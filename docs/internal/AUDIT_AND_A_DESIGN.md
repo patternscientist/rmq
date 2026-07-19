@@ -3455,3 +3455,46 @@ right is worse than no line.
 
 **Battery now run by me with `-Base`**, the round-51 lesson wired into the
 script rather than remembered.
+
+---
+
+## C05 round 53 — the budget transfer removed a worker's ability to catch its
+## own gap, and the check I now own caught it
+
+Lane B's battery, run by me: library + paper + examples 0 errors, validator
+PASS, `headline_axiom_check` 0, claim-drift 752 hits / 0 strict failures,
+paper-topology PASS, both `git diff --check` forms 0.
+
+**`design_decision_check.ps1 -Strict -Base c4595b7` exited 1**, and it was
+right. Lane B's report states "DD-IDs claimed: DD-20260719-050 only." But
+`DESIGN_DECISIONS.md` **does not appear in its diff at all**, and
+`rg "DD-20260719-050" docs/` returns nothing. **The ID was claimed in the report
+and never written to the log.**
+
+**This is a direct consequence of a change I made, and it is worth stating
+plainly.** I moved the docs/lint battery off the workers to buy them budget.
+That transfer also removed the worker's ability to catch its own missing design
+entry — the check that would have told it was no longer in its hands. The trade
+is still right: the worker got a 612-line module out of the budget, and the gap
+is bookkeeping rather than mathematics. But it converts a distributed check into
+a single point, and single points fail. **Last round mine failed exactly that
+way** — I invoked the same script in a form that examined nothing and exited 0.
+The `-Base` fix is what made this catch possible one round later.
+
+So the rule now has a second half. Taking a check off a worker obliges me to run
+it in the form that actually examines the work, and to treat MY skipping it as
+the same class of defect as a worker skipping it. Routed to Lane B2, which is in
+the same branch, with the substance quoted from its predecessor's own report so
+the entry records what was decided rather than that something was.
+
+**A false positive in MY tooling, recorded so it is not mistaken for a tree
+defect.** The battery's hygiene regex flagged `E1InteriorChunkFold.lean:181` —
+prose reading "the partial-chunk indicator, hence `8`", matched by an over-loose
+`\bpartial\b`. There is no `partial def` there. Tightened to declaration forms
+(`^\s*partial\s+(def|theorem)`), and the worker told explicitly NOT to reword
+the comment: the defect was in my instrument, and editing the tree to satisfy a
+bad instrument is how a scan starts shaping the code instead of measuring it.
+
+That distinction is the same one Lane B drew when it declined to present its
+validator PASS as evidence of its own deliverable. An instrument that is wrong
+should be fixed, not accommodated — in either direction.
