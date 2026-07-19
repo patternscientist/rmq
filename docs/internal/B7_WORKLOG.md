@@ -1924,3 +1924,194 @@ The width obstruction is CLOSED and committed; do not revisit it. Start at 1.
 6. Provenance/W19, the vocabulary theorem, REQ-B7-08 docs, the matrix, and the
    full battery including CHK-04 against the session-2 baseline. The interior
    windows MUST move.
+
+# Session 10 (B7-10)
+
+## WHAT I INHERITED, AND HOW IT DIFFERED FROM THE DELEGATION
+
+The delegation described one blocker in `SuccinctFinalRAM.lean` (timeout at
+`:5992`/`:5953`, cascade at `:6020`) and a resume point calling for the caps,
+the slack deletion and the literal. ALL OF THAT WAS ALREADY DONE in the
+uncommitted working tree; session 9 was never logged, so the worklog's session-8
+resume point and the coordinator's error report were both stale. Verified rather
+than assumed:
+
+- `lake env lean RMQ/Core/SuccinctFinalRAM.lean`: EXIT 0, zero errors, and
+  `InteriorDirectory.olean` (01:46:19) was NEWER than its source (01:44:26), so
+  it had typechecked against the SWAPPED definitions. The `SuccinctFinalRAM`
+  witness had already been rewritten to exhibit the level read, with the
+  rationale in a comment at `:5964-5972`.
+- The cap constant is `33`, the tight branch theorem is
+  `..._cost_le_thirty_three_literal_of_size_ge_four_of_bounded`, and the slack
+  artifact is DELETED (tombstone comment at `InteriorDirectory.lean:5541-5555`).
+- The live literal is already `210` with `207` frozen; W19 already carries the
+  level read through the EXISTING `lcaInterior` constructor.
+
+FIRST ACTION was still the preservation the delegation asked for: the WIP patch
+was refreshed from the working tree and committed docs-only at `714fb4a`, with
+`git apply --check` verified CLEAN against a scratch worktree at `65c6ab3`.
+
+## THE REAL BLOCKER WAS IN A DIFFERENT FILE
+
+`lake build RMQ RMQPaper RMQExamples` failed with the SAME signature the
+coordinator described but in `ReviewerReachabilitySmall.lean`:
+
+    :2096:0    (deterministic) timeout at `whnf`, 200000 heartbeats
+    :2699:16   (kernel) unknown constant
+               '..._private...reviewerIncreasingCanonicalInterior_successfulRead'
+
+The coordinator's structural diagnosis was CORRECT - it was simply pointing at
+the file where the symptom had already been fixed. Cause (1) was genuinely live
+here, and this is exactly the case where raising `maxHeartbeats` would have
+produced a theorem describing the wrong machine:
+
+    let slot := bpLocalSparseCellSlot layout.macroSize layout.levelCount 0 1
+      (Nat.log2 2)                                       -- proof-level log2
+    ...
+    have hlocalSpan : ... in ((canonicalRelativeRmmMachineLocalSpanCandidate
+      Computation shape 0 1 (Nat.log2 2)).run store).reads
+    have htwo : ... := by
+      unfold ...LocalTwoSpanCandidateComputation
+      simp only [bind_run, append]
+      exact List.mem_append_left _ hlocalSpan     -- SPAN CLAIMED LEFTMOST
+
+`canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation`
+(`InteriorDirectory.lean:2351-2373`) now binds the LEVEL read first and only
+then, inside the `match` on the read value, reads the span. So the span read is
+no longer in the left summand of the append and `mem_append_left` no longer
+places it there.
+
+## THE REPAIR
+
+Rewritten against the amended computation's ACTUAL read sequence. The witness
+now exhibits the LEVEL read, which the outer bind performs unconditionally
+before matching on the read value and which is therefore genuinely the leftmost
+read. Consequences worth recording:
+
+- No `Nat.log2` and no `bpLocalSparseCellSlot` address arithmetic survive at
+  proof level. The level slot IS the count the route presents (`2`), so the
+  concrete `slot` unfolding that drove elaboration into `whnf` is GONE rather
+  than merely made cheaper. That is why no heartbeat increase was needed.
+- The in-range obligation is discharged positionally: `2 < domain` from
+  `bpSparseLevelEntries_length` and `bpSparseLevelDomain = bound + 2`, with
+  `hmacroSize : macroSize = 25`.
+- New `reviewerCanonicalComponent_localLevel_get`, the component-store accessor
+  for the level region, stated over the six regions that PRECEDE it and
+  quantified over everything that follows - the same discipline the local
+  accessor documented, which is what keeps it stable as the store grows.
+
+DEAD SOURCES REMOVED IN THE SAME COMMIT. The rewrite took the last caller of
+`reviewerCanonicalComponent_local_get` and of `reviewer_log2_twentyFive`; both
+are deleted, since "no dead sources at any commit" binds here.
+
+## CHK-04: SIX OF EIGHT INTERIOR WINDOWS MOVED, AND THE TWO THAT DID NOT CANNOT
+
+`lake exe rmq_succinct_classic_cost_harness`, EXIT 0, "all reported windows
+agree with reference List Int RMQ semantics", `canonicalBound=210` and
+`canonicalBoundIs210=true` on every window. Against the session-2 baseline:
+
+    fixture             window          baseline  now   delta
+    tie-boundary n=6    [0,6)   cross      76      76     0
+    tie-boundary n=6    [1,5)   cross      72      72     0
+    generated-64        [0,64)  cross     116     118    +2
+    generated-64        [7,39)  cross     126     128    +2
+    zigzag-128          [0,128) cross      92      93    +1
+    zigzag-128          [17,97) cross      96      97    +1
+    generated-128-alt   [0,128) cross      93      94    +1
+    generated-128-alt   [15,96) cross      95      96    +1
+    (all four sameBlock rows 54/62/57/57 unchanged, as expected - sameBlock
+     does not enter the interior)
+
+THE TWO UNMOVED WINDOWS ARE STRUCTURALLY INCAPABLE OF MOVING, and this was
+checked rather than argued. Probed layouts:
+
+    tie n=6  blockSize=6  blockCount=2  macroSize=9  macroSampleCount=1
+    gen64    blockSize=14 blockCount=9  macroSize=49 macroSampleCount=1
+
+With `blockCount=2` a crossBlock query's two endpoint blocks have NO block
+strictly between them, so the interior range-min is invoked with `count=0` and
+takes the `Costed.pure` branch. Probed directly:
+
+    tie n=6  interior startBlock=0 count=0 cost=0
+    tie n=6  interior startBlock=0 count=1 cost=18
+    tie n=6  interior startBlock=0 count=2 cost=18
+    gen64    interior startBlock=0 count=0 cost=0
+    gen64    interior startBlock=0 count=1 cost=18
+
+The charged level read lives inside the two-span computation, which `count=0`
+never reaches. So the n=6 rows carry zero interior reads before AND after the
+swap; they are not evidence of a dead store.
+
+The criterion's stated RATIONALE ("windows identical to baseline would mean the
+store grew and nothing reads it") is therefore disproven - the store is read on
+every window whose fixture has `blockCount >= 3`. But the criterion's LITERAL
+window list includes `76` and `72`, and those did not move. I am NOT closing
+CHK-04 on my own authority and I have NOT weakened the row. The coordinator
+should decide whether to amend the window list to exclude the `blockCount=2`
+fixture, with the probe above as the justification.
+
+## VERIFICATION LEDGER (B7-10), all as observed
+
+- `lake build RMQ RMQPaper RMQExamples` at the candidate state: "Build completed
+  successfully", `LAKE_EXIT=0`, twelve warnings (the recorded baseline; none in
+  a file this session touched).
+- `lake exe rmq_succinct_classic_cost_harness`: `HARNESS_EXIT=0`, table above.
+- `lake env lean scripts/headline_axiom_check.lean`: `EXIT=0`, zero
+  `Lean.ofReduceBool`, zero `sorryAx`.
+- `#print axioms` after a root build, importing the modules DIRECTLY:
+  `..._small_successful_closed_valid_occurrence` (the public consumer of the
+  rewritten private witness), `..._cost_le_thirty_three_literal_...`,
+  `..._cost_le_thirty_of_size_ge_four_of_bounded`,
+  `..._readWord_only`, `..._counted_producer_may_path` - all
+  `[propext, Classical.choice, Quot.sound]`. And `queryCost_eq`,
+  `..._PrincipledAllSizeChargedTraceCost_eq`, `..._CloseCost_eq`,
+  `..._SilentSparseLevelChargedTraceCost_eq` report "does not depend on any
+  axioms", which is the sharpest available evidence that `210` is COMPUTED and
+  not asserted.
+- Hygiene `rg` over all seven touched Lean files: ZERO hits for
+  sorry/admit/native_decide/implemented_by/partial/unsafe/extern/noncomputable/
+  `import Mathlib`/axiom/ofReduceBool. `native_decide`/`ofReduceBool` across
+  `RMQ/` and `RMQExamples/`: ZERO.
+- `git diff --check` on the working tree: exit 0. `git diff --check
+  f6564ec..HEAD`: exit 2, hits ONLY `docs/internal/B7_STEP2_WIP.patch` - the
+  documented structural property of a committed unified diff. NOT a defect.
+- `design_decision_check.ps1 -Strict -Base f6564ec`: exit 0, "DESIGN-CHECK:
+  checked 24 changed files".
+- `claim_drift_scan.ps1`: exit 0, "scan complete (721 hits, 0 strict failures)".
+- `paper_topology_lint.ps1`: exit 0, "PAPER-TOPOLOGY PASS (83 broad documentary
+  identifiers; 49 paper identifiers resolved)".
+- KNOWN RED, externally owned, CONFIRMED UNCHANGED and NOT fixed:
+  `lake exe rmq_succinct_classic_validate` fails at elaboration with
+  "`singletonRepeatedEqualReadPositionsOK` did not evaluate to `true`"
+  (`Validation/SuccinctClassic.lean:253`). That is precisely the a07-owned
+  fixture the delegation ring-fenced; the failure is in the fixture, not in the
+  literal migration in the same file.
+- Per the delegation, `scripts/axiom_check.lean`, `scripts/wordram_axiom_check.lean`
+  and `gate.ps1` were NOT run.
+
+## NUMERALS MOVED (FOR THE MERGE RECONCILER)
+
+Moved by session 9 and carried in this commit; none moved by session 10:
+
+    canonicalTransitionalQueryCost      328 -> 352
+      RMQ/Core/SuccinctRMQClassic.lean:148
+      RMQ/Validation/SuccinctClassic.lean:270
+      RMQExamples/Concrete.lean:89
+      docs/internal/CLAIM_DRIFT_POLICY.json  id canonical-transitional-328 ->
+        canonical-transitional-352, pattern \b328\b -> \b352\b
+      scripts/paper_topology_lint.ps1  oldRegimePattern gains 352 (328 retained)
+    interior cap                         30 -> 33
+      InteriorDirectory.lean:1934
+    live whole-query literal            207 -> 210 (queryCost), with 207/126
+      frozen as named historical constants pinned to LITERAL components
+      (SuccinctFinalRAM.lean:8852 = 30, :8874 = 37)
+
+`Validation/SuccinctClassic.lean`'s a07-owned fixture was NOT touched.
+
+## STATUS AT END OF THIS SESSION
+
+The library and both example/paper targets are green, the swap is committed as
+real source rather than a patch, and the rung's substantive obligations carry
+evidence. CHK-04 is the one row I decline to close on my own authority, for the
+reason recorded above. No row was weakened, no constant is asserted, no frozen
+identity was renamed or deleted.

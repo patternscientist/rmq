@@ -464,3 +464,127 @@ the correct state for a tree where the swap has not landed.
 `lake build RMQ` at `fa5e94d`: exit 0, 243/244, zero errors, twelve
 pre-existing warnings (baseline-identical, none in a touched file). This is the
 per-commit evidence REQ-B7-09 asks for.
+
+## Evidence at session 10 (B7-10): the swap is COMMITTED and the library is green
+
+The swap landed as real source at `c45e62c` (preservation commit `714fb4a`
+first). `lake build RMQ RMQPaper RMQExamples` exits 0. The last blocker was a
+read-order defect in `ReviewerReachabilitySmall.lean`, not a performance
+problem; see the session-10 worklog entry for the diagnosis.
+
+### REQ-B7-05 - the literal is DERIVED, and the maximizing branch is exhibited
+
+Quoted proposition, `RMQ/Core/SuccinctFinalRAM.lean:8828`:
+
+    theorem concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq :
+        concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 210 := by
+      rfl
+
+The right-hand side is reached through the NAMED component algebra
+(`:8811-8821`), whose `interiorDirectory` field names the LIVE cap definition
+`canonicalRelativeRmmPrincipledInteriorChargedTraceCost`
+(`InteriorDirectory.lean:1934`, `:= 33`):
+
+    closeLCA   = 2*rank11 + 2*fringe37 + interior33 = 129
+    wholeQuery = 2*select35 + 129 + rank11          = 210
+
+ANTI-VACUITY (P/Q): P = "the literal is computed from the algebra";
+Q = "mutating a component constant breaks the `_eq` right-hand side". Because
+`interiorDirectory` names the live cap rather than a numeral, moving the cap
+necessarily moves `210`; this is the same mechanism that moved it from `207`.
+`#print axioms` reports `queryCost_eq`,
+`..._PrincipledAllSizeChargedTraceCost_eq` and `..._CloseCost_eq` as "does not
+depend on any axioms" - a pure computation, not an assertion.
+
+THE MAXIMIZING BRANCH, `InteriorDirectory.lean:5461-5517`. The four live
+branches of `..._cost_le_thirty_three_literal_of_size_ge_four_of_bounded`
+discharge as:
+
+    within-macro (two-span)   _cost_le_twenty_six_of_size_ge_four    26, slack 7
+    adjacent-macro            _cost_le_twenty_two_of_macro_crossing  22, slack 11
+    left-middle-macro         _cost_le_twenty_two_of_macro_crossing  22, slack 11
+    cross-macro               _cost_le_thirty_three_of_macro_crossing 33, slack 0
+
+The cross-macro branch is discharged by a BARE `exact` against the cap
+(`:5516-5517`) with no `Nat.le_trans` and no numeric slack, while the other
+three route through `Nat.le_trans ... (by simp)`. The cap is therefore attained,
+not merely respected - which is exactly the shape Amendment 1 predicted for the
+recharged rung, and it is what makes `30 < cap` unprovable.
+
+THE FROZEN HISTORICAL CONSTANT IS GENUINELY FROZEN. `207` is retained as
+`concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost` (`:8959-8964`)
+over an algebra whose components are PINNED LITERALS (`:8852 := 30`,
+`:8874 := 37`), not names of live definitions. The docstring at `:8832-8844`
+states the trap explicitly: a historical constant that names a live definition
+silently tracks the live route and rewrites history on the next recharge.
+
+Disposition: evidence complete. NOT closed unilaterally; coordinator acceptance
+required.
+
+### THE SLACK ARTIFACT IS DELETED
+
+`canonicalRelativeRmmPrincipledInteriorChargedTraceCost_announced_slack_of_size_ge_four_of_bounded`
+no longer exists as a declaration. `InteriorDirectory.lean:5541-5555` carries a
+tombstone recording that it was DELETED rather than weakened, and why its first
+conjunct (`route <= 30`) became false. Verified by search: the identifier
+survives only in prose and in the historical WIP patch, in no `theorem` line.
+
+### REQ-B7-07 - the vocabulary theorem holds over the AMENDED object
+
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only`
+(`SuccinctFinalRAM.lean:9708`) re-elaborated over the amended route in the
+`c45e62c` build; `#print axioms` `[propext, Classical.choice, Quot.sound]`.
+The new level events are `readWord`, since the theorem quantifies over the
+whole-query trace which now contains them.
+
+### W19 provenance - carried by the EXISTING constructor, no new segment
+
+The charged level read is emitted inside
+`concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural`,
+which is precisely the object the existing `ReviewerProducerReadPath.lcaInterior`
+constructor is stated over (`SuccinctFinalRAM.lean:5397-5401`). It is discharged
+at `:5543` and consumed at `:6138`. No new constructor and no new segment were
+needed, and `canonical_segments_complete` still reads `segment < 23`
+(`SuccinctFinalModelAdequacy.lean:116`).
+
+### CHK-04 - six of eight interior windows moved; the two that did not CANNOT
+
+Harness exit 0, `canonicalBound=210` on every window, all windows agree with
+reference semantics. Deltas against the session-2 baseline:
+
+    generated-64      [0,64)  116 -> 118   [7,39)  126 -> 128
+    zigzag-128        [0,128)  92 ->  93   [17,97)  96 ->  97
+    generated-128-alt [0,128)  93 ->  94   [15,96)  95 ->  96
+    tie-boundary n=6  [0,6)    76 ->  76   [1,5)    72 ->  72   (UNMOVED)
+
+The tie-boundary fixture has `blockCount=2` (probed), so a crossBlock query has
+no block strictly between its two endpoint blocks; the interior range-min is
+invoked with `count=0` and takes the `Costed.pure` branch. Probed interior
+costs: `count=0` costs 0, `count=1` and `count=2` cost 18 on both that shape and
+`generated-64`. The charged level read lives inside the two-span computation,
+which `count=0` never reaches, so those two windows carried zero interior reads
+before AND after the swap.
+
+The row's stated rationale - "windows identical to baseline would mean the store
+grew and nothing reads it" - is therefore DISPROVEN as a reading of these two
+rows: the store is read on every window whose fixture has `blockCount >= 3`.
+But the row's literal window list names `76` and `72`, which did not move.
+
+Disposition: CHK-04 REMAINS OPEN. It is not closed here and the row is NOT
+weakened. The coordinator should rule on whether to amend the window list to
+exclude the `blockCount=2` fixture, on the probe evidence above.
+
+### Verification rows - as observed at `c45e62c`
+
+CHK-01 `lake build RMQ RMQPaper RMQExamples` exit 0. CHK-03
+`headline_axiom_check` exit 0, zero `ofReduceBool`/`sorryAx`. CHK-05 hygiene and
+native_decide scans ZERO hits. CHK-06 `git diff --check` exit 0 on the working
+tree; `f6564ec..HEAD` exit 2 hitting ONLY the committed `.patch` (documented
+structural property). CHK-07 `design_decision_check.ps1 -Strict -Base f6564ec`
+exit 0, 24 files. CHK-08 `claim_drift_scan.ps1` exit 0 (721 hits, 0 strict
+failures) and `paper_topology_lint.ps1` PASS. CHK-02 NOT run per the delegation.
+
+KNOWN RED and externally owned: `lake exe rmq_succinct_classic_validate` fails at
+elaboration on the a07-owned fixture `singletonRepeatedEqualReadPositionsOK`
+(`Validation/SuccinctClassic.lean:253`), which the delegation ring-fenced. Not
+caused by, and not repaired by, this rung.
