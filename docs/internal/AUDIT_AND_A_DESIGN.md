@@ -2065,3 +2065,47 @@ churn every open branch.
 **E1 unblocked:** B7 merged into `claude/b1-b2-charged-fringe-tables` at
 `f9b1ecc`, tree clean, 28 E1 modules and B7's `SparseLevelTable` both present.
 Merged-tree build verification running.
+
+**Round 30 addendum — merged tree verified, E1 fired.** `lake build RMQ` on the
+merged `f9b1ecc` exits 0 at 249/250 with zero errors: E1's 28 machine modules
+and B7's charged interior compose cleanly. The pre-staged E1 unblock prompt was
+fired with the B7 SHA substituted, carrying forward the three consequences the
+worker must account for — the interior now performs MORE reads than when the
+cross-block arm was written, the route literal is 210, and the interior cap is
+33 attained at zero slack.
+
+Two guards added to the E1 brief from B7's experience rather than from theory:
+**do not raise `maxHeartbeats` to clear a timeout in a proof about execution
+structure** (B7 hit exactly that, and the real cause was a membership cascade
+encoding a stale read ORDER — raising the limit would have produced a theorem
+describing the wrong machine); and **take the next design-decision ID from above
+the maximum actually observed in the file**, since two branches already minted
+colliding IDs and a third collision is pending at the T1 merge.
+
+**B7-11's window accounting correction accepted.** There are NINE crossBlock
+windows, not eight — `tiny-leftmost-ties [0,5)` was omitted from the
+predecessor's table entirely, so the "6 of 8 moved" framing I ruled on rested on
+an incomplete inventory. The ruling stands regardless (adding a live-interior
+fixture was right on coverage grounds, not on counting grounds), but this is now
+frequent enough to state as practice: **treat every enumerated list in this
+campaign as provisional until a successor re-derives it.** Inventories have been
+short at least four times — executed sites twice, the repair surface twice, and
+now the window table.
+
+**B7-11's new fixture is probed, not assumed.** `tie-boundary-live-interior`
+(n=24, base=5, blockSize=10, blockCount=4) has three windows with
+`interiorLive=true` and `count=1..3`, and the interior is LOAD-BEARING: the
+minimum value occurs only at indices in interior blocks 1-3 while both fringe
+blocks carry none, so leftmost tie-breaking is decided by the interior
+range-min. That is precisely the interaction the ruling identified as never
+having been exercised.
+
+**A scoping judgment deliberately left to the worker, with the labelling fixed
+by the coordinator.** Measuring a pre-swap "before" value for the new fixture
+may require a full rebuild at an old commit. There is a cheaper derivation
+available — a window provably invoking the interior with `count > 0` and showing
+a post-swap interior cost of 18 cannot have cost 18 pre-swap, since the pre-swap
+interior performed no level-table reads. Either is acceptable, but the worker
+must STATE which it used and let the coordinator rule. The difference between a
+measurement and a derivation belongs in the evidence record, not buried in a
+worker's reasoning, because the eventual auditor must weigh them differently.
