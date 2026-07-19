@@ -1366,3 +1366,44 @@ regressed.
 **Reporting discipline continues to pay:** the worker observed 298 axiom lines
 where an earlier session's log recorded 311, and reported what it ran. Two
 sessions running have now corrected a predecessor's logged check output.
+
+## 2026-07-19 (C05 round 18) — B7 scope shrinks; a worker declines an authorization
+
+**Site count is FOUR, not six — proved, not assumed.** B7-03 walked consumers
+from the root and discharged the "fifth family" worry negative: both
+`WordReads.lean` definitions funnel into `bpTwoLevelInteriorCandidateWordsRead`,
+whose only def-body consumers are the LEGACY directory's `payloadWordsRead`
+field (the canonical directory sources that field from
+`canonicalRelativeRmmInteriorRangePhysicalWordsReadWithStore`) and a logical
+audit projection consumed by two theorems. Charging the four reachable sites
+closes the rung with no residual Theta(log n) computation behind it. The worker
+re-verified this by hand rather than accepting its own subagent's account, and
+correctly refused to propagate that subagent's line numbers because it had read
+the tree mid-edit.
+
+**The space-accounting fix was not the predicted one.** The prediction was a
+symbolic `M = (Nat.log2 n + 1)^2`. The actual fix is the tight cube bound
+`hMw : M * w <= 8 * n` already sitting three lines above in the same proof.
+Links 1-3 are done: `..._payload_length_eq_raw` stays an exact equality;
+`..._le_linear` has its constant DERIVED 218 -> 527; `_littleO` remains, with
+its decisive error recorded verbatim for the successor.
+
+**A worker declined a coordinator-granted relaxation.** The delegation
+explicitly authorized weakening `..._eq_legacy_of_compactReady` to `<=`. B7-03
+did not use the authorization: it kept the exact equality, strengthened to
+`= legacy + canonicalRelativeRmmInteriorLevelTableOverhead shape`. Recording
+this because it is the disposition the completion gate exists to produce --
+an authorization to weaken is a ceiling, not an instruction, and a worker that
+finds the stronger statement achievable should take it.
+
+**Minor but worth knowing:** a committed `.patch` artifact necessarily trips
+`git diff --check`, because a blank context line in a unified diff is a single
+space. The `B3_M5_WIP.patch` precedent has the identical property (103 hits).
+Structural, not a source defect; stripping the spaces would corrupt the patch.
+Expect and explain these hits rather than fixing them.
+
+**Recovery mechanism validated.** The step-2 work that lived only in a
+session-local scratchpad is now durable at 661 lines and `git apply --check`
+clean. Two workers in a row have correctly refused to commit a partial swap and
+refreshed the patch instead. The rule holds: work that cannot be committed
+green must still be committed as an artifact, never left in a scratchpad.
