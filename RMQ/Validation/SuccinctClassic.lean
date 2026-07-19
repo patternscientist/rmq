@@ -237,15 +237,29 @@ def invalidEmptyPublicPhysicalResult :=
 
 /- Occurrence-level provenance must not collapse equal event values.  The two
 select-close invocations in this valid singleton query emit identical
-twelve-event component traces, so global positions `0` and `12` carry the same
-successful read value while remaining distinct provenance obligations. -/
+fifteen-event component traces, so global positions `0` and `15` carry the same
+successful read value while remaining distinct provenance obligations.  The
+closed program check pins those occurrences to its distinct instruction
+positions `0` and `1`, rather than inferring instruction distinctness from the
+global trace positions alone. -/
 def singletonLogicalTrace :=
   (RMQ.SuccinctClassic.queryTraceResult ([7] : List Int) 0 1).trace
 
+def singletonRepeatedEqualReadInstructionPositionsOK : Bool :=
+  match
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProgram[0]?,
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProgram[1]? with
+  | some firstInstr, some secondInstr =>
+      firstInstr.reviewerReadLeaf? == some .selectClose &&
+        secondInstr.reviewerReadLeaf? == some .selectClose &&
+        (0 : Nat) != 1
+  | _, _ => false
+
 def singletonRepeatedEqualReadPositionsOK : Bool :=
   (singletonLogicalTrace[0]?).isSome &&
-    singletonLogicalTrace[0]? == singletonLogicalTrace[12]? &&
-    (0 : Nat) != 12 &&
+    singletonLogicalTrace[0]? == singletonLogicalTrace[15]? &&
+    (0 : Nat) != 15 &&
+    singletonRepeatedEqualReadInstructionPositionsOK &&
     match singletonLogicalTrace[0]? with
     | some (RMQ.WordRAM.TraceEvent.readWord _ _ (some _)) => true
     | _ => false
@@ -291,7 +305,7 @@ def mainImpl : IO Unit := do
           ("validated " ++ toString totalWindowCount ++
             " SuccinctClassic valid/invalid query windows across " ++
             toString generatedInputs.length ++
-            " deterministic inputs; canonical same/cross routes, principled 76 charged-trace bound, " ++
+            " deterministic inputs; canonical same/cross routes, principled 207 charged-trace bound, " ++
             "physical erasure/backing, and flat-store dependency checked")
       else
         IO.eprintln
