@@ -1089,3 +1089,49 @@ resolved. Do not ship that sentence unamended.
 Note (C) is the same move the campaign already made twice, and the same
 resolution shape as the queued allocated-cell space theorem: fix the mechanism
 rather than widen the assumption set.
+
+## 2026-07-19 (C05 round 13) — user chooses the charged fix; B7 launched
+
+**User decision:** pursue the charged fix for the sparse level, "or whatever
+option gives the best and most unimpeachable result." Explicitly NOT
+authorized: an `msb`/`log2` machine instruction, or weakening any bound to
+accept Theta(log n) work. This is the second time the user has chosen the more
+expensive, more precedent-matching route over the cheaper assumption (the
+first being Option B over Option A at the campaign's start), and it is
+consistent with the project's stated goal of minimising precedent-free
+justification.
+
+**Coordinator source verification before launch — the finding is confirmed with
+exact executed sites.** `let level := Nat.log2 count` appears in the EXECUTED
+interior evaluator at `EndpointFringe/InteriorCandidate/InteriorRAM.lean:573`,
+`:621`, `:819`, `:867` (the last two on `macroSpanCount`), on runtime-derived
+arguments. The level reaches an accepted read address through
+`bpGlobalSparseCellSlot macroCount macroStart level = level * macroCount +
+macroStart` (`EndpointFringe/InteriorCandidate/LocalGlobalSparse.lean:199-201`).
+Four executed sites, not one.
+
+**B7 launched** on branch `claude/b7-charged-sparse-level` in worktree
+`.worktrees/b7-charged-level`, based at the campaign HEAD `f6564ec`, isolated
+from the two concurrent workers. Its milestone 0 is a MECHANISM DETERMINATION
+committed before any implementation, choosing the highest workable option from:
+(1) the level is already derivable from a directory entry the route already
+reads -- nearly free; (2) store it as a widened field in an existing counted
+entry; (3) a new o(n) floor-log2 table in the established B2/B3/B6 pattern;
+(4) restructure to remove the runtime log2. Preference order is deliberate:
+prefer arithmetic on data already charged over new counted storage.
+
+**Explicitly required of B7:** derive whether the route literal moves rather
+than assuming either way (B6's added reads fit under the existing MAX-over-
+branches cap and 207 did not move; that may or may not recur), re-establish the
+readWord-only vocabulary theorem over the amended route, and repair the
+charge-policy section of `PAPER_MODEL_ADEQUACY.md` so it is true after the rung.
+
+**Stretch goal set, and it is the strategically important one:** a COMPLETE
+INVENTORY of every uncharged computation reachable from the accepted
+whole-query route, each classified as representation artifact (with its checked
+bridge lemma) or charged. Three instances of this defect class have now been
+found by three different mechanisms -- a worker refusing to fake a proof, a
+coordinator adjudicating an audit alarm, and a machine construction forcing
+every quantity to have a provenance. An enumeration is what converts "we fixed
+the ones we found" into "here is the complete list", and it is the single
+highest-value artifact remaining for reviewer confidence.
