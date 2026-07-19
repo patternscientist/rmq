@@ -424,6 +424,149 @@ theorem sameBlockArm_runsTo
       leftClose rightClose seed, <- hvalA, hresC]
     rfl
 
+/-! ## The RANGE PREAMBLE (add/sub only)
+
+`sameBlockArm_runsTo` also needs `fStart`, `fLo` and `fHi`.  Unlike the
+address preamble, none of these needs a divisor: the route's own
+`sbStart`/`sbRelLo`/`sbRelHi` are built from `+` and truncated `-` alone.
+
+The instruction order below mirrors the route expressions LEFT TO RIGHT,
+which matters because `Nat` subtraction is truncated: `sbRelHi` is
+`leftClose + 1 + (rightClose - leftClose + 1) - 1 - base`, so the machine
+must subtract `1` and then `base`, in that order, from the sum -- not
+combine them.  Reassociating would change the value at the clamping
+boundary, so the block is written to match the route syntactically.
+-/
+
+/-- The right close position the range preamble consumes. -/
+abbrev fRight : Nat := 71
+
+/-- The range preamble at base `Q` (eight instructions, exit `Q + 8`):
+`fStart`, `fLo` and `fHi` from the two query operands and the window bit
+base `fBB` that the address preamble has already computed. -/
+def windowRange : List Instr :=
+  [ .const fT 1             -- Q+0  the only immediate the block needs
+  , .add fStart fClose fT   -- Q+1  start   = leftClose + 1
+  , .sub fLo fStart fBB     -- Q+2  relLo   = start - base
+  , .sub fU fRight fClose   -- Q+3            rightClose - leftClose
+  , .add fU fU fT           -- Q+4  count   = that + 1
+  , .add fHi fStart fU      -- Q+5            start + count
+  , .sub fHi fHi fT         -- Q+6            ... - 1
+  , .sub fHi fHi fBB ]      -- Q+7  relHi   = ... - base
+
+@[simp] theorem windowRange_length : windowRange.length = 8 := rfl
+
+/-- Category log of the range preamble: one register write and seven
+unconditional arithmetic ticks.  No read, no branch. -/
+def windowRangeCats : List Category :=
+  [.registerWrite, .arithmetic, .arithmetic, .arithmetic, .arithmetic,
+    .arithmetic, .arithmetic, .arithmetic]
+
+/-- Constructor-exhaustive width certificate for the range preamble.  No
+wildcard arm: every one of the eight instructions is discharged by its own
+constructor's field conjunction. -/
+theorem windowRange_fits (w : Nat) (hw : 71 < 2 ^ w) :
+    ∀ instr ∈ windowRange, Instr.FieldsFit w instr := by
+  intro instr hinstr
+  have h1 : (1 : Nat) < 2 ^ w := by omega
+  have h50 : (50 : Nat) < 2 ^ w := by omega
+  have h51 : (51 : Nat) < 2 ^ w := by omega
+  have h60 : (60 : Nat) < 2 ^ w := by omega
+  have h61 : (61 : Nat) < 2 ^ w := by omega
+  have h64 : (64 : Nat) < 2 ^ w := by omega
+  have h66 : (66 : Nat) < 2 ^ w := by omega
+  have h70 : (70 : Nat) < 2 ^ w := by omega
+  have h71 : (71 : Nat) < 2 ^ w := hw
+  simp only [windowRange, List.mem_cons, List.not_mem_nil, or_false]
+    at hinstr
+  rcases hinstr with h | h | h | h | h | h | h | h <;> subst h
+  · exact ⟨h60, h1⟩
+  · exact ⟨h66, h70, h60⟩
+  · exact ⟨h50, h66, h64⟩
+  · exact ⟨h61, h71, h70⟩
+  · exact ⟨h61, h61, h60⟩
+  · exact ⟨h51, h66, h61⟩
+  · exact ⟨h51, h51, h60⟩
+  · exact ⟨h51, h51, h64⟩
+
+/-- Every range-preamble instruction is straight-line. -/
+theorem windowRange_straight :
+    ∀ instr ∈ windowRange, instr.isStraight = true := by
+  intro instr hinstr
+  simp only [windowRange, List.mem_cons, List.not_mem_nil, or_false]
+    at hinstr
+  rcases hinstr with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> rfl
+
+local macro "range_eval" : tactic =>
+  `(tactic| straight_eval [windowRange, fT, fU, fLo, fHi, fStart, fClose,
+      fRight, fBB])
+
+/-- The range preamble writes only `fLo`, `fHi`, `fT`, `fU` and `fStart`.
+Stated in NUMERALS, not the register abbrevs, so `omega` can use it. -/
+abbrev WindowRangeUntouched (r : Nat) : Prop :=
+  r ≠ 50 ∧ r ≠ 51 ∧ r ≠ 60 ∧ r ≠ 61 ∧ r ≠ 66
+
+/-- Exact simulation of the range preamble: no receipt, eight ticks, and
+the three range registers `sameBlockArm_runsTo` demands, computed from the
+query operands by addition and truncated subtraction alone. -/
+theorem windowRange_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {Q : Nat}
+    (hHost : HostedAt program Q windowRange)
+    (regs : RegFile) (leftClose rightClose base : Nat)
+    (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose)
+    (hBB : regs fBB = base) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, Q, false⟩ ⟨regs', Q + 8, false⟩ []
+        windowRangeCats ∧
+      regs' fStart = leftClose + 1 ∧
+      regs' fLo = leftClose + 1 - base ∧
+      regs' fHi =
+        leftClose + 1 + (rightClose - leftClose + 1) - 1 - base ∧
+      (∀ r, WindowRangeUntouched r → regs' r = regs r) := by
+  have hrun := RunsTo.straight store windowRange windowRange_straight Q
+    hHost regs
+  obtain ⟨regsW, hregsW⟩ :
+      ∃ x, straightRegs store windowRange regs = x := ⟨_, rfl⟩
+  rw [hregsW] at hrun
+  have hreads : straightReads store windowRange regs = [] := by range_eval
+  have hcats : windowRange.map Instr.category = windowRangeCats := rfl
+  rw [hreads, hcats] at hrun
+  refine ⟨regsW, by simpa using hrun, ?_, ?_, ?_, ?_⟩
+  · rw [<- hregsW]
+    range_eval <;> simp [hClose]
+  · rw [<- hregsW]
+    range_eval <;> simp [hClose, hBB]
+  · rw [<- hregsW]
+    range_eval <;> simp [hClose, hRight, hBB]
+  · intro r hr
+    obtain ⟨h50, h51, h60, h61, h66⟩ := hr
+    rw [<- hregsW]
+    apply straightRegs_preserves
+    intro i hi
+    simp only [windowRange, List.mem_cons, List.not_mem_nil, or_false] at hi
+    rcases hi with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
+      straight_writes [fT, fU, fLo, fHi, fStart] <;> omega
+
+/-- The range preamble's outputs ARE the route's own `sbStart`, `sbRelLo`
+and `sbRelHi` at the accepted window bit base -- the exact three
+hypotheses `sameBlockArm_runsTo` takes. -/
+theorem windowRange_runsTo_route
+    (shape : Cartesian.CartesianShape) (store : ReadStore)
+    {program : E1Machine.Program} {Q blockSize : Nat}
+    (hHost : HostedAt program Q windowRange)
+    (regs : RegFile) (leftClose rightClose : Nat)
+    (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose)
+    (hBB : regs fBB = sbBB shape blockSize leftClose) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, Q, false⟩ ⟨regs', Q + 8, false⟩ []
+        windowRangeCats ∧
+      regs' fStart = sbStart leftClose ∧
+      regs' fLo = sbRelLo shape blockSize leftClose ∧
+      regs' fHi = sbRelHi shape blockSize leftClose rightClose ∧
+      (∀ r, WindowRangeUntouched r → regs' r = regs r) :=
+  windowRange_runsTo store hHost regs leftClose rightClose
+    (sbBB shape blockSize leftClose) hClose hRight hBB
+
 end E1SameBlockArm
 end WordRAM
 end RMQ
