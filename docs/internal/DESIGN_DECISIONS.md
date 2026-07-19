@@ -2604,7 +2604,7 @@ Scope: B2-02 wiring milestone (branch `claude/b1-b2-charged-fringe-tables`):
 `ReviewerReachability(Small).lean`, `BPNavigationRAM.lean`,
 `SuccinctRMQClassic.lean`, `Headlines/RMQ.lean`, `Validation/*`.
 
-Decisions (executing coordinator ruling C05 — store extension coupled to the
+Decisions (executing coordinator ruling C05 â€” store extension coupled to the
 wiring, every commit `lake build RMQ` green):
 
 1. Dispatcher relocation, not in-place edit: the canonical dispatchers
@@ -2709,7 +2709,7 @@ Decision:
    as B2's 32-chunk window cap).  The clamp makes the evaluator agree with
    `RMQ.RAM.boolRankPrefix` (which also stops at the word end) without
    ever decoding `false` padding as data, so the universal value
-   equivalence needs only `word.length <= 8 * c` — a hypothesis every
+   equivalence needs only `word.length <= 8 * c` â€” a hypothesis every
    accepted call site discharges from its structure's own
    `wordSize_le_machine` + `BoundedPayloadWordStore.word_length_le`.
 3. In-word select is an early-exit fold: per chunk one existing-table read
@@ -2740,7 +2740,7 @@ Decision:
    `B_WORKLOG.md` was rejected because the closed B2 matrix and ledger
    reference `B2_WORKLOG.md` by name and frozen rows may not be edited).
 
-Context: B3 mission — eliminate the remaining `wordRank`/`wordSelect`
+Context: B3 mission â€” eliminate the remaining `wordRank`/`wordSelect`
 events from the accepted route (three `TwoLevelPayloadLiveStoredWordRankData`
 rank seeds and the `denseTwoWordSelectCosted` leaf) so the charged
 vocabulary collapses to `readWord` only.
@@ -2748,27 +2748,27 @@ vocabulary collapses to `readWord` only.
 Options considered:
 
 - New popcount-per-chunk-value table (design doc's first suggestion):
-  rejected — the existing `(v, a, b)` entries already determine every
+  rejected â€” the existing `(v, a, b)` entries already determine every
   in-chunk prefix rank via the offset-encoded min field, so a new rank
   table would duplicate counted bits and add a second store region for
   zero proof savings.
 - Adding a packed select field to the B2 entry (one table for both):
-  rejected — a per-entry select answer needs the occurrence index `k` as
+  rejected â€” a per-entry select answer needs the occurrence index `k` as
   input, so it cannot live in the `(v, a, b)` index without multiplying
   the row space by `(c+1)` anyway; widening the packed entry would also
   reopen the closed width-vs-reviewer-word rows (`bpFringeChunkEntryWidth`
   consumers) for no read-count gain.
-- Select table indexed by `(target, v, k)` (both targets): rejected —
+- Select table indexed by `(target, v, k)` (both targets): rejected â€”
   the accepted route selects only `target = false`
   (`sparseExceptionSelectData shape.bpCode false`); the definition is
   target-generic, only the `false` instance is stored/counted.  A second
   instance can be appended as a further source if a future route needs it.
 - Fixed non-clamped chunk count (`limit / c + 1` as in B2's fringe):
-  rejected for rank in favor of the ceiling form — it avoids a guaranteed
+  rejected for rank in favor of the ceiling form â€” it avoids a guaranteed
   zero-information read when `c` divides the limit, and the select fold
   needs the ceiling form regardless (it scans the whole word).
 - Reusing `Costed.tickValue` window packets for the sample reads:
-  not applicable — the three rank sample reads are already genuine
+  not applicable â€” the three rank sample reads are already genuine
   charged store reads in the accepted leaf; they are kept verbatim.
 
 Rationale: minimal new counted bits (one small table), minimal new proof
@@ -2835,16 +2835,16 @@ Options considered:
 
 - Relabeled register programs (`ofNatProgramWithStore` +
   `tripleSegmentMap`, the accepted presentation): rejected for the
-  recharged sites — the register instruction emits the `wordRank` event
+  recharged sites â€” the register instruction emits the `wordRank` event
   the B3 mission removes, so the twin would need a new instruction
   anyway; direct atoms make `_matchesReadStore` and the vocabulary
   induction definitionally `readWord`-shaped.
-- A new register instruction (`twoLevelChunkedRank`): rejected — it
+- A new register instruction (`twoLevelChunkedRank`): rejected â€” it
   would extend the `Program`/`NatProgram` universe (public-surface
   churn) for zero proof gain; the data-dependent chunk addressing is
   exactly what `bpChunkReadTraceResult` already generalizes.
 - Re-implementing the four-field entry-table reads as direct atoms:
-  rejected — those reads are not recharged by B3; reusing the accepted
+  rejected â€” those reads are not recharged by B3; reusing the accepted
   evaluators keeps the super/local read paths literally identical to the
   accepted route (no sibling).
 
@@ -3262,7 +3262,7 @@ Decision (`RMQ/Core/WordRAM/E1SelectBridge.lean`, namespace
   the component bank `8..27` is fully owned by the rank/select folds;
   every fold preservation theorem in the tree covers `28 <= r`
   (`rankCloseBlock_runsTo_hit`/`rankTrueCloseBlock_runsTo_hit`:
-  `r <= 8 ∨ 28 <= r`; `rankFalseLoopFold_runsTo`/
+  `r <= 8 âˆ¨ 28 <= r`; `rankFalseLoopFold_runsTo`/
   `rankAtSegmentBlock_runsTo` and `selectFoldBlock_runsTo`: write-set
   complements including `28 <= r`), so extension-bank state survives
   every hosted fold without new preservation obligations.
@@ -3463,11 +3463,11 @@ prefix `LB+0..LB+31`, merge `LB+32..LB+44`, window shift `LB+45..LB+63`,
 cursor/counter `LB+64..LB+65`.  Width certificate:
 `fringeLoopBody_fits`.
 
-## DD-20260718-010: E1 charged fringe ARM layout — window-read sub-block, derived 33-cap, and the locally-pinned epilogue (E1-R4l M3d-2)
+## DD-20260718-010: E1 charged fringe ARM layout â€” window-read sub-block, derived 33-cap, and the locally-pinned epilogue (E1-R4l M3d-2)
 
 Date: 2026-07-18. Scope: the machine realization of a whole charged
-fringe arm — the four window-word reads, the 33-capped chunk fold, and
-the `bpFringeCandGlobal` global rebase — i.e. the accepted objects
+fringe arm â€” the four window-word reads, the 33-capped chunk fold, and
+the `bpFringeCandGlobal` global rebase â€” i.e. the accepted objects
 `bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore` and
 `bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore`
 (`RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeTrace.lean:708`
@@ -3512,12 +3512,12 @@ Decision (`RMQ/Core/WordRAM/E1FringeArmBlock.lean`, namespace
   rather than reading the pinned `fOne`. This is forced by composition,
   not stylistic: the fold block's preservation certificate
   `FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`) is the conservative
-  predicate `r < 40 ∨ 63 ≤ r`, which does NOT certify `fOne = 40`. An
+  predicate `r < 40 âˆ¨ 63 â‰¤ r`, which does NOT certify `fOne = 40`. An
   epilogue depending on `fOne` therefore could not be composed with the
-  fold without first strengthening the fold's certificate — a change to a
+  fold without first strengthening the fold's certificate â€” a change to a
   block that is already closed. Pinning locally costs one register write
   and keeps the epilogue composable as written. The bank registers the
-  epilogue does consume (`fBB`, `fSeed`, `fStart`) are all `≥ 63` and so
+  epilogue does consume (`fBB`, `fSeed`, `fStart`) are all `â‰¥ 63` and so
   ARE certified by `FringeFoldUntouched`.
 
 - THE EPILOGUE'S CATEGORY LOG IS ROUTE-INDEXED. `bpFringeCandGlobal`
@@ -3526,7 +3526,7 @@ Decision (`RMQ/Core/WordRAM/E1FringeArmBlock.lean`, namespace
   `fringeCandGlobalArmCats occupied` is 4 ticks when the fold left an
   occupied best and 5 when it fell back. In the whole-arm log
   `fringeArmCats` that index is the `isSome` of the ACCEPTED fold
-  object's best candidate — route-side data, not a machine register and
+  object's best candidate â€” route-side data, not a machine register and
   not a numeral (`bestOfRegs_isSome` supplies the agreement). This
   follows the `fringeMergeCatsAt` precedent of DD-20260718-009.
 
@@ -3534,7 +3534,7 @@ Decision (`RMQ/Core/WordRAM/E1FringeArmBlock.lean`, namespace
   read, so the arm's receipt is exactly the leg's: four window reads
   followed positionally by the accepted fold object's own trace
   (`fringeLeg_trace_eq_leftArm` / `_rightArm`). It does still cost branch
-  and arithmetic ticks, which the arm-indexed log records — charge and
+  and arithmetic ticks, which the arm-indexed log records â€” charge and
   receipt are kept separate.
 
 Arm layout at base `A` (95 instructions): prologue `A..A+20` (init
@@ -3548,3 +3548,76 @@ first three window words have length exactly `L`. These are properties of
 `chunkPayloadWords`, discharged at canonical instantiation exactly as the
 dense select leg discharges its `hlen`
 (`E1SelectCanonical.lean` `canonical_denseLen`).
+
+## DD-20260718-011: E1 address preamble and same-block close arm Ã¢â‚¬â€ constant-divisor addressing, bank extension `69..70` (E1-R4m M3d-3)
+
+Date: 2026-07-18. Scope: the machine realization of the accepted B6
+same-block object
+`bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore`
+(`RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockTrace.lean:55`),
+plus the address arithmetic that computes the window base registers from
+the query operand. Decided by: worker E1-R4m under the amended E1 contract
+(frozen matrix `E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md`
+REQ-E1-01/02/04/06). Extends DD-20260718-009 and DD-20260718-010.
+
+Decision (`RMQ/Core/WordRAM/E1SameBlockArm.lean`, namespace
+`RMQ.WordRAM.E1SameBlockArm`):
+
+- BANK EXTENSION `69..70`, above the fringe arm bank `63..68`:
+  `fRes = 69` (the `bpCandidateClose?` payload) and `fClose = 70` (the
+  close position the address preamble consumes). Both are fresh; no
+  existing register meaning is redefined.
+
+- ADDRESSING USES CONSTANT DIVISORS ONLY, and this was verified before
+  being relied on rather than assumed. The ISA deliberately has no
+  variable-divisor instruction. `blockOfClose` and `blockStartOf`
+  (`BlockLocal.lean:863`/`:866`) take `blockSize` as a parameter, and every
+  accepted-route call site binds `canonicalBPRelativeSummaryBlockSizeRaw
+  shape` (`ChargedFringeWiring.lean:36`/`:57`,
+  `ChargedFringeTrace.lean:928`/`:1151`), which is
+  `2 * (Nat.log2 shape.size + 1)` Ã¢â‚¬â€ a function of `shape` alone and always
+  `>= 2`. The word width `machineWordBits shape.bpCode.length` is likewise
+  shape-determined and positive. So `windowAddr` is FOUR instructions
+  (`divConst`, `mulConst`, `divConst`, `mulConst`) whose immediates are
+  per-shape program constants, and `windowAddr_fits` discharges
+  `divConst`'s `0 < k` arm from those positivity facts.
+
+  CONSEQUENCE THAT MUST BE RESPECTED BY LATER CODE: immediates must be
+  generated from `canonicalBPRelativeSummaryBlockSizeRaw`, NOT from the
+  guarded `canonicalBPRelativeSummaryBlockSize`
+  (`RelativeSummary.lean:1469`), which is `0` on inactive shapes and would
+  fail the width certificate for a leg that never executes. The guarded
+  name belongs only to the legacy dispatcher behind the near-homonym
+  `concreteBPNativeLCACloseGlobalWordTraceResult`
+  (`SuccinctFinalRAM.lean:2271`), which the accepted route does not
+  consume.
+
+- THE CLOSE EPILOGUE IS TWO INSTRUCTIONS AND HAS NO OPTION DISPATCH.
+  `bpCandidateClose?` is `candidate?.map fun c => c.2 - 1`
+  (`Candidate.lean:28`), and the arm feeds it `bpFringeCandGlobal`, which
+  is total into `some` (`ChargedFringeChunks.lean:1617` Ã¢â‚¬â€ both arms yield
+  `some`). So no occupancy test is needed and none is emitted; the
+  epilogue is `const` plus `sub`. Its category log `sameBlockCloseCats` is
+  therefore unconditional, which is honest precisely BECAUSE the route-side
+  function it mirrors has no branch Ã¢â‚¬â€ unlike `fringeCandGlobalArmCats`,
+  which is route-indexed because its route-side counterpart does branch.
+
+- THE EPILOGUE EMITS NO READ EVENT, matching the route: the accepted
+  object applies `bpCandidateClose?` through `TraceResult.map`, which
+  contributes no trace. `sameBlockSeeded_trace_eq` states the resulting
+  receipt agreement POSITIONALLY, as a `List` equality.
+
+Rejected alternative: computing the window base by a variable-divisor
+instruction added to the ISA. Rejected because it is unnecessary Ã¢â‚¬â€ the
+divisors are per-shape constants Ã¢â‚¬â€ and because widening the ISA without
+need would weaken REQ-E1-01's "familiar repertoire" claim.
+
+Related open item, recorded here because it is an ISA-level question of
+the same kind: the INTERIOR leg computes `Nat.log2` and `2 ^ Nat.log2` of
+a RUNTIME-derived count (`InteriorDirectory.lean:2112-2142`,
+`SparseArgMin.lean:598-599`). The existing ISA can compute both by
+halving/doubling with the constant `2`, so this is not an expressiveness
+gap, but the resulting loop has no literal all-size iteration cap, which
+is in tension with REQ-E1-06(c) as frozen. This is flagged for coordinator
+adjudication in `docs/internal/E1_WORKLOG.md` (M3d-3 section 2) and is NOT
+decided here.
