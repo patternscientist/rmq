@@ -32,12 +32,16 @@ repaired the folded-state event-value layer, but audit found that equal events
 could collapse, invocation parameters were erased, and positive component
 may-read used a weaker predicate than the fresh-source mutation. W19 follows
 one global `getElem?` occurrence through its program instruction, folded state,
-component-local position, exact invocation, source, and offset. Symbolic
+component-local position, exact invocation, source, and offset. The subsequent
+charged-table campaign extended the live manifest to 22 physical sources:
+segment `21` is now the live counted fringe chunk table, and fresh segment `23`
+is the checked rejected mutation. Symbolic
 closed-valid witnesses cover the large long-super and sparse-local sources;
 small witnesses cover the remaining sources and all shared-BP consumers. A
-common claim relation accepts successful sources and rejects fresh segment
-`21`, with a checked bridge where the positive and mutation quantifiers differ.
-The repeated-equal-event regression checks positions `0` and `12` separately.
+common claim relation accepts successful sources and rejects that fresh segment,
+with a checked bridge where the positive and mutation quantifiers differ.
+The repeated-equal-event regression checks global positions `0` and `15`
+separately and ties them to producing program instructions `0` and `1`.
 Coordinator acceptance remains separate from this candidate evidence and
 requires a fresh blind exact-commit audit.
 

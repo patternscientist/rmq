@@ -3501,3 +3501,91 @@ Consequences:
 - The accepted whole-query evaluator now has a checked answer-level corruption
   witness at one actually consumed counted cell, without changing route code,
   public identities, payload accounting, or the derived `207` bound.
+
+## DD-20260718-010: retain same-block occurrence identity in the public manifest proposition (R1-R1)
+
+Status: Proposed repair record; coordinator re-audit and acceptance remain
+separate.
+
+Date: 2026-07-18
+
+Context: the R1 same-block theorem's proof constructed the correct
+`ProducesEventAt` witness using the actual third whole-query instruction,
+folded state, and local component position. Its conclusion, however, exposed
+that information only through `ReviewerReadOccurrenceReceiptAtInstruction`,
+whose `localPos` and invocation are existential fields, while separately
+exposing a `localPos` for the LCA and charged same-block component traces. A
+client destructuring only the proposition could not identify those two local
+occurrences. The existing manifest packet also did not consume the same-block
+theorem, so axiom inventory alone did not make it a public dependency.
+
+Decision:
+
+1. Strengthen
+   `concreteBPNativeSuccinctRMQSingleton_sameBlockFringeChunk_indexed_occurrence_receipt`
+   in place. Its conclusion now exposes one `preState` and one `localPos`,
+   identifies the state as the fold of the actual first two whole-query
+   instructions, and concludes all of the following about that same tuple:
+   the indexed global read, `ProducesEventAt` for instruction `2` and the
+   literal `.lcaClose` instruction, the prefix-length/global-offset equality,
+   `InvokesReviewerRead ... (.canonicalClose 1 1)`, the exact invocation
+   component read, the LCA component read, and the charged same-block decoded
+   read. The ordinary and instruction-indexed receipts remain conjuncts for
+   their source/region/path/counting data.
+
+2. Add this exact strengthened proposition as a mandatory field of the
+   existing `ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy`
+   structure and initialize it from the strengthened theorem. This is the
+   packet already carried as the first conjunct of
+   `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`; no sibling certificate or
+   unused wrapper is introduced.
+
+3. Keep `ReviewerReadOccurrenceReceiptAtInstruction` unchanged. It remains the
+   accepted R1-D interface for exposing distinct program-instruction
+   positions. Changing its parameter list would force unrelated repeated-read
+   theorem churn and still require a separate exact-invocation bridge for the
+   same-block witness. The targeted public proposition instead retains the
+   stronger occurrence identity where the frozen R1-C requirement needs it.
+
+4. Evidence tiers remain explicit. The R1-C identity is kernel evidence in the
+   manifest proposition. The validator, matrix audits, prose review, command
+   transcripts, and final gate are attested evidence and are labeled as such.
+   B2 REQ-B4-07/08 and B6 REQ-B6-06 therefore receive attested documentation,
+   audit, or prose-review status labels without relabeling theorem rows.
+
+5. Current fixture prose is synchronized to global positions `0`/`15` and
+   producing instruction positions `0`/`1`; current ADD provenance records live
+   counted segment `21` and rejected fresh segment `23`. The gate's topology
+   comment names the live reviewer-payload/readWord-only/207 topology without
+   changing any executed command.
+
+Alternatives rejected:
+
+- Rely on the proof term's witness choice. Proof construction is not theorem
+  conclusion information, and clients cannot project an erased local position.
+- Add a sibling theorem or record containing the stronger fact while leaving
+  the named theorem and manifest unchanged. That would not close the assigned
+  consumer and would permit the public packet to bypass the repair.
+- Parameterize the general instruction receipt by `localPos` and rewrite all
+  R1-D consumers. That broad change is unnecessary for the narrow same-block
+  identity gap and risks weakening or destabilizing an already-passing row.
+- Treat the validator or final gate as proof of occurrence identity. They are
+  useful executable/integration attestations, not kernel propositions.
+- Record final post-commit commands as though they were already committed in
+  the worklog. The durable ledger instead names the semantic commit certified
+  by pre-commit results and explicitly reserves the later exact-HEAD
+  attestation for the worker response.
+
+Consequences and evidence:
+
+- Destructuring the strengthened proposition yields a single local occurrence
+  that is simultaneously the producing instruction occurrence, exact
+  canonical-close invocation occurrence, LCA component occurrence, and charged
+  same-block subtrace occurrence.
+- The manifest constructor fails if the theorem is removed or weakened, and
+  the paper main theorem consumes that manifest type.
+- The accepted payload, store, answer dependency, distinct-instruction
+  receipts, route algebra, and derived literal `207` are unchanged.
+- Focused builds, the post-change validator, public builds, axiom inventories,
+  documentary checks, and the one final aggregate gate remain required before
+  a candidate report. Coordinator exact-commit re-audit remains the next owner.

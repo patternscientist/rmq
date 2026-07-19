@@ -2581,7 +2581,12 @@ theorem concreteBPNativeSuccinctRMQSingleton_sameBlockFringeChunk_indexed_occurr
     ∃ xs : List Int,
     ∃ globalPos localPos index : Nat,
     ∃ word : WordRAM.Word,
+    ∃ preState : WholeQueryState,
       ValidRange xs 0 1 ∧
+      preState =
+        (WholeQueryProgram.evalGlobalWordTrace (Cartesian.shape xs) 0 1
+          (concreteBPNativeSuccinctRMQWholeQueryProgram.take 2)
+          WholeQueryState.empty).value ∧
       (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
         (Cartesian.shape xs) 0 1).trace[globalPos]? =
           some (.readWord concreteBPNativeFringeChunkTraceSegment index
@@ -2591,6 +2596,23 @@ theorem concreteBPNativeSuccinctRMQSingleton_sameBlockFringeChunk_indexed_occurr
       ReviewerReadOccurrenceReceiptAtInstruction (Cartesian.shape xs)
         0 1 globalPos 2 concreteBPNativeFringeChunkTraceSegment index
         (some word) ∧
+      WholeQueryProgram.ProducesEventAt (Cartesian.shape xs) 0 1
+        (.readWord concreteBPNativeFringeChunkTraceSegment index (some word))
+        concreteBPNativeSuccinctRMQWholeQueryProgram WholeQueryState.empty
+        globalPos 2
+        (WholeQueryInstr.lcaClose .answerClose .leftClose .rightClose)
+        preState localPos ∧
+      globalPos =
+        (WholeQueryProgram.evalGlobalWordTrace (Cartesian.shape xs) 0 1
+          (concreteBPNativeSuccinctRMQWholeQueryProgram.take 2)
+          WholeQueryState.empty).trace.length + localPos ∧
+      WholeQueryInstr.InvokesReviewerRead 0 1 preState
+        (WholeQueryInstr.lcaClose .answerClose .leftClose .rightClose)
+        (.canonicalClose 1 1) ∧
+      ((.canonicalClose 1 1 : ReviewerReadInvocation).componentTrace
+        (Cartesian.shape xs))[localPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word)) ∧
       (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
         (Cartesian.shape xs) 1 1).trace[localPos]? =
           some (.readWord concreteBPNativeFringeChunkTraceSegment index
@@ -2668,12 +2690,27 @@ theorem concreteBPNativeSuccinctRMQSingleton_sameBlockFringeChunk_indexed_occurr
             (some word)) := by
     simpa [concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult] using
       hproducer.global_getElem
+  have hinvocation :
+      WholeQueryInstr.InvokesReviewerRead 0 1 reviewerSingletonBeforeLCAState
+        (WholeQueryInstr.lcaClose .answerClose .leftClose .rightClose)
+        (.canonicalClose 1 1) := by
+    exact WholeQueryInstr.InvokesReviewerRead.canonicalClose
+      .answerClose .leftClose .rightClose 1 1 hcloses.1 hcloses.2
+  have hinvocationGet :
+      ((.canonicalClose 1 1 : ReviewerReadInvocation).componentTrace
+        shape)[localPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word)) := by
+    simpa [ReviewerReadInvocation.componentTrace] using hcomponentGet
   refine ⟨reviewerSingletonInput, globalPos, localPos, index, word,
-    by simp [ValidRange, reviewerSingletonInput], hglobalGet,
+    reviewerSingletonBeforeLCAState,
+    by simp [ValidRange, reviewerSingletonInput], ?_, hglobalGet,
     concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked
       shape 0 1 hglobalGet,
     reviewerReadOccurrenceReceiptAtInstruction_of_producer hproducer,
-    hcomponentGet, ?_⟩
+    hproducer, ?_, hinvocation, hinvocationGet, hcomponentGet, ?_⟩
+  · rfl
+  · rfl
   simpa [shape, rankTrace, blockSize] using hsameGet
 
 /--

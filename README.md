@@ -134,8 +134,9 @@ dead-source addition, used-source removal, and mismatched consumer labels.
 Occurrence evidence starts from a global `getElem?` witness and retains
 the same position through the program instruction, folded pre-state, local
 component occurrence, and exact select/rank/close parameters. A checked
-singleton regression keeps the equal events at global positions `0` and `12`
-as distinct obligations. The source witnesses use actual successful closed
+singleton regression keeps the equal events at global positions `0` and `15`
+as distinct obligations produced by program instructions `0` and `1`. The
+source witnesses use actual successful closed
 valid executions, including symbolic large witnesses for sources `12`--`19`;
 component may-read and earlier event-value facts remain compatibility facts. The
 current charged-trace cap is `207` (the retired silent in-word rank/select cap `142` is frozen as `canonicalSilentWordRankSelectQueryCost`, and the earlier event-silent-fringe cap `76` as `canonicalSilentFringeQueryCost`); detailed earlier cost and dispatch

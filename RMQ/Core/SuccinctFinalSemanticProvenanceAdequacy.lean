@@ -18,10 +18,12 @@ whole-query execution under a valid ordinary-list query.  The mutation
 predicate is the same existential execution relation with arbitrary read
 result, and the checked bridge below relates the two.  The B4 fields extend
 the packet with the chunk-table provenance strength: per-leaf successful
-occurrences for the shared fringe chunk table (segment `21`), and positional
-repeated-equal-read witnesses with distinct global positions AND distinct
-producing instruction positions for both chunk-table sources (segments `21`
-and `22`). -/
+occurrences for the shared fringe chunk table (segment `21`), one same-block
+occurrence retaining the identical local position from its whole-query
+producer through the exact invocation and charged component subtrace, and
+positional repeated-equal-read witnesses with distinct global positions AND
+distinct producing instruction positions for both chunk-table sources
+(segments `21` and `22`). -/
 structure ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy : Prop where
   canonical_counted_sources_have_successful_closed_valid_occurrence :
     forall source : ReviewerSource, source.Counted ->
@@ -45,6 +47,55 @@ structure ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy : Prop whe
     forall leaf : ReviewerReadLeaf,
       (ReviewerProducerClaim.mk concreteBPNativeFringeChunkTraceSegment
         leaf).HasSuccessfulClosedValidOccurrence
+  same_block_fringe_chunk_occurrence_retains_exact_identity :
+    ∃ xs : List Int,
+    ∃ globalPos localPos index : Nat,
+    ∃ word : WordRAM.Word,
+    ∃ preState : WholeQueryState,
+      ValidRange xs 0 1 ∧
+      preState =
+        (WholeQueryProgram.evalGlobalWordTrace (Cartesian.shape xs) 0 1
+          (concreteBPNativeSuccinctRMQWholeQueryProgram.take 2)
+          WholeQueryState.empty).value ∧
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (Cartesian.shape xs) 0 1).trace[globalPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word)) ∧
+      ReviewerReadOccurrenceReceipt (Cartesian.shape xs) 0 1 globalPos
+        concreteBPNativeFringeChunkTraceSegment index (some word) ∧
+      ReviewerReadOccurrenceReceiptAtInstruction (Cartesian.shape xs)
+        0 1 globalPos 2 concreteBPNativeFringeChunkTraceSegment index
+        (some word) ∧
+      WholeQueryProgram.ProducesEventAt (Cartesian.shape xs) 0 1
+        (.readWord concreteBPNativeFringeChunkTraceSegment index (some word))
+        concreteBPNativeSuccinctRMQWholeQueryProgram WholeQueryState.empty
+        globalPos 2
+        (WholeQueryInstr.lcaClose .answerClose .leftClose .rightClose)
+        preState localPos ∧
+      globalPos =
+        (WholeQueryProgram.evalGlobalWordTrace (Cartesian.shape xs) 0 1
+          (concreteBPNativeSuccinctRMQWholeQueryProgram.take 2)
+          WholeQueryState.empty).trace.length + localPos ∧
+      WholeQueryInstr.InvokesReviewerRead 0 1 preState
+        (WholeQueryInstr.lcaClose .answerClose .leftClose .rightClose)
+        (.canonicalClose 1 1) ∧
+      ((.canonicalClose 1 1 : ReviewerReadInvocation).componentTrace
+        (Cartesian.shape xs))[localPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word)) ∧
+      (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+        (Cartesian.shape xs) 1 1).trace[localPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word)) ∧
+      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment
+        (Cartesian.shape xs)
+        (concreteBPNativeRankCloseWordTraceResultAtSegment
+          (Cartesian.shape xs) concreteBPNativeRankCloseTraceSegmentBase)
+        concreteBPNativeFringeChunkTraceSegment
+        (SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw
+          (Cartesian.shape xs)) 1 1).trace[localPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word))
   fringe_chunk_repeated_equal_read_occurrences_have_distinct_receipts :
     ∃ xs : List Int,
     ∃ left right firstPos secondPos instrPos1 instrPos2 index : Nat,
@@ -105,6 +156,8 @@ theorem concreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy :
       concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage
     fringe_chunk_table_every_reader_leaf_has_successful_closed_valid_occurrence :=
       concreteBPNativeSuccinctRMQFringeChunkTable_every_reader_leaf_successful_occurrence
+    same_block_fringe_chunk_occurrence_retains_exact_identity :=
+      concreteBPNativeSuccinctRMQSingleton_sameBlockFringeChunk_indexed_occurrence_receipt
     fringe_chunk_repeated_equal_read_occurrences_have_distinct_receipts :=
       concreteBPNativeSuccinctRMQFringeChunk_repeated_equal_read_distinct_instruction_receipts
     select_chunk_repeated_equal_read_occurrences_have_distinct_receipts :=
