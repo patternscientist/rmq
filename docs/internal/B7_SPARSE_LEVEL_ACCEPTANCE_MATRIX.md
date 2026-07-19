@@ -1,0 +1,127 @@
+﻿# B7 Charged Sparse-Table Level Acceptance Matrix (frozen before implementation)
+
+Worker: B7-01 (branch `claude/b7-charged-sparse-level`, base
+`f6564ec`). Contract source: the B7-01 delegation prompt, governed by
+DD-20260718-012 (the Milestone 0 mechanism determination, committed at
+`052eca4` BEFORE this matrix and before any implementation) and by
+DD-20260717-C05-001. Requirement wording below is verbatim from the
+delegation prompt. Frozen at this commit; after this commit only
+evidence, status, and coordinator-approved amendments may change.
+
+This matrix ADDS rows. No closed B2/B3/B4/B6 row is weakened or reopened.
+
+## The finding this rung closes
+
+`let level := Nat.log2 count` at four EXECUTED evaluator sites
+(`RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorRAM.lean:573`,
+`:621`, `:819`, `:867`, the latter two on `macroSpanCount`), with cost
+twins at `EndpointFringe/InteriorCandidate/LocalGlobalSparse.lean:30` and
+`:603` and store-parametric twins at
+`RelativeRmmMacro/ConcreteDirectoryRAMStoreParam.lean:1405` and `:1995`.
+The level feeds an accepted READ ADDRESS through `bpLocalSparseCellSlot`
+(`EndpointFringe/PrefixRange/LocalSparseOffset.lean:15-17`) and
+`bpGlobalSparseCellSlot` (`LocalGlobalSparse.lean:199-201`). `Nat.log2`
+is a Theta(log n) recursion emitting no trace events on a runtime-derived
+argument.
+
+THE SPAN IS IN SCOPE. Each site also evaluates `bpSparseLogSpan count =
+2 ^ Nat.log2 count` (`EndpointFringe/PrefixRange/SparseArgMin.lean:598-599`);
+`Nat.pow` is a second Theta(log n) recursion at the same site. A fix that
+charges the level and leaves the span uncharged does NOT close this rung.
+This is recorded here because the delegation named the span in the
+finding, and because DD-20260718-011 (E1-R4m) independently flagged both.
+
+## Chosen mechanism (DD-20260718-012)
+
+Mechanism 3 in a single-source, single-read form: one new counted table
+over domain `D = macroSize + macroCount + 1`, cell `i` storing
+`Nat.log2 i * D + bpSparseLogSpan i`, unpacked by constant-divisor
+div/mod, read once per two-span call. Mechanisms 1, 2, and 4 rejected
+with the evidence recorded in DD-20260718-012. An `msb`/`log2` ISA
+instruction and any bound weakened to accept Theta(log n) work were NOT
+evaluated, per the user decision recorded in the delegation.
+
+## Derived consequence, frozen at freeze time as a DERIVATION not a result
+
+The cost chain 5 -> 10 -> 30 is exactly tight
+(`spanCandidateCosted_cost_le_five` at `LocalSparseOffset.lean:450` and
+`LocalGlobalSparse.lean:494`; `twoSpanCandidateCosted_cost_le_ten` at
+`LocalGlobalSparse.lean:41`/`:613`;
+`bpTwoLevelInteriorCandidateCosted_cost_le_thirty` at
+`TwoLevelCandidate.lean:53`), and 30 is ATTAINED on the cross-macro
+branch, which carries all three new reads. So the interior cap is
+expected to move 30 -> 33 and the literal 207 -> 210. Unlike B6, this
+rung's recharged leaf IS on the maximizing branch. REQ-B7-05 records this
+as the expected outcome but its evidence column is authoritative: the
+derivation wins over this prediction if they disagree.
+
+## Verified anchors (this worktree, base `f6564ec`)
+
+- the four executed sites and two cost twins, as listed above;
+- caller chain: `twoSpanCandidate...` ->
+  `bpTwoLevel{Adjacent,LeftMiddle,Cross}MacroCandidateTraceResult`
+  (`InteriorRAM.lean:1150`, `:1198`, `:1257`; segment variants `:1321`,
+  `:1371`, `:1432`) -> `bpTwoLevelInteriorCandidateTraceResult(AtSegments)`
+  (`:1498`, `:1579`) ->
+  `concreteBPRelativeRmmInteriorRangeMinTraceResult...OfReady`
+  (`RelativeRmmMacro/ConcreteDirectoryRAM.lean:376`, `:398`, `:423`) ->
+  `crossBlockCloseTraceResultWithRankSeed...` (`:1920`, `:2051`) ->
+  `lcaCloseTraceResultWithRankSeedAtSegments...` (`:3700`, `:3746`) ->
+  `concreteBPNativeLCACloseWordTraceResultAtSegmentsOfSizeGe`
+  (`SuccinctFinalRAM.lean:2238`);
+- argument provenance (`InteriorRAM.lean:1515-1525`,
+  `TwoLevelCandidate.lean:32-42`): `count`, `leftCount = macroSize -
+  startBlock % macroSize`, `rightCount`, `middleMacroCount`;
+- range hypotheses actually available: `0 < count`,
+  `count <= macroSize` (local) and `0 < macroSpanCount`,
+  `macroSpanCount <= macroCount` (global), converted to
+  `Nat.log2 _ < levelCount` by the ASSUMED `hlocalLevel`/`hglobalLevel`
+  at `TwoLevelCandidate.lean:241-248`;
+- sizing constants: `canonicalBPRelativeSummaryBase = Nat.log2 size + 1`
+  (`RelativeSummary.lean:1238`), `blockSize = 2 * base` (`:1242`),
+  `macroSize` (`RelativeSummary.lean:2733-2736`), `levelCount` /
+  `globalLevelCount` (`:2743-2755`), `machineWordBits`
+  (`SuccinctRank.lean:38-39`);
+- new-source template to follow: `ChargedFringeSpace.lean:37-77`
+  (`bpChunkedOverheadCandidate`, `bpChunkedBuildPayloadCandidate`,
+  `..._littleO`, `..._length`) plus `ChargedFringeTableFacts.lean`;
+- cost algebra: `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra`
+  (`SuccinctFinalRAM.lean:8810-8820`; `selectClose := 35`,
+  `rankClose := 11`, `endpointFringe := 37`, `interiorDirectory := 30`),
+  `..._CloseCost_eq = 126` (`:8818`), `..._TraceCost_eq = 207` (`:8822`);
+  historical-constant pattern at `:8825-8875` (76, 142) and 328;
+- consumers of 207: `Headlines/RMQ.lean:70/:497/:529`,
+  `Validation/SuccinctClassic.lean:266`,
+  `Validation/SuccinctClassicCostHarness.lean:118` (`canonicalBoundIs207`),
+  `RMQExamples/Concrete.lean:84`, `scripts/paper_topology_lint.ps1`
+  (`SumLe207`), `scripts/headline_axiom_check.lean`;
+- vocabulary theorem:
+  `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only`.
+
+| ID | Exact frozen requirement (verbatim) | Scope | Evidence needed (exact proposition/check) | Named consumer and identity/composition chain | Anti-vacuity challenge | Evidence obtained | Status / residual gap |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| REQ-B7-00 | "MILESTONE 0 - MECHANISM DETERMINATION (do this first, commit the finding before implementing) ... recording the evidence and the rejected alternatives in a DD entry". | Process | A DD entry committed BEFORE any implementation commit, evaluating mechanisms 1-4 in the stated preference order, choosing the highest that works, and recording the rejected alternatives with evidence rather than assertion. | Governs every other row. | The rejections must rest on checked structural or arithmetic facts at cited file:line, not on plausibility. Mechanism 1 in particular must be rejected by an argument about read ORDER, not by an unsuccessful search. | DD-20260718-012 committed at `052eca4`, before this matrix and before any Lean change. Mechanism 1 rejected structurally: the level forms the ADDRESS consumed by `bpLocalSparseCellSlot`/`bpGlobalSparseCellSlot`, so it is required strictly before the first charged read of the span exists; the reads present are single-field `FixedWidthNatTable.readCosted` (`SuccinctSpace/Tables.lean:86-91`). Mechanism 2 rejected arithmetically: the cross-macro branch needs the levels of THREE different runtime values (`InteriorRAM.lean:1278-1287`), and the offset cell has ~1 spare bit. Mechanism 4 rejected by a size computation: span-indexing costs `n * macroSize` bits = Theta(n polylog). | Closed |
+| REQ-B7-01 | "mechanism justification". | Local | The chosen mechanism's o(n) sizing derived over the domain of values that ACTUALLY OCCUR (`count` / `macroSpanCount` ranges), not over all of `Nat`, with the domain bound checked against the route's own hypotheses. | Feeds REQ-B7-06 (erasure/capacity/o(n)) and REQ-B7-02. | The domain must be shown to COVER every reachable index (else reads fall out of range and the table is vacuous), and to be o(n)-sized (else the public space claim breaks). Both directions required. | | Open |
+| REQ-B7-02 | "value equivalence to the accepted level at every executed site under the route's own hypotheses". | Local | Checked theorems: the table-read level equals `Nat.log2 count` and the table-read span equals `bpSparseLogSpan count`, universally quantified, under exactly the hypotheses available at the accepted call sites (`0 < count`, `count <= macroSize`; `0 < macroSpanCount`, `macroSpanCount <= macroCount`) - not on sampled inputs, and not under added readiness guards. Plus: the amended two-span objects have the SAME `.value` as the accepted ones. | Route exactness through `bpTwoLevelInteriorCandidateCosted_erase_exact` (`TwoLevelCandidate.lean`) and the `..._erase_..._exact` chain in `LocalGlobalSparse.lean`. | P = value equality of the full `Option (Nat x Nat)` result at all four sites for all reachable invocations. Reject Q1 (agreement on sampled inputs), Q2 (level only, span left uncharged), Q3 (agreement under an added hypothesis the route cannot discharge). Name the checked theorem rejecting each. | | Open |
+| REQ-B7-03 | "positional receipt/trace equality". | Local | TraceResult and WithStore twins for the amended two-span objects whose trace is the accepted events PLUS exactly one `readWord levelSegment slot` per two-span call, in a checked POSITIONAL (`List` equality) statement; `_refines`, `_matchesReadStore`, `_no_syntheticCostOnlyPrimitive`, `_trace_forall`, `_eq_of_agree`, `_store_parametric`. | Amended dispatchers up to `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`. | The trace must contain the ACTUAL `readWord` event produced by the store computation, never an `ofCosted` synthetic marker; the refined value must depend on the read word. | | Open |
+| REQ-B7-04 | "charged-read backing and provenance to the W19 standard if a new source is added". | Local+roadmap | A new source is added, so the FULL treatment is required: counted source, segment number, store arm, erasure exactness, capacity, littleO, and provenance packets (`every_emitted_read_has_listed_region`, `..._occurrence_provenance`, `..._eventValue_producer_provenance`) regenerated with a level-read producer path; a W19 successful-occurrence witness exhibited on an execution that actually reads the level table. | `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy`; chain: level read -> segment -> source -> region -> physical address -> counted payload. | Provenance must cover the ACTUAL emitted level events by PRODUCER (producing instruction + occurrence position), not merely assert segment membership; deleting the level case from the regenerated induction must break adequacy. `canonical_segments_complete` must move from `< 22` to the new bound. | | Open |
+| REQ-B7-05 | "derived route literal". "DERIVE whether that happens again - do not assume it either way. If the literal must move, freeze 207 as a named historical constant with its `_eq` theorem and guards exactly as 142/76/328 already are, and update every Lean consumer plus the current topology anchor (`SumLe207` -> the new value in `scripts/paper_topology_lint.ps1` and `scripts/headline_axiom_check.lean`; frozen legacy anchors untouched). If it does not move, say so with the derivation." | Local+public | The literal RE-DERIVED by `rfl` from the named component algebra over the amended route, never asserted. If it differs from 207: mint `concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost = 207` by the 142/76/328 pattern, and update every consumer enumerated in the anchors above. | `SuccinctClassic.queryCost_eq` -> paper main theorem conjunct -> headline abbrevs -> harness/validation/examples guards -> topology anchor. | The literal must be DERIVED (`rfl`) from the algebra, not asserted against an independent numeral; mutating a component constant must break the `_eq` right-hand side. If the value moves, verify it moves BECAUSE the new reads are genuinely in the accounting on the maximizing branch (exhibit the checked branch bound), not because a cap was loosened. | | Open (expected 207 -> 210 per DD-20260718-012; derivation authoritative) |
+| REQ-B7-06 | "erasure/capacity/o(n) preservation with the exact public statement shape `buildPayload.length <= 2*n + overhead n`, `overhead = o(n)`". | Public surface | The amended payload/overhead pair keeps the EXACT public statement shape, with `LittleOLinear` for the amended overhead, following `ChargedFringeSpace.lean:37-77`; physical erasure of the new table checked; entry width within the reviewer machine word. | `SuccinctRMQClassic.lean:951` public payload bound; capstone conjunct. | The o(n) proof must be about the ACTUAL table the route reads (two-payload trap), and must hold at every n including tiny shapes, with no threshold. | | Open |
+| REQ-B7-07 | "vocabulary theorem re-established". | Public | `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only` RE-PROVED over the amended route (re-elaborated after the definitions change), not inherited from the pre-amendment object. | Whole-query trace surface. | The new level events must be `readWord`; the theorem must fail to build if the level read emitted anything else. | | Open |
+| REQ-B7-08 | "charge-policy doc repaired" - "repair the charge-policy section of `docs/PAPER_MODEL_ADEQUACY.md` so it is TRUE after this rung - including the representation-artifact-versus-algorithmic-work principle with named bridge lemmas." | Public surface | The charge-policy section amended so its claim is true of the amended route; the sparse level named as the leg that made it false; the round-7 principle stated with NAMED bridge lemmas distinguishing representation artifacts (value checked-equal to an input parameter or a charged read) from algorithmic work; residual uncharged work enumerated precisely with its checked cap. | Paper adequacy doc; `claim_drift_scan.ps1`, `paper_topology_lint.ps1`. | Every "bounded per step" claim must name the checked cap. The principle must come with actual bridge lemma NAMES, not a prose restatement. Deleting a false sentence without stating the new truth is insufficient. | | Open |
+| REQ-B7-09 | "library-green-per-commit"; "no dead sources at any commit"; parallel-then-swap. | Process | Per-commit `lake build RMQ` exit 0 recorded in the `B7_WORKLOG.md` ledger; the swap atomic within one commit; no commit introduces a counted-but-unread source. | Coordinator audit of branch history. | `git log` + ledger cross-check at final report. Note the standing warning: per-file `lake env lean` is an iterate aid only and has previously reported clean on code spliced inside a `/-!` comment. | | Open |
+| REQ-B7-10 | "committed hygiene". | Verification | No NEW forbidden-token hits in touched files; native_decide scan clean; `git diff --check` and `git diff --check f6564ec..HEAD` clean; `design_decision_check.ps1 -Strict -Base f6564ec`, `claim_drift_scan.ps1`, `paper_topology_lint.ps1` exit 0. Do NOT run `scripts/axiom_check.lean` or `gate.ps1`. | Hygiene. | `#print axioms` AFTER a root build on every claimed theorem (per-file checks write no olean, so fresh names report `unknown constant` until then). | | Open |
+| INV-STORE-IDENTITY | Inherited: "the exact payload/store executed is the payload/store counted by the public space theorem". | Inherited | The level reads execute against the same counted table object that the amended public space theorem counts; flatten/erasure chain extended, not bypassed. | REQ-B7-04 chain. | Two-payload trap: the counted table component must be the same object the level execution reads. A new source makes this a REAL obligation here, unlike B6 where it was inherited. | | Open |
+| INV-VALUE-DEPENDENCY | Inherited: "returned values and routing decisions depend on actual charged reads, not a semantic answer computed before the reads". | Inherited | A corruption witness at a slot the level execution actually reads changes the RETURNED interior candidate value, not merely the trace log. | REQ-B7-02. | The corruption must move the returned `Option (Nat x Nat)`; a witness that moves only the level variable while the candidate is unchanged is insufficient. | | Open |
+| INV-NO-SYNTHETIC | Inherited: "synthetic events, decorative rereads, and post-hoc replay do not support the execution claim". | Inherited | `_no_syntheticCostOnlyPrimitive` checked for every new level trace object; every charged unit is a table read. | REQ-B7-03. | Decorative-read challenge: the level read's value must flow into the result - it does so through the ADDRESS of the subsequent span read, which is the strongest possible form of dependence. | | Open |
+| INV-ALL-SIZE | Inherited: "exactness covers all assigned sizes and edge cases without hidden readiness or compatibility dispatch". | Inherited | All new equivalence/cost theorems quantified over all shapes/sizes; no `Ready`/threshold predicate; degenerate `count = 0`, `count = 1`, and maximal `count = macroSize` / `macroSpanCount = macroCount` covered by the same unguarded statement. | REQ-B7-01/02. | Grep the new code for readiness predicates. Check `count = 0` specifically: `Nat.log2 0 = 0` and `bpSparseLogSpan 0 = 1`, so the table's cell 0 must agree with whatever the accepted route does on that argument, or the equivalence must carry `0 < count` and the route must discharge it. | | Open |
+| INV-PUBLIC-COMPOSITION | Inherited: a theorem combining space, exactness, cost, provenance, or machine claims proves them about the same construction and execution. | Inherited | The capstone/profile theorems re-proved over the amended route (amended payload, amended execution), not conjoined across pre- and post-swap objects. | REQ-B7-05/06. | The capstone's `rfl` conjunct must still hold against the AMENDED payload - and since this rung DOES add a source, that conjunct genuinely changes, unlike B6. | | Open |
+| CHK-01 | "`lake build RMQ RMQPaper RMQExamples`". | Verification | Exit 0. | - | - | | Open |
+| CHK-02 | "`lake env lean scripts/wordram_axiom_check.lean`". | Verification | Exit 0. | - | - | | Open |
+| CHK-03 | "`lake env lean scripts/headline_axiom_check.lean`". | Verification | Exit 0, with the anchor moved to the derived literal. | - | - | | Open |
+| CHK-04 | "cost harness". | Verification | Harness run recorded; guards consistent with the DERIVED literal; interior-route windows must MOVE (empirical anti-vacuity that the swap is live). | - | - | | Open |
+| CHK-05 | "hygiene `rg` + native_decide scan". | Verification | No new forbidden-token hits; zero `native_decide`/`ofReduceBool`. | - | - | | Open |
+| CHK-06 | "`git diff --check` + `git diff --check f6564ec..HEAD`". | Verification | Exit 0. | - | - | | Open |
+| CHK-07 | "`design_decision_check.ps1 -Strict -Base f6564ec`". | Verification | Exit 0. | - | - | | Open |
+| CHK-08 | "`claim_drift_scan.ps1`; `paper_topology_lint.ps1`". | Verification | Exit 0, with `SumLe207` migrated to the derived literal if it moves. | - | - | | Open |
+| STRETCH-01 | "a COMPLETE INVENTORY of every uncharged computation reachable from the accepted whole-query route, each classified as representation artifact (with its checked bridge lemma) or charged, committed as a doc section." | Stretch | An enumeration with a stated derivation method (so its completeness is auditable), each entry classified with its bridge lemma name or its charging evidence. | Converts "we fixed the ones we found" into "here is the complete list". | The enumeration must state HOW completeness was established (e.g. mechanized reachability from the route root), not merely list what was noticed. Already-known input: the dead `maxRel` read at the min-candidate site (DD-20260718-012). | | Open (stretch; attempted only after the rung closes) |
