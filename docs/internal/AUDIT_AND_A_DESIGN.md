@@ -3824,3 +3824,69 @@ machine."**
 - Lane C's `chunkPres`/`mutantH` are absent from the campaign branch because
   **Lane C's branch is unmerged** — consistent, and a merge-window item.
 - Do NOT re-issue the `OfSizeGe` framing for M7; refused twice and FALSE.
+
+---
+
+## C05 round 58 — the width premises were false on a THIRD of reachable inputs,
+## and the repair removed them outright rather than weakening them
+
+Checked in on Lane CL. It is not blocked; `c7c26ad` closes items 1 and 2, and
+work continues on 3 and 4.
+
+**The evaluation, done before any building, exactly as instructed.** Six
+concrete shapes, at the reachable last close position, with `bpCode`'s final bit
+a CLOSE in every case:
+
+```
+spine4  m=8  L=4 B=6  firstWord=1 lens=(4,0,0,0) h0h1h2=(T,F,F)
+spine8  m=16 L=5 B=8  firstWord=1 lens=(5,5,1,0) h0h1h2=(T,T,F)
+spine16 m=32 L=6 B=10 firstWord=5 lens=(2,0,0,0) h0h1h2=(F,F,F)
+spine32 m=64 L=7 B=12 firstWord=8 lens=(7,1,0,0) h0h1h2=(T,F,F)
+bal3    m=14 L=4 B=6  firstWord=3 lens=(2,0,0,0) h0h1h2=(F,F,F)
+bal4    m=30 L=5 B=8  firstWord=4 lens=(5,5,0,0) h0h1h2=(T,T,F)
+```
+
+**This is far worse than the boundary case both surveys predicted.** Not an edge
+point: **8 of 16 close positions fail for spine8, 12 of 32 for spine16**, in
+CONTIGUOUS trailing regions `[8..15]` and `[20..31]`. At spine16 and bal3 **even
+`h0` fails**. So the affected headlines — `sameBlockDispatchProgram_runsTo`,
+`crossBlockArmProgramAt_runsTo` and four others — were not merely unproved at a
+boundary: they were **SILENT on roughly a third to a half of reachable close
+positions**, saying nothing there at all, while reading as general theorems.
+Cross-checked through the proved store bridge rather than by inference.
+
+**And the repair is better than the one I authorised.** I said weaken to `≤` and
+reprove the decode. The worker found the right predicate instead:
+
+> *"A word need be full width only when the NEXT word is nonempty, because a
+> short word's weight only ever multiplies an empty tail."*
+
+That is the Horner bridge stated at its true strength. It becomes `WindowDense`,
+one predicate replacing three premises at each parametric level, and then
+`canonicalWindowDense` **discharges density at every base unconditionally**,
+because `chunkPayloadWords` truncates only the FINAL word. **So the nine
+premises are removed outright, not weakened-and-forwarded** — all six headlines
+now carry no window premise and no `hc`. `lake build RMQ` green.
+
+Three things worth extracting:
+
+1. **"Settle it by evaluation before building" earned its keep.** Both surveys
+   had reasoned to "false at last-block endpoints." The numbers said false across
+   contiguous trailing REGIONS, and false at `h0` too, which no argument had
+   reached. A repair scoped to the boundary would have been built on a wrong
+   picture and would have looked correct.
+2. **The M3d-14 precedent was the right call and paid better than expected.**
+   "Assert exactness only where it genuinely holds" did not merely make the
+   premises provable — it made them unnecessary. Precedent-matching chose the
+   route, and the route turned out to be the strongest one available.
+3. **Padding stayed forbidden and cost nothing.** The tempting repair would have
+   reshaped the accepted artifact to spare a proof; refusing it did not force a
+   weaker result, it forced a better one.
+
+`hc` is also gone from every headline that does not need it, kept only on the
+genuinely `L`-parametric arm theorems, with the width certificates losing
+`hcpos`/`hcL`/`hLpos` the same way. A decorative hypothesis that had survived six
+headlines and two width certificates.
+
+Items 3 (the cross arm's missing terminator) and 4 (the composed arms' absent
+preservation clauses) are in progress — five files modified in the worktree.
