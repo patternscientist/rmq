@@ -967,15 +967,29 @@ passing check, so nobody mistakes it for evidence.
 
 The whole-query comparison -- run the machine end to end on a fixture and
 compare its answer against `refRMQ` -- cannot be written yet.  It needs
-the INTERIOR leg, which is blocked on the `bpSparseLogSpan` /
-`Nat.log2` decision recorded in `docs/internal/E1_WORKLOG.md` (M3d-3
-section 2): `bpSparseLogSpan blockCount = 2 ^ Nat.log2 blockCount`
-(`EndpointFringe/PrefixRange/SparseArgMin.lean:598`) is evaluated on a
-RUNTIME-derived `blockCount` and feeds an accepted read address, so no
-constant immediate encodes it.
+the INTERIOR leg, which is UNBUILT.  It is no longer BLOCKED, and the
+distinction matters enough to correct here rather than carry.
 
-Until that is adjudicated there is no whole-query program to run, and this
-harness reports the hole as OPEN rather than reporting a vacuous pass. -/
+The old reason recorded in this docstring was the `bpSparseLogSpan` /
+`Nat.log2` decision (`docs/internal/E1_WORKLOG.md`, M3d-3 section 2): a
+runtime-derived `blockCount` feeding an accepted read address through
+`2 ^ Nat.log2 blockCount`, which no constant immediate encodes.  THAT
+OBSTRUCTION IS DISCHARGED.  B7 replaced the computation with one charged
+count-indexed table read whose cell packs level and span, unpacked by
+constant-divisor `div`/`mod`; `Nat.log2` survives only in table
+CONSTRUCTION generators, in the spec-side refinement ladder, and in
+space-budget proofs -- nowhere in an executed definition on the accepted
+route.
+
+What is missing now is construction, not adjudication.  The interior's
+atomic single-chunk read landed in M3d-11
+(`E1InteriorReadBlock.interiorReadNat`) and its eight-capped multi-chunk
+fold landed in M3d-12
+(`E1InteriorChunkFold.interiorChunkFold_runsTo`), but the five-branch
+interior composition and `hInterior` for
+`crossBlockArmProgramAt_runsTo` are not written, so there is still no
+whole-query program to run.  This harness reports the hole as OPEN rather
+than reporting a vacuous pass. -/
 
 /-- Status of the whole-query comparison.  `false` means "not yet
 attachable", which is the honest state today. -/
@@ -1806,7 +1820,7 @@ def mainImpl : IO UInt32 := do
   IO.println s!"wholeQueryComparisonAvailable={wholeQueryComparisonAvailable}"
   match wholeQueryMismatches with
   | none =>
-      IO.println "wholeQueryComparison=OPEN (interior leg blocked; NOT a pass)"
+      IO.println "wholeQueryComparison=OPEN (interior leg UNBUILT, not blocked: atom and eight-capped chunk fold landed, five-branch composition and hInterior not written; NOT a pass)"
   | some ms =>
       IO.println s!"wholeQueryMismatches={ms.length}"
   IO.println ""
