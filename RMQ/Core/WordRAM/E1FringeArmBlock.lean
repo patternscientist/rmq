@@ -516,6 +516,159 @@ theorem fringeArmPrologue_runsTo
     rw [hpresW r ⟨h3, h4, h5, h6, h11⟩,
       hpresI r ⟨h1, h2, h7, h8, h9, h10, h11, h12⟩]
 
+
+/-! ## The fringe leg: prologue then fold
+
+Composing `fringeArmPrologue_runsTo` with
+`fringeFoldLoop_runsTo_accepted` (`E1FringeFoldBlock.lean:1301`) gives the
+whole read-performing part of a fringe arm.  The remaining route step,
+`bpFringeCandGlobal`, is a PURE two-arm option rebase that performs no
+memory read, so this theorem's receipt is already the arm's complete
+receipt.
+
+Layout: prologue at `A .. A+20`, fold loop base `LB = A + 21`, loop exit
+at `A + 88`.
+-/
+
+/-- Category log of the whole fringe leg at the derived capped count. -/
+def fringeLegCats (store : ReadStore) (S c : Nat) (window : List Bool)
+    (relLo relHi seed count : Nat) : List Category :=
+  fringeArmPrologueCats ++
+    fringeFoldCats store S c window relLo relHi seed count
+
+/--
+Exact simulation of a whole fringe leg: the 21-instruction prologue (four
+charged window reads plus the derived 33-cap) followed by the charged
+chunk fold.
+
+The receipt is the four window reads followed POSITIONALLY by the accepted
+fold object's own trace; the fold's value is recovered from the machine's
+registers `fAcc` and the option-shifted pair `fBV`/`fBP`.  The iteration
+count is the DERIVED `Nat.min (relHi / c + 1) 33`, never an asserted
+numeral.
+-/
+theorem fringeLeg_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {A S c L : Nat}
+    (hc : c ≤ L)
+    (hPro : HostedAt program A (fringeArmPrologue c))
+    (hPre : HostedAt program (A + 21) (fringePrefix S c))
+    (hMrg : HostedAt program (A + 21 + 32) (fringeMerge (A + 21)))
+    (hTail : HostedAt program (A + 21 + 45)
+      (fringeShift c L ++ fringeAdvance))
+    (hbr : program[A + 21 + 66]? = some (.brNZ fCnt (A + 21)))
+    (base relLo relHi seed : Nat)
+    (h0 : (readBits store base).length = L)
+    (h1 : (readBits store (base + 1)).length = L)
+    (h2 : (readBits store (base + 2)).length = L)
+    (regs : RegFile)
+    (hBase : regs fBase = base) (hLo : regs fLo = relLo)
+    (hHi : regs fHi = relHi) (hAcc : regs fAcc = seed) :
+    ∃ regsF : RegFile,
+      RunsTo store program ⟨regs, A, false⟩ ⟨regsF, A + 88, false⟩
+        (windowReadEvents store base ++
+          (bpFringeChunkFoldTraceResultAtSegmentWithStore store S c
+            (windowBitsOfStore store base) seed relLo relHi
+            (Nat.min (relHi / c + 1) 33)).trace)
+        (fringeLegCats store S c (windowBitsOfStore store base)
+          relLo relHi seed (Nat.min (relHi / c + 1) 33)) ∧
+      (regsF fAcc, bestOfRegs (regsF fBV) (regsF fBP)) =
+        (bpFringeChunkFoldTraceResultAtSegmentWithStore store S c
+          (windowBitsOfStore store base) seed relLo relHi
+          (Nat.min (relHi / c + 1) 33)).value := by
+  obtain ⟨regsP, hrunP, hOne, hC, hJC, hBV, hBP, hCnt,
+      hW0, hW1, hW2, hW3, hpresP⟩ :=
+    fringeArmPrologue_runsTo store hPro base relHi regs hBase hHi
+  have hLoP : regsP fLo = relLo := by
+    rw [hpresP fLo (by decide), hLo]
+  have hHiP : regsP fHi = relHi := by
+    rw [hpresP fHi (by decide), hHi]
+  have hAccP : regsP fAcc = seed := by
+    rw [hpresP fAcc (by decide), hAcc]
+  have hWin : windowRegsValue L (regsP fW0) (regsP fW1) (regsP fW2)
+      (regsP fW3) =
+      SuccinctSpace.bitsToNatLE (windowBitsOfStore store base) := by
+    rw [hW0, hW1, hW2, hW3]
+    exact windowRegsValue_of_readBits store base h0 h1 h2
+  obtain ⟨regsF, hrunF, hval, _hpresF⟩ :=
+    fringeFoldLoop_runsTo_accepted store hc hPre hMrg hTail hbr
+      (windowBitsOfStore store base) relLo relHi seed
+      (Nat.min (relHi / c + 1) 33) (cap_count_pos relHi c)
+      regsP hOne hC hLoP hHiP hJC hCnt hAccP hBV hWin
+  have htrans := RunsTo.trans hrunP hrunF
+  have hpc : A + 21 + 67 = A + 88 := by omega
+  rw [hpc] at htrans
+  exact ⟨regsF, htrans, hval⟩
+
+/-! ## Receipt bridge to the accepted fringe arm objects
+
+The left and right charged chunked fringe arms
+(`ChargedFringeTrace.lean:707`/`:730`) are each a `bind` of the window
+read into the fold, followed by a PURE `bpFringeCandGlobal` map.  The
+machine's leg receipt is therefore positionally equal to the whole arm's
+receipt.
+-/
+
+/-- The accepted LEFT fringe arm's receipt is the machine leg's receipt. -/
+theorem fringeLeg_trace_eq_leftArm
+    (shape : Cartesian.CartesianShape) (store : ReadStore)
+    (fringeSegment blockSize leftClose seed : Nat) :
+    (bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+        shape store fringeSegment blockSize leftClose seed).trace =
+      windowReadEvents store (bpWindowFirstWord shape blockSize leftClose) ++
+        (bpFringeChunkFoldTraceResultAtSegmentWithStore store fringeSegment
+          (bpFringeChunkBits shape.bpCode.length)
+          (windowBitsOfStore store
+            (bpWindowFirstWord shape blockSize leftClose))
+          seed
+          (leftClose + 1 - localBPWindowBase shape blockSize leftClose)
+          (leftClose + 1 +
+            (blockStartOf blockSize (blockOfClose blockSize leftClose) +
+              blockSize - leftClose) - 1 -
+            localBPWindowBase shape blockSize leftClose)
+          (Nat.min
+            ((leftClose + 1 +
+              (blockStartOf blockSize (blockOfClose blockSize leftClose) +
+                blockSize - leftClose) - 1 -
+              localBPWindowBase shape blockSize leftClose) /
+              bpFringeChunkBits shape.bpCode.length + 1) 33)).trace := by
+  unfold bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+  rw [windowReadEvents_eq_route_windowBits shape store blockSize leftClose,
+    <- route_windowBits_eq_windowBitsOfStore shape store blockSize leftClose]
+  simp [WordRAM.TraceResult.bind, WordRAM.TraceResult.map,
+    WordRAM.TraceResult.pure]
+
+/-- The accepted RIGHT fringe arm's receipt is the machine leg's receipt. -/
+theorem fringeLeg_trace_eq_rightArm
+    (shape : Cartesian.CartesianShape) (store : ReadStore)
+    (fringeSegment blockSize rightClose seed : Nat) :
+    (bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+        shape store fringeSegment blockSize rightClose seed).trace =
+      windowReadEvents store
+          (bpWindowFirstWord shape blockSize rightClose) ++
+        (bpFringeChunkFoldTraceResultAtSegmentWithStore store fringeSegment
+          (bpFringeChunkBits shape.bpCode.length)
+          (windowBitsOfStore store
+            (bpWindowFirstWord shape blockSize rightClose))
+          seed
+          (blockStartOf blockSize (blockOfClose blockSize rightClose) -
+            localBPWindowBase shape blockSize rightClose)
+          (blockStartOf blockSize (blockOfClose blockSize rightClose) +
+            (rightClose -
+              blockStartOf blockSize (blockOfClose blockSize rightClose) + 2)
+            - 1 - localBPWindowBase shape blockSize rightClose)
+          (Nat.min
+            ((blockStartOf blockSize (blockOfClose blockSize rightClose) +
+              (rightClose -
+                blockStartOf blockSize
+                  (blockOfClose blockSize rightClose) + 2)
+              - 1 - localBPWindowBase shape blockSize rightClose) /
+              bpFringeChunkBits shape.bpCode.length + 1) 33)).trace := by
+  unfold bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+  rw [windowReadEvents_eq_route_windowBits shape store blockSize rightClose,
+    <- route_windowBits_eq_windowBitsOfStore shape store blockSize rightClose]
+  simp [WordRAM.TraceResult.bind, WordRAM.TraceResult.map,
+    WordRAM.TraceResult.pure]
+
 end E1FringeArmBlock
 end WordRAM
 end RMQ
