@@ -2209,3 +2209,62 @@ of it, rather than making an absolute claim that a five-minute search refutes.
 and `:2131` as the uncharged sites; those line numbers now point at refinement
 theorems. The docstring describes the pre-change state and no longer resolves —
 the same anchor-drift class this campaign has logged repeatedly.
+
+## 2026-07-19 (C05 round 33) — the scan is dead; space accounting audited; E1 resized
+
+**THE SUSPECTED SCAN IS DEAD FROM THE ACCEPTED ROUTE — settled by the
+coordinator, not left open.** E1-R4t flagged that it could not determine whether
+`boundedSummaryRangeScanTraceResultAtSegments` (a name suggesting a linear scan)
+is reachable from the whole-query root, and correctly said its tracing was
+"consistent with dead but not a proof of absence". Resolved: its only two
+non-theorem references sit at `ConcreteDirectoryRAM.lean:1205` and `:1232`, both
+inside `concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSize
+StructuralLEGACY` (def `:1196`) and a `..._total_legacy` theorem (`:1219`). The
+accepted route consumes the NON-legacy `...AllSizeStructural` (def `:1188`),
+whose body ends before `:1196` and contains no scan reference. **REQ-E1-07's
+supersession note is safe**, and the interior has five branches, not six.
+
+Worth noting the pattern: this is the third time a `Legacy`-suffixed sibling has
+sat one line-range away from an accepted definition and needed disambiguating —
+after the `...AllSizeStructural` near-homonym and the `OfSizeGe` family. The
+queued `Legacy` naming repair keeps earning its place.
+
+**Space accounting independently audited at `6ad4198` — clean, with two honest
+loosenesses.** All four links present and wired (counted region as two
+instantiations folded into the existing `.canonicalClose` source rather than a
+new one; capacity; littleO; flatten/erasure). The bridge lemma
+`bpSparseLevelWidth_le_square_width` is EXACT — its right-hand side is literally
+the pre-tightening definition of the width, confirmed against `78d15c3` — and
+its sole hypothesis `0 < domain` is free everywhere, since every domain is
+`bound + 2`. The public statement `buildPayload_length` / `overhead_littleO` is
+BYTE-IDENTICAL to `f6564ec`: no added hypotheses, no thresholds. Local and
+global envelopes are genuinely distinct (cube vs sampled), never conflated.
+
+Two loosenesses to record rather than repair:
+1. `527` is a proof-CHECKED literal, not machine-derived, and hugely
+   conservative — the component bounds contributing `196n + 113n` cover true
+   table sizes of `~log^2 n * log log n` and `~n/log^2 n`. Sound, and in the safe
+   direction, but do not describe it as tight.
+2. The global side's PROVED envelope is `n/log n`, not the `n/log^2 n` its
+   docstring names as the true size. Still `o(n)`, so the littleO conclusion
+   stands — but `n/log^2 n` must not be cited as a proved bound.
+The audit also independently corroborated the frozen-algebra repin: the commit's
+own docstring concedes 76 and 142 "were not frozen at all" before and were
+silently tracking the live route.
+
+**E1 resized by a real finding.** The interior's atomic read is NOT
+single-chunk in general. Under macro crossing `width <= machineWordBits` gives
+one chunk (the 11-per-two-span rate behind the attained 33), but the
+within-macro branch has only `width <= 7 * machineWordBits`
+(`canonicalRelativeRmmMachineReadNatCosted_cost_le_eight`), and the within-macro
+bound's arithmetic is explicitly `26 = 8 + 9 + 9`. **At small shapes one logical
+interior read can emit up to eight physical events.** E1-R4t's atom is correct
+but insufficient alone and carries the width bounds as explicit hypotheses
+rather than discharging them; an eight-capped chunk fold is needed. This is NOT
+a return to the pre-B7 obstruction — 8 is a literal cap, using the same
+`x - (x - 8)` chain the fringe's 33-cap already uses, so REQ-E1-06(c) survives.
+
+E1-R4t landed the read atom with the validity test performed BY THE MACHINE
+(`natLt` on its own index register, branched) rather than by a Lean-level `if`
+around the block, so the dead-address path is a charged path — the anti-vacuity
+shape REQ-E1-05 asks for.
