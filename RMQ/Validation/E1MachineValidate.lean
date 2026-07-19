@@ -1,4 +1,4 @@
-import RMQ.Core.WordRAM.E1CloseDispatch
+import RMQ.Core.WordRAM.E1CloseCompose
 import RMQ.Core.WordRAM.E1SelectCanonical
 
 /-!
@@ -527,6 +527,236 @@ def selectModeledReads (salt : Nat) (build : List Instr → List Instr) : Nat :=
   selectCases.foldl (fun acc (xs, i) =>
     acc + (runSelectLeg salt build xs i).machineReads) 0
 
+/-! ## 6d. THE COMPOSITE: dispatch ∘ rebased same-block leg, executed
+
+`E1CloseCompose.sameBlockDispatchProgram_runsTo` proves that the four
+instruction dispatch followed by the REBASED same-block leg runs
+`0 -> 4 + crossArm.length + 173` on the route's own same-block condition,
+reproducing the route's trace.  With the dispatch module's two-instruction
+witness cross arm that exit is the concrete `179`, and the leg is hosted
+at `6` -- so its internal fold back edge targets `103`, not `97`.
+
+This phase executes that composite.  It is a STRICTLY stronger test than
+phase 3b, because 3b runs the leg at base `0`, where every absolute
+internal target happens to be correct by accident.
+
+Two things are checked, and they are different in kind:
+
+* SAME-BLOCK cases: the branch is taken, the machine must reach `179`, and
+  its `readLog` must equal the route's same-block trace event for event.
+  Since the dispatch performs no read, the composite's receipt must equal
+  the LEG's receipt exactly -- so this also checks the dispatch is
+  read-free in situ, not merely by inspection of its opcodes.
+* CROSS-BLOCK cases: the branch is not taken and the machine must halt in
+  the witness cross arm having read nothing.  This does NOT validate the
+  route's cross-block VALUE -- there is no cross-block machine arm yet
+  (its interior leg is blocked).  It validates only that the composite
+  selects the fall-through and that the leg is genuinely skipped. -/
+
+/-- The honest composite: dispatch at `0`, witness cross arm at `4`, the
+REBASED leg at `6`. -/
+def goodCompose (shape : Cartesian.CartesianShape) (blockSize : Nat) :
+    List Instr :=
+  E1CloseCompose.sameBlockDispatchProgram shape legFringeSegment blockSize
+    E1CloseDispatch.witnessCrossArm
+
+/-- MUTANT A -- THE REBASING DEFECT ITSELF: host the BASE-0 leg layout at
+base `6`, i.e. forget to rebase the leg's four internal addresses.  This
+is the exact bug `sameBlockLegProgramAt` exists to prevent, and it is what
+a careless composition would produce.  It preserves the program's LENGTH
+(both layouts are 173 instructions), so a length check cannot see it. -/
+def mutatedComposeUnrebased (shape : Cartesian.CartesianShape)
+    (blockSize : Nat) : List Instr :=
+  E1CloseDispatch.closeDispatchProgram blockSize
+    E1CloseDispatch.witnessCrossArm
+    (E1SameBlockLeg.sameBlockLegProgram shape legFringeSegment blockSize)
+
+/-- MUTANT B -- ONE TARGET LEFT BEHIND: rebase everything EXCEPT the fold
+back edge, sending it to the base-`0` address `97` instead of `103`.  A
+single operand differs from the honest program: same length, same
+instruction count, same opcodes.  This is the composite-level analogue of
+the phase-4b back-edge mutation and is the sharpest test in the harness. -/
+def mutatedComposeBackEdge (shape : Cartesian.CartesianShape)
+    (blockSize : Nat) : List Instr :=
+  (goodCompose shape blockSize).map fun instr =>
+    match instr with
+    | .brNZ cond 103 => .brNZ cond 97
+    | other => other
+
+/-- What one composite run reports.  `routeSame` is an EXPECTATION: it is
+computed from the route's own condition with no machine involved. -/
+structure ComposeReport where
+  routeSame : Bool
+  reachedLegExit : Bool
+  haltedInCrossArm : Bool
+  modeledSteps : Nat
+  machineReads : Nat
+  routeTraceLen : Nat
+  receiptMatchesRoute : Bool
+deriving Repr
+
+/-- Fuel for an HONEST composite run.  Generous: the honest leg completes
+in a few hundred modeled steps, and phase 3d prints the observed maximum
+so this margin is checkable rather than asserted. -/
+def composeFuel : Nat := 40000
+
+/-- Fuel for a MUTANT composite run, and the reason it is smaller.
+
+A mis-rebased leg does not merely compute a wrong answer.  Its fold back
+edge jumps to an address that never re-establishes the loop's exit
+condition, so the machine runs until fuel is exhausted.  At the honest
+budget that made the two mutant sweeps hundreds of times more expensive
+than the honest one, and the first version of this phase did not finish in
+ten minutes.
+
+Fuel exhaustion is REJECTION, not a pass: a mutant that runs out of fuel
+neither reaches the proved exit pc nor reproduces the route's receipt, so
+the very same tests the honest run must satisfy count it as a mismatch.
+Lowering the mutant budget therefore weakens nothing -- it only bounds the
+cost of exhibiting a failure that has already occurred.
+
+The choice is not left to trust: `composeMutantFuelIsSlack` below checks
+that this budget strictly exceeds the largest honest run, so a correct
+program could never be failed by it. -/
+def composeMutantFuel : Nat := 6000
+
+/-- RUN THE COMPOSITE and compare against independently computed
+expectations.  The route condition and the route trace are both derived
+BEFORE the program is built or run. -/
+def runComposeFuel (fuel : Nat) (salt : Nat)
+    (build : Cartesian.CartesianShape → Nat → List Instr)
+    (xs : List Int) (leftClose rightClose : Nat) : ComposeReport :=
+  let shape := Cartesian.stackCartesianShape xs
+  let blockSize := SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+  let store := legStore shape
+  -- EXPECTATIONS FIRST, from the route alone.
+  let routeSame :=
+    SuccinctClose.blockOfClose blockSize leftClose ==
+      SuccinctClose.blockOfClose blockSize rightClose
+  let routeTrace :=
+    (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+      shape (SuccinctFinal.concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
+      legFringeSegment store blockSize leftClose rightClose).trace
+  -- ONLY NOW the machine.
+  let program := build shape blockSize
+  let result :=
+    E1Machine.run store program (fuel + salt)
+      ⟨legRegs leftClose rightClose, 0, false⟩
+  { routeSame := routeSame
+    reachedLegExit := result.final.pc == 179
+    haltedInCrossArm :=
+      result.final.halted && result.final.regs E1CloseDispatch.dSame == 7
+    modeledSteps := result.steps
+    machineReads := result.readLog.length
+    routeTraceLen := routeTrace.length
+    receiptMatchesRoute := result.readLog == routeTrace }
+
+/-- Fixtures and windows the composite is exercised on.  Wider endpoint
+separations than `legCases` so that BOTH dispatch directions occur, and
+FEWER cases, because the composite sweep is run three times (honest plus
+two mutants) and each case drives the full leg. -/
+def composeCases : List (List Int × Nat × Nat) :=
+  [2, 3, 5, 8].flatMap fun len =>
+    let xs := generatedInput len 0
+    [0, 1].flatMap fun l =>
+      [0, 1, 2, 5, 9].map fun d => (xs, l, l + d)
+
+/-- EVERY composite report for one builder, computed ONCE.
+
+Deriving each count from its own sweep would re-run the machine per
+statistic -- eight sweeps for the honest builder alone.  That is what the
+first version of this phase did, and it did not finish in ten minutes.
+The counts below are all folds over this single list. -/
+def composeReports (salt : Nat)
+    (build : Cartesian.CartesianShape → Nat → List Instr) :
+    List ComposeReport :=
+  composeCases.map fun (xs, l, r) =>
+    runComposeFuel composeFuel salt build xs l r
+
+/-- The subset the MUTANT sweeps run on.  Small for the cost reason given
+above `composeMutantFuel`: each mutant case burns its whole fuel budget.
+Rejection needs only one surviving disagreement, and this subset contains
+same-block cases, which `composeMutantCoversSameBlock` checks. -/
+def composeMutantCases : List (List Int × Nat × Nat) :=
+  composeCases.take 10
+
+/-- Mutant reports, on the reduced case set and the reduced fuel. -/
+def composeMutantReports (salt : Nat)
+    (build : Cartesian.CartesianShape → Nat → List Instr) :
+    List ComposeReport :=
+  composeMutantCases.map fun (xs, l, r) =>
+    runComposeFuel composeMutantFuel salt build xs l r
+
+/-- The mutant subset must contain at least one SAME-BLOCK case, or the
+mutant sweeps would exercise only the fall-through and reject nothing. -/
+def composeMutantCoversSameBlock (salt : Nat) : Bool :=
+  ((composeMutantReports salt goodCompose).filter
+    fun rep => rep.routeSame).length != 0
+
+/-- The largest modeled step count over the HONEST sweep. -/
+def composeMaxModeledSteps (reports : List ComposeReport) : Nat :=
+  reports.foldl (fun acc rep => max acc rep.modeledSteps) 0
+
+/-- The mutant fuel budget strictly exceeds every honest run, so it could
+never fail a correct program.  Checked, not asserted. -/
+def composeMutantFuelIsSlack (reports : List ComposeReport) : Bool :=
+  composeMaxModeledSteps reports < composeMutantFuel
+
+/-- Composite same-block cases (the ones whose receipt is comparable). -/
+def composeSameCases (reports : List ComposeReport) : Nat :=
+  (reports.filter fun rep => rep.routeSame).length
+
+/-- Composite cross-block cases. -/
+def composeCrossCases (reports : List ComposeReport) : Nat :=
+  (reports.filter fun rep => !rep.routeSame).length
+
+/-- SAME-BLOCK composite runs that fail to reach the proved exit pc 179. -/
+def composeLegExitFailures (reports : List ComposeReport) : Nat :=
+  (reports.filter fun rep => rep.routeSame && !rep.reachedLegExit).length
+
+/-- SAME-BLOCK composite runs whose receipt disagrees with the route. -/
+def composeReceiptMismatches (reports : List ComposeReport) : Nat :=
+  (reports.filter fun rep => rep.routeSame && !rep.receiptMatchesRoute).length
+
+/-- CROSS-BLOCK composite runs that fail to halt in the witness cross arm. -/
+def composeCrossArmFailures (reports : List ComposeReport) : Nat :=
+  (reports.filter fun rep => !rep.routeSame && !rep.haltedInCrossArm).length
+
+/-- CROSS-BLOCK composite runs that performed a read.  Must be zero: the
+dispatch reads nothing and the leg must be skipped entirely. -/
+def composeCrossReads (reports : List ComposeReport) : Nat :=
+  reports.foldl (fun acc rep =>
+    if rep.routeSame then acc else acc + rep.machineReads) 0
+
+/-- Total modeled steps across the composite sweep: a MODELED quantity. -/
+def composeModeledSteps (reports : List ComposeReport) : Nat :=
+  reports.foldl (fun acc rep => acc + rep.modeledSteps) 0
+
+/-- Total modeled read events across the composite sweep. -/
+def composeModeledReads (reports : List ComposeReport) : Nat :=
+  reports.foldl (fun acc rep => acc + rep.machineReads) 0
+
+/-- Both composite mutations genuinely change the instruction list, and
+NEITHER changes its length. -/
+def composeMutationsAreReal : Bool :=
+  let shape := Cartesian.stackCartesianShape (generatedInput 5 0)
+  let blockSize := SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+  let good := goodCompose shape blockSize
+  let mutA := mutatedComposeUnrebased shape blockSize
+  let mutB := mutatedComposeBackEdge shape blockSize
+  good != mutA && good != mutB &&
+    good.length == mutA.length && good.length == mutB.length
+
+/-- `sameBlockDispatchProgram_length` says `4 + 2 + 173 = 179`; check the
+running list agrees, and that the rebased layout really does differ from
+the base-0 one (if it did not, the rung would be vacuous). -/
+def composeLengthOk : Bool :=
+  let shape := Cartesian.stackCartesianShape (generatedInput 5 0)
+  let blockSize := SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+  (goodCompose shape blockSize).length == 179 &&
+    E1SameBlockLeg.sameBlockLegProgramAt shape legFringeSegment blockSize 6 !=
+      E1SameBlockLeg.sameBlockLegProgram shape legFringeSegment blockSize
+
 /-! ## 7. THE HOLE: whole-query comparison
 
 DELIBERATELY NOT IMPLEMENTED, and compiling as a hole rather than as a
@@ -596,6 +826,11 @@ The modeled step counts were never affected by any of this; only the
 wall-clock numbers were, which is exactly the reason the report keeps the
 two in separate columns and calls the wall-clock non-evidence. -/
 
+-- The report grew a fourth machine phase and its verdict clauses; the
+-- resulting `do` block exceeds the default elaboration recursion depth.
+-- This raises only the ELABORATOR's stack budget: it is not a proof
+-- option and weakens no check.
+set_option maxRecDepth 8000 in
 def mainImpl : IO UInt32 := do
   IO.println "== E1 amended-machine validator (M6) =="
   IO.println ""
@@ -672,6 +907,35 @@ def mainImpl : IO UInt32 := do
   IO.println s!"selectWallClockMs={ts1 - ts0}   (this binary on this host; NOT evidence)"
   IO.println ""
 
+  -- STEP 3d: the COMPOSITE (dispatch then rebased leg), executed.
+  IO.println "-- phase 3d: COMPOSITE dispatch-then-rebased-leg vs route --"
+  let tc0 <- IO.monoMsNow
+  let cmpReports := composeReports salt goodCompose
+  let cmpSame := composeSameCases cmpReports
+  let cmpCross := composeCrossCases cmpReports
+  let cmpExitFails := composeLegExitFailures cmpReports
+  let cmpReceiptFails := composeReceiptMismatches cmpReports
+  let cmpCrossFails := composeCrossArmFailures cmpReports
+  let cmpCrossReads := composeCrossReads cmpReports
+  let cmpSteps := composeModeledSteps cmpReports
+  let cmpReads := composeModeledReads cmpReports
+  let cmpMaxSteps := composeMaxModeledSteps cmpReports
+  let cmpFuelSlack := composeMutantFuelIsSlack cmpReports
+  IO.println s!"composeCases={composeCases.length}"
+  IO.println s!"composeLengthOk={composeLengthOk}   (179, and rebased != base-0)"
+  IO.println s!"composeSameCases={cmpSame}   (branch taken; leg hosted at 6)"
+  IO.println s!"composeCrossCases={cmpCross}   (fall-through to witness cross arm)"
+  IO.println s!"composeLegExitFailures={cmpExitFails}   (proved exit is pc 179)"
+  IO.println s!"composeReceiptMismatches={cmpReceiptFails}   (machine readLog vs route trace)"
+  IO.println s!"composeCrossArmFailures={cmpCrossFails}   (cross cases must halt in the cross arm)"
+  IO.println s!"composeCrossReads={cmpCrossReads}   (must be 0: leg skipped entirely)"
+  IO.println s!"composeModeledSteps={cmpSteps}   (machine-modeled, reproducible)"
+  IO.println s!"composeMaxModeledSteps={cmpMaxSteps}   (largest single honest run)"
+  IO.println s!"composeModeledReads={cmpReads}   (machine-modeled receipt events)"
+  let tc1 <- IO.monoMsNow
+  IO.println s!"composeWallClockMs={tc1 - tc0}   (this binary on this host; NOT evidence)"
+  IO.println ""
+
   -- STEP 4: the mutation must be rejected.
   IO.println "-- phase 4: deliberate mutation --"
   let tm0 <- IO.monoMsNow
@@ -701,6 +965,29 @@ def mainImpl : IO UInt32 := do
   IO.println s!"legMutationWallClockMs={tlm1 - tlm0}"
   IO.println ""
 
+  -- STEP 4c: mutating the COMPOSITE's rebasing specifically.
+  IO.println "-- phase 4c: deliberate REBASING mutations of the composite --"
+  let tcm0 <- IO.monoMsNow
+  let mutAReports := composeMutantReports salt mutatedComposeUnrebased
+  let mutBReports := composeMutantReports salt mutatedComposeBackEdge
+  let mutAExit := composeLegExitFailures mutAReports
+  let mutAReceipt := composeReceiptMismatches mutAReports
+  let mutBExit := composeLegExitFailures mutBReports
+  let mutBReceipt := composeReceiptMismatches mutBReports
+  IO.println s!"composeMutationsAreReal={composeMutationsAreReal}   (both differ; both same length)"
+  IO.println s!"composeMutantCases={composeMutantCases.length}   (subset; each burns its fuel budget)"
+  IO.println s!"composeMutantFuel={composeMutantFuel}   (vs honest max modeled {cmpMaxSteps}; slack={cmpFuelSlack})"
+  IO.println s!"composeMutantCoversSameBlock={composeMutantCoversSameBlock salt}"
+  IO.println s!"mutantA_unrebased_exitFailures={mutAExit}"
+  IO.println s!"mutantA_unrebased_receiptMismatches={mutAReceipt}   (must be > 0)"
+  IO.println s!"mutantB_backEdge_exitFailures={mutBExit}"
+  IO.println s!"mutantB_backEdge_receiptMismatches={mutBReceipt}   (must be > 0)"
+  IO.println s!"composeMutationARejected={mutAReceipt != 0}"
+  IO.println s!"composeMutationBRejected={mutBReceipt != 0}"
+  let tcm1 <- IO.monoMsNow
+  IO.println s!"composeMutationWallClockMs={tcm1 - tcm0}"
+  IO.println ""
+
   -- STEP 5: the hole.
   IO.println "-- phase 5: whole-query comparison --"
   IO.println s!"wholeQueryComparisonAvailable={wholeQueryComparisonAvailable}"
@@ -711,14 +998,32 @@ def mainImpl : IO UInt32 := do
       IO.println s!"wholeQueryMismatches={ms.length}"
   IO.println ""
 
-  -- Verdict.
-  let ok :=
-    refFailures == 0 && dispatchLengthOk && witnessLengthOk &&
-      sameBlockLegLengthOk && mismatches.isEmpty && reads == 0 &&
-      mutationIsReal 3 && rejected &&
-      legExitFails == 0 && legReceiptFails == 0 &&
-      legMutationIsReal && legMutationRejected salt &&
-      selExitFails == 0 && selReceiptFails == 0
+  -- Verdict.  Grouped into named clauses: a single `&&` chain over all of
+  -- these exceeds the elaborator's recursion depth on `BEq Nat`.
+  let okReference := refFailures == 0
+  let okLengths :=
+    dispatchLengthOk && witnessLengthOk && sameBlockLegLengthOk &&
+      composeLengthOk
+  let okDispatch := mismatches.isEmpty && reads == 0
+  let okLeg := legExitFails == 0 && legReceiptFails == 0
+  let okSelect := selExitFails == 0 && selReceiptFails == 0
+  let okCompose :=
+    cmpExitFails == 0 && cmpReceiptFails == 0 && cmpCrossFails == 0 &&
+      cmpCrossReads == 0
+  -- Anti-vacuity: BOTH dispatch directions must actually occur in the
+  -- composite sweep, or the composite checks above are empty.
+  let okComposeCoverage := cmpSame != 0 && cmpCross != 0
+  let okMutations :=
+    mutationIsReal 3 && rejected && legMutationIsReal &&
+      legMutationRejected salt && composeMutationsAreReal &&
+      mutAReceipt != 0 && mutBReceipt != 0
+  -- The reduced mutant budget must be provably non-binding for a correct
+  -- program, and the reduced case set must reach the same-block arm.
+  let okMutantSetup := cmpFuelSlack && composeMutantCoversSameBlock salt
+  let okCore := okReference && okLengths && okDispatch && okLeg
+  let okComposite := okSelect && okCompose && okComposeCoverage
+  let okAdversarial := okMutations && okMutantSetup
+  let ok := okCore && okComposite && okAdversarial
   if ok then
     IO.println "RESULT: PASS (with the whole-query comparison still OPEN)"
     return 0

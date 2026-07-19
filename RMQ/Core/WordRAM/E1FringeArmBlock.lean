@@ -724,6 +724,42 @@ def fringeCandGlobal (E : Nat) : List Instr :=
 @[simp] theorem fringeCandGlobal_length (E : Nat) :
     (fringeCandGlobal E).length = 7 := rfl
 
+/-- Constructor-exhaustive width certificate for the global-rebase
+epilogue.  No wildcard arm: each of the seven instructions discharges its
+own constructor's field conjunction from `Instr.FieldsFit`.  The epilogue
+carries no divisor, so no positivity arm arises.  Both branch targets are
+`E`-relative and so are bounded by the single hypothesis `hE`.
+
+This was the one segment of the same-block leg with no width certificate;
+`rankCloseBlock_fits` (`E1RankBlock.lean:1003`), `fringeLoopBody_fits`
+(`E1FringeFoldBlock.lean:376`), `fringeArmPrologue_fits` (`:210`),
+`windowAddr_fits`, `windowRange_fits`, `sameBlockClose_fits`,
+`rankSeedPos_fits` and `rankSeedFinish_fits` already covered the rest. -/
+theorem fringeCandGlobal_fits (w E : Nat) (hw : 68 < 2 ^ w)
+    (hE : E + 7 < 2 ^ w) :
+    ∀ instr ∈ fringeCandGlobal E, Instr.FieldsFit w instr := by
+  intro instr hinstr
+  have h1 : (1 : Nat) < 2 ^ w := by omega
+  have h47 : (47 : Nat) < 2 ^ w := by omega
+  have h48 : (48 : Nat) < 2 ^ w := by omega
+  have h60 : (60 : Nat) < 2 ^ w := by omega
+  have h64 : (64 : Nat) < 2 ^ w := by omega
+  have h65 : (65 : Nat) < 2 ^ w := by omega
+  have h66 : (66 : Nat) < 2 ^ w := by omega
+  have h67 : (67 : Nat) < 2 ^ w := by omega
+  have h68 : (68 : Nat) < 2 ^ w := hw
+  have h5 : E + 5 < 2 ^ w := by omega
+  simp only [fringeCandGlobal, List.mem_cons, List.not_mem_nil, or_false]
+    at hinstr
+  rcases hinstr with h | h | h | h | h | h | h <;> subst h
+  · exact ⟨h60, h1⟩
+  · exact ⟨h47, h5⟩
+  · exact ⟨h67, h65⟩
+  · exact ⟨h68, h66⟩
+  · exact ⟨h60, hE⟩
+  · exact ⟨h67, h47, h60⟩
+  · exact ⟨h68, h64, h48⟩
+
 /--
 Category log of the epilogue, indexed by the route-side condition it
 dispatches on (whether the fold left an occupied best).  Never a numeral.
