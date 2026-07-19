@@ -3238,3 +3238,82 @@ models, what remains beyond the interior, and known-red. Additive, so Lane C's
 branch merges without conflict. Every anchor in it grep-verified at `790d7b3`.
 Lane B owns keeping it current, on the ground that a stale line THERE is more
 expensive than a stale line anywhere else.
+
+---
+
+## C05 round 50 — the fold-level preservation gap was WIDER than I said, and a
+## discarded clause one level up
+
+Lane C returned CANDIDATE_COMPLETE at `bde70da` (three commits), landing
+validator phase 3i and mutation phase 4h. `E1InteriorChunkFold.lean` was NOT
+touched: the preservation clause needed no strengthening, it was executable
+exactly as stated.
+
+**MY TENTH FAILED CLAIM, and this one made the job BIGGER rather than smaller.**
+I briefed Lane C that the fringe side "has exactly this and DOES run it,"
+naming `FringeFoldUntouched`. The abbrev exists where I cited it — but **the
+string `FringeFoldUntouched` does not occur in `E1MachineValidate.lean` at
+all.** Phase 3h runs `FringeArmUntouched`, the ARM's write set, a different and
+larger one. So the fringe FOLD's clause is exactly as unexecuted as the
+interior's was, and Lane C's work is **the first executed fold-level
+preservation check in the tree on either side** — not a port of an existing one.
+The worker recorded the correction in the phase header in-file, on the ground
+that the next reader inherits the same assumption. That is the right place for
+it; a correction that lives only in a report is a correction that expires.
+
+**New owed work this surfaced:** `FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`)
+is stated and never executed anywhere. The fringe fold has the gap the interior
+fold just lost. Not scheduled yet; recorded so it is not re-discovered.
+
+**Second addressing error, same brief:** I cited the interior fold's clause at
+`:1011`. That line is real and carries the exact text, but it belongs to
+`interiorChunkReadLoop_runsTo` — one of FOUR segments. The composed fold
+headline's clause is at `:1835`. The worker executed the headline's, which is
+the one the composition consumes, i.e. it noticed and picked correctly rather
+than following me.
+
+**THE CROSS-LANE DEFECT, and it is the serious item.**
+`summaryMinCandidate_runsTo` (`E1InteriorMinCandidate.lean:929`) states **no
+preservation clause**. Its component `minCandidateBlock_runsTo` proves one, and
+the composed proof BINDS it at `:991` as `_hpres2` — underscore-prefixed,
+deliberately discarded — then re-exports neither it nor `hpres1`. **This is the
+M3d-13 defect recurring one level up**, against the standing rule that the
+clause belongs to the headline. Routed to Lane B, which owns that file, with
+instructions to verify before acting.
+
+**The sharpest observation in the report, and it is a general one.**
+`minCandidateBlock` is READ-FREE, receipt `[]`. So on a read-free block
+preservation is not a THIRD discriminator but **the second of only two** — the
+receipt discriminator is structurally powerless there. That raises the stakes on
+the clause being present rather than lowering them, and it is the argument for
+why discarding `_hpres2` is not a harmless tidy-up.
+
+**Judgement worth preserving: why register 102 and not 85.** The mutation target
+is `E1InteriorSummaryGroup.sMin` — **the register at which the interior's own
+composition instantiates this clause** (`E1InteriorSummaryGroup.lean:427-429`
+carries a staged minimum across later fold invocations). Witness FOUND at the
+target, not BUILT for the premise; rule 5 satisfied in its strong form. The
+worker first picked `iIdx` and rejected it: it is the fold's one declared input,
+so the fixture would have to seed it with the real index, and detection would
+then depend on the mutant happening to write a differing value. With 102 the
+seed is 717 and the combine loop can only write 0 or 1 — disjoint ranges,
+detection is not luck.
+
+Also right: the invisibility check compares the read log **event by event**,
+because `chunkFoldWitness_paths_distinguishable` (`E1InteriorChunkFold.lean:2004`)
+records that two paths agree on modeled steps AND returned cell and are
+separated only by the read log. A receipt check by length or count would have
+been the wrong instrument, and the worker knew that because the fact was already
+in the tree.
+
+All seven new theorems are `rfl` and **depend on no axioms** — kernel facts, not
+runtime observations. Cost recorded honestly: the validator module goes from
+~20s to ~3m45s. Scope stated rather than glossed: this is the fold at its own
+hosting witness, a hand-built literal shape; it says nothing about the fold at a
+real `canonicalSummaryLayout`, nothing about the leg, nothing about the query.
+
+**A hygiene near-miss caught by the worker on itself:** its first draft put the
+compiler-escape-hatch token in a DOCSTRING, which would have taken the house
+scan over `RMQ/` from 0 to 1 and regressed Closed row CHK-B4-02 — a row that
+exists because a prior mention was reworded to keep that scan at zero. Reworded;
+both scans re-verified at 0. A Closed row nearly reopened by a comment.
