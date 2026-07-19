@@ -204,6 +204,11 @@ Verification:
 - For each expensive command, record covered acceptance rows, closest observed
   runtime, chosen timeout, exact tree state, duration, and result. Run only one
   heavy Lean/Lake process at a time per build tree.
+- If a replay executable imports changed Lean modules, run a bounded
+  startup/shape smoke test and one known exact selector before the full
+  registry. Treat slow import-time initialization of proof-only closed witness
+  data as a category error to repair, not as a reason to raise the full replay
+  deadline.
 - If a command times out or stays quiet, inspect its child process, CPU/artifact
   progress, prerequisites, and whether it fell back to a full build. Do not
   launch the same expensive command unchanged. Retry only after recording the
@@ -212,6 +217,9 @@ Verification:
   failure, reproduce and repair the smallest failing component before the one
   final aggregate rerun. Do not separately duplicate checks already included
   by the aggregate gate unless the prompt names a distinct acceptance purpose.
+- Run broad trust, policy, topology, and aggregate certification only after
+  executable startup, one exact selector, and the full replay pass on frozen
+  content when those controls are part of the contract.
 - git diff --check
 - after committing, git diff --check [EXACT BASE SHA]..HEAD
 - powershell -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1

@@ -4071,3 +4071,57 @@ Exact artifact replay should be complete and bounded without confusing
 repeated host-language reconstruction with the modeled query cost. Typed
 fixture sharing preserves the case contract while keeping runtime evidence in
 its proper category.
+## WDD-20260719-010: probe executable startup before full replay and certification
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: proof-worker verification ordering for changed executable import
+closures.
+
+Decision:
+
+1. When a replay executable imports changed Lean modules, verification runs a
+   bounded startup/shape smoke test, then one known exact selector, then the
+   complete registry.
+2. An unexpectedly slow smoke test triggers inspection of import-time
+   initialization and proof-only closed data before any deadline increase.
+3. Broad trust, policy, topology, and aggregate certification follows the
+   successful replay controls and content freeze rather than preceding them.
+
+Trigger and evidence:
+
+B7-R3 checkpoint `024e33eb922355bb811ed20191215c5992328ebc` exported closed
+size-3469 address/store values used only by one corruption theorem. The first
+full replay crossed a 20-minute deadline; after fixture caching, a shape-only
+size-5 probe still crossed 120 seconds. Candidate `879edb0a3c61d44a7a20cee0026e96a121666791`
+moved those expressions into theorem-local `let`s. The identical smoke probe
+then took about two seconds and the 21-case replay about 29 seconds. The
+worker's retrospective identifies roughly 53--62 minutes of avoidable or
+deferrable verification, chiefly full-campaign timeouts and certification run
+before replay closure.
+
+Rejected alternatives:
+
+- Increase full-replay deadlines without isolating startup.
+- Treat modeled query ticks as an explanation of Lean initialization time.
+- Run the full registry as the first observation after every executable import
+  change.
+- Certify broad public/trust surfaces before the executable acceptance control
+  is known to terminate on frozen content.
+
+Consequences and regression evidence:
+
+- `COMPLETION_GATE.md` and `WORKER_PROMPT.md` require the smoke/selector/full
+  order for changed replay imports.
+- Named regression `B7R3-STARTUP-SMOKE-BEFORE-FULL-REPLAY` uses `024e33e` and
+  rejects a ledger whose first executable observation is the full registry or
+  whose broad certification precedes replay closure.
+- Legitimately long full campaigns remain allowed once startup is isolated and
+  their deadlines use observed evidence.
+- No Lean proposition, payload bit, proof field, modeled tick, trace, store,
+  or public mathematical claim changes.
+
+Publication-facing significance:
+
+Artifact evidence remains complete without confusing proof-witness
+initialization or repeated host construction with the charged RAM cost model.
