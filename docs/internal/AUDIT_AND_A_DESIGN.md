@@ -1407,3 +1407,46 @@ session-local scratchpad is now durable at 661 lines and `git apply --check`
 clean. Two workers in a row have correctly refused to commit a partial swap and
 refreshed the patch instead. The rule holds: work that cannot be committed
 green must still be committed as an artifact, never left in a scratchpad.
+
+## 2026-07-19 (C05 round 19) — two discriminators, neither subsuming the other
+
+**Methodological finding (E1-R4q), worth carrying into the paper's evidence
+story.** The three-way candidate merge block is READ-FREE, so receipt diffing --
+the discriminator that caught every previous machine mutation, including the
+single-operand rebased back edge that preserved length, opcodes and exit pc --
+is UNAVAILABLE: honest and mutant emit the same empty receipt. Its mutant D
+changes one source operand and preserves exit pc, modeled steps AND receipt,
+verified case for case (`mergeMutantDIsValueOnly=true`). Only the independent
+reference VALUE rejects it.
+
+So the two discriminators are complementary and neither subsumes the other:
+- receipt diffing catches control-flow-preserving mutations in read-bearing
+  blocks, where the value may coincidentally agree;
+- independent-value checking catches value-only mutations in read-free blocks,
+  where the receipt is necessarily identical.
+A validator carrying only one of them has a blind spot with a known shape. Both
+are now present and both have a witnessed mutation they alone reject.
+
+**Honest non-claim:** the worker recorded that REQ-E1-04 gained NOTHING this
+session and said why in the worklog -- a read-free block has no receipt to
+compare. Declining credit the evidence does not support is the behaviour the
+completion gate exists to produce.
+
+**A prose-only fact got a lemma.** `bpFringeCandGlobal_isSome` -- totality of the
+global fringe candidate -- was relied on at several sites and asserted in three
+prose comments, with no lemma anywhere. Now proved. Worth a sweep for other
+load-bearing facts that live only in comments.
+
+**New unrecognised prerequisite for the cross-block arm.** The earlier inventory
+listed "the two arms hosted" as comparable to re-hosting seeds. It is not:
+`sameBlockLegProgramAt` exists because someone built the leg's instruction-list
+form, whereas the fringe ARM has no counterpart -- `fringeArm_runsTo` is stated
+entirely against hosting hypotheses and a repo-wide search for any
+`fringeArmProgram` returns nothing. An arm layout plus a five-segment layout
+with a hole is new construction, larger than the merge that was just built. The
+worker stopped rather than start it, which was right.
+
+**The interior interface is now a signature rather than an intention:** `middle?`
+arrives in `mMV` (77) biased, position in `mMP` (78), unconstrained when absent.
+DD-20260718-012 records why a sentinel encoding would break the accepted route's
+leftmost tie-break under strict `<`.
