@@ -3545,3 +3545,83 @@ hiding, since a paraphrase drifts toward what the plan can deliver.
 Each survey is told the same thing every worker is told: everything in the
 prompt is a hypothesis, "not found" is a fact about the search, and coordinator
 claims have failed inspection thirteen times.
+
+---
+
+## C05 round 55 — Survey 1: four of the six width premises look FALSE, and the
+## fix has an exact in-campaign precedent
+
+Survey 1 returned. Two of its three findings shrink the work; the third is the
+most serious obstruction E1 has hit since the R3 obstruction itself.
+
+**FIRST TIME AN ENUMERATION GOT SMALLER.** `bpCandidateMerge3?`
+(`Candidate.lean:24-26`) is **definitionally**
+`bpCandidateMerge? (bpCandidateMerge? left middle) right`. So #8 needs no
+option-shaped three-way primitive at all — it is two applications of the 2-way
+block with a `move` shuttle between them, and the reassociation is `rfl`. The
+"merge3" label in my table overstated the obligation. Routed to Lane B2 before
+it could build the thing it does not need.
+
+**And my stated REASON for the `candMerge3` disqualification was wrong**, which
+matters because I relayed it from Lane B without checking. I said the epilogue
+writes the closed position "whereas the combiners need the candidate left in the
+bank". `candMerge3_runsTo` (`E1CandMerge3.lean:718`) leaves the candidate in the
+bank **as well** (clause 2, `:729-731`); the close is two separable
+instructions. The real disqualifier is narrower: the OCCUPANCY premises
+`hLV`/`hRV` (`:723`,`:725`) force both outer arms present, which is the fringe's
+situation. Conclusion right, reason wrong — the third time this campaign, and
+the second where I propagated a worker's reasoning without testing it.
+
+**THE OBSTRUCTION.** Of `crossBlockArmProgramAt_runsTo`'s six width premises,
+**`hL1`, `hL2`, `hR1`, `hR2` are believed FALSE as stated**, and the survey
+gives a refutation chain rather than a suspicion:
+
+- `readBits store i = (store.readWord? 0 i).getD []` (`E1FringeArmBlock.lean:51`)
+- `readWord?` returns `none` on an invalid index (`WordRAM.lean:69-72`), so an
+  out-of-range read has length `0`
+- `machineWordBits_pos : 0 < machineWordBits n` (`SuccinctRank.lean:41`) — so
+  length `0` **provably contradicts** the premise
+- the canonical store builds segment 0 with `ofChunks`, NOT
+  `ofChunksWithSentinel` (`Source.lean:2408-2410`), and `chunkPayloadWords`
+  documents at `WordStore.lean:153` that **the final word may be shorter**
+- `blockSize ≈ 2w`, and the window covers `+0,+1,+2`, so at the LAST block
+  `sbBase + 2` lands on the short final chunk or past the end
+- in a balanced-parenthesis encoding the final bit is a CLOSE, so
+  `rightClose = |bpCode| - 1` is REACHABLE
+
+`ofChunksWithSentinel` does not rescue it: its sentinel words are
+`List.replicate ... []`, length 0, which fails the premise exactly as an
+out-of-range read does. **No discharge exists anywhere** — `E1SameBlockLeg`,
+`E1CloseCompose` and `E1CrossBlockArm` all FORWARD the identical triple
+unproved, and `hc` is propagated everywhere and proved nowhere.
+
+The theorem is not wrong; `leftClose`/`rightClose` are free, so it is a
+conditional that does not apply at boundary endpoints. What is missing is a side
+condition the whole-query glue **cannot supply for all reachable endpoints**.
+
+**THE DECISION, and it is not close.** Three options: (a) prove the endpoints
+in range — the survey believes this is not provable at last-block endpoints, and
+I agree, because the BP encoding puts a real close at the final bit; (b) weaken
+the six premises to `≤` and reprove the decode under short final words;
+(c) pad `bpCode` to a multiple of `w` at construction.
+
+**(b), and the reason is that this campaign has ALREADY MADE THIS EXACT FIX one
+layer down.** Round M3d-14: the interior chunk store demanded
+`w.length = wordSize` of every chunk when the store guarantees only `≤`; the
+premise was found unsatisfiable and repaired by **weakening to `hle` everywhere
+plus `hexact` only where `j+1 < n`** — that is, exactness asserted only at
+non-final chunks, where it genuinely holds. The close/fringe side has the
+identical defect against the identical store discipline. Applying the identical
+repair means a reviewer pattern-matches it against a fix already accepted one
+layer down, which is the whole point of the standing rule.
+
+(c) is the tempting one and it is wrong for this project: padding changes the
+CONSTRUCTED DATA to make a proof convenient, which is the "assume it rather than
+charge it" move inverted, and it would ripple into space accounting and frozen
+constants for the sake of a proof obligation. The precedent here is explicit —
+charge it rather than assume it, and never reshape the accepted artifact to
+spare the proof.
+
+Recorded now, before the remaining three surveys land, because this is a
+statement change that propagates through three modules and should be planned as
+its own lane rather than folded into an assembly session.
