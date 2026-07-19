@@ -3489,3 +3489,300 @@ NOTHING below is implemented.
    is at `RMQ/Validation/E1MachineValidate.lean` phase 5
    (`wholeQueryComparisonAvailable` / `wholeQueryMismatches`) and is where
    the end-to-end machine-vs-`refRMQ` comparison attaches.
+
+## M3d-8 (worker E1-R4r): the fringe ARM's program form, the cross-block layout, and both discriminators executed
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, from HEAD
+`810c68f` to `<HEAD>`.  Three milestones landed green and committed
+(`156eed2`, `55694f5`, `f9553c8`).
+
+### 1. THE FRINGE ARM'S PROGRAM FORM (resume item 2) - LANDED
+
+`RMQ/Core/WordRAM/E1FringeArmProgram.lean`, new module.  This was the
+prerequisite M3d-7 section 5 identified: `fringeArm_runsTo`
+(`E1FringeArmBlock.lean:940`) is stated against SEVEN hosting hypotheses
+and `rg fringeArmProgram` returned nothing, so no caller could discharge
+them from one assumption.
+
+`fringeArmProgramAt S c L A` (`:79`) is 95 instructions in six segments,
+BASE-PARAMETRIC FROM THE START.  Its three internal addresses (the fold
+merge target `A + 21`, the back edge `A + 21`, the epilogue base
+`A + 88`) are all `A`-relative, so - unlike `sameBlockLegProgram`, which
+was built pinned at `0` and cost M3d-6 a rebuild plus a `_zero`
+specialisation lemma - there is NO base-`0` version to specialise from and
+no rebuild scheduled.  The delegation named this explicitly and it was the
+right call: the cross-block layout below hosts TWO arms at different
+bases, which a pinned form could not have served at all.
+
+Delivered: `_length` (`:87`), `_fold_eq` (`:95` - the arm's three fold
+segments ARE `fringeLoopBody`'s three groups, which is what lets the width
+certificate delegate 66 of the 95 instructions), `_hosts` (`:110`),
+`_runsTo` (`:140`), `_fits` (`:188`, constructor-exhaustive, no wildcard
+arm).
+
+### 2. THE EXECUTION WITNESS, AND WHY BASE `2`
+
+The delegation asked for a witness that EXECUTES rather than merely hosts.
+`armWitnessProgram` (`:232`) pads with two instructions so the arm is
+hosted at `2`, NOT `0`.  That is not decoration: at base `0` the internal
+addresses coincide with their own offsets (`0 + 21 = 21`) and a
+base-pinned layout typechecks by accident.
+`fringeArmWitness_internalAddresses` (`:255`) observes `brNZ fCnt 23` at
+index 87 and `brNZ fBV 95` at index 89 in the emitted list; at base `0`
+these would read `21` and `93`.
+
+`armWitness_path1..7` (`:288`-`:340`) RUN the arm on seven fixtures, all
+halting at `97`.  `armWitness_paths_distinguishable` (`:346`) states
+pairwise distinctness of `(steps, value, position, reads)` as a `Nodup`
+that fails if any two paths collapse.  The seven cover BOTH epilogue arms
+(occupied window rebase, paths 1-5; seed fallback, paths 6-7) and one, two
+and three fold passes - so the epilogue branch and the fold back edge are
+both witnessed live, not argued.
+
+`fringeArmWitness_readsAreCharged` (`:366`) records `[5, 7, 8, 6]` charged
+reads.  This matters for the validator: the arm is READ-BEARING, which is
+exactly the property the merge block lacks.
+
+All eight execution theorems depend on NO axioms (kernel computation).
+
+TECHNIQUE: the multi-pass fixtures (143-271 modeled steps) need
+`set_option maxRecDepth 40000`; the default budget reduces the 88-step
+fixtures but not the longer ones, and the failure is a bare "maximum
+recursion depth" with no indication that only SOME of the block's `rfl`s
+are affected.
+
+### 3. THE CROSS-BLOCK LAYOUT (resume item 3) - LANDED, interior parameterized
+
+`RMQ/Core/WordRAM/E1CrossBlockArm.lean`, new module.
+
+THE INTERFACE FIRST.  `crossBlockArmSpec` (`:132`) is the cross-block
+object with the interior's whole `TraceResult` as an ARGUMENT.
+`crossBlockArmSpec_eq` (`:170`) exhibits the accepted route object
+(`ChargedFringeTrace.lean:1144`) as that spec applied to the interior's
+current contents.  This is the ONLY place the interior appears
+concretely: when B7 lands (interior trace gains reads, route literal
+`207 -> 210`) this theorem's `interior` argument changes and nothing else
+stated over `crossBlockArmSpec` does.
+`crossBlockArmSpec_trace_of_interior_pure` (`:207`) makes "the interior is
+a hole" checked rather than pictured.
+
+FINDING, VERIFIED AT SOURCE - A CORRECTION TO THE M3d-7 RESUME POINT.
+`E1SameBlockArm.windowRange` (`:447`) is NOT reusable by either cross arm.
+Its high endpoint is driven by `rightClose - leftClose + 1`, the
+SAME-BLOCK span between the two query endpoints.  Read off
+`fringeLeg_trace_eq_leftArm` (`E1FringeArmBlock.lean:618`) and `_rightArm`
+(`:647`), the left cross arm instead runs from `leftClose + 1` to the END
+OF THE LEFT BLOCK, and the right cross arm STARTS at
+`blockStartOf blockSize rightBlock` rather than at `leftClose + 1`.
+Neither is `windowRange`'s arithmetic.  The M3d-7 resume point listed the
+cross-block step as layout-then-assembly; two new preamble blocks were
+required first.
+
+NEW SEGMENTS, each with length, category log, straightness and a
+constructor-exhaustive width certificate: `crossLeftRange` (`:225`, 10
+instructions), `crossRightRange` (`:290`, 10), `crossStashLeft` (`:349`,
+3) and `crossStashRight` (`:357`), `crossRepoint` (`:410`, 1).  Both range
+preambles compute their ranges from `fClose` by `divConst`/`mulConst` on
+the per-shape program constant `blockSize` (`blockOfClose bs c = c / bs`,
+`blockStartOf bs b = b * bs`, `BlockLocal.lean:864,868`) - no route value
+is copied in.  The stashes apply the house `+1` BIAS, which is not
+bookkeeping: `candMerge3_runsTo` requires `regs mLV = lv + 1`, and that
+hypothesis IS the route fact `bpFringeCandGlobal_isSome`.
+
+THE LAYOUT.  `crossBlockArmProgramAt shape S blockSize A interior`
+(`:452`) is `369 + interior.length` instructions, five sub-computations
+with the two seeds NON-ADJACENT and the interior as a HOLE, in the route's
+own emission order (only the two seed legs, the two arms and the interior
+emit receipts; the preambles, stashes, repoint and merge are read-free).
+`_hosts` (`:507`) derives all SEVENTEEN segment hosting facts from one
+assumption, with every post-hole address forced by `interior.length`.
+`_fits` (`:590`) is constructor-exhaustive over the whole arm and carries
+the interior's instructions as a HYPOTHESIS - the
+`sameBlockDispatchProgram_fits` idiom - so it is stated before the
+interior exists and will force the interior to be certified when it lands.
+
+Both arms are hosted at their own bases (`A + 78`, `A + 255 + n`) and each
+receives its OWN base as the `fringeArmProgramAt` argument.  This is the
+concrete payoff of milestone 1: a base-pinned arm form could not have
+served both.
+
+### 4. VALIDATOR (delegation item 3): PHASES 3f/4e AND 3g/4f
+
+`RMQ/Validation/E1MachineValidate.lean`.  The whole-query hole (phase 5)
+is UNTOUCHED and still reports `OPEN (interior leg blocked; NOT a pass)`.
+
+DISCRIMINATOR CHOICE PER BLOCK, which is the point of these two phases:
+
+* PHASE 3f/4e, the FRINGE ARM - RECEIPT.  The arm is read-bearing, so the
+  receipt has power.  `refArmReads`/`refArmWindowAddrs` are computed from
+  the specification BEFORE the program is built.  MUTANT E
+  (`mutatedArmSegment`) charges the fold's chunk-table read to the next
+  segment: same length, same opcode categories, and because the witness
+  store answers every segment identically, exit pc, halted flag, step
+  count, VALUE and POSITION are all unchanged.
+  `armMutantEIsReceiptOnly` checks that case for case.
+* PHASE 3g/4f, the CROSS-BLOCK RANGE PREAMBLES - VALUE.  Both are
+  read-free, so no receipt exists to diff - the merge's situation.
+  `refCrossLeftRange`/`refCrossRightRange` are written from the route's
+  `blockStartOf`/`blockOfClose`, structurally different from the machine's
+  fused `(leftBlock + 1) * blockSize`.  MUTANT F drops the `+ 1` that
+  turns the block INDEX into the block's exclusive end.
+
+MUTANT E IS THE EXACT MIRROR OF M3d-7's MUTANT D.  D was invisible to the
+receipt and caught only by the value; E is invisible to the value and
+caught only by the receipt.  M3d-7 ARGUED that the two discriminators are
+complementary; this session EXECUTES the argument in both directions, so
+complementarity is now evidence rather than commentary.
+
+Anti-vacuity added: `armEpilogueCoverage` (must be 2), `armPassCoverage`
+(must be > 1), `armModeledReads > 0`, `rangeModeledReads == 0`.
+`eventAddr` returns `Option` so a non-`readWord` event SHRINKS the
+projected list and is caught by the length check, rather than being passed
+off as a read by a sentinel.
+
+### 5. GOTCHAS RECORDED THIS SESSION (carry forward)
+
+1. LONG `rfl` EXECUTION WITNESSES NEED `maxRecDepth` AND FAIL SELECTIVELY.
+   88-step runs reduce under the default budget; 143-271-step runs do not.
+   The error names only "maximum recursion depth", giving no hint that the
+   short fixtures in the same block are fine.  `set_option maxRecDepth
+   40000` at the section head.
+2. `simp` DOES NOT CLOSE `A + k + m = A + (k+m)` WHEN THE OFFSET CARRIES A
+   VARIABLE LENGTH.  In `crossBlockArmProgramAt_hosts` the goals
+   `A + 176 + interior.length + 1 = A + 177 + interior.length` need
+   `simp; omega`, while the interior-free ones close on `simp` alone.
+   Reaching for `omega` uniformly instead produces unused-simp warnings.
+3. `or_assoc` WAS NOT NEEDED in the 17-way `List.mem_append` flattening,
+   contrary to the M3d-3 gotcha.  A fully right-nested `++` chain already
+   produces a right-nested disjunction; the M3d-3 case had `++` groups.
+   The linter names it as unused, so follow the linter, not the gotcha.
+4. THE `Instr.FieldsFit` ABBREV-OPACITY GOTCHA STILL BITES ON ONE-LINE
+   BLOCKS.  `crossRepoint_fits` has a single `move` and the obvious
+   anonymous-constructor proof fails - `fClose`/`fRight` are abbrevs.
+   Needs `simp only [Instr.FieldsFit, fClose, fRight]` first.  (M3d-4
+   gotcha, recurring for the fifth session.)
+5. AN UNBALANCED PAREN IN A DEEPLY NESTED `++` LAYOUT REPORTS AS
+   "unexpected token" AT THE NEXT DECLARATION, not at the def.  The
+   17-segment layout is one paren per segment; count them before trusting
+   the error location.
+6. THE VALIDATOR'S `mainImpl` DO-BLOCK NOW NEEDS `set_option maxRecDepth
+   8192` at the namespace head.  Adding four phases pushed the whole
+   do-block past the default budget, and the reported error line was in
+   the MERGE phase (untouched this session), not in the new code.
+7. `lake build RMQ` STILL DOES NOT BUILD THE VALIDATOR.  Confirmed again
+   (M3d-6 gotcha 1, M3d-7 gotcha 7).
+
+### 6. VERIFICATION LEDGER (root builds, not per-file checks)
+
+`lake build RMQ` exit 0 at every commit.  At HEAD:
+
+* `lake build RMQ RMQPaper RMQExamples` -> `Build completed successfully.`
+* `lake build rmq_e1_machine_validate` -> `Build completed successfully.`
+* `lake exe rmq_e1_machine_validate` -> exit 0,
+  `RESULT: PASS (with the whole-query comparison still OPEN)`
+* `lake env lean scripts/headline_axiom_check.lean` -> exit 0
+* `git diff --check` and `git diff --check d90b062..HEAD` -> both exit 0
+* `design_decision_check.ps1 -Strict -Base d90b062` ->
+  `DESIGN-CHECK: checked 50 changed files`, exit 0
+* `claim_drift_scan.ps1` ->
+  `CLAIM-DRIFT: scan complete (739 hits, 0 strict failures)`, exit 0
+* `paper_topology_lint.ps1` ->
+  `PAPER-TOPOLOGY PASS (83 broad documentary identifiers; 49 paper
+  identifiers resolved)`, exit 0
+* hygiene `rg` over the three touched Lean files and `RMQ.lean`: no
+  matches.  No `native_decide` anywhere under `RMQ/`.
+
+`#print axioms` run AFTER a root build on all twenty-six theorems this
+session claims.  Never `sorryAx`.  The eight arm execution witnesses,
+`fringeArmProgramAt_fold_eq`, `crossLeftRange_cats`, `crossRightRange_cats`
+and both `_straight` lemmas report no axioms or only `propext`; the
+remainder report only `propext` / `Classical.choice` / `Quot.sound`.
+
+Validator figures, modeled and wall-clock kept apart: `armCases=36`,
+`armExitFailures=0`, `armReceiptFailures=0`, `armEpilogueCoverage=2`,
+`armPassCoverage=4`, `armModeledSteps=6276`, `armModeledReads=234`;
+`mutantE_segment_exitFailures=0`, `mutantE_segment_receiptFailures=36`,
+`mutantE_isReceiptOnly=true`.  `rangeCases=54` per preamble,
+`crossLeftRangeMismatches=0`, `crossRightRangeMismatches=0`,
+`rangeModeledReads=0`; `mutantF_blockEnd_exitFailures=0`,
+`mutantF_blockEnd_mismatches=33`.  Wall clock on this host, NOT evidence:
+`armWallClockMs=10`, `armMutationWallClockMs=27`, `rangeWallClockMs=1`,
+`rangeMutationWallClockMs=0`.  All pre-existing phases unchanged and still
+passing.
+
+NOTE ON `mutantF_blockEnd_mismatches=33` OF 54.  The mutation replaces
+`leftBlock + 1` by `leftBlock + leftBlock`, which COINCIDES with the
+honest value whenever `leftBlock = 1`.  21 of the 54 fixtures have
+`leftBlock = 1`, so 33 rejections is the correct count, not a partial
+failure.  A fixture set confined to the first block would have rejected
+nothing.
+
+### 7. PRE-EXISTING RED ITEMS, RECORDED NOT FIXED
+
+Both owned by `claude/a07-blocker-repairs`; neither touched.
+
+1. `lake exe rmq_succinct_classic_validate` exits 1.  THE BRIEF DESCRIBES
+   THIS AS "a stale fixture"; what is actually observed is a COMPILE-TIME
+   failure, so the executable never runs:
+   `RMQ/Validation/SuccinctClassic.lean:253:0: expression
+   singletonRepeatedEqualReadPositionsOK did not evaluate to 'true'`.
+   Last touched by `f1c8af3` (B3 M5), an ancestor of this branch's base,
+   so it is not this rung's.  Reported as a refinement, not a new defect.
+2. `lake env lean scripts/wordram_axiom_check.lean` exits 1:
+   `scripts/wordram_axiom_check.lean:197:14: error: unknown constant
+   'RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_76'`
+   - exactly as briefed.
+3. `scripts/axiom_check.lean` and `gate.ps1` NOT RUN, per the delegation.
+
+### 8. MATRIX STATUS AT YIELD
+
+All rows REQ-E1-01..11 remain OPEN.  This session closed none and weakened
+none.  Closure was impossible by construction: every row is whole-query
+scoped and the whole-query composition is downstream of the blocked
+interior leg.  Evidence added is component-level and discharges no row.
+
+Component-level evidence added: REQ-E1-01 (the arm's program form executed
+at a nonzero base on seven distinguishable paths); REQ-E1-02 (whole-arm
+and whole-cross-block-arm width certificates, the latter carrying the
+interior as a hypothesis); REQ-E1-04 (the arm's receipt checked against an
+independent read reference, and a mutation NO value check could catch);
+REQ-E1-06 (the new segments' category logs are functions or `.map
+Instr.category`, never numerals); REQ-E1-08 (independent references for
+the arm's reads and for both cross-block ranges, plus the first
+receipt-only mutation in this harness).
+
+### 9. RESUME POINT (M3d-9)
+
+NOTHING below is implemented.
+
+1. STILL BLOCKED: the interior-leg `Nat.log2` decision (M3d-3 section 2).
+   Items 2-5 are unaffected.
+2. THE ONE GENUINELY NEW CERTIFICATE THE COMPOSITION NEEDS:
+   `fringeArm_runsTo` (`E1FringeArmBlock.lean:940`) states NO register
+   preservation clause at all, and `fringeArmProgramAt_runsTo`
+   (`E1FringeArmProgram.lean:140`) inherits that gap.  The cross-block
+   composition requires the LEFT stash's `mLV` (75) and `mLP` (76) to
+   survive the interior, the right seed leg, the right range preamble and
+   the RIGHT ARM.  Both registers sit above every existing block's write
+   set, so this is a STRENGTHENING of an existing theorem (add a
+   preservation clause on the write-set complement, discharged from the
+   fold's and epilogue's existing preservation lemmas), not new
+   simulation.  DO THIS FIRST: everything in item 4 depends on it.
+3. `crossLeftRange_runsTo` / `crossRightRange_runsTo` and
+   `crossStashLeft_runsTo` / `crossStashRight_runsTo` - four straight-line
+   blocks, `RunsTo.straight` plus a `straight_eval`-style macro.  The
+   route-side obligations are
+   `(leftClose / bs + 1) * bs - leftClose =
+   blockStartOf bs (blockOfClose bs leftClose) + bs - leftClose`
+   (by unfolding plus `Nat.succ_mul`) and its right-hand analogue.  Both
+   are already VALIDATED by execution against an independent reference
+   (phase 3g), so the arithmetic is known right before the proof starts.
+4. THEN `crossBlockArmProgramAt_runsTo`, stated over `crossBlockArmSpec`
+   with the interior's `RunsTo` as a HYPOTHESIS (abstract entry/exit,
+   trace, cats, and the two-register post-condition `mMV` biased / `mMP`
+   positional per M3d-7 section 6).  Composition, but threading
+   preservation across ~370 instructions.
+5. WHOLE-QUERY GLUE, the derived all-size literal, and the amended target
+   Prop remain out of scope, all downstream of item 1.  The validator hole
+   is at `RMQ/Validation/E1MachineValidate.lean` phase 5
+   (`wholeQueryComparisonAvailable` / `wholeQueryMismatches`).
