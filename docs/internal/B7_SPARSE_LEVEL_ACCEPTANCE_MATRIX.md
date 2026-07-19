@@ -792,3 +792,27 @@ under `Global\\RMQHeavyVerification` when overlap is possible.
 are explicitly excluded from B7-R1 final acceptance. A timeout is classified as
 infrastructure/process evidence until the owned child, artifacts, and imports
 are inspected; an unchanged quiet command is never duplicated.
+
+### B7-R1 pre-implementation scope stop
+
+`REQ-B7R1-CURRENT-PUBLIC-SURFACES` remains Open and blocks implementation under
+the delegation's closed write scope. The candidate policy registers five stale
+current paths outside that scope:
+
+- `docs/PAPER_RELATED_WORK.md`;
+- `docs/PUBLICATION_STRATEGY.md`;
+- `docs/RELATED_WORK_AND_LIMITATIONS.md`;
+- `docs/ROADMAP.md`;
+- `docs/internal/RMQ_FINAL_ROADMAP.md`.
+
+They state the old current `76` algebra and/or weaker three-constructor event
+vocabulary. Correcting them is required by the exact row; removing or
+allowlisting them would weaken the registry. `docs/ADD_PROVENANCE.md` is the
+inverse discrepancy: it is in the granted write scope and contains stale
+current facts, but is absent from the registry. The exact evidence and command
+results are recorded in the B7-R1 worklog entry.
+
+Disposition: `REQ-B7R1-CURRENT-PUBLIC-SURFACES` Open, every other B7-R1 row
+Open, `COMPLETE-B7R1-EVIDENCE` Open. Coordinator authorization to add the five
+paths, or an explicit contract amendment, is required before substantive repair
+work resumes.

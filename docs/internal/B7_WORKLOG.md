@@ -2362,3 +2362,96 @@ is not claimed here for CHK-04 or for any other row.
 Nothing was weakened: no requirement text edited, no fixture removed, no
 constant asserted, no frozen identity renamed or deleted, and no dead source
 introduced.
+
+# B7-R1 repair session: governed preflight, contract freeze, and scope stop
+
+## Checkout and governance
+
+- Worker: B7-R1.
+- Requested title: `(B7-R1) Close the charged sparse-level acceptance contract`.
+- Worktree: `C:\Users\poin\.codex\worktrees\dd4a\RMQ`.
+- Exact base: `55e2b9ae3704a16129aaecc9c12f487aee5df12e`.
+- Branch: `codex/b7-charged-sparse-level-r1`.
+- Governance: `bd854edaa65944d5a7fa0fac5667e9572c370bbb`.
+- `scripts/project_skill_preflight.ps1` with required
+  `rmq-proof-sprint` and runtime skills `rmq-audit-prompt`,
+  `rmq-coordinator`, `rmq-proof-sprint`: exit 0 in 8.5s.
+
+The append-only B7-R1 contract and verification ledger were frozen before any
+repair implementation and committed as `197a3f7`. No Lean, trust, harness,
+hygiene-artifact, public-surface, design-decision, or workflow-decision repair
+was made after the freeze, because the current-surface inventory exposed a
+closed-write-scope dependency.
+
+## Blocking dependency: five registered current surfaces are out of scope
+
+`docs/internal/CLAIM_DRIFT_POLICY.json` version 18 registers 18 current fact
+surfaces through `currentFactSurfacePathRegex`. Five registered files outside
+the B7-R1 closed write list contain stale current B7 facts and require edits:
+
+- `docs/PAPER_RELATED_WORK.md:102-107`: current canonical charged-trace bound
+  `76`.
+- `docs/PUBLICATION_STRATEGY.md:66-71`, `:122-127`, and `:151-155`: current
+  canonical `76` story.
+- `docs/RELATED_WORK_AND_LIMITATIONS.md:55-64`: current `76` bound and
+  component-minimality wording.
+- `docs/ROADMAP.md:74-79`: current algebra
+  `2*13 + (2*4 + 2*4 + 30) + 4 = 76` and weaker three-constructor event
+  vocabulary.
+- `docs/internal/RMQ_FINAL_ROADMAP.md:199-217`: current U3 `76` and weaker
+  three-constructor vocabulary.
+
+The frozen B7-R1 requirement says every surface registered by the candidate
+policy must state the checked current facts, including the exact `210` algebra
+and the separate strong public `readWord`-only theorem identity. Removing these
+paths from the registry, allowlisting their current prose, or treating a green
+scanner as a substitute for correcting the statements would weaken or evade
+the contract. The delegation explicitly says to stop on a genuinely new
+required path outside the closed transitive write list. Coordinator authority
+is therefore required to add these five paths (or to amend the semantic
+contract) before implementation may continue.
+
+The inventory also found the inverse registry gap:
+`docs/ADD_PROVENANCE.md` is explicitly in B7-R1 write scope but absent from the
+current-surface regex. It contains stale `20-source` and global-position
+`0`/`12` prose. On an authorized continuation it should join the current
+registry, with exact frozen-history treatment for historical material.
+
+## Read-only diagnostics and resume leads
+
+- `powershell -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1
+  -Strict`: exit 1 in 11.1s with 55 strict failures. Among the failures are
+  stale current costs, source counts, positions, weaker vocabulary, and missing
+  strong-theorem attributions. This was a development diagnosis, not final-tree
+  evidence.
+- `lake build
+  RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory`:
+  exit 0 in 353.3s after the fresh worktree lacked module artifacts. The live
+  child was inspected while quiet and was advancing through prerequisites; no
+  duplicate was launched. This is cache warm-up only, not acceptance evidence.
+- A read-only theorem audit found a plausible exact reachable witness for the
+  missing tightness proof: the right-spine shape of size `3469`, list query
+  `[1704,3469)`, and accepted interior `(startBlock,count)=(143,146)`, which
+  dispatches to cross-macro parameters `(0,143,1,1)`. The proposed proof must
+  still be kernel checked on the canonical store-backed structural trace before
+  it can evidence `cost = 33` and `not (cost <= 30)`.
+- A read-only gate audit reproduced 66 committed-range whitespace failures, all
+  in `docs/internal/B7_STEP2_WIP.patch`; naïve whitespace stripping corrupts
+  the patch. The repair lead is to regenerate the exact
+  `65c6ab3..c45e62c` nine-file artifact as a replayable zero-context diff and
+  validate it in an exact scratch tree, or truthfully retire it.
+- `scripts/wordram_axiom_check.lean:197` names the removed
+  `...nonSyntheticWeight_sum_le_76`; the live coverage replacement is
+  `...nonSyntheticWeight_sum_le_210`, while the generic principled theorem at
+  line 196 remains.
+- The current 21-window cost harness has no exact stable-ID registry or focused
+  selector. Its empty recursive base returns true, so an eventual filtered
+  zero-case selection would pass vacuously unless validation is added.
+
+## Stop disposition
+
+Status is BLOCKED on write-scope authority, not on proof difficulty or a failed
+semantic target. The branch remains a clean checkpoint containing only the
+pre-implementation contract freeze and this durable stop record. No original
+B7 row or B7-R1 row is claimed complete, no coordinator acceptance is claimed,
+and no roadmap closure is claimed.
