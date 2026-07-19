@@ -12,11 +12,9 @@ substrate used by the query components. A `TraceResult` contains a value and an
 ordered event list; `TraceResult.toCosted` assigns cost equal to the event-list
 length.
 
-The canonical whole-query trace emits only:
-
-- `readWord` for an attempted indexed payload-word read;
-- `wordRank` for a word-local rank primitive; and
-- `wordSelect` for a word-local select primitive.
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` proves
+that the canonical whole-query trace emits only `readWord` events for attempted
+indexed payload-word reads.
 
 The compatibility constructor `syntheticCostOnlyPrimitive` exists in the trace
 datatype, but the canonical execution proves that it is absent.
@@ -46,8 +44,8 @@ producing instruction occurrence and prefix-folded state, then to its
 component-local occurrence, invocation parameters, source, and global offset.
 The source manifest is exhaustive for the canonical payload. Separate
 nonvacuity theorems witness every counted source and shared-BP consumer in some
-valid closed whole-query execution, while a fresh unused segment is rejected
-by the same operational relation.
+valid closed whole-query execution, while fresh segment `23` is rejected by
+the same operational relation and live segment `21` is the fringe chunk table.
 
 This is stronger than event-value membership or a category-only label: the
 evidence is attached to the indexed occurrence that was actually emitted.
@@ -87,8 +85,10 @@ The same execution proves:
 
 The construction-facing theorem
 `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
-joins these facts to payload size, physical erasure, read backing, and exact
-query semantics.
+joins items 2–5 and its own explicit three-constructor event classification to
+payload size, physical erasure, read backing, and exact query semantics. The
+separate strong theorem in item 1 strengthens that exact same trace; the
+capstone's own checked type does not contain the readWord-only conjunct.
 
 ## Uncharged Boundary
 

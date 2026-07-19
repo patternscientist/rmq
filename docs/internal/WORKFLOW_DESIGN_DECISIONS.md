@@ -3476,6 +3476,37 @@ This is workflow infrastructure only. It preserves versioned role policy while
 preventing unrelated skill injection from becoming false evidence that a proof
 worker is unqualified to run its assigned theorem campaign.
 
+## WDD-20260718-004: update the aggregate-gate topology comment without changing the gate
+
+Status: Accepted.
+Date: 2026-07-18.
+Scope: the topology description in `scripts/gate.ps1` only.
+
+Decision:
+
+Update the stale physical-payload/76 topology comment to describe the live
+canonical reviewer-payload, `readWord`-only, derived-207 topology.  This is a
+comment-only correction: it changes no workflow command, command ordering,
+failure condition, mutex handling, gate semantics, or executable behavior.
+
+Rejected alternatives:
+
+- Leave the stale comment in place, which would continue to misdescribe the
+  checks performed by the unchanged gate.
+- Change a checker or executable command together with the prose correction;
+  no behavioral change is required for this repair.
+
+Consequences:
+
+- Readers see the topology that the existing gate already checks.
+- Gate scheduling, execution, and verdicts are unchanged.
+
+Evidence:
+
+- The committed-range diff of `scripts/gate.ps1` changes only the topology
+  comment.
+- `scripts/design_decision_check.ps1 -Strict -Base
+  6155d48dde13dfc8e4b3da108b4b81e258300b86` checks this decision record.
 ## WDD-20260718-005: strict drift policy separates live claims from frozen history
 
 Status: Accepted.
@@ -3605,6 +3636,34 @@ Publication-facing significance:
 This is workflow infrastructure. It prevents a mechanically predictable scope
 block from interrupting a submission-hardening repair while preserving the
 same strict audit trail for aggregate-gate changes.
+
+## WDD-20260719-001: treat R1-R2 as public-claim synchronization, not roadmap change
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: live current documentation, `docs/internal/RMQ_FINAL_ROADMAP.md`, and
+the R1-R2 evidence ledger.
+
+Decision:
+
+The R1-R2 documentation repair synchronizes reviewer-facing descriptions to
+already-checked R1-R1 source facts. Updating the workflow-sensitive final
+roadmap is not a roadmap dependency, acceptance, workflow-command, command-
+ordering, gate-semantics, or executable-behavior change.
+
+Rejected alternatives:
+
+- Leave the live roadmap stale because it is workflow-sensitive.
+- Treat the prose repair as coordinator acceptance or a new roadmap node.
+- Edit historical roadmap/audit chronology to remove old facts.
+
+Consequences and evidence:
+
+- The roadmap remains an accurate current reader surface without changing its
+  dependency graph or acceptance ownership.
+- Coordinator exact-commit re-audit remains required.
+- The strict claim scan, topology lint, strict decision check, and committed
+  range audit record this limited workflow disposition.
 
 ## WDD-20260719-002: derive exhaustive current-claim repair scope from one registry
 

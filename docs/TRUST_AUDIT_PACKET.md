@@ -13,7 +13,13 @@ The construction-facing anchor is:
 RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile
 ```
 
-Its checked type joins one canonical reviewer payload and one canonical global
+The stronger event-vocabulary anchor on the exact same trace is:
+
+```lean
+RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly
+```
+
+The construction capstone's checked type joins one canonical reviewer payload and one canonical global
 trace. For every valid half-open query over a Cartesian shape, it packages:
 
 - payload length at most `2*n + overhead n`, with `overhead = o(n)`;
@@ -24,6 +30,10 @@ trace. For every valid half-open query over a Cartesian shape, it packages:
 - certificate weight equal to trace length and the same `Costed.cost`;
 - uniform charged-trace cost at most `210`; and
 - the exact leftmost RMQ answer.
+
+The separate strong anchor proves universally on that same canonical trace
+that every emitted event satisfies `isReadWord`; this stronger conjunct is not
+part of the construction capstone's own checked type.
 
 The ordinary-list endpoint is:
 

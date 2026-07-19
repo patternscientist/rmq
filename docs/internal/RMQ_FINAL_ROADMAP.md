@@ -127,8 +127,8 @@ and the fresh blind A04 audit recorded at
 `f5c2ab03a064e56f90a17574041cd116568416d8` on 2026-07-14.
 
 Every size uses `RelativeRmm.canonicalLayout` and the same close/LCA reviewer
-route. One exhaustive typed 22-source universe (23 logical segments;
-segments `0` and `19` share the BP-code source) includes canonical close
+route. One exhaustive typed universe has 22 physical sources over logical
+segments `0..22`; segments `0` and `19` share the BP-code source. It includes canonical close
 and the B2/B3 fringe/select chunk-table sources.
 For every indexed read, W19 retains the same global occurrence, program
 instruction occurrence, folded prefix state, component-local position, exact

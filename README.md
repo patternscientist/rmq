@@ -205,8 +205,9 @@ At a high level, the repository currently includes:
   most `2*n + o(n)` and constant modeled query cost;
 - an interpreter-backed final succinct RMQ query surface whose all-size
   execution story emits one global `WordRAM.TraceEvent` stream; every event is
-  either a payload read or a bounded word primitive, and every read is checked
-  against one concrete payload store;
+  a payload `readWord`, as checked by
+  `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`, and
+  every read agrees with one concrete payload store;
 - a standalone rank/select spoke with public Jacobson/Clark-style profiles, a
   concrete fixed-weight compressed/FID capstone family surface, and an
   interpreter-backed replay of that compressed/FID query path; and
@@ -224,7 +225,17 @@ about Lean's executable `List` runtime.
 The space statements count payload bits separately from proof-only fields and
 certificates. The succinct RMQ theorem counts the balanced-parentheses shape
 payload plus `o(n)` auxiliary payload; proof objects that certify correctness
-are not counted as data-structure storage.
+are not counted as data-structure storage. Its physical-erasure equality is an
+exact equality of flattened payload **bit contents** with the public payload.
+Empty sentinel cells and unused per-cell padding are not payload bits and are
+not charged by that theorem; it does not claim a bound on allocated cells or
+their padded capacity.
+
+`scripts/paper_topology_lint.ps1` checks the identifier topology of the paper
+surface: required theorem names resolve and the curated composition anchors are
+present. It does not interpret prose numeric values. Numeric prose therefore
+requires separate source review and claim-drift checks; the lint alone cannot
+detect a stale component constant, source count, or segment number.
 
 For the trust base, non-claims, and exact verification commands, see
 [`docs/TRUST_BASE.md`](docs/TRUST_BASE.md) and

@@ -104,6 +104,7 @@ RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReads
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength
+RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly
 RMQ.Headlines.succinctRMQQueryCostEq
 RMQ.Headlines.succinctRMQChargedTraceCostAlgebra
 RMQ.Headlines.succinctRMQPrincipledAllSizeChargedTraceFinalFullModelCostLeOfFootprintGlobal
@@ -127,7 +128,7 @@ RMQ.Headlines.succinctRMQReviewerPhysicalFootprintAddressFits
 ```
 
 These are the reviewer-facing anchors for what the modeled constant query
-means. They package the existing final trace facts: `Costed` equals
+means. Collectively they package the existing final trace facts: `Costed` equals
 `TraceResult.toCosted`, the trace refines the interpreted whole-query program,
 the fixed modeled cost bound holds, reads match the global store, event data
 are bounded, no synthetic cost-only

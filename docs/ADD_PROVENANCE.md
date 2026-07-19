@@ -37,7 +37,10 @@ repaired the folded-state event-value layer, but audit found that equal events
 could collapse, invocation parameters were erased, and positive component
 may-read used a weaker predicate than the fresh-source mutation. W19 follows
 one global `getElem?` occurrence through its program instruction, folded state,
-component-local position, exact invocation, source, and offset. Symbolic
+component-local position, exact invocation, source, and offset. The subsequent
+charged-table campaign extended the live manifest to 22 physical sources:
+segment `21` is now the live counted fringe chunk table, and fresh segment `23`
+is the checked rejected mutation. Symbolic
 closed-valid witnesses cover the large long-super and sparse-local sources;
 small witnesses cover the remaining sources and all shared-BP consumers. A
 historical common claim relation accepts successful sources and rejects fresh

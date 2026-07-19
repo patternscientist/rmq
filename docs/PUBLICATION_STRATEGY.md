@@ -151,7 +151,7 @@ Landed on `main` since this document was written (through `3f6f1e3`):
 - **Historical cost-regime split:** detailed earlier cost and dispatch
   chronology is quarantined in the explicit compatibility history. The
   canonical reviewer route is uniform; the current theorem gives the checked charged-trace cap
-  `76`, while E1 fully charged controller simulation remains.
+  `207`, while E1 fully charged controller simulation remains.
 
 Remaining, in priority order: **paper/artifact packaging; novelty search;
 extraction + benchmarks; E1 fully charged simulation.**

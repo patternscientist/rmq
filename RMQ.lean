@@ -32,6 +32,7 @@ import RMQ.Core.WordRAM.E1FringeArmBlock
 import RMQ.Core.WordRAM.E1SameBlockArm
 import RMQ.Core.WordRAM.E1SameBlockLeg
 import RMQ.Core.GenericSelect.RAMStoreParam
+import RMQ.Core.GenericSelectBPCompat
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeTableFacts
@@ -47,6 +48,7 @@ import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedRankSelectWiring
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedTableRegime
 import RMQ.Core.SuccinctFinalStoreParam
 import RMQ.Core.SuccinctFinal.RAM.ChargePolicyDependency
+import RMQ.Core.SuccinctFinal.RAM.AnswerValueDependency
 import RMQ.Core.SuccinctFinalModelAdequacy
 import RMQ.Core.SuccinctRankSelect
 import RMQ.Core.BPCloseNavigation
@@ -75,3 +77,4 @@ import RMQ.Impl.LCACost
 import RMQ.Impl.LCAFischerHeun
 import RMQ.Impl.Equivalence
 import RMQ.Headlines
+import RMQUnionFind

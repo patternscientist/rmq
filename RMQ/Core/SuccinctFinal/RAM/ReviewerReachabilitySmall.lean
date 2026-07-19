@@ -1732,6 +1732,26 @@ private theorem reviewerSingleton_lca_value :
   have hvalue := congrArg Costed.value href
   exact hvalue.trans hinterpreted
 
+private def reviewerSingletonBeforeLCA : WholeQueryProgram :=
+  [ WholeQueryInstr.selectClose .leftClose .inputLeft
+  , WholeQueryInstr.selectClose .rightClose
+      (.sub .inputRight (.const 1))
+  ]
+
+private def reviewerSingletonBeforeLCAState : WholeQueryState :=
+  (WholeQueryProgram.evalGlobalWordTrace
+    (Cartesian.shape reviewerSingletonInput) 0 1 reviewerSingletonBeforeLCA
+    WholeQueryState.empty).value
+
+private theorem reviewerSingletonBeforeLCAState_closes :
+    reviewerSingletonBeforeLCAState.opt .leftClose = some 1 ∧
+      reviewerSingletonBeforeLCAState.opt .rightClose = some 1 := by
+  simp [reviewerSingletonBeforeLCAState, reviewerSingletonBeforeLCA,
+    WholeQueryProgram.evalGlobalWordTrace,
+    WholeQueryInstr.evalGlobalWordTrace, WholeQueryNatExpr.eval,
+    reviewerSingleton_select_value, WholeQueryState.empty,
+    WholeQueryState.setOpt, WholeQueryState.opt]
+
 private def reviewerSingletonBeforeRank : WholeQueryProgram :=
   [ WholeQueryInstr.selectClose .leftClose .inputLeft
   , WholeQueryInstr.selectClose .rightClose
@@ -2838,7 +2858,218 @@ private theorem reviewerSingleton_selectComponent_trace_length :
         data.bitWords 1 0 0).cost) = 15
   rw [reviewerSingleton_denseLeaf_cost_eq_seven]
 
-/--
+/-- A complete occurrence receipt whose producing instruction position is an
+explicit parameter instead of an existential hidden inside the receipt. -/
+def ReviewerReadOccurrenceReceiptAtInstruction
+    (shape : Cartesian.CartesianShape)
+    (left right globalPos instrPos segment index : Nat)
+    (word? : Option WordRAM.Word) : Prop :=
+  ∃ source : ReviewerSource,
+  ∃ instr : WholeQueryInstr,
+  ∃ preState : WholeQueryState,
+  ∃ localPos : Nat,
+  ∃ invocation : ReviewerReadInvocation,
+    WholeQueryProgram.ProducesEventAt shape left right
+      (.readWord segment index word?)
+      concreteBPNativeSuccinctRMQWholeQueryProgram WholeQueryState.empty
+      globalPos instrPos instr preState localPos ∧
+    concreteBPNativeSuccinctRMQReviewerSegmentSource? segment =
+      some source ∧
+    concreteBPNativeSuccinctRMQReviewerSegmentRegion? segment =
+      some source.region ∧
+    instr.InvokesReviewerRead left right preState invocation ∧
+    (invocation.componentTrace shape)[localPos]? =
+      some (.readWord segment index word?) ∧
+    ReviewerProducerReadPath shape invocation.leaf segment index word? ∧
+    source.Counted
+
+private theorem reviewerReadOccurrenceReceiptAtInstruction_of_producer
+    {shape : Cartesian.CartesianShape}
+    {left right globalPos instrPos segment index : Nat}
+    {word? : Option WordRAM.Word}
+    {instr : WholeQueryInstr} {preState : WholeQueryState} {localPos : Nat}
+    (hproducer :
+      WholeQueryProgram.ProducesEventAt shape left right
+        (.readWord segment index word?)
+        concreteBPNativeSuccinctRMQWholeQueryProgram WholeQueryState.empty
+        globalPos instrPos instr preState localPos) :
+    ReviewerReadOccurrenceReceiptAtInstruction shape left right globalPos
+      instrPos segment index word? := by
+  have hglobalGet := hproducer.global_getElem
+  rcases hproducer with
+    ⟨before, after, hprogram, hinstrPos, hpreState, hglobalPos, hlocalGet⟩
+  rcases WholeQueryInstr.evalGlobalWordTrace_getElem?_read_invocation
+      shape left right instr preState localPos segment index word? hlocalGet with
+    ⟨invocation, hinvocation, hinvocationGet⟩
+  have hmem : WordRAM.TraceEvent.readWord segment index word? ∈
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace := by
+    apply List.mem_of_getElem?
+    simpa [concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult] using
+      hglobalGet
+  have hsegment : segment < 23 :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_segment_lt
+      shape left right hmem
+  rcases (concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage segment).2
+      hsegment with ⟨source, hsource⟩
+  have hregion :
+      concreteBPNativeSuccinctRMQReviewerSegmentRegion? segment =
+        some source.region := by
+    simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?, hsource]
+  rcases WholeQueryInstr.evalGlobalWordTrace_read_producer_path
+      shape left right instr preState (List.mem_of_getElem? hlocalGet) with
+    ⟨leaf, hleaf, hpath⟩
+  have hinvocationLeaf := hinvocation.reviewerReadLeaf?_eq
+  have hleafEq : leaf = invocation.leaf := by
+    rw [hleaf] at hinvocationLeaf
+    exact Option.some.inj hinvocationLeaf
+  subst leaf
+  refine ⟨source, instr, preState, localPos, invocation,
+    ⟨before, after, hprogram, hinstrPos, hpreState, hglobalPos, hlocalGet⟩,
+    hsource, hregion, hinvocation, hinvocationGet, hpath, ?_⟩
+  exact concreteBPNativeSuccinctRMQReviewerSegmentSource_counted hsource
+
+/- A valid singleton whole query reaches the charged SAME-BLOCK LCA arm and
+emits an indexed segment-21 read. The same local position is exhibited both
+in the LCA invocation trace and in the charged same-block decoded subtrace,
+and global instruction position `2` carries the complete occurrence receipt. -/
+theorem concreteBPNativeSuccinctRMQSingleton_sameBlockFringeChunk_indexed_occurrence_receipt :
+    ∃ xs : List Int,
+    ∃ globalPos localPos index : Nat,
+    ∃ word : WordRAM.Word,
+    ∃ preState : WholeQueryState,
+      ValidRange xs 0 1 ∧
+      preState =
+        (WholeQueryProgram.evalGlobalWordTrace (Cartesian.shape xs) 0 1
+          (concreteBPNativeSuccinctRMQWholeQueryProgram.take 2)
+          WholeQueryState.empty).value ∧
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (Cartesian.shape xs) 0 1).trace[globalPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word)) ∧
+      ReviewerReadOccurrenceReceipt (Cartesian.shape xs) 0 1 globalPos
+        concreteBPNativeFringeChunkTraceSegment index (some word) ∧
+      ReviewerReadOccurrenceReceiptAtInstruction (Cartesian.shape xs)
+        0 1 globalPos 2 concreteBPNativeFringeChunkTraceSegment index
+        (some word) ∧
+      WholeQueryProgram.ProducesEventAt (Cartesian.shape xs) 0 1
+        (.readWord concreteBPNativeFringeChunkTraceSegment index (some word))
+        concreteBPNativeSuccinctRMQWholeQueryProgram WholeQueryState.empty
+        globalPos 2
+        (WholeQueryInstr.lcaClose .answerClose .leftClose .rightClose)
+        preState localPos ∧
+      globalPos =
+        (WholeQueryProgram.evalGlobalWordTrace (Cartesian.shape xs) 0 1
+          (concreteBPNativeSuccinctRMQWholeQueryProgram.take 2)
+          WholeQueryState.empty).trace.length + localPos ∧
+      WholeQueryInstr.InvokesReviewerRead 0 1 preState
+        (WholeQueryInstr.lcaClose .answerClose .leftClose .rightClose)
+        (.canonicalClose 1 1) ∧
+      ((.canonicalClose 1 1 : ReviewerReadInvocation).componentTrace
+        (Cartesian.shape xs))[localPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word)) ∧
+      (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+        (Cartesian.shape xs) 1 1).trace[localPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word)) ∧
+      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment
+        (Cartesian.shape xs)
+        (concreteBPNativeRankCloseWordTraceResultAtSegment
+          (Cartesian.shape xs) concreteBPNativeRankCloseTraceSegmentBase)
+        concreteBPNativeFringeChunkTraceSegment
+        (SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw
+          (Cartesian.shape xs)) 1 1).trace[localPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word)) := by
+  let shape := Cartesian.shape reviewerSingletonInput
+  let rankTrace := concreteBPNativeRankCloseWordTraceResultAtSegment
+    shape concreteBPNativeRankCloseTraceSegmentBase
+  let blockSize :=
+    SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+  rcases
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_fringe_successful_mayRead
+        shape rankTrace concreteBPNativeFringeChunkTraceSegment
+        blockSize 1 1 with
+    ⟨index, word, hsameMem⟩
+  rcases List.mem_iff_getElem?.mp hsameMem with ⟨localPos, hsameGet⟩
+  have hcomponentGet :
+      (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+        shape 1 1).trace[localPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word)) := by
+    have hsame :
+        SuccinctClose.blockOfClose blockSize 1 =
+          SuccinctClose.blockOfClose blockSize 1 := rfl
+    unfold concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+    unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural
+    simp only [hsame, if_pos]
+    simpa [rankTrace, blockSize] using hsameGet
+  have hcloses := reviewerSingletonBeforeLCAState_closes
+  have hlocal :
+      ((WholeQueryInstr.lcaClose .answerClose .leftClose
+        .rightClose).evalGlobalWordTrace shape 0 1
+          reviewerSingletonBeforeLCAState).trace[localPos]? =
+        some (.readWord concreteBPNativeFringeChunkTraceSegment index
+          (some word)) := by
+    simpa [WholeQueryInstr.evalGlobalWordTrace, hcloses.1, hcloses.2] using
+      hcomponentGet
+  let globalPos :=
+    (WholeQueryProgram.evalGlobalWordTrace shape 0 1
+      reviewerSingletonBeforeLCA WholeQueryState.empty).trace.length + localPos
+  have hprogram : concreteBPNativeSuccinctRMQWholeQueryProgram =
+      reviewerSingletonBeforeLCA ++
+        WholeQueryInstr.lcaClose .answerClose .leftClose .rightClose ::
+          [ WholeQueryInstr.rankCloseIfSome .closeRank .answerClose
+              (.add (.optNatD .answerClose 0) (.const 1))
+          , WholeQueryInstr.outputPredIfSome .output .answerClose .closeRank
+          ] := rfl
+  have hproducer :
+      WholeQueryProgram.ProducesEventAt shape 0 1
+        (.readWord concreteBPNativeFringeChunkTraceSegment index (some word))
+        concreteBPNativeSuccinctRMQWholeQueryProgram WholeQueryState.empty
+        globalPos 2
+        (WholeQueryInstr.lcaClose .answerClose .leftClose .rightClose)
+        reviewerSingletonBeforeLCAState localPos := by
+    refine ⟨reviewerSingletonBeforeLCA,
+      [ WholeQueryInstr.rankCloseIfSome .closeRank .answerClose
+          (.add (.optNatD .answerClose 0) (.const 1))
+      , WholeQueryInstr.outputPredIfSome .output .answerClose .closeRank
+      ], hprogram, ?_, ?_, ?_, hlocal⟩
+    · decide
+    · rfl
+    · rfl
+  have hglobalGet :
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape 0 1).trace[globalPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word)) := by
+    simpa [concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult] using
+      hproducer.global_getElem
+  have hinvocation :
+      WholeQueryInstr.InvokesReviewerRead 0 1 reviewerSingletonBeforeLCAState
+        (WholeQueryInstr.lcaClose .answerClose .leftClose .rightClose)
+        (.canonicalClose 1 1) := by
+    exact WholeQueryInstr.InvokesReviewerRead.canonicalClose
+      .answerClose .leftClose .rightClose 1 1 hcloses.1 hcloses.2
+  have hinvocationGet :
+      ((.canonicalClose 1 1 : ReviewerReadInvocation).componentTrace
+        shape)[localPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word)) := by
+    simpa [ReviewerReadInvocation.componentTrace] using hcomponentGet
+  refine ⟨reviewerSingletonInput, globalPos, localPos, index, word,
+    reviewerSingletonBeforeLCAState,
+    by simp [ValidRange, reviewerSingletonInput], ?_, hglobalGet,
+    concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked
+      shape 0 1 hglobalGet,
+    reviewerReadOccurrenceReceiptAtInstruction_of_producer hproducer,
+    hproducer, ?_, hinvocation, hinvocationGet, hcomponentGet, ?_⟩
+  · rfl
+  · rfl
+  simpa [shape, rankTrace, blockSize] using hsameGet
+
+/-
 The singleton query at `left = 0`, `right = 1` runs its two select-close
 instructions at the SAME component index `0` (the second instruction's
 expression `right - 1 = 0` reads no state registers), so any successful
@@ -2850,8 +3081,8 @@ private theorem reviewerSingleton_selectComponent_repeated_receipts
     (hmem : .readWord segment index (some word) ∈
       (concreteBPNativeSelectCloseGlobalWordTraceResult
         (Cartesian.shape reviewerSingletonInput) 0).trace) :
-    ∃ firstPos secondPos : Nat,
-      firstPos ≠ secondPos ∧
+    ∃ firstPos secondPos instrPos1 instrPos2 : Nat,
+      instrPos1 ≠ instrPos2 ∧ firstPos ≠ secondPos ∧
       (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
         (Cartesian.shape reviewerSingletonInput) 0 1).trace[firstPos]? =
           some (.readWord segment index (some word)) ∧
@@ -2861,7 +3092,13 @@ private theorem reviewerSingleton_selectComponent_repeated_receipts
       ReviewerReadOccurrenceReceipt (Cartesian.shape reviewerSingletonInput)
         0 1 firstPos segment index (some word) ∧
       ReviewerReadOccurrenceReceipt (Cartesian.shape reviewerSingletonInput)
-        0 1 secondPos segment index (some word) := by
+        0 1 secondPos segment index (some word) ∧
+      ReviewerReadOccurrenceReceiptAtInstruction
+        (Cartesian.shape reviewerSingletonInput) 0 1 firstPos instrPos1
+        segment index (some word) ∧
+      ReviewerReadOccurrenceReceiptAtInstruction
+        (Cartesian.shape reviewerSingletonInput) 0 1 secondPos instrPos2
+        segment index (some word) := by
   rcases List.mem_iff_getElem?.mp hmem with ⟨p, hcompGet⟩
   have hprogram1 : concreteBPNativeSuccinctRMQWholeQueryProgram =
       [] ++ WholeQueryInstr.selectClose .leftClose .inputLeft ::
@@ -2983,11 +3220,13 @@ private theorem reviewerSingleton_selectComponent_repeated_receipts
       (Cartesian.shape reviewerSingletonInput) 0 1
       [WholeQueryInstr.selectClose .leftClose .inputLeft]
       WholeQueryState.empty).trace.length + p,
-    hne, hget1, hget2,
+    0, 1, by omega, hne, hget1, hget2,
     concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked
       (Cartesian.shape reviewerSingletonInput) 0 1 hget1,
     concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked
-      (Cartesian.shape reviewerSingletonInput) 0 1 hget2⟩
+      (Cartesian.shape reviewerSingletonInput) 0 1 hget2,
+    reviewerReadOccurrenceReceiptAtInstruction_of_producer hproducer1,
+    reviewerReadOccurrenceReceiptAtInstruction_of_producer hproducer2⟩
 
 /--
 The actual singleton whole-query execution repeats its first successful
@@ -3179,7 +3418,8 @@ theorem concreteBPNativeSuccinctRMQSelectChunk_repeated_equal_read_distinct_rece
   rcases reviewerSingleton_selectChunkTable_successful_read with
     ⟨index, word, hmem⟩
   rcases reviewerSingleton_selectComponent_repeated_receipts hmem with
-    ⟨firstPos, secondPos, hne, hfirst, hsecond, hreceipt1, hreceipt2⟩
+    ⟨firstPos, secondPos, _instrPos1, _instrPos2, _hinstrNe, hne,
+      hfirst, hsecond, hreceipt1, hreceipt2, _hat1, _hat2⟩
   exact ⟨reviewerSingletonInput, 0, 1, firstPos, secondPos, index, word,
     by simp [ValidRange, reviewerSingletonInput], hne, hfirst, hsecond,
     hreceipt1, hreceipt2⟩
@@ -3210,10 +3450,75 @@ theorem concreteBPNativeSuccinctRMQFringeChunk_repeated_equal_read_distinct_rece
   rcases reviewerSingleton_selectClose_fringeChunk_successful_read with
     ⟨index, word, hmem⟩
   rcases reviewerSingleton_selectComponent_repeated_receipts hmem with
-    ⟨firstPos, secondPos, hne, hfirst, hsecond, hreceipt1, hreceipt2⟩
+    ⟨firstPos, secondPos, _instrPos1, _instrPos2, _hinstrNe, hne,
+      hfirst, hsecond, hreceipt1, hreceipt2, _hat1, _hat2⟩
   exact ⟨reviewerSingletonInput, 0, 1, firstPos, secondPos, index, word,
     by simp [ValidRange, reviewerSingletonInput], hne, hfirst, hsecond,
     hreceipt1, hreceipt2⟩
+
+/-- The repeated singleton select-table read is produced by two distinct
+program-instruction positions, not merely emitted at two distinct trace
+positions.  Each explicit instruction position carries a complete receipt. -/
+theorem concreteBPNativeSuccinctRMQSelectChunk_repeated_equal_read_distinct_instruction_receipts :
+    ∃ xs : List Int,
+    ∃ left right firstPos secondPos instrPos1 instrPos2 index : Nat,
+    ∃ word : WordRAM.Word,
+      ValidRange xs left right ∧
+      firstPos ≠ secondPos ∧ instrPos1 ≠ instrPos2 ∧
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (Cartesian.shape xs) left right).trace[firstPos]? =
+          some (.readWord concreteBPNativeSelectChunkTraceSegment index
+            (some word)) ∧
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (Cartesian.shape xs) left right).trace[secondPos]? =
+          some (.readWord concreteBPNativeSelectChunkTraceSegment index
+            (some word)) ∧
+      ReviewerReadOccurrenceReceiptAtInstruction (Cartesian.shape xs)
+        left right firstPos instrPos1 concreteBPNativeSelectChunkTraceSegment
+        index (some word) ∧
+      ReviewerReadOccurrenceReceiptAtInstruction (Cartesian.shape xs)
+        left right secondPos instrPos2 concreteBPNativeSelectChunkTraceSegment
+        index (some word) := by
+  rcases reviewerSingleton_selectChunkTable_successful_read with
+    ⟨index, word, hmem⟩
+  rcases reviewerSingleton_selectComponent_repeated_receipts hmem with
+    ⟨firstPos, secondPos, instrPos1, instrPos2, hinstrNe, hposNe,
+      hfirst, hsecond, _hreceipt1, _hreceipt2, hat1, hat2⟩
+  exact ⟨reviewerSingletonInput, 0, 1, firstPos, secondPos, instrPos1,
+    instrPos2, index, word, by simp [ValidRange, reviewerSingletonInput],
+    hposNe, hinstrNe, hfirst, hsecond, hat1, hat2⟩
+
+/-- The repeated singleton fringe-table read is produced by two distinct
+program-instruction positions, not merely emitted at two distinct trace
+positions.  Each explicit instruction position carries a complete receipt. -/
+theorem concreteBPNativeSuccinctRMQFringeChunk_repeated_equal_read_distinct_instruction_receipts :
+    ∃ xs : List Int,
+    ∃ left right firstPos secondPos instrPos1 instrPos2 index : Nat,
+    ∃ word : WordRAM.Word,
+      ValidRange xs left right ∧
+      firstPos ≠ secondPos ∧ instrPos1 ≠ instrPos2 ∧
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (Cartesian.shape xs) left right).trace[firstPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word)) ∧
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (Cartesian.shape xs) left right).trace[secondPos]? =
+          some (.readWord concreteBPNativeFringeChunkTraceSegment index
+            (some word)) ∧
+      ReviewerReadOccurrenceReceiptAtInstruction (Cartesian.shape xs)
+        left right firstPos instrPos1 concreteBPNativeFringeChunkTraceSegment
+        index (some word) ∧
+      ReviewerReadOccurrenceReceiptAtInstruction (Cartesian.shape xs)
+        left right secondPos instrPos2 concreteBPNativeFringeChunkTraceSegment
+        index (some word) := by
+  rcases reviewerSingleton_selectClose_fringeChunk_successful_read with
+    ⟨index, word, hmem⟩
+  rcases reviewerSingleton_selectComponent_repeated_receipts hmem with
+    ⟨firstPos, secondPos, instrPos1, instrPos2, hinstrNe, hposNe,
+      hfirst, hsecond, _hreceipt1, _hreceipt2, hat1, hat2⟩
+  exact ⟨reviewerSingletonInput, 0, 1, firstPos, secondPos, instrPos1,
+    instrPos2, index, word, by simp [ValidRange, reviewerSingletonInput],
+    hposNe, hinstrNe, hfirst, hsecond, hat1, hat2⟩
 
 private theorem reviewerIncreasing_canonical_successful_claims :
     (ReviewerProducerClaim.mk 20 .canonicalClose).HasSuccessfulClosedValidOccurrence ∧

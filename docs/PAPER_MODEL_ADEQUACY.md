@@ -67,8 +67,10 @@ complete physical `TraceResult`, including failures and repeated reads. The
 checked theorem
 `concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator`
 identifies the physical answer with the translated supplied-store evaluator at
-`.value`; a decisive singleton corruption changes the real answer from
-`some 0` to `none`, while the value-ignore mutant retains stale `some 0`.
+`.value`; a decisive singleton corruption changes only consumed logical
+segment `21`, index `3`, from the canonical five-bit LE encoding of `1` to the
+five-bit LE encoding of `4`, and changes the whole-query answer from `some 0`
+to `none`.
 Successful-read backing and returned-word bounds are
 lifted to the canonical reviewer payload and physical store. Empty, singleton,
 size-two, and symbolic threshold-boundary cases are kernel checked.
@@ -91,8 +93,19 @@ direct positional physical backing for each successful read, non-synthetic
 weight equality to trace length and `Costed.cost`, and uniform `210` bound in
 one checked type.
 
+The physical-erasure result is exact equality of the flattened payload **bit
+contents** with the canonical public payload. Empty sentinel cells and unused
+per-cell padding are outside those payload bits and are not charged by this
+space result. This is deliberately not an allocated-cell or padded-capacity
+bound.
+
 It packages existing checked theorem surfaces. It does not introduce a new
 algorithm, a new cost model, or a verified CPU/compiler semantics.
+
+The accompanying `paper_topology_lint.ps1` validates identifier topology, not
+the numeric truth of prose. It checks that named Lean anchors resolve and that
+the curated composition shape is present; it does not parse component
+constants, source counts, or segment numbers stated in paragraphs.
 
 ## Costed And TraceResult
 

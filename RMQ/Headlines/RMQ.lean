@@ -245,7 +245,8 @@ abbrev succinctRMQReviewerPhysicalSourcesNodup :=
 abbrev succinctRMQReviewerSourceRegionInjective :=
   @RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_region_injective
 
-/-- Logical segments are covered exactly through segment 20. -/
+/-- Logical segments `0..22` are covered; segments `0` and `19` share the
+BP-code physical source. -/
 abbrev succinctRMQReviewerSegmentSourceCoverage :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage
 

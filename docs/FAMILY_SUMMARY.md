@@ -390,9 +390,13 @@ cost, and size-premise chronology lives only in the explicit
 `Core.WordRAM` exposes segment-relabeling and `ReadStore` provenance helpers.
 The public headline
 alias `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` now consumes
-the all-size layout: every final query event is either a payload read or a
-bounded word primitive, and every read is checked against one concrete global
-payload store. The companion
+the all-size layout and provides a weaker supporting classification in which a
+final-query event is a payload read or bounded word primitive, while every read
+is checked against one concrete global payload store. On the same accepted
+trace, the current signature
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` proves
+that every event is `readWord`; the word-primitive alternatives admitted by
+the weaker theorem are never emitted on this route. The companion
 `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` adds a
 trace-local finite bit width proving that final payload-read addresses and
 word-primitive natural operands/results are bounded. The additional theorem
