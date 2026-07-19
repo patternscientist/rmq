@@ -877,6 +877,105 @@ theorem indexDecomp_runsTo (store : ReadStore) {program : E1Machine.Program}
       hr2, RegFile.write_other _ _ hT,
       hr1, RegFile.write_other _ _ hMacro]
 
+/-! ## `#4`'s ENTRY REGISTERS, SIMULATED
+
+Four instructions, run unconditionally before the dispatch.
+
+`#4` is entered on `tA`/`tStart`/`tN`/`tOff` (`127`-`130`) and
+`#6`/`#7`/`#8` on `uMacro`/`uLocal`/`uMid`/`uRight` (`136`-`139`) -- two
+DISJOINT banks -- so this setup can run on every path without any arm
+being able to observe another arm's entry values.  `twoLegBlock` and
+`crossLegBlock` write `127`-`130` themselves in their two `legSetup`s, so
+the combiner arms simply overwrite what this leaves.
+
+`tA = macroStart * (levelCount * macroSize)` and
+`tOff = macroStart * macroSize` are the slot base and block offset
+`twoSpanValue_local_eq_routeValue` (`E1InteriorTwoSpan.lean:1085`)
+requires; `levelSlab` is the caller's spelling of `levelCount * macroSize`.
+
+Charge log: two `arithmetic` (the `mulConst`s) and two `registerWrite`
+(the `move`s). -/
+theorem localArmSetup_runsTo (store : ReadStore)
+    {program : E1Machine.Program} {macroSize levelSlab Q : Nat}
+    (hHost : HostedAt program Q (localArmSetup macroSize levelSlab))
+    (regs : RegFile) (macroStart localStart count : Nat)
+    (hMacro : regs uMacro = macroStart) (hLocal : regs uLocal = localStart)
+    (hCount : regs wCount = count) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, Q, false⟩ ⟨regs', Q + 4, false⟩ []
+          [Category.arithmetic, Category.registerWrite,
+            Category.registerWrite, Category.arithmetic] ∧
+        regs' tA = macroStart * levelSlab ∧
+        regs' tStart = localStart ∧
+        regs' tN = count ∧
+        regs' tOff = macroStart * macroSize ∧
+        (∀ r, r ≠ tA → r ≠ tStart → r ≠ tN → r ≠ tOff →
+          regs' r = regs r) := by
+  have hf : ∀ (k m : Nat) (instr : Instr), k < 4 →
+      (localArmSetup macroSize levelSlab)[k]? = some instr → Q + k = m →
+      program[m]? = some instr := by
+    intro k m instr hk hget hm
+    rw [← hm, hHost k hk, hget]
+  have h0 : program[Q]? = some (.mulConst tA uMacro levelSlab) :=
+    hf 0 Q _ (by omega) rfl (by omega)
+  have h1 : program[Q + 1]? = some (.move tStart uLocal) :=
+    hf 1 _ _ (by omega) rfl (by omega)
+  have h2 : program[Q + 2]? = some (.move tN wCount) :=
+    hf 2 _ _ (by omega) rfl (by omega)
+  have h3 : program[Q + 3]? = some (.mulConst tOff uMacro macroSize) :=
+    hf 3 _ _ (by omega) rfl (by omega)
+  obtain ⟨r1, hr1⟩ : ∃ z : RegFile,
+      z = regs.write tA (macroStart * levelSlab) := ⟨_, rfl⟩
+  obtain ⟨r2, hr2⟩ : ∃ z : RegFile, z = r1.write tStart localStart :=
+    ⟨_, rfl⟩
+  obtain ⟨r3, hr3⟩ : ∃ z : RegFile, z = r2.write tN count := ⟨_, rfl⟩
+  obtain ⟨r4, hr4⟩ : ∃ z : RegFile,
+      z = r3.write tOff (macroStart * macroSize) := ⟨_, rfl⟩
+  have e1l : r1 uLocal = localStart := by
+    rw [hr1, RegFile.write_other _ _ (by decide), hLocal]
+  have e2c : r2 wCount = count := by
+    rw [hr2, RegFile.write_other _ _ (by decide),
+      hr1, RegFile.write_other _ _ (by decide), hCount]
+  have e3m : r3 uMacro = macroStart := by
+    rw [hr3, RegFile.write_other _ _ (by decide),
+      hr2, RegFile.write_other _ _ (by decide),
+      hr1, RegFile.write_other _ _ (by decide), hMacro]
+  have s0 : RunsTo store program ⟨regs, Q, false⟩ ⟨r1, Q + 1, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.mulConst (store := store)
+      (s := (⟨regs, Q, false⟩ : State)) rfl h0
+    simpa [hr1, hMacro] using h
+  have s1 : RunsTo store program ⟨r1, Q + 1, false⟩ ⟨r2, Q + 2, false⟩ []
+      [Category.registerWrite] := by
+    have h := RunsTo.move (store := store)
+      (s := (⟨r1, Q + 1, false⟩ : State)) rfl h1
+    simpa [hr2, e1l] using h
+  have s2 : RunsTo store program ⟨r2, Q + 2, false⟩ ⟨r3, Q + 3, false⟩ []
+      [Category.registerWrite] := by
+    have h := RunsTo.move (store := store)
+      (s := (⟨r2, Q + 2, false⟩ : State)) rfl h2
+    simpa [hr3, e2c] using h
+  have s3 : RunsTo store program ⟨r3, Q + 3, false⟩ ⟨r4, Q + 4, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.mulConst (store := store)
+      (s := (⟨r3, Q + 3, false⟩ : State)) rfl h3
+    simpa [hr4, e3m] using h
+  refine ⟨r4, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · have := (s0.trans s1).trans (s2.trans s3)
+    simpa using this
+  · rw [hr4, RegFile.write_other _ _ (by decide),
+      hr3, RegFile.write_other _ _ (by decide),
+      hr2, RegFile.write_other _ _ (by decide), hr1, RegFile.write_same]
+  · rw [hr4, RegFile.write_other _ _ (by decide),
+      hr3, RegFile.write_other _ _ (by decide), hr2, RegFile.write_same]
+  · rw [hr4, RegFile.write_other _ _ (by decide), hr3, RegFile.write_same]
+  · rw [hr4, RegFile.write_same]
+  · intro r hA hStart hN hOff
+    rw [hr4, RegFile.write_other _ _ hOff,
+      hr3, RegFile.write_other _ _ hN,
+      hr2, RegFile.write_other _ _ hStart,
+      hr1, RegFile.write_other _ _ hA]
+
 /-! ## THE SELECTOR, SIMULATED: EACH ROUTE CONDITION REACHES ITS ARM BASE
 
 Five lemmas, one per branch of
