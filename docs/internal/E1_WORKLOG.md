@@ -2367,16 +2367,21 @@ matching the route, whose `TraceResult.map` contributes no trace.
 
 Key objects (file:line exact at `e4aa8d0`):
 
-- `fClose 70` (preamble input), `fRes 69` (close result) - bank extension.
-- `windowAddr` (`:113`, 4 instructions), `windowAddrCats` (`:122`),
-  `windowAddr_fits` (`:128`), `windowAddr_straight` (`:145`),
-  `windowAddr_runsTo` (`:159`), `windowAddr_runsTo_route` (`:196`).
-- `sameBlockClose` (`:239`, 2 instructions), `sameBlockCloseCats` (`:246`),
-  `sameBlockClose_fits` (`:250`), `sameBlockClose_runsTo` (`:266`).
-- `sameBlockSeeded_trace_eq` (`:305`) - POSITIONAL `List` equality of the
+- `fRes 69` (close result, `:46`), `fClose 70` (preamble input, `:123`) -
+  bank extension.
+- `windowAddr` (`:127`, 4 instructions), `windowAddrCats` (`:137`),
+  `windowAddr_fits` (`:143`), `windowAddr_straight` (`:159`),
+  `windowAddr_runsTo` (`:174`), `windowAddr_runsTo_route` (`:211`).
+- `sameBlockClose` (`:238`, 2 instructions), `sameBlockCloseCats` (`:246`),
+  `sameBlockClose_fits` (`:249`), `sameBlockClose_runsTo` (`:265`).
+- `sameBlockSeeded_trace_eq` (`:308`) - POSITIONAL `List` equality of the
   accepted object's `.trace`.
-- `sameBlockSeeded_value_eq` (`:327`).
-- `sameBlockArm_runsTo` (`:369`) - THE WHOLE SAME-BLOCK ARM, `A -> A+97`.
+- `sameBlockSeeded_value_eq` (`:329`).
+- `sameBlockArmCats` (`:348`).
+- `sameBlockArm_runsTo` (`:373`) - THE WHOLE SAME-BLOCK ARM, `A -> A+97`.
+
+(Line numbers above re-verified against the source at final HEAD, after
+the iteration-time numbers had drifted.)
 
 Same-block arm layout at base `A` (97 instructions): prologue `A..A+20`,
 fold loop base `A+21` (exit `A+88`), global-rebase epilogue `A+88..A+94`,
