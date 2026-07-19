@@ -18,10 +18,37 @@ Campaign branch `claude/b1-b2-charged-fringe-tables`. **Get the head with
 branch's HEAD can never name the commit that updates the file, so any hash
 written here is stale by construction — it has already been wrong twice.
 
-**All eleven rows of `E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md` are Open.** They
-are whole-query scoped by deliberate design, so no interior-leg component can
-close one. Do not expect to close a row until the whole-query glue lands; do not
-weaken a row to make one closable.
+**All eleven rows of `E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md` are Open.**
+
+**CORRECTION — an earlier version of this file said "they are whole-query scoped
+by deliberate design, so no interior-leg component can close one." THAT WAS
+FALSE, and it was mine, not the matrix's.** The matrix's own `Scope` column
+reads: `01` Local, `02` Local, `03` Local+roadmap, `04` Local+roadmap, `05`
+**Local**, `06` Local, `07` Local+roadmap, `08` Local, `09` Public surface, `10`
+Process, `11` Inherited hygiene + process. Nothing says whole-query. Workers
+have been annotating rows "Does NOT discharge the row (whole-query scope)" — a
+phrase that appears nowhere in the matrix, because I put it in their briefs.
+
+**Read each row's own `Evidence needed` column and judge against THAT.** Under
+`COMPLETION_GATE.md` §1 that column is the operative acceptance test: "the exact
+proposition or check result that would entail the requirement." Three rows are
+at or near closable on evidence that already exists:
+
+- **REQ-E1-01** — every item in its Evidence-needed column and its whole
+  anti-vacuity challenge exist in `E1Machine.lean` plus DD-20260718-005. Its only
+  residual is the *Named consumer* column, which points at the REQ-E1-07 Prop
+  that does not yet exist.
+- **REQ-E1-05** — everything exists except the five words "and in the
+  validator". One validator phase running `programSkeleton` on the
+  empty/reversed/out-of-bounds fixtures closes it, and it is **independent of the
+  interior leg**: `programSkeleton_invalid_matches_public_guard`
+  (`E1QueryBridge.lean:44`) is universally quantified over `validPath`.
+- **REQ-E1-10** — matrix-first ordering verified by git ancestry (`702cfbe` is an
+  ancestor of `11b8cf9`); DD coverage present.
+
+Still true and still binding: **do not weaken a row to make it closable**, and
+do not edit frozen requirement text — append a NOTE, as M3d-11/-12/-13/-16/-17
+did.
 
 ## 2. The interior leg's ACTUAL structure
 
