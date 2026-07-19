@@ -972,6 +972,80 @@ theorem fringeArm_runsTo
   refine ⟨regsF, htrans, ?_⟩
   rw [hvalE, hbest]
 
+/-! ## Value bridges to the named accepted fringe arm objects
+
+`fringeArm_runsTo` delivers the result pair against the fold object and
+`bpFringeCandGlobal`.  These two lemmas identify that with the `.value` of
+the NAMED accepted arm objects
+`bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore` and its
+right counterpart (`ChargedFringeTrace.lean:707`/`:730`), at the route's
+own instantiation of base, start, `relLo` and `relHi`.
+-/
+
+/-- The accepted LEFT fringe arm's value, in the form the machine
+delivers it. -/
+theorem leftArm_value_eq
+    (shape : Cartesian.CartesianShape) (store : ReadStore)
+    (fringeSegment blockSize leftClose seed : Nat) :
+    (bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+        shape store fringeSegment blockSize leftClose seed).value =
+      bpFringeCandGlobal (localBPWindowBase shape blockSize leftClose)
+        seed (leftClose + 1)
+        (bpFringeChunkFoldTraceResultAtSegmentWithStore store fringeSegment
+          (bpFringeChunkBits shape.bpCode.length)
+          (windowBitsOfStore store
+            (bpWindowFirstWord shape blockSize leftClose))
+          seed
+          (leftClose + 1 - localBPWindowBase shape blockSize leftClose)
+          (leftClose + 1 +
+            (blockStartOf blockSize (blockOfClose blockSize leftClose) +
+              blockSize - leftClose) - 1 -
+            localBPWindowBase shape blockSize leftClose)
+          (Nat.min
+            ((leftClose + 1 +
+              (blockStartOf blockSize (blockOfClose blockSize leftClose) +
+                blockSize - leftClose) - 1 -
+              localBPWindowBase shape blockSize leftClose) /
+              bpFringeChunkBits shape.bpCode.length + 1) 33)).value.2 := by
+  unfold bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+  rw [<- route_windowBits_eq_windowBitsOfStore shape store blockSize
+    leftClose]
+  simp [WordRAM.TraceResult.bind, WordRAM.TraceResult.map,
+    WordRAM.TraceResult.pure]
+
+/-- The accepted RIGHT fringe arm's value, in the form the machine
+delivers it. -/
+theorem rightArm_value_eq
+    (shape : Cartesian.CartesianShape) (store : ReadStore)
+    (fringeSegment blockSize rightClose seed : Nat) :
+    (bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+        shape store fringeSegment blockSize rightClose seed).value =
+      bpFringeCandGlobal (localBPWindowBase shape blockSize rightClose)
+        seed (blockStartOf blockSize (blockOfClose blockSize rightClose))
+        (bpFringeChunkFoldTraceResultAtSegmentWithStore store fringeSegment
+          (bpFringeChunkBits shape.bpCode.length)
+          (windowBitsOfStore store
+            (bpWindowFirstWord shape blockSize rightClose))
+          seed
+          (blockStartOf blockSize (blockOfClose blockSize rightClose) -
+            localBPWindowBase shape blockSize rightClose)
+          (blockStartOf blockSize (blockOfClose blockSize rightClose) +
+            (rightClose -
+              blockStartOf blockSize (blockOfClose blockSize rightClose) + 2)
+            - 1 - localBPWindowBase shape blockSize rightClose)
+          (Nat.min
+            ((blockStartOf blockSize (blockOfClose blockSize rightClose) +
+              (rightClose -
+                blockStartOf blockSize
+                  (blockOfClose blockSize rightClose) + 2)
+              - 1 - localBPWindowBase shape blockSize rightClose) /
+              bpFringeChunkBits shape.bpCode.length + 1) 33)).value.2 := by
+  unfold bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+  rw [<- route_windowBits_eq_windowBitsOfStore shape store blockSize
+    rightClose]
+  simp [WordRAM.TraceResult.bind, WordRAM.TraceResult.map,
+    WordRAM.TraceResult.pure]
+
 end E1FringeArmBlock
 end WordRAM
 end RMQ
