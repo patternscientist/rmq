@@ -138,6 +138,10 @@ foreach ($policyCase in @(
     @{
       Name = "auto-chain-terminal-watch-retired"
       Literal = "AUTO-CHAIN-MONITOR-RETIREMENT"
+    },
+    @{
+      Name = "public-identity-consumer-inventory-required"
+      Literal = "Dependency-surface inventory"
     }
   )) {
   if (-not $coordinatorPolicy.Contains($policyCase.Literal)) {
@@ -284,6 +288,34 @@ try {
   $currentSurfaceWithRegistryLines | Set-Content -LiteralPath $currentSurfaceWithRegistry -Encoding utf8
   Invoke-Case "current-surface-sync-with-attested-policy-registry-accepted" 0 `
     $currentSurfaceWithRegistry $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
+
+  $identityWithoutConsumers = Join-Path $tempRoot "identity-without-consumers.txt"
+  $identityWithoutConsumersLines = @(Get-Content -LiteralPath $validPrompt) | ForEach-Object {
+    if ($_ -match '^- Frozen acceptance IDs:') {
+      '- Frozen acceptance IDs: REQ-B7R1-HISTORICAL-328-IDENTITY, INV-CATEGORY-SEPARATION, CHK-DIFF.'
+    } else {
+      $_
+    }
+  }
+  $identityWithoutConsumersLines += '- Restore and pin the public historical identity while separating the live bound.'
+  $identityWithoutConsumersLines | Set-Content -LiteralPath $identityWithoutConsumers -Encoding utf8
+  Invoke-Case "b7r2-public-identity-migration-without-consumer-inventory-rejected" 2 `
+    $identityWithoutConsumers $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("public-identity-migration-requires-consumer-inventory")
+
+  $identityWithConsumers = Join-Path $tempRoot "identity-with-consumers.txt"
+  $identityWithConsumersLines = @($identityWithoutConsumersLines) | ForEach-Object {
+    if ($_ -match '^- Write scope:') {
+      '- Write scope: E1 source, README.md, its matrix, and directly required checks.'
+    } else {
+      $_
+    }
+  }
+  $identityWithConsumersLines += '- Dependency-surface inventory: searched_symbols=Example.publicHistoricalIdentity; inspected_consumer_paths=README.md; expected_repair_paths=README.md'
+  $identityWithConsumersLines | Set-Content -LiteralPath $identityWithConsumers -Encoding utf8
+  Invoke-Case "public-identity-migration-with-closed-consumer-inventory-accepted" 0 `
+    $identityWithConsumers $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
 
   Invoke-Case "returning-runtime-unknown" 2 $validPrompt $governanceRef $workerBase `

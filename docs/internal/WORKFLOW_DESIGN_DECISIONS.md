@@ -3890,3 +3890,62 @@ Submission-freeze repairs cannot silently omit current reviewer surfaces merely
 because their prompts express exhaustiveness with different natural language.
 The worker receives a closed evidence surface before editing, avoiding repeated
 documentation-only repair loops and scope stops.
+
+## WDD-20260719-007: public identity migrations close their Lean consumer surface before launch
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: worker prompt preflight, transitive Lean/public write scope, and the
+B7-R2 repair chain.
+
+Decision:
+
+1. A prompt that restores, renames, splits, or migrates a public theorem or
+   historical identity must record an exact-base dependency-surface inventory:
+   searched declarations, every directly inspected tracked consumer path, and
+   expected repair paths.
+2. The inventory covers direct Lean consumers, compatibility/headline aliases,
+   validation guards, examples, and trust inventories. Every expected repair
+   path must be owned before `READY_TO_SEND`.
+3. The structural preflight rejects identity-migration prompts without this
+   inventory and rejects any declared repair path not inspected or not in write
+   scope. Semantic completeness remains coordinator-reviewed.
+
+Trigger and evidence:
+
+B7-R2 base `e23875542995ca31404567cba5b128c9271e861a` correctly closed all 18
+registered current-document surfaces but omitted four direct consumers needed
+by `REQ-B7R1-HISTORICAL-328-IDENTITY`:
+`RMQ/Core/SuccinctFinalStoreParam.lean`,
+`RMQ/Core/SuccinctFinalModelAdequacy.lean`,
+`RMQ/Headlines/RMQCompatibility.lean`, and
+`RMQ/Validation/SuccinctClassic.lean`. The worker reached a kernel-checked
+exact-cost checkpoint and then stopped with substantive uncommitted work
+because restoring the public 328 identity while separating the live 352 bound
+would otherwise leave those consumers mislabeled or ill-typed.
+
+Rejected alternatives:
+
+- Treat another clean scope stop as normal discovery.
+- Add only the four B7 paths without changing prompt policy.
+- Grant proof workers blanket repository write access.
+- Infer consumer closure from a source theorem build, which does not compile
+  separate compatibility, validation, example, or trust roots.
+
+Consequences and regression evidence:
+
+- Named regression
+  `b7r2-public-identity-migration-without-consumer-inventory-rejected`
+  reproduces the missing-inventory launch pattern.
+- Positive control
+  `public-identity-migration-with-closed-consumer-inventory-accepted` retains a
+  narrowly owned, explicitly inspected migration.
+- This changes no Lean proposition, payload, proof-only field, modeled cost,
+  trace, allocation, runtime behavior, or public mathematical fact.
+
+Publication-facing significance:
+
+Historical cost identities and live compatibility bounds must remain visibly
+different checked objects throughout the theorem, headline, example, and
+validator chain. Closing that chain before launch prevents a source-level
+repair from leaving public descendants with contradictory names or numerals.
