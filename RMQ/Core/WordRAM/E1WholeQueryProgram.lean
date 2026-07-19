@@ -368,10 +368,22 @@ answers `none` unconditionally, and the composition would fail at
 `WholeQueryMachineAgrees`'s value clause rather than anywhere near the code
 responsible.
 
-An output stage must therefore be BUILT — decode `fRes` into `regOut`'s packet
-and halt — and the valid path's length will change when it lands, which moves
-`invalidExitBlock` with it.  Stated as an executed equality so that the
-coincidence cannot drift silently. -/
+An output stage must therefore be BUILT, and the valid path's length will
+change when it lands, which moves `invalidExitBlock` with it.
+
+**THE STAGE IS BUILT BELOW (E1-LaneA5, DD-20260719-180), AND THIS THEOREM IS
+RETAINED AS THE RECORD OF WHAT THE REPAIR PREVENTS.**  It is a true statement
+about `wholeQueryValidPathThroughLca`, which is still the definition of the
+path THROUGH the close/LCA leg; the repaired path is `wholeQueryValidPath`,
+which appends `wholeQueryOutputStage` and is 64 instructions longer, so its
+exit address is no longer the leg's.  `wholeQueryValidPath_exit_is_not_invalidExit`
+is the repaired counterpart, and `wholeQueryOutputStage_runsTo` EXECUTES the
+repaired path from this very address to a halt that is not the `none`
+writer's.
+
+Retaining both is deliberate: the defect and its repair are pinned by
+theorems that would both break if the layout drifted, so neither the
+coincidence nor its absence can become silent. -/
 theorem wholeQueryValidPath_exit_is_invalidExit
     (shape : Cartesian.CartesianShape) (noneExit : Nat) :
     E1WholeQueryCloseLca.closeLcaExit 827 =
@@ -380,13 +392,247 @@ theorem wholeQueryValidPath_exit_is_invalidExit
 
 /-- The skeleton really does host `.const regOut 0; .halt` at the address the
 valid path exits to — so the fall-through above is a fact about the composed
-program, not about the arithmetic alone. -/
+program, not about the arithmetic alone.
+
+RETAINED AS THE RECORD OF THE DEFECT (E1-LaneA5).  It is stated about
+`wholeQueryValidPathThroughLca`, the path that stops at the close/LCA leg.
+Under the repaired path `wholeQueryValidPath` the same address hosts the
+output stage's first instruction instead, which
+`wholeQueryValidPath_hosts_outputStage` proves and
+`wholeQueryProgram_at_closeLcaExit_is_not_noneWriter` states as the direct
+contradiction of this theorem's conclusion. -/
 theorem wholeQueryValidPath_falls_into_noneWriter
     (shape : Cartesian.CartesianShape) (n noneExit : Nat) :
     HostedAt (programSkeleton n (wholeQueryValidPathThroughLca shape noneExit))
         (E1WholeQueryCloseLca.closeLcaExit 827) invalidExitBlock := by
   rw [wholeQueryValidPath_exit_is_invalidExit shape noneExit]
   exact programSkeleton_hosts_invalidExit n _
+
+/-! ## THE OUTPUT STAGE — THE REPAIR
+
+The stage that was missing is not "write `regOut` and halt".  The route's
+`.full` value is
+`some ((concreteBPNativeRankCloseWordTraceResultAtSegment shape … (answerClose + 1)).value - 1)`
+(`wholeQueryBranchValue`, `E1RouteDecomposition.lean:330`), so between the
+close/LCA leg's answer in `fRes` and the output packet there is a RANK LEG.
+An output stage that packaged `fRes` directly would halt at the right address
+carrying the wrong number — the same class of defect as the three address
+coincidences, one level up.
+
+    5580   rank setup      2    rPos := fRes + 1
+    5582   rank leg       60    `rankCloseBlock` at the canonical rank data
+    5642   packet write    2    regOut := rVal ; halt
+    5644   ...                  `invalidExitBlock` starts HERE, one past the halt
+
+`regOut := rVal` is exact rather than approximate, and the reason is worth
+stating: the packet convention is `decodePacket (v + 1) = some v` and the
+route's value is `rank.value - 1`, so the register that must be written is the
+rank value ITSELF — the option shift is already carried by the convention.  No
+increment and no decrement appears in the stage, and that is a consequence of
+the two conventions agreeing, not a coincidence to be checked at runtime.
+-/
+
+/-- Rank setup: the rank leg reads its position from `rPos`, and the route
+indexes the rank leg at `answerClose + 1` where `answerClose` is the close/LCA
+leg's answer in `fRes`.  Two instructions because the ISA has no
+add-immediate; the `.add` reads `rPos` in its own pre-state, where the
+preceding `.const` has left `1`. -/
+def wholeQueryRankSetup : List Instr :=
+  [ .const rPos 1
+  , .add rPos fRes rPos ]
+
+@[simp] theorem wholeQueryRankSetup_length :
+    wholeQueryRankSetup.length = 2 := rfl
+
+/-- The rank-close leg at the canonical rank data, hosted at base `B`.
+Spelled exactly as `rankCloseBlock_runsTo_canonical` (`E1RankCanonical.lean:257`)
+demands, so that its hosting hypothesis is discharged by `rfl`. -/
+def wholeQueryRankLeg (shape : Cartesian.CartesianShape) (B : Nat) :
+    List Instr :=
+  rankCloseBlock B concreteBPNativeRankCloseTraceSegmentBase
+    (bpFringeChunkBits shape.bpCode.length)
+    shape.bpCode.length
+    (builtRelativeSplitBPCloseRankData shape).wordSize
+    (builtRelativeSplitBPCloseRankData shape).blocksPerSuper
+
+@[simp] theorem wholeQueryRankLeg_length (shape : Cartesian.CartesianShape)
+    (B : Nat) : (wholeQueryRankLeg shape B).length = 60 := rfl
+
+/-- The packet write and the halt: `regOut := rVal`, then stop. -/
+def wholeQueryPacketWrite : List Instr :=
+  [ .move regOut rVal
+  , .halt ]
+
+@[simp] theorem wholeQueryPacketWrite_length :
+    wholeQueryPacketWrite.length = 2 := rfl
+
+/-- THE OUTPUT STAGE, hosted at base `B`: rank setup, rank leg, packet write
+and halt. -/
+def wholeQueryOutputStage (shape : Cartesian.CartesianShape) (B : Nat) :
+    List Instr :=
+  wholeQueryRankSetup ++
+    (wholeQueryRankLeg shape (B + 2) ++ wholeQueryPacketWrite)
+
+@[simp] theorem wholeQueryOutputStage_length
+    (shape : Cartesian.CartesianShape) (B : Nat) :
+    (wholeQueryOutputStage shape B).length = 64 := by
+  simp [wholeQueryOutputStage]
+
+/-! ## The repaired valid path -/
+
+/-- THE REPAIRED VALID PATH: the path through the close/LCA leg, followed by
+the output stage at the leg's own exit address.  The base handed to
+`wholeQueryOutputStage` is COMPUTED from the leg's exit rather than written
+down, so a length drift anywhere earlier moves the stage with it. -/
+def wholeQueryValidPath (shape : Cartesian.CartesianShape) (noneExit : Nat) :
+    List Instr :=
+  wholeQueryValidPathThroughLca shape noneExit ++
+    wholeQueryOutputStage shape (E1WholeQueryCloseLca.closeLcaExit 827)
+
+@[simp] theorem wholeQueryValidPath_length
+    (shape : Cartesian.CartesianShape) (noneExit : Nat) :
+    (wholeQueryValidPath shape noneExit).length = 5636 := by
+  simp [wholeQueryValidPath]
+
+/-- The address the select join's two miss branches jump to: the skeleton's
+own invalid exit, which writes the `none` packet and halts.  The two
+select-miss branches and the guard's two reject branches therefore share one
+`none` writer. -/
+def wholeQueryNoneExit : Nat := 5644
+
+/-- The `none` exit really IS the skeleton's invalid-exit base under the
+repaired path.  An executed equality, so that adding or removing one
+instruction anywhere in the valid path breaks the build rather than silently
+sending the miss branches into the middle of the output stage. -/
+theorem wholeQueryNoneExit_is_invalidExit_base
+    (shape : Cartesian.CartesianShape) :
+    8 + (wholeQueryValidPath shape wholeQueryNoneExit).length =
+      wholeQueryNoneExit := by
+  simp [wholeQueryNoneExit]
+
+/-! ## Hosting the repaired path -/
+
+/-- The repaired path hosts the through-LCA prefix at `8` and the output stage
+at the close/LCA leg's exit `5580`, every offset computed by
+`append_left`/`append_right`. -/
+theorem wholeQueryValidPath_hosts_outputStage
+    (shape : Cartesian.CartesianShape) {program : E1Machine.Program}
+    {noneExit : Nat}
+    (hHost : HostedAt program 8 (wholeQueryValidPath shape noneExit)) :
+    HostedAt program 8 (wholeQueryValidPathThroughLca shape noneExit) ∧
+      HostedAt program (E1WholeQueryCloseLca.closeLcaExit 827)
+        (wholeQueryOutputStage shape
+          (E1WholeQueryCloseLca.closeLcaExit 827)) := by
+  refine ⟨hHost.append_left, ?_⟩
+  have hrest := hHost.append_right
+    (code₁ := wholeQueryValidPathThroughLca shape noneExit)
+  have harith : 8 + (wholeQueryValidPathThroughLca shape noneExit).length =
+      E1WholeQueryCloseLca.closeLcaExit 827 := by
+    simp [E1WholeQueryCloseLca.closeLcaExit]
+  rw [harith] at hrest
+  exact hrest
+
+/-- The output stage's three sub-blocks, each at its computed base. -/
+theorem wholeQueryOutputStage_hosts (shape : Cartesian.CartesianShape)
+    {program : E1Machine.Program} {B : Nat}
+    (hHost : HostedAt program B (wholeQueryOutputStage shape B)) :
+    HostedAt program B wholeQueryRankSetup ∧
+      HostedAt program (B + 2) (wholeQueryRankLeg shape (B + 2)) ∧
+      HostedAt program (B + 62) wholeQueryPacketWrite := by
+  have h1 : HostedAt program B wholeQueryRankSetup := hHost.append_left
+  have hrest := hHost.append_right (code₁ := wholeQueryRankSetup)
+  have hrest' : HostedAt program (B + 2)
+      (wholeQueryRankLeg shape (B + 2) ++ wholeQueryPacketWrite) := by
+    simpa using hrest
+  refine ⟨h1, hrest'.append_left, ?_⟩
+  have := hrest'.append_right (code₁ := wholeQueryRankLeg shape (B + 2))
+  have harith : B + 2 + (wholeQueryRankLeg shape (B + 2)).length = B + 62 := by
+    simp
+  rw [harith] at this
+  exact this
+
+/-! ## THE OUTPUT STAGE, EXECUTED
+
+Rule 3: the address coincidence was found by arithmetic, so the repair is
+confirmed by EXECUTION, not by a layout argument.
+-/
+
+/--
+THE OUTPUT STAGE RUNS, FROM THE EXACT ADDRESS THAT USED TO FALL THROUGH.
+
+From `⟨regs, B, false⟩` the stage sets `rPos := fRes + 1`, runs the canonical
+rank leg, copies its value into `regOut` and HALTS at `B + 63`.  The receipt is
+the route's rank-leg trace at `regs fRes + 1` — which is the position the
+route's `.full` branch indexes the rank leg at — and the category log is the
+frozen `rankCloseHitCats` bracketed by the stage's own four instructions.
+
+Universally quantified in `shape`, `B` and the incoming register file: no
+sampling, no readiness guard, no size threshold.
+-/
+theorem wholeQueryOutputStage_runsTo (shape : Cartesian.CartesianShape)
+    {program : E1Machine.Program} {B : Nat}
+    (hHost : HostedAt program B (wholeQueryOutputStage shape B))
+    (regs : RegFile) :
+    ∃ regsF : RegFile,
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+          ⟨regs, B, false⟩ ⟨regsF, B + 63, true⟩
+        (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape
+          (regs fRes + 1)).trace
+        ([Category.registerWrite, Category.arithmetic] ++
+          (rankCloseHitCats
+              (bpWordChunkCount (bpFringeChunkBits shape.bpCode.length)
+                ((builtRelativeSplitBPCloseRankData shape).wordOffset
+                  (regs fRes + 1))) ++
+            [Category.registerWrite, Category.control])) ∧
+      regsF regOut =
+        (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape
+          (regs fRes + 1)).value := by
+  obtain ⟨hsetup, hleg, hwrite⟩ := wholeQueryOutputStage_hosts shape hHost
+  -- pc B: rPos := 1
+  have hf0 : program[B]? = some (.const rPos 1) := hsetup.head
+  have hs0 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regs, B, false⟩ ⟨regs.write rPos 1, B + 1, false⟩ []
+      [Category.registerWrite] :=
+    RunsTo.const (s := ⟨regs, B, false⟩) rfl hf0
+  -- pc B + 1: rPos := fRes + rPos, and `fRes ≠ rPos` so the first operand
+  -- is still the close/LCA leg's answer
+  have hf1 : program[B + 1]? = some (.add rPos fRes rPos) := (hsetup.tail).head
+  have hs1 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regs.write rPos 1, B + 1, false⟩
+      ⟨(regs.write rPos 1).write rPos
+        ((regs.write rPos 1) fRes + (regs.write rPos 1) rPos), B + 2, false⟩
+      [] [Category.arithmetic] :=
+    RunsTo.add (s := ⟨regs.write rPos 1, B + 1, false⟩) rfl hf1
+  -- the register file entering the rank leg carries `fRes + 1` in `rPos`
+  have hpos : ((regs.write rPos 1).write rPos
+      ((regs.write rPos 1) fRes + (regs.write rPos 1) rPos)) rPos =
+      regs fRes + 1 := by
+    simp [RegFile.write, rPos, fRes]
+  obtain ⟨regsR, hrunR, hval, _hpresR⟩ :=
+    rankCloseBlock_runsTo_canonical shape (B := B + 2) hleg
+      ((regs.write rPos 1).write rPos
+        ((regs.write rPos 1) fRes + (regs.write rPos 1) rPos))
+  rw [hpos] at hrunR hval
+  -- pc B + 62: regOut := rVal
+  have hf62 : program[B + 62]? = some (.move regOut rVal) := hwrite.head
+  have hs62 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regsR, B + 62, false⟩
+      ⟨regsR.write regOut (regsR rVal), B + 63, false⟩ []
+      [Category.registerWrite] :=
+    RunsTo.move (s := ⟨regsR, B + 62, false⟩) rfl hf62
+  -- pc B + 63: halt
+  have hf63 : program[B + 63]? = some .halt := (hwrite.tail).head
+  have hs63 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regsR.write regOut (regsR rVal), B + 63, false⟩
+      ⟨regsR.write regOut (regsR rVal), B + 63, true⟩ [] [Category.control] :=
+    RunsTo.halt (s := ⟨regsR.write regOut (regsR rVal), B + 63, false⟩) rfl hf63
+  refine ⟨regsR.write regOut (regsR rVal), ?_, ?_⟩
+  · have hpc : B + 2 + 60 = B + 62 := by omega
+    rw [hpc] at hrunR
+    have htrans := (((hs0.trans hs1).trans hrunR).trans hs62).trans hs63
+    simpa [List.append_assoc] using htrans
+  · rw [RegFile.write_same]
+    exact hval
 
 /-! ## SCOPE, STATED HONESTLY
 
