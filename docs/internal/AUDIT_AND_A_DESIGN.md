@@ -2528,3 +2528,66 @@ admired.
 **Honest matrix note preserved:** REQ-E1-03's interior value evidence had been
 resting on a theorem vacuous at the interior store. It now rests on one that is
 not. No row was closed or weakened, and no frozen text was edited.
+
+## 2026-07-19 (C05 round 38) — a premise believed VACUOUS was alive
+
+**Task zero delivered its verdict and then overturned a prior one.** `hcap`
+(`chunkCount <= 8`) and `hccPos` (`0 < chunkCount`) both discharge
+UNCONDITIONALLY at `canonicalRelativeRmmInteriorComponentStore` for all eight
+tables — twelve theorems in `E1InteriorChunkCap.lean` (`c9ddbbf`), so the
+composition will cite proofs rather than notes. But NOT by the expected route:
+`canonicalRelativeRmmMachineReadNatCosted_cost_le_one` is about the route's
+COST, not about `fixedWidthNatTableMachineChunkCount`, and its hypothesis is
+unavailable unconditionally for three of the tables. The discharge is
+`interiorChunkCount_le_eight` plus five hypothesis-free `_le_seven_machine`
+lemmas.
+
+**THE FINDING THAT OUTRANKS THE VERDICT.** `machineWordBits n = Nat.log2 n + 1`,
+so chunk counts are COMPUTABLE. Evaluated `(size, wordSize, relativeWidth,
+chunkCount)`: `(1,2,5,3) (2,3,7,3) (4,4,7,2) (8,5,9,2) (16,6,9,2) (64,8,9,2)
+(256,10,11,2) (1024,12,11,1) (4096,14,11,1) (65536,18,13,1)`. **The interior is
+NOT single-chunk.** Every `shape.size` below roughly 1024 is multi-chunk; the
+smallest are three-chunk. So DD-20260719-009's discharge of the value bridge's
+`hexact` as "vacuous, because the interior tables are single-chunk" is FALSE —
+the premise is LIVE at exactly the small shapes an all-size claim must cover.
+
+Nothing is retracted: DD-009's CUT (exactness only for non-final chunks) is
+correct and untouched, and the premise remains satisfiable. But it must now be
+discharged SUBSTANTIVELY, from `chunkPayloadWords_get?_eq_take_drop`
+(`WordStore.lean:274`) — which does not exist; the existing lemmas
+(`_word_length_le` `:234`, `_length_eq_div_add_indicator` `:390`) are bounds and
+counts, not per-index exactness. That is the next blocker.
+
+**NEW STANDING RULE, adopted from the worker's own formulation:** *a premise
+recorded as VACUOUS owes a witness of vacuity on the same terms that a premise
+recorded as OWED owes a witness of satisfiability. Where a quantity is
+computable, EVALUATE it rather than reason about it.* The worker's summary of
+the pair is worth preserving verbatim: "M3d-14 asked whether a premise could
+ever be met and found one that could not. This session asked whether a premise
+was ever exercised and found one believed dead that is alive. A `<=` bound
+answers neither."
+
+Three consecutive sessions have now found defects in exactly the class of claim
+that LOOKS like diligence: an unsourced premise, an unsatisfiable premise, and a
+falsely-vacuous premise. All three were introduced by careful workers, survived
+review, and were caught only by someone trying to USE them.
+
+**The fold ruling is independently corroborated, for a better reason than I
+had.** I ruled "compose on the FOLD, not the atom" on macro-crossing
+conditionality. The real reason is stronger: small shapes are genuinely
+multi-chunk, so the 7-instruction atom would be WRONG there, not merely
+unprovable. A coordinator ruling that turns out to be right for a reason the
+coordinator did not know is worth flagging as luck, not judgement.
+
+**Frozen-row anchor handled as decided:** `:4337` reconfirmed as a doc comment
+closing at `:4339` (documenting `...InterpretedCosted` at `:4340`); intended def
+`:4426`; path correct. Recorded as a NOTE appended after the frozen anchor
+block. No frozen requirement text touched.
+
+**Honest matrix relabelling:** REQ-E1-03's interior value evidence was resting
+on `hexact` believed vacuous; it is now labelled a live obligation with a named
+discharge route. Not withdrawn — correctly labelled. That distinction is the
+whole point of the evidence column.
+
+**Also still owed, recorded so it is not lost:** an EXECUTED preservation check
+for the interior fold — the validator has no interior analogue of phase 3h.
