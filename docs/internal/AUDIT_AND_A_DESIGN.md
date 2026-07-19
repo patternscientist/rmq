@@ -3044,3 +3044,72 @@ the theorem is `unbounded_agreement_refuted` (`:537`).
 All eleven matrix rows remain Open — they are whole-query scoped and this was an
 interior-leg component. The interior analogue of validator phase 3h is still
 owed.
+
+---
+
+## C05 round 47 — the A-to-B link lands, and a parametrisation that moves a
+## statement into kernel reach without moving the mathematics
+
+E1-R5f returned INCOMPLETE at `73dc270` (two commits from `abfb681`), delivering
+mission item 1 AND the further step both it and its predecessor had explicitly
+declined to claim. Items 2-6 unbuilt. 816 insertions, 4 deletions — all four
+deletions being stale scope-note prose the worker's OWN work falsified.
+
+**What landed.** `routeDecode_eq_machineReadComputation_value`
+(`E1InteriorSummaryGroup.lean:879`) equates the machine's decoded cell with the
+route computation's `.value`, and
+`routeDecodedSummary_eq_summaryComputation_value`
+(`E1InteriorMinCandidate.lean:1067`) lifts it to the summary tuple. That second
+theorem is the step round 46 recorded as "a further step, NOT claimed" — the
+worker landed it rather than inheriting the disclaimer. No cap hypothesis, no
+width bound anywhere on the path; the four
+`geomCell_*_eq_readComputation_value` corollaries discharge all three hypotheses
+by `rfl`. The decisive step is definitional rather than arithmetic: both sides
+split on the same validity test and `chunkAddrs`'s valid arm IS
+`fixedWidthNatTableMachineFootprintAt` unfolded.
+
+**The best judgement call of the round (DD-20260719-017).** The link is an
+equation between two `match`es — a shape that can hold vacuously because both
+sides are constant, so it owes an executed witness. At shape level it cannot
+have one: `machineWordBits` → `Nat.log2` is kernel-irreducible, the boundary
+M3d-22 established. The worker PARAMETRISED `wordSize`, which moves the same
+equation into kernel-reachable territory with the shape-level form as an
+instance. This is the right resolution and it is worth naming why: the
+kernel boundary was a property of the STATEMENT'S SHAPE, not of the
+mathematics, so restating rather than assuming was available the whole time.
+The fixture is deliberately MULTI-CHUNK (3 entries, width 20, wordSize 8 → 3
+chunks per cell) — the regime the single-chunk atom cannot reach — and
+`linkWitness_discriminates_content` separates two cells of the SAME shape
+differing only in stored bits. That is the right-shape/wrong-content guard
+built at exactly the level where it can execute. Four witnesses depend on no
+axioms at all.
+
+**A trap logged for successors (DD-20260719-018).** Stating the shift as an
+inline `match` elaborates a fresh auxiliary per declaration, so the inversion
+lemma was defeq to the goal AND STILL WOULD NOT FIRE. It presents as "unsolved
+goals" on a goal `simp` visibly should close. Fix: name it (`optShift`), which
+is definitional, so no statement moved.
+
+**My seventh failed claim, inherited and harmless.** I passed along the previous
+inventory's "`geomRouteDecode` has six occurrences, all in one file." It has
+fourteen across two — the count was taken before that session's own composition
+landed and never refreshed. It changed no conclusion, but it is a clean
+illustration of why "treat every enumerated inventory as provisional, INCLUDING
+YOUR OWN" is in the brief: the author of a count is the person most likely to
+invalidate it and least likely to re-run it.
+
+**Honesty note worth preserving.** The worker's own work falsified three of its
+own written assertions, and it corrected all three as SUPERSEDED rather than
+silently rewriting them. It also re-checked the citations it had already
+committed one commit earlier, because its own refactor had shifted the lines.
+That is the citation convention working as intended.
+
+All eleven matrix rows remain Open; matrix file untouched. Validator counts
+unchanged from M3d-22, correctly — no machine block was added, so no new modeled
+steps. The interior analogue of phase 3h is still owed.
+
+**Next rung is the sharper half of the same obligation:** the VALUE is proved,
+the POSITIONAL RECEIPT is not. Receipt equality in the route's bind order is
+where the right-shape/wrong-content class bites hardest, because a receipt list
+in the right order with a stale head passes every length and read-count check we
+have.
