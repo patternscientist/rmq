@@ -932,3 +932,60 @@ aggregate gate, round 8). Both share a root cause worth stating in the
 completion gate: **a green check is evidence only of what it actually
 examined.** Prefer the check that would fail loudly over the check that is
 convenient to run.
+
+## 2026-07-19 (C05 round 10) — V1-S01 scout accepted; validator regression found
+
+**Disposition: ACCEPT the scout.** V1-S01 (Codex) delivered a report-only
+scout at `f218b98` on `codex/v1-s01-independent-verification-scout`, parent
+verified as the exact target `bacd41b`. It correctly declined to commit CI
+automation it could not validate on Linux, correctly separated "verified by
+running" from "inferred by reading", and correctly refused to assert
+submission-readiness. Quality is high; findings accepted in full.
+
+**NEW BLOCKER not found by A07 — the documented concrete validator FAILS.**
+`lake exe rmq_succinct_classic_validate` exits 1 after 127.7 s at
+`RMQ/Validation/SuccinctClassic.lean:253`, `singletonRepeatedEqualReadPositionsOK`.
+Coordinator-verified at source: the fixture hardcodes global trace positions
+`0` and `12` (its docstring says "twelve-event component traces"). A singleton
+query is SAME-BLOCK, so the B6 swap changed that trace and position 12 no
+longer carries the matching read. The Lean theorems are unaffected -- B4 stated
+`firstPos`/`secondPos` symbolically (`secondPos = prefixLen + p`), so they
+adapt and still prove; only the executable fixture's literal is stale.
+Documented reproduction calls the validator BEFORE the axiom checks and gate,
+so a stranger's very first substantive step fails.
+
+**Root cause is the coordinator's battery specification, for the second time.**
+Round 8 recorded that I omitted `gate.ps1` from every rung battery and a stale
+identifier survived four rungs. The same defect class recurs here: my battery
+spec listed the cost harness but NOT `lake exe rmq_succinct_classic_validate`,
+so no rung ran the executable validator, and my B6 reconstruction explicitly
+instructed the auditor to treat executables as given. Three independent checks
+(worker battery, coordinator reconstruction, A07 -- whose gate run aborted
+earlier on the stale axiom name) all missed a failing validator.
+
+**Battery specification amended (durable, applies to every future rung):** the
+final battery MUST include, at minimum, the root builds, BOTH axiom
+inventories, `lake exe rmq_succinct_classic_validate`, the cost harness, the
+hygiene scans, both `git diff --check` forms, the strict design check, claim
+drift, topology lint -- and the coordinator runs full `gate.ps1` at the rung
+boundary. Any rung that changes an accepted-route TRACE must additionally
+re-run every executable fixture that indexes trace positions.
+
+**POSITIVE, and significant: independent kernel checking works.** An official
+Lean 4.22 exporter produced a 54.5 MB dependency closure for the canonical
+headline two-sided profile, and current Nanoda source checked all **6,643
+exported declarations with no errors**. This is the strongest independent
+trust-base evidence the project has. Full-module export (407 MB) panics inside
+Nanoda's definitional-equality checking, and the latest RELEASED Nanoda cannot
+parse Lean export format 3.1 -- both are upstream checker limitations, not
+project defects. Next step: pin the exporter and the known-working Nanoda
+source commit, curate a list of filtered headline closures, and record the
+admitted axiom list.
+
+**Other findings (already in flight):** stale `_sum_le_76` inventories and the
+retired-fact documentation drift are A07 P1-1/P2-3, delegated to R1. The Linux
+CI blocker is new detail on a known gap:
+`scripts/project_skill_preflight_regression.ps1:38` invokes `powershell`, which
+does not exist on Ubuntu runners (`pwsh` does), plus Windows-shaped child paths
+and `GIT_CONFIG_GLOBAL=NUL`; the smallest fix is redispatching via
+`(Get-Process -Id $PID).Path` as sibling scripts already do.
