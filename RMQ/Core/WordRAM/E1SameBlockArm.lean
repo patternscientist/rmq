@@ -98,6 +98,135 @@ abbrev sbFold (shape : Cartesian.CartesianShape) (store : ReadStore)
     (sbRelHi shape blockSize leftClose rightClose)
     (sbCount shape blockSize leftClose rightClose)
 
+/-! ## The ADDRESS PREAMBLE (risk gate: constant divisors only)
+
+`fringeArm_runsTo` takes the window base registers as hypotheses.  This
+block computes them from the query operand, and it is the reason the
+divisor question had to be settled first: the ISA has `divConst`/
+`mulConst` only, so every divisor here must be a PER-SHAPE constant.
+
+It is.  `blockOfClose blockSize close = close / blockSize` and
+`blockStartOf blockSize block = block * blockSize`
+(`BlockLocal.lean:863`/`:866`), and on the accepted route `blockSize` is
+always `canonicalBPRelativeSummaryBlockSizeRaw shape`
+(`RelativeSummary.lean:1240`), a function of `shape` alone -- never of
+`close`, `left`, `right`, or any value read from memory.  Likewise
+`L = SuccinctRank.machineWordBits shape.bpCode.length`
+(`SuccinctRank.lean:38`).  Both are positive, which `divConst`'s width
+arm additionally requires.
+
+So the whole preamble is FOUR arithmetic instructions with encoded
+constants, and no variable-divisor instruction is needed.
+-/
+
+/-- The close position the preamble consumes. -/
+abbrev fClose : Nat := 70
+
+/-- The address preamble at base `P` (four instructions, exit `P + 4`):
+window word index into `fBase`, window bit base into `fBB`. -/
+def windowAddr (blockSize L : Nat) : List Instr :=
+  [ .divConst fBase fClose blockSize   -- P+0  block index
+  , .mulConst fBase fBase blockSize    -- P+1  block start
+  , .divConst fBase fBase L            -- P+2  first window word
+  , .mulConst fBB fBase L ]            -- P+3  window bit base
+
+@[simp] theorem windowAddr_length (blockSize L : Nat) :
+    (windowAddr blockSize L).length = 4 := rfl
+
+/-- Category log of the preamble: four unconditional arithmetic ticks. -/
+def windowAddrCats : List Category :=
+  [.arithmetic, .arithmetic, .arithmetic, .arithmetic]
+
+/-- Constructor-exhaustive width certificate for the address preamble.
+The `0 < blockSize` and `0 < L` side conditions are exactly `divConst`'s
+positivity arm, and both hold on the accepted route. -/
+theorem windowAddr_fits (w blockSize L : Nat) (hw : 70 < 2 ^ w)
+    (hbs : 0 < blockSize) (hbsw : blockSize < 2 ^ w)
+    (hL : 0 < L) (hLw : L < 2 ^ w) :
+    ∀ instr ∈ windowAddr blockSize L, Instr.FieldsFit w instr := by
+  intro instr hinstr
+  have h63 : (63 : Nat) < 2 ^ w := by omega
+  have h64 : (64 : Nat) < 2 ^ w := by omega
+  have h70 : (70 : Nat) < 2 ^ w := hw
+  simp only [windowAddr, List.mem_cons, List.not_mem_nil, or_false] at hinstr
+  rcases hinstr with h | h | h | h <;> subst h
+  · exact ⟨h63, h70, hbs, hbsw⟩
+  · exact ⟨h63, h63, hbsw⟩
+  · exact ⟨h63, h63, hL, hLw⟩
+  · exact ⟨h64, h63, hLw⟩
+
+/-- Every preamble instruction is straight-line (no branch, no halt). -/
+theorem windowAddr_straight (blockSize L : Nat) :
+    ∀ instr ∈ windowAddr blockSize L, instr.isStraight = true := by
+  intro instr hinstr
+  simp only [windowAddr, List.mem_cons, List.not_mem_nil, or_false] at hinstr
+  rcases hinstr with rfl | rfl | rfl | rfl <;> rfl
+
+local macro "addr_eval" : tactic =>
+  `(tactic| straight_eval [windowAddr, fBase, fBB, fClose])
+
+/-- The preamble writes only the two window base registers. -/
+abbrev WindowAddrUntouched (r : Nat) : Prop := r ≠ 63 ∧ r ≠ 64
+
+/-- Exact simulation of the address preamble: no receipt, four arithmetic
+ticks, and the two window base registers computed from the query operand
+by constant-divisor arithmetic alone. -/
+theorem windowAddr_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {P blockSize L : Nat}
+    (hHost : HostedAt program P (windowAddr blockSize L))
+    (regs : RegFile) (close : Nat) (hClose : regs fClose = close) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, P, false⟩ ⟨regs', P + 4, false⟩ []
+        windowAddrCats ∧
+      regs' fBase = blockStartOf blockSize (blockOfClose blockSize close) / L ∧
+      regs' fBB =
+        blockStartOf blockSize (blockOfClose blockSize close) / L * L ∧
+      (∀ r, WindowAddrUntouched r → regs' r = regs r) := by
+  have hrun := RunsTo.straight store (windowAddr blockSize L)
+    (windowAddr_straight blockSize L) P hHost regs
+  obtain ⟨regsW, hregsW⟩ :
+      ∃ x, straightRegs store (windowAddr blockSize L) regs = x := ⟨_, rfl⟩
+  rw [hregsW] at hrun
+  have hreads : straightReads store (windowAddr blockSize L) regs = [] := by
+    addr_eval
+  have hcats :
+      (windowAddr blockSize L).map Instr.category = windowAddrCats := rfl
+  rw [hreads, hcats] at hrun
+  refine ⟨regsW, by simpa using hrun, ?_, ?_, ?_⟩
+  · rw [<- hregsW]
+    addr_eval <;> simp [hClose, blockStartOf, blockOfClose]
+  · rw [<- hregsW]
+    addr_eval <;> simp [hClose, blockStartOf, blockOfClose]
+  · intro r hr
+    obtain ⟨hB, hBB⟩ := hr
+    rw [<- hregsW]
+    apply straightRegs_preserves
+    intro i hi
+    simp only [windowAddr, List.mem_cons, List.not_mem_nil, or_false] at hi
+    rcases hi with rfl | rfl | rfl | rfl <;>
+      straight_writes [fBase, fBB, fClose] <;> omega
+
+/-- The preamble's outputs ARE the route's window word index and window
+bit base, at the accepted route's own `blockSize` and word width. -/
+theorem windowAddr_runsTo_route
+    (shape : Cartesian.CartesianShape) (store : ReadStore)
+    {program : E1Machine.Program} {P blockSize : Nat}
+    (hHost : HostedAt program P
+      (windowAddr blockSize
+        (SuccinctRank.machineWordBits shape.bpCode.length)))
+    (regs : RegFile) (close : Nat) (hClose : regs fClose = close) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, P, false⟩ ⟨regs', P + 4, false⟩ []
+        windowAddrCats ∧
+      regs' fBase = bpWindowFirstWord shape blockSize close ∧
+      regs' fBB = localBPWindowBase shape blockSize close ∧
+      (∀ r, WindowAddrUntouched r → regs' r = regs r) := by
+  obtain ⟨regs', hrun, hbase, hbb, hpres⟩ :=
+    windowAddr_runsTo store hHost regs close hClose
+  refine ⟨regs', hrun, hbase, ?_, hpres⟩
+  rw [hbb, localBPWindowBase_eq]
+  rfl
+
 /-! ## The `bpCandidateClose?` epilogue
 
 `bpCandidateClose?` maps an occupied candidate to `position - 1`
