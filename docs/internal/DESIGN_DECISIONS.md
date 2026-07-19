@@ -3462,3 +3462,89 @@ Layout at loop base `LB` (66-instruction body, back edge at `LB + 66`):
 prefix `LB+0..LB+31`, merge `LB+32..LB+44`, window shift `LB+45..LB+63`,
 cursor/counter `LB+64..LB+65`.  Width certificate:
 `fringeLoopBody_fits`.
+
+## DD-20260718-010: E1 charged fringe ARM layout — window-read sub-block, derived 33-cap, and the locally-pinned epilogue (E1-R4l M3d-2)
+
+Date: 2026-07-18. Scope: the machine realization of a whole charged
+fringe arm — the four window-word reads, the 33-capped chunk fold, and
+the `bpFringeCandGlobal` global rebase — i.e. the accepted objects
+`bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore` and
+`bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore`
+(`RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeTrace.lean:708`
+and `:731`). Decided by: worker E1-R4l under the amended E1 contract
+(frozen matrix `E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md`
+REQ-E1-01/02/04/06). Extends DD-20260718-009.
+
+Decision (`RMQ/Core/WordRAM/E1FringeArmBlock.lean`, namespace
+`RMQ.WordRAM.E1FringeArmBlock`):
+
+- BANK EXTENSION `63..68`, above the fringe fold bank `40..62`:
+  `fBase = 63` (window base WORD index), `fBB = 64` (window BIT base, the
+  route's `localBPWindowBase`), `fSeed = 65` and `fStart = 66` (the
+  fallback candidate pair), `fRV = 67` and `fRP = 68` (the arm result).
+  `fBase` and `fBB` are deliberately SEPARATE registers: the route's
+  `localBPWindowBase` (`LocalBPDecoder.lean:205`) is the word index times
+  the word width, and the arm needs the word index for addressing and the
+  bit base for the rebase, in the same live range
+  (`localBPWindowBase_eq`).
+
+- WINDOW READ IS FOUR SEPARATE `readMem` INSTRUCTIONS, not a composite.
+  `fringeWindowRead` is 11 instructions emitting exactly FOUR memory-read
+  events at global segment `0`, indices `base .. base + 3`, each decoded
+  out of the option-shift convention by an explicit `sub _ _ fOne`
+  (`decodeRead - 1`, `E1RankBridge.lean:182`). This is the shape
+  REQ-E1-01's anti-composite challenge demands: a hypothetical
+  `readWindow` folding four reads into one step would be rejected by the
+  per-instruction read-event count.
+
+- THE ITERATION COUNT IS DERIVED, NEVER ASSERTED. The route's fold count
+  is literally `Nat.min (relHi / c + 1) 33` (`ChargedFringeTrace.lean:728`
+  and `:749`). `fringeArmInit` computes it in five instructions by the
+  truncated-subtraction cap chain `x - (x - 33)`, the same chain
+  `rankAtInit` uses for its 8-cap (`E1RankAtBlock.lean:56-62`), and
+  `cap_chain_eq_min` proves that chain equals `Nat.min`. The literal `33`
+  appears only as the route's own cap immediate, never as an asserted
+  count; `cap_count_pos` then discharges the fold block's `hcount`.
+
+- THE EPILOGUE PINS ITS OWN UNIT CONSTANT. `fringeCandGlobal` writes `1`
+  into the scratch register `fT` at its first instruction and uses `fT`
+  both as its unconditional-branch condition and as the unshift operand,
+  rather than reading the pinned `fOne`. This is forced by composition,
+  not stylistic: the fold block's preservation certificate
+  `FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`) is the conservative
+  predicate `r < 40 ∨ 63 ≤ r`, which does NOT certify `fOne = 40`. An
+  epilogue depending on `fOne` therefore could not be composed with the
+  fold without first strengthening the fold's certificate — a change to a
+  block that is already closed. Pinning locally costs one register write
+  and keeps the epilogue composable as written. The bank registers the
+  epilogue does consume (`fBB`, `fSeed`, `fStart`) are all `≥ 63` and so
+  ARE certified by `FringeFoldUntouched`.
+
+- THE EPILOGUE'S CATEGORY LOG IS ROUTE-INDEXED. `bpFringeCandGlobal`
+  (`ChargedFringeChunks.lean:1617`) is a two-arm option rebase, so the
+  epilogue branches and its charge is arm-dependent:
+  `fringeCandGlobalArmCats occupied` is 4 ticks when the fold left an
+  occupied best and 5 when it fell back. In the whole-arm log
+  `fringeArmCats` that index is the `isSome` of the ACCEPTED fold
+  object's best candidate — route-side data, not a machine register and
+  not a numeral (`bestOfRegs_isSome` supplies the agreement). This
+  follows the `fringeMergeCatsAt` precedent of DD-20260718-009.
+
+- THE EPILOGUE EMITS NO RECEIPT. `bpFringeCandGlobal` performs no memory
+  read, so the arm's receipt is exactly the leg's: four window reads
+  followed positionally by the accepted fold object's own trace
+  (`fringeLeg_trace_eq_leftArm` / `_rightArm`). It does still cost branch
+  and arithmetic ticks, which the arm-indexed log records — charge and
+  receipt are kept separate.
+
+Arm layout at base `A` (95 instructions): prologue `A..A+20` (init
+`A..A+9`, window read `A+10..A+20`), fold loop base `A+21` with exit
+`A+88`, epilogue `A+88..A+94`, arm exit `A+95`. Width certificate:
+`fringeArmPrologue_fits` (constructor-exhaustive, no wildcard arm).
+
+Route-side residue deliberately left to canonical instantiation: the
+Horner bridge `windowRegsValue_of_readBits` takes as hypotheses that the
+first three window words have length exactly `L`. These are properties of
+`chunkPayloadWords`, discharged at canonical instantiation exactly as the
+dense select leg discharges its `hlen`
+(`E1SelectCanonical.lean` `canonical_denseLen`).

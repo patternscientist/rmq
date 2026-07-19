@@ -2010,3 +2010,213 @@ rewording, to be folded into M7:
   traversal whose value is checked-equal to an input parameter or to a
   charged read is a representation artifact.
 - Add the same-block enumerated exception the audit asked for.
+
+## M3d-2 COMPLETE: the whole charged fringe ARM (worker E1-R4l)
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, session base
+`fb1d292`. `lake build RMQ` exit 0 at EVERY commit of this session.
+
+Items 1 and 2 of the previous RESUME POINT (window reads, 33-cap init)
+are IMPLEMENTED, and the session went further: the whole fringe arm now
+runs end to end against the named accepted objects, on both the receipt
+and the value side. Items 3-7 of that resume point remain open.
+
+### WHAT LANDED
+
+One NEW module, `RMQ/Core/WordRAM/E1FringeArmBlock.lean` (~1000 lines),
+namespace `RMQ.WordRAM.E1FringeArmBlock`, plus its `RMQ.lean` import line.
+No route-side file was modified; the change is purely additive.
+
+Commits, in order:
+
+- `2a9e210` M3d-2a: window-read sub-block and derived 33-cap init
+- `91ddc5d` M3d-2b: receipt/value/Horner bridges, prologue composition
+- `eb31429` M3d-2c: fringe leg composition, receipt bridges to both arms
+- `0a6f956` M3d-2d: the `bpFringeCandGlobal` epilogue (first form)
+- `6de78f2` M3d-2e: whole arm; epilogue rewritten to pin its own constant
+- `eb262f9` M3d-2f: value bridges to the named accepted arm objects
+
+Key objects (file:line exact in `E1FringeArmBlock.lean` at `eb262f9`):
+
+- `fBase 63`, `fBB 64`, `fSeed 65`, `fStart 66`, `fRV 67`, `fRP 68` —
+  bank extension, recorded as DD-20260718-010.
+- `readBits` (`:51`), `windowBitsOfStore` (`:55`) — the store-side window.
+- `fringeWindowRead` (`:90`, 11 instructions, FOUR reads),
+  `fringeArmInit` (`:119`, 10 instructions), `fringeArmPrologue` (`:135`,
+  21 instructions).
+- `fringeCandGlobal` (`:715`, 7 instructions, exit `E+7`).
+- `cap_chain_eq_min` (`:239`), `cap_count_pos` (`:245`) — the DERIVED
+  33-cap; `cap_count_pos` is exactly the fold block's `hcount`.
+- `fringeArmPrologue_fits` (`:210`) — constructor-exhaustive width
+  certificate, no wildcard arm.
+- `fringeWindowRead_runsTo` (`:270`), `fringeArmInit_runsTo` (`:326`),
+  `fringeArmPrologue_runsTo` (`:473`).
+- `windowReadEvents_eq_route` (`:393`) /
+  `windowReadEvents_eq_route_windowBits` (`:405`) — POSITIONAL receipt
+  bridges to `localBPBlockWordsTraceResultWithStore`
+  (`ConcreteDirectoryRAMStoreParam.lean:4071`) and
+  `localBPWindowBitsTraceResultWithStore` (`:4152`).
+- `route_windowBits_eq_windowBitsOfStore` (`:422`) — the route object's
+  window bits ARE the concatenation of the four words the machine's own
+  charged reads return (value dependency, not a spec copy).
+- `windowRegsValue_of_readBits` (`:443`) — the Horner bridge supplying
+  the fold block's `hW`.
+- `fringeLeg_runsTo` (`:550`) — prologue + fold, `A -> A+88`.
+- `fringeLeg_trace_eq_leftArm` (`:618`) / `_rightArm` (`:647`).
+- `fringeCandGlobal_runsTo` (`:747`) — the two-arm rebase.
+- `fringeArm_runsTo` (`:904`) — THE WHOLE ARM, `A -> A+95`.
+- `leftArm_value_eq` (`:987`) / `rightArm_value_eq` (`:1018`) — value
+  bridges to the NAMED accepted objects
+  `bpChunkedLeft/RightFringeCandidateSeededTraceResultAtSegmentWithStore`
+  (`ChargedFringeTrace.lean:708`/`:731`).
+
+Arm layout at base `A` (95 instructions): prologue `A..A+20`, fold loop
+base `A+21` (exit `A+88`), epilogue `A+88..A+94`, exit `A+95`.
+
+### GOTCHAS RECORDED THIS SESSION (carry forward)
+
+1. `omega` DOES handle `min`/`max`, but only after `show ... = min x k`
+   — a goal written with `Nat.min` does not match, and `rw [Nat.min_def]`
+   fails for the same reason. Worse, `omega` then still fails on
+   `min (relHi / c + 1) 33` because division by a VARIABLE divisor is an
+   opaque atom whose non-negativity omega loses; `generalize relHi / c = q`
+   first. Both fixes are in `cap_chain_eq_min` / `cap_count_pos`.
+2. `hf k _ _ (by omega) rfl (by omega)` fetch-fact helpers fail at `k = 0`
+   because the target index `m` is still a metavariable when `omega` runs.
+   Give `m` explicitly at the zero case (pattern at `:756`).
+3. Side conditions of the shape `(regs.write fT 1) fBV = 0` do NOT close
+   by `rw [hbvT]` even with `hbvT` in hand: the register abbrevs are
+   reducible and the goal is already in numerals, so the rewrite is not
+   syntactically applicable. Use `simpa [RegFile.write, fT, fBV] using hbv`.
+4. `FringeFoldUntouched`-shaped side conditions on CONCRETE bank slots
+   close by `decide`, not by `simp [FringeFoldUntouched]`.
+5. The width predicate is `Instr.FieldsFit w` (`E1Machine.lean:503`), a
+   `Prop`, NOT a `Bool`-valued `Instr.fits`. `divConst` additionally
+   requires `0 < k`, so a width certificate over a segment containing
+   `divConst _ _ c` needs `0 < c` as a hypothesis.
+6. Splicing into a Lean file at a `/-!` marker remains hazardous (the
+   defect the previous session recorded). This session appended only
+   immediately BEFORE the `end <namespace>` lines and verified every
+   claimed theorem with `#print axioms`, which is the cheap independent
+   check that a name is a real constant rather than comment text.
+
+### VERIFICATION LEDGER (root builds, not per-file checks)
+
+`lake build RMQ` exit 0 at all six commits. `#print axioms` run on every
+theorem this session claims: `fringeWindowRead_runsTo`,
+`fringeArmInit_runsTo`, `fringeArmPrologue_fits`,
+`fringeArmPrologue_straight`, `cap_chain_eq_min`, `cap_count_pos`,
+`readBits_decode`, `flatten_readStorePayloadWordValue`,
+`fringeArmPrologueCats_memoryRead_count`, `windowReadEvents_eq_route`,
+`windowReadEvents_eq_route_windowBits`,
+`route_windowBits_eq_windowBitsOfStore`, `windowRegsValue_of_readBits`,
+`localBPWindowBase_eq`, `fringeArmPrologue_runsTo`, `fringeLeg_runsTo`,
+`fringeLeg_trace_eq_leftArm`, `fringeLeg_trace_eq_rightArm`,
+`fringeCandGlobal_runsTo`, `bestOfRegs_isSome`, `fringeArm_runsTo`,
+`leftArm_value_eq`, `rightArm_value_eq` — every one reports only
+`propext` / `Classical.choice` / `Quot.sound`, never `sorryAx`. Hygiene
+`rg` clean on the new module; `git diff --check` clean;
+`design_decision_check.ps1 -Strict -Base d90b062` exit 0 (40 changed
+files).
+
+
+### FINDING FOR THE COORDINATOR: `scripts/axiom_check.lean` is BROKEN at base
+
+Not fixed here, and deliberately so: `scripts/axiom_check.lean` is in the
+file set assigned to the concurrent `claude/a07-blocker-repairs` worker,
+so this session reports rather than edits. BOTH defects are PRE-EXISTING
+at the coordinator-accepted base `d90b062`; neither was introduced by
+this branch.
+
+1. UNBUILDABLE IMPORT. Line 4 is `import RMQ.Core.GenericSelectBPCompat`.
+   That module exists as a source file
+   (`RMQ/Core/GenericSelectBPCompat.lean`) but is NOT in `RMQ.lean`'s
+   import closure, so `lake build RMQ` never produces its olean and the
+   script fails to LOAD: "object file ... RMQ.Core.GenericSelectBPCompat
+   .olean ... does not exist". A separate
+   `lake build RMQ.Core.GenericSelectBPCompat` (exit 0) makes it loadable.
+
+2. STALE CONSTANT. Once loadable, line 975 is `#print axioms
+   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace
+   Result_nonSyntheticWeight_sum_le_76` — an UNKNOWN CONSTANT. The tree
+   carries `..._nonSyntheticWeight_sum_le_207`; the `_76` name is a
+   leftover from before the bound became 207. So the script exits 1 and
+   that assertion has been checking nothing.
+
+Net effect: `lake env lean scripts/axiom_check.lean` exits 1 at this base,
+so the delegation's "MUST exit 0" battery item cannot be satisfied by any
+worker until this script is repaired. Substantively the run is clean —
+with the dependency built, the 2430 lines of output contain ZERO
+`sorryAx` — but the script itself does not certify that, because it
+aborts. This is the same class as the trust-base defect the external
+blind audit found. `scripts/wordram_axiom_check.lean` and
+`scripts/headline_axiom_check.lean` both exit 0 at this HEAD.
+
+### MATRIX STATUS AT YIELD
+
+All rows REQ-E1-01..11 remain OPEN. This session closed none and weakened
+none. Evidence accumulated for REQ-E1-01/02/04/06 is recorded in the
+matrix evidence column; it is component-level (now a whole fringe arm
+rather than only the fold) and does NOT discharge any row, all of which
+are WHOLE-QUERY scoped.
+
+### RESUME POINT (M3d-3: the same-block arm, then the cross-block arm)
+
+NOTHING below is implemented.
+
+1. ADDRESS PREAMBLE. `fringeArm_runsTo` takes `fBase`, `fBB`, `fLo`,
+   `fHi`, `fAcc`, `fSeed`, `fStart` as register HYPOTHESES. A whole arm
+   still needs the straight-line code that computes them from the query
+   operands: `bpWindowFirstWord` (`E1FringeArmBlock.lean:373`) is
+   `blockStartOf blockSize (blockOfClose blockSize close) / L`, and
+   `localBPWindowBase` is that times `L` (`localBPWindowBase_eq:380`).
+   `blockOfClose` and `blockStartOf` are constant div/mul by `blockSize`,
+   so this is a short straight segment — but CHECK whether `blockSize` is
+   a per-shape constant on the accepted route before encoding it as an
+   immediate; if it is not, the ISA has no variable-divisor instruction
+   and the preamble needs rethinking. THIS IS THE FIRST THING TO VERIFY.
+2. SAME-BLOCK ARM (B6's object). Rank seed
+   (`rankCloseBlock_runsTo_canonical`, `E1RankCanonical.lean:263`,
+   already exists); window reads and fold now exist as `fringeLeg_runsTo`;
+   then the PURE merge `bpCandidateClose? (bpFringeCandGlobal ...)` — no
+   reads. Target
+   `bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment`
+   (`ChargedSameBlockTrace.lean:326`), the POST-B6 object - but PREFER its store-parameterized twin `bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore` (`:340`), the form every block in this rung targets. Its 33-cap
+   init is at `ChargedSameBlockTrace.lean:52` — CONFIRM it is the same
+   `Nat.min (relHi / c + 1) 33` shape `cap_chain_eq_min` already covers.
+3. CROSS-BLOCK ARM. Two fringe arms (both now available as
+   `fringeArm_runsTo`, instantiated left and right via
+   `leftArm_value_eq` / `rightArm_value_eq`) plus the INTERIOR leg. The
+   interior leg is NOT a loop:
+   `canonicalRelativeRmmInteriorRangeMinComputation`
+   (`SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean:2185`), a five-way `if` into fixed-shape
+   sparse span reads; its `else` arm is receipt-EMPTY but still costs
+   comparison/branch ticks, so it needs a route-indexed category log in
+   the `fringeCandGlobalArmCats` style.
+4. CANONICAL-STORE FORM mirroring `rankCloseBlock_runsTo_canonical` /
+   `selectCloseBlock_runsTo_canonical`. This is where the THREE window
+   full-width hypotheses of `windowRegsValue_of_readBits` get discharged,
+   via `SuccinctSpace.chunkPayloadWords_get?_eq_take_drop`
+   (`SuccinctSpace/WordStore.lean:274`) plus
+   `chunkPayloadWords_length_eq_div_add_indicator` (`:390`) — the same
+   pair `builtRankData_wordOffset_le` uses
+   (`E1RankCanonical.lean:49-122`). Segment agreement lemmas: seg 0
+   `..._bpCode` (`Segments.lean:281`), seg 17/18/19
+   `..._rankCloseSuper/Block/Word`
+   (`ChargedRankSelectWiring.lean:154/165/176`), seg 20
+   `..._canonicalComponent` (`Segments.lean:258`), seg 21
+   `..._fringeChunkTable` (`Segments.lean:247`). Segment 28 is INERT
+   after B6 — no machine code should reference it.
+5. WHOLE-QUERY GLUE via `E1RouteDecomposition`. NAME THE ACCEPTED OBJECT
+   EXPLICITLY:
+   `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`
+   (`SuccinctFinalRAM.lean:2330`, consumed at `:3279`/`:3733`), NOT the
+   legacy near-homonym `concreteBPNativeLCACloseGlobalWordTraceResult`
+   (`:2271`).
+6. Then M4 (derived literal step total — note the arm is now a known
+   95 instructions plus `67 * count` for the fold, which with the
+   derived cap `count <= 33` gives a literal per-arm bound; derive it,
+   do not assert it), M5 (amended target Prop + obstruction
+   supersession), M6 (validator `lean_exe`), M7 (docs + matrix closure +
+   final battery, including the coordinator-queued PAPER_MODEL_ADEQUACY
+   and B6-matrix edits in the COORDINATOR DIRECTIVES section above).
