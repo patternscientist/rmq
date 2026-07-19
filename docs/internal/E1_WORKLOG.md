@@ -4044,3 +4044,233 @@ NOTHING below is implemented.
    Prop remain out of scope, all downstream of item 1.  The validator hole
    is at `RMQ/Validation/E1MachineValidate.lean` phase 5
    (`wholeQueryComparisonAvailable` / `wholeQueryMismatches`).
+
+## M3d-11 (worker E1-R4t): the interior's atomic table read, and the two-regime finding that resizes the remaining interior work
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, from HEAD
+`f9b1ecc` (the B7 merge) to `<HEAD>`.  One milestone landed green and
+committed (`3811920`).
+
+The M3d-10 resume point's item 1 -- "STILL BLOCKED: the interior-leg
+`Nat.log2` decision" -- IS DISCHARGED, by B7 rather than by this session.
+`Nat.log2` is gone from every executed definition; it survives only in
+table-CONSTRUCTION generators (`bpSparseLevelCell`,
+`SparseLevelTable.lean:55`), in the spec-side `PayloadLive*` refinement
+ladder (`LocalGlobalSparse.lean:30-31`, `:603-604`), and in space-budget
+proofs.  The interior's level and span now arrive from ONE charged
+count-indexed table read whose cell packs both, unpacked by constant-divisor
+`div`/`mod` (`bpSparseLevelCell_div` / `_mod`, `SparseLevelTable.lean:78`,
+`:90`).  Item 2, discharging `hInterior`, is now genuinely unblocked and is
+what the remaining interior work consists of.
+
+### 1. THE ATOM (landed)
+
+New module `RMQ/Core/WordRAM/E1InteriorReadBlock.lean`, imported from
+`RMQ.lean:40`.
+
+Every memory read the interior performs is one instance of
+`FixedWidthNatTable.machineReadComputationAt`
+(`MachineChunkedTableProgram.lean:343`).  The maximising cross-macro branch
+makes THIRTY-THREE of them.  A defect in the atom multiplies by thirty-three,
+so it is landed and certified alone before any composite.
+
+* `interiorReadNat:107` -- seven instructions, ONE branch, exactly ONE
+  `readMem`.  `interiorReadAddr:125` is the route's own case split.
+* `interiorReadNat_runsTo:214` -- exact simulation: positional singleton
+  receipt, category log indexed by the route-side validity condition,
+  decoded cell in the option-shift convention, preservation off the
+  three-register write set `InteriorReadNatUntouched:159`.
+* `interiorReadNat_route_atom:443` -- THE BRIDGE.  The route's adapter, at
+  one chunk, issues that same address, emits that same one-event trace, and
+  decodes to that same value.  Supported by `chunkCount_eq_one:400`,
+  `footprintAt_eq_singleton:415`, `collectPayloadWords_singleton:425`.
+* `interiorReadNat_fits:175` -- constructor-exhaustive width certificate, no
+  wildcard arm, no divisor hence no positivity arm.
+* `interiorReadNatCats_memoryRead_count:151` -- exactly one charged read on
+  EITHER path.  Depends on no axioms.
+
+THE VALIDITY TEST IS MACHINE-PERFORMED, not a Lean-level `if` around the
+block: `natLt` at `Q+1` on the machine's own index register, branched at
+`Q+4`.  The dead path costs one more controller step but not one more read,
+matching `machineReadCostedWithStore_cost` (`MachineChunkedTable.lean:240`).
+Recorded as DD-20260719-002, together with the fresh register bank `85 .. 88`
+chosen above the merge slots `75 .. 84` so no interior scratch can collide
+with the `mLV`/`mLP`/`mMV`/`mMP` that `hInterior` must preserve.
+
+### 2. THE FINDING THAT RESIZES THE REMAINING WORK
+
+THE INTERIOR'S ATOMIC READ IS NOT SINGLE-CHUNK IN GENERAL, and the route's
+own cost lemmas already distinguish two regimes.  This was found by asking
+what `interiorReadNat`'s one `readMem` is entitled to assume, not by reading
+the cost prose, which states only the macro-crossing rate.
+
+* MACRO-CROSSING: `width <= machineWordBits` gives chunk count `1`
+  (`canonicalRelativeRmmMachineReadNatCosted_cost_le_one`,
+  `InteriorDirectory.lean:4060`).  This is the `11`-per-two-span rate and the
+  attained `33`.
+* WITHIN-MACRO: only `width <= 7 * machineWordBits` is available, so the rate
+  is `canonicalRelativeRmmMachineReadNatCosted_cost_le_eight`
+  (`InteriorDirectory.lean:4511`), consumed by
+  `..._cost_le_twenty_six_of_size_ge_four` (`:5196`), whose arithmetic is
+  explicitly `26 = 8 + 9 + 9`.  AT SMALL SHAPES ONE LOGICAL INTERIOR READ CAN
+  EMIT UP TO EIGHT PHYSICAL READ EVENTS.
+
+Consequence, stated plainly: `interiorReadNat` is CORRECT BUT INSUFFICIENT
+ALONE.  It carries `0 < width` and `width <= wordSize` as EXPLICIT
+hypotheses on its bridge rather than discharging them from the current
+tables, so every consumer inherits the obligation instead of the shape being
+silently assumed.  The interior simulation needs a SECOND block: an
+eight-capped chunk fold for the within-macro regime.
+
+THIS IS NOT A RETURN TO THE PRE-B7 OBSTRUCTION.  `8` is a LITERAL cap, and
+the fold is the same truncated-subtraction cap chain `x - (x - 8)` that
+`fringeArmInit` (`E1FringeArmBlock.lean:118`) already uses for the fringe's
+`33`.  REQ-E1-06 conjunct (c) -- an all-size literal total with no size
+hypothesis -- survives intact.  Recorded as DD-20260719-003.
+
+`0 < width` is the half the route's cost bound does not need and is stated
+anyway: at `width = 0` the route reads NOTHING while the block still reads
+once, and an `<= 1` cost bound hides exactly that off-by-one.
+
+### 3. THE ROUTE-SIDE MAP THE NEXT SESSION SHOULD NOT RE-DERIVE
+
+Interior object: `crossBlockArmSpec_eq` (`E1CrossBlockArm.lean:181`)
+instantiates the interior as
+`concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore`
+(`ConcreteDirectoryRAMStoreParam.lean:3639`), guarded by
+`leftBlock + 1 < rightBlock` (else `TraceResult.pure none`, zero events).
+That def is a `flatStoreExecutionTraceResultAtSegment` of
+`canonicalRelativeRmmInteriorRangeMinComputation` (`InteriorDirectory.lean:2444`)
+on the SINGLE segment `segments.canonicalComponent`, the literal `20`
+(`Segments.lean:60`).  `FlatStoreComputation.bind` appends read logs
+left-to-right, and the trace map preserves log order, so TRACE ORDER =
+TEXTUAL BIND ORDER.
+
+Five branches, writing `L`/`G` for the local/global level read, `o`/`b` for
+the local-offset / global-block read, and `S` for the four-read summary group
+(`baseline, minRel, maxRel, argOffset`, in that order,
+`InteriorDirectory.lean:2277`):
+
+| Branch | Guard | Read sequence | reads |
+| --- | --- | --- | --- |
+| B0 empty | `count = 0` | (none) | 0 |
+| B1 within-macro | `count <= macroSize - localStart` | `L, o,S, o,S` | 11 |
+| B2 adjacent-macro | `middleMacroCount = 0` | `L,o,S,o,S, L,o,S,o,S` | 22 |
+| B3 left+middle | `rightCount = 0` | `L,o,S,o,S, G,b,S,b,S` | 22 |
+| B4 cross-macro | otherwise | `L,o,S,o,S, G,b,S,b,S, L,o,S,o,S` | 33 |
+
+A `none` level read short-circuits its two-span call to `pure none` and its
+two span reads are NOT emitted; likewise a `none` offset/block read skips the
+following summary group.  The level read is indexed by THE COUNT ITSELF --
+no slot arithmetic -- while `o`/`b` carry `bpLocalSparseCellSlot` /
+`bpGlobalSparseCellSlot` arithmetic.
+
+### 4. THE READ-ORDER INVARIANT, INHERITED FROM B7 AND WORTH RESTATING
+
+B7's whnf timeout (`B7_WORKLOG.md:1954-2005`) was a membership cascade
+encoding a STALE READ ORDER: a witness claimed the sparse-OFFSET read was
+leftmost via `List.mem_append_left`, which the swap made false, and
+elaboration went hunting through concrete slot arithmetic until the heartbeat
+budget blew.  Raising `maxHeartbeats` would have produced a theorem
+describing the wrong machine.
+
+THE INVARIANT TO ENCODE: the LEVEL read is the unconditional head of every
+two-span call's append chain -- the outer `bind` performs it before matching
+on the read value.  Any positional or membership lemma that assumes otherwise
+presents as a HEARTBEAT TIMEOUT, not as a clean type error.  Diagnose a whnf
+timeout in this area as a read-order defect first.
+
+### 5. VERIFICATION LEDGER
+
+`lake build RMQ` exit 0.  Decisive lines:
+`[249/251] Built RMQ.Core.WordRAM.E1InteriorReadBlock`,
+`[250/251] Built RMQ`, `Build completed successfully.`
+
+`#print axioms` AFTER the root build, importing
+`RMQ.Core.WordRAM.E1InteriorReadBlock` DIRECTLY (`import RMQ` does not reach
+it):
+
+    interiorReadNat_runsTo                depends on axioms: [propext, Quot.sound]
+    interiorReadNat_fits                  depends on axioms: [propext, Quot.sound]
+    interiorReadNat_route_atom            depends on axioms: [propext, Quot.sound]
+    chunkCount_eq_one                     depends on axioms: [propext, Quot.sound]
+    footprintAt_eq_singleton              depends on axioms: [propext, Quot.sound]
+    collectPayloadWords_singleton         depends on axioms: [propext]
+    interiorReadNatCats_memoryRead_count  does not depend on any axioms
+
+Never `sorryAx`.  The validator was NOT extended this session and phase 5
+still reports `OPEN (interior leg blocked; NOT a pass)`; that report is now
+STALE IN ITS REASON -- the interior is no longer blocked, it is unbuilt --
+and the next session should reword it as it closes it.
+
+### 6. MATRIX STATUS AT YIELD
+
+All rows REQ-E1-01..11 remain OPEN.  This session closed none and weakened
+none.  Closure was impossible by construction: every row is whole-query
+scoped and the whole-query composition is downstream of the interior
+simulation, of which this session landed the atom.
+
+Component-level evidence added: REQ-E1-01 (one more atomic-constructor block,
+with the guard decided by a machine comparison rather than a meta-level
+`if`); REQ-E1-02 (`interiorReadNat_fits`, constructor-exhaustive, no wildcard
+arm); REQ-E1-04 (`interiorReadNat_route_atom`, positional singleton receipt
+equal to the route adapter's trace); REQ-E1-06 (`interiorReadNatCats` is a
+function of the route-side validity condition, never a numeral, and the
+two-regime finding fixes the remaining cap as the LITERAL `8`).
+
+REQ-E1-06's standing residual gap -- "the interior loop has no literal
+all-size iteration cap" -- is now SUPERSEDED IN ITS CAUSE.  B7 removed the
+`Nat.log2` loop; what remains is the chunk fold, which does have a literal
+cap (`8`).  The gap should be restated by the coordinator rather than
+carried forward in its old wording, which named a mechanism that no longer
+exists.
+
+### 7. RESUME POINT (M3d-12)
+
+NOTHING below is implemented.
+
+1. THE EIGHT-CAPPED CHUNK FOLD.  `interiorReadNat` covers the single-chunk
+   regime only (section 2).  Build its within-macro twin as a capped fold
+   over `fixedWidthNatTableMachineFootprint`, cap `8`, using the
+   `x - (x - 8)` chain from `fringeArmInit` (`E1FringeArmBlock.lean:118`) and
+   the fold-loop pattern of `fringeFoldLoop_runsTo_accepted`
+   (`E1FringeFoldBlock.lean:1301`), whose receipt is already a POSITIONAL
+   `List` equality via `iterLog_congr` + `iterLog_singleton_desc`.  Decide
+   deliberately whether the interior uses ONE block carrying the cap (simpler
+   layout, eight-step cost everywhere) or TWO with a per-shape generator
+   choice (tighter, but the generator then branches on a shape predicate --
+   check that against INV-ALL-SIZE before committing to it).
+2. THE SUMMARY GROUP `S`: four atomic reads at
+   `baseline (block / blocksPerSuper)`, `minRel block`, `maxRel block`,
+   `argOffset block`, in that order, then the four-way `match` into
+   `Option (Nat x Nat x Nat x Nat)` and `bpRelativeSummaryMinCandidate`
+   (`InteriorDirectory.lean:2277`, `:2300`).  Between reads the caller must
+   stage `iVal` into a holding register and reset `iIdx`; `iIdx` is
+   read-only within the atom, so only the caller writes it.
+3. THE SPAN BLOCKS: `o`/`b` read plus option dispatch into the summary group
+   (`:2311`, `:2329`).  The `none` arm emits NOTHING -- the block must branch
+   PAST the summary group, not run it and discard.
+4. THE TWO-SPAN BLOCKS: level read, then constant-divisor `div`/`mod` by
+   `bpSparseLevelDomain`, then two span blocks and `bpCandidateMerge?`
+   (`:2351`, `:2376`).  The level read is the UNCONDITIONAL HEAD (section 4).
+5. THE FIVE-BRANCH DISPATCH (`:2444`) and then `hInterior` in
+   `crossBlockArmProgramAt_runsTo` (`E1CrossBlockArm.lean:1143`), whose four
+   preservation obligations (`fClose`, `fRight`, `mLV`, `mLP`) are all
+   outside the interior bank `85 .. 88` by construction.
+6. Only then: the whole-query glue, the derived literal, the amended target
+   Prop, the validator's phase 5, and the doc rows.  All remain out of scope
+   and all are downstream of item 5.
+
+OPEN THREAD INHERITED FROM B7, NOT RESOLVED HERE (STRETCH-01,
+`B7_WORKLOG.md:1063-1068`): whether
+`concreteBPFiniteSmallInteriorRangeMinTable` /
+`...AllSizeStructuralLegacy` (`ConcreteDirectoryRAM.lean:1100-1209`), which
+dispatches to `boundedSummaryRangeScanTraceResultAtSegments` -- a name
+suggesting a LINEAR SCAN -- is dead from the whole-query root.  Tracing this
+session found the live route reaching only the `canonicalComponent` flat
+execution, with the `...Legacy` def at
+`ConcreteDirectoryRAMStoreParam.lean:3624` unreferenced by that chain, which
+is CONSISTENT WITH IT BEING DEAD BUT IS NOT A PROOF OF ABSENCE.  If it is
+live, the interior has a sixth branch and it is a scan; that would bear
+directly on REQ-E1-07's supersession note.  Worth a definitive answer before
+the target Prop is stated.

@@ -81,3 +81,73 @@ Accepted-route objects the rows refer to (verified in this worktree at
 | CHK-E1-04 | `git diff --check` and `git diff --check d90b062..HEAD`. | Open |
 | CHK-E1-05 | `design_decision_check.ps1 -Strict -Base d90b062687fd8e32f5c6f0120bf21f4e56666f4b`. | Open |
 | CHK-E1-06 | `claim_drift_scan.ps1`; `paper_topology_lint.ps1`. (gate.ps1 explicitly NOT run per delegation.) | Open |
+
+## M3d-11 evidence note (worker E1-R4t) — no row closed, no row weakened
+
+Added at commit `3811920`. All eleven rows REQ-E1-01..11 remain **Open**.
+This note records component-level evidence and one status correction; it
+amends no requirement wording.
+
+Component-level evidence added, all in
+`RMQ/Core/WordRAM/E1InteriorReadBlock.lean`:
+
+- **REQ-E1-01** — `interiorReadNat:107`, seven instructions, every one an
+  atomic constructor, exactly ONE `readMem`, no multi-read composite. The
+  route's `i < entries.length` guard is decided BY THE MACHINE (`natLt` at
+  `Q+1` on the machine's own index register, branched at `Q+4`), not by a
+  Lean-level `if` around the block, so the dead-address path is a charged
+  path. ISA decision recorded DD-20260719-002. Does NOT discharge the row
+  (whole-query scope).
+- **REQ-E1-02** — `interiorReadNat_fits:175`, constructor-exhaustive over all
+  seven instructions, no wildcard arm; no divisor, hence no positivity side
+  condition. Does NOT discharge the row.
+- **REQ-E1-04** — `interiorReadNat_route_atom:443`: the route's own adapter
+  (`FixedWidthNatTable.machineReadComputationAt`,
+  `MachineChunkedTableProgram.lean:343`), at one chunk, emits a ONE-EVENT
+  trace at exactly the address the block reads, and the block's receipt is
+  syntactically that trace — a POSITIONAL `List` equality for one interior
+  read. Does NOT discharge the row.
+- **REQ-E1-06** — `interiorReadNatCats:133` is a FUNCTION of the route-side
+  validity condition (six steps live, seven dead), never a numeral;
+  `interiorReadNatCats_memoryRead_count:151` fixes exactly one charged read
+  on either path, matching `machineReadCostedWithStore_cost`. No literal
+  total derived. Does NOT discharge the row.
+
+### STATUS CORRECTION to REQ-E1-06's recorded residual gap
+
+The residual gap recorded in the REQ-E1-06 row reads, in part: the interior
+computes `Nat.log2 count` and `bpSparseLogSpan count` for a runtime-derived
+`count`, and "the loop has NO literal all-size iteration cap". **That gap is
+superseded in its cause and its mechanism no longer exists.** B7 (`d5a9355`,
+merged at `f9b1ecc`) replaced the runtime computation with a count-indexed
+charged table whose cell packs level and span, read once per two-span call
+and unpacked by constant-divisor `div`/`mod` (`bpSparseLevelCell_div` /
+`_mod`, `SparseLevelTable.lean:78`, `:90`). No executed definition mentions
+`Nat.log2`.
+
+What replaces it is NOT a restatement of the same obstruction. The remaining
+uncapped structure is the table adapter's chunk fold, and that fold has a
+LITERAL cap of `8`
+(`canonicalRelativeRmmMachineReadNatCosted_cost_le_eight`,
+`InteriorDirectory.lean:4511`), so REQ-E1-06 conjunct (c) — an all-size
+literal total with no size hypothesis — survives intact. See
+DD-20260719-003 and `E1_WORKLOG.md` M3d-11 section 2.
+
+**This correction is offered for coordinator adjudication, not applied to the
+frozen row text.** The row's own wording names a mechanism that is gone;
+carrying it forward unamended would misdescribe the current machine, which is
+the same failure mode the REQ-E1-07 supersession-note correction was recorded
+to prevent.
+
+### Consequence for REQ-E1-07's supersession note
+
+The delegation's caution stands and is now discharged in one direction. The
+sentence "every loop is a chunk fold under a literal cap" was FALSE while the
+interior recursion existed. After B7 it is TRUE — but it must be shipped with
+the B7 dependency explicit, and with the cap named as TWO literals, not one:
+`33`/`8` for the fringe window and the interior chunk fold respectively. A
+draft that names only `33`/`8` from the pre-B7 fringe text is still wrong,
+because the `8` there is the per-word cap
+(`machineWordBits_le_8_mul_bpFringeChunkBits`, `ChargedWordChunks.lean:39`),
+a different `8` from the interior adapter's chunk cap. Two distinct literals
+that happen to share a value.

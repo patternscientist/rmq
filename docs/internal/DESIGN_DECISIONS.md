@@ -4187,3 +4187,88 @@ It does not re-derive the route literal. Commit A's `210` is EXPECTED to be
 recovered, and the width fix is what makes that possible, but REQ-B7-05 demands
 the literal be derived over the AMENDED route with the maximizing branch bound
 exhibited. That derivation is commit B's and is not claimed here.
+
+## DD-20260719-002: the interior's atomic table read is a seven-instruction branch block with a machine-decided validity test (E1 M3d-11)
+
+Context. Every memory read the interior leg performs is one instance of
+`FixedWidthNatTable.machineReadComputationAt`
+(`MachineChunkedTableProgram.lean:343`), wrapped as
+`canonicalRelativeRmmMachineReadNatComputation` (`InteriorDirectory.lean:2132`).
+The maximising cross-macro branch makes thirty-three such calls
+(`canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_three_of_macro_crossing`,
+`InteriorDirectory.lean:5412`). A defect in the atom therefore multiplies by
+thirty-three, so it is landed and certified on its own before any composite.
+
+Decision. `interiorReadNat` (`E1InteriorReadBlock.lean`) is seven
+instructions, ONE branch, exactly ONE `readMem`:
+
+    Q+0 const iT entriesLen / Q+1 natLt iT iIdx iT / Q+2 const iA base
+    Q+3 add iA iA iIdx / Q+4 brNZ iT (Q+6) / Q+5 const iA deadAddress
+    Q+6 readMem iVal segment iA
+
+THE VALIDITY TEST IS PERFORMED BY THE MACHINE, not by a Lean-level `if`
+around the block: the route's `i < entries.length` is a `natLt` at `Q+1` on
+the machine's own index register, branched on at `Q+4`. This is what
+REQ-E1-05's anti-vacuity challenge demands of a guard, and it makes the
+dead-address path a CHARGED path rather than a meta-level fallback. The
+live path is the taken branch and the dead path the fall-through, so the
+dead path costs one more controller step but NOT one more read
+(`interiorReadNatCats_memoryRead_count`), matching the route's
+`machineReadCostedWithStore_cost`, which charges `1` for an invalid index.
+
+The category log `interiorReadNatCats` is INDEXED BY the route-side validity
+condition and is never a numeral, per the standing discipline.
+
+Register bank. `85 .. 88` (`iIdx`, `iVal`, `iA`, `iT`), opened fresh above
+the three-way merge's `75 .. 84` (`E1CandMerge3.lean:97`) so that no interior
+scratch overlaps the merge slots `mLV`/`mLP`/`mMV`/`mMP` that
+`crossBlockArmProgramAt_runsTo`'s `hInterior` requires the interior to
+preserve. `iIdx` is read-only, so a caller may keep an index live across a
+read.
+
+Option encoding. The route decodes with `fixedWidthNatTableMachineDecode`,
+which at one chunk is `word?.map bitsToNatLE`; the machine decodes with
+`decodeRead`, which is `bitsToNatLE word + 1` on a hit and `0` on a miss. The
+machine register therefore carries the route's `Option Nat` in the
+development's standing option-shift convention, and read success is testable
+by one comparison against `0`. `interiorReadNat_route_atom` states that
+correspondence together with the positional receipt equality.
+
+## DD-20260719-003: the interior's single-chunk read shape is an EXPLICIT hypothesis, because the within-macro regime genuinely violates it (E1 M3d-11)
+
+Context. `interiorReadNat` performs exactly one `readMem`. Whether that is
+FAITHFUL to the route depends on the route's chunk count
+`fixedWidthNatTableMachineChunkCount width wordSize`
+(`MachineChunkedTable.lean:12`), which is variable in general.
+
+FINDING, CHECKED NOT ASSUMED. The chunk count is NOT always one, and the two
+regimes are already distinguished in the route's own cost lemmas:
+
+* MACRO-CROSSING regime. `width <= machineWordBits` gives chunk count `1` and
+  `canonicalRelativeRmmMachineReadNatCosted_cost_le_one`
+  (`InteriorDirectory.lean:4060`). This is what yields `11` per two-span and
+  the attained `33` on the cross-macro branch.
+* WITHIN-MACRO regime. Only `width <= 7 * machineWordBits` is available, so
+  chunk count is bounded by `8` and the rate is
+  `canonicalRelativeRmmMachineReadNatCosted_cost_le_eight`
+  (`InteriorDirectory.lean:4511`). Its consumer is the within-macro branch
+  bound `canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_twenty_six_of_size_ge_four`
+  (`:5196`), whose arithmetic is explicitly `26 = 8 + 9 + 9`. At small shapes
+  ONE logical interior read can emit up to EIGHT physical read events.
+
+Decision. `interiorReadNat`'s bridge theorem `interiorReadNat_route_atom`
+carries `0 < width` and `width <= wordSize` as EXPLICIT hypotheses rather
+than discharging them from the current tables. Two consequences are recorded
+deliberately:
+
+1. The block is correct but INSUFFICIENT ALONE. The interior simulation needs
+   a second block: an eight-capped chunk fold for the within-macro regime.
+   That is not a regression to the pre-B7 obstruction, because `8` is a
+   LITERAL cap: the fold is the same truncated-subtraction cap chain
+   `x - (x - 8)` that `fringeArmInit` (`E1FringeArmBlock.lean:118`) already
+   uses for the fringe's `33`, so REQ-E1-06 conjunct (c) survives intact.
+2. `0 < width` is the half the route's cost bound does NOT need, and it is
+   stated anyway. At `width = 0` the route reads NOTHING while this block
+   still reads once. An `<= 1` cost bound hides exactly that off-by-one, so
+   the hypothesis is carried where a reader of the cost model would not think
+   to look for it.
