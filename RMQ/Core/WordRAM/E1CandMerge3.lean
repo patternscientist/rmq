@@ -349,7 +349,7 @@ theorem candMerge3_hosting {program : E1Machine.Program} {E : Nat}
 /-! ## Preservation predicate (NUMERALS, per the house pattern) -/
 
 /-- Registers the block never writes.  Stated in numerals: with the
-register abbrevs `omega` treats the names as opaque atoms and fails. -/
+register abbrevs `omega` treats the names as unanalysed atoms and fails. -/
 abbrev CandMerge3Untouched (r : Nat) : Prop :=
   r ≠ 69 ∧ r ≠ 81 ∧ r ≠ 82 ∧ r ≠ 83 ∧ r ≠ 84
 
@@ -760,7 +760,7 @@ theorem candMerge3_runsTo
 
 `candMerge3_runsTo` is a simulation theorem, and a reader is entitled to
 ask whether its six arms are ever actually taken -- a block that
-collapsed two arms would still admit a simulation theorem, just one whose
+collapsed two arms would still support a simulation theorem, just one whose
 case split was decorative.
 
 This section RUNS the block rather than merely hosting it: `run` is
