@@ -1,6 +1,8 @@
 import RMQ.Core.WordRAM.E1CloseCompose
 import RMQ.Core.WordRAM.E1SelectCanonical
 import RMQ.Core.WordRAM.E1CandMerge3
+import RMQ.Core.WordRAM.E1CrossBlockArm
+import RMQ.Core.WordRAM.E1FringeArmProgram
 
 /-!
 # M6: executable validation of the E1 amended machine
@@ -42,6 +44,11 @@ this harness exits 1.  A validator that cannot fail is not a validator.
 -/
 
 namespace RMQ.Validation.E1MachineValidate
+
+-- The `mainImpl` do-block is long enough that elaborating it exceeds the
+-- default recursion budget (the existing verdict-grouping comment below
+-- records the same pressure on the `&&` chain).
+set_option maxRecDepth 8192
 
 open RMQ.WordRAM
 open RMQ.WordRAM.E1Machine
@@ -1027,6 +1034,294 @@ two in separate columns and calls the wall-clock non-evidence. -/
 -- This raises only the ELABORATOR's stack budget: it is not a proof
 -- option and weakens no check.
 set_option maxRecDepth 8000 in
+/-! ## Phase 3f/4e: the FRINGE ARM, where the RECEIPT is the discriminator
+
+The M3d-7 session established that this harness's two discriminators are
+COMPLEMENTARY: receipt diffing catches control-flow-preserving mutations
+in READ-BEARING blocks, independent-value checking catches value-only
+mutations in READ-FREE blocks, and neither subsumes the other.  The merge
+block is read-free, so phase 3e/4d had to use the value.
+
+The fringe arm is the other side of that coin.  It is READ-BEARING -- four
+charged window reads plus one per capped fold pass -- so here the RECEIPT
+is the discriminator with power, and mutant E below is chosen to be
+invisible to the value check precisely as mutant D was invisible to the
+receipt check.
+-/
+
+/-- INDEPENDENT reference for the arm's charged-read accounting.
+
+Computed from the SPECIFICATION -- the window read is four ascending
+payload words at the window base in segment `0`, and the 33-capped fold
+performs exactly one chunk-table read per pass at the fringe segment --
+without calling the machine, `fringeArmProgramAt`, or the route's fold
+evaluator.  The cap `33` is the route's literal
+(`ChargedFringeTrace.lean:722`). -/
+def refArmReads (c relHi : Nat) : Nat := 4 + Nat.min (relHi / c + 1) 33
+
+/-- The four window-read `(segment, address)` pairs the specification
+requires, in order. -/
+def refArmWindowAddrs (base : Nat) : List (Nat × Nat) :=
+  [(0, base), (0, base + 1), (0, base + 2), (0, base + 3)]
+
+/-- Project a trace event onto the `(segment, address)` pair it charges.
+
+Non-`readWord` events map to `none` rather than to a sentinel pair, so
+that a receipt carrying a `wordRank`, `wordSelect` or
+`syntheticCostOnlyPrimitive` event SHRINKS the projected list and is
+caught by the length check in `runArm` -- a sentinel would have silently
+passed such an event off as a read. -/
+def eventAddr : TraceEvent -> Option (Nat × Nat)
+  | .readWord segment address _ => some (segment, address)
+  | _ => none
+
+/-- Arm fixtures as `(word, S, c, L, base, relLo, relHi, seed, bb, start)`.
+The `relLo`/`relHi` grids straddle the fold's window gate so that BOTH
+epilogue arms occur -- an occupied rebase and the seed fallback -- and the
+`c`/`relHi` grid makes the pass count vary from one to four. -/
+def armCases : List (List Bool × Nat × Nat × Nat × Nat × Nat × Nat × Nat × Nat × Nat) :=
+  [[true, false, true, false], [false, false, false, false],
+    [true, true, true, true]].flatMap fun w =>
+    [(2, 1), (2, 5), (1, 3), (2, 3)].flatMap fun (c, relHi) =>
+      [0, 4, 9].map fun relLo =>
+        (w, 7, c, 4, 100, relLo, relHi, 0, 500, 900)
+
+/-- What one arm run reports.  Every `expected*` field is computed from
+the independent reference BEFORE the program is built or run. -/
+structure ArmReport where
+  expectedReads : Nat
+  machineReads : Nat
+  expectedWindowAddrs : List (Nat × Nat)
+  machineWindowAddrs : List (Nat × Nat)
+  foldSegmentsOk : Bool
+  reachedExit : Bool
+  modeledSteps : Nat
+  value : Nat
+  position : Nat
+  readsAgree : Bool
+  windowAgrees : Bool
+deriving Repr
+
+/-- RUN THE ARM at host base `2` and compare its receipt against the
+independent reference. -/
+def runArm (salt : Nat) (build : List Instr -> List Instr)
+    (w : List Bool) (S c L base relLo relHi seed bb start : Nat) :
+    ArmReport :=
+  -- EXPECTATION FIRST, from `refArmReads`/`refArmWindowAddrs` alone.
+  let expectedReads := refArmReads c relHi
+  let expectedWindow := refArmWindowAddrs base
+  -- ONLY NOW the machine.
+  let program := build (E1FringeArmProgram.armWitnessProgram S c L)
+  let result :=
+    E1Machine.run (E1FringeArmProgram.armWitnessStore w) program
+      (4000 + salt)
+      ⟨E1FringeArmProgram.armWitnessRegs base relLo relHi seed bb start,
+        0, false⟩
+  let addrs := result.readLog.filterMap eventAddr
+  let window := addrs.take 4
+  let folds := addrs.drop 4
+  { expectedReads := expectedReads
+    machineReads := result.readLog.length
+    expectedWindowAddrs := expectedWindow
+    machineWindowAddrs := window
+    -- `addrs.length == readLog.length` rejects any non-read event on the
+    -- receipt; `folds.all` pins every fold read to the fringe segment.
+    foldSegmentsOk :=
+      addrs.length == result.readLog.length && folds.all (fun p => p.1 == S)
+    reachedExit := result.final.pc == 97 && result.final.halted
+    modeledSteps := result.steps
+    value := result.final.regs E1FringeArmBlock.fRV
+    position := result.final.regs E1FringeArmBlock.fRP
+    readsAgree := expectedReads == result.readLog.length
+    windowAgrees := expectedWindow == window }
+
+def armReports (salt : Nat) (build : List Instr -> List Instr) :
+    List ArmReport :=
+  armCases.map fun (w, S, c, L, base, relLo, relHi, seed, bb, start) =>
+    runArm salt build w S c L base relLo relHi seed bb start
+
+def armExitFailures (rs : List ArmReport) : Nat :=
+  (rs.filter (fun r => !r.reachedExit)).length
+
+/-- RECEIPT failures: read count or window addresses disagreeing with the
+independent reference, or a fold read charged at the wrong segment. -/
+def armReceiptFailures (rs : List ArmReport) : Nat :=
+  (rs.filter
+    (fun r => !r.readsAgree || !r.windowAgrees || !r.foldSegmentsOk)).length
+
+/-- Anti-vacuity: the fixture set must reach BOTH epilogue arms.  The
+seed-fallback arm leaves the seed's `start` in the position register; the
+occupied arm leaves a window rebase.  A fixture set hitting only one would
+make the arm phase blind to the epilogue branch. -/
+def armEpilogueCoverage (rs : List ArmReport) : Nat :=
+  (dedupList (rs.map (fun r => r.position == 900))).length
+
+/-- Anti-vacuity: the fold's back edge must actually fire.  Distinct read
+counts above the four window reads witness distinct pass counts. -/
+def armPassCoverage (rs : List ArmReport) : Nat :=
+  (dedupList (rs.map (fun r => r.machineReads))).length
+
+def goodArm : List Instr -> List Instr := id
+
+/-- MUTANT E: charge the fold's chunk-table read to the NEXT segment.
+
+One field change; same program length; same opcode-category sequence; and
+because the witness store answers every segment identically, the decoded
+word, every branch, the exit pc, the halted flag, the modeled step count
+AND the computed value are all UNCHANGED.  Only the segment recorded in
+the receipt differs.
+
+This is the exact mirror of mutant D: D was invisible to the receipt and
+caught only by the value; E is invisible to the value and caught only by
+the receipt.  Together they show neither discriminator subsumes the
+other. -/
+def mutatedArmSegment (program : List Instr) : List Instr :=
+  program.map fun instr =>
+    match instr with
+    | .readMem d s a => if s == 7 then .readMem d (s + 1) a else .readMem d s a
+    | other => other
+
+/-- The mutation is real: it changes the program, preserves its length,
+and preserves the whole opcode-category sequence. -/
+def armMutationIsReal : Bool :=
+  let honest := E1FringeArmProgram.armWitnessProgram 7 2 4
+  let mutant := mutatedArmSegment honest
+  honest != mutant && honest.length == mutant.length &&
+    honest.map Instr.category == mutant.map Instr.category
+
+/-- Mutant E is RECEIPT-ONLY: case for case it agrees with the honest run
+on exit pc, halted flag, modeled step count and computed value.  Checked,
+not asserted -- this is what makes "only the receipt rejects it" evidence. -/
+def armMutantEIsReceiptOnly (salt : Nat) : Bool :=
+  let honest := armReports salt goodArm
+  let mutant := armReports salt mutatedArmSegment
+  (honest.zip mutant).all fun (h, m) =>
+    h.reachedExit == m.reachedExit && h.modeledSteps == m.modeledSteps &&
+      h.value == m.value && h.position == m.position
+
+/-! ## Phase 3g/4f: the CROSS-BLOCK range preambles, where the VALUE is
+the discriminator
+
+`crossLeftRange` and `crossRightRange` (`E1CrossBlockArm.lean`) are new
+this session and READ-FREE, so the receipt has no power over them at all
+-- exactly the merge's situation.  They are validated against an
+independent reference for the route's left- and right-fringe window
+ranges, computed from `blockStartOf`/`blockOfClose` rather than from the
+machine's `(c / bs + 1) * bs` form.
+
+This phase is worth more than usual: these two blocks do NOT yet have
+`_runsTo` theorems, so execution against an independent reference is the
+only evidence their arithmetic is right.
+-/
+
+/-- INDEPENDENT reference for the LEFT cross-block fringe range, read off
+`fringeLeg_trace_eq_leftArm` (`E1FringeArmBlock.lean:618`).  Structurally
+different from the machine's form: it uses the route's `blockStartOf` and
+`blockOfClose` and adds `blockSize` separately, where the machine folds
+both into one `(leftBlock + 1) * blockSize`. -/
+def refCrossLeftRange (blockSize bb leftClose : Nat) : Nat × Nat × Nat :=
+  let start := leftClose + 1
+  let count :=
+    RMQ.SuccinctClose.blockStartOf blockSize
+        (RMQ.SuccinctClose.blockOfClose blockSize leftClose) +
+      blockSize - leftClose
+  (start, start - bb, start + count - 1 - bb)
+
+/-- INDEPENDENT reference for the RIGHT cross-block fringe range, read off
+`fringeLeg_trace_eq_rightArm` (`E1FringeArmBlock.lean:647`). -/
+def refCrossRightRange (blockSize bb rightClose : Nat) : Nat × Nat × Nat :=
+  let blockStart :=
+    RMQ.SuccinctClose.blockStartOf blockSize
+      (RMQ.SuccinctClose.blockOfClose blockSize rightClose)
+  (blockStart, blockStart - bb,
+    blockStart + (rightClose - blockStart + 2) - 1 - bb)
+
+/-- Range fixtures as `(blockSize, bb, close)`.  The closes straddle block
+boundaries in both directions so that the `divConst`/`mulConst` chain is
+exercised at exact multiples of `blockSize` and strictly inside blocks. -/
+def rangeCases : List (Nat × Nat × Nat) :=
+  [4, 6, 8].flatMap fun bs =>
+    [0, 1, 5].flatMap fun bb =>
+      [8, 9, 11, 12, 17, 24].map fun close => (bs, bb, close)
+
+/-- What one range-preamble run reports.  `expected` is computed from the
+independent reference BEFORE the program is built or run. -/
+structure RangeReport where
+  expected : Nat × Nat × Nat
+  machine : Nat × Nat × Nat
+  reachedExit : Bool
+  modeledSteps : Nat
+  machineReads : Nat
+  agrees : Bool
+deriving Repr
+
+/-- RUN one range preamble and compare against the independent reference. -/
+def runRange (salt : Nat) (isLeft : Bool)
+    (build : List Instr -> List Instr) (blockSize bb close : Nat) :
+    RangeReport :=
+  -- EXPECTATION FIRST.
+  let expected :=
+    if isLeft then refCrossLeftRange blockSize bb close
+    else refCrossRightRange blockSize bb close
+  -- ONLY NOW the machine.
+  let block :=
+    if isLeft then E1CrossBlockArm.crossLeftRange blockSize
+    else E1CrossBlockArm.crossRightRange blockSize
+  let program := build block ++ [Instr.halt]
+  let regs :=
+    RegFile.write (RegFile.write (fun _ => 0)
+      E1SameBlockArm.fClose close) E1FringeArmBlock.fBB bb
+  let result :=
+    E1Machine.run ⟨fun _ _ => none⟩ program (64 + salt) ⟨regs, 0, false⟩
+  let got :=
+    (result.final.regs E1FringeArmBlock.fStart,
+      result.final.regs E1FringeFoldBlock.fLo,
+      result.final.regs E1FringeFoldBlock.fHi)
+  { expected := expected
+    machine := got
+    reachedExit := result.final.pc == 10 && result.final.halted
+    modeledSteps := result.steps
+    machineReads := result.readLog.length
+    agrees := expected == got }
+
+def rangeReports (salt : Nat) (isLeft : Bool)
+    (build : List Instr -> List Instr) : List RangeReport :=
+  rangeCases.map fun (bs, bb, close) => runRange salt isLeft build bs bb close
+
+def rangeMismatches (rs : List RangeReport) : Nat :=
+  (rs.filter (fun r => !r.agrees)).length
+
+def rangeExitFailures (rs : List RangeReport) : Nat :=
+  (rs.filter (fun r => !r.reachedExit)).length
+
+def rangeReads (rs : List RangeReport) : Nat :=
+  (rs.map RangeReport.machineReads).foldl (· + ·) 0
+
+def goodRange : List Instr -> List Instr := id
+
+/-- MUTANT F: drop the `+ 1` that turns the left block INDEX into the
+block's exclusive end, i.e. compute `leftBlock * blockSize - leftClose`
+instead of `(leftBlock + 1) * blockSize - leftClose`.
+
+This is the off-by-one an eye is least likely to catch in a range
+preamble.  One operand change, same length, same opcode categories, and
+the block is READ-FREE so no receipt exists to diff.  Only the independent
+reference rejects it. -/
+def mutatedRangeCount (program : List Instr) : List Instr :=
+  program.map fun instr =>
+    match instr with
+    | .add d s1 s2 =>
+        if d == E1FringeFoldBlock.fU && s1 == E1FringeFoldBlock.fU then
+          .add d s1 s1
+        else .add d s1 s2
+    | other => other
+
+def rangeMutationIsReal : Bool :=
+  let honest := E1CrossBlockArm.crossLeftRange 4
+  let mutant := mutatedRangeCount honest
+  honest != mutant && honest.length == mutant.length &&
+    honest.map Instr.category == mutant.map Instr.category
+
 def mainImpl : IO UInt32 := do
   IO.println "== E1 amended-machine validator (M6) =="
   IO.println ""
@@ -1225,6 +1520,77 @@ def mainImpl : IO UInt32 := do
   IO.println s!"mergeMutationWallClockMs={tgm1 - tgm0}"
   IO.println ""
 
+  -- STEP 3f: the fringe ARM, judged by its RECEIPT.
+  IO.println "-- phase 3f: fringe ARM at base 2 vs an independent read reference --"
+  let ta0 <- IO.monoMsNow
+  let armHonest := armReports salt goodArm
+  let armExitFails := armExitFailures armHonest
+  let armReceiptFails := armReceiptFailures armHonest
+  let armEpiCov := armEpilogueCoverage armHonest
+  let armPassCov := armPassCoverage armHonest
+  let armSteps := (armHonest.map ArmReport.modeledSteps).foldl (· + ·) 0
+  let armReadsTotal := (armHonest.map ArmReport.machineReads).foldl (· + ·) 0
+  IO.println s!"armCases={armCases.length}"
+  IO.println s!"armExitFailures={armExitFails}   (proved exit is pc 97, halted)"
+  IO.println s!"armReceiptFailures={armReceiptFails}   (read count, window addresses, fold segment; must be 0)"
+  IO.println s!"armEpilogueCoverage={armEpiCov}   (must be 2: occupied rebase AND seed fallback)"
+  IO.println s!"armPassCoverage={armPassCov}   (must be > 1: the fold back edge fires)"
+  IO.println s!"armModeledSteps={armSteps}   (machine-modeled, reproducible)"
+  IO.println s!"armModeledReads={armReadsTotal}   (must be > 0: the arm is read-BEARING)"
+  let ta1 <- IO.monoMsNow
+  IO.println s!"armWallClockMs={ta1 - ta0}   (this binary on this host; NOT evidence)"
+  IO.println ""
+
+  -- STEP 4e: mutating the ARM, where the VALUE cannot help.
+  IO.println "-- phase 4e: deliberate mutation of the ARM (receipt-only visible) --"
+  let tam0 <- IO.monoMsNow
+  let mutEReports := armReports salt mutatedArmSegment
+  let mutEExit := armExitFailures mutEReports
+  let mutEReceipt := armReceiptFailures mutEReports
+  let mutEReceiptOnly := armMutantEIsReceiptOnly salt
+  IO.println s!"armMutationIsReal={armMutationIsReal}   (differs; same length AND same opcode categories)"
+  IO.println s!"mutantE_segment_exitFailures={mutEExit}   (0 expected: exit pc alone MISSES this)"
+  IO.println s!"mutantE_segment_receiptFailures={mutEReceipt}   (must be > 0: ONLY the receipt catches it)"
+  IO.println s!"mutantE_isReceiptOnly={mutEReceiptOnly}   (pc, steps, value and position all agree with honest)"
+  IO.println s!"armMutationERejected={mutEReceipt != 0}"
+  let tam1 <- IO.monoMsNow
+  IO.println s!"armMutationWallClockMs={tam1 - tam0}"
+  IO.println ""
+
+  -- STEP 3g: the two cross-block range preambles, judged by their VALUE.
+  IO.println "-- phase 3g: cross-block RANGE preambles vs an independent reference --"
+  let tr0 <- IO.monoMsNow
+  let leftRangeReports := rangeReports salt true goodRange
+  let rightRangeReports := rangeReports salt false goodRange
+  let lrMismatch := rangeMismatches leftRangeReports
+  let lrExit := rangeExitFailures leftRangeReports
+  let rrMismatch := rangeMismatches rightRangeReports
+  let rrExit := rangeExitFailures rightRangeReports
+  let rangeReadsTotal := rangeReads leftRangeReports + rangeReads rightRangeReports
+  IO.println s!"rangeCases={rangeCases.length}   (each preamble)"
+  IO.println s!"crossLeftRangeExitFailures={lrExit}   (exit is pc 10, halted)"
+  IO.println s!"crossLeftRangeMismatches={lrMismatch}   (start/relLo/relHi vs refCrossLeftRange; must be 0)"
+  IO.println s!"crossRightRangeExitFailures={rrExit}"
+  IO.println s!"crossRightRangeMismatches={rrMismatch}   (vs refCrossRightRange; must be 0)"
+  IO.println s!"rangeModeledReads={rangeReadsTotal}   (must be 0: both preambles are read-free)"
+  let tr1 <- IO.monoMsNow
+  IO.println s!"rangeWallClockMs={tr1 - tr0}"
+  IO.println ""
+
+  -- STEP 4f: mutating a range preamble, where no receipt exists to diff.
+  IO.println "-- phase 4f: deliberate mutation of the LEFT range (value-only visible) --"
+  let trm0 <- IO.monoMsNow
+  let mutFReports := rangeReports salt true mutatedRangeCount
+  let mutFMismatch := rangeMismatches mutFReports
+  let mutFExit := rangeExitFailures mutFReports
+  IO.println s!"rangeMutationIsReal={rangeMutationIsReal}   (differs; same length AND same opcode categories)"
+  IO.println s!"mutantF_blockEnd_exitFailures={mutFExit}   (0 expected: exit pc alone MISSES this)"
+  IO.println s!"mutantF_blockEnd_mismatches={mutFMismatch}   (must be > 0: the value catches it)"
+  IO.println s!"rangeMutationFRejected={mutFMismatch != 0}   (no receipt exists to diff: the block is read-free)"
+  let trm1 <- IO.monoMsNow
+  IO.println s!"rangeMutationWallClockMs={trm1 - trm0}"
+  IO.println ""
+
   -- STEP 5: the hole.
   IO.println "-- phase 5: whole-query comparison --"
   IO.println s!"wholeQueryComparisonAvailable={wholeQueryComparisonAvailable}"
@@ -1267,10 +1633,27 @@ def mainImpl : IO UInt32 := do
   let okMergeMutations :=
     mergeMutationsAreReal && mutCMismatch != 0 && mutDMismatch != 0 &&
       mutDValueOnly
+  -- The fringe arm: RECEIPT agreement with the independent read
+  -- reference, both epilogue arms reached, the fold back edge fired, and
+  -- reads actually charged (a read-free arm would make phase 3f vacuous).
+  let okArm :=
+    armExitFails == 0 && armReceiptFails == 0 && armEpiCov == 2 &&
+      armPassCov > 1 && armReadsTotal > 0
+  -- Mutant E rejected, and confirmed invisible to every observable except
+  -- the receipt -- the mirror of mutant D.
+  let okArmMutations :=
+    armMutationIsReal && mutEReceipt != 0 && mutEReceiptOnly
+  -- The two new cross-block range preambles: VALUE agreement with the
+  -- independent reference, and read-freedom observed in execution.
+  let okRange :=
+    lrMismatch == 0 && lrExit == 0 && rrMismatch == 0 && rrExit == 0 &&
+      rangeReadsTotal == 0
+  let okRangeMutations := rangeMutationIsReal && mutFMismatch != 0
   let okCore := okReference && okLengths && okDispatch && okLeg
   let okComposite := okSelect && okCompose && okComposeCoverage && okMerge
   let okAdversarial := okMutations && okMutantSetup && okMergeMutations
-  let ok := okCore && okComposite && okAdversarial
+  let okNew := okArm && okArmMutations && okRange && okRangeMutations
+  let ok := okCore && okComposite && okAdversarial && okNew
   if ok then
     IO.println "RESULT: PASS (with the whole-query comparison still OPEN)"
     return 0
