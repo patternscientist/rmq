@@ -4180,3 +4180,42 @@ Both failures this round are process rather than mathematics, and both are the
 coordinator's. Worth recording plainly: the workers' output has been sound in
 every one of these cases, and what has repeatedly needed repair is my
 instructions and my sequencing.
+
+---
+
+## C05 round 64 — Lane CL's DD entries, and a padding argument stronger than
+## the one I gave it
+
+Lane CL closed the bookkeeping gap at `ace8683`, four entries at
+`DESIGN_DECISIONS.md:5265`/`5315`/`5408`/`5468`. It verified the right thing
+before committing: `git diff --name-only be0291e -- RMQ/` is **empty**, so the
+verified-green source tree is provably untouched by a docs-only commit. That is
+the check I would have wanted and did not ask for.
+
+**Its argument against padding is better than mine, on a ground I had not
+seen.** I rejected padding because it reshapes the accepted artifact to spare a
+proof. CL added three more, one of which is decisive on its own: **`bpCode_length`
+(`Shape.lean:51`) is frozen at `2 * size`, and `L` is a function OF that length —
+so the padding target depends on the padded result.** Padding is not merely
+undesirable here, it is circular. And it tied the decision to DD-009 from the
+opposite direction, where raggedness is LOAD-BEARING because padding would break
+`erases`. So the move I forbade on principle turns out to be blocked by an
+existing accepted property as well.
+
+**The terminator fixture's impostor is FOUND, not invented**, and CL recorded
+why that matters: it is `witnessCrossArm` with its `.halt` replaced by a register
+write — i.e. exactly the real arm's exit condition. Rule 5 satisfied in its
+strong form on a discriminator, which is the case where a constructed witness is
+most tempting and least useful.
+
+**And it corrected its own citation drift**: `sbChunkBits` moved
+`E1SameBlockArm.lean:56` → `:106`, because its own insertion of
+`CloseLegUntouched` and the adequacy theorems shifted it. Every other file:line
+in the four entries re-grepped at source before writing. That is the third worker
+this campaign to catch its own insertions staling its own citations.
+
+Two deviations it flagged rather than absorbed, both fine: the session tag reads
+`(E1 LaneCL)` because this lane has no `M`-number, and the evaluated table's
+first column reads `bpCode length` rather than `|bpCode|` because a literal pipe
+breaks a markdown table. Flagging a formatting compromise instead of silently
+making it is the habit that has been catching real defects all campaign.
