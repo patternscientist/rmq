@@ -1529,3 +1529,35 @@ easier; what should break is the `rfl` identities that COMPUTE from the live
 field — `closeLCA = 126` and `wholeQuery = 207` — which is precisely what
 commit A exists to migrate to 129 and 210. If instead a cap proof fails, the
 staging split is unsound and the rung returns to a single atomic commit.
+
+**Round 21 result — prediction confirmed, staging split VERIFIED SOUND.**
+Coordinator ran the experiment directly. Setting the interior cap to 33:
+
+1. First failure was NOT a cap proof. It was `InteriorDirectory.lean:4567`, the
+   CROSS-MACRO branch — the zero-slack one B7-03 identified. Its three siblings
+   wrap their bounds in `Nat.le_trans ... (by simp [...])`, which adapts to any
+   cap; the cross-macro branch applies its lemma directly with `exact`, so a
+   `<= 33` goal stops type-matching. Giving it the same wrapper its siblings
+   already have fixes it — verified by rebuild.
+2. With that wrapper the interior module builds, the run reaches 418.9s (versus
+   28.8s before), and it fails at EXACTLY the three predicted sites, all of them
+   commit A's scope: `SuccinctFinalRAM.lean:8821` and `:8825` (`rfl` failures on
+   the `closeLCA = 126` and `wholeQuery = 207` identities) and `:9015` (one
+   consumer type mismatch).
+
+So the recorded prediction holds with one mechanical amendment: cap PROOFS
+remain provable because widening a cap makes `cost <= cap` strictly easier, and
+only the identities that COMPUTE from the live field must migrate. **Commit A is
+sound and its failure surface is now enumerated rather than estimated.**
+
+Coordinator reverted both experimental edits, leaving the worker a clean tree at
+`0445d1d` so commit A is authored by the worker rather than by the coordinator.
+The boundary matters: finishing an experiment a stalled worker started is
+coordinator work; writing its commit is not.
+
+**Watchdog mitigation now standing policy.** Whole-library rebuilds after a
+core-definition change run 400s+ silent and kill a watchdogged agent at 600s.
+Workers must keep output flowing, tee to a polled file, or keep builds
+incremental; if a silent cold rebuild is genuinely required, the worker stops
+and the COORDINATOR runs it in a background shell and hands back the result.
+Same division of labour already used for the aggregate gate.
