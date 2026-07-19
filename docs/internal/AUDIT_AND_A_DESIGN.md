@@ -4336,3 +4336,42 @@ before writing. The corrected instruction worked first time.
 
 **Batteries now running in the quiet window**, per round 65: combined B3+B4
 range, then Lane CL.
+
+---
+
+## C05 round 67 — B3+B4 fully green; and my own tooling produced a green check
+## that examined nothing, for the second time
+
+**Lane B3+B4 over `4241de4..46a74b3`: fully green.** Library+paper+examples 0
+errors, validator PASS, headline axiom check 0, `design_decision_check -Strict`
+a **real** pass over 7 examined files (so DD-053 through -058 are properly
+logged), claim-drift 760 hits / 0 strict failures, paper-topology PASS, both
+`git diff --check` forms 0, hygiene 0.
+
+**And then my own tooling did the exact thing I have been warning workers
+about.** I chained the two deferred batteries in one PowerShell invocation. The
+command **exited 0**. The second battery **never ran** — `battery.ps1` does
+`Set-Location $Worktree` and never restores it, so after the first run the
+relative `./battery.ps1` resolved against the worktree and threw
+`CommandNotFoundException`. The chained exit status reported success anyway.
+
+Had I not checked for the second tag's lines in the output, I would have
+reported both lanes green on the strength of a run that examined one of them.
+**That is round 51 repeating in a different costume, in tooling I wrote after
+round 51 specifically to prevent round 51.** The pattern is now unmistakable and
+worth stating as a rule rather than a lesson: **an exit code is a claim about
+what a process did, and like every other claim in this campaign it has to be
+checked against what was actually examined.** For a battery that means confirming
+the expected TAG appears in the output, not that the status was zero.
+
+Fixed: `battery.ps1` now captures `Get-Location` at entry and restores it in the
+`finally` block, so it is composable. Lane CL's battery re-launched with an
+absolute script path.
+
+Three of my last six coordinator errors have been in verification scaffolding
+rather than in mathematics or addressing: a check invoked so it examined nothing
+(51), a lane launched into a worktree with a battery queued on it (63), a
+battery contending for the mutex with the lane it verifies (65), and now a
+chained battery silently skipped (67). The engineering work has been sound; the
+apparatus I built to check it keeps failing open. Failing OPEN is the dangerous
+direction, because it produces false assurance rather than false alarm.
