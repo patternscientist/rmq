@@ -501,7 +501,7 @@ workflow-decision edit is authorized.
 These requirements and IDs are frozen before the first R1-R3 claim edit. Only
 evidence, status, and an explicitly approved contract amendment may change.
 
-| ID | Exact frozen requirement | Scope | Evidence needed (exact proposition/check) | Named consumer and identity/composition chain | Anti-vacuity challenge attempted and outcome | Evidence obtained | Status / residual gap |
+| ID | Exact frozen requirement | Scope | Evidence needed (exact proposition/check) | Named consumer and identity/composition chain | Anti-vacuity challenge attempted and outcome | Evidence obtained | Pre-edit status snapshot (superseded by the exact-evidence closure register below) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `REQ-R1R3-READWORD-ONLY-SURFACE` | "repair these exact rejected-candidate statements and any semantically equivalent current statement found by the closed inventory"; `artifact/CLAIMS.md`: replace “Every actual emitted event is readWord, wordRank, or wordSelect” with the universal readWord-only route fact and cite `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`; `docs/PAPER_CLAIM_CORRESPONDENCE.md`: the current charged-trace row must cite the readWord-only headline/source theorem, not present the weaker three-constructor disjunction as the current route signature; `docs/FAMILY_SUMMARY.md`: preserve the definition-level fact that `nonSyntheticWeight` assigns one to `readWord`, `wordRank`, and `wordSelect`, but state separately and explicitly that the accepted canonical trace emits only `readWord`; `wordRank` and `wordSelect` remain compatibility constructors and are never emitted on this route. Coordinator amendment: "This authorization covers all current-route wording in README, not only the first line that triggered the stop. In particular, inspect and repair the headline execution-story/current-signature rows around the current base's lines 71 and 78 and the overview wording around lines 207-208 wherever they present the accepted canonical route as allowing bounded word primitives rather than stating the stronger checked readWord-only fact." | Local current public surface | For every `shape left right event`, membership in the exact `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult shape left right` trace implies `event.isReadWord`; every repaired surface names the public alias and does not substitute the weaker compatibility theorem. | Source theorem -> exact headline abbreviation -> README/artifact/paper/family current consumer -> topology/claim scanner -> coordinator exact-commit audit. | Reorder the three constructors, put the compatibility theorem before the strong theorem, or state only a singleton fixture. All must remain visibly weaker than the universal exact-object source proposition and must not survive as the current signature. | Pre-edit inventory found four repair paths and no additional out-of-scope path. | Open until edits and final checks |
 | `REQ-R1R3-CLOSED-INVENTORY` | "enumerate all tracked paths matched by `currentFactSurfacePathRegex`, reread each one, and record a per-path disposition in the worklog. ‘No scanner hit’ is insufficient evidence that a path was semantically current." | Local current-surface registry | Exact base registry contains the 18 paths listed above; each has a source-directed repair/preserve disposition and final reread. | Policy JSON regex -> exact-base tracked paths -> per-path semantic reread -> durable worklog -> coordinator reconstruction. | Look for an unregistered current-looking tracked document and for a registered file with no regex hit but misleading sentence composition. The registered README weakness was found despite the prior green strict scan; all repository Markdown remains an adversarial search domain. | Exact 18-path pre-edit inventory frozen above. | Open until post-edit per-path reread |
@@ -517,6 +517,33 @@ evidence, status, and an explicitly approved contract amendment may change.
 | `CHK-R1R3-TOPOLOGY` | `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\paper_topology_lint.ps1` | Final required | Exit 0 on the committed candidate with documentary public identities resolved. | Repaired source/public alias text -> generated broad/paper checks -> production topology verdict. | A true theorem name in adjacent prose but a dead/current-misclassified alias in a claim row must fail independent review even if a lexical scan passes. | Not run on candidate. | Open |
 | `CHK-R1R3-DIFF` | `git diff --check`; `git diff --check a835720ddae8816727febb16c636eee4a5f57076..HEAD`; exact changed-path authorization; exact governance-policy byte-identity check; final clean-tree and HEAD checks. | Final required | Every command exits 0 on the committed candidate; changed paths are a subset of the amended scope; policy/regressions equal governance. | Authorized docs/worklog commit -> committed range -> clean exact HEAD -> coordinator audit. | A clean worktree without a committed-range whitespace/scope check fails. | Not run on candidate. | Open |
 
+#### Exact-evidence closure register
+
+The preceding final column is the deliberately frozen pre-edit scheduling
+snapshot. This register is the authoritative evidence/status update for every
+frozen row. The material public-claim repair is commit
+`9c1ff099a72e7400a18dc3a544ada737dae3c9f4`. Checks recorded here ran on that
+clean committed material tree. The evidence-only commit containing this
+register necessarily follows those runs; its exact-HEAD response attestation
+must rerun the final commands and is the only remaining temporal boundary, not
+an open acceptance row.
+
+| ID | Exact evidence obtained | Status / residual gap |
+| --- | --- | --- |
+| `REQ-R1R3-READWORD-ONLY-SURFACE` | Commit `9c1ff099...` repairs all current-route wording in README, artifact claims, paper correspondence, and the family summary. Each uses the universal same-object fact `event ∈ (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult shape left right).trace -> event.isReadWord`, names `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`, and labels the older three-constructor result only as weaker compatibility/support. | Closed on committed material tree; exact final-HEAD checks are response-attested. |
+| `REQ-R1R3-CLOSED-INVENTORY` | All 18 base-registry paths above were reread individually after the repair. Four are repaired and fourteen preserved. A repository-wide Markdown reread found no additional live/current repair target; the only old unregistered wording is explicitly dated history in `docs/DIGESTION_LOG.md`. | Closed on committed material tree; inventory is durable above. |
+| `REQ-R1R3-CURRENT-COMPATIBILITY-ACCURACY` | The current prose preserves all four `nonSyntheticWeight` branches (`readWord`, `wordRank`, `wordSelect` map to one; `syntheticCostOnlyPrimitive` maps to zero) and separately states that only the exact canonical execution object is readWord-only. Rank/select compatibility vocabulary remains where accurate. | Closed on committed material tree. |
+| `REQ-R1R3-POLICY-INHERITANCE` | Exact byte comparison against governance `be1239a353a8f067b50d7d1bd8c4c10413a33100` passed for `docs/internal/CLAIM_DRIFT_POLICY.json`, `scripts/claim_drift_policy_regression.ps1`, and `scripts/paper_topology_lint_regression.ps1` in 2.1 s; none is a changed path. | Closed on committed material tree; exact final-HEAD identity is response-attested. |
+| `REQ-R1R3-WORKLOG-TRUTH` | The appended R1-R2 correction removes the false exhaustive-closure impression; this R1-R3 section contains the frozen matrix, exact source/definition bodies, 18-path dispositions, adversarial rereads, inherited-versus-new labels, command results, and four-part digestion. No exact-final-HEAD result is backdated into the earlier material commit. | Closed, subject only to truthful response attestation of the evidence-only exact HEAD. |
+| `COMPLETE-R1R3-COMMITTED-EVIDENCE` | Material repairs are commit `9c1ff099...`; this closure register and digestion are committed separately so the final exact candidate contains both. Only the six amended-scope paths are present, and no generated artifact is staged. | Closure determined by clean exact-HEAD response attestation after this evidence commit. |
+| `INV-R1R2-FOUR-FACT-PRESERVATION` | Final source-directed reread preserves cost `207` and `2*35 + (2*11 + 2*37 + 30) + 11`; 22 physical sources over roles 0..22 with 0/19 sharing BP; live 21 and rejected fresh 23; global positions 0/15 from instruction positions 0/1. No source changed. | Closed on committed material tree. |
+| `INV-R1R1-SEMANTIC-PRESERVATION` | Exact changed-path audit contains only README and five authorized documentation/worklog files; no Lean, theorem, definition, validator, executable, payload, store, trace, receipt, script, or public identity changed. | Closed on committed material tree; exact final-HEAD scope is response-attested. |
+| `INV-HISTORICAL-PRESERVATION` | No dated digest, audit report, frozen matrix, prior worklog body, or earlier decision body was rewritten. The R1-R2 correction is appended in the current R1 section, and dated weaker wording remains unchanged. | Closed on committed material tree. |
+| `INV-CATEGORY-SEPARATION` | Final prose changes only current trace-event vocabulary and preserves payload/proof/tick/runtime, trace/instruction position, physical-source/logical-role, allocation, and measured-performance distinctions. | Closed on committed material tree. |
+| `CHK-R1R3-STRICT-CLAIMS` | Strict production scan exited 0 in 7.0 s on `9c1ff099...`, classifying 816 hits with zero strict failures. | Closed on committed material tree; exact final-HEAD rerun is response-attested. |
+| `CHK-R1R3-TOPOLOGY` | After the permitted one-time `lake build RMQ.Headlines` (549.9 s) and direct missing consumer artifact `lake build RMQPaper` (4.2 s), topology lint exited 0 in 80.4 s on `9c1ff099...`: 83 broad documentary identifiers and 48 paper identifiers resolved. | Closed on committed material tree; exact final-HEAD rerun is response-attested. |
+| `CHK-R1R3-DIFF` | On `9c1ff099...`, working/range `git diff --check` exited 0 in 0.5/0.4 s; exact changed-path authorization passed in 2.7 s with six authorized paths; governance identity passed in 2.1 s; final current-surface search passed in 0.4 s; hygiene scan passed in 3.6 s; branch/HEAD/clean check passed in 2.9 s. | Closed on committed material tree; exact final-HEAD diff, scope, identity, branch, and cleanliness are response-attested. |
+
 Explicitly deferred and non-blocking: integration, coordinator acceptance,
 broader submission freeze, A1/V1 launch, and roadmap-node closure. The worker
 will request coordinator exact-commit audit and will not claim acceptance,
@@ -528,21 +555,20 @@ no replay harness and will not claim a replay campaign.
 
 ### R1-R3 verification coverage plan and command ledger
 
-No Lean/build command is planned: this is a documentation-only repair over an
-unchanged checked source/public-identity tree. `lake build RMQ.Headlines` is
-conditional only if topology lint demonstrates missing or stale build artifacts.
-No root build, aggregate gate, validator, cost harness, axiom inventory, or
-policy-regression suite is proportionate or authorized absent a unique changed-
-path trigger.
+This is a documentation-only repair over an unchanged checked source/public-
+identity tree. Topology lint demonstrated missing headline and paper consumer
+artifacts, so the conditional focused builds were used only to restore those
+prerequisites. No root build, aggregate gate, validator, cost harness, axiom
+inventory, or policy-regression suite was proportionate or run.
 
 | Command | Role and covered rows | Unique failure mode | Tree/runtime/timeout plan | Outcome |
 | --- | --- | --- | --- | --- |
-| Source-directed `rg` plus manual per-path reread for `readWord`, `wordRank`, `wordSelect`, `nonSyntheticWeight`, both theorem identities, paraphrases, reordered constructors, compatibility-before-current ordering, and unregistered current-looking Markdown | Development and final semantic audit; `REQ-R1R3-READWORD-ONLY-SURFACE`, `REQ-R1R3-CLOSED-INVENTORY`, `REQ-R1R3-CURRENT-COMPATIBILITY-ACCURACY`, inherited invariants | Misleading composition outside strict scanner regex | Dirty development tree, then final committed candidate; expected seconds; timeout 2 min | Pre-edit inventory complete; post-edit run pending |
-| `git diff --check` | Development and final; `CHK-R1R3-DIFF` | Working-tree whitespace errors | After edits; expected <5 s; timeout 1 min | Pending |
-| `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1 -Strict` | Final; `CHK-R1R3-STRICT-CLAIMS`, policy and vocabulary rows | Production strict claim classification/allowance failure | Committed candidate; prior comparable R1-R2 ~13 s; timeout 2 min | Pending |
-| `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\paper_topology_lint.ps1` | Final; `CHK-R1R3-TOPOLOGY`, public identity rows | Dead or misclassified documentary identity | Committed candidate; prior comparable R1-R2 ~83 s with artifacts; timeout 5 min | Pending |
-| `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1 -Strict -Base a835720ddae8816727febb16c636eee4a5f57076` | Final; worklog/decision discipline | A substantive public-claim change requiring a decision entry | Committed candidate; prior comparable ~1 s; timeout 1 min | Pending; add minimal DD entry only if required |
-| `git diff --check a835720ddae8816727febb16c636eee4a5f57076..HEAD`, changed-path authorization, governance policy/regression byte identity, exact HEAD, and clean-tree checks | Final; `REQ-R1R3-POLICY-INHERITANCE`, `COMPLETE-R1R3-COMMITTED-EVIDENCE`, inherited invariants, `CHK-R1R3-DIFF` | Committed whitespace, scope expansion, policy drift, dirty post-commit state | Final committed candidate; expected seconds; timeout 2 min | Pending |
+| Source-directed `rg` plus manual per-path reread for `readWord`, `wordRank`, `wordSelect`, `nonSyntheticWeight`, both theorem identities, paraphrases, reordered constructors, compatibility-before-current ordering, and unregistered current-looking Markdown | Development and final semantic audit; `REQ-R1R3-READWORD-ONLY-SURFACE`, `REQ-R1R3-CLOSED-INVENTORY`, `REQ-R1R3-CURRENT-COMPATIBILITY-ACCURACY`, inherited invariants | Misleading composition outside strict scanner regex | Dirty development tree, then clean commit `9c1ff099...`; timeout 2 min | Exact 18-path reread plus repository-wide adversarial search completed; final source search exited 0 in 0.4 s with only correct current, compatibility, policy, matrix, or dated-history survivors. |
+| `git diff --check` | Development and final; `CHK-R1R3-DIFF` | Working-tree whitespace errors | Clean commit `9c1ff099...`; timeout 1 min | Exit 0 in 0.5 s; exact-base range form also exited 0 in 0.4 s. |
+| `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1 -Strict` | Final; `CHK-R1R3-STRICT-CLAIMS`, policy and vocabulary rows | Production strict claim classification/allowance failure | Clean commit `9c1ff099...`; timeout 2 min | Exit 0 in 7.0 s; 816 classified hits, zero strict failures. |
+| `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\paper_topology_lint.ps1` | Final; `CHK-R1R3-TOPOLOGY`, public identity rows | Dead or misclassified documentary identity | Clean commit `9c1ff099...`; timeout 5 min | Initial sandbox run failed after 85.6 s only on artifact download; approved rerun exposed missing headline/paper artifacts after 122.4 s. One permitted `lake build RMQ.Headlines` exited 0 in 549.9 s; direct missing consumer `lake build RMQPaper` exited 0 in 4.2 s; final lint exited 0 in 80.4 s with 83 broad and 48 paper identifiers resolved. |
+| `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1 -Strict -Base a835720ddae8816727febb16c636eee4a5f57076` | Final; worklog/decision discipline | A substantive public-claim change requiring a decision entry | Clean commit `9c1ff099...`; timeout 1 min | Initial development check required a decision entry. After `DD-20260719-002`, exact command exited 0 in 3.4 s over six changed files. |
+| `git diff --check a835720ddae8816727febb16c636eee4a5f57076..HEAD`, changed-path authorization, governance policy/regression byte identity, exact HEAD, and clean-tree checks | Final; `REQ-R1R3-POLICY-INHERITANCE`, `COMPLETE-R1R3-COMMITTED-EVIDENCE`, inherited invariants, `CHK-R1R3-DIFF` | Committed whitespace, scope expansion, policy drift, dirty post-commit state | Clean commit `9c1ff099...`; timeout 2 min | Range check exited 0 in 0.4 s; exact six-path authorization passed in 2.7 s; governance byte identity passed in 2.1 s; exact branch/HEAD/clean check passed in 2.9 s. Exact evidence-only HEAD is response-attested after this ledger commit. |
 
 ### R1-R3 adversarial reread outcomes
 
@@ -576,14 +602,12 @@ path trigger.
   policy/enforcement data, or explicit compatibility descriptions; no
   unregistered live/current repair target was found.
 
-The development production strict scan exited 0 with 814 classified hits and
-zero strict failures. `git diff --check` exited 0. The initial strict design
-check correctly exited 1 because public-claim files changed without a new
-decision entry; after appending `DD-20260719-002`, the same strict command
-exited 0 in 2.6 seconds over six changed files. A development byte comparison
-of the policy JSON and both named regression suites against governance
-`be1239a...` passed. These are development results on the dirty material tree,
-not final committed-candidate attestations.
+The earlier dirty-tree development strict scan classified 814 hits with zero
+failures. The authoritative material-commit results are the clean-tree results
+in the ledger above. The initial strict design check correctly exited 1 because
+public-claim files changed without a new decision entry; `DD-20260719-002`
+records the substantive reader-signature decision. Exact evidence-only HEAD
+reruns are response-only attestations and are not backdated into this commit.
 
 ### R1-R3 proof digestion and final-attestation boundary
 
