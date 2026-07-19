@@ -2828,3 +2828,59 @@ evidence rather than kernel proof, since the sizes run through `Nat.log2`.
 
 **Register-bank state for the successor:** `100..104` taken, next block opens at
 `105`; `iIdx` is NOT preserved across a group but `sBlock` is.
+
+## 2026-07-19 (C05 round 43) — coordinator guidance would have caused the defect it warned about
+
+**The stale `hexact` docstring is repaired** (`5f5eaa5`), with both halves of the
+old gloss verified false at source before rewriting. The real discharge chain is
+recorded in the docstring: `hexact_*_concrete` -> `hexact_*` ->
+`hexact_of_segment_agrees` -> `machineWords_length_eq_of_succ_lt_chunkCount`,
+resting on `chunkPayloadWords_get?_eq_take_drop`.
+
+**Correction against my phrasing (factual).** I said the summary tables are
+two-chunk "at every shape evaluated". The tree's own evaluation
+(`E1InteriorChunkExact.lean:19-21`) gives chunk count **1** at sizes 1024, 4096
+and 65536. Single-chunk-ness is SHAPE-DEPENDENT. The point survives sharper —
+vacuity is never the ground at ANY shape — and the worker wrote the docstring to
+that rather than to my sentence, asserting only the size it evaluated itself.
+
+**Correction against my guidance (serious — it would have produced an unsound
+block).** I told the worker the ground for keeping the `maxRel` read is the
+positional receipt, "not the value". Sound but INCOMPLETE. The route's summary
+match (`InteriorDirectory.lean:2277`) is
+`| some b, some mn, some mx, some arg => some (...) | _,_,_,_ => none`, so
+**`maxRel = none` forces the min-candidate to `none`** — even though
+`bpRelativeSummaryMinCandidate` never reads `summary.2.2.1`. A block that keeps
+the read and ignores the value returns `some` where the route returns `none`:
+**right trace, right read count, WRONG RESULT.** Exactly the defect class I had
+just finished warning about in the same prompt, reachable through my own
+instruction. The `none` arm is reachable, not hypothetical:
+`machineReadComputationAt` (`MachineChunkedTableProgram.lean:343`) reads
+`[deadAddress]` when the index is out of range.
+
+This is the sharpest instance yet of the coordinator failure mode this campaign
+keeps surfacing. The previous four were propagated CLAIMS that were false. This
+was a propagated FRAMING that was true as far as it went and wrong at the margin
+that mattered — harder to catch by grepping, and it would have been caught only
+by a worker who checked the route's option structure rather than trusting the
+stated ground. It did.
+
+**COORDINATOR RULING on the fork the worker correctly left open:** implement all
+four tests UNCONDITIONALLY; do not collapse the `maxRel` test. The alternative —
+proving `maxRel.entriesLen = minRel.entriesLen` (evaluated equal at four sizes,
+proved nowhere in the tree) and collapsing — is extra work AND makes the
+machine's control flow diverge from the route's. Under the standing decision
+rule the unimpeachable option is the one where the machine MIRRORS the route
+structurally, so a reviewer comparing them sees correspondence rather than a
+justified shortcut. The worker's own assessment stands: assuming the equality
+without proving it is the single unsound option.
+
+**The worker's judgement not to start item 1 after this finding was correct** and
+is recorded as such — a module built on the incomplete framing would have had to
+be torn out, and a verified handoff beats a module that cannot land green.
+
+**Minor, accepted:** the repaired docstring cites four modules
+`E1InteriorChunkValue` does not import — forward references in a comment,
+matching existing practice in the reverse direction. It couples documentation to
+line numbers and will rot; acceptable given the anchor-drift regime already in
+force, and cheaper than the alternative of leaving the discharge route unstated.
