@@ -3396,3 +3396,69 @@ helpers `finalSameBlockLcaWithStore_storeTraceLocal` /
 proofs about the retired silent objects, not counted payload sources, so
 this is not a dead-source violation; B6 leaves them as B2 left its twins and
 flags the pair as a single cleanup candidate for a later rung.
+
+## DD-20260718-009: E1 charged fringe fold register bank, option-shifted best candidate, and the branching merge (E1-R4 M3d-1b)
+
+Date: 2026-07-18. Scope: the machine realization of the charged chunked
+fringe fold (`bpFringeChunkFoldComputationFrom`,
+`RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeTrace.lean:32`),
+which BOTH arms of the close/LCA dispatcher consume after B6. Decided by:
+worker E1-R4k under the amended E1 contract (frozen matrix
+`E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md` REQ-E1-01/02/04/06).
+
+Decision (`RMQ/Core/WordRAM/E1FringeFoldBlock.lean`, namespace
+`RMQ.WordRAM.E1FringeFoldBlock`):
+
+- Frozen FRINGE BANK `40..62`, fresh above the skeleton (`0..7`),
+  component (`8..27`) and select-extension (`28..39`) banks:
+  `fOne/fC = 40/41` (pinned constants), `fW0..fW3 = 42..45` (the four
+  window registers), `fAcc = 46`, `fBV/fBP = 47/48` (best candidate),
+  `fJC = 49` (chunk cursor `j * c`), `fLo/fHi = 50/51`, `fCnt = 52`,
+  `fV/fA/fB = 53/54/55` (chunk value, start/end offsets),
+  `fSlot/fE = 56/57`, `fCV/fCP = 58/59` (candidate), `fT/fU/fX = 60..62`
+  (scratch).  The LCA leg runs third, so `28..39` is dead by then and
+  reuse would be sound; a fresh bank is still preferred so the whole-query
+  glue never has to reason about liveness across legs.
+
+- FOUR-REGISTER WINDOW, not one.  The fringe fold's window is the four
+  payload words of `localBPWindowBits`, so its decode does NOT fit one
+  modeled register and the machine may not hold `bitsToNatLE window` at
+  all (REQ-E1-02 / INV-ADDRESS-WIDTH).  The window is carried in the
+  fixed-stride Horner representation `windowRegsValue L R0 R1 R2 R3`
+  (`E1FringeBridge.lean`) and advanced each pass by a four-register shift
+  using only the per-shape CONSTANTS `2 ^ c` and `2 ^ (L - c)`
+  (`windowRegsValue_shift`), so no variable-width shift is needed and the
+  ISA's constant-only `mulConst`/`divConst` (DD-20260718-005) suffice.
+  The side condition `c <= L` is unconditional at every size
+  (`bpFringeChunkBits_le_machineWordBits`).
+
+- OPTION-SHIFTED BEST CANDIDATE across two registers: `fBV = value + 1`
+  with `0` meaning `none`, and `fBP` the position (`bestOfRegs`).  This is
+  the same convention `decodeRead` uses for reads (DD-20260718-005), so
+  the option test is one register comparison against zero and the fold's
+  `cand.1 < best.1` becomes the shifted comparison `fCV + 1 < fBV`
+  (`bestOfRegs_merge_some`).
+
+- THE MERGE SEGMENT BRANCHES; this is forced, not chosen.
+  `bpFringeMergeCand` (`ChargedFringeChunks.lean:892`) is a three-way
+  match gated by `startOff < endOff`.  A branch-free encoding would need
+  `take * X` with `take` a RUNTIME `0/1` value, and the ISA has
+  `mulConst` (constant multiplier) only - deliberately, per
+  DD-20260718-005.  So the merge is 13 instructions with four branch
+  points, and the per-pass simulation is a FOUR-WAY case analysis
+  (`fringeMerge_runsTo`) rather than one `RunsTo.straight` call.  Arms:
+  gate closed -> 3 instructions; gate open with no incumbent -> 6;
+  gate open and candidate better -> 8; gate open and not better -> 7.
+
+- CONSEQUENCE FOR CHARGING: the per-pass category log is therefore NOT a
+  constant list.  It is a FUNCTION of the route-side branch conditions
+  (`fringeMergeArmCats` / `fringeMergeCatsAt` / `fringePassCats`),
+  following the `selectFoldCats` / `denseLegCats` precedent.  No per-pass
+  numeral is asserted anywhere; the whole-fold log `fringeFoldCats` is the
+  execution-ordered concatenation of the per-pass logs via the new
+  `ascLog` / `iterLog_desc` combinator.
+
+Layout at loop base `LB` (66-instruction body, back edge at `LB + 66`):
+prefix `LB+0..LB+31`, merge `LB+32..LB+44`, window shift `LB+45..LB+63`,
+cursor/counter `LB+64..LB+65`.  Width certificate:
+`fringeLoopBody_fits`.
