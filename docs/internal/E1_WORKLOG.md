@@ -4598,3 +4598,367 @@ whether the intended referent was (a) the reviewer-width declaration at
 `bpSparseLogSpan` site B7 discharged, mis-remembered. The doc row should be
 written only after that is settled, and item 8 is in any case downstream of
 M3d-13 items 2-5, none of which are built.
+
+## M3d-13 (worker E1-R4v): the chunk fold's value bridge, and the preservation clause item 2 turned out to need
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, from HEAD
+`63591cc` (M3d-12's yield) to `255ef61`.  Two commits, both green.
+
+M3d-12's resume item 1 -- THE VALUE BRIDGE -- IS BUILT.  Items 2-6 are
+NOT.  Item 2 was started, and starting it surfaced a blocker that had to
+be fixed first; that fix is the second commit and is section 3.
+
+The coordinator's ruling on the open block decision is recorded and
+followed: compose the interior on the 37-instruction FOLD
+(`E1InteriorChunkFold.lean`), uniformly across all five branches, NOT on
+the 7-instruction atom.  M3d-12 section 7's "THAT CHOICE IS STILL OPEN"
+is therefore CLOSED; nothing below relitigates it.
+
+### 1. WHAT LANDED (commit `f6573ca`)
+
+New module `RMQ/Core/WordRAM/E1InteriorChunkValue.lean` (627 lines),
+imported from `RMQ.lean:42`.  No new registers, no new instructions: this
+is arithmetic content only, relating numbers the fold already computes to
+numbers the route already computes.
+
+* `chunkFoldValue_eq_route_decode:310` -- THE HEADLINE.  The machine's
+  option-shifted cell equals
+  `RMQ.SuccinctSpace.fixedWidthNatTableMachineDecode`
+  (`MachineChunkedTable.lean:215`), THE ROUTE'S OWN DECODE, applied to the
+  words read at the route's own addresses.  Both sides are computed from
+  `store.readWord?` at the SAME addresses, so this is a statement about
+  the arithmetic; the addressing is `chunkEventsAt_eq_route`.
+* `interiorChunkFold_cOut_eq_routeDecode:491` -- the same fact in the
+  shape a consumer needs: its left-hand side is verbatim the `cOut`
+  clause of `interiorChunkFold_runsTo`, at the fold's own machine-computed
+  `chunkStart`/`chunkIters`.  A consumer of the simulation theorem may
+  rewrite with this and be left with a statement purely about the route.
+* `bitsToNatLE_append:84` -- THE LEMMA THE REPOSITORY DID NOT HAVE.
+  M3d-12 recorded that a search of `RMQ/Core/SuccinctSpace/` found only
+  `TablesRAM.lean:18` and `WordStore.lean:53`.  That was re-checked and is
+  correct.  See DD-20260719-008 for why it is proved in the new module
+  rather than added to `WordStore.lean`.
+* `bitsToNatLE_lt_two_pow:106`, `chunkDigit_lt:437` -- what makes each
+  chunk a legitimate base-`2 ^ wordSize` digit, hence the reversal exact
+  rather than lossy.  A missing chunk qualifies for free: the option shift
+  sends it to the truncated `0 - 1 = 0`.
+* `chunkRevGen:199`, `chunkRevGen_succ_front:222`,
+  `chunkRevGen_chunkAcc:239`, `chunkRevAt_eq_gen:207` -- the reversal,
+  generalised.  See section 2.
+* `chunkLit:129` with `chunkLit_succ_front:137`, and
+  `chunkBad_succ_front:166` -- the end-swapping lemmas.  See section 2.
+* `chunkRevAt_chunkAcc_eq_chunkLit:463` -- the reversal produces the
+  route's little-endian value.
+
+### 2. THE TWO STRUCTURAL FACTS THAT SHAPED THE PROOF
+
+BOTH ARE DIRECTION MISMATCHES, and each needed its own conversion lemma.
+Neither is bookkeeping: without them the inductions do not close.
+
+First, `chunkRevAt` (`E1InteriorChunkFold.lean:1099`) peels a base-`scale`
+digit off the BOTTOM of the accumulator, while `chunkAcc` (`:656`) builds
+one ONTO the bottom.  The two recursions run in opposite directions, so no
+induction on `chunkRevAt` alone lines them up.  `chunkRevGen` exposes the
+running little-endian result as a parameter and `chunkRevGen_succ_front`
+proves a step may be taken at the FRONT instead of at the end; that single
+identity collapses the mismatch to one induction.  `chunkRevAt_eq_gen`
+keeps the original definition authoritative -- the generalisation is a
+proof device, not a redefinition of what the machine computes.
+
+Second, the route's address list `consecutiveWordIndices` is HEAD-first
+while `chunkAcc` and `chunkBad` are LAST-first, so `chunkLit_succ_front`
+and `chunkBad_succ_front` convert.  Same class of mismatch, one level up.
+
+### 3. WHAT ITEM 2 TURNED OUT TO NEED (commit `255ef61`)
+
+STRENGTHENING ONLY.  A conjunct was added to two conclusions; nothing was
+weakened, nothing renamed, no hypothesis added.
+
+`interiorChunkFold_runsTo` could not be composed more than once in a
+single program.  It concluded only about `cOut`, so nothing said that a
+second fold leaves the first fold's staged result -- or the caller's own
+block index -- alone.  The summary group of item 2 stages four fold
+results into holding registers and must reset `iIdx` between reads, so it
+needs exactly that.
+
+The ingredients already existed and were being discarded:
+`interiorChunkInit_runsTo` (`:1498`) and both loop theorems each carried
+the preservation clause, and the headline's proof was binding them as
+`_h1Pres`, `_h2Pres`, `_h3Pres` -- underscore-prefixed, i.e. deliberately
+unused.  What was MISSING was the fourth:
+`interiorChunkEpilogue_runsTo` had no such clause.
+
+`interiorChunkEpilogue_runsTo:1672` now carries it (`:1682`).  The
+obligation is discharged from the bank arithmetic: the epilogue writes
+only `cOut`, which is `99`, inside the bank `89 .. 99`, so
+`ChunkFoldUntouched r` gives `r` distinct from `cOut` directly.
+`interiorChunkFold_runsTo:1794` then chains all four (`:1821`).
+
+RECORDED BECAUSE IT GENERALISES: a block simulation theorem that concludes
+only about its OUTPUT register is not composable, and the defect does not
+show up until a second instance of the same block appears in one program.
+The fringe and same-block arms did not surface it because each appears
+once.  The interior is the first place a block is instantiated four times.
+Items 2 and 3 of the new resume point will instantiate the summary group
+and the span blocks repeatedly, so the same question should be asked of
+every block written from here on: does its headline say what it LEAVES
+ALONE, not only what it computes?
+
+### 4. THE BRIDGE IS NOT VACUOUS, AND THAT IS CHECKED BY EXECUTION
+
+`interiorChunkFold_cOut_eq_routeDecode` carries a per-chunk width premise.
+A theorem whose premises no store satisfies proves nothing, so the premise
+is discharged concretely:
+
+* `witnessWidth_cell0:579` discharges it on
+  `E1InteriorChunkFold.witnessStore`, whose chunks are one bit wide, so
+  `wordSize = 1` and the fold's `wordScale = 2` is `2 ^ 1`.
+* `witnessCOut_cell0_via_bridge:612` then DERIVES the machine's cell
+  through the bridge -- rewriting the `cOut` expression into the route's
+  decode and letting the kernel evaluate -- landing on `2`.  That is the
+  same `2` that `chunkFoldWitness_path_bothPresent`
+  (`E1InteriorChunkFold.lean:1918`) obtained independently by RUNNING the
+  machine.  Neither number is asserted.
+* `witnessRouteDecode_cell2:560` checks the `none` side: the wholly
+  missing cell decodes to `none`, matching the machine's `cOut = 0`.  A
+  value-only check has no power over that arm, which is why it is proved
+  rather than assumed.
+
+The width premise is NOT discharged in general.  It is sourced on the
+`BoundedPayloadWordStore` side and is owed where the fold is composed
+against `canonicalRelativeRmmInteriorComponentStore`.  Stating it
+explicitly is what keeps that debt visible; see DD-20260719-008.
+
+### 5. VERIFICATION LEDGER
+
+`lake build RMQ RMQPaper RMQExamples` exit 0:
+
+    [251/253] Built RMQ.Core.WordRAM.E1InteriorChunkValue
+    [252/253] Built RMQ
+    Build completed successfully.
+    BUILD_EXIT=0
+
+`lake build rmq_e1_machine_validate` exit 0; `lake exe
+rmq_e1_machine_validate` exit 0:
+
+    RESULT: PASS (with the whole-query comparison still OPEN)
+    VALEXE_EXIT=0
+
+`lake env lean scripts/headline_axiom_check.lean` exit 0.
+`design_decision_check.ps1 -Strict -Base d90b062...`: `DESIGN-CHECK:
+checked 71 changed files`.
+`claim_drift_scan.ps1`: `scan complete (741 hits, 0 strict failures)`,
+exit 0.
+`paper_topology_lint.ps1`: `PAPER-TOPOLOGY PASS (83 broad documentary
+identifiers; 49 paper identifiers resolved)`, exit 0.
+`git diff --check` clean; `git diff --check d90b062..HEAD` flags
+whitespace SOLELY in `docs/internal/B7_STEP2_WIP.patch`, as inherited.
+Hygiene `rg` over the two touched modules: no forbidden tokens, no
+`import Mathlib`.  `rg native_decide|Lean.ofReduceBool RMQ RMQExamples`:
+no hits.  (The prose word "partial" was reworded out of the new module so
+a naive grep stays quiet.)
+
+`#print axioms` AFTER a root build, importing
+`RMQ.Core.WordRAM.E1InteriorChunkValue` DIRECTLY:
+
+    bitsToNatLE_append                    [propext, Quot.sound]
+    bitsToNatLE_lt_two_pow                [propext, Quot.sound]
+    chunkLit_succ_front                   [propext, Quot.sound]
+    chunkBad_succ_front                   [propext, Quot.sound]
+    chunkRevAt_eq_gen                     does not depend on any axioms
+    chunkRevGen_succ_front                does not depend on any axioms
+    chunkRevGen_chunkAcc                  [propext, Quot.sound]
+    chunkFoldValue_eq_route_decode        [propext, Classical.choice, Quot.sound]
+    chunkDigit_lt                         [propext, Quot.sound]
+    chunkRevAt_chunkAcc_eq_chunkLit       [propext, Quot.sound]
+    interiorChunkFold_cOut_eq_routeDecode [propext, Classical.choice, Quot.sound]
+    witnessRouteDecode_cell0              does not depend on any axioms
+    witnessCOut_agrees_routeDecode_cell0  does not depend on any axioms
+    witnessRouteDecode_cell2              does not depend on any axioms
+
+and importing `RMQ.Core.WordRAM.E1InteriorChunkFold` DIRECTLY, to confirm
+the strengthening changed nothing:
+
+    interiorChunkFold_runsTo              [propext, Classical.choice, Quot.sound]
+    interiorChunkEpilogue_runsTo          [propext, Quot.sound]
+
+Never `sorryAx`.
+
+### 6. MATRIX STATUS AT YIELD
+
+All rows REQ-E1-01..11 remain OPEN.  This session closed none and weakened
+none.  Closure was impossible by construction, for the reason M3d-11 and
+M3d-12 both recorded: every row is whole-query scoped and the whole-query
+composition is downstream of the interior simulation.
+
+Component-level evidence added: REQ-E1-03 (the interior fold's VALUE is
+now tied to the route's own decode, not only its receipt -- the first
+value-side interior evidence in the matrix); REQ-E1-01 (the fold's
+headline now states what it LEAVES ALONE, which is what makes the block
+composable); REQ-E1-05 (`witnessRouteDecode_cell2`, the `none` arm checked
+by execution on the route side).
+
+### 7. RESUME POINT (M3d-14)
+
+NOTHING below is implemented.  All file:line verified at HEAD `255ef61`.
+
+0. STANDING, AND NEWLY LEARNED: every block written from here on must
+   state a preservation clause in its HEADLINE, not only in its internal
+   segment lemmas.  Section 3 records what it costs to discover this late.
+   The predicate is `ChunkFoldUntouched` (`E1InteriorChunkFold.lean:928`).
+
+1. THE SUMMARY GROUP `S`
+   (`InteriorDirectory.lean:2277` `canonicalRelativeRmmMachineSummaryComputation`,
+   `:2300` `canonicalRelativeRmmMachineMinCandidateComputation`).  Four
+   reads, in this order: `baseline (block / blocksPerSuper)`,
+   `minRel block`, `maxRel block`, `argOffset block`, then the four-way
+   `match` into an optional quadruple, then
+   `bpRelativeSummaryMinCandidate` (`RelativeSummaryCandidate.lean:15`).
+   Design facts established this session and NOT yet implemented:
+   * All four reads are `canonicalRelativeRmmMachineReadNatComputation`
+     (`InteriorDirectory.lean:2132`), which is
+     `table.machineReadComputationAt (machineWordBits shape.bpCode.length)
+     base deadAddress i` -- exactly what `interiorChunkFold` simulates, so
+     all four are fold instances with different program constants.  They
+     SHARE `deadAddress` and `wordSize`; they differ in `base`,
+     `entriesLen`, `chunkCount`.  Offsets are
+     `canonicalRelativeRmmInteriorComponentOffsets` (`:1614`): `baseline`
+     is `0`, `minRel`/`maxRel`/`argOffset` are running sums of the
+     preceding tables' word counts.
+   * `bpRelativeSummaryMinCandidate` is
+     `(baseline + minRel - bpSuperblockSpan blockSize blocksPerSuper,
+     blockStartOf blockSize block + argOffset)`.  The superblock span is a
+     per-shape constant.  CONFIRM `blockStartOf`'s definition at source
+     before relying on a `mulConst` shape for it -- it was read as a
+     scaling by `blockSize` but NOT verified at source this session.
+   * `maxRel` IS READ AND IS NOT USED by the candidate: only `baseline`,
+     `minRel` and `argOffset` appear in `bpRelativeSummaryMinCandidate`'s
+     body.  The read is nevertheless charged, because the ROUTE performs
+     it (`:2290`).  A machine that skipped it would have a shorter receipt
+     and would fail the positional receipt obligation.  Do not remove it.
+   * The caller must reset `iIdx` (`85`) between reads.  `iIdx` is
+     read-only inside both interior blocks, so only the caller writes it,
+     and it survives each fold by the clause landed this session
+     (`iIdx = 85` is below the fold's bank, so `ChunkFoldUntouched iIdx`).
+   * Register bank: the fold owns `89 .. 99`; the summary group needs its
+     own bank at `100` and above, and must claim a DD id.
+2. THE SPAN BLOCKS: `o`/`b` read plus option dispatch into the summary
+   group (`InteriorDirectory.lean:2311` local, `:2329` global).  The
+   `none` arm emits NOTHING -- the block must branch PAST the summary
+   group, not run it and discard.
+3. THE TWO-SPAN BLOCKS (`:2351` local, `:2376` global): level read, then
+   constant-divisor `div`/`mod` by `bpSparseLevelDomain`, then two span
+   blocks and `bpCandidateMerge?`.  THE LEVEL READ IS THE UNCONDITIONAL
+   HEAD of every two-span append chain; a positional or membership lemma
+   assuming otherwise presents as a WHNF HEARTBEAT TIMEOUT, not a type
+   error, and raising `maxHeartbeats` would produce a theorem about the
+   wrong machine.
+4. THE FIVE-BRANCH DISPATCH (`:2444`
+   `canonicalRelativeRmmInteriorRangeMinComputation`): count zero gives
+   pure none; count within the macro remainder gives the local two-span;
+   then a zero middle-macro count gives adjacent macro (`:2400`); a zero
+   right count gives left-middle (`:2413`); otherwise cross-macro
+   (`:2426`).  Then discharge `hInterior` in
+   `crossBlockArmProgramAt_runsTo` (`E1CrossBlockArm.lean:1143`), whose
+   four preservation obligations (`fClose`, `fRight`, `mLV`, `mLP`) are
+   outside both interior banks by construction.
+5. Only then: the whole-query glue via `E1RouteDecomposition`, the derived
+   all-size literal, the amended target Prop with its supersession note,
+   the validator's whole-query phase, and the doc rows.  All downstream of
+   item 4.
+
+ALSO OWED, not on the critical path:
+* THE WIDTH PREMISE.  `interiorChunkFold_cOut_eq_routeDecode` owes its
+  per-chunk width hypothesis to whoever composes it against
+  `canonicalRelativeRmmInteriorComponentStore`.  The fact is a
+  `BoundedPayloadWordStore` property; it was NOT located this session and
+  should be sourced BEFORE item 1 is composed, not after.
+* AN EXECUTED PRESERVATION CHECK FOR THE INTERIOR FOLD.  The clause landed
+  this session is proof-side only.  The validator's phase 3h already does
+  sentinel-seeded preservation checking for the fringe arm, and records
+  that THE SENTINEL SEEDING IS LOAD-BEARING (from a zero-seeded file the
+  phase is vacuous, since a block that zeroes a register it does not own
+  still "preserves" it).  The interior fold has no such phase.  Worth
+  adding when the validator's interior phase is written, for the reason
+  phase 3h exists: neither a value check nor a receipt check nor a step
+  count has power over a block that scribbles on a register it does not
+  own.
+
+### 8. THE M7 DOC ROW, RE-CHECKED -- THE CORRECTED CITATION ALSO DOES NOT HOLD
+
+M3d-12 section 8 refused a coordinator-supplied `Nat.log2` scope precision
+because it did not survive checking.  A CORRECTED version was supplied to
+this session, re-verified by the coordinator at source.  IT WAS CHECKED
+AGAIN HERE AND IT ALSO DOES NOT HOLD.  The doc was again NOT extended.
+
+What the corrected version asserted, and what was found at this HEAD:
+
+* "Runtime `bpSparseLogSpan count` survives at `InteriorRAM.lean:574,
+  622, 820, 868`" -- TRUE.  All four read `let span := bpSparseLogSpan
+  count` or `let spanMacros := bpSparseLogSpan macroSpanCount`, and
+  `bpSparseLogSpan` is `2 ^ Nat.log2 blockCount`
+  (`SparseArgMin.lean:598`), a genuine runtime `Nat.log2` on a runtime
+  argument.  The enclosing defs are the local and global
+  `twoSpanCandidateTraceResult` / `...AtSegments` families
+  (`InteriorRAM.lean:559`, `:606`, `:805`, `:852`).
+* "`SuccinctFinalRAM.lean:4486` is the ENTRY POINT and itself contains no
+  `Nat.log2`" -- TRUE.
+* "Those [sites] are reachable from
+  `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe`,
+  guarded by `2 ^ 128 <= shape.size`" -- FALSE, AND THIS IS THE HALF THE
+  ROW WOULD REST ON.  `WholeQueryInstr.evalGlobalWordTraceOfSizeGe`
+  (`SuccinctFinalRAM.lean:3718`) takes its size hypothesis as
+  `(_hsize : 2 ^ 128 <= shape.size)` -- UNDERSCORE-PREFIXED AND UNUSED --
+  and its `.lcaClose` arm (`:3732`) dispatches to
+  `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`, the
+  SAME interior leg the accepted route uses.  The size-premised family
+  therefore reaches exactly the same interior as the accepted route and
+  does NOT reach the four sites.  Verified directly at source this
+  session, not inferred.
+* "and from the `...WithStoreLegacy` mirror" -- NOT AS NAMED.  No
+  `...WholeQueryGlobalWordTraceResultOfSizeGe...WithStoreLegacy` exists.
+  There ARE `WithStoreLegacy` defs, but in
+  `ConcreteDirectoryRAMStoreParam.lean` (`:3624`, `:4578`, `:5307`), a
+  different family; that file does contain `bpSparseLogSpan` (6
+  occurrences), so a store-parametric Legacy quarantine is real -- but it
+  is not the object the row named.
+* The delegation cited the accepted whole-query trace as
+  `SuccinctFinalRAM.lean:4337`.  At this HEAD `:4337` is a comment line;
+  `def concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult` is at
+  `:4426`.  The FROZEN MATRIX carries the same stale `:4337`
+  (`E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md:17`).  Flagged as a reference
+  correction for coordinator adjudication; NOT applied to the frozen text.
+
+WHAT DOES SURVIVE, AND IS WORTH WRITING once a coordinator settles it.
+The sentence "no uncharged size-dependent computation on the ACCEPTED
+ROUTE" is TRUE and supportable.  The accepted route
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult` (`:4426`)
+reaches its interior through `...AllSizeStructural`
+(`ConcreteDirectoryRAM.lean:1188`), which calls
+`canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment` (`:1113`), a
+flat-store replay that never mentions `bpSparseLogSpan`.  The four sites
+are reached only through `...AtSegmentsAllSizeStructuralLegacy`
+(`ConcreteDirectoryRAM.lean:1196`), whose consumers are theorem
+statements and `unfold`s, not executed defs.
+
+SO THE CORRECT CONTRAST IS `AllSizeStructural` vs
+`AllSizeStructuralLegacy` -- THE SAME LEGACY/NON-LEGACY DISTINCTION the
+coordinator already established for
+`boundedSummaryRangeScanTraceResultAtSegments` -- AND NOT the `OfSizeGe`
+sibling, which is not a counterexample family at all.  A reviewer who
+follows the `OfSizeGe` citation finds `_hsize` unused and concludes the
+adequacy doc is careless, which is the exact failure mode M3d-12 refused
+to ship.
+
+RECOMMENDED NEXT STEP, for the coordinator rather than a worker: approve
+the `AllSizeStructural` vs `AllSizeStructuralLegacy` wording, and decide
+separately whether the store-parametric `WithStoreLegacy` family in
+`ConcreteDirectoryRAMStoreParam.lean` needs its own sentence.  The row is
+in any case downstream of M3d-14 items 1-4, none of which are built.
+
+Also noted, not acted on: `B7_WORKLOG.md:1495` states that `Nat.log2` and
+`bpSparseLogSpan` no longer occur in "the four bodies".  That is not true
+of `InteriorRAM.lean:574/622/820/868`, which still contain live
+`bpSparseLogSpan`.  It presumably refers to different bodies.  This does
+not affect the doc sentence, because those bodies are off-route, but the
+worklog line is inaccurate as written and a future reader may be misled.

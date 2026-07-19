@@ -191,10 +191,10 @@ theorem chunkBad_succ_front (store : ReadStore) (segment start : Nat) :
 relates it to `chunkAcc` has to peel a digit off the FRONT of the
 accumulator, which pushes a digit into the result before the recursive
 call, so the result cannot stay `0`.  `chunkRevGen` is the same loop with
-the partial result exposed.
+the running result exposed.
 -/
 
-/-- The digit-reversal step iterated `j` times from an arbitrary partial
+/-- The digit-reversal step iterated `j` times from an arbitrary running
 result `r0`. -/
 def chunkRevGen (scale acc0 r0 : Nat) : Nat → Nat × Nat
   | 0 => (acc0, r0)

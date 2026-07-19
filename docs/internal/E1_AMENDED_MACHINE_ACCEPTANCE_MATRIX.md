@@ -214,3 +214,80 @@ are M3d-13 items 2-5. Separately, the block's VALUE correspondence to the
 route's `fixedWidthNatTableMachineDecode` is not yet proved -- only its
 RECEIPT is. See `E1_WORKLOG.md` M3d-12 section 7 item 1 for the exact
 statement owed and the missing `bitsToNatLE_append` lemma.
+
+## Evidence added by E1-R4v (M3d-13), no row closed, no row weakened
+
+All eleven rows REQ-E1-01..11 remain OPEN. Closure was impossible by
+construction, for the reason M3d-11 and M3d-12 both recorded: every row is
+whole-query scoped and the whole-query composition is downstream of the
+interior simulation, of which this session landed the third piece and
+unblocked the fourth.
+
+Module: `RMQ/Core/WordRAM/E1InteriorChunkValue.lean`, plus a strengthening
+of two theorems in `RMQ/Core/WordRAM/E1InteriorChunkFold.lean`.
+
+- **REQ-E1-03** (result agreement) — FIRST VALUE-SIDE INTERIOR EVIDENCE.
+  Every earlier interior entry in this matrix was about receipts, widths
+  or categories; the fold's VALUE was stated only in machine vocabulary.
+  `chunkFoldValue_eq_route_decode:310` equates the machine's
+  option-shifted cell with `fixedWidthNatTableMachineDecode`
+  (`MachineChunkedTable.lean:215`), THE ROUTE'S OWN DECODE, on the words
+  read at the route's own addresses, covering both the `some` and `none`
+  verdicts. `interiorChunkFold_cOut_eq_routeDecode:491` restates it with
+  a left-hand side that is verbatim the `cOut` clause of
+  `interiorChunkFold_runsTo`, so a consumer may rewrite and be left with
+  a statement purely about the route. This required
+  `bitsToNatLE_append:84`, which the repository did not have. Does NOT
+  discharge the row (whole-query scope).
+- **REQ-E1-01** — `interiorChunkFold_runsTo`
+  (`E1InteriorChunkFold.lean:1794`) now states what the block LEAVES
+  ALONE (`:1821`), not only what it computes, chaining the four segments'
+  own preservation clauses after supplying the missing fourth at
+  `interiorChunkEpilogue_runsTo:1682`. STRENGTHENING ONLY: a conjunct was
+  added to two conclusions, nothing weakened, nothing renamed, no
+  hypothesis added. This is what makes the block instantiable more than
+  once in one program, which the summary group requires. Does NOT
+  discharge the row.
+- **REQ-E1-05** — `witnessRouteDecode_cell2:560` checks the `none` arm on
+  the ROUTE side by execution: the wholly missing cell decodes to `none`,
+  matching the machine's `cOut = 0`. A value-only check has no power over
+  that arm. Does NOT discharge the row.
+- **Anti-vacuity for the new premise.** `interiorChunkFold_cOut_eq_routeDecode`
+  carries a per-chunk width premise. `witnessWidth_cell0:579` discharges
+  it on the existing witness store and `witnessCOut_cell0_via_bridge:612`
+  DERIVES `2` through the bridge — the same `2`
+  `chunkFoldWitness_path_bothPresent` (`E1InteriorChunkFold.lean:1918`)
+  obtained by RUNNING the machine — so the premise set is demonstrably
+  satisfiable and the theorem is not vacuously true.
+
+### Reference correction offered for adjudication, NOT applied to frozen text
+
+This matrix's accepted-route block (line 17) cites the accepted whole-query
+trace as `RMQ/Core/SuccinctFinalRAM.lean:4337`. At this HEAD `:4337` is a
+comment line; `def concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult`
+is at `:4426`. The identifier is unchanged and correct — only the line
+number has drifted. Recorded here rather than edited, because the block is
+frozen. See `E1_WORKLOG.md` M3d-13 section 8.
+
+### REQ-E1-09 / M7 doc row: the corrected citation was checked and REFUSED again
+
+M3d-12 refused a coordinator-supplied `Nat.log2` scope precision because
+it did not survive checking. A corrected version was supplied to M3d-13.
+It was checked and it also does not hold: its load-bearing half — that the
+four surviving runtime `bpSparseLogSpan` sites
+(`InteriorRAM.lean:574, 622, 820, 868`) are reachable from the
+size-premised `...OfSizeGe` family — is FALSE.
+`WholeQueryInstr.evalGlobalWordTraceOfSizeGe`
+(`SuccinctFinalRAM.lean:3718`) takes `(_hsize : 2 ^ 128 <= shape.size)`
+UNUSED and its `.lcaClose` arm (`:3732`) dispatches to the same
+`...AllSizeStructural` interior leg the accepted route uses.
+
+The underlying claim — "no uncharged size-dependent computation on the
+ACCEPTED ROUTE" — is TRUE and supportable, but the correct contrast is
+`...AllSizeStructural` (`ConcreteDirectoryRAM.lean:1188`, accepted) versus
+`...AtSegmentsAllSizeStructuralLegacy` (`:1196`, theorem-only consumers),
+the same Legacy/non-Legacy distinction the coordinator already established
+for `boundedSummaryRangeScanTraceResultAtSegments`. The doc row should be
+written only after a coordinator settles that wording; it is in any case
+downstream of the unbuilt interior items. Full evidence in
+`E1_WORKLOG.md` M3d-13 section 8.
