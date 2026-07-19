@@ -1238,3 +1238,217 @@ NEXT ACTION, in order:
 4. Repair the theorem bands, then the caps, then the literal.
 5. Provenance, adequacy, docs, matrix, and the final battery including
    CHK-04 against the pre-swap harness baseline recorded in session 2.
+
+# Session 6 (B7-06)
+
+COMMIT A LANDED AND GREEN. The rung is past the frozen-constant blocker
+that stalled sessions 2-5. The swap (commit B) is NOT started, deliberately;
+see the budget ruling at the end.
+
+Commits this session, oldest first:
+
+- `f6000c3` B7 commit A: cap 30 -> 33, literal 207 -> 210, frozen 207.
+- `34a1c9d` cross-branch README line (topology-lint forced), isolated.
+- `7707f73` WDD-20260719-001 (design-decision gate).
+- `90c1fbf` swap patch refreshed 989 -> 952 lines.
+
+## THE INTERIOR PROOF WAS RESTRUCTURED, NOT WRAPPED
+
+The delegation carried a verified one-branch fix: give the cross-macro
+branch of `..._cost_le_thirty_of_size_ge_four_of_bounded` the same
+`Nat.le_trans ... (by simp [cap])` wrapper its three siblings have, since
+it alone applies its `<= 30` lemma directly with `exact` and so does not
+adapt to a widened cap.
+
+That fix is correct and it was not used. A better one was available:
+
+- The tight proof body is kept VERBATIM under
+  `canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_size_ge_four_of_bounded`,
+  concluding at the LITERAL `30`. Because the goal is now a literal, all
+  four branches close unchanged - the cross-macro branch's bare `exact`
+  included, since its lemma concludes at exactly `30`.
+- The cap-facing theorem keeps its NAME and STATEMENT and is re-derived
+  from the literal one in three lines by `Nat.le_trans`.
+
+Why this is better than the wrapper: it fixes the zero-slack branch
+STRUCTURALLY rather than per-branch (no future cap move can break a branch
+again, because no branch mentions the cap); it keeps the tight `<= 30`
+content checkable on its own rather than buried inside a `<= 33` statement;
+and it leaves both external consumers (`ChargedFringeSubstitution.lean:418`,
+`ConcreteDirectoryRAM.lean:2534`) and both axiom-inventory scripts
+untouched, since the consumed name did not change.
+
+Side effect handled: with the goal a literal, four
+`simp [canonicalRelativeRmmPrincipledInteriorChargedTraceCost]` arguments
+inside the literal theorem became UNUSED and the linter said so. They were
+removed rather than left, so the warning baseline stays at exactly 12.
+
+## THE SLACK ARTIFACT
+
+Required by the delegation, carried as a checked proposition:
+
+    theorem canonicalRelativeRmmPrincipledInteriorChargedTraceCost_announced_slack_of_size_ge_four_of_bounded
+        (shape : Cartesian.CartesianShape) (hsize : 4 <= shape.size)
+        (startBlock count : Nat)
+        (hbound : startBlock + count <=
+          (RelativeRmm.canonicalLayout shape).blockCount) :
+        (canonicalRelativeRmmInteriorRangeMinCosted shape startBlock count).cost <=
+            30
+          /\ 30 < canonicalRelativeRmmPrincipledInteriorChargedTraceCost
+          /\ canonicalRelativeRmmPrincipledInteriorChargedTraceCost = 33
+
+The middle conjunct is the point. A theorem merely bounding the route by 30
+would be a bound; asserting that the declared cap STRICTLY exceeds what the
+route needs is an ANNOUNCEMENT, and it is unprovable the moment the swap
+consumes the headroom. Commit B must DELETE it, not weaken it.
+
+## THE HARNESS CONFIRMS THE SLACK - AND LEAVES CHK-04 OPEN
+
+Cost harness at commit A: exit 0, "all reported windows agree",
+`canonicalBound=210` / `canonicalBoundIs210=true` everywhere. Every
+`modeledTraceCost` is IDENTICAL to the session-2 pre-swap baseline:
+
+    tie-boundary n=6      [0,6) 76   [1,5) 72   [2,3) 54
+    generated-64          [0,64) 116 [7,39) 126 [31,32) 62
+    zigzag-128            [0,128) 92 [17,97) 96 [64,65) 57
+    generated-128-alt     [0,128) 93 [15,96) 95 [63,64) 57
+
+All twelve unchanged. That is exactly right for commit A - it widens a cap
+and adds no reads - and it is independent empirical confirmation that the
+slack theorem tells the truth about the live route.
+
+It also means CHK-04 IS NOT DISCHARGED and was not claimed. CHK-04 demands
+the interior windows MOVE. Only commit B can do that.
+
+The same applies to REQ-B7-05, and this must not be glossed. That row's
+anti-vacuity challenge says the literal must move BECAUSE new reads entered
+the accounting on the maximizing branch, "not because a cap was loosened".
+At commit A it moved because a cap was loosened. REQ-B7-05 therefore stays
+OPEN despite the literal already reading 210. Closing it requires
+re-deriving 210 over the AMENDED route and exhibiting the branch bound that
+consumes the three units.
+
+## 207 FROZEN WITH ITS OWN PINNED COMPONENT
+
+`concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq = 207`
+plus a `..._CloseCost_eq = 126` companion, public abbrev
+`canonicalSilentSparseLevelQueryCost`, and guards in
+`Validation/SuccinctClassic.lean` and `RMQExamples/Concrete.lean` - the
+same surface the 142/76/328 constants have.
+
+Its endpoint-fringe field is a NEW pinned constant
+(`canonicalSilentSparseLevelHistoricalEndpointFringeChargedTraceCost := 37`)
+rather than a reuse of the identically-valued silent-rank/select capture.
+Deliberate: under the `228ae8f` discipline each frozen algebra owns its own
+components, so no retired route's narrative can be edited by work on
+another's. Two constants holding 37 is the intended shape, not duplication
+to be collapsed.
+
+Confirmation that `228ae8f` did its job: the frozen `76` and `142` `_eq`
+theorems still close by `rfl` across a live interior move, and
+`#print axioms` reports both as depending on no axioms.
+
+## THE SWAP PATCH WAS STALE FOR A GOOD REASON
+
+See `90c1fbf`. The patch's third section repairs the same
+`ReviewerReachabilitySmall.lean` proof that `0445d1d` already repaired, and
+`0445d1d`'s version is store-growth-INVARIANT (`hmiddle` quantified over
+`forall post`) where the patch's enumerates the new tail literally. Section
+dropped, not merged; patch 989 -> 952 lines; `git apply --check` clean.
+
+FIRST THING TO CHECK AT COMMIT B: whether that generalised proof really
+survives the store extension untouched. It is quantified precisely so that
+it should, which is why the hunk was dropped - but that is a prediction and
+only commit B's first root build settles it. If it fails, repair it in the
+GENERALISED style; do not reinstate the deleted hunk.
+
+## VERIFICATION LEDGER (B7-06), all as observed at `90c1fbf`
+
+- `lake build RMQ`: exit 0, 243/244, "Build completed successfully",
+  ZERO errors, TWELVE warnings - byte-identical to the recorded baseline,
+  none in any file this session touched.
+- `lake build RMQ RMQPaper RMQExamples`: exit 0, 267/268, "Build completed
+  successfully". `RMQExamples.Concrete` builds, so the new `#guard`s pass.
+- `lake env lean scripts/headline_axiom_check.lean`: exit 0.
+- `#print axioms` after a root build, on all new/migrated names: the
+  arithmetic identities - both live (`= 210`, `= 129`), both new frozen
+  (`= 207`, `= 126`), `queryCost_eq`,
+  `canonicalSilentSparseLevelQueryCost_eq`, and the UNCHANGED frozen
+  `76`/`142` - all report "does not depend on any axioms". The route
+  theorems, the slack artifact, the literal interior theorem and
+  `listIntSuccinctRMQPaperMainTheorem` report only
+  [propext, Classical.choice, Quot.sound]. No name reported
+  `unknown constant`.
+- Cost harness: exit 0 (values above).
+- Hygiene: zero forbidden-token hits across all eight touched Lean files;
+  zero `native_decide`/`ofReduceBool` repo-wide.
+- `git diff --check` (working tree): exit 0.
+- `git diff --check f6564ec..HEAD`: exit 2, hits ONLY
+  `docs/internal/B7_STEP2_WIP.patch`. Structural committed-patch property,
+  documented since B7-03. NOT a source defect.
+- `design_decision_check.ps1 -Strict -Base f6564ec`: exit 1 at first run
+  ("strict mode found 1 missing design-log updates", triggered by
+  `scripts/paper_topology_lint.ps1`); exit 0 after WDD-20260719-001
+  ("DESIGN-CHECK: checked 22 changed files").
+- `claim_drift_scan.ps1`: exit 0.
+- `paper_topology_lint.ps1`: exit 1 before the README line moved
+  ("unknown identifier '...SumLe207'", 1 failure); after `34a1c9d`,
+  "PAPER-TOPOLOGY PASS (83 broad documentary identifiers; 49 paper
+  identifiers resolved)", exit 0.
+- Per the delegation, `scripts/axiom_check.lean` and `gate.ps1` were NOT run.
+
+## OUTSTANDING, OWNED BY `claude/a07-blocker-repairs`, NOT TAKEN
+
+Stale `207` prose numerals that B7's migration makes false but that no gate
+catches (both `claim_drift_scan.ps1` and `paper_topology_lint.ps1` exit 0
+with them present, since prose numerals are not resolved as identifiers):
+
+- `README.md:70,76,140,334`
+- `docs/FAMILY_SUMMARY.md:9,43,48,133,446,1041` - `:9` also carries the
+  component formula with `interior30`, which becomes `interior33`.
+
+B7 took ONLY `README.md:80`, and only because the topology gate fails
+structurally without it. These must be migrated before the rung is
+presented as complete. Coordinator to decide whether a07 absorbs them.
+
+## BUDGET RULING: COMMIT B NOT STARTED, DELIBERATELY
+
+The delegation is explicit that a partial swap must not be committed. On
+honest assessment the remaining budget does not cover: apply the patch,
+wire the four sites, discharge a repair surface known to be a LOWER bound,
+retire the slack artifact, re-tighten the caps, re-derive the literal over
+the amended route, extend W19 provenance for a NEW source, and re-run a
+battery whose root build alone is 400-700s per iteration. Starting it would
+produce exactly the partial swap the rules forbid.
+
+So the session stopped at a clean, green, fully-verified commit A with a
+clean-applying refreshed patch - the state the delegation prescribes here.
+
+## RESUME POINT, in order
+
+1. Apply `docs/internal/B7_STEP2_WIP.patch` (952 lines, `git apply --check`
+   clean at `90c1fbf`). The FIRST build answers the open
+   `ReviewerReachabilitySmall.lean` question above.
+2. Wire the four reachable sites (`:1823`, `:1837` Costed; `:2263`, `:2277`
+   Computation, in the PATCHED file's numbering).
+3. Discharge the repair surface - LOWER bound; `ReviewerPhysical.lean:1815`
+   and the two recorded overruns.
+4. RETIRE the slack artifact by DELETING
+   `canonicalRelativeRmmPrincipledInteriorChargedTraceCost_announced_slack_of_size_ge_four_of_bounded`,
+   and re-tighten: the `_literal` theorem's `30` becomes the amended tight
+   value, and if that value is 33 the cap-facing theorem's `Nat.le_trans`
+   step collapses to `Nat.le_refl` or the two theorems merge again.
+5. Re-derive 210 over the AMENDED route and exhibit the maximizing branch
+   bound that consumes the three units - this is what closes REQ-B7-05,
+   which commit A explicitly did NOT close.
+6. Re-establish `..._readWord_only`; extend provenance
+   (`ReviewerProducerReadPath`, `SuccinctFinalRAM.lean:5324`, mirroring
+   `lcaSameBlock` at `:5419-5424`, discharge at `:5537`; W19 names are
+   STRUCTURE FIELDS in `SuccinctFinalModelAdequacy.lean:117/133/135`;
+   `canonical_segments_complete` at `:113` hard-codes `< 23` and does NOT
+   move).
+7. CHK-04 against the session-2 baseline quoted above: the interior windows
+   must MOVE. Twelve unchanged values is the failure signal.
+8. Finish REQ-B7-08 (the doc section already states the principle and names
+   the bridge lemmas, but describes commit A's route; it must be made true
+   of the AMENDED route), then the matrix and the full battery.

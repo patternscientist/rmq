@@ -179,3 +179,114 @@ HARDER-to-satisfy evidence and one gets lighter.
 5. NOT A CONSTRAINT. The E1 note at `E1_WORKLOG.md:2340-2343` rejecting a
    table read on positional-receipt grounds is over-strict; B2/B3/B6 each
    added reads to the accepted route.
+
+## Evidence at commit A (`f6000c3` .. `90c1fbf`), recorded by B7-06
+
+Appended rather than written into the frozen cells, so the frozen
+requirement text stays verbatim. NO ROW IS CLOSED BY THIS SECTION and no
+row is weakened. Commit A is the staging half of the rung; the swap
+(commit B) is not started.
+
+Statuses that MOVE: none.
+Statuses that gain evidence while remaining Open: REQ-B7-05, REQ-B7-08,
+CHK-01, CHK-02, CHK-03, CHK-04, CHK-05, CHK-06, CHK-07, CHK-08.
+
+### REQ-B7-05 - REMAINS OPEN, and the reason matters
+
+The literal now reads `210` and re-derives by `rfl` from the named
+component algebra:
+
+    closeLCA   = 2*rank11 + 2*fringe37 + interior33 = 129
+    wholeQuery = 2*select35 + 129 + rank11          = 210
+
+checked by `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCloseCost_eq`
+and `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`, both
+`by rfl`, both reporting "does not depend on any axioms".
+
+The freeze half is DONE by the 142/76/328 pattern:
+`concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq = 207`,
+its `..._CloseCost_eq = 126` companion, the public abbrev
+`canonicalSilentSparseLevelQueryCost`, guards in
+`Validation/SuccinctClassic.lean` and `RMQExamples/Concrete.lean`, and the
+anchor migration `SumLe207 -> SumLe210` in both scripts. All four fields of
+the frozen algebra are literals (two numerals, two pinned components), per
+the `228ae8f` freezing discipline. No frozen identity renamed or deleted.
+
+The row nevertheless STAYS OPEN. Its anti-vacuity challenge requires the
+literal to move BECAUSE the new reads are genuinely in the accounting on
+the maximizing branch, "not because a cap was loosened". At commit A it
+moved because a cap was loosened - that is precisely the condition the row
+tells us not to accept. Closing REQ-B7-05 requires re-deriving `210` over
+the AMENDED route at commit B and exhibiting the checked branch bound that
+consumes the three units.
+
+### REQ-B7-08 - substantially advanced, REMAINS OPEN
+
+`docs/PAPER_MODEL_ADEQUACY.md` gains a new section, "Why the Literal Moved:
+Representation Artifact vs Algorithmic Work", which states the principle
+(the model's unit of cost is the memory touch, not the comparison; a
+representation artifact must be charged, and leaving one uncharged is an
+unmodelled algorithm rather than a cheaper one) and names the bridge
+lemmas rather than paraphrasing them:
+
+- `canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_size_ge_four_of_bounded`
+- `canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_four_of_bounded`
+- `canonicalRelativeRmmPrincipledInteriorChargedTraceCost_announced_slack_of_size_ge_four_of_bounded`
+- `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCloseCost_eq` (129)
+- `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq` (210)
+- `concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq` (207)
+
+B6's stale "207, unchanged" narrative is corrected in place rather than
+deleted, and the `48 <= 126` step is restated as `48 <= 129`.
+
+OPEN because the row demands the section be true of the AMENDED route. It
+is currently true of commit A's route, which is not the same thing. The
+residual-uncharged-work enumeration with checked caps is also still owed
+(that is STRETCH-01's inventory feeding this row).
+
+### Verification rows, as observed
+
+- CHK-01 `lake build RMQ RMQPaper RMQExamples`: exit 0, 267/268, "Build
+  completed successfully". Evidence obtained; row stays Open because it
+  must hold at the CANDIDATE state, which is post-swap.
+- CHK-02 `lake env lean scripts/wordram_axiom_check.lean`: exit 1, ONE
+  error, `scripts/wordram_axiom_check.lean:197:14: error: unknown constant
+  'RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_76'`.
+  This is the KNOWN RED item owned by `claude/a07-blocker-repairs`,
+  recorded and not fixed per the delegation. It references the retired
+  `76`, not `207`/`210`, so B7's migration neither caused it nor worsened
+  it - the error count is still exactly one and it is the same one.
+- CHK-03 `lake env lean scripts/headline_axiom_check.lean`: exit 0, with
+  the anchor moved to `...SumLe210`.
+- CHK-04 cost harness: exit 0, "all reported windows agree",
+  `canonicalBound=210` / `canonicalBoundIs210=true` on every window - so
+  the guards ARE consistent with the derived literal. But every one of the
+  twelve `modeledTraceCost` values is IDENTICAL to the session-2 pre-swap
+  baseline, so the anti-vacuity half - "interior-route windows must MOVE" -
+  is NOT satisfied and is NOT claimed. Correct at commit A, which adds no
+  reads; dischargeable only at commit B.
+- CHK-05 hygiene: zero forbidden-token hits across all eight touched Lean
+  files; zero `native_decide`/`ofReduceBool` repo-wide.
+- CHK-06 `git diff --check`: exit 0 on the working tree.
+  `git diff --check f6564ec..HEAD`: exit 2, hits ONLY
+  `docs/internal/B7_STEP2_WIP.patch` - the structural committed-patch
+  property documented since B7-03, not a source defect.
+- CHK-07 `design_decision_check.ps1 -Strict -Base f6564ec`: exit 0 after
+  WDD-20260719-001 was logged (exit 1 before, on
+  `scripts/paper_topology_lint.ps1`).
+- CHK-08 `claim_drift_scan.ps1`: exit 0. `paper_topology_lint.ps1`:
+  "PAPER-TOPOLOGY PASS (83 broad documentary identifiers; 49 paper
+  identifiers resolved)", exit 0, with `SumLe207` migrated to `SumLe210`.
+
+Per the delegation, `scripts/axiom_check.lean` and `gate.ps1` were NOT run.
+
+### Invariant rows
+
+INV-STORE-IDENTITY, INV-VALUE-DEPENDENCY, INV-NO-SYNTHETIC, INV-ALL-SIZE
+and INV-PUBLIC-COMPOSITION are all untouched by commit A and remain Open.
+Commit A adds no source, no read, and no store region; it changes a cap, a
+literal, and the names carrying that literal. INV-ALL-SIZE is worth one
+positive note: the new literal interior theorem and the slack artifact
+carry exactly the hypotheses the pre-existing cap theorem carried
+(`4 <= shape.size` and the block bound) and add no readiness or threshold
+predicate.
