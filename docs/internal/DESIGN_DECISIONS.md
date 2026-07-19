@@ -4272,3 +4272,105 @@ deliberately:
    still reads once. An `<= 1` cost bound hides exactly that off-by-one, so
    the hypothesis is carried where a reader of the cost model would not think
    to look for it.
+
+## DD-20260719-004: the interior chunk fold is TWO loops, and only one of them reads (E1 M3d-12)
+
+Context. DD-20260719-003 established that the within-macro regime needs an
+eight-capped chunk fold. The route's value for a multi-chunk cell is
+`bitsToNatLE` of the CONCATENATION of the chunks in ascending address order
+(`collectPayloadWords`, `MachineChunkedTable.lean:201`), which with
+`wordSize`-bit chunks is `sum_j 2 ^ (j * wordSize) * chunk j` -- LITTLE-endian
+in the chunk index.
+
+CONSTRAINT, CHECKED NOT ASSUMED. The machine's arithmetic vocabulary
+(`Instr`, `E1Machine.lean:76`) has `mulConst` and `divConst`, which scale a
+register by a program CONSTANT, and no register-by-register multiply. The
+little-endian term `2 ^ (j * wordSize) * chunk j` therefore cannot be formed:
+it needs the running power TIMES the freshly read chunk, and both are
+runtime registers. What `mulConst` alone supports is the Horner step
+`acc := acc * 2 ^ wordSize + chunk j`, which accumulates BIG-endian.
+
+Decision. The fold is two capped loops:
+
+1. `interiorChunkReadBody` reads ASCENDING -- the order the receipt must
+   match -- into a big-endian accumulator.
+2. `interiorChunkCombine` reverses the base-`2 ^ wordSize` digits, restoring
+   the route's little-endian value, under the same iteration count.
+
+THE SECOND LOOP PERFORMS NO READS. It contains no `readMem`, so every
+iteration contributes the empty receipt and the block's whole trace is the
+read loop's trace; the reversal costs only `arithmetic` and `branch` charges.
+`interiorChunkCombineCats_memoryRead_count` states the read-freeness and
+`interiorChunkFoldCats_memoryRead_count` derives the block's total as exactly
+the iteration count -- from the category algebra, not asserted.
+
+Rejected alternative: reading DESCENDING so that one Horner loop suffices.
+Rejected because the route's `readMany` issues ascending addresses and the
+receipt obligation is POSITIONAL list equality, not set equality. Trading a
+read-free arithmetic loop for a wrong trace order would have been the same
+class of defect as B7's stale read order.
+
+## DD-20260719-005: the cap is enforced BY THE MACHINE, not assumed of the constant (E1 M3d-12)
+
+Context. Unlike the fringe's `33`, whose uncapped count derives from the
+query-dependent register `fHi`, the interior's chunk count depends only on
+the SHAPE (`width`, `wordSize`), so it reaches the machine as a per-shape
+program constant -- like `base`, `deadAddress`, and `entriesLen` already do
+in `E1InteriorReadBlock`.
+
+The tempting simplification is to let the loop count BE that constant and
+prove `chunkCount <= 8` about it. That would make the literal cap a property
+of a theorem about the generator, not of the machine: a generator defect
+supplying a larger constant would produce an unbounded fold with no
+machine-level barrier.
+
+Decision. `interiorChunkInit` computes the iteration count with the
+truncated-subtraction cap chain `chunkCount - (chunkCount - 8)`, machine
+executed, exactly as `fringeArmInit` (`E1FringeArmBlock.lean:118`) does for
+`33`. The cap is therefore a property of the MACHINE: a shape presenting a
+chunk count above `8` runs a SHORT fold, never an unbounded one.
+`interiorChunkCount_le_eight` then separately proves no reachable shape does,
+from the route's own within-macro width bound
+(`canonicalRelativeRmmMachineReadNatCosted_cost_le_eight`,
+`InteriorDirectory.lean:4511`), so the cap is exact rather than lossy.
+
+Recorded deliberately: `interiorChunkCount_le_eight` carries NO `0 < wordSize`
+hypothesis, because it does not need one. At `wordSize = 0` the route's own
+definition gives `width / 0 = 0` and `width % 0 = width`, so the chunk count
+is at most the indicator `1`. Stating the bound without a positivity side
+condition keeps the cap UNCONDITIONAL, which is what the all-size claim needs.
+
+## DD-20260719-006: the dead path is a one-chunk instance of the same fold (E1 M3d-12)
+
+Context. `FixedWidthNatTable.machineReadComputationAt`
+(`MachineChunkedTableProgram.lean:343`) splits on `i < entries.length` and
+applies the SAME decode to both arms; the invalid arm reads the singleton
+`[deadAddress]`. This differs from `machineReadCostedWithStore`
+(`MachineChunkedTable.lean:240`), whose invalid arm maps to `fun _ => none`.
+The interior consumes the COMPUTATION form, so its dead path decodes the dead
+word normally rather than short-circuiting to `none`.
+
+Decision. The machine realises the dead path by overriding `cAddr` and `cCnt`
+before the loop (`interiorChunkInit` at `Q+10`/`Q+11`), making it a one-chunk
+instance of the same fold, rather than branching around a separate read block.
+
+Consequence, which is why this is worth recording: the receipt obligation
+becomes UNIFORM in the validity condition.
+`chunkAddrs_eq_consecutive` shows both arms of the route's split are one
+consecutive index block -- `chunkCount` words from `base + i * chunkCount`, or
+one word at `deadAddress` -- so a single positional equality covers both, with
+no per-arm trace reasoning. The validity test itself remains machine
+performed (`natLt` at `Q+1`, branched at `Q+9`), as REQ-E1-05's anti-vacuity
+challenge requires of a guard.
+
+## DD-20260719-007: interior chunk-fold register bank `89 .. 99` (E1 M3d-12)
+
+The bank below `89` is fully allocated: `40 .. 62` fringe fold, `63 .. 68`
+arm, `69 .. 71` same-block, `72 .. 74` dispatch, `75 .. 84` three-way merge
+(`E1CandMerge3.lean:97`), `85 .. 88` the interior atom
+(`E1InteriorReadBlock.lean:89`). The chunk fold opens at `89`.
+
+Chosen so the fold's scratch is disjoint both from the merge slots
+`mLV`/`mLP`/`mMV`/`mMP` that the cross-block composition requires the interior
+to preserve, and from the atom's own bank: the fold READS `iIdx` (`85`) as its
+logical index input and writes nothing below `89`.
