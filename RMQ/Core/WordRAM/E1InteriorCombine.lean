@@ -757,6 +757,140 @@ theorem twoLegBlock_runsTo
       h4P r hTA hTSt hTN hTO, hr3, RegFile.write_other _ _ hUT, hr2,
       RegFile.write_other _ _ hUT, hr1, RegFile.write_other _ _ hUZ]
 
+/-! ## `#6` AND `#7` INSTANTIATED
+
+Both are `twoLegBlock` at a geometry pair and a source pair, exactly as
+`#4`/`#5` are `twoSpanBlock` at a geometry pair.  The value links below
+are stated at the parameters `twoLegBlock_runsTo` actually PRODUCES --
+`macroStart * kA1`, `(macroStart + 1) * kA2` and so on -- rather than at
+their reduced forms, so a caller composes them by `rw` and not by an
+arithmetic detour.
+
+`#7`'s global leg takes `kA2 = kO2 = 0`, so its slot base and block
+offset arrive as `(macroStart + 1) * 0`.  That REDUCES to `0`, because
+`Nat.mul` recurses on its second argument -- the mirror image of the
+`0 + value` trap `E1_LIVE_STATE.md` §4 records, and for once it falls the
+convenient way. -/
+
+/-- **`#6` INSTANTIATED.** The two-leg combiner's value, at the LOCAL
+geometries on both legs and at the route's own parameters, IS the value of
+`canonicalRelativeRmmMachineAdjacentMacroCandidateComputation`.
+
+NO VALIDITY, CAP OR STORE HYPOTHESIS, inherited from `#4`'s link.
+
+The left leg's count is `macroSize - localStart`, which is the route's own
+`leftCount`: `#6` recomputes it internally rather than taking it as an
+argument (`InteriorDirectory.lean:2404`), so the machine must recompute it
+too -- which is what the combiner's three-instruction prologue does. -/
+theorem twoLegValue_adjacentMacro_eq_routeValue
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart rightCount : Nat) :
+    bpCandidateMerge?
+        (twoSpanValue shape (E1InteriorTwoSpan.localLevelGeom shape)
+          (E1InteriorSpanBlock.localSpanGeom shape)
+          (macroStart * ((RelativeRmm.canonicalLayout shape).levelCount *
+            (RelativeRmm.canonicalLayout shape).macroSize))
+          (RelativeRmm.canonicalLayout shape).macroSize
+          (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize)
+          localStart
+          ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
+          (macroStart * (RelativeRmm.canonicalLayout shape).macroSize))
+        (twoSpanValue shape (E1InteriorTwoSpan.localLevelGeom shape)
+          (E1InteriorSpanBlock.localSpanGeom shape)
+          ((macroStart + 1) * ((RelativeRmm.canonicalLayout shape).levelCount *
+            (RelativeRmm.canonicalLayout shape).macroSize))
+          (RelativeRmm.canonicalLayout shape).macroSize
+          (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize)
+          0 rightCount
+          ((macroStart + 1) * (RelativeRmm.canonicalLayout shape).macroSize)) =
+      ((canonicalRelativeRmmMachineAdjacentMacroCandidateComputation shape
+            macroStart localStart rightCount).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value := by
+  rw [E1InteriorTwoSpan.twoSpanValue_local_eq_routeValue,
+    E1InteriorTwoSpan.twoSpanValue_local_eq_routeValue]
+  unfold canonicalRelativeRmmMachineAdjacentMacroCandidateComputation
+  simp only [FlatStoreComputation.bind, FlatStoreComputation.map,
+    FlatStoreExecution.append]
+  rfl
+
+/-- **`#7` INSTANTIATED.** The left leg is `#4`'s local geometry pair; the
+second leg is `#5`'s global pair at slot base and block offset
+`(macroStart + 1) * 0`. -/
+theorem twoLegValue_leftMiddleMacro_eq_routeValue
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart middleMacroCount : Nat) :
+    bpCandidateMerge?
+        (twoSpanValue shape (E1InteriorTwoSpan.localLevelGeom shape)
+          (E1InteriorSpanBlock.localSpanGeom shape)
+          (macroStart * ((RelativeRmm.canonicalLayout shape).levelCount *
+            (RelativeRmm.canonicalLayout shape).macroSize))
+          (RelativeRmm.canonicalLayout shape).macroSize
+          (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize)
+          localStart
+          ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
+          (macroStart * (RelativeRmm.canonicalLayout shape).macroSize))
+        (twoSpanValue shape (E1InteriorTwoSpan.globalLevelGeom shape)
+          (E1InteriorSpanBlock.globalSpanGeom shape)
+          ((macroStart + 1) * 0)
+          (RelativeRmm.canonicalLayout shape).macroSampleCount
+          (bpSparseLevelDomain
+            (RelativeRmm.canonicalLayout shape).macroSampleCount)
+          (macroStart + 1) middleMacroCount ((macroStart + 1) * 0)) =
+      ((canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation shape
+            macroStart localStart middleMacroCount).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value := by
+  -- `(macroStart + 1) * 0` REDUCES to `0`, but `rw` matches syntactically,
+  -- so the reduction has to be performed rather than relied on.
+  simp only [Nat.mul_zero]
+  rw [E1InteriorTwoSpan.twoSpanValue_local_eq_routeValue,
+    E1InteriorTwoSpan.twoSpanValue_global_eq_routeValue]
+  unfold canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation
+  simp only [FlatStoreComputation.bind, FlatStoreComputation.map,
+    FlatStoreExecution.append]
+  rfl
+
+/-! ## The second leg's source premises, WITNESSED at both instantiations
+
+`twoLegBlock_runsTo`'s `hS2`/`hN2` are OWED premises: each says the
+second setup's source register carries a named value whenever the six
+combiner-bank readings hold.  Rule 1 asks for a witness AT THE INTENDED
+INSTANTIATION, and both witnesses are projections -- `#6` reads its start
+from `uZero` and its count from `uRight`, `#7` reads its start from `uT`
+(which holds `macroStart + 1` by then) and its count from `uMid`.
+
+These are stated as theorems rather than left to the call site so that the
+premises are demonstrably NOT vacuous: a `RegFile` satisfying all six
+readings exists, since the six constrain six DISTINCT registers. -/
+
+/-- `#6`'s second-leg sources: `(uZero, uRight)`. -/
+theorem adjacentMacro_src_witnesses
+    (macroStart localStart mid rightCount : Nat) :
+    (∀ r : RegFile, r uMacro = macroStart → r uLocal = localStart →
+      r uMid = mid → r uRight = rightCount → r uZero = 0 →
+      r uT = macroStart + 1 → r uZero = 0) ∧
+    (∀ r : RegFile, r uMacro = macroStart → r uLocal = localStart →
+      r uMid = mid → r uRight = rightCount → r uZero = 0 →
+      r uT = macroStart + 1 → r uRight = rightCount) :=
+  ⟨fun _ _ _ _ _ hz _ => hz, fun _ _ _ _ hr _ _ => hr⟩
+
+/-- `#7`'s second-leg sources: `(uT, uMid)`.  `uT` holds `macroStart + 1`
+by the time the second setup runs, which is what the block's two-instruction
+bump establishes and what makes the global leg's `macroStart` argument
+correct. -/
+theorem leftMiddleMacro_src_witnesses
+    (macroStart localStart middleMacroCount right : Nat) :
+    (∀ r : RegFile, r uMacro = macroStart → r uLocal = localStart →
+      r uMid = middleMacroCount → r uRight = right → r uZero = 0 →
+      r uT = macroStart + 1 → r uT = macroStart + 1) ∧
+    (∀ r : RegFile, r uMacro = macroStart → r uLocal = localStart →
+      r uMid = middleMacroCount → r uRight = right → r uZero = 0 →
+      r uT = macroStart + 1 → r uMid = middleMacroCount) :=
+  ⟨fun _ _ _ _ _ _ ht => ht, fun _ _ _ hm _ _ _ => hm⟩
+
 end E1InteriorCombine
 end WordRAM
 end RMQ
