@@ -1,0 +1,491 @@
+diff --git a/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean b/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean
+index d4e6434..b97d7fc 100644
+--- a/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean
++++ b/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean
+@@ -1507,7 +1507,9 @@ def canonicalRelativeRmmInteriorDirectoryPayloadLength
+     (shape : Cartesian.CartesianShape) : Nat :=
+   (canonicalRelativeRmmSummaryTable shape).payload.length +
+     (canonicalRelativeRmmInteriorLocalTable shape).payload.length +
+-      (canonicalRelativeRmmInteriorGlobalTable shape).payload.length
++      (canonicalRelativeRmmInteriorGlobalTable shape).payload.length +
++        (canonicalRelativeRmmInteriorLocalLevelTable shape).payload.length +
++          (canonicalRelativeRmmInteriorGlobalLevelTable shape).payload.length
+ 
+ 
+ /-- Machine-word stores for the four summary fields in payload order. -/
+@@ -1545,30 +1547,58 @@ def canonicalRelativeRmmGlobalMachineStore
+   let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
+   exact table.table.machineStore hword
+ 
++/-- Machine-word store for the charged local level/span table (B7). -/
++def canonicalRelativeRmmLocalLevelMachineStore
++    (shape : Cartesian.CartesianShape) :
++    let table := canonicalRelativeRmmInteriorLocalLevelTable shape
++    BoundedPayloadWordStore table.table.payload
++      (SuccinctRank.machineWordBits shape.bpCode.length) := by
++  let table := canonicalRelativeRmmInteriorLocalLevelTable shape
++  let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
++  exact table.table.machineStore hword
++
++/-- Machine-word store for the charged global level/span table (B7). -/
++def canonicalRelativeRmmGlobalLevelMachineStore
++    (shape : Cartesian.CartesianShape) :
++    let table := canonicalRelativeRmmInteriorGlobalLevelTable shape
++    BoundedPayloadWordStore table.table.payload
++      (SuccinctRank.machineWordBits shape.bpCode.length) := by
++  let table := canonicalRelativeRmmInteriorGlobalLevelTable shape
++  let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
++  exact table.table.machineStore hword
++
+ /--
+-One canonical bounded store for all six fixed-width tables, in counted
++One canonical bounded store for all eight fixed-width tables, in counted
+ directory-payload order: baseline, relative minimum, relative maximum,
+-arg-min offset, local sparse offset, global sparse block.
++arg-min offset, local sparse offset, global sparse block, local charged
++level/span, global charged level/span.
+ -/
+ def canonicalRelativeRmmInteriorComponentStore
+     (shape : Cartesian.CartesianShape) :
+     let summary := canonicalRelativeRmmSummaryTable shape
+     let localTable := canonicalRelativeRmmInteriorLocalTable shape
+     let globalTable := canonicalRelativeRmmInteriorGlobalTable shape
++    let localLevel := canonicalRelativeRmmInteriorLocalLevelTable shape
++    let globalLevel := canonicalRelativeRmmInteriorGlobalLevelTable shape
+     BoundedPayloadWordStore
+-      (((summary.baselineTable.payload ++
++      (((((summary.baselineTable.payload ++
+           (summary.minRelTable.payload ++
+             (summary.maxRelTable.payload ++ summary.argOffsetTable.payload))) ++
+-        localTable.table.payload) ++ globalTable.table.payload)
++        localTable.table.payload) ++ globalTable.table.payload) ++
++        localLevel.table.payload) ++ globalLevel.table.payload)
+       (SuccinctRank.machineWordBits shape.bpCode.length) := by
+   exact
+     BoundedPayloadWordStore.append
+       (BoundedPayloadWordStore.append
+-        (canonicalRelativeRmmSummaryMachineStore shape)
+-        (canonicalRelativeRmmLocalMachineStore shape))
+-      (canonicalRelativeRmmGlobalMachineStore shape)
+-
+-/-- Explicit flat word offsets for the six directory components. -/
++        (BoundedPayloadWordStore.append
++          (BoundedPayloadWordStore.append
++            (canonicalRelativeRmmSummaryMachineStore shape)
++            (canonicalRelativeRmmLocalMachineStore shape))
++          (canonicalRelativeRmmGlobalMachineStore shape))
++        (canonicalRelativeRmmLocalLevelMachineStore shape))
++      (canonicalRelativeRmmGlobalLevelMachineStore shape)
++
++/-- Explicit flat word offsets for the eight directory components. -/
+ structure CanonicalRelativeRmmInteriorComponentOffsets where
+   baseline : Nat
+   minRel : Nat
+@@ -1576,6 +1606,8 @@ structure CanonicalRelativeRmmInteriorComponentOffsets where
+   argOffset : Nat
+   localOffset : Nat
+   globalBlock : Nat
++  localLevel : Nat
++  globalLevel : Nat
+   deadAddress : Nat
+ deriving Repr, DecidableEq
+ 
+@@ -1594,6 +1626,10 @@ def canonicalRelativeRmmInteriorComponentOffsets
+     (summary.argOffsetTable.machineStore hword).store.words.size
+   let localWords :=
+     (canonicalRelativeRmmLocalMachineStore shape).store.words.size
++  let globalWords :=
++    (canonicalRelativeRmmGlobalMachineStore shape).store.words.size
++  let localLevelWords :=
++    (canonicalRelativeRmmLocalLevelMachineStore shape).store.words.size
+   { baseline := 0
+     minRel := baselineWords
+     maxRel := baselineWords + minRelWords
+@@ -1601,6 +1637,12 @@ def canonicalRelativeRmmInteriorComponentOffsets
+     localOffset := baselineWords + minRelWords + maxRelWords + argOffsetWords
+     globalBlock :=
+       baselineWords + minRelWords + maxRelWords + argOffsetWords + localWords
++    localLevel :=
++      baselineWords + minRelWords + maxRelWords + argOffsetWords + localWords +
++        globalWords
++    globalLevel :=
++      baselineWords + minRelWords + maxRelWords + argOffsetWords + localWords +
++        globalWords + localLevelWords
+     deadAddress :=
+       (canonicalRelativeRmmInteriorComponentStore shape).store.words.size }
+ 
+@@ -1611,11 +1653,13 @@ theorem canonicalRelativeRmmInteriorComponentStore_flattens_payload
+           shape).store.words.toList =
+       (canonicalRelativeRmmSummaryTable shape).payload ++
+         (canonicalRelativeRmmInteriorLocalTable shape).payload ++
+-
+-          (canonicalRelativeRmmInteriorGlobalTable shape).payload := by
++          (canonicalRelativeRmmInteriorGlobalTable shape).payload ++
++            (canonicalRelativeRmmInteriorLocalLevelTable shape).payload ++
++              (canonicalRelativeRmmInteriorGlobalLevelTable shape).payload := by
+   simpa [PayloadLiveBPRelativeMinMaxArgSummaryTable.payload,
+     PayloadLiveBPLocalSparseOffsetTable.payload,
+-    PayloadLiveBPGlobalSparseBlockTable.payload] using
++    PayloadLiveBPGlobalSparseBlockTable.payload,
++    PayloadLiveBPSparseLevelTable.payload] using
+     (canonicalRelativeRmmInteriorComponentStore shape).erases
+ 
+ theorem canonicalRelativeRmmInteriorComponentStore_words_toList
+@@ -1630,11 +1674,17 @@ theorem canonicalRelativeRmmInteriorComponentStore_words_toList
+               ((canonicalRelativeRmmInteriorLocalTable
+                 shape).table.machineStore hword).store.words.toList ++
+                 ((canonicalRelativeRmmInteriorGlobalTable
+-                  shape).table.machineStore hword).store.words.toList := by
++                  shape).table.machineStore hword).store.words.toList ++
++                  ((canonicalRelativeRmmInteriorLocalLevelTable
++                    shape).table.machineStore hword).store.words.toList ++
++                    ((canonicalRelativeRmmInteriorGlobalLevelTable
++                      shape).table.machineStore hword).store.words.toList := by
+   simp [canonicalRelativeRmmInteriorComponentStore,
+     canonicalRelativeRmmSummaryMachineStore,
+     canonicalRelativeRmmLocalMachineStore,
+     canonicalRelativeRmmGlobalMachineStore,
++    canonicalRelativeRmmLocalLevelMachineStore,
++    canonicalRelativeRmmGlobalLevelMachineStore,
+     BoundedPayloadWordStore.append]
+ 
+ theorem canonicalRelativeRmmInteriorComponentStore_words_size_eq
+@@ -1648,8 +1698,12 @@ theorem canonicalRelativeRmmInteriorComponentStore_words_size_eq
+             ((summary.argOffsetTable.machineStore hword).store.words.size +
+               (((canonicalRelativeRmmInteriorLocalTable
+                 shape).table.machineStore hword).store.words.size +
+-                ((canonicalRelativeRmmInteriorGlobalTable
+-                  shape).table.machineStore hword).store.words.size)))) := by
++                (((canonicalRelativeRmmInteriorGlobalTable
++                  shape).table.machineStore hword).store.words.size +
++                  (((canonicalRelativeRmmInteriorLocalLevelTable
++                    shape).table.machineStore hword).store.words.size +
++                    ((canonicalRelativeRmmInteriorGlobalLevelTable
++                      shape).table.machineStore hword).store.words.size)))))) := by
+   have h := congrArg List.length
+     (canonicalRelativeRmmInteriorComponentStore_words_toList shape)
+   simpa using h
+@@ -2101,6 +2155,38 @@ theorem canonicalRelativeRmmGlobalReadComputation_footprint_le_dead
+     canonicalRelativeRmmInteriorComponentStore_words_size_eq,
+     canonicalRelativeRmmLocalMachineStore] <;> omega
+ 
++theorem canonicalRelativeRmmLocalLevelReadComputation_footprint_le_dead
++    (shape : Cartesian.CartesianShape) (i : Nat) :
++    (canonicalRelativeRmmMachineReadNatComputation shape
++      (canonicalRelativeRmmInteriorLocalLevelTable shape).table
++      (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel i)
++      |>.FootprintWithin
++        (fun address =>
++          address <=
++            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
++  apply canonicalRelativeRmmMachineReadNatComputation_footprint_le_dead
++  simp [canonicalRelativeRmmInteriorComponentOffsets,
++    canonicalRelativeRmmInteriorComponentStore_words_size_eq,
++    canonicalRelativeRmmLocalMachineStore,
++    canonicalRelativeRmmGlobalMachineStore,
++    canonicalRelativeRmmLocalLevelMachineStore] <;> omega
++
++theorem canonicalRelativeRmmGlobalLevelReadComputation_footprint_le_dead
++    (shape : Cartesian.CartesianShape) (i : Nat) :
++    (canonicalRelativeRmmMachineReadNatComputation shape
++      (canonicalRelativeRmmInteriorGlobalLevelTable shape).table
++      (canonicalRelativeRmmInteriorComponentOffsets shape).globalLevel i)
++      |>.FootprintWithin
++        (fun address =>
++          address <=
++            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
++  apply canonicalRelativeRmmMachineReadNatComputation_footprint_le_dead
++  simp [canonicalRelativeRmmInteriorComponentOffsets,
++    canonicalRelativeRmmInteriorComponentStore_words_size_eq,
++    canonicalRelativeRmmLocalMachineStore,
++    canonicalRelativeRmmGlobalMachineStore,
++    canonicalRelativeRmmLocalLevelMachineStore] <;> omega
++
+ def canonicalRelativeRmmMachineSummaryComputation
+     (shape : Cartesian.CartesianShape) (block : Nat) :
+     FlatStoreComputation (Option (Prod Nat (Prod Nat (Prod Nat Nat)))) :=
+@@ -2767,17 +2853,25 @@ theorem canonicalRelativeRmmMaxRelReadComputation_refines
+       let globalWords :=
+         ((canonicalRelativeRmmInteriorGlobalTable
+           shape).table.machineStore hword).store.words.toList
++      let localLevelWords :=
++        ((canonicalRelativeRmmInteriorLocalLevelTable
++          shape).table.machineStore hword).store.words.toList
++      let globalLevelWords :=
++        ((canonicalRelativeRmmInteriorGlobalLevelTable
++          shape).table.machineStore hword).store.words.toList
+       have hmiddle :
+           ((baselineWords ++ minRelWords) ++ maxRelWords ++
+-            (argWords ++ localWords ++ globalWords))[
++            (argWords ++ localWords ++ globalWords ++ localLevelWords ++
++              globalLevelWords))[
+               (baselineWords ++ minRelWords).length + localAddress]? =
+             maxRelWords[localAddress]? :=
+         List.getElem?_append_middle_of_lt
+           (baselineWords ++ minRelWords) maxRelWords
+-          (argWords ++ localWords ++ globalWords) localAddress hlocal
++          (argWords ++ localWords ++ globalWords ++ localLevelWords ++
++            globalLevelWords) localAddress hlocal
+       rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
+       simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+-        argWords, localWords, globalWords,
++        argWords, localWords, globalWords, localLevelWords, globalLevelWords,
+         canonicalRelativeRmmInteriorComponentOffsets,
+         List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
+     simpa [Array.getElem?_toList] using hlist
+@@ -2821,17 +2915,25 @@ theorem canonicalRelativeRmmArgOffsetReadComputation_refines
+       let globalWords :=
+         ((canonicalRelativeRmmInteriorGlobalTable
+           shape).table.machineStore hword).store.words.toList
++      let localLevelWords :=
++        ((canonicalRelativeRmmInteriorLocalLevelTable
++          shape).table.machineStore hword).store.words.toList
++      let globalLevelWords :=
++        ((canonicalRelativeRmmInteriorGlobalLevelTable
++          shape).table.machineStore hword).store.words.toList
+       have hmiddle :
+           (((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords ++
+-            (localWords ++ globalWords))[
++            (localWords ++ globalWords ++ localLevelWords ++
++              globalLevelWords))[
+               ((baselineWords ++ minRelWords) ++ maxRelWords).length +
+                 localAddress]? = argWords[localAddress]? :=
+         List.getElem?_append_middle_of_lt
+           ((baselineWords ++ minRelWords) ++ maxRelWords) argWords
+-          (localWords ++ globalWords) localAddress hlocal
++          (localWords ++ globalWords ++ localLevelWords ++ globalLevelWords)
++          localAddress hlocal
+       rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
+       simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+-        argWords, localWords, globalWords,
++        argWords, localWords, globalWords, localLevelWords, globalLevelWords,
+         canonicalRelativeRmmInteriorComponentOffsets,
+         List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
+     simpa [Array.getElem?_toList] using hlist
+@@ -2875,18 +2977,26 @@ theorem canonicalRelativeRmmLocalReadComputation_refines
+       let globalWords :=
+         ((canonicalRelativeRmmInteriorGlobalTable
+           shape).table.machineStore hword).store.words.toList
++      let localLevelWords :=
++        ((canonicalRelativeRmmInteriorLocalLevelTable
++          shape).table.machineStore hword).store.words.toList
++      let globalLevelWords :=
++        ((canonicalRelativeRmmInteriorGlobalLevelTable
++          shape).table.machineStore hword).store.words.toList
+       have hmiddle :
+           ((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+-            localWords ++ globalWords)[
++            localWords ++ (globalWords ++ localLevelWords ++
++              globalLevelWords))[
+               (((baselineWords ++ minRelWords) ++ maxRelWords) ++
+                 argWords).length + localAddress]? =
+             localWords[localAddress]? :=
+         List.getElem?_append_middle_of_lt
+           (((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords)
+-          localWords globalWords localAddress hlocal
++          localWords (globalWords ++ localLevelWords ++ globalLevelWords)
++          localAddress hlocal
+       rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
+       simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+-        argWords, localWords, globalWords,
++        argWords, localWords, globalWords, localLevelWords, globalLevelWords,
+         canonicalRelativeRmmInteriorComponentOffsets,
+         canonicalRelativeRmmLocalMachineStore,
+         List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
+@@ -2931,20 +3041,160 @@ theorem canonicalRelativeRmmGlobalReadComputation_refines
+       let globalWords :=
+         ((canonicalRelativeRmmInteriorGlobalTable
+           shape).table.machineStore hword).store.words.toList
++      let localLevelWords :=
++        ((canonicalRelativeRmmInteriorLocalLevelTable
++          shape).table.machineStore hword).store.words.toList
++      let globalLevelWords :=
++        ((canonicalRelativeRmmInteriorGlobalLevelTable
++          shape).table.machineStore hword).store.words.toList
+       have hmiddle :
+           (((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+-            localWords) ++ globalWords ++ [])[
++            localWords) ++ globalWords ++
++              (localLevelWords ++ globalLevelWords))[
+               ((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+                 localWords).length + localAddress]? =
+             globalWords[localAddress]? :=
+         List.getElem?_append_middle_of_lt
+           ((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+-            localWords) globalWords [] localAddress hlocal
++            localWords) globalWords (localLevelWords ++ globalLevelWords)
++          localAddress hlocal
++      rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
++      simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
++        argWords, localWords, globalWords, localLevelWords, globalLevelWords,
++        canonicalRelativeRmmInteriorComponentOffsets,
++        canonicalRelativeRmmLocalMachineStore,
++        List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
++    simpa [Array.getElem?_toList] using hlist
++  case hdead =>
++    simp [canonicalRelativeRmmInteriorComponentOffsets]
++
++theorem canonicalRelativeRmmLocalLevelReadComputation_refines
++    (shape : Cartesian.CartesianShape) (i : Nat) :
++    ((canonicalRelativeRmmMachineReadNatComputation shape
++        (canonicalRelativeRmmInteriorLocalLevelTable shape).table
++        (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel i).run
++      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
++      canonicalRelativeRmmMachineReadNatCosted shape
++        (canonicalRelativeRmmInteriorLocalLevelTable shape).table i := by
++  unfold canonicalRelativeRmmMachineReadNatComputation
++  unfold canonicalRelativeRmmMachineReadNatCosted
++  apply FixedWidthNatTable.machineReadComputationAt_refines_machineReadCosted
++  case hsegment =>
++    intro localAddress hlocal
++    have hlist :
++        (canonicalRelativeRmmInteriorComponentStore
++          shape).store.words.toList[
++            (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel +
++              localAddress]? =
++        ((canonicalRelativeRmmInteriorLocalLevelTable shape).table.machineStore
++          (SuccinctRank.machineWordBits_pos
++            shape.bpCode.length)).store.words.toList[localAddress]? := by
++      let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
++      let summary := canonicalRelativeRmmSummaryTable shape
++      let baselineWords :=
++        (summary.baselineTable.machineStore hword).store.words.toList
++      let minRelWords :=
++        (summary.minRelTable.machineStore hword).store.words.toList
++      let maxRelWords :=
++        (summary.maxRelTable.machineStore hword).store.words.toList
++      let argWords :=
++        (summary.argOffsetTable.machineStore hword).store.words.toList
++      let localWords :=
++        ((canonicalRelativeRmmInteriorLocalTable
++          shape).table.machineStore hword).store.words.toList
++      let globalWords :=
++        ((canonicalRelativeRmmInteriorGlobalTable
++          shape).table.machineStore hword).store.words.toList
++      let localLevelWords :=
++        ((canonicalRelativeRmmInteriorLocalLevelTable
++          shape).table.machineStore hword).store.words.toList
++      let globalLevelWords :=
++        ((canonicalRelativeRmmInteriorGlobalLevelTable
++          shape).table.machineStore hword).store.words.toList
++      have hmiddle :
++          ((((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
++            localWords) ++ globalWords) ++ localLevelWords ++
++              globalLevelWords)[
++              (((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
++                localWords) ++ globalWords).length + localAddress]? =
++            localLevelWords[localAddress]? :=
++        List.getElem?_append_middle_of_lt
++          (((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
++            localWords) ++ globalWords) localLevelWords globalLevelWords
++          localAddress hlocal
++      rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
++      simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
++        argWords, localWords, globalWords, localLevelWords, globalLevelWords,
++        canonicalRelativeRmmInteriorComponentOffsets,
++        canonicalRelativeRmmLocalMachineStore,
++        canonicalRelativeRmmGlobalMachineStore,
++        List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
++    simpa [Array.getElem?_toList] using hlist
++  case hdead =>
++    simp [canonicalRelativeRmmInteriorComponentOffsets]
++
++theorem canonicalRelativeRmmGlobalLevelReadComputation_refines
++    (shape : Cartesian.CartesianShape) (i : Nat) :
++    ((canonicalRelativeRmmMachineReadNatComputation shape
++        (canonicalRelativeRmmInteriorGlobalLevelTable shape).table
++        (canonicalRelativeRmmInteriorComponentOffsets shape).globalLevel i).run
++      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
++      canonicalRelativeRmmMachineReadNatCosted shape
++        (canonicalRelativeRmmInteriorGlobalLevelTable shape).table i := by
++  unfold canonicalRelativeRmmMachineReadNatComputation
++  unfold canonicalRelativeRmmMachineReadNatCosted
++  apply FixedWidthNatTable.machineReadComputationAt_refines_machineReadCosted
++  case hsegment =>
++    intro localAddress hlocal
++    have hlist :
++        (canonicalRelativeRmmInteriorComponentStore
++          shape).store.words.toList[
++            (canonicalRelativeRmmInteriorComponentOffsets shape).globalLevel +
++              localAddress]? =
++        ((canonicalRelativeRmmInteriorGlobalLevelTable shape).table.machineStore
++          (SuccinctRank.machineWordBits_pos
++            shape.bpCode.length)).store.words.toList[localAddress]? := by
++      let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
++      let summary := canonicalRelativeRmmSummaryTable shape
++      let baselineWords :=
++        (summary.baselineTable.machineStore hword).store.words.toList
++      let minRelWords :=
++        (summary.minRelTable.machineStore hword).store.words.toList
++      let maxRelWords :=
++        (summary.maxRelTable.machineStore hword).store.words.toList
++      let argWords :=
++        (summary.argOffsetTable.machineStore hword).store.words.toList
++      let localWords :=
++        ((canonicalRelativeRmmInteriorLocalTable
++          shape).table.machineStore hword).store.words.toList
++      let globalWords :=
++        ((canonicalRelativeRmmInteriorGlobalTable
++          shape).table.machineStore hword).store.words.toList
++      let localLevelWords :=
++        ((canonicalRelativeRmmInteriorLocalLevelTable
++          shape).table.machineStore hword).store.words.toList
++      let globalLevelWords :=
++        ((canonicalRelativeRmmInteriorGlobalLevelTable
++          shape).table.machineStore hword).store.words.toList
++      have hmiddle :
++          (((((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
++            localWords) ++ globalWords) ++ localLevelWords) ++
++              globalLevelWords ++ [])[
++              ((((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
++                localWords) ++ globalWords) ++ localLevelWords).length +
++                  localAddress]? =
++            globalLevelWords[localAddress]? :=
++        List.getElem?_append_middle_of_lt
++          ((((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
++            localWords) ++ globalWords) ++ localLevelWords) globalLevelWords []
++          localAddress hlocal
+       rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
+       simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+-        argWords, localWords, globalWords,
++        argWords, localWords, globalWords, localLevelWords, globalLevelWords,
+         canonicalRelativeRmmInteriorComponentOffsets,
+         canonicalRelativeRmmLocalMachineStore,
++        canonicalRelativeRmmGlobalMachineStore,
++        canonicalRelativeRmmLocalLevelMachineStore,
+         List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
+     simpa [Array.getElem?_toList] using hlist
+   case hdead =>
+@@ -3294,7 +3544,9 @@ theorem canonicalRelativeRmmInteriorRange_successful_read_backed
+             shape).store.words.toList =
+         (canonicalRelativeRmmSummaryTable shape).payload ++
+           (canonicalRelativeRmmInteriorLocalTable shape).payload ++
+-            (canonicalRelativeRmmInteriorGlobalTable shape).payload := by
++            (canonicalRelativeRmmInteriorGlobalTable shape).payload ++
++              (canonicalRelativeRmmInteriorLocalLevelTable shape).payload ++
++                (canonicalRelativeRmmInteriorGlobalLevelTable shape).payload := by
+   have hmatch :=
+     canonicalRelativeRmmInteriorRangeRead_matches_store
+       shape (canonicalRelativeRmmInteriorComponentStore shape).store.words
+@@ -4712,7 +4964,9 @@ def canonicalRelativeRmmInteriorDirectory
+   payload :=
+     (canonicalRelativeRmmSummaryTable shape).payload ++
+       (canonicalRelativeRmmInteriorLocalTable shape).payload ++
+-        (canonicalRelativeRmmInteriorGlobalTable shape).payload
++        (canonicalRelativeRmmInteriorGlobalTable shape).payload ++
++          (canonicalRelativeRmmInteriorLocalLevelTable shape).payload ++
++            (canonicalRelativeRmmInteriorGlobalLevelTable shape).payload
+   payload_length_eq := by
+     simp [canonicalRelativeRmmInteriorDirectoryPayloadLength,
+       Nat.add_assoc]
+@@ -5208,7 +5462,9 @@ structure CanonicalRelativeRmmInteriorStoreProfile
+           shape).store.words.toList =
+       (canonicalRelativeRmmSummaryTable shape).payload ++
+         (canonicalRelativeRmmInteriorLocalTable shape).payload ++
+-          (canonicalRelativeRmmInteriorGlobalTable shape).payload
++          (canonicalRelativeRmmInteriorGlobalTable shape).payload ++
++            (canonicalRelativeRmmInteriorLocalLevelTable shape).payload ++
++              (canonicalRelativeRmmInteriorGlobalLevelTable shape).payload
+   canonical_execution_eq :
+     forall startBlock count,
+       canonicalRelativeRmmInteriorRangeMinCostedWithStore shape
