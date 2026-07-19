@@ -269,9 +269,9 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   `E1RankBlock.lean`'s `local` macros are now thin wrappers naming the
   block's segments/registers; all inherited proofs unchanged.
 - `rankCloseBlock_fits` (`E1RankBlock.lean`): constructor-exhaustive
-  REQ-E1-02 certificate for the 60-instruction block Ã¢â‚¬â€ register bank,
+  REQ-E1-02 certificate for the 60-instruction block ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â register bank,
   segments `G..G+4`, immediates, mul/div constants
-  (`WS`/`BPS`/`2^c`/`c+1`/`2*c+2`/`2`, variable divisors positive Ã¢â‚¬â€ `c`
+  (`WS`/`BPS`/`2^c`/`c+1`/`2*c+2`/`2`, variable divisors positive ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â `c`
   needs the route's `bpFringeChunkBits_pos`), branch targets
   `< 2^w` given `28 <= 2^w`, `G+4 < 2^w`, `L < 2^w`, `0 < c`,
   `0 < WS < 2^w`, `0 < BPS < 2^w`, `2^c < 2^w`, `2*c+2 < 2^w`,
@@ -279,7 +279,7 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   disjunction grouped per segment; add `or_assoc` to the simp set before
   the 60-way `rcases`.)
 - `rankCloseBlock_runsTo_canonical` (`E1RankCanonical.lean`): the M3c
-  store-swap glue Ã¢â‚¬â€ for every shape/base/position the hosted block runs
+  store-swap glue ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â for every shape/base/position the hosted block runs
   against `concreteBPNativeSuccinctRMQGlobalReadStore shape` (base
   `concreteBPNativeRankCloseTraceSegmentBase` = 17) with receipts
   POSITIONALLY EQUAL to
@@ -360,7 +360,7 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   mirroring the fold (exit pass / continue-exhaust / continue-IH), each
   pass via `RunsTo.straight` + the shared `straight_eval` macro.
 - Technique notes: preservation-helper hypotheses must be stated on
-  register NUMERALS (`r Ã¢â€°Â  22`), not the abbrevs (`r Ã¢â€°Â  sA`) - omega does
+  register NUMERALS (`r ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â  22`), not the abbrevs (`r ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â  sA`) - omega does
   not unfold abbrevs in hypotheses; `rw` auto-closes refl goals (no
   trailing `rfl` after preservation chains); the packet-value goal needs
   an explicit `X + j*c + 1 = j*c + X + 1` commutation before
@@ -391,7 +391,7 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   (constructor-exhaustive, 59 arms, branch targets `B+30/B+58/B+59`).
 - Technique delta discovered: with a generic loop base the invariant's
   pc equation `hpc : pc = LB` has a BARE-VARIABLE RHS, and `subst hpc`
-  eliminates `LB` (not `pc`), breaking later explicit `LB` references Ã¢â‚¬â€
+  eliminates `LB` (not `pc`), breaking later explicit `LB` references ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â
   use `subst pc` to force the direction.  (The false block never hit
   this because its RHS `B + 30` is not a variable.)
 - Verification at this commit: standalone `lake env lean` exit 0 (no
@@ -408,7 +408,7 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   limit`).  Pieces: `rankFalseLoopFold_runsTo` (the shared
   `rankLoopBody` loop re-proved at a GENERIC loop base `LB`, end
   `LB+25`, preservation widened to the exact write-set complement
-  `r <= 8 Ã¢Ë†Â¨ 10 <= r <= 16 Ã¢Ë†Â¨ 24 <= r <= 26 Ã¢Ë†Â¨ 28 <= r` Ã¢â‚¬â€ the dense leg
+  `r <= 8 ÃƒÂ¢Ã‹â€ Ã‚Â¨ 10 <= r <= 16 ÃƒÂ¢Ã‹â€ Ã‚Â¨ 24 <= r <= 26 ÃƒÂ¢Ã‹â€ Ã‚Â¨ 28 <= r` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the dense leg
   must keep `rWrd`/samples across a fold); 32-instr
   `rankAtSegmentBlock A G c` (7-instr register-input init `A..A+6`,
   loop `A+7..A+30`, back edge `A+31`); frozen `rankAtSegmentCats`
@@ -418,8 +418,8 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   trace, value in `rVal`); width certificate `rankAtSegmentBlock_fits`
   (32 arms, branch target `A+7`).
 - Technique: init-only preservation hypotheses must ALSO be stated on
-  register numerals (`r Ã¢â€°Â  22 Ã¢Ë†Â§ ...`), instantiated with `(by decide)` at
-  abbrev call sites Ã¢â‚¬â€ same omega-opacity gotcha as loop preservation.
+  register numerals (`r ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â  22 ÃƒÂ¢Ã‹â€ Ã‚Â§ ...`), instantiated with `(by decide)` at
+  abbrev call sites ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â same omega-opacity gotcha as loop preservation.
 - Verification at this commit: standalone `lake env lean` exit 0 (no
   warnings); `lake build RMQ` green.
 
@@ -460,8 +460,8 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
     `relativeReadBlock_fits`.
 - Technique notes (parametric-destination variant of the numerals
   gotcha): disequalities for `RegFile.write` if-conditions must be
-  provided in the CONDITION'S orientation (`(10 : Nat) Ã¢â€°Â  F1` for address
-  preservation, `F1 Ã¢â€°Â  F2` for later-write skips over the queried
+  provided in the CONDITION'S orientation (`(10 : Nat) ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â  F1` for address
+  preservation, `F1 ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â  F2` for later-write skips over the queried
   register) - derive them once by omega from the bank bounds and splice
   into the per-fact simp lists; the unused-simp-arg linter identifies
   the ones each fact does not need.  `HostedAt.tail.tail.head` type-
@@ -584,7 +584,7 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
     packet under `decodePacket` in `rVal`; cats
     `longLegCats`/`sparseLegCats` (rank hit cats + setup + present/
     absent relative read + move); preservation
-    `(r <= 8 Ã¢Ë†Â¨ 28 <= r) Ã¢Ë†Â§ r Ã¢â€°Â  38` (the legs own `xBPos`).  Entry
+    `(r <= 8 ÃƒÂ¢Ã‹â€ Ã‚Â¨ 28 <= r) ÃƒÂ¢Ã‹â€ Ã‚Â§ r ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â  38` (the legs own `xBPos`).  Entry
     fields arrive as shifted-encode hypotheses
     (`regs0 xSF1 = super.baseOccurrence + 1` etc.); seed presence +
     offset bound are route-side hypotheses for canonical discharge.
@@ -593,7 +593,7 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Gotcha: `relativeReadBlock_runsTo`'s value clause uses WordRAM's
   `bitsToNatLE`, the route uses `SuccinctSpace.bitsToNatLE` - convert
   with `funext SuccinctSpace.WordRAMBridge.bitsToNatLE_eq` and
-  `rw [Ã¢â€ Â hfn]` (simp cannot rewrite the unapplied function under
+  `rw [ÃƒÂ¢Ã¢â‚¬Â Ã‚Â hfn]` (simp cannot rewrite the unapplied function under
   `Option.map`).
 - Verification at this commit: standalone `lake env lean` exit 0 (no
   warnings); `lake build RMQ` green; hygiene rg clean.
@@ -604,14 +604,14 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   a usage limit), verified and landed here unchanged.
 - `E1DenseSelectBlock.lean`: the register-preservation clauses of
   `denseHeadBlock_runsTo_present` and `denseSelectLegBlock_runsTo` are
-  strengthened from `(Ã¢Ë†â‚¬ r, (24 Ã¢â€°Â¤ r Ã¢Ë†Â§ r Ã¢â€°Â¤ 26) Ã¢Ë†Â¨ 28 Ã¢â€°Â¤ r Ã¢â€ â€™ regsF r =
-  regs0 r)` to `(Ã¢Ë†â‚¬ r, r Ã¢â€°Â¤ 8 Ã¢Ë†Â¨ (24 Ã¢â€°Â¤ r Ã¢Ë†Â§ r Ã¢â€°Â¤ 26) Ã¢Ë†Â¨ 28 Ã¢â€°Â¤ r Ã¢â€ â€™ regsF r =
+  strengthened from `(ÃƒÂ¢Ã‹â€ Ã¢â€šÂ¬ r, (24 ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ r ÃƒÂ¢Ã‹â€ Ã‚Â§ r ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ 26) ÃƒÂ¢Ã‹â€ Ã‚Â¨ 28 ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ r ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ regsF r =
+  regs0 r)` to `(ÃƒÂ¢Ã‹â€ Ã¢â€šÂ¬ r, r ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ 8 ÃƒÂ¢Ã‹â€ Ã‚Â¨ (24 ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ r ÃƒÂ¢Ã‹â€ Ã‚Â§ r ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ 26) ÃƒÂ¢Ã‹â€ Ã‚Â¨ 28 ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ r ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ regsF r =
   regs0 r)`, with the internal `h6bank` hypothesis widened to match.
 - WHY (needed downstream, not cosmetic): the top-level select dispatch
   calls the dense leg with the pinned constants (`rOne`, `rZero`, the
   per-shape constant registers) live in `0..8`; without this clause the
   dispatch would have to re-pin them after every leg call.  The proof
-  cost was nil - `h6pres`/`h5pres` already covered `r Ã¢â€°Â¤ 8`, so only the
+  cost was nil - `h6pres`/`h5pres` already covered `r ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ 8`, so only the
   hypothesis and conclusion widened.
 - Verification at this commit: `lake env lean
   RMQ\Core\WordRAM\E1DenseSelectBlock.lean` exit 0 (24.3s, zero errors,
@@ -650,7 +650,7 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   - `queryOccurrence data idx = idx` definitionally
     (`Source.lean:1851`), so `xQ` is a plain register copy of `xIdx`.
   - Unconditional jumps after the LONG/SPARSE legs cannot use `rOne`:
-    those legs preserve only `r Ã¢â€°Â¤ 8 Ã¢Ë†Â¨ 28 Ã¢â€°Â¤ r`, and `rOne = 24` is
+    those legs preserve only `r ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ 8 ÃƒÂ¢Ã‹â€ Ã‚Â¨ 28 ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ r`, and `rOne = 24` is
     outside it.  Use the 2-instruction `const rB 1; brNZ rB END` idiom
     (the DENSE leg does preserve `24..26`, but the same idiom is used
     for uniformity).
@@ -668,18 +668,18 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 
 - Appended to `E1SelectDispatch.lean`:
   - `dispatchPrologue_runsTo`, `dispatchSuperSlot_runsTo`,
-    `dispatchLocalSlot_runsTo`, `dispatchDenseBase_runsTo` Ã¢â‚¬â€ the four
+    `dispatchLocalSlot_runsTo`, `dispatchDenseBase_runsTo` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the four
     straight-line segments (all first-try green).
   - `dispatchNoneTail_runsTo`, `dispatchJump_runsTo` (the two tail
     idioms), `selectCloseBlockAt` (the block instantiated at the accepted
-    layout/data Ã¢â‚¬â€ a large readability win for every later statement).
+    layout/data ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â a large readability win for every later statement).
   - `selectCloseBlock_prefix_runsTo`: the shared in-range prefix
     (prologue, taken range branch, super slot, super entry 4-read) to
     `A + 22`, receipts POSITIONALLY EQUAL to the accepted super
     entry-table read events, four shifted field decodes in the super
-    bank, miss indicator in `rA`, pinned constants live, `r Ã¢â€°Â¤ 7 Ã¢Ë†Â¨ r = 28`
+    bank, miss indicator in `rA`, pinned constants live, `r ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ 7 ÃƒÂ¢Ã‹â€ Ã‚Â¨ r = 28`
     preserved.
-  - `entryFields_of_some`: inversion of the accepted 4-read decode Ã¢â‚¬â€ a
+  - `entryFields_of_some`: inversion of the accepted 4-read decode ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â a
     present entry pins each shifted field register to `field + 1`
     (exactly the leg blocks' hypothesis shape, and a zero miss indicator
     for free).  Works for both the super and local tables.
@@ -688,16 +688,16 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
     branches, full receipts/value/cats/preservation against
     `bpChunkedSelectTraceResultWithStore`.
 - Gotchas (new):
-  - `omega` cannot see through the register ABBREVS: `28 Ã¢â€°Â¤ xSF1` and
-    `r Ã¢â€°Â  xSF1` both fail.  Use `by decide` for CLOSED side conditions,
+  - `omega` cannot see through the register ABBREVS: `28 ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ xSF1` and
+    `r ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â  xSF1` both fail.  Use `by decide` for CLOSED side conditions,
     and put explicit `have nSF1 : xSF1 = 30 := rfl` facts in context when
     the register is universally quantified (omega then treats the abbrev
     as an atom with a known value).
   - `RunsTo.brNZ_taken`'s condition hypothesis is stated on
     `s.regs cond`, so a tactic block there operates on the unreduced
-    projection and `rw` fails.  Prove `regsX rOne Ã¢â€°Â  0` as a standalone
-    `have` and pass it Ã¢â‚¬â€ `exact` closes the projection by defeq.
-  - `simp only [Ã¢â€ Â superEntry]` is rejected (`Ã¢â€ Â` on a definition to be
+    projection and `rw` fails.  Prove `regsX rOne ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â  0` as a standalone
+    `have` and pass it ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â `exact` closes the projection by defeq.
+  - `simp only [ÃƒÂ¢Ã¢â‚¬Â Ã‚Â superEntry]` is rejected (`ÃƒÂ¢Ã¢â‚¬Â Ã‚Â` on a definition to be
     unfolded).  Get the raw form with a `have hmissRaw : <raw> = none :=
     hmiss` type ascription instead and `rw` with that.
   - `cases h1 : store.readWord? ...` already substitutes into the goal,
@@ -711,15 +711,15 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 
 - `E1SelectDispatch.lean` now carries the whole dispatch:
   - `selectCloseBlock_runsTo_outOfRange`, `_superMiss`, `_long`,
-    `_localMiss`, `_sparse`, `_dense` Ã¢â‚¬â€ the six control branches, each
+    `_localMiss`, `_sparse`, `_dense` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the six control branches, each
     with receipts POSITIONALLY EQUAL to
     `(data.bpChunkedSelectTraceResultWithStore layout (G+4) ST store c
     idx).trace`, the evaluator's optional answer under `decodePacket` in
-    `rVal`, the derived `selectCloseCats`, and `r Ã¢â€°Â¤ 7 Ã¢Ë†Â¨ r = 28`
+    `rVal`, the derived `selectCloseCats`, and `r ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ 7 ÃƒÂ¢Ã‹â€ Ã‚Â¨ r = 28`
     preserved.
-  - `selectCloseBlock_localPrefix_runsTo` Ã¢â‚¬â€ the shared continuation past
+  - `selectCloseBlock_localPrefix_runsTo` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the shared continuation past
     an unmarked super entry (consumed by the last three branches).
-  - `selectCloseBlock_runsTo` Ã¢â‚¬â€ the combining theorem, case-splitting on
+  - `selectCloseBlock_runsTo` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the combining theorem, case-splitting on
     range / super presence / super marked / local presence / local
     marked, with the three route-side hypotheses (`hLongSeed`,
     `hSparseSeed`, `hDenseLen`) each conditioned on exactly the branch
@@ -731,27 +731,27 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   iota-reduced and the marked-test `if` is not yet in the goal (the
   telltale symptom is an "unused simp argument" warning on the very
   hypothesis you are trying to use).  Instead give ONE `simp` the whole
-  fact set Ã¢â‚¬â€ evaluator def, `queryOccurrence`, `hrange`, the raw `.value`
+  fact set ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â evaluator def, `queryOccurrence`, `hrange`, the raw `.value`
   equations, the marked/unmarked booleans, `entryRead_trace_eq`, and (for
   the sparse leg) `SparseExceptionDirectory.bpChunkedReadTraceResultWithStore`
-  Ã¢â‚¬â€ and let it unfold, iota-reduce, and rewrite in one pass.  For the
+  ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â and let it unfold, iota-reduce, and rewrite in one pass.  For the
   value goals, prove a `have hval : (route).value = (leg expr).value` by
   the same one-shot `simp` and then `exact` the leg's decode clause.
 - Other gotchas: `by_contra` is Mathlib-only and unavailable here (use
   `simpa [relativeSplitSelectEntryIsMarked]` to invert an unmarked
   entry); `by_cases` IS available (core).  `rw` does not close
-  `n + 1 - 1 = n` Ã¢â‚¬â€ add `omega`.
+  `n + 1 - 1 = n` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â add `omega`.
 - Verification at this commit: standalone `lake env lean` exit 0 (11.1s,
   no warnings); `lake build RMQ` exit 0 (14.6s, 233/233).
 - NEXT: the canonical-store select form mirroring
-  `rankCloseBlock_runsTo_canonical` Ã¢â‚¬â€ instantiate `selectCloseBlock_runsTo`
+  `rankCloseBlock_runsTo_canonical` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â instantiate `selectCloseBlock_runsTo`
   at `concreteBPNativeSuccinctRMQGlobalReadStore` and discharge
   `hLongSeed`/`hSparseSeed`/`hDenseLen` from the canonical layout facts
   (agreement lemmas listed at `ChargedRankSelectWiring.lean:656`).
 
 ## M3c-6g: CANONICAL SELECT FORM COMPLETE (`E1SelectCanonical.lean`)
 
-The inventory in the RESUME POINT section below is now DISCHARGED Ã¢â‚¬â€ every
+The inventory in the RESUME POINT section below is now DISCHARGED ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â every
 one of its predictions held, including the two it flagged as unverified.
 Landed in commits `d9ecd68` (prep) and this one.
 
@@ -778,15 +778,15 @@ Landed in commits `d9ecd68` (prep) and this one.
     consumer moved.  The inventory's plan (textual substitution of the
     body with the payload renamed) worked verbatim.
 - NEW `RMQ/Core/WordRAM/E1SelectCanonical.lean` (added to `RMQ.lean`):
-  - `canonical_longSeed`, `canonical_sparseSeed` Ã¢â‚¬â€ the three seed reads of
+  - `canonical_longSeed`, `canonical_sparseSeed` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the three seed reads of
     the long-flag rank object and of the sparse-directory rank object are
     PRESENT at the canonical global store, with the in-word offset bound.
     Both are UNCONDITIONAL in the entry (presence does not depend on entry
-    contents), so the dispatch's `Ã¢Ë†â‚¬ super, ... Ã¢â€ â€™ ... Ã¢â€ â€™` hypotheses are
+    contents), so the dispatch's `ÃƒÂ¢Ã‹â€ Ã¢â€šÂ¬ super, ... ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ ... ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢` hypotheses are
     discharged by `fun _ _ _ => ...` with no case split.
-  - `canonical_denseLen` Ã¢â‚¬â€ the dense-leg exact `Nat.min` word length, one
+  - `canonical_denseLen` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the dense-leg exact `Nat.min` word length, one
     lemma serving BOTH the `i` and `i + 1` obligations.
-  - `selectCloseBlock_runsTo_canonical` Ã¢â‚¬â€ the canonical-store dispatch.
+  - `selectCloseBlock_runsTo_canonical` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the canonical-store dispatch.
 - CONFIRMED (the inventory's two flagged unknowns, both now checked):
   - The `hwords` premise IS `rfl` for both select rank objects
     (`longFlagRankData_bitWords_words`, `sparseRankData_bitWords_words`),
@@ -794,8 +794,8 @@ Landed in commits `d9ecd68` (prep) and this one.
   - `17 + 4 = 21` closes the chunk-segment identification by `rfl`, the
     same trick as `E1RankCanonical.lean:386`.
 - CONFIRMED WRONG-GUESS CORRECTION HELD: `hDenseLen` really is the
-  three-step `ofChunks` route (`_selectBitWords` Ã¢â€ â€™
-  `selectAlignedBitWords_ofChunks.get_eq_take_drop` Ã¢â€ â€™ `simp
+  three-step `ofChunks` route (`_selectBitWords` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢
+  `selectAlignedBitWords_ofChunks.get_eq_take_drop` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ `simp
   [List.length_take, List.length_drop]`), NOT a
   `builtRankData_wordOffset_le` mirror.  Sentinel-free, no case split.
 - NEW GOTCHAS (add to the standing list):
@@ -804,7 +804,7 @@ Landed in commits `d9ecd68` (prep) and this one.
     them); they are
     `sparseExceptionEffectiveFlagRank{Super,Block}Overhead bits target`.
   - The sparse local slot's entry argument has type
-    `SparseDenseSelectDenseLocalEntry`, NOT `RelativeSplitSelectEntry` Ã¢â‚¬â€
+    `SparseDenseSelectDenseLocalEntry`, NOT `RelativeSplitSelectEntry` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â
     the two are easy to confuse since both flow through
     `relativeSplitSelectEntryIsMarked`.
   - `xIdx` is AMBIGUOUS under the dispatch's `open` set; qualify it as
@@ -814,11 +814,11 @@ Landed in commits `d9ecd68` (prep) and this one.
 - Verification at this commit: standalone `lake env lean
   RMQ/Core/WordRAM/E1SelectCanonical.lean` exit 0, NO warnings; `lake
   build RMQ` exit 0.
-- NEXT: the close/LCA structural leg (the last risk center) Ã¢â‚¬â€
+- NEXT: the close/LCA structural leg (the last risk center) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â
   `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`
   (`SuccinctFinalRAM.lean:2330`).
 
-## RESUME POINT (M3c-6g: canonical select form) Ã¢â‚¬â€ DISCHARGED, see M3c-6g above
+## RESUME POINT (M3c-6g: canonical select form) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â DISCHARGED, see M3c-6g above
 
 Everything below was inventoried at HEAD by a read-only survey of an
 earlier session.  It is retained as the audit record of what was predicted
@@ -846,7 +846,7 @@ CANONICAL INSTANTIATION ARGUMENTS:
   (`Segments.lean:174`).
 - `G := concreteBPNativeRankCloseTraceSegmentBase = 17` (`Segments.lean:48`)
   so that `G + 4 = 21 = concreteBPNativeFringeChunkTraceSegment`
-  (`Segments.lean:79`) BY `rfl` Ã¢â‚¬â€ the same `17 + 4 = 21` trick the rank
+  (`Segments.lean:79`) BY `rfl` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the same `17 + 4 = 21` trick the rank
   template uses at `E1RankCanonical.lean:386`.
 - `ST := concreteBPNativeSelectChunkTraceSegment = 22` (`Segments.lean:82`).
 - `c := SuccinctClose.bpFringeChunkBits shape.bpCode.length`.
@@ -855,7 +855,7 @@ CANONICAL INSTANTIATION ARGUMENTS:
   `concreteBPNativeSelectCloseGlobalWordTraceResult`
   (`SuccinctFinalRAM.lean:1342`) is DEFINITIONALLY the same.
 
-DISCHARGING `hDenseLen` (EASIEST Ã¢â‚¬â€ do this one first):
+DISCHARGING `hDenseLen` (EASIEST ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â do this one first):
 The select dense store is SENTINEL-FREE: `data.bitWords` is built by
 `BoundedPayloadWordStore.ofChunks` (`GenericSelect/Source.lean:2408-2410`),
 NOT `ofChunksWithSentinel`.  So every present word is a genuine chunk and
@@ -868,7 +868,7 @@ the exact `Nat.min` length is unconditional.  Route:
    `selectAlignedBitWords_ofChunks` (`GenericSelect/DenseWord.lean:26`;
    structure at `:13`) to get `word = (bits.drop (i*wordSize)).take wordSize`;
 3. `simp [List.length_take, List.length_drop]` gives exactly
-   `Nat.min wordSize (bits.length - i * wordSize)` Ã¢â‚¬â€ the `hDenseLen`
+   `Nat.min wordSize (bits.length - i * wordSize)` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the `hDenseLen`
    shape, for both `i` and `i + 1`, no case split.
 The worklog's earlier guess that this would mirror
 `builtRankData_wordOffset_le` was WRONG; that name belongs to the
@@ -894,19 +894,19 @@ Two sub-obligations, seed PRESENCE and the OFFSET BOUND.
       `twoLevelRankData_sample_words_present`
         (`SuccinctFinal/RAM/ReviewerReachabilitySparse.lean:672`)
     stated for a generic `TwoLevelPayloadLiveStoredWordRankData` at any
-    `pos Ã¢â€°Â¤ bits.length`, in the `superSampleWords`/`blockSampleWords`
-    vocabulary Ã¢â‚¬â€ i.e. it composes with the agreement lemmas above by
+    `pos ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ bits.length`, in the `superSampleWords`/`blockSampleWords`
+    vocabulary ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â i.e. it composes with the agreement lemmas above by
     plain rewrite, with NO `read_exact` codec detour (unlike the rank
     template, which hand-rolls that upgrade three times at
     `E1RankCanonical.lean:289-357`).  DECISION NEEDED: de-privatize one
-    copy and delete the other (preferred Ã¢â‚¬â€ it removes a duplication),
+    copy and delete the other (preferred ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â it removes a duplication),
     or write a third copy in the new file.  Their shared helper
     `fixedWidthNatTable_word_present_of_entry_present` is likewise
     duplicated (`ReviewerReachabilityLong.lean:293`,
     `ReviewerReachabilitySparse.lean:336`).
 
 (b) OFFSET BOUND.  NO reusable lemma exists (searched
-    `wordOffset.*[<=Ã¢â€°Â¤].*length` repo-wide: only hypothesis binders in the
+    `wordOffset.*[<=ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤].*length` repo-wide: only hypothesis binders in the
     E1 block files).  `builtRankData_wordOffset_le`
     (`E1RankCanonical.lean:42`) is shape-specialized but its proof
     transfers verbatim with the payload renamed, because ALL THREE rank
@@ -927,10 +927,10 @@ Two sub-obligations, seed PRESENCE and the OFFSET BOUND.
           (SuccinctSpace.chunkPayloadWords d.wordSize bits ++
             List.replicate (bits.length + 1) []).toArray)
         (pos : Nat) {w} (hw : d.bitWords.store.words[d.wordIndex pos]? =
-          some w) : d.wordOffset pos Ã¢â€°Â¤ w.length`
+          some w) : d.wordOffset pos ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ w.length`
     with the body of `builtRankData_wordOffset_le` (`E1RankCanonical.lean:49-122`)
-    textually substituted (`builtRelativeSplitBPCloseRankData shape` Ã¢â€ â€™ `d`,
-    `shape.bpCode` Ã¢â€ â€™ `bits`), then instantiate three times.  All the
+    textually substituted (`builtRelativeSplitBPCloseRankData shape` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ `d`,
+    `shape.bpCode` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ `bits`), then instantiate three times.  All the
     generic steps it uses are structure-level and transfer: `queryPos pos
     = Nat.min pos bits.length` (so `Nat.min_le_right` gives the clamp for
     free), `wordIndex pos = queryPos pos / wordSize := rfl`, `wordOffset
@@ -963,7 +963,7 @@ lemmas in a fixed order (8 pullback, then :292, :305, :318, :331, :345,
 
 AFTER M3c-6g, the remaining dependency order is unchanged: close/LCA
 structural leg (`concreteBPNativeLCACloseGlobalWordTraceResultAllSize
-Structural`, `SuccinctFinalRAM.lean:2330`) Ã¢â‚¬â€ the last risk center Ã¢â‚¬â€
+Structural`, `SuccinctFinalRAM.lean:2330`) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the last risk center ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â
 then whole-query glue via `E1RouteDecomposition`, then M4 category
 algebra + derived literal, M5 target Prop + supersession note, M6
 validator `lean_exe`, M7 adequacy doc + matrix closure + final battery.
@@ -974,8 +974,8 @@ validator `lean_exe`, M7 adequacy doc + matrix closure + final battery.
 `selectFoldBlock_runsTo` interface RE-VERIFIED this session
 (`E1SelectBlock.lean:367`): inputs sOne=1, sC=c, sLen(13)=word.length,
 sR(17)=bitsToNatLE word / 2^(j*c), sJC(27)=j*c, sOcc(12)=k, sK(18)=count,
-`0 < count`; ends LB+36, packet in sVal(9), preserves r<=8 Ã¢Ë†Â¨
-rÃ¢Ë†Ë†{10,11,13,14,15,16,24,25,26} Ã¢Ë†Â¨ 28<=r.  The dense select call is at
+`0 < count`; ends LB+36, packet in sVal(9), preserves r<=8 ÃƒÂ¢Ã‹â€ Ã‚Â¨
+rÃƒÂ¢Ã‹â€ Ã‹â€ {10,11,13,14,15,16,24,25,26} ÃƒÂ¢Ã‹â€ Ã‚Â¨ 28<=r.  The dense select call is at
 j=0, count = bpWordChunkCount c word.length (ALWAYS >= 1 - positivity is
 free via `bpWordChunkCount_eq_sub` + omega; discharge the `/2^(0*c)`
 hypothesis by simp [Nat.zero_mul, pow_zero, Nat.div_one]).  Head-output/
@@ -1003,8 +1003,8 @@ Whole-leg block `denseSelectLegBlock L W G S c WS N2` at base `L`
 - MISS TAIL L+192: const rVal 0; fall through to END = L+193.
 
 Packet-shift correctness: fold none -> sVal 0 -> shift skipped -> packet
-none Ã¢Å“â€œ; fold some off -> sVal = off+1 -> add gives rWI + off + 1 =
-packet (wordStart + off) Ã¢Å“â€œ (commute by omega).  Second-tail length needs
+none ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“; fold some off -> sVal = off+1 -> add gives rWI + off + 1 =
+packet (wordStart + off) ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ (commute by omega).  Second-tail length needs
 the SECOND route hypothesis `hlen2 : w2.length = Nat.min WS (N2 -
 (bPos / WS + 1) * WS)`.  Whole-leg theorem target:
 `bpChunkedDenseTwoWordSelectTraceResultWithStore W (G+4) S c false
@@ -1018,7 +1018,7 @@ tail rewrites only rP/rWI in the component bank).
 ## RESUME POINT (next session: select-close read sub-blocks onward)
 
 NEW in the M3c-4 session (commits `eb3f102`, `aff4393`, `d49672d`):
-RESUME step 1 is DONE Ã¢â‚¬â€ `E1RankTrueBlock.lean` (TRUE-target seeded
+RESUME step 1 is DONE ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â `E1RankTrueBlock.lean` (TRUE-target seeded
 block, chunk segment `S` decoupled from the seed base, generic-base
 loop `rankTrueLoopFold_runsTo`) and `E1RankAtBlock.lean` (atomic
 register-input FALSE fold `rankAtSegmentBlock` + generic-base
@@ -1034,7 +1034,7 @@ longRelativeBase 12, sparseDirectory.rankBase 13 (seeds 13/14/15),
 sparseDirectory.relativeBase 16, bitWordBase 0, dead segment
 `concreteBPNativeDeadTraceSegment`; fringe chunk table 21, select chunk
 table 22; rank-close base 17 (its chunk 21 = 17 + 4 is the only
-`seeds+4` coincidence Ã¢â‚¬â€ hence M3c-4c).  ATOMIC-BLOCK NOTE: the dense
+`seeds+4` coincidence ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â hence M3c-4c).  ATOMIC-BLOCK NOTE: the dense
 leg instantiates `rankAtSegmentBlock A G c` at `G := 17` so its
 hardwired `G + 4 = 21` hits the chunk table.
 
@@ -1056,7 +1056,7 @@ compare, `selectFoldBlock` at 21/22 per M3c-3a).
 
 REGISTER-ALLOCATION CONSTRAINT (checked): `E1QueryProgram` reserves
 0..7; component bank 8..27 is fully owned by the rank/select folds;
-hosted-fold preservation covers `r <= 8 Ã¢Ë†Â¨ 28 <= r` (seeded) and the
+hosted-fold preservation covers `r <= 8 ÃƒÂ¢Ã‹â€ Ã‚Â¨ 28 <= r` (seeded) and the
 write-set complement (atomic).  The select dispatch must therefore keep
 `idx`/`q`/the 4 super fields/the 4 local fields/base-position/
 base-occurrence in registers `>= 28` (they survive every hosted fold);
@@ -1075,7 +1075,7 @@ store (table.readProgram i)` binds ending in `entryOfFields`
 `Program.readWord 0 i` (`SuccinctSpace/WordStoreRAM.lean:26`,
 `TablesRAM.lean:53/145`), so each bind's trace should reduce (near-rfl)
 to `[readWord fieldSeg i (store.readWord? fieldSeg i)]` and its value
-to the decoded option Ã¢â‚¬â€ derive small bridge lemmas
+to the decoded option ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derive small bridge lemmas
 `ofProgramWithStore_readProgram_trace/_value` first (in a new
 `E1SelectBridge.lean`), then the machine sub-block is 4 readMems +
 4 zero tests with the fields parked in the `>= 28` bank.
@@ -1178,8 +1178,8 @@ PROOF TECHNIQUE (read this before writing the next block; it is the
 whole cost model of the grind): do NOT hand-write RunsTo state towers.
 Segment the block into straight-line pieces + branches; run each piece
 with `RunsTo.straight`; name the register file after each piece by
-`obtain Ã¢Å¸Â¨regsN, hregsNÃ¢Å¸Â© : Ã¢Ë†Æ’ x, straightRegs store seg regsM = x :=
-Ã¢Å¸Â¨_, rflÃ¢Å¸Â©`; prove per-register value facts by `rw [<- hregsN]` then the
+`obtain ÃƒÂ¢Ã…Â¸Ã‚Â¨regsN, hregsNÃƒÂ¢Ã…Â¸Ã‚Â© : ÃƒÂ¢Ã‹â€ Ã†â€™ x, straightRegs store seg regsM = x :=
+ÃƒÂ¢Ã…Â¸Ã‚Â¨_, rflÃƒÂ¢Ã…Â¸Ã‚Â©`; prove per-register value facts by `rw [<- hregsN]` then the
 `regs_eval` macro (local in `E1RankBlock.lean`: simp with segment defs,
 `straightRegs_cons`, `straightStepRegs/Event`, `RegFile.write`, and the
 register-numeral abbrevs) followed by a second `simp [bridge equations]`
@@ -1299,16 +1299,16 @@ That object splits on `blockOfClose blockSize leftClose = blockOfClose
 blockSize rightClose` (`ChargedFringeWiring.lean:49-63`):
 
 - CROSS-BLOCK branch: `bpChunkedCrossBlockCloseTraceResultWithRankSeed
-  AllSizeStructuralAtSegments` Ã¢â‚¬â€ properly CHARGED.  This is the B2
+  AllSizeStructuralAtSegments` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â properly CHARGED.  This is the B2
   charged-fringe work: every endpoint-fringe min-excess/argmin is paid for
   by chunk-table reads at the fringe segment, under literal caps.
 - SAME-BLOCK branch: `localBPSameBlockCloseDecodedTraceResultWithRankSeed`
-  (`ConcreteDirectoryRAM.lean:1559`) Ã¢â‚¬â€ still EVENT-SILENT.
+  (`ConcreteDirectoryRAM.lean:1559`) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â still EVENT-SILENT.
 
 The same-block branch is a rank seed plus
 `localBPSameBlockCloseSeededTraceResult` (`ConcreteDirectoryRAM.lean:334`),
 which is exactly ONE `TraceResult.map` over
-`localBPWindowBitsTraceResult` Ã¢â‚¬â€ and
+`localBPWindowBitsTraceResult` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â and
 `localBPWindowBitsTraceResult_cost` (`ConcreteDirectoryRAM.lean:225`) checks
 that this contributes exactly `4` read events, independent of the query
 width.  The model's charge for the whole branch is likewise the constant
@@ -1318,7 +1318,7 @@ width.  The model's charge for the whole branch is likewise the constant
 Inside that single `map`, the value is computed by
 `localBPSeededPrefixRangeMinExcess` / `localBPSeededPrefixRangeArgMinPrefixPos`
 (`LocalBPDecoder.lean:929-941`), which recurse through
-`localBPSeededPrefixRangeArgMinPrefixPosFrom` (`:797-805`) Ã¢â‚¬â€ a PER-POSITION
+`localBPSeededPrefixRangeArgMinPrefixPosFrom` (`:797-805`) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â a PER-POSITION
 scan, one `localBPSeededBetterPrefixPos` comparison (`:739`) per position,
 for `count = rightClose - leftClose + 1` positions.
 
@@ -1326,7 +1326,7 @@ for `count = rightClose - leftClose + 1` positions.
 
 Same-block means `leftClose / blockSize = rightClose / blockSize`, so
 `count <= blockSize = 2 * (Nat.log2 shape.size + 1)`
-(`RelativeSummary.lean:1236-1242`).  That is UNBOUNDED in the size Ã¢â‚¬â€ 258 at
+(`RelativeSummary.lean:1236-1242`).  That is UNBOUNDED in the size ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â 258 at
 `size = 2^128`, 2002 at `2^1000`.  So on this branch the machine must
 perform Theta(log n) comparisons while the accepted receipt contains a
 CONSTANT 4 window reads.  Under the frozen matrix that is jointly
@@ -1335,14 +1335,14 @@ unsatisfiable:
 - REQ-E1-01 forbids an instruction that hides a variable-length scan, so
   each of the `count` comparisons costs at least one charged step;
 - REQ-E1-06(c) demands a DERIVED all-size LITERAL total step bound with no
-  size hypothesis Ã¢â‚¬â€ impossible against a Theta(log n) step count;
+  size hypothesis ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â impossible against a Theta(log n) step count;
 - and the obvious repair (fold the window chunk-wise against the fringe
   chunk table, as the cross-block branch does) adds read events, which
   REQ-E1-04 forbids: the read projection must be POSITIONALLY EQUAL to the
   accepted trace, which has exactly those 4 window reads.
 
-The machine does not need more READS here Ã¢â‚¬â€ four words already carry the
-whole window Ã¢â‚¬â€ it needs more STEPS than any literal allows.
+The machine does not need more READS here ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â four words already carry the
+whole window ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â it needs more STEPS than any literal allows.
 
 ### Why this is a scope decision, not a repair I may make
 
@@ -1460,12 +1460,12 @@ CROSS-BLOCK branch
   2a. 4 window reads at seg 0   2b. LEFT FRINGE FOLD, <=33 reads at seg 21
   3. INTERIOR, guarded by `leftBlock + 1 < rightBlock`; the `else` arm is
      `TraceResult.pure none` and is RECEIPT-EMPTY (but still costs
-     comparison + branch category ticks Ã¢â‚¬â€ account for them)
+     comparison + branch category ticks ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â account for them)
   4. rank-seed@right   5a. 4 window reads at seg 0   5b. RIGHT FRINGE FOLD
   then a pure merge, no reads: `bpCandidateClose? (bpCandidateMerge3? ...)`
   (`Candidate.lean:24,28`).
 
-FOLDS AND CAPS Ã¢â‚¬â€ two independent caps, so ONE cross-block query runs FOUR
+FOLDS AND CAPS ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â two independent caps, so ONE cross-block query runs FOUR
 counted loops (two rank-seed folds <=8, two fringe folds <=33):
 - fringe fold `bpFringeChunkFoldComputationFrom` (`ChargedFringeTrace.lean:32`),
   iteration count LITERALLY `Nat.min (relHi / c + 1) 33`
@@ -1474,7 +1474,7 @@ counted loops (two rank-seed folds <=8, two fringe folds <=33):
   `ChargedFringeChunks.lean:1531`).  NO early exit -> use `RunsTo.iterate`,
   NOT `iterateUntil`.
 - word-rank fold cap `bpWordChunkCount c e = Nat.min ((e-1)/c + 1) 8`
-  (`ChargedWordChunks.lean:150`) Ã¢â‚¬â€ already simulated by
+  (`ChargedWordChunks.lean:150`) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â already simulated by
   `rankAtSegmentBlock_runsTo` (`E1RankAtBlock.lean:359`), whose `G + 4`
   lands on segment 21 at `G := 17`.
 - address function `bpFringeChunkSlot c v a b = (v*(c+1) + a)*(c+1) + b`
@@ -1482,14 +1482,14 @@ counted loops (two rank-seed folds <=8, two fringe folds <=33):
   `bpFringeChunkEndOff` (`:904`); `c = bpFringeChunkBits m = Nat.log2 m / 8 + 1`
   (`:42`).
 
-RECEIPT ORDER Ã¢â‚¬â€ there is NO route-side flip lemma.  The fold's footprint is
+RECEIPT ORDER ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â there is NO route-side flip lemma.  The fold's footprint is
 ASCENDING in `j` (`bpFringeChunkFoldComputationFrom_run_footprint`,
 `ChargedFringeTrace.lean:141`) while `iterLog` descends.  Reconcile with
 `iterLog_congr` (`E1RankBridge.lean:345`) + `iterLog_singleton_desc`
 (`E1RankBridge.lean:362`), following the WORKED two-step pattern at
 `E1RankTrueBlock.lean:630-641`.
 
-SEGMENTS AND AGREEMENT LEMMAS Ã¢â‚¬â€ every segment this leg touches ALREADY has a
+SEGMENTS AND AGREEMENT LEMMAS ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â every segment this leg touches ALREADY has a
 per-address lemma, so no pullback plumbing is needed:
   seg 0  window/bp code  `..._bpCode` (`Segments.lean:281`)
   seg 17/18/19 rank seed `..._rankCloseSuper/Block/Word`
@@ -1498,7 +1498,7 @@ per-address lemma, so no pullback plumbing is needed:
   seg 21 fringe + rank chunk table
                          `..._fringeChunkTable` (`Segments.lean:247`)
 Segment 28 (`concreteBPNativeFiniteSmallSameBlockCloseTraceSegment`) is
-passed but bound to `_sameBlockSegment` and is INERT Ã¢â‚¬â€ no machine code
+passed but bound to `_sameBlockSegment` and is INERT ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â no machine code
 should reference it.  Seg 21 is shared by the fringe fold (direct) and the
 rank-seed fold (as `17 + 4`); `rfl` closes the gap
 (`SuccinctFinalRAM.lean:1578`).
@@ -1687,7 +1687,7 @@ Horner levels plus the final `divConst`. Body total is 66, not ~63.
    set rewrites `%` away via `nat_mod_eq_sub_div_mul`, so a `%`-form
    hypothesis will not match.
 3. Write-set predicates must be stated on LITERAL bank slots
-   (`r ≠ 53 ∧ ...`), not on the register abbrevs (`r ≠ fV ∧ ...`): omega
+   (`r â‰  53 âˆ§ ...`), not on the register abbrevs (`r â‰  fV âˆ§ ...`): omega
    does not see through the abbrevs in HYPOTHESES, so the preservation
    side conditions fail. Concrete-register side conditions then discharge
    by `decide`, and generic-`r` ones by the three coercion lemmas
@@ -2038,34 +2038,34 @@ Commits, in order:
 
 Key objects (file:line exact in `E1FringeArmBlock.lean` at `eb262f9`):
 
-- `fBase 63`, `fBB 64`, `fSeed 65`, `fStart 66`, `fRV 67`, `fRP 68` —
+- `fBase 63`, `fBB 64`, `fSeed 65`, `fStart 66`, `fRV 67`, `fRP 68` â€”
   bank extension, recorded as DD-20260718-010.
-- `readBits` (`:51`), `windowBitsOfStore` (`:55`) — the store-side window.
+- `readBits` (`:51`), `windowBitsOfStore` (`:55`) â€” the store-side window.
 - `fringeWindowRead` (`:90`, 11 instructions, FOUR reads),
   `fringeArmInit` (`:119`, 10 instructions), `fringeArmPrologue` (`:135`,
   21 instructions).
 - `fringeCandGlobal` (`:715`, 7 instructions, exit `E+7`).
-- `cap_chain_eq_min` (`:239`), `cap_count_pos` (`:245`) — the DERIVED
+- `cap_chain_eq_min` (`:239`), `cap_count_pos` (`:245`) â€” the DERIVED
   33-cap; `cap_count_pos` is exactly the fold block's `hcount`.
-- `fringeArmPrologue_fits` (`:210`) — constructor-exhaustive width
+- `fringeArmPrologue_fits` (`:210`) â€” constructor-exhaustive width
   certificate, no wildcard arm.
 - `fringeWindowRead_runsTo` (`:270`), `fringeArmInit_runsTo` (`:326`),
   `fringeArmPrologue_runsTo` (`:473`).
 - `windowReadEvents_eq_route` (`:393`) /
-  `windowReadEvents_eq_route_windowBits` (`:405`) — POSITIONAL receipt
+  `windowReadEvents_eq_route_windowBits` (`:405`) â€” POSITIONAL receipt
   bridges to `localBPBlockWordsTraceResultWithStore`
   (`ConcreteDirectoryRAMStoreParam.lean:4071`) and
   `localBPWindowBitsTraceResultWithStore` (`:4152`).
-- `route_windowBits_eq_windowBitsOfStore` (`:422`) — the route object's
+- `route_windowBits_eq_windowBitsOfStore` (`:422`) â€” the route object's
   window bits ARE the concatenation of the four words the machine's own
   charged reads return (value dependency, not a spec copy).
-- `windowRegsValue_of_readBits` (`:443`) — the Horner bridge supplying
+- `windowRegsValue_of_readBits` (`:443`) â€” the Horner bridge supplying
   the fold block's `hW`.
-- `fringeLeg_runsTo` (`:550`) — prologue + fold, `A -> A+88`.
+- `fringeLeg_runsTo` (`:550`) â€” prologue + fold, `A -> A+88`.
 - `fringeLeg_trace_eq_leftArm` (`:618`) / `_rightArm` (`:647`).
-- `fringeCandGlobal_runsTo` (`:747`) — the two-arm rebase.
-- `fringeArm_runsTo` (`:904`) — THE WHOLE ARM, `A -> A+95`.
-- `leftArm_value_eq` (`:987`) / `rightArm_value_eq` (`:1018`) — value
+- `fringeCandGlobal_runsTo` (`:747`) â€” the two-arm rebase.
+- `fringeArm_runsTo` (`:904`) â€” THE WHOLE ARM, `A -> A+95`.
+- `leftArm_value_eq` (`:987`) / `rightArm_value_eq` (`:1018`) â€” value
   bridges to the NAMED accepted objects
   `bpChunkedLeft/RightFringeCandidateSeededTraceResultAtSegmentWithStore`
   (`ChargedFringeTrace.lean:708`/`:731`).
@@ -2076,7 +2076,7 @@ base `A+21` (exit `A+88`), epilogue `A+88..A+94`, exit `A+95`.
 ### GOTCHAS RECORDED THIS SESSION (carry forward)
 
 1. `omega` DOES handle `min`/`max`, but only after `show ... = min x k`
-   — a goal written with `Nat.min` does not match, and `rw [Nat.min_def]`
+   â€” a goal written with `Nat.min` does not match, and `rw [Nat.min_def]`
    fails for the same reason. Worse, `omega` then still fails on
    `min (relHi / c + 1) 33` because division by a VARIABLE divisor is an
    opaque atom whose non-negativity omega loses; `generalize relHi / c = q`
@@ -2113,7 +2113,7 @@ theorem this session claims: `fringeWindowRead_runsTo`,
 `localBPWindowBase_eq`, `fringeArmPrologue_runsTo`, `fringeLeg_runsTo`,
 `fringeLeg_trace_eq_leftArm`, `fringeLeg_trace_eq_rightArm`,
 `fringeCandGlobal_runsTo`, `bestOfRegs_isSome`, `fringeArm_runsTo`,
-`leftArm_value_eq`, `rightArm_value_eq` — every one reports only
+`leftArm_value_eq`, `rightArm_value_eq` â€” every one reports only
 `propext` / `Classical.choice` / `Quot.sound`, never `sorryAx`. Hygiene
 `rg` clean on the new module; `git diff --check` clean;
 `design_decision_check.ps1 -Strict -Base d90b062` exit 0 (40 changed
@@ -2138,16 +2138,16 @@ this branch.
 
 2. STALE CONSTANT. Once loadable, line 975 is `#print axioms
    RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace
-   Result_nonSyntheticWeight_sum_le_76` — an UNKNOWN CONSTANT. The tree
+   Result_nonSyntheticWeight_sum_le_76` â€” an UNKNOWN CONSTANT. The tree
    carries `..._nonSyntheticWeight_sum_le_207`; the `_76` name is a
    leftover from before the bound became 207. So the script exits 1 and
    that assertion has been checking nothing.
 
 Net effect: `lake env lean scripts/axiom_check.lean` exits 1 at this base,
 so the delegation's "MUST exit 0" battery item cannot be satisfied by any
-worker until this script is repaired. Substantively the run is clean —
+worker until this script is repaired. Substantively the run is clean â€”
 with the dependency built, the 2430 lines of output contain ZERO
-`sorryAx` — but the script itself does not certify that, because it
+`sorryAx` â€” but the script itself does not certify that, because it
 aborts. This is the same class as the trust-base defect the external
 blind audit found. `scripts/wordram_axiom_check.lean` and
 `scripts/headline_axiom_check.lean` both exit 0 at this HEAD.
@@ -2171,18 +2171,18 @@ NOTHING below is implemented.
    `blockStartOf blockSize (blockOfClose blockSize close) / L`, and
    `localBPWindowBase` is that times `L` (`localBPWindowBase_eq:380`).
    `blockOfClose` and `blockStartOf` are constant div/mul by `blockSize`,
-   so this is a short straight segment — but CHECK whether `blockSize` is
+   so this is a short straight segment â€” but CHECK whether `blockSize` is
    a per-shape constant on the accepted route before encoding it as an
    immediate; if it is not, the ISA has no variable-divisor instruction
    and the preamble needs rethinking. THIS IS THE FIRST THING TO VERIFY.
 2. SAME-BLOCK ARM (B6's object). Rank seed
    (`rankCloseBlock_runsTo_canonical`, `E1RankCanonical.lean:263`,
    already exists); window reads and fold now exist as `fringeLeg_runsTo`;
-   then the PURE merge `bpCandidateClose? (bpFringeCandGlobal ...)` — no
+   then the PURE merge `bpCandidateClose? (bpFringeCandGlobal ...)` â€” no
    reads. Target
    `bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment`
    (`ChargedSameBlockTrace.lean:326`), the POST-B6 object - but PREFER its store-parameterized twin `bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore` (`:340`), the form every block in this rung targets. Its 33-cap
-   init is at `ChargedSameBlockTrace.lean:52` — CONFIRM it is the same
+   init is at `ChargedSameBlockTrace.lean:52` â€” CONFIRM it is the same
    `Nat.min (relHi / c + 1) 33` shape `cap_chain_eq_min` already covers.
 3. CROSS-BLOCK ARM. Two fringe arms (both now available as
    `fringeArm_runsTo`, instantiated left and right via
@@ -2198,7 +2198,7 @@ NOTHING below is implemented.
    full-width hypotheses of `windowRegsValue_of_readBits` get discharged,
    via `SuccinctSpace.chunkPayloadWords_get?_eq_take_drop`
    (`SuccinctSpace/WordStore.lean:274`) plus
-   `chunkPayloadWords_length_eq_div_add_indicator` (`:390`) — the same
+   `chunkPayloadWords_length_eq_div_add_indicator` (`:390`) â€” the same
    pair `builtRankData_wordOffset_le` uses
    (`E1RankCanonical.lean:49-122`). Segment agreement lemmas: seg 0
    `..._bpCode` (`Segments.lean:281`), seg 17/18/19
@@ -2206,14 +2206,14 @@ NOTHING below is implemented.
    (`ChargedRankSelectWiring.lean:154/165/176`), seg 20
    `..._canonicalComponent` (`Segments.lean:258`), seg 21
    `..._fringeChunkTable` (`Segments.lean:247`). Segment 28 is INERT
-   after B6 — no machine code should reference it.
+   after B6 â€” no machine code should reference it.
 5. WHOLE-QUERY GLUE via `E1RouteDecomposition`. NAME THE ACCEPTED OBJECT
    EXPLICITLY:
    `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`
    (`SuccinctFinalRAM.lean:2330`, consumed at `:3279`/`:3733`), NOT the
    legacy near-homonym `concreteBPNativeLCACloseGlobalWordTraceResult`
    (`:2271`).
-6. Then M4 (derived literal step total — note the arm is now a known
+6. Then M4 (derived literal step total â€” note the arm is now a known
    95 instructions plus `67 * count` for the fold, which with the
    derived cap `count <= 33` gives a literal per-arm bound; derive it,
    do not assert it), M5 (amended target Prop + obstruction
@@ -2453,4 +2453,3 @@ NOTHING below is implemented.
 4. CANONICAL-STORE FORM, then whole-query glue, M4-M7 - unchanged from the
    previous resume point, except that M5's supersession wording MUST be
    corrected per section 2.
-
