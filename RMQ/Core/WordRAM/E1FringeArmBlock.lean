@@ -669,6 +669,165 @@ theorem fringeLeg_trace_eq_rightArm
   simp [WordRAM.TraceResult.bind, WordRAM.TraceResult.map,
     WordRAM.TraceResult.pure]
 
+
+/-! ## The `bpFringeCandGlobal` epilogue
+
+The last route step of each fringe arm (`ChargedFringeChunks.lean:1617`)
+is a PURE two-arm option rebase: an occupied best is rebased to global
+coordinates, an empty best falls back to the seed pair.  It performs no
+memory read, so the epilogue emits no receipt — but it still costs branch
+and arithmetic ticks, which the arm-indexed category log records.
+
+Since `bpFringeCandGlobal` always returns `some`, the machine carries the
+result UNSHIFTED in `fRV`/`fRP`.
+-/
+
+/-- Window bit base (the route's `localBPWindowBase`). -/
+abbrev fBB : Nat := 64
+/-- Fallback candidate value (the seed). -/
+abbrev fSeed : Nat := 65
+/-- Fallback candidate position. -/
+abbrev fStart : Nat := 66
+/-- Result value. -/
+abbrev fRV : Nat := 67
+/-- Result position. -/
+abbrev fRP : Nat := 68
+
+/--
+The global-rebase epilogue at base `E` (six instructions, exit `E + 6`):
+if the fold left an occupied best, unshift it and rebase its position by
+the window bit base; otherwise fall back to the seed pair.
+-/
+def fringeCandGlobal (E : Nat) : List Instr :=
+  [ .brNZ fBV (E + 4)      -- E+0
+  , .move fRV fSeed        -- E+1
+  , .move fRP fStart       -- E+2
+  , .brNZ fOne (E + 6)     -- E+3
+  , .sub fRV fBV fOne      -- E+4
+  , .add fRP fBB fBP ]     -- E+5
+
+@[simp] theorem fringeCandGlobal_length (E : Nat) :
+    (fringeCandGlobal E).length = 6 := rfl
+
+/--
+Category log of the epilogue, indexed by the route-side condition it
+dispatches on (whether the fold left an occupied best).  Never a numeral.
+-/
+def fringeCandGlobalArmCats (occupied : Bool) : List Category :=
+  if occupied then [.branch, .arithmetic, .arithmetic]
+  else [.branch, .registerWrite, .registerWrite, .branch]
+
+/--
+Exact simulation of the global-rebase epilogue: no receipt, an
+arm-indexed category log, and `some (fRV, fRP)` equal to the route's
+`bpFringeCandGlobal` applied to the machine's own option-shifted best.
+-/
+theorem fringeCandGlobal_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {E : Nat}
+    (hHost : HostedAt program E (fringeCandGlobal E))
+    (regs : RegFile) (bb seed start : Nat)
+    (hOne : regs fOne = 1) (hBB : regs fBB = bb)
+    (hSeed : regs fSeed = seed) (hStart : regs fStart = start) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, E, false⟩ ⟨regs', E + 6, false⟩ []
+        (fringeCandGlobalArmCats (!(regs fBV == 0))) ∧
+      some (regs' fRV, regs' fRP) =
+        bpFringeCandGlobal bb seed start
+          (bestOfRegs (regs fBV) (regs fBP)) ∧
+      (∀ r, r ≠ fRV -> r ≠ fRP -> regs' r = regs r) := by
+  have hf : forall (k m : Nat) (instr : Instr), k < 6 ->
+      (fringeCandGlobal E)[k]? = some instr -> E + k = m ->
+      program[m]? = some instr := by
+    intro k m instr hk hget hm
+    rw [<- hm, hHost k hk, hget]
+  have h0 : program[E]? = some (.brNZ fBV (E + 4)) :=
+    hf 0 E (.brNZ fBV (E + 4)) (by omega) rfl (by omega)
+  have h1 : program[E + 1]? = some (.move fRV fSeed) :=
+    hf 1 _ _ (by omega) rfl (by omega)
+  have h2 : program[E + 2]? = some (.move fRP fStart) :=
+    hf 2 _ _ (by omega) rfl (by omega)
+  have h3 : program[E + 3]? = some (.brNZ fOne (E + 6)) :=
+    hf 3 _ _ (by omega) rfl (by omega)
+  have h4 : program[E + 4]? = some (.sub fRV fBV fOne) :=
+    hf 4 _ _ (by omega) rfl (by omega)
+  have h5 : program[E + 5]? = some (.add fRP fBB fBP) :=
+    hf 5 _ _ (by omega) rfl (by omega)
+  by_cases hbv : regs fBV = 0
+  · -- empty best: fall back to the seed pair
+    have hbr0 : RunsTo store program ⟨regs, E, false⟩
+        ⟨regs, E + 1, false⟩ [] [Category.branch] := by
+      have h := RunsTo.brNZ_not_taken (store := store)
+        (s := (⟨regs, E, false⟩ : State)) rfl h0 hbv
+      simpa using h
+    have hm1 : RunsTo store program ⟨regs, E + 1, false⟩
+        ⟨regs.write fRV seed, E + 2, false⟩ []
+        [Category.registerWrite] := by
+      have h := RunsTo.move (store := store)
+        (s := (⟨regs, E + 1, false⟩ : State)) rfl h1
+      simpa [hSeed] using h
+    have hm2 : RunsTo store program ⟨regs.write fRV seed, E + 2, false⟩
+        ⟨(regs.write fRV seed).write fRP start, E + 3, false⟩ []
+        [Category.registerWrite] := by
+      have h := RunsTo.move (store := store)
+        (s := (⟨regs.write fRV seed, E + 2, false⟩ : State)) rfl h2
+      simpa [RegFile.write, fRV, fStart, hStart] using h
+    have hbr3 : RunsTo store program
+        ⟨(regs.write fRV seed).write fRP start, E + 3, false⟩
+        ⟨(regs.write fRV seed).write fRP start, E + 6, false⟩ []
+        [Category.branch] := by
+      have h := RunsTo.brNZ_taken (store := store)
+        (s := (⟨(regs.write fRV seed).write fRP start, E + 3,
+          false⟩ : State)) rfl h3
+        (by simp [RegFile.write, fOne, fRV, fRP, hOne])
+      simpa using h
+    refine ⟨(regs.write fRV seed).write fRP start, ?_, ?_, ?_⟩
+    · have hrun := ((hbr0.trans hm1).trans hm2).trans hbr3
+      simpa [fringeCandGlobalArmCats, hbv] using hrun
+    · have e1 : ((regs.write fRV seed).write fRP start) fRV = seed := by
+        simp [RegFile.write, fRV, fRP]
+      have e2 : ((regs.write fRV seed).write fRP start) fRP = start := by
+        simp [RegFile.write]
+      rw [e1, e2, hbv, bestOfRegs_zero]
+      rfl
+    · intro r hRV hRP
+      simp [RegFile.write, hRV, hRP]
+  · -- occupied best: unshift and rebase
+    have hbr0 : RunsTo store program ⟨regs, E, false⟩
+        ⟨regs, E + 4, false⟩ [] [Category.branch] := by
+      have h := RunsTo.brNZ_taken (store := store)
+        (s := (⟨regs, E, false⟩ : State)) rfl h0 hbv
+      simpa using h
+    have hs4 : RunsTo store program ⟨regs, E + 4, false⟩
+        ⟨regs.write fRV (regs fBV - 1), E + 5, false⟩ []
+        [Category.arithmetic] := by
+      have h := RunsTo.sub (store := store)
+        (s := (⟨regs, E + 4, false⟩ : State)) rfl h4
+      simpa [hOne] using h
+    have ha5 : RunsTo store program
+        ⟨regs.write fRV (regs fBV - 1), E + 5, false⟩
+        ⟨(regs.write fRV (regs fBV - 1)).write fRP (bb + regs fBP),
+          E + 6, false⟩ [] [Category.arithmetic] := by
+      have h := RunsTo.add (store := store)
+        (s := (⟨regs.write fRV (regs fBV - 1), E + 5, false⟩ : State))
+        rfl h5
+      simpa [RegFile.write, fRV, fBB, fBP, hBB] using h
+    refine ⟨(regs.write fRV (regs fBV - 1)).write fRP (bb + regs fBP),
+      ?_, ?_, ?_⟩
+    · have hrun := (hbr0.trans hs4).trans ha5
+      simpa [fringeCandGlobalArmCats, hbv] using hrun
+    · have e1 : ((regs.write fRV (regs fBV - 1)).write fRP
+          (bb + regs fBP)) fRV = regs fBV - 1 := by
+        simp [RegFile.write, fRV, fRP]
+      have e2 : ((regs.write fRV (regs fBV - 1)).write fRP
+          (bb + regs fBP)) fRP = bb + regs fBP := by
+        simp [RegFile.write]
+      rw [e1, e2]
+      obtain ⟨v, hv⟩ : ∃ v, regs fBV = v + 1 := ⟨regs fBV - 1, by omega⟩
+      rw [hv, bestOfRegs_succ]
+      simp [bpFringeCandGlobal]
+    · intro r hRV hRP
+      simp [RegFile.write, hRV, hRP]
+
 end E1FringeArmBlock
 end WordRAM
 end RMQ
