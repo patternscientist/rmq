@@ -6704,3 +6704,253 @@ All file:line verified at `ff9bee1`.
    value is owed to the option structure as well (section 3).  When a
    prompt supplies the reason a thing is needed, check whether it is the
    ONLY reason before designing to it.
+
+## M3d-21 (worker E1-R5d): the min-candidate consumer landed with all four presence tests, and the ground for the fourth is now recorded where it can be checked
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, from HEAD
+`5f5eaa5` to `d82558e`.  Green.
+
+Mission item 1 IS DONE.  Items 2-6 are UNBUILT.  This is the sixteenth
+session to land one milestone green rather than start a second it could
+not finish.
+
+### 1. THE ANCHORS HELD, WITH TWO PATH CORRECTIONS
+
+Every anchor supplied was grepped before use, per rule 4.  All eight
+`InteriorDirectory.lean` line numbers were exact (`:2277`, `:2295`,
+`:2300`, `:2311`, `:2329`, `:2351`, `:2376`, `:2444`), as was
+`E1CrossBlockArm.lean:1143` (`crossBlockArmProgramAt_runsTo`).
+
+TWO DIRECTORY CORRECTIONS, both harmless to the argument but recorded so
+the next session does not repeat the search:
+
+* `MachineChunkedTableProgram.lean` is at `RMQ/Core/SuccinctSpace/`, not
+  under the interior path.  `machineReadComputationAt` is at `:343` there,
+  and it does read `[deadAddress]` out of range, as the delegation says.
+* `RelativeSummaryCandidate.lean` is at
+  `RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/`, not under
+  `InteriorCandidate/`.  `bpRelativeSummaryMinCandidate` is at `:15`.
+
+The delegation's soundness argument was checked at source rather than
+taken on report, and it holds in full: the route's four-way match is at
+`InteriorDirectory.lean:2293-2296`, and `bpRelativeSummaryMinCandidate`
+reads `summary.1`, `summary.2.1`, `summary.2.2.2` and never
+`summary.2.2.1`.
+
+### 2. WHAT LANDED: `RMQ/Core/WordRAM/E1InteriorMinCandidate.lean`
+
+A 21-instruction READ-FREE block simulating
+`canonicalRelativeRmmMachineMinCandidateComputation`, with the
+coordinator's ruling implemented as directed: ALL FOUR presence tests,
+the `maxRel` test not collapsed.
+
+`minCandidateBlock_runsTo` (`:364`) is the exact simulation.  Its result
+clause is the ROUTE'S OWN EXPRESSION:
+
+    bestOfRegs (regs' mMV) (regs' mMP) =
+      (summaryOfCells cB cMn cMx cA).map
+        (bpRelativeSummaryMinCandidate blockSize blocksPerSuper block)
+
+with `summaryOfCells` (`:161`) written arm-for-arm as the route writes its
+match, `mx` binder present and unused on the left exactly as it is there.
+The `maxRel` cell therefore appears on BOTH sides of the statement and is
+not an argument the theorem could drop.  Receipt is `[]`.
+
+THREE DESIGN POINTS, all recorded at DD-20260719-015:
+
+* `none` IS THE FALLTHROUGH.  The block installs the `none` encoding
+  first and conditionally skips the value computation, mirroring
+  `| _, _, _, _ => none`.  It therefore needs no unconditional jump and
+  no always-nonzero register -- one instruction and one hypothesis less
+  than the `brNZ fOne` idiom `candMerge3Mid` uses.
+* THE SHIFT IS APPLIED LAST.  The block computes `(cB + cMn) - (span + 2)`
+  and only then adds `1`.  Folding both option shifts into the constant is
+  valid because `a + k - (b + k) = a - b` holds unconditionally in `Nat`;
+  adding the `1` FIRST would give `(b + mn + 1) - span`, which differs
+  from `(b + mn - span) + 1` at every `span > b + mn`.  This was the
+  hazard section 4 of M3d-20 flagged, and it is real.
+* NO REGISTER-REGISTER MULTIPLY EXISTS in the ISA (`mulConst` only), so
+  the branchless masking alternative was not available; the masking trick
+  that would have worked needs a dominating constant and so a bound
+  hypothesis, which would have been a decorative premise.  Branching is
+  also the structurally faithful choice.
+
+Registers `105 .. 117`.  THE NEXT BLOCK OPENS AT `118`.
+
+### 3. THE ANTI-VACUITY IS EXECUTED, AND IT TARGETS THE ACTUAL DEFECT
+
+Rule 5 says a witness built FOR a premise defeats its purpose.  The
+witness suite here is built against the MUTATION the defect class would
+survive, not against the theorem's hypotheses.
+
+`witnessOut` (`:791`) runs the real block, hosted in a real program, on
+the empty store.  Four discriminators (`:811`, `:815`, `:818`, `:821`)
+each run two fixtures differing in EXACTLY ONE cell and show the outputs
+differ.  The `maxRel` pair is the decisive one: at
+`(block, cB, cMn, cMx, cA) = (1, 10, 5, 7, 3)` the machine leaves
+`(6, 6)`, and at `(1, 10, 5, 0, 3)` it leaves `(0, 0)`.  A block that
+dropped the `Q + 5` test would make those two EQUAL while leaving the
+trace, the read count and the exit pc untouched.
+
+`witness_maxRel_discriminates` DEPENDS ON NO AXIOMS AT ALL -- it is pure
+kernel computation.  That is the strongest form this evidence takes.
+
+Cross-checked independently against the route's own functions:
+`witness_route_value` (`:851`) evaluates
+`(summaryOfCells 10 5 7 3).map (bpRelativeSummaryMinCandidate 4 2 1)` to
+`some (5, 6)` through the REAL `bpSuperblockSpan` and `blockStartOf`, and
+`witness_route_value_maxRelAbsent` (`:856`) evaluates the `maxRel`-absent
+case to `none`.  The machine's `(6, 6)` is the `bestOfRegs` encoding of
+`some (5, 6)`, so the shift arithmetic is confirmed by two independent
+computations rather than by the proof alone.
+
+Both arms' read logs are `[]` by kernel reduction (`:826`, `:830`), so the
+receipt in the theorem is executed truth and not a modelling choice.  The
+two arms charge DIFFERENT category logs (`:863`), so the `if` in
+`minCandidateCats` is not decorative.  `witness_instantiates_theorem`
+(`:838`) instantiates the main theorem at the witness fixture, discharging
+every hypothesis by `rfl` against the hosting fact the witness program
+itself supplies.
+
+### 4. TWO DOCSTRINGS THIS SESSION'S OWN OUTPUT FALSIFIED
+
+`E1InteriorSummaryGroup.lean` carried, in two places, the claim that no
+consumer inspects `maxRel`'s value -- offered as the reason its bridge is
+provided "anyway".  That reading is the INCOMPLETE one M3d-20 identified,
+and this session's module is a consumer whose `none`/`some` split is
+decided in part by that cell.  The sentences were false as written once
+the consumer existed.
+
+Both were repaired to state the option-structure ground ALONGSIDE the
+receipt ground: the `summaryGroup` docstring (now `:285`) and
+`geomCell_maxRel_eq_routeDecode` (now `:726`).  Docstring-only: no
+theorem, statement or proof changed, and no frozen requirement text
+edited.  Note that these edits shifted line numbers in that module --
+`canonicalSummaryGroup_runsTo` is now `:555`, the four value bridges are
+now `:694`, `:708`, `:726`, `:740`, `canonicalSummaryLayout` is `:464`,
+`summaryGroup` is `:285` and `GroupUntouched` is `:305`.
+
+### 5. VERIFICATION LEDGER
+
+Under the `Global\RMQHeavyVerification` mutex:
+
+    lake build RMQ RMQPaper RMQExamples      LIB_BUILD_EXIT=0
+    lake build rmq_e1_machine_validate       VALIDATOR_BUILD_EXIT=0
+    lake exe rmq_e1_machine_validate         VALIDATOR_RUN_EXIT=0
+
+    Build completed successfully.
+    [281/283] Built RMQ.Core.WordRAM.E1InteriorMinCandidate
+
+Validator: `RESULT: PASS (with the whole-query comparison still OPEN)`,
+`wholeQueryComparisonAvailable=false`.  Phase 3h `presFailures=0`,
+`presSentinelNonZero=true`; mutation phase 4g
+`mutantG_scratch_preservationFailures=36`, `mutantG_scratch_exitFailures=0`,
+`mutantG_clobberedRegs=[70]`, `mutantG_isPreservationOnly=true`.  The
+discriminators still bite, unchanged from M3d-20.  The interior analogue
+of 3h REMAINS UNBUILT and is still owed.
+
+`#print axioms` after a root build, importing the module DIRECTLY:
+
+    minCandidateBlock_runsTo         [propext, Classical.choice, Quot.sound]
+    summaryOfCells_eq_none           [propext, Classical.choice, Quot.sound]
+    summaryOfCells_eq_some           [propext, Quot.sound]
+    minCandidateBlock_fits           [propext, Quot.sound]
+    minCandidateBlock_readFree       [propext]
+    witness_instantiates_theorem     [propext, Classical.choice, Quot.sound]
+    witness_maxRel_discriminates     does not depend on any axioms
+
+Never `sorryAx`.  `lake env lean scripts/headline_axiom_check.lean` runs
+clean.  `design_decision_check.ps1 -Strict` `DD_EXIT=0` ("checked 2
+changed files"), `claim_drift_scan.ps1` `DRIFT_EXIT=0` (744 hits, 0 strict
+failures, none in this session's files), `paper_topology_lint.ps1`
+`TOPO_EXIT=0`.  `git diff --check` exit 0 and the committed-range form
+`5f5eaa5..HEAD` exit 0 -- the inherited `B7_STEP2_WIP.patch` whitespace is
+outside this range.  Hygiene `rg` over the new module is CLEAN: no
+`sorry`, `admit`, `axiom`, `native_decide`, `partial`, `unsafe`,
+`implemented_by` or Mathlib.  `maxHeartbeats` was NOT raised anywhere, and
+no whnf timeout was encountered.
+
+The thirteen build warnings are all pre-existing and in the same modules
+M3d-19 and M3d-20 recorded (`SuccinctFinalRAM` x6, `E1InteriorChunkFold`,
+`ReviewerReachability{Small x3, Long, Sparse}`, `BPNavigationRAM`).  The
+new module emits NONE.
+
+DD-20260719-015 CLAIMED this session.  The maximum OBSERVED before
+claiming was `DD-20260719-014`, verified by scanning the tree.  The
+consolidated program-layout DD is still owed at the glue.
+
+KNOWN RED, externally owned, unchanged and not touched:
+`scripts/wordram_axiom_check.lean`, `scripts/axiom_check.lean`,
+`lake exe rmq_succinct_classic_validate` (COMPILE-time failure).
+
+### 6. MATRIX STATUS AT YIELD
+
+All eleven rows REQ-E1-01..11 remain OPEN.  This session closed none,
+weakened none, and edited no frozen row text.  The rows are whole-query
+scoped and this session landed a component of the interior leg, so no
+row's status could move; the matrix was left untouched rather than
+annotated, consistent with the fifteen prior sessions.
+
+### 7. RESUME POINT (M3d-22)
+
+All file:line verified at `d82558e`.
+
+1. ITEM 1 IS DONE.  `E1InteriorMinCandidate.lean:364`
+   (`minCandidateBlock_runsTo`) is the min-candidate consumer, 21
+   instructions, read-free, exit `Q + 21`.  Its output is already in the
+   `bestOfRegs` encoding the arm's interior interface wants
+   (`E1CrossBlockArm.lean:1184`).  Registers `105 .. 117` are TAKEN; THE
+   NEXT BLOCK OPENS AT `118`.
+2. THE NEXT BLOCKS ARE THE SPAN BLOCKS (`InteriorDirectory.lean:2311`,
+   `:2329`).  Both were re-read this session and both are
+   `FlatStoreComputation.pure none` on the `none` arm, so THE `none` ARM
+   MUST BRANCH PAST THE SUMMARY GROUP -- past all 156 instructions of it
+   AND past the 21 of the consumer, since the span blocks call the
+   consumer, not the group alone.  The composite to jump over is
+   therefore 177 instructions.  This was NOT verified by construction
+   this session; it is arithmetic on `summaryGroup_length = 156` and
+   `minCandidateBlock_length = 21` and should be re-derived, not trusted.
+3. THEN THE TWO-SPAN BLOCKS (`:2351`, `:2376`).  THE LEVEL READ IS THE
+   UNCONDITIONAL HEAD of every append chain -- re-confirmed at source this
+   session, in both computations the level-table read is the outermost
+   `bind` and the whole span structure sits inside its `some` arm.
+   Violating that order presents as a whnf heartbeat timeout, NOT a type
+   error, and must never be met by raising `maxHeartbeats`.
+4. THEN the five-branch dispatch (`:2444`) and `hInterior` at
+   `E1CrossBlockArm.lean:1143`.  The interior has five branches and no
+   scan.
+5. ITEMS 6-7 OF THE PRIOR INVENTORY UNCHANGED AND UNBUILT: the closure
+   ladder (full LCA leg at canonical-store form; whole-query glue via
+   `E1RouteDecomposition` with result agreement on `(...).value` and
+   POSITIONAL receipt equality on `(...).trace`; category accounting
+   across ALL branches including selects-none and lca-none; the public
+   `List Int` corollary; the DERIVED all-size literal step total from the
+   category algebra and the caps 33/8/8 -- derive, never assert; the
+   amended-target Prop with its supersession note; the validator's
+   whole-query phase; docs and matrix closure; the ONE consolidated
+   program-layout DD at the glue), and an EXECUTED preservation check for
+   the interior fold -- the validator's phase 3h is fringe-arm only.
+6. THE M7 DOC CLAIM is scoped to QUERY TIME with construction-time
+   computation carved out as preprocessing (`bpSparseLevelCell`,
+   `SparseLevelTable.lean:55`).  Do not write it until the interior leg
+   exists.  The stale frozen-row anchor is a NOTE, already appended; do
+   not edit frozen requirement text.
+7. THE VALUE BRIDGE IS NOT YET WIRED TO THE CONSUMER.  This session's
+   theorem is generic in the four cells, which is what lets it compose
+   with the group at ANY store.  Connecting it to the ROUTE's decode
+   still needs the four `geomCell_*_eq_routeDecode` bridges (now `:694`,
+   `:708`, `:726`, `:740` in `E1InteriorSummaryGroup.lean`), each of
+   which carries an `i < entriesLen` obligation the caller must supply.
+   NOTE THE ASYMMETRY THIS CREATES: the bridges hold only at VALID
+   indices, but the consumer's `none` arm is precisely the INVALID-index
+   case.  Whoever composes them must supply, for the invalid case, a fact
+   that `geomCell = 0` there -- which is NOT one of the four bridges and
+   was not found in the tree this session.  Budget for it.
+8. STANDING RULES, still five.  This session adds no sixth.  It confirms
+   M3d-20's caution to rule 5 from the other side: the delegation's
+   ground was incomplete, the coordinator's ruling supplied the missing
+   half, and implementing to the ruling rather than to the original
+   framing is what made the block sound.  When a prompt supplies a
+   reason, check whether it is the ONLY reason -- and when a later
+   instruction CORRECTS an earlier one, the correction is the thing to
+   build to.
