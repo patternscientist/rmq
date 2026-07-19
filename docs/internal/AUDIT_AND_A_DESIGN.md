@@ -899,3 +899,36 @@ job. The campaign's mathematical core stands; the defects are claim-to-evidence
 gaps, one broken script, and stale prose. Repairs delegated to Codex (which
 authored the original W19 provenance apparatus) on a separate worktree so E1 can
 continue uninterrupted.
+
+## 2026-07-18 (C05 round 9) — verification-standard rule from a self-caught defect
+
+**Trigger:** worker E1-R4k spliced new sections at a marker string that was a
+substring of a `/-!` doc-comment line, creating a nested unterminated comment
+that swallowed an entire region. Two commits (`06673fd`, `9320bbf`) therefore
+claimed lemmas that were **inert comment text**. Per-file
+`lake env lean <file>` reported CLEAN, because commented-out code produces no
+errors, and the check was additionally resolving against a stale dependency
+olean. The worker detected and repaired this itself (`22a8b90`) and disclosed
+it unprompted.
+
+**Durable rule (applies to every worker prompt from now on):**
+`lake build <root>` is the BINDING verification standard. `lake env lean
+<file>` is an iterate-loop aid only and may NOT be cited as the evidence that a
+milestone compiles. A milestone commit's evidence must include a root build.
+Additionally, when a rung claims a NEW theorem, the cheapest independent proof
+that the constant actually exists is `#print axioms` on it -- a name inside a
+comment has no axioms because it has no constant.
+
+**Assessed blast radius:** low. The A07 blind audit independently ran the full
+builds, both axiom inventories, and the headline check against the campaign
+frontier and found only the stale `_sum_le_76` identifier -- a missing-constant
+error, which is exactly the failure mode a commented-out theorem would also
+produce. Every reconstruction round additionally quoted theorem statements read
+from source. No evidence of a second instance; no re-audit ordered.
+
+**Related:** this is the second defect this session traceable to a check whose
+green output did not mean what the reader assumed (the first being the deferred
+aggregate gate, round 8). Both share a root cause worth stating in the
+completion gate: **a green check is evidence only of what it actually
+examined.** Prefer the check that would fail loudly over the check that is
+convenient to run.
