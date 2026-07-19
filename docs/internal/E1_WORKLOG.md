@@ -5471,3 +5471,202 @@ All file:line verified at this commit.
    leg to exist.
 5. STILL OWED, carried from M3d-13: an EXECUTED preservation check for the
    interior fold; the validator has no interior analogue of phase 3h.
+
+## M3d-16 (worker E1-R4y): `hexact` discharged substantively; the lemma it needed was already in the tree
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, from HEAD
+`c9ddbbf` (M3d-15's yield) to this commit.  Green.
+
+Module added: `RMQ/Core/WordRAM/E1InteriorChunkExact.lean`, registered in
+`RMQ.lean`.  Nothing else in the tree was edited apart from the worklog,
+`DESIGN_DECISIONS.md` and the matrix's evidence section.
+
+### 1. THE RESUME DIRECTION'S NON-EXISTENCE CLAIM IS FALSE, AND IT MATTERED
+
+M3d-16's delegation stated that the intended source for non-final-chunk
+exactness, `chunkPayloadWords_get?_eq_take_drop` (`WordStore.lean:274`),
+"does not exist", and directed that the needed lemma be proved from
+scratch.
+
+IT EXISTS, at exactly that file and line:
+
+    theorem chunkPayloadWords_get?_eq_take_drop
+        {wordSize : Nat} {payload word : List Bool} {i : Nat}
+        (hget : (chunkPayloadWords wordSize payload)[i]? = some word) :
+        word = (payload.drop (i * wordSize)).take wordSize
+
+That is exactly the per-index presentation the task needed, and four
+modules already cite it (`GenericSelect/DenseWord.lean:38`,
+`RankSelectCompressed/Base/ClassLengthEnvelope.lean:2679`,
+`RankSelectCompressed/Base/LogChunks.lean:681`,
+`RankSelectCompressedSubLogDenseWord.lean:222`).  The new module's proof
+CALLS it and compiles, so this is settled by construction, not by grep.
+
+The rest of the same direction is accurate: the two lemmas it named as the
+existing alternatives, `chunkPayloadWords_word_length_le` (`:234`) and
+`chunkPayloadWords_length_eq_div_add_indicator` (`:390`), really are about
+bounds and counts rather than per-index exactness.  DD-20260719-010's
+original direction -- use `_get?_eq_take_drop` -- was correct as written;
+the "does not exist" gloss added downstream of it was wrong.
+
+WHY THIS IS WORTH A SECTION.  Had the direction been followed literally,
+the session would have re-proved a lemma the repository already had, in a
+fifth place, and the duplicate would have been indistinguishable from
+diligence.  This is the fourth consecutive session in which a supplied
+claim did not survive checking, and the second in which the claim was
+about what the tree contains rather than about what is true.
+
+### 2. WHAT WAS ACTUALLY MISSING
+
+Only the arithmetic and the flat-index bookkeeping.  Both are landed.
+
+`succ_mul_le_of_succ_lt_chunkCount` is the whole arithmetic content: from
+`j + 1 < width / wordSize + (if width % wordSize = 0 then 0 else 1)`, both
+arms of the split give `j + 1 <= width / wordSize`, after which
+`Nat.div_mul_le_self` gives `(j + 1) * wordSize <= width`.  Factored out
+because it is the step a reviewer would otherwise re-derive.
+
+`machineWords_length_eq_of_succ_lt_chunkCount` is the headline: the
+machine word at flat index `i * count + j` has length exactly `wordSize`
+whenever the table holds cell `i` and `j + 1 < count`.  It goes through
+`FixedWidthNatTable.machineWords_cell_slice`
+(`MachineChunkedTable.lean:121`) to reach cell `i`'s chunk list, then
+`_get?_eq_take_drop`, then the arithmetic above.
+
+`hexact_of_segment_agrees` restates it in the shape the value bridge
+states `hexact`, over a `ReadStore` segment.  The guard travels correctly:
+the bridge guards on `j + 1 < chunkIters`, and on the valid arm with the
+cap in hand `chunkIters` IS the machine chunk count.
+
+### 3. ANTI-VACUITY, APPLIED TO THIS MODULE'S OWN STATEMENT
+
+The standing rule -- where a quantity is computable, EVALUATE it -- is
+applied here to what this module CLAIMS, not only to what it consumes,
+since that is the direction three consecutive audits found defects in.
+
+`exactFixture_*` executes the claim on the `shape.size = 1` interior row
+from M3d-15's evaluation (`wordSize = 2`, width `5`, `chunkCount = 3`),
+the most multi-chunk reachable shape.  `exactFixture_chunkCount` confirms
+the fixture matches that row.  `exactFixture_nonfinal_lengths` exhibits
+the two non-final chunks at length exactly `2`.
+
+`exactFixture_final_length_lt` is the one that matters: the FINAL chunk
+has length `1`.  So the `j + 1 < n` guard is LOAD-BEARING -- dropping it
+does not weaken the statement, it makes it FALSE at a reachable shape.
+That is the check separating a real cut from a hypothesis carried for
+appearance.  All four fixture theorems depend on NO axioms.
+
+`cell_exists_of_lt` is DERIVED rather than assumed, from the table's own
+`read_exact` field: if `entries[i]?` is `some`, the stored word cannot be
+`none`.  Stated that way so the corollary carries no unchecked
+existential.
+
+The corollary's one carried premise, `hagree`, is a deliberate parameter:
+the segment-to-table mapping is fixed by the interior composition, not by
+this module, and writing a concrete layout here would guess something this
+module cannot check.  Per the satisfiability rule it does not ship
+undischarged -- `segmentStore` / `segmentStore_agrees` exhibit a store
+meeting it.
+
+### 4. WHAT WAS NOT DONE
+
+Mission items 2-7 are UNBUILT: the summary group, the span blocks, the
+two-span blocks, the five-branch dispatch and `hInterior`, and the whole
+closure ladder.  Item 1 was the session.  Nothing was composed on the
+fold beyond the premise discharge, and no matrix row moved.
+
+One reconnaissance note on item 2, recorded because it was checked and it
+CONFIRMS the delegation rather than correcting it: in
+`canonicalRelativeRmmMachineSummaryComputation`
+(`InteriorDirectory.lean:2277`) the `maxRel` read's value IS bound into
+the summary tuple at `:2295`, but the min-candidate consumer
+(`canonicalRelativeRmmMachineMinCandidateComputation`, `:2300`) maps
+through `bpRelativeSummaryMinCandidate` and discards it.  So the
+delegation's instruction is right and its reason is the receipt
+obligation, not the value: the read must appear in the machine's log
+because the route performs it, even though nothing downstream consumes it.
+
+### 5. VERIFICATION LEDGER
+
+`lake build RMQ RMQPaper RMQExamples` exit 0:
+
+    ✔ [277/279] Built RMQ.Core.WordRAM.E1InteriorChunkExact
+    ✔ [278/279] Built RMQ
+    Build completed successfully.
+    BUILD_EXIT=0
+
+The new module emits NO warning; its only line in the build log is the
+Built line.  The warning lines in the log are pre-existing and elsewhere
+(the `unusedSimpArgs` linter at `SuccinctFinalRAM.lean`).
+
+`#print axioms` AFTER a root build, importing
+`RMQ.Core.WordRAM.E1InteriorChunkExact` DIRECTLY:
+
+    succ_mul_le_of_succ_lt_chunkCount        [propext, Quot.sound]
+    machineWords_length_eq_of_succ_lt_chunkCount
+                                             [propext, Classical.choice, Quot.sound]
+    cell_exists_of_lt                        [propext, Classical.choice, Quot.sound]
+    hexact_of_segment_agrees                 [propext, Classical.choice, Quot.sound]
+    exactFixture_chunkCount                  does not depend on any axioms
+    exactFixture_chunks                      does not depend on any axioms
+    exactFixture_nonfinal_lengths            does not depend on any axioms
+    exactFixture_final_length_lt             does not depend on any axioms
+    segmentStore_agrees                      [propext]
+
+Never `sorryAx`.  `maxHeartbeats` was NOT raised anywhere.
+
+### 6. MATRIX STATUS AT YIELD
+
+All rows REQ-E1-01..11 remain OPEN.  None closed, none weakened, no frozen
+row text edited.
+
+REQ-E1-03's interior value evidence is strengthened in the one direction
+M3d-15 left it weak: the value bridge's `hexact` premise now has a
+substantive discharge route landed as executable Lean with an executed
+load-bearing check, rather than a named-but-unbuilt one.  The row does not
+move, because it is whole-query scoped and items 2-7 are unbuilt.
+
+### 7. RESUME POINT (M3d-17)
+
+All file:line verified at this commit.
+
+1. THE FOLD'S THREE PREMISES ARE NOW ALL SETTLED.  `hcap`/`hccPos` from
+   `E1InteriorChunkCap.chunkCount_le_eight_*` and `..._pos_*`, one per
+   width (M3d-15).  `hle` verbatim from
+   `canonicalRelativeRmmInteriorComponentStore_words_bounded`
+   (`InteriorDirectory.lean:1711`).  `hexact` from
+   `E1InteriorChunkExact.hexact_of_segment_agrees`, whose only open
+   parameter is `hagree`, the segment-to-table mapping.  Do NOT cite
+   `canonicalRelativeRmmMachineReadNatCosted_cost_le_one` for any of the
+   three, and do NOT cite vacuity for `hexact`.
+2. `hagree` IS THE ONE THING ITEM 2 MUST SUPPLY.  It is
+   `∀ a, store.readWord? segment (base + a) =
+   (fixedWidthNatTableMachineWords table wordSize)[a]?`.  The interior
+   store's segment/offset assignment is
+   `canonicalRelativeRmmInteriorComponentOffsets` (consumed at
+   `InteriorDirectory.lean:2282`, `:2317`, `:2335`); the store's word list
+   is `canonicalRelativeRmmInteriorComponentStore_words_toList`
+   (near `:1707`).  Deriving `hagree` from those two is the composition
+   step, and it is NOT yet done.  It is stated as a parameter rather than
+   guessed; `segmentStore_agrees` shows it is satisfiable, which is not
+   the same as showing it holds AT THE INTERIOR STORE.  That distinction
+   is the whole content of the satisfiability rule and must not be
+   elided.
+3. ITEM 2 RECONNAISSANCE, CHECKED: the `maxRel` read at
+   `InteriorDirectory.lean:2290` binds its value into the summary tuple
+   (`:2295`) but the min-candidate consumer (`:2300`) discards it.  The
+   delegation's instruction not to optimise it away is correct, and its
+   ground is the POSITIONAL receipt obligation, not the value.
+4. STANDING RULES, now four, in the order learned: a premise recorded as
+   OWED owes a witness it is SATISFIABLE at the intended instantiation
+   (M3d-14); a premise recorded as VACUOUS owes a witness of VACUITY on
+   the same terms (M3d-15); where a quantity is COMPUTABLE, EVALUATE it
+   (M3d-15); and -- added this session -- a supplied claim about WHAT THE
+   TREE CONTAINS is checkable in one grep and must be checked before it
+   is acted on (M3d-16, section 1).
+5. Items 3-5 of M3d-13's list are unchanged.  The M7 doc row still has an
+   approved scope and a drafted sentence and still needs the interior leg
+   to exist.
+6. STILL OWED, carried from M3d-13 and unchanged: an EXECUTED preservation
+   check for the interior fold; the validator has no interior analogue of
+   phase 3h.

@@ -4559,3 +4559,66 @@ when it is live (this one). Neither is visible at the definition site, and
 neither is visible from a bound alone -- a `<=` fact says nothing about
 whether the quantity is ever large, and the fastest way to find out here was
 to EVALUATE the count rather than reason about it.
+
+## DD-20260719-011: non-final-chunk exactness is proved substantively, and the lemma it needed already existed (E1 M3d-16)
+
+Context. DD-20260719-010 established that `hexact` -- the value bridge's
+per-chunk width-equality premise
+(`interiorChunkFold_cOut_eq_routeDecode`, `E1InteriorChunkValue.lean:526`)
+-- is a LIVE obligation at `canonicalRelativeRmmInteriorComponentStore`,
+not a vacuous one, because the interior tables are multi-chunk at every
+`shape.size` below roughly `1024`. It directed that whoever composes the
+value bridge must discharge it substantively from `chunkPayloadWords`'s own
+structure and must not cite vacuity. That is done here.
+
+Decision -- the discharge is landed as
+`RMQ/Core/WordRAM/E1InteriorChunkExact.lean`, whose headline is
+
+    machineWords_length_eq_of_succ_lt_chunkCount
+
+the machine word at flat index `i * count + j`, for a cell index the table
+holds and a chunk index with another chunk above it, has length exactly
+`wordSize`. Its arithmetic core is factored out as
+`succ_mul_le_of_succ_lt_chunkCount`: both arms of the `width % wordSize`
+split give `j + 1 <= width / wordSize`, after which `Nat.div_mul_le_self`
+finishes. The bridge-shaped corollary is `hexact_of_segment_agrees`.
+
+CORRECTION TO THE M3d-16 RESUME DIRECTION, recorded because it was checked
+rather than assumed. The delegation carried forward a claim that the
+intended source lemma, `chunkPayloadWords_get?_eq_take_drop`
+(`WordStore.lean:274`), "does not exist" and would have to be proved. IT
+EXISTS, at exactly that file and line, with exactly the per-index
+presentation needed (`word = (payload.drop (i * wordSize)).take wordSize`),
+and four modules already cite it: `GenericSelect/DenseWord.lean:38`,
+`RankSelectCompressed/Base/ClassLengthEnvelope.lean:2679`,
+`RankSelectCompressed/Base/LogChunks.lean:681`,
+`RankSelectCompressedSubLogDenseWord.lean:222`. The new module's proof
+CALLS it and compiles, which settles the question by construction rather
+than by grep. What was actually missing was only the arithmetic step above
+and the flat-index bookkeeping; DD-20260719-010's original direction was
+correct as written, and the "does not exist" gloss added downstream of it
+was wrong.
+
+The two length lemmas the same direction offered as the existing
+alternatives -- `chunkPayloadWords_word_length_le` (`:234`) and
+`chunkPayloadWords_length_eq_div_add_indicator` (`:390`) -- ARE, as
+described, about bounds and counts rather than per-index exactness. That
+half of the claim holds; it is the non-existence half that does not.
+
+Anti-vacuity, applied to this module's own statement and not only to its
+inputs, per the standing rule that where a quantity is computable it must
+be EVALUATED. `exactFixture_*` executes the claim on the `shape.size = 1`
+interior row (`wordSize = 2`, width `5`, `chunkCount = 3`), the most
+multi-chunk reachable shape: the two non-final chunks have length exactly
+`2`, and `exactFixture_final_length_lt` shows the FINAL chunk has length
+`1`. So the `j + 1 < n` guard is load-bearing -- dropping it does not
+weaken the statement, it makes it FALSE at a reachable shape. All four
+fixture theorems depend on NO axioms.
+
+The corollary's one carried premise, `hagree` (the segment-to-table
+mapping), is left as a parameter deliberately: it is fixed by the interior
+composition's segment assignment, not by this module, and stating a
+concrete layout here would guess something this module cannot check.
+Per the satisfiability rule it does not ship undischarged --
+`segmentStore` / `segmentStore_agrees` exhibit a store meeting it, so
+nothing composed on the corollary rests on an unmeetable hypothesis.

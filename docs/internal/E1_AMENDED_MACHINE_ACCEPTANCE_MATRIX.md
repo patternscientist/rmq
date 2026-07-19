@@ -303,3 +303,54 @@ for `boundedSummaryRangeScanTraceResultAtSegments`. The doc row should be
 written only after a coordinator settles that wording; it is in any case
 downstream of the unbuilt interior items. Full evidence in
 `E1_WORKLOG.md` M3d-13 section 8.
+
+## Evidence added by E1-R4y (M3d-16), no row closed, no row weakened
+
+All eleven rows REQ-E1-01..11 remain OPEN. Closure was impossible by
+construction, for the reason M3d-11 through M3d-15 all recorded: every row
+is whole-query scoped and the whole-query composition is downstream of the
+interior simulation, of which this session discharged the last outstanding
+premise but composed no further block.
+
+Module: `RMQ/Core/WordRAM/E1InteriorChunkExact.lean`.
+
+- **REQ-E1-03** (result agreement) — the value bridge's `hexact` premise,
+  which M3d-15 reclassified from vacuous to LIVE, now has a SUBSTANTIVE
+  discharge landed as executable Lean.
+  `machineWords_length_eq_of_succ_lt_chunkCount` proves the machine word
+  at flat index `i * count + j` has length exactly `wordSize` whenever the
+  table holds cell `i` and another chunk sits above `j`, via
+  `FixedWidthNatTable.machineWords_cell_slice`
+  (`MachineChunkedTable.lean:121`) and
+  `chunkPayloadWords_get?_eq_take_drop` (`WordStore.lean:274`).
+  `hexact_of_segment_agrees` restates it in the bridge's own shape over a
+  `ReadStore` segment. Does NOT discharge the row (whole-query scope).
+- **Anti-vacuity, on this module's OWN statement.**
+  `exactFixture_final_length_lt` shows the FINAL chunk at the reachable
+  `shape.size = 1` row has length `1` against `wordSize = 2`, so the
+  `j + 1 < n` guard is LOAD-BEARING: dropping it makes the statement
+  FALSE, not weaker. `exactFixture_nonfinal_lengths` exhibits the two
+  non-final chunks at exactly `2`. All four fixture theorems depend on NO
+  axioms (kernel computation).
+- **Satisfiability of the one carried premise.** `hexact_of_segment_agrees`
+  carries `hagree`, the segment-to-table mapping, as a deliberate
+  parameter. `segmentStore` / `segmentStore_agrees` exhibit a store
+  meeting it. NOTE THE LIMIT OF THAT EVIDENCE, stated so no consumer
+  over-reads it: it shows the premise is SATISFIABLE, not that it HOLDS at
+  `canonicalRelativeRmmInteriorComponentStore`. Deriving it there is the
+  composition step and is NOT done.
+- **REQ-E1-11** — `cell_exists_of_lt` is DERIVED from the table's
+  `read_exact` field rather than assumed, so the corollary carries no
+  unchecked existential premise.
+
+### Correction to a supplied claim, checked at source
+
+The M3d-16 delegation stated that `chunkPayloadWords_get?_eq_take_drop`
+(`WordStore.lean:274`) "does not exist" and directed that it be proved.
+IT EXISTS, at exactly that file and line, with exactly the per-index
+presentation needed, and four modules already cite it. The new module's
+proof CALLS it and compiles. DD-20260719-010's original direction was
+correct as written; the non-existence gloss added downstream of it was
+wrong. Recorded per the standing instruction to report rather than write
+an unsupported sentence. Full evidence in `E1_WORKLOG.md` M3d-16 section 1
+and DD-20260719-011.
