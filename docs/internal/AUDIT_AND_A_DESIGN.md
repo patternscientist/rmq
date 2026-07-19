@@ -1259,3 +1259,9 @@ of the program is equally true and equally worthless. The worker discharged
 hosting against a concrete program whose same-block target is COMPUTED from the
 cross arm's length, then EXECUTED both directions onto distinguishable halts.
 That bar (execute both branches, do not merely host them) should carry forward.
+
+**Round 15 addendum — coordinator independently verified the disputed check.**
+Ran `lake env lean scripts/wordram_axiom_check.lean` at the campaign HEAD under
+the heavy-verification mutex: **exit 1**, confirming A07 and the E1 worker and
+refuting the earlier session's logged exit 0. Recording a first-hand
+observation rather than a third attestation, which is the point of the rule.
