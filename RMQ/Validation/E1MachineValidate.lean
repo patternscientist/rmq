@@ -4,6 +4,7 @@ import RMQ.Core.WordRAM.E1CandMerge3
 import RMQ.Core.WordRAM.E1CrossBlockArm
 import RMQ.Core.WordRAM.E1FringeArmProgram
 import RMQ.Core.WordRAM.E1InteriorChunkFold
+import RMQ.Core.WordRAM.E1CostAlgebra
 
 /-!
 # M6: executable validation of the E1 amended machine
@@ -1825,6 +1826,182 @@ happens to differ from the seed. -/
 theorem chunkPres_target_seed_outside_written_range :
     presSentinel chunkClobberTarget = 717 := rfl
 
+/-! ## REQ-E1-05: the guard skeleton, EXECUTED on invalid fixtures
+
+REQ-E1-05's Evidence-needed column asks for the invalid guard to be
+"exercised on empty, reversed, and out-of-bounds fixtures in Lean examples
+and in the validator".  The Lean examples exist
+(`programSkeleton_invalid_matches_public_guard`, `E1QueryBridge.lean:55`,
+universally quantified over `validPath`).  The validator half did not: nothing
+outside `E1QueryProgram.lean`, `E1QueryBridge.lean` and
+`E1WholeQueryPublic.lean` mentioned `programSkeleton`, and this harness never
+ran it.  These fixtures RUN it.
+
+**WHY THERE ARE VALID CONTROLS, and why the phase would be worthless without
+them.**  A sweep containing only invalid ranges cannot distinguish the real
+guard from a machine that rejects EVERYTHING -- `const regOut 0; halt` at
+`pc = 0` passes every invalid check below.  So the sweep carries valid
+controls whose required outcome is the OPPOSITE: they must reach the stub
+valid path and leave a non-`none` packet.  `guardAcceptedCount` is the
+anti-vacuity metric, and it is asserted `> 0` in the verdict rather than
+merely printed.
+-/
+
+/-- Stub valid path for the guard fixtures: write a non-`none` packet and
+halt.  Its only job is to be DISTINGUISHABLE from the invalid exit, so that a
+valid control which reaches it is visibly not a rejection. -/
+def guardStubValidPath : List Instr :=
+  [ .const E1Query.regOut 1, .halt ]
+
+/-- Any store: the guard performs no read.  This one answers every address
+with a non-empty word, so a stray read would both register in the receipt AND
+perturb a value -- a store answering `none` would hide the second effect. -/
+def guardStore : ReadStore := ⟨fun _ _ => some [true]⟩
+
+structure GuardReport where
+  family : String
+  expectedValid : Bool
+  n : Nat
+  left : Nat
+  right : Nat
+  halted : Bool
+  modeledSteps : Nat
+  readCount : Nat
+  memoryReadCharges : Nat
+  packetIsNone : Bool
+  ok : Bool
+deriving Repr
+
+/-- RUN the guard skeleton on one fixture and check the whole REQ-E1-05
+clause list: halts, `none` packet, EMPTY receipt, zero memory-read charge,
+and at most ten charged steps.  Valid controls are checked for the opposite
+outcome. -/
+def runGuard (salt : Nat) (build : E1Machine.Program -> E1Machine.Program)
+    (family : String) (expectedValid : Bool)
+    (n left right : Nat) : GuardReport :=
+  let program := build (E1Query.programSkeleton n guardStubValidPath)
+  let result :=
+    E1Machine.run guardStore program (64 + salt)
+      (E1Query.initialState left right)
+  let isNone :=
+    E1Query.decodePacket (result.final.regs E1Query.regOut) == none
+  { family := family
+    expectedValid := expectedValid
+    n := n, left := left, right := right
+    halted := result.final.halted
+    modeledSteps := result.steps
+    readCount := result.readLog.length
+    memoryReadCharges := catCount result.catLog Category.memoryRead
+    packetIsNone := isNone
+    ok :=
+      if expectedValid then
+        result.final.halted && !isNone
+      else
+        result.final.halted && isNone && result.readLog.isEmpty &&
+          catCount result.catLog Category.memoryRead == 0 &&
+          result.steps <= 10 }
+
+/-- The three invalid families REQ-E1-05 names, plus valid controls.
+`n` is the modelled input length; `left`/`right` the query operands. -/
+def guardCases : List (String × Bool × Nat × Nat × Nat) :=
+  [ ("empty",        false, 0, 0, 0)
+  , ("empty",        false, 0, 0, 1)
+  , ("emptyRange",   false, 8, 3, 3)
+  , ("emptyRange",   false, 8, 0, 0)
+  , ("reversed",     false, 8, 5, 2)
+  , ("reversed",     false, 8, 7, 1)
+  , ("outOfBounds",  false, 8, 0, 9)
+  , ("outOfBounds",  false, 8, 3, 100)
+  , ("valid",        true,  8, 0, 8)
+  , ("valid",        true,  8, 2, 5)
+  , ("valid",        true,  1, 0, 1) ]
+
+def goodGuard : E1Machine.Program -> E1Machine.Program := id
+
+/--
+MUTANT J: disable the OUT-OF-BOUNDS half of the guard, leaving the
+empty/reversed half intact.
+
+Instruction `7` of the skeleton is `brNZ regG invalidBase`, the branch taken
+when `right <= n` FAILS.  The mutant repoints its CONDITION register from
+`regG` (the live negation flag) to `regZero`, which the prologue pins to `0`,
+so the branch is never taken and an out-of-bounds query falls through into
+the valid path.
+
+It is the "right shape, wrong content" defect class at the guard: the program
+has the SAME length and the SAME per-instruction category log -- a `brNZ` is
+still a `brNZ` -- so neither a length check nor a category-shape check can see
+it.  What sees it is that two of the eight invalid fixtures stop being
+rejected.
+-/
+def mutatedGuardBounds (p : E1Machine.Program) : E1Machine.Program :=
+  p.set 7 (.brNZ E1Query.regZero (8 + guardStubValidPath.length))
+
+def guardMutationIsReal : Bool :=
+  let honest := E1Query.programSkeleton 8 guardStubValidPath
+  let mutant := mutatedGuardBounds honest
+  honest != mutant && honest.length == mutant.length &&
+    honest.map Instr.category == mutant.map Instr.category
+
+def guardReports (salt : Nat)
+    (build : E1Machine.Program -> E1Machine.Program) : List GuardReport :=
+  guardCases.map fun (family, expectedValid, n, left, right) =>
+    runGuard salt build family expectedValid n left right
+
+def guardFailures (rs : List GuardReport) : Nat :=
+  (rs.filter (fun r => !r.ok)).length
+
+/-- Invalid fixtures that actually reached the guarded `none` packet. -/
+def guardRejectedCount (rs : List GuardReport) : Nat :=
+  (rs.filter (fun r => !r.expectedValid && r.packetIsNone)).length
+
+/-- ANTI-VACUITY METRIC: valid controls the guard did NOT reject.  A machine
+that rejects everything scores `0` here and passes every other check in this
+phase. -/
+def guardAcceptedCount (rs : List GuardReport) : Nat :=
+  (rs.filter (fun r => r.expectedValid && !r.packetIsNone)).length
+
+/-- Worst charged step count over the invalid fixtures, against the frozen
+`<= 10` of `guardRejectCats_length_le`. -/
+def guardMaxInvalidSteps (rs : List GuardReport) : Nat :=
+  (rs.filter (fun r => !r.expectedValid)).foldl
+    (fun acc r => Nat.max acc r.modeledSteps) 0
+
+/-- Every fixture, invalid and valid alike, meets its own clause list. -/
+theorem guard_all_cases_ok : guardFailures (guardReports 0 goodGuard) = 0 :=
+  rfl
+
+/-- All eight invalid fixtures reach the guarded `none` packet. -/
+theorem guard_invalid_all_rejected :
+    guardRejectedCount (guardReports 0 goodGuard) = 8 := rfl
+
+/-- ANTI-VACUITY, kernel-checked: all three valid controls are ACCEPTED, so
+the phase is not passing merely because the machine rejects everything. -/
+theorem guard_valid_controls_accepted :
+    guardAcceptedCount (guardReports 0 goodGuard) = 3 := rfl
+
+/-- The invalid path's charged step count never exceeds the frozen `10`. -/
+theorem guard_invalid_steps_within_ten :
+    guardMaxInvalidSteps (guardReports 0 goodGuard) = 10 := rfl
+
+/-- The mutation is REAL and SHAPE-PRESERVING: a different program, of the
+same length, with the identical per-instruction category log. -/
+theorem guard_mutation_is_real : guardMutationIsReal = true := rfl
+
+/-- MUTANT J IS CAUGHT: the THREE fixtures whose rejection depends on the
+`right <= n` test stop being rejected -- the two labelled `outOfBounds` plus
+`("empty", n = 0, 0, 1)`, which is an out-of-bounds query at an empty list --
+so the rejected count falls from `8` to `5`. -/
+theorem guard_mutantJ_caught :
+    guardRejectedCount (guardReports 0 mutatedGuardBounds) = 5 := rfl
+
+/-- ...and it is caught by REJECTION, not by the phase falling over: the
+mutant still ACCEPTS all three valid controls, exactly as the honest guard
+does.  So the discriminator is the invalid half specifically, and a harness
+checking only that valid queries survive would MISS this defect entirely. -/
+theorem guard_mutantJ_still_accepts_valid_controls :
+    guardAcceptedCount (guardReports 0 mutatedGuardBounds) = 3 := rfl
+
 def mainImpl : IO UInt32 := do
   IO.println "== E1 amended-machine validator (M6) =="
   IO.println ""
@@ -2168,6 +2345,39 @@ def mainImpl : IO UInt32 := do
   IO.println s!"chunkPresMutationWallClockMs={tcm1 - tcm0}"
   IO.println ""
 
+  -- STEP 3j: REQ-E1-05's five-word residual, "and in the validator".
+  IO.println "-- phase 3j: INVALID GUARD skeleton on empty/reversed/out-of-bounds fixtures (REQ-E1-05) --"
+  let tg0 <- IO.monoMsNow
+  let gRs := guardReports salt goodGuard
+  let gFails := guardFailures gRs
+  let gRejected := guardRejectedCount gRs
+  let gAccepted := guardAcceptedCount gRs
+  IO.println s!"guardCases={gRs.length}"
+  IO.println s!"guardFamilies=empty,emptyRange,reversed,outOfBounds + valid controls"
+  IO.println s!"guardFailures={gFails}   (must be 0: every fixture meets its own clause list)"
+  IO.println s!"guardRejected={gRejected}   (invalid fixtures reaching the guarded none-packet)"
+  IO.println s!"guardValidControlsAccepted={gAccepted}   (must be > 0: a reject-everything machine scores 0 here and passes every other check in this phase)"
+  IO.println s!"guardMaxInvalidSteps={guardMaxInvalidSteps gRs}   (frozen bound is 10, guardRejectCats_length_le)"
+  IO.println s!"guardReadsTotal={(gRs.filter (fun r => r.readCount != 0)).length}   (must be 0: the guard reads nothing)"
+  IO.println s!"guardMemoryReadCharges={(gRs.filter (fun r => r.memoryReadCharges != 0)).length}   (must be 0: zero memory-read category charge)"
+  let tg1 <- IO.monoMsNow
+  IO.println s!"guardWallClockMs={tg1 - tg0}"
+  IO.println ""
+
+  -- STEP 4i: a guard mutation with the same length and the same category log.
+  IO.println "-- phase 4i: deliberate mutation of the OUT-OF-BOUNDS guard branch (rejection-only visible) --"
+  let tgm0 <- IO.monoMsNow
+  let mutJRs := guardReports salt mutatedGuardBounds
+  let mutJRejected := guardRejectedCount mutJRs
+  let mutJAccepted := guardAcceptedCount mutJRs
+  IO.println s!"guardMutationIsReal={guardMutationIsReal}   (differs; same length AND same instruction categories)"
+  IO.println s!"mutantJ_rejected={mutJRejected}   (5 expected: the three fixtures needing the right<=n test escape)"
+  IO.println s!"mutantJ_validControlsAccepted={mutJAccepted}   (3 expected: valid queries are UNAFFECTED, so a valid-only harness MISSES this)"
+  IO.println s!"mutantJ_caught={mutJRejected != 8}   (must be true)"
+  let tgm1 <- IO.monoMsNow
+  IO.println s!"guardMutationWallClockMs={tgm1 - tgm0}"
+  IO.println ""
+
   -- STEP 5: the hole.
   IO.println "-- phase 5: whole-query comparison --"
   IO.println s!"wholeQueryComparisonAvailable={wholeQueryComparisonAvailable}"
@@ -2247,6 +2457,16 @@ def mainImpl : IO UInt32 := do
   -- discriminators on the interior side.
   let okChunkPresMutations :=
     chunkPresMutationIsReal && mutHFails != 0 && mutHPresOnly
+  -- REQ-E1-05: every fixture meets its own clause list, all eight invalid
+  -- ones reach the guarded none-packet, AND the valid controls are accepted
+  -- -- the last conjunct is what stops a reject-everything machine passing.
+  let okGuard :=
+    gFails == 0 && gRejected == 8 && gAccepted > 0 &&
+      guardMaxInvalidSteps gRs <= 10
+  -- Mutant J rejected, and confirmed shape-preserving and invisible to a
+  -- valid-query-only harness.
+  let okGuardMutations :=
+    guardMutationIsReal && mutJRejected != 8 && mutJAccepted == 3
   let okCore := okReference && okLengths && okDispatch && okLeg
   let okComposite := okSelect && okCompose && okComposeCoverage && okMerge
   let okAdversarial := okMutations && okMutantSetup && okMergeMutations
@@ -2255,7 +2475,7 @@ def mainImpl : IO UInt32 := do
   let okChunkPreservation := okChunkPres && okChunkPresMutations
   let ok :=
     okCore && okComposite && okAdversarial && okNew && okPreservation &&
-      okChunkPreservation
+      okChunkPreservation && okGuard && okGuardMutations
   if ok then
     IO.println "RESULT: PASS (with the whole-query comparison still OPEN)"
     return 0

@@ -6756,3 +6756,50 @@ rather than left for a reader to notice, because a target Prop that silently
 drops a conjunct its row names is indistinguishable from one that forgot.
 Carrying it as a decorative hypothesis was considered and REJECTED under the
 standing rule against decorative hypotheses.
+
+## DD-20260719-143: REQ-E1-05's validator phase carries VALID CONTROLS, because an invalid-only sweep cannot distinguish the guard from a reject-everything machine (E1-LaneA2)
+
+Claimed by the cost-algebra lane on `claude/e1-cost-algebra`.
+
+WHAT WAS MISSING, grep-verified. REQ-E1-05's Evidence-needed column asks for
+the invalid guard "exercised on empty, reversed, and out-of-bounds fixtures in
+Lean examples AND IN THE VALIDATOR". The Lean examples existed
+(`programSkeleton_invalid_matches_public_guard`, `E1QueryBridge.lean:55`,
+universally quantified over `validPath`). The validator half did not: this
+harness never ran `programSkeleton`.
+
+CORRECTION TO THE DELEGATION'S PREMISE, recorded because it was acted on.
+The brief stated `programSkeleton` "has no consumer outside its own two
+files". It has THREE: `E1QueryProgram.lean`, `E1QueryBridge.lean` AND
+`E1WholeQueryPublic.lean`, the last of which carries a real consumer,
+`programSkeleton_valid_matches_public` (`:140`). The residual the row names
+-- the VALIDATOR -- was genuinely absent, so the conclusion held; the count
+did not.
+
+THE DESIGN POINT. A sweep containing only invalid ranges is worth nothing on
+its own: `const regOut 0; halt` at `pc = 0` -- a machine that rejects
+EVERYTHING -- passes every invalid clause the row lists (halts, `none`
+packet, empty receipt, zero memory-read charge, at most ten steps). Phase 3j
+therefore carries three VALID controls whose required outcome is the
+opposite, and `guardAcceptedCount` is asserted `> 0` in the verdict rather
+than merely printed. This is the campaign's own vacuity rule applied before
+the fact instead of after: the anti-vacuity witness is on the same terms as
+the claim.
+
+THE MUTATION, and what it says about instrument power. Phase 4i's mutant J
+repoints instruction `7`'s branch CONDITION from `regG` (the live negation
+flag) to `regZero` (pinned `0` by the prologue), disabling the `right <= n`
+half of the guard. It is shape-preserving: same program length, same
+per-instruction category log, `guardMutationIsReal = true`. Rejections fall
+from `8` to `5` -- and the count is `5`, not the `6` this lane first
+predicted, because the fixture labelled `("empty", n = 0, 0, 1)` is
+genuinely an OUT-OF-BOUNDS query at an empty list and escapes with the two
+labelled ones. The figure was EVALUATED rather than reasoned to, per the
+standing rule on computable quantities; the first guess was wrong and the
+kernel caught it.
+
+The sharpest thing the mutant shows is a NON-ENTAILMENT:
+`mutantJ_validControlsAccepted = 3`, identical to the honest guard. Every
+valid query behaves exactly as before. A harness that checked only that
+valid queries still work -- which is the natural thing to check -- would miss
+this defect completely.
