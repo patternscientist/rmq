@@ -19,8 +19,9 @@ predicate is the same existential execution relation with arbitrary read
 result, and the checked bridge below relates the two.  The B4 fields extend
 the packet with the chunk-table provenance strength: per-leaf successful
 occurrences for the shared fringe chunk table (segment `21`), and positional
-repeated-equal-read witnesses with distinct occurrence receipts for both
-chunk-table sources (segments `21` and `22`). -/
+repeated-equal-read witnesses with distinct global positions AND distinct
+producing instruction positions for both chunk-table sources (segments `21`
+and `22`). -/
 structure ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy : Prop where
   canonical_counted_sources_have_successful_closed_valid_occurrence :
     forall source : ReviewerSource, source.Counted ->
@@ -45,9 +46,11 @@ structure ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy : Prop whe
       (ReviewerProducerClaim.mk concreteBPNativeFringeChunkTraceSegment
         leaf).HasSuccessfulClosedValidOccurrence
   fringe_chunk_repeated_equal_read_occurrences_have_distinct_receipts :
-    ∃ xs : List Int, ∃ left right firstPos secondPos index : Nat,
+    ∃ xs : List Int,
+    ∃ left right firstPos secondPos instrPos1 instrPos2 index : Nat,
     ∃ word : WordRAM.Word,
-      ValidRange xs left right ∧ firstPos ≠ secondPos ∧
+      ValidRange xs left right ∧
+      firstPos ≠ secondPos ∧ instrPos1 ≠ instrPos2 ∧
       (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
         (Cartesian.shape xs) left right).trace[firstPos]? =
           some (.readWord concreteBPNativeFringeChunkTraceSegment index
@@ -56,14 +59,18 @@ structure ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy : Prop whe
         (Cartesian.shape xs) left right).trace[secondPos]? =
           some (.readWord concreteBPNativeFringeChunkTraceSegment index
             (some word)) ∧
-      ReviewerReadOccurrenceReceipt (Cartesian.shape xs) left right firstPos
-        concreteBPNativeFringeChunkTraceSegment index (some word) ∧
-      ReviewerReadOccurrenceReceipt (Cartesian.shape xs) left right secondPos
-        concreteBPNativeFringeChunkTraceSegment index (some word)
+      ReviewerReadOccurrenceReceiptAtInstruction (Cartesian.shape xs)
+        left right firstPos instrPos1 concreteBPNativeFringeChunkTraceSegment
+        index (some word) ∧
+      ReviewerReadOccurrenceReceiptAtInstruction (Cartesian.shape xs)
+        left right secondPos instrPos2 concreteBPNativeFringeChunkTraceSegment
+        index (some word)
   select_chunk_repeated_equal_read_occurrences_have_distinct_receipts :
-    ∃ xs : List Int, ∃ left right firstPos secondPos index : Nat,
+    ∃ xs : List Int,
+    ∃ left right firstPos secondPos instrPos1 instrPos2 index : Nat,
     ∃ word : WordRAM.Word,
-      ValidRange xs left right ∧ firstPos ≠ secondPos ∧
+      ValidRange xs left right ∧
+      firstPos ≠ secondPos ∧ instrPos1 ≠ instrPos2 ∧
       (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
         (Cartesian.shape xs) left right).trace[firstPos]? =
           some (.readWord concreteBPNativeSelectChunkTraceSegment index
@@ -72,10 +79,12 @@ structure ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy : Prop whe
         (Cartesian.shape xs) left right).trace[secondPos]? =
           some (.readWord concreteBPNativeSelectChunkTraceSegment index
             (some word)) ∧
-      ReviewerReadOccurrenceReceipt (Cartesian.shape xs) left right firstPos
-        concreteBPNativeSelectChunkTraceSegment index (some word) ∧
-      ReviewerReadOccurrenceReceipt (Cartesian.shape xs) left right secondPos
-        concreteBPNativeSelectChunkTraceSegment index (some word)
+      ReviewerReadOccurrenceReceiptAtInstruction (Cartesian.shape xs)
+        left right firstPos instrPos1 concreteBPNativeSelectChunkTraceSegment
+        index (some word) ∧
+      ReviewerReadOccurrenceReceiptAtInstruction (Cartesian.shape xs)
+        left right secondPos instrPos2 concreteBPNativeSelectChunkTraceSegment
+        index (some word)
 
 /-- The concrete manifest discharges the global W19 packet using the actual
 small, symbolic long-super, and symbolic sparse-local witness families. -/
@@ -97,8 +106,8 @@ theorem concreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy :
     fringe_chunk_table_every_reader_leaf_has_successful_closed_valid_occurrence :=
       concreteBPNativeSuccinctRMQFringeChunkTable_every_reader_leaf_successful_occurrence
     fringe_chunk_repeated_equal_read_occurrences_have_distinct_receipts :=
-      concreteBPNativeSuccinctRMQFringeChunk_repeated_equal_read_distinct_receipts
+      concreteBPNativeSuccinctRMQFringeChunk_repeated_equal_read_distinct_instruction_receipts
     select_chunk_repeated_equal_read_occurrences_have_distinct_receipts :=
-      concreteBPNativeSuccinctRMQSelectChunk_repeated_equal_read_distinct_receipts }
+      concreteBPNativeSuccinctRMQSelectChunk_repeated_equal_read_distinct_instruction_receipts }
 
 end RMQ.SuccinctFinal
