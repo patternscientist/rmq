@@ -29,6 +29,7 @@ import RMQ.Core.WordRAM.E1SelectCanonical
 import RMQ.Core.WordRAM.E1FringeBridge
 import RMQ.Core.WordRAM.E1FringeFoldBlock
 import RMQ.Core.WordRAM.E1FringeArmBlock
+import RMQ.Core.WordRAM.E1SameBlockArm
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks
