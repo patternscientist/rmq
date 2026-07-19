@@ -4418,3 +4418,74 @@ debt. `witnessWidth_cell0` discharges it on the existing witness store, and
 `chunkFoldWitness_path_bothPresent` obtained by RUNNING the machine -- through
 the bridge rather than by `rfl`, so the premise set is demonstrably
 satisfiable.
+
+## DD-20260719-009: the chunk fold's width premise is re-cut, because the stated one was unsatisfiable at the target store (E1 M3d-14)
+
+Context. DD-20260719-008 recorded the value bridge's per-chunk width premise
+as a visible debt, to be discharged "on the `BoundedPayloadWordStore` side"
+where the fold meets `canonicalRelativeRmmInteriorComponentStore`. M3d-14 was
+directed to source that fact BEFORE composing the summary group. Sourcing it
+established that IT CANNOT BE SOURCED: the premise as stated is not merely
+unproved there, it is FALSE there, so the bridge was vacuous at the one store
+the interior composition needs it against.
+
+The evidence, all read at source. `interiorChunkFold_cOut_eq_routeDecode`
+demanded `w.length = wordSize` of EVERY chunk. But
+`fixedWidthNatTableMachineWords` (`MachineChunkedTable.lean:15`) is a bare
+`table.store.words.toList.flatMap (chunkPayloadWords wordSize)` -- no padding
+at any point on the path -- and `chunkPayloadWords` is documented at
+`WordStore.lean:153` as "The final word may be shorter". Accordingly
+`BoundedPayloadWordStore` carries only `word_length_le` (`:552`), an
+INEQUALITY, and that is the strongest fact available. Nor is the shortfall a
+boundary case: `superWidth _ shape` (`RelativeSummary.lean:1290`) is
+`machineWordBits shape.bpCode.length`, i.e. `wordSize` itself, but
+`offsetWidth` (`:1299`) and `blockAddressWidth` (`:1308`) apply
+`machineWordBits` to `layout.macroSize` and `layout.blockCount`, both strictly
+smaller, so those chunks are strictly narrower than `wordSize` for any
+nontrivial shape. Seven of the interior store's eight components fail the old
+premise.
+
+Decision -- the premise is SPLIT, not deleted, and the split is forced by
+where exactness is actually consumed. Exactness enters at exactly one place:
+`bitsToNatLE_append` produces `2 ^ w.length * bitsToNatLE tail`, and the old
+`hw` was used only to turn `2 ^ w.length` into the fold's uniform digit weight
+`2 ^ wordSize`. When the chunk is the LAST one, `tail` is empty, that term is
+`2 ^ w.length * 0`, and the width is irrelevant. The premise was therefore
+over-demanding by one index.
+
+* `chunkFoldValue_eq_route_decode` asks equality only at `j + 1 < n`.
+* `chunkDigit_lt` and `chunkRevAt_chunkAcc_eq_chunkLit` ask only
+  `w.length <= wordSize`; the digit bound needs `2 ^ w.length <= 2 ^ wordSize`,
+  never equality.
+* `interiorChunkFold_cOut_eq_routeDecode` carries both: `hle` (bound, every
+  chunk) and `hexact` (equality, non-final chunks).
+
+Why this is the right cut rather than a convenient one. The ROUTE imposes no
+width discipline at all -- `fixedWidthNatTableMachineDecode`
+(`MachineChunkedTable.lean:215`) is `(collectPayloadWords words).map
+bitsToNatLE`, plain concatenation -- and it MUST NOT, because the store's
+`erases` obligation says the chunks flatten back to the exact `width`-bit
+payload. Padding chunks up to `wordSize` would break `erases`. So raggedness
+is a property of the design, not an accident to be legislated away, and the
+machine-side premise had to be the thing that moved.
+
+Both halves now discharge at the target store: `hle` is verbatim the store's
+own `word_length_le` field, and `hexact` is VACUOUS there, because the
+interior tables are single-chunk -- `canonicalRelativeRmmMachineReadNatCosted_cost_le_one`
+(`InteriorDirectory.lean:4060`) derives `chunkCount <= 1` from
+`width <= machineWordBits shape.bpCode.length`, note the inequality.
+
+This is a strengthening: premises weakened, conclusions untouched, nothing
+renamed or deleted. Anti-vacuity is preserved and was re-checked, not assumed:
+the witness store is a genuine TWO-chunk fixture (`chunkIters 3 2 0 = 2`), so
+`hexact` is still exercised at `j = 0`, and `witnessCOut_cell0_via_bridge`
+still derives the machine's cell through the bridge onto the same `2` that
+`chunkFoldWitness_path_bothPresent` obtains by RUNNING the machine.
+
+Recorded because it generalises, in the same spirit as M3d-13's preservation
+finding: a premise that is merely UNPROVED and a premise that is UNSATISFIABLE
+look identical at the definition site, and both look like diligence. The
+difference only appears when someone tries to discharge it against the
+concrete object. A hypothesis stated as a visible debt should name the store
+it is owed against and be checked for satisfiability there AT THE TIME IT IS
+STATED, not at the time it is consumed.

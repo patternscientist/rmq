@@ -4962,3 +4962,315 @@ of `InteriorRAM.lean:574/622/820/868`, which still contain live
 `bpSparseLogSpan`.  It presumably refers to different bodies.  This does
 not affect the doc sentence, because those bodies are off-route, but the
 worklog line is inaccurate as written and a future reader may be misled.
+
+## M3d-14 (worker E1-R4w): the width premise was unsatisfiable, and settling it first is what caught that
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, from HEAD
+`1766727` (M3d-13's yield) to `3ea0528`.  One commit, green.
+
+M3d-13's resume point listed two things "ALSO OWED, not on the critical
+path", to be settled BEFORE composing the summary group rather than
+discovered mid-proof.  That instruction earned its keep.  One of the two
+-- the width premise -- turned out not to be a lookup but a defect, and
+the composition it was blocking could never have closed as planned.
+NONE of resume items 1-5 are built.  This session is the repair plus the
+two verification answers.
+
+### 1. `blockStartOf`, CONFIRMED AT SOURCE (the cheap half)
+
+`RMQ/Core/SuccinctClose/BlockLocal.lean:868`:
+
+    /-- First BP position in a block. -/
+    def blockStartOf (blockSize block : Nat) : Nat :=
+      block * blockSize
+
+M3d-13 read this as a scaling by `blockSize` but flagged it unverified.
+The read is CORRECT, and the argument order is the favourable one: the
+runtime quantity is `block` and the multiplier `blockSize` is the
+per-shape constant, so a `mulConst` shape against the register holding
+`block` is sound.  Nothing further is owed here.
+
+### 2. THE WIDTH PREMISE WAS NOT UNPROVED -- IT WAS FALSE
+
+M3d-13 recorded the premise of `interiorChunkFold_cOut_eq_routeDecode` as
+a debt "sourced on the `BoundedPayloadWordStore` side".  It cannot be.
+The premise demanded `w.length = wordSize` of EVERY chunk; the store side
+supplies only `word_length_le`, an INEQUALITY (`WordStore.lean:552`), and
+that is not a gap in the library but a fact about the construction:
+
+* `fixedWidthNatTableMachineWords` (`MachineChunkedTable.lean:15`) is a
+  bare `flatMap (chunkPayloadWords wordSize)`.  There is NO padding
+  anywhere on the path to the interior store.
+* `chunkPayloadWords` (`WordStore.lean:154`) is documented, in the
+  repository's own words, "The final word may be shorter."
+* The widths are genuinely different quantities.  `superWidth _ shape`
+  (`RelativeSummary.lean:1290`) IS `machineWordBits shape.bpCode.length`,
+  i.e. `wordSize`.  But `offsetWidth` (`:1299`) is
+  `machineWordBits layout.macroSize` and `blockAddressWidth` (`:1308`) is
+  `machineWordBits layout.blockCount`, both applying a monotone function
+  to strictly smaller arguments.  Seven of the interior component store's
+  eight tables are strictly narrower than `wordSize`.
+
+So the bridge was VACUOUS at
+`canonicalRelativeRmmInteriorComponentStore`, the one store the interior
+composition needs it against.  Composing the summary group on it would
+have produced a chain of theorems resting on a hypothesis no one could
+ever discharge -- the exact "decorative hypothesis that silently owes
+itself to every consumer" failure the standards name.
+
+### 3. THE REPAIR: THE PREMISE WAS OVER-DEMANDING BY ONE INDEX
+
+Exactness is consumed at exactly ONE place.  `bitsToNatLE_append` yields
+`2 ^ w.length * bitsToNatLE tail`, and the old hypothesis was used only
+to rewrite `2 ^ w.length` into the fold's uniform digit weight
+`2 ^ wordSize`.  For the LAST chunk `tail` is empty, that term is
+`2 ^ w.length * 0`, and the width does not matter.  Hence:
+
+* `chunkFoldValue_eq_route_decode:311` -- equality only at `j + 1 < n`.
+  The induction's `succ` case now derives the head's exactness only when
+  `n > 0`, via a `by_cases` on `n = 0` inside a new `hmul` step; the
+  `n = 0` branch closes from `chunkLit ... 0 = 0` without any width fact.
+* `chunkDigit_lt:451` and `chunkRevAt_chunkAcc_eq_chunkLit:480` -- only
+  `w.length <= wordSize`.  The digit bound wants
+  `2 ^ w.length <= 2 ^ wordSize` (`Nat.pow_le_pow_right`), never equality.
+* `interiorChunkFold_cOut_eq_routeDecode:498` -- carries BOTH, split:
+  `hle` (bound, every chunk) and `hexact` (equality, non-final chunks).
+
+STRENGTHENING ONLY: premises weakened, conclusions untouched, nothing
+renamed or deleted.  There are no external consumers -- all four
+theorems are local to `E1InteriorChunkValue.lean` -- so the repair is
+contained.  See DD-20260719-009 (claimed this session; the maximum
+OBSERVED was `DD-20260719-008`).
+
+WHY THE MACHINE SIDE HAD TO MOVE AND NOT THE STORE.  The route imposes no
+width discipline at all: `fixedWidthNatTableMachineDecode`
+(`MachineChunkedTable.lean:215`) is `(collectPayloadWords words).map
+bitsToNatLE`, plain concatenation.  It MUST NOT impose one, because the
+store's `erases` obligation says the chunks flatten back to the exact
+`width`-bit payload -- padding chunks up to `wordSize` would BREAK
+`erases`.  Raggedness is designed, not accidental.
+
+BOTH HALVES NOW DISCHARGE AT THE TARGET STORE, which is the whole point:
+`hle` is verbatim the store's own `word_length_le` field, and `hexact` is
+VACUOUS there, the interior tables being single-chunk --
+`canonicalRelativeRmmMachineReadNatCosted_cost_le_one`
+(`InteriorDirectory.lean:4060`) derives `chunkCount <= 1` from
+`width <= machineWordBits shape.bpCode.length`, note the inequality.
+
+### 4. ANTI-VACUITY RE-CHECKED, NOT ASSUMED
+
+A repair that makes a premise easier to satisfy invites the suspicion
+that it made it trivially satisfiable.  It did not.  The witness fixture
+is a genuine TWO-chunk case (`chunkIters 3 2 0 = 2`), so `hexact` is
+still exercised non-vacuously at `j = 0`, and
+`witnessCOut_cell0_via_bridge:641` still DERIVES the machine's cell
+through the bridge -- rewriting `cOut` into the route's decode and
+letting the kernel evaluate -- onto the same `2` that
+`chunkFoldWitness_path_bothPresent` (`E1InteriorChunkFold.lean:1918`)
+obtains independently by RUNNING the machine.  Neither number is
+asserted.
+
+### 5. QUESTION (a), THE M7 DOC ROW: THE CORE CONTRAST HOLDS, TWO SUPPORTING CLAIMS DO NOT
+
+The row was again NOT written.  Unlike M3d-12 and M3d-13, this is not a
+flat refusal: the contrast the coordinator asked about DOES hold.  Two
+of the sentences that would surround it do not, and one of those is a
+fact the coordinator has not yet seen.
+
+CONFIRMED at source this session:
+
+* The four runtime `bpSparseLogSpan` sites survive at
+  `InteriorRAM.lean:574, 622, 820, 868`.  Their enclosing defs -- the
+  families the row should NAME -- are
+  `PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateTraceResult`
+  (`:559`) and `...AtSegments` (`:606`), and
+  `PayloadLiveBPGlobalSparseBlockTable.twoSpanCandidateTraceResult`
+  (`:805`) and `...AtSegments` (`:852`).  Note the short names are
+  DUPLICATED across the two namespaces; any doc text must qualify them.
+* `ConcreteDirectoryRAM.lean:1188` is
+  `concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural`
+  and `:1196` the `...Legacy` twin.  The non-Legacy `:1188` does NOT
+  reach the four sites; it routes through
+  `canonicalRelativeRmmInteriorRangeMinComputation`
+  (`InteriorDirectory.lean:2444`), and `InteriorDirectory.lean` contains
+  ZERO occurrences of `bpSparseLogSpan`.  The Legacy `:1196` DOES reach
+  all four.  THE CONTRAST IS REAL.
+* The accepted route
+  `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult`
+  (`SuccinctFinalRAM.lean:4426`) reaches its interior via `:1188`.
+
+WHAT DOES NOT HOLD, and would have shipped as an overstatement:
+
+* "The Legacy family's consumers are theorem statements and unfolds, not
+  executed defs" is FALSE as a statement about the family.  It is true of
+  `:1196` itself -- all ten of its references sit inside theorems.  But
+  the `...OfReady` layer beneath it IS consumed by executed defs:
+  `concreteBPRelativeRmmInteriorRangeMinTraceResultOfSizeGe`
+  (`ConcreteDirectoryRAM.lean:398`), `...AtSegmentsOfSizeGe` (`:495`),
+  `crossBlockCloseTraceResultWithRankSeedOfReady` (`:1920`),
+  `...AtSegmentsOfReady` (`:2051`), `lcaCloseTraceResultWithRankSeedOfReady`
+  (`:3591`), `...AtSegmentsOfReady` (`:3700`).  These are genuine `def`s
+  that transitively execute the four sites.  THE DEFENSIBLE PREDICATE IS
+  "NOT REACHABLE FROM THE ACCEPTED ROUTE", which is what was actually
+  checked and does hold -- not a claim about what kind of syntax the
+  consumers are.
+* MORE IMPORTANTLY, AND NEW: the accepted route DOES reach
+  `bpSparseLogSpan`, at STORE-CONSTRUCTION time.  The chain is
+  `concreteBPNativeSuccinctRMQGlobalReadStore` ->
+  `canonicalRelativeRmmInteriorComponentStore` ->
+  `canonicalRelativeRmmInteriorLocalLevelTable`
+  (`InteriorDirectory.lean:1462`) -> `bpSparseLevelTable` ->
+  `bpSparseLevelEntries` -> `bpSparseLevelCell`, and
+  `SparseLevelTable.lean:55` reads
+
+      def bpSparseLevelCell (domain i : Nat) : Nat :=
+        bpSparseLogSpan i + domain * Nat.log2 i
+
+  VERIFIED DIRECTLY AT SOURCE.  A row asserting flatly that the accepted
+  route never reaches `bpSparseLogSpan` is therefore FALSE, and a
+  reviewer who follows the store-construction path breaks it in one step
+  -- the precise failure mode M3d-12 refused to ship.  The defensible
+  sentence must be scoped to QUERY time: the accepted route's only
+  contact with `bpSparseLogSpan` is the PRECOMPUTED level table, and at
+  query time the machine READS and DECODES that cell
+  (`InteriorDirectory.lean:2364-2366`, `level := value / domain`,
+  `span := value % domain`) and never calls `bpSparseLogSpan`.
+
+* Also found, and relevant to any sentence about the store-parametric
+  quarantine: `lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStoreLegacy`
+  (`ConcreteDirectoryRAMStoreParam.lean:5307`) is MISNAMED relative to its
+  body -- it dispatches to the NON-Legacy
+  `crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`
+  and does not reach the sparse sites at all, while `:3624` does.  Any row
+  treating "the `WithStoreLegacy` family" as one uniformly-wired unit is
+  inaccurate.
+
+RECOMMENDATION, unchanged in kind from M3d-13 but now with a concrete
+sentence to approve.  This remains a coordinator decision, and the
+wording it should approve is narrower than the one supplied:
+
+  "On the accepted route, no size-dependent computation is performed
+  uncharged AT QUERY TIME.  The route reaches its interior through
+  `...AllSizeStructural` (`ConcreteDirectoryRAM.lean:1188`), which
+  dispatches to `canonicalRelativeRmmInteriorRangeMinComputation`; that
+  path contains no occurrence of `bpSparseLogSpan`.  The four surviving
+  runtime `Nat.log2` sites (`InteriorRAM.lean:574, 622, 820, 868`, in
+  `PayloadLiveBPLocalSparseOffsetTable`/`PayloadLiveBPGlobalSparseBlockTable`
+  `.twoSpanCandidateTraceResult{,AtSegments}`) are reached only through
+  `...AtSegmentsAllSizeStructuralLegacy` (`:1196`), which is not
+  reachable from the accepted route.  `bpSparseLogSpan` does occur on the
+  route's PREPROCESSING side, in `bpSparseLevelCell`
+  (`SparseLevelTable.lean:55`), which builds the level table; at query
+  time the machine reads and decodes that precomputed cell."
+
+The `OfSizeGe` sibling is confirmed once more NOT to be a counterexample
+family: `evalGlobalWordTraceOfSizeGe` (`SuccinctFinalRAM.lean:3718`) takes
+`_hsize` UNUSED and dispatches `.lcaClose` to the same accepted leg.
+
+### 6. QUESTION (b), THE FROZEN-ROW ANCHOR: THE CITATION IS STALE
+
+CONFIRMED, and NOT edited -- anchor repair in a frozen row is a
+coordinator decision, per the delegation.
+
+`E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md:17` cites the accepted
+whole-query trace as `RMQ/Core/SuccinctFinalRAM.lean:4337`.  At this HEAD
+`:4337` is a line inside a DOC COMMENT, and the comment belongs to a
+DIFFERENT definition -- `concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted`,
+which begins at `:4340`.  The intended object,
+`def concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult`, is at
+`:4426`.  The citation is therefore not merely off by a few lines; it
+lands inside the documentation of a neighbouring def, which is the kind
+of miss that reads as carelessness to a reviewer.  Note also the matrix
+gives the path as `RMQ/Core/SuccinctFinalRAM.lean`, which IS correct at
+this HEAD (the file is not under `RMQ/Core/SuccinctFinal/RAM/`).
+
+### 7. VERIFICATION LEDGER
+
+`lake build RMQ RMQPaper RMQExamples` exit 0:
+
+    [275/277] Built RMQ.Core.WordRAM.E1InteriorChunkValue
+    [276/277] Built RMQ
+    Build completed successfully.
+    BUILD_EXIT=0
+
+`lake build rmq_e1_machine_validate` exit 0; `lake exe
+rmq_e1_machine_validate` exit 0:
+
+    presSentinelNonZero=true   (a zero-seeded file makes this phase vacuous)
+    -- phase 5: whole-query comparison --
+    RESULT: PASS (with the whole-query comparison still OPEN)
+    VALEXE_EXIT=0
+
+Phases 3/3b-3h and 4/4b-4g all present and passing, unchanged from
+M3d-13; the whole-query phase remains OPEN because it is downstream of
+resume items 1-5, none of which are built.
+
+`#print axioms` AFTER a root build, importing
+`RMQ.Core.WordRAM.E1InteriorChunkValue` DIRECTLY:
+
+    chunkFoldValue_eq_route_decode        [propext, Classical.choice, Quot.sound]
+    interiorChunkFold_cOut_eq_routeDecode [propext, Classical.choice, Quot.sound]
+    chunkDigit_lt                         [propext, Quot.sound]
+    chunkRevAt_chunkAcc_eq_chunkLit       [propext, Quot.sound]
+    witnessWidth_cell0                    [propext, Quot.sound]
+    witnessCOut_cell0_via_bridge          [propext, Classical.choice, Quot.sound]
+    bitsToNatLE_append                    [propext, Quot.sound]
+
+Never `sorryAx`.  `maxHeartbeats` was NOT raised anywhere.
+
+### 8. MATRIX STATUS AT YIELD
+
+All rows REQ-E1-01..11 remain OPEN.  This session closed none and
+weakened none.  No frozen row text was edited.
+
+Component-level evidence CHANGED, and honestly it is a subtraction as
+much as an addition: REQ-E1-03's interior value evidence, recorded by
+M3d-13, was resting on a theorem that was vacuous at the interior store.
+It is now resting on one that is not.  The row is no better off than it
+looked yesterday, but it is now as well off as it looked.
+
+### 9. RESUME POINT (M3d-15)
+
+M3d-13's resume items 1-5 stand UNCHANGED and unimplemented; that list
+is still the plan and is not restated here.  All file:line below verified
+at HEAD `3ea0528`.
+
+What M3d-14 changes about it:
+
+0. THE WIDTH PREMISE IS NO LONGER A BLOCKER, and item 1 may now be
+   composed.  When the fold is instantiated against
+   `canonicalRelativeRmmInteriorComponentStore`, discharge `hle` from
+   `canonicalRelativeRmmInteriorComponentStore_words_bounded`
+   (`InteriorDirectory.lean:1711`) and `hexact` VACUOUSLY from
+   `chunkCount <= 1` via
+   `canonicalRelativeRmmMachineReadNatCosted_cost_le_one`
+   (`InteriorDirectory.lean:4060`).  Both were located this session; the
+   second was not previously recorded.
+
+1. STANDING, AND NEWLY LEARNED, alongside M3d-13's preservation rule: a
+   hypothesis stated as a visible debt must name the concrete object it
+   is owed against AND be checked satisfiable there AT THE TIME IT IS
+   STATED.  Unproved and unsatisfiable look identical at the definition
+   site.  This one survived a full session and a coordinator review
+   before anyone tried to discharge it.
+
+2. THE ANALOGOUS QUESTION IS OWED OF THE `<= 8` CAP.  `hcap : chunkCount
+   <= 8` is the fold's other carried hypothesis.  It was NOT audited this
+   session.  Given that the interior is single-chunk, it is presumably
+   satisfiable with room to spare -- but "presumably" is exactly what was
+   said about the width premise.  Check it at source before composing,
+   not after.
+
+3. `blockStartOf` is settled (section 1); no further verification owed.
+
+4. THE M7 DOC ROW has an approvable sentence drafted at section 5.  It
+   needs a coordinator decision, not a worker's.  The store-construction
+   carve-out is NOT optional -- without it the row is false.
+
+5. THE FROZEN-ROW ANCHOR (`E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md:17`,
+   `:4337` -> `:4426`) awaits coordinator adjudication (section 6).
+
+6. STILL OWED, carried unchanged from M3d-13: an EXECUTED preservation
+   check for the interior fold.  The clause is proof-side only; the
+   validator has no interior analogue of phase 3h, and phase 3h's own
+   note records that sentinel seeding is load-bearing.
