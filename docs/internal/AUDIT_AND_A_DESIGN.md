@@ -4441,3 +4441,72 @@ Also: LaneB4's open block-size question is resolved —
 first wrote into §3/§3a were wrong and it caught them by grepping its own output
 before committing — fifth worker to do so. DD-059 and -060 **written into the
 log**, not merely claimed; the corrected instruction is holding.
+
+---
+
+## C05 round 69 — THE INTERIOR LEG IS COMPLETE
+
+Lane B6 returned CANDIDATE_COMPLETE at `26afae9`. `interiorDispatchBlock_runsTo`
+composes all five arms with receipt, category log, value and preservation;
+`interiorDispatch_hInterior` discharges `hInterior`. Rows #1 through #9 of the
+interior are closed. This is the milestone the campaign has been walking toward
+since the R3 obstruction.
+
+**And the worker did the one thing that distinguishes a real discharge from a
+plausible one.** `crossBlockArm_withCanonicalInterior_runsTo` (`:1267`)
+**APPLIES** `crossBlockArmProgramAt_runsTo` to the new `hInterior`, drawing the
+interior's hosting from `crossBlockArmProgramAt_hosts`'s eighth component. Its
+own words for why that matters:
+
+> That is the only check that the premise unifies — a shape-correct theorem could
+> still fail if `interior.length` did not reduce to `4204`, or if the route's
+> block size and the sub-blocks' were different terms.
+
+Both are now kernel facts. **Shape-matching a premise and discharging it are
+different things**, and every prior lane in this campaign stopped at the former
+because nothing downstream existed to consume it. This one didn't.
+
+**The discriminator moves one branch target to a DIFFERENT ARM'S BASE.** Exit
+PC, halted flag, category log and preservation all agree; the **receipt**
+separates them at every store — a `readWord` event carries its address, so the
+inequality survives even a store answering `none` to both — as does the value.
+Both witness arms end un-halted.
+
+And for the third lane running, the worker labelled the limitation correctly:
+**"the category-log agreement is the FIXTURE's, not the block's"** — it gave the
+two arms identical instruction shapes to isolate the receipt, whereas #9's real
+arms are 510/1045/1045/1574 instructions with different logs, so the real
+category log would also catch a mis-dispatch. That habit is now stable across
+workers, which is worth more than any single fixture.
+
+**The matrix analysis is the most honest I have received, and it ADDS a debt.**
+The worker states that completing the interior *bears on* REQ-E1-03 and -04
+(supplying the interior's share of each, but at the leg and not the whole query),
+feeds REQ-E1-06(c) by making the interior's category log an explicit function,
+leaves REQ-E1-08 untouched — and **adds obligation to REQ-E1-02**, because the
+width predicate must now cover its 4204 instructions' operands. A worker
+noticing that its own contribution created new debt, and saying so unprompted,
+is the behaviour this whole protocol exists to produce.
+
+**A stale artefact it correctly did not fix.** Validator phase 5 still prints
+`OPEN (interior leg UNBUILT, ... five-branch composition and hInterior not
+written; NOT a pass)`. **That parenthetical is FALSE at this commit.** The string
+lives in a file owned by an unmerged branch; recorded in §10b rather than edited.
+
+**Six coordinator claims checked, all six held** — the first clean brief of the
+campaign, after nineteen failures. The difference is not that I got more careful;
+it is that this brief was assembled almost entirely from prior WORKERS' verified
+findings rather than from my recollection.
+
+DD-061/062/063 written into the log and committed. Next free bank still 152 —
+this session allocated none.
+
+**What this changes.** The critical path is no longer construction. Four
+branches are now complete and green and UNMERGED — the campaign branch (all
+interior work), `claude/e1-close-leg-structural`, `claude/e1-glue-foundations`,
+`claude/e1-interior-preservation`, plus `claude/dd-check-validation-coverage`.
+Whole-query assembly needs the close leg AND the glue AND the interior in one
+tree, so **the merge is now the blocker**, and it carries known work: append-only
+conflicts in three docs, and `crossBlockArmProgramAt_runsTo`'s renumbering
+`:1143` → `:1181` which is cited in prose from nine places across five interior
+files that the close-leg lane does not own.
