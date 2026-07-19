@@ -452,3 +452,92 @@ fixtures, not the validator run.
 driver (`axcheck_e1laneb2.lean`) into the tree and had to remove it in a
 follow-up commit. Keep throwaway drivers in the session scratchpad; `git
 add -A` will otherwise take them.
+
+---
+
+## 11. Findings from the four read-only surveys (2026-07-19)
+
+Only items that change what a worker should DO are here. Cosmetic doc drift was
+deliberately left unfixed and is listed at the end.
+
+**A. The operative constant is `210`, not `207`.** AMENDMENT A1 in the matrix
+(owner-approved) migrated REQ-E1-06's frozen `<= 207` and the accepted-route
+citations. At HEAD `207` is a frozen HISTORICAL constant naming a retired route;
+`f6000c3` migrated the live bound to `210`. Algebra:
+`2*select35 + (2*rank11 + 2*endpointFringe37 + interior33) + rank11 = 210`,
+`closeLCA = 129`. **Never prove anything against `207`.**
+
+**B. `Nat.log2` does NOT block the derived step literal.** Three sessions have
+been shaped by treating the kernel boundary as an obstruction here. It is not:
+REQ-E1-06 conjunct (c) demands an **inequality** `totalSteps <= <literal>`, not
+an equality, and every cap in the algebra is proved symbolically by
+`unfold; omega`. The boundary bites only on *equations* whose value passes
+through `machineWordBits`. State the target as `≤` and it is reachable today.
+
+**C. THERE ARE TWO DISTINCT `33`s, and the campaign shorthand "caps 33/8/8"
+conflates them.**
+- fringe-window chunk-read cap — lives INSIDE `endpointFringe = 4 + 33 = 37`
+  (`ChargedFringeChunks.lean:1624-1687`)
+- whole-interior-directory read cap —
+  `canonicalRelativeRmmPrincipledInteriorChargedTraceCost := 33`
+  (`InteriorDirectory.lean:1934`)
+- (`3 * rankClose = 33` is a third, coincidental)
+The two `8`s were already flagged as distinct in an M3d-11 note; **the two 33s
+never were**, and they are the more dangerous pair because one sits inside the
+other's sibling term in the same algebra. Anyone writing the step literal or
+REQ-E1-07's supersession note must distinguish them.
+
+**D. A vocabulary gap with zero bridge lemmas.** Machine-level accounting uses
+`catCount log c`; every block-level cap uses `(log.filter (· == c)).length`.
+There is **no lemma connecting them anywhere**. REQ-E1-06 needs
+`catCount log c = (log.filter (· == c)).length` — a short induction, absent,
+buildable today with no interior dependency, and currently invisible to everyone.
+
+**E. REQ-E1-07's supersession note must be precise about WHAT was refuted.**
+`E1R3FamiliarMachineTarget` and `e1R3FamiliarMachineTarget_obstruction` are
+recoverable as git objects at commit `7fe5b8b` (absent from HEAD sources). The
+note must name the **THIRD conjunct** — the familiar-local-iteration lower bound
+— and cite `e1R3CanonicalSameBlockInvocation_unbounded` as the refuting witness.
+Two further precision points: the old target had **five** step categories, the
+amended machine freezes **six** (DD-20260718-005), so the category set is
+refrozen rather than inherited; and the old target demanded
+`publicModeledCost = accepted.toCosted.cost` as an **equality**, which the
+amended Prop should preserve rather than weaken to `≤`.
+
+**F. On the `none` branches the positional category log is the SOLE
+discriminator.** Result agreement degenerates to `none = none`, satisfied by any
+impostor that also returns `none`; and a machine that ran a leg it should have
+skipped is invisible to receipt equality restricted to the legs that DID run.
+Category accounting is also the ONE obligation with no discriminator anywhere —
+`catLog` appears **zero** times in the 1,901-line validator, while value, receipt
+and preservation each have a mutant proven invisible to the other two.
+**Corollary for anyone writing a whole-query category function: write it from
+the ROUTE, before the machine side exists. A category function written after the
+machine is a category function fitted to the machine.**
+
+**G. Sibling-branch state.** `chunkPres*` / `mutantH` (the interior fold's
+executed preservation phase) are NOT on this branch — they are on
+`claude/e1-interior-preservation`, unmerged. If you grep for them here and find
+nothing, that is why. Two further lanes are live on
+`claude/e1-close-leg-structural` (the nine width premises, the cross arm's
+missing terminator, `hc`, and the composed arms' absent preservation clauses)
+and `claude/e1-glue-foundations` (guard-accept, the category strengthening, the
+rank/LCA object reconciliations, the route case-split combinator).
+
+**H. Do NOT re-issue the `OfSizeGe` framing** for the M7 doc claim. It was
+supplied twice by a coordinator and refused twice, correctly:
+`WholeQueryInstr.evalGlobalWordTraceOfSizeGe` takes its size premise
+**underscore-prefixed and unused**, and its `.lcaClose` arm dispatches to the
+same accepted interior leg. The correct contrast is `...AllSizeStructural`
+(accepted) vs `...AtSegmentsAllSizeStructuralLegacy`.
+
+**Recorded, deliberately NOT fixed** (owner direction: spend usage on semantic
+work, not on prose drift) — owed to REQ-E1-09's closure pass:
+`README.md` asserts the retired `207` at `:70`, `:76`, `:140`, `:334` while
+`:80` cites the `...SumLe210` identifier, i.e. it is internally inconsistent;
+`docs/FAMILY_SUMMARY.md` still carries the PRE-B7 algebra (`interior30 ... = 207`)
+at `:9`, `:43`, `:48`, `:133`, `:446`, `:1041`. Neither gate catches this:
+`CLAIM_DRIFT_POLICY.json` has no `207`/`210` term and `paper_topology_lint.ps1`
+anchors on identifiers, not prose numerals. Separately, REQ-E1-09 instructs
+fixing four "fresh segment 21" surfaces that ALREADY read `23`, and a 33-cap
+attribution that is ALREADY correct.
