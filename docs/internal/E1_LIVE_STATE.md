@@ -13,7 +13,10 @@ catch has come from a worker.
 
 ## 1. Where things stand
 
-Campaign branch `claude/b1-b2-charged-fringe-tables`, HEAD `f3d96e2`.
+Campaign branch `claude/b1-b2-charged-fringe-tables`. **Get the head with
+`git log --oneline -1`, not from this line.** A file that records its own
+branch's HEAD can never name the commit that updates the file, so any hash
+written here is stale by construction — it has already been wrong twice.
 
 **All eleven rows of `E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md` are Open.** They
 are whole-query scoped by deliberate design, so no interior-leg component can
