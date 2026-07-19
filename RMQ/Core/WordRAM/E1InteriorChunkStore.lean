@@ -510,9 +510,9 @@ twenty-nine addresses rather than a boundary one.
 That evaluation is not what ships, for a reason worth recording.  The
 interior store's sizes run through `Nat.log2`, which Lean defines by
 well-founded recursion; the compiler evaluates it but THE KERNEL CANNOT
-REDUCE IT, so `rfl` and `decide` both fail on the numeric statement.  A
-`native_decide` would close it and is forbidden -- correctly, since it
-would move the check out of the kernel.
+REDUCE IT, so `rfl` and `decide` both fail on the numeric statement.  The
+compiler-backed decision tactic this project forbids would close it, and
+the prohibition is right: it would move the check out of the kernel.
 
 So the fact is proved GENERALLY instead, which is stronger than the
 fixture would have been: it holds at every shape whose `minRel` table is

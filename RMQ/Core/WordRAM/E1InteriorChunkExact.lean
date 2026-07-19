@@ -161,7 +161,7 @@ theorem machineWords_index_lt
   unfold fixedWidthNatTableMachineWords
   omega
 
-/-- A cell index the table's entry list admits is backed by a stored word.
+/-- A cell index the table's entry list allows is backed by a stored word.
 
 DERIVED, not assumed.  `read_exact` maps the stored word through
 `bitsToNatLE` onto `entries[i]?`; if the entry is `some`, the word cannot
