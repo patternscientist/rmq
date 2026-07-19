@@ -1318,3 +1318,51 @@ scratchpad, which would have been lost. B7-03 is instructed to reconstruct and
 commit it as `docs/internal/B7_STEP2_WIP.patch`, following the `B3_M5_WIP.patch`
 precedent. Add to the standing rules: work that cannot be committed as green
 must still be committed as a patch artifact, never left in a scratchpad.
+
+## 2026-07-19 (C05 round 17) — the "binding standard" rule was itself incomplete
+
+**Finding (E1-R4p).** `lake build RMQ` printed `Build completed successfully`
+while `RMQ/Validation/E1MachineValidate.lean` was failing to compile, hiding
+three compile errors. The module belongs to a `lean_exe` target, not the `RMQ`
+library, so the library build never touched it.
+
+This corrects the round-9 rule. "`lake build <root>` is BINDING" is true only
+for what that root actually closes over. **Amended standing rule:** a battery
+must build and run EVERY target whose correctness it claims — explicitly
+`lake build <exe>` and `lake exe <exe>` for each executable, in addition to the
+library roots. Running the executable is what forces its build; a library build
+is not a proxy for it.
+
+This is the fourth instance this campaign of a green check whose scope was
+narrower than its reader assumed: the deferred aggregate gate (round 8),
+per-file `lake env lean` on commented-out code (round 9), the omitted executable
+validator (round 10), and now a library build that skips `lean_exe` targets.
+The general form is stable enough to state as doctrine: **name what a check
+covers, and assume it covers nothing else.**
+
+**Second finding — the cross-block blocker is not the interior leg.** Reading
+the cross-block object at source (`RelativeRmmMacro/ChargedFringeTrace.lean:1144`,
+a path component earlier surveys omitted), it sequences FIVE sub-computations,
+not four, and the seeds are not adjacent. The three-way candidate merge
+`bpCandidateMerge3?` has NO machine block at all — a repo-wide search over
+`RMQ/Core/WordRAM/` for any merge block returns nothing. `sameBlockClose` does
+not generalise to it: that block exploits `bpFringeCandGlobal` being total into
+`some`, whereas `middle?` is genuinely optional. So the cross-block arm is
+blocked ahead of the interior leg, by missing machine work rather than by the
+adjudicated `Nat.log2` question. The worker designed the block (16 instructions,
+read-free, `+1`-biased option encoding per the house idiom) and recorded the
+interior's interface obligation, but did not build it — six control paths
+exceeded the budget to build AND verify, and a half-built module is worse than
+none. Correct call; it is now the next unblocked target.
+
+**Premise correction in the campaign's favour:** the leg theorem did NOT need
+re-derivation. `sameBlockLeg_runsTo_canonical` was already base-parametric; only
+the concrete witness was pinned to base 0, and it hardcoded FOUR internal
+addresses rather than the two previously named. The fix was a new witness
+program plus a specialisation lemma (`sameBlockLegProgramAt_zero`) proving the
+base-parametric form collapses to the original, so nothing already landed
+regressed.
+
+**Reporting discipline continues to pay:** the worker observed 298 axiom lines
+where an earlier session's log recorded 311, and reported what it ran. Two
+sessions running have now corrected a predecessor's logged check output.
