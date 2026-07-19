@@ -1710,3 +1710,59 @@ under-approximation that would have been easier to prove and weaker to consume.
 tactic", then misreports the whole proof as unsolved goals); PC arithmetic stops
 associating definitionally once `interior.length` enters it (`A+176+n+1` is not
 `A+177+n` by defeq), handled by a new `runsTo_pc_congr`.
+
+## 2026-07-19 (C05 round 25) — a coordinator phrase was wrong; frozen-constant policy stated
+
+**The obstruction, and it is a good one.** B7-07 found that "one charged read
+per two-span call" — MY phrasing in the delegation — is FALSE as stated. A
+charged read costs one unit PER MACHINE WORD TOUCHED
+(`canonicalRelativeRmmMachineReadNatCosted_cost_le_one`,
+`InteriorDirectory.lean:3945`, requires `width <= machineWordBits`), and the
+level table's entry width exceeds that on reachable shapes:
+
+| size | b | macroSize | domain | width | machineWord | read cost |
+|---|---|---|---|---|---|---|
+| 2048 | 12 | 144 | 146 | 15 | 13 | 2 |
+| 32768 | 16 | 256 | 258 | 17 | 17 | 2 |
+| 65536 | 17 | 289 | 291 | 17 | 18 | 1 |
+
+and macro-crossing is genuinely reachable at 2048 (`macroSize 144 < blockCount
+170`), so the maximizing branch carries three reads at cost 2: interior 36,
+closeLCA 132, literal **213** — contradicting the 210 commit A had already
+frozen and migrated everywhere. The worker caught this by COMPUTING WIDTHS
+rather than trusting the coordinator's phrase. Second coordinator claim this
+rung has corrected.
+
+**Note what caught it:** REQ-B7-05's anti-vacuity challenge. The row exists to
+reject a literal that moved because a cap was loosened, and it did exactly that
+job on a tree where every mechanized check was green.
+
+**RULING — tighten the width, and the reason is policy, not cost.** A frozen
+historical constant records a value that GENUINELY DESCRIBED THE ACCEPTED ROUTE
+at some point. 76, 142 and 207 each did. **210 never did** — it exists only
+inside commit A's staging window, an artifact of a deliberately loosened cap.
+Freezing it would place a fiction in the historical record, which is worse than
+redoing a migration. **The historical record must not accumulate values that
+never described a real machine.** Recorded as standing policy for any future
+staged migration.
+
+The width fix is also independently better engineering: tightening
+`bpSparseLevelCell_lt` from bounding the level by `domain` to
+`Nat.log2 (domain * (Nat.log2 domain + 1)) + 1` makes the read genuinely one
+machine word, which is what the phrase was always supposed to mean.
+
+**Hard requirement attached:** a table of three sizes is NOT a proof. The fit
+must be established for all shapes where the cross-macro branch is reachable,
+as a checked proposition. The fit plausibly FAILS at small sizes (at size 4,
+width ~6 against `machineWordBits` ~4) and is saved only because macro-crossing
+is unreachable there (`blockCount 1 < macroSize 9`) — so the reachability
+hypothesis must appear in the statement, and it must be the hypothesis the
+route's own dispatch already establishes, NOT a size threshold introduced for
+convenience. A threshold in the public route is precisely what this project
+forbids. If the all-size proof does not go through, the worker stops and
+reports rather than falling back to 213.
+
+**Settled and closed:** the dropped `ReviewerReachabilitySmall.lean` hunk was
+correctly dropped — `0445d1d`'s `forall post`-quantified `hmiddle` absorbs both
+new store regions untouched, verified green at [229/244]. B7 crosses no a07
+concurrency boundary after all.
