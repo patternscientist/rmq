@@ -2388,3 +2388,66 @@ constraint on this runtime bars the last two regardless.
 
 Recorded in coordinator memory as well, so the authority and its precedents
 survive context compaction and any handoff.
+
+## 2026-07-19 (C05 round 36) — the coordinator was wrong twice on the same claim
+
+**Value bridge DONE** (`1766727`). `chunkFoldValue_eq_route_decode` connects the
+machine's Horner accumulation to the route's `fixedWidthNatTableMachineDecode`,
+with `bitsToNatLE_append` proved from scratch — the repo genuinely had none, a
+finding now confirmed twice. `interiorChunkFold_cOut_eq_routeDecode` restates it
+with a left-hand side verbatim from the `runsTo` conclusion. First VALUE-side
+interior evidence in the campaign; every prior interior entry was receipts,
+widths, or categories.
+
+**A blocker found by attempting the next item, and fixed as strengthening.**
+`interiorChunkFold_runsTo` concluded only about `cOut`, so it could not be
+instantiated twice in one program — and the summary group stages four fold
+results, resetting `iIdx` between reads. The init and both loops already carried
+their preservation clauses and the headline proof was DISCARDING them as
+`_h1Pres`/`_h2Pres`/`_h3Pres`; the epilogue's was missing. All four now chain.
+Nothing weakened, renamed, or newly hypothesised. The worker's generalisation is
+worth adopting: **ask of every block whether its headline says what it leaves
+alone**, not merely what it computes.
+
+**THE COORDINATOR WAS WRONG TWICE ON THE SAME CLAIM. Recording it plainly.**
+Rounds 32 and 34 both asserted that uncharged runtime `Nat.log2` is reachable
+from the `OfSizeGe` family. E1-R4v refused to write it into
+`PAPER_MODEL_ADEQUACY.md` and checked instead. Coordinator has now verified at
+source and the worker is right:
+- `evalGlobalWordTraceOfSizeGe` (`SuccinctFinalRAM.lean:3718`) takes
+  `(_hsize : 2 ^ 128 <= shape.size)` — **underscore-prefixed and UNUSED**;
+- its `.lcaClose` arm (`:3730-3735`) dispatches to
+  `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`, **the same
+  accepted interior leg**.
+So the `OfSizeGe` whole-query family never reaches the four `bpSparseLogSpan`
+sites and is not a counterexample family at all. (`WithStoreLegacy` defs DO
+exist — three, in `ConcreteDirectoryRAMStoreParam.lean` — but they are the
+`AllSizeStructural...Legacy` family, not an `OfSizeGe` mirror, so the worker's
+narrower statement was exact.)
+
+The correct contrast is the one already settled for the scan:
+`...AllSizeStructural` (`ConcreteDirectoryRAM.lean:1188`) versus
+`...AtSegmentsAllSizeStructuralLegacy` (`:1196`). The uncharged runtime log2
+lives in the LEGACY/compat interior families. `OfSizeGe` need not be mentioned.
+
+**Root cause, and the process fix.** I propagated a subagent's trace twice
+without verifying its decisive link myself, then handed it to a worker as a
+"coordinator-verified" claim — twice. The verification I actually did (that
+`OfSizeGe` appears only in `RMQCompatibility.lean`) was true but did not
+establish what I used it for. **Standing fix: when I have not personally
+verified a claim end to end, hand the worker the QUESTION, not the CLAIM.** A
+question costs a worker ten minutes; a wrong claim labelled "coordinator-
+verified" costs a refusal cycle, and would have cost a false public statement if
+two workers in a row had been less careful. Both refusals were correct and both
+should be read as the system working.
+
+**Also flagged by the worker, unverified by me and therefore passed on as a
+question:** the frozen matrix cites the accepted route at
+`SuccinctFinalRAM.lean:4337`, which is a comment line at this HEAD; the def is
+at `:4426`. Anchor drift again, in a frozen row this time.
+
+**Anti-vacuity worth noting:** the bridge's width premise is discharged
+concretely on the existing witness store, and `witnessCOut_cell0_via_bridge`
+DERIVES the value `2` through the bridge — the same `2` the machine produced by
+running. The `none` arm is checked separately at `witnessRouteDecode_cell2`,
+which a value-only check cannot see.
