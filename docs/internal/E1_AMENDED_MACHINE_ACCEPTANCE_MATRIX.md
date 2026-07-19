@@ -151,3 +151,66 @@ because the `8` there is the per-word cap
 (`machineWordBits_le_8_mul_bpFringeChunkBits`, `ChargedWordChunks.lean:39`),
 a different `8` from the interior adapter's chunk cap. Two distinct literals
 that happen to share a value.
+
+## Evidence added by E1-R4u (M3d-12), no row closed, no row weakened
+
+All eleven rows remain OPEN. Closure was impossible by construction: every
+row is whole-query scoped and the whole-query composition is downstream of
+the interior simulation, of which this session landed the second of six
+pieces (M3d-11 landed the atom; this landed the eight-capped chunk fold).
+
+Module: `RMQ/Core/WordRAM/E1InteriorChunkFold.lean`.
+
+- REQ-E1-01. A second interior block whose guard is decided by a MACHINE
+  comparison (`natLt` at `Q+1` on the machine's own index register,
+  branched at `Q+9`) rather than a Lean-level `if`, and whose iteration
+  count is COMPUTED by the machine via the truncated-subtraction cap chain
+  `chunkCount - (chunkCount - 8)` rather than asserted
+  (`interiorChunkInit:268`, `cap_chain_eq_min:1461`, DD-20260719-005).
+- REQ-E1-02. `interiorChunkFold_fits:619`, constructor-exhaustive, no
+  wildcard arm, per segment at `:507`, `:552`, `:578`, `:602`. Unlike the
+  atom this block carries a divisor, so it has a positivity arm, discharged
+  from `0 < wordScale`.
+- REQ-E1-04. `chunkEventsAt_eq_route:1745`: positional receipt equality
+  with the route's own address list, covering BOTH arms of the validity
+  split at once because the dead path is a one-chunk instance of the same
+  fold (`chunkAddrs_eq_consecutive:159`, DD-20260719-006). The whole-block
+  form is `interiorChunkFold_runsTo:1785`.
+- REQ-E1-05. `chunkFoldWitness_paths_distinguishable:1955`: four EXECUTED
+  paths -- fully present multi-chunk, partially missing, wholly missing,
+  dead -- onto pairwise distinguishable halts, by `decide`, depending on no
+  axioms. All four halt (`:1937`).
+- REQ-E1-06. `interiorChunkFoldCats_memoryRead_count:457` DERIVES the
+  block's memory traffic from the category algebra as exactly the iteration
+  count (init charges none, the reversal loop is read-free, the epilogue
+  charges none), and `interiorChunkFoldCats_memoryRead_le_eight:480` caps
+  it at the literal `8` WITH NO SIZE HYPOTHESIS.
+
+### Sharpening of the REQ-E1-07 caution recorded above
+
+The caution that the two `8`s are distinct literals that happen to share a
+value is CONFIRMED and can now be stated with both sides concrete. The
+fringe's `8` is the per-word chunk cap
+(`machineWordBits_le_8_mul_bpFringeChunkBits`, `ChargedWordChunks.lean:39`).
+The interior's `8` is the table adapter's per-read chunk cap, and it is now
+proved on the machine side as `interiorChunkCount_le_eight:189`, derived
+from `width <= 7 * wordSize` as `7` full chunks plus the partial-chunk
+indicator.
+
+Recorded because it is the kind of thing a reviewer would otherwise have to
+re-derive: `interiorChunkCount_le_eight` carries NO `0 < wordSize`
+hypothesis, deliberately. At `wordSize = 0` the route's own definition gives
+`width / 0 = 0` and `width % 0 = width`, so the count is at most the
+indicator `1`. Stating the bound without a positivity side condition keeps
+the interior cap UNCONDITIONAL, which is what an all-size claim needs; a
+version carrying `0 < wordSize` would silently owe that hypothesis to every
+consumer.
+
+### What REQ-E1-06 still lacks, stated precisely
+
+The cap is now proved OF ONE BLOCK, not of the interior leg. The row needs
+the composition: the five-branch interior dispatch and `hInterior`, which
+are M3d-13 items 2-5. Separately, the block's VALUE correspondence to the
+route's `fixedWidthNatTableMachineDecode` is not yet proved -- only its
+RECEIPT is. See `E1_WORKLOG.md` M3d-12 section 7 item 1 for the exact
+statement owed and the missing `bitsToNatLE_append` lemma.
