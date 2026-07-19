@@ -607,6 +607,235 @@ theorem spanNoneArm_both_halt :
         ⟨armRegs 1 10 5 7 3, 0, false⟩).final.halted = true :=
   ⟨by rfl, by rfl⟩
 
+/-! ## THE TWO INSTANTIATIONS: `#2` AND `#3`
+
+`spanBlock` is parametric in a `TableGeom`.  The two route computations
+it covers are its instantiations at the two geometries below, and this
+section supplies them and links `spanValue` to each route computation's
+own value.
+
+The geometries are DEFINED the way `canonicalSummaryLayout`
+(`E1InteriorSummaryGroup.lean`) defines its four, and for the same
+reason: each field is the ROUTE's own, so
+`geomRouteDecode_eq_readComputation_value`'s three hypotheses are `rfl`
+rather than obligations that travel to the caller.  `entriesLen` is the
+route's entry-list length -- which makes `hvalid` and `hentries` the SAME
+proposition, so a single validity split discharges both -- and
+`chunkCount` is the route's own `fixedWidthNatTableMachineChunkCount` at
+the table's width. -/
+
+/-- Read geometry of the interior's LOCAL sparse offset table, the table
+`canonicalRelativeRmmMachineLocalSpanCandidateComputation` reads.  Its
+entry list and width are `canonicalRelativeRmmInteriorLocalTable`'s. -/
+def localSpanGeom (shape : Cartesian.CartesianShape) : TableGeom :=
+  let layout := RelativeRmm.canonicalLayout shape
+  { base := (canonicalRelativeRmmInteriorComponentOffsets shape).localOffset
+  , entriesLen :=
+      (bpLocalSparseOffsetEntries shape layout.blockSize layout.blockCount
+        layout.macroSize layout.macroSampleCount layout.levelCount).length
+  , chunkCount :=
+      SuccinctSpace.fixedWidthNatTableMachineChunkCount layout.offsetWidth
+        (SuccinctRank.machineWordBits shape.bpCode.length) }
+
+/-- Read geometry of the interior's GLOBAL sparse block table, the table
+`canonicalRelativeRmmMachineGlobalSpanCandidateComputation` reads. -/
+def globalSpanGeom (shape : Cartesian.CartesianShape) : TableGeom :=
+  let layout := RelativeRmm.canonicalLayout shape
+  { base := (canonicalRelativeRmmInteriorComponentOffsets shape).globalBlock
+  , entriesLen :=
+      (bpGlobalSparseBlockEntries shape layout.blockSize layout.blockCount
+        layout.macroSize layout.macroSampleCount layout.globalLevelCount).length
+  , chunkCount :=
+      SuccinctSpace.fixedWidthNatTableMachineChunkCount
+        layout.blockAddressWidth
+        (SuccinctRank.machineWordBits shape.bpCode.length) }
+
+/-- The cap `spanBlock_runsTo` carries, at `#2`'s geometry. -/
+theorem localSpanGeom_cap (shape : Cartesian.CartesianShape) :
+    (localSpanGeom shape).chunkCount ≤ 8 :=
+  E1InteriorChunkCap.chunkCount_le_eight_offsetWidth shape
+
+/-- The cap `spanBlock_runsTo` carries, at `#3`'s geometry. -/
+theorem globalSpanGeom_cap (shape : Cartesian.CartesianShape) :
+    (globalSpanGeom shape).chunkCount ≤ 8 :=
+  E1InteriorChunkCap.chunkCount_le_eight_blockAddressWidth shape
+
+/-- The cell bridge at `#2`'s geometry, UNCONDITIONAL IN `slot`, exactly
+as the summary group's four are.  The `some` arm of the span block reaches
+this at slots it cannot bound in advance, so a validity hypothesis here
+would be an obligation the caller could not always discharge. -/
+theorem geomCell_localSpan_eq_routeDecode
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    E1InteriorSummaryGroup.geomCell
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape) (localSpanGeom shape) i =
+      E1InteriorSummaryGroup.geomRouteDecode
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape) (localSpanGeom shape) i := by
+  by_cases hvalid : i < (localSpanGeom shape).entriesLen
+  · exact E1InteriorSummaryGroup.geomCell_eq_routeDecode shape _ i
+      (localSpanGeom_cap shape)
+      (E1InteriorStoreConcrete.hexact_local_concrete rfl hvalid hvalid)
+  · exact E1InteriorSummaryGroup.geomCell_eq_routeDecode_of_invalid shape _ i
+      (localSpanGeom_cap shape) hvalid
+
+/-- The cell bridge at `#3`'s geometry.  UNCONDITIONAL IN `slot`. -/
+theorem geomCell_globalSpan_eq_routeDecode
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    E1InteriorSummaryGroup.geomCell
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape) (globalSpanGeom shape) i =
+      E1InteriorSummaryGroup.geomRouteDecode
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape) (globalSpanGeom shape) i := by
+  by_cases hvalid : i < (globalSpanGeom shape).entriesLen
+  · exact E1InteriorSummaryGroup.geomCell_eq_routeDecode shape _ i
+      (globalSpanGeom_cap shape)
+      (E1InteriorStoreConcrete.hexact_global_concrete rfl hvalid hvalid)
+  · exact E1InteriorSummaryGroup.geomCell_eq_routeDecode_of_invalid shape _ i
+      (globalSpanGeom_cap shape) hvalid
+
+/-- `#2`'s span cell IS the value of the read computation the route runs,
+with the option shift INVERTED -- so this is stated on `cellOpt`, the form
+`spanValue` actually dispatches on.  No validity, cap or store hypothesis
+survives. -/
+theorem cellOpt_spanCell_localSpan
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    cellOpt (spanCell shape (localSpanGeom shape) i) =
+      ((canonicalRelativeRmmMachineReadNatComputation shape
+            (canonicalRelativeRmmInteriorLocalTable shape).table
+            (localSpanGeom shape).base i).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value := by
+  unfold spanCell
+  rw [geomCell_localSpan_eq_routeDecode,
+    E1InteriorSummaryGroup.geomRouteDecode_eq_readComputation_value shape _
+      (canonicalRelativeRmmInteriorLocalTable shape).table _ _ i rfl rfl rfl,
+    E1InteriorMinCandidate.cellOpt_optShift]
+
+/-- `#3`'s span cell, on the same terms. -/
+theorem cellOpt_spanCell_globalSpan
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    cellOpt (spanCell shape (globalSpanGeom shape) i) =
+      ((canonicalRelativeRmmMachineReadNatComputation shape
+            (canonicalRelativeRmmInteriorGlobalTable shape).table
+            (globalSpanGeom shape).base i).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value := by
+  unfold spanCell
+  rw [geomCell_globalSpan_eq_routeDecode,
+    E1InteriorSummaryGroup.geomRouteDecode_eq_readComputation_value shape _
+      (canonicalRelativeRmmInteriorGlobalTable shape).table _ _ i rfl rfl rfl,
+    E1InteriorMinCandidate.cellOpt_optShift]
+
+/-- THE `some` ARM'S TARGET: the 177-leg's value IS the value of the
+min-candidate computation the two span computations bind against.
+
+`legValue` was stated against `routeDecodedSummary`, which
+`routeDecodedSummary_eq_summaryComputation_value`
+(`E1InteriorMinCandidate.lean`) identifies with the summary computation's
+value; the min-candidate computation is a read-free `map` over that. -/
+theorem legValue_eq_minCandidateComputation_value
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    legValue shape block =
+      ((canonicalRelativeRmmMachineMinCandidateComputation shape block).run
+        (RMQ.SuccinctClose.flatWordStoreOfReadStore
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (canonicalSummaryLayout shape).segment)).value := by
+  unfold legValue canonicalRelativeRmmMachineMinCandidateComputation
+  rw [E1InteriorMinCandidate.routeDecodedSummary_eq_summaryComputation_value]
+  rfl
+
+/-- The two geometries' bases, as the route spells them.  Stated so the
+headline theorems below can align the block's scrutinee with the route's
+SYNTACTICALLY; they are `rfl`, but `cases` needs the two occurrences to
+match as terms, not merely to be defeq. -/
+@[simp] theorem localSpanGeom_base (shape : Cartesian.CartesianShape) :
+    (localSpanGeom shape).base =
+      (canonicalRelativeRmmInteriorComponentOffsets shape).localOffset := rfl
+
+@[simp] theorem globalSpanGeom_base (shape : Cartesian.CartesianShape) :
+    (globalSpanGeom shape).base =
+      (canonicalRelativeRmmInteriorComponentOffsets shape).globalBlock := rfl
+
+/-- **`#2` INSTANTIATED.** The span block's value function, at the LOCAL
+geometry and at the route's own slot and offset, IS the value of
+`canonicalRelativeRmmMachineLocalSpanCandidateComputation`.
+
+The offset is `macroIdx * macroSize`, which is exactly the additive part
+of the route's block-index map `macroIdx * macroSize + value`.
+
+NO VALIDITY, CAP OR STORE HYPOTHESIS. Composed from the unconditional
+cell bridge and the hypothesis-free link, exactly as the summary group's
+four value bridges are. -/
+theorem spanValue_localSpan_eq_routeValue
+    (shape : Cartesian.CartesianShape) (macroIdx localStart level : Nat) :
+    spanValue shape (localSpanGeom shape)
+        (bpLocalSparseCellSlot (RelativeRmm.canonicalLayout shape).macroSize
+          (RelativeRmm.canonicalLayout shape).levelCount
+          macroIdx localStart level)
+        (macroIdx * (RelativeRmm.canonicalLayout shape).macroSize) =
+      ((canonicalRelativeRmmMachineLocalSpanCandidateComputation shape
+            macroIdx localStart level).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value := by
+  unfold spanValue canonicalRelativeRmmMachineLocalSpanCandidateComputation
+  rw [cellOpt_spanCell_localSpan, localSpanGeom_base]
+  cases hcell : ((canonicalRelativeRmmMachineReadNatComputation shape
+        (canonicalRelativeRmmInteriorLocalTable shape).table
+        (canonicalRelativeRmmInteriorComponentOffsets shape).localOffset
+        (bpLocalSparseCellSlot (RelativeRmm.canonicalLayout shape).macroSize
+          (RelativeRmm.canonicalLayout shape).levelCount
+          macroIdx localStart level)).run
+      (RMQ.SuccinctClose.flatWordStoreOfReadStore
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape).segment)).value with
+  | none =>
+      simp only [FlatStoreComputation.bind, FlatStoreExecution.append, hcell]
+      rfl
+  | some v =>
+      simp only [FlatStoreComputation.bind, FlatStoreExecution.append, hcell]
+      exact legValue_eq_minCandidateComputation_value shape _
+
+/-- **`#3` INSTANTIATED.** The global twin, at offset `0`.
+
+`Nat.zero_add` is genuinely needed rather than cosmetic: `Nat.add`
+recurses on its SECOND argument, so `0 + value` is not definitionally
+`value`, and the route's global block-index map is bare `value`. -/
+theorem spanValue_globalSpan_eq_routeValue
+    (shape : Cartesian.CartesianShape) (macroStart level : Nat) :
+    spanValue shape (globalSpanGeom shape)
+        (bpGlobalSparseCellSlot
+          (RelativeRmm.canonicalLayout shape).macroSampleCount
+          macroStart level)
+        0 =
+      ((canonicalRelativeRmmMachineGlobalSpanCandidateComputation shape
+            macroStart level).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value := by
+  unfold spanValue canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+  rw [cellOpt_spanCell_globalSpan, globalSpanGeom_base]
+  cases hcell : ((canonicalRelativeRmmMachineReadNatComputation shape
+        (canonicalRelativeRmmInteriorGlobalTable shape).table
+        (canonicalRelativeRmmInteriorComponentOffsets shape).globalBlock
+        (bpGlobalSparseCellSlot
+          (RelativeRmm.canonicalLayout shape).macroSampleCount
+          macroStart level)).run
+      (RMQ.SuccinctClose.flatWordStoreOfReadStore
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape).segment)).value with
+  | none =>
+      simp only [FlatStoreComputation.bind, FlatStoreExecution.append, hcell]
+      rfl
+  | some v =>
+      simp only [FlatStoreComputation.bind, FlatStoreExecution.append, hcell,
+        Nat.zero_add]
+      exact legValue_eq_minCandidateComputation_value shape _
+
 end E1InteriorSpanBlock
 end WordRAM
 end RMQ
