@@ -3591,3 +3591,60 @@ README is the first reviewer navigation surface. Requiring its presence in the
 same pre-launch closed inventory as the paper map and artifact prevents a true
 but weaker compatibility story from surviving under a nominally exhaustive
 submission-freeze repair.
+
+## WDD-20260719-004: require theorem identity for strong current claims
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: public-claim attribution, claim-drift policy, and completed-worker
+failure-mode feedback.
+
+Decision:
+
+1. A current registered publication surface that states the strong
+   `readWord`-only property must name the exact public theorem
+   `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`.
+2. `CLAIM_DRIFT_POLICY.json` records this as a structured file-level required
+   attribution rather than another same-line vocabulary exception.
+3. The strong alias remains distinct from the generic execution story, the
+   weaker three-constructor compatibility alias, and the construction-facing
+   capstone. Those declarations may still be cited for their actual checked
+   propositions, but cannot be the sole identity beside the stronger claim.
+
+Trigger and evidence:
+
+Rejected R1-R3 candidate `bad14d0f1f7561f5f4200c19259a4ae5c8375499`
+passed the line-oriented strict scanner after synchronizing four surfaces, yet
+seven registered current documents still stated the strong fact without naming
+its theorem. Five also attributed that fact to a weaker theorem or capstone.
+The worker's closed inventory therefore confused truth of a separate theorem
+with membership of that proposition in the declaration cited by the prose.
+
+Rejected alternatives:
+
+- Accept the prose because the strong property is true elsewhere in the same
+  Lean module.
+- Add more same-line negative vocabulary patterns, which cannot reliably
+  connect a multi-line claim to its cited declaration.
+- Ban the weaker declarations from public documents, which would erase useful
+  and accurate compatibility and construction structure.
+- Require every current document to reproduce the full Lean proposition.
+
+Consequences and evidence:
+
+- Policy version 18 adds a file-level `requiredAttributions` contract and the
+  production scanner enforces it in strict mode.
+- Named regressions `r1r3-bad14d0-*` reproduce all seven missing-identity
+  surfaces; strong-alias and accurately labeled weaker-story controls remain
+  accepted.
+- This is a necessary tripwire, not semantic proof. Coordinators and auditors
+  must still compare each sentence with the actual theorem type and repair
+  false attribution rather than merely inserting the required name elsewhere.
+- No Lean proposition, payload, proof data, modeled tick, trace, allocation,
+  or runtime behavior changes.
+
+Publication-facing significance:
+
+Reviewer navigation must identify which checked theorem actually carries a
+headline conjunct. This prevents a true project-level fact from being attached
+to a weaker declaration in the theorem map, trust packet, or paper digest.

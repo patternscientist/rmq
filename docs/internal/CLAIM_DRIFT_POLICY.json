@@ -1,5 +1,5 @@
 {
-  "version": 17,
+  "version": 18,
   "updated": "2026-07-19",
   "currentFactSurfacePathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\\.md|RMQ_FINAL_ROADMAP\\.md))$",
   "terms": [
@@ -243,6 +243,16 @@
       "strict": true,
       "allowedPathRegex": "^docs/internal/|^docs/RMQ_EXTRACTION_FRONTIER\\.md$",
       "allowedLineRegex": "must not|planning|policy|scan|not erase|runnable"
+    }
+  ],
+  "requiredAttributions": [
+    {
+      "id": "required-current-readword-only-theorem-attribution",
+      "pathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md)$",
+      "claimPattern": "(?is)(?:every\\s+(?:(?:actual|accepted)\\s+)?(?:emitted\\s+)?(?:trace\\s+)?event.{0,120}(?:is|are|be)\\s+(?:a\\s+)?(?:genuine\\s+)?(?:payload(?:-word)?\\s+read|`?readWord`?)|only\\s+genuine\\s+`?readWord`?\\s+events|trace\\s+emits\\s+only\\s+`?readWord`?\\s+events|readWord[- ]only)",
+      "requiredPattern": "RMQ\\.Headlines\\.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly",
+      "status": "strong-current-readword-only-claim-must-name-the-strong-public-theorem",
+      "strict": true
     }
   ]
 }

@@ -138,6 +138,14 @@ and the headline axiom inventory.
   base-derived match count, full inspected-path set, and expected repair paths,
   all of which must be covered by write scope. A prompt-local hand list or
   worker-side first discovery is not sufficient.
+- A registered current publication surface that asserts the strong
+  `readWord`-only fact must name
+  `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`.
+  File-level required-attribution checks complement line-oriented vocabulary
+  lint: a generic execution story, the weaker three-constructor alias, or the
+  construction-facing capstone must not be presented as though its own checked
+  type contains the stronger conjunct. Accurately labeled weaker and
+  compatibility claims remain permitted beside the strong alias.
 - `CLAIM-HISTORY-A07-EVENT-VOCABULARY`: the weaker three-constructor current
   route description, including `payload read or bounded word primitive`
   paraphrases, is historical or explicitly compatibility-labeled only.
