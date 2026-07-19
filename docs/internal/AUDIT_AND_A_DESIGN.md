@@ -4773,3 +4773,67 @@ composite category logs remain unbounded. And one genuine missing cap lemma: the
 fringe fold's `count ≤ 33` holds only because every caller writes
 `Nat.min (relHi / c + 1) 33`, with no lemma to that effect — unlike the
 interior's twin, it is not free from a definition.
+
+---
+
+## C05 round 74 — blocker 1 cleared; the composed valid path answers `none` for
+## EVERY valid query, pinned as a theorem before it could drift
+
+Lane A3 returned INCOMPLETE at `86cbbb6`. Blocker 1 cleared, blocker 2 re-scoped
+and correctly not attempted under a false framing of mine, and a new defect
+found in the assembly.
+
+**THE DEFECT, and it is the kind that would have cost a week later.**
+`closeLcaExit 827 = 5580`, and `invalidExitBlock` sits at `8 + 5572 = 5580` —
+**the same address.** The valid path falls straight into `.const regOut 0; .halt`.
+**As composed, the program would halt carrying the `none` packet for every valid
+query.** Nothing proved is wrong and no theorem claimed the whole path runs, so
+nothing false was ever asserted — but the composition was silently answering
+`none` for everything. The worker **pinned it as executed theorems**
+(`E1WholeQueryProgram.lean:375`, `:384`) so it cannot drift, which is exactly the
+treatment the cross-arm fall-through got and for the same reason: an address
+coincidence is invisible to every check we run until someone executes it. **Third
+distinct layout coincidence this campaign** — cross arm into same-block leg, #9's
+dispatch arms, and now valid path into the invalid writer.
+
+**THE FIFTH-CONJUNCT SAGA INVERTS AGAIN, and this time the answer is settled by
+someone who built it.** I told a lane `hInterior` "needs a fifth conjunct" —
+wrong at the time, since the premise had four. B6 then recorded "NOT A FIFTH
+CONJUNCT, prove it as a separate export." A3 has now shown it **had to be a
+fifth conjunct**: preservation is about the register file `hInterior`'s
+existential **binds**, so the standalone form is about a *different witness* and
+cannot be substituted. B6's note was right that the standalone form does not
+typecheck against a four-conjunct premise, and wrong that the conjunct was
+avoidable. My original instinct was right for the wrong reason and at the wrong
+time — which is not the same as being right.
+
+**Soundness was checked against the ARM's OWN WRITE SET**, per the rule the
+unsound-predicate round produced: all fourteen segments admit `{0..7} ∪ {28}` by
+their own predicates, and the two writes that look like counterexamples are not
+(`fClose` = 70, `fRes` = 69, both outside the band). And the band **deliberately
+excludes `rVal` (9)** because the join consumes the second select's answer BEFORE
+the close leg, so it has nothing to survive — covering it would have been a
+decorative clause. Refusing to over-claim a preservation predicate is the mirror
+of the too-weak/unsound failures and just as important.
+
+**Live-state §3b had recorded the preservation asymmetry as impossible.** It was
+not: the asymmetry was a fact about the **interface**, never about the code, and
+the clause threaded through with no instruction changed. Both close/LCA arms now
+export the same clause; preservation is symmetric.
+
+**MY TWENTY-THIRD FAILED CLAIM.** "The pieces already exist and this is
+assembly, not research" was true of blocker 1 and **false of blocker 2**.
+`dispatchEvents` is built from `twoSpanEvents` — a freestanding event list
+**never once equated to any computation's `.reads`**; every theorem mentioning it
+supplies it as a `RunsTo` receipt argument, and the two name-sets are
+file-disjoint. It needs three new ladder lemmas plus a segment/store
+reconciliation. Moderate proof, not assembly. The worker declined to start it
+under my framing rather than half-build it, and scoped it instead.
+
+One carry-forward observation worth keeping: at the real block the skipped code
+is **4753 reading instructions**, so the block's blindness is strictly NARROWER
+than the fixture's — the fourth consecutive lane to distinguish instrument from
+subject.
+
+Forty-three citations re-verified programmatically against the declaration each
+names, and forty-three stale ones repaired.
