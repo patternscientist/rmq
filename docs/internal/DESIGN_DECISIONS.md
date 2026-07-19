@@ -6641,3 +6641,118 @@ Recorded because this is the one merge hazard that no textual tool reports:
 two branches, two files, no conflict, and a type error that only appears
 after both land. A merge that had been resolved file-by-file and committed
 on a green `git status` would have shipped it.
+
+## DD-20260719-140: the `catCount`/`filter` vocabulary bridge lives in `E1Machine.lean` and is EXERCISED, not merely stated (E1-LaneA2)
+
+Claimed by the cost-algebra lane on `claude/e1-cost-algebra`.
+
+THE GAP, grep-verified before acting. Machine-level accounting is written
+with `catCount` (`catCount_partition`, `run_steps_eq_category_sum`,
+`run_readLog_length_eq_memoryRead_count`, all `E1Machine.lean`). Every
+BLOCK-level cap is written with `(log.filter (· == c)).length` --
+`interiorChunkFoldCats_memoryRead_count`, `fringeArmPrologueCats_memoryRead_count`,
+`interiorReadNatCats_memoryRead_count` and the rest. A grep for any lemma
+mentioning both vocabularies returned ZERO hits across `*.lean`. The two
+halves of REQ-E1-06 could not be composed because nothing said the two
+numbers were the same number.
+
+WHERE IT LANDED AND WHY. `catCount_eq_filter_length` is in `E1Machine.lean`,
+beside `catCount`'s own definition and its partition lemma, rather than in the
+new cost-algebra module -- it is a fact about `catCount`, not about the cost
+algebra, and a consumer in any other module would otherwise have to import the
+algebra to get it. `catCount_le_of_filter_length_le` is the transport in the
+direction block caps are actually stated in, so a call site needs no
+rewriting step of its own.
+
+WHY IT TYPECHECKS AT ALL, recorded because it is not obvious. `Category`
+derives `DecidableEq` and NOT `BEq`, so `a == c` elaborates through
+`instBEqOfDecidableEq` to `decide (a = c)`. Had `Category` derived a
+hand-written `BEq`, the two sides would not have agreed definitionally and the
+induction would have needed a lawfulness argument.
+
+STATED AND UNUSED WOULD HAVE BEEN WORTH NOTHING, which is the campaign's own
+recorded lesson (`E1_LIVE_STATE.md` §5: "a clause that is proved but never
+executed passes every check in the battery"). So the bridge is carried across
+the one gap it was written for: `interiorChunkFold_readLog_le_eight`
+(`E1CostAlgebra.lean`) turns `interiorChunkFoldCats_memoryRead_le_eight` -- a
+`filter` cap -- into a bound on the MACHINE'S OWN RECEIPT LENGTH, via
+`RunsTo.readLog_length_eq_memoryRead_count`, which produces a `catCount`. The
+first and last links of that chain existed already and could not be put next
+to each other.
+
+## DD-20260719-141: per-block charge bounds are stated as INEQUALITIES, and the two `33`s and two `8`s are kept apart in the module text (E1-LaneA2)
+
+Claimed by the cost-algebra lane on `claude/e1-cost-algebra`.
+
+INEQUALITIES, NOT EQUATIONS. REQ-E1-06 conjunct (c) demands
+`totalSteps <= <literal>`. Three sessions were shaped by treating
+`Nat.log2`'s kernel-irreducibility as an obstruction to the derived literal;
+it is not, and the reason is a property of the STATEMENT'S SHAPE. The
+boundary bites on EQUATIONS whose value passes through `machineWordBits`.
+None of the bounds in `E1CostAlgebra.lean` passes through `machineWordBits` at
+all -- they count instructions, not bits -- but they are stated as `<=`
+regardless, because that is the shape the requirement asks for and the shape
+that composes under `omega`. `interiorChunkFoldCats_length` is left as an
+EQUATION deliberately, because it is the algebra the `<=` is derived FROM and
+every quantity in it is an instruction count.
+
+THE TWO `33`s ARE NOT THE SAME NUMERAL. The campaign shorthand "caps 33/8/8"
+conflates them, and unlike the two `8`s -- flagged distinct in an M3d-11 note
+-- the two `33`s had never been separated anywhere. They are:
+
+* the FRINGE-WINDOW chunk-read cap, which sits INSIDE
+  `endpointFringe = 4 + 33 = 37` (`ChargedFringeChunks.lean:1624-1687`);
+* the WHOLE-INTERIOR-DIRECTORY read cap,
+  `canonicalRelativeRmmPrincipledInteriorChargedTraceCost := 33`
+  (`InteriorDirectory.lean:1934`);
+* `3 * rankClose = 33`, a third and purely coincidental occurrence.
+
+The dangerous pair is the first two, because one sits INSIDE the other's
+sibling term in the same algebra
+(`2*select35 + (2*rank11 + 2*endpointFringe37 + interior33) + rank11 = 210`).
+`E1CostAlgebra.lean` therefore proves NOTHING against `33`, and says so in its
+header. The `8` it does prove is the interior table adapter's per-read chunk
+cap, which is a different `8` from the fringe's per-word chunk cap
+(`machineWordBits_le_8_mul_bpFringeChunkBits`, `ChargedWordChunks.lean:39`).
+
+THE OPERATIVE TOTAL IS `210`, NOT `207`. `207` at HEAD names a RETIRED route
+(AMENDMENT A1, owner-approved). Nothing in this lane is proved against `207`.
+
+## DD-20260719-142: `E1AmendedFamiliarMachineTarget` carries NO width conjunct, and that omission is a finding rather than an oversight (E1-LaneA2)
+
+Claimed by the cost-algebra lane on `claude/e1-cost-algebra`.
+
+THE PROBLEM. REQ-E1-07's evidence column asks the amended target Prop to
+bundle "width accounting" alongside result agreement, receipt projection, the
+invalid guard, category accounting and the derived literal. Both natural
+spellings of that conjunct are unusable, and the reason is arithmetic, not
+taste:
+
+* `ProgramFits (SuccinctRank.machineWordBits n) (programSkeleton n validPath)`
+  is FALSE at small `n`. `machineWordBits n = Nat.log2 n + 1`
+  (`SuccinctRank.lean:38`), so at `n = 4` the modeled width is `3` and the
+  fitting bound is `2 ^ 3 = 8`, while this construction's register file
+  reaches `152` (`E1_LIVE_STATE.md` §3: "Next free block opens at `152`"). A
+  target asserting it would be unsatisfiable for a reason having nothing to do
+  with whether the machine is correct.
+* `∀ n, ∃ w, ProgramFits w (programSkeleton n validPath)` is VACUOUS. Every
+  finite instruction list fits SOME width, so the conjunct excludes nothing.
+  Under the campaign's own rule -- a VACUOUS premise owes a witness of vacuity
+  on the same terms -- this one's witness of vacuity is immediate, which is
+  exactly why it must not be shipped as evidence.
+
+HOW THE TREE ALREADY RESOLVES IT, and why that cannot be folded in. The
+existing width certificates take `w` as a PARAMETER with explicit side
+conditions: `sameBlockLegProgramAt_fits` (`E1ProgramWidth.lean:57`) carries
+eleven, including `74 < 2 ^ w`, `hcode`, `hpowL` and two positivity arms.
+Those conditions are properties of the SHAPE and the allocation, not of the
+query, and collapsing them into a Prop quantified over `xs left right` forces
+one of the two bad spellings above.
+
+DECISION. Width accounting stays where it lives, as REQ-E1-02's row against
+`E1ProgramWidth`'s parametric certificates, and `E1AmendedFamiliarMachineTarget`
+does not restate it. The omission is documented in the Prop's own docstring
+rather than left for a reader to notice, because a target Prop that silently
+drops a conjunct its row names is indistinguishable from one that forgot.
+Carrying it as a decorative hypothesis was considered and REJECTED under the
+standing rule against decorative hypotheses.
