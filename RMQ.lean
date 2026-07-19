@@ -58,6 +58,7 @@ import RMQ.Core.WordRAM.E1InteriorDispatchCompose
 import RMQ.Core.WordRAM.E1CostAlgebra
 import RMQ.Core.WordRAM.E1AmendedTarget
 import RMQ.Core.WordRAM.E1ReviewerWidth
+import RMQ.Core.WordRAM.E1FringeFoldProgram
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks

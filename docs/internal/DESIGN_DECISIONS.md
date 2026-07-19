@@ -6883,3 +6883,84 @@ SIDE CONDITIONS AT ANY INSTANTIATION. They were OWED premises with no
 satisfiability witness, so a reader could not tell whether the width story
 closes or is vacuous. This module supplies the missing witness on the same
 terms as the premises.
+
+## DD-20260719-145: `FringeFoldUntouched` is executed by running the fold STANDALONE, because the arm's host cannot reach it (E1-LaneA4)
+
+`FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`) is the fringe fold's
+own register-preservation clause. It was stated and executed NOWHERE. The
+validator's own note at the head of phase 3i already recorded this, and that
+note was accurate.
+
+WHY THE OBVIOUS ROUTE IS NOT MERELY INCONVENIENT BUT WRONG. Phase 3h already
+runs the fringe ARM and checks `FringeArmUntouched`
+(`r < 40 ∨ (63 ≤ r ∧ r ≠ 67 ∧ r ≠ 68)`). Reusing that harness and swapping
+in the fold's predicate `FringeFoldUntouched` (`r < 40 ∨ 63 ≤ r`) would
+FAIL, and would fail CORRECTLY: the fold's predicate is STRICTLY STRONGER,
+and the arm's prologue writes exactly the two registers `67` and `68` that
+the stronger predicate claims. A failure there would be a true statement
+about the ARM and would say nothing whatever about the FOLD. So the fold
+needs its own host.
+
+WHAT WAS BUILT. `E1FringeFoldProgram.lean`: a standalone host
+`foldWitnessProgram` -- two instructions of padding, the 66-instruction loop
+body at base `2`, the back edge, `halt` -- and `foldWitnessProgram_hosts`,
+which discharges all FOUR hosting hypotheses of
+`fringeFoldLoop_runsTo_accepted` (`E1FringeFoldBlock.lean:1301`) against it
+at once. The offsets are forced through `hostedAt_step`, so an off-by-one
+anywhere fails to typecheck rather than passing quietly.
+
+The base is `2` rather than `0` on purpose, matching `armWitnessProgram`'s
+discipline (`E1FringeArmProgram.lean:238`): a nonzero loop base is what
+makes an address computed absolutely instead of base-relative show up as a
+wrong target instead of typechecking by accident.
+
+`foldWitnessProgram_fold_eq` is proved by `rfl` and records that the
+right-associated layout the hosting proof needs IS `fringeLoopBody S c L 2`,
+so the module hosts THE fold rather than a look-alike with the same shape.
+
+THE CHECKED BANK IS THE BLOCK'S OWN WRITE SET. The fold's registers are
+`fOne = 40` through `fX = 62` (`E1FringeFoldBlock.lean:62-106`), so
+`FringeFoldUntouched` is exactly "outside `40..62`". This campaign has
+shipped both a too-weak and an unsound preservation predicate before, so the
+predicate was checked against the write set rather than against a
+neighbouring block's.
+
+ANTI-VACUITY, on the same terms as the claim. Seeded from `fun _ => 0`
+preservation is worthless -- a block that zeroes a register it does not own
+still "preserves" it -- so the fixtures use `presSentinel`, injective and
+nowhere zero, as phase 3h does. Beyond that, `foldPresReadBearingCases`
+asserts that every fixture's read log is NONEMPTY: the fold charges one read
+per pass, so a sweep that charged nothing would be observing nothing, and
+that count is a verdict conjunct rather than a printed figure.
+
+MUTANT K, and why its receipt argument is NOT the usual one. The mutation
+renames the fold's private scratch `fX` (62) to `105`, consistently across
+the whole loop body. It is value-invisible because `fX` is WRITE-FIRST
+everywhere it appears -- `sub fX fT fU` in `fringePrefix`, and
+`mulConst fX fU (2 ^ c)` opening each of the three window groups in
+`fringeShift` -- so its incoming value cannot matter and nothing consumes
+its outgoing value.
+
+The receipt argument needed care and is worth recording, because the
+interior's mutant H could lean on its block being READ-FREE and this one
+cannot. The fringe fold IS read-bearing, and `fX` actually reaches the read:
+it feeds `fB`, which feeds `fSlot`, which is the ADDRESS of the single
+`readMem fE S fSlot`. The mutation is invisible only because the rename is
+CONSISTENT, so `fSlot` receives the identical value and the address is
+unchanged. Had the rename been partial it would have moved a read, and the
+receipt discriminator would have caught it -- correctly.
+
+THE NUMBERS, EVALUATED BEFORE THEY WERE WRITTEN DOWN. 27 fixtures, 87
+registers checked. Honest: `foldPresFailures = 0`,
+`foldPresClobberedRegs = []`, `foldPresSeedDisagreements = 0`,
+`foldPresReadBearingCases = 27`. Mutant K:
+`mutantK_fold_preservationFailures = 27`, `mutantK_clobberedRegs = [105]`,
+`mutantK_fold_exitFailures = 0`, `mutantK_isPreservationOnly = true`. Five
+of these are also kernel-checked by `rfl` rather than merely printed.
+
+The sharpest of them is `mutantK_fold_exitFailures = 0` together with
+`mutantK_isPreservationOnly = true`: exit pc, modeled steps, accumulator,
+best pair and read log ALL match the honest sweep. A harness checking any of
+those -- which is what every other phase on this block checks -- would miss
+this defect completely. That non-entailment is the reason the phase earns
+its place rather than duplicating coverage.

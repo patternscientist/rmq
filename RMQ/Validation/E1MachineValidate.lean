@@ -3,6 +3,7 @@ import RMQ.Core.WordRAM.E1SelectCanonical
 import RMQ.Core.WordRAM.E1CandMerge3
 import RMQ.Core.WordRAM.E1CrossBlockArm
 import RMQ.Core.WordRAM.E1FringeArmProgram
+import RMQ.Core.WordRAM.E1FringeFoldProgram
 import RMQ.Core.WordRAM.E1InteriorChunkFold
 import RMQ.Core.WordRAM.E1CostAlgebra
 
@@ -2002,6 +2003,223 @@ checking only that valid queries survive would MISS this defect entirely. -/
 theorem guard_mutantJ_still_accepts_valid_controls :
     guardAcceptedCount (guardReports 0 mutatedGuardBounds) = 3 := rfl
 
+/-! ## Phase 3k/4j: the FRINGE fold's OWN preservation clause, executed
+
+Phase 3h runs the fringe ARM and checks `FringeArmUntouched`.  Phase 3i
+runs the INTERIOR fold and checks `ChunkFoldUntouched`.  The fringe FOLD's
+own clause, `FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`), was
+executed by neither, and the note at the head of phase 3i says so.
+
+WHY IT CANNOT BE FOLDED INTO PHASE 3H.  `FringeFoldUntouched`
+(`r < 40 ∨ 63 ≤ r`) is STRICTLY STRONGER than `FringeArmUntouched`
+(`r < 40 ∨ (63 ≤ r ∧ r ≠ 67 ∧ r ≠ 68)`).  Running the whole arm and
+checking the fold's predicate would FAIL at `67` and `68` -- and fail
+CORRECTLY, because the arm's prologue writes them while the fold does not.
+The observation would say nothing about the fold.  So the fold is run
+STANDALONE at its own loop base, on
+`E1FringeFoldProgram.foldWitnessProgram` (base `2`, exit `69`), whose four
+hosting facts are discharged against `fringeFoldLoop_runsTo_accepted`'s
+hypotheses in `foldWitnessProgram_hosts`.
+
+The checked bank is `40..62` exactly, which is the fold's OWN write set
+(`fOne = 40` through `fX = 62`), so this is the block's own clause and not
+a neighbour's borrowed one.
+-/
+
+/-- Register file for a fringe-fold fixture: every register carries its
+distinct sentinel, then the fold's twelve declared inputs are written over.
+Seeded from `fun _ => 0` this phase would be VACUOUS -- a block that zeroes
+a register it does not own still "preserves" it -- so `presSentinel` is
+reused here for the same reason phase 3h gives. -/
+def foldPresRegs (c relLo relHi seed count w0 w1 w2 w3 : Nat) : RegFile :=
+  RegFile.write (RegFile.write (RegFile.write (RegFile.write
+    (RegFile.write (RegFile.write (RegFile.write (RegFile.write
+      (RegFile.write (RegFile.write (RegFile.write (RegFile.write
+        presSentinel E1FringeFoldBlock.fOne 1) E1FringeFoldBlock.fC c)
+        E1FringeFoldBlock.fLo relLo) E1FringeFoldBlock.fHi relHi)
+        E1FringeFoldBlock.fJC 0) E1FringeFoldBlock.fCnt count)
+        E1FringeFoldBlock.fAcc seed) E1FringeFoldBlock.fBV 0)
+        E1FringeFoldBlock.fW0 w0) E1FringeFoldBlock.fW1 w1)
+        E1FringeFoldBlock.fW2 w2) E1FringeFoldBlock.fW3 w3
+
+/-- The registers `FringeFoldUntouched` claims survive the fold, as a
+concrete list over the bank the machine actually uses.  Mirrors the
+predicate `r < 40 ∨ 63 ≤ r` literally. -/
+def foldUntouchedRegs : List Nat :=
+  (List.range 110).filter fun r => r < 40 || 63 <= r
+
+/-- Fixtures: window word, segment, chunk width, word width, then the
+fold's range, seed, trip count and four window registers.  The trip counts
+are all `> 0`, so every fixture runs at least one full pass. -/
+def foldPresCases :
+    List (List Bool × Nat × Nat × Nat × Nat × Nat × Nat ×
+      Nat × Nat × Nat × Nat × Nat) :=
+  [[true, false, true, false], [false, false, false, false],
+    [true, true, true, true]].flatMap fun w =>
+    [(2, 5), (1, 3), (2, 1)].flatMap fun (c, relHi) =>
+      [(1 : Nat), 2, 3].map fun count =>
+        (w, 7, c, 4, 0, relHi, 0, count, 11, 5, 9, 3)
+
+/-- What one fringe-fold preservation fixture reports. -/
+structure FoldPresReport where
+  clobbered : List Nat
+  checkedRegs : Nat
+  reachedExit : Bool
+  modeledSteps : Nat
+  acc : Nat
+  bestValue : Nat
+  bestPos : Nat
+  reads : List TraceEvent
+  zeroSeedAcc : Nat
+  zeroSeedReads : List TraceEvent
+  preserved : Bool
+  agreesWithZeroSeed : Bool
+deriving Repr
+
+/-- RUN THE FRINGE FOLD STANDALONE on a sentinel-seeded register file and
+check its own preservation clause register by register.
+
+Also re-runs the SAME fixture zero-seeded, on the fold's own
+`foldWitnessRegs`, and compares both the accumulator AND the read log event
+by event -- so this doubles as evidence that the fold reads no register it
+does not initialise. -/
+def runFoldPres (salt : Nat) (build : List Instr -> List Instr)
+    (w : List Bool) (S c L relLo relHi seed count w0 w1 w2 w3 : Nat) :
+    FoldPresReport :=
+  let program := build (E1FringeFoldProgram.foldWitnessProgram S c L)
+  let regs0 := foldPresRegs c relLo relHi seed count w0 w1 w2 w3
+  let store := E1FringeFoldProgram.foldWitnessStore w
+  let result := E1Machine.run store program (4000 + salt) ⟨regs0, 2, false⟩
+  let zeroResult :=
+    E1Machine.run store program (4000 + salt)
+      ⟨E1FringeFoldProgram.foldWitnessRegs c relLo relHi seed count
+        w0 w1 w2 w3, 2, false⟩
+  let clobbered :=
+    foldUntouchedRegs.filter fun r => result.final.regs r != regs0 r
+  { clobbered := clobbered
+    checkedRegs := foldUntouchedRegs.length
+    reachedExit := result.final.pc == 69
+    modeledSteps := result.steps
+    acc := result.final.regs E1FringeFoldBlock.fAcc
+    bestValue := result.final.regs E1FringeFoldBlock.fBV
+    bestPos := result.final.regs E1FringeFoldBlock.fBP
+    reads := result.readLog
+    zeroSeedAcc := zeroResult.final.regs E1FringeFoldBlock.fAcc
+    zeroSeedReads := zeroResult.readLog
+    preserved := clobbered.isEmpty
+    agreesWithZeroSeed :=
+      result.final.regs E1FringeFoldBlock.fAcc ==
+          zeroResult.final.regs E1FringeFoldBlock.fAcc &&
+        result.readLog == zeroResult.readLog }
+
+def foldPresReports (salt : Nat) (build : List Instr -> List Instr) :
+    List FoldPresReport :=
+  foldPresCases.map fun (w, S, c, L, relLo, relHi, seed, count, a, b, d, e) =>
+    runFoldPres salt build w S c L relLo relHi seed count a b d e
+
+def foldPresFailures (rs : List FoldPresReport) : Nat :=
+  (rs.filter (fun r => !r.preserved)).length
+
+def foldPresExitFailures (rs : List FoldPresReport) : Nat :=
+  (rs.filter (fun r => !r.reachedExit)).length
+
+def foldPresSeedDisagreements (rs : List FoldPresReport) : Nat :=
+  (rs.filter (fun r => !r.agreesWithZeroSeed)).length
+
+def foldPresClobberedRegs (rs : List FoldPresReport) : List Nat :=
+  (rs.flatMap (fun r => r.clobbered)).eraseDups
+
+/-- Fixtures whose read log is nonempty -- the fold is READ-BEARING, one
+charged read per pass, so a sweep with an empty log would be observing
+nothing. -/
+def foldPresReadBearingCases (rs : List FoldPresReport) : Nat :=
+  (rs.filter (fun r => !r.reads.isEmpty)).length
+
+def goodFoldPres : List Instr -> List Instr := id
+
+/-- The register mutant K scribbles on: `105`, outside the fold's bank and
+so inside `FringeFoldUntouched`. -/
+def foldClobberTarget : Nat := 105
+
+/-- MUTANT K: rename the fold's private scratch `fX` (62, inside the bank
+`40..62`) to `105`, consistently across every occurrence in the loop body.
+
+WHY IT IS INVISIBLE TO THE VALUE.  `fX` is WRITE-FIRST wherever it appears.
+In `fringePrefix` (`E1FringeFoldBlock.lean:146`) its first mention is
+`sub fX fT fU`, a write, before the read in `sub fB fT fX`.  In
+`fringeShift` (`E1FringeFoldBlock.lean:223`) each of the three window
+groups opens with `mulConst fX fU (2 ^ c)`, again a write, before the two
+reads that consume it, and nothing reads it after `add fW2 fT fX`.  So its
+incoming value cannot matter and its outgoing value is consumed by nobody
+-- a consistent rename performs the identical arithmetic.
+
+WHY IT IS INVISIBLE TO THE RECEIPT.  This one needs care rather than the
+usual read-free argument, because the fold is NOT read-free.  `fX` does
+reach the read: it feeds `fB`, which feeds `fSlot`, which is the address of
+the single `readMem fE S fSlot`.  But the rename is CONSISTENT, so `fSlot`
+receives the identical value and the read address is unchanged.  The trip
+count is driven by `fCnt`, not `fX`, so the control path and step count are
+identical too.
+
+WHY `105` IS DETECTED ROBUSTLY.  It is not a fold input, so it carries
+`presSentinel 105 = 738`, and it is above the bank, so
+`FringeFoldUntouched 105` holds and the clause genuinely claims it. -/
+def mutatedFoldScratch (program : List Instr) : List Instr :=
+  program.map (substReg E1FringeFoldBlock.fX foldClobberTarget)
+
+def foldPresMutationIsReal : Bool :=
+  let honest := E1FringeFoldProgram.foldWitnessProgram 7 2 4
+  let mutant := mutatedFoldScratch honest
+  honest != mutant && honest.length == mutant.length &&
+    honest.map Instr.category == mutant.map Instr.category
+
+/-- Mutant K is PRESERVATION-ONLY: case for case its exit pc, modeled step
+count, accumulator, best pair AND read log all match the honest sweep, so
+neither the value discriminator nor the receipt discriminator can see it. -/
+def foldMutantKIsPreservationOnly (salt : Nat) : Bool :=
+  let honest := foldPresReports salt goodFoldPres
+  let mutant := foldPresReports salt mutatedFoldScratch
+  honest.length == mutant.length &&
+    (List.zip honest mutant).all fun (h, m) =>
+      h.reachedExit == m.reachedExit && h.modeledSteps == m.modeledSteps &&
+        h.acc == m.acc && h.bestValue == m.bestValue &&
+        h.bestPos == m.bestPos && h.reads == m.reads
+
+/-! ### The same facts, KERNEL-CHECKED rather than printed
+
+`mainImpl` prints these counts, which makes them reproducible but not
+proved.  The quantities are closed and computable, so they are also stated
+as theorems and discharged by `rfl`.  Every literal here was EVALUATED
+first and then written down, per the standing rule on computable
+quantities; none was predicted. -/
+
+/-- The honest fold disturbs NOTHING outside its bank, on all 27 fixtures.
+This is `FringeFoldUntouched`'s content at the fold's own witness, and it is
+the first time that predicate has been executed anywhere. -/
+theorem foldPres_honest_clobbers_nothing :
+    foldPresClobberedRegs (foldPresReports 0 goodFoldPres) = [] := rfl
+
+/-- The sweep is READ-BEARING on every fixture, so preservation is being
+checked against a fold that actually ran and charged. -/
+theorem foldPres_all_cases_read_bearing :
+    foldPresReadBearingCases (foldPresReports 0 goodFoldPres) = 27 := rfl
+
+/-- Mutant K disturbs EXACTLY register `105` and nothing else -- the phase
+names the register rather than merely reporting a failure. -/
+theorem foldPres_mutantK_clobbers_target :
+    foldPresClobberedRegs (foldPresReports 0 mutatedFoldScratch) = [105] :=
+  rfl
+
+/-- ...and it is caught on EVERY fixture, not just one. -/
+theorem foldPres_mutantK_caught :
+    foldPresFailures (foldPresReports 0 mutatedFoldScratch) = 27 := rfl
+
+/-- ...while the exit-pc discriminator sees NOTHING.  This is the
+non-entailment that justifies the phase existing: a harness checking only
+that the block reaches its exit would miss this defect completely. -/
+theorem foldPres_mutantK_invisible_to_exit :
+    foldPresExitFailures (foldPresReports 0 mutatedFoldScratch) = 0 := rfl
+
 def mainImpl : IO UInt32 := do
   IO.println "== E1 amended-machine validator (M6) =="
   IO.println ""
@@ -2345,6 +2563,47 @@ def mainImpl : IO UInt32 := do
   IO.println s!"chunkPresMutationWallClockMs={tcm1 - tcm0}"
   IO.println ""
 
+  -- STEP 3k: the FRINGE fold's OWN preservation clause -- stated at
+  -- `E1FringeFoldBlock.lean:962`, executed NOWHERE until now, and NOT
+  -- reachable through phase 3h because the fold's predicate is strictly
+  -- stronger than the arm's.
+  IO.println "-- phase 3k: FRINGE FOLD register preservation, run STANDALONE (FringeFoldUntouched, first execution) --"
+  let tf0 <- IO.monoMsNow
+  let fPresRs := foldPresReports salt goodFoldPres
+  let fPresFails := foldPresFailures fPresRs
+  let fPresExitFails := foldPresExitFailures fPresRs
+  let fPresSeedDis := foldPresSeedDisagreements fPresRs
+  let fPresReadBearing := foldPresReadBearingCases fPresRs
+  IO.println s!"foldPresCases={fPresRs.length}"
+  IO.println s!"foldPresCheckedRegs={foldUntouchedRegs.length}   (registers FringeFoldUntouched claims survive)"
+  IO.println s!"foldPresSentinelNonZero={presSentinel 0 != 0}   (a zero-seeded file makes this phase vacuous)"
+  IO.println s!"foldPresTargetSeed={presSentinel foldClobberTarget}   (seed at 105, outside the fold bank 40..62)"
+  IO.println s!"foldPresReadBearingCases={fPresReadBearing}   (must equal the case count: the fold charges one read per pass)"
+  IO.println s!"foldPresExitFailures={fPresExitFails}"
+  IO.println s!"foldPresFailures={fPresFails}   (must be 0: the FRINGE fold's own preservation clause, executed)"
+  IO.println s!"foldPresClobberedRegs={foldPresClobberedRegs fPresRs}   (must be empty)"
+  IO.println s!"foldPresSeedDisagreements={fPresSeedDis}   (must be 0: accumulator AND read log agree under both seedings)"
+  let tf1 <- IO.monoMsNow
+  IO.println s!"foldPresWallClockMs={tf1 - tf0}"
+  IO.println ""
+
+  -- STEP 4j: a mutation of the fringe fold's private scratch, visible to
+  -- preservation and to nothing else this harness checks.
+  IO.println "-- phase 4j: deliberate rename of the FRINGE FOLD's scratch register fX (preservation-only visible) --"
+  let tfm0 <- IO.monoMsNow
+  let mutKReports := foldPresReports salt mutatedFoldScratch
+  let mutKFails := foldPresFailures mutKReports
+  let mutKExit := foldPresExitFailures mutKReports
+  let mutKPresOnly := foldMutantKIsPreservationOnly salt
+  IO.println s!"foldPresMutationIsReal={foldPresMutationIsReal}   (differs; same length AND same opcode categories)"
+  IO.println s!"mutantK_fold_exitFailures={mutKExit}   (0 expected: exit pc alone MISSES this)"
+  IO.println s!"mutantK_fold_preservationFailures={mutKFails}   (must be > 0: preservation catches it)"
+  IO.println s!"mutantK_clobberedRegs={foldPresClobberedRegs mutKReports}   (expect [105])"
+  IO.println s!"mutantK_isPreservationOnly={mutKPresOnly}   (exit pc, steps, accumulator, best pair AND read log ALL match)"
+  let tfm1 <- IO.monoMsNow
+  IO.println s!"foldPresMutationWallClockMs={tfm1 - tfm0}"
+  IO.println ""
+
   -- STEP 3j: REQ-E1-05's five-word residual, "and in the validator".
   IO.println "-- phase 3j: INVALID GUARD skeleton on empty/reversed/out-of-bounds fixtures (REQ-E1-05) --"
   let tg0 <- IO.monoMsNow
@@ -2467,6 +2726,17 @@ def mainImpl : IO UInt32 := do
   -- valid-query-only harness.
   let okGuardMutations :=
     guardMutationIsReal && mutJRejected != 8 && mutJAccepted == 3
+  -- The FRINGE fold's own preservation clause, executed standalone:
+  -- nothing outside the bank 40..62 moves, sentinel seeding changes
+  -- neither the accumulator nor the read log, and every fixture is
+  -- genuinely read-bearing rather than a run that charged nothing.
+  let okFoldPres :=
+    fPresFails == 0 && fPresExitFails == 0 && fPresSeedDis == 0 &&
+      fPresReadBearing == fPresRs.length && presSentinel 0 != 0
+  -- Mutant K rejected, and confirmed shape-preserving and invisible to
+  -- both the value and the receipt discriminators.
+  let okFoldPresMutations :=
+    foldPresMutationIsReal && mutKFails != 0 && mutKPresOnly
   let okCore := okReference && okLengths && okDispatch && okLeg
   let okComposite := okSelect && okCompose && okComposeCoverage && okMerge
   let okAdversarial := okMutations && okMutantSetup && okMergeMutations
@@ -2475,7 +2745,8 @@ def mainImpl : IO UInt32 := do
   let okChunkPreservation := okChunkPres && okChunkPresMutations
   let ok :=
     okCore && okComposite && okAdversarial && okNew && okPreservation &&
-      okChunkPreservation && okGuard && okGuardMutations
+      okChunkPreservation && okGuard && okGuardMutations &&
+      okFoldPres && okFoldPresMutations
   if ok then
     IO.println "RESULT: PASS (with the whole-query comparison still OPEN)"
     return 0
