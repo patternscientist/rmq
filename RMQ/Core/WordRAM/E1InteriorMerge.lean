@@ -365,6 +365,216 @@ theorem mergeBlock_runsTo
               obtain ⟨hMVr, hMPr, hT, hOne⟩ := hrr
               simp [hr4, hr3, hr2, hr1, RegFile.write, hMVr, hMPr, hT, hOne]
 
+/-! ## THE DISCRIMINATORS, AND WHERE THE CHECKS RUN OUT
+
+Two impostors, chosen at the two places this block's index differs from
+its neighbours': the STRICTNESS of the comparison at `Q + 5`, and the
+SOURCE REGISTER of the position move at `Q + 8`.
+
+They are deliberately a PAIR, because they fall on opposite sides of the
+category-log boundary.  The span block's `none`-arm impostor
+(DD-20260719-050) was caught by a positional category comparison even
+though receipt, read count, exit code and preservation all failed to
+catch it; recording only that case would leave the false impression that
+a category log is a sufficient backstop.  It is not: the SECOND impostor
+below takes the SAME PATH as the correct block and is therefore invisible
+to the category log as well. -/
+
+/-- The empty store.  No arm may depend on the store, and using the empty
+one makes that manifest. -/
+def mergeStore : ReadStore := ⟨fun _ _ => none⟩
+
+/-- The block at base `0`, with a halt at `9`, PARAMETRIC in the two
+places an impostor can differ.  `cmp` is the comparison at `5` and
+`posSrc` the source of the position move at `8`; everything else is held
+fixed, so each fixture below varies exactly one thing. -/
+def mergeProgram (cmp : Instr) (posSrc : Nat) : E1Machine.Program :=
+  [ Instr.const qOne 1
+  , Instr.brNZ qLV 3
+  , Instr.brNZ qOne 9
+  , Instr.brNZ mMV 5
+  , Instr.brNZ qOne 7
+  , cmp
+  , Instr.brNZ qT 9
+  , Instr.move mMV qLV
+  , Instr.move mMP posSrc
+  , Instr.halt ]
+
+/-- The correct block is `mergeProgram` at the strict test and the
+position register -- definitionally `mergeBlock 0` plus its halt. -/
+theorem mergeProgram_correct_eq_mergeBlock :
+    mergeProgram (Instr.natLt qT mMV qLV) qLP =
+      mergeBlock 0 ++ [Instr.halt] := by rfl
+
+/-- Both candidates entered biased; `qOne` starts at `0` and the block
+sets it. -/
+def mergeRegs (lv lp rv rp : Nat) : RegFile := fun r =>
+  if r = qLV then lv
+  else if r = qLP then lp
+  else if r = mMV then rv
+  else if r = mMP then rp
+  else 0
+
+/-- The arm's value, in the form the route's combiners consume. -/
+def mergeOut (cmp : Instr) (posSrc lv lp rv rp : Nat) : Option (Nat × Nat) :=
+  let final :=
+    (E1Machine.run mergeStore (mergeProgram cmp posSrc) 20
+      ⟨mergeRegs lv lp rv rp, 0, false⟩).final.regs
+  bestOfRegs (final mMV) (final mMP)
+
+/-- The arm's receipt. -/
+def mergeReadLog (cmp : Instr) (posSrc lv lp rv rp : Nat) : List TraceEvent :=
+  (E1Machine.run mergeStore (mergeProgram cmp posSrc) 20
+    ⟨mergeRegs lv lp rv rp, 0, false⟩).readLog
+
+/-- The arm's charge log. -/
+def mergeCatLog (cmp : Instr) (posSrc lv lp rv rp : Nat) : List Category :=
+  (E1Machine.run mergeStore (mergeProgram cmp posSrc) 20
+    ⟨mergeRegs lv lp rv rp, 0, false⟩).catLog
+
+/-! ### IMPOSTOR ONE: the tie, `natLe` for `natLt`
+
+`bpCandidateBetter` is `if right.1 < left.1 then right else left` --
+STRICT, so a tie keeps the LEFT candidate.  A block spelling that test
+`natLe` agrees everywhere except on ties, and ties are not rare: they are
+the generic case whenever two sub-ranges share a minimum excess, which is
+what an RMQ over a balanced-parenthesis sequence produces constantly.
+
+The fixture is a TIE: left `some (5, 11)`, right `some (5, 22)`. -/
+
+/-- The correct block keeps the LEFT candidate on a tie. -/
+theorem mergeTie_correct :
+    mergeOut (Instr.natLt qT mMV qLV) qLP 6 11 6 22 = some (5, 11) := by rfl
+
+/-- The `natLe` impostor takes the RIGHT one. -/
+theorem mergeTie_impostor :
+    mergeOut (Instr.natLe qT mMV qLV) qLP 6 11 6 22 = some (5, 22) := by rfl
+
+/-- THE DISCRIMINATOR: strictness is load-bearing, and a block that
+spelled the test `natLe` would be WRONG, not merely differently spelled. -/
+theorem mergeTie_discriminates :
+    mergeOut (Instr.natLt qT mMV qLV) qLP 6 11 6 22 ≠
+      mergeOut (Instr.natLe qT mMV qLV) qLP 6 11 6 22 := by decide
+
+/-- NON-ENTAILMENT: the two receipts are equal, and both are empty, so
+neither a receipt check nor a read COUNT separates them. -/
+theorem mergeTie_traces_agree :
+    mergeReadLog (Instr.natLt qT mMV qLV) qLP 6 11 6 22 =
+        mergeReadLog (Instr.natLe qT mMV qLV) qLP 6 11 6 22 ∧
+      mergeReadLog (Instr.natLt qT mMV qLV) qLP 6 11 6 22 = [] :=
+  ⟨by rfl, by rfl⟩
+
+/-- What DOES catch this one, besides the value: the charge logs differ,
+because the impostor branches to the exit where the correct block falls
+through into two moves.  Recorded so the boundary is exact -- and so that
+the CONTRAST with impostor two below is visible. -/
+theorem mergeTie_catLogs_differ :
+    mergeCatLog (Instr.natLt qT mMV qLV) qLP 6 11 6 22 ≠
+      mergeCatLog (Instr.natLe qT mMV qLV) qLP 6 11 6 22 := by decide
+
+/-! ### IMPOSTOR TWO: the position move's source, `qLV` for `qLP`
+
+THE SHARPER ONE. `Q + 7` and `Q + 8` move the left candidate's two
+components from ADJACENT registers, so "copy the source from the
+instruction above" is a live error rather than a hypothetical one -- the
+same shape of defect as the stale receipt head recorded in
+DD-20260719-019.
+
+It takes the SAME PATH as the correct block: same instructions executed,
+in the same order, differing only in one operand.  So of receipt, read
+count, exit code, preservation AND POSITIONAL CATEGORY LOG, **not one
+rejects it**.  Only the value does.
+
+The fixture keeps the left candidate strictly (`8 < 5` is false), so both
+blocks reach the moves. -/
+
+/-- The correct block takes the position from `qLP`. -/
+theorem mergePos_correct :
+    mergeOut (Instr.natLt qT mMV qLV) qLP 6 11 9 22 = some (5, 11) := by rfl
+
+/-- The impostor takes it from `qLV`, returning the left candidate's own
+BIASED VALUE as its position. -/
+theorem mergePos_impostor :
+    mergeOut (Instr.natLt qT mMV qLV) qLV 6 11 9 22 = some (5, 6) := by rfl
+
+/-- THE DISCRIMINATOR. -/
+theorem mergePos_discriminates :
+    mergeOut (Instr.natLt qT mMV qLV) qLP 6 11 9 22 ≠
+      mergeOut (Instr.natLt qT mMV qLV) qLV 6 11 9 22 := by decide
+
+/-- NON-ENTAILMENT: equal receipts, both empty. -/
+theorem mergePos_traces_agree :
+    mergeReadLog (Instr.natLt qT mMV qLV) qLP 6 11 9 22 =
+        mergeReadLog (Instr.natLt qT mMV qLV) qLV 6 11 9 22 ∧
+      mergeReadLog (Instr.natLt qT mMV qLV) qLP 6 11 9 22 = [] :=
+  ⟨by rfl, by rfl⟩
+
+/-- **THE SHARP NON-ENTAILMENT, AND THE POINT OF THIS PAIR.** The charge
+logs are EQUAL too.
+
+So the positional category comparison that caught the span block's
+`none`-arm impostor (`spanNoneArm_catLogs_differ`) is FORMALLY INCAPABLE
+of rejecting this one.  A category log constrains which instructions ran;
+it says nothing about their operands. -/
+theorem mergePos_catLogs_agree :
+    mergeCatLog (Instr.natLt qT mMV qLV) qLP 6 11 9 22 =
+      mergeCatLog (Instr.natLt qT mMV qLV) qLV 6 11 9 22 := by rfl
+
+/-- NON-ENTAILMENT: both halt, so the exit code does not separate them. -/
+theorem mergePos_both_halt :
+    (E1Machine.run mergeStore (mergeProgram (Instr.natLt qT mMV qLV) qLP) 20
+        ⟨mergeRegs 6 11 9 22, 0, false⟩).final.halted = true ∧
+      (E1Machine.run mergeStore (mergeProgram (Instr.natLt qT mMV qLV) qLV) 20
+        ⟨mergeRegs 6 11 9 22, 0, false⟩).final.halted = true :=
+  ⟨by rfl, by rfl⟩
+
+/-! ### The preservation clause, EXECUTED
+
+A clause that is proved but never executed passes every check in the
+battery.  `mergeBlock_runsTo`'s third clause is therefore run here, with
+the four cross-block-arm operands seeded with DISTINCT MARKS so survival
+is discriminating rather than trivially true at zero. -/
+
+/-- The fixture's register file with `70`, `71`, `75`, `76` marked.  None
+is read by the block, so the marks cannot perturb the values above. -/
+def mergeRegsMarked (lv lp rv rp : Nat) : RegFile := fun r =>
+  if r = 70 then 91
+  else if r = 71 then 92
+  else if r = 75 then 93
+  else if r = 76 then 94
+  else mergeRegs lv lp rv rp r
+
+/-- The four operands as the run leaves them. -/
+def mergeOperands (cmp : Instr) (posSrc lv lp rv rp : Nat) : List Nat :=
+  let final :=
+    (E1Machine.run mergeStore (mergeProgram cmp posSrc) 20
+      ⟨mergeRegsMarked lv lp rv rp, 0, false⟩).final.regs
+  [final 70, final 71, final 75, final 76]
+
+/-- EXECUTED: the marks survive the correct block on the moving arm. -/
+theorem mergeOperands_preserved_correct :
+    mergeOperands (Instr.natLt qT mMV qLV) qLP 6 11 9 22 = [91, 92, 93, 94] := by
+  rfl
+
+/-- EXECUTED: they survive the branch-to-exit arm too, which is the arm
+that writes NOTHING and so is the one where a preservation claim is
+weakest evidence. -/
+theorem mergeOperands_preserved_exitArm :
+    mergeOperands (Instr.natLt qT mMV qLV) qLP 6 11 3 22 = [91, 92, 93, 94] := by
+  rfl
+
+/-- EXECUTED, AND THE LAST NON-ENTAILMENT: the marks survive the POSITION
+IMPOSTOR too.
+
+Collecting the four: receipt, read count, exit code and preservation all
+agree with the correct block, AND SO DOES THE CATEGORY LOG. For this
+impostor the value is the ONLY instrument. That is why
+`mergeBlock_runsTo`'s value clause is stated against the route's own
+`bpCandidateMerge?` rather than against the block's arithmetic. -/
+theorem mergeOperands_preserved_impostor :
+    mergeOperands (Instr.natLt qT mMV qLV) qLV 6 11 9 22 = [91, 92, 93, 94] := by
+  rfl
+
 end E1InteriorMerge
 end WordRAM
 end RMQ
