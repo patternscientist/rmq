@@ -16,11 +16,12 @@ not proof evidence.
 ## Current Decision Index
 
 WDD-20260709-015 through WDD-20260709-019, WDD-20260710-001 through
-WDD-20260710-002, and WDD-20260711-001 through WDD-20260711-002 govern the
-current audit-context, obstruction, skill-context, lifecycle, scout, durable
-read-only-report, model-routing, and proof-completion policies. Earlier
-entries retain stable IDs and historical insertion order; read their Status
-rather than inferring current priority from file order.
+WDD-20260710-002, WDD-20260711-001 through WDD-20260711-002, and
+WDD-20260716-001 govern the current audit-context, obstruction, skill-context,
+lifecycle, scout, durable read-only-report, model-routing, proof-completion,
+and worker-prompt-readiness policies. Earlier entries retain stable IDs and
+historical insertion order; read their Status rather than inferring current
+priority from file order.
 
 ## WDD-20260708-001: Log ADD Improvements As Workflow Design Decisions
 
@@ -225,7 +226,8 @@ engineers external-auditor prompts and packets.
 Evidence:
 
 - `.agents/skills/rmq-coordinator/SKILL.md`
-- `.agents/skills/rmq-audit/SKILL.md`
+- `.agents/skills/rmq-audit-prompt/SKILL.md` (renamed from `rmq-audit` by
+  WDD-20260718-003)
 - `.agents/skills/rmq-proof-sprint/SKILL.md`
 
 Follow-up:
@@ -286,15 +288,14 @@ imply that normal worker integration is delegated away from the coordinator.
 Evidence:
 
 - `.agents/skills/rmq-coordinator/SKILL.md`
-- `.agents/skills/rmq-audit/SKILL.md`
+- `.agents/skills/rmq-audit-prompt/SKILL.md`
 - `.agents/skills/rmq-proof-sprint/SKILL.md`
 - `docs/internal/templates/AUDIT_PROMPT.md`
 
 Follow-up:
 
-After the next external audit request, evaluate whether `rmq-audit` should be
-renamed to `rmq-external-audit-prompt` or whether the revised description is
-clear enough.
+Completed by WDD-20260718-003: rename the skill to `rmq-audit-prompt` so the
+prompt-authoring boundary is explicit without the longer proposed name.
 
 Supersedes:
 
@@ -740,7 +741,7 @@ finding is accepted with correction.
 
 Consequences:
 
-`docs/internal/AUDIT_PROTOCOL.md`, `.agents/skills/rmq-audit/SKILL.md`, and
+`docs/internal/AUDIT_PROTOCOL.md`, `.agents/skills/rmq-audit-prompt/SKILL.md`, and
 `docs/internal/templates/AUDIT_PROMPT.md` now require or request a durable
 report path for material audits. The first stored report is
 `docs/internal/audit_reports/2026-07-09_A01_rmq_frontier_audit.md`.
@@ -748,7 +749,7 @@ report path for material audits. The first stored report is
 Evidence:
 
 - `docs/internal/AUDIT_PROTOCOL.md`
-- `.agents/skills/rmq-audit/SKILL.md`
+- `.agents/skills/rmq-audit-prompt/SKILL.md`
 - `docs/internal/templates/AUDIT_PROMPT.md`
 - `docs/internal/audit_reports/README.md`
 
@@ -1577,7 +1578,7 @@ Evidence:
 - `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`
 - `.agents/skills/rmq-proof-sprint/SKILL.md`
 - `.agents/skills/rmq-coordinator/SKILL.md`
-- `.agents/skills/rmq-audit/SKILL.md`
+- `.agents/skills/rmq-audit-prompt/SKILL.md`
 - `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`
 - `docs/internal/templates/WORKER_PROMPT.md`
 - `docs/internal/templates/AUDIT_PROMPT.md`
@@ -1755,7 +1756,7 @@ Evidence:
 - `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`.
 - `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`.
 - `.agents/skills/rmq-coordinator/SKILL.md`.
-- `.agents/skills/rmq-audit/SKILL.md`.
+- `.agents/skills/rmq-audit-prompt/SKILL.md`.
 - `docs/internal/templates/WORKER_PROMPT.md`.
 - `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`.
 - `docs/internal/templates/AUDIT_PROMPT.md`.
@@ -2059,7 +2060,7 @@ claimed verification ledger refer to the same object.
 
 Consequences:
 
-- `rmq-audit`, `AUDIT_PROMPT.md`, and `AUDIT_PROTOCOL.md` require post-report
+- `rmq-audit-prompt`, `AUDIT_PROMPT.md`, and `AUDIT_PROTOCOL.md` require post-report
   final-tree checks.
 - `rmq-coordinator` independently verifies report-only commits before recording
   `ACCEPTED`.
@@ -2599,3 +2600,1235 @@ Evidence: `paper_topology_lint.ps1` before the README line moved:
 identifier '...SumLe207'", 1 failure, exit 1. After: "PAPER-TOPOLOGY PASS
 (83 broad documentary identifiers; 49 paper identifiers resolved)", exit
 0. `lake env lean scripts/headline_axiom_check.lean` exit 0.
+## WDD-20260716-001: gate worker-prompt readiness and anti-bypass evidence
+
+Status: Accepted.
+Date: 2026-07-16.
+Scope: completed-worker repair delegation, read-only acceptance audits,
+small-step machine evidence, public-certificate anti-bypass, committed-range
+hygiene, and PowerShell workflow portability.
+
+Decision:
+
+1. Classify every proposed worker prompt as `READY_TO_SEND` or
+   `DRAFT_DO_NOT_SEND`. A prompt is ready only after its first-line title
+   instruction, exact governed base, worker identity/branch, required skill,
+   and failure-mode disposition pass `scripts/worker_prompt_preflight.ps1`.
+2. When an audit is read-only, classify reusable misses immediately but leave
+   durable patching and regression `PENDING`. A repair specification requested
+   by the audit may be returned only as `DRAFT_DO_NOT_SEND`; a later governance
+   turn must complete the feedback loop before launch.
+3. Keep coordinator launch metadata outside the pasted worker prompt, but make
+   prompt status and the preflight result mandatory coordinator evidence.
+4. Treat E1 candidate
+   `fd5e3d24d045c9ec503c258dfeb87599fe002e19` as the named regression fixture
+   for small-step atomicity, independent oracles, constructor-exhaustive width,
+   input-dependent program accounting, validation reach, and committed-range
+   hygiene. Install those rules in the proof-sprint completion gate, known
+   failure reference, and matrix template rather than expanding the
+   coordinator skill with Lean-specific details.
+5. Invoke child PowerShell processes through the current host executable rather
+   than the Windows-only command name `powershell`. Run both startup-skill and
+   worker-prompt policy regressions in the aggregate gate.
+6. Treat M1 candidate
+   `9e68c48a52692fa4fb26f1790179d5c623cb47f1` as the named regression fixture
+   for mandatory certificate-field consumption. Require a checked typed
+   consumer that projects every mandatory field at the exact propositions and
+   object arguments promised by the acceptance contract.
+7. Preflight every emitted prompt artifact, including drafts, and require the
+   populated worker-identity, checkout, roadmap, acceptance, verification, and
+   report contracts. Literal title/SHA/skill/branch presence is necessary but
+   not sufficient for `READY_TO_SEND`.
+8. Treat prompt preflight as a structural lower bound. Reject trivially short
+   contract fields and acceptance lists without stable IDs, but require the
+   coordinator to record a separate semantic-contract review `COMPLETE` before
+   `READY_TO_SEND`; lexical length cannot establish theorem/roadmap fidelity.
+9. Verify the destination task's runtime skill inventory independently of the
+   governed worker base. A returning task is ready only with explicit current
+   runtime evidence. Unknown or stale returning tasks must be replaced by fresh
+   Codex worktree tasks started from the exact governed repair-base branch.
+
+Trigger and exact evidence:
+
+The E1 worker reported every matrix row closed at `fd5e3d2`, but an independent
+audit found a recursive `.localBPWindow` evaluator charged as one step,
+multi-arithmetic `.candidateOfSummary`, invalid test expectations copied from
+the raw machine output, an instruction-width predicate that constrained only
+`.natConst`, shape-specialized uncounted code literals, validators that did not
+run the new machine, and trailing whitespace missed by a clean-working-tree
+`git diff --check`. The coordinator then drafted a repair prompt with `Title:`
+metadata instead of the required first-line rename instruction, called it ready
+before completing this feedback loop, and named an E1 base that did not contain
+the current governance commit.
+
+Separately, GitHub CI runs `29545437694` and `29545437344` failed on governance
+commit `4a608537e153cc82009c740bcb719b82b5694e60` because
+`project_skill_preflight_regression.ps1` invoked `powershell` from an Ubuntu
+`pwsh` runner.
+
+The M1 worker supplied a reviewer-native machine certificate at `9e68c48a`, but
+the independent audit found that the public theorem accepted the record
+opaquely. No checked typed consumer pinned every mandatory field to the exact
+well-formedness and supplied-store propositions. Deleting a field and repairing
+constructor initializers could therefore leave the advertised dependency
+unchecked.
+
+Fresh-context forward testing of governance `2c30a3a8417704a860187263aac70066e3b9ebc6`
+found that a seven-line prompt containing only the exact title, governance/base
+SHAs, skill, branch, and status literals passed `worker_prompt_preflight.ps1`.
+It omitted the roadmap target, frozen acceptance IDs, write scope, verification
+contract, and completion-report obligations. The same test also exposed an
+ambiguity about whether an emitted `DRAFT_DO_NOT_SEND` artifact should be
+preflighted.
+
+A second fresh-context test of `e2515a6a` confirmed that the skeletal bypass was
+closed, then showed that every required heading/field filled with `x.` could
+still pass. This is partly mechanically preventable and partly irreducible:
+the preflight can reject trivial values and require stable acceptance IDs, but
+only a coordinator source review can determine whether a nontrivial-looking
+goal and proposition contract are actually correct.
+
+The first E1-01R1 and M1-01R1 repair launches were incorrectly recommended as
+returning tasks. Both exact bases contained all three governed RMQ skills, but
+the old task runtimes exposed only `rmq-proof-sprint`; creating or selecting a
+later branch did not rebuild their catalogs. Both workers correctly stopped
+before edits. Prompt/base preflight had certified repository state while
+silently treating the destination runtime as if it were the same object.
+
+Regression mapping:
+
+- The exact-title and governed-base mutations are rejected by
+  `worker_prompt_preflight_regression.ps1`.
+- `READY_TO_SEND` with feedback `PENDING` rejects, while the same prompt labeled
+  `DRAFT_DO_NOT_SEND` accepts without granting launch authority.
+- The `.localBPWindow` and `.candidateOfSummary` evidence fails
+  `INV-INSTRUCTION-ATOMICITY` even though category receipts and one-step
+  increment theorems remain true.
+- Self-derived invalid expectations fail `INV-ORACLE-INDEPENDENCE`.
+- A width predicate that defaults non-`.natConst` constructors to `True` fails
+  the constructor-exhaustive `INV-ADDRESS-WIDTH` mutation.
+- Shape-dependent code literals fail `INV-PROGRAM-ACCOUNTING` until counted or
+  uniformly derived.
+- Predecessor-only executable checks fail `INV-VALIDATION-REACH`.
+- The committed whitespace is rejected by `git diff --check <base>..HEAD` even
+  when plain post-commit `git diff --check` is green.
+- A certificate passed opaquely fails `INV-CERTIFICATE-ANTI-BYPASS` until one
+  checked typed consumer projects every mandatory field at its exact
+  proposition and object arguments; field-deletion, weakening, and sibling-
+  substitution mutations must break that consumer.
+- The skeletal forward-test prompt is rejected unless every required template
+  section and load-bearing field is populated, including the committed-range
+  diff check and candidate-report status contract.
+- Trivial filler values and acceptance text without a stable ID reject, and
+  `READY_TO_SEND` with semantic-contract review `PENDING` rejects. A recorded
+  review remains coordinator evidence, not mathematical proof.
+- A returning prompt with destination runtime `UNKNOWN` or `STALE` rejects. A
+  fresh prompt is ready only when configured to start its Codex worktree from
+  the governed repair-base branch and still runs project-skill preflight first.
+
+Rejected alternatives:
+
+- Add another prose reminder for titles without mechanically checking it.
+- Let a returning worker merge workflow policy after beginning implementation.
+- Ask the proof worker to patch coordinator process as part of the proof repair.
+- Treat constructor/category coverage as evidence about evaluator atomicity.
+- Let the implementation result serve as the expected edge-case oracle.
+- Run only the predecessor validator and call it E1 executable evidence.
+- Treat record construction, field-name inventories, or opaque record passage
+  as proof that every mandatory certificate field is load-bearing.
+- Treat a title/SHA/skill/branch token check as certification that the roadmap,
+  acceptance, verification, and report contracts were populated.
+- Pretend regexes can establish that plausible-looking roadmap prose is
+  semantically faithful, or omit an explicit human/agent source reread.
+- Infer a destination task's runtime catalog from repository files, or assume a
+  branch/worktree created inside an old task refreshes its available skills.
+- Preserve the Windows-only `powershell` invocation because local checks pass.
+
+Consequences:
+
+- A launch-ready repair prompt now has a reproducible readiness certificate and
+  one exact governance-containing base, and the certificate rejects skeletal
+  prompts that omit the task's load-bearing contracts.
+- Read-only audits can satisfy a request for a repair specification without
+  silently bypassing the failure-mode feedback loop.
+- Fully charged machine reviews must inspect executable bodies, code/data
+  accounting, and validation reach rather than infer semantics from theorem
+  names or category inventories.
+- Reviewer-native certificate reviews must follow exact field projections into
+  typed consumers rather than infer anti-bypass from record construction or a
+  public theorem parameter.
+- Existing legitimate weaker claims remain available when labeled accurately:
+  `fd5e3d2` still supplies a transition-system simulation and fuel bound, but
+  not the rejected fully charged familiar-machine capstone.
+- No Lean theorem, payload representation, public identity, or proof trust base
+  changes in this workflow decision, so no separate proof/code design decision
+  is required.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md`.
+- `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`.
+- `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`.
+- `docs/internal/templates/WORKER_PROMPT.md`.
+- `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`.
+- `scripts/worker_prompt_preflight.ps1`.
+- `scripts/worker_prompt_preflight_regression.ps1`.
+- `scripts/project_skill_preflight_regression.ps1`.
+- `scripts/gate.ps1`.
+- Aggregate `scripts/gate.ps1` pass on 2026-07-16, including all Lean builds,
+  eight axiom inventories, both workflow regressions, strict claim drift, and
+  paper-topology mutations.
+
+Publication-facing significance:
+
+Worker and coordinator statuses organize how machine-model claims reach the
+paper frontier. Preventing a macro-step, self-oracle, uncounted-code, stale-
+validator, or opaque-certificate candidate from being labeled ready keeps
+workflow evidence aligned with the theorem actually available, without
+treating the workflow machinery itself as mathematical proof.
+
+## WDD-20260717-001: make verification cost-aware and forbid blind expensive reruns
+
+Status: Accepted.
+Date: 2026-07-17.
+Scope: worker proof loops, completed-worker audits, local repository gates,
+timeouts, cold-worktree warm-up, and final exact-tree certification.
+
+Decision:
+
+1. Require a verification coverage ledger that classifies commands as
+   development-loop, final-required, or conditional and maps each command to
+   changed paths, acceptance rows, unique failure coverage, exact tree state,
+   expected runtime, timeout, observed duration, and rerun reason.
+2. Order verification by information per unit time: static hygiene, focused
+   targets, direct public consumers and relevant trust checks, then broad roots
+   or the aggregate gate only when scope or the frozen contract requires them.
+3. Run only one heavy Lean/Lake process at a time against a shared build tree.
+4. Treat a wrapper timeout or quiet output as an execution-state question, not
+   a semantic failure. Inspect child liveness, CPU/artifact progress, missing
+   import artifacts, environment, and accidental full-build fallback before
+   deciding to stop or retry.
+5. Forbid launching the same expensive command again on an unchanged tree
+   without first accounting for the old process and recording a material
+   changed condition. If the child survived, wait for it; if it ended, retry
+   only after a fix, dependency warm-up, environment correction, target
+   narrowing, or evidence-based timeout change.
+6. Run an aggregate gate at most once on an unchanged final tree. Debug a late
+   failure with its smallest component and reserve the next aggregate run for
+   final certification.
+7. Do not equate repeated gate runs with independent evidence. Worker results
+   remain untrusted for acceptance, but their durations and failure locations
+   may guide proportionate independent audit scheduling and cache use.
+
+Trigger and evidence:
+
+The user identified recurring RMQ runs where a 20-minute command reached a
+timeout and the same work was then paid again for 30 minutes or more. The active
+E1 repair transcript also showed why the policy needs nuance: large source
+checks were repeated after genuine source changes, while an adapter proof first
+exceeded the default heartbeat allowance and later exceeded a larger allowance.
+Some reruns were dependency-valid; the missing rule was to distinguish those
+from unchanged blind retries before spending another long interval.
+
+Historical evidence already records two related cases: high-volume axiom
+output made the aggregate gate look broken even when direct commands passed,
+and topology/full-gate runs could appear hung because of stale Lean processes
+or a focused mutation falling back to full resolution. Together these show
+that silence, wrapper termination, semantic failure, stale children, and cold
+dependency work are different states and must not share one retry policy.
+
+Rejected alternatives:
+
+- Require the full gate after every edit or at every audit checkpoint.
+- Put a universal short timeout on Lean commands and retry when it expires.
+- Solve timeout risk by using arbitrarily huge limits without inspecting
+  progress or target scope.
+- Run several heavy Lean jobs concurrently and assume wall-clock time improves.
+- Trust worker gate results as acceptance evidence merely to avoid local work.
+- Skip all broad gates, including final public/integration certification.
+
+Consequences:
+
+- Narrow work receives narrow verification, while public capstones,
+  integration commits, artifacts, and trust-boundary changes still receive the
+  broad checks their contracts require.
+- Expensive checks are scheduled once for final certification instead of being
+  reflexively duplicated before and inside the aggregate gate.
+- A timeout now requires process and cache diagnosis before a retry, reducing
+  duplicate survivors, cold rebuilds, and misleading failure reports.
+- Exact-tree identity remains essential: a source or checker edit invalidates
+  its dependent checks, while a docs-only edit does not automatically erase
+  unrelated Lean compilation evidence.
+- This is workflow policy only. It changes no Lean theorem, public claim,
+  payload accounting, cost model, or trust allowance.
+
+Evidence:
+
+- `AGENTS.md` verification guidance.
+- `.agents/skills/rmq-coordinator/SKILL.md` verification economics.
+- `.agents/skills/rmq-proof-sprint/SKILL.md` verification workflow.
+- `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md` command ledger
+  and rerun rules.
+- `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md` expensive-
+  verification regression pattern.
+- `docs/internal/templates/WORKER_PROMPT.md` tiered verification contract.
+- `scripts/worker_prompt_preflight_regression.ps1`: all cases passed in 108.2
+  seconds on the seven-file governance diff.
+- `scripts/project_skill_preflight_regression.ps1`: all cases passed in 84.6
+  seconds on the same tree.
+- `scripts/design_decision_check.ps1 -Strict` and `git diff --check`: passed.
+
+Publication-facing significance:
+
+Gate evidence supports confidence in the theorem and artifact frontier, but
+the amount of repeated compute is not itself mathematical evidence. This rule
+preserves the checks that matter while preventing timeout behavior from being
+misreported as proof failure or mistaken for stronger validation.
+
+## WDD-20260717-002: require committed mutation evidence for public dependencies
+
+Status: Accepted.
+Date: 2026-07-17.
+Scope: public certificate anti-bypass, paper-theorem dependency checks,
+mutation campaigns, worker completion evidence, and repair-prompt readiness.
+
+Decision:
+
+1. Add `INV-MUTATION-REPRODUCIBILITY` whenever acceptance relies on an
+   exhaustive, production, or public-dependency mutation campaign.
+2. Require the candidate to commit a replayable runner or stable fixture set
+   that names every claimed mutation, expected verdict, exact failing surface,
+   expected-accept controls, and restoration/clean-tree check.
+3. Treat matrix prose, copied terminal output, one-off edited worktrees, and
+   unreferenced Git objects as discovery or process evidence, never as
+   replayable acceptance evidence.
+4. For a public dependency, require a checked expected-type consumer whose
+   proof route consumes the public theorem and whose elaboration fails when the
+   advertised conjunct is removed. Axiom printing or checking the theorem's
+   current mutable type does not pin the dependency.
+5. Use M1 R2 candidate
+   `1f50e5698a0842b8c50c1e08d101b076152d6bef` as the named regression
+   fixture, while preserving its legitimate improvement over the earlier M1
+   candidate: the 24-field independent typed projection is real and remains
+   required.
+
+Trigger and exact evidence:
+
+The independent M1 R2 audit found that `RequiredFacts` repeated all 24 exact
+certificate propositions and that `.requiredFacts` used every literal field
+projection. The guarded list packet and paper theorem consumed the new object.
+However, no M1 mutation runner or fixture existed under `scripts/`, and the
+matrix's cited snapshot was outside the candidate ancestry and had no ref.
+
+In a disposable exact-candidate worktree, removing only the paper theorem's
+guarded `RequiredFacts` conjunct and corresponding tuple element still passed
+`lake build RMQPaper RMQ` and
+`lake env lean scripts/headline_axiom_check.lean`. The existing axiom check
+followed the theorem's current type, so it could not reject deletion of the new
+public dependency. The source topology was materially improved, but the frozen
+public anti-deletion acceptance row was not reproducibly enforced.
+
+Regression mapping:
+
+- Candidate `1f50e569...` fails `INV-MUTATION-REPRODUCIBILITY` because
+  `git ls-tree -r --name-only <candidate> scripts` contains no M1 mutation
+  runner or fixtures.
+- The public-dependency deletion passes the candidate's production paper build
+  and headline axiom check, so those checks alone do not satisfy the new rule.
+- A repair closes the rule only when its committed runner rejects that deletion
+  through an expected-type consumer and also accepts one explicitly
+  non-load-bearing packet-only control.
+- A legitimately weaker theorem or packet remains permitted when it does not
+  advertise the deleted fact as load-bearing and its expected-accept control
+  records that boundary.
+
+Rejected alternatives:
+
+- Accept a mutation campaign summarized only in the worker report or matrix.
+- Preserve local mutation commits as unreachable objects and assume reviewers
+  can reconstruct them.
+- Treat `#print axioms` as an assertion of the theorem's full public type.
+- Require every packet restatement to be load-bearing, eliminating useful
+  compatibility or documentary packaging.
+- Discard the genuine R2 typed-field improvement because its public mutation
+  evidence was incomplete.
+
+Consequences:
+
+- M1 R3 remains narrow: it adds durable enforcement around the sound R2
+  topology instead of redesigning the certificate or evaluator.
+- Future public capstones cannot claim anti-deletion coverage without shipping
+  the cases needed to replay it.
+- Expected-accept controls preserve honest non-load-bearing packaging and keep
+  the rule from equating every nearby proposition with a required public input.
+- The workflow change adds no Lean axiom, payload bit, modeled tick, machine
+  event, or runtime claim.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md`.
+- `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`.
+- `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`.
+- `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`.
+- `docs/internal/templates/WORKER_PROMPT.md`.
+- Exact-candidate mutation audit of
+  `1f50e5698a0842b8c50c1e08d101b076152d6bef`.
+- System `quick_validate.py`: both modified RMQ skills valid.
+- `scripts/worker_prompt_preflight_regression.ps1`: all cases passed in
+  139.7 seconds.
+- `scripts/project_skill_preflight_regression.ps1`: all cases passed in
+  117.7 seconds.
+- `scripts/design_decision_check.ps1 -Strict` and `git diff --check`: passed.
+
+Publication-facing significance:
+
+The paper theorem's advertised conjunction is part of the reviewer-facing
+claim surface. Requiring a replayable deletion test and independent expected-
+type consumer prevents later refactors from silently removing a claimed
+machine-adequacy dependency while all current-name and current-type checks stay
+green.
+
+## WDD-20260717-003: permit opt-in audited worker chains
+
+Status: Accepted.
+Date: 2026-07-17.
+Scope: Codex task launch, completion monitoring, completed-worker audit,
+successor-prompt launch, model routing, and automation authority boundaries.
+
+Decision:
+
+1. When the user explicitly opts in, allow the RMQ coordinator to create a
+   fresh governed Codex worker task from a preflighted `READY_TO_SEND` prompt,
+   select a contract-appropriate model/reasoning level, and attach a completion
+   logical monitor record to the owning coordinator task.
+2. While a worker is active, the monitor reads status without opening or
+   steering the task and emits only a terse update. Completion is determined
+   from task state, not silence or elapsed time.
+3. On completion, run the ordinary `rmq-coordinator` exact-commit audit,
+   including independent reconstruction, proportionate verification, mandatory
+   blind leaves, and the reusable failure-mode feedback loop.
+4. Automatically launch successor prompts only after semantic review and
+   failure-mode feedback are complete and `worker_prompt_preflight.ps1` marks
+   each artifact `READY_TO_SEND` against an exact base containing current
+   governance. Suppress duplicate handle/base/branch launches and attach a new
+   logical monitor record to every launched successor.
+5. Stop for user direction when a next step requires merge/push authority,
+   destructive lifecycle work, missing runtime skills, an unresolved
+   dependency, a new proof-architecture choice, or unsafe/wasteful heavy-worker
+   concurrency.
+6. Default public theorem and nontrivial Lean work to `gpt-5.6-sol` with `max`
+   reasoning, use `xhigh` for bounded mechanically checked repairs, and use
+   `gpt-5.6-terra` with `xhigh` for read-only or lower-risk tooling work. Do not
+   select `ultra` without an explicit coordinator record that `max` is
+   inadequate for the exact task.
+7. Use a 30-minute monitor cadence by default and make launch recovery
+   idempotent: inventory exact handle/base/branch ownership before creation; if
+   task creation succeeds but monitor attachment fails, retain the task and
+   retry only its monitor rather than creating a duplicate.
+8. When the platform permits only one heartbeat per coordinator task,
+   multiplex exact per-worker logical records in that heartbeat. Remove only a
+   completed worker's record after audit/disposition, update the heartbeat while
+   others remain, and delete it only when the watch set is empty. Do not create
+   a cron workaround.
+
+Trigger and evidence:
+
+The user requested that M1 R3 be launched directly, monitored like E1 R2, and
+that either completion automatically trigger coordinator audit, next ambitious
+prompt engineering, successor task creation, and a successor monitor. The
+repository already had stable prompt preflight, runtime-skill preflight,
+failure-mode feedback, worker lifecycle, and exact-commit audit rules. Those
+gates make a bounded opt-in chain materially different from the unreviewed
+proof-writing loop rejected by WDD-20260708-002.
+
+The live E1 R2 monitor also exposed a scheduling risk: a 30-minute aggregate
+gate timed out and the worker immediately began the same full gate again with a
+one-hour ceiling. Automated chaining therefore inherits verification economics
+and must not treat repeated expensive commands or concurrent heavy workers as
+evidence of rigor.
+
+Rejected alternatives:
+
+- Keep requiring the user to copy every preflighted prompt and manually create
+  every completion timer.
+- Launch successors directly from worker self-reports without coordinator
+  reconstruction or failure-mode feedback.
+- Build an unconstrained recursive proof-writing daemon that can merge, push,
+  delete worktrees, or choose new proof architecture.
+- Use an unstructured global monitor that lacks exact per-worker records and
+  risks confusing task identity or deleting the wrong watch entry.
+- Route every task to `ultra` irrespective of scope, or route proof work to a
+  cheaper model merely because the check surface is automated.
+- Start duplicate or dependency-conflicting workers simply because a prompt
+  can be generated.
+
+Consequences:
+
+- Routine launch/monitor/audit/prompt handoffs no longer require manual copying
+  once the user opts in.
+- Mathematical acceptance remains coordinator-owned and source-grounded; task
+  creation and model choice add no proof evidence.
+- Each worker has a concrete logical record and stop condition even when one
+  platform heartbeat multiplexes the watch set, preventing an invisible
+  uncontrolled recursive loop.
+- A coordinator restart or partial launch failure can be reconstructed from
+  task/automation inventory without multiplying workers.
+- Integration and destructive lifecycle actions remain explicit boundaries, so
+  an accepted candidate may still require user direction before a dependent
+  A1/V1 launch.
+- Model routing remains strong but cost-aware, with `ultra` exceptional rather
+  than routine.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md` opt-in automated completion loop.
+- `AGENTS.md` automated-chain authority boundary.
+- `docs/internal/ADD_WORKFLOW_TOOLING_PLAN.md` reviewed-worker automation stage.
+- `docs/internal/WORKER_LIFECYCLE.md` one-monitor-per-worker lifecycle rule.
+- `scripts/project_skill_preflight.ps1` and
+  `scripts/worker_prompt_preflight.ps1` launch gates.
+- Live E1 R2 and M1 R3 coordinator task/monitor exercise on 2026-07-17.
+
+Publication-facing significance:
+
+Automation changes who performs coordination steps, not what the paper proves.
+Exact-commit audits, committed evidence, trust checks, and public theorem
+consumption remain unchanged; agent reports and monitor state remain process
+evidence outside the proof trust base.
+
+## WDD-20260717-004: require quantifier-matched formal obstructions
+
+Status: Accepted.
+Date: 2026-07-17.
+Scope: proof-sprint stop conditions, completed-worker audit, acceptance
+matrices, and worker prompts for formal obstruction claims.
+
+Decision:
+
+1. A formal obstruction may stop a worker only when its checked proposition
+   negates the frozen target or a checked theorem derives `False` from that
+   target on the same domain, objects, guards, and quantifiers.
+2. Separate facts about an arbitrary mutated state, an unbounded shape
+   parameter, and one reachable execution cannot be composed by prose.  If
+   their conjunction is load-bearing, one checked canonical reachable family
+   must preserve the growing parameter and actual invocation together.
+3. Every obstruction report must distinguish impossibility of the frozen
+   target from failure of the current implementation or one proposed
+   decomposition.  The latter is valuable checkpoint evidence but does not
+   authorize target-level `Status: OBSTRUCTED`.
+4. Use E1 R2 candidate
+   `39e97e08b14e8960c484cc7948409d550a97c955` as the named regression: its
+   three true witness theorems do not establish the missing common canonical
+   reachable family and therefore must be rejected as target-level closure.
+
+Trigger and evidence:
+
+The E1 R2 report combined an arbitrary register mutation, unbounded canonical
+block geometry, and a singleton reachable `.localBPWindow` execution into a
+claim that the frozen fully charged familiar-machine target was impossible.
+Independent source reconstruction found no theorem connecting those witnesses
+and no proof that all permitted familiar decompositions fail.  The candidate
+does correctly prove that its current macro instruction and fixed scalar
+unrolling are inadequate; the workflow defect was upgrading that narrower
+result to a target obstruction.
+
+Rejected alternatives:
+
+- Accept narrative witness composition when every cited theorem is true.
+- Require only theorem names, without comparing domains and quantifiers.
+- Discard narrow implementation obstructions that are accurately labeled.
+- Amend the E1 architecture automatically from an incomplete obstruction.
+
+Consequences:
+
+- Workers must retain load-bearing witness identity through the obstruction
+  proposition instead of relying on a prose join.
+- Coordinators and blind auditors can distinguish a real design fork from a
+  repairable implementation checkpoint before changing the roadmap contract.
+- The rule adds no Lean axiom, payload data, modeled tick, trace event, or
+  runtime claim.
+
+Evidence:
+
+- `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`.
+- `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`.
+- `.agents/skills/rmq-coordinator/SKILL.md`.
+- `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`.
+- `docs/internal/templates/WORKER_PROMPT.md`.
+- Exact-candidate audit of
+  `39e97e08b14e8960c484cc7948409d550a97c955`.
+- System `quick_validate.py`: both modified RMQ skills valid.
+- `scripts/worker_prompt_preflight_regression.ps1`: all cases passed in
+  141.7 seconds.
+- `scripts/design_decision_check.ps1 -Strict` and `git diff --check`: passed.
+
+Publication-facing significance:
+
+Obstruction claims determine whether the project changes its machine model or
+payload architecture. Requiring a checked quantifier-matched obstruction
+prevents process prose from forcing a paper-level design amendment that the
+formal evidence does not establish.
+
+## WDD-20260717-005: require nonvacuous and bounded replay harnesses
+
+Status: Accepted.
+Date: 2026-07-17.
+Scope: mutation-runner acceptance, focused replay selectors, child-process
+economics, worker-prompt preflight, and completed-worker audit.
+
+Decision:
+
+1. A harness claiming exhaustive replay must declare the exact ordered frozen
+   case registry, prove uniqueness and set equality, check any ID-to-field or
+   ID-to-object mapping, and check exact verdict counts. A total pass count is
+   not coverage evidence.
+2. A focused selector must execute exactly one requested frozen ID and reject
+   unknown IDs. Cheap controls must cover an omitted middle ID, a duplicated
+   middle ID, a valid frozen ID, and an unknown ID.
+3. Every external compiler or tool stage used by a replay harness must have a
+   positive evidence-based deadline, classify timeout as failure, terminate its
+   owned process tree, and run cleanup plus live-tree integrity checks in
+   `finally`. A cheap sleeper self-test exercises this path without hanging the
+   semantic campaign.
+4. Worker prompts carry the stable anchors `REPLAY-EXACT-REGISTRY`,
+   `REPLAY-SELECTOR-NONVACUITY`, and `REPLAY-SUBPROCESS-DEADLINE`; prompt
+   preflight rejects any missing anchor before launch.
+
+Trigger and evidence:
+
+The exact-commit audit of M1 R3 candidate
+`868166550fe0df905aef2f7719147d62e88c87bf` found that its topology regression
+registered descriptive names while the frozen matrix named `A01` and `A02`.
+`-OnlyCase A01`, `-OnlyCase A02`, and an unknown selector all exited zero with
+`0 reject; 0 accept`. The mutation runner's current 41 IDs are correct, but its
+only aggregate completeness check is `$passes -eq 41`, so a missing middle case
+can be replaced by a duplicate without detection. Its synchronous Lean child
+has no deadline or process-tree cleanup path, so a hang can prevent case
+cleanup, live-integrity comparison, and final verdict indefinitely.
+
+Rejected alternatives:
+
+- Accept a zero-case focused run because the full aggregate run happened to
+  pass once.
+- Treat boundary-name lint plus a total pass count as an exact registry proof.
+- Add an arbitrarily large outer gate timeout without a per-stage timeout,
+  owned-process cleanup, or cheap timeout self-test.
+- Rerun the 40-minute aggregate gate to diagnose defects already reproduced by
+  static inspection and focused ten-second controls.
+
+Consequences:
+
+- Exact case IDs become reviewer-replayable rather than documentary labels.
+- Registry drift and selector vacuity fail cheaply before any Lean mutation
+  sweep starts.
+- A hung compiler becomes a bounded failed case with cleanup evidence instead
+  of an indefinite gate and an incentive for wasteful unchanged reruns.
+- The workflow rule changes no Lean proposition, payload bit, proof field,
+  modeled tick, trace event, or runtime claim.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md`.
+- `docs/internal/templates/WORKER_PROMPT.md`.
+- `scripts/worker_prompt_preflight.ps1`.
+- Named regressions `m1r3-exact-registry-omitted`,
+  `m1r3-zero-case-selector`, and `m1r3-unbounded-subprocess` in
+  `scripts/worker_prompt_preflight_regression.ps1`.
+- Fresh-blind exact-candidate audits of M1 R3 candidate `8681665`.
+
+Publication-facing significance:
+
+Mutation evidence protects the reviewer-facing public theorem dependency.
+Requiring exact, nonvacuous, bounded replay prevents a green process transcript
+from standing in for actual coverage of the frozen public acceptance contract.
+
+## WDD-20260717-006: complete opt-in chains through private repair bases
+
+Status: Accepted.
+Date: 2026-07-17.
+Scope: audited-worker successor construction, repair-base authority, terminal
+watch retirement, and automatic-chain stop boundaries.
+
+Decision:
+
+1. Explicit opt-in to the audited worker chain authorizes the coordinator to
+   create a dedicated local unpublished repair-base branch joining a completed
+   candidate with current governance when that sibling relationship is the sole
+   blocker to a preflighted repair successor.
+2. The join must preserve the candidate as first parent and current governance
+   as second parent, avoid `main` and published/frontier branches, remain local,
+   and pass exact ancestry, scope, clean-state, range, and project-skill checks.
+   Any semantic/public-theorem conflict or proof choice stops for user review.
+3. This narrow authority does not authorize candidate acceptance, roadmap/main
+   integration, push, branch/worktree deletion, publication, or proof-
+   architecture selection.
+4. A terminal-worker audit is not complete while its logical watch remains
+   live. Use the automation API first. If self-deletion of the currently
+   executing empty heartbeat is locked, verify its exact ID, target thread, and
+   empty watch set, then move only that catalog record recoverably outside the
+   live automation directory and report its location.
+
+Trigger and evidence:
+
+The user explicitly opted into automatic launch, monitoring, completed-worker
+audit, next-prompt engineering, successor launch, and repeated monitoring. After
+M1-01R3 candidate `868166550fe0df905aef2f7719147d62e88c87bf` was rejected, the
+coordinator correctly engineered M1-01R4 but left it `DRAFT_DO_NOT_SEND` because
+candidate and governance `5efb1515c543e866cda67e66866f3dc34149ed42` were siblings.
+That treated the private governed repair-base join already required by the
+delegation section as forbidden integration, breaking the opted-in chain. The
+old heartbeat also kept polling the terminal M1 task because its automation API
+could not delete itself while its active run held the record; the record was
+eventually retired recoverably from the live catalog.
+
+Rejected alternatives:
+
+- Require the user to manually construct every mechanical candidate-plus-
+  governance repair base after opting into the automatic chain.
+- Treat a private local repair-base join as equivalent to merging an accepted
+  candidate into `main`.
+- Permit automatic resolution of proof, public-theorem, or architecture
+  conflicts.
+- Leave an empty terminal-worker watch active because the preferred API is
+  self-locked, causing repeated stale audits and user noise.
+- Delete arbitrary automation records or use a duplicate cron workaround.
+
+Consequences:
+
+- The automatic chain now advances through mechanically governed repair loops
+  without silently expanding authority to publication or roadmap integration.
+- Ambiguous semantic joins still stop for the user.
+- Terminal watches have a bounded, recoverable retirement path and cannot keep
+  re-querying already audited workers indefinitely.
+- The workflow change adds no Lean axiom, payload data, proof field, modeled
+  tick, trace event, or runtime claim.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md` anchors
+  `AUTO-CHAIN-PRIVATE-REPAIR-BASE` and `AUTO-CHAIN-MONITOR-RETIREMENT`.
+- Named regressions `auto-chain-private-repair-base-allowed`,
+  `auto-chain-main-merge-stopped`, and `auto-chain-terminal-watch-retired` in
+  `scripts/worker_prompt_preflight_regression.ps1`.
+- Exact M1-01R3 audit and successor disposition in coordinator task
+  `019f6d85-7626-7433-a60b-81f8be29689a`.
+
+Publication-facing significance:
+
+This changes only who performs mechanical workflow joins and watch cleanup.
+Mathematical acceptance, exact-commit audit, public theorem identity, and
+submission integration remain independently gated.
+
+## WDD-20260717-007: proxy obstructions require checked target implication
+
+Status: Accepted.
+Date: 2026-07-17.
+Scope: theorem-shaped stop conditions, operational reachability, and completed-
+worker obstruction audit.
+
+Decision:
+
+1. A proxy proposition may support `Status: OBSTRUCTED` only when every
+   load-bearing clause is frozen verbatim or a checked theorem proves that the
+   full frozen target implies the proxy.
+2. A worker may not insert the contradiction-producing lower bound as a field
+   of a stronger proxy and treat its negation as a negation of the assigned
+   target.
+3. Boundary values, guard validity, accepted logical output, and same-block
+   arithmetic do not establish execution reachability.  When an instruction
+   occurrence is load-bearing, the checked witness must retain its occurrence,
+   pre-state, full instruction and evaluated operands, post-state, and exact
+   run or receipt object, or prove an equivalent operational bridge.
+4. A sound negation lacking those bridges remains valuable as a narrowly
+   labeled decomposition obstruction, but it does not close the roadmap node.
+
+Trigger and evidence:
+
+The exact-commit audit of E1 R3 candidate
+`7fe5b8ba353b955b8e989ddd2ae8dc2371140518` found a sound unbounded family of
+accepted same-block boundary intervals and a sound negation of a newly defined
+scalar packet target.  The packet target stipulated
+`localCount <= localBPSteps`; the frozen contract permitted an equally familiar
+primitive decomposition and did not state that lower bound.  Its canonical
+invocation predicate retained no actual run, transition, receipt occurrence,
+instruction operands, pre-state, or post-state.  Three fresh-blind audit leaves
+independently reproduced the mismatch.
+
+Rejected alternatives:
+
+- Accept a stronger proxy because its theorem name and surrounding matrix prose
+  describe the frozen target.
+- Treat accepted boundary arithmetic as proof that the production machine
+  executes the relevant instruction.
+- Discard the narrow arithmetic obstruction entirely because it does not close
+  the broader target.
+- Amend the frozen machine contract implicitly during a repair attempt.
+
+Consequences:
+
+- Obstruction claims now preserve predicate identity and execution-object
+  identity through the contradiction.
+- Narrow decomposition impossibilities remain publishable checkpoint evidence
+  when labeled precisely.
+- Workers must derive, rather than stipulate, the lower bound that drives an
+  impossibility argument.
+- The workflow rule changes no Lean proposition, payload bit, proof field,
+  modeled tick, trace event, or runtime behavior.
+
+Evidence:
+
+- `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`.
+- Named regression `E1R3-SURROGATE-OBSTRUCTION-REGRESSION` in
+  `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`.
+- Fresh-blind target-fidelity, execution-semantics, and trust/topology audits of
+  exact candidate `7fe5b8ba353b955b8e989ddd2ae8dc2371140518`.
+
+Publication-facing significance:
+
+An obstruction can force a paper-level model or payload decision.  Requiring a
+checked implication from the frozen target prevents a decomposition-specific
+lower bound from being mistaken for an impossibility of the claimed machine
+architecture.
+
+## WDD-20260718-003: name audit prompt engineering and scope runtime skills by role
+
+Status: Accepted.
+Date: 2026-07-18.
+Scope: project-skill identity, runtime discovery, startup preflight, and worker
+restart policy.
+
+Decision:
+
+1. Rename the coordinator-side `rmq-audit` skill to `rmq-audit-prompt` and make
+   its metadata state explicitly that it engineers external-auditor prompts and
+   evidence packets. It is not an audit-worker execution skill.
+2. Keep the full canonical skill inventory mandatory in the governed checkout
+   and working tree, including frontmatter and freshness checks.
+3. Require the runtime catalog to expose every skill explicitly required by the
+   task's role, but do not require unrelated canonical skills to be injected.
+   A proof-only worker may therefore pass with only `rmq-proof-sprint`; a
+   coordinator must expose `rmq-coordinator`; prompt engineering must expose
+   `rmq-audit-prompt` in addition to any other skill it actually uses.
+4. Continue to hard-stop on an omitted runtime catalog, undefined required
+   skill, missing required runtime skill, incomplete/stale canonical checkout,
+   frontmatter mismatch, or governance ancestry failure.
+
+Trigger and evidence:
+
+R1, titled `(R1) Repair the A07 blocking findings`, was a proof-only repair task
+whose prompt required `rmq-proof-sprint`. Its checkout contained all three
+canonical skills, but the task runtime exposed only `rmq-proof-sprint`. The old
+preflight compared the entire canonical set to the runtime set and stopped R1
+for missing `rmq-audit` and `rmq-coordinator`, although neither was applicable
+to the work. The name `rmq-audit` also suggested an auditor execution skill even
+though WDD-20260708-008 had already repurposed it to coordinator-side prompt
+engineering.
+
+Rejected alternatives:
+
+- Install every canonical skill globally so every task always sees all roles.
+  That duplicates versioned repository policy and can silently drift.
+- Drop canonical checkout validation and check only the required runtime name.
+  That would permit a governed task to start from an incomplete or stale skill
+  frontier.
+- Keep the ambiguous `rmq-audit` name and explain the distinction only in prose.
+- Let proof workers bypass a known failing preflight ad hoc. That weakens a
+  deterministic gate instead of correcting its overly broad predicate.
+
+Consequences:
+
+- Fresh tasks still need a governance-containing checkout because runtime skill
+  discovery occurs when a task is initialized and cannot be repaired by later
+  branch movement alone.
+- Role-specific tasks no longer fail merely because unrelated coordinator-side
+  skills are absent from their injected runtime catalog.
+- External audit workers follow their frozen prompt and
+  `docs/internal/AUDIT_PROTOCOL.md`; coordinators use `rmq-audit-prompt` when
+  authoring that prompt or packet.
+- Historical records may retain the former name when quoting an old catalog;
+  all live paths, metadata, templates, and tooling use the new identity.
+- No Lean proposition, payload bit, proof field, modeled tick, trace event, or
+  runtime claim changes.
+
+Evidence:
+
+- `.agents/skills/rmq-audit-prompt/SKILL.md` and `agents/openai.yaml`.
+- `AGENTS.md` and `.agents/skills/rmq-coordinator/SKILL.md`.
+- `scripts/project_skill_preflight.ps1`.
+- Named regressions `role-runtime-proof-sprint-only-pass`,
+  `coordinator-role-missing-from-runtime`,
+  `audit-prompt-role-missing-from-runtime`, and
+  `legacy-rmq-audit-name-rejected` in
+  `scripts/project_skill_preflight_regression.ps1`.
+- Worker R1 task `019f7801-d565-70e2-83cf-1546a1f62090` and its exact blocked
+  preflight report.
+
+Supersedes:
+
+- WDD-20260708-008 for the skill name only; its responsibility split remains.
+- WDD-20260715-002 points 2 through 4 only where they required the complete
+  canonical set in every runtime. Full canonical checkout validation and hard
+  stops for missing applicable skills remain in force.
+
+Publication-facing significance:
+
+This is workflow infrastructure only. It preserves versioned role policy while
+preventing unrelated skill injection from becoming false evidence that a proof
+worker is unqualified to run its assigned theorem campaign.
+
+## WDD-20260718-005: strict drift policy separates live claims from frozen history
+
+Status: Accepted.
+Date: 2026-07-18.
+Scope: current RMQ public surfaces, historical evidence, claim-drift policy,
+and completed-worker public-claim audits.
+
+Decision:
+
+1. Treat the pre-A07 current constants and fixtures as strict failures on live
+   public/current surfaces: cost bounds `76` or `142`, a 20-source manifest,
+   fresh or rejected segment `21`, and repeated-read global positions `0` and
+   `12`.
+2. Admit those literals only in explicitly frozen historical surfaces such as
+   dated digests, audit reports, acceptance matrices, worklogs, and design-
+   decision ledgers. A broad `docs/internal` allowance is not sufficient.
+3. Keep the production scanner's final strict verdict as the policy result and
+   reproduce the failed candidate's exact evidence pattern with named
+   regression fixtures plus current-value expected-accept controls.
+4. The live replacement facts are cost `207` with algebra
+   `2*35 + (2*11 + 2*37 + 30) + 11 = 207`, 22 physical sources over logical
+   segments `0..22` with segments `0` and `19` sharing BP, live segment `21`,
+   rejected fresh segment `23`, and repeated-read positions `0` and `15` from
+   producing instruction positions `0` and `1`.
+
+Trigger and evidence:
+
+The exact-commit audit of R1-R1 candidate
+`3a2b47261ba6a15829a3160a7fce352b62c88380` found its Lean theorem and manifest
+consumer sound but found retired current facts across live artifact, paper,
+roadmap, review-packet, and current-digest surfaces. The candidate worklog
+claimed those values remained only in historical records, while
+`scripts/claim_drift_scan.ps1 -Strict` exited successfully with 746 hits and no
+strict failure. The policy had marked `76` and the 20-source manifest as current
+and did not classify the stale fresh-segment or trace-position fixtures.
+
+Rejected alternatives:
+
+- Rely on a worker's repository-wide search transcript without checking the
+  policy classifier and its allowances.
+- Ban the retired literals everywhere, which would corrupt frozen audit and
+  design history.
+- Add one broad `docs/internal` exception, which would also exempt the live
+  final roadmap and current claim policy.
+- Repair prose alone while leaving the scanner blind to the reproduced miss.
+
+Consequences:
+
+- A docs-only repair cannot report a clean current surface while these exact
+  retired formulations remain live.
+- Frozen historical evidence remains readable and truthful.
+- The strict policy is a lower-bound consistency check; coordinators still
+  reconstruct source theorem identities and semantics independently.
+- No Lean proposition, payload bit, proof field, modeled tick, trace event, or
+  runtime behavior changes.
+
+Evidence:
+
+- `docs/internal/CLAIM_DRIFT_POLICY.json` and `.md`.
+- Named `r1r1-3a2b472-*` reject and current-value control fixtures in
+  `scripts/claim_drift_policy_regression.ps1`.
+- Exact rejected candidate
+  `3a2b47261ba6a15829a3160a7fce352b62c88380`.
+
+Publication-facing significance:
+
+The artifact's numeric cost, physical-source universe, freshness witness, and
+trace-position provenance are reviewer-visible claims. The strict live-versus-
+historical boundary prevents obsolete but once-valid facts from surviving a
+submission freeze under a green consistency gate.
+
+## WDD-20260718-006: worker write scopes include workflow-sensitive companions
+
+Status: Accepted.
+Date: 2026-07-18.
+Scope: worker-prompt construction, write-scope preflight, and strict workflow-
+decision evidence.
+
+Decision:
+
+1. Close transitive write scope before a prompt is marked `READY_TO_SEND`.
+2. If a write prompt may edit `scripts/gate.ps1`, require
+   `docs/internal/WORKFLOW_DESIGN_DECISIONS.md` in the same declared write
+   scope. This applies even when the gate edit is comment-only because the
+   strict decision checker intentionally treats the gate as process-sensitive.
+3. Enforce the relation in `worker_prompt_preflight.ps1`, document it in the
+   worker template and coordinator skill, and retain both failing and passing
+   regression cases.
+
+Trigger and evidence:
+
+R1-R1 was assigned a stale-comment correction in `scripts/gate.ps1` while its
+frozen write scope omitted the workflow-decision ledger. The worker completed
+the substantive theorem repair, then correctly stopped when
+`design_decision_check.ps1 -Strict` required a workflow entry it lacked
+authority to write. A later coordinator scope amendment was safe but avoidable.
+
+Rejected alternatives:
+
+- Let workers silently expand their scope when a strict checker requests a
+  companion file.
+- Exempt comment-only gate edits from process-sensitive classification.
+- Mention the companion only in prose without making prompt preflight reject
+  the incomplete scope.
+- Add every design ledger to every prompt regardless of changed paths.
+
+Consequences:
+
+- Gate-edit prompts arrive with enough authority to satisfy their known strict
+  workflow evidence dependency.
+- Workers still stop on any other unanticipated scope expansion.
+- Narrow prompts that do not touch the gate gain no extra write authority.
+- The rule changes no command, gate order, Lean proposition, payload data,
+  modeled cost, trace, or runtime semantics.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md`.
+- `docs/internal/templates/WORKER_PROMPT.md`.
+- `scripts/worker_prompt_preflight.ps1`.
+- Named regressions `gate-strict-wdd-outside-write-scope-rejected` and
+  `gate-strict-wdd-in-write-scope-accepted` in
+  `scripts/worker_prompt_preflight_regression.ps1`.
+
+Publication-facing significance:
+
+This is workflow infrastructure. It prevents a mechanically predictable scope
+block from interrupting a submission-hardening repair while preserving the
+same strict audit trail for aggregate-gate changes.
+
+## WDD-20260719-002: derive exhaustive current-claim repair scope from one registry
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: current-claim policy, worker-prompt construction, and R1-R2 repair
+auditing.
+
+Decision:
+
+1. Treat `docs/internal/CLAIM_DRIFT_POLICY.json`
+   `currentFactSurfacePathRegex` as the canonical current-reader-surface
+   registry for exhaustive synchronization tasks.
+2. Include the reviewer-grade claim correspondence, family summary, and model
+   adequacy packet in that registry.
+3. Reject the exact stale current-route vocabulary preserved by rejected
+   candidate `48147cbc67c6c01c4abcf2565f9b981adb5eacb8`: the accepted canonical
+   trace is `readWord`-only, while three-constructor language is allowed only
+   when accurately labeled compatibility or frozen history.
+4. Require worker prompts claiming exhaustive current-surface synchronization
+   to name the registry and inspect every matched tracked path before launch.
+
+Trigger and evidence:
+
+R1-R2 repaired every path in its hand-written 17-file scope and passed strict
+claim drift, yet `artifact/CLAIMS.md`, `docs/PAPER_CLAIM_CORRESPONDENCE.md`, and
+`docs/FAMILY_SUMMARY.md` retained the weaker three-constructor current-route
+story. The policy omitted two of those authoritative surfaces and had no
+event-vocabulary term for the included artifact row.
+
+Rejected alternatives:
+
+- Treat the weaker statement as sufficient because it remains logically true.
+- Add only the three prose files to one repair prompt while leaving governance
+  unable to reproduce the miss.
+- Ban `wordRank` and `wordSelect` globally, which would corrupt accurate model
+  definitions, compatibility surfaces, and frozen history.
+- Continue maintaining an unrelated prompt-local surface list and scanner list.
+
+Consequences and evidence:
+
+- `claim_drift_policy_regression.ps1` freezes the exact rejected candidate
+  patterns plus current readWord-only and compatibility-labeled controls.
+- `worker_prompt_preflight.ps1` rejects an exhaustive synchronization prompt
+  that does not name the canonical registry.
+- Coordinators must still reread source theorems and every matched current
+  surface; scanner success remains a lower bound rather than semantic proof.
+- No Lean proposition, payload, modeled cost, trace, or runtime behavior
+  changes.
+
+Publication-facing significance:
+
+The paper claim map and family summary are authoritative reviewer navigation
+surfaces. Keeping them in the same closed inventory as the artifact and theorem
+map prevents an obsolete but weaker execution vocabulary from surviving a
+submission freeze under a green scanner.
+
+## WDD-20260719-003: attest the closed current-surface set before worker launch
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: exhaustive current-claim prompt construction, write-scope closure, and
+claim-drift vocabulary coverage.
+
+Decision:
+
+1. Before an exhaustive current-surface prompt becomes `READY_TO_SEND`, the
+   coordinator records the exact base-derived registry match count, complete
+   inspected path set, and expected repair paths in the prompt artifact.
+2. `worker_prompt_preflight.ps1` independently reconstructs the registry from
+   the exact worker base, rejects count/path-set disagreement, and rejects any
+   declared repair path absent from write scope.
+3. The current-event vocabulary policy rejects the exact README paraphrases
+   found at governed base `a835720ddae8816727febb16c636eee4a5f57076`, including
+   `payload read, word-rank, or word-select` and `payload read or bounded word
+   primitive`, unless the same line accurately labels compatibility or the
+   current readWord-only route.
+
+Trigger and evidence:
+
+R1-R3 received a prompt that named `currentFactSurfacePathRegex` but delegated
+the first complete enumeration to the worker. The worker correctly stopped
+clean before editing when registered `README.md` contained a required repair
+outside its write scope. The coordinator rule already required pre-launch
+inspection, but the structural preflight accepted an unattested instruction to
+inspect later, and policy version 16 did not match the README paraphrase.
+
+Rejected alternatives:
+
+- Treat a clean worker scope stop as adequate recurring behavior.
+- Add only `README.md` to this task without making future inventory evidence
+  mechanically replayable.
+- Grant every documentation worker blanket repository write access.
+- Ban all mentions of word-rank/select primitives, including accurate model,
+  component, compatibility, and historical descriptions.
+
+Consequences and evidence:
+
+- Exhaustive prompts carry a reproducible closed read set and a narrower owned
+  repair set; workers still stop on genuinely new semantic discoveries.
+- Named prompt regressions reject an unattested inventory and an expected
+  repair outside write scope, while an exact counted/path-complete prompt
+  accepts.
+- Named claim-policy regressions reproduce the R1-R3 README spellings and keep
+  an explicitly compatibility-labeled weaker-story control accepted.
+- This changes no Lean proposition, payload, modeled cost, trace, machine, or
+  runtime behavior.
+
+Publication-facing significance:
+
+README is the first reviewer navigation surface. Requiring its presence in the
+same pre-launch closed inventory as the paper map and artifact prevents a true
+but weaker compatibility story from surviving under a nominally exhaustive
+submission-freeze repair.
+
+## WDD-20260719-004: require theorem identity for strong current claims
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: public-claim attribution, claim-drift policy, and completed-worker
+failure-mode feedback.
+
+Decision:
+
+1. A current registered publication surface that states the strong
+   `readWord`-only property must name the exact public theorem
+   `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`.
+2. `CLAIM_DRIFT_POLICY.json` records this as a structured file-level required
+   attribution rather than another same-line vocabulary exception.
+3. The strong alias remains distinct from the generic execution story, the
+   weaker three-constructor compatibility alias, and the construction-facing
+   capstone. Those declarations may still be cited for their actual checked
+   propositions, but cannot be the sole identity beside the stronger claim.
+
+Trigger and evidence:
+
+Rejected R1-R3 candidate `bad14d0f1f7561f5f4200c19259a4ae5c8375499`
+passed the line-oriented strict scanner after synchronizing four surfaces, yet
+seven registered current documents still stated the strong fact without naming
+its theorem. Five also attributed that fact to a weaker theorem or capstone.
+The worker's closed inventory therefore confused truth of a separate theorem
+with membership of that proposition in the declaration cited by the prose.
+
+Rejected alternatives:
+
+- Accept the prose because the strong property is true elsewhere in the same
+  Lean module.
+- Add more same-line negative vocabulary patterns, which cannot reliably
+  connect a multi-line claim to its cited declaration.
+- Ban the weaker declarations from public documents, which would erase useful
+  and accurate compatibility and construction structure.
+- Require every current document to reproduce the full Lean proposition.
+
+Consequences and evidence:
+
+- Policy version 18 adds a file-level `requiredAttributions` contract and the
+  production scanner enforces it in strict mode.
+- Named regressions `r1r3-bad14d0-*` reproduce all seven missing-identity
+  surfaces; strong-alias and accurately labeled weaker-story controls remain
+  accepted.
+- This is a necessary tripwire, not semantic proof. Coordinators and auditors
+  must still compare each sentence with the actual theorem type and repair
+  false attribution rather than merely inserting the required name elsewhere.
+- No Lean proposition, payload, proof data, modeled tick, trace, allocation,
+  or runtime behavior changes.
+
+Publication-facing significance:
+
+Reviewer navigation must identify which checked theorem actually carries a
+headline conjunct. This prevents a true project-level fact from being attached
+to a weaker declaration in the theorem map, trust packet, or paper digest.
+
+## WDD-20260719-005: separate semantic matrix evidence from cell placement and upper-bound syntax from attainment
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: completed-worker proof gates, external-audit reconstruction, and audit
+prompt engineering.
+
+Decision:
+
+1. Auditors enumerate the real frozen IDs and reconstruct each row from every
+   evidence location explicitly allowed by the matrix schema. A blank cell or
+   coordinator-owned `Open` status is not independently a blocker.
+2. Appended evidence remains untrusted until its proposition, consumer, object
+   identity, executable result, and anti-vacuity obligation are checked.
+3. Tightness, attainment, and impossibility of a smaller cost bound require an
+   equality/lower-bound witness or checked counterexample/negation on the same
+   reachable object. A direct proof of `cost <= K` proves only that upper bound.
+
+Trigger and evidence:
+
+B7 target `6ad4198cf09c0d4e103ae0e1c0a5c7a084d0ae25` promoted a direct
+`cost <= 33` proof to the statements that 33 was attained and the old 30 bound
+was unprovable. A08 report `1bc6b3597b97720c5c5dad0a2e87277cf28fd7ea`
+correctly challenged that promotion, but separately rejected 24 rows from
+blank cell placement and `Open` status, named nonexistent row IDs, and did not
+reconstruct the row-keyed append-only evidence.
+
+Rejected alternatives:
+
+- Treat proof-term shape or absence of transitivity as a semantic lower bound.
+- Require every frozen matrix to rewrite table cells after freeze, which would
+  defeat append-only evidence designs and confuse worker evidence with
+  coordinator acceptance.
+- Accept append-only prose at face value merely because its row ID is present.
+- Repair only the A08 report without making the two general failure patterns
+  durable.
+
+Consequences and regression evidence:
+
+- `B7-UPPER-BOUND-IS-NOT-ATTAINMENT` rejects the exact 6ad4198 evidence pattern
+  while allowing accurately labeled upper-bound theorems.
+- `A08-EVIDENCE-LOCATION-IS-NOT-EVIDENCE-ABSENCE` rejects the exact 1bc6b35
+  row-count argument while still requiring substantive row-by-row evidence.
+- Audit prompts and reports must use the protocol evidence tiers and actual
+  frozen identifiers; process layout cannot substitute for mathematical or
+  executable reconstruction.
+- No Lean proposition, payload, proof-only field, modeled tick, trace,
+  allocation, or runtime behavior changes.
+
+Publication-facing significance:
+
+Reviewers must be able to distinguish a certified upper bound from a witnessed
+worst case and a missing proof from evidence recorded append-only. The rule
+prevents both mathematical overstatement and audit rejection based only on
+document layout.

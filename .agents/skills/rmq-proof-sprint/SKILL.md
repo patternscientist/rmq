@@ -126,8 +126,11 @@ and follow-up clearly enough to support future paper exposition.
 
 ## 6. Verify
 
-Choose the narrowest relevant build first, then the public gates required by
-the prompt. Typical commands are:
+Write a verification coverage plan before running commands. Classify checks as
+development-loop, final-required, or conditional; name the changed paths and
+acceptance rows each check covers. Choose the narrowest relevant build first,
+then the public gates required by the prompt. Do not run a broad command merely
+because it appears in this example list. Typical commands are:
 
 ```powershell
 lake build <touched target>
@@ -140,6 +143,25 @@ git diff --check
 powershell -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1
 powershell -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1
 ```
+
+For any check expected to take several minutes, record the most recent
+comparable runtime and choose a timeout with realistic margin. Run only one
+heavy Lean/Lake command at a time against the worktree. If a command times out,
+do not immediately rerun it unchanged: check whether the child is still alive,
+whether artifacts are advancing, whether imports need a targeted warm-up, and
+whether the command unexpectedly expanded into a full build. Resume the live
+process or retry only after a material change. A timeout followed by the same
+20- or 30-minute command is a process defect unless the first process is known
+to have ended and the retry condition has changed.
+
+Run an aggregate gate at most once on an unchanged final tree unless the first
+run did not actually complete. After a failure, reproduce the failing component
+with the smallest command, fix it, rerun affected checks, and reserve the next
+aggregate run for final certification. When the aggregate gate already includes
+a listed build or axiom check, avoid a separate duplicate final run unless it
+provides necessary diagnosis or the prompt requires independent evidence.
+Read the detailed rerun and final-tree rules in
+`references/COMPLETION_GATE.md`.
 
 Run the native-decision scan when computation/trust examples changed and the
 claim-drift scan when public prose changed. Update curated axiom checks when a

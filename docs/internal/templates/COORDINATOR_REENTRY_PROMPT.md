@@ -21,9 +21,12 @@ Tasks:
        -GovernanceRef [WORKFLOW_GOVERNANCE_REF]
        -RequiredSkills rmq-coordinator
        -RuntimeProjectSkills "[COMMA-SEPARATED RMQ SKILLS ACTUALLY SHOWN]"
-   - If $rmq-coordinator, another canonical RMQ skill, or the preflight script
-     is unavailable/stale, STOP and report CWD, HEAD, governance ref, expected
-     skills, runtime skills, and missing/stale names.
+   - If the preflight script is absent, a canonical checkout skill is
+     missing/stale, or the required $rmq-coordinator skill is missing from the
+     runtime, STOP and report CWD, HEAD, governance ref, expected skills,
+     runtime skills, and missing/stale names. Unrelated role skills need not be
+     injected into this coordinator runtime unless the task explicitly uses
+     them.
    - Do not substitute $rmq-proof-sprint or continue best-effort.
    - Resume only after starting/restarting from a governance-containing
      checkout, unless the user explicitly authorizes a fallback after the

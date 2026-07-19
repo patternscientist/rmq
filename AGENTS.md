@@ -4,13 +4,17 @@
 
 - The canonical RMQ project skills are the `SKILL.md` packages tracked under
   `.agents/skills` at the task's declared workflow-governance frontier. Before
-  substantive repository work, identify the applicable role skill and confirm
-  that every canonical RMQ skill, especially any explicitly named skill, is
-  present in the task's runtime available-skills catalog.
+  substantive repository work, confirm that the checkout contains the complete
+  canonical set, identify the applicable role skill or skills, and confirm that
+  those explicitly required skills are present in the task's runtime catalog.
+  A role-specific task does not need unrelated coordinator-side skills injected
+  into its runtime.
 - Use `$rmq-coordinator` for coordination, re-entry, completed-worker audit,
   integration, roadmap planning, and handoff work; `$rmq-proof-sprint` for
-  narrow Lean/proof/construction work; and `$rmq-audit` for preparing external
-  audit prompts and evidence packets.
+  narrow Lean/proof/construction work; and `$rmq-audit-prompt` for preparing
+  external audit prompts and evidence packets. `$rmq-audit-prompt` is a
+  coordinator-side authoring skill, not an audit-worker skill. Audit workers
+  follow their frozen prompt and `docs/internal/AUDIT_PROTOCOL.md`.
 - When an exact governance ref is supplied, run
   `scripts/project_skill_preflight.ps1` with that ref, the applicable skill,
   and the RMQ skill names shown in the task's runtime catalog. Keep the
@@ -21,22 +25,22 @@
   powershell -ExecutionPolicy Bypass -File scripts\project_skill_preflight.ps1 `
     -GovernanceRef <EXACT_SHA> `
     -RequiredSkills rmq-coordinator `
-    -RuntimeProjectSkills "rmq-audit,rmq-coordinator,rmq-proof-sprint"
+    -RuntimeProjectSkills "rmq-coordinator"
   ```
 
   Replace the runtime list with the RMQ skills actually exposed to the task; do
   not copy the expected list merely to make the check pass.
 - If the script is absent, a canonical skill is missing or stale in the
-  checkout, the runtime catalog omits a canonical or explicitly required
-  skill, or the governance ref is not in the checkout's ancestry, **stop before
-  substantive work**. Report the working directory, checkout HEAD, governance
-  ref, expected project skills, runtime project skills, and missing/stale
-  names. Do not substitute another skill or continue best-effort.
+  checkout, the runtime catalog omits an explicitly required role skill, or the
+  governance ref is not in the checkout's ancestry, **stop before substantive
+  work**. Report the working directory, checkout HEAD, governance ref, expected
+  project skills, runtime project skills, and missing/stale names. Do not
+  substitute another skill or continue best-effort.
 - Resume only in a new or restarted task rooted at a checkout containing the
-  governing workflow commit and exposing the complete skill catalog, unless
-  the user explicitly authorizes a fallback after the mismatch is disclosed.
-  A fallback run cannot record coordinator acceptance, integration, or roadmap
-  closure.
+  governing workflow commit and exposing every explicitly required role skill,
+  unless the user explicitly authorizes a fallback after the mismatch is
+  disclosed. A fallback run cannot record coordinator acceptance, integration,
+  or roadmap closure.
 
 ## Repository Expectations
 
@@ -64,7 +68,20 @@
 
 ## Verification
 
-- After proof or implementation edits, run `lake build`.
+- Plan verification from changed paths and acceptance rows. During development,
+  run the narrowest affected target and direct consumer first. Reserve full
+  `lake build` and `scripts/gate.ps1` for broad/integration/public-capstone
+  changes or an explicit final contract; narrow proof, docs-only, and read-only
+  work should use proportionate checks and record why broad gates were skipped.
+- Run only one heavy Lean/Lake process at a time per build tree. For a
+  multi-minute command, choose a timeout from observed runtimes with cold-cache
+  margin. After a timeout, inspect surviving child processes, artifact progress,
+  missing prerequisites, and accidental full-build fallback before retrying.
+  Never rerun the same expensive command unchanged merely because its wrapper
+  timed out or remained quiet.
+- Run an aggregate gate at most once on an unchanged final tree. Diagnose a
+  late failure with the smallest failing component, then reserve the next full
+  run for final certification.
 - Run this hygiene scan before finalizing:
 
   ```powershell
@@ -132,7 +149,22 @@
   what changed conceptually, what the work just done now means in plain
   English, what assumptions are live, and what a skeptical grad student would
   ask next.
+- When completion relies on a mutation campaign, require committed replayable
+  cases with expected verdicts, exact failing surfaces, expected-accept
+  controls, and restoration/clean-tree checks. Report-only experiments,
+  terminal transcripts, and unreferenced Git objects do not close acceptance
+  rows. Public-dependency claims also require a checked expected-type consumer
+  that fails when the public proposition is mutated.
 - The lead thread remains responsible for periodic check-ins, steering agents
   away from premature loop breaks or side quests, integrating accepted work, and
   running the final gate. For public-facing milestones, it should also fold
   the worker's digestion note into `docs/DIGESTION_LOG.md` or a focused digest.
+- When the user explicitly opts into automated worker chaining, use the
+  `rmq-coordinator` audited completion loop: launch only preflighted
+  `READY_TO_SEND` prompts in fresh governed Codex tasks, register one logical
+  completion-monitor record per task (multiplexed in one heartbeat when the app
+  permits only one), independently audit exact commits, complete reusable
+  failure-mode feedback, and attach monitors to any automatically launched
+  successors. Do not use that opt-in to infer authority to merge, push, delete
+  branches/worktrees, or launch around unresolved dependencies or architecture
+  choices.

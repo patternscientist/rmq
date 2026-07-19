@@ -1,6 +1,7 @@
 {
-  "version": 14,
-  "updated": "2026-07-14",
+  "version": 18,
+  "updated": "2026-07-19",
+  "currentFactSurfacePathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\\.md|RMQ_FINAL_ROADMAP\\.md))$",
   "terms": [
     {
       "id": "novelty-first-mechanized",
@@ -105,10 +106,19 @@
     {
       "id": "principled-charged-trace-76",
       "pattern": "\\b76\\b",
-      "status": "current-canonical-principled-charged-trace-bound-controller-operations-explicitly-uncharged",
+      "status": "historical-pre-A07-principled-charged-trace-bound-not-current",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""
+    },
+    {
+      "id": "forbidden-retired-current-cost-bound",
+      "pattern": "(?i)(?:\\b(?:current|canonical|principled|uniform|modeled|query|charged-trace|trace length|Costed\\.cost)\\b.{0,120}\\b(?:76|142)\\b|\\b(?:76|142)\\b.{0,120}\\b(?:current|canonical|principled|uniform|modeled|query|charged-trace|trace length|Costed\\.cost)\\b)",
+      "status": "forbidden-retired-76-or-142-current-cost-formulation-outside-frozen-history-or-policy-enforcement-data",
+      "strict": true,
+      "scope": "current-fact-surface",
+      "allowedPathRegex": "",
+      "allowedLineRegex": "CLAIM-HISTORY-A07-COST"
     },
     {
       "id": "canonical-physical-payload-identity",
@@ -128,11 +138,47 @@
     },
     {
       "id": "typed-reviewer-source-manifest",
-      "pattern": "20-source|ReviewerSource|reviewer source manifest",
+      "pattern": "22-source|ReviewerSource|reviewer source manifest",
       "status": "current-exhaustive-typed-canonical-universe",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""
+    },
+    {
+      "id": "forbidden-retired-current-source-count",
+      "pattern": "(?i)\\b20(?:-source| sources?)\\b",
+      "status": "forbidden-retired-20-source-current-manifest-outside-frozen-history-or-policy-enforcement-data",
+      "strict": true,
+      "scope": "current-fact-surface",
+      "allowedPathRegex": "",
+      "allowedLineRegex": "CLAIM-HISTORY-A07-SOURCE-COUNT"
+    },
+    {
+      "id": "forbidden-retired-fresh-segment-21",
+      "pattern": "(?i)(?:\\b(?:fresh|unused|rejected)\\b.{0,100}\\b(?:segment|source)\\s*`?21`?|\\b(?:segment|source)\\s*`?21`?.{0,100}\\b(?:fresh|unused|rejected)\\b)",
+      "status": "forbidden-retired-fresh-or-rejected-segment-21-current-formulation-outside-frozen-history-or-policy-enforcement-data",
+      "strict": true,
+      "scope": "current-fact-surface",
+      "allowedPathRegex": "",
+      "allowedLineRegex": "CLAIM-HISTORY-A07-FRESH-SEGMENT"
+    },
+    {
+      "id": "forbidden-retired-trace-position-12",
+      "pattern": "(?i)\\b(?:global\\s+)?positions?\\b.{0,100}`?\\b0\\b`?\\s*(?:and|/|,)\\s*`?\\b12\\b`?",
+      "status": "forbidden-retired-current-repeated-read-position-0-and-12-outside-frozen-history-or-policy-enforcement-data",
+      "strict": true,
+      "scope": "current-fact-surface",
+      "allowedPathRegex": "",
+      "allowedLineRegex": "CLAIM-HISTORY-A07-TRACE-POSITIONS"
+    },
+    {
+      "id": "forbidden-retired-current-event-vocabulary",
+      "pattern": "(?i)(?:every\\s+(?:actual\\s+)?(?:emitted\\s+)?event\\b.{0,120}\\breadWord\\b.{0,80}\\bwordRank\\b.{0,80}\\bwordSelect\\b|every\\s+event\\s+actually\\s+emitted\\b.{0,120}\\bpayload\\s+read\\b.{0,80}\\bword[- ]rank\\b.{0,80}\\bword[- ]select\\b|(?:every\\s+event|events)\\s+(?:is|are)(?:\\s+either)?\\s+(?:a\\s+)?(?:payload\\s+)?reads?\\s+or\\s+(?:a\\s+)?(?:bounded\\s+)?word\\s+primitives?|one\\s+of\\s+the\\s+three\\s+genuine\\s+constructors)",
+      "status": "forbidden-weaker-three-constructor-vocabulary-for-current-readword-only-route-outside-frozen-history-or-explicit-compatibility-labeling",
+      "strict": true,
+      "scope": "current-fact-surface",
+      "allowedPathRegex": "",
+      "allowedLineRegex": "(?i)readWord[- ]only|compatibility[- ]only|never emitted|CLAIM-HISTORY-A07-EVENT-VOCABULARY"
     },
     {
       "id": "producer-level-provenance",
@@ -197,6 +243,16 @@
       "strict": true,
       "allowedPathRegex": "^docs/internal/|^docs/RMQ_EXTRACTION_FRONTIER\\.md$",
       "allowedLineRegex": "must not|planning|policy|scan|not erase|runnable"
+    }
+  ],
+  "requiredAttributions": [
+    {
+      "id": "required-current-readword-only-theorem-attribution",
+      "pathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md)$",
+      "claimPattern": "(?is)(?:every\\s+(?:(?:actual|accepted)\\s+)?(?:emitted\\s+)?(?:trace\\s+)?event.{0,120}(?:is|are|be)\\s+(?:a\\s+)?(?:genuine\\s+)?(?:payload(?:-word)?\\s+read|`?readWord`?)|only\\s+genuine\\s+`?readWord`?\\s+events|trace\\s+emits\\s+only\\s+`?readWord`?\\s+events|readWord[- ]only)",
+      "requiredPattern": "RMQ\\.Headlines\\.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly",
+      "status": "strong-current-readword-only-claim-must-name-the-strong-public-theorem",
+      "strict": true
     }
   ]
 }

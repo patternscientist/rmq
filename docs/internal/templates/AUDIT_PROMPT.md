@@ -34,6 +34,11 @@ Adversarial requirements:
 - Reconstruct a requirement-to-evidence matrix independently from the prompt,
   named consumer, roadmap node, and inherited RMQ invariants. Do not accept the
   worker's chosen local endpoint as the target without checking that contract.
+- Enumerate the actual frozen IDs verbatim. Evidence may be in frozen cells or
+  an explicitly permitted append-only ledger; a blank cell or coordinator-owned
+  `Open` status is not a finding without a substantive missing proposition,
+  consumer, identity, executable result, or anti-vacuity witness. Do not invent
+  IDs or substitute a row count for ID-by-ID dispositions.
 - In fresh-blind mode, do not read the worker verdict or narrative. Inspect
   exact theorem types and expand load-bearing definitions; declaration-name
   lists are not evidence.
@@ -53,6 +58,10 @@ Adversarial requirements:
   proof but erased from its conclusion does not close a stronger claim.
 - Look for wrappers, renamed caveats, decorative reads, proof-only answers,
   uncounted storage, synthetic events, or work that advances a different goal.
+- Treat `cost <= K` as an upper bound only. Claims that `K` is tight or attained,
+  or that `cost <= K - 1` is impossible, require an equality/lower-bound witness
+  or checked counterexample/negation on the same reachable object; an `exact`
+  proof with no transitivity slack is not such evidence.
 - Treat the report's own remaining-risk or next-consumer caveats as evidence
   against completion when they concern assigned or inherited criteria.
 - Do not accept the worker's label that a residual question is "strictly

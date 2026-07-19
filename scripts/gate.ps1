@@ -35,6 +35,9 @@ function RunAxiomCheck($script, $label) {
 & "$PSScriptRoot\project_skill_preflight_regression.ps1"
 if ($LASTEXITCODE -ne 0) { Fail "project_skill_preflight_regression.ps1 found issues" }
 
+& "$PSScriptRoot\worker_prompt_preflight_regression.ps1"
+if ($LASTEXITCODE -ne 0) { Fail "worker_prompt_preflight_regression.ps1 found issues" }
+
 # 1. Build must be green.
 lake build
 if ($LASTEXITCODE -ne 0) { Fail "lake build failed" }

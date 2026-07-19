@@ -124,9 +124,32 @@ and the headline axiom inventory.
   activated-at, threshold-free, exponent-first, and spaced/unspaced forms.
   Narrow role allowances keep explicit negation, historical records,
   compatibility companions, and proof-only sparse-local witnesses accepted.
-- `76` is the current principled canonical charged-trace bound, with exact cost
-  equal to emitted trace length. It charges payload reads and word-rank/select
-  primitives; controller operations remain explicitly uncharged.
+- `207` is the current principled canonical charged-trace bound, with exact
+  algebra `2*35 + (2*11 + 2*37 + 30) + 11 = 207` and cost equal to emitted
+  trace length. The current route is `readWord`-only: attempted payload reads
+  are charged and `wordRank`/`wordSelect` remain compatibility-only
+  constructors that are never emitted by this route. Controller operations
+  remain explicitly uncharged.
+- The canonical current-surface registry includes the reviewer-grade claim
+  correspondence, family summary, and model-adequacy packet as well as the
+  artifact, theorem-map, roadmap, trust, and current-digest surfaces. An
+  exhaustive synchronization task must inspect every path matched by
+  `currentFactSurfacePathRegex`; before launch its prompt records the exact
+  base-derived match count, full inspected-path set, and expected repair paths,
+  all of which must be covered by write scope. A prompt-local hand list or
+  worker-side first discovery is not sufficient.
+- A registered current publication surface that asserts the strong
+  `readWord`-only fact must name
+  `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`.
+  File-level required-attribution checks complement line-oriented vocabulary
+  lint: a generic execution story, the weaker three-constructor alias, or the
+  construction-facing capstone must not be presented as though its own checked
+  type contains the stronger conjunct. Accurately labeled weaker and
+  compatibility claims remain permitted beside the strong alias.
+- `CLAIM-HISTORY-A07-EVENT-VOCABULARY`: the weaker three-constructor current
+  route description, including `payload read or bounded word primitive`
+  paraphrases, is historical or explicitly compatibility-labeled only.
+- `CLAIM-HISTORY-A07-COST`: retired current bounds `76` and `142` are historical only.
 - `328` is the historical checked transitional U2 bound, retained for audit
   comparison rather than as the paper-facing cost.
 - `4144`, Ready-regime `118`, the zero-block route, and `196727` are
@@ -158,9 +181,15 @@ and the headline axiom inventory.
 - "Physical execution" in the current reviewer story must name the genuine
   `FlatPhysical` supplied-store evaluator and translation adapter, not a mapping
   of an already-computed logical result and trace.
-- The canonical live manifest is one typed universe of exactly 20 sources,
-  including canonical close. Legacy close/interior storage is compatibility
-  only; BP code is the explicitly shared source.
+- The canonical live manifest is one typed universe of exactly 22 physical
+  sources over logical segments `0..22`, including canonical close. Logical
+  segments `0` and `19` share the BP source. Live segment `21` is present;
+  rejected fresh segment `23` is outside the manifest. The current singleton
+  repeated-read fixture uses global positions `0` and `15` from producing
+  instruction positions `0` and `1`.
+- `CLAIM-HISTORY-A07-SOURCE-COUNT`: the retired 20-source count is historical only.
+- `CLAIM-HISTORY-A07-FRESH-SEGMENT`: rejected fresh segment `21` is historical only.
+- `CLAIM-HISTORY-A07-TRACE-POSITIONS`: global positions `0` and `12` are historical only.
 - The public list space statement is
   `buildPayload.length <= 2*n + overhead n` with little-o overhead. Exact
   physical-word erasure remains mandatory, but no padding may manufacture a

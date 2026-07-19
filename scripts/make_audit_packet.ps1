@@ -73,7 +73,7 @@ $files = @(
   "docs/internal/CLAIM_DRIFT_POLICY.md",
   "docs/internal/CLAIM_DRIFT_POLICY.json",
   ".agents/skills/rmq-coordinator/SKILL.md",
-  ".agents/skills/rmq-audit/SKILL.md",
+  ".agents/skills/rmq-audit-prompt/SKILL.md",
   ".agents/skills/rmq-proof-sprint/SKILL.md"
 )
 

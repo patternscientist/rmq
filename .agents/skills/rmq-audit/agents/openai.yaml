@@ -1,4 +1,0 @@
-interface:
-  display_name: "RMQ External Audit Prompt"
-  short_description: "Engineer evidence-classed external RMQ audit prompts"
-  default_prompt: "Use $rmq-audit to prepare an external-auditor prompt from the current RMQ frontier."

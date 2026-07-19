@@ -2,8 +2,28 @@
 
 Delete bracketed guidance before sending.
 
+Coordinator launch metadata (do not paste into the worker prompt):
+
+- Prompt status: [READY_TO_SEND / DRAFT_DO_NOT_SEND].
+- Failure-mode feedback: [COMPLETE / PENDING / NOT_APPLICABLE].
+- Semantic-contract review: [COMPLETE / PENDING]. This is an independent
+  coordinator reread of the target, closure conditions, acceptance IDs, scope,
+  forbidden shortcuts, verification, and report contract; preflight structure
+  checks do not replace it.
+- Destination task: [RETURNING_TASK / FRESH_GOVERNED_WORKTREE].
+- Destination runtime evidence: [VERIFIED_CURRENT / GOVERNED_START / UNKNOWN /
+  STALE]. A returning task requires an explicit current runtime inventory;
+  repository skill files or a later branch switch are not runtime evidence.
+- Worker handle, fresh/returning chat, exact model variant/reasoning/service
+  mode, exact governance SHA, exact worker-base SHA, and branch.
+- Run `scripts/worker_prompt_preflight.ps1` for every emitted prompt artifact
+  and record its result. `READY_TO_SEND` requires a passing populated-template
+  check. A read-only audit with pending durable feedback may emit only
+  `DRAFT_DO_NOT_SEND`; if its contract forbids even a temporary prompt file,
+  record `NOT_RUN` and do not grant launch authority.
+
 ```text
-Make the title of this chat exactly: `([WORKER_HANDLE]) [SHORT_TASK_SUMMARY]`
+Make the title of this chat exactly: ([WORKER_HANDLE]) [SHORT_TASK_SUMMARY]
 
 Worker identity:
 - Handle: [WORKER_HANDLE]
@@ -15,11 +35,12 @@ Skill:
 - Workflow-governance ref: [EXACT COMMIT CONTAINING CURRENT RMQ SKILLS/POLICY].
 - Before substantive work, run `scripts/project_skill_preflight.ps1` against
   that ref with `[SKILL_NAME]` required and the RMQ skill names actually shown
-  in the task's runtime available-skills catalog. If the script or any
-  canonical/required skill is missing or stale, stop and notify the user; do
-  not substitute another skill or continue best-effort. Restart from a
-  governance-containing checkout unless the user explicitly authorizes a
-  disclosed fallback.
+  in the task's runtime available-skills catalog. If the script is absent, any
+  canonical checkout skill is missing/stale, or any explicitly required role
+  skill is missing from the runtime, stop and notify the user; do not substitute
+  another skill or continue best-effort. Unrelated coordinator-side skills need
+  not be injected into a proof-only worker. Restart from a governance-containing
+  checkout unless the user explicitly authorizes a disclosed fallback.
 
 Checkout contract:
 - Task mode: [WRITE / READ-ONLY].
@@ -41,6 +62,17 @@ Roadmap contract:
 - Goal: [ONE SENTENCE EXACT TARGET]
 - Required theorem/file/tool: [EXACT TARGET]
 - Write scope: [PATHS]
+- Write-scope closure: if the task may edit `scripts/gate.ps1`, include
+  `docs/internal/WORKFLOW_DESIGN_DECISIONS.md` in the same scope because the
+  strict workflow-decision checker requires a durable process entry even for a
+  comment-only gate edit.
+- Current-surface inventory: [FOR EXHAUSTIVE LIVE/CURRENT PUBLIC-SURFACE TASKS,
+  USE `registry=docs/internal/CLAIM_DRIFT_POLICY.json;
+  field=currentFactSurfacePathRegex; matched_count=N;
+  inspected_paths=comma-separated exact tracked paths;
+  expected_repair_paths=comma-separated owned paths` FROM THE EXACT BASE.
+  REQUIRE EVERY MATCHED PATH TO BE INSPECTED AND EVERY EXPECTED REPAIR PATH TO
+  APPEAR IN WRITE SCOPE; OTHERWISE NOT_APPLICABLE].
 - Non-goals: [BOUNDARIES]
 - Explicitly deferred work: [ITEMS]. A deferred item is non-blocking only when
   it is not required for this target or its inherited invariants to be true.
@@ -82,6 +114,25 @@ Acceptance contract:
   parameters whenever the requirement claims occurrence-level production.
 - For a public theorem combining space/execution/model claims, prove each
   conjunct concerns the same payload, store, execution, and word model.
+- If acceptance cites a mutation campaign, commit a replayable runner or stable
+  fixtures for every claimed case, expected verdict/failing surface, expected-
+  accept control, and restoration/clean-tree check. Report prose, terminal
+  transcripts, and dangling Git objects are not acceptance evidence. For a
+  public dependency, add an independent expected-type consumer and show that
+  mutating the public proposition itself breaks the committed check; printing
+  or checking the theorem's mutable current type does not pin it.
+- `REPLAY-EXACT-REGISTRY`: a replay harness must declare the exact ordered
+  frozen case registry, reject missing or duplicate IDs, verify any ID-to-field
+  or ID-to-object mapping, and check exact verdict counts; a total pass count
+  alone is insufficient.
+- `REPLAY-SELECTOR-NONVACUITY`: focused selection must execute exactly one
+  requested frozen ID and must reject unknown IDs. Add cheap named controls for
+  an omitted middle ID, duplicated middle ID, valid frozen ID, and unknown ID.
+- `REPLAY-SUBPROCESS-DEADLINE`: every external compiler/tool stage in a replay
+  harness must have a positive evidence-based deadline, classify timeout as
+  failure, terminate its owned process tree, and run cleanup plus live-tree
+  integrity checks in `finally`. Add a cheap sleeper self-test; do not discover
+  this control by hanging the full semantic campaign.
 - If a public wrapper guards valid inputs, ensure every combined field uses the
   same guard/domain. Raw adequacy may occur only under the valid-range premise
   or in a guarded packet with matching invalid semantics; a bridge theorem does
@@ -118,6 +169,13 @@ Context:
 Completion:
 - Work until the named target closes or a valid obstruction dossier forces a
   coordinator decision.
+- An obstruction must negate the exact frozen target or give a checked
+  implication from that target to `False` with matching objects, guards, and
+  quantifiers. Do not join separate arbitrary-state, shape-growth, and one-
+  witness reachability facts by prose; prove the canonical reachable family
+  that carries them together. A failure of the current implementation or one
+  proposed decomposition is a checkpoint unless it rules out every
+  construction permitted by the frozen contract.
 - A commit, push, green build, local helper, or honest caveat is a checkpoint,
   not completion. If your self-audit says a required property remains for the
   next consumer, continue on the same branch and add another commit.
@@ -132,8 +190,22 @@ Completion:
 - Stage only intended files and commit unless explicitly read-only.
 
 Verification:
-- [TARGETED BUILD/CHECKS]
+- Development-loop checks: [NARROW CHECKS USED WHILE EDITING]
+- Final-required checks: [ONLY CHECKS REQUIRED ON THE FINAL TREE]
+- Conditional checks: [COMMAND, TRIGGER, AND WHY IT IS NOT UNCONDITIONAL]
+- For each expensive command, record covered acceptance rows, closest observed
+  runtime, chosen timeout, exact tree state, duration, and result. Run only one
+  heavy Lean/Lake process at a time per build tree.
+- If a command times out or stays quiet, inspect its child process, CPU/artifact
+  progress, prerequisites, and whether it fell back to a full build. Do not
+  launch the same expensive command unchanged. Retry only after recording the
+  material change that makes the rerun meaningful.
+- Run the aggregate gate at most once on an unchanged final tree. After a late
+  failure, reproduce and repair the smallest failing component before the one
+  final aggregate rerun. Do not separately duplicate checks already included
+  by the aggregate gate unless the prompt names a distinct acceptance purpose.
 - git diff --check
+- after committing, git diff --check [EXACT BASE SHA]..HEAD
 - powershell -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1
 - powershell -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1
   [only if public prose changed]

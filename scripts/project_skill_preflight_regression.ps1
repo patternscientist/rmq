@@ -7,6 +7,11 @@ function Fail([string]$Message) {
   exit 1
 }
 
+$powerShellExecutable = (Get-Process -Id $PID).Path
+if (-not $powerShellExecutable) {
+  Fail "could not resolve the current PowerShell executable"
+}
+
 function Write-Skill([string]$Root, [string]$Name, [string]$Description) {
   $dir = Join-Path $Root ".agents\skills\$Name"
   New-Item -ItemType Directory -Force -Path $dir | Out-Null
@@ -35,7 +40,7 @@ function Invoke-Case(
     "-RequiredSkills", $RequiredSkills
   )
   if ($RuntimeSkills) { $arguments += @("-RuntimeProjectSkills", $RuntimeSkills) }
-  $output = @(& powershell @arguments 2>&1)
+  $output = @(& $script:powerShellExecutable @arguments 2>&1)
   $exitCode = $LASTEXITCODE
   if ($exitCode -ne $ExpectedExit) {
     Fail "$Name expected exit $ExpectedExit, got $exitCode`n$($output -join [Environment]::NewLine)"
@@ -79,7 +84,7 @@ try {
   $staleRef = (& git -C $tempRoot rev-parse HEAD).Trim()
 
   Write-Skill $tempRoot "rmq-coordinator" "Coordinator fixture."
-  Write-Skill $tempRoot "rmq-audit" "Audit fixture."
+  Write-Skill $tempRoot "rmq-audit-prompt" "Audit prompt fixture."
   & git -C $tempRoot add .agents/skills
   & git -C $tempRoot -c commit.gpgSign=false commit --quiet -m "current skill frontier"
   if ($LASTEXITCODE -ne 0) { Fail "could not commit current fixture" }
@@ -88,33 +93,42 @@ try {
   & git -C $tempRoot checkout --quiet $staleRef
   Invoke-Case "stale-checkout-and-runtime" 2 $currentRef "rmq-coordinator" `
     "rmq-proof-sprint" @(
-      "missing_from_checkout=rmq-audit,rmq-coordinator",
-      "missing_from_runtime=rmq-audit,rmq-coordinator",
+      "missing_from_checkout=rmq-audit-prompt,rmq-coordinator",
+      "missing_required_from_runtime=rmq-coordinator",
       "required_unavailable=rmq-coordinator",
       "ACTION STOP"
     )
 
   & git -C $tempRoot checkout --quiet $currentRef
-  Invoke-Case "current-checkout-stale-runtime" 2 $currentRef "rmq-coordinator" `
-    "rmq-proof-sprint" @("missing_from_runtime=rmq-audit,rmq-coordinator", "ACTION STOP")
+  Invoke-Case "role-runtime-proof-sprint-only-pass" 0 $currentRef "rmq-proof-sprint" `
+    "rmq-proof-sprint" @("SKILL-PREFLIGHT: PASS")
+
+  Invoke-Case "coordinator-role-missing-from-runtime" 2 $currentRef "rmq-coordinator" `
+    "rmq-proof-sprint" @("missing_required_from_runtime=rmq-coordinator", "ACTION STOP")
+
+  Invoke-Case "audit-prompt-role-missing-from-runtime" 2 $currentRef "rmq-audit-prompt" `
+    "rmq-coordinator" @("missing_required_from_runtime=rmq-audit-prompt", "ACTION STOP")
 
   Invoke-Case "complete-runtime-catalog" 0 $currentRef "rmq-coordinator" `
-    "rmq-audit,rmq-coordinator,rmq-proof-sprint" @("SKILL-PREFLIGHT: PASS")
+    "rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint" @("SKILL-PREFLIGHT: PASS")
 
   Invoke-Case "extra-nonproject-skills-ignored" 0 $currentRef "rmq-coordinator" `
-    "openai-docs,rmq-audit,rmq-coordinator,rmq-proof-sprint" @("SKILL-PREFLIGHT: PASS")
+    "openai-docs,rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint" @("SKILL-PREFLIGHT: PASS")
 
   Invoke-Case "omitted-runtime-catalog" 2 $currentRef "rmq-coordinator" "" `
     @("runtime_catalog_omitted", "ACTION STOP")
 
   Invoke-Case "undefined-required-skill" 2 $currentRef "rmq-nonexistent" `
-    "rmq-audit,rmq-coordinator,rmq-proof-sprint" @("required_not_defined=rmq-nonexistent")
+    "rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint" @("required_not_defined=rmq-nonexistent")
+
+  Invoke-Case "legacy-rmq-audit-name-rejected" 2 $currentRef "rmq-audit" `
+    "rmq-audit,rmq-proof-sprint" @("required_not_defined=rmq-audit")
 
   $coordinatorSkill = Join-Path $tempRoot ".agents\skills\rmq-coordinator\SKILL.md"
   (Get-Content -LiteralPath $coordinatorSkill) -replace '^name: rmq-coordinator$', 'name: wrong-name' |
     Set-Content -LiteralPath $coordinatorSkill -Encoding utf8
   Invoke-Case "frontmatter-name-mismatch" 2 $currentRef "rmq-coordinator" `
-    "rmq-audit,rmq-coordinator,rmq-proof-sprint" @("frontmatter_mismatch=rmq-coordinator")
+    "rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint" @("frontmatter_mismatch=rmq-coordinator")
 
   Write-Host "SKILL-PREFLIGHT-REGRESSION: PASS all cases"
   exit 0

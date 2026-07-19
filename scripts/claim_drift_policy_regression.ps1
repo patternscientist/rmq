@@ -23,6 +23,57 @@ if (-not (Test-Path -LiteralPath $resolvedScannerPath)) {
   exit 1
 }
 
+$policyObject = Get-Content -Raw -LiteralPath $resolvedPolicyPath | ConvertFrom-Json
+$currentSurfaceRegex = [string]$policyObject.currentFactSurfacePathRegex
+foreach ($requiredCurrentSurface in @(
+    'artifact/CLAIMS.md',
+    'docs/FAMILY_SUMMARY.md',
+    'docs/PAPER_CLAIM_CORRESPONDENCE.md',
+    'docs/PAPER_MODEL_ADEQUACY.md'
+  )) {
+  if (-not [regex]::IsMatch($requiredCurrentSurface, $currentSurfaceRegex)) {
+    Write-Host "CLAIM-POLICY-REGRESSION: FAIL [r1r2-48147cb-current-surface-registry] missing $requiredCurrentSurface"
+    exit 1
+  }
+}
+$currentEventVocabularyTerm = @(
+  $policyObject.terms |
+    Where-Object id -eq 'forbidden-retired-current-event-vocabulary'
+)
+if ($currentEventVocabularyTerm.Count -ne 1 -or
+    -not [bool]$currentEventVocabularyTerm[0].strict -or
+    [string]$currentEventVocabularyTerm[0].scope -ne 'current-fact-surface') {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [r1r2-48147cb-current-event-vocabulary-config]"
+  exit 1
+}
+$readWordAttribution = @(
+  $policyObject.requiredAttributions |
+    Where-Object id -eq 'required-current-readword-only-theorem-attribution'
+)
+if ($readWordAttribution.Count -ne 1 -or
+    -not [bool]$readWordAttribution[0].strict -or
+    [string]$readWordAttribution[0].requiredPattern -notmatch 'succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly') {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [r1r3-bad14d0-readword-attribution-config]"
+  exit 1
+}
+Write-Host "CLAIM-POLICY-REGRESSION: PASS [r1r2-48147cb-current-surface-registry]"
+
+$sourceManifestTerm = @($policyObject.terms | Where-Object id -eq 'typed-reviewer-source-manifest')
+if ($sourceManifestTerm.Count -ne 1 -or
+    [string]$sourceManifestTerm[0].pattern -notmatch '22-source' -or
+    [string]$sourceManifestTerm[0].pattern -match '20-source') {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [r1r1-3a2b472-current-source-policy-config] expected current 22-source advisory pattern"
+  exit 1
+}
+$retiredCostTerm = @($policyObject.terms | Where-Object id -eq 'principled-charged-trace-76')
+if ($retiredCostTerm.Count -ne 1 -or
+    [string]$retiredCostTerm[0].status -notmatch 'historical' -or
+    [string]$retiredCostTerm[0].status -match '^current-') {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [r1r1-3a2b472-current-cost-policy-config] retired cost advisory is still current"
+  exit 1
+}
+Write-Host "CLAIM-POLICY-REGRESSION: PASS [r1r1-3a2b472-current-policy-config]"
+
 $fixtures = @(
   @{ id = "canonical-uses-unspaced"; reject = $true; text = "The canonical execution uses 2^128 as an activation premise." },
   @{ id = "canonical-uses-spaced"; reject = $true; text = "The canonical execution uses 2 ^ 128 as an activation premise." },
@@ -66,6 +117,41 @@ $fixtures = @(
   @{ id = "retired-large-regime-story-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory" },
   @{ id = "renamed-w18-list-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.listIntSuccinctRMQEventValueProducerProvenanceOfValid" },
   @{ id = "renamed-w18-program-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQProgramEventValueProducer" },
+
+  # Exact stale-current evidence pattern reproduced from rejected R1-R1
+  # candidate 3a2b47261ba6a15829a3160a7fce352b62c88380.
+  @{ id = "r1r1-3a2b472-current-cost-76"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "The current principled charged-trace bound is 76." },
+  @{ id = "r1r1-3a2b472-current-source-count-20"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $true; termId = "forbidden-retired-current-source-count"; text = "The canonical reviewer manifest is one typed 20-source universe." },
+  @{ id = "r1r1-3a2b472-fresh-segment-21"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $true; termId = "forbidden-retired-fresh-segment-21"; text = "Fresh unused segment 21 is rejected by the common predicate." },
+  @{ id = "r1r1-3a2b472-global-positions-0-12"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $true; termId = "forbidden-retired-trace-position-12"; text = "The current global positions 0 and 12 remain distinct obligations." },
+  @{ id = "r1r1-current-cost-207-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; termId = "forbidden-retired-current-cost-bound"; text = "The current principled charged-trace bound is 207." },
+  @{ id = "r1r1-current-source-count-22-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; termId = "forbidden-retired-current-source-count"; text = "The canonical reviewer manifest is one typed 22-source universe." },
+  @{ id = "r1r1-fresh-segment-23-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; termId = "forbidden-retired-fresh-segment-21"; text = "Fresh unused segment 23 is rejected by the common predicate." },
+  @{ id = "r1r1-global-positions-0-15-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; termId = "forbidden-retired-trace-position-12"; text = "The current global positions 0 and 15 remain distinct obligations." },
+
+  # Exact stale-current vocabulary patterns reproduced from rejected R1-R2
+  # candidate 48147cbc67c6c01c4abcf2565f9b981adb5eacb8.
+  @{ id = "r1r2-48147cb-artifact-three-constructor-vocabulary"; relativePath = "artifact/CLAIMS.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "Every actual emitted event is readWord, wordRank, or wordSelect." },
+  @{ id = "r1r2-48147cb-correspondence-three-constructor-vocabulary"; relativePath = "docs/PAPER_CLAIM_CORRESPONDENCE.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "The canonical trace proves every actual event is readWord, wordRank, or wordSelect." },
+  @{ id = "r1r2-48147cb-family-three-constructor-vocabulary"; relativePath = "docs/FAMILY_SUMMARY.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "The canonical trace proves every emitted event is one of the three genuine constructors." },
+  @{ id = "r1r3-a835720-readme-hyphenated-three-constructor-vocabulary"; relativePath = "README.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "Every event actually emitted by the canonical whole-query trace is a payload read, word-rank, or word-select event." },
+  @{ id = "r1r3-a835720-readme-bounded-word-primitive-vocabulary"; relativePath = "README.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "Every event is either a payload read or a bounded word primitive." },
+  @{ id = "r1r3-a835720-artifact-word-primitive-vocabulary"; relativePath = "artifact/CLAIMS.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "Every event is a payload read or word primitive." },
+  @{ id = "r1r2-current-readword-only-control"; relativePath = "docs/PAPER_CLAIM_CORRESPONDENCE.md"; reject = $false; termId = "forbidden-retired-current-event-vocabulary"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly proves every emitted event is readWord on the current readWord-only route." },
+  @{ id = "r1r2-current-compatibility-labeled-control"; relativePath = "docs/FAMILY_SUMMARY.md"; reject = $false; termId = "forbidden-retired-current-event-vocabulary"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly proves the current route is readWord-only; wordRank and wordSelect are compatibility-only constructors and are never emitted." },
+  @{ id = "r1r3-compatibility-labeled-weaker-story-control"; relativePath = "README.md"; reject = $false; termId = "forbidden-retired-current-event-vocabulary"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly proves the current route is readWord-only. The compatibility theorem says every event is a payload read or bounded word primitive." },
+
+  # Exact theorem-attribution misses reproduced from rejected R1-R3 candidate
+  # bad14d0f1f7561f5f4200c19259a4ae5c8375499.
+  @{ id = "r1r3-bad14d0-paper-main-missing-strong-alias"; relativePath = "docs/PAPER_MAIN_THEOREM.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "Every actual emitted event is proved to be readWord." },
+  @{ id = "r1r3-bad14d0-theorem-map-missing-strong-alias"; relativePath = "docs/PAPER_THEOREM_MAP.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "These anchors package that every emitted trace event is readWord." },
+  @{ id = "r1r3-bad14d0-trust-packet-missing-strong-alias"; relativePath = "docs/TRUST_AUDIT_PACKET.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "The checked type packages only genuine readWord events and no synthetic cost marker." },
+  @{ id = "r1r3-bad14d0-wordram-packet-missing-strong-alias"; relativePath = "docs/WORD_RAM_REVIEW_PACKET.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "The same execution proves every emitted event is readWord." },
+  @{ id = "r1r3-bad14d0-digestion-missing-strong-alias"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "The construction-facing theorem states that every emitted event is a payload-word read." },
+  @{ id = "r1r3-bad14d0-what-is-proved-missing-strong-alias"; relativePath = "docs/WHAT_IS_PROVED.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "The execution story proves every emitted event is a payload read." },
+  @{ id = "r1r3-bad14d0-artifact-readme-missing-strong-alias"; relativePath = "artifact/README.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "Every accepted emitted event is a payload read." },
+  @{ id = "r1r3-current-readword-strong-attribution-control"; relativePath = "docs/PAPER_MAIN_THEOREM.md"; reject = $false; termId = "required-current-readword-only-theorem-attribution"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly proves every actual emitted event is readWord." },
+  @{ id = "r1r3-accurate-weaker-attribution-control"; relativePath = "docs/WHAT_IS_PROVED.md"; reject = $false; termId = "required-current-readword-only-theorem-attribution"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly is the strong readWord-only theorem. RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect is a weaker compatibility alias." },
 
   @{ id = "negated-canonical"; reject = $false; allowedMatch = $true; text = "No canonical execution theorem uses 2^128 as an activation premise." },
   @{ id = "negated-current-canonical"; reject = $false; allowedMatch = $true; text = "No current canonical reviewer route has 2 ^ 128 as an activation premise." },
@@ -269,9 +355,15 @@ try {
     Test-AbsoluteWindowsScannerPath
   } else {
     foreach ($fixture in $fixtures) {
-      $fixturePath = $fixture.id + ".txt"
+      $fixturePath = if ($fixture.ContainsKey("relativePath")) {
+        [string]$fixture.relativePath
+      } else {
+        $fixture.id + ".txt"
+      }
+      $fixtureFullPath = Join-Path $absoluteFixtureRoot $fixturePath
+      [System.IO.Directory]::CreateDirectory((Split-Path -Parent $fixtureFullPath)) | Out-Null
       [System.IO.File]::WriteAllText(
-        (Join-Path $absoluteFixtureRoot $fixturePath),
+        $fixtureFullPath,
         [string]$fixture.text + [Environment]::NewLine
       )
       $termId = "forbidden-2pow128-canonical-activation"
@@ -332,6 +424,28 @@ try {
       -Content "[FROZEN-HISTORY: casual] $retiredAlias"
     Test-FinalVerdict -Id 'casual-history-word-does-not-bypass' -Path $casualFrozenShadow.RelativePath -WorkingDirectory $casualFrozenShadow.Root -Reject $true -TermId $retiredTerm -CheckTrackedState $true
     $contextCount += 6
+
+    $historicalR1Shadow = New-ShadowFileRoot `
+      -RelativePath 'docs/internal/audit_reports/r1r1-3a2b472-frozen-evidence.md' `
+      -Content @'
+The historical current bound at the audited candidate was 76.
+The historical canonical manifest was a typed 20-source universe.
+Fresh unused segment 21 was rejected in that frozen candidate.
+The historical global positions 0 and 12 were distinct.
+'@
+    foreach ($historicalTerm in @(
+        'forbidden-retired-current-cost-bound',
+        'forbidden-retired-current-source-count',
+        'forbidden-retired-fresh-segment-21',
+        'forbidden-retired-trace-position-12'
+      )) {
+      Test-FinalVerdict -Id "r1r1-3a2b472-historical-$historicalTerm" `
+        -Path $historicalR1Shadow.RelativePath `
+        -WorkingDirectory $historicalR1Shadow.Root `
+        -Reject $false -RequireAllowed $true -TermId $historicalTerm `
+        -CheckTrackedState $true
+      $contextCount += 1
+    }
   }
 } finally {
   if ([System.IO.Directory]::Exists($absoluteFixtureRoot)) {

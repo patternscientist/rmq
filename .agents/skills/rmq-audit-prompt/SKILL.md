@@ -1,12 +1,15 @@
 ---
-name: rmq-audit
-description: Use to engineer independent external-auditor prompts and evidence packets for RMQ. Select fresh-blind, continuation, longitudinal, or whole-frontier mode and fill the repo audit template from exact commits and source evidence.
+name: rmq-audit-prompt
+description: Use to engineer independent external-auditor prompts and evidence packets for RMQ. This is a coordinator-side prompt-authoring skill, not the skill used by audit workers. Select fresh-blind, continuation, longitudinal, or whole-frontier mode and fill the repo audit template from exact commits and source evidence.
 ---
 
-# RMQ External Audit Prompt
+# RMQ External Audit Prompt Engineering
 
-Use this skill to prepare an external audit. The coordinator still audits the
-report, integrates branches, updates the roadmap, and engineers worker prompts.
+Use this coordinator-side skill to prepare an external audit prompt and evidence
+packet. The auditor follows the resulting prompt and `AUDIT_PROTOCOL.md`; the
+auditor does not need this prompt-authoring skill. The coordinator still audits
+the report, integrates branches, updates the roadmap, and engineers worker
+prompts.
 
 ## 1. Choose Independence Mode
 
@@ -54,6 +57,22 @@ verdict and narrative. Require checked theorem types and expanded object
 arguments; a declaration-name inventory is not evidence. Treat a completion
 report's own "remaining risk", "reviewer should ask", or "next consumer must
 prove" language as presumptive evidence of incomplete closure.
+
+Reconstruction is semantic, not table-format policing. Require the auditor to
+enumerate the actual frozen IDs verbatim and map every ID to evidence wherever
+the frozen artifact permits that evidence to live, including an append-only
+evidence ledger. A blank table cell or coordinator-owned `Open` status is not
+by itself a failed row when the matrix schema reserves acceptance to the
+coordinator. Conversely, appended prose does not close a row unless its exact
+proposition, consumer, object identity, and anti-vacuity obligation do. Reject
+invented IDs, count-only summaries, and findings that infer missing evidence
+solely from its physical placement.
+
+For claimed tightness, attainment, or impossibility of an older bound, require
+an equality/lower-bound witness or a checked counterexample/negation on the
+same reachable object. A proof of `cost <= K`, even one discharged by `exact`
+with no transitivity slack, establishes only an upper bound; it does not prove
+that `K` is attained or that `cost <= K - 1` is false.
 
 For combined public claims, require an explicit identity chain showing that
 space, execution, provenance, and machine facts concern the same construction.
