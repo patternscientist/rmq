@@ -1816,3 +1816,47 @@ aggregate gate is already RED on the a07-owned `wordram_axiom_check` stale
 constant, so a full end-to-end run would fail on that and prove nothing about
 this checker. T1 wires and verifies the invocation, states the external block
 plainly, and stops — rather than manufacturing a green it cannot honestly claim.
+
+**Round 26 addendum — T1 complete at `b406bd4`, and a deferral.**
+
+Repair landed as diagnosed: `docs/WHAT_IS_PROVED.md:75` keeps the `240` and marks
+the clause transitional, naming the live `30` alongside. Both values now check
+green routed to DIFFERENT declarations (frozen
+`canonicalRelativeRmmInteriorQueryCost` vs live
+`canonicalRelativeRmmPrincipledInteriorChargedTraceCost`), making that row a
+second instance of the one-line live/historical mix that forced clause scoping —
+the repair exercises the mechanism instead of dodging it. Checker: `NUMERIC-PROSE
+PASS (53 sites; 2 historical; 12 symbols extracted from Lean; 0 hardcoded
+expected values)`.
+
+**A consequence the worker caught and converted rather than deleted:** repairing
+the tree invalidated its own regression case 1, which asserted that the base tree
+REJECTS. Rather than dropping it, it became
+`historical-marker-stripped-rejected` — strip the marker back off, require
+rejection — so this specific drift cannot silently return. Counts preserved at
+12 cases / 10 reject / 2 accept.
+
+**Gate wiring verified by extraction, not inspection.** The block was pulled out
+of `gate.ps1` and driven in isolation against stub scripts exiting 1, confirming
+`Fail` actually fires for each. The worker's own framing is the correct
+instinct: "a guard that is present but not honoured would have looked identical
+to inspection." No end-to-end green attempted or claimed; that remains blocked on
+the a07-owned `wordram_axiom_check` red.
+
+**The governance gap is now empirically confirmed from the inside:** strict
+design checking passed VACUOUSLY while two new gate-class scripts were the only
+change, and only began demanding entries once a path that happened to be
+enumerated was touched.
+
+**COORDINATOR DEFERRAL, deliberate.** The obvious follow-up is to make
+`design_decision_check.ps1` match gate-class scripts structurally rather than by
+enumeration. **Not now.** That script is executed by every active worker's final
+battery; changing a gate script while five branches are running batteries
+against it would alter their verification semantics mid-flight and make their
+ledgers non-comparable. Queued for the merge window, when the tree is quiet.
+Reason recorded so a successor does not read the delay as an oversight.
+
+**Reconciliation note for the merge:** the `WHAT_IS_PROVED.md` edit is one table
+row, also touched by B7. The reconciler must keep the word "transitional" in
+that clause — if B7 rewords it, the checker will fail rather than let it drift,
+which is intended behaviour.
