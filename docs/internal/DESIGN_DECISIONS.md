@@ -5261,3 +5261,167 @@ scoped and remain Open. At the time of the decision the two `TableGeom`s
 instantiating the block were not yet defined, the two-span blocks, the
 macro combiners and the five-branch dispatch were unbuilt, and no two-way
 merge block existed on the machine side.
+
+## DD-20260719-051: the two span geometries are DEFINED as the route's own, so the span block's route-value link carries no surviving hypothesis (E1 M3d-27)
+
+Claimed this session (E1-LaneB2) from band `051-069`; the maximum
+OBSERVED in this file before claiming was `DD-20260719-050`, this
+session's own earlier entry, written on its predecessor's behalf.
+
+Context. `spanBlock` (DD-20260719-050) is parametric in a `TableGeom`,
+and the claim that ONE block covers both span computations held. What
+remained was to supply the two geometries and to link the block's value
+function to each route computation's value.
+
+Decision: define `localSpanGeom` and `globalSpanGeom` field-for-field as
+`canonicalSummaryLayout` defines its four, i.e. with every field spelled
+as the ROUTE's own quantity -- `entriesLen` as the route's entry-list
+length, `chunkCount` as the route's own
+`fixedWidthNatTableMachineChunkCount` at the table's width.
+
+Why that spelling rather than any equivalent one. It makes three separate
+obligations evaporate instead of travel:
+
+* `geomRouteDecode_eq_readComputation_value`'s three hypotheses become
+  `rfl` at both geometries, exactly as they are at the summary group's
+  four;
+* `hvalid` and `hentries` become the SAME PROPOSITION, so one validity
+  split discharges both -- which is why each cell bridge is four lines;
+* the cap is the already-proved `chunkCount_le_eight_offsetWidth` /
+  `..._blockAddressWidth` applied directly, with no arithmetic in
+  between.
+
+An equivalent-but-differently-spelled geometry would have left all three
+as obligations the caller must discharge at every call site.
+
+The two missing store-side clauses were supplied on the same terms:
+`hexact_local_concrete` and `hexact_global_concrete`, one line each,
+composing the existing `hexact_local`/`hexact_global` with
+`holdsInteriorStore_concrete`. The four summary twins already existed;
+the two span twins simply had not been written.
+
+What is now claimed. `spanValue_localSpan_eq_routeValue` and
+`spanValue_globalSpan_eq_routeValue`: the span block's value function, at
+the route's own slot and offset, IS the value of
+`canonicalRelativeRmmMachineLocalSpanCandidateComputation` and of its
+global twin respectively. NO VALIDITY, CAP OR STORE HYPOTHESIS SURVIVES.
+
+One arithmetic detail, recorded because it is the kind of thing that
+looks cosmetic and is not. The global twin needs `Nat.zero_add`
+substantively: `Nat.add` recurses on its SECOND argument, so `0 + value`
+is NOT definitionally `value`, while the route's global block-index map
+is bare `value`. The local twin's map is `macroIdx * macroSize + value`
+and needs nothing.
+
+Correction of record, made while doing this. `E1_LIVE_STATE.md` cited
+`geomCell_eq_routeDecode` and `geomRouteDecode_eq_readComputation_value`
+as `E1InteriorChunkStore.lean:674` and `:904`. The LINE NUMBERS are
+right; the FILE is wrong -- both are in `E1InteriorSummaryGroup.lean`,
+and `E1InteriorChunkStore.lean` is only 619 lines long, so the citation
+was refutable by `wc` alone. Fixed in that file.
+
+Scope. This is `#2` and `#3` of the interior ladder, at the canonical
+store and layout. It does not discharge any row of
+`E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md`, all of which are whole-query
+scoped and remain Open. The two-span blocks `#4`/`#5`, the three macro
+combiners `#6`/`#7`/`#8` and the five-branch dispatch `#9` remain
+unbuilt, and no receipt or charge-log link is claimed here -- only the
+VALUE. DD-20260719-019's rule applies: a value equation and a receipt
+equation are independent obligations, and the span block's receipt clause
+is stated but its route-side link is not yet written.
+
+## DD-20260719-052: the interior's two-way candidate merge is a NEW 9-instruction block writing in place to the interior's output pair, and its sharpest impostor defeats the category log as well (E1 M3d-27)
+
+Claimed this session; predecessor `DD-20260719-051`, this session's own
+earlier entry, checked before claiming.
+
+Context, and a correction that made the work bigger. `#4`, `#5`, `#6` and
+`#7` all end in `bpCandidateMerge?` over two `Option`-valued sub-legs.
+`E1_LIVE_STATE.md` had listed `candMerge3` as the reusable read-free
+merge; its own later correction then established that `candMerge3` is
+fringe-shaped and unusable, and that NO two-way merge block existed. That
+correction is upheld. Its stated REASON is not, and the difference
+matters.
+
+THIS ENTRY SUPERSEDES THE SECOND HALF OF THAT CORRECTION. It said
+`candMerge3`'s "epilogue writes the closed position where the combiners
+need the candidate left in the bank". That is false as stated:
+`candMerge3Close` is ADDITIVE, and `candMerge3_runsTo` already exports
+`bestOfRegs (regs' mAV) (regs' mAP)` holding the merged candidate
+alongside the `fRes` clause. The candidate IS left in the bank. The real
+obstacles are (a) `candMerge3_runsTo` pins BOTH outer arms to occupied
+biased form, matching `bpCandidateMerge3?_some_left_right`'s bare-pair
+arguments -- the fringe's situation, not the interior's -- and (b) the
+`fRes` (69) write, `fRes` being the shared dispatch output register,
+which a combiner running mid-leg must not touch. The headline conclusion
+is unaffected: the block had to be built.
+
+Decision one: the result lands IN PLACE in `mMV`/`mMP`, the same pair
+`spanBlock` and the 177-leg write. `crossBlockArmProgramAt_runsTo`'s
+`hInterior` reads the interior's answer from
+`bestOfRegs (regsI mMV) (regsI mMP)`, so one destination pair for every
+interior producer is what lets `#4` through `#9` compose without
+shuffling. The two arms that keep the RIGHT candidate therefore execute
+NO writes at all -- it is already in the destination -- which is why
+`Q + 2` and `Q + 6` both jump straight to the exit.
+
+Decision two: the comparison is `natLt` on the BIASED registers, and
+nothing is unbiased first. Both operands carry the same `+1`, so
+`natLt qT mMV qLV` computes `right.1 < left.1` directly, which is exactly
+`bpCandidateBetter`'s test. It is STRICT, so a tie keeps the LEFT
+candidate, matching the route.
+
+Decision three: the block sets its own unit register `qOne` rather than
+inheriting an `hOne` hypothesis, following `spanBlock`'s `pOne`. The
+fold's preservation certificate does not cover `fOne`, so a combiner that
+runs after a fold cannot rely on it.
+
+Register bank `123 .. 126`: `qLV` 123 and `qLP` 124 are the caller's
+stashed left candidate, `qT` 125 and `qOne` 126 are scratch. Next free
+opens at `127`. `mergeUntouched_at_crossBlockArm_operands` DECIDES that
+all four registers `hInterior` needs survive; the write set is a numeral
+predicate, so it evaluates rather than being eyeballed.
+
+What is now claimed. `mergeBlock_runsTo`: exact simulation on ALL FOUR
+option combinations, all exiting `Q + 9`, read-free with the receipt
+stated as the literal empty list rather than as a length, value stated
+against the route's own `bpCandidateMerge?`, plus preservation. No store
+hypothesis.
+
+THE DISCRIMINATORS, AND WHY THEY ARE A PAIR. DD-20260719-050 recorded
+that of receipt, read count, exit code and preservation, not one rejected
+the span block's `none`-arm impostor, and that a positional CATEGORY
+comparison did. Read alone, that invites the conclusion that a category
+log is a sufficient backstop. It is not, and this block proves it:
+
+* IMPOSTOR ONE, `natLe` for `natLt`, differing only on TIES -- which are
+  the generic case whenever two sub-ranges share a minimum excess.
+  Receipts equal and empty (`mergeTie_traces_agree`); the value separates
+  them (`mergeTie_discriminates`); and the CHARGE LOGS DIFFER
+  (`mergeTie_catLogs_differ`), because the impostor branches where the
+  correct block falls through. Caught by the category check.
+* IMPOSTOR TWO, `qLV` for `qLP` as the position move's source. The two
+  components of the left candidate sit in ADJACENT registers, so "copy
+  the source from the instruction above" is a live error -- the same
+  shape as the stale receipt head of DD-20260719-019. It takes the SAME
+  PATH: receipts equal and empty, both halt, preservation holds on both
+  (`mergeOperands_preserved_impostor`), AND THE CHARGE LOGS ARE EQUAL
+  (`mergePos_catLogs_agree`). NOT caught by the category check.
+
+The general rule this instances: a category log constrains WHICH
+INSTRUCTIONS RAN and says nothing about their OPERANDS. Any defect that
+preserves the control path is invisible to it, and for such defects the
+value equation is the only instrument. State which checks fail, not only
+which one succeeds -- the boundary is the content.
+
+Preservation is EXECUTED on three arms, including the branch-to-exit arm,
+which writes nothing and is therefore the arm where a preservation claim
+is the weakest evidence and most needs running.
+
+Scope. This is the two-way merge BLOCK. It is not yet composed with
+anything: `#4` and `#5` need it wired to two `spanBlock` runs with the
+level read as the unconditional head of the append chain, and that
+composition is not built. No row of the matrix is closed. No receipt or
+charge-log link to the route's `FlatStoreComputation.map` is claimed --
+only the machine-side charge log as a function of the route's branch
+conditions.

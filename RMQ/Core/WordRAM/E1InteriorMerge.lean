@@ -575,6 +575,93 @@ theorem mergeOperands_preserved_impostor :
     mergeOperands (Instr.natLt qT mMV qLV) qLV 6 11 9 22 = [91, 92, 93, 94] := by
   rfl
 
+/-! ## COMPOSING: what `#6`, `#7` and `#8` need beyond this block
+
+Two small facts, both cheaper than they look, recorded here so the next
+lane budgets them correctly. -/
+
+/-- **`#8` NEEDS NO THREE-WAY PRIMITIVE.**
+
+`bpCandidateMerge3?` (`Candidate.lean:24`) is DEFINITIONALLY
+`bpCandidateMerge? (bpCandidateMerge? left middle) right`, left-
+associated, so `CrossMacroCandidateComputation` is this block run TWICE
+and the reassociation is `rfl` rather than a proof obligation.
+
+Stated as a checked one-liner rather than left as a remark: the
+`E1_LIVE_STATE.md` ladder labelled `#8` "merge3", which reads as a third
+primitive owed. It is not one. -/
+theorem merge3_eq_two_merges (left middle right : Option (Nat × Nat)) :
+    bpCandidateMerge3? left middle right =
+      bpCandidateMerge? (bpCandidateMerge? left middle) right := rfl
+
+/-- THE SHUTTLE: two moves restaging a merge result as the NEXT merge's
+left input.
+
+`mergeBlock` merges `qLV`/`qLP` into `mMV`/`mMP` IN PLACE, which is what
+makes the interior's output pair uniform -- but it also means chaining two
+merges needs the accumulated result moved back to the left slots first.
+Two instructions, no branch, no read, and independent of its own base. -/
+def mergeShuttle : List Instr :=
+  [ Instr.move qLV mMV
+  , Instr.move qLP mMP ]
+
+@[simp] theorem mergeShuttle_length : mergeShuttle.length = 2 := rfl
+
+/-- What the shuttle leaves alone: everything but the two left slots. -/
+abbrev ShuttleUntouched (r : Nat) : Prop := r ≠ 123 ∧ r ≠ 124
+
+/-- The four cross-block-arm operands survive the shuttle too, so a
+chained combiner still discharges `hInterior`'s preservation half. -/
+theorem shuttleUntouched_at_crossBlockArm_operands :
+    ShuttleUntouched 70 ∧ ShuttleUntouched 71 ∧ ShuttleUntouched 75 ∧
+      ShuttleUntouched 76 := by
+  decide
+
+/-- Exact simulation of the shuttle.  Read-free, two register writes, and
+it leaves BOTH pairs holding the candidate -- the left pair because that
+is the point, the output pair because the next merge reads it as its right
+operand when the chain continues. -/
+theorem mergeShuttle_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {Q : Nat}
+    (hHost : HostedAt program Q mergeShuttle)
+    (regs : RegFile) (v p : Nat)
+    (hMV : regs mMV = v) (hMP : regs mMP = p) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, Q, false⟩ ⟨regs', Q + 2, false⟩ []
+        [Category.registerWrite, Category.registerWrite] ∧
+      regs' qLV = v ∧ regs' qLP = p ∧
+      regs' mMV = v ∧ regs' mMP = p ∧
+      (∀ r, ShuttleUntouched r → regs' r = regs r) := by
+  have hf : ∀ (k m : Nat) (instr : Instr), k < 2 →
+      mergeShuttle[k]? = some instr → Q + k = m →
+      program[m]? = some instr := by
+    intro k m instr hk hget hm
+    rw [← hm, hHost k hk, hget]
+  have h0 : program[Q]? = some (.move qLV mMV) :=
+    hf 0 Q _ (by omega) rfl (by omega)
+  have h1 : program[Q + 1]? = some (.move qLP mMP) :=
+    hf 1 _ _ (by omega) rfl (by omega)
+  obtain ⟨r1, hr1⟩ : ∃ z : RegFile, z = regs.write qLV v := ⟨_, rfl⟩
+  have hs0 : RunsTo store program ⟨regs, Q, false⟩
+      ⟨r1, Q + 1, false⟩ [] [Category.registerWrite] := by
+    have h := RunsTo.move (store := store)
+      (s := (⟨regs, Q, false⟩ : State)) rfl h0
+    simpa [hr1, hMV] using h
+  obtain ⟨r2, hr2⟩ : ∃ z : RegFile, z = r1.write qLP p := ⟨_, rfl⟩
+  have hs1 : RunsTo store program ⟨r1, Q + 1, false⟩
+      ⟨r2, Q + 2, false⟩ [] [Category.registerWrite] := by
+    have h := RunsTo.move (store := store)
+      (s := (⟨r1, Q + 1, false⟩ : State)) rfl h1
+    simpa [hr2, hr1, RegFile.write, qLV, mMP, hMP] using h
+  refine ⟨r2, hs0.trans hs1, ?_, ?_, ?_, ?_, ?_⟩
+  · simp [hr2, hr1, RegFile.write, qLV, qLP]
+  · simp [hr2, RegFile.write]
+  · simp [hr2, hr1, RegFile.write, qLV, qLP, mMV, hMV]
+  · simp [hr2, hr1, RegFile.write, qLV, qLP, mMP, hMP]
+  · intro r hr
+    obtain ⟨hLV, hLP⟩ := hr
+    simp [hr2, hr1, RegFile.write, hLV, hLP]
+
 end E1InteriorMerge
 end WordRAM
 end RMQ
