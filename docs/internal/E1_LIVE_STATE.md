@@ -246,6 +246,66 @@ the INPUT registers `136..139`, which sit below the block's own scratch;
 block's whole write set lies below `136`, so a combiner can carry its bank
 across a sub-leg without re-deciding ten conjuncts. Use it.
 
+### 3a. PROGRAM GEOMETRY FOR `#9`'s DISPATCH — read this before laying it out
+
+Assembled by E1-LaneB4 at the coordinator's request, because `#9` cannot be
+laid out without it and it is expensive to re-derive.
+
+| Block | Length | Entry PC | Exit PC | Terminates? |
+|---|---|---|---|---|
+| 177-leg `summaryMinCandidate` | 177 | `A` | `A + 177` | **FALLS THROUGH** |
+| `spanBlock` (#2/#3) | 222 | `Q` | `Q + 222` | **FALLS THROUGH** |
+| `twoSpanBlock` (#4/#5) | 509 | `Q` | `Q + 509` | **FALLS THROUGH** |
+| `twoLegBlock` (#6/#7) | 1044 | `Q` | `Q + 1044` | **FALLS THROUGH** |
+| `crossLegBlock` (#8) | 1574 | `Q` | `Q + 1574` | **FALLS THROUGH** |
+| `mergeBlock` | 9 | `Q` | `Q + 9` | **FALLS THROUGH** |
+
+**NOT ONE OF THESE BLOCKS TERMINATES. THEY ALL FALL THROUGH.** Every
+`runsTo` above ends in the state `⟨regs', <exit>, false⟩` — the third
+component is the HALTED FLAG and it is `false` in every one. This is not
+an oversight in the blocks: a `halt` instruction does exist in the ISA
+(`E1Machine.lean:103`), and none of them uses it, because each is designed
+to be composed.
+
+**WHAT THE CALLER MUST PLACE AFTER THEM, and why `#9` is where this
+bites.** A dispatch arm that ends at its block's exit PC continues
+executing at whatever instruction sits there. So **every one of `#9`'s
+five arms must end with an explicit unconditional branch to the dispatch's
+join point**, or the arm falls straight into the next arm's code. That is
+the cross-block-arm defect the close-leg lane found — an arm whose exit PC
+landed exactly on the next block's base — restated as a design rule, and
+it is the single most likely way `#9` goes wrong. The `count = 0` arm
+(`pure none`) is the dangerous one: it is the shortest, so it is the arm
+whose missing branch is cheapest to overlook, and a two-instruction
+witness arm is precisely the shape that CANNOT exhibit the defect.
+
+**Every one of these blocks is POSITION-DEPENDENT and takes its own base
+as an argument.** `spanBlock`, `twoSpanBlock`, `mergeBlock`, `twoLegBlock`
+and `crossLegBlock` all take `Q` and compute their internal branch targets
+from it, so **the `Q` passed to the constructor must equal the base it is
+hosted at** or the branch targets silently point elsewhere. Nothing in the
+type enforces this; `HostedAt program Q (block ... Q)` is where the two are
+tied together, and a `runsTo` premise written as
+`HostedAt program Q (block ... Q')` with `Q ≠ Q'` would be satisfiable and
+wrong. `legSetup` and `mergeShuttle` are the exceptions — no `Q`, position
+independent.
+
+**Register state on entry and exit.**
+
+| Block | Caller must pin on entry | Leaves candidate in |
+|---|---|---|
+| `spanBlock` | `pSlot` 118, `pOff` 119 | `mMV`/`mMP` |
+| `twoSpanBlock` | `tA` 127, `tStart` 128, `tN` 129, `tOff` 130 | `mMV`/`mMP` |
+| `twoLegBlock` | `uMacro` 136, `uLocal` 137, `uMid` 138, `uRight` 139 | `mMV`/`mMP` |
+| `crossLegBlock` | the same four | `mMV`/`mMP` |
+| `mergeBlock` | `qLV` 123, `qLP` 124 (left); `mMV` 77, `mMP` 78 (right) | `mMV`/`mMP` |
+
+`twoLegBlock` and `crossLegBlock` additionally need their second leg's
+sources tied to values by `hS2`/`hN2` — see §10b and DD-20260719-057.
+Their `runsTo` statements say what each block LEAVES ALONE but deliberately
+say NOTHING about the final value of a register they write, so `#9` must
+not read `uT` or `uZero` out of a finished combiner; recompute instead.
+
 **The interior's output pair is `mMV`/`mMP` (77/78), and every interior
 block must land there.** `crossBlockArmProgramAt_runsTo`'s `hInterior` reads
 the answer from `bestOfRegs (regsI mMV) (regsI mMP)`, so `spanBlock`, the
@@ -646,7 +706,16 @@ as a fifth conjunct of a four-conjunct premise will not typecheck.
 
 **Resume inventory, in the order I would take it.**
 
-1. **`#9`, the five-branch dispatch.** The branch conditions, read off
+1. **`#9`, the five-branch dispatch. START AT §3a**, which has the entry
+   PC convention, length and exit PC of every block `#9` dispatches into,
+   and the fact that governs the whole layout: **none of them terminates,
+   they all fall through**, so every arm needs an explicit branch to the
+   join point. Coordinator C05 stopped this lane before `#9` deliberately
+   — a five-branch dispatch built at the end of a budget is the
+   highest-risk artefact left, and the close-leg lane already found a
+   cross arm with no terminator whose exit PC landed on the next block's
+   base. Build it rested.
+   The branch conditions, read off
    `InteriorDirectory.lean:2444-2467` and verified this session, are, in
    order: `count = 0` -> `pure none`; `count <= macroSize - localStart` ->
    `#4`; `middleMacroCount = 0` -> `#6`; `rightCount = 0` -> `#7`; else
