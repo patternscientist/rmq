@@ -1697,3 +1697,219 @@ swap has not landed.
    `210`, but DERIVE it - that is the whole point of REQ-B7-05), the deletion of
    the slack artifact, provenance/W19, the vocabulary theorem, the docs, the
    matrix, and the full battery including CHK-04 against the session-2 baseline.
+
+# Session 8 (B7-08)
+
+THE WIDTH OBSTRUCTION IS CLOSED, and closed in the strong form the coordinator
+required: not a sampled table of sizes but a checked all-size proposition
+carrying the route's own reachability hypothesis. That work is COMMITTED AND
+GREEN (`fa5e94d`). The swap (commit B) is still NOT landed; the refreshed patch
+carries it.
+
+## THE COORDINATOR RULING, and why it is a policy point
+
+Ruling: tighten `bpSparseLevelWidth` to recover commit A's frozen `210`, rather
+than re-migrate `210 -> 213` and freeze `210` as a second historical constant.
+Recorded in full as DD-20260719-001. The short form:
+
+A frozen historical constant records a value that GENUINELY DESCRIBED THE
+ACCEPTED ROUTE at some point. `76`, `142` and `207` each did. `210` never did -
+it exists only inside commit A's staging window and is an artifact of a
+deliberately loosened cap. Freezing it would put a fiction in the permanent
+record, which is worse than redoing a migration.
+
+COORDINATOR CORRECTION OF RECORD, coordinator-initiated: the phrase "one
+charged read per two-span call" was the coordinator's and was WRONG as stated,
+because in this cost model a read costs one unit PER MACHINE WORD TOUCHED.
+B7-07 was right to compute actual widths against `machineWordBits` rather than
+trust the phrasing. This rung has now corrected the coordinator twice.
+
+## THE WIDTH FIX (`SparseLevelTable.lean`)
+
+`bpSparseLevelCell_lt` now concludes at `domain * (Nat.log2 domain + 1)`
+instead of `domain * domain`. The stored level is `Nat.log2 i` with
+`i < domain`, so it is bounded by `Nat.log2 domain`, not by `domain` -
+exponentially smaller. The old bound was slack by construction.
+
+    def bpSparseLevelWidth (domain : Nat) : Nat :=
+      Nat.log2 (domain * (Nat.log2 domain + 1)) + 1
+
+## THE ALL-SIZE FIT, with the hypothesis that IS the work
+
+Four theorems, all `[propext, Quot.sound]` only. The two that matter, quoted
+exactly:
+
+    theorem bpSparseLevelLocalWidth_le_machine_of_macro_crossing
+        {shape : Cartesian.CartesianShape}
+        (hmacro : (RelativeRmm.canonicalLayout shape).macroSize <
+            (RelativeRmm.canonicalLayout shape).blockCount) :
+        bpSparseLevelWidth
+            (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize) <=
+          SuccinctRank.machineWordBits shape.bpCode.length
+
+    theorem bpSparseLevelGlobalWidth_le_machine_of_macro_crossing
+        {shape : Cartesian.CartesianShape}
+        (hmacro : (RelativeRmm.canonicalLayout shape).macroSize <
+            (RelativeRmm.canonicalLayout shape).blockCount) :
+        bpSparseLevelWidth
+            (bpSparseLevelDomain
+              (RelativeRmm.canonicalLayout shape).macroSampleCount) <=
+          SuccinctRank.machineWordBits shape.bpCode.length
+
+`hmacro` is NOT a size threshold introduced for convenience. It is exactly what
+the interior dispatcher already derives before it can reach a cross-macro
+two-span call: the branch guard `hcross` plus the route-level `hbound` produce
+`hmacro : macroSize < blockCount` in
+`canonicalRelativeRmmInteriorRangeMinCosted_cost_le_..._of_size_ge_four_of_bounded`.
+The precedent carrying the identical hypothesis is
+`canonicalRelativeRmmRelativeWidth_le_machine_of_macroSize_lt_blockCount`, and
+the new lemmas are its analogue.
+
+THE HYPOTHESIS IS LOAD-BEARING, exactly as the coordinator predicted. At
+`size = 4`: base 3, `macroSize` 9, domain 11, tightened width 6 against a
+`machineWordBits` of 4. The fit FAILS there. It is saved by unreachability:
+macro crossing needs `9 < blockCount = 1`, which is false.
+
+Derivation, no threshold introduced at any step:
+macro crossing gives `base^3 < size`; `size < 2 ^ base` holds by definition of
+`base = Nat.log2 size + 1`; together they force `10 <= base` by ELIMINATING
+`base <= 9` (at `base = 9`, `base^3 = 729` but `2^9 = 512`). With `10 <= base`
+the local domain `base*base + 2` is below `2 ^ base`, so its level is at most
+`base`, so the packed product is at most `2 * base^3 < 2 ^ (base+1)`, giving
+width `<= base + 1 <= machineWordBits shape.bpCode.length` via the existing
+`canonicalRelativeRmmBase_succ_le_machine_of_size_pos`. The global instance runs
+the same way through `base * (size / base^3) <= size`.
+
+Branches WITHOUT `hmacro` are covered unconditionally by
+`bpSparseLevelLocalWidth_le_seven_machine` and
+`bpSparseLevelGlobalWidth_le_seven_machine` (`<= 7 * machineWordBits`), so those
+reads charge at the `cost_le_eight` rate. Those branches only have to stay under
+the interior cap and have ample headroom. Their proofs are elementary: `base`
+bounds `machineWordBits` by monotonicity, and `Nat.lt_two_pow_self` does the
+rest - no induction anywhere in this rung's width arithmetic.
+
+## SPACE ACCOUNTING: RE-DERIVED, NOT ASSUMED - and it did need work
+
+The tighter width makes the table SMALLER, so the bounds get easier, but the
+four links state the width SYNTACTICALLY: 13 occurrences of
+`Nat.log2 ((x+2)*(x+2)) + 1` across the raw-overhead def, the `527` linear feed
+and the envelope arithmetic. They do NOT transport for free.
+
+Resolved by a bridge rather than by reproving:
+
+    private theorem bpSparseLevelWidth_le_square_width
+        {domain : Nat} (hpos : 0 < domain) :
+        bpSparseLevelWidth domain <= Nat.log2 (domain * domain) + 1
+
+so each existing bound is inherited through one `Nat.le_trans`. CONSEQUENCE
+WORTH STATING: the `527` capacity constant and both `LittleOLinear` envelopes
+are UNCHANGED and remain valid - now loose rather than tight, which is sound for
+upper bounds. No row is weakened, and `ReviewerPhysical.lean` needs no second
+migration.
+
+One genuine repair was needed: the `n = 0` case of
+`..._RawPayloadOverhead_le_linear` closed on `Nat.log2 9` and now needs
+`bpSparseLevelWidth 3`, which does not reduce. Routed through the bridge.
+
+## THE 13 ERRORS ARE CONFIRMED UNCHANGED
+
+With the refreshed patch applied, `lake env lean` on `InteriorDirectory.lean`
+reports EXACTLY 13 errors - the same five groups B7-07 enumerated, with no new
+error introduced by the width work or the space-accounting migration. LINE
+NUMBERS IN THE PATCHED FILE HAVE MOVED, because the width block adds 352 lines
+at `:4042`. The first eight are unmoved; the five cost errors shift by +352:
+
+    :2027 :2039              Costed-to-spec _refines pair (needs domain hyp)
+    :2498 :2502 :2518 :2522  footprint_le_dead heartbeat timeouts
+    :3386 :3400              Computation-to-Costed _refines (NO hypothesis)
+    :4618 :4642              _cost_le_eighty        (was :4266 :4290)
+    :5035 :5059 :5083        _cost_le_eighteen + two _cost_le_ten_of_macro_crossing
+                             (was :4683 :4707 :4731)
+
+## CORRECTIONS OF RECORD (tooling; each cost real time)
+
+1. `import RMQ` DOES NOT REACH `InteriorDirectory`. `#print axioms` on any
+   `InteriorDirectory` name reports `unknown constant` under `import RMQ` even
+   after a successful `lake build RMQ`. Import the module directly:
+   `import RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory`.
+   This is a real trap: the failure looks exactly like "the theorem was not
+   built", and the standing instruction says only "after a root build".
+2. DO NOT splice Lean source with Windows Python using default encoding.
+   Reading a UTF-8 file without `encoding='utf-8'` and rewriting it produced
+   mojibake in the middle-dot and disjunction characters, which Lean reported as
+   "unknown tactic" - a misleading error a long way from the real cause.
+3. `Nat.lt_two_pow` does not exist; the name is `Nat.lt_two_pow_self`.
+   `Nat.pos_pow_of_pos` is deprecated in favour of `Nat.pow_pos`, whose argument
+   order differs.
+
+## VERIFICATION LEDGER (B7-08), all as observed
+
+- `lake build RMQ` at `fa5e94d` (width fix committed, swap NOT applied):
+  EXIT 0, 243/244, "Build completed successfully", ZERO errors, TWELVE
+  warnings - byte-identical to the recorded baseline
+  (`SuccinctFinalRAM` :5804 :5807 :5809 :5811 :5933 :5934;
+  `ReviewerReachabilitySmall` :463 :1484 twice; `ReviewerReachabilityLong`:519;
+  `ReviewerReachabilitySparse`:563; `BPNavigationRAM`:2111). NONE in a file
+  this session touched.
+- `lake build RMQ RMQPaper RMQExamples` at `fa5e94d`: EXIT 0, 266/268,
+  "Build completed successfully". `RMQExamples.Concrete` builds, so commit A's
+  `#guard`s still pass across the width change.
+- `claim_drift_scan.ps1`: exit 0, "scan complete (782 hits, 0 strict failures)".
+- `#print axioms` after that root build, importing the module directly:
+  `bpSparseLevelLocalWidth_le_machine_of_macro_crossing`,
+  `bpSparseLevelGlobalWidth_le_machine_of_macro_crossing`,
+  `bpSparseLevelLocalWidth_le_seven_machine`,
+  `bpSparseLevelGlobalWidth_le_seven_machine`, `bpSparseLevelCell_lt`,
+  `bpSparseLevelEntries_lt_two_pow`, `bpSparseLevelTable` - ALL
+  `[propext, Quot.sound]`. No `Classical.choice`, no `Lean.ofReduceBool`.
+- `lake env lean InteriorDirectory.lean` WITH the refreshed patch applied:
+  EXIT 1, exactly 13 errors as enumerated above. ITERATE AID ONLY.
+- Hygiene `rg` over both touched Lean files: ZERO hits for
+  sorry/admit/native_decide/implemented_by/partial/unsafe/extern/
+  noncomputable/`import Mathlib`/axiom/ofReduceBool.
+- `git diff --check` on the working tree: exit 0.
+- `design_decision_check.ps1 -Strict -Base f6564ec`: exit 0,
+  "DESIGN-CHECK: checked 22 changed files".
+- `git apply --check docs/internal/B7_STEP2_WIP.patch` (refreshed, 1128 lines)
+  against `fa5e94d`: CLEAN.
+- NOT RUN and NOT claimed: the cost harness (CHK-04), `headline_axiom_check`.
+  The rung is not at a candidate state and no swap landed, so the twelve
+  interior windows are necessarily still at commit A's baseline.
+- Per the delegation, `scripts/axiom_check.lean` and `gate.ps1` were NOT run.
+- KNOWN RED, externally owned, NOT re-verified and NOT claimed:
+  `scripts/wordram_axiom_check.lean`, `scripts/axiom_check.lean`,
+  `lake exe rmq_succinct_classic_validate`; and the a07-owned stale `207` prose
+  numerals in `README.md` and `docs/FAMILY_SUMMARY.md`.
+
+## STATUS AT END OF THIS SESSION: INCOMPLETE
+
+No acceptance-matrix row changed status. No row was weakened. No constant is
+asserted. REQ-B7-05 and CHK-04 remain OPEN and are NOT claimed. The slack
+artifact
+`canonicalRelativeRmmPrincipledInteriorChargedTraceCost_announced_slack_of_size_ge_four_of_bounded`
+is STILL PRESENT and still true, which is correct for a tree where the swap has
+not landed.
+
+## RESUME POINT, in order
+
+The width obstruction is CLOSED and committed; do not revisit it. Start at 1.
+
+1. Apply `docs/internal/B7_STEP2_WIP.patch` (1128 lines, `git apply --check`
+   clean at `fa5e94d`). It carries the store extension, all four
+   space-accounting links migrated to the new width, the `527` migration, and
+   the four wired sites.
+2. Clear the 13 errors group by group, at the line numbers above. Templates and
+   the bounded hypothesis cascade are in session 7's entry and still apply;
+   `:3386`/`:3400` need NO hypothesis.
+3. Charge the level reads: `cost_le_one` under `hmacro` via the two
+   `_of_macro_crossing` fit theorems; `cost_le_eight` elsewhere via the two
+   unconditional ones. THE FIT LEMMAS ARE ALREADY IN THE TREE at `fa5e94d` -
+   they need only to be applied.
+4. Re-tighten the caps and DELETE the slack artifact (its `30 < cap` conjunct
+   becomes unprovable - that is the signal commit B is real).
+5. Re-derive the literal over the AMENDED route and exhibit the maximizing
+   branch bound. Expected back at `33` / `210`, but DERIVE it; that is what
+   closes REQ-B7-05.
+6. Provenance/W19, the vocabulary theorem, REQ-B7-08 docs, the matrix, and the
+   full battery including CHK-04 against the session-2 baseline. The interior
+   windows MUST move.

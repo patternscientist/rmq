@@ -1,5 +1,5 @@
 diff --git a/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean b/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean
-index 8d68095..4b19669 100644
+index 499cbe5..3b71f45 100644
 --- a/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean
 +++ b/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean
 @@ -1507,7 +1507,9 @@ def canonicalRelativeRmmInteriorDirectoryPayloadLength
@@ -442,7 +442,7 @@ index 8d68095..4b19669 100644
          canonicalRelativeRmmInteriorComponentOffsets,
          canonicalRelativeRmmLocalMachineStore,
          List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
-@@ -2945,18 +3105,26 @@ theorem canonicalRelativeRmmGlobalReadComputation_refines
+@@ -2945,20 +3105,160 @@ theorem canonicalRelativeRmmGlobalReadComputation_refines
        let globalWords :=
          ((canonicalRelativeRmmInteriorGlobalTable
            shape).table.machineStore hword).store.words.toList
@@ -465,17 +465,16 @@ index 8d68095..4b19669 100644
 -            localWords) globalWords [] localAddress hlocal
 +            localWords) globalWords (localLevelWords ++ globalLevelWords)
 +          localAddress hlocal
-       rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
-       simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
--        argWords, localWords, globalWords,
++      rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
++      simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
 +        argWords, localWords, globalWords, localLevelWords, globalLevelWords,
-         canonicalRelativeRmmInteriorComponentOffsets,
-         canonicalRelativeRmmLocalMachineStore,
-         List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
-@@ -2964,6 +3132,138 @@ theorem canonicalRelativeRmmGlobalReadComputation_refines
-   case hdead =>
-     simp [canonicalRelativeRmmInteriorComponentOffsets]
- 
++        canonicalRelativeRmmInteriorComponentOffsets,
++        canonicalRelativeRmmLocalMachineStore,
++        List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
++    simpa [Array.getElem?_toList] using hlist
++  case hdead =>
++    simp [canonicalRelativeRmmInteriorComponentOffsets]
++
 +theorem canonicalRelativeRmmLocalLevelReadComputation_refines
 +    (shape : Cartesian.CartesianShape) (i : Nat) :
 +    ((canonicalRelativeRmmMachineReadNatComputation shape
@@ -596,21 +595,17 @@ index 8d68095..4b19669 100644
 +          ((((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
 +            localWords) ++ globalWords) ++ localLevelWords) globalLevelWords []
 +          localAddress hlocal
-+      rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
-+      simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+       rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
+       simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+-        argWords, localWords, globalWords,
 +        argWords, localWords, globalWords, localLevelWords, globalLevelWords,
-+        canonicalRelativeRmmInteriorComponentOffsets,
-+        canonicalRelativeRmmLocalMachineStore,
+         canonicalRelativeRmmInteriorComponentOffsets,
+         canonicalRelativeRmmLocalMachineStore,
 +        canonicalRelativeRmmGlobalMachineStore,
 +        canonicalRelativeRmmLocalLevelMachineStore,
-+        List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
-+    simpa [Array.getElem?_toList] using hlist
-+  case hdead =>
-+    simp [canonicalRelativeRmmInteriorComponentOffsets]
-+
- theorem canonicalRelativeRmmMachineSummaryComputation_refines
-     (shape : Cartesian.CartesianShape) (block : Nat) :
-     ((canonicalRelativeRmmMachineSummaryComputation shape block).run
+         List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
+     simpa [Array.getElem?_toList] using hlist
+   case hdead =>
 @@ -3308,7 +3608,9 @@ theorem canonicalRelativeRmmInteriorRange_successful_read_backed
              shape).store.words.toList =
          (canonicalRelativeRmmSummaryTable shape).payload ++
@@ -622,7 +617,7 @@ index 8d68095..4b19669 100644
    have hmatch :=
      canonicalRelativeRmmInteriorRangeRead_matches_store
        shape (canonicalRelativeRmmInteriorComponentStore shape).store.words
-@@ -4778,7 +5080,9 @@ def canonicalRelativeRmmInteriorDirectory
+@@ -5130,7 +5432,9 @@ def canonicalRelativeRmmInteriorDirectory
    payload :=
      (canonicalRelativeRmmSummaryTable shape).payload ++
        (canonicalRelativeRmmInteriorLocalTable shape).payload ++
@@ -633,7 +628,7 @@ index 8d68095..4b19669 100644
    payload_length_eq := by
      simp [canonicalRelativeRmmInteriorDirectoryPayloadLength,
        Nat.add_assoc]
-@@ -4939,7 +5243,67 @@ private theorem machineWordBits_two_mul_le_two_mul (n : Nat) :
+@@ -5291,7 +5595,88 @@ private theorem machineWordBits_two_mul_le_two_mul (n : Nat) :
        natLog2_succ_le_of_pos_lt_pow (by omega) hlt
      simpa [SuccinctRank.machineWordBits, w] using hbits
  
@@ -655,12 +650,32 @@ index 8d68095..4b19669 100644
 +      Nat.mul_le_mul_left 2 (machineWordBits_two_mul_le_two_mul x)
 +    _ = 4 * SuccinctRank.machineWordBits x := by omega
 +
++/--
++THE WIDTH BRIDGE (B7).  The tightened stored width never exceeds the
++square-domain width this module's space accounting was originally written
++against.  Every space bound below is therefore inherited rather than re-derived:
++a narrower cell can only make the table smaller.
++-/
++private theorem bpSparseLevelWidth_le_square_width
++    {domain : Nat} (hpos : 0 < domain) :
++    bpSparseLevelWidth domain <= Nat.log2 (domain * domain) + 1 := by
++  have hlog : Nat.log2 domain + 1 <= domain := by
++    have h := machineWordBits_le_self_of_pos hpos
++    simpa [SuccinctRank.machineWordBits] using h
++  have hmul : domain * (Nat.log2 domain + 1) <= domain * domain :=
++    Nat.mul_le_mul_left domain hlog
++  have hmono := SuccinctRank.machineWordBits_mono_le hmul
++  simpa [bpSparseLevelWidth, SuccinctRank.machineWordBits] using hmono
++
 +/-- The charged sparse-level width on a domain `x + 2` is linear in
 +`machineWordBits x` (B7). -/
 +private theorem sparseLevelWidth_add_two_le_of_pos
 +    {x : Nat} (hx : 0 < x) :
-+    Nat.log2 ((x + 2) * (x + 2)) + 1 <=
++    bpSparseLevelWidth (x + 2) <=
 +      8 * SuccinctRank.machineWordBits x + 1 := by
++  have hbridge : bpSparseLevelWidth (x + 2) <=
++      Nat.log2 ((x + 2) * (x + 2)) + 1 :=
++    bpSparseLevelWidth_le_square_width (by omega)
 +  have hmul :
 +      SuccinctRank.machineWordBits ((x + 2) * (x + 2)) <=
 +        2 * SuccinctRank.machineWordBits (x + 2) + 1 :=
@@ -670,7 +685,8 @@ index 8d68095..4b19669 100644
 +      SuccinctRank.machineWordBits ((x + 2) * (x + 2)) <=
 +        8 * SuccinctRank.machineWordBits x + 1 := by
 +    omega
-+  simpa [SuccinctRank.machineWordBits] using hgoal
++  exact Nat.le_trans hbridge
++    (by simpa [SuccinctRank.machineWordBits] using hgoal)
 +
  def canonicalRelativeRmmInteriorRawPayloadOverhead (n : Nat) : Nat :=
 +  let base := Nat.log2 n + 1
@@ -688,8 +704,8 @@ index 8d68095..4b19669 100644
 +  (superCount * superWidth + 3 * (blockCount * relativeWidth)) +
 +    ((macroCount * (offsetWidth * macroSize)) * offsetWidth) +
 +      ((globalLevelCount * macroCount) * blockAddressWidth) +
-+        (localLevelDomain * (Nat.log2 (localLevelDomain * localLevelDomain) + 1)) +
-+          (globalLevelDomain * (Nat.log2 (globalLevelDomain * globalLevelDomain) + 1))
++        (localLevelDomain * bpSparseLevelWidth localLevelDomain) +
++          (globalLevelDomain * bpSparseLevelWidth globalLevelDomain)
 +
 +/--
 +The pre-B7 (legacy-shaped) part of the raw interior payload overhead: the
@@ -701,7 +717,7 @@ index 8d68095..4b19669 100644
    let base := Nat.log2 n + 1
    let blockCount := n / base
    let relativeWidth := 2 * (Nat.log2 base + 1) + 3
-@@ -4954,13 +5318,41 @@ def canonicalRelativeRmmInteriorRawPayloadOverhead (n : Nat) : Nat :=
+@@ -5306,13 +5691,46 @@ def canonicalRelativeRmmInteriorRawPayloadOverhead (n : Nat) : Nat :=
      ((macroCount * (offsetWidth * macroSize)) * offsetWidth) +
        ((globalLevelCount * macroCount) * blockAddressWidth)
  
@@ -717,8 +733,8 @@ index 8d68095..4b19669 100644
 +  let macroCount := blockCount / macroSize + 1
 +  let localLevelDomain := macroSize + 2
 +  let globalLevelDomain := macroCount + 2
-+  (localLevelDomain * (Nat.log2 (localLevelDomain * localLevelDomain) + 1)) +
-+    (globalLevelDomain * (Nat.log2 (globalLevelDomain * globalLevelDomain) + 1))
++  (localLevelDomain * bpSparseLevelWidth localLevelDomain) +
++    (globalLevelDomain * bpSparseLevelWidth globalLevelDomain)
 +
 +theorem canonicalRelativeRmmInteriorRawPayloadOverhead_eq_parts (n : Nat) :
 +    canonicalRelativeRmmInteriorRawPayloadOverhead n =
@@ -738,13 +754,18 @@ index 8d68095..4b19669 100644
 +      have hlt : Nat.log2 9 < 4 :=
 +        (Nat.log2_lt (by omega : Not ((9 : Nat) = 0))).2 (by decide)
 +      omega
++    have hw3 : bpSparseLevelWidth 3 <= 4 := by
++      have hbridge : bpSparseLevelWidth 3 <= Nat.log2 (3 * 3) + 1 :=
++        bpSparseLevelWidth_le_square_width (by omega)
++      simp only [show (3 : Nat) * 3 = 9 from rfl] at hbridge
++      omega
      simp [canonicalRelativeRmmInteriorRawPayloadOverhead,
        SuccinctRank.machineWordBits, nat_log2_one_eq_zero]
 +    omega
    case neg =>
      have hnpos : 0 < n := by omega
      let w := SuccinctRank.machineWordBits n
-@@ -5078,8 +5470,58 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear (n : Nat) :
+@@ -5430,8 +5848,58 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear (n : Nat) :
            simp [M, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm]
          _ <= 2 * (5 * n) := Nat.mul_le_mul_left 2 hmM5
          _ = 10 * n := by omega
@@ -754,12 +775,12 @@ index 8d68095..4b19669 100644
 +    -- is closed with the tight cube bound `M * w = w ^ 3 <= 8 * n` instead.
 +    have hMpos : 0 < M := Nat.mul_pos hwpos hwpos
 +    have hmpos : 0 < m := Nat.succ_pos (b / M)
-+    have hlocalWidth : Nat.log2 ((M + 2) * (M + 2)) + 1 <= 16 * w + 9 := by
++    have hlocalWidth : bpSparseLevelWidth (M + 2) <= 16 * w + 9 := by
 +      have hraw := sparseLevelWidth_add_two_le_of_pos (x := M) hMpos
 +      have ho : SuccinctRank.machineWordBits M <= 2 * e + 1 := hoBound
 +      have hew : e <= w := hele
 +      omega
-+    have hglobalWidth : Nat.log2 ((m + 2) * (m + 2)) + 1 <= 16 * w + 1 := by
++    have hglobalWidth : bpSparseLevelWidth (m + 2) <= 16 * w + 1 := by
 +      have hraw := sparseLevelWidth_add_two_le_of_pos (x := m) hmpos
 +      have hg : SuccinctRank.machineWordBits m <= 2 * w := hgle
 +      omega
@@ -769,9 +790,9 @@ index 8d68095..4b19669 100644
 +        _ = m * M := by simp [M]
 +        _ <= 5 * n := hmM5
 +    have hlocalLevel :
-+        (M + 2) * (Nat.log2 ((M + 2) * (M + 2)) + 1) <= 196 * n + 18 := by
++        (M + 2) * (bpSparseLevelWidth (M + 2)) <= 196 * n + 18 := by
 +      calc
-+        (M + 2) * (Nat.log2 ((M + 2) * (M + 2)) + 1)
++        (M + 2) * (bpSparseLevelWidth (M + 2))
 +            <= (M + 2) * (16 * w + 9) :=
 +          Nat.mul_le_mul_left (M + 2) hlocalWidth
 +        _ = 16 * (M * w) + 9 * M + 32 * w + 18 := by
@@ -784,9 +805,9 @@ index 8d68095..4b19669 100644
 +          omega
 +        _ = 196 * n + 18 := by omega
 +    have hglobalLevel :
-+        (m + 2) * (Nat.log2 ((m + 2) * (m + 2)) + 1) <= 113 * n + 3 := by
++        (m + 2) * (bpSparseLevelWidth (m + 2)) <= 113 * n + 3 := by
 +      calc
-+        (m + 2) * (Nat.log2 ((m + 2) * (m + 2)) + 1)
++        (m + 2) * (bpSparseLevelWidth (m + 2))
 +            <= (m + 2) * (16 * w + 1) :=
 +          Nat.mul_le_mul_left (m + 2) hglobalWidth
 +        _ = 16 * (m * w) + m + 32 * w + 2 := by
@@ -799,12 +820,12 @@ index 8d68095..4b19669 100644
      change (s * sw + 3 * (b * r)) + (m * (o * M)) * o +
 -      (g * m) * a <= 218 * (n + 1)
 +      (g * m) * a +
-+      ((M + 2) * (Nat.log2 ((M + 2) * (M + 2)) + 1)) +
-+      ((m + 2) * (Nat.log2 ((m + 2) * (m + 2)) + 1)) <= 527 * (n + 1)
++      ((M + 2) * (bpSparseLevelWidth (M + 2))) +
++      ((m + 2) * (bpSparseLevelWidth (m + 2))) <= 527 * (n + 1)
      omega
  
  theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
-@@ -5091,7 +5533,10 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
+@@ -5443,7 +5911,10 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
    rw [(canonicalRelativeRmmSummaryTable shape).payload_length]
    rw [(canonicalRelativeRmmInteriorLocalTable shape).payload_length]
    rw [(canonicalRelativeRmmInteriorGlobalTable shape).payload_length]
@@ -815,7 +836,7 @@ index 8d68095..4b19669 100644
      RelativeRmm.canonicalLayout, RelativeRmm.Layout.superSampleCount,
      RelativeRmm.Layout.superWidth, RelativeRmm.Layout.macroSize,
      RelativeRmm.Layout.macroSampleCount, RelativeRmm.Layout.offsetWidth,
-@@ -5112,7 +5557,8 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compac
+@@ -5464,7 +5935,8 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compac
      {shape : Cartesian.CartesianShape}
      (hready : (RelativeRmm.canonicalLayout shape).CompactReady shape) :
      (canonicalRelativeRmmInteriorDirectory shape).payload.length =
@@ -825,7 +846,7 @@ index 8d68095..4b19669 100644
    let layout := RelativeRmm.canonicalLayout shape
    have hlegacyReady :=
      (RelativeRmm.canonicalLayout_compactReady_iff_legacyReady shape).mp hready
-@@ -5194,11 +5640,161 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compac
+@@ -5546,11 +6018,161 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compac
    rw [(concreteBPRelativeRmmInteriorDirectory shape).payload_length_eq]
    simp [canonicalRelativeRmmInteriorDirectoryPayloadLength,
      concreteBPRelativeRmmInteriorDirectoryPayloadLength, hlegacyReady,
@@ -868,9 +889,9 @@ index 8d68095..4b19669 100644
 +    (hmwb : SuccinctRank.machineWordBits (x + 1) <= base)
 +    (hchain : base * x <= q) :
 +    (base * base + 2) *
-+        (Nat.log2 ((base * base + 2) * (base * base + 2)) + 1) +
++        (bpSparseLevelWidth (base * base + 2)) +
 +      (x + 1 + 2) *
-+        (Nat.log2 ((x + 1 + 2) * (x + 1 + 2)) + 1) <=
++        (bpSparseLevelWidth (x + 1 + 2)) <=
 +      81 * (base * (base * base)) + (9 * q + 21) := by
 +  have hbasepos : 0 < base := by omega
 +  have hsq4 : 4 <= base * base := by
@@ -879,7 +900,7 @@ index 8d68095..4b19669 100644
 +  have hMpos : 0 < base * base := by omega
 +  -- local level table: width is linear in `base`, domain is `~ base^2`
 +  have hwidthL :
-+      Nat.log2 ((base * base + 2) * (base * base + 2)) + 1 <= 25 * base := by
++      bpSparseLevelWidth (base * base + 2) <= 25 * base := by
 +    have h1 := sparseLevelWidth_add_two_le_of_pos hMpos
 +    have h2 := SuccinctRank.machineWordBits_mul_self_log_bound base
 +    have h3 := machineWordBits_le_self_of_pos hbasepos
@@ -887,7 +908,7 @@ index 8d68095..4b19669 100644
 +  have hdomL : base * base + 2 <= 2 * (base * base) := by omega
 +  have hlocal :
 +      (base * base + 2) *
-+          (Nat.log2 ((base * base + 2) * (base * base + 2)) + 1) <=
++          (bpSparseLevelWidth (base * base + 2)) <=
 +        50 * (base * (base * base)) := by
 +    have hmul := Nat.mul_le_mul hdomL hwidthL
 +    have hexp :
@@ -896,11 +917,11 @@ index 8d68095..4b19669 100644
 +    exact Nat.le_trans hmul (Nat.le_of_eq hexp)
 +  -- global level table: width is linear in `base`, domain is `~ n / base^3`
 +  have hwidthG :
-+      Nat.log2 ((x + 1 + 2) * (x + 1 + 2)) + 1 <= 9 * base := by
++      bpSparseLevelWidth (x + 1 + 2) <= 9 * base := by
 +    have h1 := sparseLevelWidth_add_two_le_of_pos (show 0 < x + 1 by omega)
 +    omega
 +  have hglobal :
-+      (x + 1 + 2) * (Nat.log2 ((x + 1 + 2) * (x + 1 + 2)) + 1) <=
++      (x + 1 + 2) * (bpSparseLevelWidth (x + 1 + 2)) <=
 +        9 * (base * x) + 27 * base := by
 +    have hmul := Nat.mul_le_mul_left (x + 1 + 2) hwidthG
 +    have hexp : (x + 1 + 2) * (9 * base) = 9 * (base * x) + 27 * base := by
@@ -990,7 +1011,7 @@ index 8d68095..4b19669 100644
    apply LittleOLinear.of_eventually_le
      concreteBPRelativeRmmInteriorOverhead_littleO
    refine ⟨concreteBPRelativeRmmInteriorReadyThreshold, ?_⟩
-@@ -5221,13 +5817,32 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_littleO :
+@@ -5573,13 +6195,32 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_littleO :
    have hlegacy :=
      (concreteBPRelativeRmmInteriorDirectory_profile_of_ready shape hready).2.1
    rw [canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw] at heq
@@ -1026,7 +1047,7 @@ index 8d68095..4b19669 100644
  theorem canonicalRelativeRmmInteriorOverhead_littleO :
      LittleOLinear canonicalRelativeRmmInteriorOverhead := by
    simpa [canonicalRelativeRmmInteriorOverhead] using
-@@ -5274,7 +5889,9 @@ structure CanonicalRelativeRmmInteriorStoreProfile
+@@ -5626,7 +6267,9 @@ structure CanonicalRelativeRmmInteriorStoreProfile
            shape).store.words.toList =
        (canonicalRelativeRmmSummaryTable shape).payload ++
          (canonicalRelativeRmmInteriorLocalTable shape).payload ++

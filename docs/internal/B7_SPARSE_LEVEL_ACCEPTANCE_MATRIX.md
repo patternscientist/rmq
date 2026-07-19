@@ -356,3 +356,111 @@ CHK-01 through CHK-08 were not re-run this session; the rung is not at a
 candidate state. CHK-04 in particular remains OPEN and unclaimed: no swap
 landed, so the twelve interior windows are necessarily still identical to the
 commit A baseline. The slack artifact remains present and true.
+
+## Evidence at session 8 (B7-08): the width obstruction is CLOSED, all-size
+
+Appended per the matrix's own rule that after freezing only evidence, status
+and coordinator-approved amendments may change. NO ROW IS CLOSED by this
+section and no row is weakened. The swap (commit B) is still not landed.
+
+Statuses that MOVE: none.
+Statuses that gain evidence while remaining Open: REQ-B7-01, REQ-B7-05,
+REQ-B7-06.
+
+### REQ-B7-01 - the sizing defect session 7 identified is REPAIRED
+
+Session 7 recorded that bounding the stored level by `domain` rather than by
+`Nat.log2 domain` is a SIZING defect in the table as built, not only a cost
+defect, and that this row requires the sizing to be derived over the domain of
+values that ACTUALLY OCCUR. Repaired at `fa5e94d`:
+
+    theorem bpSparseLevelCell_lt
+        {i domain : Nat} (hdomain : 2 <= domain) (hi : i < domain) :
+        bpSparseLevelCell domain i < domain * (Nat.log2 domain + 1)
+
+    def bpSparseLevelWidth (domain : Nat) : Nat :=
+      Nat.log2 (domain * (Nat.log2 domain + 1)) + 1
+
+The stored level is `Nat.log2 i` with `i < domain`, so `Nat.log2 domain` is the
+bound the occurring values actually justify. The table is correspondingly
+smaller at every domain.
+
+### REQ-B7-05 - the read is now ONE MACHINE WORD, proved for ALL shapes
+
+The coordinator ruled that the width be tightened to recover commit A's frozen
+`210`, rather than freezing `210` as a historical constant and migrating to
+`213`. The policy reason is recorded in DD-20260719-001: `76`, `142` and `207`
+each genuinely described the accepted route at some point in its history;
+`210` never did, so freezing it would place a fiction in the permanent record.
+
+The evidence required was explicitly NOT a sampled table of sizes. It is a
+checked all-size proposition carrying the route's own reachability hypothesis:
+
+    theorem bpSparseLevelLocalWidth_le_machine_of_macro_crossing
+        {shape : Cartesian.CartesianShape}
+        (hmacro : (RelativeRmm.canonicalLayout shape).macroSize <
+            (RelativeRmm.canonicalLayout shape).blockCount) :
+        bpSparseLevelWidth
+            (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize) <=
+          SuccinctRank.machineWordBits shape.bpCode.length
+
+with the global twin over `macroSampleCount`. Both report
+`[propext, Quot.sound]` only.
+
+WHY THE HYPOTHESIS IS NOT A THRESHOLD, which is the substance of this row's
+anti-vacuity concern. `hmacro` is exactly what the interior dispatcher already
+derives from its own branch guard `hcross` and the route-level `hbound` before
+a cross-macro two-span call is reachable at all; the existing
+`canonicalRelativeRmmRelativeWidth_le_machine_of_macroSize_lt_blockCount`
+carries the identical hypothesis for the relative summary field. Nothing was
+added to the public route, and no size regime is tested anywhere.
+
+The hypothesis is LOAD-BEARING rather than decorative: at `size = 4` the
+tightened width is 6 against a `machineWordBits` of 4, so the fit genuinely
+FAILS there and is saved only because macro crossing requires
+`macroSize = 9 < blockCount = 1`, which is false. `10 <= base` is DERIVED by
+eliminating `base <= 9` against `base^3 < size < 2 ^ base`, not assumed.
+
+Branches that do not carry `hmacro` are covered by two UNCONDITIONAL fit
+theorems at the `cost_le_eight` rate, so no branch is left without a checked
+width bound.
+
+THE ROW STAYS OPEN. This establishes that the read CAN be one word on the
+maximizing branch; it does not re-derive the literal. Closing REQ-B7-05 still
+requires deriving the literal over the AMENDED route and exhibiting the
+maximizing branch bound that consumes the three units. No swap has landed, so
+that derivation does not yet exist.
+
+### REQ-B7-06 - the o(n) accounting survives, and was re-derived not assumed
+
+The tighter width makes the table smaller, so every space bound gets easier -
+but the four space-accounting links state the width SYNTACTICALLY (13
+occurrences across the raw-overhead def, the `527` linear feed and the envelope
+arithmetic), so they do not transport for free. Each is inherited through one
+`Nat.le_trans` on a new bridge:
+
+    private theorem bpSparseLevelWidth_le_square_width
+        {domain : Nat} (hpos : 0 < domain) :
+        bpSparseLevelWidth domain <= Nat.log2 (domain * domain) + 1
+
+Consequences relevant to this row: the `527` capacity constant and both
+`LittleOLinear` envelopes are UNCHANGED and remain valid (now loose rather than
+tight, which is sound for upper bounds), so `ReviewerPhysical.lean` needs no
+second migration. The row's "no threshold" requirement is unaffected - the
+space accounting is unconditional and covers every `n` including `n = 0`, whose
+case needed one genuine repair (it previously closed on `Nat.log2 9` and now
+needs `bpSparseLevelWidth 3`, routed through the bridge).
+
+THE ROW STAYS OPEN: the accounting is stated over the amended payload only in
+the WIP patch, not in committed source.
+
+### Verification rows - unchanged and NOT re-claimed
+
+CHK-04 remains OPEN and unclaimed. No swap landed this session, so the twelve
+interior windows are necessarily still identical to the commit A baseline and
+the harness was not run. The slack artifact remains present and true, which is
+the correct state for a tree where the swap has not landed.
+
+`lake build RMQ` at `fa5e94d`: exit 0, 243/244, zero errors, twelve
+pre-existing warnings (baseline-identical, none in a touched file). This is the
+per-commit evidence REQ-B7-09 asks for.
