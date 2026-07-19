@@ -2651,3 +2651,65 @@ its ground is the positional receipt obligation, not the value.
 
 The worker also corrected two anchors in its OWN resume inventory before
 yielding. The anchor-drift class applies to a worker's own notes too.
+
+## 2026-07-19 (C05 round 40) — a witness built FOR a premise hid a FALSE premise
+
+**The satisfiable-versus-holds gap was worse than a gap: the premise was FALSE
+at the target store.** `hagree` was stated UNBOUNDED, and
+`canonicalRelativeRmmInteriorComponentStore` is the CONCATENATION of eight
+tables' word lists (`..._words_toList`, `InteriorDirectory.lean:1665`). Past the
+end of any one table the store still answers `some` — the NEXT table's word —
+while `(fixedWidthNatTableMachineWords table wordSize)[a]?` answers `none`.
+**Seven of eight tables fail**; only `globalLevel` escapes, and only because
+nothing follows it. Evaluated before building on it: `(baselineWords,
+storeWords)` = one-node `(2,31)`, two-node `(1,38)`, four-node `(1,69)`,
+eight-node `(1,133)` — at the smallest shape the premise is wrong about
+twenty-nine addresses.
+
+**FIFTH STANDING RULE, and it sharpens rule 1 rather than adding to it.**
+`segmentStore_agrees` was honest and correctly proved. It exhibits a store built
+to hold ONE table — and one table is exactly the case where the unbounded form
+is fine. In the worker's words: *a witness constructed FOR the premise rather
+than FOUND at the target satisfies the letter of the satisfiability requirement
+and defeats its purpose.* **A satisfiability witness must be the intended
+instantiation, not a construction designed to make the premise true.**
+
+The five rules now read: an OWED premise owes a satisfiability witness AT THE
+INTENDED INSTANTIATION, not a bespoke one; a VACUOUS premise owes a vacuity
+witness on the same terms; a COMPUTABLE quantity gets evaluated; a CONTAINMENT
+claim gets grepped; and every one of them applies to your own output as much as
+to what you inherit.
+
+**COORDINATOR RULING — instantiate, do not parameterise.** The worker applied
+its own finding to its own work unprompted: `HoldsInteriorStore` is carried as a
+setup hypothesis by all twelve clauses and witnessed by `interiorReadStore_holds`
+— "the same shape of witness as the one that hid the defect I found", a store
+built FOR the hypothesis rather than found at the machine store the interior
+program will run against. It also established the precedent: **no E1 module has
+ever carried an agreement hypothesis.** `concreteBPNativeChunkedRankCloseSeedRead
+Store` (`ChargedRankSelectWiring.lean:970`), `E1RankCanonical.lean:127` and
+`E1CrossBlockArm.lean:1143` all put the CONCRETE store directly in the `RunsTo`
+slot. Ruling: follow that pattern. Instantiation dissolves the problem
+structurally — with no agreement hypothesis there is no witness to construct,
+and no way for a convenient witness to hide a false premise.
+
+**A boundary on rule 3, recorded so it is not rediscovered.** Interior sizes run
+through `Nat.log2`, which Lean defines by WELL-FOUNDED RECURSION: the compiler
+evaluates it (hence instant `#eval`) but **the kernel cannot reduce it**, so
+`rfl` and `decide` both fail on a numeric fixture. The forbidden compiler-backed
+tactic would have closed it. So evaluation FINDS truth here but cannot PROVE it,
+and the general proof is strictly stronger anyway. Rule 3 is a discovery tool,
+not a proof tactic, wherever `Nat.log2` is in the term.
+
+**Rule 4 was applied to the coordinator's prompt, as instructed, and caught
+one thing:** `InteriorDirectory.lean` lives at
+`RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/`, not the bare path my
+prompt implied. All other cited anchors (`:1614`, `:1665`, `:1711`, `:2277`,
+`:2295`, `:2300`) verified at source, and the `hcap`/`hccPos`/`hle` guidance and
+`maxRel` receipt reasoning all held. The DD-ID maximum was verified before
+claiming the next.
+
+**Honest matrix note:** REQ-E1-03's evidence is now partly a SUBTRACTION,
+recorded as such — what an earlier session recorded rested on a premise
+unmeetable at this store. Recording a retraction in the evidence column is the
+column doing its job.
