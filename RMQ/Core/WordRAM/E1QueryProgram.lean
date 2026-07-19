@@ -20,7 +20,11 @@ Design (DD-20260718-006):
   then the two-instruction invalid exit at base `8 + validPath.length`.  The
   invalid exit is reachable only through the guard's two conditional
   branches; the valid path terminates by writing `regOut` and halting, so it
-  never falls through into the exit block;
+  never falls through into the exit block.  **That last clause is still
+  prose**: it is a claim about the valid-path block, which does not exist
+  yet, and nothing here proves it.  What IS now proved is the other half -
+  `guard_accept_of_valid` establishes that a valid range REACHES base `8`
+  with the operands intact, which is the part the glue composes against;
 * the guard is computed BY MACHINE INSTRUCTIONS on the input registers -
   `natLt`/`natLe` comparisons, `natEq` negations against the pinned zero
   register, and `brNZ` branches - so rejection charges machine steps in the
@@ -214,6 +218,51 @@ execute before the `none`-packet write and halt. -/
 def guardRejectBoundsCats : List Category :=
   [ .registerWrite, .registerWrite, .comparison, .comparison, .comparison
   , .branch, .comparison, .branch, .registerWrite, .control ]
+
+/--
+The exact category log the guard charges on an invalid range, as a function
+of WHICH invalidity holds.
+
+Which of the two rejection logs runs is decided by `left < right` alone: if
+it fails the first branch fires, and if it holds then invalidity must have
+come from the bounds test, so the second fires.  The size constant `n` is
+therefore NOT a parameter here - it is what makes the two cases invalid, but
+it does not select between them.
+
+This exists so that the combined rejection theorem can name its category log
+positionally instead of quantifying it away.  The aggregate facts that used
+to be the whole content of that theorem are recovered immediately below, and
+are now consequences of the exact log rather than independent claims.
+-/
+def guardRejectCats (left right : Nat) : List Category :=
+  if left < right then guardRejectBoundsCats else guardRejectRangeCats
+
+theorem guardRejectCats_of_not_lt {left right : Nat} (hnot : ¬ left < right) :
+    guardRejectCats left right = guardRejectRangeCats := by
+  simp [guardRejectCats, hnot]
+
+theorem guardRejectCats_of_lt {left right : Nat} (hlt : left < right) :
+    guardRejectCats left right = guardRejectBoundsCats := by
+  simp [guardRejectCats, hlt]
+
+/-- The guard never reads, on either rejection path. -/
+theorem guardRejectCats_memoryRead (left right : Nat) :
+    catCount (guardRejectCats left right) .memoryRead = 0 := by
+  unfold guardRejectCats
+  split <;> decide
+
+/-- The frozen bookkeeping bound, on either rejection path. -/
+theorem guardRejectCats_length_le (left right : Nat) :
+    (guardRejectCats left right).length ≤ 10 := by
+  unfold guardRejectCats
+  split <;> decide
+
+/-- The two rejection logs are DIFFERENT logs, so the branch-indexed
+definition above is not a distinction without a difference.  They also have
+different lengths, but they differ positionally from index six on, which is
+what a category comparison sees. -/
+theorem guardRejectRangeCats_ne_guardRejectBoundsCats :
+    guardRejectRangeCats ≠ guardRejectBoundsCats := by decide
 
 /--
 Guard rejection, empty/reversed ranges: from the query start state, any
@@ -442,41 +491,72 @@ theorem guard_reject_of_out_of_bounds
 /--
 Combined charged invalid rejection: whenever the query range fails the
 route's validity test against the size constant `n`, the hosted guard runs
-the machine to a halted `none`-packet state with an EMPTY receipt log, a
-zero memory-read category count, and at most ten charged bookkeeping steps.
+the machine to a halted `none`-packet state with an EMPTY receipt log and
+EXACTLY the category log `guardRejectCats left right`.
+
+The category log is named POSITIONALLY, not quantified away.  An earlier form
+of this theorem read `∃ cats, … ∧ catCount cats .memoryRead = 0 ∧
+cats.length ≤ 10`, keeping only two aggregates of a log whose exact value was
+already proved twenty lines above.  Both aggregates are blind to the defect
+class that has bitten this campaign repeatedly: a log of the right length
+with one slot changed from `.comparison` to `.branch` satisfies the read
+count and the length bound exactly.  Those two aggregates are now corollaries
+(`guardRejectCats_memoryRead`, `guardRejectCats_length_le`) of the exact log,
+so nothing is lost and the positional content is retained.
 -/
 theorem guard_reject_of_invalid
     (store : ReadStore) {program : E1Machine.Program} {n invalidBase : Nat}
     (hguard : HostedAt program 0 (guardBlock n invalidBase))
     (hexit : HostedAt program invalidBase invalidExitBlock)
     {left right : Nat} (hbad : ¬ (left < right ∧ right ≤ n)) :
-    ∃ (final : State) (cats : List Category),
-      RunsTo store program (initialState left right) final [] cats ∧
-        final.halted = true ∧ final.regs regOut = 0 ∧
-        catCount cats .memoryRead = 0 ∧ cats.length ≤ 10 := by
+    ∃ final : State,
+      RunsTo store program (initialState left right) final []
+          (guardRejectCats left right) ∧
+        final.halted = true ∧ final.regs regOut = 0 := by
   by_cases hlt : left < right
   · have hbound : ¬ right ≤ n := fun h => hbad ⟨hlt, h⟩
     obtain ⟨final, hrun, hhalted, hout⟩ :=
       guard_reject_of_out_of_bounds store hguard hexit hlt hbound
-    exact ⟨final, guardRejectBoundsCats, hrun, hhalted, hout, rfl,
-      by decide⟩
+    exact ⟨final, by rw [guardRejectCats_of_lt hlt]; exact hrun, hhalted,
+      hout⟩
   · obtain ⟨final, hrun, hhalted, hout⟩ :=
       guard_reject_of_not_lt store hguard hexit hlt
-    exact ⟨final, guardRejectRangeCats, hrun, hhalted, hout, rfl,
-      by decide⟩
+    exact ⟨final, by rw [guardRejectCats_of_not_lt hlt]; exact hrun, hhalted,
+      hout⟩
 
 /-- Invalid rejection specialized to the concrete program skeleton. -/
 theorem programSkeleton_reject_of_invalid
+    (store : ReadStore) (n : Nat) (validPath : List Instr)
+    {left right : Nat} (hbad : ¬ (left < right ∧ right ≤ n)) :
+    ∃ final : State,
+      RunsTo store (programSkeleton n validPath)
+          (initialState left right) final []
+          (guardRejectCats left right) ∧
+        final.halted = true ∧ final.regs regOut = 0 :=
+  guard_reject_of_invalid store
+    (programSkeleton_hosts_guardBlock n validPath)
+    (programSkeleton_hosts_invalidExit n validPath) hbad
+
+/--
+The aggregate form the combined theorem used to state, kept because it is
+occasionally the convenient shape, but now DERIVED from the exact log rather
+than proved alongside it.  Stating it this way makes the implication
+one-directional on purpose: the exact log entails these aggregates, and the
+aggregates entail nothing about the log.
+-/
+theorem programSkeleton_reject_of_invalid_aggregate
     (store : ReadStore) (n : Nat) (validPath : List Instr)
     {left right : Nat} (hbad : ¬ (left < right ∧ right ≤ n)) :
     ∃ (final : State) (cats : List Category),
       RunsTo store (programSkeleton n validPath)
           (initialState left right) final [] cats ∧
         final.halted = true ∧ final.regs regOut = 0 ∧
-        catCount cats .memoryRead = 0 ∧ cats.length ≤ 10 :=
-  guard_reject_of_invalid store
-    (programSkeleton_hosts_guardBlock n validPath)
-    (programSkeleton_hosts_invalidExit n validPath) hbad
+        catCount cats .memoryRead = 0 ∧ cats.length ≤ 10 := by
+  obtain ⟨final, hrun, hhalted, hout⟩ :=
+    programSkeleton_reject_of_invalid store n validPath hbad
+  exact ⟨final, guardRejectCats left right, hrun, hhalted, hout,
+    guardRejectCats_memoryRead left right,
+    guardRejectCats_length_le left right⟩
 
 /-! ## Charged VALID fall-through
 
