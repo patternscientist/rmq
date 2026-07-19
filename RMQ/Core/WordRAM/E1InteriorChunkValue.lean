@@ -310,7 +310,7 @@ addressing is `chunkEventsAt_eq_route`
 theorem chunkFoldValue_eq_route_decode
     (store : ReadStore) (segment wordSize start : Nat) :
     ∀ n : Nat,
-      (∀ j, j < n → ∀ w, store.readWord? segment (start + j) = some w →
+      (∀ j, j + 1 < n → ∀ w, store.readWord? segment (start + j) = some w →
         w.length = wordSize) →
       RMQ.SuccinctSpace.fixedWidthNatTableMachineDecode
           ((RMQ.SuccinctSpace.consecutiveWordIndices start n).map
@@ -328,7 +328,7 @@ theorem chunkFoldValue_eq_route_decode
         RMQ.SuccinctSpace.bitsToNatLE]
   | succ n ih =>
       intro hwidth
-      have hrest : ∀ j, j < n → ∀ w,
+      have hrest : ∀ j, j + 1 < n → ∀ w,
           store.readWord? segment (start + 1 + j) = some w →
           w.length = wordSize := by
         intro j hj w hw
@@ -347,9 +347,6 @@ theorem chunkFoldValue_eq_route_decode
           simp [RMQ.SuccinctSpace.fixedWidthNatTableMachineDecode,
             RMQ.SuccinctSpace.collectPayloadWords]
       | some w =>
-          have hw : w.length = wordSize := by
-            have hidx : start + 0 = start := by omega
-            exact hwidth 0 (by omega) w (by rw [hidx]; exact hhead)
           -- `cases` substituted the read into the goal, so the arithmetic
           -- facts are stated on `some w`, the form the goal now carries.
           have hnz : ¬ decodeRead (some w) = 0 := by
@@ -427,7 +424,23 @@ theorem chunkFoldValue_eq_route_decode
                     + 2 ^ wordSize
                       * chunkLit store segment (2 ^ wordSize) (start + 1) n)
                 else none)
-              rw [if_pos hcond, bitsToNatLE_append, hw, htail, hdec]
+              -- THE FINAL CHUNK'S WIDTH IS SPURIOUS.  The head is the last
+              -- chunk exactly when `n = 0`, and then the tail contributes
+              -- `2 ^ w.length * 0`, which is `0` whatever `w.length` is.
+              -- So exactness is needed only for a head that has a chunk
+              -- above it, which is what `j + 1 < n` says.
+              have hmul : 2 ^ w.length * RMQ.SuccinctSpace.bitsToNatLE tail
+                  = 2 ^ wordSize
+                    * chunkLit store segment (2 ^ wordSize) (start + 1) n := by
+                by_cases hn : n = 0
+                · subst hn
+                  rw [htail]
+                  simp [chunkLit]
+                · have hw : w.length = wordSize := by
+                    have hidx : start + 0 = start := by omega
+                    exact hwidth 0 (by omega) w (by rw [hidx]; exact hhead)
+                  rw [hw, htail]
+              rw [if_pos hcond, bitsToNatLE_append, hmul, hdec]
 
 /-! ## The form `interiorChunkFold_runsTo`'s consumers need -/
 
@@ -436,22 +449,24 @@ A missing chunk qualifies for free: the option shift sends it to the
 truncated `0 - 1 = 0`. -/
 theorem chunkDigit_lt (store : ReadStore) (segment wordSize start n : Nat)
     (hwidth : ∀ j, j < n → ∀ w, store.readWord? segment (start + j) = some w →
-      w.length = wordSize) :
+      w.length ≤ wordSize) :
     ∀ j, j < n →
       decodeRead (store.readWord? segment (start + j)) - 1 < 2 ^ wordSize := by
   intro j hj
   cases hread : store.readWord? segment (start + j) with
   | none => exact Nat.pow_pos (by omega)
   | some w =>
-      have hw : w.length = wordSize := hwidth j hj w hread
+      have hw : w.length ≤ wordSize := hwidth j hj w hread
       have hlt : RMQ.SuccinctSpace.bitsToNatLE w < 2 ^ w.length :=
         bitsToNatLE_lt_two_pow w
+      have hpow : (2 : Nat) ^ w.length ≤ 2 ^ wordSize :=
+        Nat.pow_le_pow_right (by omega) hw
       have hval : decodeRead (some w) - 1 = RMQ.SuccinctSpace.bitsToNatLE w := by
         show RMQ.WordRAM.bitsToNatLE w + 1 - 1 = _
         rw [RMQ.SuccinctSpace.WordRAMBridge.bitsToNatLE_eq]
         omega
-      rw [hval, ← hw]
-      exact hlt
+      rw [hval]
+      omega
 
 /--
 THE REVERSAL PRODUCES THE ROUTE'S LITTLE-ENDIAN VALUE.
@@ -463,7 +478,7 @@ route's own weighting.
 theorem chunkRevAt_chunkAcc_eq_chunkLit
     (store : ReadStore) (segment wordSize start n : Nat)
     (hwidth : ∀ j, j < n → ∀ w, store.readWord? segment (start + j) = some w →
-      w.length = wordSize) :
+      w.length ≤ wordSize) :
     (chunkRevAt (2 ^ wordSize)
         (chunkAcc store segment (2 ^ wordSize) start n) n).2 =
       chunkLit store segment (2 ^ wordSize) start n := by
@@ -485,14 +500,38 @@ the route's decode, option-shifted the same way.  A consumer of the
 simulation theorem may rewrite with this and be left with a statement
 purely about the route.
 
-The width premise is indexed at the fold's own start; it is discharged
-where the fold meets a concrete `BoundedPayloadWordStore`, not here.
+THE WIDTH PREMISE IS SPLIT, AND THE SPLIT IS WHAT MAKES IT DISCHARGEABLE.
+
+`hle` is a BOUND on every chunk and is exactly the
+`BoundedPayloadWordStore.word_length_le` field
+(`RMQ/Core/SuccinctSpace/WordStore.lean:552`), so it is available at any
+store built the repository's way.  `hexact` demands EQUALITY, but only of
+a chunk that has another chunk above it (`j + 1 < n`); the final chunk's
+width is spurious, because its tail contributes `2 ^ w.length * 0`.
+
+That distinction is not cosmetic.  `fixedWidthNatTableMachineWords`
+(`MachineChunkedTable.lean:15`) is a bare
+`flatMap (chunkPayloadWords wordSize)` with NO padding, and
+`chunkPayloadWords` is documented "The final word may be shorter"
+(`WordStore.lean:153`).  A premise demanding equality of EVERY chunk is
+therefore unsatisfiable at any table whose width is not a multiple of
+`wordSize` -- which is most of them, since the interior's `offsetWidth`
+and `blockAddressWidth` (`RelativeSummary.lean:1299`, `:1308`) apply
+`machineWordBits` to strictly smaller arguments than `wordSize` does.
+Stated the old way this theorem was VACUOUS at
+`canonicalRelativeRmmInteriorComponentStore`.  Stated this way both
+premises discharge there: `hle` from the store's own field, and `hexact`
+vacuously, because the interior tables are single-chunk.
 -/
 theorem interiorChunkFold_cOut_eq_routeDecode
     (store : ReadStore)
     {segment base deadAddress entriesLen chunkCount wordSize i : Nat}
     (hcap : chunkCount ≤ 8)
-    (hwidth : ∀ j, j < chunkIters entriesLen chunkCount i → ∀ w,
+    (hle : ∀ j, j < chunkIters entriesLen chunkCount i → ∀ w,
+      store.readWord? segment
+          (chunkStart base deadAddress entriesLen chunkCount i + j) = some w →
+        w.length ≤ wordSize)
+    (hexact : ∀ j, j + 1 < chunkIters entriesLen chunkCount i → ∀ w,
       store.readWord? segment
           (chunkStart base deadAddress entriesLen chunkCount i + j) = some w →
         w.length = wordSize) :
@@ -513,10 +552,10 @@ theorem interiorChunkFold_cOut_eq_routeDecode
   rw [chunkAddrs_eq_consecutive hcap,
     chunkFoldValue_eq_route_decode store segment wordSize
       (chunkStart base deadAddress entriesLen chunkCount i)
-      (chunkIters entriesLen chunkCount i) hwidth,
+      (chunkIters entriesLen chunkCount i) hexact,
     chunkRevAt_chunkAcc_eq_chunkLit store segment wordSize
       (chunkStart base deadAddress entriesLen chunkCount i)
-      (chunkIters entriesLen chunkCount i) hwidth]
+      (chunkIters entriesLen chunkCount i) hle]
   by_cases hbad : chunkBad store segment
       (chunkStart base deadAddress entriesLen chunkCount i)
       (chunkIters entriesLen chunkCount i) = 0
@@ -619,7 +658,8 @@ theorem witnessCOut_cell0_via_bridge :
       else 0) = 2 := by
   rw [interiorChunkFold_cOut_eq_routeDecode
     E1InteriorChunkFold.witnessStore (wordSize := 1) (by omega)
-    witnessWidth_cell0]
+    (fun j hj w hw => Nat.le_of_eq (witnessWidth_cell0 j hj w hw))
+    (fun j hj w hw => witnessWidth_cell0 j (by omega) w hw)]
   decide
 
 end E1InteriorChunkValue
