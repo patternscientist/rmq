@@ -8805,6 +8805,285 @@ theorem concreteBPNativeSelectCloseInterpretedCosted_exact
   rw [concreteBPNativeChunkedSelectCloseCosted_exact shape idx]
   exact SuccinctSpace.select_false_bpCode_eq_bpCloseOfInorder? shape idx
 
+private theorem WholeQueryProgram.evalGlobalWordTrace_append_trace
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (before after : WholeQueryProgram) (state : WholeQueryState) :
+    (evalGlobalWordTrace shape left right (before ++ after) state).trace =
+      (evalGlobalWordTrace shape left right before state).trace ++
+        (evalGlobalWordTrace shape left right after
+          (evalGlobalWordTrace shape left right before state).value).trace := by
+  induction before generalizing state with
+  | nil => simp [evalGlobalWordTrace]
+  | cons first rest ih =>
+      simp only [List.cons_append, evalGlobalWordTrace,
+        WordRAM.TraceResult.bind_trace, WordRAM.TraceResult.bind_value]
+      rw [ih]
+      simp [List.append_assoc]
+
+private theorem WordRAM.TraceResult.nestedBind_contains_middle
+    {α β γ δ : Type}
+    (first : WordRAM.TraceResult α)
+    (second : α → WordRAM.TraceResult β)
+    (middle : WordRAM.TraceResult γ)
+    (rest : β → γ → WordRAM.TraceResult δ) :
+    ∃ prefixTrace suffixTrace,
+      (WordRAM.TraceResult.bind first fun firstValue =>
+        WordRAM.TraceResult.bind (second firstValue) fun secondValue =>
+          WordRAM.TraceResult.bind middle fun middleValue =>
+            rest secondValue middleValue).trace =
+        prefixTrace ++ middle.trace ++ suffixTrace := by
+  refine ⟨first.trace ++ (second first.value).trace,
+    (rest (second first.value).value middle.value).trace, ?_⟩
+  simp [WordRAM.TraceResult.bind_trace, List.append_assoc]
+
+/-- Exact proposition retained by the B7 whole-query reachability theorem. -/
+def ConcreteBPNativeB7Cost33WholeQueryReachability : Prop :=
+    let xs := SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessInput
+    let shape := SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape
+    let before : WholeQueryProgram :=
+      [ WholeQueryInstr.selectClose .leftClose .inputLeft
+      , WholeQueryInstr.selectClose .rightClose
+          (.sub .inputRight (.const 1))
+      ]
+    let lcaInstr :=
+      WholeQueryInstr.lcaClose .answerClose .leftClose .rightClose
+    let preState :=
+      WholeQueryProgram.evalGlobalWordTrace shape 1704 3469 before
+        WholeQueryState.empty |>.value
+    let interior :=
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+        shape concreteBPNativeInteriorTraceSegments 143 146
+    let blockSize :=
+      SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+    let leftBlock := SuccinctClose.blockOfClose blockSize 3409
+    let rightBlock := SuccinctClose.blockOfClose blockSize 6937
+    ValidRange xs 1704 3469 ∧
+      Cartesian.shape xs = shape ∧
+      (concreteBPNativeSelectCloseGlobalWordTraceResult shape 1704).value =
+        some 3409 ∧
+      (concreteBPNativeSelectCloseGlobalWordTraceResult shape 3468).value =
+        some 6937 ∧
+      before.length = 2 ∧
+      preState.opt .leftClose = some 3409 ∧
+      preState.opt .rightClose = some 6937 ∧
+      concreteBPNativeSuccinctRMQWholeQueryProgram =
+        before ++ lcaInstr ::
+          [ WholeQueryInstr.rankCloseIfSome .closeRank .answerClose
+              (.add (.optNatD .answerClose 0) (.const 1))
+          , WholeQueryInstr.outputPredIfSome .output .answerClose .closeRank
+          ] ∧
+      lcaInstr.evalGlobalWordTrace shape 1704 3469 preState =
+        WordRAM.TraceResult.map
+          (fun answer? => preState.setOpt .answerClose answer?)
+          (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+            shape 3409 6937) ∧
+      (leftBlock + 1, rightBlock - leftBlock - 1,
+        if leftBlock + 1 < rightBlock then
+          SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+            shape concreteBPNativeInteriorTraceSegments
+            (leftBlock + 1) (rightBlock - leftBlock - 1)
+        else
+          WordRAM.TraceResult.pure none) =
+        (143, 146, interior) ∧
+      (∃ prefixTrace suffixTrace,
+        (lcaInstr.evalGlobalWordTrace shape 1704 3469 preState).trace =
+          prefixTrace ++ interior.trace ++ suffixTrace) ∧
+      (∃ prefixTrace suffixTrace,
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape 1704 3469).trace =
+            prefixTrace ++ interior.trace ++ suffixTrace) ∧
+      interior.toCosted.cost = 33 ∧
+      interior.trace.length = 33 ∧
+      Not (interior.toCosted.cost <= 30)
+
+/--
+The canonical B7 window reaches the literal cost-33 segment-20 component
+through the actual closed whole-query fold.  The proposition retains both
+select results, the position-2 LCA instruction and its folded pre-state, the
+real cross-block middle conditional, and append decompositions showing the
+identical component inside both the LCA-instruction trace and the complete
+whole-query trace.
+-/
+theorem concreteBPNativeB7Cost33Witness_wholeQuery_reaches_interiorTrace :
+    ConcreteBPNativeB7Cost33WholeQueryReachability := by
+  unfold ConcreteBPNativeB7Cost33WholeQueryReachability
+  let xs := SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessInput
+  let shape := SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape
+  let before : WholeQueryProgram :=
+    [ WholeQueryInstr.selectClose .leftClose .inputLeft
+    , WholeQueryInstr.selectClose .rightClose
+        (.sub .inputRight (.const 1))
+    ]
+  let lcaInstr :=
+    WholeQueryInstr.lcaClose .answerClose .leftClose .rightClose
+  let preState :=
+    WholeQueryProgram.evalGlobalWordTrace shape 1704 3469 before
+      WholeQueryState.empty |>.value
+  let interior :=
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+      shape concreteBPNativeInteriorTraceSegments 143 146
+  let blockSize :=
+    SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+  let leftBlock := SuccinctClose.blockOfClose blockSize 3409
+  let rightBlock := SuccinctClose.blockOfClose blockSize 6937
+  rcases concreteBPNativeB7Cost33Witness_query_geometry with
+    ⟨hleftLt, hrightBound, hshape, hleftClose, hrightClose⟩
+  have hvalid : ValidRange xs 1704 3469 := by
+    exact ⟨hleftLt, by simpa [xs] using hrightBound⟩
+  have hleftValue :
+      (concreteBPNativeSelectCloseGlobalWordTraceResult shape 1704).value =
+        some 3409 := by
+    have href := congrArg Costed.value
+      (concreteBPNativeSelectCloseGlobalWordTraceResult_refines_interpretedCosted
+        shape 1704)
+    rw [WordRAM.TraceResult.toCosted_value] at href
+    have hexact := concreteBPNativeSelectCloseInterpretedCosted_exact
+      shape 1704
+    have hinterpreted :
+        (concreteBPNativeSelectCloseInterpretedCosted shape 1704).value =
+          some 3409 := by
+      simpa [Costed.erase, shape] using hexact.trans hleftClose
+    exact href.trans hinterpreted
+  have hrightValue :
+      (concreteBPNativeSelectCloseGlobalWordTraceResult shape 3468).value =
+        some 6937 := by
+    have href := congrArg Costed.value
+      (concreteBPNativeSelectCloseGlobalWordTraceResult_refines_interpretedCosted
+        shape 3468)
+    rw [WordRAM.TraceResult.toCosted_value] at href
+    have hexact := concreteBPNativeSelectCloseInterpretedCosted_exact
+      shape 3468
+    have hinterpreted :
+        (concreteBPNativeSelectCloseInterpretedCosted shape 3468).value =
+          some 6937 := by
+      simpa [Costed.erase, shape] using hexact.trans hrightClose
+    exact href.trans hinterpreted
+  have hpreLeft : preState.opt .leftClose = some 3409 := by
+    simp [preState, before, WholeQueryProgram.evalGlobalWordTrace,
+      WholeQueryInstr.evalGlobalWordTrace, WholeQueryNatExpr.eval,
+      hleftValue, hrightValue, WholeQueryState.empty,
+      WholeQueryState.setOpt, WholeQueryState.opt]
+  have hpreRight : preState.opt .rightClose = some 6937 := by
+    simp [preState, before, WholeQueryProgram.evalGlobalWordTrace,
+      WholeQueryInstr.evalGlobalWordTrace, WholeQueryNatExpr.eval,
+      hleftValue, hrightValue, WholeQueryState.empty,
+      WholeQueryState.setOpt, WholeQueryState.opt]
+  have hprogram : concreteBPNativeSuccinctRMQWholeQueryProgram =
+      before ++ lcaInstr ::
+        [ WholeQueryInstr.rankCloseIfSome .closeRank .answerClose
+            (.add (.optNatD .answerClose 0) (.const 1))
+        , WholeQueryInstr.outputPredIfSome .output .answerClose .closeRank
+        ] := by
+    rfl
+  have hlcaEval :
+      lcaInstr.evalGlobalWordTrace shape 1704 3469 preState =
+        WordRAM.TraceResult.map
+          (fun answer? => preState.setOpt .answerClose answer?)
+          (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+            shape 3409 6937) := by
+    simp [lcaInstr, WholeQueryInstr.evalGlobalWordTrace,
+      hpreLeft, hpreRight]
+  have hmiddleTriple :
+      (leftBlock + 1, rightBlock - leftBlock - 1,
+        if leftBlock + 1 < rightBlock then
+          SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+            shape concreteBPNativeInteriorTraceSegments
+            (leftBlock + 1) (rightBlock - leftBlock - 1)
+        else
+          WordRAM.TraceResult.pure none) =
+        (143, 146, interior) := by
+    simpa [shape, blockSize, leftBlock, rightBlock, interior] using
+      concreteBPNativeB7Cost33Witness_acceptedMiddleInvocation
+  have hstart : leftBlock + 1 = 143 :=
+    congrArg (fun value => value.1) hmiddleTriple
+  have hcount : rightBlock - leftBlock - 1 = 146 :=
+    congrArg (fun value => value.2.1) hmiddleTriple
+  have hmiddle :
+      (if leftBlock + 1 < rightBlock then
+        SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+          shape concreteBPNativeInteriorTraceSegments
+          (leftBlock + 1) (rightBlock - leftBlock - 1)
+      else
+        WordRAM.TraceResult.pure none) = interior :=
+    congrArg (fun value => value.2.2) hmiddleTriple
+  have hsame : leftBlock ≠ rightBlock := by
+    intro heq
+    rw [heq] at hcount
+    omega
+  have hlcaComponent :
+      ∃ prefixTrace suffixTrace,
+        (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+          shape 3409 6937).trace =
+            prefixTrace ++ interior.trace ++ suffixTrace := by
+    unfold concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+    unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural
+    rw [if_neg (by simpa [blockSize, leftBlock, rightBlock] using hsame)]
+    unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments
+    dsimp only
+    rw [show
+      (if leftBlock + 1 < rightBlock then
+        SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+          shape concreteBPNativeInteriorTraceSegments
+          (leftBlock + 1) (rightBlock - leftBlock - 1)
+      else WordRAM.TraceResult.pure none) = interior from hmiddle]
+    exact WordRAM.TraceResult.nestedBind_contains_middle _ _ _ _
+  rcases hlcaComponent with ⟨lcaPrefix, lcaSuffix, hlcaComponent⟩
+  have hinstrComponent :
+      (lcaInstr.evalGlobalWordTrace shape 1704 3469 preState).trace =
+        lcaPrefix ++ interior.trace ++ lcaSuffix := by
+    rw [hlcaEval]
+    simpa [WordRAM.TraceResult.map_trace] using hlcaComponent
+  let after : WholeQueryProgram :=
+    [ WholeQueryInstr.rankCloseIfSome .closeRank .answerClose
+        (.add (.optNatD .answerClose 0) (.const 1))
+    , WholeQueryInstr.outputPredIfSome .output .answerClose .closeRank
+    ]
+  have hwholeTrace :
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape 1704 3469).trace =
+        (WholeQueryProgram.evalGlobalWordTrace shape 1704 3469 before
+          WholeQueryState.empty).trace ++
+        (lcaInstr.evalGlobalWordTrace shape 1704 3469 preState).trace ++
+        (WholeQueryProgram.evalGlobalWordTrace shape 1704 3469 after
+          (lcaInstr.evalGlobalWordTrace shape 1704 3469 preState).value).trace := by
+    unfold concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+    rw [WordRAM.TraceResult.map_trace]
+    rw [show concreteBPNativeSuccinctRMQWholeQueryProgram =
+      before ++ lcaInstr :: after by simpa [after] using hprogram]
+    rw [WholeQueryProgram.evalGlobalWordTrace_append_trace]
+    change
+      (WholeQueryProgram.evalGlobalWordTrace shape 1704 3469 before
+        WholeQueryState.empty).trace ++
+          (WholeQueryProgram.evalGlobalWordTrace shape 1704 3469
+            (lcaInstr :: after) preState).trace = _
+    simp only [WholeQueryProgram.evalGlobalWordTrace,
+      WordRAM.TraceResult.bind_trace]
+    simp [List.append_assoc]
+  have hwholeComponent :
+      ∃ prefixTrace suffixTrace,
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape 1704 3469).trace =
+            prefixTrace ++ interior.trace ++ suffixTrace := by
+    refine ⟨
+      (WholeQueryProgram.evalGlobalWordTrace shape 1704 3469 before
+        WholeQueryState.empty).trace ++ lcaPrefix,
+      lcaSuffix ++
+        (WholeQueryProgram.evalGlobalWordTrace shape 1704 3469 after
+          (lcaInstr.evalGlobalWordTrace shape 1704 3469 preState).value).trace,
+      ?_⟩
+    rw [hwholeTrace, hinstrComponent]
+    simp [List.append_assoc]
+  have hinteriorExact :
+      interior.toCosted.cost = 33 ∧
+        interior.trace.length = 33 ∧
+        Not (interior.toCosted.cost <= 30) := by
+    simpa [shape, interior] using
+      concreteBPNativeB7Cost33Witness_interiorTrace_exact
+  exact ⟨hvalid, by simpa [xs, shape] using hshape, hleftValue,
+    hrightValue, by simp, hpreLeft, hpreRight, hprogram, hlcaEval,
+    hmiddleTriple, ⟨lcaPrefix, lcaSuffix, hinstrComponent⟩, hwholeComponent,
+    hinteriorExact.1, hinteriorExact.2.1, hinteriorExact.2.2⟩
+
 /-- Exact-value substitution for the swapped chunked rank-close seed. -/
 theorem concreteBPNativeRankCloseInterpretedCosted_exact
     (shape : Cartesian.CartesianShape) (pos : Nat) :

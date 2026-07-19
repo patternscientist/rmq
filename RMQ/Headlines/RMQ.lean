@@ -291,6 +291,23 @@ provenance receipts. -/
 abbrev succinctRMQReviewerRepeatedEqualOccurrencesRemainDistinct :=
   RMQ.SuccinctFinal.repeated_equal_read_occurrences_have_distinct_receipts
 
+/--
+Headline alias for the guarded canonical B7 query's exact position-2 LCA
+reachability of the identical cost-33 segment-20 component.
+-/
+theorem succinctRMQB7Cost33WholeQueryReachability :
+    RMQ.SuccinctClassic.B7Cost33WholeQueryReachability :=
+  RMQ.SuccinctClassic.b7Cost33WholeQuery_reaches_interiorTrace
+
+/--
+Headline alias retaining the singleton read's literal global positions
+`0`/`15`, instruction positions `0`/`1`, folded states, local positions, and
+complete receipts.
+-/
+theorem succinctRMQB7SingletonRepeatedReadExactPositions :
+    RMQ.SuccinctClassic.B7SingletonRepeatedReadExactPositions :=
+  RMQ.SuccinctClassic.b7Singleton_repeated_read_exact_positions
+
 /-- No legacy duplicate close source occurs in the canonical source list. -/
 abbrev succinctRMQReviewerPhysicalSourcesExcludeLegacyClose :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources_exclude_legacy_close

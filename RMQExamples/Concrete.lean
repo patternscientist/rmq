@@ -193,6 +193,73 @@ example :
     RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory
       tinyRMQInput 0 5
 
+/- Exact-use consumer: the guarded canonical B7 query contains the identical
+cost-33 interior trace, not merely an independently evaluated component. -/
+example :
+    let shape :=
+      RMQ.SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape
+    let interior :=
+      RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+        shape RMQ.SuccinctFinal.concreteBPNativeInteriorTraceSegments 143 146
+    ∃ prefixTrace suffixTrace,
+      RMQ.SuccinctClassic.queryTraceResult
+          RMQ.SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessInput
+          1704 3469 =
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape 1704 3469 ∧
+      (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape 1704 3469).trace =
+          prefixTrace ++ interior.trace ++ suffixTrace ∧
+      interior.toCosted.cost = 33 ∧
+      Not (interior.toCosted.cost <= 30) := by
+  have hpublic :=
+    RMQ.SuccinctClassic.b7Cost33WholeQuery_reaches_interiorTrace
+  unfold RMQ.SuccinctClassic.B7Cost33WholeQueryReachability at hpublic
+  rcases hpublic with ⟨hquery, hsource⟩
+  unfold RMQ.SuccinctFinal.ConcreteBPNativeB7Cost33WholeQueryReachability
+    at hsource
+  rcases hsource with
+    ⟨_hvalid, _hshape, _hleft, _hright, _hbeforeLength,
+      _hpreLeft, _hpreRight, _hprogram, _hlcaEval, _hmiddle,
+      _hlcaContains, hwholeContains, hcost, _hlength, hnotLeThirty⟩
+  rcases hwholeContains with ⟨prefixTrace, suffixTrace, hcontains⟩
+  exact ⟨prefixTrace, suffixTrace, hquery, hcontains, hcost, hnotLeThirty⟩
+
+/- Exact-use consumer: global position `15` comes from instruction position
+`1`, at the actual folded state and local position `0`, with its receipt. -/
+example :
+    ∃ word : RMQ.WordRAM.Word,
+      RMQ.SuccinctClassic.queryTraceResult ([7] : List Int) 0 1 =
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          (RMQ.Cartesian.shape ([7] : List Int)) 0 1 ∧
+      (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1).trace[15]? =
+          some (.readWord 1 0 (some word)) ∧
+      RMQ.SuccinctFinal.WholeQueryProgram.ProducesEventAt
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1
+        (.readWord 1 0 (some word))
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProgram
+        RMQ.SuccinctFinal.WholeQueryState.empty 15 1
+        (RMQ.SuccinctFinal.WholeQueryInstr.selectClose .rightClose
+          (.sub .inputRight (.const 1)))
+        (RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace
+          (RMQ.Cartesian.shape ([7] : List Int)) 0 1
+          [RMQ.SuccinctFinal.WholeQueryInstr.selectClose .leftClose .inputLeft]
+          RMQ.SuccinctFinal.WholeQueryState.empty).value 0 ∧
+      RMQ.SuccinctFinal.ReviewerReadOccurrenceReceipt
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1 15 1 0 (some word) := by
+  have hpublic :=
+    RMQ.SuccinctClassic.b7Singleton_repeated_read_exact_positions
+  unfold RMQ.SuccinctClassic.B7SingletonRepeatedReadExactPositions at hpublic
+  rcases hpublic with ⟨hquery, hsource⟩
+  unfold
+    RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQSingletonRepeatedReadExactPositions
+    at hsource
+  rcases hsource with
+    ⟨word, _hvalid, _hlength, _hinstrNe, _hget0, hget15,
+      _hproducer0, hproducer15, _hreceipt0, hreceipt15⟩
+  exact ⟨word, hquery, hget15, hproducer15, hreceipt15⟩
+
 def tinyUnionFind : RMQ.UnionFind.State where
   size := 3
   repr := fun x => x

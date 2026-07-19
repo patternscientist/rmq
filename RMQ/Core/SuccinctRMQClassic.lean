@@ -1,5 +1,6 @@
 import RMQ.Core.Microtable
 import RMQ.Core.SuccinctFinalModelAdequacy
+import RMQ.Core.SuccinctFinal.RAM.ReviewerReachabilitySmall
 
 /-!
 # Classic list-facing succinct RMQ theorem
@@ -284,6 +285,67 @@ theorem queryTraceResult_valid
       SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
         (cartesianShape xs) left right := by
   simp [queryTraceResult, withValidRange, hvalid]
+
+/--
+Public list-facing B7 cost-33 reachability proposition.  The first conjunct
+ties the guarded `List Int` query to the exact canonical whole-query trace;
+the second retains the complete folded-instruction/component proposition.
+-/
+def B7Cost33WholeQueryReachability : Prop :=
+  let xs := SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessInput
+  queryTraceResult xs 1704 3469 =
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape
+        1704 3469 ∧
+    SuccinctFinal.ConcreteBPNativeB7Cost33WholeQueryReachability
+
+/-- The public guarded query reaches the identical cost-33 interior trace. -/
+theorem b7Cost33WholeQuery_reaches_interiorTrace :
+    B7Cost33WholeQueryReachability := by
+  unfold B7Cost33WholeQueryReachability
+  have hsource :=
+    SuccinctFinal.concreteBPNativeB7Cost33Witness_wholeQuery_reaches_interiorTrace
+  unfold SuccinctFinal.ConcreteBPNativeB7Cost33WholeQueryReachability at hsource
+  have hvalid := hsource.1
+  have hshape := hsource.2.1
+  refine ⟨?_, hsource⟩
+  calc
+    queryTraceResult
+        SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessInput
+        1704 3469 =
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (cartesianShape
+          SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessInput)
+        1704 3469 :=
+      queryTraceResult_valid _ _ _ hvalid
+    _ = SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape
+        1704 3469 := by
+      rw [cartesianShape, hshape]
+
+/--
+Public list-facing singleton occurrence proposition.  It retains the guarded
+query equality together with the literal `0`/`15` global positions, `0`/`1`
+instruction positions, folded states, local positions, and receipts.
+-/
+def B7SingletonRepeatedReadExactPositions : Prop :=
+  queryTraceResult ([7] : List Int) 0 1 =
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (Cartesian.shape ([7] : List Int)) 0 1 ∧
+    SuccinctFinal.ConcreteBPNativeSuccinctRMQSingletonRepeatedReadExactPositions
+
+/-- The actual singleton guarded query has the two literal read occurrences. -/
+theorem b7Singleton_repeated_read_exact_positions :
+    B7SingletonRepeatedReadExactPositions := by
+  unfold B7SingletonRepeatedReadExactPositions
+  have hsource :=
+    SuccinctFinal.concreteBPNativeSuccinctRMQSingleton_repeated_read_exact_positions
+  unfold
+    SuccinctFinal.ConcreteBPNativeSuccinctRMQSingletonRepeatedReadExactPositions
+    at hsource
+  refine ⟨queryTraceResult_valid ([7] : List Int) 0 1
+    (by simp [ValidRange]), ?_⟩
+  exact hsource
 
 /-- On a valid range the supplied-store trace is exactly the supplied-store
 evaluator. -/

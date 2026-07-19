@@ -4218,3 +4218,57 @@ probe fell from a 120.034-second timeout to 2.135 seconds, and the exact
 21-case replay completed in 29.158 seconds. Payload bits, proof fields, modeled
 ticks, traces, allocated cells, Lean runtime, and measured wall time remain
 separate categories.
+
+## DD-20260719-005: B7 execution bridges retain literal objects and positions in additive propositions (B7-R4)
+
+Context. Exact-commit audit of the R3 candidate found two semantic facts that
+were true only as separately reconstructed components. The cost-33 interior
+trace was proved in isolation but no proposition placed that identical trace
+inside the accepted whole/list query. The singleton repeated-read proof knew
+global positions `0`/`15` and instruction positions `0`/`1`, but its exported
+compatibility theorem erased those constants behind existential receipts. A
+fresh reconstruction also separated two equal-read phenomena: global
+positions `0`/`15` are the segment-`1`, index-`0` select-directory read, while
+the pre-existing segment-`22` select-chunk witness is at positions `14`/`29`.
+
+Decision. Add two named, reducible proposition definitions and checked
+inhabitants rather than changing the older compatibility theorem types.
+`ConcreteBPNativeB7Cost33WholeQueryReachability` retains the actual two
+select-close instructions, their values `3409`/`6937`, the position-2 LCA
+instruction and its folded pre-state, the real cross-block middle conditional
+at `(143,146)`, append decompositions into both the LCA-instruction trace and
+the complete whole-query trace, and exact `33`/length-`33`/not-`<=30` facts on
+the identical segment-20 component. The public Classic proposition additionally
+equates the guarded `List Int` `queryTraceResult` for `[1704,3469)` with that
+whole trace.
+
+`ConcreteBPNativeSuccinctRMQSingletonRepeatedReadExactPositions` retains the
+actual singleton execution, global positions `0` and `15`, producing
+instruction positions `0` and `1`, both distinct select-close instructions,
+the empty and one-instruction-folded states, local position `0`, the two
+`ProducesEventAt` derivations, and complete receipts for the same segment-`1`,
+index-`0` successful read. Its Classic proposition likewise retains the valid
+guarded query equality. Headline aliases preserve these proposition names;
+validation, example, and both curated trust files unfold them into independent
+literal expected types.
+
+Rejected alternatives. (1) Re-export only the isolated interior evaluator;
+that does not prove reachability from the accepted query object. (2) Rebuild a
+sibling aggregate harness; that would not identify the production execution.
+(3) Keep the literal positions only in proof bodies or existentially quantify
+them; that cannot be checked by a downstream consumer. (4) Relabel the old
+segment-22 theorem as the `0`/`15` witness; executable reconstruction shows its
+positions are `14`/`29`. (5) mutate the old compatibility theorem type; two
+outside-scope semantic-provenance consumers rely on it, and an additive exact
+proposition gives the required stronger surface without breaking them.
+
+Consequences. The new public import from `SuccinctRMQClassic` to
+`ReviewerReachabilitySmall` is intentional and therefore triggers the ordered
+startup/selector/full-registry replay required by WDD-20260719-010. No query
+algorithm, payload/store geometry, trace event, modeled cost, `210`, historical
+`328`, live `352`, or reference semantics changes. The exact propositions are
+larger than compatibility aliases because object identity is now part of the
+checked contract; downstream expected-type consumers will fail if the whole
+query is replaced by the component evaluator, `(143,146)` changes, `15`/`1`
+changes, the producers collapse, folded-state/local-position evidence is
+removed, or the literal positions are existentially hidden.

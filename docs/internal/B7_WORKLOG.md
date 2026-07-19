@@ -2738,3 +2738,229 @@ The first checkpoint's aggregate/trust results are development evidence only
 after this source amendment. The amended tree must be committed and receive a
 fresh exact-commit aggregate, both trust inventories, strict public/decision
 gates, and final clean-tree checks before candidate completion is reported.
+
+# B7-R4 proposition-level execution bridges
+
+## Governed start and dependency reconstruction
+
+Worker `B7-R4` started fresh at exact base
+`07b0dda3878574070ae7ab0332cc61658e56f67a` in
+`C:\Users\poin\.codex\worktrees\91bc\RMQ` on branch
+`codex/b7-charged-sparse-level-r4`. Before substantive work,
+`scripts/project_skill_preflight.ps1` passed against workflow-governance ref
+`7e0e6089251147b02365bc5603ebd2347902018f`, requiring
+`rmq-proof-sprint` and accurately reporting the runtime RMQ catalog as
+`rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint`. The checkout contained all
+three canonical project skills, the governing ref was in ancestry, HEAD was
+the requested ordered join, and the tree was clean.
+
+The frozen symbol search was repeated before editing. It found the enumerated
+public/trust consumers and two additional read-only consumers of the older
+compatibility theorem in
+`SuccinctFinalSemanticProvenanceAdequacy.lean` and
+`ChargePolicyDependency.lean`. No fifth Lean write consumer was required:
+the old theorem remains unchanged, while the exact literal-position theorem is
+additive. No outside-scope file was edited.
+
+## Whole-query cost-33 reachability
+
+The source theorem has the exact named type:
+
+```lean
+RMQ.SuccinctFinal.concreteBPNativeB7Cost33Witness_wholeQuery_reaches_interiorTrace :
+  RMQ.SuccinctFinal.ConcreteBPNativeB7Cost33WholeQueryReachability
+```
+
+The retained proposition starts at the canonical witness input and valid
+half-open range `[1704,3469)`. Its object-composition chain is:
+
+```text
+canonical witness List/shape
+  -> actual whole-query program
+  -> instruction 0 selectClose = 3409
+  -> instruction 1 selectClose = 6937
+  -> actual folded state before instruction 2
+  -> instruction 2 lcaClose evaluator on (3409,6937)
+  -> real cross-block middle conditional
+  -> exact invocation (143,146)
+  -> identical segment-20 all-size structural interior TraceResult
+  -> append-contained in the instruction trace
+  -> append-contained in the complete whole-query trace
+  -> cost = 33, trace.length = 33, Not (cost <= 30)
+```
+
+The public theorem
+`RMQ.SuccinctClassic.b7Cost33WholeQuery_reaches_interiorTrace` has type
+`RMQ.SuccinctClassic.B7Cost33WholeQueryReachability`; its first conjunct
+equates the valid guarded `queryTraceResult` with that exact whole-query trace,
+and its second conjunct retains the entire source proposition. The headline
+alias has the same Classic proposition type.
+
+## Singleton literal occurrence identity
+
+The source theorem has the exact named type:
+
+```lean
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQSingleton_repeated_read_exact_positions :
+  RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQSingletonRepeatedReadExactPositions
+```
+
+Its occurrence chain is one checked proposition:
+
+```text
+actual guarded singleton query ([7], [0,1))
+  -> actual closed whole-query program
+  -> global trace[0] = readWord 1 0 (some word)
+  -> ProducesEventAt global 0 / instruction 0
+       / left selectClose / empty folded state / local 0
+  -> complete receipt at global 0
+  -> first select trace has length 15
+  -> global trace[15] = the identical readWord event
+  -> ProducesEventAt global 15 / instruction 1
+       / right selectClose / actual one-instruction folded state / local 0
+  -> complete receipt at global 15
+  -> the two select-close instructions are unequal
+```
+
+The literal read here is segment `1`, index `0`. The unchanged compatibility
+witness for the successful segment-`22` select-chunk read remains a different
+fact at global positions `14` and `29`. The public theorem
+`RMQ.SuccinctClassic.b7Singleton_repeated_read_exact_positions` retains both
+the valid guarded query equality and the complete literal source proposition;
+the headline alias has that exact Classic proposition type.
+
+## Public anti-vacuity consumers
+
+Independent literal expected-type consumers were added in
+`RMQ/Validation/SuccinctClassic.lean`, `RMQExamples/Concrete.lean`,
+`scripts/wordram_axiom_check.lean`, and `scripts/headline_axiom_check.lean`.
+They unfold the stable public proposition definitions and demand the concrete
+query equality, invocation/trace containment and exact cost facts, or the
+literal global/instruction/state/local/receipt fields. They do not merely
+print or infer the mutable theorem type.
+
+The accepted whole-query predicate P is the guarded query equality conjoined
+with the actual folded-program proposition above. Rejected Q1 substitutes the
+isolated interior evaluator, Q2 substitutes an invocation other than
+`(143,146)`, and Q3 retains only an upper bound. The expected consumers require
+the missing equality/conjuncts and therefore do not typecheck against Q1-Q3.
+
+The accepted occurrence predicate P is the singleton proposition with literal
+global positions `0`/`15`, instruction positions `0`/`1`, distinct concrete
+producers, exact folded states, local position `0`, and both receipts. Rejected
+Q1 changes `15`, Q2 changes instruction position `1`, Q3 uses one producer,
+Q4 erases folded-state/local-position identity, and Q5 existentially hides the
+positions. The validation and trust consumers state these fields literally,
+so each Q lacks a demanded projection and fails at exact theorem use.
+
+DD-20260719-005 records the additive public-surface and occurrence-identity
+decision. No public prose, policy, roadmap, packet, README, artifact, or
+current-fact registry was changed; document-authority consolidation and stale
+prose remain coordinator-owned.
+
+## Development-loop evidence before replay freeze
+
+All commands used positive deadlines derived from the prior R3 timings, and
+only one Lean/Lake process ran at a time. No command timed out.
+
+- `lake build RMQ.Validation.SuccinctClassic`: cold prerequisite/cache build,
+  exit `0`, `143/143`, 868.9s;
+- `lake build RMQ.Core.SuccinctFinalRAM`: first completed bridge build, exit
+  `0`, 76.6s; after removing the one new unused-simp warning, exit `0`,
+  `139/139`, 54.6s (remaining warnings predate B7-R4);
+- `lake build RMQ.Core.SuccinctFinal.RAM.ReviewerReachabilitySmall`: exit `0`,
+  `140/140`, 0.8s on the rebuilt dependency cache;
+- `lake build RMQ.Core.SuccinctRMQClassic`: exit `0`, 8.3s after the initial
+  import-closure rebuild;
+- `lake build RMQ.Headlines.RMQ`: exit `0`, 32.8s;
+- `lake build RMQ.Validation.SuccinctClassic`: exact literal consumer, exit
+  `0`, 173.2s;
+- `lake build RMQExamples.Concrete`: exact literal consumer, exit `0`, 57.3s;
+- `lake env lean scripts/wordram_axiom_check.lean`: exit `0`, 112s, with only
+  the established Lean logical axioms reported;
+- `lake env lean scripts/headline_axiom_check.lean`: after building missing
+  aggregate prerequisites, exit `0`, 47.0s, with only the established Lean
+  logical axioms reported;
+- `lake build RMQ.Headlines`: development prerequisite, exit `0`, 181.7s;
+- `lake build RMQPaper RMQ`: development prerequisite, exit `0`, 176.2s.
+
+The two trust scripts' first attempts stopped immediately on absent imported
+`.olean` prerequisites rather than a proposition failure; the missing modules
+were built once and the scripts then passed. These are development results,
+not the final exact-commit certification. Ordered replay and the post-commit
+final ledger follow on the frozen semantic tree.
+
+## Ordered replay and pre-commit structural gates
+
+WDD-20260719-010 order was followed after the semantic/import content froze:
+
+- startup/shape smoke,
+  `lake exe rmq_succinct_classic_cost_harness -- --shape-profile-size 5`:
+  exit `0` in 41.1s, including the first executable object rebuild; it printed
+  `n=5`, `shapeSize=5`, `bpCodeLength=10`, `preparedArrayValues=5`;
+- known exact selector,
+  `lake exe rmq_succinct_classic_cost_harness -- --case interior-full-leftmost`:
+  exit `0` in 3.0s, exactly `1/1`, one expected/actual prepared fixture,
+  answer/reference `some 5`, cross-block route, charged cost `112 -> 114`, and
+  every predicate true;
+- full ordered registry,
+  `lake exe rmq_succinct_classic_cost_harness`: exit `0` in 39.2s, exactly
+  `21/21`, six expected/actual prepared fixtures, and every answer,
+  independent reference answer, route, post-cost, disposition, and bound
+  predicate true;
+- `lake exe` correctly rejected unknown case `__unknown_b7r4__` but normalized
+  the child failure to wrapper exit `1`; direct execution of the already-built
+  harness recorded its contractual exit `4` in 1.7s and printed
+  `unknown case id: __unknown_b7r4__`;
+- direct zero-match fixture `__zero_b7r4__`: exit `4` in 1.5s and printed
+  `selector matched zero cases`.
+
+No stage timed out, so no retry or process-tree cleanup was required. The
+direct-binary observation was not a duplicate semantic run: it distinguished
+Lake's wrapper exit normalization from the harness's specified exit code.
+
+Only after replay closure, `scripts/paper_topology_lint.ps1` was run. Its first
+attempt failed in 78.5s at an actual `lake env lean` dependency download under
+the restricted sandbox; it produced no topology verdict. The required
+outside-restriction rerun exited `0` in 75.2s with `82` broad documentary
+identifiers and `48` resolved paper identifiers. Strict decision checks then
+passed against base `07b0dda3878574070ae7ab0332cc61658e56f67a` in 2.3s
+(`11` changed paths) and original `f6564ec` in 2.5s (`67` changed paths).
+`git diff --check` passed. Both required hygiene scans returned no matches,
+and the added-line scan likewise found no forbidden token, Mathlib import,
+`native_decide`, or `Lean.ofReduceBool` occurrence.
+
+## B7-R4 proof digestion
+
+1. **Conceptual change.** Two facts that previously existed only as proof
+   ingredients are now propositions about the accepted execution objects:
+   the actual guarded B7 query contains the identical cost-33 component, and
+   the actual singleton trace exports the literal identities of both repeated
+   read occurrences and their producers.
+2. **Plain-English meaning.** For the large witness, Lean now checks the path
+   from the user's half-open query through its real select results and LCA
+   branch into the exact segment-20 trace that costs 33; this is not a second
+   evaluator that merely happens to return the same facts. For `[7]`, Lean now
+   checks that the same successful directory word is read at trace positions
+   0 and 15 by two different select instructions, with the exact machine state
+   and local occurrence recorded for each.
+3. **Live assumptions.** RMQ semantics remain half-open, leftmost, and
+   value-level over `List Int`. Trace length is the modeled WordRAM cost;
+   theorem proof data and measured Lean wall time are not payload or ticks.
+   The existing supplied-store/footprint, charged-table, capacity,
+   `2*n+o(n)`, and RAM/indexed-access assumptions are unchanged. This rung
+   proves reachability of the cost-33 component, not total-query cost `210` by
+   re-evaluation and not an inventory of every future machine refinement.
+4. **Strongest skeptical graduate-student question.** Does append containment
+   prove the cost-33 events occupy a unique global interval with precise
+   offsets, rather than merely occur somewhere in the real trace? The present
+   acceptance contract asks for identical-object reachability and gives exact
+   positions only for the singleton repeated-read bridge. A future strengthening
+   could expose the large witness's prefix length, but it is not needed to
+   reject the isolated-evaluator substitution repaired here.
+
+DD-20260719-005 records the nontrivial public proposition and compatibility
+choice. The final post-commit direct builds, aggregate, trust inventories,
+structural gates, exact diff ranges, and clean status are reported in the
+candidate handoff. Document-authority consolidation, stale-prose repair, and
+`STRETCH-01` were not performed and remain coordinator-owned/deferred.

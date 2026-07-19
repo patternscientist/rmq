@@ -239,6 +239,95 @@ def invalidEmptyPublicPhysicalResult :=
 select-close instructions in this valid singleton query begin at global trace
 positions `0` and `15`; those positions carry the same successful read value
 while remaining distinct instruction-occurrence provenance obligations. -/
+
+/- Independent expected-type consumer for the actual B7 whole-query bridge.
+Weakening the public theorem to the isolated component drops `hquery` or
+`hwhole` and makes this proof fail. -/
+example :
+    let xs :=
+      RMQ.SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessInput
+    let shape :=
+      RMQ.SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape
+    let interior :=
+      RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+        shape RMQ.SuccinctFinal.concreteBPNativeInteriorTraceSegments 143 146
+    RMQ.SuccinctClassic.queryTraceResult xs 1704 3469 =
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape 1704 3469 ∧
+      (∃ prefixTrace suffixTrace,
+        (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape 1704 3469).trace =
+            prefixTrace ++ interior.trace ++ suffixTrace) ∧
+      interior.toCosted.cost = 33 ∧
+      interior.trace.length = 33 ∧
+      Not (interior.toCosted.cost <= 30) := by
+  have hpublic :=
+    RMQ.SuccinctClassic.b7Cost33WholeQuery_reaches_interiorTrace
+  unfold RMQ.SuccinctClassic.B7Cost33WholeQueryReachability at hpublic
+  rcases hpublic with ⟨hquery, hsource⟩
+  unfold RMQ.SuccinctFinal.ConcreteBPNativeB7Cost33WholeQueryReachability
+    at hsource
+  rcases hsource with
+    ⟨_hvalid, _hshape, _hleft, _hright, _hbeforeLength,
+      _hpreLeft, _hpreRight, _hprogram, _hlcaEval, _hmiddle,
+      _hlcaContains, hwholeContains, hcost, hlength, hnotLeThirty⟩
+  exact ⟨hquery, hwholeContains, hcost, hlength, hnotLeThirty⟩
+
+/- Independent literal expected type for the singleton occurrence bridge.
+The constants, instruction identities, folded state, local positions, and
+receipts all occur in this consumer's proposition. -/
+example :
+    ∃ word : RMQ.WordRAM.Word,
+      RMQ.ValidRange ([7] : List Int) 0 1 ∧
+      RMQ.SuccinctClassic.queryTraceResult ([7] : List Int) 0 1 =
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          (RMQ.Cartesian.shape ([7] : List Int)) 0 1 ∧
+      (RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResult
+        (RMQ.Cartesian.shape ([7] : List Int)) 0).trace.length = 15 ∧
+      RMQ.SuccinctFinal.WholeQueryInstr.selectClose .leftClose .inputLeft ≠
+        RMQ.SuccinctFinal.WholeQueryInstr.selectClose .rightClose
+          (.sub .inputRight (.const 1)) ∧
+      (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1).trace[0]? =
+          some (.readWord 1 0 (some word)) ∧
+      (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1).trace[15]? =
+          some (.readWord 1 0 (some word)) ∧
+      RMQ.SuccinctFinal.WholeQueryProgram.ProducesEventAt
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1
+        (.readWord 1 0 (some word))
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProgram
+        RMQ.SuccinctFinal.WholeQueryState.empty 0 0
+        (RMQ.SuccinctFinal.WholeQueryInstr.selectClose .leftClose .inputLeft)
+        RMQ.SuccinctFinal.WholeQueryState.empty 0 ∧
+      RMQ.SuccinctFinal.WholeQueryProgram.ProducesEventAt
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1
+        (.readWord 1 0 (some word))
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProgram
+        RMQ.SuccinctFinal.WholeQueryState.empty 15 1
+        (RMQ.SuccinctFinal.WholeQueryInstr.selectClose .rightClose
+          (.sub .inputRight (.const 1)))
+        (RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace
+          (RMQ.Cartesian.shape ([7] : List Int)) 0 1
+          [RMQ.SuccinctFinal.WholeQueryInstr.selectClose .leftClose .inputLeft]
+          RMQ.SuccinctFinal.WholeQueryState.empty).value 0 ∧
+      RMQ.SuccinctFinal.ReviewerReadOccurrenceReceipt
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1 0 1 0 (some word) ∧
+      RMQ.SuccinctFinal.ReviewerReadOccurrenceReceipt
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1 15 1 0 (some word) := by
+  have hpublic :=
+    RMQ.SuccinctClassic.b7Singleton_repeated_read_exact_positions
+  unfold RMQ.SuccinctClassic.B7SingletonRepeatedReadExactPositions at hpublic
+  rcases hpublic with ⟨hquery, hsource⟩
+  unfold
+    RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQSingletonRepeatedReadExactPositions
+    at hsource
+  rcases hsource with
+    ⟨word, hvalid, hlength, hinstrNe, hget0, hget15,
+      hproducer0, hproducer15, hreceipt0, hreceipt15⟩
+  exact ⟨word, hvalid, hquery, hlength, hinstrNe, hget0, hget15,
+    hproducer0, hproducer15, hreceipt0, hreceipt15⟩
+
 def singletonLogicalTrace :=
   (RMQ.SuccinctClassic.queryTraceResult ([7] : List Int) 0 1).trace
 

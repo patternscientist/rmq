@@ -207,6 +207,90 @@ that consume the Word-RAM bridge layer.
 #print axioms RMQ.SuccinctFinal.concreteBPNativeB7Cost33Witness_query_geometry
 #print axioms RMQ.SuccinctFinal.concreteBPNativeB7Cost33Witness_acceptedMiddleInvocation
 #print axioms RMQ.SuccinctFinal.concreteBPNativeB7Cost33Witness_interiorTrace_exact
+#print axioms RMQ.SuccinctFinal.concreteBPNativeB7Cost33Witness_wholeQuery_reaches_interiorTrace
+#print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQSingleton_repeated_read_exact_positions
+#print axioms RMQ.SuccinctClassic.b7Cost33WholeQuery_reaches_interiorTrace
+#print axioms RMQ.SuccinctClassic.b7Singleton_repeated_read_exact_positions
+#print axioms RMQ.Headlines.succinctRMQB7Cost33WholeQueryReachability
+#print axioms RMQ.Headlines.succinctRMQB7SingletonRepeatedReadExactPositions
+
+/- Independent trust consumer for the guarded whole-query/component bridge. -/
+example :
+    let shape :=
+      RMQ.SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape
+    let interior :=
+      RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+        shape RMQ.SuccinctFinal.concreteBPNativeInteriorTraceSegments 143 146
+    RMQ.SuccinctClassic.queryTraceResult
+        RMQ.SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessInput
+        1704 3469 =
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape 1704 3469 ∧
+    (∃ prefixTrace suffixTrace,
+      (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape 1704 3469).trace =
+          prefixTrace ++ interior.trace ++ suffixTrace) ∧
+    interior.toCosted.cost = 33 ∧
+    interior.trace.length = 33 ∧
+    Not (interior.toCosted.cost <= 30) := by
+  have hpublic : RMQ.SuccinctClassic.B7Cost33WholeQueryReachability :=
+    RMQ.Headlines.succinctRMQB7Cost33WholeQueryReachability
+  unfold RMQ.SuccinctClassic.B7Cost33WholeQueryReachability at hpublic
+  rcases hpublic with ⟨hquery, hsource⟩
+  unfold RMQ.SuccinctFinal.ConcreteBPNativeB7Cost33WholeQueryReachability
+    at hsource
+  rcases hsource with
+    ⟨_hvalid, _hshape, _hleft, _hright, _hbeforeLength,
+      _hpreLeft, _hpreRight, _hprogram, _hlcaEval, _hmiddle,
+      _hlcaContains, hwholeContains, hcost, hlength, hnotLeThirty⟩
+  exact ⟨hquery, hwholeContains, hcost, hlength, hnotLeThirty⟩
+
+/- Independent trust consumer for literal occurrence and instruction identity. -/
+example :
+    ∃ word : RMQ.WordRAM.Word,
+      RMQ.SuccinctFinal.WholeQueryInstr.selectClose .leftClose .inputLeft ≠
+        RMQ.SuccinctFinal.WholeQueryInstr.selectClose .rightClose
+          (.sub .inputRight (.const 1)) ∧
+      (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1).trace[0]? =
+          some (.readWord 1 0 (some word)) ∧
+      (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1).trace[15]? =
+          some (.readWord 1 0 (some word)) ∧
+      RMQ.SuccinctFinal.WholeQueryProgram.ProducesEventAt
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1
+        (.readWord 1 0 (some word))
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProgram
+        RMQ.SuccinctFinal.WholeQueryState.empty 0 0
+        (RMQ.SuccinctFinal.WholeQueryInstr.selectClose .leftClose .inputLeft)
+        RMQ.SuccinctFinal.WholeQueryState.empty 0 ∧
+      RMQ.SuccinctFinal.WholeQueryProgram.ProducesEventAt
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1
+        (.readWord 1 0 (some word))
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProgram
+        RMQ.SuccinctFinal.WholeQueryState.empty 15 1
+        (RMQ.SuccinctFinal.WholeQueryInstr.selectClose .rightClose
+          (.sub .inputRight (.const 1)))
+        (RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace
+          (RMQ.Cartesian.shape ([7] : List Int)) 0 1
+          [RMQ.SuccinctFinal.WholeQueryInstr.selectClose .leftClose .inputLeft]
+          RMQ.SuccinctFinal.WholeQueryState.empty).value 0 ∧
+      RMQ.SuccinctFinal.ReviewerReadOccurrenceReceipt
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1 0 1 0 (some word) ∧
+      RMQ.SuccinctFinal.ReviewerReadOccurrenceReceipt
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1 15 1 0 (some word) := by
+  have hpublic : RMQ.SuccinctClassic.B7SingletonRepeatedReadExactPositions :=
+    RMQ.Headlines.succinctRMQB7SingletonRepeatedReadExactPositions
+  unfold RMQ.SuccinctClassic.B7SingletonRepeatedReadExactPositions at hpublic
+  rcases hpublic with ⟨_hquery, hsource⟩
+  unfold
+    RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQSingletonRepeatedReadExactPositions
+    at hsource
+  rcases hsource with
+    ⟨word, _hvalid, _hlength, hinstrNe, hget0, hget15,
+      hproducer0, hproducer15, hreceipt0, hreceipt15⟩
+  exact ⟨word, hinstrNe, hget0, hget15, hproducer0, hproducer15,
+    hreceipt0, hreceipt15⟩
 #print axioms RMQ.GenericSelect.sparseExceptionSelectSource_selectPositionCosted_cost_le_thirteen
 #print axioms RMQ.SuccinctClose.canonicalRelativeRmmRelativeWidth_le_machine_of_macroSize_lt_blockCount
 #print axioms RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_four_of_bounded

@@ -62,6 +62,85 @@ profiles are checked by broader inventories, not promoted here.
 #print axioms RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence
 #print axioms RMQ.Headlines.succinctRMQReviewerSuccessfulOccurrenceImpliesOperationalProducer
 #print axioms RMQ.Headlines.succinctRMQReviewerRepeatedEqualOccurrencesRemainDistinct
+#print axioms RMQ.Headlines.succinctRMQB7Cost33WholeQueryReachability
+#print axioms RMQ.Headlines.succinctRMQB7SingletonRepeatedReadExactPositions
+
+/- The headline cost-33 alias must retain the guarded whole trace and the
+identical component, not only the isolated component theorem. -/
+example :
+    let shape :=
+      RMQ.SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape
+    let interior :=
+      RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+        shape RMQ.SuccinctFinal.concreteBPNativeInteriorTraceSegments 143 146
+    RMQ.SuccinctClassic.queryTraceResult
+        RMQ.SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessInput
+        1704 3469 =
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape 1704 3469 ∧
+    (∃ prefixTrace suffixTrace,
+      (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape 1704 3469).trace =
+          prefixTrace ++ interior.trace ++ suffixTrace) ∧
+    interior.toCosted.cost = 33 ∧
+    interior.trace.length = 33 ∧
+    Not (interior.toCosted.cost <= 30) := by
+  have hpublic : RMQ.SuccinctClassic.B7Cost33WholeQueryReachability :=
+    RMQ.Headlines.succinctRMQB7Cost33WholeQueryReachability
+  unfold RMQ.SuccinctClassic.B7Cost33WholeQueryReachability at hpublic
+  rcases hpublic with ⟨hquery, hsource⟩
+  unfold RMQ.SuccinctFinal.ConcreteBPNativeB7Cost33WholeQueryReachability
+    at hsource
+  rcases hsource with
+    ⟨_hvalid, _hshape, _hleft, _hright, _hbeforeLength,
+      _hpreLeft, _hpreRight, _hprogram, _hlcaEval, _hmiddle,
+      _hlcaContains, hwholeContains, hcost, hlength, hnotLeThirty⟩
+  exact ⟨hquery, hwholeContains, hcost, hlength, hnotLeThirty⟩
+
+/- The headline occurrence alias must retain both literal producers and both
+receipts; existential positions or one collapsed producer do not inhabit it. -/
+example :
+    ∃ word : RMQ.WordRAM.Word,
+      (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1).trace[0]? =
+          some (.readWord 1 0 (some word)) ∧
+      (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1).trace[15]? =
+          some (.readWord 1 0 (some word)) ∧
+      RMQ.SuccinctFinal.WholeQueryProgram.ProducesEventAt
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1
+        (.readWord 1 0 (some word))
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProgram
+        RMQ.SuccinctFinal.WholeQueryState.empty 0 0
+        (RMQ.SuccinctFinal.WholeQueryInstr.selectClose .leftClose .inputLeft)
+        RMQ.SuccinctFinal.WholeQueryState.empty 0 ∧
+      RMQ.SuccinctFinal.WholeQueryProgram.ProducesEventAt
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1
+        (.readWord 1 0 (some word))
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProgram
+        RMQ.SuccinctFinal.WholeQueryState.empty 15 1
+        (RMQ.SuccinctFinal.WholeQueryInstr.selectClose .rightClose
+          (.sub .inputRight (.const 1)))
+        (RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace
+          (RMQ.Cartesian.shape ([7] : List Int)) 0 1
+          [RMQ.SuccinctFinal.WholeQueryInstr.selectClose .leftClose .inputLeft]
+          RMQ.SuccinctFinal.WholeQueryState.empty).value 0 ∧
+      RMQ.SuccinctFinal.ReviewerReadOccurrenceReceipt
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1 0 1 0 (some word) ∧
+      RMQ.SuccinctFinal.ReviewerReadOccurrenceReceipt
+        (RMQ.Cartesian.shape ([7] : List Int)) 0 1 15 1 0 (some word) := by
+  have hpublic : RMQ.SuccinctClassic.B7SingletonRepeatedReadExactPositions :=
+    RMQ.Headlines.succinctRMQB7SingletonRepeatedReadExactPositions
+  unfold RMQ.SuccinctClassic.B7SingletonRepeatedReadExactPositions at hpublic
+  rcases hpublic with ⟨_hquery, hsource⟩
+  unfold
+    RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQSingletonRepeatedReadExactPositions
+    at hsource
+  rcases hsource with
+    ⟨word, _hvalid, _hlength, _hinstrNe, hget0, hget15,
+      hproducer0, hproducer15, hreceipt0, hreceipt15⟩
+  exact ⟨word, hget0, hget15, hproducer0, hproducer15,
+    hreceipt0, hreceipt15⟩
 #print axioms RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer
 #print axioms RMQ.Headlines.succinctRMQReviewerPhysicalSourcesExcludeLegacyClose
 #print axioms RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid
