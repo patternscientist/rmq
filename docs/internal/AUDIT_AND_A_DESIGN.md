@@ -2940,3 +2940,40 @@ discipline of getting it right.
 This is the smaller sibling of the round-39 and round-43 failures: the content
 of my claims has been sound, the addressing has not. Both fixes are mechanical
 rather than attentional, which is the right kind of fix.
+
+---
+
+## C05 round 45 — E1-R5e launched on the invalid-index obligation
+
+Two sessions dispatched against E1's frontier at `88f9605`:
+
+**E1-R5e (implementation)** carries the round-44 obligation as task zero: the
+"geomCell = 0 at invalid indices" fact needed to compose the min-candidate
+consumer's `none` arm with the summary group. Then the ladder in dependency
+order — span blocks (`InteriorDirectory.lean:2311`, `:2329`), two-span blocks
+(`:2351`, `:2376`), five-branch dispatch (`:2444`), `hInterior` discharge for
+`crossBlockArmProgramAt_runsTo` (`E1CrossBlockArm.lean:1143`), then closure:
+full LCA leg, whole-query glue via `E1RouteDecomposition`, the DERIVED all-size
+step literal, the amended-target Prop with its supersession note, the
+validator's whole-query phase, docs and matrix. Registers `105..117` are taken;
+the next block opens at `118`. Also owed: an EXECUTED preservation check for the
+interior fold — the validator has no interior analogue of phase 3h.
+
+**A parallel read-only sweep** for pre-existing invalid-index zero facts, so
+task zero is answered by grep before it is answered by proof. This is rule 4
+applied to my OWN prompt: I told the worker the fact "is not in the tree," which
+is exactly the shape of the round-39 claim that was false and cost a worker a
+near-duplicate of a lemma cited by six modules. The sweep exists because my
+non-existence claims have a failure record, not because I doubt this one
+specifically.
+
+**Two ordering hazards restated to the worker because they present as the wrong
+symptom.** The two-span level read must be the unconditional head of every
+append chain; violating it surfaces as a whnf heartbeat timeout, not a type
+error, and must never be met by raising `maxHeartbeats`. And the span blocks'
+`none` arm must branch PAST the summary group — a `none` arm that falls through
+into it produces the round-43 defect exactly: right trace, right read count,
+`some` where the route is `none`.
+
+First application of the round-44 citation fix: every anchor in the brief is
+`File.lean:NNN` with no directory path.
