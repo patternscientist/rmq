@@ -18,6 +18,35 @@ Campaign branch `claude/b1-b2-charged-fringe-tables`. **Get the head with
 branch's HEAD can never name the commit that updates the file, so any hash
 written here is stale by construction — it has already been wrong twice.
 
+**ALL FIVE BRANCHES ARE MERGED. There is no unmerged sibling lane left**
+(E1-LaneM). The campaign branch now carries, in ONE TREE:
+
+- the **interior leg** — `#1`–`#9` built, the five-branch composition
+  (`interiorDispatchBlock_runsTo`), `hInterior` discharged
+  (`interiorDispatch_hInterior`) AND consumed
+  (`crossBlockArm_withCanonicalInterior_runsTo`);
+- the **interior preservation discriminator**, executed — validator phases
+  3i and 4h (from `claude/e1-interior-preservation`, DD-20260719-030..034);
+- the **close leg** — `hc` discharged, the nine window premises REMOVED,
+  the cross-arm terminator, `CloseLegUntouched` (from
+  `claude/e1-close-leg-structural`, DD-20260719-070..073);
+- the **whole-query glue foundations** — `guard_accept_of_valid`, the
+  strengthened guard bridge, the object reconciliations, the route
+  case-split, `wholeQueryBranchCats` (from `claude/e1-glue-foundations`,
+  DD-20260719-090..092);
+- the `design_decision_check` `RMQ/Validation` coverage fix and
+  `WDD-20260719-002` (from `claude/dd-check-validation-coverage`).
+
+The merge required ONE semantic repair that no textual tool reported: the
+close leg's signature change to `crossBlockArmProgramAt_runsTo` versus the
+campaign branch's application of it, in two different files with no
+conflict. See the §3 subsection on that signature and DD-20260719-110.
+
+**What is still missing for whole-query is the whole-query PROGRAM
+ITSELF** — no definition composes the close legs and the interior into one
+runnable query program, and no `wholeQueryProgram` exists in the tree.
+Validator phase 5 remains OPEN and states this correctly.
+
 **All eleven rows of `E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md` are Open.**
 
 **CORRECTION — an earlier version of this file said "they are whole-query scoped
@@ -42,7 +71,7 @@ at or near closable on evidence that already exists:
   validator". One validator phase running `programSkeleton` on the
   empty/reversed/out-of-bounds fixtures closes it, and it is **independent of the
   interior leg**: `programSkeleton_invalid_matches_public_guard`
-  (`E1QueryBridge.lean:44`) is universally quantified over `validPath`.
+  (`E1QueryBridge.lean:55`) is universally quantified over `validPath`.
 - **REQ-E1-10** — matrix-first ordering verified by git ancestry (`702cfbe` is an
   ancestor of `11b8cf9`); DD coverage present.
 
@@ -83,7 +112,7 @@ composition** — `interiorDispatchBlock_runsTo`
 five branches — **and `hInterior`**
 (`interiorDispatch_hInterior`, `:1171`), which is not merely
 premise-SHAPED but is CONSUMED by `crossBlockArmProgramAt_runsTo` in
-`crossBlockArm_withCanonicalInterior_runsTo` (`:1267`). Nothing in
+`crossBlockArm_withCanonicalInterior_runsTo` (`:1274`). Nothing in
 `E1CrossBlockArm.lean` was edited.
 
 ~~**What is NOT built is the composition of the five arms into one
@@ -195,7 +224,7 @@ makes one block cover both.
 | block lengths (177 = 156 + 21) | `summaryGroup_length` `:299`, `minCandidateBlock_length` `E1InteriorMinCandidate.lean:241` |
 | read-free 3-way merge — **fringe-shaped, see §2 correction** | `candMerge3` — `E1CandMerge3.lean:198`, `candMerge3_readFree` `:206` |
 | merge algebra | `bpCandidateMerge?_some_left` `:132`, `bpCandidateMerge3?_some_left_right` `:139` |
-| cross-block arm awaiting `hInterior` | `crossBlockArmProgramAt_runsTo` — `E1CrossBlockArm.lean:1143` |
+| cross-block arm — **SIGNATURE CHANGED, see below** | `crossBlockArmProgramAt_runsTo` — `E1CrossBlockArm.lean:1181` |
 | interior fold preservation clause — **COMPOSED HEADLINE** | `interiorChunkFold_runsTo` `E1InteriorChunkFold.lean:1808`, clause at `:1835` |
 | **the #2/#3 span block, both arms** | `spanBlock_runsTo` — `E1InteriorSpanBlock.lean:262` |
 | **its `none`-arm discriminator** | `spanNoneArm_discriminates` — `E1InteriorSpanBlock.lean:540` |
@@ -244,7 +273,7 @@ makes one block cover both.
 | the caller's guard is subsumed | `interiorRangeMin_guard_subsumed` — `E1InteriorDispatch.lean:544` |
 | **`#9`'s FIVE ARMS COMPOSED — the interior leg's top** | `interiorDispatchBlock_runsTo` — `E1InteriorDispatchCompose.lean:816` |
 | **`hInterior`, DISCHARGED** | `interiorDispatch_hInterior` — `E1InteriorDispatchCompose.lean:1171` |
-| **and CONSUMED, which is what proves it fits** | `crossBlockArm_withCanonicalInterior_runsTo` — `:1267` |
+| **and CONSUMED, which is what proves it fits** | `crossBlockArm_withCanonicalInterior_runsTo` — `:1274` |
 | the close leg's clause, as a SEPARATE export | `interiorDispatch_preserves_closeLeg` — `:1223` |
 | `#9`'s receipt and charge log, written FROM THE ROUTE | `dispatchEvents` `:194`, `dispatchCats` `:374`, `dispatchArmCats` `:264` |
 | the route's answer, named once | `dispatchRouteValue` — `:381` |
@@ -320,7 +349,7 @@ laid out without it and it is expensive to re-derive.
 **#9 DOES NOT TERMINATE EITHER, AND THAT IS FORCED, NOT INHERITED**
 (E1-LaneB5). `hInterior`'s target state is
 `⟨regsI, A + 176 + interior.length, false⟩` — the halted flag is
-**`false`** (`E1CrossBlockArm.lean:1143`, re-read this session). So a
+**`false`** (`E1CrossBlockArm.lean:1181`, re-read this session). So a
 `#9` that ended in `halt` could not discharge the premise at all. The
 rule "every block here falls through" is, at this one block, not a
 convention that could have gone the other way.
@@ -412,6 +441,27 @@ the answer from `bestOfRegs (regsI mMV) (regsI mMP)`, so `spanBlock`, the
 177-leg and the merge block all write that pair — the merge block IN PLACE,
 which is why chaining needs `mergeShuttle`. Do not introduce a second
 output convention for #4–#9.
+
+### `crossBlockArmProgramAt_runsTo` LOST SEVEN PREMISES — do not re-supply them
+
+Landed with the close-leg merge (E1-LaneM). `crossBlockArmProgramAt_runsTo`
+(`E1CrossBlockArm.lean:1181`) no longer takes `hc`, and no longer takes the
+six `readBits ... .length = machineWordBits` window premises (`hL0`, `hL1`,
+`hL2`, `hR0`, `hR1`, `hR2`). `hc` is discharged internally; the six window
+premises were REMOVED because they are FALSE across contiguous regions of
+reachable close positions — a theorem demanding them is unusable at exactly
+the positions the route reaches.
+
+Its argument order is now `shape hHost hInterior regs hClose hRight`. Code
+written against the old seven-longer signature will fail with an
+application type mismatch in which `hc` lands in `hHost`'s position. **The
+fix is to DELETE the arguments, never to re-add the premises.**
+
+`crossBlockArm_withCanonicalInterior_runsTo`
+(`E1InteriorDispatchCompose.lean:1274`) has had the same seven binders
+removed for the same reason, so it too is now
+`shape hHost regs hClose hRight`. Retaining them would have obliged every
+caller to prove facts that do not hold. See DD-20260719-110.
 
 ## 4. Techniques that are state of the art here
 
@@ -629,7 +679,7 @@ preserves it.
 (E1-LaneB6). The seventh model's impostor is a MISSING terminator. This
 one's is a PRESENT, correct, terminating branch whose target is a
 DIFFERENT ARM'S BASE — the defect the arm composition could have
-shipped. `missDispatch_runs_armA` (`E1InteriorDispatchCompose.lean:1431`)
+shipped. `missDispatch_runs_armA` (`E1InteriorDispatchCompose.lean:1411`)
 against `missDispatchImpostor_runs_armB` (`:1502`), one instruction
 apart (`missDispatch_differ_at_one_index`, `:1422`).
 
@@ -707,10 +757,24 @@ neighbours' and build the impostor there.
 `#1`-`#9` are built and `hInterior` is discharged and consumed. What
 follows is everything else, unchanged except where noted.
 
-- **Interior preservation discriminator** — clause stated, never executed
-  (§3). Being built on branch `claude/e1-interior-preservation`.
-- **Closure ladder**: full LCA leg at canonical-store form; whole-query glue via
-  `E1RouteDecomposition`; category accounting across ALL branches including
+- ~~**Interior preservation discriminator**~~ — **DONE and MERGED**
+  (E1-LaneM). The clause is now EXECUTED, not merely stated: validator
+  phase 3i runs the fold's preservation clause and phase 4h rejects a
+  combine-scratch mutation that exit pc, steps, cell and read log all
+  MISS (`mutantH_clobberedRegs=[102]`, `mutantH_isPreservationOnly=true`).
+  DD-20260719-030..034.
+- ~~**The close leg**~~ — **DONE and MERGED** (E1-LaneM), including the
+  cross-arm terminator and `CloseLegUntouched`. Note the signature change
+  in §3: seven premises were removed from
+  `crossBlockArmProgramAt_runsTo`, not weakened around.
+- **Closure ladder** — the glue FOUNDATIONS have landed (E1-LaneM):
+  `guard_accept_of_valid`, the strengthened guard bridge, the object
+  reconciliations, the route case-split via `E1RouteDecomposition`, and
+  `wholeQueryBranchCats` are in the tree. **Still owed:** the whole-query
+  PROGRAM itself — no definition composes the close legs and the interior
+  into one runnable program, which is now the single blocking item for
+  whole-query. Then: full LCA leg at canonical-store form; category
+  accounting across ALL branches including
   selects-none and lca-none; the public `List Int` corollary; the **DERIVED**
   all-size step literal (from the category algebra and the caps 33/8/8 — derive,
   never assert); the amended-target Prop with its supersession note; the
@@ -752,7 +816,7 @@ then #6/#7/#8; then #9's five-branch dispatch; then `hInterior`.
 
 **On `hInterior` specifically — the shape is known and the arithmetic checks
 out, so do not re-derive it.** `crossBlockArmProgramAt_runsTo`
-(`E1CrossBlockArm.lean:1143`) needs, at base `A + 176`: a `RunsTo` to
+(`E1CrossBlockArm.lean:1181`) needs, at base `A + 176`: a `RunsTo` to
 `A + 176 + interior.length`, `bestOfRegs (regsI mMV) (regsI mMP) = interiorValue`,
 and preservation of `fClose` (70), `fRight` (71), `mLV` (75), `mLP` (76).
 All four survive the 177-leg — `legUntouched_at_crossBlockArm_operands`
@@ -866,7 +930,7 @@ in `RMQ.lean`. `E1CrossBlockArm.lean` was NOT edited.
   `interiorRangeMin_of_*`.
 - `interiorDispatch_hInterior` (`:1171`) — `hInterior`'s body at its
   intended instantiation. FOUR register equalities, not five.
-- `crossBlockArm_withCanonicalInterior_runsTo` (`:1267`) — which CONSUMES
+- `crossBlockArm_withCanonicalInterior_runsTo` (`:1274`) — which CONSUMES
   `crossBlockArmProgramAt_runsTo` with it. See the note below on why
   this, and not the previous item, is what discharges the premise.
 - `interiorDispatch_preserves_closeLeg` (`:1223`) — the close leg's
@@ -899,7 +963,7 @@ recording rather than papering over — the file has been edited by five
 workers since the last coordinator pass, and it shows.
 
 1. `hInterior` has exactly FOUR register equalities — **held**, re-read
-   at `E1CrossBlockArm.lean:1143` before writing anything against it.
+   at `E1CrossBlockArm.lean:1181` before writing anything against it.
 2. `#9` falls through and MUST, because `hInterior`'s target state
    carries `halted = false` — **held**, and now executed: the composition
    ends `⟨regs', Q + 4204, false⟩`.
@@ -967,6 +1031,49 @@ literal. Note §11 B: state that target as an INEQUALITY and `Nat.log2` is
 not an obstruction. Two cheap independent items are still unclaimed and
 block nothing: `catCount log c = (log.filter (· == c)).length` (§11 D,
 absent, short induction) and REQ-E1-05's validator phase (§1).
+
+### What whole-query assembly may now ASSUME (E1-LaneM, five-branch merge)
+
+All five branches are in one tree and the tree is green, so the assembler
+no longer has to reason about which lane a fact came from. It may assume,
+without rebuilding any of it:
+
+- **The interior leg is complete AND consumed.** `interiorDispatch_hInterior`
+  (`E1InteriorDispatchCompose.lean:1171`) is not merely `hInterior`-shaped;
+  `crossBlockArm_withCanonicalInterior_runsTo` (`:1274`) APPLIES
+  `crossBlockArmProgramAt_runsTo` to it, so the shape is known to UNIFY.
+  Assembly consumes the wrapper and does not re-derive `hInterior`.
+- **The cross arm needs NO width or window premises.** After the close-leg
+  merge, `crossBlockArmProgramAt_runsTo` takes
+  `shape hHost hInterior regs hClose hRight` and nothing else. Do not
+  attempt to discharge `hc` or any `readBits ... .length` fact for it —
+  those premises are gone, and six of them are FALSE at reachable close
+  positions. Same for the wrapper. See §3 and DD-20260719-110.
+- **The close leg exports its own preservation clause.** `CloseLegUntouched`
+  (`r ≤ 7 ∨ r = 28`) survives the interior:
+  `interiorDispatch_preserves_closeLeg` (`:1223`) is a SEPARATE export, so
+  assembly can carry close-leg register facts across the interior without
+  re-proving them.
+- **The guard and route case-split are available.** `guard_accept_of_valid`
+  (`E1QueryProgram.lean:608`), the strengthened guard bridge, the object
+  reconciliations, `E1RouteDecomposition`'s case-split
+  (`E1RouteDecomposition.lean:41`) and `wholeQueryBranchCats`
+  (`E1WholeQueryCats.lean:98`) all exist. §11 F's warning still binds:
+  write the whole-query category function FROM THE ROUTE — LaneG already
+  did, and `wholeQueryBranchCats` is indexed by a route-side branch
+  classifier for exactly that reason.
+- **Preservation is instrumented, not just stated.** Validator phases 3i
+  and 4h execute the interior fold's preservation clause and reject a
+  mutation invisible to every other discriminator. A whole-query phase can
+  follow that pattern rather than inventing one.
+
+**What assembly may NOT assume: that any whole-query program exists.** It
+does not. There is no `wholeQueryProgram` in the tree;
+`WholeQueryMachineAgrees` (`E1WholeQueryPublic.lean:114`) is the target
+predicate, not a program. Validator phase 5 is OPEN, contributes no clause
+to the verdict, and runs no comparison — building the program is the
+blocking item, and phase 5 must not be flipped to available until there is
+something real for it to run.
 
 
 ---
