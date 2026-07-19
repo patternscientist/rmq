@@ -4510,3 +4510,74 @@ tree, so **the merge is now the blocker**, and it carries known work: append-onl
 conflicts in three docs, and `crossBlockArmProgramAt_runsTo`'s renumbering
 `:1143` → `:1181` which is cited in prose from nine places across five interior
 files that the close-leg lane does not own.
+
+---
+
+## C05 round 70 — five branches in one tree, green; and a repair that went one
+## level deeper than I specified
+
+Lane M returned CANDIDATE_COMPLETE at `fd59487`. Verified independently by me:
+`main` is still `4a60853`, the campaign branch is NOT an ancestor of it, and all
+four sibling branches ARE ancestors of the campaign head. Five branches, one
+tree, green at every commit, full battery clean with the design check
+non-vacuous over **28 changed files**.
+
+**THE REPAIR WENT DEEPER THAN MY BRIEF SPECIFIED, and the extra depth is the
+whole point.** I predicted the semantic conflict correctly and told the worker to
+"fix it by removing the now-absent arguments." That would have compiled and been
+wrong. The wrapper does not merely PASS the seven premises — **it BINDS them
+itself** and forwards them. Dropping them only at the call site would have left
+seven dead binders obliging every future caller to prove the six window premises
+that are FALSE at reachable close positions. In the worker's words: **"the
+removed defect, reintroduced one level up and harder to see."**
+
+It dropped the arguments AND the binders, checked first that the wrapper has no
+other callers on either branch, and confirmed `crossBlockArmProgramAt_hosts` was
+unchanged so the hardcoded projection still selects the right hosting component.
+Repair by removal only: no premise re-added, no theorem weakened, conclusion
+unchanged, wrapper strictly stronger. It also rewrote a docstring that claimed
+the seven premises were "carried through untouched" — false after the merge.
+
+**MY TWENTIETH FAILED CLAIM, and a batch fix would have silently mis-pointed
+one citation.** I gave nine stale citations. There were **eight**, and they were
+not the nine I named: three I listed carry no line number at all, three files I
+never listed did carry one, and — the dangerous one — **`E1InteriorMinCandidate.lean:92`
+cited `:1184`, a DIFFERENT anchor**: the `bestOfRegs (regsI mMV) (regsI mMP)`
+line naming the four registers, not the theorem head. It resolves to `:1196`,
+not `:1181`. A sweep over my list would have pointed it at the wrong line while
+looking like a successful batch repair. Seven went to `:1181`, one to `:1196`.
+
+It also deliberately left `E1_WORKLOG.md` and superseded DD entries citing
+`:1143` — those record what was true when written, and the worklog is
+append-only chronology. Correct instinct: a historical record is not stale, it
+is dated.
+
+**Conflict resolution was reasoned per file, not concatenated.**
+`DESIGN_DECISIONS.md` is numerically sorted, so `030-034` went BEFORE `050-063`
+and `090-092` was spliced between `073` and `110`. `E1_WORKLOG.md` is
+chronological and its HEAD side continued sections 1-7, so that one went
+HEAD-first — **the opposite order**. Two files, two orders, each derived from
+what the file is. 100 DD entries / 100 unique; 40 WDD / 40; no renumbering.
+
+**Phase 5 corrected without being made to pass**, which was the trap I flagged.
+It now says the whole-query PROGRAM is not assembled — and the worker **grepped
+to confirm no `wholeQueryProgram` exists** before asserting that is what is
+missing, rather than inferring it from my brief. Still OPEN, still contributing
+no `ok*` clause, `wholeQueryComparisonAvailable` still `false`.
+
+**It flagged its own judgement call unprompted**, which is the behaviour worth
+most here: dropping the seven binders is a signature change made under standing
+authority and not instructed, with no callers today. **Assessed and endorsed** —
+the wrapper is strictly stronger, the alternative preserved an obligation to
+prove false premises, and leaving it would have been the defect-preserving
+choice. This is the right thing to have surfaced.
+
+Known-red items verified as pre-existing at base `26afae9` rather than caused by
+the merge, including the one `maxHeartbeats` raise, which lives in
+`FlatPayload.lean` and predates this work entirely.
+
+**The critical path is now whole-query assembly.** Everything it needs is in one
+tree for the first time: the interior leg, the close leg with its terminator and
+preservation, the glue foundations, the route case-split, the category function,
+and the guard on both arms. What does not exist is any definition that composes
+them into one runnable query program.
