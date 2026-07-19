@@ -3953,3 +3953,64 @@ in the direction it least often runs.
 
 Base `db81641` confirmed green; the worker's earlier "baseline not green"
 reading was its own `lake` contention and it said so.
+
+---
+
+## C05 round 60 — Lane CL closes three of four and declines the fourth; the
+## latent fall-through is now a PROVED fact
+
+Lane CL returned INCOMPLETE at `be0291e`, refusing to claim completion because
+one assigned criterion is genuinely unmet. Three closed, one partial, DDs
+`070`-`073`.
+
+**The terminator obligation is closed in the strongest available form.**
+`unterminatedCrossArm_falls_through` (`E1CloseDispatch.lean:469`) **exhibits the
+fall-through by EXECUTION** — so the defect Survey 2 inferred from a layout
+argument is now a proved fact about the real program, and `crossArmTerminated`
+(`:625`) with `crossArmTerminated_converges` (`:649`) is the fix. That is the
+right shape: a latent bug that would have surfaced at composition time is now a
+theorem saying it WOULD have, which is exactly the evidence a reviewer needs to
+see that the repair was necessary rather than defensive.
+
+**The width repair's mechanism, stated properly by the worker.** The decode
+survives short words because `bitsToNatLE_append` contributes
+`2 ^ w.length * bitsToNatLE tail`, and a short word is by construction the LAST
+nonempty one — so its weight multiplies zero. Density ("next nonempty → this one
+full") is exactly what `chunkPayloadWords` guarantees, since it truncates only
+the final word: word `j+1` nonempty means `(j+1)*L < m`, hence word `j` is full.
+`0 < L` is needed to propagate emptiness downward. The evaluation was run
+**twice** — once with `readBits`/`sbBase` inlined verbatim, once against the real
+definitions, identical — which is the right paranoia for a number that decides a
+repair.
+
+**Item 4 is PARTIAL and the worker was right not to force it.**
+`CloseLegUntouched r := r ≤ 7 ∨ r = 28` is exported from five headlines with
+adequacy `by decide`, but NOT from `crossBlockArmProgramAt_runsTo`, because that
+one is structural rather than bookkeeping: `hInterior` promises four registers
+and the interior sits mid-arm, so the arm cannot export more than the interior
+promises. It **verified the entailment is satisfiable** through
+`LegUntouched` → `ChunkFoldUntouched` plus disequalities against 100-104, 77/78
+and 105-117 — then recorded it as an interior-lane interface rather than
+reaching into a file it does not own. Exactly the cross-lane discipline asked
+for.
+
+**MY SIXTEENTH FAILED CLAIM, relayed from Survey 2 without checking.** I told
+Lane CL that "of registers 0-7 only the guard scratch 5,6,7 is dead after the
+prologue." Unsupported: `guardBlock` (`E1QueryProgram.lean:106`) writes
+**3,4,5,6,7**, and at the time no valid-path theorem existed at all, so liveness
+was undefined by any proof — not narrower than I said, but *undetermined*. Moot
+for CL's clause, which covers all of `0..7`. Worth noting the concurrency: Lane
+G has since built `guard_accept_of_valid`, so that theorem now exists; the claim
+was false when made and is now merely unnecessary.
+
+**Two housekeeping items the worker surfaced rather than silently absorbed.**
+`crossBlockArmProgramAt_runsTo` moved `:1143` → `:1181`, and is cited in prose
+from nine places across five files it does not own — a merge-window fix.
+And `windowRegsValue_eq_bitsToNatLE` (`E1FringeBridge.lean:99`) is now
+unreferenced but **deliberately kept**, because deleting it would remove a public
+identity; `windowDense_of_length_eq` records that the new form is strictly
+stronger. Retiring a public name is a coordinator decision and it correctly did
+not make it.
+
+Three declarations depend on **no axioms**; no `sorryAx` anywhere; the validator
+still PASSes with phases 3h/4g catching the preservation-only mutant.
