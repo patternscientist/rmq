@@ -1659,6 +1659,315 @@ theorem interiorChunkInit_runsTo
       rw [initTail_preserves store _ hr, initDead_preserves store _ _ hr,
         initHead_preserves store _ _ _ _ hr]
 
+/-! ## The epilogue -/
+
+/--
+EXACT SIMULATION OF THE EPILOGUE.
+
+Re-imposes the option shift.  The `none` verdict is a MACHINE BRANCH on a
+MACHINE-ACCUMULATED count: `cBad` was incremented once per missing chunk
+by the read loop, and the epilogue branches on it.  Nothing here consults
+a Lean-level `if` about the store.
+-/
+theorem interiorChunkEpilogue_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {E : Nat}
+    (hHost : HostedAt program E (interiorChunkEpilogue E))
+    (regs : RegFile) (rev bad : Nat)
+    (hOne : regs cOne = 1) (hRev : regs cRev = rev)
+    (hBad : regs cBad = bad) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, E, false⟩ ⟨regs', E + 3, false⟩ []
+          (interiorChunkEpilogueCats (decide (bad = 0))) ∧
+        regs' cOut = (if bad = 0 then rev + 1 else 0) := by
+  have h0 : program[E]? = some (.const cOut 0) := by
+    simpa using hHost.head
+  have h1 : program[E + 1]? = some (.brNZ cBad (E + 3)) := by
+    have h := hHost 1 (by simp)
+    simpa using h
+  have h2 : program[E + 2]? = some (.add cOut cRev cOne) := by
+    have h := hHost 2 (by simp)
+    simpa using h
+  have s0 : RunsTo store program ⟨regs, E, false⟩
+      ⟨regs.write cOut 0, E + 1, false⟩ [] [Category.registerWrite] := by
+    have h := RunsTo.const (store := store)
+      (s := (⟨regs, E, false⟩ : State)) rfl h0
+    simpa using h
+  have hbadv : (regs.write cOut 0) cBad = bad := by
+    simp [RegFile.write, cOut, cBad, hBad]
+  by_cases hzero : bad = 0
+  · -- every chunk present: fall through and shift the value
+    have sbr : RunsTo store program ⟨regs.write cOut 0, E + 1, false⟩
+        ⟨regs.write cOut 0, E + 2, false⟩ [] [Category.branch] := by
+      have h := RunsTo.brNZ_not_taken (store := store)
+        (s := (⟨regs.write cOut 0, E + 1, false⟩ : State)) rfl h1
+        (by show regs.write cOut 0 cBad = 0; rw [hbadv]; exact hzero)
+      simpa using h
+    have sadd : RunsTo store program ⟨regs.write cOut 0, E + 2, false⟩
+        ⟨(regs.write cOut 0).write cOut (rev + 1), E + 3, false⟩ []
+        [Category.arithmetic] := by
+      have h := RunsTo.add (store := store)
+        (s := (⟨regs.write cOut 0, E + 2, false⟩ : State)) rfl h2
+      simpa [RegFile.write, cOut, cRev, cOne, hRev, hOne] using h
+    refine ⟨(regs.write cOut 0).write cOut (rev + 1), ?_, ?_⟩
+    · have hrun := (s0.trans sbr).trans sadd
+      simpa [interiorChunkEpilogueCats, hzero] using hrun
+    · simp [RegFile.write, hzero]
+  · -- some chunk missing: the branch keeps the `none` default
+    have sbr : RunsTo store program ⟨regs.write cOut 0, E + 1, false⟩
+        ⟨regs.write cOut 0, E + 3, false⟩ [] [Category.branch] := by
+      have h := RunsTo.brNZ_taken (store := store)
+        (s := (⟨regs.write cOut 0, E + 1, false⟩ : State)) rfl h1
+        (by show regs.write cOut 0 cBad ≠ 0; rw [hbadv]; exact hzero)
+      simpa using h
+    refine ⟨regs.write cOut 0, ?_, ?_⟩
+    · have hrun := s0.trans sbr
+      simpa [interiorChunkEpilogueCats, hzero] using hrun
+    · simp [RegFile.write, hzero]
+
+/-! ## The whole fold -/
+
+/-- The route's trace for one chunked read: its own address list, each
+address paired with the word the store holds there. -/
+def chunkRouteEvents (store : ReadStore)
+    (segment base deadAddress entriesLen chunkCount i : Nat) :
+    List TraceEvent :=
+  (chunkAddrs base deadAddress entriesLen chunkCount i).map
+    (fun a => TraceEvent.readWord segment a (store.readWord? segment a))
+
+/--
+THE POSITIONAL RECEIPT IDENTITY.
+
+What the machine's fold emits (`chunkEventsAt` at the machine-computed
+start and count) is what the route's adapter issues
+(`chunkRouteEvents`) -- the same addresses, in the same positions,
+carrying the same words -- for BOTH arms of the validity split at once.
+-/
+theorem chunkEventsAt_eq_route (store : ReadStore)
+    {segment base deadAddress entriesLen chunkCount i : Nat}
+    (hcap : chunkCount ≤ 8) :
+    chunkEventsAt store segment
+        (chunkStart base deadAddress entriesLen chunkCount i)
+        (chunkIters entriesLen chunkCount i)
+      = chunkRouteEvents store segment base deadAddress entriesLen
+          chunkCount i := by
+  unfold chunkRouteEvents chunkEventsAt
+  rw [chunkAddrs_eq_consecutive hcap]
+
+/-- The fold's iteration count is positive exactly when the table has a
+chunk to read. -/
+theorem chunkIters_pos {entriesLen chunkCount i : Nat}
+    (hcc : 0 < chunkCount) : 0 < chunkIters entriesLen chunkCount i := by
+  unfold chunkIters
+  split
+  · rcases Nat.le_total chunkCount 8 with h | h
+    · have e : Nat.min chunkCount 8 = chunkCount := Nat.min_eq_left h
+      rw [e]; omega
+    · have e : Nat.min chunkCount 8 = 8 := Nat.min_eq_right h
+      rw [e]; omega
+  · omega
+
+/--
+EXACT SIMULATION OF THE INTERIOR'S EIGHT-CAPPED CHUNK FOLD.
+
+From the block entry with the logical table index in `iIdx`, the
+thirty-seven hosted instructions run to the block exit at `Q + 37`,
+emitting EXACTLY THE ROUTE'S TRACE for that chunked read -- positionally,
+address for address, word for word, on both arms of the validity split --
+charging the fold's category log, and leaving the decoded cell in `cOut`
+in the option-shift convention.
+
+The two hypotheses are the ones DD-20260719-003 identified and refused to
+hide.  `0 < chunkCount` is the half the route's `<= 8` cost bound does not
+supply: at zero chunks the route reads nothing while this do-while block
+still reads once.  `chunkCount <= 8` is the within-macro cap, discharged
+for every reachable shape by `interiorChunkCount_le_eight`.
+-/
+theorem interiorChunkFold_runsTo
+    (store : ReadStore) {program : E1Machine.Program}
+    {segment base deadAddress entriesLen chunkCount wordScale Q : Nat}
+    (hHost : HostedAt program Q
+      (interiorChunkFold segment base deadAddress entriesLen chunkCount
+        wordScale Q))
+    (hccPos : 0 < chunkCount) (hccCap : chunkCount ≤ 8)
+    (regs : RegFile) (i : Nat) (hIdx : regs iIdx = i) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, Q, false⟩ ⟨regs', Q + 37, false⟩
+          (chunkRouteEvents store segment base deadAddress entriesLen
+            chunkCount i)
+          (interiorChunkFoldCats (decide (i < entriesLen))
+            (decide (chunkBad store segment
+              (chunkStart base deadAddress entriesLen chunkCount i)
+              (chunkIters entriesLen chunkCount i) = 0))
+            (chunkIters entriesLen chunkCount i)) ∧
+        regs' cOut =
+          (if chunkBad store segment
+                (chunkStart base deadAddress entriesLen chunkCount i)
+                (chunkIters entriesLen chunkCount i) = 0 then
+            (chunkRevAt wordScale
+              (chunkAcc store segment wordScale
+                (chunkStart base deadAddress entriesLen chunkCount i)
+                (chunkIters entriesLen chunkCount i))
+              (chunkIters entriesLen chunkCount i)).2 + 1
+          else 0) := by
+  have hIters : 0 < chunkIters entriesLen chunkCount i :=
+    chunkIters_pos hccPos
+  -- hosting decomposition
+  have hInit : HostedAt program Q
+      (interiorChunkInit base deadAddress entriesLen chunkCount Q) :=
+    hHost.append_left.append_left.append_left
+  have hRead : HostedAt program (Q + 17)
+      (interiorChunkReadBody segment wordScale (Q + 17)) := by
+    have h := hHost.append_left.append_left.append_right
+    simpa using h
+  have hComb : HostedAt program (Q + 26)
+      (interiorChunkCombine wordScale (Q + 26)) := by
+    have h := hHost.append_left.append_right
+    simpa using h
+  have hEpi : HostedAt program (Q + 34)
+      (interiorChunkEpilogue (Q + 34)) := by
+    have h := hHost.append_right
+    simpa using h
+  -- the four segments
+  obtain ⟨r1, rInit, h1One, h1Addr, h1Cnt, h1N, h1Acc, h1Bad, h1Rev,
+    _h1Pres⟩ := interiorChunkInit_runsTo store hInit regs i hIdx
+  obtain ⟨r2, rRead, h2One, _h2Cnt, h2Acc, h2Bad, h2N, h2Rev, _h2Pres⟩ :=
+    interiorChunkReadLoop_runsTo store hRead r1
+      (chunkStart base deadAddress entriesLen chunkCount i)
+      (chunkIters entriesLen chunkCount i) hIters h1One h1Addr h1Cnt
+      h1Acc h1Bad
+  have h2Nv : r2 cN = chunkIters entriesLen chunkCount i := by
+    rw [h2N, h1N]
+  have h2Revv : r2 cRev = 0 := by rw [h2Rev, h1Rev]
+  obtain ⟨r3, rComb, h3One, h3Rev, _h3N, h3Bad, _h3Pres⟩ :=
+    interiorChunkCombineLoop_runsTo store hComb r2
+      (chunkAcc store segment wordScale
+        (chunkStart base deadAddress entriesLen chunkCount i)
+        (chunkIters entriesLen chunkCount i))
+      (chunkIters entriesLen chunkCount i) hIters h2One h2Acc h2Revv h2Nv
+  have h3Badv : r3 cBad =
+      chunkBad store segment
+        (chunkStart base deadAddress entriesLen chunkCount i)
+        (chunkIters entriesLen chunkCount i) := by
+    rw [h3Bad, h2Bad]
+  obtain ⟨r4, rEpi, h4Out⟩ :=
+    interiorChunkEpilogue_runsTo store hEpi r3 _ _ h3One h3Rev h3Badv
+  refine ⟨r4, ?_, h4Out⟩
+  have hrun := ((rInit.trans rRead).trans rComb).trans rEpi
+  rw [chunkEventsAt_eq_route store hccCap] at hrun
+  simpa [interiorChunkFoldCats] using hrun
+
+/-! ## Hosting witness: the paths EXECUTE, onto distinguishable halts
+
+`interiorChunkFold_runsTo` is a statement about every store and every
+index.  A theorem of that shape can be true because its paths are
+unreachable, so the block is also RUN here, on a concrete store, and the
+outcomes are checked to differ.
+
+The witness shape: one segment, table base `10`, dead address `99`,
+three logical entries, TWO chunks per entry, word scale `2` (one-bit
+chunks).  The store holds words at `10`, `11`, `12` and at the dead
+address `99`, and holds nothing at `13`, `14`, `15` -- so the witness
+exercises a fully present multi-chunk read, a partially missing one, a
+wholly missing one, and the dead path.
+-/
+
+/-- Witness store: present at `10`, `11`, `12`, `99`; absent elsewhere. -/
+def witnessStore : ReadStore :=
+  ⟨fun segment address =>
+    if segment = 0 then
+      if address = 10 then some [true]
+      else if address = 11 then some [false]
+      else if address = 12 then some [true]
+      else if address = 99 then some [true]
+      else none
+    else none⟩
+
+/-- Witness program: the fold at base `0`, then `halt`. -/
+def chunkFoldWitness : E1Machine.Program :=
+  interiorChunkFold 0 10 99 3 2 2 0 ++ [.halt]
+
+/-- The witness program hosts the fold at base `0`. -/
+theorem chunkFoldWitness_hosts :
+    HostedAt chunkFoldWitness 0 (interiorChunkFold 0 10 99 3 2 2 0) :=
+  HostedAt.append_left (hostedAt_self chunkFoldWitness)
+
+/-- Register file for one path: only the logical index is supplied. -/
+def witnessRegs (i : Nat) : RegFile := RegFile.write (fun _ => 0) iIdx i
+
+/-- The observable outcome of running the witness at one index: exit pc,
+halted flag, modeled steps, option-shifted cell, read log. -/
+def witnessOutcome (i : Nat) :
+    Nat × Bool × Nat × Nat × List TraceEvent :=
+  let r := run witnessStore chunkFoldWitness 128 ⟨witnessRegs i, 0, false⟩
+  (r.final.pc, r.final.halted, r.steps, r.final.regs cOut, r.readLog)
+
+/-- PATH 1: a valid index whose TWO chunks are both present.  The block
+reads `10` then `11` -- ASCENDING, the route's order -- and returns the
+option-shifted `bitsToNatLE ([true] ++ [false]) = 1`, i.e. `2`.  This is
+the executed check that the big-endian read loop and the read-free
+reversal loop compose back to the route's LITTLE-endian value. -/
+theorem chunkFoldWitness_path_bothPresent :
+    witnessOutcome 0 =
+      (37, true, 53, 2,
+        [.readWord 0 10 (some [true]), .readWord 0 11 (some [false])]) :=
+  rfl
+
+/-- PATH 2: a valid index whose SECOND chunk is missing.  Both chunks are
+still read -- the fold does not short-circuit -- and the missing chunk
+drives `cOut` to the option-shift's `none`. -/
+theorem chunkFoldWitness_path_partiallyMissing :
+    witnessOutcome 1 =
+      (37, true, 52, 0,
+        [.readWord 0 12 (some [true]), .readWord 0 13 none]) := rfl
+
+/-- PATH 3: a valid index whose chunks are BOTH missing. -/
+theorem chunkFoldWitness_path_whollyMissing :
+    witnessOutcome 2 =
+      (37, true, 52, 0,
+        [.readWord 0 14 none, .readWord 0 15 none]) := rfl
+
+/-- PATH 4: an index past the table.  The dead path reads the dead address
+ONCE -- it is a one-chunk instance of the same fold (DD-20260719-006) --
+and costs two more init steps and one fewer loop pass. -/
+theorem chunkFoldWitness_path_dead :
+    witnessOutcome 5 =
+      (37, true, 38, 2, [.readWord 0 99 (some [true])]) := rfl
+
+/-- Every path HALTS, at the same exit, having actually run. -/
+theorem chunkFoldWitness_all_halt :
+    [ (witnessOutcome 0).2.1, (witnessOutcome 1).2.1
+    , (witnessOutcome 2).2.1, (witnessOutcome 5).2.1 ]
+      = [true, true, true, true] := rfl
+
+/--
+THE FOUR EXECUTED PATHS ARE PAIRWISE DISTINGUISHABLE on the
+`(modeled steps, option-shifted cell, read log)` triple.  This is the
+statement that would fail if any two control paths collapsed.
+
+WORTH RECORDING FOR THE VALIDATOR'S DISCRIMINATOR CHOICE (M6): paths 2 and
+3 agree on BOTH the modeled step count (`52`) and the returned cell (`0`).
+They are separated ONLY by the read log.  So on this block a value check
+has no power over a receipt-only difference, and step counting has none
+either -- a mutation that redirected a chunk read to a different address
+of the same multiplicity would pass both and be caught only by
+event-by-event receipt diffing.
+-/
+theorem chunkFoldWitness_paths_distinguishable :
+    let obs := fun (o : Nat × Bool × Nat × Nat × List TraceEvent) =>
+      (o.2.2.1, o.2.2.2.1, o.2.2.2.2)
+    [ obs (witnessOutcome 0), obs (witnessOutcome 1)
+    , obs (witnessOutcome 2), obs (witnessOutcome 5) ].Nodup := by decide
+
+/-- Executed form of the cap: no path reads more than the literal `8`
+chunks, and the multi-chunk paths genuinely read more than one -- so the
+fold is exercised as a FOLD, not merely as the single-chunk atom the
+predecessor block already covered. -/
+theorem chunkFoldWitness_readCounts :
+    [ (witnessOutcome 0).2.2.2.2.length, (witnessOutcome 1).2.2.2.2.length
+    , (witnessOutcome 2).2.2.2.2.length
+    , (witnessOutcome 5).2.2.2.2.length ]
+      = [2, 2, 2, 1] := rfl
+
 end E1InteriorChunkFold
 end WordRAM
 end RMQ
