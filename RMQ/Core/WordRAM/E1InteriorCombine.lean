@@ -380,6 +380,22 @@ theorem twoLegUntouched_of_ge {r : Nat} (h : 144 ≤ r) : TwoLegUntouched r :=
     show r ≠ 130 by omega, show r ≠ 140 by omega, show r ≠ 141 by omega,
     show r ≠ 142 by omega, show r ≠ 143 by omega⟩
 
+/-- The combiner-bank version, and the one the INPUT registers need.
+
+`uMacro`, `uLocal`, `uMid` and `uRight` sit at `136`-`139`, BELOW the
+block's own scratch, so `twoLegUntouched_of_ge` does not reach them --
+yet a caller chaining a second combiner after this one has to carry them
+across.  Any register at `136`+ that is not one of the four slots this
+block writes for itself is left alone. -/
+theorem twoLegUntouched_of_bank {r : Nat} (h : 136 ≤ r) (hT : r ≠ uT)
+    (hZ : r ≠ uZero) (hV : r ≠ uSV) (hP : r ≠ uSP) : TwoLegUntouched r :=
+  ⟨E1InteriorTwoSpan.twoSpanUntouched_of_ge h,
+    ⟨show r ≠ 77 by omega, show r ≠ 78 by omega, show r ≠ 125 by omega,
+      show r ≠ 126 by omega⟩,
+    ⟨show r ≠ 123 by omega, show r ≠ 124 by omega⟩,
+    show r ≠ 127 by omega, show r ≠ 128 by omega, show r ≠ 129 by omega,
+    show r ≠ 130 by omega, hT, hZ, hV, hP⟩
+
 /-! ## Exact simulation of the two-leg combiner -/
 
 /--
@@ -882,6 +898,487 @@ by the time the second setup runs, which is what the block's two-instruction
 bump establishes and what makes the global leg's `macroStart` argument
 correct. -/
 theorem leftMiddleMacro_src_witnesses
+    (macroStart localStart middleMacroCount right : Nat) :
+    (∀ r : RegFile, r uMacro = macroStart → r uLocal = localStart →
+      r uMid = middleMacroCount → r uRight = right → r uZero = 0 →
+      r uT = macroStart + 1 → r uT = macroStart + 1) ∧
+    (∀ r : RegFile, r uMacro = macroStart → r uLocal = localStart →
+      r uMid = middleMacroCount → r uRight = right → r uZero = 0 →
+      r uT = macroStart + 1 → r uMid = middleMacroCount) :=
+  ⟨fun _ _ _ _ _ _ ht => ht, fun _ _ _ hm _ _ _ => hm⟩
+
+/-! ## THE THREE-LEG COMBINER: `#8`
+
+`#8` is NOT a third primitive.  `bpCandidateMerge3? left middle right` is
+DEFINITIONALLY `bpCandidateMerge? (bpCandidateMerge? left middle) right`
+(`merge3_eq_two_merges`, `E1InteriorMerge.lean:593`), and `#8`'s first two
+legs are exactly `#7`'s.  So the block is `twoLegBlock` at `#7`'s
+parameters, followed by a third local leg and one more two-way merge --
+1574 instructions, of which 1044 are the two-leg combiner unchanged.
+
+**THE THIRD NESTING LEVEL NEEDS A THIRD STASH PAIR**, `vSV`/`vSP` at
+`144`/`145`.  `uSV`/`uSP` will NOT do: `twoLegBlock` writes them itself,
+exactly as `twoSpanBlock` writes `qLV`/`qLP`.  `twoLegUntouched_of_ge`
+(write set below `144`) is what makes the new pair survive the whole
+two-leg sub-block without re-deciding eleven conjuncts, and it is why that
+lemma exists.
+
+`rightMacroStart` is recomputed from `uMacro` and `uMid` in four
+instructions rather than read out of `uT` -- `twoLegBlock` does leave
+`macroStart + 1` there, but its `runsTo` states what the block LEAVES
+ALONE and says nothing about the final value of a register it writes.
+Depending on that value would mean strengthening the two-leg contract for
+a saving of three instructions.  `uZero` is re-seeded for the same reason. -/
+
+/-- Scratch: the OUTERMOST stash of the first TWO legs' merged candidate.
+
+NOT `uSV`: `twoLegBlock` writes that pair, so a candidate stashed there
+would be destroyed by the two-leg sub-block, exactly as `twoSpanBlock`
+destroys `qLV`/`qLP`.  Third nesting level, third pair. -/
+abbrev vSV : Nat := 144
+
+/-- Scratch: the outermost stash of the merged candidate's position. -/
+abbrev vSP : Nat := 145
+
+/-- THE THREE-LEG COMBINER (1574 instructions, exit `Q + 1574`). -/
+def crossLegBlock (L : SummaryLayout) (GL1 GS1 GL2 GS2 GL3 GS3 : TableGeom)
+    (M1 D1 M2 D2 M3 D3 kA1 kO1 kA2 kO2 kA3 kO3 srcStart2 srcN2
+      macroSize blockSize blocksPerSuper Q : Nat) : List Instr :=
+  twoLegBlock L GL1 GS1 GL2 GS2 M1 D1 M2 D2 kA1 kO1 kA2 kO2 srcStart2 srcN2
+      macroSize blockSize blocksPerSuper Q ++
+    ([ Instr.move vSV mMV            -- Q+1044  OUTERMOST stash
+      , Instr.move vSP mMP ] ++      -- Q+1045
+      ([ Instr.const uZero 0         -- Q+1046  re-seed the zero source
+        , Instr.const uT 1           -- Q+1047
+        , Instr.add uT uMacro uT     -- Q+1048  macroStart + 1
+        , Instr.add uT uT uMid ] ++  -- Q+1049  + middleMacroCount
+        (legSetup kA3 kO3 uT uZero uRight ++  -- Q+1050 .. Q+1053
+          (twoSpanBlock L GL3 GS3 M3 D3 blockSize blocksPerSuper (Q + 1054) ++
+            ([ Instr.move qLV vSV    -- Q+1563  restore, AFTER the third leg
+              , Instr.move qLP vSP ] ++ -- Q+1564
+              mergeBlock (Q + 1565))))))
+
+@[simp] theorem crossLegBlock_length (L : SummaryLayout)
+    (GL1 GS1 GL2 GS2 GL3 GS3 : TableGeom)
+    (M1 D1 M2 D2 M3 D3 kA1 kO1 kA2 kO2 kA3 kO3 srcStart2 srcN2
+      macroSize blockSize blocksPerSuper Q : Nat) :
+    (crossLegBlock L GL1 GS1 GL2 GS2 GL3 GS3 M1 D1 M2 D2 M3 D3 kA1 kO1 kA2 kO2
+      kA3 kO3 srcStart2 srcN2 macroSize blockSize blocksPerSuper Q).length
+      = 1574 := by
+  simp [crossLegBlock]
+
+/-- The three-leg combiner's charge log. -/
+def crossLegCats (catsA catsB catsC : List Category)
+    (valA valB valC : Option (Nat × Nat)) : List Category :=
+  twoLegCats catsA catsB valA valB ++
+    ([Category.registerWrite, Category.registerWrite] ++
+      ([Category.registerWrite, Category.registerWrite, Category.arithmetic,
+          Category.arithmetic] ++
+        (legSetupCats ++
+          (catsC ++
+            ([Category.registerWrite, Category.registerWrite] ++
+              mergeCats (bpCandidateMerge? valA valB) valC)))))
+
+/-- What the three-leg combiner LEAVES ALONE. -/
+abbrev CrossLegUntouched (r : Nat) : Prop :=
+  TwoLegUntouched r ∧ r ≠ vSV ∧ r ≠ vSP
+
+/-- THE FOUR CROSS-BLOCK-ARM OPERANDS SURVIVE THE WHOLE THREE-LEG BLOCK. -/
+theorem crossLegUntouched_at_crossBlockArm_operands :
+    CrossLegUntouched 70 ∧ CrossLegUntouched 71 ∧ CrossLegUntouched 75 ∧
+      CrossLegUntouched 76 :=
+  ⟨⟨twoLegUntouched_at_crossBlockArm_operands.1, by decide, by decide⟩,
+    ⟨twoLegUntouched_at_crossBlockArm_operands.2.1, by decide, by decide⟩,
+    ⟨twoLegUntouched_at_crossBlockArm_operands.2.2.1, by decide, by decide⟩,
+    ⟨twoLegUntouched_at_crossBlockArm_operands.2.2.2, by decide, by decide⟩⟩
+
+/-- **THE WHOLE WRITE SET LIES BELOW `146`**, so `#9` can carry a dispatch
+bank across a three-leg arm. -/
+theorem crossLegUntouched_of_ge {r : Nat} (h : 146 ≤ r) : CrossLegUntouched r :=
+  ⟨twoLegUntouched_of_ge (by omega), show r ≠ 144 by omega,
+    show r ≠ 145 by omega⟩
+
+/--
+EXACT SIMULATION OF THE THREE-LEG COMBINER.
+
+Exit `Q + 1574`.  The receipt is the THREE sub-legs' receipts
+concatenated; the value is the route's own
+`bpCandidateMerge? (bpCandidateMerge? v1 v2) v3`, which
+`merge3_eq_two_merges` identifies with `bpCandidateMerge3?`.
+
+NO STORE HYPOTHESIS AND NO VALIDITY HYPOTHESIS.
+-/
+theorem crossLegBlock_runsTo
+    (shape : Cartesian.CartesianShape) {program : E1Machine.Program}
+    {GL1 GS1 GL2 GS2 GL3 GS3 : TableGeom}
+    {M1 D1 M2 D2 M3 D3 kA1 kO1 kA2 kO2 kA3 kO3 srcStart2 srcN2 macroSize
+      Q : Nat}
+    {macroStart localStart mid right start2 n2 : Nat} {regs : RegFile}
+    (hHost : HostedAt program Q
+      (crossLegBlock (canonicalSummaryLayout shape) GL1 GS1 GL2 GS2 GL3 GS3
+        M1 D1 M2 D2 M3 D3 kA1 kO1 kA2 kO2 kA3 kO3 srcStart2 srcN2 macroSize
+        (RelativeRmm.canonicalLayout shape).blockSize
+        (RelativeRmm.canonicalLayout shape).blocksPerSuper Q))
+    (hMacro : regs uMacro = macroStart) (hLocal : regs uLocal = localStart)
+    (hMid : regs uMid = mid) (hRight : regs uRight = right)
+    (hbS2 : 136 ≤ srcStart2) (hbN2 : 136 ≤ srcN2)
+    (hS2 : ∀ r : RegFile, r uMacro = macroStart → r uLocal = localStart →
+      r uMid = mid → r uRight = right → r uZero = 0 →
+      r uT = macroStart + 1 → r srcStart2 = start2)
+    (hN2 : ∀ r : RegFile, r uMacro = macroStart → r uLocal = localStart →
+      r uMid = mid → r uRight = right → r uZero = 0 →
+      r uT = macroStart + 1 → r srcN2 = n2)
+    (hL1Pos : 0 < GL1.chunkCount) (hL1Cap : GL1.chunkCount ≤ 8)
+    (hS1Pos : 0 < GS1.chunkCount) (hS1Cap : GS1.chunkCount ≤ 8)
+    (hL2Pos : 0 < GL2.chunkCount) (hL2Cap : GL2.chunkCount ≤ 8)
+    (hS2Pos : 0 < GS2.chunkCount) (hS2Cap : GS2.chunkCount ≤ 8)
+    (hL3Pos : 0 < GL3.chunkCount) (hL3Cap : GL3.chunkCount ≤ 8)
+    (hS3Pos : 0 < GS3.chunkCount) (hS3Cap : GS3.chunkCount ≤ 8) :
+    ∃ regs' : RegFile,
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+          ⟨regs, Q, false⟩ ⟨regs', Q + 1574, false⟩
+          (twoSpanEvents shape GL1 GS1 (macroStart * kA1) M1 D1 localStart
+              (macroSize - localStart) (macroStart * kO1) ++
+            twoSpanEvents shape GL2 GS2 ((macroStart + 1) * kA2) M2 D2
+              start2 n2 ((macroStart + 1) * kO2) ++
+            twoSpanEvents shape GL3 GS3
+              ((macroStart + 1 + mid) * kA3) M3 D3 0 right
+              ((macroStart + 1 + mid) * kO3))
+          (crossLegCats
+            (twoSpanCats shape GL1 GS1 (macroStart * kA1) M1 D1 localStart
+              (macroSize - localStart) (macroStart * kO1))
+            (twoSpanCats shape GL2 GS2 ((macroStart + 1) * kA2) M2 D2
+              start2 n2 ((macroStart + 1) * kO2))
+            (twoSpanCats shape GL3 GS3 ((macroStart + 1 + mid) * kA3) M3 D3
+              0 right ((macroStart + 1 + mid) * kO3))
+            (twoSpanValue shape GL1 GS1 (macroStart * kA1) M1 D1 localStart
+              (macroSize - localStart) (macroStart * kO1))
+            (twoSpanValue shape GL2 GS2 ((macroStart + 1) * kA2) M2 D2
+              start2 n2 ((macroStart + 1) * kO2))
+            (twoSpanValue shape GL3 GS3 ((macroStart + 1 + mid) * kA3) M3 D3
+              0 right ((macroStart + 1 + mid) * kO3))) ∧
+        bestOfRegs (regs' mMV) (regs' mMP) =
+          bpCandidateMerge?
+            (bpCandidateMerge?
+              (twoSpanValue shape GL1 GS1 (macroStart * kA1) M1 D1 localStart
+                (macroSize - localStart) (macroStart * kO1))
+              (twoSpanValue shape GL2 GS2 ((macroStart + 1) * kA2) M2 D2
+                start2 n2 ((macroStart + 1) * kO2)))
+            (twoSpanValue shape GL3 GS3 ((macroStart + 1 + mid) * kA3) M3 D3
+              0 right ((macroStart + 1 + mid) * kO3)) ∧
+        (∀ r, CrossLegUntouched r → regs' r = regs r) := by
+  -- ## hosting
+  have hTwoH : HostedAt program Q
+      (twoLegBlock (canonicalSummaryLayout shape) GL1 GS1 GL2 GS2
+        M1 D1 M2 D2 kA1 kO1 kA2 kO2 srcStart2 srcN2 macroSize
+        (RelativeRmm.canonicalLayout shape).blockSize
+        (RelativeRmm.canonicalLayout shape).blocksPerSuper Q) :=
+    hHost.append_left
+  have hT1 := hHost.append_right
+    (code₁ := twoLegBlock (canonicalSummaryLayout shape) GL1 GS1 GL2 GS2
+      M1 D1 M2 D2 kA1 kO1 kA2 kO2 srcStart2 srcN2 macroSize
+      (RelativeRmm.canonicalLayout shape).blockSize
+      (RelativeRmm.canonicalLayout shape).blocksPerSuper Q)
+  rw [show Q + (twoLegBlock (canonicalSummaryLayout shape) GL1 GS1 GL2 GS2
+      M1 D1 M2 D2 kA1 kO1 kA2 kO2 srcStart2 srcN2 macroSize
+      (RelativeRmm.canonicalLayout shape).blockSize
+      (RelativeRmm.canonicalLayout shape).blocksPerSuper Q).length = Q + 1044
+    from by simp only [twoLegBlock_length]] at hT1
+  have hStash3 : HostedAt program (Q + 1044)
+      [Instr.move vSV mMV, Instr.move vSP mMP] := hT1.append_left
+  have hT2 := hT1.append_right
+    (code₁ := [Instr.move vSV mMV, Instr.move vSP mMP])
+  rw [show Q + 1044 + [Instr.move vSV mMV, Instr.move vSP mMP].length
+    = Q + 1046 from rfl] at hT2
+  have hPro3 : HostedAt program (Q + 1046)
+      [Instr.const uZero 0, Instr.const uT 1, Instr.add uT uMacro uT,
+        Instr.add uT uT uMid] := hT2.append_left
+  have hT3 := hT2.append_right
+    (code₁ := [Instr.const uZero 0, Instr.const uT 1,
+      Instr.add uT uMacro uT, Instr.add uT uT uMid])
+  rw [show Q + 1046 + [Instr.const uZero 0, Instr.const uT 1,
+      Instr.add uT uMacro uT, Instr.add uT uT uMid].length = Q + 1050
+    from rfl] at hT3
+  have hSet3 : HostedAt program (Q + 1050)
+      (legSetup kA3 kO3 uT uZero uRight) := hT3.append_left
+  have hT4 := hT3.append_right (code₁ := legSetup kA3 kO3 uT uZero uRight)
+  rw [show Q + 1050 + (legSetup kA3 kO3 uT uZero uRight).length = Q + 1054
+    from by simp only [legSetup_length]] at hT4
+  have hSpan3 : HostedAt program (Q + 1054)
+      (twoSpanBlock (canonicalSummaryLayout shape) GL3 GS3 M3 D3
+        (RelativeRmm.canonicalLayout shape).blockSize
+        (RelativeRmm.canonicalLayout shape).blocksPerSuper (Q + 1054)) :=
+    hT4.append_left
+  have hT5 := hT4.append_right
+    (code₁ := twoSpanBlock (canonicalSummaryLayout shape) GL3 GS3 M3 D3
+      (RelativeRmm.canonicalLayout shape).blockSize
+      (RelativeRmm.canonicalLayout shape).blocksPerSuper (Q + 1054))
+  rw [show Q + 1054 + (twoSpanBlock (canonicalSummaryLayout shape) GL3 GS3
+      M3 D3 (RelativeRmm.canonicalLayout shape).blockSize
+      (RelativeRmm.canonicalLayout shape).blocksPerSuper (Q + 1054)).length
+      = Q + 1563 from by
+    simp only [E1InteriorTwoSpan.twoSpanBlock_length]] at hT5
+  have hRest3 : HostedAt program (Q + 1563)
+      [Instr.move qLV vSV, Instr.move qLP vSP] := hT5.append_left
+  have hMergeH : HostedAt program (Q + 1565) (mergeBlock (Q + 1565)) := by
+    have h := hT5.append_right
+      (code₁ := [Instr.move qLV vSV, Instr.move qLP vSP])
+    rw [show Q + 1563 + [Instr.move qLV vSV, Instr.move qLP vSP].length
+      = Q + 1565 from rfl] at h
+    exact h
+  -- ## Q .. Q+1043: the two-leg sub-block, unchanged
+  obtain ⟨w1, sTwo, hVal12, hPres12⟩ :=
+    twoLegBlock_runsTo shape hTwoH hMacro hLocal hMid hRight hbS2 hbN2 hS2 hN2
+      hL1Pos hL1Cap hS1Pos hS1Cap hL2Pos hL2Cap hS2Pos hS2Cap
+  -- ## Q+1044, Q+1045: the OUTERMOST stash
+  have f1044 : program[Q + 1044]? = some (Instr.move vSV mMV) := hStash3.head
+  have f1045 : program[Q + 1045]? = some (Instr.move vSP mMP) := by
+    have h := hStash3.tail.head
+    have harith : Q + 1044 + 1 = Q + 1045 := by omega
+    rwa [harith] at h
+  obtain ⟨w2, hw2⟩ : ∃ z : RegFile, z = w1.write vSV (w1 mMV) := ⟨_, rfl⟩
+  have s1044 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      program ⟨w1, Q + 1044, false⟩ ⟨w2, Q + 1045, false⟩ []
+      [Category.registerWrite] := by
+    have h := RunsTo.move
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨w1, Q + 1044, false⟩ : State)) rfl f1044
+    simpa [hw2] using h
+  have hw2P : w2 mMP = w1 mMP := by
+    rw [hw2, RegFile.write_other _ _ (by decide)]
+  obtain ⟨w3, hw3⟩ : ∃ z : RegFile, z = w2.write vSP (w1 mMP) := ⟨_, rfl⟩
+  have s1045 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      program ⟨w2, Q + 1045, false⟩ ⟨w3, Q + 1046, false⟩ []
+      [Category.registerWrite] := by
+    have h := RunsTo.move
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨w2, Q + 1045, false⟩ : State)) rfl f1045
+    simpa [hw3, hw2P] using h
+  -- ## Q+1046 .. Q+1049: re-seed `uZero`, then `rightMacroStart`
+  have f1046 : program[Q + 1046]? = some (Instr.const uZero 0) := hPro3.head
+  have f1047 : program[Q + 1047]? = some (Instr.const uT 1) := by
+    have h := hPro3.tail.head
+    have harith : Q + 1046 + 1 = Q + 1047 := by omega
+    rwa [harith] at h
+  have f1048 : program[Q + 1048]? = some (Instr.add uT uMacro uT) := by
+    have h := hPro3.tail.tail.head
+    have harith : Q + 1046 + 1 + 1 = Q + 1048 := by omega
+    rwa [harith] at h
+  have f1049 : program[Q + 1049]? = some (Instr.add uT uT uMid) := by
+    have h := hPro3.tail.tail.tail.head
+    have harith : Q + 1046 + 1 + 1 + 1 = Q + 1049 := by omega
+    rwa [harith] at h
+  obtain ⟨w4, hw4⟩ : ∃ z : RegFile, z = w3.write uZero 0 := ⟨_, rfl⟩
+  have s1046 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      program ⟨w3, Q + 1046, false⟩ ⟨w4, Q + 1047, false⟩ []
+      [Category.registerWrite] := by
+    have h := RunsTo.const
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨w3, Q + 1046, false⟩ : State)) rfl f1046
+    simpa [hw4] using h
+  obtain ⟨w5, hw5⟩ : ∃ z : RegFile, z = w4.write uT 1 := ⟨_, rfl⟩
+  have s1047 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      program ⟨w4, Q + 1047, false⟩ ⟨w5, Q + 1048, false⟩ []
+      [Category.registerWrite] := by
+    have h := RunsTo.const
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨w4, Q + 1047, false⟩ : State)) rfl f1047
+    simpa [hw5] using h
+  -- the caller's bank survives the two-leg sub-block and the stash
+  have hBank3 : ∀ r : Nat, TwoLegUntouched r → r ≠ vSV → r ≠ vSP →
+      r ≠ uZero → r ≠ uT → w5 r = regs r := by
+    intro r hr hV hP hZ hT
+    rw [hw5, RegFile.write_other _ _ hT, hw4, RegFile.write_other _ _ hZ,
+      hw3, RegFile.write_other _ _ hP, hw2, RegFile.write_other _ _ hV,
+      hPres12 r hr]
+  have hInBank : ∀ r : Nat, 136 ≤ r → r ≠ uT → r ≠ uZero → r ≠ uSV →
+      r ≠ uSP → r ≠ vSV → r ≠ vSP → w5 r = regs r := by
+    intro r hge hT hZ hV hP hV3 hP3
+    exact hBank3 r (twoLegUntouched_of_bank hge hT hZ hV hP) hV3 hP3 hZ hT
+  have h5M : w5 uMacro = macroStart := by
+    rw [hInBank uMacro (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide)]
+    exact hMacro
+  have h5T : w5 uT = 1 := by rw [hw5, RegFile.write_same]
+  obtain ⟨w6, hw6⟩ : ∃ z : RegFile, z = w5.write uT (macroStart + 1) :=
+    ⟨_, rfl⟩
+  have s1048 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      program ⟨w5, Q + 1048, false⟩ ⟨w6, Q + 1049, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.add
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨w5, Q + 1048, false⟩ : State)) rfl f1048
+    simpa [hw6, h5M, h5T] using h
+  have h6T : w6 uT = macroStart + 1 := by rw [hw6, RegFile.write_same]
+  have h6Mid : w6 uMid = mid := by
+    rw [hw6, RegFile.write_other _ _ (by decide),
+      hInBank uMid (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide)]
+    exact hMid
+  obtain ⟨w7, hw7⟩ : ∃ z : RegFile, z = w6.write uT (macroStart + 1 + mid) :=
+    ⟨_, rfl⟩
+  have s1049 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      program ⟨w6, Q + 1049, false⟩ ⟨w7, Q + 1050, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.add
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨w6, Q + 1049, false⟩ : State)) rfl f1049
+    simpa [hw7, h6T, h6Mid] using h
+  have h7T : w7 uT = macroStart + 1 + mid := by rw [hw7, RegFile.write_same]
+  have h7Z : w7 uZero = 0 := by
+    rw [hw7, RegFile.write_other _ _ (by decide), hw6,
+      RegFile.write_other _ _ (by decide), hw5,
+      RegFile.write_other _ _ (by decide), hw4, RegFile.write_same]
+  have h7R : w7 uRight = right := by
+    rw [hw7, RegFile.write_other _ _ (by decide), hw6,
+      RegFile.write_other _ _ (by decide),
+      hInBank uRight (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide)]
+    exact hRight
+  -- ## Q+1050 .. Q+1053: the third leg's setup
+  obtain ⟨w8, sSet3, h8A, h8S, h8N, h8O, h8P⟩ :=
+    legSetup_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (regs := w7) hSet3 (by decide) (by decide) (by decide)
+  rw [h7T] at h8A h8O
+  rw [h7Z] at h8S
+  rw [h7R] at h8N
+  -- ## Q+1054 .. Q+1562: the third sub-leg
+  obtain ⟨w9, sSpan3, hVal3, hPres3⟩ :=
+    E1InteriorTwoSpan.twoSpanBlock_runsTo shape hSpan3 h8A h8S h8N h8O
+      hL3Pos hL3Cap hS3Pos hS3Cap
+  -- ## Q+1563, Q+1564: the outermost RESTORE
+  have f1563 : program[Q + 1563]? = some (Instr.move qLV vSV) := hRest3.head
+  have f1564 : program[Q + 1564]? = some (Instr.move qLP vSP) := by
+    have h := hRest3.tail.head
+    have harith : Q + 1563 + 1 = Q + 1564 := by omega
+    rwa [harith] at h
+  have h9V : w9 vSV = w1 mMV := by
+    rw [hPres3 vSV (E1InteriorTwoSpan.twoSpanUntouched_of_ge (by decide)),
+      h8P vSV (by decide) (by decide) (by decide) (by decide), hw7,
+      RegFile.write_other _ _ (by decide), hw6,
+      RegFile.write_other _ _ (by decide), hw5,
+      RegFile.write_other _ _ (by decide), hw4,
+      RegFile.write_other _ _ (by decide), hw3,
+      RegFile.write_other _ _ (by decide), hw2, RegFile.write_same]
+  have h9P : w9 vSP = w1 mMP := by
+    rw [hPres3 vSP (E1InteriorTwoSpan.twoSpanUntouched_of_ge (by decide)),
+      h8P vSP (by decide) (by decide) (by decide) (by decide), hw7,
+      RegFile.write_other _ _ (by decide), hw6,
+      RegFile.write_other _ _ (by decide), hw5,
+      RegFile.write_other _ _ (by decide), hw4,
+      RegFile.write_other _ _ (by decide), hw3, RegFile.write_same]
+  obtain ⟨w10, hw10⟩ : ∃ z : RegFile, z = w9.write qLV (w1 mMV) := ⟨_, rfl⟩
+  have s1563 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      program ⟨w9, Q + 1563, false⟩ ⟨w10, Q + 1564, false⟩ []
+      [Category.registerWrite] := by
+    have h := RunsTo.move
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨w9, Q + 1563, false⟩ : State)) rfl f1563
+    simpa [hw10, h9V] using h
+  have hw10P : w10 vSP = w1 mMP := by
+    rw [hw10, RegFile.write_other _ _ (by decide)]; exact h9P
+  obtain ⟨w11, hw11⟩ : ∃ z : RegFile, z = w10.write qLP (w1 mMP) := ⟨_, rfl⟩
+  have s1564 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      program ⟨w10, Q + 1564, false⟩ ⟨w11, Q + 1565, false⟩ []
+      [Category.registerWrite] := by
+    have h := RunsTo.move
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨w10, Q + 1564, false⟩ : State)) rfl f1564
+    simpa [hw11, hw10P] using h
+  -- ## Q+1565 .. Q+1573: the outermost merge
+  have h11LV : w11 qLV = w1 mMV := by
+    rw [hw11, RegFile.write_other _ _ (by decide), hw10, RegFile.write_same]
+  have h11LP : w11 qLP = w1 mMP := by rw [hw11, RegFile.write_same]
+  have h11MV : w11 mMV = w9 mMV := by
+    rw [hw11, RegFile.write_other _ _ (by decide), hw10,
+      RegFile.write_other _ _ (by decide)]
+  have h11MP : w11 mMP = w9 mMP := by
+    rw [hw11, RegFile.write_other _ _ (by decide), hw10,
+      RegFile.write_other _ _ (by decide)]
+  obtain ⟨w12, sMerge, hValM, hPresM⟩ :=
+    E1InteriorMerge.mergeBlock_runsTo
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape) hMergeH w11
+      (w1 mMV) (w1 mMP) (w9 mMV) (w9 mMP) h11LV h11LP h11MV h11MP
+  rw [hVal12, hVal3] at sMerge hValM
+  have harithEnd : Q + 1565 + 9 = Q + 1574 := by omega
+  rw [harithEnd] at sMerge
+  refine ⟨w12, ?_, ?_, ?_⟩
+  · have h := ((((((((sTwo.trans s1044).trans s1045).trans s1046).trans
+      s1047).trans s1048).trans s1049).trans sSet3).trans sSpan3).trans
+      ((s1563.trans s1564).trans sMerge)
+    simpa [crossLegCats, twoLegCats, legSetupCats, List.append_assoc] using h
+  · exact hValM
+  · intro r hr
+    obtain ⟨hTL, hV3, hP3⟩ := hr
+    obtain ⟨hTS, hM, hSh, hTA, hTSt, hTN, hTO, hUT, hUZ, hUSV, hUSP⟩ := hTL
+    rw [hPresM r hM, hw11, RegFile.write_other _ _ hSh.2, hw10,
+      RegFile.write_other _ _ hSh.1, hPres3 r hTS,
+      h8P r hTA hTSt hTN hTO, hw7, RegFile.write_other _ _ hUT, hw6,
+      RegFile.write_other _ _ hUT, hw5, RegFile.write_other _ _ hUT, hw4,
+      RegFile.write_other _ _ hUZ, hw3, RegFile.write_other _ _ hP3, hw2,
+      RegFile.write_other _ _ hV3]
+    exact hPres12 r ⟨hTS, hM, hSh, hTA, hTSt, hTN, hTO, hUT, hUZ, hUSV, hUSP⟩
+
+/-- **`#8` INSTANTIATED.** The three-leg combiner's value, at LOCAL /
+GLOBAL / LOCAL geometries and the route's own parameters, IS the value of
+`canonicalRelativeRmmMachineCrossMacroCandidateComputation`.
+
+The route's terminal combination is `bpCandidateMerge3? left middle
+right`, and the machine's is two two-way merges; the two agree
+DEFINITIONALLY (`merge3_eq_two_merges`), which is why no reassociation
+step appears below.
+
+NO VALIDITY, CAP OR STORE HYPOTHESIS. -/
+theorem crossLegValue_crossMacro_eq_routeValue
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart middleMacroCount rightCount : Nat) :
+    bpCandidateMerge?
+        (bpCandidateMerge?
+          (twoSpanValue shape (E1InteriorTwoSpan.localLevelGeom shape)
+            (E1InteriorSpanBlock.localSpanGeom shape)
+            (macroStart * ((RelativeRmm.canonicalLayout shape).levelCount *
+              (RelativeRmm.canonicalLayout shape).macroSize))
+            (RelativeRmm.canonicalLayout shape).macroSize
+            (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize)
+            localStart
+            ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
+            (macroStart * (RelativeRmm.canonicalLayout shape).macroSize))
+          (twoSpanValue shape (E1InteriorTwoSpan.globalLevelGeom shape)
+            (E1InteriorSpanBlock.globalSpanGeom shape)
+            ((macroStart + 1) * 0)
+            (RelativeRmm.canonicalLayout shape).macroSampleCount
+            (bpSparseLevelDomain
+              (RelativeRmm.canonicalLayout shape).macroSampleCount)
+            (macroStart + 1) middleMacroCount ((macroStart + 1) * 0)))
+        (twoSpanValue shape (E1InteriorTwoSpan.localLevelGeom shape)
+          (E1InteriorSpanBlock.localSpanGeom shape)
+          ((macroStart + 1 + middleMacroCount) *
+            ((RelativeRmm.canonicalLayout shape).levelCount *
+              (RelativeRmm.canonicalLayout shape).macroSize))
+          (RelativeRmm.canonicalLayout shape).macroSize
+          (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize)
+          0 rightCount
+          ((macroStart + 1 + middleMacroCount) *
+            (RelativeRmm.canonicalLayout shape).macroSize)) =
+      ((canonicalRelativeRmmMachineCrossMacroCandidateComputation shape
+            macroStart localStart middleMacroCount rightCount).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value := by
+  simp only [Nat.mul_zero]
+  rw [E1InteriorTwoSpan.twoSpanValue_local_eq_routeValue,
+    E1InteriorTwoSpan.twoSpanValue_global_eq_routeValue,
+    E1InteriorTwoSpan.twoSpanValue_local_eq_routeValue]
+  unfold canonicalRelativeRmmMachineCrossMacroCandidateComputation
+  simp only [FlatStoreComputation.bind, FlatStoreComputation.map,
+    FlatStoreExecution.append]
+  rfl
+
+/-- `#8`'s second-leg sources are `#7`'s: `(uT, uMid)`.  Its THIRD leg's
+sources are program-fixed (`uZero`, `uRight`) and appear directly in
+`crossLegBlock`, so they need no witness -- only the second leg's are
+parametric. -/
+theorem crossMacro_src_witnesses
     (macroStart localStart middleMacroCount right : Nat) :
     (∀ r : RegFile, r uMacro = macroStart → r uLocal = localStart →
       r uMid = middleMacroCount → r uRight = right → r uZero = 0 →
