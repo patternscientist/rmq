@@ -62,8 +62,8 @@ blocks and the dispatch that were never enumerated.
 | 1 | `...MinCandidateComputation` | 2300 | 4 (via summary group) | **DONE** |
 | 2 | `...LocalSpanCandidateComputation` | 2311 | 1, then `some`→#1 / `none`→pure | **DONE** |
 | 3 | `...GlobalSpanCandidateComputation` | 2329 | 1, then `some`→#1 / `none`→pure | **DONE** |
-| 4 | `...LocalTwoSpanCandidateComputation` | 2351 | 1, then level/span split, two #2 merged | owed; merge block now EXISTS |
-| 5 | `...GlobalTwoSpanCandidateComputation` | 2376 | 1, then two #3 merged | owed; merge block now EXISTS |
+| 4 | `...LocalTwoSpanCandidateComputation` | 2351 | 1, then level/span split, two #2 merged | **DONE** |
+| 5 | `...GlobalTwoSpanCandidateComputation` | 2376 | 1, then two #3 merged | **DONE** |
 | 6 | `...AdjacentMacroCandidateComputation` | 2400 | **none** — two #4, merged | owed |
 | 7 | `...LeftMiddleMacroCandidateComputation` | 2413 | **none** — #4 + #5, merged | owed |
 | 8 | `...CrossMacroCandidateComputation` | 2426 | **none** — #4 + #5 + #4, TWO two-way merges | owed |
@@ -138,6 +138,16 @@ Left as struck-through rather than deleted, per the standing rule.
 session. 9 instructions, all four option combinations, read-free, result
 written IN PLACE to `mMV`/`mMP` so every interior producer lands in one
 pair. #4, #5, #6, #7 and #8 can all call it. DD-20260719-052.
+
+**#4 AND #5 ARE DONE** (M3d-28). One parametric `twoSpanBlock`
+(`E1InteriorTwoSpan.lean:186`) covers both, 509 instructions, exit
+`Q + 509` on both arms. The parametric-pattern claim held a second time,
+though for a slightly different reason than this file gave: #4/#5 differ
+not only in "which span block they call" but ALSO in the SLOT MAP — and
+both maps are `A + level * M + start` for a caller-supplied `A` and a
+program constant `M` (local: `A = macroIdx * (levelCount * macroSize)`,
+`M = macroSize`; global: `A = 0`, `M = macroSampleCount`). That is what
+makes one block cover both.
 
 **#9's five branches**, read off the source: `count = 0` → `pure none`;
 `count ≤ macroSize - localStart` → #4; `middleMacroCount = 0` → #6;
