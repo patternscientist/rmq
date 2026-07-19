@@ -183,7 +183,19 @@ makes one block cover both.
 | **its paired discriminators** | `mergeTie_discriminates` `:455`, `mergePos_discriminates` `:501` |
 | **the category-log boundary, both sides** | `mergeTie_catLogs_differ` `:471`, `mergePos_catLogs_agree` `:519` |
 | **#8 is two two-way merges, not a primitive** | `merge3_eq_two_merges` — `E1InteriorMerge.lean:593` |
-| the chaining shuttle | `mergeShuttle` `:604`, `mergeShuttle_runsTo` `:624` |
+| the chaining shuttle — **ONE LEVEL DOWN ONLY, see §6** | `mergeShuttle` `:604`, `mergeShuttle_runsTo` `:624` |
+| **the #4/#5 two-span block, both arms** | `twoSpanBlock_runsTo` — `E1InteriorTwoSpan.lean:355` (block at `:185`, 509 instrs) |
+| **#4 and #5 instantiated** | `twoSpanValue_local_eq_routeValue` `E1InteriorTwoSpan.lean:1085`, `..._global_...` `:1123` |
+| **#4/#5's two level geometries** | `localLevelGeom` `E1InteriorTwoSpan.lean:885`, `globalLevelGeom` `:898` |
+| their cell bridges, unconditional | `geomCell_localLevel_eq_routeDecode` `:936`, `..._globalLevel_...` `:952` |
+| **the level tables' `hexact`** (did NOT exist before M3d-28) | `hexact_localLevel` `E1InteriorChunkStore.lean:580`, `hexact_globalLevel` `:601` |
+| their concrete twins | `hexact_localLevel_concrete` `E1InteriorStoreConcrete.lean:280`, `_globalLevel_` `:298` |
+| **the two-span block's IMPOSTOR PAIR** | `twoSpanNoneArm_discriminates` `E1InteriorTwoSpan.lean:1251` |
+| **the RECEIPT boundary, both sides** | `..._receipt_catches_impostorA` `:1258`, `..._receipt_blind_to_impostorB` `:1266` |
+| **the write set is below `136`** | `twoSpanUntouched_of_ge` — `E1InteriorTwoSpan.lean:303` |
+| **the two-span block CLOBBERS `qLV`/`qLP`** | `twoSpanUntouched_excludes_mergeStash` — `:331` |
+| one two-span leg's four-input setup | `legSetup_runsTo` — `E1InteriorCombine.lean:161` (setup at `:135`) |
+| `#6`/`#7`'s block, **DEFINED, SIMULATION OWED** | `twoLegBlock` — `E1InteriorCombine.lean:258`, 1044 instrs |
 | four route branch decompositions | `E1RouteDecomposition.lean:41`, `:85`, `:121`, `:148` |
 | close/LCA dispatch, both arms | `closeDispatch_runsTo_same` / `_cross` — `E1CloseDispatch.lean:187`/`:224` |
 | same-block leg composed | `sameBlockDispatchProgram_runsTo` — `E1CloseCompose.lean:95` |
@@ -193,7 +205,16 @@ Summary+min-candidate `105..117`. Span block `118..122` (`pSlot` 118 and
 `pOff` 119 are INPUTS the caller writes; `pCell` 120, `pT` 121, `pOne` 122 are
 scratch). Two-way merge `123..126` (`qLV` 123 and `qLP` 124 are the INPUT
 stashed left candidate; `qT` 125 and `qOne` 126 are scratch).
-**Next free block opens at `127`.**
+Two-span block `127..135` (`tA` 127, `tStart` 128, `tN` 129, `tOff` 130 are
+INPUTS; `tCell` 131, `tLvl` 132, `tRS` 133, `tT` 134, `tOne` 135 scratch).
+Combiner `136..143` (`uMacro` 136, `uLocal` 137, `uMid` 138, `uRight` 139 are
+INPUTS; `uT` 140, `uZero` 141 scratch; `uSV` 142, `uSP` 143 the combiner's
+OWN stash pair — see §6).
+**Next free block opens at `144`.**
+
+`twoSpanUntouched_of_ge` (`E1InteriorTwoSpan.lean:303`) proves the two-span
+block's whole write set lies below `136`, so a combiner can carry its bank
+across a sub-leg without re-deciding ten conjuncts. Use it.
 
 **The interior's output pair is `mMV`/`mMP` (77/78), and every interior
 block must land there.** `crossBlockArmProgramAt_runsTo`'s `hInterior` reads
@@ -257,6 +278,27 @@ output convention for #4–#9.
   `@[simp] theorem geomBase : (someGeom shape).base = offsets.field := rfl`
   costs one line and is what lets the machine-side and route-side scrutinees
   be recognised as the same term.
+- **`simp` does NOT unfold the register `abbrev`s, and `omega` collects them
+  as OPAQUE ATOMS.** Both fail in ways that read as something else:
+  `simp [.., RegFile.write, ..]` leaves a goal like `tT = tLvl → v / D = v`,
+  and `omega` reports "a possible counterexample may satisfy `a ≥ 136` where
+  `a := iIdx`". Two fixes, both cheap: for register-value chains use explicit
+  `rw [hEq, RegFile.write_other _ _ (by decide)]` rather than `simp`; for
+  numeric-bound lemmas write the NUMERAL (`show r ≠ 85 by omega`), which is
+  accepted by defeq. `twoSpanUntouched_of_ge` is the worked example.
+- **There is no modulus instruction.** The route's `v % D` becomes
+  `divConst`/`mulConst`/`sub` — `v - v / D * D` — and the one bridge is
+  `mod_eq_sub_div_mul` (`E1InteriorTwoSpan.lean:143`). `omega` cannot do it
+  alone (`D * (v / D)` is a product of two variables); supply
+  `Nat.mod_add_div` and `Nat.mul_comm` as hypotheses and omega closes it
+  treating both products as atoms.
+- **A `mulConst` by the program constant `0` is how a global leg reuses a
+  local leg's instruction shape.** `legSetup` (`E1InteriorCombine.lean:135`)
+  sets `tA` and `tOff` by `mulConst` at `(levelCount * macroSize, macroSize)`
+  for a local leg and at `(0, 0)` for a global one, so both share ONE
+  four-instruction shape and ONE category log. Spelling the global setup with
+  `const` instead would make `#6` and `#7` differ in CATEGORY for a
+  difference the route does not observe.
 
 ## 5. Gotchas that have each cost a session
 
@@ -315,6 +357,40 @@ nothing about their OPERANDS.** Any defect preserving the control path is
 invisible to it. When you build a block's discriminator, build one impostor
 that changes the path and one that does not — the second is the one that
 tells you whether your value clause is load-bearing. DD-20260719-052.
+
+**A SIXTH MODEL, AND IT LOCATES THE RECEIPT'S BOUNDARY** (M3d-28). The
+two-span block's `none` arm admits TWO impostors — the same defect, a wrong
+branch target, at two of the block's own live numerals — and they fall on
+OPPOSITE SIDES of the receipt boundary:
+
+- **A**, target `Q + 275` (past only the FIRST span block). The tail it
+  falls into CONTAINS A READ, so it emits an event the route never emitted.
+  **The receipt catches it** (`twoSpanNoneArm_receipt_catches_impostorA`,
+  `E1InteriorTwoSpan.lean:1258`).
+- **B**, target `Q + 500` (straight to the merge). `mergeBlock_readFree`
+  makes that tail read-free, so receipt and read count are IDENTICAL to the
+  correct arm's; it merges a STALE left candidate out of `qLV`/`qLP` and
+  returns it where the route returns `none`.
+  **The receipt is formally incapable of catching it**
+  (`..._receipt_blind_to_impostorB`, `:1266`). Only the category log and the
+  value reject it.
+
+The rule this adds: **a receipt constrains WHICH READS HAPPENED, so its power
+over a skipped-code defect is exactly whether the skipped code READS.** §6's
+first four models all happened to skip read-free code, which made the receipt
+look uniformly weak. It is not — it is weak precisely there.
+
+**AND A PRESERVATION PREDICATE CAUGHT A REAL DESIGN ERROR AT A COMPOSITION
+SITE.** The natural combiner for `#6`/`#7` stashes the first sub-leg's
+candidate in `qLV`/`qLP` and merges after the second. That is WRONG:
+`twoSpanBlock` CONTAINS a `mergeShuttle` and a `mergeBlock`, so it writes
+that pair itself and the second sub-leg destroys the stash.
+`twoSpanUntouched_excludes_mergeStash` (`E1InteriorTwoSpan.lean:331`) proves
+it rather than asserting it. **Every nesting level needs its OWN stash pair**
+— the combiner's is `uSV`/`uSP` at `142`/`143`. §3's "the chaining shuttle"
+row is true one level DOWN and not sufficient one level UP. The type checker
+caught this, not a fixture: `TwoSpanUntouched qLV` is unprovable because it
+is false.
 
 Working models to copy: `witness_maxRel_discriminates`
 (`E1InteriorMinCandidate.lean:817`), `linkWitness_discriminates_content`
@@ -462,6 +538,98 @@ fixtures, not the validator run.
 driver (`axcheck_e1laneb2.lean`) into the tree and had to remove it in a
 follow-up commit. Keep throwaway drivers in the session scratchpad; `git
 add -A` will otherwise take them.
+
+---
+
+## 10b. Worklog — E1-LaneB3, 2026-07-19 (M3d-28)
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `4241de4`. Four commits.
+DD-IDs claimed: **`053`, `054`, `055`**. Band `056-069` remains free.
+
+**Built and CLOSED: `#4` and `#5`.** One parametric `twoSpanBlock`
+(`E1InteriorTwoSpan.lean:185`, 509 instructions, exit `Q + 509` on both
+arms) with `twoSpanBlock_runsTo` (`:355`) giving receipt, charge log, value
+against the route's own `bpCandidateMerge?`, and preservation — no store and
+no validity hypothesis. Instantiated by `twoSpanValue_local_eq_routeValue`
+(`:1085`) and `twoSpanValue_global_eq_routeValue` (`:1123`). `#5` needs
+`Nat.zero_add` substantively at its slot base `0`, exactly as §4 predicted.
+
+**NOT built: `#6`, `#7`, `#8`, `#9`, `hInterior`.** `twoLegBlock`
+(`E1InteriorCombine.lean:258`) is DEFINED with its length, charge log and
+preservation predicate, but **`twoLegBlock_runsTo` does not exist**. Only
+`legSetup_runsTo` (`:161`) is proved. Do not read the definition as a
+closure of anything.
+
+**A coordinator claim failed inspection.** The brief said everything `#4`/`#5`
+needs already exists. **`hexact_localLevel` and `hexact_globalLevel` did not
+exist anywhere in the tree** — all eight `hagree_*` clauses were present and
+six tables had `hexact` twins, but the two LEVEL tables had none. Counting
+`hagree`s counts the wrong thing; a table is only as composed as its LAST
+clause. Written this session (`E1InteriorChunkStore.lean:580`, `:601`) plus
+concrete twins (`E1InteriorStoreConcrete.lean:280`, `:298`).
+
+**Resume inventory, in the order I would take it.**
+
+1. **`twoLegBlock_runsTo`** — the composition is written out in the block and
+   the shape is exactly `twoSpanBlock_runsTo`'s own body (setup, sub-leg,
+   stash, setup, sub-leg, merge). Hosting peels in the block's append order;
+   the bank survives every sub-leg by `twoSpanUntouched_of_ge`. Budget it as
+   one long but mechanical proof, not as research.
+2. **`#6` and `#7`** — instantiations of `twoLegBlock` at
+   `(local, local, srcStart2 = uZero, srcN2 = uRight)` and
+   `(local, global, srcStart2 = uT, srcN2 = uMid)`. The `hsrc2S`/`hsrc2N`
+   hypotheses in the runsTo statement are what make those two one block.
+3. **`#8`** — `#7`'s two legs plus a third local leg at
+   `macroStart + 1 + middleMacroCount`, needing a THIRD stash pair (`144`+).
+4. **`#9`** — five-way dispatch, branch conditions at
+   `InteriorDirectory.lean:2450-2467`. Note the `count = 0` arm returns
+   `pure none`, which is also what the route's cross-block guard
+   (`ChargedFringeTrace.lean:1163`) returns when `leftBlock + 1 >= rightBlock`
+   — so the machine needs NO separate guard.
+5. **`hInterior`.**
+
+**ON `hInterior`, THE PIECE MY BRIEF DID NOT HAVE.** `hInterior` is
+`∀ regsS, regsS fClose = leftClose → regsS fRight = rightClose → ...`, so the
+interior program's answer must be a function of `fClose`/`fRight` ALONE — a
+program reading unpinned registers cannot discharge it, because two `regsS`
+agreeing on the two operands would give different answers for one fixed
+`interiorValue`. **The route fixes the range and it is `divConst`-computable**:
+`ChargedFringeTrace.lean:1164-1166` gives
+`startBlock = blockOfClose blockSize leftClose + 1` and
+`count = blockOfClose blockSize rightClose - blockOfClose blockSize leftClose - 1`,
+with `blockOfClose blockSize close = close / blockSize`
+(`BlockLocal.lean:864`). So the preamble is two `divConst`, an `add` and two
+`sub` — and it is a discharge FOUND at the target, not a witness built for the
+premise. `crossBlockArmSpec` itself takes the interior as an abstract packet
+(`E1CrossBlockArm.lean:146`), so nothing at that level determines the range;
+`ChargedFringeTrace.lean` is where to look.
+
+**`hInterior` NEEDS A FIFTH CONJUNCT** (coordinator, mid-session; verified
+satisfiable but NOT built here). Alongside its four register-equality
+promises:
+
+```
+(∀ r, CloseLegUntouched r → regsI r = regsS r)
+```
+
+with `CloseLegUntouched r := r ≤ 7 ∨ r = 28` (`E1SameBlockArm.lean:72`, on
+branch `claude/e1-close-leg-structural`, not yet merged here). The chain is
+`LegUntouched` → `ChunkFoldUntouched` (`r < 89 ∨ 99 < r`) plus disequalities
+against `100..104`, `77`/`78` and `105..117`, all of which hold at `r ≤ 7` and
+`r = 28`. Building `hInterior` without it will be sent back.
+
+Also from the coordinator, NOT actioned here on purpose:
+`crossBlockArmProgramAt_runsTo` has moved to `E1CrossBlockArm.lean:1181` and
+lost the nine window premises and `hc` — but that branch is UNMERGED, so
+`:1143` is still correct in this worktree and the prose citations in
+`E1InteriorMerge.lean`, `E1InteriorMinCandidate.lean`,
+`E1InteriorSpanBlock.lean`, `E1InteriorStoreConcrete.lean` and
+`E1InteriorSummaryGroup.lean` were deliberately left alone. Merge-window item.
+
+**Validator.** `lake exe rmq_e1_machine_validate` is PASS, but phase 5 still
+reports `wholeQueryComparisonAvailable=false` and `interior leg UNBUILT`.
+**It does not exercise anything built this session.** The evidence for `#4`
+and `#5` is the in-tree executed fixtures, not the validator run.
 
 ---
 
