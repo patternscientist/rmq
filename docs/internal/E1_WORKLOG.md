@@ -7737,3 +7737,74 @@ All file:line verified at this session's HEAD.
    index copied from the segment below", which is what the fixture is --
    and the six-entry table exists precisely so the impostor is NOT caught
    by the cheap check, which is the property that makes it a real witness.
+
+### 8. SUPPLEMENT (same session, second commit): the consumer's receipt, in the form the span blocks consume
+
+Sections 1-7 were written at commit `3ccda2e`, where the session's assigned
+milestone was complete.  Budget remained.  It was NOT spent starting mission
+item 2 -- the span blocks need a new machine block with its own `runsTo`,
+categories and anti-vacuity, which is a session's work and would have been
+left half-built.  It was spent on the one increment that is squarely in this
+module and that item 2 will consume directly.
+
+`minCandidateComputation_reads_eq_summary`: the min-candidate computation is
+a `FlatStoreComputation.map` over the summary computation, and `map`
+contributes no read event, so the composite's receipt IS the summary group's
+four segments and nothing more.  This is the ROUTE-side twin of
+`minCandidateBlock_readFree` (`:246`), which says the same of the MACHINE
+block.  Both are needed and they are different statements: one says the
+block emits no event, the other says the route expects none.
+
+`minCandidateMachineTrace_eq_routeReads`: the four `geomEvents` that
+`summaryMinCandidate_runsTo` (`:929`) emits ARE the read log of
+`canonicalRelativeRmmMachineMinCandidateComputation`
+(`InteriorDirectory.lean:2300`).
+
+WHY THIS IS THE RIGHT SHAPE FOR ITEM 2, verified against the source rather
+than assumed.  `canonicalRelativeRmmMachineLocalSpanCandidateComputation`
+(`InteriorDirectory.lean:2311`) and its global twin (`:2329`) both bind ONE
+read and then branch:
+
+    | some value => canonicalRelativeRmmMachineMinCandidateComputation shape ...
+    | none       => FlatStoreComputation.pure none
+
+So the `some` arm's receipt is the head read followed by exactly the receipt
+this supplement names, and the `none` arm's receipt is the head read AND
+NOTHING ELSE -- `pure` logs no event.  That is the receipt-level content of
+the constraint the delegation states as "the `none` arm must branch PAST
+177": the branch must skip all 177 instructions AND emit nothing while doing
+so.  The 177 was re-derived in section 1.
+
+### 9. VERIFICATION LEDGER (second commit)
+
+Under the `Global\RMQHeavyVerification` mutex, re-run in full:
+
+    lake build RMQ RMQPaper RMQExamples   LIB_BUILD_EXIT=0
+    lake build rmq_e1_machine_validate    VALIDATOR_BUILD_EXIT=0
+    lake exe rmq_e1_machine_validate      VALIDATOR_RUN_EXIT=0
+
+Validator counts UNCHANGED again, same reason: no machine block was added.
+`RESULT: PASS (with the whole-query comparison still OPEN)`,
+`presFailures=0`, `presSentinelNonZero=true`,
+`mutantG_scratch_preservationFailures=36`,
+`mutantG_isPreservationOnly=true`,
+`wholeQueryComparisonAvailable=false`.
+
+`#print axioms`, importing the module DIRECTLY:
+
+    minCandidateComputation_reads_eq_summary  [propext, Classical.choice, Quot.sound]
+    minCandidateMachineTrace_eq_routeReads    [propext, Classical.choice, Quot.sound]
+    summaryMachineTrace_eq_routeReads         [propext, Classical.choice, Quot.sound]
+
+Never `sorryAx`.
+
+A CITATION IN THIS SESSION'S OWN OUTPUT WAS WRONG AND WAS FIXED.  The first
+draft of the `minCandidateComputation_reads_eq_summary` docstring cited
+`minCandidateBlock_readFree` at `:247`; it is at `:246`.  Caught by grepping
+this session's own new prose against the tree, the same check applied to the
+delegation in section 1.  No other citation in the new material moved.
+
+Resume item 2 of section 7 is REFINED, not superseded: the span blocks
+remain the next step and remain unbuilt; what is new is that their `some`
+arm now has its receipt available as a named theorem, and their `none` arm's
+read-freeness is established at the route by the `pure none` reading above.

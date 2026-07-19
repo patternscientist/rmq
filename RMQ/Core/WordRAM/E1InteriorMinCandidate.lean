@@ -1223,6 +1223,63 @@ theorem summaryMachineTrace_eq_routeReads
     geomEvents_eq_summaryReadReceipt_map, geomEvents_eq_summaryReadReceipt_map,
     geomEvents_eq_summaryReadReceipt_map]
 
+/-- THE CONSUMER IS READ-FREE AT THE ROUTE LEVEL TOO.
+
+`canonicalRelativeRmmMachineMinCandidateComputation`
+(`InteriorDirectory.lean:2300`) is a `FlatStoreComputation.map` over the
+summary computation, and `map` contributes no read event -- so the
+composite's receipt IS the summary group's four segments and nothing more.
+
+This is the route-side twin of `minCandidateBlock_readFree` (`:246`), which
+says the same thing about the MACHINE block.  Both are needed: one says the
+block emits no event, the other says the route expects none. -/
+theorem minCandidateComputation_reads_eq_summary
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    ((canonicalRelativeRmmMachineMinCandidateComputation shape block).run
+        (RMQ.SuccinctClose.flatWordStoreOfReadStore
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (canonicalSummaryLayout shape).segment)).reads =
+      ((canonicalRelativeRmmMachineSummaryComputation shape block).run
+        (RMQ.SuccinctClose.flatWordStoreOfReadStore
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (canonicalSummaryLayout shape).segment)).reads := by
+  unfold canonicalRelativeRmmMachineMinCandidateComputation
+  simp
+
+/-- THE COMPOSITE'S RECEIPT, MACHINE AGAINST ROUTE, IN THE FORM THE SPAN
+BLOCKS WILL CONSUME.
+
+`summaryMinCandidate_runsTo` (`:929`) emits the four `geomEvents`; this
+says that list IS the read log of the min-candidate computation the span
+computations bind against.  The span blocks
+(`InteriorDirectory.lean:2311`, `:2329`) call that computation on their
+`some` arm, so this is the receipt their `some` arm must reproduce -- and
+their `none` arm, being `FlatStoreComputation.pure none`, must reproduce
+the EMPTY one while branching past all 177 instructions. -/
+theorem minCandidateMachineTrace_eq_routeReads
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    (geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (canonicalSummaryLayout shape)
+          (canonicalSummaryLayout shape).baseline
+          (block / (canonicalSummaryLayout shape).blocksPerSuper) ++
+        geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (canonicalSummaryLayout shape)
+          (canonicalSummaryLayout shape).minRel block ++
+        geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (canonicalSummaryLayout shape)
+          (canonicalSummaryLayout shape).maxRel block ++
+        geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (canonicalSummaryLayout shape)
+          (canonicalSummaryLayout shape).argOffset block) =
+      ((canonicalRelativeRmmMachineMinCandidateComputation shape block).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).reads.map
+        (fun p =>
+          TraceEvent.readWord (canonicalSummaryLayout shape).segment p.1 p.2) := by
+  rw [minCandidateComputation_reads_eq_summary]
+  exact summaryMachineTrace_eq_routeReads shape block
+
 /-! ### ANTI-VACUITY: THE STALE HEAD, EXECUTED
 
 Parametric in `wordSize` for the reason recorded in the summary group: the
