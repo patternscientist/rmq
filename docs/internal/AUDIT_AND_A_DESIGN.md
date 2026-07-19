@@ -4014,3 +4014,49 @@ not make it.
 
 Three declarations depend on **no axioms**; no `sorryAx` anywhere; the validator
 still PASSes with phases 3h/4g catching the preservation-only mutant.
+
+---
+
+## C05 round 61 — the same DD gap twice, and the cause is my brief's wording
+
+Lane G's battery: **fully green.** Library+paper+examples 0 errors, validator
+PASS, headline axiom check 0, claim-drift 756 hits / 0 strict failures,
+paper-topology PASS, both `git diff --check` forms 0, hygiene 0, and
+`design_decision_check -Strict -Base db81641` a **real** pass over 8 examined
+files.
+
+Lane CL's battery: green everywhere except `DESIGN_CHECK_EXIT=1` — 9 files
+examined, one missing design-log update. Verified: DD-20260719-070..073 were
+claimed in the commit messages and report, and `DESIGN_DECISIONS.md` **does not
+appear in the diff at all**.
+
+**This is the second consecutive lane with exactly this gap, so it is a pattern
+and it is MINE.** My brief says: *"Design-decision IDs: you are allocated the
+band ... Say which you claimed."* That instructs a worker to CLAIM an ID and
+REPORT it. **It never says to write the entry into the log.** I had been
+treating that as implied; two workers in a row read it the way it is actually
+written, which is the correct reading. Fixed in the wording for the remaining
+lanes.
+
+**And there is a real reason it reads as satisfied.** Lane CL's commit body for
+`c7c26ad` is a better design-decision entry than most of what is in that file —
+it states the alternatives, gives the evaluated table shape by shape, names the
+M3d-14 precedent, and argues explicitly why padding was rejected. The worker did
+the thinking and recorded it; it simply landed somewhere the tool whose job is
+to find it cannot search. So the instruction to CL is to LIFT from its own commit
+bodies rather than compose fresh — the content exists and is good, and asking for
+a re-derivation would risk a weaker second telling of an argument that was right
+the first time.
+
+Worth noting how this was caught at all: only because I run the docs battery
+myself now, and only because the `-Base` fix from round 51 made the check
+examine anything. The same transfer that created this single point of failure is
+the reason both instances were found. That is not an argument against the
+transfer — it is an argument that the coordinator's half of it is load-bearing
+and cannot be skipped.
+
+**A standing brief change, applied from here:** the design-decision instruction
+now reads "write the entry into `docs/internal/DESIGN_DECISIONS.md` and commit
+it; claiming an ID in a report or commit message does not satisfy this." An
+instruction that has been misread twice by careful readers is a defective
+instruction, not a discipline problem.
