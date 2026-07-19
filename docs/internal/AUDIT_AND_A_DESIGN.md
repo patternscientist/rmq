@@ -3625,3 +3625,77 @@ spare the proof.
 Recorded now, before the remaining three surveys land, because this is a
 statement change that propagates through three modules and should be planned as
 its own lane rather than folded into an assembly session.
+
+---
+
+## C05 round 56 — Survey 2: a latent fall-through, an absent preservation
+## clause, and a free premise nobody took
+
+Survey 2 returned on the close/LCA leg. It is the most productive single report
+this campaign has produced, and three of its findings were invisible to every
+instrument we run.
+
+**THE ONE THAT WOULD HAVE HURT MOST — the cross arm has NO TERMINATOR.**
+`crossBlockArmProgramAt_runsTo` exits with `halted = false`. In
+`closeDispatchProgram` (`E1CloseDispatch.lean:277`) the layout is
+`dispatch(4) ++ crossArm ++ sameArm`, so with `A = 4` the arm's exit PC is
+`4 + crossArm.length` — **exactly the same-block leg's base.** The real cross
+arm would fall straight through into the same-block leg and run it on the wrong
+data. The 2-instruction `witnessCrossArm` ends in `.halt`, which is precisely
+WHY the witness composition works and the real one would not: the witness hides
+the defect by being the one shape that cannot exhibit it. Nothing in the tree
+records this. It is the right-shape/wrong-content class at the PROGRAM-LAYOUT
+level, and it would have been found at composition time, late, with the interior
+already built on top of it.
+
+**The dispatch is composed with ONE real arm, not two, and my live-state said
+"both arms".** The two `closeDispatch_runsTo_*` theorems are the dispatch's two
+BRANCH DIRECTIONS against an abstract program; only the same-block side is ever
+composed with a real arm. `crossBlockArmProgramAt` is referenced **only inside
+its own file** — no `crossBlockDispatchProgram`, no composite theorem anywhere.
+My anchor table read as more finished than the tree is; corrected wording
+supplied by the survey and adopted.
+
+**`hc` IS FREE and has been threaded as an undischarged hypothesis through seven
+theorems.** `bpFringeChunkBits_le_machineWordBits` (`E1FringeBridge.lean:82`) is
+unconditional, `unfold; omega`, and `sbChunkBits` is a reducible `abbrev` for
+its argument. One term closes it everywhere. A decorative hypothesis surviving
+seven headlines is exactly what "do not carry a decorative hypothesis" exists to
+prevent, and nobody — including me — checked whether the premise was already a
+theorem.
+
+**BOTH composed arms export NO preservation clause. Absent, not weak.** The
+components prove it (`RankSeedLegUntouched`, `FringeArmUntouched`,
+`CloseDispatchUntouched`) and the composition discards it. Third instance of
+this exact defect: M3d-13 at the fold, `summaryMinCandidate_runsTo` last week,
+now both close arms. It is no longer a slip; it is a pattern in how composition
+proofs get written here, and the brief now says to state the clause **against a
+real consumer** rather than reconstruct it later.
+
+**And the consumer constraint is tighter than anyone had written down.** The
+glue must run `select(left); select(right-1); close(...)`, carrying the first
+select's answer across the second. `selectCloseBlock_runsTo_canonical` preserves
+only `r ≤ 7 ∨ r = 28`, and of registers `0..7` only the guard scratch `5,6,7` is
+dead after the prologue. Three slots. It is enough, it is nowhere recorded, and
+the select clause as stated forbids loading `fClose`/`fRight` before the second
+select runs. That is a design constraint discovered by a survey rather than by a
+failed proof, which is the cheapest possible way to find it.
+
+**Also: the select leg is an ORPHAN** — no consumer anywhere in `RMQ/Core/`,
+exercised only by the validator. Correctly so: the route decomposition puts both
+selects BEFORE the LCA leg, so select is a sibling of the close leg rather than
+a component. Worth recording because "canonical and proved" read to me as
+"wired in", and it is not.
+
+**LANE CL LAUNCHED** on the four obligations together, since they live in the
+same files: discharge `hc`; settle and repair the nine width premises; terminate
+the cross arm with a discriminator; re-export preservation against the real
+consumer. Fully parallel with the interior lane, and the survey's own judgement
+is that the width lemma is the only item with real mathematical risk and must
+not be duplicated across lanes — **one root lemma serves all nine premises**,
+three on the same-block side and six on the cross side.
+
+The brief's first instruction is to settle the width question **by evaluation,
+before building anything** — concrete shape, actual `readBits` lengths at the
+last block's window — and to report the numbers. If false, the repair is already
+decided and it is the M3d-14 precedent, not padding.
