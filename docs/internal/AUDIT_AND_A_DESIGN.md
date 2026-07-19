@@ -2884,3 +2884,59 @@ be torn out, and a verified handoff beats a module that cannot land green.
 matching existing practice in the reverse direction. It couples documentation to
 line numbers and will rot; acceptable given the anchor-drift regime already in
 force, and cheaper than the alternative of leaving the discharge route unstated.
+
+## 2026-07-19 (C05 round 44) — the ruling enforced structurally; a coordinator process fix
+
+**The min-candidate consumer landed** (`88f9605`): 21 instructions, read-free,
+all four presence tests per the ruling. The enforcement is better than the
+ruling: the theorem states its result as the ROUTE'S OWN EXPRESSION, with
+`summaryOfCells` written arm-for-arm as the route writes its match — `mx` binder
+present and unused exactly as at `InteriorDirectory.lean:2293-2296`. **`cMx`
+therefore appears on both sides of the statement and is not an argument the
+theorem could drop.** Structural correspondence rather than an asserted one,
+which is what the ruling was reaching for.
+
+**Anti-vacuity aimed at the DEFECT, not the premise.**
+`witness_maxRel_discriminates` runs the real block on fixtures differing in
+exactly one cell: `(1,10,5,7,3)` leaves `(6,6)`, `(1,10,5,0,3)` leaves `(0,0)`.
+A block dropping the `maxRel` test makes those equal while leaving trace, read
+count and exit pc untouched. The theorem **depends on no axioms at all**, and it
+is cross-checked independently — `witness_route_value` evaluates the route side
+through the real `bpSuperblockSpan`/`blockStartOf` to `some (5,6)`, encoding
+`(6,6)`. Two computations, not the proof alone.
+
+Two design points recorded: `none` is the FALLTHROUGH, mirroring the route's
+catch-all, so no unconditional jump and no always-nonzero register is needed;
+and the option shift is applied LAST, because `(b + mn + 1) - span` differs from
+`(b + mn - span) + 1` whenever `span > b + mn`. The truncation hazard flagged in
+the previous inventory was real.
+
+**The worker repaired two docstrings ITS OWN WORK falsified.**
+`E1InteriorSummaryGroup` asserted in two places that no consumer inspects
+`maxRel`'s value, offered as why its bridge exists "anyway". This consumer's
+`none`/`some` split is decided partly by that cell, so those sentences became
+false the moment the module landed. Docstrings only; no theorem, statement,
+proof or frozen text touched. Note the line shift it caused:
+`canonicalSummaryGroup_runsTo` is now `:555`, the four bridges `:694`/`:708`/
+`:726`/`:740`.
+
+**THE NEXT OBLIGATION, flagged rather than assumed.** The four
+`geomCell_*_eq_routeDecode` bridges hold only at VALID indices, but the
+consumer's `none` arm is precisely the INVALID-index case. Composing them
+requires a "geomCell = 0 at invalid indices" fact that is not among the four and
+that the worker did not find in the tree. Budgeted as task zero for the
+successor, not assumed away.
+
+**COORDINATOR PROCESS FIX.** Three sessions running, workers have had to repair
+DIRECTORY PATHS in my anchors — line numbers and contents exact, directories
+wrong (`MachineChunkedTableProgram.lean` is under `SuccinctSpace/`,
+`RelativeSummaryCandidate.lean` under `EndpointFringe/PrefixRange/`,
+`ChargedRankSelectWiring.lean` under `SuccinctClose/RelativeRmmMacro/`,
+`WordStore.lean` under `SuccinctSpace/`). My directory memory is unreliable and
+the filenames are unique in this tree. **From here I cite `File.lean:NNN`
+without directory paths.** A citation form that cannot be wrong beats a
+discipline of getting it right.
+
+This is the smaller sibling of the round-39 and round-43 failures: the content
+of my claims has been sound, the addressing has not. Both fixes are mechanical
+rather than attentional, which is the right kind of fix.
