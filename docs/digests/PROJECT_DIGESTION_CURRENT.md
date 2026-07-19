@@ -8,12 +8,14 @@ prose and Lean disagree, the checked Lean proposition is authoritative.
 **Canonical proposition.** The canonical reviewer payload and canonical global
 trace are joined by
 `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`.
-The same checked theorem packages the at-most `2*n + o(n)` payload, its exact
+That capstone packages the at-most `2*n + o(n)` payload, its exact
 physical-word erasure, direct positional backing for successful reads, exact
 valid half-open leftmost RMQ answers, non-synthetic trace accounting, and the
 uniform charged-trace bound `207`. Controller operations remain outside the
 charged event model, so this is not a conventional word-RAM or Lean runtime
-bound.
+bound. On the exact same canonical trace, the separate strong theorem
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` proves
+that every emitted event is a payload-word read.
 
 ## What The Main Theorem Says
 
@@ -24,16 +26,19 @@ list theorem is `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`; it retains
 the repository's half-open query contract, rejects invalid or empty ranges,
 and returns the leftmost minimum index for every valid range.
 
-The construction-facing theorem states six facts about one object and one
-execution:
+The construction-facing capstone and the separate strong event theorem state
+six facts about one object and one execution:
 
 1. the auxiliary overhead is `o(n)` and the canonical reviewer payload has
    length at most `2*n + overhead n`;
 2. the physical reviewer words flatten exactly to that payload;
 3. every successful payload read in the canonical global trace is backed by
    the corresponding in-bounds physical word;
-4. every emitted event is a payload-word read,
-   and no synthetic cost-only marker occurs;
+4. `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`
+   proves every emitted event is a payload-word read on this trace, while the
+   capstone's own event field is the weaker explicit `readWord`/`wordRank`/
+   `wordSelect` classification and its next field excludes the synthetic
+   cost-only marker;
 5. the non-synthetic certificate sum equals trace length and the same
    `Costed.cost`, and is at most `207`;
 6. erasing the valid-query result gives the reference `scanWindow` answer.
@@ -53,14 +58,18 @@ execution:
 
 `TraceResult.toCosted` charges trace length. Independently,
 `WordRAM.TraceEvent.nonSyntheticWeight` assigns unit certificate weight to the
-genuine `readWord` constructor and zero to the synthetic marker. The
-canonical execution proves that all of its events are genuine and that the
-marker is absent. The checked certificate sum therefore equals both the trace
-length and the modeled cost before the uniform upper bound is applied.
+genuine `readWord`, `wordRank`, and `wordSelect` constructors and zero to the
+synthetic marker. The capstone proves that all events satisfy the explicit
+three-constructor classification and that the marker is absent; the separate
+strong theorem above further proves that this canonical execution actually
+emits only `readWord`. The checked certificate sum therefore equals both the
+trace length and the modeled cost before the uniform upper bound is applied.
 
 This is proposition-level evidence: the cost theorem, physical backing,
 payload bound, and exact answer do not live on sibling executions or merely
-adjacent lemmas. They are conjuncts of the same construction-facing profile.
+adjacent lemmas. They are conjuncts of the construction-facing profile; the
+readWord-only fact is a separate theorem quantified over that exact trace, not
+a field silently attributed to the profile.
 
 ## Supplied Stores, Physical Words, And Provenance
 

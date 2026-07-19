@@ -12,7 +12,8 @@ substrate used by the query components. A `TraceResult` contains a value and an
 ordered event list; `TraceResult.toCosted` assigns cost equal to the event-list
 length.
 
-The canonical whole-query trace emits only `readWord` events for attempted
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` proves
+that the canonical whole-query trace emits only `readWord` events for attempted
 indexed payload-word reads.
 
 The compatibility constructor `syntheticCostOnlyPrimitive` exists in the trace
@@ -75,7 +76,8 @@ The canonical component cap is:
 
 The same execution proves:
 
-1. every emitted event is `readWord`;
+1. `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`
+   proves every emitted event is `readWord`;
 2. the synthetic marker is absent;
 3. the `nonSyntheticWeight` sum equals event-list length;
 4. that sum equals the same execution's `Costed.cost`; and
@@ -83,8 +85,10 @@ The same execution proves:
 
 The construction-facing theorem
 `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
-joins these facts to payload size, physical erasure, read backing, and exact
-query semantics.
+joins items 2–5 and its own explicit three-constructor event classification to
+payload size, physical erasure, read backing, and exact query semantics. The
+separate strong theorem in item 1 strengthens that exact same trace; the
+capstone's own checked type does not contain the readWord-only conjunct.
 
 ## Uncharged Boundary
 

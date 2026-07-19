@@ -107,6 +107,7 @@ RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReads
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength
+RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly
 RMQ.Headlines.succinctRMQQueryCostEq
 RMQ.Headlines.succinctRMQChargedTraceCostAlgebra
 RMQ.Headlines.succinctRMQPrincipledAllSizeChargedTraceFinalFullModelCostLeOfFootprintGlobal
@@ -130,9 +131,11 @@ RMQ.Headlines.succinctRMQReviewerPhysicalFootprintAddressFits
 ```
 
 These are the reviewer-facing anchors for what the modeled constant query
-means. They package the existing final trace facts: `Costed` equals
+means. Collectively they package the existing final trace facts: `Costed` equals
 `TraceResult.toCosted`, the trace refines the interpreted whole-query program,
-the fixed modeled cost bound holds, every emitted trace event is `readWord`,
+the fixed modeled cost bound holds,
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` proves
+every emitted trace event is `readWord`,
 reads match the global store, event data are bounded, no synthetic cost-only
 events appear, successful reads are backed by counted flat payload words, and
 the supplied-store replay is store-parametric under final-layout footprint
@@ -149,7 +152,9 @@ backing and modeled cost under footprint agreement.
 The current final global trace has the uniform canonical charged-trace bound
 `SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 207`.
 The checked sum is `2*35 + (2*11 + 2*37 + 30) + 11 = 207`. On the actual
-canonical trace, every emitted event is proved to be `readWord`, the
+canonical trace,
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` proves
+every emitted event is `readWord`; separately, the
 synthetic fallback is absent, and the direct `WordRAM.TraceEvent.nonSyntheticWeight`
 certificate sum equals both emitted trace length and the `Costed` cost of the
 same execution before being bounded by `207`. That equality uses the canonical

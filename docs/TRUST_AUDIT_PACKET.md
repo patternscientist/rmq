@@ -13,16 +13,27 @@ The construction-facing anchor is:
 RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile
 ```
 
-Its checked type joins one canonical reviewer payload and one canonical global
+The stronger event-vocabulary anchor on the exact same trace is:
+
+```lean
+RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly
+```
+
+The construction capstone's checked type joins one canonical reviewer payload and one canonical global
 trace. For every valid half-open query over a Cartesian shape, it packages:
 
 - payload length at most `2*n + overhead n`, with `overhead = o(n)`;
 - exact erasure of the physical reviewer words to that payload;
 - direct positional physical backing for every successful trace read;
-- only genuine `readWord` events and no synthetic cost marker;
+- the explicit `readWord`/`wordRank`/`wordSelect` event classification and no
+  synthetic cost marker;
 - certificate weight equal to trace length and the same `Costed.cost`;
 - uniform charged-trace cost at most `207`; and
 - the exact leftmost RMQ answer.
+
+The separate strong anchor proves universally on that same canonical trace
+that every emitted event satisfies `isReadWord`; this stronger conjunct is not
+part of the construction capstone's own checked type.
 
 The ordinary-list endpoint is:
 
@@ -85,10 +96,13 @@ The current component derivation is:
 ```
 
 `TraceResult.toCosted` charges trace length. The separate
-`TraceEvent.nonSyntheticWeight` certificate assigns one to `readWord` and zero
-to the synthetic compatibility marker.
-The canonical trace proves that every emitted event is genuine and no marker is
-present, so certificate weight equals both trace length and modeled cost.
+`TraceEvent.nonSyntheticWeight` certificate assigns one to `readWord`,
+`wordRank`, and `wordSelect`, and zero to the synthetic compatibility marker.
+The construction capstone proves the explicit three-constructor classification
+and absence of the marker, so certificate weight equals both trace length and
+modeled cost. Separately,
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` proves
+that this exact canonical trace emits only `readWord`.
 
 The theorem does not charge controller dispatch, input/register access, option
 tests, arithmetic, branching, decoding, local scanning, candidate merging,

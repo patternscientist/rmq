@@ -650,3 +650,306 @@ boundary. Final-required commands must run on a committed candidate. Any later
 evidence-only commit will preserve the material claim files and will receive
 its own exact-HEAD response attestation; results are not backdated into this
 ledger.
+
+## R1-R4: pin every live readWord-only claim to its actual theorem
+
+Worker: R1-R4
+
+Requested title: `(R1-R4) Pin every live readWord-only claim to its actual theorem`
+
+Exact base: `263d004f11168ef5ed0629b35332b7f4dbccc43c`, the two-parent
+join of rejected R1-R3 candidate
+`bad14d0f1f7561f5f4200c19259a4ae5c8375499` and workflow-governance
+commit `e64b8639551df8a67a1add6c2c711e7f3dcf17b4`.
+
+Branch: `codex/r1-a07-readword-attribution-sync-r4`.
+
+Worktree: `C:\Users\poin\.codex\worktrees\50a4\RMQ`.
+
+The checkout was clean and detached at the exact base before the branch was
+created. Both parents are commits, `HEAD^1` and `HEAD^2` are the two required
+objects in the required order, and governance is in the checkout ancestry.
+The governed skill preflight passed before substantive work with required
+skill `rmq-proof-sprint` and the actual runtime RMQ catalog
+`rmq-audit-prompt`, `rmq-coordinator`, and `rmq-proof-sprint`.
+
+### Frozen R1-R4 target and stop conditions
+
+Named target: repair every registered current document that states the strong
+readWord-only fact without naming the theorem that proves it, and correct every
+nearby attribution to a weaker declaration. The downstream consumer is the
+A07/R1 submission-freeze public-claim synchronization rung; A07 itself remains
+coordinator-open until an independent exact-commit audit.
+
+Hard obligation: each strong reader-facing statement in the seven authorized
+repair paths must visibly name
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` in the
+same reader-facing unit. The generic execution story, the weaker
+three-constructor alias, and the construction capstone must be described only
+by propositions that their checked types actually contain.
+
+Forbidden shortcuts: do not drop the strong fact, move its alias to an
+unrelated inventory, change Lean to make stale prose true, call the weaker
+three-constructor theorem readWord-only, say the capstone type contains the
+strong conjunct, or use a green lexical scan as semantic evidence. No Lean,
+script, policy, matrix, roadmap, historical snapshot, gate, skill, template,
+validator, executable, workflow-decision, payload, store, trace, cost, or
+runtime change is authorized.
+
+Stop conditions: continue until every frozen row closes on one clean committed
+candidate, or stop only for an exact out-of-scope proposition mismatch, a
+formal obstruction, an external-state blocker, or an explicit redirect. A
+commit or green scanner alone is not completion.
+
+Parallelization check: this is one source-attribution join across seven prose
+consumers plus one shared worklog and one decision ledger. The sentence repairs
+depend on one common source-type comparison and the final 18-path reread; there
+is no disjoint write leaf with an independent consumer, so the worker proceeds
+single-threaded.
+
+### Frozen source-type comparison
+
+The strong source theorem and its exact public abbreviation have the following
+universal proposition on the canonical trace object:
+
+```lean
+theorem
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    forall event,
+      event ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace ->
+        event.isReadWord
+
+abbrev RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only
+```
+
+By contrast, the generic execution story's event conjunct is only:
+
+```lean
+forall event,
+  event ∈
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace ->
+    event.isReadWord ∨ event.isWordPrimitive
+```
+
+The weaker source/public compatibility theorem and the construction capstone's
+event conjunct both classify an emitted event by the explicit disjunction:
+
+```lean
+(∃ segment index word?, event = WordRAM.TraceEvent.readWord segment index word?) ∨
+(∃ target limit result, event = WordRAM.TraceEvent.wordRank target limit result) ∨
+(∃ target occurrence result, event = WordRAM.TraceEvent.wordSelect target occurrence result)
+```
+
+The capstone separately contains absence of
+`syntheticCostOnlyPrimitive`, non-synthetic-weight equalities, the bound `207`,
+payload/physical/read-backing facts, and exact answers. It does not contain the
+strong readWord-only conjunct. Likewise,
+`WordRAM.TraceEvent.nonSyntheticWeight` assigns one to `readWord`, `wordRank`,
+and `wordSelect`, and zero to `syntheticCostOnlyPrimitive`; it is a certificate
+weight, not the cost definition and not an execution-vocabulary restriction.
+
+### Seven-path sentence/source comparison before editing
+
+| Authorized repair path | Strong reader-facing unit on the exact base | Source-type comparison and required repair |
+| --- | --- | --- |
+| `artifact/README.md` | The charged-trace bullet says every accepted emitted event is a payload read but names no theorem. | True only by the strong alias above; add that alias beside the bullet without attributing the fact to a generic/capstone theorem. |
+| `docs/digests/PROJECT_DIGESTION_CURRENT.md` | The capstone is introduced as the canonical proposition, then the six-fact list says its construction-facing theorem has “every emitted event is a payload-word read.” | The capstone's own event field is the three-constructor disjunction. Separate the strong alias from the capstone fields, while keeping their same-trace composition explicit. |
+| `docs/PAPER_MAIN_THEOREM.md` | The current-cost paragraph says every actual emitted event is `readWord` but names only the cost theorems nearby. | Add the strong alias in the same paragraph; do not imply the cost equalities prove the event classification. |
+| `docs/PAPER_THEOREM_MAP.md` | The final-trace anchor list omits the strong alias, then says the listed anchors package readWord-only; the later current-trace paragraph repeats the strong fact. | Put the strong alias in the anchor list before that claim and keep generic/weak/capstone anchors scoped to their checked fields. |
+| `docs/TRUST_AUDIT_PACKET.md` | The capstone's checked type is said to package “only genuine `readWord` events.” | The capstone event conjunct permits three constructors. Name the separate strong alias and state that it strengthens the same canonical trace alongside the capstone's actual fields. |
+| `docs/WHAT_IS_PROVED.md` | The generic execution-story row says every emitted event is a payload read; the weaker three-constructor alias row says the current route is read-only, but there is no dedicated strong-alias row. | Describe the generic story only by `isReadWord ∨ isWordPrimitive`, describe the weaker alias only by its explicit disjunction, and add a dedicated strong-alias row for `event.isReadWord`. |
+| `docs/WORD_RAM_REVIEW_PACKET.md` | Item 1 is readWord-only, followed by a sentence saying the construction-facing capstone joins “these facts.” | Identify the strong theorem as the proof of item 1; say the capstone independently joins its own three-constructor/no-synthetic/certificate/cost fields with construction facts, while the separate strong theorem strengthens that same trace. |
+
+### Frozen R1-R4 requirement-to-evidence matrix
+
+These IDs and requirements are frozen before the first reader-facing claim
+edit. Only evidence, outcome, status, or an explicitly approved contract
+amendment may change.
+
+| ID | Exact frozen requirement | Scope | Evidence needed (exact proposition/check) | Named consumer and identity/composition chain | Anti-vacuity challenge attempted and outcome | Evidence obtained | Status / residual gap |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `REQ-R1R4-STRONG-ALIAS-EVERY-SURFACE` | "all seven expected repair paths must visibly name the exact strong public alias beside or in the same reader-facing unit as the strong claim. Merely inserting the alias in an unrelated appendix, footnote, or inventory does not close the row." | Seven authorized current surfaces | Each path names `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` beside a statement equivalent to `event ∈ canonicalTrace -> event.isReadWord`. | Source theorem -> exact headline abbreviation -> each local claim unit -> strict policy/topology -> coordinator exact-commit audit. | Place the alias elsewhere in the file while leaving the claim unit unattributed; policy version 18 is expected to reject the file, and manual unit-level reread must also reject it. | Initial strict scan failed exactly the seven paths, confirming the selector is nonvacuous; no claim edit yet. | Open until seven repairs and final reread/checks. |
+| `REQ-R1R4-NO-WEAK-MISATTRIBUTION` | "expand the actual checked types. The generic execution story and weaker compatibility alias do not themselves state the strong readWord-only proposition. The construction-facing capstone's event conjunct is the explicit three-constructor classification, not readWord-only. Repair sentences that say or imply otherwise. It is acceptable to say the project combines a separate strong theorem with capstone fields only when the attribution boundary is explicit." | Semantic attribution | Strong result is `event.isReadWord`; generic result is `event.isReadWord ∨ event.isWordPrimitive`; weak/capstone result is the explicit readWord/wordRank/wordSelect disjunction. | Exact source declarations -> headline aliases -> seven repaired sentences -> source-directed reread. | Substitute each weaker declaration beside the strong sentence. Direct proposition comparison above shows that none entails the attribution as a field of that declaration; the strong theorem is the required witness. | Exact source propositions frozen above; no prose repair yet. | Open. |
+| `REQ-R1R4-CLOSED-INVENTORY` | "reread all 18 registry-matched paths after editing. Preserve the already-repaired strong identities in README, artifact/CLAIMS, FAMILY_SUMMARY, PAPER_CLAIM_CORRESPONDENCE, and PAPER_MODEL_ADEQUACY. Record every path and disposition in the worklog." | Registry closure | Exact ordered 18-path registry; seven repaired and eleven preserved with sentence-level dispositions. | `CLAIM_DRIFT_POLICY.json.currentFactSurfacePathRegex` -> tracked-path inventory -> per-path source reread -> worklog -> coordinator audit. | Treat no scanner hit as semantic evidence or omit a registered file; the fixed count/order and manual reread reject both. | Exact 18-path list supplied and baseline scanner confirms exactly seven required-attribution failures. | Open until post-edit inventory. |
+| `REQ-R1R4-POLICY-GREEN` | "The governed base's strict scanner must initially fail exactly those seven required-attribution paths. If the initial set differs, stop and report the exact delta before editing." Final-required: "one full `powershell -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1 -Strict` on the unchanged final candidate." | Policy version 18 | Baseline has exactly seven expected failures; final unchanged candidate exits 0 with zero strict failures; policy/scanner files are unchanged. | Seven prose repairs -> existing structured required-attribution rule -> production strict verdict. | A lexical-only repair far from the claim may satisfy presence but fails `REQ-R1R4-STRONG-ALIAS-EVERY-SURFACE`; manual semantics remains independent. | Baseline exited 1 in 104.4 s with exactly the seven expected paths and no delta. | Open until final green strict run. |
+| `REQ-R1R4-WORKLOG-TRUTH` | "Before editing, append an R1-R4 matrix section to `docs/internal/R1_WORKLOG.md` using `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`. Copy the frozen rows verbatim, state the exact proposition/consumer/identity chain, and record the source-type comparison for every repaired sentence. Do not rewrite prior R1-R3 evidence as if that rejected candidate had passed." | Durable evidence ledger | This appended pre-edit matrix, sentence comparison, final 18-path inventory, command ledger, and proof digestion truthfully distinguish baseline, material-candidate, and exact-final evidence. | Frozen prompt/source -> worklog -> candidate report -> coordinator exact-commit audit. | Rewrite R1-R3 closure text, backdate a final result, or claim rejected R1-R3 passed; append-only diff and temporal ledger must reject each. | This R1-R4 section is the first edit; prior R1-R3 evidence is unchanged and remains explicitly rejected by the new context. | Open until final ledger/digestion. |
+| `COMPLETE-R1R4-COMMITTED-EVIDENCE` | "Work until all frozen R1-R4 rows are satisfied on one committed clean candidate." "A commit, green scan, or candid caveat is only a checkpoint. Reread every sentence against the source proposition after the scanner is green." | Candidate completeness | One clean committed candidate contains only intended authorized paths, completed matrix/inventory/digestion, and final check evidence without an unmet row. | Frozen matrix -> repairs -> checks -> commit -> exact final candidate -> coordinator audit request. | Stop after a material commit or scanner pass with a false nearby attribution; source-directed self-audit must reject it. | None yet. | Open. |
+| `INV-R1R3-FOUR-REPAIRED-SURFACES` | Preserve the rejected R1-R3 candidate's four repaired current surfaces and their strong identities: `README.md`, `artifact/CLAIMS.md`, `docs/FAMILY_SUMMARY.md`, and `docs/PAPER_CLAIM_CORRESPONDENCE.md`. | Inherited R1-R3 material | These four paths remain byte-unchanged and retain the strong public alias beside the strong fact. | R1-R3 material parent -> join base -> unchanged preserved paths -> 18-path reread. | Revert any of the four to generic/three-constructor wording or remove the strong alias; path diff plus reread rejects it. | Exact base contains the four repairs; none is writable in R1-R4. | Open until final preservation audit. |
+| `INV-R1R2-FOUR-CURRENT-FACTS` | "preserve modeled cost `207 = 2*35 + (2*11 + 2*37 + 30) + 11`; 22 physical reviewer sources over logical segments 0..22 with segments 0 and 19 sharing BP; live segment 21 and rejected fresh segment 23; global trace positions 0 and 15 produced by instruction positions 0 and 1." | Inherited current facts | Final repaired prose and preserved paths retain all literals and category distinctions. | Accepted R1-R2 facts -> exact base -> docs-only attribution repair -> current surfaces. | Change a number, call 23 physical sources, swap live/fresh segments, or conflate global/instruction positions; focused searches and reread reject each. | Base facts reread before editing; no numeric/source repair planned. | Open until final reread. |
+| `INV-R1R1-SEMANTIC-PRESERVATION` | "no Lean, theorem, validator, payload, trace, store, cost, fixture, or executable behavior changes." | Inherited semantic tree | Exact changed-path inventory contains only authorized docs; all semantic/executable paths equal base. | Accepted R1-R1 semantic layer -> unchanged source objects -> corrected documentation attribution. | Any `RMQ/`, script, validator, policy, gate, or executable path in the range fails. | No semantic path changed before freeze. | Open until final scope audit. |
+| `INV-HISTORICAL-PRESERVATION` | "do not modernize dated digests, prior audit reports, old matrices, or earlier decision bodies. New design evidence must be append-only." | Inherited history | Only the new R1-R4 worklog and new DD entry append evidence; prior bodies and historical paths remain unchanged. | Frozen history -> append-only current evidence -> candidate diff. | Edit R1-R3 closure text or a dated digest to make search green; range audit rejects it. | Prior worklog and decision bodies remain unchanged before freeze. | Open until final diff audit. |
+| `INV-CATEGORY-SEPARATION` | "keep payload bits, proof-only data, modeled ticks, trace positions, instruction positions, physical sources, logical segments, allocated cells, Lean runtime, and measured performance distinct." | Inherited model/public categories | Repairs alter theorem attribution only and preserve all category boundaries, including `nonSyntheticWeight` versus `TraceResult.toCosted`. | Source definitions/facts -> repaired reader units -> final semantic reread. | Call weight the cost definition, call 207 runtime, equate 22 sources with 23 logical segments, or equate trace positions with instructions; searches/reread reject each. | Exact source distinction frozen above. | Open until final reread. |
+| `CHK-R1R4-STRICT-CLAIMS` | `powershell -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1 -Strict` | Final required | Exit 0 once on the unchanged final candidate, with zero strict failures. | Repaired seven paths -> unchanged production scanner/policy -> final verdict. | A green scanner is not semantic proof; `REQ-R1R4-NO-WEAK-MISATTRIBUTION` requires independent source comparison. | Not run on final candidate. | Open. |
+| `CHK-R1R4-TOPOLOGY` | `powershell -ExecutionPolicy Bypass -File scripts\paper_topology_lint.ps1` | Final required | Exit 0 after all theorem-name edits; conditional focused build only if missing fresh-worktree artifacts are diagnosed. | Documentary `RMQ.Headlines.*` identifiers -> generated Lean consumers -> headline/paper imports. | A live name beside a false attribution can still resolve; source-directed reread is separate. | Not run on candidate. | Open. |
+| `CHK-R1R4-DIFF` | `git diff --check`; `git diff --check 263d004f11168ef5ed0629b35332b7f4dbccc43c..HEAD`; exact changed-path inventory; clean-tree check. | Development/final | Every command exits 0; candidate range is within the nine writable paths and final tree is clean on the exact branch/commit. | Authorized edits -> committed range -> exact final candidate -> coordinator audit. | A clean worktree without committed-range whitespace/scope certification fails. | Not run on candidate. | Open. |
+
+`REPLAY-EXACT-REGISTRY` is represented by the exact ordered 18-path inventory
+and seven-path repair subset; no replay harness is introduced.
+`REPLAY-SELECTOR-NONVACUITY` is covered by focused scans that must name and scan
+each exact repair path; unknown or nonexistent paths are not evidence.
+`REPLAY-SUBPROCESS-DEADLINE` is not applicable unless topology needs a Lean
+prerequisite; if it does, the prompt's observed 175-second focused-build timing
+governs a positive cold-cache timeout and owned-process inspection.
+
+Explicitly deferred and non-blocking: coordinator acceptance/integration,
+broader submission freeze, any A1/V1 launch, and roadmap-node closure.
+
+### R1-R4 verification coverage plan and pre-edit command ledger
+
+| Command | Role and covered rows | Unique failure mode | Exact tree/runtime/timeout plan | Pre-edit outcome |
+| --- | --- | --- | --- | --- |
+| `scripts/project_skill_preflight.ps1` at governance `e64b863...` | Preflight; all rows | Missing/stale canonical or runtime role skill, or ancestry mismatch | Exact clean base; 120 s timeout | Exit 0 in 21.5 s; expected/checkout/working/runtime catalogs all contained the three canonical RMQ skills and required `rmq-proof-sprint`. |
+| Full strict claim scan before editing | Required baseline; `REQ-R1R4-POLICY-GREEN`, selector nonvacuity | Wrong required-attribution repair set | Exact clean base; 180 s timeout | Exit 1 in 104.4 s with exactly the seven expected failures and no missing/extra path. |
+| Exact seven focused strict scans after each repair cluster | Development; strong-alias/policy rows | A requested path remains unattributed or an invocation did not scan that path | Dirty development tree; 180 s per invocation | Pending. |
+| Source-directed theorem `rg` and manual seven-/18-path reread | Development/final semantic audit; strong/weak/inventory/category rows | Semantically false attribution despite lexical policy success | Dirty development tree, then committed candidate; 120 s searches | Source propositions and pre-edit seven mismatches are frozen above; final reread pending. |
+| `git diff --check` | Development/final; `CHK-R1R4-DIFF` | Working-tree whitespace defects | After each cluster; 60 s | Pending. |
+| One full strict claim scan | Final; `CHK-R1R4-STRICT-CLAIMS` | Production required-attribution/policy failure | Unchanged final candidate; observed baseline 104.4 s, timeout 180 s | Pending. |
+| Paper topology lint | Final; `CHK-R1R4-TOPOLOGY` | Dead/mis-scoped documentary public alias | After all name edits; prior timing about 214 s, timeout 360 s | Pending. |
+| Strict design-decision check with exact base | Final; worklog/decision discipline | Substantive public-attribution change lacks append-only decision evidence | Final material candidate; 60 s | Pending. |
+| Changed-path inventory, branch/HEAD/clean checks, and both diff checks | Final; completeness/invariants/diff rows | Scope expansion, dirty state, or committed whitespace defect | Exact candidate; 120 s | Pending. |
+
+No aggregate gate, root build, validator, cost harness, axiom inventory, policy
+regression, or policy mutation suite is planned: this task cannot change Lean,
+executables, policy, scanners, or those transitive inputs, and governance
+`e64b863...` already carries the green production policy mutation suite.
+
+### R1-R4 post-repair 18-path disposition inventory
+
+The following is the exact ordered registry from
+`docs/internal/CLAIM_DRIFT_POLICY.json.currentFactSurfacePathRegex`. Every path
+was reread after the seven repairs against the strong, generic, weak, capstone,
+and certificate propositions frozen above. A no-hit search or green scanner
+was not used as a substitute for the sentence-level dispositions.
+
+| Registered current path | Final source-directed disposition on the material tree |
+| --- | --- |
+| `artifact/CLAIMS.md` | **Preserve.** Rows 73 and 76 already name the strong headline/source theorem beside the universal readWord-only fact. The generic story is explicitly weaker support, and the capstone row states only its actual construction/certificate fields. |
+| `artifact/README.md` | **Repaired.** The charged-trace bullet now names `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` immediately before saying every accepted emitted event is a payload read. |
+| `docs/digests/PROJECT_DIGESTION_CURRENT.md` | **Repaired.** The capstone fields and the separate strong theorem are distinguished twice. The digest says the capstone has the explicit three-constructor field while the strong theorem proves readWord-only on the exact same trace; all four `nonSyntheticWeight` cases are stated accurately. |
+| `docs/FAMILY_SUMMARY.md` | **Preserve.** It already separates all four weight-definition cases from execution, names the strong alias for readWord-only, and calls the generic execution story weaker support. |
+| `docs/internal/CLAIM_DRIFT_POLICY.md` | **Preserve.** This is the policy explanation, not a theorem map. It records the current route fact and then states the structured requirement that public claim surfaces name the exact strong alias; it does not attach the fact to a weaker declaration. |
+| `docs/internal/RMQ_FINAL_ROADMAP.md` | **Preserve.** Its U3 planning/status paragraph describes the source-level actual-event bridge and cost chronology rather than assigning readWord-only to a named weaker public declaration. The structured public-attribution `pathRegex` deliberately excludes this internal roadmap. |
+| `docs/PAPER_CLAIM_CORRESPONDENCE.md` | **Preserve.** Rows 7, 63, and 70 already place the strong headline/source theorem beside the strong fact and explicitly label generic read-or-primitive support weaker; the construction capstone row lists only actual capstone fields. |
+| `docs/PAPER_MAIN_THEOREM.md` | **Repaired.** The current-cost paragraph now names the strong alias beside the readWord-only sentence, separately from the two cost theorems. The capstone map bullet remains accurately limited to its construction/certificate fields. |
+| `docs/PAPER_MODEL_ADEQUACY.md` | **Preserve.** It already expands the universal source proposition, names the strong public alias, distinguishes the weaker three-constructor theorem, and says the capstone event field is the weaker classification rather than readWord-only. |
+| `docs/PAPER_RELATED_WORK.md` | **Preserve.** It discusses explicit reads, no-synthetic traces, payload backing, and the `207` model boundary without asserting readWord-only or attributing it to a weaker theorem. |
+| `docs/PAPER_THEOREM_MAP.md` | **Repaired.** The strong alias is now in the final-trace anchor list before the collective readWord-only description and is repeated beside the later strong statement. The capstone paragraph remains scoped to actual capstone fields. |
+| `docs/PUBLICATION_STRATEGY.md` | **Preserve.** It discusses the anti-oracle method, event classification generically, the no-synthetic certificate, and `207`; it makes no readWord-only theorem attribution. |
+| `docs/RELATED_WORK_AND_LIMITATIONS.md` | **Preserve.** It states no-synthetic/read-backing and the charged-trace/runtime boundary, but no strong readWord-only theorem claim. |
+| `docs/ROADMAP.md` | **Preserve.** Its roadmap-status paragraph reports the source-level actual-event bridge and later obligations, without naming a weaker public alias or capstone as the carrier. It is unchanged under the governed seven-path repair subset. |
+| `docs/TRUST_AUDIT_PACKET.md` | **Repaired.** The capstone bullet now states its explicit three-constructor field; a separate local anchor and sentence give the universal readWord-only theorem on the same trace. The cost section states all four weight cases and repeats the attribution boundary. |
+| `docs/WHAT_IS_PROVED.md` | **Repaired.** A dedicated strong-alias row gives `event.isReadWord`; the generic story row gives only `isReadWord ∨ isWordPrimitive`; the compatibility row gives only the explicit three-constructor disjunction. |
+| `docs/WORD_RAM_REVIEW_PACKET.md` | **Repaired.** The opening and cost item 1 name the strong alias. The capstone sentence says it joins items 2–5 plus its own three-constructor field, while the separate strong theorem supplies item 1 on the exact same trace. |
+| `README.md` | **Preserve.** The theorem table and overview already name the strong alias beside the strong fact and label the generic story weaker support. |
+
+Inventory totals: 18 registered paths, exactly seven repaired paths, and eleven
+preserved paths. The exact seven are the frozen expected subset; there is no
+missing, duplicated, or extra repair-path claim.
+
+### R1-R4 adversarial source-attribution review
+
+- **Unrelated alias insertion:** every repaired strong claim unit was read in
+  context. The alias is in the charged-trace bullet/paragraph/list item/table
+  row or immediately introduced local anchor; none relies on an appendix or
+  unrelated inventory occurrence.
+- **Generic-story substitution:** `docs/WHAT_IS_PROVED.md` now quotes the
+  generic event field as `isReadWord ∨ isWordPrimitive` and expressly says it
+  is not readWord-only. Preserved README, artifact, family, and correspondence
+  surfaces label the generic story weaker support.
+- **Compatibility substitution:** the weaker alias is described only by the
+  existential `readWord`/`wordRank`/`wordSelect` constructor disjunction and is
+  expressly not called the source of readWord-only.
+- **Capstone field inflation:** the digest, trust packet, and Word-RAM packet
+  say that the capstone's own event field is the three-constructor
+  classification. They join the separate strong theorem only by equality of
+  the exact canonical trace object, not by claiming the capstone contains the
+  stronger conjunct.
+- **Certificate/execution conflation:** the repaired digest and trust packet
+  state `nonSyntheticWeight` on all four constructors. Weight one for three
+  genuine constructors plus weight zero for the synthetic marker is kept
+  distinct from `TraceResult.toCosted = trace.length` and from the separate
+  readWord-only execution theorem.
+- **Inherited-fact mutation:** the diff retains `207 = 2*35 + (2*11 + 2*37 +
+  30) + 11`; 22 physical sources over logical segments `0..22` with shared
+  `0`/`19`; live `21` and fresh rejected `23`; and global positions `0`/`15`
+  from instruction positions `0`/`1`. No source or executable path changed.
+
+### R1-R4 pre-commit evidence register
+
+This register updates the frozen scheduling snapshot without claiming final
+certification. It covers the repaired dirty material tree; final-required
+commands still must run on a committed candidate.
+
+| ID | Evidence on the repaired material tree | Current status |
+| --- | --- | --- |
+| `REQ-R1R4-STRONG-ALIAS-EVERY-SURFACE` | All seven repaired reader units name the exact strong public alias locally. Seven separate focused strict invocations each scanned its requested path and reported the required attribution allowed with zero strict failures. | Material content closed; committed/final certification pending. |
+| `REQ-R1R4-NO-WEAK-MISATTRIBUTION` | The seven-path diff and 18-path reread compare every repaired sentence with the exact propositions above. Generic = `isReadWord ∨ isWordPrimitive`; weak/capstone event = explicit three-constructor disjunction; strong = `event.isReadWord`. | Material content closed; coordinator reconstruction pending. |
+| `REQ-R1R4-CLOSED-INVENTORY` | Exact ordered inventory above has 18 paths, seven repairs, and eleven preserves. The five specifically protected strong-identity paths remain unchanged and accurate. | Material content closed. |
+| `REQ-R1R4-POLICY-GREEN` | Baseline exact-seven failure and seven focused post-repair passes are recorded. | Open only for one full final strict scan. |
+| `REQ-R1R4-WORKLOG-TRUTH` | R1-R4 was appended before claim editing; it contains the frozen types/matrix, sentence comparison, exact inventory, adversarial review, and this temporal boundary. Prior R1-R3 evidence was not rewritten or laundered. | Open only for final command evidence and committed candidate identity. |
+| `COMPLETE-R1R4-COMMITTED-EVIDENCE` | Exactly nine authorized files are changed and no generated artifact exists. | Open until commit and exact final checks. |
+| `INV-R1R3-FOUR-REPAIRED-SURFACES` | README, artifact claims, family summary, and claim correspondence are unchanged and retain their strong theorem attribution. | Material preservation closed. |
+| `INV-R1R2-FOUR-CURRENT-FACTS` | Source-directed reread and diff preserve all four frozen fact clusters and their category boundaries. | Material preservation closed. |
+| `INV-R1R1-SEMANTIC-PRESERVATION` | Changed paths are exactly the seven docs, R1 worklog, and design decisions; no Lean/script/policy/validator/payload/store/trace/cost/fixture/executable path changed. | Material preservation closed. |
+| `INV-HISTORICAL-PRESERVATION` | Only new R1-R4 worklog and DD-20260719-003 evidence was appended; prior worklog/decision bodies and all dated/historical paths are unchanged. | Material preservation closed. |
+| `INV-CATEGORY-SEPARATION` | The repaired prose keeps certificate weight, cost, trace events, payload/physical storage, modeled ticks, runtime, sources/segments, and coordinate systems distinct. | Material content closed. |
+| `CHK-R1R4-STRICT-CLAIMS` | Seven focused development scans passed; full final scan not yet run. | Open. |
+| `CHK-R1R4-TOPOLOGY` | Not yet run after theorem-name edits. | Open. |
+| `CHK-R1R4-DIFF` | Working-tree `git diff --check` exited 0; exact changed-path inventory is the nine authorized paths. | Open for committed-range and clean-tree forms. |
+
+### R1-R4 development command outcomes
+
+| Command | Exact dirty tree | Duration / exit / result |
+| --- | --- | --- |
+| Focused strict scan `-Path artifact/README.md` | Seven repaired docs plus worklog/DD | 34.7 s, exit 0, 7 hits and zero strict failures; required attribution allowed at line 168. |
+| Focused strict scan `-Path docs/digests/PROJECT_DIGESTION_CURRENT.md` | Same repaired tree | 33.2 s, exit 0, 3 hits and zero strict failures; required attribution allowed at line 18. |
+| Focused strict scan `-Path docs/PAPER_MAIN_THEOREM.md` | Same repaired tree | 32.3 s, exit 0, 7 hits and zero strict failures; required attribution allowed at line 92. |
+| Focused strict scan `-Path docs/PAPER_THEOREM_MAP.md` | Same repaired tree | 30.9 s, exit 0, 7 hits and zero strict failures; required attribution allowed at line 138. |
+| Focused strict scan `-Path docs/TRUST_AUDIT_PACKET.md` | Same repaired tree | 29.3 s, exit 0, 3 hits and zero strict failures. The unit-level source reread, not a required-attribution hit, verifies the local strong/capstone boundary. |
+| Focused strict scan `-Path docs/WHAT_IS_PROVED.md` | Same repaired tree | 34.9 s, exit 0, 18 hits and zero strict failures; required attribution allowed at line 75. |
+| Focused strict scan `-Path docs/WORD_RAM_REVIEW_PACKET.md` | Same repaired tree | 28.2 s, exit 0, 2 hits and zero strict failures; required attribution allowed at line 16. |
+| `git diff --check` | Same repaired tree | 0.9 s, exit 0. Line-ending conversion warnings are advisory; no whitespace error was reported. |
+| `design_decision_check.ps1 -Strict -Base 263d004f...` | Same repaired tree with DD-20260719-003 | 6.1 s, exit 0, 9 changed files checked. |
+| Exact changed-path inventory | Same repaired tree | 4.4 s, exit 0, exactly the nine authorized paths. |
+
+### R1-R4 proof digestion before certification
+
+Conceptual change: public theorem attribution now follows proposition strength.
+The strong universal event theorem, generic execution story, weaker
+three-constructor theorem, construction capstone, and certificate definition
+remain separate declarations with separate reader-facing jobs.
+
+Plain-English meaning: the accepted canonical query really emits only payload
+reads, but that fact comes from one specific theorem. The construction capstone
+still joins space, physical backing, certificate accounting, cost, and answers;
+its own event field merely permits the three genuine constructors. Readers can
+now tell which theorem proves which sentence without inferring a stronger
+conjunct from a nearby name.
+
+Live assumptions: the strong theorem is universal over every shape, pair of
+query endpoints, and event in
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult shape left right`.
+It concerns the explicit charged-event trace only. Controller work remains
+uncharged; `207` is modeled cost rather than Lean runtime; certificate weight
+is not cost by definition; payload bits, physical/allocated words, proof data,
+sources/segments, and trace/instruction positions remain distinct.
+
+Downstream consumers: all seven repaired current surfaces now point to
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`. The
+generic story remains useful for trace/store refinement, the capstone for the
+construction join, and the weaker alias for compatibility classification. A07
+submission-freeze review can now reconstruct every strong sentence from the
+actual carrying theorem.
+
+Strongest skeptical reviewer question: does any current claim still invite the
+reader to believe that the generic execution story or construction capstone
+contains the readWord-only conjunct merely because all declarations concern
+the same trace? The exact type comparison, seven local attribution units, and
+18-path sentence reread answer no on the material tree; production strict and
+topology checks plus coordinator exact-commit reconstruction remain the final
+certification boundary.

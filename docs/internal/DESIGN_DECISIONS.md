@@ -3679,3 +3679,55 @@ Consequences and evidence:
 - Source-directed reread, production strict claim scan, topology lint, strict
   decision check, governance byte identity, and committed-range checks are the
   required documentary evidence. No workflow decision changes.
+
+## DD-20260719-003: make strong trace claims name their exact carrying theorem (R1-R4)
+
+Status: Proposed repair record; coordinator exact-commit audit and acceptance
+remain separate.
+
+Date: 2026-07-19
+
+Context: policy version 18 exposed a semantic attribution gap left by the
+rejected R1-R3 candidate. Seven registered current surfaces stated the true
+readWord-only project fact without naming the theorem that carries it. Five
+also placed the fact beside a declaration whose checked type is weaker: the
+generic execution story proves only `isReadWord ∨ isWordPrimitive`, while the
+compatibility alias and construction capstone event field prove the explicit
+`readWord`/`wordRank`/`wordSelect` disjunction.
+
+Decision:
+
+Every current reader-facing readWord-only statement must name
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` in the
+same unit. Keep the generic story, compatibility theorem, and construction
+capstone visible where useful, but describe only their checked propositions.
+When a sentence combines the strong event fact with capstone fields, say
+explicitly that a separate theorem strengthens the exact same canonical trace.
+
+Rejected alternatives:
+
+- Insert the strong alias in an unrelated inventory while leaving the local
+  attribution ambiguous.
+- Treat truth of the strong project-level theorem as proof that a nearby
+  weaker declaration contains that conjunct.
+- Remove the strong claim merely to satisfy a lexical policy.
+- Strengthen or wrap the Lean declarations, even though the required strong
+  theorem already exists on the exact trace object.
+- Delete the weaker declarations from documentation; they remain accurate
+  compatibility and construction evidence when properly scoped.
+
+Consequences and evidence:
+
+- Seven current surfaces name the strong alias locally and distinguish its
+  conclusion from the generic disjunction and capstone/compatibility
+  three-constructor fields.
+- The capstone remains the construction-facing join for payload, physical
+  erasure/backing, certificate equalities, cost, and exactness; readWord-only is
+  a separate theorem over the same trace.
+- `TraceEvent.nonSyntheticWeight` remains a certificate assigning one to all
+  three genuine constructors and zero to the synthetic marker; it is neither
+  the cost definition nor a readWord-only restriction.
+- The Lean tree, public declarations, policy, scanners, payload/store/trace,
+  modeled `207` algebra, and runtime behavior are unchanged. The exact
+  18-surface reread, strict policy scan, topology lint, strict decision check,
+  and committed-range audit are the acceptance evidence.

@@ -163,9 +163,11 @@ things:
 - a linear reviewer capacity and query-independent logarithmic word width
   bounding physical words, physical addresses, and primitive operands/results;
 - the checked principled all-size charged-trace query cap
-  `207 = 2*35 + (2*11 + 2*37 + 30) + 11`: every accepted emitted event is a
-  payload read, and the no-synthetic certificate equals both emitted trace
-  length and the same execution's modeled cost; and
+  `207 = 2*35 + (2*11 + 2*37 + 30) + 11`:
+  `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`
+  proves every accepted emitted event is a payload read, and the
+  no-synthetic certificate equals both emitted trace length and the same
+  execution's modeled cost; and
 - an information-theoretic Catalan/Cartesian-shape RMQ lower bound.
 
 Earlier cost and dispatch theorems remain available only through the explicit

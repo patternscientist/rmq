@@ -87,10 +87,12 @@ The canonical all-size reviewer trace has the principled charged-trace bound
 `207`, proved by
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`
 and `SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`.
-Its algebra is `2*35 + (2*11 + 2*37 + 30) + 11 = 207`. Every actual emitted
-event is proved to be `readWord`; the trace has no synthetic marker, so
-the `WordRAM.TraceEvent.nonSyntheticWeight` certificate sum equals both emitted
-trace length and the `Costed` cost of the same execution and is at most `207`.
+Its algebra is `2*35 + (2*11 + 2*37 + 30) + 11 = 207`.
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` proves
+that every actual emitted event is `readWord`; the trace has no synthetic
+marker, so the `WordRAM.TraceEvent.nonSyntheticWeight` certificate sum equals
+both emitted trace length and the `Costed` cost of the same execution and is at
+most `207`.
 `TraceResult.toCosted` itself charges trace length and would count a synthetic
 compatibility marker if one were present.
 Historical cost and execution profiles remain kernel-checked through
