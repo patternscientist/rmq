@@ -6909,3 +6909,148 @@ changes and `invalidExitBlock` moves with it; the first theorem above is
 stated as an executed equality precisely so that the coincidence cannot drift
 silently, and it will break the build when the stage is added — which is the
 intended behaviour, not a regression.
+
+## DD-20260719-180 — the output stage, and why it is not "write `regOut` and halt"
+
+**Status.** BUILT, E1-LaneA5. Full `lake build RMQ` green.
+Resolves the defect DD-20260719-162 pinned.
+
+**THE REPAIR.** `wholeQueryOutputStage` (`E1WholeQueryProgram.lean`), 64
+instructions, hosted at the close/LCA leg's own exit `5580`:
+
+    5580   rank setup      2    rPos := fRes + 1
+    5582   rank leg       60    `rankCloseBlock` at the canonical rank data
+    5642   packet write    2    regOut := rVal ; halt
+    5644   `invalidExitBlock`, one past the halt
+
+The repaired valid path is 5636 instructions, so `invalidExitBlock` moves from
+`5580` to `5644` and the coincidence is gone.
+
+**DD-20260719-162 UNDER-SPECIFIED THE STAGE, AND THE CORRECTION IS THE WHOLE
+POINT.** That entry called for a stage that "decodes `fRes` into `regOut`'s
+packet and halts". That stage would have halted at the right address carrying
+the WRONG NUMBER. The route's `.full` value is
+`some ((rank … (answerClose + 1)).value - 1)`
+(`wholeQueryBranchValue`, `E1RouteDecomposition.lean:330`) — there is a RANK
+LEG between the close/LCA leg's answer and the output packet. `fRes` is a
+close POSITION; the answer is an INDEX. A four-instruction output stage would
+have produced a program that halts, answers `some`, passes every layout check,
+and is wrong — the same defect class as the three address coincidences, one
+level up, and invisible to exactly the same checks.
+
+**`regOut := rVal` CARRIES NO SHIFT INSTRUCTION, AND THAT IS DERIVED.** The
+packet convention is `decodePacket (v + 1) = some v` and the route's value is
+`rank.value - 1`. The two shifts cancel, so the register to write is the rank
+value itself. No increment or decrement appears in the stage. This is a
+consequence of the two conventions agreeing, not a runtime coincidence.
+
+## DD-20260719-181 — a premise unsatisfiable at its intended instantiation
+
+**Status.** FIXED by generalisation, E1-LaneA5. No proof change.
+
+`wholeQuerySelectPrefix_runsTo` (`E1WholeQueryProgram.lean`) took
+`hguard : HostedAt program 0 (guardBlock n (8 + (813 : Nat)))` — the guard with
+branch target `821`. `programSkeleton` builds its guard as
+`guardBlock n (8 + validPath.length)` (`E1QueryProgram.lean:136`), which for
+the repaired path is `guardBlock n 5644`. **No skeleton hosting any valid path
+other than the bare select prefix can satisfy that premise.** It is the rule-1
+failure: an OWED premise that owes a witness at the intended instantiation and
+has none.
+
+`guard_accept_of_valid` (`E1QueryProgram.lean:608`) was already universally
+quantified in `invalidBase`, because on the ACCEPTING path neither branch is
+taken and the target is never read. So the specialisation bought nothing and
+cost the composition. Generalised; every downstream proof unchanged.
+
+**Why it is recorded rather than quietly fixed.** It would have surfaced as a
+hosting mismatch at the guard — arbitrarily far from the layout decision that
+caused it. Same failure mode as the address coincidences: a number written
+down once, correct in the context it was written in, silently wrong one layer
+up.
+
+## DD-20260719-182 — a docstring citing a lemma that was never written
+
+**Status.** Lemma SUPPLIED, E1-LaneA5.
+
+`lcaLeg_of_sameBlock`'s docstring (`E1WholeQueryLcaLeg.lean`) said the two
+sides agree "modulo the rank-seed argument, which `lcaLeg_sameBlock_rankSeed_eq`
+below identifies". Grepped the whole tree: **the name occurred exactly once —
+in that sentence.** There was no lemma.
+
+The identification is real: the arm lemmas hand the close/LCA arm the seed
+`concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore shape store
+rankBase`, while every machine-side arm theorem produces
+`concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape`, and at the
+global read store these are the same function. Now supplied, as a FUNCTION
+equality rather than pointwise, because the seed enters the arm partially
+applied and a pointwise lemma could not be rewritten under it.
+
+Both rewrites are pre-existing theorems
+(`SuccinctFinalStoreParam.lean:473`, `SuccinctFinalRAM.lean:1550`); nothing is
+reconciled here that was not already reconciled.
+
+## DD-20260719-183 — the repair confirmed by EXECUTION, not by layout
+
+**Status.** BUILT, E1-LaneA5.
+
+The lane's brief was explicit that a layout argument is not evidence, three
+address coincidences over. So the repair is confirmed at three levels, and the
+third subsumes the first two:
+
+1. **Addresses.** `wholeQueryValidPath_exit_is_not_invalidExit` — `5580` against
+   `5644`.
+2. **Instruction content.** `wholeQueryProgram_at_closeLcaExit_is_not_noneWriter`
+   — the program holds `.const rPos 1` at `5580`, not `invalidExitBlock`'s
+   first instruction. An address argument alone does not settle this: two
+   different blocks can begin at two different addresses and both be `none`
+   writers.
+3. **Execution.** `wholeQueryValidPath_does_not_reach_noneWriter` — from `5580`
+   the program RUNS to a halted state at pc `5643`. `RunsTo` is exact-fuel
+   (`E1MachineCalculus.lean:96`), so every step is enumerated and none is at
+   `5644`.
+
+**And end to end**: `wholeQueryProgram_runsTo_sameBlock` runs the WHOLE query —
+guard, both selects, join, close/LCA same-block arm, rank leg, halt — as one
+`RunsTo` from `initialState left right` to `⟨regsF, 5643, true⟩`, emitting
+positionally the concatenation of the four legs' route receipts, with the rank
+leg's value in `regOut`. Universally quantified in shape, `n` and the range.
+This derivation could not have been written under the old layout at all.
+
+All three are retained. Each fails differently under a future layout drift,
+and the campaign's experience is that the check which happens to survive a
+refactor is the one that catches the next defect.
+
+## DD-20260719-184 — the `none` branches: the block's blindness is NARROWER than the fixture's
+
+**Status.** Both branches EXECUTED against the route's own objects, E1-LaneA5.
+The category-accounting blind spot is UNCHANGED and still owed.
+
+`wholeQueryProgram_runsTo_leftSelectNone` and `_rightSelectNone` execute the
+two select-miss branches to a halted state at `5645` with
+`decodePacket regOut = wholeQueryBranchValue shape …` and receipt
+`wholeQueryBranchTrace shape left right …` on the nose. Neither needs anything
+from the interior trace ladder: the close/LCA and rank legs do not appear in
+their receipts (`wholeQueryBranchTrace_selectNone_needs_no_swap`,
+`E1WholeQueryObjects.lean:169`).
+
+**WHERE THE DISCRIMINATION COMES FROM, AND WHERE IT DOES NOT.** The value
+clause degenerates: both branches answer `none`, so `none = none` rejects no
+impostor. What is NOT degenerate is that the receipt equality is POSITIONAL on
+the WHOLE receipt and pinned to exactly `selL ++ selR` with nothing appended,
+while the code the machine skips on these branches is `closeLcaProgramAt` —
+4753 instructions whose arms perform memory reads on every path. An impostor
+that ran it would emit those reads.
+
+**So at the REAL BLOCK the receipt is NOT blind to a spurious close/LCA leg.**
+This is strictly NARROWER blindness than the fixture's: at `lcaNone_impostor`
+(`E1WholeQueryCats.lean`) the skipped stage is `fixtureStageCats`, which is
+READ-FREE, so appending it changes the receipt by `t ++ [] = t` and the
+receipt is formally powerless. **The fixture's blindness is WIDER; the block's
+is narrower.** A program-level discriminator must therefore not inherit the
+fixture's statement, which concedes more than the block has to concede.
+
+Governing rule, confirmed at the block: a receipt's power over a skipped-code
+defect is exactly whether the skipped code reads.
+
+**STILL OWED.** Category accounting has no discriminator anywhere in the
+validator, and this lane did not change that.
