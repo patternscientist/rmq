@@ -6954,3 +6954,240 @@ All file:line verified at `d82558e`.
    reason, check whether it is the ONLY reason -- and when a later
    instruction CORRECTS an earlier one, the correction is the thing to
    build to.
+
+## M3d-22 (worker E1-R5e): Task Zero's premise was false, and the tree contained the disproof; the min-candidate leg is composed
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, from HEAD
+`88f9605` to `109eb67`.  Green.
+
+MISSION ITEM 1 IS DONE, both halves.  Items 2-6 are UNBUILT.  This is the
+seventeenth session to land one milestone green rather than start a second
+it could not finish.
+
+### 1. TASK ZERO: THE FACT I WAS SENT TO PROVE IS FALSE
+
+The delegation stated that composing the four `geomCell_*_eq_routeDecode`
+bridges with the min-candidate consumer's `none` arm needs a
+"`geomCell = 0` at invalid indices" fact, absent from the tree, and told
+me to budget for proving it.  Rule 4 says grep before acting.  Two
+findings, both checked at source rather than taken on report:
+
+FIRST, THE FACT IS NOT NEEDED.  `geomCell_eq_routeDecode` (`:674`) takes
+only `hcap` and `hexact`, and `hexact` constrains NON-FINAL chunks:
+`forall j, j + 1 < chunkIters ... i -> ...`.  Out of range
+`chunkIters entriesLen chunkCount i = 1` (`chunkIters`,
+`E1InteriorChunkFold.lean:135`), so `j + 1 < 1` is uninhabited and the
+premise is VACUOUS.  The generic bridge therefore applies at invalid
+indices with no store fact at all.
+
+SECOND, THE FACT IS FALSE.  `stageCell`
+(`E1InteriorSummaryGroup.lean:221`) is `0` out of range only when
+`chunkBad store segment deadAddress 1 <> 0` -- i.e. only when the dead
+address is unreadable IN THE STORE.  `chunkFoldWitness_path_dead`
+(`E1InteriorChunkFold.lean:1947`), an `rfl`-checked theorem PREDATING
+this session, runs the real fold at index `5` past `entriesLen = 3` and
+leaves `cOut = 2`, i.e. `some 1`, NOT `0` -- because `witnessStore` holds
+a word at the dead address `99`.  Whoever took the delegated route would
+have spent the session trying to prove something false of that store, and
+the counterexample was already in the file they would have been editing.
+
+So the asymmetry the predecessor flagged for the successor to budget for
+does not exist to be budgeted for.  The four bridges are now
+UNCONDITIONAL IN THE INDEX (`:737`, `:753`, `:773`, `:789`); the `hvalid`
+hypothesis is GONE.  This is a strengthening -- a hypothesis removed, no
+statement narrowed -- and the four had no callers, so nothing broke.
+
+Recorded at DD-20260719-016.  New: `chunkIters_of_invalid`
+(`E1InteriorChunkFold.lean:1787`), the complement of `chunkIters_pos`
+(`:1767`), and `geomCell_eq_routeDecode_of_invalid`
+(`E1InteriorSummaryGroup.lean:717`).
+
+### 2. THE COMPOSITION (mission item 1, second half)
+
+`summaryMinCandidate_runsTo` (`E1InteriorMinCandidate.lean:924`): the
+summary group followed by the consumer, `156 + 21 = 177` instructions,
+exit `Q + 177`.  Receipt is the group's four route event lists in the
+route's bind order and NOTHING ELSE -- the consumer is read-free, so
+composition adds no event.  Category log is the group's followed by
+`minCandidateCats`, whose arm is selected by the ROUTE's own summary
+being `some`.  NO VALIDITY HYPOTHESIS AND NO STORE HYPOTHESIS.  That is
+the whole point of the unconditional bridges: the `none` arm is reached
+at indices the interior's branch structure does not bound in advance, so
+a composite carrying `i < entriesLen` per read would have been unusable
+on exactly the arm it most needs to cover.
+
+`routeDecodedSummary` (`:898`) is NAMED CAREFULLY and its docstring says
+what it is NOT.  It is the summary assembled from the four ROUTE DECODES,
+which is what the value bridges deliver.  Equality with the value of
+`canonicalRelativeRmmMachineSummaryComputation`
+(`InteriorDirectory.lean:2277`) is a FURTHER step and is NOT claimed.
+See section 6 item 2.
+
+### 3. ANTI-VACUITY, EXECUTED, DEPENDING ON NO AXIOMS AT ALL
+
+* `chunkIters_witness_discriminates` (`E1InteriorChunkFold.lean:1968`):
+  the count is `1` out of range and `2` at a valid index of the same
+  two-chunk table, so `chunkIters_of_invalid` DISCRIMINATES rather than
+  reporting a constant.
+* `outOfRange_cell_not_always_zero` (`:1982`): the zero claim refuted by
+  kernel computation.  This is what makes DD-20260719-016 a real fork
+  rather than a preference.
+* `summaryMinCandidate_premises_satisfiable`
+  (`E1InteriorMinCandidate.lean:1018`) discharges rule 1: `hHost` and
+  `hBlock` JOINTLY satisfiable at the intended instantiation, the theorem
+  instantiated at the self-hosting leg (`:1004`) with `sBlock` actually
+  holding `block`, existential carried to a concrete consequence.
+
+The first two depend on NO AXIOMS -- pure kernel computation.
+
+A LIMIT WORTH STATING.  I did NOT run the composite end-to-end on a
+numeric fixture.  The summary group's reads go through `machineWordBits`,
+hence `Nat.log2`, which is well-founded recursion the KERNEL cannot
+evaluate; `rfl`/`decide` fail on numeric fixtures there.  So the
+predecessor's `witness_maxRel_discriminates` model does not extend to the
+composite, and the discriminating content stays witnessed at the consumer
+level where it is kernel-reachable.
+
+### 4. VERIFICATION LEDGER
+
+Under the `Global\RMQHeavyVerification` mutex:
+
+    lake build RMQ RMQPaper RMQExamples   LIB_BUILD_EXIT=0
+    lake build rmq_e1_machine_validate    VALIDATOR_BUILD_EXIT=0
+    lake exe rmq_e1_machine_validate      VALIDATOR_RUN_EXIT=0
+
+    [280/283] Built RMQ.Core.WordRAM.E1InteriorSummaryGroup
+    [281/283] Built RMQ.Core.WordRAM.E1InteriorMinCandidate
+    [282/283] Built RMQ
+    Build completed successfully.
+
+0 errors; 13 warnings, all pre-existing and in the modules M3d-19..21
+recorded.  The changed modules emit NONE.
+
+Validator: `RESULT: PASS (with the whole-query comparison still OPEN)`,
+`wholeQueryComparisonAvailable=false`, `presFailures=0`,
+`presSentinelNonZero=true`, `mutantG_scratch_preservationFailures=36`,
+`mutantG_scratch_exitFailures=0`, `mutantG_clobberedRegs=[70]`,
+`mutantG_isPreservationOnly=true`.  UNCHANGED from M3d-21, as expected:
+this session added no machine block, only a composition of two existing
+ones.  The interior analogue of phase 3h REMAINS UNBUILT and is still
+owed.
+
+`#print axioms` after a root build, importing the modules DIRECTLY:
+
+    chunkIters_of_invalid                    does not depend on any axioms
+    chunkIters_witness_discriminates         does not depend on any axioms
+    outOfRange_cell_not_always_zero          does not depend on any axioms
+    geomCell_eq_routeDecode_of_invalid       [propext, Classical.choice, Quot.sound]
+    geomCell_baseline_eq_routeDecode         [propext, Classical.choice, Quot.sound]
+    geomCell_minRel_eq_routeDecode           [propext, Classical.choice, Quot.sound]
+    geomCell_maxRel_eq_routeDecode           [propext, Classical.choice, Quot.sound]
+    geomCell_argOffset_eq_routeDecode        [propext, Classical.choice, Quot.sound]
+    summaryMinCandidate_runsTo               [propext, Classical.choice, Quot.sound]
+    summaryMinCandidate_hosted_self          [propext, Classical.choice, Quot.sound]
+    summaryMinCandidate_premises_satisfiable [propext, Classical.choice, Quot.sound]
+
+Never `sorryAx`.  `lake env lean scripts/headline_axiom_check.lean` runs
+clean.  `design_decision_check.ps1 -Strict` `DD_EXIT=0` ("checked 4
+changed files"), `claim_drift_scan.ps1` `DRIFT_EXIT=0` (746 hits, 0
+strict failures), `paper_topology_lint.ps1` `TOPO_EXIT=0`.
+`git diff --check` exit 0.  Hygiene `rg` over the three changed modules is
+CLEAN: no `sorry`, `admit`, `axiom`, `native_decide`, `partial`,
+`unsafe`, `implemented_by` or Mathlib.  `maxHeartbeats` was NOT raised
+anywhere, and NO whnf timeout was encountered.
+
+DD-20260719-016 CLAIMED.  Maximum OBSERVED before claiming was
+`DD-20260719-015`, verified by scanning the tree.  The consolidated
+program-layout DD is still owed at the glue.
+
+KNOWN RED, externally owned, unchanged and not touched:
+`scripts/wordram_axiom_check.lean`, `scripts/axiom_check.lean`,
+`lake exe rmq_succinct_classic_validate` (COMPILE-time failure).
+
+### 5. MATRIX STATUS AT YIELD
+
+All eleven rows REQ-E1-01..11 remain OPEN.  This session closed none,
+weakened none, and edited no frozen row text.  The rows are whole-query
+scoped and this session landed a component of the interior leg, so no
+row's status could move; the matrix was left untouched rather than
+annotated, consistent with the sixteen prior sessions.
+
+### 6. RESUME POINT (M3d-23)
+
+All file:line verified at `109eb67`.
+
+1. MISSION ITEM 1 IS DONE.  `summaryMinCandidate_runsTo`
+   (`E1InteriorMinCandidate.lean:924`) is the composed leg, 177
+   instructions, exit `Q + 177`, no validity and no store hypothesis.
+   Registers `105 .. 117` are TAKEN; THE NEXT BLOCK OPENS AT `118`.
+2. THE A-TO-B LINK IS THE NEXT NATURAL STEP, AND IT IS SHORT.  Nothing in
+   the tree equates `geomRouteDecode` with the run value of
+   `canonicalRelativeRmmMachineReadNatComputation`
+   (`InteriorDirectory.lean:2132`, a pure alias for
+   `machineReadComputationAt`).  This was searched exhaustively this
+   session; `geomRouteDecode` has six occurrences tree-wide, all in
+   `E1InteriorSummaryGroup.lean`.  The chain, each step verified to
+   exist: unfold the alias; unfold `machineReadComputationAt`
+   (`MachineChunkedTableProgram.lean:343`); push `.value` through
+   `map_run_value` (`:199`, `@[simp]`); apply `readMany_run_value`
+   (`:213`, `@[simp]`) which gives `addresses.map (fun a => store a)` --
+   THE DECISIVE STEP; unfold `flatWordStoreOfReadStore`
+   (`InteriorRAM.lean:170`), which IS `store.readWord? segment a`
+   definitionally; identify the address lists -- `chunkAddrs`
+   (`E1InteriorChunkFold.lean:123`) against
+   `fixedWidthNatTableMachineFootprintAt`
+   (`MachineChunkedTableProgram.lean:332`), which at
+   `canonicalSummaryLayout` agree BY `rfl` because that layout DEFINES
+   `chunkCount` as the route's `fixedWidthNatTableMachineChunkCount` and
+   `entriesLen` as the route's entry-list length; then
+   `fixedWidthNatTableMachineDecode` (`MachineChunkedTable.lean:215`)
+   applies to the same list on both sides.  NO CAP HYPOTHESIS on this
+   path -- `chunkAddrs_eq_consecutive`'s `hcap` is a DIFFERENT equation,
+   already consumed inside `geomCell_eq_routeDecode`.
+   DO NOT USE `interiorReadNat_route_atom`
+   (`E1InteriorReadBlock.lean:443`): it is the single-chunk atom and
+   carries `0 < width`, `width <= wordSize`, which fail at the interior's
+   reachable multi-chunk shapes.  The summary group's own header says so
+   at `E1InteriorSummaryGroup.lean:33-40`.
+3. THEN THE SPAN BLOCKS (`InteriorDirectory.lean:2311`, `:2329`).  Both
+   are `FlatStoreComputation.pure none` on the `none` arm, so THE `none`
+   ARM MUST BRANCH PAST the composite -- 177 instructions, now a single
+   named object rather than arithmetic on two.  RE-DERIVE, do not trust:
+   it is `summaryGroup_length = 156` plus `minCandidateBlock_length = 21`.
+4. THEN THE TWO-SPAN BLOCKS (`:2351`, `:2376`).  THE LEVEL READ IS THE
+   UNCONDITIONAL HEAD of every append chain.  Violating that order
+   presents as a whnf heartbeat timeout, NOT a type error, and must never
+   be met by raising `maxHeartbeats`.
+5. THEN the five-branch dispatch (`:2444`) and `hInterior` at
+   `E1CrossBlockArm.lean:1143`.  The interior has five branches and no
+   scan.
+6. THE CLOSURE LADDER AND THE OWED PRESERVATION CHECK are unchanged and
+   unbuilt: full LCA leg at canonical-store form; whole-query glue via
+   `E1RouteDecomposition` with result agreement on `(...).value` and
+   POSITIONAL receipt equality on `(...).trace`; category accounting
+   across ALL branches including selects-none and lca-none; the public
+   `List Int` corollary; the DERIVED all-size literal step total from the
+   category algebra and the caps 33/8/8 -- derive, never assert; the
+   amended-target Prop with its supersession note; the validator's
+   whole-query phase; docs and matrix closure; the ONE consolidated
+   program-layout DD at the glue; and an EXECUTED preservation check for
+   the interior fold -- the validator's phase 3h is fringe-arm only.
+7. THE M7 DOC CLAIM is scoped to QUERY TIME with construction-time
+   computation carved out as preprocessing (`bpSparseLevelCell`,
+   `SparseLevelTable.lean:55`).  Do not write it until the interior leg
+   exists.  The stale frozen-row anchor is a NOTE, already appended; do
+   not edit frozen requirement text.
+8. A STALE NAME FOUND IN PASSING, NOT FIXED because it is outside this
+   session's scope and touching it would have mixed concerns: the module
+   docstring of `E1InteriorChunkStore.lean` at `:31` refers to
+   `probeShape_unbounded_agreement_fails`, but the theorem is named
+   `unbounded_agreement_refuted` (`:537`).  Prose only; no theorem
+   affected.
+9. STANDING RULES, still five.  This session adds no sixth.  It supplies
+   the sharpest case yet for rule 4, from a direction the prior sessions
+   did not hit: the delegation was not merely imprecise about what the
+   tree CONTAINS, it was wrong about what is TRUE, and the disproof was
+   an existing `rfl`-checked theorem in the very file the work would have
+   touched.  A supplied premise gets grepped; so does a supplied
+   OBLIGATION.  When a prompt says "if it genuinely is absent, prove it",
+   check first whether it is absent BECAUSE IT IS FALSE.
