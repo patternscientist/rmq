@@ -396,3 +396,233 @@ The development checks above certify the uncommitted semantic document content.
 The final response supplies the exact-HEAD command attestations after the
 ledger commit; it must not be read as claiming that those later runs were
 already recorded in this commit.
+
+## R1-R3: close every live readWord-only A07 surface
+
+Worker: R1-R3
+Requested title: `(R1-R3) Close every live readWord-only A07 surface`
+Exact base: `a835720ddae8816727febb16c636eee4a5f57076` (rejected R1-R2
+candidate parent `48147cbc67c6c01c4abcf2565f9b981adb5eacb8`; workflow-governance
+parent `be1239a353a8f067b50d7d1bd8c4c10413a33100`).
+Branch: `codex/r1-a07-readword-surface-sync-r3`.
+
+The exact-base and both-parent objects were fetched and verified before the
+branch was created. The governed preflight passed with governance
+`be1239a353a8f067b50d7d1bd8c4c10413a33100`, required skill
+`rmq-proof-sprint`, and runtime project skills `rmq-audit-prompt`,
+`rmq-coordinator`, and `rmq-proof-sprint`.
+
+### R1-R2 exhaustive-closure correction
+
+The R1-R2 statements that "all 14 current prose surfaces plus
+README/artifact surfaces" were reread and that reviewers consequently saw the
+readWord-only route were not an exhaustive current-surface result. They closed
+the four then-targeted cost/source/freshness/fixture facts, but they did not
+derive the inventory from `currentFactSurfacePathRegex` and left weaker
+three-constructor or read-or-primitive wording on four registered current
+surfaces. The R1-R2 four-fact evidence remains inherited; its exhaustive
+current-surface and readWord-only impression is superseded by the R1-R3 matrix
+and the exact 18-path registry below. This correction appends evidence rather
+than rewriting the earlier R1-R2 record.
+
+### Frozen source proposition and definition cases
+
+The load-bearing source proposition is universal over the exact trace consumed
+by cost and adequacy:
+
+```lean
+theorem
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    forall event,
+      event ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace ->
+        event.isReadWord
+```
+
+The required public reader-facing identity is
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`, an
+abbreviation of that exact theorem. The older
+`...EventReadWordOrWordRankOrWordSelect` alias is only weaker compatibility
+evidence and cannot serve as the current route signature.
+
+The definition-level compatibility cases remain distinct from execution:
+
+```lean
+def WordRAM.TraceEvent.nonSyntheticWeight : TraceEvent -> Nat
+  | readWord _ _ _ => 1
+  | wordRank _ _ _ => 1
+  | wordSelect _ _ _ => 1
+  | syntheticCostOnlyPrimitive => 0
+```
+
+Thus the definition is not readWord-only; the accepted canonical trace object
+is readWord-only.
+
+### Closed policy-derived current-surface inventory (pre-edit freeze)
+
+This list is derived by applying the exact
+`docs/internal/CLAIM_DRIFT_POLICY.json` field
+`currentFactSurfacePathRegex` to every tracked path at
+`a835720ddae8816727febb16c636eee4a5f57076`. Each path was reread against the
+source proposition and compatibility definition, not merely searched for a
+scanner hit.
+
+| Registered current path | Pre-edit source-directed disposition |
+| --- | --- |
+| `README.md` | **Repair authorized by coordinator amendment.** The headline execution-story row presented the accepted route as read-or-primitive; the current-signature row promoted the weaker three-constructor alias; and the overview repeated read-or-primitive wording. |
+| `artifact/CLAIMS.md` | **Repair.** The execution-story claim used read-or-primitive wording and the charged-trace row used the weaker three-constructor alias as the current signature. |
+| `artifact/README.md` | Preserve. It already says every accepted emitted event is a payload read and keeps cost/model scope separate. |
+| `docs/FAMILY_SUMMARY.md` | **Repair.** The opening certificate paragraph says the canonical trace proves only one-of-three, and the execution-story paragraph presents the accepted final query as read-or-primitive. Preserve the exact four `nonSyntheticWeight` cases while separating the stronger execution fact. |
+| `docs/PAPER_CLAIM_CORRESPONDENCE.md` | **Repair.** The current charged-trace row cites and states only the weaker three-constructor signature. |
+| `docs/PAPER_MAIN_THEOREM.md` | Preserve. It already says every actual emitted event is `readWord` on the canonical trace. |
+| `docs/PAPER_MODEL_ADEQUACY.md` | Preserve as the independently source-checked semantic reference. It names the exact source/headline identities, universal readWord-only fact, and compatibility-only `wordRank`/`wordSelect` constructors. |
+| `docs/PAPER_RELATED_WORK.md` | Preserve. Its current cost/model boundary is accurate and it makes no weaker current event-vocabulary claim. |
+| `docs/PAPER_THEOREM_MAP.md` | Preserve. It explicitly says every emitted canonical event is `readWord` and separates certificate weighting. |
+| `docs/PUBLICATION_STRATEGY.md` | Preserve. It states current `207` trace/certificate accounting without presenting a weaker constructor vocabulary as current. |
+| `docs/RELATED_WORK_AND_LIMITATIONS.md` | Preserve. It accurately scopes `207` and makes no misleading event-vocabulary claim. |
+| `docs/ROADMAP.md` | Preserve. Its current paragraph classifies actual emitted events as `readWord`; later word-rank/select material is explicit historical/component chronology. |
+| `docs/TRUST_AUDIT_PACKET.md` | Preserve. The capstone says only genuine `readWord` events. Its certificate sentence states true constructor cases without claiming those are exhaustive definition cases. |
+| `docs/WHAT_IS_PROVED.md` | Preserve. It states the current readWord-only fact and labels the older three-constructor public identity compatibility-named. |
+| `docs/WORD_RAM_REVIEW_PACKET.md` | Preserve. It says the canonical trace emits only `readWord` and lists that fact before certificate equalities. |
+| `docs/digests/PROJECT_DIGESTION_CURRENT.md` | Preserve. It says every emitted event is a payload-word read. Its certificate description is a true non-exclusive subset of the definition cases. |
+| `docs/internal/CLAIM_DRIFT_POLICY.md` | Preserve byte-for-byte. It explicitly states the route is readWord-only and `wordRank`/`wordSelect` are compatibility-only constructors never emitted by this route. |
+| `docs/internal/RMQ_FINAL_ROADMAP.md` | Preserve. Its current U3 paragraph says each emitted event is `readWord`; historical status remains explicit. |
+
+The repaired claim paths plus this worklog are within the amended scope.
+`docs/internal/DESIGN_DECISIONS.md` remains conditional: it will change only if
+the strict design checker requires a minimal substantive public-claim entry.
+No policy, script, Lean, roadmap, matrix, historical, gate, skill, template, or
+workflow-decision edit is authorized.
+
+### Frozen R1-R3 requirement-to-evidence matrix
+
+These requirements and IDs are frozen before the first R1-R3 claim edit. Only
+evidence, status, and an explicitly approved contract amendment may change.
+
+| ID | Exact frozen requirement | Scope | Evidence needed (exact proposition/check) | Named consumer and identity/composition chain | Anti-vacuity challenge attempted and outcome | Evidence obtained | Status / residual gap |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `REQ-R1R3-READWORD-ONLY-SURFACE` | "repair these exact rejected-candidate statements and any semantically equivalent current statement found by the closed inventory"; `artifact/CLAIMS.md`: replace “Every actual emitted event is readWord, wordRank, or wordSelect” with the universal readWord-only route fact and cite `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`; `docs/PAPER_CLAIM_CORRESPONDENCE.md`: the current charged-trace row must cite the readWord-only headline/source theorem, not present the weaker three-constructor disjunction as the current route signature; `docs/FAMILY_SUMMARY.md`: preserve the definition-level fact that `nonSyntheticWeight` assigns one to `readWord`, `wordRank`, and `wordSelect`, but state separately and explicitly that the accepted canonical trace emits only `readWord`; `wordRank` and `wordSelect` remain compatibility constructors and are never emitted on this route. Coordinator amendment: "This authorization covers all current-route wording in README, not only the first line that triggered the stop. In particular, inspect and repair the headline execution-story/current-signature rows around the current base's lines 71 and 78 and the overview wording around lines 207-208 wherever they present the accepted canonical route as allowing bounded word primitives rather than stating the stronger checked readWord-only fact." | Local current public surface | For every `shape left right event`, membership in the exact `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult shape left right` trace implies `event.isReadWord`; every repaired surface names the public alias and does not substitute the weaker compatibility theorem. | Source theorem -> exact headline abbreviation -> README/artifact/paper/family current consumer -> topology/claim scanner -> coordinator exact-commit audit. | Reorder the three constructors, put the compatibility theorem before the strong theorem, or state only a singleton fixture. All must remain visibly weaker than the universal exact-object source proposition and must not survive as the current signature. | Pre-edit inventory found four repair paths and no additional out-of-scope path. | Open until edits and final checks |
+| `REQ-R1R3-CLOSED-INVENTORY` | "enumerate all tracked paths matched by `currentFactSurfacePathRegex`, reread each one, and record a per-path disposition in the worklog. ‘No scanner hit’ is insufficient evidence that a path was semantically current." | Local current-surface registry | Exact base registry contains the 18 paths listed above; each has a source-directed repair/preserve disposition and final reread. | Policy JSON regex -> exact-base tracked paths -> per-path semantic reread -> durable worklog -> coordinator reconstruction. | Look for an unregistered current-looking tracked document and for a registered file with no regex hit but misleading sentence composition. The registered README weakness was found despite the prior green strict scan; all repository Markdown remains an adversarial search domain. | Exact 18-path pre-edit inventory frozen above. | Open until post-edit per-path reread |
+| `REQ-R1R3-CURRENT-COMPATIBILITY-ACCURACY` | "do not falsely claim that the `nonSyntheticWeight` definition itself is readWord-only. It gives weight one to all three genuine constructors and zero to `syntheticCostOnlyPrimitive`; the current canonical execution is the object that is readWord-only." | Definition/execution category boundary | Quote all four definition cases and separately quote the universal theorem over the exact canonical trace object. | `WordRAM.TraceEvent.nonSyntheticWeight` -> certificate sum theorems; exact trace -> readWord-only theorem -> public prose. | Conflate the weight definition with actual trace emission, or globally delete accurate `wordRank`/`wordSelect` compatibility vocabulary. The source cases above reject both moves. | Exact cases and object distinction frozen above. | Open until final prose reread |
+| `REQ-R1R3-POLICY-INHERITANCE` | "preserve the governance policy and both named regression suites byte-for-byte relative to governance commit `be1239a353a8f067b50d7d1bd8c4c10413a33100`. The base already contains passing exact-candidate fixtures for the three rejected phrases and the current controls. If policy or regression code appears to need modification, stop for coordinator scope rather than editing it." | Inherited governance | Exact Git byte comparison for `docs/internal/CLAIM_DRIFT_POLICY.json`, `scripts/claim_drift_policy_regression.ps1`, and `scripts/paper_topology_lint_regression.ps1` against governance; no changed policy/script path. | Governance commit -> unchanged production policy/regressions -> strict production scanner/topology verdict. | Attempt to make prose pass by altering an allowance, mutation fixture, or scanner. Scope audit and byte comparison must reject it. | No policy/script edit planned or authorized. | Open until byte-identity check |
+| `REQ-R1R3-WORKLOG-TRUTH` | "correct the R1-R2 worklog's false exhaustive-closure impression, add the R1-R3 matrix and four-part digestion, distinguish inherited evidence from exact-candidate checks, and do not mark final checks Closed before they run successfully on the committed candidate." | Durable evidence ledger | Appended R1-R2 correction; complete R1-R3 matrix; conceptual/plain-English/assumptions/skeptical-question digestion; final commands remain open until their exact committed-candidate runs. | Source facts and inherited R1-R2 evidence -> R1-R3 candidate checks -> worklog -> final response -> coordinator audit. | Backdate a post-commit check, call inherited first-parent semantic evidence new, or leave the prior exhaustive impression uncorrected. The ledger must visibly reject each. | Correction, source facts, inventory, and frozen matrix appended before claim edits. | Open until digestion and candidate checks |
+| `COMPLETE-R1R3-COMMITTED-EVIDENCE` | "Durable disposition for material work: committed updates plus the R1-R3 evidence matrix and proof digestion in `docs/internal/R1_WORKLOG.md`." "Work until all frozen R1-R3 rows close on one clean committed candidate or a valid obstruction forces coordinator review." | Candidate completeness | One clean committed candidate contains all authorized repairs, completed evidence rows, inventory, digestion, and committed-candidate check results without staging unrelated artifacts. | Matrix -> authorized docs -> commit -> committed-candidate checks -> clean tree -> coordinator exact-commit audit request. | A green scanner, a commit, or a candid caveat with any registered stale surface still present fails. | None yet; this pre-edit freeze is not candidate evidence. | Open |
+| `INV-R1R2-FOUR-FACT-PRESERVATION` | "retain current cost `207` with algebra `2*35 + (2*11 + 2*37 + 30) + 11`; 22 physical sources over logical segments 0..22 with segments 0 and 19 sharing BP; live segment 21 and rejected fresh segment 23; global trace positions 0 and 15 produced by instruction positions 0 and 1." | Inherited public facts | Final current-surface reread and diff preserve each literal/category fact; no changed source. | Accepted R1-R2 facts -> unchanged source -> repaired prose -> claim scanner and diff audit. | Accidentally change a numeral, call 23 physical sources, swap live/fresh segments, or collapse global/program positions. Targeted searches must find none. | Pre-edit source/reference reread confirms all four facts. | Open until final reread |
+| `INV-R1R1-SEMANTIC-PRESERVATION` | "no Lean, theorem, definition, validator, executable, payload, store, trace, receipt, or public identity change is authorized." | Inherited semantic tree | Exact changed-path authorization contains documentation/worklog only; Lean and executable tree remains byte-identical to base. | Accepted R1-R1/R1-R2 source tree -> doc-only diff -> same theorem/public identities. | Any `RMQ/`, `RMQExamples/`, script, policy, or executable path in the candidate range fails. | No semantic path changed before freeze. | Open until final scope audit |
+| `INV-HISTORICAL-PRESERVATION` | "do not rewrite dated digests, audit reports, frozen matrices, prior worklogs outside the current R1 section, or earlier design-decision bodies. Historical weaker vocabulary may remain only where its historical role is explicit and accurate." | Inherited history | Final changed paths contain only amended scope; R1-R2 is corrected by an appended R1-R3 note; no historical occurrence is rewritten to make searches green. | Frozen history -> unchanged paths/bodies -> current-only synchronization. | Global removal of `wordRank`/`wordSelect` or editing dated history fails. | No historical path/body change planned. | Open until final path/diff audit |
+| `INV-CATEGORY-SEPARATION` | "keep payload bits, proof-only data, modeled ticks, trace events and positions, instruction positions, physical sources and logical roles, allocated cells, Lean runtime, and measured performance distinct." | Inherited model/public categories | Final prose and worklog retain exact distinctions and change only current event-vocabulary wording. | Source categories -> current prose -> source-directed reread -> coordinator audit. | Treat weight as cost definition, call modeled ticks runtime, identify 22 sources with 23 roles, or identify trace positions with instructions. Each must be absent. | Pre-edit inventory identified no new category error beyond event-vocabulary weakening. | Open until final reread |
+| `CHK-R1R3-STRICT-CLAIMS` | `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1 -Strict` | Final required | Exit 0 on the committed candidate with zero strict failures. | Repaired current prose -> unchanged production scanner/policy -> strict verdict. | Exact policy mutations are a lower bound; production green does not replace the 18-path reread. | Not run on candidate. | Open |
+| `CHK-R1R3-TOPOLOGY` | `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\paper_topology_lint.ps1` | Final required | Exit 0 on the committed candidate with documentary public identities resolved. | Repaired source/public alias text -> generated broad/paper checks -> production topology verdict. | A true theorem name in adjacent prose but a dead/current-misclassified alias in a claim row must fail independent review even if a lexical scan passes. | Not run on candidate. | Open |
+| `CHK-R1R3-DIFF` | `git diff --check`; `git diff --check a835720ddae8816727febb16c636eee4a5f57076..HEAD`; exact changed-path authorization; exact governance-policy byte-identity check; final clean-tree and HEAD checks. | Final required | Every command exits 0 on the committed candidate; changed paths are a subset of the amended scope; policy/regressions equal governance. | Authorized docs/worklog commit -> committed range -> clean exact HEAD -> coordinator audit. | A clean worktree without a committed-range whitespace/scope check fails. | Not run on candidate. | Open |
+
+Explicitly deferred and non-blocking: integration, coordinator acceptance,
+broader submission freeze, A1/V1 launch, and roadmap-node closure. The worker
+will request coordinator exact-commit audit and will not claim acceptance,
+integration, push, merge readiness, or roadmap closure.
+
+`REPLAY-EXACT-REGISTRY`, `REPLAY-SELECTOR-NONVACUITY`, and
+`REPLAY-SUBPROCESS-DEADLINE` are `NOT_APPLICABLE`: this task creates or changes
+no replay harness and will not claim a replay campaign.
+
+### R1-R3 verification coverage plan and command ledger
+
+No Lean/build command is planned: this is a documentation-only repair over an
+unchanged checked source/public-identity tree. `lake build RMQ.Headlines` is
+conditional only if topology lint demonstrates missing or stale build artifacts.
+No root build, aggregate gate, validator, cost harness, axiom inventory, or
+policy-regression suite is proportionate or authorized absent a unique changed-
+path trigger.
+
+| Command | Role and covered rows | Unique failure mode | Tree/runtime/timeout plan | Outcome |
+| --- | --- | --- | --- | --- |
+| Source-directed `rg` plus manual per-path reread for `readWord`, `wordRank`, `wordSelect`, `nonSyntheticWeight`, both theorem identities, paraphrases, reordered constructors, compatibility-before-current ordering, and unregistered current-looking Markdown | Development and final semantic audit; `REQ-R1R3-READWORD-ONLY-SURFACE`, `REQ-R1R3-CLOSED-INVENTORY`, `REQ-R1R3-CURRENT-COMPATIBILITY-ACCURACY`, inherited invariants | Misleading composition outside strict scanner regex | Dirty development tree, then final committed candidate; expected seconds; timeout 2 min | Pre-edit inventory complete; post-edit run pending |
+| `git diff --check` | Development and final; `CHK-R1R3-DIFF` | Working-tree whitespace errors | After edits; expected <5 s; timeout 1 min | Pending |
+| `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1 -Strict` | Final; `CHK-R1R3-STRICT-CLAIMS`, policy and vocabulary rows | Production strict claim classification/allowance failure | Committed candidate; prior comparable R1-R2 ~13 s; timeout 2 min | Pending |
+| `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\paper_topology_lint.ps1` | Final; `CHK-R1R3-TOPOLOGY`, public identity rows | Dead or misclassified documentary identity | Committed candidate; prior comparable R1-R2 ~83 s with artifacts; timeout 5 min | Pending |
+| `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1 -Strict -Base a835720ddae8816727febb16c636eee4a5f57076` | Final; worklog/decision discipline | A substantive public-claim change requiring a decision entry | Committed candidate; prior comparable ~1 s; timeout 1 min | Pending; add minimal DD entry only if required |
+| `git diff --check a835720ddae8816727febb16c636eee4a5f57076..HEAD`, changed-path authorization, governance policy/regression byte identity, exact HEAD, and clean-tree checks | Final; `REQ-R1R3-POLICY-INHERITANCE`, `COMPLETE-R1R3-COMMITTED-EVIDENCE`, inherited invariants, `CHK-R1R3-DIFF` | Committed whitespace, scope expansion, policy drift, dirty post-commit state | Final committed candidate; expected seconds; timeout 2 min | Pending |
+
+### R1-R3 adversarial reread outcomes
+
+- **Reordered three-constructor current wording:** a PCRE intersection search
+  for lines containing `readWord`, `wordRank`, and `wordSelect` found only the
+  repaired current statements (which say rank/select are compatibility
+  constructors never emitted), the exact definition-level cases, explicitly
+  compatibility-named theorem inventories, frozen matrices, dated history,
+  policy/enforcement data, and this frozen contract. No unqualified reordered
+  current-route disjunction remains.
+- **Definition/execution conflation:** the four `nonSyntheticWeight` branches
+  were reread directly. `docs/FAMILY_SUMMARY.md` now lists all four definition
+  cases before separately stating the universal readWord-only execution fact.
+  Other registered surfaces either give the current execution fact, give a
+  true non-exclusive subset of the weight cases, or explicitly describe the
+  certificate equality for the no-synthetic trace; none says the definition is
+  readWord-only.
+- **Compatibility theorem before stronger theorem:** README, artifact claims,
+  paper correspondence, and the family summary now call the generic
+  read-or-primitive/three-constructor results weaker support where they remain
+  visible, and name
+  `succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` as the current
+  signature on the same trace object. The follow-up search found two additional
+  paper-correspondence inventory rows and they were repaired in the same pass.
+- **Unregistered current-looking tracked document:** repository-wide Markdown
+  search found the old read-or-primitive wording in `docs/DIGESTION_LOG.md`.
+  Direct context reread shows it is inside an explicitly dated 2026-07-01
+  large-regime historical entry with the then-live size premise and alias, so
+  `INV-HISTORICAL-PRESERVATION` requires leaving it unchanged. Other survivors
+  are likewise dated history, frozen acceptance matrices, design rationale,
+  policy/enforcement data, or explicit compatibility descriptions; no
+  unregistered live/current repair target was found.
+
+The development production strict scan exited 0 with 814 classified hits and
+zero strict failures. `git diff --check` exited 0. The initial strict design
+check correctly exited 1 because public-claim files changed without a new
+decision entry; after appending `DD-20260719-002`, the same strict command
+exited 0 in 2.6 seconds over six changed files. A development byte comparison
+of the policy JSON and both named regression suites against governance
+`be1239a...` passed. These are development results on the dirty material tree,
+not final committed-candidate attestations.
+
+### R1-R3 proof digestion and final-attestation boundary
+
+Conceptual change: the public vocabulary identity is synchronized to the
+already-checked universal theorem on the exact canonical whole-query trace.
+The weaker read-or-primitive and three-constructor propositions remain only as
+explicit compatibility/supporting evidence; no theorem or definition changes.
+
+Plain-English meaning: on the accepted route, every charged trace entry is an
+actual payload-word read. The model still defines historical `wordRank` and
+`wordSelect` event constructors and gives them certificate weight one, but the
+current canonical query never emits them.
+
+Live assumptions: the claim is about
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult shape left right`
+and its modeled trace for arbitrary shapes/endpoints. It preserves the charged-
+trace boundary: controller operations remain uncharged; `207` is not Lean
+runtime or measured performance; payload bits, physical words/cells, proof
+data, sources/roles, and occurrence coordinate systems remain distinct.
+
+Downstream consumers: the exact source theorem is exposed by
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` and is
+now the current identity in README, artifact claims, paper correspondence, and
+the family summary. The unchanged cost, adequacy, supplied-store, and paper
+capstones consume the same trace object.
+
+Strongest skeptical next question: can any registered or plausible
+current-looking document still lead a reader to treat the compatibility
+three-constructor theorem as the accepted route signature, or to infer that
+`nonSyntheticWeight` itself excludes rank/select? The exact 18-path reread,
+repository-wide adversarial searches, production strict scan, topology lint,
+and coordinator exact-commit reconstruction are the required answer.
+
+Decision record: `DD-20260719-002` records the substantive public-claim choice
+required by the strict checker. No workflow/process decision changed, so no
+`WORKFLOW_DESIGN_DECISIONS.md` entry is authorized or needed.
+
+The first commit will freeze the repaired material tree and this evidence
+boundary. Final-required commands must run on a committed candidate. Any later
+evidence-only commit will preserve the material claim files and will receive
+its own exact-HEAD response attestation; results are not backdated into this
+ledger.

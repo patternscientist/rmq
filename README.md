@@ -68,14 +68,14 @@ for checked historical profiles under `Legacy`/`Compatibility` names.
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store all-size cost transfer: under the same footprint agreement, the supplied-store query has modeled cost at most `SuccinctClassic.queryCost`. |
 | `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile` | Canonical construction-facing profile: doubled-Catalan space envelopes, the at-most `2*n + o(n)` canonical reviewer payload, exact physical-word erasure, direct positional physical backing for every successful read, exact queries through the same global trace, non-synthetic certificate weight equal to both trace length and its `Costed.cost`, and the uniform bound `207`. |
-| `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size execution-story theorem for the final succinct RMQ query: the costed query refines one globally segmented trace, every event is either a payload read or bounded word primitive, and every read agrees with one concrete global payload store. |
+| `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | Weaker supporting all-size execution story: the costed query refines one globally segmented trace whose generic classification permits a payload read or bounded word primitive, and every read agrees with one concrete global payload store. On this same accepted trace, the readWord-only signature below proves that the bounded-word-primitive alternatives are never emitted. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | Store-extensional all-size execution story: any read store agreeing with the concrete global store on the emitted payload-read events validates the same final-query trace. |
 | `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` | Canonical all-size interior profile: exactness, component store, execution footprint, successful-read backing, and reviewer-width guarantees. The current execution has the separate charged-trace cap `30`; `240` remains the transitional interface cap. |
 | `RMQ.Headlines.succinctRMQCanonicalReviewerMachineWordsComponentSlice` | Exact physical machine-word placement of the canonical component after the counted prefix. |
 | `RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits` | Every physical address consumed by the canonical interior execution fits the pre-execution reviewer word width. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Paper-facing theorem: the uniform canonical trace has charged-trace cost at most `207`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength` | Exact accounting bridge: modeled cost equals emitted charged-event trace length. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect` | Every event actually emitted by the canonical whole-query trace is a payload read, word-rank, or word-select event. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` | Current route signature: every event actually emitted by the canonical whole-query trace is a `readWord` payload-read event; compatibility constructors `wordRank` and `wordSelect` are never emitted on this route. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost` | For the canonical no-synthetic trace, the `WordRAM.TraceEvent.nonSyntheticWeight` certificate sum equals the `Costed` cost of the same execution. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe207` | The non-synthetic-weighted actual emitted trace is bounded by `207`. |
 | `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality` | Counterfactual check: a synthetic event anywhere in a trace makes its `nonSyntheticWeight` sum differ from its length. |
@@ -205,8 +205,9 @@ At a high level, the repository currently includes:
   most `2*n + o(n)` and constant modeled query cost;
 - an interpreter-backed final succinct RMQ query surface whose all-size
   execution story emits one global `WordRAM.TraceEvent` stream; every event is
-  either a payload read or a bounded word primitive, and every read is checked
-  against one concrete payload store;
+  a payload `readWord`, as checked by
+  `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`, and
+  every read agrees with one concrete payload store;
 - a standalone rank/select spoke with public Jacobson/Clark-style profiles, a
   concrete fixed-weight compressed/FID capstone family surface, and an
   interpreter-backed replay of that compressed/FID query path; and

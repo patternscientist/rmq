@@ -37,10 +37,13 @@ The current operational bridge keeps two quantities distinct.
 compatibility marker if one were present. Separately,
 `WordRAM.TraceEvent.nonSyntheticWeight` is a certificate weight: `readWord`,
 `wordRank`, and `wordSelect` have weight one, while the synthetic marker has
-weight zero. The canonical whole-query trace proves that every emitted event is
-one of the three genuine constructors, that no synthetic marker occurs, and
-therefore that the certificate-weight sum equals both trace length and the
-`Costed` cost of the same execution before being bounded by `207`.
+weight zero. Those are definition-level compatibility cases, not a description
+of current execution. The accepted canonical whole-query trace proves the
+strictly stronger universal fact that every emitted event is `readWord`;
+`wordRank` and `wordSelect` remain compatibility constructors and are never
+emitted on this route. The trace also has no synthetic marker, so the
+certificate-weight sum equals both trace length and the `Costed` cost of the
+same execution before being bounded by `207`.
 Instruction dispatch, input/register access, option tests, arithmetic
 (including division/modulo/logarithms), fixed-width decoding, local BP
 scanning, candidate merging, trace assembly, and the public validity guard are
@@ -385,9 +388,13 @@ cost, and size-premise chronology lives only in the explicit
 `Core.WordRAM` exposes segment-relabeling and `ReadStore` provenance helpers.
 The public headline
 alias `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` now consumes
-the all-size layout: every final query event is either a payload read or a
-bounded word primitive, and every read is checked against one concrete global
-payload store. The companion
+the all-size layout and provides a weaker supporting classification in which a
+final-query event is a payload read or bounded word primitive, while every read
+is checked against one concrete global payload store. On the same accepted
+trace, the current signature
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` proves
+that every event is `readWord`; the word-primitive alternatives admitted by
+the weaker theorem are never emitted on this route. The companion
 `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` adds a
 trace-local finite bit width proving that final payload-read addresses and
 word-primitive natural operands/results are bounded. The additional theorem

@@ -3626,3 +3626,56 @@ Consequences and evidence:
   `Validation/SuccinctClassic.lean` are the source objects; strict claim scan,
   topology lint, decision check, and committed-range checks are the process
   evidence.
+
+## DD-20260719-002: make readWord-only the current A07 reader signature (R1-R3)
+
+Status: Proposed repair record; coordinator exact-commit audit and acceptance
+remain separate.
+
+Date: 2026-07-19
+
+Context: R1-R2 synchronized cost, source, freshness, and fixture facts, but four
+registered current surfaces still presented the accepted canonical trace using
+the older read/word-rank/word-select disjunction or a generic read-or-primitive
+execution story. The checked B3 theorem is stronger on the same whole-query
+trace: universally over shapes, query endpoints, and event membership, every
+event satisfies `TraceEvent.isReadWord`.
+
+Decision:
+
+Use `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` as
+the current reader-facing event-vocabulary identity. Retain the older generic
+execution-story and three-constructor theorems only when explicitly labeled
+weaker compatibility/supporting evidence. Keep the definition-level
+`nonSyntheticWeight` cases exact: weight one for `readWord`, `wordRank`, and
+`wordSelect`, and zero for `syntheticCostOnlyPrimitive`; the canonical
+execution, not the definition, is readWord-only.
+
+Rejected alternatives:
+
+- Keep the weaker theorem as the current signature merely because the
+  readWord-only fact implies it. That hides the accepted route's exact charged
+  vocabulary.
+- Remove all `wordRank`/`wordSelect` language. Those constructors and the
+  weaker theorems remain accurate compatibility surfaces.
+- Rely on the strict claim scanner alone. Its finite patterns did not expose
+  the unqualified README theorem-map row; the policy-derived 18-path reread is
+  the closure evidence.
+- Change the Lean alias, trace model, policy, or regression suites. Existing
+  checked identities and governance enforcement already express the needed
+  distinction.
+
+Consequences and evidence:
+
+- README, artifact claims, paper correspondence, and the family summary name
+  the universal readWord-only theorem for the exact canonical trace used by
+  cost and adequacy.
+- Generic read-or-primitive statements remain visible only as explicitly
+  weaker support for that same object; compatibility definitions and history
+  are preserved.
+- The 207 algebra, 22-source/23-logical-role manifest, live segment 21/fresh
+  segment 23 split, and global 0/15 versus instruction 0/1 fixture facts do not
+  change.
+- Source-directed reread, production strict claim scan, topology lint, strict
+  decision check, governance byte identity, and committed-range checks are the
+  required documentary evidence. No workflow decision changes.
