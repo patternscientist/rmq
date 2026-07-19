@@ -36,3 +36,7 @@ root = "RMQ.Validation.SuccinctClassic"
 [[lean_exe]]
 name = "rmq_succinct_classic_cost_harness"
 root = "RMQ.Validation.SuccinctClassicCostHarness"
+
+[[lean_exe]]
+name = "rmq_e1_machine_validate"
+root = "RMQ.Validation.E1MachineValidate"
