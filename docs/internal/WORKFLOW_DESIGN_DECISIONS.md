@@ -2599,3 +2599,68 @@ Evidence: `paper_topology_lint.ps1` before the README line moved:
 identifier '...SumLe207'", 1 failure, exit 1. After: "PAPER-TOPOLOGY PASS
 (83 broad documentary identifiers; 49 paper identifiers resolved)", exit
 0. `lake env lean scripts/headline_axiom_check.lean` exit 0.
+
+## WDD-20260719-002: the design-decision check was blind to `RMQ/Validation`
+
+Context: the E1 interior-preservation lane (branch
+`claude/e1-interior-preservation`, candidate `bde70da`) changed exactly one
+code file, `RMQ/Validation/E1MachineValidate.lean`, and recorded five design
+decisions for it (`DD-20260719-030..034`). The coordinator ran
+`design_decision_check.ps1 -Strict` over that candidate and it exited 0.
+
+It exited 0 for two independent reasons, and BOTH were vacuous:
+
+1. Invoked without `-Base`, `Get-ChangedFiles` falls back to the worktree and
+   index diffs. On a clean tree that is the empty set, so the script printed
+   "no changed files detected" and exited 0 having examined nothing. This was
+   coordinator invocation error, not a script defect.
+2. Re-invoked WITH `-Base 3ccda2e`, it printed "no design-sensitive paths
+   detected" and exited 0 again. `$codePatterns` enumerated
+   `^RMQ/Core/WordRAM`, `^RMQ/Core/SuccinctClose`, `^RMQ/Core/SuccinctFinal`,
+   `^RMQ/Headlines` and others, but **no pattern matched `RMQ/Validation`**.
+
+So the tool whose purpose is to require a design decision was structurally
+incapable of requiring one for the validator — the module where the three
+discriminators live. A phase could be added, weakened, or deleted, and this
+check would say nothing.
+
+Decision: add `"^RMQ/Validation"` to `$codePatterns`.
+
+Alternatives rejected:
+
+- Leave it to the merge window (rejected: the enumeration gap had already been
+  noted once and deferred; it has now produced a vacuous strict pass over real
+  work with five design decisions in it. A second deferral would mean the next
+  validator change is unchecked for the same reason, which is the failure mode
+  the check exists to prevent).
+- Replace the enumeration with a denylist, so coverage is opt-out rather than
+  opt-in (rejected FOR THIS COMMIT, though it is the better long-run shape.
+  The present design's coverage is exactly the list someone remembered to
+  write, which is why this gap existed; but inverting it would demand design
+  entries across the whole tree and is a strictly larger change than the one
+  that fixes the observed hole. Recorded as a candidate cleanup.)
+- Narrow it to `^RMQ/Validation/E1MachineValidate\.lean$` (rejected: names one
+  file for the same reason the original enumeration named too few, and the
+  other validators under that directory are design-sensitive on identical
+  grounds).
+
+Consequences: changes confined to `RMQ/Validation` now require a
+`docs/internal/DESIGN_DECISIONS.md` entry under `-Strict`. The
+interior-preservation candidate already satisfies this; it is the first
+candidate the rule is exercised against. Note that this commit's own edit is to
+`scripts/design_decision_check.ps1`, which is itself on `$workflowPatterns`, so
+the check demands this WDD entry for its own change — that behaviour is
+correct and is why this entry exists.
+
+Evidence, at base `3ccda2e`:
+
+Before — "DESIGN-CHECK: no design-sensitive paths detected", exit 0, with the
+validator file among the changed set.
+
+After — "DESIGN-CHECK: checked 4 changed files"; the code-decision arm is now
+triggered and is satisfied by the candidate's `DESIGN_DECISIONS.md` entry; the
+workflow arm reports "strict mode found 1 missing design-log updates" and the
+script exits **1** until this entry is committed. Measured with
+`powershell -Command "& { & './scripts/design_decision_check.ps1' -Strict -Base 3ccda2e; exit $LASTEXITCODE }"` —
+piping the script through `tail` reports the exit status of `tail`, not of the
+script, which masked the failure on first measurement.

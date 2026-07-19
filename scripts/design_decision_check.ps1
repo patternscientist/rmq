@@ -59,6 +59,7 @@ $codePatterns = @(
   "^RMQ/Core/SuccinctFinal",
   "^RMQ/Core/SuccinctClose",
   "^RMQ/Core/WordRAM",
+  "^RMQ/Validation",
   "^artifact/",
   "^docs/PAPER_",
   "^docs/WHAT_IS_PROVED\.md$",
