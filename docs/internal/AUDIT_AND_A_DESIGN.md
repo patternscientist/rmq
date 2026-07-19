@@ -1265,3 +1265,56 @@ Ran `lake env lean scripts/wordram_axiom_check.lean` at the campaign HEAD under
 the heavy-verification mutex: **exit 1**, confirming A07 and the E1 worker and
 refuting the earlier session's logged exit 0. Recording a first-hand
 observation rather than a third attestation, which is the point of the rule.
+
+## 2026-07-19 (C05 round 16) — B7 is forced into one atomic commit; inventory corrections
+
+**B7-02 implemented step 2, verified it elaborates with zero errors, then
+REVERTED it rather than commit.** Correct call, and the reasoning is worth
+preserving: `CanonicalRelativeRmmInteriorStoreProfile.component_flattens`
+(`InteriorDirectory.lean:5456`) asserts the component store flattens to the
+enumerated payload list, so any new region is necessarily COUNTED. A counted
+region no execution reads is a dead source, which the standing rules forbid at
+EVERY commit. Therefore the reads must be wired in the same commit; wiring them
+breaks the per-two-span caps; that moves the interior cap; that moves the
+literal. **Steps 2-5 are one atomic commit and cannot be separated.** Verified
+by the actual failure, not inferred:
+`FlatPayload.lean:2271:8: type mismatch ... canonicalRelativeRmmInteriorComponentStore_flattens_payload`.
+
+This is the anti-dead-source rule doing real work: it forces the swap to be
+honest in one step rather than allowing a window in which counted storage
+exists that nothing reads.
+
+**Inventory corrections of record**, all checked at source and all against
+COORDINATOR-circulated anchors:
+- the file is under `EndpointFringe/InteriorCandidate/`, not `PrefixRange/`;
+- every `InteriorDirectory.lean` line number previously circulated is low by
+  ~59 (`canonicalRelativeRmmPrincipledInteriorChargedTraceCost` is at `:1843`,
+  not `:1783`);
+- `..._CloseCost_eq` does not exist; the real names are
+  `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCloseCost_eq`
+  (`SuccinctFinalRAM.lean:8818`, = 126) and `..._ChargedTraceCost_eq`
+  (`:8823`, = 207);
+- there are **four** executed sites, not two — the `Costed` twins at `:1769`
+  and `:1783` are equated to the `Computation` sites through the `_refines`
+  chain;
+- and a **fifth parallel family nobody had listed**: `WordReads.lean:203` and
+  `:260`, each with its own `let level := Nat.log2 count`.
+- step 2 additionally breaks four PRE-EXISTING `_refines` proofs (`:2818`,
+  `:2872`, `:2926`, `:2982`) whose `hmiddle` terms spell the store list out
+  literally.
+
+Three successive rounds have now corrected circulated line numbers. Treat every
+anchor in a prompt as a hypothesis; the campaign's own record is that they drift
+faster than they are re-verified.
+
+**Located, not solved — the one genuinely novel piece.** The space-accounting
+theorems (`:5276`, `:5303`): the existing proof's `m * M <= 5 * n` yields
+`M <= 5n`, far too loose for the level term (it gives ~`n log n`, destroying
+o(n)). The tighter `M = (Nat.log2 n + 1)^2` must be used directly. Budgeted
+explicitly for B7-03 rather than assumed away.
+
+**Process note:** B7-02's step-2 work was saved only to a SESSION-LOCAL
+scratchpad, which would have been lost. B7-03 is instructed to reconstruct and
+commit it as `docs/internal/B7_STEP2_WIP.patch`, following the `B3_M5_WIP.patch`
+precedent. Add to the standing rules: work that cannot be committed as green
+must still be committed as a patch artifact, never left in a scratchpad.
