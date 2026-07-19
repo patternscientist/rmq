@@ -3831,3 +3831,161 @@ established 142/76/328 pattern already in
 every Lean consumer plus the topology anchor `SumLe207` in
 `scripts/paper_topology_lint.ps1` and `scripts/headline_axiom_check.lean`
 must move to 210. Frozen legacy anchors are not touched.
+
+## DD-20260718-013: B7 correction of record - the executed sites are the FlatStoreComputation family, and the interior cap is genuinely tight (B7 Milestone 0b)
+
+Date: 2026-07-18. Scope: corrects two factual errors in DD-20260718-012
+and settles the decisive cost question the coordinator posed. Decided by:
+worker B7-01, after a coordinator relay of read-only scout findings that
+contradicted this worker's own subagent survey, and after verifying both
+accounts at source. Supersedes the cited SITES of DD-20260718-012; the
+MECHANISM decision in that entry stands, and the literal derivation in it
+is now confirmed by reading the cap proof rather than inferred from a
+docstring.
+
+### CORRECTION 1: the four cited sites are cost-model twins, not executed
+
+DD-20260718-012 cited `InteriorRAM.lean:573`, `:621`, `:819`, `:867` as
+the executed evaluator sites. That is WRONG. Verified at source in this
+worktree at `f6564ec`:
+
+`canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment`
+(`RelativeRmmMacro/ConcreteDirectoryRAM.lean:1113-1119`) is defined as
+
+    flatStoreExecutionTraceResultAtSegment componentSegment
+      (canonicalRelativeRmmInteriorRangeMinExecutionWithStore shape
+        (canonicalRelativeRmmInteriorComponentStore shape).store.words
+        startBlock count)
+
+so the executed object is the `FlatStoreComputation` family rooted at
+`canonicalRelativeRmmInteriorRangeMinComputation`
+(`InteriorDirectory.lean:2185`), NOT the `PayloadLive*` family. The
+`PayloadLive*.twoSpanCandidateTraceResultAtSegments` chain is the
+refinement/specification ladder; walking its callers up dead-ends at
+`concreteBPNativeLCACloseWordTraceResultAtSegmentsOfSizeGe`
+(`SuccinctFinalRAM.lean:2238`), which has no definition-level caller.
+
+THE EXECUTED CLASS-(a) SITES ARE EXACTLY THREE:
+
+- `canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation`,
+  `let level := Nat.log2 count` (`InteriorDirectory.lean:2117`), whose
+  level reaches `bpLocalSparseCellSlot` (`:2088`);
+- `canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation`,
+  `let level := Nat.log2 macroSpanCount` (`InteriorDirectory.lean:2131`),
+  whose level reaches `bpGlobalSparseCellSlot` (`:2106`);
+- `bpSparseLogSpan` (`SparseArgMin.lean:599`), invoked at `:2118` and
+  `:2132`, setting `rightLocalStart` / `rightMacroStart` - the address
+  argument of the SECOND span read.
+
+The worst case is the cross-macro branch
+(`canonicalRelativeRmmMachineCrossMacroCandidateComputation`, reached from
+`InteriorDirectory.lean:2208`): two local two-spans and one global
+two-span, i.e. SIX `Nat.log2` evaluations per query (each two-span
+evaluates `Nat.log2` once directly and once inside `bpSparseLogSpan`).
+
+This worker's own subagent survey found these same declarations but
+classified them as a dead parallel family, which was exactly backwards.
+Recorded because the error is instructive: the `Costed`/`TraceResult`
+refinement ladder and the `FlatStoreComputation` execution ladder are
+near-homonyms, and a caller-chain walk that starts from the wrong ladder
+terminates plausibly rather than visibly failing.
+
+### CORRECTION 2: no new segment and no new ReviewerSource are required
+
+`flatStoreExecutionTraceResultAtSegment` (`InteriorRAM.lean:175-180`) maps
+the WHOLE flat-store interior execution onto ONE component segment. The
+new table therefore joins the existing interior component store
+(`canonicalRelativeRmmInteriorComponentStore`, addressed through
+`canonicalRelativeRmmInteriorComponentOffsets`) as an additional region,
+exactly as the local and global sparse tables already do. This is the
+property that made B6 cheap and it holds here. REQ-B7-04 is correspondingly
+lighter than frozen: `canonical_segments_complete` does NOT move, and no
+new `ReviewerSource` constructor is added.
+
+### THE DECISIVE NUMBER: the interior cap is genuinely tight. 207 -> 210.
+
+Settled by reading the cap proof
+`canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_four_of_bounded`
+(`InteriorDirectory.lean:4451-4510`) rather than inferring it. The four
+branches discharge against
+`canonicalRelativeRmmPrincipledInteriorChargedTraceCost = 30`
+(`InteriorDirectory.lean:1783`) as follows:
+
+- within-macro: `...LocalTwoSpanCandidateCosted_cost_le_eighteen_of_size_ge_four`
+  (`:4289`), then `Nat.le_trans` to 30. SLACK 12.
+- adjacent: `...AdjacentMacroCandidateCosted_cost_le_twenty_of_macro_crossing`
+  (`:4358`), then `Nat.le_trans` to 30. SLACK 10.
+- left-middle: `...LeftMiddleMacroCandidateCosted_cost_le_twenty_of_macro_crossing`,
+  then `Nat.le_trans` to 30. SLACK 10.
+- cross-macro: `...CrossMacroCandidateCosted_cost_le_thirty_of_macro_crossing`
+  applied DIRECTLY, with NO `Nat.le_trans` and no numeric slack. SLACK 0.
+
+The cross-macro branch is three two-spans at
+`...TwoSpanCandidateCosted_cost_le_ten_of_macro_crossing` (`:4310`,
+`:4334`), each two span candidates at
+`...SpanCandidateCosted_cost_le_five_of_macro_crossing` (`:4224`, `:4260`):
+3 * 2 * 5 = 30, attained. THE CAP IS EXACTLY TIGHT AND HAS ZERO SLACK.
+
+Note the machine family's caps differ from the `PayloadLive` family's
+under a different hypothesis: `..._cost_le_eighteen_of_size_ge_four` (span
+<= 9, `:4164`) versus `..._cost_le_ten_of_macro_crossing` (span <= 5).
+DD-20260718-012 reasoned from the `PayloadLive` numbers and reached the
+right conclusion for a partly wrong reason; the conclusion is now
+established on the executed family.
+
+Adding one packed level/span read per two-span call therefore gives, on
+the maximizing cross-macro branch, 3 * 11 = 33, and through the named
+algebra (`SuccinctFinalRAM.lean:8810-8820`):
+
+    closeLCA   = 2*11 + 2*37 + 33 = 129   (was 126)
+    wholeQuery = 2*35 + 129 + 11  = 210   (was 207)
+
+The other three branches absorb their added read inside existing slack
+(18 -> 20, 20 -> 22, 20 -> 22, all <= 30), so the cross-macro branch alone
+drives the move. 207 is to be frozen as
+`concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost` by the
+142/76/328 pattern, with every consumer and the `SumLe207` topology anchor
+migrated to 210, and frozen legacy anchors untouched.
+
+CONSEQUENCE FOR PLANNING, recorded honestly: this makes the rung a
+3-4 session job rather than a B6-shaped 2-session one, because the moved
+literal drags the full claim-registry and documentation migration surface.
+
+### CORRECTION 3: sizing should reuse the existing envelopes, via two
+### instantiations of one generic table
+
+DD-20260718-012 proposed a single merged table over
+`macroSize + macroCount + 1`. That merged domain matches no existing
+asymptotic envelope and would require a fresh `LittleOLinear` argument.
+Superseded: build ONE generic count-indexed table construction and
+INSTANTIATE IT TWICE - a local table indexed by `count <= macroSize`
+(~`b^2` rows) and a global table indexed by
+`macroSpanCount <= macroSampleCount` (~`n / b^3` rows), with
+`b = Nat.log2 shape.size + 1`. The global instance's budget is exactly
+`logLogSampledDirectoryOverhead_littleO` (`Asymptotics.lean:243`), the
+envelope the existing global sparse block table already uses, dominated
+via `LittleOLinear.of_le` (`:35`); the local instance repackages
+`eventually_scale_log2_succ_cube_le_self` (`Asymptotics.lean:516`). One
+set of lemmas, two sources, no new asymptotics.
+
+Explicitly NOT to be copied: the chunk-table pattern
+(`bpFringeTableOverhead_littleO`), whose exponential-slack threshold
+argument exists only because chunk tables have `2^c` rows. Those steps are
+vacuous for a count-indexed table. Analogues of the linear-capacity feeds
+(`bpFringeChunkRowCount_le_linear`,
+`bpChunkSelectEntryWidth_le_machineWordBits_capacity`) ARE still needed and
+are easier here.
+
+### Also superseded
+
+The E1 note at `E1_WORKLOG.md:2340-2343`, which rejected a table read
+because it "breaks REQ-E1-04 positional receipt equality", is over-strict
+and is not a constraint on this rung: B2, B3 and B6 each added reads to
+the accepted route. Changing the accepted trace is a re-freeze cost, not
+an impossibility.
+
+The msb/log2 ISA option is dead for a sharper reason than the user
+decision alone: at the trace layer cost IS trace length, so an event-free
+msb instruction costs ZERO there and buys nothing at the layer where the
+route's charge policy lives. The standardness claim for a unit-cost msb is
+also unsubstantiated anywhere in this repository.

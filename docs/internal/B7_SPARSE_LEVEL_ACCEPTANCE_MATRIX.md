@@ -125,3 +125,57 @@ derivation wins over this prediction if they disagree.
 | CHK-07 | "`design_decision_check.ps1 -Strict -Base f6564ec`". | Verification | Exit 0. | - | - | | Open |
 | CHK-08 | "`claim_drift_scan.ps1`; `paper_topology_lint.ps1`". | Verification | Exit 0, with `SumLe207` migrated to the derived literal if it moves. | - | - | | Open |
 | STRETCH-01 | "a COMPLETE INVENTORY of every uncharged computation reachable from the accepted whole-query route, each classified as representation artifact (with its checked bridge lemma) or charged, committed as a doc section." | Stretch | An enumeration with a stated derivation method (so its completeness is auditable), each entry classified with its bridge lemma name or its charging evidence. | Converts "we fixed the ones we found" into "here is the complete list". | The enumeration must state HOW completeness was established (e.g. mechanized reachability from the route root), not merely list what was noticed. Already-known input: the dead `maxRel` read at the min-candidate site (DD-20260718-012). | | Open (stretch; attempted only after the rung closes) |
+
+## Amendment 1 (coordinator-relayed correction, before implementation)
+
+Recorded per the matrix's own rule that after freezing, only evidence,
+status, and coordinator-approved amendments may change. Full evidence in
+DD-20260718-013. Nothing below weakens a requirement; two rows get
+HARDER-to-satisfy evidence and one gets lighter.
+
+1. SITES CORRECTED. The "finding this rung closes" section above cites
+   `InteriorRAM.lean:573/621/819/867`. Those are cost-model twins on the
+   refinement ladder, NOT the executed route. The executed sites are the
+   `FlatStoreComputation` family: `InteriorDirectory.lean:2117` (local,
+   level -> `bpLocalSparseCellSlot` at `:2088`), `InteriorDirectory.lean:2131`
+   (global, level -> `bpGlobalSparseCellSlot` at `:2106`), and
+   `SparseArgMin.lean:599` (invoked at `:2118`/`:2132`). Root:
+   `canonicalRelativeRmmInteriorRangeMinComputation`
+   (`InteriorDirectory.lean:2185`), reached from
+   `canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment`
+   (`ConcreteDirectoryRAM.lean:1113`). REQ-B7-02 and REQ-B7-03 must be
+   evidenced on THESE objects; evidence on the `PayloadLive*` family does
+   not discharge them.
+
+2. REQ-B7-04 IS LIGHTER THAN FROZEN. `flatStoreExecutionTraceResultAtSegment`
+   (`InteriorRAM.lean:175-180`) maps the whole interior execution onto ONE
+   component segment, so the new table joins the existing interior
+   component store as a region rather than becoming a new segment. NO new
+   segment, NO new `ReviewerSource`, and `canonical_segments_complete` does
+   NOT move. The row's remaining obligations (erasure, capacity, littleO,
+   producer provenance, W19 witness on an execution that actually reads the
+   level table) stand unchanged.
+
+3. REQ-B7-05 SETTLED IN ADVANCE, WITH EVIDENCE. The interior cap is
+   genuinely tight: in
+   `canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_four_of_bounded`
+   (`InteriorDirectory.lean:4451-4510`) the cross-macro branch discharges
+   `..._cost_le_thirty_of_macro_crossing` DIRECTLY against the cap with no
+   `Nat.le_trans` and zero numeric slack, while the other three branches
+   carry slack 12, 10, 10. So interior 30 -> 33 and the literal 207 -> 210.
+   The row's evidence column remains authoritative and the final value must
+   still be `rfl`-derived over the amended route.
+
+4. REQ-B7-01 SIZING SUPERSEDED. Build ONE generic count-indexed table and
+   instantiate it TWICE (local, indexed by `count <= macroSize`; global,
+   indexed by `macroSpanCount <= macroSampleCount`) rather than one merged
+   table over a summed domain. The global instance reuses
+   `logLogSampledDirectoryOverhead_littleO` (`Asymptotics.lean:243`) via
+   `LittleOLinear.of_le` (`:35`); the local instance repackages
+   `eventually_scale_log2_succ_cube_le_self` (`Asymptotics.lean:516`). The
+   chunk-table `littleO` pattern must NOT be copied. Linear-capacity feed
+   analogues are still required.
+
+5. NOT A CONSTRAINT. The E1 note at `E1_WORKLOG.md:2340-2343` rejecting a
+   table read on positional-receipt grounds is over-strict; B2/B3/B6 each
+   added reads to the accepted route.
