@@ -5961,35 +5961,40 @@ private theorem reviewerCanonicalInterior_mayRead
         SuccinctClose.canonicalBPRelativeSummaryBlocksPerSuperRaw shape := by
     exact Nat.one_le_iff_ne_zero.mpr (Nat.mul_ne_zero
       (Nat.ne_of_gt hraw) (Nat.ne_of_gt hraw))
-  let layout := SuccinctClose.RelativeRmm.canonicalLayout shape
-  let table := SuccinctClose.canonicalRelativeRmmInteriorLocalTable shape
+  -- WITNESSED READ CHANGED BY THE CHARGED SPARSE-LEVEL SWAP.
+  -- The two-span computation now reads the charged level table FIRST and
+  -- derives the level from that read, so the sparse-offset span read is no
+  -- longer the head of the append chain.  This witness therefore exhibits the
+  -- LEVEL read, which is unconditionally performed by the outer bind before
+  -- the match on the read value and so is the leftmost read of the execution.
+  -- Witnessing it needs no `Nat.log2` at proof level and no `bpLocalSparseCellSlot`
+  -- address arithmetic, which is why the concrete `layout`/`slot` unfolding that
+  -- used to drive this proof into `whnf` is gone rather than merely made cheaper.
+  let levelTable :=
+    SuccinctClose.canonicalRelativeRmmInteriorLocalLevelTable shape
   let offsets := SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets shape
   let array :=
     (SuccinctClose.canonicalRelativeRmmInteriorComponentStore shape).store.words
   let store := SuccinctSpace.FlatWordStore.ofArray array
-  let slot := SuccinctClose.bpLocalSparseCellSlot layout.macroSize
-    layout.levelCount 0 0 (Nat.log2 1)
-  rcases machineReadComputationAt_mayRead table.table
+  have hwidth : 0 < SuccinctClose.bpSparseLevelWidth
+      (SuccinctClose.bpSparseLevelDomain
+        (SuccinctClose.RelativeRmm.canonicalLayout shape).macroSize) := by
+    unfold SuccinctClose.bpSparseLevelWidth
+    omega
+  rcases machineReadComputationAt_mayRead levelTable.table
       (SuccinctRank.machineWordBits shape.bpCode.length)
-      offsets.localOffset offsets.deadAddress slot
-      (SuccinctRank.machineWordBits_pos layout.macroSize) store with
+      offsets.localLevel offsets.deadAddress 1
+      hwidth store with
     ⟨address, word?, hfirst⟩
-  have hlocalSpan : (address, word?) ∈
-      ((SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation
-        shape 0 0 (Nat.log2 1)).run store).reads := by
-    unfold SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation
-    simp only [SuccinctSpace.FlatStoreComputation.bind_run,
-      SuccinctSpace.FlatStoreExecution.append]
-    apply List.mem_append_left
-    simpa [SuccinctClose.canonicalRelativeRmmMachineReadNatComputation,
-      table, offsets, layout, slot] using hfirst
   have htwo : (address, word?) ∈
       ((SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
         shape 0 0 1).run store).reads := by
     unfold SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
     simp only [SuccinctSpace.FlatStoreComputation.bind_run,
       SuccinctSpace.FlatStoreExecution.append]
-    exact List.mem_append_left _ hlocalSpan
+    apply List.mem_append_left
+    simpa [SuccinctClose.canonicalRelativeRmmMachineReadNatComputation,
+      levelTable, offsets] using hfirst
   have hexec : (address, word?) ∈
       (SuccinctClose.canonicalRelativeRmmInteriorRangeMinExecutionWithStore
         shape array 0 1).reads := by
@@ -8870,7 +8875,7 @@ def canonicalSilentSparseLevelHistoricalEndpointFringeChargedTraceCost : Nat := 
 
 /--
 Frozen historical algebra of the retired event-silent fringe route
-(pattern: `canonicalTransitionalQueryCost = 328`).  The retired route's
+(pattern: `canonicalTransitionalQueryCost = 352`).  The retired route's
 fringe leaves computed their min-excess/argmin scan without charged reads;
 the chunked route replaces the two 4-read fringes by two 37-read fringes.
 
@@ -9100,7 +9105,7 @@ theorem concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le
   have htransitional :
       3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
           SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
-            SuccinctSelect.sparseDenseFalseSelectQueryCost = 328 := by
+            SuccinctSelect.sparseDenseFalseSelectQueryCost = 352 := by
     rfl
   omega
 
@@ -9720,12 +9725,12 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only
         WholeQueryState.empty)
       event hmem
 
-/-- The canonical transitional whole-query cap computes to 328 modeled ticks. -/
+/-- The canonical transitional whole-query cap computes to 352 modeled ticks. -/
 theorem concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq :
     3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
         SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
           SuccinctSelect.sparseDenseFalseSelectQueryCost =
-      328 := by
+      352 := by
   rfl
 
 /-- Compatibility with the older conservative aggregate bound. -/

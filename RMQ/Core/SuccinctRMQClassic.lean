@@ -145,7 +145,7 @@ theorem canonicalSilentSparseLevelQueryCost_eq :
     SuccinctFinal.concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq
 
 theorem canonicalTransitionalQueryCost_eq :
-    canonicalTransitionalQueryCost = 328 := by
+    canonicalTransitionalQueryCost = 352 := by
   exact
     SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq
 

@@ -267,7 +267,7 @@ def canonicalBoundOK : Bool :=
     RMQ.SuccinctClassic.canonicalSilentSparseLevelQueryCost == 207 &&
     RMQ.SuccinctClassic.canonicalSilentWordRankSelectQueryCost == 142 &&
     RMQ.SuccinctClassic.canonicalSilentFringeQueryCost == 76 &&
-    RMQ.SuccinctClassic.canonicalTransitionalQueryCost == 328
+    RMQ.SuccinctClassic.canonicalTransitionalQueryCost == 352
 
 def structuralEvidenceOK : Bool :=
   routeEvidenceOK && physicalErasureOK && physicalBackingOK &&

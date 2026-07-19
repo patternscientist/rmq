@@ -86,7 +86,7 @@ def physicalReadsMatchCanonicalStore
 #guard RMQ.SuccinctClassic.canonicalSilentWordRankSelectQueryCost == 142
 #guard RMQ.SuccinctClassic.canonicalSilentFringeQueryCost == 76
 
-#guard RMQ.SuccinctClassic.canonicalTransitionalQueryCost == 328
+#guard RMQ.SuccinctClassic.canonicalTransitionalQueryCost == 352
 
 #guard canonicalQueryRoute tinyRMQInput 2 4 == .sameBlock
 

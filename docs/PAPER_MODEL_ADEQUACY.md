@@ -123,8 +123,16 @@ concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only
 every event of the accepted whole-query global word trace is a
 `WordRAM.TraceEvent.readWord` constructor, for every shape and query. The
 `wordRank`/`wordSelect` word-local primitives remain defined for
-legacy/compatibility surfaces (the frozen 76/142/328 routes) but are never
+legacy/compatibility surfaces (the frozen 76/142/207 routes) but are never
 emitted by the accepted route.
+
+CORRECTION OF RECORD (charged sparse-level rung): `328` was previously listed
+here among the frozen routes.  It is NOT frozen.  `canonicalTransitionalQueryCost`
+is a LIVE symbolic abbrev over `canonicalCompactBPCloseQueryCostWithRankSeed`,
+which is in turn defined over the live `canonicalRelativeRmmInteriorQueryCost`;
+it therefore tracks the accepted route and moves whenever that cap moves.  The
+genuinely frozen whole-query constants are `76`, `142` and `207`, each of which
+names only pinned numeral components and so is invariant under a live cap move.
 
 The declared charge policy is therefore:
 
@@ -345,10 +353,13 @@ The current reviewer-route modeled bound is the principled charged-trace sum
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`
 and evaluated by
 `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`. The sum is
-`2*select35 + (2*rank11 + 2*fringe37 + interior30) + rank11`, derived (never
+`2*select35 + (2*rank11 + 2*fringe37 + interior33) + rank11`, derived (never
 asserted) from the component algebra; the retired 142 (silent in-word
-rank/select), 76 (silent fringe), and 328 (transitional) literals stay frozen
-as historical constants with their chains still checked.
+rank/select), 76 (silent fringe), and 207 (silent sparse-level) literals stay
+frozen as historical constants with their chains still checked.  The
+transitional cap is NOT among them: it is live, and the charged sparse-level
+recharge moves it `328 -> 352` for the same reason it moves the interior
+component `30 -> 33`.
 The operational bridge classifies every event in the actual canonical trace as
 `readWord` (the readWord-only vocabulary theorem above), excludes
 `syntheticCostOnlyPrimitive`, and proves that the direct
