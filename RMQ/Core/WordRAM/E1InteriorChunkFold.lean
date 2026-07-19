@@ -239,25 +239,38 @@ the cap is exact rather than lossy.
 The dead path overrides both the address and the count, making it a
 one-chunk instance of the same fold rather than a separate code path.
 -/
+def interiorChunkInitHead
+    (base entriesLen chunkCount : Nat) : List Instr :=
+  [ .const cT entriesLen            -- Q+0
+  , .natLt cT iIdx cT               -- Q+1   cT := (i < entriesLen)
+  , .mulConst cAddr iIdx chunkCount -- Q+2   cAddr := i * chunkCount
+  , .const cU base                  -- Q+3
+  , .add cAddr cU cAddr             -- Q+4   cAddr := base + i * chunkCount
+  , .const cCnt chunkCount          -- Q+5
+  , .const cU 8                     -- Q+6
+  , .sub cU cCnt cU                 -- Q+7   cU := chunkCount - 8
+  , .sub cCnt cCnt cU ]             -- Q+8   cCnt := min chunkCount 8
+
+/-- The dead-address override: taken only when the route's validity test
+fails, making the dead path a ONE-CHUNK instance of the same fold. -/
+def interiorChunkInitDead (deadAddress : Nat) : List Instr :=
+  [ .const cAddr deadAddress        -- Q+10
+  , .const cCnt 1 ]                 -- Q+11
+
+/-- The fold's zeroing tail, common to both paths. -/
+def interiorChunkInitTail : List Instr :=
+  [ .const cOne 1                   -- Q+12
+  , .const cAcc 0                   -- Q+13
+  , .const cBad 0                   -- Q+14
+  , .const cRev 0                   -- Q+15
+  , .move cN cCnt ]                 -- Q+16  save the count for the reversal
+
 def interiorChunkInit
     (base deadAddress entriesLen chunkCount Q : Nat) : List Instr :=
-  [ .const cT entriesLen           -- Q+0
-  , .natLt cT iIdx cT              -- Q+1   cT := (i < entriesLen)
-  , .mulConst cAddr iIdx chunkCount -- Q+2  cAddr := i * chunkCount
-  , .const cU base                 -- Q+3
-  , .add cAddr cU cAddr            -- Q+4   cAddr := base + i * chunkCount
-  , .const cCnt chunkCount         -- Q+5
-  , .const cU 8                    -- Q+6
-  , .sub cU cCnt cU                -- Q+7   cU := chunkCount - 8
-  , .sub cCnt cCnt cU              -- Q+8   cCnt := min chunkCount 8
-  , .brNZ cT (Q + 12)              -- Q+9   valid: skip the dead override
-  , .const cAddr deadAddress       -- Q+10
-  , .const cCnt 1                  -- Q+11
-  , .const cOne 1                  -- Q+12
-  , .const cAcc 0                  -- Q+13
-  , .const cBad 0                  -- Q+14
-  , .const cRev 0                  -- Q+15
-  , .move cN cCnt ]                -- Q+16  save the count for the reversal
+  interiorChunkInitHead base entriesLen chunkCount
+    ++ [.brNZ cT (Q + 12)]          -- Q+9   valid: skip the dead override
+    ++ interiorChunkInitDead deadAddress
+    ++ interiorChunkInitTail
 
 @[simp] theorem interiorChunkInit_length
     (base deadAddress entriesLen chunkCount Q : Nat) :
@@ -354,16 +367,10 @@ as a CONSEQUENCE of the cap chain.
 /-- Init charges, indexed by the route's validity condition: the valid
 path skips the two-instruction dead override. -/
 def interiorChunkInitCats (valid : Bool) : List Category :=
-  if valid then
-    [.registerWrite, .comparison, .arithmetic, .registerWrite, .arithmetic,
-      .registerWrite, .registerWrite, .arithmetic, .arithmetic, .branch,
-      .registerWrite, .registerWrite, .registerWrite, .registerWrite,
-      .registerWrite]
-  else
-    [.registerWrite, .comparison, .arithmetic, .registerWrite, .arithmetic,
-      .registerWrite, .registerWrite, .arithmetic, .arithmetic, .branch,
-      .registerWrite, .registerWrite, .registerWrite, .registerWrite,
-      .registerWrite, .registerWrite, .registerWrite]
+  (interiorChunkInitHead 0 0 0).map Instr.category
+    ++ [Category.branch]
+    ++ (if valid then [] else (interiorChunkInitDead 0).map Instr.category)
+    ++ interiorChunkInitTail.map Instr.category
 
 @[simp] theorem interiorChunkInitCats_valid :
     (interiorChunkInitCats true).length = 15 := rfl
@@ -518,8 +525,10 @@ theorem interiorChunkInit_fits
   have h8 : (8 : Nat) < 2 ^ w := by omega
   have h1 : (1 : Nat) < 2 ^ w := by omega
   have h0 : (0 : Nat) < 2 ^ w := by omega
-  simp only [interiorChunkInit, List.mem_cons, List.not_mem_nil, or_false]
-    at hinstr
+  simp only [interiorChunkInit, interiorChunkInitHead,
+    interiorChunkInitDead, interiorChunkInitTail, List.append_assoc,
+    List.cons_append, List.nil_append, List.mem_cons, List.not_mem_nil,
+    or_false] at hinstr
   rcases hinstr with h | h | h | h | h | h | h | h | h | h | h | h | h | h
     | h | h | h <;> subst h
   · exact ⟨h95, hlen⟩
@@ -1077,6 +1086,578 @@ theorem interiorChunkReadLoop_runsTo
   · rwa [iterLog_chunkReads_eq store segment n start] at hrunF
   · rw [haccF, Nat.sub_zero]
   · rw [hbadF, Nat.sub_zero]
+
+/-! ## The digit-reversal loop
+
+Read-free.  Its whole contribution to the receipt is `[]` at every
+iteration, so the fold's trace is the read loop's trace; what it costs is
+`arithmetic` and `branch` charges under the same literal cap.
+-/
+
+/-- The reversal state after `j` steps: one base-`scale` digit moves from
+the big-endian accumulator to the little-endian result per step. -/
+def chunkRevAt (scale acc0 : Nat) : Nat → Nat × Nat
+  | 0 => (acc0, 0)
+  | j + 1 =>
+      ((chunkRevAt scale acc0 j).1 / scale,
+        (chunkRevAt scale acc0 j).2 * scale
+          + (chunkRevAt scale acc0 j).1 % scale)
+
+/-- `a - a / k * k` is `a % k`; the machine forms the remainder this way
+because it has no modulus instruction. -/
+theorem sub_div_mul_eq_mod (a k : Nat) : a - a / k * k = a % k := by
+  have h := Nat.div_add_mod a k
+  have hcomm : a / k * k = k * (a / k) := Nat.mul_comm _ _
+  omega
+
+/-- An iterated empty receipt is empty. -/
+theorem iterLog_nil_reads (n : Nat) :
+    iterLog (fun _ => ([] : List TraceEvent)) n = [] := by
+  induction n with
+  | zero => rfl
+  | succ n ih => rw [iterLog_succ, ih]; rfl
+
+/-- After `MB+0`: the quotient. -/
+def rvR1 (regs : RegFile) (acc scale : Nat) : RegFile :=
+  regs.write cT (acc / scale)
+
+/-- After `MB+1`: the quotient scaled back up. -/
+def rvR2 (regs : RegFile) (acc scale : Nat) : RegFile :=
+  (rvR1 regs acc scale).write cU (acc / scale * scale)
+
+/-- After `MB+2`: the low digit, formed as a difference. -/
+def rvR3 (regs : RegFile) (acc scale : Nat) : RegFile :=
+  (rvR2 regs acc scale).write cU (acc % scale)
+
+/-- After `MB+3`: the result shifts up. -/
+def rvR4 (regs : RegFile) (acc scale rev : Nat) : RegFile :=
+  (rvR3 regs acc scale).write cRev (rev * scale)
+
+/-- After `MB+4`: the digit is emitted, reversed. -/
+def rvR5 (regs : RegFile) (acc scale rev : Nat) : RegFile :=
+  (rvR4 regs acc scale rev).write cRev (rev * scale + acc % scale)
+
+/-- After `MB+5`: the accumulator drops its low digit. -/
+def rvR6 (regs : RegFile) (acc scale rev : Nat) : RegFile :=
+  (rvR5 regs acc scale rev).write cAcc (acc / scale)
+
+/-- After `MB+6`: the counter decrements. -/
+def rvR7 (regs : RegFile) (acc scale rev cnt : Nat) : RegFile :=
+  (rvR6 regs acc scale rev).write cN cnt
+
+theorem rvR7_apply (regs : RegFile) (acc scale rev cnt r : Nat) :
+    rvR7 regs acc scale rev cnt r =
+      if r = cN then cnt
+      else if r = cAcc then acc / scale
+      else if r = cRev then rev * scale + acc % scale
+      else if r = cU then acc % scale
+      else if r = cT then acc / scale
+      else regs r := by
+  unfold rvR7 rvR6 rvR5 rvR4 rvR3 rvR2 rvR1 RegFile.write
+  simp only [cN, cAcc, cRev, cU, cT]
+  by_cases h1 : r = 98
+  · simp [h1]
+  · by_cases h2 : r = 92
+    · simp [h2]
+    · by_cases h3 : r = 97
+      · simp [h3]
+      · by_cases h4 : r = 96
+        · simp [h4]
+        · by_cases h5 : r = 95
+          · simp [h5]
+          · simp [h1, h2, h3, h4, h5]
+
+/-- Registers the reversal body writes. -/
+abbrev ChunkCombineUntouched (r : Nat) : Prop :=
+  r ≠ cT ∧ r ≠ cU ∧ r ≠ cRev ∧ r ≠ cAcc ∧ r ≠ cN
+
+/-- A register outside the bank is outside the reversal body's write
+set. -/
+theorem chunkCombineUntouched_of_fold {r : Nat}
+    (h : ChunkFoldUntouched r) : ChunkCombineUntouched r := by
+  simp only [ChunkFoldUntouched] at h
+  simp only [ChunkCombineUntouched, cT, cU, cRev, cAcc, cN]
+  omega
+
+/--
+ONE ITERATION OF THE REVERSAL LOOP.
+
+No `readWord`: the receipt is empty.  One base-`scale` digit moves from
+`cAcc` to `cRev`, the counter decrements, and the back edge is taken
+exactly when iterations remain.
+
+`cBad` is stated preserved because the epilogue's `some`/`none` verdict
+reads it after this loop has run.
+-/
+theorem interiorChunkCombine_step
+    (store : ReadStore) {program : E1Machine.Program} {wordScale MB : Nat}
+    (hHost : HostedAt program MB (interiorChunkCombine wordScale MB))
+    (regs : RegFile) (acc rev cnt : Nat)
+    (hOne : regs cOne = 1) (hAcc : regs cAcc = acc)
+    (hRev : regs cRev = rev) (hN : regs cN = cnt + 1) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, MB, false⟩
+          ⟨regs', if cnt = 0 then MB + 8 else MB, false⟩ []
+          interiorChunkCombineCats ∧
+        regs' cOne = 1 ∧
+        regs' cAcc = acc / wordScale ∧
+        regs' cRev = rev * wordScale + acc % wordScale ∧
+        regs' cN = cnt ∧
+        regs' cBad = regs cBad ∧
+        (∀ r, ChunkCombineUntouched r → regs' r = regs r) := by
+  have hf : ∀ (k m : Nat) (instr : Instr), k < 8 →
+      (interiorChunkCombine wordScale MB)[k]? = some instr →
+      MB + k = m → program[m]? = some instr := by
+    intro k m instr hk hget hm
+    rw [← hm, hHost k hk, hget]
+  have h0 : program[MB]? = some (.divConst cT cAcc wordScale) :=
+    hf 0 MB _ (by omega) rfl (by omega)
+  have h1 : program[MB + 1]? = some (.mulConst cU cT wordScale) :=
+    hf 1 _ _ (by omega) rfl (by omega)
+  have h2 : program[MB + 2]? = some (.sub cU cAcc cU) :=
+    hf 2 _ _ (by omega) rfl (by omega)
+  have h3 : program[MB + 3]? = some (.mulConst cRev cRev wordScale) :=
+    hf 3 _ _ (by omega) rfl (by omega)
+  have h4 : program[MB + 4]? = some (.add cRev cRev cU) :=
+    hf 4 _ _ (by omega) rfl (by omega)
+  have h5 : program[MB + 5]? = some (.move cAcc cT) :=
+    hf 5 _ _ (by omega) rfl (by omega)
+  have h6 : program[MB + 6]? = some (.sub cN cN cOne) :=
+    hf 6 _ _ (by omega) rfl (by omega)
+  have h7 : program[MB + 7]? = some (.brNZ cN MB) :=
+    hf 7 _ _ (by omega) rfl (by omega)
+  have s0 : RunsTo store program ⟨regs, MB, false⟩
+      ⟨rvR1 regs acc wordScale, MB + 1, false⟩ [] [Category.arithmetic] := by
+    have h := RunsTo.divConst (store := store)
+      (s := (⟨regs, MB, false⟩ : State)) rfl h0
+    simpa [rvR1, hAcc] using h
+  have s1 : RunsTo store program ⟨rvR1 regs acc wordScale, MB + 1, false⟩
+      ⟨rvR2 regs acc wordScale, MB + 2, false⟩ [] [Category.arithmetic] := by
+    have h := RunsTo.mulConst (store := store)
+      (s := (⟨rvR1 regs acc wordScale, MB + 1, false⟩ : State)) rfl h1
+    simpa [rvR2, rvR1, RegFile.write, cT, cU] using h
+  have s2 : RunsTo store program ⟨rvR2 regs acc wordScale, MB + 2, false⟩
+      ⟨rvR3 regs acc wordScale, MB + 3, false⟩ [] [Category.arithmetic] := by
+    have h := RunsTo.sub (store := store)
+      (s := (⟨rvR2 regs acc wordScale, MB + 2, false⟩ : State)) rfl h2
+    simpa [rvR3, rvR2, rvR1, RegFile.write, cT, cU, cAcc, hAcc,
+      sub_div_mul_eq_mod] using h
+  have s3 : RunsTo store program ⟨rvR3 regs acc wordScale, MB + 3, false⟩
+      ⟨rvR4 regs acc wordScale rev, MB + 4, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.mulConst (store := store)
+      (s := (⟨rvR3 regs acc wordScale, MB + 3, false⟩ : State)) rfl h3
+    simpa [rvR4, rvR3, rvR2, rvR1, RegFile.write, cT, cU, cRev, hRev]
+      using h
+  have s4 : RunsTo store program
+      ⟨rvR4 regs acc wordScale rev, MB + 4, false⟩
+      ⟨rvR5 regs acc wordScale rev, MB + 5, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.add (store := store)
+      (s := (⟨rvR4 regs acc wordScale rev, MB + 4, false⟩ : State)) rfl h4
+    simpa [rvR5, rvR4, rvR3, rvR2, rvR1, RegFile.write, cU, cRev] using h
+  have s5 : RunsTo store program
+      ⟨rvR5 regs acc wordScale rev, MB + 5, false⟩
+      ⟨rvR6 regs acc wordScale rev, MB + 6, false⟩ []
+      [Category.registerWrite] := by
+    have h := RunsTo.move (store := store)
+      (s := (⟨rvR5 regs acc wordScale rev, MB + 5, false⟩ : State)) rfl h5
+    simpa [rvR6, rvR5, rvR4, rvR3, rvR2, rvR1, RegFile.write, cT, cU,
+      cRev, cAcc] using h
+  have s6 : RunsTo store program
+      ⟨rvR6 regs acc wordScale rev, MB + 6, false⟩
+      ⟨rvR7 regs acc wordScale rev cnt, MB + 7, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.sub (store := store)
+      (s := (⟨rvR6 regs acc wordScale rev, MB + 6, false⟩ : State)) rfl h6
+    simpa [rvR7, rvR6, rvR5, rvR4, rvR3, rvR2, rvR1, RegFile.write, cT,
+      cU, cRev, cAcc, cN, cOne, hN, hOne] using h
+  have s7 : RunsTo store program
+      ⟨rvR7 regs acc wordScale rev cnt, MB + 7, false⟩
+      ⟨rvR7 regs acc wordScale rev cnt, if cnt = 0 then MB + 8 else MB,
+        false⟩ [] [Category.branch] := by
+    have h := RunsTo.brNZ (store := store)
+      (s := (⟨rvR7 regs acc wordScale rev cnt, MB + 7, false⟩ : State))
+      rfl h7
+    have hn7 : rvR7 regs acc wordScale rev cnt cN = cnt := by
+      rw [rvR7_apply]; simp
+    simpa [hn7] using h
+  refine ⟨rvR7 regs acc wordScale rev cnt, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · have hrun :=
+      (((s0.trans s1).trans (s2.trans s3)).trans
+        ((s4.trans s5).trans (s6.trans s7)))
+    simpa [interiorChunkCombineCats, interiorChunkCombine] using hrun
+  · rw [rvR7_apply]; simp [cOne, cN, cAcc, cRev, cU, cT, hOne]
+  · rw [rvR7_apply]; simp [cAcc, cN]
+  · rw [rvR7_apply]; simp [cRev, cN, cAcc]
+  · rw [rvR7_apply]; simp
+  · rw [rvR7_apply]; simp [cBad, cN, cAcc, cRev, cU, cT]
+  · intro r hr
+    obtain ⟨hT, hU, hRv, hAc, hNn⟩ := hr
+    rw [rvR7_apply]
+    simp [hT, hU, hRv, hAc, hNn]
+
+/--
+EXACT SIMULATION OF THE DIGIT-REVERSAL LOOP.
+
+Emits NOTHING -- the receipt is `[]` -- and converts the read loop's
+big-endian accumulation into the route's little-endian digit order under
+the same iteration count, leaving the result in `cRev`.
+
+`0 < n` is required for the same do-while reason as the read loop.
+-/
+theorem interiorChunkCombineLoop_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {wordScale MB : Nat}
+    (hHost : HostedAt program MB (interiorChunkCombine wordScale MB))
+    (regsL : RegFile) (acc0 n : Nat) (hn : 0 < n)
+    (hOne : regsL cOne = 1) (hAcc : regsL cAcc = acc0)
+    (hRev : regsL cRev = 0) (hN : regsL cN = n) :
+    ∃ regsF : RegFile,
+      RunsTo store program ⟨regsL, MB, false⟩ ⟨regsF, MB + 8, false⟩ []
+          (iterLog (fun _ => interiorChunkCombineCats) n) ∧
+        regsF cOne = 1 ∧
+        regsF cRev = (chunkRevAt wordScale acc0 n).2 ∧
+        regsF cN = 0 ∧
+        regsF cBad = regsL cBad ∧
+        (∀ r, ChunkFoldUntouched r → regsF r = regsL r) := by
+  let P : Nat → State → Prop := fun k s =>
+    k ≤ n ∧ s.halted = false ∧
+    s.pc = (if k = 0 then MB + 8 else MB) ∧
+    s.regs cOne = 1 ∧
+    s.regs cAcc = (chunkRevAt wordScale acc0 (n - k)).1 ∧
+    s.regs cRev = (chunkRevAt wordScale acc0 (n - k)).2 ∧
+    s.regs cN = k ∧
+    s.regs cBad = regsL cBad ∧
+    (∀ r, ChunkFoldUntouched r → s.regs r = regsL r)
+  have hstep : ∀ k s, P (k + 1) s →
+      ∃ s', RunsTo store program s s' [] interiorChunkCombineCats ∧ P k s' := by
+    intro k s hP
+    obtain ⟨regs, pc, halted⟩ := s
+    obtain ⟨hkle, hhalt, hpc, hone, hacc, hrev, hcn, hbad, hpres⟩ := hP
+    simp only at hhalt hpc hone hacc hrev hcn hbad hpres
+    subst hhalt
+    rw [if_neg (Nat.succ_ne_zero k)] at hpc
+    subst pc
+    have hik : n - k = (n - (k + 1)) + 1 := by omega
+    obtain ⟨regs', hrun, hone', hacc', hrev', hcn', hbad', hpres'⟩ :=
+      interiorChunkCombine_step store hHost regs
+        (chunkRevAt wordScale acc0 (n - (k + 1))).1
+        (chunkRevAt wordScale acc0 (n - (k + 1))).2
+        k hone hacc hrev hcn
+    refine ⟨⟨regs', if k = 0 then MB + 8 else MB, false⟩, hrun, ?_⟩
+    refine ⟨by omega, rfl, rfl, hone', ?_, ?_, hcn', ?_, ?_⟩
+    · show regs' cAcc = (chunkRevAt wordScale acc0 (n - k)).1
+      rw [hacc', hik]
+      rfl
+    · show regs' cRev = (chunkRevAt wordScale acc0 (n - k)).2
+      rw [hrev', hik]
+      rfl
+    · show regs' cBad = regsL cBad
+      rw [hbad', hbad]
+    · intro r hr
+      show regs' r = regsL r
+      rw [hpres' r (chunkCombineUntouched_of_fold hr), hpres r hr]
+  have hP0 : P n ⟨regsL, MB, false⟩ := by
+    refine ⟨Nat.le_refl n, rfl, ?_, hOne, ?_, ?_, hN, rfl, fun r _ => rfl⟩
+    · show MB = if n = 0 then MB + 8 else MB
+      rw [if_neg (by omega)]
+    · show regsL cAcc = (chunkRevAt wordScale acc0 (n - n)).1
+      rw [hAcc, Nat.sub_self]; rfl
+    · show regsL cRev = (chunkRevAt wordScale acc0 (n - n)).2
+      rw [hRev, Nat.sub_self]; rfl
+  obtain ⟨sF, hrunF, hPF⟩ :=
+    RunsTo.iterate (store := store) (program := program) P
+      (fun _ => []) (fun _ => interiorChunkCombineCats) hstep n
+      ⟨regsL, MB, false⟩ hP0
+  obtain ⟨regsF, pcF, haltedF⟩ := sF
+  obtain ⟨_, hhaltF, hpcF, honeF, _, hrevF, hcnF, hbadF, hpresF⟩ := hPF
+  simp only at hhaltF hpcF honeF hrevF hcnF hbadF hpresF
+  subst hhaltF
+  subst pcF
+  refine ⟨regsF, ?_, honeF, ?_, hcnF, hbadF, hpresF⟩
+  · rwa [iterLog_nil_reads n] at hrunF
+  · rw [hrevF, Nat.sub_zero]
+
+/-! ## The init -/
+
+@[simp] theorem interiorChunkInitHead_length
+    (base entriesLen chunkCount : Nat) :
+    (interiorChunkInitHead base entriesLen chunkCount).length = 9 := rfl
+
+@[simp] theorem interiorChunkInitDead_length (deadAddress : Nat) :
+    (interiorChunkInitDead deadAddress).length = 2 := rfl
+
+@[simp] theorem interiorChunkInitTail_length :
+    interiorChunkInitTail.length = 5 := rfl
+
+theorem interiorChunkInitHead_straight (base entriesLen chunkCount : Nat) :
+    ∀ instr ∈ interiorChunkInitHead base entriesLen chunkCount,
+      instr.isStraight = true := by
+  intro instr hi
+  simp only [interiorChunkInitHead, List.mem_cons, List.not_mem_nil,
+    or_false] at hi
+  rcases hi with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> rfl
+
+theorem interiorChunkInitDead_straight (deadAddress : Nat) :
+    ∀ instr ∈ interiorChunkInitDead deadAddress,
+      instr.isStraight = true := by
+  intro instr hi
+  simp only [interiorChunkInitDead, List.mem_cons, List.not_mem_nil,
+    or_false] at hi
+  rcases hi with rfl | rfl <;> rfl
+
+theorem interiorChunkInitTail_straight :
+    ∀ instr ∈ interiorChunkInitTail, instr.isStraight = true := by
+  intro instr hi
+  simp only [interiorChunkInitTail, List.mem_cons, List.not_mem_nil,
+    or_false] at hi
+  rcases hi with rfl | rfl | rfl | rfl | rfl <;> rfl
+
+/-! Preservation for the init's three straight segments, via
+`straightRegs_preserves`: a register outside the fold's bank is never a
+write target of any of the seventeen instructions. -/
+
+theorem initHead_preserves (store : ReadStore)
+    (base entriesLen chunkCount : Nat) (regs : RegFile) {r : Nat}
+    (hr : ChunkFoldUntouched r) :
+    straightRegs store (interiorChunkInitHead base entriesLen chunkCount)
+      regs r = regs r := by
+  simp only [ChunkFoldUntouched] at hr
+  apply straightRegs_preserves
+  intro instr hi
+  simp only [interiorChunkInitHead, List.mem_cons, List.not_mem_nil,
+    or_false] at hi
+  rcases hi with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
+    (simp only [Instr.writesTo, cT, cU, cAddr, cCnt, ne_eq,
+      Option.some.injEq]; omega)
+
+theorem initDead_preserves (store : ReadStore) (deadAddress : Nat)
+    (regs : RegFile) {r : Nat} (hr : ChunkFoldUntouched r) :
+    straightRegs store (interiorChunkInitDead deadAddress) regs r
+      = regs r := by
+  simp only [ChunkFoldUntouched] at hr
+  apply straightRegs_preserves
+  intro instr hi
+  simp only [interiorChunkInitDead, List.mem_cons, List.not_mem_nil,
+    or_false] at hi
+  rcases hi with rfl | rfl <;>
+    (simp only [Instr.writesTo, cAddr, cCnt, ne_eq, Option.some.injEq];
+      omega)
+
+theorem initTail_preserves (store : ReadStore) (regs : RegFile) {r : Nat}
+    (hr : ChunkFoldUntouched r) :
+    straightRegs store interiorChunkInitTail regs r = regs r := by
+  simp only [ChunkFoldUntouched] at hr
+  apply straightRegs_preserves
+  intro instr hi
+  simp only [interiorChunkInitTail, List.mem_cons, List.not_mem_nil,
+    or_false] at hi
+  rcases hi with rfl | rfl | rfl | rfl | rfl <;>
+    (simp only [Instr.writesTo, cOne, cAcc, cBad, cRev, cN, ne_eq,
+      Option.some.injEq]; omega)
+
+/-- The cap chain computes the minimum.  This is the arithmetic content of
+DD-20260719-005: the machine's two truncated subtractions ARE `min`. -/
+theorem cap_chain_eq_min (chunkCount : Nat) :
+    chunkCount - (chunkCount - 8) = Nat.min chunkCount 8 := by
+  by_cases h : chunkCount ≤ 8
+  · have hmin : Nat.min chunkCount 8 = chunkCount := Nat.min_eq_left h
+    rw [hmin]; omega
+  · have h8 : 8 ≤ chunkCount := by omega
+    have hmin : Nat.min chunkCount 8 = 8 := Nat.min_eq_right h8
+    rw [hmin]; omega
+
+/--
+EXACT SIMULATION OF THE FOLD INIT.
+
+Emits NOTHING (no `readMem` in any of the three segments), charges the
+validity-indexed log, and leaves the machine with the route's start
+address in `cAddr` and the eight-capped iteration count in both `cCnt` and
+its saved copy `cN`, with the accumulators zeroed.
+
+The validity test is performed BY THE MACHINE -- `natLt` at `Q+1` against
+the machine's own index register, branched at `Q+9` -- not by a Lean-level
+`if` around the block, which is what REQ-E1-05's anti-vacuity challenge
+demands of a guard.
+-/
+theorem interiorChunkInit_runsTo
+    (store : ReadStore) {program : E1Machine.Program}
+    {base deadAddress entriesLen chunkCount Q : Nat}
+    (hHost : HostedAt program Q
+      (interiorChunkInit base deadAddress entriesLen chunkCount Q))
+    (regs : RegFile) (i : Nat) (hIdx : regs iIdx = i) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, Q, false⟩ ⟨regs', Q + 17, false⟩ []
+          (interiorChunkInitCats (decide (i < entriesLen))) ∧
+        regs' cOne = 1 ∧
+        regs' cAddr =
+          chunkStart base deadAddress entriesLen chunkCount i ∧
+        regs' cCnt = chunkIters entriesLen chunkCount i ∧
+        regs' cN = chunkIters entriesLen chunkCount i ∧
+        regs' cAcc = 0 ∧ regs' cBad = 0 ∧ regs' cRev = 0 ∧
+        (∀ r, ChunkFoldUntouched r → regs' r = regs r) := by
+  have hHead : HostedAt program Q
+      (interiorChunkInitHead base entriesLen chunkCount) :=
+    hHost.append_left.append_left.append_left
+  have hBr : program[Q + 9]? = some (.brNZ cT (Q + 12)) := by
+    have h := hHost.append_left.append_left.append_right
+    simpa using h.head
+  have hDead : HostedAt program (Q + 10)
+      (interiorChunkInitDead deadAddress) := by
+    have h := hHost.append_left.append_right
+    simpa using h
+  have hTail : HostedAt program (Q + 12) interiorChunkInitTail := by
+    have h := hHost.append_right
+    simpa using h
+  have rHead := RunsTo.straight store
+    (interiorChunkInitHead base entriesLen chunkCount)
+    (interiorChunkInitHead_straight base entriesLen chunkCount) Q hHead regs
+  have rTail : ∀ rr : RegFile,
+      RunsTo store program ⟨rr, Q + 12, false⟩
+        ⟨straightRegs store interiorChunkInitTail rr, Q + 17, false⟩
+        (straightReads store interiorChunkInitTail rr)
+        (interiorChunkInitTail.map Instr.category) := by
+    intro rr
+    have h := RunsTo.straight store interiorChunkInitTail
+      interiorChunkInitTail_straight (Q + 12) hTail rr
+    simpa using h
+  by_cases hvalid : i < entriesLen
+  · -- LIVE path: the branch is taken and the dead override is skipped
+    have hcond :
+        straightRegs store
+          (interiorChunkInitHead base entriesLen chunkCount) regs cT ≠ 0 := by
+      straight_eval [interiorChunkInitHead, cT, cU, cAddr, cCnt, iIdx]
+      simp [hIdx, hvalid]
+    have rBr : RunsTo store program
+        ⟨straightRegs store
+          (interiorChunkInitHead base entriesLen chunkCount) regs,
+          Q + 9, false⟩
+        ⟨straightRegs store
+          (interiorChunkInitHead base entriesLen chunkCount) regs,
+          Q + 12, false⟩ [] [Category.branch] := by
+      have h := RunsTo.brNZ_taken (store := store)
+        (s := (⟨straightRegs store
+          (interiorChunkInitHead base entriesLen chunkCount) regs, Q + 9,
+          false⟩ : State)) rfl (by simpa using hBr) hcond
+      simpa using h
+    refine ⟨straightRegs store interiorChunkInitTail
+      (straightRegs store
+        (interiorChunkInitHead base entriesLen chunkCount) regs),
+      ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+    · have hrun := (rHead.trans rBr).trans (rTail _)
+      have hreads : straightReads store
+          (interiorChunkInitHead base entriesLen chunkCount) regs = [] := by
+        straight_eval [interiorChunkInitHead]
+      have hreadsT : straightReads store interiorChunkInitTail
+          (straightRegs store
+            (interiorChunkInitHead base entriesLen chunkCount) regs)
+          = [] := by
+        straight_eval [interiorChunkInitTail]
+      rw [hreads, hreadsT] at hrun
+      simpa [interiorChunkInitCats, hvalid] using hrun
+    · straight_eval [interiorChunkInitTail, interiorChunkInitHead, cOne,
+        cAcc, cBad, cRev, cN, cCnt, cT, cU, cAddr, iIdx]
+    · straight_eval [interiorChunkInitTail, interiorChunkInitHead, cOne,
+        cAcc, cBad, cRev, cN, cCnt, cT, cU, cAddr, iIdx]
+      simp [chunkStart, hvalid, hIdx]
+    · straight_eval [interiorChunkInitTail, interiorChunkInitHead, cOne,
+        cAcc, cBad, cRev, cN, cCnt, cT, cU, cAddr, iIdx]
+      simp [chunkIters, hvalid, cap_chain_eq_min]
+    · straight_eval [interiorChunkInitTail, interiorChunkInitHead, cOne,
+        cAcc, cBad, cRev, cN, cCnt, cT, cU, cAddr, iIdx]
+      simp [chunkIters, hvalid, cap_chain_eq_min]
+    · straight_eval [interiorChunkInitTail, interiorChunkInitHead, cOne,
+        cAcc, cBad, cRev, cN, cCnt, cT, cU, cAddr, iIdx]
+    · straight_eval [interiorChunkInitTail, interiorChunkInitHead, cOne,
+        cAcc, cBad, cRev, cN, cCnt, cT, cU, cAddr, iIdx]
+    · straight_eval [interiorChunkInitTail, interiorChunkInitHead, cOne,
+        cAcc, cBad, cRev, cN, cCnt, cT, cU, cAddr, iIdx]
+    · intro r hr
+      rw [initTail_preserves store _ hr, initHead_preserves store _ _ _ _ hr]
+  · -- DEAD path: the branch falls through into the override
+    have hcond :
+        straightRegs store
+          (interiorChunkInitHead base entriesLen chunkCount) regs cT = 0 := by
+      straight_eval [interiorChunkInitHead, cT, cU, cAddr, cCnt, iIdx,
+        hIdx, hvalid]
+    have rBr : RunsTo store program
+        ⟨straightRegs store
+          (interiorChunkInitHead base entriesLen chunkCount) regs,
+          Q + 9, false⟩
+        ⟨straightRegs store
+          (interiorChunkInitHead base entriesLen chunkCount) regs,
+          Q + 10, false⟩ [] [Category.branch] := by
+      have h := RunsTo.brNZ_not_taken (store := store)
+        (s := (⟨straightRegs store
+          (interiorChunkInitHead base entriesLen chunkCount) regs, Q + 9,
+          false⟩ : State)) rfl (by simpa using hBr) hcond
+      simpa using h
+    have rDead : RunsTo store program
+        ⟨straightRegs store
+          (interiorChunkInitHead base entriesLen chunkCount) regs,
+          Q + 10, false⟩
+        ⟨straightRegs store (interiorChunkInitDead deadAddress)
+          (straightRegs store
+            (interiorChunkInitHead base entriesLen chunkCount) regs),
+          Q + 12, false⟩
+        (straightReads store (interiorChunkInitDead deadAddress)
+          (straightRegs store
+            (interiorChunkInitHead base entriesLen chunkCount) regs))
+        ((interiorChunkInitDead deadAddress).map Instr.category) := by
+      have h := RunsTo.straight store (interiorChunkInitDead deadAddress)
+        (interiorChunkInitDead_straight deadAddress) (Q + 10) hDead
+        (straightRegs store
+          (interiorChunkInitHead base entriesLen chunkCount) regs)
+      simpa using h
+    refine ⟨straightRegs store interiorChunkInitTail
+      (straightRegs store (interiorChunkInitDead deadAddress)
+        (straightRegs store
+          (interiorChunkInitHead base entriesLen chunkCount) regs)),
+      ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+    · have hrun := ((rHead.trans rBr).trans rDead).trans (rTail _)
+      have hreads : straightReads store
+          (interiorChunkInitHead base entriesLen chunkCount) regs = [] := by
+        straight_eval [interiorChunkInitHead]
+      have hreadsD : straightReads store (interiorChunkInitDead deadAddress)
+          (straightRegs store
+            (interiorChunkInitHead base entriesLen chunkCount) regs)
+          = [] := by
+        straight_eval [interiorChunkInitDead]
+      have hreadsT : straightReads store interiorChunkInitTail
+          (straightRegs store (interiorChunkInitDead deadAddress)
+            (straightRegs store
+              (interiorChunkInitHead base entriesLen chunkCount) regs))
+          = [] := by
+        straight_eval [interiorChunkInitTail]
+      rw [hreads, hreadsD, hreadsT] at hrun
+      simpa [interiorChunkInitCats, hvalid] using hrun
+    · straight_eval [interiorChunkInitTail, interiorChunkInitDead,
+        interiorChunkInitHead, cOne, cAcc, cBad, cRev, cN, cCnt, cT, cU,
+        cAddr, iIdx]
+    · straight_eval [interiorChunkInitTail, interiorChunkInitDead,
+        interiorChunkInitHead, cOne, cAcc, cBad, cRev, cN, cCnt, cT, cU,
+        cAddr, iIdx]
+      simp [chunkStart, hvalid]
+    · straight_eval [interiorChunkInitTail, interiorChunkInitDead,
+        interiorChunkInitHead, cOne, cAcc, cBad, cRev, cN, cCnt, cT, cU,
+        cAddr, iIdx]
+      simp [chunkIters, hvalid]
+    · straight_eval [interiorChunkInitTail, interiorChunkInitDead,
+        interiorChunkInitHead, cOne, cAcc, cBad, cRev, cN, cCnt, cT, cU,
+        cAddr, iIdx]
+      simp [chunkIters, hvalid]
+    · straight_eval [interiorChunkInitTail, interiorChunkInitDead,
+        interiorChunkInitHead, cOne, cAcc, cBad, cRev, cN, cCnt, cT, cU,
+        cAddr, iIdx]
+    · straight_eval [interiorChunkInitTail, interiorChunkInitDead,
+        interiorChunkInitHead, cOne, cAcc, cBad, cRev, cN, cCnt, cT, cU,
+        cAddr, iIdx]
+    · straight_eval [interiorChunkInitTail, interiorChunkInitDead,
+        interiorChunkInitHead, cOne, cAcc, cBad, cRev, cN, cCnt, cT, cU,
+        cAddr, iIdx]
+    · intro r hr
+      rw [initTail_preserves store _ hr, initDead_preserves store _ _ hr,
+        initHead_preserves store _ _ _ _ hr]
 
 end E1InteriorChunkFold
 end WordRAM
