@@ -3699,3 +3699,128 @@ The brief's first instruction is to settle the width question **by evaluation,
 before building anything** — concrete shape, actual `readBits` lengths at the
 last block's window — and to report the numbers. If false, the repair is already
 decided and it is the M3d-14 precedent, not padding.
+
+---
+
+## C05 round 57 — Surveys 3 and 4. My FOURTEENTH failed claim was the load-
+## bearing premise of the entire plan, and a frozen row demands a dead constant
+
+### THE BIG ONE: the rows are NOT whole-query scoped, and I invented that
+
+`E1_LIVE_STATE.md` asserted "**All eleven rows** are whole-query scoped by
+deliberate design, so no interior-leg component can close one." I verified the
+matrix's own `Scope` column with awk: `01` Local, `02` Local, `03`
+Local+roadmap, `04` Local+roadmap, `05` **Local**, `06` Local, `07`
+Local+roadmap, `08` Local, `09` Public surface, `10` Process, `11` Inherited
+hygiene + process. **Nothing says whole-query.**
+
+Worse, workers have been annotating rows "Does NOT discharge the row
+(whole-query scope)" — a phrase that appears NOWHERE in the matrix, because I
+put it in their briefs and they were being obedient to a coordinator claim
+rather than credulous about the tree. This is the difference between my other
+thirteen failures and this one: the others cost an address or a plan. This one
+**told every worker for weeks that their work could not close anything**, which
+is both false and demoralising, and it is the exact mechanism by which a
+paraphrase drifts toward what the plan can deliver — Survey 4 exists because I
+suspected that in the abstract, and it found the concrete instance in my own
+file. Corrected in-file at `1fe86fb`, with the true Scope column quoted.
+
+**Three rows are at or near closable TODAY**, none of them needing the interior:
+REQ-E1-01 (every Evidence-needed item and the whole anti-vacuity challenge exist
+in `E1Machine.lean` + DD-20260718-005; only the REQ-E1-07 consumer is missing);
+REQ-E1-05 (everything but the five words "and in the validator" — and the bridge
+is universally quantified over `validPath`, so it is interior-independent);
+REQ-E1-10 (matrix-first ordering verified by git ancestry).
+
+### A FROZEN ROW DEMANDS A CONSTANT THAT NO LONGER EXISTS
+
+REQ-E1-06's frozen text demands the memory-read count be "**<= 207** by the
+existing bound". At HEAD, **207 is a frozen HISTORICAL constant for a RETIRED
+route** (`concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq`). The
+live bound is **210**, since commit `f6000c3` ("B7 commit A: widen the interior
+charged cap 30 -> 33 and migrate 207 -> 210"). B7's own docstring says the
+interior component is TIGHT AND ATTAINED at 33 with the headroom CONSUMED — so a
+theorem literally asserting `<= 207` for the accepted route is unprovable, not
+merely unproved.
+
+And the matrix's own frozen accepted-route block cites
+`...PrincipledAllSizeChargedTraceCost_eq : = 207` and `queryCost_eq : = 207`,
+**neither of which has said 207 since `f6000c3`**. Escalated to the user rather
+than decided: reading `<= 207` as `<= 210` is literally a WEAKENING of frozen
+requirement text, which is on my do-not-decide list.
+
+### THE PUBLIC SURFACE IS ALREADY WRONG, AND BOTH GATES PASS
+
+Verified directly: `README.md:76` calls a paper-facing theorem "charged-trace
+cost at most `207`" while `:80` cites `...SumLe210` — internally inconsistent at
+HEAD. Also `:70`, `:140` ("current charged-trace cap"), `:334`.
+`docs/FAMILY_SUMMARY.md:9` still carries the **pre-B7 algebra**
+`2*select35 + (2*rank11 + 2*endpointFringe37 + interior30) + rank11 = 207`, plus
+five more sites. `CLAIM_DRIFT_POLICY.json` has **no term for 207 or 210** (I
+grepped: zero), and `paper_topology_lint.ps1` anchors on identifiers, not prose
+numerals. So both gates exit 0 while the README asserts a superseded cap.
+
+REQ-E1-09 meanwhile instructs fixing four "fresh segment 21" surfaces that were
+**already fixed** (all read 23 at HEAD) and a 33-cap attribution that is
+**already correct** — while the genuinely stale numerals are named by no row and
+caught by no gate. A requirement pointed at yesterday's defect.
+
+### TWO DISTINCT 33s, NEVER FLAGGED
+
+The campaign shorthand "the caps 33/8/8" conflates **three** different 33s: the
+fringe-window chunk-read cap (which lives INSIDE `endpointFringe = 4 + 33 = 37`),
+the whole-interior-directory read cap (`...PrincipledInteriorChargedTraceCost := 33`),
+and the coincidence `3 * rankClose`. The two 8s were already flagged as distinct
+in an M3d-11 note; **the two 33s never were**, and they are the more dangerous
+pair because one sits inside the other's sibling term in the same algebra. Any
+supersession note written to the row's literal "33/8" wording will conflate them.
+
+### THE KERNEL BOUNDARY DOES NOT BLOCK THE STEP LITERAL
+
+Survey 4's most useful unblock: conjunct (c) demands an **inequality**
+`totalSteps <= <literal>`, not an equality. Every cap in the algebra is proved
+symbolically by `unfold; omega`. So `Nat.log2`'s kernel-irreducibility — which
+has shaped three sessions — **is not an obstruction here at all**, provided the
+target is stated as `≤`. I had been treating it as one.
+
+### A VOCABULARY GAP NOBODY HAD SEEN
+
+Machine-level accounting uses `catCount log c` (four files). Every block-level
+cap uses `(log.filter (· == c)).length`. **Zero bridge lemmas between them.**
+Composing the caps into REQ-E1-06 needs `catCount log c = (log.filter (· == c)).length`
+— a short induction, absent, and buildable today with no interior dependency.
+
+### Survey 3's sharpest finding, which decides where the risk is
+
+On the `none` branches the **positional category log is the SOLE discriminator**.
+There the route value is `none`, so result agreement degenerates to `none = none`
+— satisfied by any impostor that also returns `none` — and a machine that ran a
+leg it should have skipped is invisible to receipt equality restricted to the
+legs that DID run. Only a positional category comparison separates honest from
+impostor.
+
+And category accounting is the one obligation with **no discriminator anywhere**:
+`catLog` appears ZERO times in the 1,901-line validator, while value, receipt and
+preservation each have a mutant proven invisible to the other two. Meanwhile the
+only category statement reaching the public surface is the guard bridge's
+`catCount ... = cost ∧ cats.length ≤ 10` — two AGGREGATES, formally incapable of
+catching a swapped slot, with the exact logs thrown away twenty lines earlier.
+
+Hence Lane G's brief carries Survey 3's ordering rule verbatim: **write the
+whole-query category function BEFORE the machine side, because "a category
+function written after the machine exists is a category function fitted to the
+machine."**
+
+### Also recorded
+- `E1RouteDecomposition` has **zero consumers**; `programSkeleton`/`validPath`
+  have zero hits outside their two files. At whole-query level the machine side
+  is empty.
+- The four route branches ARE exhaustive — verified by reading the evaluator's
+  three `Option` scrutinees, the rank leg's `Nat` result being no fourth
+  determinant.
+- Validator phase 5 contributes **no clause** to the verdict; `RESULT: PASS`
+  covers phases 1-4g only and "would print identically if the whole-query machine
+  existed and were wrong."
+- Lane C's `chunkPres`/`mutantH` are absent from the campaign branch because
+  **Lane C's branch is unmerged** — consistent, and a merge-window item.
+- Do NOT re-issue the `OfSizeGe` framing for M7; refused twice and FALSE.
