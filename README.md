@@ -77,7 +77,7 @@ for checked historical profiles under `Legacy`/`Compatibility` names.
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength` | Exact accounting bridge: modeled cost equals emitted charged-event trace length. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect` | Every event actually emitted by the canonical whole-query trace is a payload read, word-rank, or word-select event. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost` | For the canonical no-synthetic trace, the `WordRAM.TraceEvent.nonSyntheticWeight` certificate sum equals the `Costed` cost of the same execution. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe207` | The non-synthetic-weighted actual emitted trace is bounded by `207`. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe210` | The non-synthetic-weighted actual emitted trace is bounded by `210`. |
 | `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality` | Counterfactual check: a synthetic event anywhere in a trace makes its `nonSyntheticWeight` sum differ from its length. |
 | `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Component cap `2*select13 + (2*rank4 + 2*fringe4 + interior30) + rank4`; the actual-event bridge above connects it to execution. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | Uniform structural execution story with direct same-block decoding and canonical component-store cross-block replay. |
