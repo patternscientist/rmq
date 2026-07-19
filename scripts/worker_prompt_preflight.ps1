@@ -275,6 +275,55 @@ try {
     }
   }
 
+  $isPublicIdentityMigration =
+    $promptText -match '(?i)(?:HISTORICAL-[A-Z0-9-]+-IDENTITY|restore(?:\s+and)?\s+pin\s+(?:the\s+)?public\s+(?:historical\s+)?identity|(?:restore|rename|split|migrate|migration).{0,100}(?:public\s+theorem|historical\s+identity))'
+  if ($isPublicIdentityMigration) {
+    $dependencyMatch = [regex]::Match(
+      $promptText,
+      '(?m)^- Dependency-surface inventory:\s*(.+?)\s*$'
+    )
+    if (-not $dependencyMatch.Success) {
+      Stop-Preflight "public-identity-migration-requires-consumer-inventory: searched_symbols, inspected_consumer_paths, and expected_repair_paths are required"
+    }
+
+    $dependencyValue = $dependencyMatch.Groups[1].Value
+    $symbolsMatch = [regex]::Match($dependencyValue, '(?:^|;)\s*searched_symbols=([^;]+)')
+    $consumersMatch = [regex]::Match($dependencyValue, '(?:^|;)\s*inspected_consumer_paths=([^;]+)')
+    $dependencyRepairMatch = [regex]::Match($dependencyValue, '(?:^|;)\s*expected_repair_paths=([^;]+)')
+    if (-not $symbolsMatch.Success -or -not $consumersMatch.Success -or
+        -not $dependencyRepairMatch.Success) {
+      Stop-Preflight "public-identity-migration-requires-attested-consumer-inventory: searched_symbols, inspected_consumer_paths, and expected_repair_paths are required"
+    }
+
+    $consumerPaths = @(
+      $consumersMatch.Groups[1].Value -split ',' |
+        ForEach-Object { $_.Trim().Replace('\', '/') } |
+        Where-Object { $_ } |
+        Sort-Object -Unique
+    )
+    if ($consumerPaths.Count -eq 0) {
+      Stop-Preflight "public-identity-migration-requires-attested-consumer-inventory: inspected_consumer_paths is empty"
+    }
+
+    $dependencyRepairPaths = @()
+    if ($dependencyRepairMatch.Groups[1].Value.Trim() -ne 'NONE') {
+      $dependencyRepairPaths = @(
+        $dependencyRepairMatch.Groups[1].Value -split ',' |
+          ForEach-Object { $_.Trim().Replace('\', '/') } |
+          Where-Object { $_ } |
+          Sort-Object -Unique
+      )
+    }
+    foreach ($repairPath in $dependencyRepairPaths) {
+      if ($repairPath -notin $consumerPaths) {
+        Stop-Preflight "public-identity-migration-repair-not-inspected: $repairPath"
+      }
+      if (-not $writeScopeLine.Contains($repairPath)) {
+        Stop-Preflight "public-identity-migration-repair-outside-write-scope: $repairPath"
+      }
+    }
+  }
+
   $acceptanceLine = [regex]::Match(
     $promptText,
     '(?m)^- Frozen acceptance IDs:\s*(.+?)\s*$'

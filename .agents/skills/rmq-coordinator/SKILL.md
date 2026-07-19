@@ -100,6 +100,15 @@ edit `scripts/gate.ps1` must also include
 `docs/internal/WORKFLOW_DESIGN_DECISIONS.md`; the strict workflow-decision check
 requires that companion even when the gate edit changes comments only.
 
+For a prompt that restores, renames, splits, or migrates a public theorem or
+historical identity, close the Lean consumer surface before launch too. Record
+`- Dependency-surface inventory:` with the exact searched declaration symbols,
+every directly inspected tracked consumer path, and the expected repair paths
+from the exact worker base. Trace aliases, validation guards, examples, trust
+inventories, and public compatibility modules; do not treat a source-file
+rename as self-contained merely because the source theorem elaborates. Every
+expected repair path must already be in write scope before `READY_TO_SEND`.
+
 For any prompt claiming that every live/current public documentation surface
 is synchronized, derive the read/verification inventory from
 `docs/internal/CLAIM_DRIFT_POLICY.json` `currentFactSurfacePathRegex`, not from a

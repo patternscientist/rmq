@@ -73,6 +73,14 @@ Roadmap contract:
   expected_repair_paths=comma-separated owned paths` FROM THE EXACT BASE.
   REQUIRE EVERY MATCHED PATH TO BE INSPECTED AND EVERY EXPECTED REPAIR PATH TO
   APPEAR IN WRITE SCOPE; OTHERWISE NOT_APPLICABLE].
+- Dependency-surface inventory: [FOR A PUBLIC THEOREM/HISTORICAL-IDENTITY
+  RESTORE, RENAME, SPLIT, OR MIGRATION, USE
+  `searched_symbols=comma-separated exact declarations;
+  inspected_consumer_paths=comma-separated exact tracked paths;
+  expected_repair_paths=comma-separated owned paths` FROM THE EXACT BASE.
+  TRACE DIRECT LEAN CONSUMERS, PUBLIC/COMPATIBILITY ALIASES, VALIDATION GUARDS,
+  EXAMPLES, AND TRUST INVENTORIES. EVERY EXPECTED REPAIR PATH MUST APPEAR IN
+  WRITE SCOPE; OTHERWISE NOT_APPLICABLE].
 - Non-goals: [BOUNDARIES]
 - Explicitly deferred work: [ITEMS]. A deferred item is non-blocking only when
   it is not required for this target or its inherited invariants to be true.
