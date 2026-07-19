@@ -1775,6 +1775,20 @@ theorem chunkIters_pos {entriesLen chunkCount i : Nat}
       rw [e]; omega
   · omega
 
+/-- THE DEAD PATH RUNS EXACTLY ONE ITERATION.  Out of range the fold reads
+the single address `deadAddress` (`chunkStart`, `chunkAddrs` above), so its
+iteration count is `1` irrespective of the table's chunk count.
+
+This is the complement of `chunkIters_pos`, and it is what makes every
+NON-FINAL-CHUNK side condition VACUOUS at an invalid index: such a
+condition is quantified over `j` with `j + 1 < chunkIters ... i`, and at
+`chunkIters ... i = 1` there is no such `j`.  A one-iteration fold has no
+non-final chunk to constrain. -/
+theorem chunkIters_of_invalid {entriesLen chunkCount i : Nat}
+    (h : ¬ (i < entriesLen)) : chunkIters entriesLen chunkCount i = 1 := by
+  unfold chunkIters
+  rw [if_neg h]
+
 /--
 EXACT SIMULATION OF THE INTERIOR'S EIGHT-CAPPED CHUNK FOLD.
 

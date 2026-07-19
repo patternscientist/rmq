@@ -690,33 +690,80 @@ theorem geomCell_eq_routeDecode (shape : Cartesian.CartesianShape)
     (concreteBPNativeSuccinctRMQGlobalReadStore shape) hcap
     (fun _ _ _ h => hle_concrete shape h) hexact
 
-/-- Baseline: the summary group's first read, at `block / blocksPerSuper`. -/
+/-- THE BRIDGE AT AN INVALID INDEX, WITH NO STORE FACT AT ALL.
+
+`geomCell_eq_routeDecode`'s only substantive premise, `hexact`, constrains
+NON-FINAL chunks.  Out of range the fold runs exactly one iteration
+(`chunkIters_of_invalid`), so there is no non-final chunk and the premise
+is VACUOUS -- dischargeable without knowing anything about the store.
+
+THIS IS WHY THE FOUR BRIDGES BELOW NEED NO VALIDITY HYPOTHESIS, and it is
+worth stating why the OTHER route is not merely dearer but FALSE.  One
+might instead try to prove `geomCell = 0` out of range and pair it with a
+route-side zero.  That is NOT definitional: `stageCell` (`:221`) is `0`
+out of range only when `chunkBad store segment deadAddress 1 <> 0`, i.e.
+only when the dead address is genuinely unreadable IN THE STORE.
+
+THE TREE ALREADY CONTAINS THE COUNTEREXAMPLE, executed and `rfl`-checked:
+`chunkFoldWitness_path_dead` (`E1InteriorChunkFold.lean:1947`) runs the
+real fold at index `5` past `entriesLen = 3` and leaves `cOut = 2` --
+`some 1`, NOT `0` -- because `witnessStore` (`:1904`) happens to hold a
+word at the dead address `99`.  So "the cell is zero out of range" is a
+STORE fact, not a geometry fact, and stating it would import an
+obligation about `deadAddress` that the equality route never incurs.
+Agreement with the ROUTE is both cheaper and strictly stronger than
+agreement with `0`: it is what a consumer composing against the route
+actually needs, and it holds at every index unconditionally. -/
+theorem geomCell_eq_routeDecode_of_invalid (shape : Cartesian.CartesianShape)
+    (G : TableGeom) (i : Nat)
+    (hcap : G.chunkCount ≤ 8)
+    (hinvalid : ¬ (i < G.entriesLen)) :
+    geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape) G i =
+      geomRouteDecode (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape) G i :=
+  geomCell_eq_routeDecode shape G i hcap
+    (fun j hj => by
+      rw [chunkIters_of_invalid hinvalid] at hj
+      omega)
+
+/-- Baseline: the summary group's first read, at `block / blocksPerSuper`.
+
+UNCONDITIONAL IN `i`.  The valid case is the substantive one; the invalid
+case is `geomCell_eq_routeDecode_of_invalid`, whose premise is vacuous.
+The consumer's `none` arm reaches this at indices it cannot bound in
+advance, so a validity hypothesis here would have been an obligation the
+caller could not always discharge. -/
 theorem geomCell_baseline_eq_routeDecode (shape : Cartesian.CartesianShape)
-    {i : Nat}
-    (hvalid : i < (canonicalSummaryLayout shape).baseline.entriesLen) :
+    (i : Nat) :
     geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (canonicalSummaryLayout shape)
         (canonicalSummaryLayout shape).baseline i =
       geomRouteDecode (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (canonicalSummaryLayout shape)
-        (canonicalSummaryLayout shape).baseline i :=
-  geomCell_eq_routeDecode shape _ i
-    (canonicalSummaryLayout_baseline_cap shape)
-    (E1InteriorStoreConcrete.hexact_baseline_concrete rfl hvalid hvalid)
+        (canonicalSummaryLayout shape).baseline i := by
+  by_cases hvalid : i < (canonicalSummaryLayout shape).baseline.entriesLen
+  · exact geomCell_eq_routeDecode shape _ i
+      (canonicalSummaryLayout_baseline_cap shape)
+      (E1InteriorStoreConcrete.hexact_baseline_concrete rfl hvalid hvalid)
+  · exact geomCell_eq_routeDecode_of_invalid shape _ i
+      (canonicalSummaryLayout_baseline_cap shape) hvalid
 
-/-- minRel: the second read. -/
+/-- minRel: the second read.  UNCONDITIONAL IN `i`. -/
 theorem geomCell_minRel_eq_routeDecode (shape : Cartesian.CartesianShape)
-    {i : Nat}
-    (hvalid : i < (canonicalSummaryLayout shape).minRel.entriesLen) :
+    (i : Nat) :
     geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (canonicalSummaryLayout shape)
         (canonicalSummaryLayout shape).minRel i =
       geomRouteDecode (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (canonicalSummaryLayout shape)
-        (canonicalSummaryLayout shape).minRel i :=
-  geomCell_eq_routeDecode shape _ i
-    (canonicalSummaryLayout_minRel_cap shape)
-    (E1InteriorStoreConcrete.hexact_minRel_concrete rfl hvalid hvalid)
+        (canonicalSummaryLayout shape).minRel i := by
+  by_cases hvalid : i < (canonicalSummaryLayout shape).minRel.entriesLen
+  · exact geomCell_eq_routeDecode shape _ i
+      (canonicalSummaryLayout_minRel_cap shape)
+      (E1InteriorStoreConcrete.hexact_minRel_concrete rfl hvalid hvalid)
+  · exact geomCell_eq_routeDecode_of_invalid shape _ i
+      (canonicalSummaryLayout_minRel_cap shape) hvalid
 
 /-- maxRel: the third read.  Its value is never READ by
 `bpRelativeSummaryMinCandidate`, but the bridge is load-bearing rather
@@ -724,31 +771,35 @@ than merely defensive: the route's summary is `none` whenever this cell
 is `none` (`InteriorDirectory.lean:2293-2296`), so the consumer's
 `none`/`some` split is decided in part HERE.  See DD-20260719-015. -/
 theorem geomCell_maxRel_eq_routeDecode (shape : Cartesian.CartesianShape)
-    {i : Nat}
-    (hvalid : i < (canonicalSummaryLayout shape).maxRel.entriesLen) :
+    (i : Nat) :
     geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (canonicalSummaryLayout shape)
         (canonicalSummaryLayout shape).maxRel i =
       geomRouteDecode (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (canonicalSummaryLayout shape)
-        (canonicalSummaryLayout shape).maxRel i :=
-  geomCell_eq_routeDecode shape _ i
-    (canonicalSummaryLayout_maxRel_cap shape)
-    (E1InteriorStoreConcrete.hexact_maxRel_concrete rfl hvalid hvalid)
+        (canonicalSummaryLayout shape).maxRel i := by
+  by_cases hvalid : i < (canonicalSummaryLayout shape).maxRel.entriesLen
+  · exact geomCell_eq_routeDecode shape _ i
+      (canonicalSummaryLayout_maxRel_cap shape)
+      (E1InteriorStoreConcrete.hexact_maxRel_concrete rfl hvalid hvalid)
+  · exact geomCell_eq_routeDecode_of_invalid shape _ i
+      (canonicalSummaryLayout_maxRel_cap shape) hvalid
 
-/-- argOffset: the fourth read. -/
+/-- argOffset: the fourth read.  UNCONDITIONAL IN `i`. -/
 theorem geomCell_argOffset_eq_routeDecode
-    (shape : Cartesian.CartesianShape) {i : Nat}
-    (hvalid : i < (canonicalSummaryLayout shape).argOffset.entriesLen) :
+    (shape : Cartesian.CartesianShape) (i : Nat) :
     geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (canonicalSummaryLayout shape)
         (canonicalSummaryLayout shape).argOffset i =
       geomRouteDecode (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (canonicalSummaryLayout shape)
-        (canonicalSummaryLayout shape).argOffset i :=
-  geomCell_eq_routeDecode shape _ i
-    (canonicalSummaryLayout_argOffset_cap shape)
-    (E1InteriorStoreConcrete.hexact_argOffset_concrete rfl hvalid hvalid)
+        (canonicalSummaryLayout shape).argOffset i := by
+  by_cases hvalid : i < (canonicalSummaryLayout shape).argOffset.entriesLen
+  · exact geomCell_eq_routeDecode shape _ i
+      (canonicalSummaryLayout_argOffset_cap shape)
+      (E1InteriorStoreConcrete.hexact_argOffset_concrete rfl hvalid hvalid)
+  · exact geomCell_eq_routeDecode_of_invalid shape _ i
+      (canonicalSummaryLayout_argOffset_cap shape) hvalid
 
 end E1InteriorSummaryGroup
 end WordRAM
