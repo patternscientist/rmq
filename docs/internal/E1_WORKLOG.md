@@ -6213,3 +6213,251 @@ All file:line verified at `bc3c8f0`.
    `SparseLevelTable.lean:55`).  Do not write it until the interior leg
    exists.  The stale frozen-row anchor is a NOTE, already appended; do not
    edit frozen requirement text.
+
+## M3d-19 (worker E1-R5b): the summary group, composed on the fold, and the `hexact` residue discharged by the layout's definition
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, from HEAD
+`7c5ad6a` (M3d-18's yield plus its worklog commit) to this commit.  Green.
+
+Mission item 1 -- the summary group `S` -- IS DONE, in both halves: the
+EXECUTION half (`RunsTo`, positional receipt, preservation) and the VALUE
+half (each saved cell equals the route's decode).  Items 2-6 (span blocks,
+two-span blocks, five-branch dispatch, `hInterior`, the closure ladder, the
+validator's interior preservation phase) are UNBUILT and were not started.
+
+### 1. THE ANCHORS WERE RE-VERIFIED, AND THIS TIME THEY ALL HELD
+
+M3d-18 reported two of sixteen delegation anchors had stale DIRECTORY
+paths.  All anchors supplied to this session were checked before use and
+were exact -- nine in `InteriorDirectory.lean` (`:2277`, `:2295`, `:2300`,
+`:2311`, `:2329`, `:2351`, `:2376`, `:2444`, `:1711`),
+`E1CrossBlockArm.lean:1143`, `E1InteriorChunkFold.lean:928`, and the
+module locations for `Segments.lean`, `SparseLevelTable.lean`,
+`BlockLocal.lean`, `MachineChunkedTableProgram.lean`.
+
+One correction of record about the RESUME rather than the tree: the
+inventory in section 7 above states its file:line are verified at
+`bc3c8f0`, but the branch HEAD at session start was `7c5ad6a`.  Checked
+rather than assumed: `git diff --stat bc3c8f0 7c5ad6a` is
+`docs/internal/E1_WORKLOG.md | 271 +++++`, a worklog-only commit, so the
+code tree is identical and the inventory's line numbers carry unchanged.
+
+### 2. THE SEGMENT TRAP WAS CONFIRMED ABSENT, BY INSPECTION NOT BY TRUST
+
+M3d-18 flagged that `concreteBPNativeInteriorTraceSegments.summary` carries
+`minRel := 21` / `maxRel := 22`, which in the canonical store are the
+fringe and select chunk tables, and asserted the trap does not arise
+because the group reads by offset into one `FlatWordStore`.  Verified here
+at source rather than accepted: all four reads in
+`canonicalRelativeRmmMachineSummaryComputation` (`:2277`) are calls to
+`canonicalRelativeRmmMachineReadNatComputation shape <table> <offset> <index>`
+(`:2132`), which is `machineReadComputationAt wordSize base dead i` over a
+single flat store.  One segment, four offsets.  The claim was correct.
+Nothing in the new module mentions the per-table segments.
+
+### 3. WHAT LANDED: `RMQ/Core/WordRAM/E1InteriorSummaryGroup.lean`
+
+Registered in `RMQ.lean:47`.  Nineteen theorems, register bank `100 .. 104`.
+See DD-20260719-014 (claimed this session; maximum OBSERVED was
+`DD-20260719-013`, checked before claiming).
+
+* `summaryStage` (`:95`), `summaryStage_runsTo` (`:136`) -- one staged read:
+  set `iIdx`, run the eight-capped fold, save `cOut`.  39 instructions.
+* `summaryGroup` (`:272`), `summaryGroup_runsTo` (`:307`) -- four stages in
+  the route's bind order.  156 instructions.  The receipt is the
+  concatenation of the four route event lists; the four cells land in
+  `sBase`/`sMin`/`sMax`/`sArg`; preservation holds outside the fold's bank.
+* `canonicalSummaryLayout` (`:451`) and the eight cap discharges
+  (`:493` .. `:528`), `canonicalSummaryGroup_runsTo` (`:542`) -- the group
+  at `concreteBPNativeSuccinctRMQGlobalReadStore shape`, with all eight
+  chunk-count premises SUPPLIED from `E1InteriorChunkCap`.
+* `hle_concrete` (`:616`) -- the width bound, verbatim from
+  `canonicalRelativeRmmInteriorComponentStore_words_bounded`
+  (`InteriorDirectory.lean:1711`) through the segment-20 projection.
+* `geomRouteDecode` (`:651`), `geomCell_eq_routeDecode` (`:661`) and the
+  four per-table bridges (`:681`, `:695`, `:712`, `:726`) -- each saved
+  cell IS the route's decode.
+
+### 4. THE TWO FINDINGS THAT CHANGED THE DESIGN
+
+FINDING A: THE HEAD CATEGORY IS NOT UNIFORM ACROSS THE FOUR STAGES.  The
+baseline read is at `block / blocksPerSuper` and needs `divConst`, which
+charges `.arithmetic`; the other three are at `block` and use `move`,
+charging `.registerWrite`.  The first draft of `summaryStageCats` fixed the
+head at `registerWrite`.  Both are ONE-ELEMENT logs, so that draft would
+have produced a category log of the right LENGTH and the wrong CONTENT in
+exactly one slot of four -- invisible to a length check and to a read-count
+check, since neither is a memory read.  Caught by reading
+`RunsTo.divConst` (`E1MachineCalculus.lean:191`) before composing rather
+than after a failure.  The head category is now a parameter.
+
+FINDING B: THREE OF THE FOUR SUMMARY READS ARE MULTI-CHUNK AT EVERY SHAPE
+TRIED.  The delegation directed composing on the fold because small shapes
+are multi-chunk.  Evaluated, at `stackCartesianShape` inputs of size 8, 16,
+64 and 256, the four chunk counts `(baseline, minRel, maxRel, argOffset)`
+are `(1, 2, 2, 2)` -- IDENTICAL at all four sizes.  So the single-chunk
+atom is unsound for three of this group's four reads not at some small
+corner but at every shape evaluated, including size 256.  The direction was
+right and its stated reason understates the case.
+
+### 5. THE OWED PREMISES, DISCHARGED RATHER THAN INHERITED
+
+The delegation named this explicitly: `hexact_*_concrete` retain `hcount`,
+`hvalid`, `hentries`, and rule 1 applies to them at composition.  They are
+discharged by how `canonicalSummaryLayout` is DEFINED, not by an added
+hypothesis:
+
+* `chunkCount` is defined to BE the route's
+  `fixedWidthNatTableMachineChunkCount` at that table's width, so `hcount`
+  is `rfl`.
+* `entriesLen` is defined to BE the route's own entry-list length, so
+  `hvalid` and `hentries` are the SAME proposition.
+
+This is machine-checked, not argued: the four bridge theorems pass `rfl`
+for `hcount` and the same `hvalid` term for both `hvalid` and `hentries`,
+and they compile.  What reaches the caller is one `i < entriesLen`
+obligation per read -- the route's own validity condition, which the
+interior's branch structure supplies at the call site.
+
+Table-to-width correspondence checked at source, not assumed: baseline
+carries `superWidth`; minRel, maxRel and argOffset all carry
+`relativeWidth` (`E1InteriorChunkCap.lean:127-129`), matching the `hcount`
+clauses of the four `hexact_*_concrete` exactly.
+
+### 6. ANTI-VACUITY, APPLIED TO THIS SESSION'S OWN OUTPUT
+
+The four bridges are guarded by `hvalid : i < entriesLen`.  If any entry
+list were empty that premise would be unsatisfiable and the bridge
+worthless.  EVALUATED -- entry lengths
+`(baseline, minRel, maxRel, argOffset)`:
+
+    size   8 : (1,  2,  2,  2)      chunk counts (1, 2, 2, 2)
+    size  16 : (1,  3,  3,  3)      chunk counts (1, 2, 2, 2)
+    size  64 : (2,  9,  9,  9)      chunk counts (1, 2, 2, 2)
+    size 256 : (4, 28, 28, 28)      chunk counts (1, 2, 2, 2)
+
+All sixteen entry lengths non-zero, so no bridge is vacuous; all sixteen
+chunk counts in `1 .. 8`, consistent with the eight cap discharges.
+`(summaryGroup (canonicalSummaryLayout (sh 8)) 0).length` evaluates to
+`156`, agreeing with the kernel-proved `summaryGroup_length`, and
+`interiorSegment` to `20`, independently reproducing M3d-18's figure.
+
+Per M3d-17's corollary this is `#eval` REPRODUCTION EVIDENCE, not a kernel
+proof: these quantities run through `Nat.log2`, which the compiler
+evaluates but the kernel cannot reduce, so `rfl`/`decide` fail on them.
+Evaluation FINDS truth; it does not PROVE it.  The theorems themselves are
+proved generally.
+
+### 7. A STALE DOCSTRING, RECORDED AND NOT EDITED
+
+`E1InteriorChunkValue.lean:521-524` still justifies its `hexact` premise by
+saying it discharges "vacuously, because the interior tables are
+single-chunk".  That is out of date twice over: M3d-16 discharged `hexact`
+SUBSTANTIVELY via `chunkPayloadWords_get?_eq_take_drop`, and section 6
+above shows three of the four summary tables are TWO-chunk at every shape
+evaluated, so the single-chunk premise the gloss rests on is false.  The
+theorem is correct and unaffected; only its docstring's justification is
+wrong.  Recorded rather than edited, since it is another module's text and
+the delegation's standing instruction is to report discrepancies.  This is
+also why the delegation's "do NOT cite vacuity for hexact" is right.
+
+### 8. VERIFICATION LEDGER
+
+`lake build RMQ RMQPaper RMQExamples` exit 0, under the
+`Global\RMQHeavyVerification` mutex:
+
+    [280/282] Built RMQ.Core.WordRAM.E1InteriorSummaryGroup
+    [281/282] Built RMQ
+    Build completed successfully.
+    BUILD_EXIT=0
+
+The new module emits NO warning; its only line in the build log is the
+Built line.  All thirteen warnings in the log are pre-existing, in
+`BPNavigationRAM.lean`, `ReviewerReachabilityLong/Small/Sparse.lean`,
+`SuccinctFinalRAM.lean` and `E1InteriorChunkFold.lean`.
+
+`#print axioms` AFTER a root build, importing
+`RMQ.Core.WordRAM.E1InteriorSummaryGroup` DIRECTLY -- all nineteen, never
+`sorryAx`:
+
+    summaryStage_runsTo              [propext, Classical.choice, Quot.sound]
+    summaryGroup_runsTo              [propext, Classical.choice, Quot.sound]
+    canonicalSummaryGroup_runsTo     [propext, Classical.choice, Quot.sound]
+    canonicalSummaryLayout_{baseline,minRel,maxRel,argOffset}_{pos,cap} (8)
+                                     [propext, Classical.choice, Quot.sound]
+    hle_concrete                     [propext, Classical.choice, Quot.sound]
+    geomCell_eq_routeDecode          [propext, Classical.choice, Quot.sound]
+    geomCell_{baseline,minRel,maxRel,argOffset}_eq_routeDecode (4)
+                                     [propext, Classical.choice, Quot.sound]
+    summaryGroup_length              [propext]
+    summaryStage_length              [propext]
+
+`maxHeartbeats` was NOT raised anywhere; the new module contains no
+`set_option`.  Hygiene `rg` over it: no
+sorry/admit/axiom/native_decide/partial/unsafe/implemented_by/Mathlib and
+no `by_contra`/`norm_num`/`set` tactic.
+
+### 9. MATRIX STATUS AT YIELD
+
+All eleven rows REQ-E1-01..11 remain OPEN.  This session closed none and
+weakened none.  No frozen row text was edited.
+
+REQ-E1-03's component evidence improves: the summary group is the first of
+the interior's five branches to have both an executed simulation and a
+value bridge at the canonical store.  The row stays OPEN -- four more
+branch families and the dispatch remain unbuilt, and no whole-query
+comparison exists.
+
+### 10. RESUME POINT (M3d-20)
+
+All file:line verified at this commit.
+
+1. ITEMS 1 AND 2 OF THE PRIOR INVENTORY ARE DONE.  The summary group has
+   `canonicalSummaryGroup_runsTo` (`E1InteriorSummaryGroup.lean:542`) for
+   execution and the four `geomCell_*_eq_routeDecode` (`:681`, `:695`,
+   `:712`, `:726`) for value.  Consumers owe only `i < entriesLen` per read.
+2. THE NEXT BLOCK IS THE MIN-CANDIDATE CONSUMER
+   (`canonicalRelativeRmmMachineMinCandidateComputation`,
+   `InteriorDirectory.lean:2300`), which maps `bpRelativeSummaryMinCandidate`
+   over the group's tuple.  It DISCARDS `maxRel`.  The `maxRel` stage must
+   still be present -- the receipt obligation, not the value, is its ground,
+   and `geomCell_maxRel_eq_routeDecode` exists deliberately so that a future
+   reader does not infer from a missing bridge that the read is optional.
+3. THEN THE SPAN BLOCKS (`:2311`, `:2329`) -- the `none` arm must branch PAST
+   the summary group -- and the TWO-SPAN BLOCKS (`:2351`, `:2376`), where
+   THE LEVEL READ IS THE UNCONDITIONAL HEAD of every append chain; violating
+   that order presents as a whnf heartbeat timeout, NOT a type error, and
+   must never be met by raising `maxHeartbeats`.  Then the five-branch
+   dispatch (`:2444`) and `hInterior` at `E1CrossBlockArm.lean:1143`.
+   The interior has five branches and no scan.
+4. REGISTER BANK: `100 .. 104` is now TAKEN by the summary group.  The next
+   block opens at `105`.  Anything that must survive a summary group must
+   satisfy `GroupUntouched` (`:292`): outside `89 .. 99` and distinct from
+   `iIdx` and the four saved slots.
+5. WHEN COMPOSING THE GROUP MORE THAN ONCE in one program, note the head
+   instructions write `iIdx` (`85`), so `iIdx` is NOT preserved across a
+   group -- `GroupUntouched` excludes it explicitly.  `sBlock` (`100`) IS
+   preserved and is the input.
+6. ITEMS 6-7 OF THE PRIOR INVENTORY UNCHANGED AND UNBUILT: the closure
+   ladder (full LCA leg at canonical-store form; whole-query glue via
+   `E1RouteDecomposition` with result agreement on `(...).value` and
+   POSITIONAL receipt equality on `(...).trace`; category accounting across
+   ALL branches including selects-none and lca-none; the public `List Int`
+   corollary; the DERIVED all-size literal step total from the category
+   algebra and the caps 33/8/8 -- derive, never assert; the amended-target
+   Prop with its supersession note; the validator's whole-query phase; docs
+   and matrix closure; the ONE consolidated program-layout DD at the glue),
+   and an EXECUTED preservation check for the interior fold -- the
+   validator's phase 3h is fringe-arm only and has no interior analogue.
+7. THE M7 DOC CLAIM is scoped to QUERY TIME with construction-time
+   computation carved out as preprocessing (`bpSparseLevelCell`,
+   `SparseLevelTable.lean:55`).  Do not write it until the interior leg
+   exists.  The stale frozen-row anchor is a NOTE, already appended; do not
+   edit frozen requirement text.
+8. STANDING RULES, still five, unchanged in content.  This session adds no
+   sixth.  It adds one caution to rule 3: when a block's stages differ only
+   in their HEAD instruction, check the head's CHARGE CATEGORY, not just its
+   effect on registers -- two heads of the same arity and the same log
+   length can charge differently, and the resulting error is invisible to
+   both length and read-count checks (section 4, finding A).
+

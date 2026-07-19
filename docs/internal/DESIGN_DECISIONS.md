@@ -4767,3 +4767,79 @@ Still owed, and not disguised. `hexact_*_concrete` retain `hcount`,
 fixed when the summary group's program is written, and were never debts
 owed to the store -- but they are premises, and under the standing rule
 they owe a witness at the intended instantiation when that program lands.
+
+## DD-20260719-014: the summary group is composed on the FOLD, with a per-stage head CATEGORY, and the `hexact` residue is discharged by how the canonical layout is DEFINED (E1 M3d-19)
+
+Claimed this session; the maximum OBSERVED in this file was
+`DD-20260719-013`, checked before claiming.
+
+Context. DD-20260719-013 eliminated the interior store hypothesis and
+delivered twelve unconditional clauses, but closed by recording that
+`hexact_*_concrete` still retain `hcount`, `hvalid` and `hentries` -- caller
+index-arithmetic facts, but premises nonetheless, owing a witness at the
+intended instantiation when the summary group's program lands. That program
+is this entry.
+
+Decision 1: compose on the fold, uniformly. `canonicalRelativeRmmMachineSummaryComputation`
+(`InteriorDirectory.lean:2277`) makes four reads. Each stage runs
+`interiorChunkFold`, never `interiorReadNat`, whose route bridge carries
+`0 < width` and `width <= wordSize` (`E1InteriorReadBlock.lean:443`).
+
+That is not a defensive choice, and this session has EXECUTED evidence it is
+not. At `stackCartesianShape` inputs of size 8, 16, 64 and 256 the four
+chunk counts are `(1, 2, 2, 2)` at EVERY one of those sizes: the baseline
+table is single-chunk, and minRel, maxRel and argOffset are TWO-chunk. So
+three of the summary group's four reads are multi-chunk at every shape
+evaluated, and the single-chunk atom would have been unsound for them --
+not at some exotic corner, but everywhere it was tried.
+
+Decision 2: the stage's head category is a PARAMETER, not a constant. The
+four stages set `iIdx` differently -- the baseline read is at
+`block / blocksPerSuper` (`divConst`, charging `.arithmetic`), the other
+three at `block` (`move`, charging `.registerWrite`). Both are one-element
+category logs, so fixing the head at `registerWrite` would have produced a
+category log of the RIGHT LENGTH and the WRONG CONTENT in exactly one slot,
+and neither a length check nor a read-count check would have caught it. The
+charge is carried per stage instead.
+
+Decision 3: the `hexact` residue is discharged by the layout's DEFINITION,
+not by an added hypothesis. `canonicalSummaryLayout` defines each table's
+`chunkCount` field to BE the route's `fixedWidthNatTableMachineChunkCount`
+at that table's width, and each `entriesLen` field to BE the route's own
+entry-list length. Two consequences, both machine-checked by the four
+bridge theorems compiling:
+
+* `hcount` is discharged by `rfl`.
+* `hvalid` and `hentries` become the SAME proposition, so one caller-side
+  index fact supplies both -- the four bridges below pass the same `hvalid`
+  term to both arguments.
+
+What survives to the caller is a single `i < entriesLen` obligation per
+read, which is the route's own validity condition. No store hypothesis, no
+chunk-count hypothesis, and no width hypothesis remains: the eight
+chunk-count premises are supplied from `E1InteriorChunkCap` (unconditional
+in `shape`, predating this module), and `hle` from the interior component
+store's own `word_length_le` field via the segment-20 projection.
+
+Anti-vacuity. The four `hvalid` premises would be unsatisfiable, and all
+four bridges vacuous, if any entry list were empty. Evaluated: the entry
+lengths are `(1,2,2,2)`, `(1,3,3,3)`, `(2,9,9,9)` and `(4,28,28,28)` at
+sizes 8, 16, 64 and 256. All non-empty at every shape, so no bridge is
+vacuous. This is `#eval` reproduction evidence, not a kernel proof --
+these quantities run through `Nat.log2`, which the compiler evaluates but
+the kernel cannot reduce.
+
+Not cited anywhere above, deliberately:
+`canonicalRelativeRmmMachineReadNatCosted_cost_le_one`. It is a COST bound,
+hence an upper bound only, and supplies neither the cap at the within-macro
+widths nor `0 < chunkCount`.
+
+Recorded discrepancy, not acted on. `E1InteriorChunkValue.lean:521-524`
+still says `hexact` discharges "vacuously, because the interior tables are
+single-chunk". That gloss is STALE: M3d-16 discharged `hexact`
+substantively via `chunkPayloadWords_get?_eq_take_drop`, and this session's
+evaluation shows three of the four summary tables are two-chunk at every
+shape tried, so the single-chunk premise behind the gloss is false. The
+theorem itself is correct and unaffected -- only its docstring's
+justification is out of date. Left for the owner of that module rather than
+edited here.

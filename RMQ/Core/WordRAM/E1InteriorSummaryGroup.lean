@@ -1,5 +1,6 @@
 import RMQ.Core.WordRAM.E1InteriorStoreConcrete
 import RMQ.Core.WordRAM.E1InteriorChunkValue
+import RMQ.Core.WordRAM.E1InteriorChunkCap
 
 /-! # E1 amended machine: the interior's SUMMARY GROUP (M3d-19)
 
@@ -425,6 +426,315 @@ theorem summaryGroup_runsTo
       hPres3 r ⟨hFold, hMaxNe⟩, RegFile.write_other _ _ hIdxNe,
       hPres2 r ⟨hFold, hMinNe⟩, RegFile.write_other _ _ hIdxNe,
       hPres1 r ⟨hFold, hBaseNe⟩, RegFile.write_other _ _ hIdxNe]
+
+/-! ## The canonical instantiation
+
+The eight chunk-count premises above are stated generally.  This section
+DISCHARGES them at the store the composition actually runs against, so
+that no consumer of the group inherits them.
+
+Every discharge below cites `E1InteriorChunkCap`, whose lemmas are
+unconditional in `shape` and predate this module.  None cites
+`canonicalRelativeRmmMachineReadNatCosted_cost_le_one`: that is a COST
+bound, hence an upper bound only, and supplies neither half -- not the cap
+at the within-macro widths, and in particular not `0 < chunkCount`.
+-/
+
+/-- The summary group's layout at the canonical interior store.
+
+`chunkCount` is DEFINED here as the route's own
+`fixedWidthNatTableMachineChunkCount` at the table's width, and
+`entriesLen` as the route's own entry-list length.  Both choices are what
+make the `hexact_*_concrete` premises discharge below rather than travel:
+`hcount` becomes `rfl`, and `hvalid`/`hentries` become the SAME
+proposition. -/
+def canonicalSummaryLayout (shape : Cartesian.CartesianShape) :
+    SummaryLayout :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let offsets := canonicalRelativeRmmInteriorComponentOffsets shape
+  let wordBits := SuccinctRank.machineWordBits shape.bpCode.length
+  { segment := E1InteriorStoreConcrete.interiorSegment
+  , deadAddress := offsets.deadAddress
+  , wordScale := 2 ^ wordBits
+  , blocksPerSuper := layout.blocksPerSuper
+  , baseline :=
+      { base := offsets.baseline
+      , entriesLen :=
+          (bpSuperblockBaselineEntries shape layout.blockSize
+            layout.blocksPerSuper layout.superSampleCount).length
+      , chunkCount :=
+          SuccinctSpace.fixedWidthNatTableMachineChunkCount
+            (layout.superWidth shape) wordBits }
+  , minRel :=
+      { base := offsets.minRel
+      , entriesLen :=
+          (bpBlockRelativeMinExcessEntries shape layout.blockSize
+            layout.blocksPerSuper layout.blockCount).length
+      , chunkCount :=
+          SuccinctSpace.fixedWidthNatTableMachineChunkCount
+            layout.relativeWidth wordBits }
+  , maxRel :=
+      { base := offsets.maxRel
+      , entriesLen :=
+          (bpBlockRelativeMaxExcessEntries shape layout.blockSize
+            layout.blocksPerSuper layout.blockCount).length
+      , chunkCount :=
+          SuccinctSpace.fixedWidthNatTableMachineChunkCount
+            layout.relativeWidth wordBits }
+  , argOffset :=
+      { base := offsets.argOffset
+      , entriesLen :=
+          (bpBlockArgMinLocalOffsetEntries shape layout.blockSize
+            layout.blockCount).length
+      , chunkCount :=
+          SuccinctSpace.fixedWidthNatTableMachineChunkCount
+            layout.relativeWidth wordBits } }
+
+theorem canonicalSummaryLayout_baseline_pos
+    (shape : Cartesian.CartesianShape) :
+    0 < (canonicalSummaryLayout shape).baseline.chunkCount :=
+  E1InteriorChunkCap.chunkCount_pos_superWidth shape
+
+theorem canonicalSummaryLayout_baseline_cap
+    (shape : Cartesian.CartesianShape) :
+    (canonicalSummaryLayout shape).baseline.chunkCount ≤ 8 :=
+  E1InteriorChunkCap.chunkCount_le_eight_superWidth shape
+
+theorem canonicalSummaryLayout_minRel_pos
+    (shape : Cartesian.CartesianShape) :
+    0 < (canonicalSummaryLayout shape).minRel.chunkCount :=
+  E1InteriorChunkCap.chunkCount_pos_relativeWidth shape
+
+theorem canonicalSummaryLayout_minRel_cap
+    (shape : Cartesian.CartesianShape) :
+    (canonicalSummaryLayout shape).minRel.chunkCount ≤ 8 :=
+  E1InteriorChunkCap.chunkCount_le_eight_relativeWidth shape
+
+theorem canonicalSummaryLayout_maxRel_pos
+    (shape : Cartesian.CartesianShape) :
+    0 < (canonicalSummaryLayout shape).maxRel.chunkCount :=
+  E1InteriorChunkCap.chunkCount_pos_relativeWidth shape
+
+theorem canonicalSummaryLayout_maxRel_cap
+    (shape : Cartesian.CartesianShape) :
+    (canonicalSummaryLayout shape).maxRel.chunkCount ≤ 8 :=
+  E1InteriorChunkCap.chunkCount_le_eight_relativeWidth shape
+
+theorem canonicalSummaryLayout_argOffset_pos
+    (shape : Cartesian.CartesianShape) :
+    0 < (canonicalSummaryLayout shape).argOffset.chunkCount :=
+  E1InteriorChunkCap.chunkCount_pos_relativeWidth shape
+
+theorem canonicalSummaryLayout_argOffset_cap
+    (shape : Cartesian.CartesianShape) :
+    (canonicalSummaryLayout shape).argOffset.chunkCount ≤ 8 :=
+  E1InteriorChunkCap.chunkCount_le_eight_relativeWidth shape
+
+/--
+THE SUMMARY GROUP AT THE STORE THE COMPOSITION NAMES.
+
+All eight chunk-count premises are supplied, not assumed.  The store is
+`concreteBPNativeSuccinctRMQGlobalReadStore shape` -- the one
+`crossBlockArmProgramAt_runsTo`'s `hInterior` premise fixes
+(`E1CrossBlockArm.lean:1143`) -- and the segment is the one the interior
+route's reads are emitted at.
+-/
+theorem canonicalSummaryGroup_runsTo
+    (shape : Cartesian.CartesianShape) {program : E1Machine.Program}
+    {Q block : Nat} {regs : RegFile}
+    (hHost : HostedAt program Q (summaryGroup (canonicalSummaryLayout shape) Q))
+    (hBlock : regs sBlock = block) :
+    ∃ regs' : RegFile,
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+          ⟨regs, Q, false⟩ ⟨regs', Q + 156, false⟩
+          (geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).baseline
+              (block / (canonicalSummaryLayout shape).blocksPerSuper) ++
+            geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).minRel block ++
+            geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).maxRel block ++
+            geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).argOffset block)
+          (geomCats (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).baseline Category.arithmetic
+              (block / (canonicalSummaryLayout shape).blocksPerSuper) ++
+            geomCats (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).minRel
+              Category.registerWrite block ++
+            geomCats (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).maxRel
+              Category.registerWrite block ++
+            geomCats (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).argOffset
+              Category.registerWrite block) ∧
+        regs' sBase =
+          geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape)
+            (canonicalSummaryLayout shape).baseline
+            (block / (canonicalSummaryLayout shape).blocksPerSuper) ∧
+        regs' sMin =
+          geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape)
+            (canonicalSummaryLayout shape).minRel block ∧
+        regs' sMax =
+          geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape)
+            (canonicalSummaryLayout shape).maxRel block ∧
+        regs' sArg =
+          geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape)
+            (canonicalSummaryLayout shape).argOffset block ∧
+        (∀ r, GroupUntouched r → regs' r = regs r) :=
+  summaryGroup_runsTo _ hHost hBlock
+    (canonicalSummaryLayout_baseline_pos shape)
+    (canonicalSummaryLayout_baseline_cap shape)
+    (canonicalSummaryLayout_minRel_pos shape)
+    (canonicalSummaryLayout_minRel_cap shape)
+    (canonicalSummaryLayout_maxRel_pos shape)
+    (canonicalSummaryLayout_maxRel_cap shape)
+    (canonicalSummaryLayout_argOffset_pos shape)
+    (canonicalSummaryLayout_argOffset_cap shape)
+
+/-! ## The width bound at the concrete store
+
+`hle` is the value bridge's OTHER premise.  It is not a chunk-count fact
+and does not come from the cap module: it is the interior component
+store's own `word_length_le` field, transported to the global store by the
+segment-20 projection.  Verbatim from
+`canonicalRelativeRmmInteriorComponentStore_words_bounded`
+(`InteriorDirectory.lean:1711`), as the resume direction requires. -/
+
+theorem hle_concrete (shape : Cartesian.CartesianShape) {a : Nat}
+    {w : List Bool}
+    (h : (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+      E1InteriorStoreConcrete.interiorSegment a = some w) :
+    w.length ≤ SuccinctRank.machineWordBits shape.bpCode.length := by
+  rw [E1InteriorStoreConcrete.holdsInteriorStore_concrete shape a] at h
+  exact canonicalRelativeRmmInteriorComponentStore_words_bounded shape
+    (List.mem_of_getElem? h)
+
+/-! ## The value bridge, and the premises it settles
+
+`summaryGroup_runsTo` states each saved cell in the fold's own machine
+terms (`geomCell`).  This section rewrites all four into the ROUTE's
+decode, which is what a consumer needs.
+
+THE PREMISES `hexact_*_concrete` STILL CARRIED ARE DISCHARGED HERE, NOT
+PASSED ON.  M3d-18 delivered them retaining `hcount`, `hvalid` and
+`hentries`, and recorded -- correctly -- that "not a debt owed to the
+store" is not the same as "not a debt".  At the canonical layout they
+settle as follows, and the settlement is a consequence of how
+`canonicalSummaryLayout` is DEFINED rather than an extra assumption:
+
+* `hcount` is `rfl`.  The layout's `chunkCount` field IS the route's
+  `fixedWidthNatTableMachineChunkCount` at that table's width.
+* `hentries` and `hvalid` are THE SAME PROPOSITION.  The layout's
+  `entriesLen` field IS the route's entry-list length, so the two premises
+  coincide and one caller-side index fact supplies both.
+
+What remains is a single `i < entriesLen` obligation per read -- the
+route's own validity condition, which the interior's branch structure
+supplies at the call site.  Nothing about the store survives.
+-/
+
+/-- The route's decode of a table cell, option-shifted the same way the
+machine's `cOut` is. -/
+def geomRouteDecode (store : ReadStore) (L : SummaryLayout) (G : TableGeom)
+    (i : Nat) : Nat :=
+  match SuccinctSpace.fixedWidthNatTableMachineDecode
+      ((chunkAddrs G.base L.deadAddress G.entriesLen G.chunkCount i).map
+        (fun a => store.readWord? L.segment a)) with
+  | none => 0
+  | some v => v + 1
+
+/-- The bridge, generically: a stage's saved cell IS the route's decode,
+given the cap, the width bound, and non-final-chunk exactness. -/
+theorem geomCell_eq_routeDecode (shape : Cartesian.CartesianShape)
+    (G : TableGeom) (i : Nat)
+    (hcap : G.chunkCount ≤ 8)
+    (hexact : ∀ j, j + 1 <
+      chunkIters G.entriesLen G.chunkCount i → ∀ w,
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          E1InteriorStoreConcrete.interiorSegment
+          (chunkStart G.base
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress
+            G.entriesLen G.chunkCount i + j) = some w →
+        w.length = SuccinctRank.machineWordBits shape.bpCode.length) :
+    geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape) G i =
+      geomRouteDecode (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape) G i :=
+  E1InteriorChunkValue.interiorChunkFold_cOut_eq_routeDecode
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape) hcap
+    (fun _ _ _ h => hle_concrete shape h) hexact
+
+/-- Baseline: the summary group's first read, at `block / blocksPerSuper`. -/
+theorem geomCell_baseline_eq_routeDecode (shape : Cartesian.CartesianShape)
+    {i : Nat}
+    (hvalid : i < (canonicalSummaryLayout shape).baseline.entriesLen) :
+    geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape)
+        (canonicalSummaryLayout shape).baseline i =
+      geomRouteDecode (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape)
+        (canonicalSummaryLayout shape).baseline i :=
+  geomCell_eq_routeDecode shape _ i
+    (canonicalSummaryLayout_baseline_cap shape)
+    (E1InteriorStoreConcrete.hexact_baseline_concrete rfl hvalid hvalid)
+
+/-- minRel: the second read. -/
+theorem geomCell_minRel_eq_routeDecode (shape : Cartesian.CartesianShape)
+    {i : Nat}
+    (hvalid : i < (canonicalSummaryLayout shape).minRel.entriesLen) :
+    geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape)
+        (canonicalSummaryLayout shape).minRel i =
+      geomRouteDecode (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape)
+        (canonicalSummaryLayout shape).minRel i :=
+  geomCell_eq_routeDecode shape _ i
+    (canonicalSummaryLayout_minRel_cap shape)
+    (E1InteriorStoreConcrete.hexact_minRel_concrete rfl hvalid hvalid)
+
+/-- maxRel: the third read.  ITS VALUE IS DISCARDED DOWNSTREAM and the
+bridge is provided anyway -- the read is owed to the positional receipt,
+and a bridge that existed only where a consumer inspects the value would
+invite exactly the optimisation the receipt forbids. -/
+theorem geomCell_maxRel_eq_routeDecode (shape : Cartesian.CartesianShape)
+    {i : Nat}
+    (hvalid : i < (canonicalSummaryLayout shape).maxRel.entriesLen) :
+    geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape)
+        (canonicalSummaryLayout shape).maxRel i =
+      geomRouteDecode (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape)
+        (canonicalSummaryLayout shape).maxRel i :=
+  geomCell_eq_routeDecode shape _ i
+    (canonicalSummaryLayout_maxRel_cap shape)
+    (E1InteriorStoreConcrete.hexact_maxRel_concrete rfl hvalid hvalid)
+
+/-- argOffset: the fourth read. -/
+theorem geomCell_argOffset_eq_routeDecode
+    (shape : Cartesian.CartesianShape) {i : Nat}
+    (hvalid : i < (canonicalSummaryLayout shape).argOffset.entriesLen) :
+    geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape)
+        (canonicalSummaryLayout shape).argOffset i =
+      geomRouteDecode (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape)
+        (canonicalSummaryLayout shape).argOffset i :=
+  geomCell_eq_routeDecode shape _ i
+    (canonicalSummaryLayout_argOffset_cap shape)
+    (E1InteriorStoreConcrete.hexact_argOffset_concrete rfl hvalid hvalid)
 
 end E1InteriorSummaryGroup
 end WordRAM
