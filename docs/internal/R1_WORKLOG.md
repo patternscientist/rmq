@@ -953,3 +953,59 @@ the same trace? The exact type comparison, seven local attribution units, and
 18-path sentence reread answer no on the material tree; production strict and
 topology checks plus coordinator exact-commit reconstruction remain the final
 certification boundary.
+
+### R1-R4 material-commit certification
+
+The complete material repair, frozen matrix, 18-path inventory, adversarial
+reread, design decision, and proof digestion were committed as
+`c91f649c1a62533b88969d92d7be3de919649db2`. The following checks ran on that
+exact clean commit. This appended evidence necessarily creates a later
+evidence-only commit; final exact-HEAD reruns are therefore response-attested
+and are not backdated into `c91f649...`.
+
+| ID | Exact evidence obtained on material commit `c91f649...` | Status / residual gap |
+| --- | --- | --- |
+| `REQ-R1R4-STRONG-ALIAS-EVERY-SURFACE` | The exact seven-path material diff places `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` in every strong claim unit. Focused scans passed before commit; the full production scan on `c91f649...` classified the registered strong claims as allowed and found zero strict failures. | Closed on material commit; exact final-HEAD scan is response-attested. |
+| `REQ-R1R4-NO-WEAK-MISATTRIBUTION` | The committed sentence/source table, repaired prose, and post-repair adversarial review quote all three relevant event conclusions. The generic story states only `isReadWord ∨ isWordPrimitive`; the compatibility alias and capstone event field state only the explicit `readWord`/`wordRank`/`wordSelect` disjunction; the strong alias alone supplies `event.isReadWord`. | Closed on material commit; coordinator source reconstruction remains the acceptance boundary. |
+| `REQ-R1R4-CLOSED-INVENTORY` | The committed exact ordered inventory records 18 registered paths, exactly seven repaired and eleven preserved. README, artifact claims, family summary, paper claim correspondence, and paper model adequacy retain their correct strong identities. | Closed on material commit. |
+| `REQ-R1R4-POLICY-GREEN` | Baseline strict scan failed exactly the expected seven paths. Full strict scan on clean `c91f649...` exited 0 in 146.2 s with 832 hits and zero strict failures. Policy/scanner files are absent from the changed range. | Closed on material commit; exact final-HEAD rerun is response-attested. |
+| `REQ-R1R4-WORKLOG-TRUTH` | The committed worklog preserves prior R1-R3 history, freezes R1-R4 before claim editing, records exact source propositions, all sentence comparisons, the 18-path inventory, development results, and proof digestion. This section distinguishes material-commit results from the later evidence commit. | Closed subject to truthful exact-final response attestation. |
+| `COMPLETE-R1R4-COMMITTED-EVIDENCE` | `c91f649...` is a clean committed material candidate containing exactly the nine authorized paths and no generated/staged artifact. This evidence section will be committed separately; its final exact-HEAD checks are response-attested. | Closure determined by evidence commit plus exact-final clean checks. |
+| `INV-R1R3-FOUR-REPAIRED-SURFACES` | Exact range contains none of README, artifact claims, family summary, or paper claim correspondence; direct reread confirms their strong identities remain. | Closed. |
+| `INV-R1R2-FOUR-CURRENT-FACTS` | The committed diff and 18-path reread preserve the `207` algebra, 22 physical/23 logical structure with shared 0/19, live 21/fresh 23 split, and global 0/15 versus instruction 0/1 distinction. | Closed. |
+| `INV-R1R1-SEMANTIC-PRESERVATION` | Exact changed-path list contains only seven authorized current docs, `R1_WORKLOG.md`, and `DESIGN_DECISIONS.md`; no Lean, theorem, validator, payload, store, trace, cost, fixture, script, or executable behavior changed. | Closed. |
+| `INV-HISTORICAL-PRESERVATION` | All dated digests, prior audits, matrices, earlier worklog bodies, and earlier decision bodies are unchanged. R1-R4 and DD-20260719-003 are append-only. | Closed. |
+| `INV-CATEGORY-SEPARATION` | The committed repairs state all `nonSyntheticWeight` cases, distinguish it from trace-length cost, and make no change or conflation among payload, proof, tick, position, source/segment, allocation, runtime, or measured-performance categories. | Closed. |
+| `CHK-R1R4-STRICT-CLAIMS` | Full exact-material scan: exit 0, 146.2 s, 832 hits, zero strict failures. | Closed on material commit; exact-final rerun response-attested. |
+| `CHK-R1R4-TOPOLOGY` | After resolving fresh-worktree prerequisites as recorded below, exact-material topology lint exited 0 in 114.2 s: 83 broad documentary identifiers and 48 paper identifiers resolved. | Closed on material commit; exact-final rerun response-attested. |
+| `CHK-R1R4-DIFF` | On exact clean `c91f649...`, working-tree and `263d004f...HEAD` committed-range `git diff --check` both exited 0 in one 7.1 s invocation; exact nine-path inventory/HEAD/clean check exited 0 in 14.4 s. | Closed on material commit; evidence-commit range/clean checks response-attested. |
+
+### Material-commit final command ledger and topology diagnosis
+
+| Command / diagnostic | Tree | Duration / exit / exact outcome |
+| --- | --- | --- |
+| `powershell -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1 -Strict` | Clean `c91f649...` | 146.2 s, exit 0, 832 hits and zero strict failures. |
+| `powershell -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1 -Strict -Base 263d004f...` | Clean `c91f649...` | 24.3 s, exit 0, 9 changed files checked. |
+| Working-tree plus exact-range `git diff --check` | Clean `c91f649...` | 7.1 s total, exit 0. |
+| Exact changed-path, HEAD, branch, and clean-tree check | Clean `c91f649...` | 14.4 s, exit 0; exactly nine authorized paths and no short-status entries. |
+| Initial `paper_topology_lint.ps1` | Clean `c91f649...`, cold fresh worktree under external RMQ build contention | 367.5 s, wrapper exit 124 with no verdict. Timeout audit found no surviving owned topology child, but did find active external `a08-b7-sparse-level-audit` Lake/Lean builds. No unchanged retry was launched. |
+| Conditional mutex-queued sandboxed `lake build RMQ.Headlines` | Clean `c91f649...` | Waited 384.185 s for `Global\RMQHeavyVerification`; actual build exited 1 in 0.345 s solely because sandbox network could not reach GitHub. |
+| Approved network-capable `lake build RMQ.Headlines` | Clean `c91f649...` | Mutex wait 0.005 s; exit 0 in 805.681 s; 185 targets completed and `RMQ.Headlines` built. This is the permitted one successful focused-headline warm-up. |
+| First mutex-wrapped warmed topology launch | Clean `c91f649...` | 118.8 s, wrapper exit 1 before lint execution because another process abandoned the mutex. |
+| Corrected abandoned-mutex wrapper launch | Clean `c91f649...` | Mutex wait 0.009 s; shell exited `-1` after 57.6 s without a lint verdict. Process audit found no surviving PowerShell/Lake/Lean child. |
+| Direct warmed sandboxed topology lint | Clean `c91f649...` | 98.3 s, exit 1 solely during Lake dependency download; no semantic/name verdict. |
+| Approved warmed topology lint before paper artifact | Clean `c91f649...` | 86.6 s, exit 1 at paper-documentary resolution with `unknown module prefix 'RMQPaper'`; broad resolution had passed. This identified the exact missing direct consumer artifact. |
+| `lake build RMQPaper` | Clean `c91f649...` with headline cache | 3.8 s, exit 0; direct missing paper artifact built. |
+| Final `powershell -ExecutionPolicy Bypass -File scripts\paper_topology_lint.ps1` | Clean `c91f649...` with both prerequisites | 114.2 s, exit 0; `PAPER-TOPOLOGY PASS (83 broad documentary identifiers; 48 paper identifiers resolved)`. |
+
+The timed-out and infrastructure-only topology attempts are recorded as
+incomplete, not semantic failures. Each retry followed a material change:
+external contention cleared, the focused headline target built, network access
+was approved after sandbox download failure, and the directly missing
+`RMQPaper` artifact built. No unchanged expensive command was rerun.
+
+Skipped as disproportionate and unauthorized for this docs-only repair: root
+`lake build`, aggregate gate, validator, cost harness, axiom inventories,
+policy regression, policy mutation suite, and hygiene/native-decision scans.
+No Lean, executable, trust-base, policy, or scanner input changed; the focused
+headline/paper builds served only topology's fresh-worktree prerequisites.
