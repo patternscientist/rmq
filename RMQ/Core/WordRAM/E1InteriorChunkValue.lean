@@ -521,7 +521,35 @@ and `blockAddressWidth` (`RelativeSummary.lean:1299`, `:1308`) apply
 Stated the old way this theorem was VACUOUS at
 `canonicalRelativeRmmInteriorComponentStore`.  Stated this way both
 premises discharge there: `hle` from the store's own field, and `hexact`
-vacuously, because the interior tables are single-chunk.
+SUBSTANTIVELY.
+
+NOT VACUOUSLY, AND NOT BECAUSE THE INTERIOR TABLES ARE SINGLE-CHUNK --
+THEY ARE NOT.  An earlier revision of this docstring justified `hexact`
+that way; both halves of that gloss were false, and it is recorded here
+because a reader who believes it will conclude the premise is free.
+Evaluating `(shape.size, wordSize, relativeWidth, chunkCount)` gives
+`(1, 2, 5, 3)`, `(4, 4, 7, 2)`, `(256, 10, 11, 2)`, reaching `1` only
+around `shape.size = 1024` (`E1InteriorChunkExact.lean:19-21`), so
+`hexact` is a LIVE obligation at exactly the small shapes an all-size
+claim must cover.  The four summary tables show the same pattern.  Three
+of them -- `minRel`, `maxRel` and `argOffset` -- carry `relativeWidth`
+(`canonicalSummaryLayout`, `E1InteriorSummaryGroup.lean:451`), whose chunk
+count is the `2` in the rows above for every size from 4 to 256, so those
+three are TWO-chunk across that range; only `baseline`, which carries
+`superWidth`, is single-chunk there.  Evaluated directly at `shape.size =
+8`, the layout's `(baseline, minRel, maxRel, argOffset)` chunk counts are
+`(1, 2, 2, 2)`.
+
+The discharge route is `E1InteriorChunkExact.hexact_of_segment_agrees`
+(`E1InteriorChunkExact.lean:213`), which fixes each non-final chunk's
+length from `chunkPayloadWords`'s own structure via
+`chunkPayloadWords_get?_eq_take_drop` (`WordStore.lean:274`) and
+`machineWords_length_eq_of_succ_lt_chunkCount`
+(`E1InteriorChunkExact.lean:90`).  The store-side wrappers are
+`hexact_baseline`/`hexact_minRel`/`hexact_maxRel`/`hexact_argOffset`
+(`E1InteriorChunkStore.lean:424`, `:444`, `:464`, `:484`) and their
+`_concrete` forms at the canonical global store
+(`E1InteriorStoreConcrete.lean:156`, `:173`, `:190`, `:207`).
 -/
 theorem interiorChunkFold_cOut_eq_routeDecode
     (store : ReadStore)
