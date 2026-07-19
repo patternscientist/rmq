@@ -3396,3 +3396,108 @@ helpers `finalSameBlockLcaWithStore_storeTraceLocal` /
 proofs about the retired silent objects, not counted payload sources, so
 this is not a dead-source violation; B6 leaves them as B2 left its twins and
 flags the pair as a single cleanup candidate for a later rung.
+
+## DD-20260718-009: repair A07 public numeric claims and expose matrix evidence tiers (R1-E/R1-F)
+
+Status: Proposed repair record; this entry does not record coordinator
+acceptance, integration, or roadmap closure.
+
+Date: 2026-07-18
+
+Scope: R1 repair of the A07 blind-audit findings in the paper root, README,
+family/model-adequacy summaries, headline comments, and the frozen B2/B6
+acceptance matrices. The accepted Lean construction, its frozen public
+identities, and the Option B charged route are not changed by this decision.
+
+Decision:
+
+1. Current public prose is sourced from the live checked algebra and manifest,
+   not from the retired pre-campaign snapshots. The canonical charged-trace
+   decomposition is
+   `2*select35 + (2*rank11 + 2*fringe37 + interior30) + rank11 = 207`.
+   The reviewer manifest has 22 physical sources and logical segments `0..22`;
+   segments `0` and `19` share the BP-code physical source. Segment `21` is the
+   live counted fringe chunk table, while fresh segment `23` is the rejected
+   mutation. Historical 76/142/328 identities remain explicitly historical;
+   no public theorem or constant is renamed or deleted.
+
+2. The space statement is scoped to what the checked erasure/payload theorem
+   establishes: exact equality of flattened payload bit contents with the
+   canonical public payload. Empty sentinel cells and unused per-cell padding
+   are not payload bits and are not charged by that theorem. No allocated-cell
+   or padded-capacity bound is inferred from payload-content equality.
+
+3. `paper_topology_lint.ps1` is documented as an identifier-topology lint. It
+   checks that curated Lean names resolve and composition anchors are present;
+   it does not interpret prose numerals. Numeric statements therefore require
+   source review and claim-drift checks in addition to the topology lint. This
+   limitation explains why stale 76/source-count/segment prose survived earlier
+   green topology runs.
+
+4. Frozen matrix requirements, scopes, consumer chains, and anti-vacuity cells
+   remain unchanged. Evidence presentation now distinguishes bare `Closed`
+   kernel propositions from `Closed (attested: ...)` process, command, artifact,
+   and executable-fixture evidence. The A07 gaps in REQ-B4-03 and REQ-B6-04
+   were reopened until the R1 Lean repairs exposed distinct instruction
+   positions and an indexed top-level same-block occurrence. They are now
+   closed by the exact kernel propositions recorded in the matrices, not by
+   placeholders. REQ-B6-07's
+   governed commit inventory includes the previously omitted `194c4e6`,
+   `285c43e`, and `b77f385`; REQ-B6-08 names the durable broad and WordRAM axiom
+   inventories. For REQ-B6-05, the coordinator has confirmed that the checked
+   MAX branch genuinely absorbs the newly charged same-block leg, the public
+   literal remains 207, and the authorization to move it was unused.
+
+5. Whole-query answer dependency is closed by an additive supplied-store
+   theorem over the accepted evaluator, not by weakening the frozen invariant.
+   `concreteBPNativeSuccinctRMQSingletonAnswerDependency_value_ne` uses the
+   valid ordinary query `[7][0:1]`; the canonical execution consumes logical
+   cell `(21,3)` as five-bit LE1, while a store differing only there returns
+   five-bit LE4. The canonical whole answer is `some 0`, the corrupt answer is
+   `none`, and the theorem concludes `.value ≠`. Consumption is derived from
+   ordered-footprint locality: if `(21,3)` were absent, agreement everywhere
+   else would force equal executions. The initially recommended `(21,7)`
+   LE21-to-LE18 mutation was rejected after exhaustive evaluation of all 32
+   five-bit replacements at that cell left the singleton answer `some 0`.
+   The accepted witness therefore follows the actual decisive cell rather than
+   preserving a false fixture. The executable repeated-read regression is also
+   pinned to post-campaign global positions `0`/`15` and evaluates the actual
+   producer instructions at program positions `0`/`1`.
+
+Alternatives rejected:
+
+- Preserve stale prose as a historical snapshot without labeling it. The files
+  are current public/model-adequacy surfaces, so an unlabeled retired numeral or
+  manifest count is a false statement about the accepted target.
+- Describe the space result as an allocated-store bound. The checked equality
+  identifies payload contents; charging empty sentinels or fixed-cell padding
+  would assert a different theorem.
+- Treat every green build, script transcript, or executable fixture as a
+  kernel-checked proposition. Those tiers answer different questions and must
+  be visually distinct to a reviewer.
+- Leave REQ-B4-03 and REQ-B6-04 marked Closed while awaiting stronger theorem
+  signatures. A component-membership fact is not a whole-query occurrence
+  receipt, and distinct global positions do not expose distinct instruction
+  positions.
+- Rename frozen public identities to make the documentation read more cleanly.
+  The repair is additive/documentary and preserves the accepted public API.
+- Keep the recommended `(21,7)` mutation and report full-record inequality as
+  answer dependency. That mutation does not change the answer, and the audit
+  expressly rejects trace-log inequality as a substitute for `.value ≠`.
+- Make the validator position-agnostic by searching for two equal reads. A
+  concrete literal regression fixture is required; dynamic search would hide
+  future trace-layout drift instead of detecting it.
+
+Consequences:
+
+- Public readers see the live 207 algebra, 22-source/23-logical-segment
+  topology, and segment-21/segment-23 roles without consulting campaign history.
+- Space claims no longer conflate payload bits with allocated padded cells.
+- Matrix status text reveals evidence information level without narrowing or
+  deleting any frozen criterion.
+- The two reopened occurrence rows are restored to kernel-checked `Closed` with
+  their exact theorem propositions inserted. Coordinator reconstruction and
+  acceptance remain required after this worker reports its candidate.
+- The accepted whole-query evaluator now has a checked answer-level corruption
+  witness at one actually consumed counted cell, without changing route code,
+  public identities, payload accounting, or the derived `207` bound.

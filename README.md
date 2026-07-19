@@ -79,10 +79,10 @@ for checked historical profiles under `Legacy`/`Compatibility` names.
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost` | For the canonical no-synthetic trace, the `WordRAM.TraceEvent.nonSyntheticWeight` certificate sum equals the `Costed` cost of the same execution. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe207` | The non-synthetic-weighted actual emitted trace is bounded by `207`. |
 | `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality` | Counterfactual check: a synthetic event anywhere in a trace makes its `nonSyntheticWeight` sum differ from its length. |
-| `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Component cap `2*select13 + (2*rank4 + 2*fringe4 + interior30) + rank4`; the actual-event bridge above connects it to execution. |
+| `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Component cap `2*select35 + (2*rank11 + 2*fringe37 + interior30) + rank11`; the actual-event bridge above connects it to execution and yields the uniform bound `207`. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | Uniform structural execution story with direct same-block decoding and canonical component-store cross-block replay. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | No-synthetic all-size execution story: the same bounded global trace contains no dedicated synthetic cost-only marker events. |
-| `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Canonical reviewer-payload no-synthetic execution story: successful reads are counted in one exhaustive typed 20-source universe, including canonical close, and cross-block replay is uniform for all sizes. |
+| `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Canonical reviewer-payload no-synthetic execution story: successful reads are counted in one exhaustive typed 22-source universe spanning logical segments `0..22` (segments `0` and `19` share the BP-code source), including canonical close, and cross-block replay is uniform for all sizes. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical` | Genuine supplied flat-physical execution: the existing supplied-store evaluator reads the caller's flat store through checked address translation and refines the canonical logical execution, preserving value, cost, ordered successes/failures, repeated reads, and footprint. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint` | Agreement on the first physical execution's consumed ordered footprint determines the complete physical execution. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore` | Projection theorem: the flat physical answer is exactly the existing translated supplied-store evaluator answer. |
@@ -113,7 +113,8 @@ The provenance layer separates two semantic obligations: indexed occurrence
 provenance preserves invocation parameters for the exact current query, while
 a global packet proves every counted source has some actual successful
 closed-valid query witness under the same operational relation used to reject
-segment `21`. The canonical reviewer route has one live public payload,
+fresh segment `23`. Segment `21` is a live counted fringe chunk-table segment.
+The canonical reviewer route has one live public payload,
 `SuccinctClassic.buildPayload`. One pre-execution reviewer physical word list
 erases exactly to that payload. The existing supplied-store evaluator runs
 through a checked adapter that reads the supplied flat store at translated
@@ -220,7 +221,17 @@ about Lean's executable `List` runtime.
 The space statements count payload bits separately from proof-only fields and
 certificates. The succinct RMQ theorem counts the balanced-parentheses shape
 payload plus `o(n)` auxiliary payload; proof objects that certify correctness
-are not counted as data-structure storage.
+are not counted as data-structure storage. Its physical-erasure equality is an
+exact equality of flattened payload **bit contents** with the public payload.
+Empty sentinel cells and unused per-cell padding are not payload bits and are
+not charged by that theorem; it does not claim a bound on allocated cells or
+their padded capacity.
+
+`scripts/paper_topology_lint.ps1` checks the identifier topology of the paper
+surface: required theorem names resolve and the curated composition anchors are
+present. It does not interpret prose numeric values. Numeric prose therefore
+requires separate source review and claim-drift checks; the lint alone cannot
+detect a stale component constant, source count, or segment number.
 
 For the trust base, non-claims, and exact verification commands, see
 [`docs/TRUST_BASE.md`](docs/TRUST_BASE.md) and

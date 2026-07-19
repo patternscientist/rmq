@@ -56,7 +56,8 @@ The all-size final trace consumes
 `SuccinctClose.canonicalRelativeRmmInteriorDirectory` through
 `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`; it does not
 dispatch through the retired size/shape regimes. One exhaustive
-typed 20-source universe includes canonical close, source regions are
+typed 22-source universe includes canonical close and spans logical segments
+`0..22` (segments `0` and `19` share the BP-code source); source regions are
 exclusive, all logical segments are covered, and duplicate legacy
 close/interior sources are absent from the canonical payload. The whole machine
 is the single pre-execution list
@@ -76,8 +77,8 @@ have exact-leaf witnesses as well. Positive predicate `P` is
 successful `ReviewerProducerClaim.HasClosedValidOccurrence`; mutation predicate
 `Q` existentially permits either read result. They share the common occurrence
 relation and `hasOperationalProducer_of_successful` checks `P -> Q`; fresh
-segment `21` fails `Q`. Earlier event-value and component may-read facts remain
-compatibility facts.
+segment `23` fails `Q`. Segment `21` is the live counted fringe chunk table.
+Earlier event-value and component may-read facts remain compatibility facts.
 
 The interior dynamic footprint is the ordered address projection of the
 execution that computes the answer. Theorems
