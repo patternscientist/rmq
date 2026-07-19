@@ -254,6 +254,167 @@ theorem bpFringeChunkStepDecoded_eq_machine
   unfold bpFringeChunkStepDecoded
   rw [<- nat_mod_eq_sub_div_mul, <- nat_mod_eq_sub_div_mul]
 
+/-! ## Positional shape of the charged fringe fold -/
+
+/-- Chunk-table slot the fringe fold reads at chunk `j`. -/
+def bpFringeChunkSlotAt (c : Nat) (window : List Bool) (relLo relHi j : Nat) :
+    Nat :=
+  bpFringeChunkSlot c (bpFringeWindowChunkValue c window j)
+    (bpFringeChunkStartOff c relLo j) (bpFringeChunkEndOff c relHi j)
+
+/-- Chunk-table read event the fringe fold emits at chunk `j`. -/
+def bpFringeChunkEventAt (store : WordRAM.ReadStore)
+    (fringeSegment c : Nat) (window : List Bool) (relLo relHi j : Nat) :
+    WordRAM.TraceEvent :=
+  WordRAM.TraceEvent.readWord fringeSegment
+    (bpFringeChunkSlotAt c window relLo relHi j)
+    (store.readWord? fringeSegment
+      (bpFringeChunkSlotAt c window relLo relHi j))
+
+/-- The fold's operational read log is the literal ascending-chunk list. -/
+theorem bpFringeChunkFoldComputationFrom_run_reads
+    (store : WordRAM.ReadStore) (fringeSegment c : Nat) (window : List Bool)
+    (relLo relHi : Nat) :
+    forall (count j : Nat) (st : Nat × Option (Nat × Nat)),
+      ((bpFringeChunkFoldComputationFrom c window relLo relHi j count st).run
+          (flatWordStoreOfReadStore store fringeSegment)).reads =
+        (List.range count).map
+          (fun d =>
+            (bpFringeChunkSlotAt c window relLo relHi (j + d),
+              store.readWord? fringeSegment
+                (bpFringeChunkSlotAt c window relLo relHi (j + d)))) := by
+  intro count
+  induction count with
+  | zero =>
+      intro j st
+      rfl
+  | succ count ih =>
+      intro j st
+      show (SuccinctSpace.FlatStoreExecution.append _ _).reads = _
+      simp only [SuccinctSpace.FlatStoreExecution.append,
+        SuccinctSpace.FlatStoreComputation.read]
+      rw [ih (j + 1)]
+      rw [List.range_succ_eq_map]
+      simp only [List.map_cons, List.map_map, List.cons_append,
+        List.nil_append]
+      congr 1
+      · apply List.map_congr_left
+        intro d _
+        show
+          (bpFringeChunkSlotAt c window relLo relHi (j + 1 + d),
+            store.readWord? fringeSegment
+              (bpFringeChunkSlotAt c window relLo relHi (j + 1 + d))) =
+            (bpFringeChunkSlotAt c window relLo relHi (j + (d + 1)),
+              store.readWord? fringeSegment
+                (bpFringeChunkSlotAt c window relLo relHi (j + (d + 1))))
+        have : j + 1 + d = j + (d + 1) := by omega
+        rw [this]
+
+/-- The supplied-store fold trace is the literal ascending-chunk event
+list. -/
+theorem bpFringeChunkFoldTraceResultAtSegmentWithStore_trace_map
+    (store : WordRAM.ReadStore) (fringeSegment c : Nat) (window : List Bool)
+    (seed relLo relHi count : Nat) :
+    (bpFringeChunkFoldTraceResultAtSegmentWithStore store fringeSegment c
+        window seed relLo relHi count).trace =
+      (List.range count).map
+        (fun j => bpFringeChunkEventAt store fringeSegment c window
+          relLo relHi j) := by
+  show
+    (((bpFringeChunkFoldComputation c window seed relLo relHi count).run
+      (flatWordStoreOfReadStore store fringeSegment)).reads).map
+        (fun read => WordRAM.TraceEvent.readWord fringeSegment read.1
+          read.2) = _
+  show
+    (((bpFringeChunkFoldComputationFrom c window relLo relHi 0 count
+      (seed, none)).run
+      (flatWordStoreOfReadStore store fringeSegment)).reads).map
+        (fun read => WordRAM.TraceEvent.readWord fringeSegment read.1
+          read.2) = _
+  rw [bpFringeChunkFoldComputationFrom_run_reads store fringeSegment c
+    window relLo relHi count 0 (seed, none)]
+  rw [List.map_map]
+  apply List.map_congr_left
+  intro d _
+  show
+    WordRAM.TraceEvent.readWord fringeSegment
+        (bpFringeChunkSlotAt c window relLo relHi (0 + d))
+        (store.readWord? fringeSegment
+          (bpFringeChunkSlotAt c window relLo relHi (0 + d))) =
+      bpFringeChunkEventAt store fringeSegment c window relLo relHi d
+  rw [Nat.zero_add]
+  rfl
+
+/-- The literal iterated state of the charged fringe fold. -/
+def bpFringeStateAt (store : WordRAM.ReadStore) (fringeSegment c : Nat)
+    (window : List Bool) (relLo relHi seed : Nat) :
+    Nat -> Nat × Option (Nat × Nat)
+  | 0 => (seed, none)
+  | j + 1 =>
+      bpFringeChunkStepDecoded c relLo relHi j
+        (bpFringeStateAt store fringeSegment c window relLo relHi seed j)
+        ((store.readWord? fringeSegment
+            (bpFringeChunkSlotAt c window relLo relHi j)).map bitsToNatLE)
+
+/-- Running the fold from chunk `j` with the iterated state at `j` produces
+the iterated state at `j + count`. -/
+theorem bpFringeChunkFoldComputationFrom_run_value_stateAt
+    (store : WordRAM.ReadStore) (fringeSegment c : Nat) (window : List Bool)
+    (relLo relHi seed : Nat) :
+    forall (count j : Nat),
+      ((bpFringeChunkFoldComputationFrom c window relLo relHi j count
+            (bpFringeStateAt store fringeSegment c window relLo relHi
+              seed j)).run
+          (flatWordStoreOfReadStore store fringeSegment)).value =
+        bpFringeStateAt store fringeSegment c window relLo relHi seed
+          (j + count) := by
+  intro count
+  induction count with
+  | zero =>
+      intro j
+      rfl
+  | succ count ih =>
+      intro j
+      show
+        ((bpFringeChunkFoldComputationFrom c window relLo relHi (j + 1)
+            count
+            (bpFringeChunkStepDecoded c relLo relHi j
+              (bpFringeStateAt store fringeSegment c window relLo relHi
+                seed j)
+              (((flatWordStoreOfReadStore store fringeSegment)
+                  (bpFringeChunkSlotAt c window relLo relHi j)).map
+                bitsToNatLE))).run
+          (flatWordStoreOfReadStore store fringeSegment)).value = _
+      show
+        ((bpFringeChunkFoldComputationFrom c window relLo relHi (j + 1)
+            count
+            (bpFringeStateAt store fringeSegment c window relLo relHi seed
+              (j + 1))).run
+          (flatWordStoreOfReadStore store fringeSegment)).value = _
+      rw [ih (j + 1)]
+      have : j + 1 + count = j + (count + 1) := by omega
+      rw [this]
+
+/-- The supplied-store fold value is the iterated state at `count`. -/
+theorem bpFringeChunkFoldTraceResultAtSegmentWithStore_value_stateAt
+    (store : WordRAM.ReadStore) (fringeSegment c : Nat) (window : List Bool)
+    (seed relLo relHi count : Nat) :
+    (bpFringeChunkFoldTraceResultAtSegmentWithStore store fringeSegment c
+        window seed relLo relHi count).value =
+      bpFringeStateAt store fringeSegment c window relLo relHi seed count := by
+  show
+    ((bpFringeChunkFoldComputationFrom c window relLo relHi 0 count
+      (seed, none)).run
+      (flatWordStoreOfReadStore store fringeSegment)).value = _
+  have hseed :
+      ((seed, none) : Nat × Option (Nat × Nat)) =
+        bpFringeStateAt store fringeSegment c window relLo relHi seed 0 :=
+    rfl
+  rw [hseed,
+    bpFringeChunkFoldComputationFrom_run_value_stateAt store fringeSegment
+      c window relLo relHi seed count 0]
+  rw [Nat.zero_add]
+
 end SuccinctClose
 
 end RMQ
