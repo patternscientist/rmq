@@ -1,4 +1,5 @@
 import RMQ.Core.WordRAM.E1CloseDispatch
+import RMQ.Core.WordRAM.E1SelectCanonical
 
 /-!
 # M6: executable validation of the E1 amended machine
@@ -202,10 +203,10 @@ deriving Repr
 reached, by reading the arm's marker out of the final register file.
 `witnessProgram` halts in both arms, so a `stuck` result means the machine
 did not halt within fuel or left an unrecognised marker -- both defects. -/
-def runDispatch (program : List Instr) (leftClose rightClose : Nat) :
-    RunReport :=
+def runDispatch (salt : Nat) (program : List Instr)
+    (leftClose rightClose : Nat) : RunReport :=
   let result :=
-    E1Machine.run emptyStore program 64
+    E1Machine.run emptyStore program (64 + salt)
       ⟨dispatchRegs leftClose rightClose, 0, false⟩
   let marker := result.final.regs dSame
   let outcome :=
@@ -244,9 +245,10 @@ deriving Repr
 
 /-- Every case where the RUN MACHINE disagrees with the route condition,
 for a given (possibly mutated) program builder. -/
-def dispatchMismatches (build : Nat → List Instr) : List DispatchMismatch :=
+def dispatchMismatches (salt : Nat) (build : Nat → List Instr) :
+    List DispatchMismatch :=
   dispatchCases.filterMap fun (blockSize, l, r) =>
-    let report := runDispatch (build blockSize) l r
+    let report := runDispatch salt (build blockSize) l r
     let expected := routeOutcome blockSize l r
     if report.outcome == expected then none
     else
@@ -255,18 +257,18 @@ def dispatchMismatches (build : Nat → List Instr) : List DispatchMismatch :=
 
 /-- Total modeled steps over the whole dispatch sweep.  A MODELED quantity:
 reproducible, machine-independent, and not a timing. -/
-def dispatchModeledSteps (build : Nat → List Instr) : Nat :=
+def dispatchModeledSteps (salt : Nat) (build : Nat → List Instr) : Nat :=
   dispatchCases.foldl
     (fun acc (blockSize, l, r) =>
-      acc + (runDispatch (build blockSize) l r).modeledSteps)
+      acc + (runDispatch salt (build blockSize) l r).modeledSteps)
     0
 
 /-- Reads performed by the dispatch sweep.  Must be zero: the dispatch
 block contains no `readMem`. -/
-def dispatchReads (build : Nat → List Instr) : Nat :=
+def dispatchReads (salt : Nat) (build : Nat → List Instr) : Nat :=
   dispatchCases.foldl
     (fun acc (blockSize, l, r) =>
-      acc + (runDispatch (build blockSize) l r).reads)
+      acc + (runDispatch salt (build blockSize) l r).reads)
     0
 
 /-! ## 5. The deliberate mutation
@@ -296,8 +298,8 @@ def mutationIsReal (blockSize : Nat) : Bool :=
 /-- THE REJECTION CHECK: the mutant must produce at least one
 machine/route disagreement.  If it produces none, the checker has gone
 vacuous and the harness must fail. -/
-def mutationRejected : Bool :=
-  !(dispatchMismatches mutatedDispatchProgram).isEmpty
+def mutationRejected (salt : Nat) : Bool :=
+  !(dispatchMismatches salt mutatedDispatchProgram).isEmpty
 
 /-! ## 6. Structural self-checks against the proved theorems
 
@@ -368,7 +370,7 @@ deriving Repr
 /-- RUN THE SAME-BLOCK LEG and compare its receipt against the route.
 `build` lets the caller substitute a mutated program while holding
 everything else fixed. -/
-def runSameBlockLeg (build : List Instr → List Instr)
+def runSameBlockLeg (salt : Nat) (build : List Instr → List Instr)
     (xs : List Int) (leftClose rightClose : Nat) : LegReport :=
   let shape := Cartesian.stackCartesianShape xs
   let blockSize := SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
@@ -376,7 +378,8 @@ def runSameBlockLeg (build : List Instr → List Instr)
   let program :=
     build (E1SameBlockLeg.sameBlockLegProgram shape legFringeSegment blockSize)
   let result :=
-    E1Machine.run store program 40000 ⟨legRegs leftClose rightClose, 0, false⟩
+    E1Machine.run store program (40000 + salt)
+      ⟨legRegs leftClose rightClose, 0, false⟩
   let routeTrace :=
     (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
       shape (SuccinctFinal.concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
@@ -414,28 +417,28 @@ def mutatedLeg (program : List Instr) : List Instr :=
     | other => other
 
 /-- Leg runs whose receipt disagrees with the route, for a given builder. -/
-def legReceiptMismatches (build : List Instr → List Instr) : Nat :=
+def legReceiptMismatches (salt : Nat) (build : List Instr → List Instr) : Nat :=
   (legCases.filter fun (xs, l, r) =>
-    !(runSameBlockLeg build xs l r).receiptMatchesRoute).length
+    !(runSameBlockLeg salt build xs l r).receiptMatchesRoute).length
 
 /-- Leg runs that fail to reach the proved exit pc 173. -/
-def legExitFailures (build : List Instr → List Instr) : Nat :=
+def legExitFailures (salt : Nat) (build : List Instr → List Instr) : Nat :=
   (legCases.filter fun (xs, l, r) =>
-    !(runSameBlockLeg build xs l r).reachedExit).length
+    !(runSameBlockLeg salt build xs l r).reachedExit).length
 
 /-- Total modeled steps across the leg sweep: a MODELED quantity. -/
-def legModeledSteps (build : List Instr → List Instr) : Nat :=
+def legModeledSteps (salt : Nat) (build : List Instr → List Instr) : Nat :=
   legCases.foldl (fun acc (xs, l, r) =>
-    acc + (runSameBlockLeg build xs l r).modeledSteps) 0
+    acc + (runSameBlockLeg salt build xs l r).modeledSteps) 0
 
 /-- Total modeled read events across the leg sweep. -/
-def legModeledReads (build : List Instr → List Instr) : Nat :=
+def legModeledReads (salt : Nat) (build : List Instr → List Instr) : Nat :=
   legCases.foldl (fun acc (xs, l, r) =>
-    acc + (runSameBlockLeg build xs l r).machineReads) 0
+    acc + (runSameBlockLeg salt build xs l r).machineReads) 0
 
 /-- The leg mutation must be REJECTED by the receipt comparison. -/
-def legMutationRejected : Bool :=
-  legReceiptMismatches mutatedLeg > 0
+def legMutationRejected (salt : Nat) : Bool :=
+  legReceiptMismatches salt mutatedLeg > 0
 
 /-- The leg mutation genuinely changes the instruction list. -/
 def legMutationIsReal : Bool :=
@@ -444,6 +447,85 @@ def legMutationIsReal : Bool :=
   let program :=
     E1SameBlockLeg.sameBlockLegProgram shape legFringeSegment blockSize
   program != mutatedLeg program
+
+/-! ## 6c. The SELECT-CLOSE LEG: executed, and its receipt compared
+
+`E1SelectCanonical.selectCloseBlock_runsTo_canonical` proves the
+405-instruction select dispatch runs `A -> A + 405` against the canonical
+store with receipts positionally equal to
+`(concreteBPNativeChunkedSelectCloseGlobalWordTraceResult shape idx).trace`.
+Hosted at base `0`, that is directly executable, so the same
+proof-vs-execution differential applies. -/
+
+/-- The accepted select-close data at a shape.  `E1SelectCanonical`'s own
+`selData` is `private`, so the definition is repeated here verbatim from
+`E1SelectCanonical.lean:41` rather than reached into. -/
+def selectData (shape : Cartesian.CartesianShape) :=
+  GenericSelect.sparseExceptionSelectData shape.bpCode false
+
+/-- The select-close leg hosted at base `0`. -/
+def selectLegProgram (shape : Cartesian.CartesianShape) : List Instr :=
+  E1SelectDispatch.selectCloseBlockAt (selectData shape)
+    SuccinctFinal.concreteBPNativeSelectCloseTraceSegmentLayout 0
+    SuccinctFinal.concreteBPNativeRankCloseTraceSegmentBase
+    SuccinctFinal.concreteBPNativeSelectChunkTraceSegment
+    (SuccinctClose.bpFringeChunkBits shape.bpCode.length)
+
+/-- What one select-leg run reports. -/
+structure SelectReport where
+  reachedExit : Bool
+  modeledSteps : Nat
+  machineReads : Nat
+  routeTraceLen : Nat
+  receiptMatchesRoute : Bool
+deriving Repr
+
+/-- RUN THE SELECT LEG and compare its receipt against the route. -/
+def runSelectLeg (salt : Nat) (build : List Instr → List Instr)
+    (xs : List Int) (idx : Nat) : SelectReport :=
+  let shape := Cartesian.stackCartesianShape xs
+  let store := legStore shape
+  let program := build (selectLegProgram shape)
+  let regs : RegFile := fun r => if r = E1SelectBridge.xIdx then idx else 0
+  let result := E1Machine.run store program (40000 + salt) ⟨regs, 0, false⟩
+  let routeTrace :=
+    (SuccinctFinal.concreteBPNativeChunkedSelectCloseGlobalWordTraceResult
+      shape idx).trace
+  { reachedExit := result.final.pc == 405
+    modeledSteps := result.steps
+    machineReads := result.readLog.length
+    routeTraceLen := routeTrace.length
+    receiptMatchesRoute := result.readLog == routeTrace }
+
+/-- Fixtures and occurrence indices the select leg is exercised on. -/
+def selectCases : List (List Int × Nat) :=
+  [2, 3, 5, 8].flatMap fun len =>
+    [0, 1].flatMap fun seed =>
+      let xs := generatedInput len seed
+      [0, 1, 2, 3].map fun idx => (xs, idx)
+
+/-- The honest select program. -/
+def goodSelect : List Instr → List Instr := id
+
+/-- Select-leg runs whose receipt disagrees with the route. -/
+def selectReceiptMismatches (salt : Nat) (build : List Instr → List Instr) : Nat :=
+  (selectCases.filter fun (xs, i) =>
+    !(runSelectLeg salt build xs i).receiptMatchesRoute).length
+
+/-- Select-leg runs failing to reach the proved exit pc 405. -/
+def selectExitFailures (salt : Nat) (build : List Instr → List Instr) : Nat :=
+  (selectCases.filter fun (xs, i) =>
+    !(runSelectLeg salt build xs i).reachedExit).length
+
+/-- Total modeled steps across the select sweep. -/
+def selectModeledSteps (salt : Nat) (build : List Instr → List Instr) : Nat :=
+  selectCases.foldl (fun acc (xs, i) =>
+    acc + (runSelectLeg salt build xs i).modeledSteps) 0
+
+/-- Total modeled read events across the select sweep. -/
+def selectModeledReads (salt : Nat) (build : List Instr → List Instr) : Nat :=
+  selectCases.foldl (fun acc (xs, i) =>
+    acc + (runSelectLeg salt build xs i).machineReads) 0
 
 /-! ## 7. THE HOLE: whole-query comparison
 
@@ -491,9 +573,37 @@ def renderMismatch (m : DispatchMismatch) : String :=
   s!"    blockSize={m.blockSize} left={m.leftClose} right={m.rightClose} " ++
     s!"machine={outcomeName m.machine} route={outcomeName m.route}"
 
+/-! ### Why the sweeps take a `salt`
+
+Getting an honest wall-clock number out of this harness took three tries,
+and the failure mode is worth recording because it is silent.
+
+A sweep like `legModeledSteps mutatedLeg` is a CLOSED term: no free
+variables, no runtime input.  Lean lifts such terms to top-level constants
+that are evaluated once, which means the work can happen before `main`
+ever runs -- so bracketing the call with `IO.monoMsNow` measured nothing
+and the harness confidently printed `0 ms` for phases that really took
+seconds.  Forcing the value inside the bracket did not help, because the
+value was already computed.
+
+Threading a runtime-obtained `salt` makes each sweep depend on an input
+that cannot be known until execution, so it is evaluated where it is
+called.  `salt` is added to the FUEL, which is already generous, so a
+salt of `0` -- what `mainImpl` always passes -- changes no result, only
+when the work happens.
+
+The modeled step counts were never affected by any of this; only the
+wall-clock numbers were, which is exactly the reason the report keeps the
+two in separate columns and calls the wall-clock non-evidence. -/
+
 def mainImpl : IO UInt32 := do
   IO.println "== E1 amended-machine validator (M6) =="
   IO.println ""
+  -- A runtime-derived zero. See the note above `mainImpl` on why the
+  -- sweeps take a salt: without it Lean evaluates them before `main`
+  -- starts and every wall-clock reading is a meaningless 0.
+  let clock <- IO.monoMsNow
+  let salt := clock * 0
 
   -- STEP 1: the reference and its expectations, BEFORE any machine run.
   IO.println "-- phase 1: independent reference (no machine involved) --"
@@ -517,15 +627,15 @@ def mainImpl : IO UInt32 := do
   -- separately and never combined.
   IO.println "-- phase 3: machine execution vs route (modeled vs wall-clock) --"
   let t0 <- IO.monoMsNow
-  let mismatches := dispatchMismatches goodDispatchProgram
-  let modeled := dispatchModeledSteps goodDispatchProgram
-  let reads := dispatchReads goodDispatchProgram
-  let t1 <- IO.monoMsNow
+  let mismatches := dispatchMismatches salt goodDispatchProgram
+  let modeled := dispatchModeledSteps salt goodDispatchProgram
+  let reads := dispatchReads salt goodDispatchProgram
   IO.println s!"dispatchCases={dispatchCases.length}"
   IO.println s!"modeledSteps={modeled}   (machine-modeled, reproducible)"
   IO.println s!"modeledReads={reads}   (must be 0: dispatch performs no readMem)"
-  IO.println s!"wallClockMs={t1 - t0}   (this binary on this host; NOT evidence)"
   IO.println s!"dispatchMismatches={mismatches.length}"
+  let t1 <- IO.monoMsNow
+  IO.println s!"dispatchWallClockMs={t1 - t0}   (this binary on this host; NOT evidence)"
   for m in mismatches.take 10 do
     IO.println (renderMismatch m)
   IO.println ""
@@ -533,28 +643,44 @@ def mainImpl : IO UInt32 := do
   -- STEP 3b: the same-block leg, executed, receipt compared to the route.
   IO.println "-- phase 3b: same-block LEG execution vs route receipt --"
   let tl0 <- IO.monoMsNow
-  let legExitFails := legExitFailures goodLeg
-  let legReceiptFails := legReceiptMismatches goodLeg
-  let legSteps := legModeledSteps goodLeg
-  let legReads := legModeledReads goodLeg
-  let tl1 <- IO.monoMsNow
+  let legExitFails := legExitFailures salt goodLeg
+  let legReceiptFails := legReceiptMismatches salt goodLeg
+  let legSteps := legModeledSteps salt goodLeg
+  let legReads := legModeledReads salt goodLeg
   IO.println s!"legCases={legCases.length}"
   IO.println s!"legExitFailures={legExitFails}   (proved exit is pc 173)"
   IO.println s!"legReceiptMismatches={legReceiptFails}   (machine readLog vs route trace)"
   IO.println s!"legModeledSteps={legSteps}   (machine-modeled, reproducible)"
   IO.println s!"legModeledReads={legReads}   (machine-modeled receipt events)"
+  let tl1 <- IO.monoMsNow
   IO.println s!"legWallClockMs={tl1 - tl0}   (this binary on this host; NOT evidence)"
+  IO.println ""
+
+  -- STEP 3c: the select-close leg, executed, receipt compared to the route.
+  IO.println "-- phase 3c: select-close LEG execution vs route receipt --"
+  let ts0 <- IO.monoMsNow
+  let selExitFails := selectExitFailures salt goodSelect
+  let selReceiptFails := selectReceiptMismatches salt goodSelect
+  let selSteps := selectModeledSteps salt goodSelect
+  let selReads := selectModeledReads salt goodSelect
+  IO.println s!"selectCases={selectCases.length}"
+  IO.println s!"selectExitFailures={selExitFails}   (proved exit is pc 405)"
+  IO.println s!"selectReceiptMismatches={selReceiptFails}   (machine readLog vs route trace)"
+  IO.println s!"selectModeledSteps={selSteps}   (machine-modeled, reproducible)"
+  IO.println s!"selectModeledReads={selReads}   (machine-modeled receipt events)"
+  let ts1 <- IO.monoMsNow
+  IO.println s!"selectWallClockMs={ts1 - ts0}   (this binary on this host; NOT evidence)"
   IO.println ""
 
   -- STEP 4: the mutation must be rejected.
   IO.println "-- phase 4: deliberate mutation --"
-  let mutantMismatches := dispatchMismatches mutatedDispatchProgram
   let tm0 <- IO.monoMsNow
-  let rejected := mutationRejected
-  let tm1 <- IO.monoMsNow
+  let mutantMismatches := dispatchMismatches salt mutatedDispatchProgram
+  let rejected := mutationRejected salt
   IO.println s!"mutationIsReal={mutationIsReal 3}"
   IO.println s!"mutantMismatches={mutantMismatches.length}   (must be > 0)"
   IO.println s!"mutationRejected={rejected}"
+  let tm1 <- IO.monoMsNow
   IO.println s!"mutationWallClockMs={tm1 - tm0}"
   for m in mutantMismatches.take 5 do
     IO.println (renderMismatch m)
@@ -563,15 +689,15 @@ def mainImpl : IO UInt32 := do
   -- STEP 4b: mutating a REAL machine component (the same-block leg).
   IO.println "-- phase 4b: deliberate mutation of the same-block LEG --"
   let tlm0 <- IO.monoMsNow
-  let legMutExitFails := legExitFailures mutatedLeg
-  let legMutReceiptFails := legReceiptMismatches mutatedLeg
-  let legMutSteps := legModeledSteps mutatedLeg
-  let tlm1 <- IO.monoMsNow
+  let legMutExitFails := legExitFailures salt mutatedLeg
+  let legMutReceiptFails := legReceiptMismatches salt mutatedLeg
+  let legMutSteps := legModeledSteps salt mutatedLeg
   IO.println s!"legMutationIsReal={legMutationIsReal}"
   IO.println s!"legMutantExitFailures={legMutExitFails}   (0 expected: exit pc alone MISSES this mutation)"
   IO.println s!"legMutantReceiptMismatches={legMutReceiptFails}   (must be > 0: the receipt catches it)"
   IO.println s!"legMutantModeledSteps={legMutSteps}   (vs honest {legSteps})"
-  IO.println s!"legMutationRejected={legMutationRejected}"
+  IO.println s!"legMutationRejected={legMutationRejected salt}"
+  let tlm1 <- IO.monoMsNow
   IO.println s!"legMutationWallClockMs={tlm1 - tlm0}"
   IO.println ""
 
@@ -591,7 +717,8 @@ def mainImpl : IO UInt32 := do
       sameBlockLegLengthOk && mismatches.isEmpty && reads == 0 &&
       mutationIsReal 3 && rejected &&
       legExitFails == 0 && legReceiptFails == 0 &&
-      legMutationIsReal && legMutationRejected
+      legMutationIsReal && legMutationRejected salt &&
+      selExitFails == 0 && selReceiptFails == 0
   if ok then
     IO.println "RESULT: PASS (with the whole-query comparison still OPEN)"
     return 0
