@@ -4133,3 +4133,50 @@ sixth model and the stash correction; §10b a file:line-exact resume inventory.
 All 25 citations re-checked after its edits. It correctly did NOT touch the
 `E1CrossBlockArm.lean:1143` prose citations, because that renumbering lives on an
 unmerged branch and `:1143` is still true in this worktree.
+
+---
+
+## C05 round 63 — two coordinator process failures in one round, both mine
+
+**1. The DD gap is now THREE consecutive lanes, and the instruction is the
+cause.** Lane B claimed `050`, Lane CL claimed `070`-`073`, Lane B3 claimed
+`053`-`055`; none of the three wrote an entry into `DESIGN_DECISIONS.md`. Lane G
+did — so it is three of four, not universal, which is exactly the signature of an
+ambiguous instruction rather than a discipline failure: careful readers split on
+it.
+
+My older wording was *"take an ID from above the maximum you OBSERVE; say which
+you claimed."* That instructs a worker to CLAIM and REPORT. It does not
+instruct a worker to WRITE, and three of them read it as written. I corrected
+the wording only when launching Lane B4, so B3 was still working under the
+defective version when it "failed" a requirement I had not actually stated.
+
+Routed B3's three entries to B4, deprioritised to end-of-session, with the
+instruction to LIFT from B3's own commit bodies rather than compose fresh — the
+reasoning is already recorded well there, and a re-derivation risks a weaker
+second telling of an argument that was right the first time. Same handling Lane
+B2 used successfully for Lane B's orphaned `050`.
+
+**2. A scheduling error of mine cost a verification run.** I launched Lane B4
+into the SAME worktree while the docs/lint battery over Lane B3's range was
+still queued. The battery took `MUTEX_TIMEOUT` on
+`Global\RMQHeavyVerification` rather than running, and by then B4 was already
+modifying the tree the battery would have examined — so re-running it against
+`6b6c293` in place is no longer meaningful.
+
+The recovery is cheap because B3's commits are ancestors of B4's branch: one
+battery over the combined range at the end covers both. But the lesson is
+specific and worth stating, because I have now built exactly this hazard twice
+in different forms — **a worktree is a single-writer resource, and so is the
+heavy-verification mutex. Queue the battery BEFORE launching the next lane into
+the same worktree, or give the next lane its own.** The same shape as round 53's
+finding: taking a check onto myself makes MY scheduling of it load-bearing.
+
+I did run the one check that has failed three times, cheaply and by grep, and it
+found the gap above. So the deferral costs coverage of prose drift and topology,
+not of the defect class that actually recurs here.
+
+Both failures this round are process rather than mathematics, and both are the
+coordinator's. Worth recording plainly: the workers' output has been sound in
+every one of these cases, and what has repeatedly needed repair is my
+instructions and my sequencing.
