@@ -912,3 +912,161 @@ NEXT ACTION, in order:
 No acceptance-matrix row changed status this session; no row was weakened.
 No constant is asserted; the 527 and the 207 -> 210 chain are both to be
 derived at the commit that lands them.
+
+# Session 4 (B7-04)
+
+Two durable results: SPACE ACCOUNTING IS COMPLETE (link 4, `..._littleO`,
+was B7-03's resume point and is now solved and compiled to a real olean),
+and the store extension's blast radius is now known to reach OUTSIDE
+`InteriorDirectory.lean` - a breakage no predecessor could have seen.
+No Lean change is committed: the atomicity finding still holds. The WIP
+patch is refreshed from 661 to 952 lines.
+
+## LINK 4 SOLVED: `canonicalRelativeRmmInteriorRawPayloadOverhead_littleO`
+
+B7-03 left the decisive error verbatim: after `heq` simplification the term
+carries `+ canonicalRelativeRmmInteriorLevelTableOverhead shape` while the
+goal expects the bare directory payload length. The `LittleOLinear.add`
+route was right; what it needed was a closed form in `n` plus a bridge to
+the `shape`-indexed overhead.
+
+Four new pieces in `InteriorDirectory.lean`:
+
+1. `canonicalRelativeRmmInteriorLegacyPartOverhead (n : Nat) : Nat` - the
+   first three summands (summary, local sparse, global sparse). This is
+   exactly the PRE-B7 raw overhead.
+2. `canonicalRelativeRmmInteriorLevelPartOverhead (n : Nat) : Nat` - the
+   two charged level-table summands as a closed form in `n`.
+3. `canonicalRelativeRmmInteriorRawPayloadOverhead_eq_parts` - raw =
+   legacy part + level part. Needs `Nat.add_assoc`: the raw def associates
+   left, the split associates right.
+4. `canonicalRelativeRmmInteriorLevelTableOverhead_eq_levelPart` - THE
+   BRIDGE, `levelTableOverhead shape = levelPart shape.size`. Proved by
+   the same simp set `..._payload_length_eq_raw` already uses, minus two
+   args the linter rejects as unused
+   (`Cartesian.CartesianShape.bpCode_length`, `Nat.mul_assoc`). That
+   theorem had already done the layout-field-to-closed-form work, so the
+   bridge is nearly free once the level part is named.
+
+With the bridge, `..._eq_legacy_of_compactReady` (which B7-03 STRENGTHENED
+to an exact equality, and which STAYS strengthened) rewrites into
+`legacyPart n + levelPart n = legacyPayload + levelPart n` and the level
+term CANCELS by `omega`. So `..._LegacyPartOverhead_littleO` is B7-03's
+existing proof verbatim plus the cancellation, and the raw `_littleO` is
+`LittleOLinear.add` of the two parts transported across `_eq_parts` by
+`LittleOLinear.of_le`.
+
+### The level part's envelope, derived
+
+`levelPartOverhead_le_envelope` (private), for `2 <= n`, with
+`base := Nat.log2 n + 1`:
+
+    canonicalRelativeRmmInteriorLevelPartOverhead n <=
+      81 * ((Nat.log2 n + 1) * ((Nat.log2 n + 1) * (Nat.log2 n + 1))) +
+        (9 * (n / (Nat.log2 n + 1)) + 21)
+
+- LOCAL table, domain `M + 2` with `M = base * base`. Width
+  `<= 8 * machineWordBits M + 1` by B7-03's
+  `sparseLevelWidth_add_two_le_of_pos`; then
+  `machineWordBits (base*base) <= 2 * machineWordBits base + 1`
+  (`SuccinctRank.machineWordBits_mul_self_log_bound`) and
+  `machineWordBits base <= base` (`machineWordBits_le_self_of_pos`) give
+  width `<= 16*base + 9 <= 25*base`. Domain `<= 2*(base*base)`. Product
+  `<= 50 * base^3`. CUBIC - needs `eventually_scale_log2_succ_cube_le_self`.
+- GLOBAL table, domain `x + 3` with `x = n / base / (base*base)`. Width
+  `<= 9*base` using `machineWordBits (x+1) <= machineWordBits n = base`
+  via `machineWordBits_mono_le` against `x + 1 <= n`. Product
+  `<= 9*(base*x) + 27*base`, and `base * x <= n / base` by
+  `Nat.div_div_eq_div_mul` + `Nat.div_mul_le_self`. So the global term is
+  `~ n / log^2 n`, NOT cubic - it needs `littleOLinear_id_div_log2_succ`.
+  THE TWO TERMS NEED DIFFERENT ENVELOPES AND MUST NOT BE MERGED.
+
+## NEW OBSTRUCTION FOUND AND FIXED, outside `InteriorDirectory.lean`
+
+No predecessor saw this because no predecessor's build ever got PAST
+`InteriorDirectory.lean`. With link 4 done the root build advanced and
+failed at [213/244]:
+
+    error: RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean:1815:6:
+    type mismatch, term ...
+    but is expected to have type
+      (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+        shape).store.words.toList = ... (six regions) ...
+
+`concreteBPNativeSuccinctRMQReviewerCloseWords_length_le` contains a
+`rw [show ... by simpa ...]` that spells the component store's word list
+out LITERALLY over six regions - the same defect class as the four
+`_refines` proofs B7-02 enumerated, but in a different file and absent
+from every inventory to date. Repaired by adding two `let`s
+(`localLevel`, `globalLevel`), two
+`fixedWidthNatTable_machineWords_length_le_payload_length` facts, the two
+new tails on the decomposition, and
+`SuccinctClose.PayloadLiveBPSparseLevelTable.payload` to the closing simp
+set. `lake env lean` on the file is then clean, no errors, no warnings.
+
+LESSON FOR THE NEXT WORKER: the literal-store-decomposition defect class
+is NOT confined to `InteriorDirectory.lean`. Before assuming the repair
+surface is the 28 theorems / 12 defs B7-02 measured, grep the whole tree
+for proofs that enumerate the component store's regions. B7-02's measured
+surface was measured against a build that never reached `SuccinctFinal`.
+
+## 218 -> 527 MIGRATED
+
+`RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean`, three occurrences in
+`concreteBPNativeSuccinctRMQReviewerPhysicalWords_length_le` (`hdirLinear`,
+`hcloseBound`, `hcanonicalCloseBound`). Headroom is not close:
+`concreteBPNativeSuccinctRMQReviewerCapacity n = 400000 * (n + 1)`
+(`ReviewerPhysical.lean:1470-1471`), so the extra `309 * (n+1)` is absorbed
+without touching the capacity constant or any other consumer.
+
+## CORRECTIONS OF RECORD (tactic-level, cost real time if rediscovered)
+
+1. `set` IS NOT AVAILABLE - it is a Mathlib tactic and this project is
+   Mathlib-free. The envelope had to be factored as a standalone
+   arithmetic lemma `levelPart_envelope_arith` over plain variables
+   `base q x` with three hypotheses, then instantiated by `exact` against
+   the zeta-reduced goal. Do not reach for `set`, `ring`, or `nlinarith`.
+2. `Nat.log2 2 = 1` DOES NOT REDUCE BY `decide` - `Nat.log2` is
+   well-founded recursion and the `Decidable` instance gets stuck with
+   "reduction got stuck at the 'Decidable' instance". The working route to
+   `1 <= Nat.log2 n` from `2 <= n` is
+   `(Nat.le_log2 hne).2 (hpow : 2^1 <= n)`.
+   (`ChargedTableRegime.lean:44` has `bpRegime_log2_two` if a numeral is
+   ever wanted.)
+3. `omega` cannot see through a product of two variables. Every
+   `(a) * (b) = c` step is a separate `have` closed by
+   `simp [Nat.mul_comm, Nat.mul_left_comm, Nat.mul_assoc, ...]` and
+   consumed by `Nat.le_trans`, never handed to `omega` directly.
+
+## STRETCH-01 GROUNDWORK: subagent inventory of the interior leg
+
+Delegated read-only sweep of the flat-store executed family. Recorded as
+GROUNDWORK, not as a closed inventory:
+
+- It independently re-derived the four sites (`:2263`/`:2264` local level
+  and span, `:2277`/`:2278` global level and span) and confirmed the
+  arguments are runtime-derived (`count = rightBlock - leftBlock - 1` at
+  `ChargedFringeTrace.lean:943`), not layout constants.
+- It found NO additional genuine defect in the interior leg. Everything
+  else classified as representation artifact or accepted primitive:
+  constant-divisor `/` and `%`; index arithmetic; `bitsToNatLE` word
+  decoding; `entries.length` (bridge lemmas at
+  `LocalGlobalSparse.lean:838`, `:866`,
+  `RelativeSummary.lean:559/566/573/580`).
+- USEFUL NEGATIVE: `bpLocalSparseCellOffset`'s `let span := 2 ^ level`
+  (`LocalSparseOffset.lean:23`) is on the TABLE-CONSTRUCTION path, not the
+  query path - the query uses `...CellSlot`, not `...CellOffset`.
+- COMPLETENESS LIMITS, stated so this is not mistaken for a closed
+  inventory: it swept ONLY the interior leg. The endpoint-fringe, local BP
+  decoder, and rank/select-close legs were inspected only at the call site.
+  Leaf expansion was one level. Reachability was textual, not elaborated.
+  It could not settle whether
+  `concreteBPFiniteSmallInteriorRangeMinTable` /
+  `...AllSizeStructuralLegacy` (`ConcreteDirectoryRAM.lean:1100-1209`,
+  which dispatches to a `boundedSummaryRangeScanTraceResultAtSegments`, a
+  name suggesting a LINEAR SCAN) is dead from the whole-query root.
+  THAT LAST ITEM IS THE MOST INTERESTING UNRESOLVED THREAD IN THIS RUNG.
+
+STRETCH-01 remains Open. This is a candidate list for the interior leg
+with stated limits, not the auditable complete enumeration the row asks
+for.
