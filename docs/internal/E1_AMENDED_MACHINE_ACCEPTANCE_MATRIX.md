@@ -354,3 +354,59 @@ correct as written; the non-existence gloss added downstream of it was
 wrong. Recorded per the standing instruction to report rather than write
 an unsupported sentence. Full evidence in `E1_WORKLOG.md` M3d-16 section 1
 and DD-20260719-011.
+
+## Evidence added by E1-R4z (M3d-17), no row closed, no row weakened
+
+All eleven rows REQ-E1-01..11 remain OPEN. No frozen requirement text was
+edited. Every row is whole-query scoped and the whole-query composition is
+downstream of the interior simulation, of which this session landed the
+premise discharge and not a block.
+
+- **REQ-E1-03** (result agreement) - the interior value bridge's `hexact`
+  premise is now DISCHARGED AT
+  `canonicalRelativeRmmInteriorComponentStore`, not merely witnessed
+  satisfiable away from it. `E1InteriorChunkStore.hexact_baseline`,
+  `hexact_minRel`, `hexact_maxRel` and `hexact_argOffset` instantiate
+  `hexact_of_segment_agrees` at that store with the agreement parameter
+  SUPPLIED, from `hagree_baseline` .. `hagree_argOffset`; the other four
+  component tables have their agreement clauses landed (`hagree_local`,
+  `hagree_global`, `hagree_localLevel`, `hagree_globalLevel`) awaiting the
+  blocks that read them. The base offsets are the ROUTE's own
+  (`canonicalRelativeRmmInteriorComponentOffsets`,
+  `InteriorDirectory.lean:1614`, consumed at `:2282`, `:2317`, `:2335`),
+  so this is agreement with the route's addressing.
+
+  THE EVIDENCE IS PARTLY A SUBTRACTION, as it was in M3d-14 and M3d-15, and
+  the subtraction is recorded rather than netted out. What M3d-16 recorded
+  for this row rested on an `hagree` premise that is FALSE at this store for
+  seven of its eight tables - the store is the CONCATENATION of the eight
+  tables' word lists, so past the end of any one of them it still answers
+  `some` while the table's own list answers `none`. The premise is re-cut
+  BOUNDED (strengthening only: premise weakened, conclusion untouched,
+  nothing renamed) and the bound is supplied internally by
+  `machineWords_index_lt`. The row is not better off than it looked; it is
+  now as well off as it looks.
+
+- **REQ-E1-05** (anti-vacuity) - `unbounded_agreement_refuted` proves the
+  discarded premise CONTRADICTORY at every shape whose `minRel` table is
+  non-empty, so the bound in the re-cut premise is demonstrated load-bearing
+  rather than asserted to be. Recorded because it bounds future anti-vacuity
+  work: the numeric fixture was written first and does NOT compile - the
+  interior store's sizes run through `Nat.log2`, defined by well-founded
+  recursion, which the compiler evaluates (`#eval` gives `(2, 31)` at the
+  one-node shape) but THE KERNEL CANNOT REDUCE, so `rfl` and `decide` both
+  fail and `native_decide` is forbidden. The general theorem is strictly
+  stronger than the fixture would have been.
+
+  NOTE THE LIMIT OF THIS EVIDENCE, stated so no consumer overreads it. All
+  twelve clauses carry `HoldsInteriorStore` - that the machine's flat store
+  at `segment` holds the interior directory - as a SETUP hypothesis.
+  `interiorReadStore_holds` shows it satisfiable. By this session's own
+  finding that is NOT a discharge: it is a store built FOR the hypothesis,
+  the same shape of witness as the `segmentStore_agrees` that hid the defect
+  this session found. Discharging it at the store the interior program
+  actually runs against is owed by whoever writes the summary group, and the
+  established E1 pattern for it is instantiation, not parameterisation.
+
+Full evidence in `E1_WORKLOG.md` M3d-17 and `DESIGN_DECISIONS.md`
+DD-20260719-012.

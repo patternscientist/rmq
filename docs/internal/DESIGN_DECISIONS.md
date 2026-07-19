@@ -4622,3 +4622,87 @@ concrete layout here would guess something this module cannot check.
 Per the satisfiability rule it does not ship undischarged --
 `segmentStore` / `segmentStore_agrees` exhibit a store meeting it, so
 nothing composed on the corollary rests on an unmeetable hypothesis.
+
+## DD-20260719-012: the fold's agreement premise was FALSE at the interior store; it is re-cut BOUNDED and discharged there (E1 M3d-17)
+
+Context. `hexact_of_segment_agrees` (`E1InteriorChunkExact.lean`) reduced the
+value bridge's exactness premise to one parameter, `hagree`: that the
+machine's flat store agrees, at a table's base offset, with that table's
+machine word list. DD-20260719-011's session exhibited a store meeting it
+(`segmentStore_agrees`) and recorded, unprompted, that this shows the premise
+SATISFIABLE and not that it HOLDS at
+`canonicalRelativeRmmInteriorComponentStore`. Closing that gap was this
+session's task.
+
+Finding. THE PREMISE AS STATED IS FALSE AT THAT STORE -- for seven of its
+eight tables. `hagree` was unbounded, asserting agreement at EVERY address
+`base + a`. But `canonicalRelativeRmmInteriorComponentStore` is the
+CONCATENATION of the eight tables' machine word lists
+(`canonicalRelativeRmmInteriorComponentStore_words_toList`,
+`InteriorDirectory.lean:1665`). Past the end of any one table the store still
+answers `some` -- with the NEXT table's word -- while
+`(fixedWidthNatTableMachineWords table wordSize)[a]?` has run out and answers
+`none`. Only the final component, `globalLevel`, escapes.
+
+Settled by EVALUATION before anything was built on it, per the standing rule.
+`#eval` at the one-node shape gives `(baselineWords, storeWords) = (2, 31)`,
+so the unbounded premise is wrong about twenty-nine addresses, not a boundary
+one. Larger shapes are worse, not better: `(1, 38)`, `(1, 69)`, `(1, 133)`.
+
+This is the SAME FAILURE CLASS DD-20260719-009 recorded one level down, and
+the third consecutive instance: a hypothesis that looks merely unproved at
+the definition site and is unmeetable at the intended instantiation. It
+survived a session, a coordinator review and an explicit satisfiability
+witness -- because the witness was honest and answered a different question.
+`segmentStore` is a store built to hold ONE table, and one table is exactly
+the case where the unbounded form is fine.
+
+Decision -- BOUND the premise; do not weaken any conclusion. `hagree` now
+reads
+
+    forall a, a < (fixedWidthNatTableMachineWords table wordSize).length ->
+      store.readWord? segment (base + a) =
+        (fixedWidthNatTableMachineWords table wordSize)[a]?
+
+and `machineWords_index_lt` (new, `E1InteriorChunkExact.lean`) supplies the
+bound internally at the ONE index the proof uses, `i * chunkCount + j`, from
+`List.mul_add_le_flatMap_length_of_constant_length`
+(`MachineChunkedTable.lean:98`) for a cell the table holds and a chunk below
+the count. STRENGTHENING ONLY: premise weakened, conclusion untouched,
+nothing renamed, and the corollary is local so no external consumer moves.
+
+Why bounded is the right cut and not a retreat. The bounded form is exactly
+what an append decomposition yields, so it discharges at the interior store
+for ALL EIGHT tables with no side conditions, from two facts: the store's
+word list is the eight-fold append, and
+`canonicalRelativeRmmInteriorComponentOffsets` (`InteriorDirectory.lean:1614`)
+is the running prefix sums of that append. Those offsets are the same
+constants the ROUTE's own read computations use (`:2282`, `:2317`, `:2335`),
+so the agreement proved is agreement with the route's addressing, not with a
+layout chosen here. Landed as `hagree_baseline` .. `hagree_globalLevel` in
+`RMQ/Core/WordRAM/E1InteriorChunkStore.lean`, with `hexact` itself then
+composed for the summary group's four reads (`hexact_baseline`,
+`hexact_minRel`, `hexact_maxRel`, `hexact_argOffset`).
+
+The bound is proved LOAD-BEARING, not asserted to be. `unbounded_agreement_refuted`
+derives `False` from the unbounded form at any shape whose `minRel` table is
+non-empty. Note what it is NOT: it is not a fixture. The numeric statement
+was written first and does not compile -- the interior store's sizes run
+through `Nat.log2`, which Lean defines by well-founded recursion, so the
+compiler evaluates it but THE KERNEL CANNOT REDUCE IT and both `rfl` and
+`decide` fail. `native_decide` would close it and is forbidden, correctly,
+since it moves the check out of the kernel. Proving it generally is stronger
+than the fixture would have been anyway: it holds at every reachable shape
+rather than at one.
+
+Residual, stated so it stays visible. `HoldsInteriorStore` -- that the
+machine's flat store at `segment` holds the interior directory -- is carried
+as a SETUP hypothesis, and every clause here is conditional on exactly it.
+It is not a mathematical debt of the same kind: it says the machine was
+loaded with the directory the route reads, and it is what the interior
+program's own wiring will establish when the summary group is written.
+Per the satisfiability rule it does not ship unwitnessed: `interiorReadStore`
+/ `interiorReadStore_holds` exhibit a store meeting it. That witness is
+subject to the same caution this entry records about `segmentStore` -- it
+shows the hypothesis meetable, NOT that the eventual concrete machine store
+meets it, and whoever wires the interior program owes the latter.

@@ -5672,3 +5672,273 @@ All file:line verified at this commit.
 6. STILL OWED, carried from M3d-13 and unchanged: an EXECUTED preservation
    check for the interior fold; the validator has no interior analogue of
    phase 3h.
+
+## M3d-17 (worker E1-R4z): the agreement premise was false at the target store, and the satisfiability witness is what hid it
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, from HEAD
+`da7556f` (M3d-16's yield) to this commit.  Green.
+
+Mission item 1 -- derive `hexact` AT
+`canonicalRelativeRmmInteriorComponentStore` -- IS DONE.  Items 2-7 (the
+summary group, the span blocks, the two-span blocks, the five-branch
+dispatch, `hInterior`, the closure ladder, the validator's interior
+preservation phase) are UNBUILT.  Item 1 was the session, and it was not a
+composition: the premise it was supposed to compose could not have held.
+
+### 1. THE GAP THE DELEGATION FLAGGED WAS NOT A GAP -- IT WAS A DEFECT
+
+M3d-16 recorded, unprompted, that `segmentStore_agrees` shows `hagree`
+SATISFIABLE and not that it HOLDS at the interior store.  That reading was
+right, and the coordinator was right to make closing it the first job.  What
+neither anticipated is the answer.
+
+`hagree` was stated UNBOUNDED: agreement at every address `base + a`.  It is
+FALSE at `canonicalRelativeRmmInteriorComponentStore` for SEVEN OF ITS EIGHT
+TABLES, and the reason is structural.  That store is the CONCATENATION of the
+eight tables' machine word lists
+(`canonicalRelativeRmmInteriorComponentStore_words_toList`,
+`InteriorDirectory.lean:1665`).  Past the end of any one table the store still
+answers `some` -- with the NEXT table's word -- while
+`(fixedWidthNatTableMachineWords table wordSize)[a]?` has run out and answers
+`none`.  Only the last component, `globalLevel`, escapes, and only because
+nothing follows it.
+
+EVALUATED FIRST, per the standing rule, before anything was built on it.  A
+scratch `#eval` of `(baselineWords, storeWords)` gives
+
+    one-node shape   (2, 31)
+    two-node shape   (1, 38)
+    four-node shape  (1, 69)
+    eight-node shape (1, 133)
+
+so at the smallest shape the unbounded premise is wrong about twenty-nine
+addresses, not a boundary one, and larger shapes are worse.  That took one
+`#eval` and settled in minutes what the prose could not.
+
+WHY THE SATISFIABILITY WITNESS DID NOT CATCH THIS, and this is the part worth
+carrying.  `segmentStore_agrees` is honest and its proof is correct.  It
+exhibits a store built to hold ONE table -- and one table is exactly the case
+where the unbounded form is fine.  The witness answered the question it was
+asked and the question was too weak.  M3d-14's rule says a premise recorded as
+OWED owes a witness that it is satisfiable AT THE INTENDED INSTANTIATION; the
+words "at the intended instantiation" are where the weight sits, and a witness
+constructed FOR the premise rather than FOUND at the target instantiation
+satisfies the letter of the rule while defeating its purpose.  This is the
+third consecutive session to find a premise unmeetable where it was needed
+(M3d-14 the width premise, M3d-15 the false vacuity, this one the agreement),
+and the first in which a witness had already been supplied.
+
+### 2. THE REPAIR: BOUNDED, AND STRENGTHENING ONLY
+
+Exactness is consumed at exactly ONE address.  `hexact_of_segment_agrees`
+instantiates `hagree` only at `i * chunkCount + j`.  So the premise is bounded
+to indices the table actually has:
+
+    (hagree : forall a, a < (fixedWidthNatTableMachineWords table wordSize).length ->
+      store.readWord? segment (base + a) =
+        (fixedWidthNatTableMachineWords table wordSize)[a]?)
+
+and the bound is supplied INTERNALLY, not pushed to the caller.
+`machineWords_index_lt` (new) derives
+`i * count + j < (fixedWidthNatTableMachineWords table wordSize).length` from
+`List.mul_add_le_flatMap_length_of_constant_length`
+(`MachineChunkedTable.lean:98`), which was already in the tree, for a cell the
+table holds and a chunk below the count.  Its side condition -- that every
+stored cell chunks into exactly `count` words -- is
+`chunkPayloadWords_length_eq_chunkCount_of_mem`, extracted from
+`machineWords_cell_slice`'s own proof, which establishes it inline.
+
+Premise weakened, conclusion untouched, nothing renamed or deleted.  All
+consumers are local, so the repair is contained.  See DD-20260719-012 (claimed
+this session; the maximum OBSERVED in `DESIGN_DECISIONS.md` was
+`DD-20260719-011`, which matches what the delegation stated -- checked before
+claiming, per rule 4).
+
+### 3. WHAT LANDED: `RMQ/Core/WordRAM/E1InteriorChunkStore.lean`
+
+Registered in `RMQ.lean:45`.  No new registers, no new instructions -- this is
+addressing arithmetic against the store the route already reads.
+
+* `readWord?_slice` -- the generic fact.  If a store's segment reproduces
+  `whole` and `whole = pre ++ mid ++ post`, the store agrees with `mid` at
+  base `pre.length`, for indices `mid` has.  Built on
+  `getElem?_append_len_add`, proved by induction.
+* `HoldsInteriorStore` -- the SETUP hypothesis: the machine's flat store at
+  `segment` holds the interior directory.  Witnessed satisfiable by
+  `interiorReadStore` / `interiorReadStore_holds`.  See section 5 for what
+  that witness does and does not establish -- the caution of section 1
+  applies to it too, and is recorded rather than repeated as a mistake.
+* `interior_words_toList` and the eight `split_*` -- the store's word list as
+  the eight-fold append, in the components' own names, re-associated so each
+  component sits in the `pre ++ mid ++ post` position.
+* `hagree_baseline`, `hagree_minRel`, `hagree_maxRel`, `hagree_argOffset`,
+  `hagree_local`, `hagree_global`, `hagree_localLevel`, `hagree_globalLevel`
+  -- THE EIGHT AGREEMENT CLAUSES, each at the offset the ROUTE's own read
+  computation uses (`canonicalRelativeRmmInteriorComponentOffsets`,
+  `InteriorDirectory.lean:1614`, consumed at `:2282`, `:2317`, `:2335`).  All
+  unconditional in `shape`.  So this is agreement with the route's addressing,
+  not with a layout invented here.
+* `hexact_baseline`, `hexact_minRel`, `hexact_maxRel`, `hexact_argOffset` --
+  THE COMPOSITION STEP, and the deliverable.  Each is
+  `hexact_of_segment_agrees` instantiated at
+  `canonicalRelativeRmmInteriorComponentStore` with its `hagree` parameter
+  SUPPLIED rather than assumed.  What remains in each statement -- `hcount`,
+  `hvalid`, `hentries` -- are facts about the CALLER's index arithmetic, fixed
+  when the summary group's program is written; they are not debts owed to the
+  store.
+* `machineStore_words_size` -- small but load-bearing.  The offsets are running
+  sums of `Array.size` and the splits are running sums of `List.length`;
+  without this bridge every offset goal stalls with the two as distinct
+  `omega` atoms.
+
+### 4. THE BOUND IS PROVED LOAD-BEARING, AND THE PROOF IS NOT A FIXTURE
+
+`unbounded_agreement_refuted` derives `False` from the unbounded premise at
+any shape whose `minRel` table is non-empty: at address
+`offsets.baseline + (wordsBaseline shape).length` the baseline table answers
+`none` while the store answers with `minRel`'s first word.
+
+RECORDED BECAUSE IT CONSTRAINS FUTURE ANTI-VACUITY WORK.  The numeric fixture
+was written FIRST -- `(wordsBaseline probeShape).length = 2` and
+`store.words.size = 31` -- and it does not compile.  The interior store's
+sizes run through `Nat.log2`, which Lean defines by WELL-FOUNDED RECURSION.
+The compiler evaluates it, which is why `#eval` answered instantly, but THE
+KERNEL CANNOT REDUCE IT, so both `rfl` and `decide` fail.  `native_decide`
+would close it and is forbidden, correctly, since it moves the check out of
+the kernel.
+
+So the standing rule "where a quantity is computable, EVALUATE it" has a
+boundary that this campaign had not yet hit: `#eval`-computable is not the
+same as kernel-computable, and anti-vacuity evidence that must live IN the
+tree cannot always be a fixture.  Here the general theorem is strictly
+stronger than the fixture would have been -- it covers every reachable shape
+rather than one -- so nothing was lost.  Elsewhere it may not be, and the
+`#eval` should then be reported as reproduction evidence with the theorem
+proved by other means, not smuggled in by `native_decide`.
+
+### 5. WHAT IS STILL OWED, STATED PRECISELY
+
+`HoldsInteriorStore` is a SETUP hypothesis, not a discharged fact, and it is
+carried by all twelve clauses.  It is a different kind of object from the
+premise this session repaired -- it says the machine was loaded with the
+directory the route reads, which is what the interior program's wiring will
+establish -- but the distinction must not be used to wave it through.
+
+`interiorReadStore_holds` witnesses it SATISFIABLE.  Applying this session's
+own finding to this session's own work: that is the same shape of witness as
+`segmentStore_agrees`, constructed FOR the hypothesis rather than found at the
+eventual concrete machine store.  It does NOT show that the store the interior
+program actually runs against meets it.  Whoever writes item 2 owes that, and
+the established E1 pattern for it is INSTANTIATION, not parameterisation:
+`concreteBPNativeChunkedRankCloseSeedReadStore`
+(`ChargedRankSelectWiring.lean:970`) builds a `ReadStore` by segment dispatch
+onto `...store.words[index]?` and proves per-segment projections at `:989`,
+`:997`, `:1005`, `:1013`.  `E1RankCanonical.lean:127` and
+`E1CrossBlockArm.lean:1143` then put the concrete store directly in the
+`RunsTo` slot.  No E1 module has ever carried an agreement hypothesis; the
+parameterised form exists only in the route layer
+(`ChargedFringeTrace.lean:332`, `ChargedRankSelectTrace.lean:43`).
+
+### 6. VERIFICATION LEDGER
+
+`lake build RMQ RMQPaper RMQExamples` exit 0, under the
+`Global\RMQHeavyVerification` mutex:
+
+    [278/280] Built RMQ.Core.WordRAM.E1InteriorChunkStore
+    [279/280] Built RMQ
+    Build completed successfully.
+
+The new module emits NO warning; its only line in the build log is the Built
+line.
+
+`#print axioms` AFTER a root build, importing
+`RMQ.Core.WordRAM.E1InteriorChunkStore` DIRECTLY -- all nineteen theorems
+`[propext]` or `[propext, Classical.choice, Quot.sound]`, never `sorryAx`:
+
+    readWord?_slice                [propext]
+    getElem?_append_len_add        [propext]
+    machineStore_words_toList      [propext, Classical.choice, Quot.sound]
+    machineStore_words_size        [propext, Classical.choice, Quot.sound]
+    interiorReadStore_holds        [propext, Classical.choice, Quot.sound]
+    interior_words_toList          [propext, Classical.choice, Quot.sound]
+    hagree_baseline .. hagree_globalLevel (8)
+                                   [propext, Classical.choice, Quot.sound]
+    hexact_baseline .. hexact_argOffset (4)
+                                   [propext, Classical.choice, Quot.sound]
+    unbounded_agreement_refuted    [propext, Classical.choice, Quot.sound]
+
+and importing `RMQ.Core.WordRAM.E1InteriorChunkExact` DIRECTLY, to confirm the
+re-cut changed nothing:
+
+    machineWords_index_lt                         [propext, Classical.choice, Quot.sound]
+    chunkPayloadWords_length_eq_chunkCount_of_mem [propext, Classical.choice, Quot.sound]
+    hexact_of_segment_agrees                      [propext, Classical.choice, Quot.sound]
+    machineWords_length_eq_of_succ_lt_chunkCount  [propext, Classical.choice, Quot.sound]
+
+`maxHeartbeats` was NOT raised anywhere.
+
+### 7. MATRIX STATUS AT YIELD
+
+All rows REQ-E1-01..11 remain OPEN.  This session closed none and weakened
+none.  No frozen row text was edited.
+
+Component-level evidence for REQ-E1-03 changes in the same double-edged way
+M3d-14's and M3d-15's did.  The interior value bridge's `hexact` premise now
+has a discharge AT the target store rather than a satisfiability witness away
+from it -- that is an addition.  But the premise it was previously recorded
+against was unmeetable there, so what the row previously appeared to have was
+not real.  As M3d-14 put it: the row is no better off than it looked
+yesterday, but it is now as well off as it looks.
+
+### 8. RESUME POINT (M3d-18)
+
+All file:line verified at this commit.
+
+1. THE FOLD'S PREMISES ARE NOW ALL SETTLED AT THE TARGET STORE.  `hcap` /
+   `hccPos` from `E1InteriorChunkCap.chunkCount_le_eight_*` and `..._pos_*`,
+   one per width (M3d-15).  `hle` verbatim from
+   `canonicalRelativeRmmInteriorComponentStore_words_bounded`
+   (`InteriorDirectory.lean:1711`).  `hexact` from
+   `E1InteriorChunkStore.hexact_baseline` / `_minRel` / `_maxRel` /
+   `_argOffset` for the summary group, or from `hexact_of_segment_agrees` plus
+   the matching `hagree_*` for the other four tables.  Do NOT cite
+   `canonicalRelativeRmmMachineReadNatCosted_cost_le_one` for any of them, and
+   do NOT cite vacuity for `hexact`.
+2. `HoldsInteriorStore` IS THE ONE THING ITEM 2 MUST SUPPLY, and it must be
+   supplied by INSTANTIATION, not by carrying it as a hypothesis.  See
+   section 5 for the established pattern and its four precedents.  A witness
+   built for the hypothesis is not a discharge -- that is precisely the error
+   this session found.
+3. THE SUMMARY GROUP `S` (`InteriorDirectory.lean:2277`
+   `canonicalRelativeRmmMachineSummaryComputation`, `:2300`
+   `canonicalRelativeRmmMachineMinCandidateComputation`) is otherwise
+   unchanged from M3d-13's item 1 and is not restated.  Its register bank
+   must sit at `100` and above (the fold owns `89 .. 99`) and must claim a DD
+   id.  `iIdx` (`85`) is below the fold's bank, so it survives each fold by
+   `ChunkFoldUntouched`.
+4. THE `maxRel` READ MUST NOT BE OPTIMISED AWAY.  Re-confirmed at source by
+   M3d-16: its value is bound into the summary tuple at `:2295` and discarded
+   by the min-candidate consumer at `:2300`.  The ground for keeping it is the
+   POSITIONAL RECEIPT obligation, not the value.
+5. Items 3-5 of M3d-13's list (span blocks `:2311`/`:2329`, two-span blocks
+   `:2351`/`:2376` with the level read as the UNCONDITIONAL HEAD of every
+   append chain, five-branch dispatch `:2444`, then `hInterior` at
+   `E1CrossBlockArm.lean:1143`) are unchanged and unbuilt.
+6. STANDING RULES, now five, in the order learned: a premise recorded as OWED
+   owes a witness it is SATISFIABLE at the intended instantiation (M3d-14); a
+   premise recorded as VACUOUS owes a witness of VACUITY on the same terms
+   (M3d-15); where a quantity is COMPUTABLE, EVALUATE it (M3d-15); a supplied
+   claim about WHAT THE TREE CONTAINS is checkable in one grep and must be
+   checked before it is acted on (M3d-16); and -- added this session -- A
+   SATISFIABILITY WITNESS CONSTRUCTED FOR A PREMISE IS NOT A WITNESS AT THE
+   TARGET.  It must be FOUND at the intended instantiation, or it can be
+   correct, honest, and still hide a premise that is false there.
+7. A COROLLARY TO RULE THREE, newly learned: `#eval`-computable is not
+   kernel-computable.  Anything whose size runs through `Nat.log2` evaluates
+   in the compiler and does NOT reduce in the kernel, so `rfl` and `decide`
+   fail on it and `native_decide` is forbidden.  Where that bites, prove the
+   fact generally and report the `#eval` as reproduction evidence.
+8. STILL OWED, carried from M3d-13 and unchanged: an EXECUTED preservation
+   check for the interior fold; the validator has no interior analogue of
+   phase 3h.  The M7 doc row still has an approved scope and a drafted
+   sentence (M3d-14 section 5) and still needs the interior leg to exist.
