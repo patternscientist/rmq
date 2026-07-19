@@ -3173,3 +3173,68 @@ instead of 7,520); the docs/lint/paper battery moved OFF the worker and onto me;
 DD-ID bands partitioned per lane, since parallel branches have collided on those
 before. File ownership declared explicitly, with "read freely, do not edit,
 report a cross-lane dependency instead."
+
+---
+
+## C05 round 49 — Lane A lands stronger than assigned; the interior ladder was
+## under-counted; the live-state file replaces the 7,500-line read
+
+E1-R5g returned INCOMPLETE at `790d7b3` having delivered item 1 **in a stronger
+form than the brief asked for**, and the upgrade came from looking rather than
+from complying. I asked for positional receipt equality. The worker found that
+`chunkRouteEvents` (`E1InteriorChunkFold.lean:1740`) is literally the route's
+read log under one injection, so it landed the **machine-vs-route** form:
+`summaryMachineTrace_eq_routeReads` (`E1InteriorMinCandidate.lean:1200`) states
+that the trace the machine emits IS the route's read log — no validity, cap or
+store hypothesis. Every index is written into the statement, so the head's
+`block / blocksPerSuper` is read off the theorem rather than trusted to a
+definition.
+
+**The witness is the best one this campaign has produced, and the reason is
+worth extracting.** The route's most likely defect is a stale head, because
+baseline is issued at `block / blocksPerSuper` while its three neighbours use
+`block` — so the head is the one segment whose index differs. The fixture shows
+lengths agree, then shows `receiptWitness_staleHead_value_agrees`, then shows
+the receipts differ by `decide`. **The value agreement is the load-bearing
+part**: it proves a NON-ENTAILMENT — that a value equation is formally incapable
+of rejecting the impostor — which is what establishes the receipt as a separate
+obligation rather than a corollary. And the fixture uses a six-entry table on
+purpose so the stale index is a VALID cell; had it fallen off the end the
+lengths would diverge and a cheap check would catch it, making the witness prove
+the opposite of what is wanted. That is anti-vacuity reasoning applied to the
+witness itself.
+
+**MY NINTH FAILED CLAIM, and it inverts the round-44 fix.** Two of ten anchors
+were wrong in the FILENAME with the line number right — I attributed both model
+theorems to one file when they live in two. Dropping directory paths fixed
+directories; it did not fix the fact that I was reconstructing citations from
+memory at all. **New rule, applied starting this round: every anchor is
+grep-verified in-session before it enters a brief.** I did that for Lane B and
+it immediately caught a wrong directory again (`InteriorDirectory.lean` is under
+`EndpointFringe/InteriorCandidate/`, not `RelativeRmmMacro/`). One command, and
+the class of failure closes.
+
+**The interior ladder was UNDER-COUNTED, and I found it by reading the source
+rather than my own ladder.** Between the two-span blocks and the five-branch
+dispatch sit **three macro combiners** — `AdjacentMacro` (`:2400`),
+`LeftMiddleMacro` (`:2413`), `CrossMacro` (`:2426`) — that no coordinator ladder
+has ever mentioned. Nine route computations are owed, not five. Good news
+inside the bad: all three are READ-FREE, and `candMerge3` already exists
+(`E1CandMerge3.lean:198`) with `candMerge3_readFree` beside it.
+
+**And the finding that turns Lane B from three sessions into one:** across the
+seven owed computations there are only **three structural patterns**. #2/#3 are
+the same block modulo table and slot; #4/#5 the same modulo which span block
+they call; #6/#7/#8 are read-free merge combiners. Built parametrically and
+instantiated, that is three things rather than seven — and parametric statements
+are also what reaches past the `Nat.log2` kernel boundary, so the same move buys
+executability. Handed to Lane B as a hypothesis, flagged as mine.
+
+**`E1_LIVE_STATE.md` created** (`c4595b7`) and Lane B is the first session
+briefed on it instead of the worklog. Eight sections: current state, the mapped
+interior structure with an owed/done column, the landed-machinery anchor table,
+the techniques, the session-costing gotchas, the defect class with three working
+models, what remains beyond the interior, and known-red. Additive, so Lane C's
+branch merges without conflict. Every anchor in it grep-verified at `790d7b3`.
+Lane B owns keeping it current, on the ground that a stale line THERE is more
+expensive than a stale line anywhere else.
