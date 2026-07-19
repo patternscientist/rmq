@@ -14,6 +14,7 @@ import RMQ.Core.WordRAM.E1MachineCalculus
 import RMQ.Core.WordRAM.E1QueryProgram
 import RMQ.Core.WordRAM.E1QueryBridge
 import RMQ.Core.WordRAM.E1RouteDecomposition
+import RMQ.Core.WordRAM.E1WholeQueryCats
 import RMQ.Core.WordRAM.E1RankBridge
 import RMQ.Core.WordRAM.E1StraightLine
 import RMQ.Core.WordRAM.E1RankBlock
