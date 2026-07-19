@@ -1139,41 +1139,53 @@ machine inputs beyond the two query operands, `hInterior`'s antecedent
 gains those conjuncts and this proof gains the matching obligation to
 establish them at `A + 176`.  That is a hypothesis change, not a
 restatement, and the four preservation clauses are unaffected.
+
+## WHY THIS ARM EXPORTS NO `CloseLegUntouched` CLAUSE (E1-LaneCL)
+
+The same-block side now exports `∀ r, CloseLegUntouched r -> regsF r =
+regs r` (`CloseLegUntouched r := r ≤ 7 ∨ r = 28`,
+`E1SameBlockArm.lean`), matching what
+`selectCloseBlock_runsTo_canonical` already exports so the whole-query
+glue can chain `select; select; close`.  THIS ARM CANNOT YET, and the
+reason is structural rather than bookkeeping:
+
+`hInterior` promises preservation of exactly FOUR registers -- `fClose`,
+`fRight`, `mLV`, `mLP`.  The interior sits in the MIDDLE of this arm, so
+every register the arm might claim must survive it, and `hInterior` says
+nothing about `0..7` or `28`.  The thirteen `hpres*` facts in the proof
+below cover every segment EXCEPT the hole, so the clause is unprovable
+here no matter how the composition is arranged.
+
+THE ONE-LINE CHANGE THAT UNBLOCKS IT, and evidence it is satisfiable at
+the intended instantiation rather than a new obstruction: `hInterior`'s
+consequent gains a fifth conjunct
+
+    (∀ r, CloseLegUntouched r -> regsI r = regsS r)
+
+and this proof then threads it alongside the existing four.  The interior
+already preserves that band -- `LegUntouched`
+(`E1InteriorMinCandidate.lean:934`) unfolds to `ChunkFoldUntouched r`
+(`= r < 89 ∨ 99 < r`, `E1InteriorChunkFold.lean:928`) together with
+disequalities against the summary bank `100..104`, `mMV`/`mMP` (`77`/`78`)
+and the range `105..117`, every one of which holds at `r ≤ 7` and at
+`r = 28`; `SpanUntouched` (`E1InteriorSpanBlock.lean:226`) adds only
+`118..122` and `100`.  So the conjunct is discharged by the interior
+lane's OWN existing predicates and costs it no new reasoning.
+
+That interface is the interior lane's, so it is recorded here rather than
+changed unilaterally.  An EXECUTED witness of the entailment is owed at
+the point of composition, in a module downstream of both this file and
+`E1InteriorMinCandidate.lean` -- this file is built BEFORE the interior
+modules, so it cannot state one.
 -/
 theorem crossBlockArmProgramAt_runsTo
     (shape : Cartesian.CartesianShape) {program : E1Machine.Program}
     {A fringeSegment leftClose rightClose : Nat}
     {interior : List Instr} {interiorTrace : List WordRAM.TraceEvent}
     {interiorCats : List Category} {interiorValue : Option (Nat × Nat)}
-    (hc : sbChunkBits shape ≤
-      SuccinctRank.machineWordBits shape.bpCode.length)
     (hHost : HostedAt program A
       (crossBlockArmProgramAt shape fringeSegment
         (canonicalBPRelativeSummaryBlockSizeRaw shape) A interior))
-    (hL0 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        leftClose)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hL1 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        leftClose + 1)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hL2 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        leftClose + 2)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hR0 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        rightClose)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hR1 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        rightClose + 1)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hR2 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        rightClose + 2)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
     (hInterior : ∀ regsS : RegFile, regsS fClose = leftClose →
       regsS fRight = rightClose →
       ∃ regsI : RegFile,
@@ -1219,11 +1231,15 @@ theorem crossBlockArmProgramAt_runsTo
       (by rw [hbb2]; exact hbb1)
   -- 4. LEFT ARM
   obtain ⟨r4, hrun4, hval4, hpres4⟩ :=
-    fringeArmProgramAt_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) hc q5
+    fringeArmProgramAt_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (bpFringeChunkBits_le_machineWordBits shape.bpCode.length) q5
       (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose) (sbBB shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose)
       (crossLeftRelLo shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose)
       (crossLeftRelHi shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose)
-      (canonicalSeed shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose) (leftClose + 1) hL0 hL1 hL2 r3
+      (canonicalSeed shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose) (leftClose + 1)
+      (SuccinctRank.machineWordBits_pos shape.bpCode.length)
+      (canonicalWindowDense shape
+        (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose)) r3
       (by rw [hpres3 fBase (by decide), hb2]; exact hbase1)
       hlo3 hhi3
       (by rw [hpres3 fAcc (by decide)]; exact hacc2)
@@ -1281,12 +1297,16 @@ theorem crossBlockArmProgramAt_runsTo
       (by rw [hbb9]; exact hbb8)
   -- 11. RIGHT ARM
   obtain ⟨r11, hrun11, hval11, hpres11⟩ :=
-    fringeArmProgramAt_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) hc q14
+    fringeArmProgramAt_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (bpFringeChunkBits_le_machineWordBits shape.bpCode.length) q14
       (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose) (sbBB shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)
       (crossRightRelLo shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)
       (crossRightRelHi shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)
       (canonicalSeed shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)
-      (blockStartOf (canonicalBPRelativeSummaryBlockSizeRaw shape) (blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)) hR0 hR1 hR2 r10
+      (blockStartOf (canonicalBPRelativeSummaryBlockSizeRaw shape) (blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose))
+      (SuccinctRank.machineWordBits_pos shape.bpCode.length)
+      (canonicalWindowDense shape
+        (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)) r10
       (by rw [hpres10 fBase (by decide), hb9]; exact hbase8)
       hlo10 hhi10
       (by rw [hpres10 fAcc (by decide)]; exact hacc9)

@@ -112,6 +112,104 @@ theorem windowRegsValue_eq_bitsToNatLE
   generalize (2 : Nat) ^ L = P
   simp [Nat.mul_add, Nat.mul_assoc, Nat.add_assoc]
 
+/-! ### The same bridge under a SHORT final word
+
+`windowRegsValue_eq_bitsToNatLE` demands the first three window words be
+full width outright.  That demand is FALSE at the canonical store: a
+`chunkPayloadWords` payload's final word may be short
+(`WordStore.lean:153`), and at a last-block endpoint the window straddles
+it.  Evaluated at the left spine of 16 nodes the three window words
+measure `2, 0, 0` against a required `L = 6`, and 12 of that shape's 32
+close positions fail.
+
+The repair is the one M3d-14 made one layer down at the interior chunk
+store: assert exactness only where it genuinely holds.  Here that is "a
+word is full width whenever the NEXT word is nonempty", which is exactly
+what `chunkPayloadWords` guarantees, and which is enough because a short
+word's weight only ever multiplies an empty tail.
+-/
+
+/-- A word's weight only matters when the tail behind it contributes.  For
+an EMPTY tail, `2 ^ w.length` multiplies zero and the width is irrelevant.
+This is M3d-14's observation, restated one layer up. -/
+theorem pow_length_mul_eq_of_ne_nil {L : Nat} {w t : List Bool}
+    (h : t ≠ [] -> w.length = L) :
+    2 ^ w.length * bitsToNatLE t = 2 ^ L * bitsToNatLE t := by
+  cases t with
+  | nil => simp [bitsToNatLE_nil]
+  | cons a t' => rw [h (List.cons_ne_nil a t')]
+
+/-- In a DENSE window an empty word is never followed by a nonempty one, so
+everything behind an empty word is empty too.  Needs `0 < L`: it is the
+positivity of the required width that makes a full-width word nonempty. -/
+theorem window_tail_eq_nil {L : Nat} {w1 w2 w3 : List Bool} (hL : 0 < L)
+    (d1 : w2 ≠ [] -> w1.length = L) (d2 : w3 ≠ [] -> w2.length = L)
+    (h1 : w1 = []) : w1 ++ (w2 ++ w3) = [] := by
+  have h2 : w2 = [] := by
+    cases hw2 : w2 with
+    | nil => rfl
+    | cons a t =>
+        have hlen := d1 (by rw [hw2]; exact List.cons_ne_nil a t)
+        rw [h1, List.length_nil] at hlen
+        omega
+  have h3 : w3 = [] := by
+    cases hw3 : w3 with
+    | nil => rfl
+    | cons a t =>
+        have hlen := d2 (by rw [hw3]; exact List.cons_ne_nil a t)
+        rw [h2, List.length_nil] at hlen
+        omega
+  rw [h1, h2, h3]
+  rfl
+
+/--
+THE DENSE-WINDOW HORNER BRIDGE.
+
+The four-register representation is exact for a four-word window whose
+widths are DENSE: each of the first three words is full width WHENEVER THE
+NEXT WORD IS NONEMPTY.  It does not require them to be full width outright,
+and it says nothing at all about the fourth word.
+
+Strictly weaker than `windowRegsValue_eq_bitsToNatLE`, and unlike that
+hypothesis it is TRUE at the canonical store
+(`canonicalWindowDense`, `E1FringeArmBlock.lean`).
+-/
+theorem windowRegsValue_eq_bitsToNatLE_dense
+    {L : Nat} {w0 w1 w2 w3 : List Bool} (hL : 0 < L)
+    (d0 : w1 ≠ [] -> w0.length = L)
+    (d1 : w2 ≠ [] -> w1.length = L)
+    (d2 : w3 ≠ [] -> w2.length = L) :
+    bitsToNatLE (w0 ++ w1 ++ w2 ++ w3) =
+      windowRegsValue L (bitsToNatLE w0) (bitsToNatLE w1)
+        (bitsToNatLE w2) (bitsToNatLE w3) := by
+  have hassoc : w0 ++ w1 ++ w2 ++ w3 = w0 ++ (w1 ++ (w2 ++ w3)) := by
+    simp [List.append_assoc]
+  have d0' : (w1 ++ (w2 ++ w3)) ≠ [] -> w0.length = L := by
+    intro h
+    refine d0 ?_
+    intro h1
+    exact h (window_tail_eq_nil hL d1 d2 h1)
+  have d1' : (w2 ++ w3) ≠ [] -> w1.length = L := by
+    intro h
+    refine d1 ?_
+    intro h2
+    have h3 : w3 = [] := by
+      cases hw3 : w3 with
+      | nil => rfl
+      | cons a t =>
+          have hlen := d2 (by rw [hw3]; exact List.cons_ne_nil a t)
+          rw [h2, List.length_nil] at hlen
+          omega
+    exact h (by rw [h2, h3]; rfl)
+  unfold windowRegsValue
+  rw [hassoc,
+    bitsToNatLE_append w0 (w1 ++ (w2 ++ w3)),
+    pow_length_mul_eq_of_ne_nil d0',
+    bitsToNatLE_append w1 (w2 ++ w3),
+    pow_length_mul_eq_of_ne_nil d1',
+    bitsToNatLE_append w2 w3,
+    pow_length_mul_eq_of_ne_nil d2]
+
 /-- Splitting a division by `2 ^ c` across a stride-`L` boundary. -/
 theorem add_pow_div_pow {L c : Nat} (hc : c <= L) (A B : Nat) :
     (A + 2 ^ L * B) / 2 ^ c = A / 2 ^ c + 2 ^ (L - c) * B := by

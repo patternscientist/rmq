@@ -6068,3 +6068,341 @@ these limits is the block's.
    halting witness arm cannot exhibit a control-flow defect at all --
    which is exactly how the close-leg lane's cross-arm defect stayed
    invisible to the whole battery.
+
+## DD-20260719-070: the close leg's chunk-width side condition was UNCONDITIONAL, so it is discharged rather than threaded (E1 LaneCL)
+
+Claimed and written by the E1-LaneCL session (close/LCA composability),
+base `bbd04de`. The four entries `070`-`073` correspond to that session's
+four obligations and are written in one pass; substance is lifted from the
+session's own commit bodies (`c7c26ad`, `be0291e`) rather than composed
+fresh.
+
+Context. `hc : sbChunkBits shape <= machineWordBits shape.bpCode.length`
+was carried as an undischarged hypothesis on six composed headlines --
+`sameBlockLeg_runsTo_canonical`, `sameBlockLegProgram_runsTo_canonical`,
+`sameBlockLegProgramAt_runsTo_canonical`, `sameBlockDispatchProgram_runsTo`,
+`sameBlockDispatchProgram_runsTo_witnessCross` and
+`crossBlockArmProgramAt_runsTo` -- and on both width certificates in
+`E1ProgramWidth.lean`.
+
+Decision: it is removed from every headline that does not need it, and kept
+ONLY on the genuinely `L`-parametric arm theorems.
+
+The fact is unconditional. `bpFringeChunkBits_le_machineWordBits`
+(`E1FringeBridge.lean:82`) proves `bpFringeChunkBits m <= machineWordBits m`
+for EVERY `m`, by `unfold; omega`: the first is `Nat.log2 m / 8 + 1` and the
+second is `Nat.log2 m + 1`. `sbChunkBits` (`E1SameBlockArm.lean:106`) is an
+`abbrev` for `bpFringeChunkBits shape.bpCode.length`, hence reducible, so at
+every canonical instantiation `hc` closes with the single term
+`bpFringeChunkBits_le_machineWordBits shape.bpCode.length`.
+
+The distinction that decides where it stays. `fringeLeg_runsTo`,
+`fringeArm_runsTo`, `fringeArmProgramAt_runsTo` and `sameBlockArm_runsTo`
+are parametric in the word width `L`, and at an arbitrary `L` the
+inequality is a real obligation. The canonical headlines instantiate
+`L := machineWordBits shape.bpCode.length`, and there it is free. So this
+is not "delete a hypothesis" but "stop restating at the instance what is
+already true in general".
+
+Two further premises fell to the same test, found while making the change
+rather than assumed. `sameBlockLegProgramAt_fits` (`E1ProgramWidth.lean:57`)
+and `sameBlockDispatchProgram_fits` (`:145`) each also carried `hcpos`
+(`0 < sbChunkBits shape`) and `hLpos` (`0 < machineWordBits ...`), which are
+`bpFringeChunkBits_pos` (`ChargedFringeChunks.lean:45`) and
+`machineWordBits_pos` (`SuccinctRank.lean:41`). Both certificates now derive
+all three internally.
+
+Recorded because a decorative hypothesis is invisible at the definition
+site. `hc` typechecked, propagated cleanly, and looked like diligence at
+every one of the eight declarations that carried it; nothing distinguishes
+it from a real obligation except trying to discharge it. A side condition
+should be checked for unconditionality WHERE IT IS INTRODUCED, not carried
+until a consumer happens to need it.
+
+## DD-20260719-071: the close leg's nine window full-width premises were FALSE at the canonical store, and the repair is DENSITY, not padding (E1 LaneCL)
+
+Context. Nine premises shared one root -- three on the same-block side
+(`h0`/`h1`/`h2`) and six on the cross side (`hL0`-`hR2`) -- each of the form
+`(readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape) (sbBase ... + k)).length
+= machineWordBits shape.bpCode.length`, for `k = 0, 1, 2`. No discharge
+existed anywhere in the tree; every consumer forwarded them unproved. They
+funnelled through exactly one lemma, `windowRegsValue_of_readBits`
+(`E1FringeArmBlock.lean:471`), used at exactly one site, which is what made
+the repair local.
+
+SETTLED BY EVALUATION BEFORE ANY REPAIR, not by argument. At the reachable
+last close position of each shape -- `bpCode[close] = some false`, a genuine
+CLOSE bit in every row, so these endpoints are reachable -- with
+`L = machineWordBits |bpCode|`, `B = canonicalBPRelativeSummaryBlockSizeRaw`,
+`firstWord = sbBase`:
+
+| shape | bpCode length | `L` | `B` | close | `sbBase` | lens at +0/+1/+2/+3 | h0,h1,h2 |
+|---|---|---|---|---|---|---|---|
+| spine4 | 8 | 4 | 6 | 7 | 1 | 4,0,0,0 | T,F,F |
+| spine8 | 16 | 5 | 8 | 15 | 1 | 5,5,1,0 | T,T,F |
+| spine16 | 32 | 6 | 10 | 31 | 5 | 2,0,0,0 | F,F,F |
+| spine32 | 64 | 7 | 12 | 63 | 8 | 7,1,0,0 | T,F,F |
+| bal3 | 14 | 4 | 6 | 13 | 3 | 2,0,0,0 | F,F,F |
+| bal4 | 30 | 5 | 8 | 29 | 4 | 5,5,0,0 | T,T,F |
+
+The premises are FALSE, and not at an isolated boundary point. The failing
+close positions form contiguous TRAILING REGIONS: `[8..15]` of 16 for
+spine8, `[20..31]` of 32 for spine16, 4 of 64 for spine32, 6 of 30 for bal4.
+At spine16 and bal3 even `h0` fails -- the FIRST window word is already
+short. Interior positions are unaffected: close `4` at spine16 gives
+`6,6,6,6` and all three hold. So the premises are true exactly away from the
+tail, which is why they survived inspection for as long as they did.
+
+The evaluation was run twice -- once with `readBits` and `sbBase` inlined
+verbatim from their definitions, once against the real definitions -- with
+identical results, and cross-checked through the proved store bridge
+`concreteBPNativeSuccinctRMQGlobalReadStore_bpCode` (`Segments.lean:281`),
+which reports 4 words for spine8 and 6 for spine16 at the same lengths.
+
+Decision: exactness is asserted only where it genuinely holds. A word must
+be full width WHENEVER THE NEXT WORD IS NONEMPTY, and nothing is claimed
+about the fourth word or about a word whose successor is absent.
+
+* `windowRegsValue_eq_bitsToNatLE_dense` (`E1FringeBridge.lean:177`) -- the
+  Horner bridge under a short final word.
+* `WindowDense` (`E1FringeArmBlock.lean:447`) -- that condition as ONE named
+  predicate, replacing three premises at each parametric level.
+* `canonicalWindowDense` (`E1SameBlockLeg.lean:114`) -- the discharge.
+
+Why density suffices, which is the part that had to be verified rather than
+hoped for. `bitsToNatLE_append` contributes `2 ^ w.length * bitsToNatLE tail`,
+and a short word is by construction the LAST nonempty one, so its weight
+multiplies zero. At spine8 the third window word has length `1` against a
+required `5`, and Horner still agrees exactly. `0 < L` is needed, to
+propagate emptiness downward from a full-width word.
+
+Why the canonical store satisfies it unconditionally. `chunkPayloadWords`
+(`WordStore.lean:154`) truncates only the FINAL word, so word `j + 1`
+nonempty means `(j + 1) * L < m`, hence `(j + 1) * L <= m`, hence word `j`
+is full. The premises therefore do not merely weaken and forward -- they are
+REMOVED OUTRIGHT from all six headlines.
+
+WHY PADDING THE BP CODE WAS REJECTED, argued rather than asserted, because
+it is the obvious alternative and it would have made the original nine
+premises literally true. (1) It inverts the direction of fit: the premise
+was a machine-side convenience and the BP code is the ACCEPTED ARTIFACT, so
+padding reshapes the object the theorem is about in order to spare the proof
+about it. (2) It is not free. `bpCode_length` (`Shape.lean:51`) is the
+frozen identity `shape.bpCode.length = 2 * shape.size`; padding to a
+multiple of `L` changes the code's length, and `L` is `machineWordBits` OF
+that length, so the padding target depends on the padded result. (3) It
+would ripple into space accounting and the frozen constants, which are
+stated against the unpadded length. (4) It is unnecessary, since the decode
+is already correct on ragged input once the premise is cut where exactness
+is actually consumed. The same reasoning appears at DD-20260719-009 from the
+other side: raggedness there is load-bearing because padding would break the
+store's `erases` obligation.
+
+This exactly repeats the repair M3d-14 made one layer down
+(DD-20260719-009): the interior chunk store demanded `w.length = wordSize`
+where the store guarantees only `<=`, and was repaired by weakening plus
+exactness only at non-final chunks. Applying the identical repair to the
+identical defect means a reviewer pattern-matches it rather than auditing a
+new argument. That a premise of this exact shape has now been found FALSE at
+two different stores, one layer apart, is itself the finding worth carrying:
+wherever a machine-side proof demands uniform word width from a
+`chunkPayloadWords` payload, the demand is wrong at the tail.
+
+Scope. The nine premises and `hc` are gone from the six close-leg headlines.
+This discharges no row of `E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md`, all of
+which are whole-query scoped and remain Open.
+
+## DD-20260719-072: the cross-block arm had NO TERMINATOR and fell through into the same-block leg; the fall-through is exhibited by EXECUTION (E1 LaneCL)
+
+Context. Nothing in the tree recorded this.
+
+The arithmetic, verified at source. `crossBlockArmProgramAt_length`
+(`E1CrossBlockArm.lean:809`) is `370 + interior.length`.
+`crossBlockArmProgramAt_runsTo` exits with `halted = false` at
+`A + 370 + interior.length`. `closeDispatchProgram`
+(`E1CloseDispatch.lean:277`) is `closeDispatch(4) ++ crossArm ++ sameArm`,
+hosting the cross arm at `4` and the same-block arm at `4 + crossArm.length`.
+Instantiating the arm at its own host base `A = 4` makes its exit address
+`4 + 370 + interior.length`, which IS `4 + crossArm.length`, the same-block
+arm's base. The real cross arm would run off its own end into the
+same-block leg and execute all 173 of its instructions on the wrong data.
+
+Why it was invisible. `witnessCrossArm` (`E1CloseDispatch.lean:320`) is
+`[.const dSame 7, .halt]`. The witness composition works precisely BECAUSE
+the witness ends in `.halt` -- it does the one thing the real arm does not,
+so every existing anti-vacuity theorem passes while the defect sits in the
+gap between the witness and the thing witnessed.
+
+Decision, part one -- the defect is demonstrated by EXECUTION rather than by
+layout argument. `unterminatedCrossArm_falls_through`
+(`E1CloseDispatch.lean:469`) takes a query whose endpoints are in DIFFERENT
+blocks -- so the dispatch correctly declines to branch and correctly enters
+the cross arm -- and runs the machine end to end. It reaches the same-block
+arm and halts carrying the SAME-BLOCK marker `9`. The impostor is not
+invented for the fixture: `unterminatedCrossArm` is `witnessCrossArm` with
+its `.halt` replaced by an ordinary register write, i.e. exactly the real
+arm's exit condition, and one instruction separates it from
+`witnessProgram_runs_cross`, which yields the cross marker `7`.
+
+The non-entailments, stated so the boundary is exact rather than implied.
+`unterminatedCrossArm_nonEntailments` conjoins the two REAL runs, so it is
+readable off the type that BOTH layouts halt and BOTH receipts are EMPTY:
+neither the halt flag, nor any receipt comparison, nor any read count
+separates them. What does separate them is the final value and the category
+log (`unterminatedCrossArm_catLogs_differ`). This is the right-shape /
+wrong-content class at the PROGRAM LAYOUT level -- correct dispatch, correct
+branch, correct arm, and still the other arm's answer.
+
+Decision, part two -- the terminator. The machine has no unconditional jump
+(`Instr`, `E1Machine.lean:76`, offers only `brNZ` and `halt`), so one is
+synthesised: `jumpTo scratch target` is
+`[.const scratch 1, .brNZ scratch target]`, with `jumpTo_runsTo` proving it
+transfers control from ANY entry register file. `crossArmTerminated`
+(`E1CloseDispatch.lean:625`) appends it to the cross arm, and
+`crossArmTerminated_converges` (`:649`) shows the repaired layout reaches
+the exit PAST the same-block arm.
+
+Why it is appended to the `crossArm` ARGUMENT rather than built into the
+layout: that is what keeps `closeDispatchProgram` and
+`sameBlockDispatchProgram_runsTo` parametric and unchanged. `dSame` is the
+dispatch's own scratch, dead once the branch is resolved, so the terminator
+clobbers nothing live.
+
+Scope. `crossArmTerminated` is defined and witnessed but not yet wired into
+a real `crossBlockArmProgramAt` composition; that lands with the whole-query
+glue.
+
+## DD-20260719-073: the close leg exports a preservation clause in the SELECT leg's shape, and the cross arm is excluded because it cannot promise more than `hInterior` promises (E1 LaneCL)
+
+Context. `sameBlockLeg_runsTo_canonical`,
+`sameBlockLegProgramAt_runsTo_canonical`, `sameBlockDispatchProgram_runsTo`
+and `crossBlockArmProgramAt_runsTo` all concluded only a `RunsTo` and a
+value equation. Their components DO prove preservation --
+`RankSeedLegUntouched`, `FringeArmUntouched` (`E1FringeArmBlock.lean:951`),
+`CloseDispatchUntouched` -- and it was discarded at composition.
+`E1SameBlockArm.lean` said so in a comment.
+
+Decision: the leg exports `CloseLegUntouched r := r <= 7 \/ r = 28`
+(`E1SameBlockArm.lean:72`), deliberately the SAME shape
+`selectCloseBlock_runsTo_canonical` (`E1SelectCanonical.lean:212`) already
+exports, so the whole-query glue chains `select; select; close` without a
+translation step between the two clauses.
+
+Stated against the real consumer rather than guessed. The glue must carry
+the FIRST select's answer across the SECOND select and then across the close
+leg. The second select preserves only `r <= 7 \/ r = 28`, and `28` is
+`xIdx` (`E1SelectBridge.lean:69`), that select's OWN input -- so the first
+answer has to be stashed in the query skeleton bank `0..7`
+(`E1QueryProgram.lean:48`), which is exactly what this clause protects.
+
+Adequacy EVALUATED, not argued, in the style of
+`spanUntouched_at_crossBlockArm_operands` (`E1InteriorSpanBlock.lean:232`):
+`closeLegUntouched_at_query_operands` (`E1SameBlockArm.lean:87`) covers the
+two query operands, the output packet and `xIdx` (`0`, `1`, `2`, `28`), and
+`closeLegUntouched_at_guard_scratch` (`:94`) covers the guard prologue's
+scratch `3..7`, the slots the glue has available for the stash. Both by
+`decide`. This is the check a sibling lane's too-WEAK predicate failed by
+declining `mLP`: stating a band is not the same as confirming it covers what
+the consumer needs.
+
+Exported from five headlines: `sameBlockArm_runsTo`,
+`sameBlockLeg_runsTo_canonical`, both wrappers,
+`sameBlockDispatchProgram_runsTo` and its witness-cross corollary.
+
+WHY THE CROSS ARM IS EXCLUDED, and why this is structural rather than
+bookkeeping. `hInterior` promises preservation of exactly FOUR registers --
+`fClose`, `fRight`, `mLV`, `mLP` -- and the interior sits in the MIDDLE of
+the arm. Every register the arm might claim must survive that hole, and
+`hInterior` says nothing about `0..7` or `28`. The thirteen `hpres*` facts
+in the proof cover every segment EXCEPT the hole, so the clause is
+unprovable there no matter how the composition is arranged. An arm cannot
+promise more than its own hypotheses promise.
+
+The unblocking change is one conjunct on `hInterior`'s consequent,
+`(forall r, CloseLegUntouched r -> regsI r = regsS r)`, and it is
+SATISFIABLE at the intended instantiation rather than a new obstruction:
+`LegUntouched` (`E1InteriorMinCandidate.lean:934`) unfolds to
+`ChunkFoldUntouched` (`E1InteriorChunkFold.lean:928`, `r < 89 \/ 99 < r`)
+together with disequalities against the summary bank `100..104`, `mMV`/`mMP`
+(`77`/`78`) and the range `105..117`, every one of which holds at `r <= 7`
+and at `r = 28`; `SpanUntouched` (`E1InteriorSpanBlock.lean:226`) adds only
+`118..122` and `100`. So the conjunct costs the interior lane no new
+reasoning.
+
+That interface is the interior lane's, so it is RECORDED with the exact
+conjunct rather than changed unilaterally. An EXECUTED witness of the
+entailment is owed at the point of composition, in a module downstream of
+both `E1CrossBlockArm.lean` and `E1InteriorMinCandidate.lean` -- the cross
+arm builds BEFORE the interior modules, so it cannot state one.
+
+Recorded because the failure mode here is not a missing clause but a clause
+that would have been too WEAK if written carelessly, and because "compose
+the preservation facts already in hand" was true of the same-block side and
+FALSE of the cross side for a reason visible only by reading the hypothesis
+against the hole it has to cross.
+
+## DD-20260719-110: the interior wrapper DROPS the close leg's seven premises rather than retaining them as dead binders (E1 LaneM, five-branch merge)
+
+Claimed by the five-branch merge session (E1-LaneM) merging
+`claude/e1-close-leg-structural` into `claude/b1-b2-charged-fringe-tables`.
+
+THE CONFLICT GIT COULD NOT SEE. `crossBlockArmProgramAt_runsTo`
+(`E1CrossBlockArm.lean:1181`) changed signature on the close-leg branch:
+`hc` was discharged and the six `readBits ... .length = machineWordBits`
+window premises were REMOVED, because they were found FALSE across
+contiguous regions of reachable close positions. Independently, on the
+campaign branch, `crossBlockArm_withCanonicalInterior_runsTo`
+(`E1InteriorDispatchCompose.lean:1274`) was written to APPLY that theorem,
+supplying all seven arguments. The two edits are in DIFFERENT FILES, so git
+merged them with no textual conflict and Lean then rejected the
+application:
+
+  Application type mismatch: ... the argument `hc` has type
+  `sbChunkBits shape <= machineWordBits ...` but is expected to have type
+  `HostedAt ...`
+
+-- `hc` sliding into `hHost`'s position, the signature having shortened
+under it.
+
+THE DECISION. The wrapper did not merely pass those seven arguments; it
+BOUND them itself, as its own hypotheses, and forwarded them. So there were
+two repairs available:
+
+1. Drop the seven arguments at the call site, KEEP the seven binders on the
+   wrapper. Minimal diff; compiles.
+2. Drop the seven arguments AND the seven binders.
+
+(2) was taken. (1) compiles and is wrong in the direction that matters:
+retaining the binders leaves every future caller of the wrapper obliged to
+prove `hc` and six window-length facts that DO NOT HOLD at contiguous
+regions of reachable close positions. That is precisely the defect the
+close-leg lane spent a session removing, reintroduced one level up and
+harder to see, because the premises would sit on a wrapper whose own proof
+no longer uses them. A dead false premise is not inert: it is an
+unsatisfiable obligation on the whole-query composition that will consume
+this wrapper.
+
+Re-ADDING the premises to `E1CrossBlockArm.lean` to make the application
+typecheck was never a candidate and is recorded here as explicitly
+rejected.
+
+WHAT WAS CHECKED BEFORE DROPPING THEM. The wrapper had NO other callers
+(`grep` across all `*.lean`, campaign branch and `claude/e1-glue-foundations`
+both: the only occurrence is its own declaration), so the binder removal
+breaks nothing downstream. `crossBlockArmProgramAt_hosts` was verified
+UNCHANGED by the close-leg branch (empty diff on that theorem), so the
+wrapper's hardcoded `.2.2.2.2.2.2.2.1` projection still selects the ninth
+conjunct, `HostedAt program (A + 176) interior`, and did not silently
+re-target under the merge.
+
+CONSEQUENCE. The wrapper is strictly STRONGER: same conclusion, seven fewer
+hypotheses. Nothing was weakened to make the merge compile; the theorem's
+statement is unchanged apart from hypothesis removal. Its docstring, which
+asserted the seven premises "belong to the fringe arms and are carried
+through untouched", was FALSE after the merge and was rewritten rather than
+left standing.
+
+Recorded because this is the one merge hazard that no textual tool reports:
+two branches, two files, no conflict, and a type error that only appears
+after both land. A merge that had been resolved file-by-file and committed
+on a green `git status` would have shipped it.

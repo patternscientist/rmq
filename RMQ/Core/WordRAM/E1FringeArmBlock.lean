@@ -433,18 +433,43 @@ theorem route_windowBits_eq_windowBitsOfStore
     flatten_readStorePayloadWordValue]
 
 /--
-HORNER BRIDGE.  Given the route-side fact that the first three window
-words are full width, the machine's four window registers represent
-exactly the window the fold consumes.  This is the hypothesis
-`fringeFoldLoop_runsTo_accepted` takes as `hW`, and the discipline is the
-one the dense select leg uses for `hlen`: the length facts are route-side
-properties of `chunkPayloadWords`, discharged at canonical instantiation.
+The four window words at `base` are DENSE at width `L`: each of the first
+three is full width WHENEVER THE NEXT ONE IS NONEMPTY.  Nothing is claimed
+about the fourth word, and nothing is claimed about a word whose successor
+is absent.
+
+This is exactly what a `chunkPayloadWords` payload store guarantees, whose
+final word may be SHORT (`WordStore.lean:153`).  The stronger demand — that
+the first three words be full width outright — is FALSE at the canonical
+store: see `canonicalWindowDense` (`E1SameBlockLeg.lean`) and the evaluated
+counterexamples recorded at `E1FringeBridge.lean`.
 -/
-theorem windowRegsValue_of_readBits {L : Nat} (store : ReadStore)
-    (base : Nat)
+def WindowDense (store : ReadStore) (base L : Nat) : Prop :=
+  (readBits store (base + 1) ≠ [] -> (readBits store base).length = L) ∧
+  (readBits store (base + 2) ≠ [] -> (readBits store (base + 1)).length = L) ∧
+  (readBits store (base + 3) ≠ [] -> (readBits store (base + 2)).length = L)
+
+/-- Full width outright is stronger than dense. -/
+theorem windowDense_of_length_eq {L : Nat} {store : ReadStore} {base : Nat}
     (h0 : (readBits store base).length = L)
     (h1 : (readBits store (base + 1)).length = L)
     (h2 : (readBits store (base + 2)).length = L) :
+    WindowDense store base L :=
+  ⟨fun _ => h0, fun _ => h1, fun _ => h2⟩
+
+/--
+HORNER BRIDGE.  Given the route-side fact that the window widths are DENSE,
+the machine's four window registers represent exactly the window the fold
+consumes.  This is the hypothesis `fringeFoldLoop_runsTo_accepted` takes as
+`hW`, and the discipline is the one the dense select leg uses for `hlen`:
+the length facts are route-side properties of `chunkPayloadWords`,
+discharged at canonical instantiation.
+
+SUPERSEDES the full-width form of this bridge, which demanded a premise no
+canonical instantiation can satisfy.
+-/
+theorem windowRegsValue_of_readBits {L : Nat} (store : ReadStore)
+    (base : Nat) (hL : 0 < L) (hW : WindowDense store base L) :
     windowRegsValue L
         (SuccinctSpace.bitsToNatLE (readBits store base))
         (SuccinctSpace.bitsToNatLE (readBits store (base + 1)))
@@ -452,7 +477,7 @@ theorem windowRegsValue_of_readBits {L : Nat} (store : ReadStore)
         (SuccinctSpace.bitsToNatLE (readBits store (base + 3))) =
       SuccinctSpace.bitsToNatLE (windowBitsOfStore store base) := by
   unfold windowBitsOfStore
-  exact (windowRegsValue_eq_bitsToNatLE h0 h1 h2).symm
+  exact (windowRegsValue_eq_bitsToNatLE_dense hL hW.1 hW.2.1 hW.2.2).symm
 
 /-! ## Prologue composition -/
 
@@ -557,9 +582,7 @@ theorem fringeLeg_runsTo
       (fringeShift c L ++ fringeAdvance))
     (hbr : program[A + 21 + 66]? = some (.brNZ fCnt (A + 21)))
     (base relLo relHi seed : Nat)
-    (h0 : (readBits store base).length = L)
-    (h1 : (readBits store (base + 1)).length = L)
-    (h2 : (readBits store (base + 2)).length = L)
+    (hL : 0 < L) (hW : WindowDense store base L)
     (regs : RegFile)
     (hBase : regs fBase = base) (hLo : regs fLo = relLo)
     (hHi : regs fHi = relHi) (hAcc : regs fAcc = seed) :
@@ -589,7 +612,7 @@ theorem fringeLeg_runsTo
       (regsP fW3) =
       SuccinctSpace.bitsToNatLE (windowBitsOfStore store base) := by
     rw [hW0, hW1, hW2, hW3]
-    exact windowRegsValue_of_readBits store base h0 h1 h2
+    exact windowRegsValue_of_readBits store base hL hW
   obtain ⟨regsF, hrunF, hval, hpresF⟩ :=
     fringeFoldLoop_runsTo_accepted store hc hPre hMrg hTail hbr
       (windowBitsOfStore store base) relLo relHi seed
@@ -983,9 +1006,7 @@ theorem fringeArm_runsTo
     (hbr : program[A + 21 + 66]? = some (.brNZ fCnt (A + 21)))
     (hEpi : HostedAt program (A + 88) (fringeCandGlobal (A + 88)))
     (base bb relLo relHi seed start : Nat)
-    (h0 : (readBits store base).length = L)
-    (h1 : (readBits store (base + 1)).length = L)
-    (h2 : (readBits store (base + 2)).length = L)
+    (hL : 0 < L) (hW : WindowDense store base L)
     (regs : RegFile)
     (hBase : regs fBase = base) (hLo : regs fLo = relLo)
     (hHi : regs fHi = relHi) (hAcc : regs fAcc = seed)
@@ -1007,7 +1028,7 @@ theorem fringeArm_runsTo
       (∀ r, FringeArmUntouched r -> regsF r = regs r) := by
   obtain ⟨regsL, hrunL, hvalL, hpresL⟩ :=
     fringeLeg_runsTo store hc hPro hPre hMrg hTail hbr base relLo relHi
-      seed h0 h1 h2 regs hBase hLo hHi hAcc
+      seed hL hW regs hBase hLo hHi hAcc
   have hbest : bestOfRegs (regsL fBV) (regsL fBP) =
       (bpFringeChunkFoldTraceResultAtSegmentWithStore store S c
         (windowBitsOfStore store base) seed relLo relHi

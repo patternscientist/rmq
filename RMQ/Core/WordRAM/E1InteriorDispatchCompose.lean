@@ -1260,43 +1260,24 @@ the route's `canonicalBPRelativeSummaryBlockSizeRaw` and the sub-blocks'
 `(RelativeRmm.canonicalLayout shape).blockSize` are the same term to the
 elaborator, and that `interior.length` in the target PC is `4204`.
 
-The remaining premises are the close leg's, not the interior's: `hc` and
-the six `readBits` length facts belong to the fringe arms and are carried
-through untouched.  `E1CrossBlockArm.lean` is NOT edited -- this is
-instantiation of its implicit parameters from the interior's side. -/
+NO close-leg premises remain.  This wrapper previously carried `hc` and
+the six `readBits` window-length facts through to
+`crossBlockArmProgramAt_runsTo`.  The close-leg lane DISCHARGED `hc` and
+REMOVED the six window premises outright, because they were found FALSE
+across contiguous regions of reachable close positions -- a theorem
+demanding them is unusable at exactly the positions the route reaches.
+Those seven binders are therefore gone from this wrapper too, rather than
+retained as dead hypotheses: keeping them would oblige every caller to
+prove facts that do not hold, reintroducing the defect the close-leg lane
+removed.  The wrapper is strictly STRONGER for their absence, and its
+conclusion is unchanged.  See DD-20260719-110. -/
 theorem crossBlockArm_withCanonicalInterior_runsTo
     (shape : Cartesian.CartesianShape) {program : E1Machine.Program}
     {A fringeSegment leftClose rightClose : Nat}
-    (hc : E1SameBlockArm.sbChunkBits shape ≤
-      SuccinctRank.machineWordBits shape.bpCode.length)
     (hHost : HostedAt program A
       (E1CrossBlockArm.crossBlockArmProgramAt shape fringeSegment
         (canonicalBPRelativeSummaryBlockSizeRaw shape) A
         (canonicalInteriorDispatchBlock shape (A + 176))))
-    (hL0 : (E1FringeArmBlock.readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (E1SameBlockArm.sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        leftClose)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hL1 : (E1FringeArmBlock.readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (E1SameBlockArm.sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        leftClose + 1)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hL2 : (E1FringeArmBlock.readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (E1SameBlockArm.sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        leftClose + 2)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hR0 : (E1FringeArmBlock.readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (E1SameBlockArm.sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        rightClose)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hR1 : (E1FringeArmBlock.readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (E1SameBlockArm.sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        rightClose + 1)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hR2 : (E1FringeArmBlock.readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (E1SameBlockArm.sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        rightClose + 2)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
     (regs : RegFile)
     (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose) :
     ∃ regsF : RegFile,
@@ -1344,8 +1325,7 @@ theorem crossBlockArm_withCanonicalInterior_runsTo
                 leftClose / (RelativeRmm.canonicalLayout shape).blockSize -
                   1)⟩
           leftClose rightClose).value :=
-  E1CrossBlockArm.crossBlockArmProgramAt_runsTo shape hc hHost hL0 hL1 hL2
-    hR0 hR1 hR2
+  E1CrossBlockArm.crossBlockArmProgramAt_runsTo shape hHost
     (interiorDispatch_hInterior shape
       ((E1CrossBlockArm.crossBlockArmProgramAt_hosts shape fringeSegment
         (canonicalBPRelativeSummaryBlockSizeRaw shape) A

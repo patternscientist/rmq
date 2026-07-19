@@ -96,16 +96,6 @@ theorem sameBlockDispatchProgram_runsTo
     (shape : Cartesian.CartesianShape)
     {fringeSegment blockSize leftClose rightClose : Nat}
     {crossArm : List Instr}
-    (hc : sbChunkBits shape ≤ SuccinctRank.machineWordBits shape.bpCode.length)
-    (h0 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (h1 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose + 1)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (h2 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose + 2)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
     (regs : RegFile)
     (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose)
     (hsame : blockOfClose blockSize leftClose =
@@ -125,20 +115,24 @@ theorem sameBlockDispatchProgram_runsTo
         (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
           shape (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
           fringeSegment (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-          blockSize leftClose rightClose).value := by
+          blockSize leftClose rightClose).value ∧
+      (∀ r, CloseLegUntouched r -> regsF r = regs r) := by
   obtain ⟨hD, -, hLeg⟩ :=
     closeDispatchProgram_hosts blockSize crossArm
       (sameBlockLegProgramAt shape fringeSegment blockSize
         (4 + crossArm.length))
-  obtain ⟨regs', hrunD, hcl', hri', -⟩ :=
+  obtain ⟨regs', hrunD, hcl', hri', hpresD⟩ :=
     closeDispatch_runsTo_same (concreteBPNativeSuccinctRMQGlobalReadStore shape)
       hD regs leftClose rightClose hClose hRight hsame
-  obtain ⟨regsF, hrunL, hval⟩ :=
-    sameBlockLegProgramAt_runsTo_canonical shape hLeg hc h0 h1 h2 regs'
-      hcl' hri'
-  refine ⟨regsF, ?_, hval⟩
-  have htrans := hrunD.trans hrunL
-  simpa [sameBlockDispatchProgram, sameBlockDispatchCats] using htrans
+  obtain ⟨regsF, hrunL, hval, hpresL⟩ :=
+    sameBlockLegProgramAt_runsTo_canonical shape hLeg regs' hcl' hri'
+  refine ⟨regsF, ?_, hval, ?_⟩
+  · have htrans := hrunD.trans hrunL
+    simpa [sameBlockDispatchProgram, sameBlockDispatchCats] using htrans
+  · -- the dispatch's own scratch is `72..74`, far above the protected band
+    intro r hr
+    have hr' : r ≤ 7 ∨ r = 28 := hr
+    rw [hpresL r hr, hpresD r (by refine ⟨?_, ?_, ?_⟩ <;> omega)]
 
 /-! ## ANTI-VACUITY: the leg really does run off base zero
 
@@ -158,16 +152,6 @@ hosted at `6`, not `0`, and the run ends at `179`. -/
 theorem sameBlockDispatchProgram_runsTo_witnessCross
     (shape : Cartesian.CartesianShape)
     {fringeSegment blockSize leftClose rightClose : Nat}
-    (hc : sbChunkBits shape ≤ SuccinctRank.machineWordBits shape.bpCode.length)
-    (h0 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (h1 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose + 1)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (h2 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose + 2)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
     (regs : RegFile)
     (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose)
     (hsame : blockOfClose blockSize leftClose =
@@ -187,10 +171,11 @@ theorem sameBlockDispatchProgram_runsTo_witnessCross
         (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
           shape (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
           fringeSegment (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-          blockSize leftClose rightClose).value := by
+          blockSize leftClose rightClose).value ∧
+      (∀ r, CloseLegUntouched r -> regsF r = regs r) := by
   have h :=
     sameBlockDispatchProgram_runsTo shape (fringeSegment := fringeSegment)
-      (crossArm := witnessCrossArm) hc h0 h1 h2 regs hClose hRight hsame
+      (crossArm := witnessCrossArm) regs hClose hRight hsame
   simpa [witnessCrossArm] using h
 
 /-- The leg's host base under the witness cross arm is `6`, and its
