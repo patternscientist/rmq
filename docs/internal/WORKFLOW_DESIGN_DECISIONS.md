@@ -3533,3 +3533,61 @@ The paper claim map and family summary are authoritative reviewer navigation
 surfaces. Keeping them in the same closed inventory as the artifact and theorem
 map prevents an obsolete but weaker execution vocabulary from surviving a
 submission freeze under a green scanner.
+
+## WDD-20260719-003: attest the closed current-surface set before worker launch
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: exhaustive current-claim prompt construction, write-scope closure, and
+claim-drift vocabulary coverage.
+
+Decision:
+
+1. Before an exhaustive current-surface prompt becomes `READY_TO_SEND`, the
+   coordinator records the exact base-derived registry match count, complete
+   inspected path set, and expected repair paths in the prompt artifact.
+2. `worker_prompt_preflight.ps1` independently reconstructs the registry from
+   the exact worker base, rejects count/path-set disagreement, and rejects any
+   declared repair path absent from write scope.
+3. The current-event vocabulary policy rejects the exact README paraphrases
+   found at governed base `a835720ddae8816727febb16c636eee4a5f57076`, including
+   `payload read, word-rank, or word-select` and `payload read or bounded word
+   primitive`, unless the same line accurately labels compatibility or the
+   current readWord-only route.
+
+Trigger and evidence:
+
+R1-R3 received a prompt that named `currentFactSurfacePathRegex` but delegated
+the first complete enumeration to the worker. The worker correctly stopped
+clean before editing when registered `README.md` contained a required repair
+outside its write scope. The coordinator rule already required pre-launch
+inspection, but the structural preflight accepted an unattested instruction to
+inspect later, and policy version 16 did not match the README paraphrase.
+
+Rejected alternatives:
+
+- Treat a clean worker scope stop as adequate recurring behavior.
+- Add only `README.md` to this task without making future inventory evidence
+  mechanically replayable.
+- Grant every documentation worker blanket repository write access.
+- Ban all mentions of word-rank/select primitives, including accurate model,
+  component, compatibility, and historical descriptions.
+
+Consequences and evidence:
+
+- Exhaustive prompts carry a reproducible closed read set and a narrower owned
+  repair set; workers still stop on genuinely new semantic discoveries.
+- Named prompt regressions reject an unattested inventory and an expected
+  repair outside write scope, while an exact counted/path-complete prompt
+  accepts.
+- Named claim-policy regressions reproduce the R1-R3 README spellings and keep
+  an explicitly compatibility-labeled weaker-story control accepted.
+- This changes no Lean proposition, payload, modeled cost, trace, machine, or
+  runtime behavior.
+
+Publication-facing significance:
+
+README is the first reviewer navigation surface. Requiring its presence in the
+same pre-launch closed inventory as the paper map and artifact prevents a true
+but weaker compatibility story from surviving under a nominally exhaustive
+submission-freeze repair.

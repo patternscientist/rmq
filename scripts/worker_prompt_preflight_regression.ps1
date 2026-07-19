@@ -178,7 +178,13 @@ try {
 
   & git -C $tempRoot switch --quiet -c governance $rootRef
   "policy" | Set-Content -LiteralPath (Join-Path $tempRoot "policy.txt") -Encoding utf8
-  & git -C $tempRoot add policy.txt
+  New-Item -ItemType Directory -Force -Path (Join-Path $tempRoot "docs\internal") | Out-Null
+  New-Item -ItemType Directory -Force -Path (Join-Path $tempRoot "artifact") | Out-Null
+  '{"currentFactSurfacePathRegex":"^(?:README\\.md|artifact/CLAIMS\\.md)$"}' |
+    Set-Content -LiteralPath (Join-Path $tempRoot "docs\internal\CLAIM_DRIFT_POLICY.json") -Encoding utf8
+  "current reader" | Set-Content -LiteralPath (Join-Path $tempRoot "README.md") -Encoding utf8
+  "current artifact" | Set-Content -LiteralPath (Join-Path $tempRoot "artifact\CLAIMS.md") -Encoding utf8
+  & git -C $tempRoot add policy.txt README.md artifact/CLAIMS.md docs/internal/CLAIM_DRIFT_POLICY.json
   & git -C $tempRoot -c commit.gpgSign=false commit --quiet -m "governance"
   $governanceRef = (& git -C $tempRoot rev-parse HEAD).Trim()
 
@@ -235,12 +241,34 @@ try {
     $currentSurfaceWithoutRegistry $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("exhaustive-current-surface-sync-requires-policy-registry")
 
-  $currentSurfaceWithRegistry = Join-Path $tempRoot "current-surface-with-registry.txt"
-  $currentSurfaceWithRegistryLines = @($currentSurfaceWithoutRegistryLines) + @(
-    '- Current-surface inventory: docs/internal/CLAIM_DRIFT_POLICY.json currentFactSurfacePathRegex; inspect every matched tracked path and place every expected repair path in write scope.'
+  $currentSurfaceWithBareRegistry = Join-Path $tempRoot "current-surface-with-bare-registry.txt"
+  $currentSurfaceWithBareRegistryLines = @($currentSurfaceWithoutRegistryLines) + @(
+    '- Current-surface inventory: registry=docs/internal/CLAIM_DRIFT_POLICY.json; field=currentFactSurfacePathRegex.'
   )
+  $currentSurfaceWithBareRegistryLines | Set-Content -LiteralPath $currentSurfaceWithBareRegistry -Encoding utf8
+  Invoke-Case "current-surface-sync-unattested-inventory-rejected" 2 `
+    $currentSurfaceWithBareRegistry $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("exhaustive-current-surface-sync-requires-attested-inventory")
+
+  $currentSurfaceRepairOutsideScope = Join-Path $tempRoot "current-surface-repair-outside-scope.txt"
+  $currentSurfaceRepairOutsideScopeLines = @($currentSurfaceWithoutRegistryLines) + @(
+    '- Current-surface inventory: registry=docs/internal/CLAIM_DRIFT_POLICY.json; field=currentFactSurfacePathRegex; matched_count=2; inspected_paths=README.md,artifact/CLAIMS.md; expected_repair_paths=artifact/CLAIMS.md'
+  )
+  $currentSurfaceRepairOutsideScopeLines | Set-Content -LiteralPath $currentSurfaceRepairOutsideScope -Encoding utf8
+  Invoke-Case "current-surface-sync-repair-outside-write-scope-rejected" 2 `
+    $currentSurfaceRepairOutsideScope $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("exhaustive-current-surface-sync-repair-outside-write-scope")
+
+  $currentSurfaceWithRegistry = Join-Path $tempRoot "current-surface-with-registry.txt"
+  $currentSurfaceWithRegistryLines = @($currentSurfaceRepairOutsideScopeLines) | ForEach-Object {
+    if ($_ -match '^- Write scope:') {
+      '- Write scope: E1 source, artifact/CLAIMS.md, its matrix, and directly required checks.'
+    } else {
+      $_
+    }
+  }
   $currentSurfaceWithRegistryLines | Set-Content -LiteralPath $currentSurfaceWithRegistry -Encoding utf8
-  Invoke-Case "current-surface-sync-with-policy-registry-accepted" 0 `
+  Invoke-Case "current-surface-sync-with-attested-policy-registry-accepted" 0 `
     $currentSurfaceWithRegistry $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
 

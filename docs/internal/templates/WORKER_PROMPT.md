@@ -67,9 +67,12 @@ Roadmap contract:
   strict workflow-decision checker requires a durable process entry even for a
   comment-only gate edit.
 - Current-surface inventory: [FOR EXHAUSTIVE LIVE/CURRENT PUBLIC-SURFACE TASKS,
-  NAME `docs/internal/CLAIM_DRIFT_POLICY.json` `currentFactSurfacePathRegex`,
-  REQUIRE EVERY MATCHED TRACKED PATH TO BE INSPECTED, AND PUT EVERY EXPECTED
-  REPAIR PATH IN WRITE SCOPE; OTHERWISE NOT_APPLICABLE].
+  USE `registry=docs/internal/CLAIM_DRIFT_POLICY.json;
+  field=currentFactSurfacePathRegex; matched_count=N;
+  inspected_paths=comma-separated exact tracked paths;
+  expected_repair_paths=comma-separated owned paths` FROM THE EXACT BASE.
+  REQUIRE EVERY MATCHED PATH TO BE INSPECTED AND EVERY EXPECTED REPAIR PATH TO
+  APPEAR IN WRITE SCOPE; OTHERWISE NOT_APPLICABLE].
 - Non-goals: [BOUNDARIES]
 - Explicitly deferred work: [ITEMS]. A deferred item is non-blocking only when
   it is not required for this target or its inherited invariants to be true.
