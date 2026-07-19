@@ -2713,3 +2713,64 @@ claiming the next.
 recorded as such — what an earlier session recorded rested on a premise
 unmeetable at this store. Recording a retraction in the evidence column is the
 column doing its job.
+
+## 2026-07-19 (C05 round 41) — the excavation ends: a witness that predates its premise
+
+**Instantiation landed, and the answer to rule 5 is the strongest form
+available.** The ruling said instantiate rather than parameterise; the open
+question was AT WHICH STORE. That turned out not to be the implementer's
+choice — `crossBlockArmProgramAt_runsTo` (`E1CrossBlockArm.lean:1143`) names
+`concreteBPNativeSuccinctRMQGlobalReadStore shape` in its own `hInterior`
+premise. The worker noted that renaming the predecessor's purpose-built
+`interiorReadStore` "concrete" and instantiating there would have **reproduced
+exactly the error rule 5 names**.
+
+**And the discharge was ALREADY IN THE TREE:** `holdsInteriorStore_concrete`
+resolves through `Segments.lean:258`, introduced by commit `b8ae4aa`, present at
+base `d90b062` — it PREDATES the interior work, so it cannot have been built for
+this premise. Verified by `git log -S` rather than by reading a docstring. That
+is the strongest answer rule 5 admits: a witness that existed before the premise
+did cannot have been shaped to fit it.
+
+Thirteen theorems, all unconditional in `shape`. **No E1 module now carries an
+agreement hypothesis.** The parameterised forms are retained beneath as the
+general lemmas these instantiate; nothing renamed or deleted.
+
+**THE SIGNAL: this session found NO new defect in inherited work.** Five
+consecutive sessions each uncovered a foundation problem — unsourced,
+unsatisfiable, falsely-vacuous, wrongly-claimed-absent, witnessed-by-
+construction. This one applied all five rules to its inheritance AND to its own
+output and found the ground solid. The worker's own phrasing marks it: REQ-E1-03
+"improves non-double-edgedly for the first time in four sessions" — the twelve
+clauses were correct as stated and merely conditional, so removing the condition
+strictly adds. **The excavation phase is over; what remains is composition.**
+
+**A live trap caught before it could bite item 2.**
+`concreteBPNativeInteriorTraceSegments.summary` carries `minRel := 21`,
+`maxRel := 22`, but in the CANONICAL store those indices are the fringe and
+select chunk tables (`Segments.lean:224`/`:228`). Reading the summary group
+there would silently fetch the wrong tables for three of four reads AND STILL
+TYPECHECK. It does not arise, because the group reads by offset into a single
+`FlatWordStore` — but the worker verified that rather than assuming it. A
+same-typed wrong-table read is exactly the class the positional receipt
+obligation exists to catch, and exactly the class that survives a green build.
+
+**Rule 4 applied to the coordinator's prompt, second round running.** Sixteen
+anchors checked; fourteen exact. Two of MY paths were stale:
+`ChargedRankSelectWiring.lean` is under `RMQ/Core/SuccinctClose/
+RelativeRmmMacro/` and `WordStore.lean` under `RMQ/Core/SuccinctSpace/`, not
+`RMQ/Core/WordRAM/`. Line numbers and contents were exact at the corrected
+paths, so the claims were sound and only the paths drifted — but that is twice
+now that a worker has had to repair my citations before using them.
+
+**Honestly owed and not disguised**, in the worker's own words: the
+`hexact_*_concrete` clauses retain `hcount`/`hvalid`/`hentries`, which are
+caller index-arithmetic facts but are still premises owing a witness when item 2
+lands. Recorded rather than quietly carried — which is the habit the five rules
+were written to produce.
+
+**Non-vacuity evaluated, with its limit stated:** component word lengths
+`(1,4,4,4)` and `(80,1,36,3)` at an eight-element shape, all non-empty, so no
+delivered clause is vacuous; `interiorSegment` evaluates to `20`. Flagged as
+`#eval` reproduction evidence rather than kernel proof, since the sizes run
+through `Nat.log2` — rule 3's boundary, correctly applied.
