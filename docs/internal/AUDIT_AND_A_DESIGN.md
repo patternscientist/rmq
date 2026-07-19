@@ -3498,3 +3498,50 @@ bad instrument is how a scan starts shaping the code instead of measuring it.
 That distinction is the same one Lane B drew when it declined to present its
 validator PASS as evidence of its own deliverable. An instrument that is wrong
 should be fixed, not accommodated — in either direction.
+
+---
+
+## C05 round 54 — stop estimating from memory; four read-only surveys
+
+The user pushed on the pattern I had just admitted to: every time I enumerate
+the remaining E1 work by READING rather than RECALLING, it gets bigger. Four
+instances now — the three unenumerated macro combiners, the absent two-way merge
+block, the seven undischarged premises on `crossBlockArmProgramAt_runsTo`, and
+before those the whole interior read path. The direction is never toward
+smaller, which is diagnostic: I am not making random errors, I am
+systematically remembering a simplified ladder.
+
+So rather than produce a fifth estimate, four READ-ONLY surveys, launched in
+parallel with Lane B2 and forbidden to edit, commit or build:
+
+1. **The interior remainder** — #6/#7/#8/#9, the `hInterior` discharge, and
+   above all the SEVEN premises of `crossBlockArmProgramAt_runsTo`. That family
+   is the reason this survey exists: the campaign has twice found premises of
+   exactly that shape defective — one unsatisfiable (`= wordSize` where the
+   store guarantees only `≤`), one FALSE at the target store (a concatenation
+   answering `some` past a table's end). The survey is told to report evidence
+   of satisfiability at the canonical instantiation, not reassurance, and to say
+   if it suspects FALSE rather than merely unproved.
+2. **The close/LCA leg** — because my ladder has called it owed, then found
+   pieces built, three times. Told specifically to distinguish a dispatch proved
+   against the real arms from one proved only against `witnessCrossArm` /
+   `witnessSameArm`, since a dispatch composed only with witnesses is a skeleton
+   and would read as a leg.
+3. **The whole-query glue and validator phase 5** — including whether the four
+   route branch decompositions are actually EXHAUSTIVE, and what phase 5's
+   "PASS ... OPEN" does and does not cover.
+4. **The acceptance criteria themselves** — all eleven matrix rows QUOTED rather
+   than paraphrased, the derived step literal with its caps EVALUATED rather
+   than taken from me, the amended-target Prop, the frozen constants, and the
+   doc obligations.
+
+Survey 4 carries the highest-value question I can ask right now: **is there a
+row whose LITERAL text the planned work would not satisfy?** Every plan I have
+made has been against my paraphrase of those rows. If one of them says something
+stronger than I have been building toward, that is far cheaper to learn now than
+at closure — and it is precisely the kind of thing my paraphrasing has been
+hiding, since a paraphrase drifts toward what the plan can deliver.
+
+Each survey is told the same thing every worker is told: everything in the
+prompt is a hypothesis, "not found" is a fact about the search, and coordinator
+claims have failed inspection thirteen times.
