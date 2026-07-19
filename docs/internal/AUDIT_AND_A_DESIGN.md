@@ -819,3 +819,83 @@ historical algebras (76/142); the current algebra uses `selectClose := 35`
 **E1 cleared to proceed** on `bacd41b` under three conditions relayed to the
 worker: target the post-B6 trace; name the accepted `...AllSizeStructural`
 object explicitly (suffix footgun); rely on 207 unchanged.
+
+## 2026-07-18 (C05 round 8) — A07 blind audit: REJECT, all findings accepted ⚠️
+
+**A07 (Codex, fresh blind, cross-family) audited `4a60853..bacd41b` and returned
+REJECT.** Report: `docs/internal/audit_reports/2026-07-18_A07_option_b_charged_
+route_audit.md`, commit `bb76860` on `codex/a07-option-b-charged-route-audit`.
+Coordinator independently verified every blocker at source. **All findings
+accepted; none contested.**
+
+What PASSED (auditor's own list, independently reconstructed): the 207
+read-count theorem and its derivation, builds, headline axiom check, cost
+harness, query semantics, payload-bit accounting, read-only trace vocabulary,
+width/capacity, and construction identity.
+
+**P1-1 — the mandatory WordRAM trust-base gate is BROKEN at the target.**
+`scripts/wordram_axiom_check.lean:197` and `scripts/axiom_check.lean:975` still
+request `..._nonSyntheticWeight_sum_le_76`; the live theorem is `..._sum_le_207`
+(`SuccinctFinalRAM.lean:9411`). `gate.ps1:76-80` treats this as fatal, so the
+full gate exits 1. **This is a coordinator process failure, not a worker
+failure.** Every rung prompt from B3 onward said "Do NOT run gate.ps1 --
+coordinator owns it pre-integration", and the coordinator then never ran it
+across B3, B4, B6, or E1. B3's rename updated the headline check and topology
+lint but missed these two inventories, and four rungs of green batteries could
+not catch it because the battery excluded the one check that would.
+
+**WDD-mandated rule change (durable):** (a) any rung that renames, retires, or
+introduces a public identifier MUST run `wordram_axiom_check.lean` and
+`axiom_check.lean` in its final battery -- they are cheap and they are the only
+name-level trust check; (b) the coordinator runs the full `gate.ps1` at every
+RUNG boundary, not once at integration. A battery that omits a mandatory gate
+component is not a battery.
+
+**P1-2 — whole-query returned-ANSWER dependency is open.**
+`INV-B4-VALUE-DEPENDENCY` ("returned values and routing decisions depend on
+actual charged reads") is marked Closed, but the checked theorems conclude only
+full-`TraceResult`-record inequality; since the disagreeing read is itself in
+the trace, record inequality can hold with `.value` identical. Component-level
+corruption witnesses exist but a single witness is not a universal claim.
+Disposition: **PROVE the answer-level theorem; do not narrow the invariant.**
+This is the anti-oracle core -- it is what separates "the machine computes the
+answer from the counted data" from "the machine merely logs reads."
+
+**P1-3 — REQ-B6-04 is Closed above its checked conclusion.** The same-block
+liveness witness reaches only the isolated LCA-close component trace under a
+block-equality hypothesis: no `xs`, no `ValidRange`, no whole-query position, no
+receipt. Disposition: add one valid singleton whole-query witness with an
+indexed segment-21 occurrence and full receipt -- B4 already did this shape for
+segment 22, so the pattern exists.
+
+**P2-1 — REQ-B4-03 erases the fact it requires.** The repeated-equal-read
+witnesses prove `firstPos ≠ secondPos` but the receipts existentially hide
+`instrPos`; nothing in the conclusion says the two producing instruction
+occurrences differ. Facts used in a proof and erased from the conclusion do not
+close an information-level claim. Disposition: expose `instrPos1 ≠ instrPos2`
+(the proof already has both witnesses).
+
+**P2-2 — space theorem counts flattened contents, not allocated cells.** Sound
+as the repository's payload-bit theorem, but sentinel and per-cell padding cells
+are not charged. Disposition: mandatory scope text now; a separate
+allocated-cell theorem queued as a strengthening rung (B8), because a reviewer
+comparing against the literature's `2n + o(n)` bits will ask exactly this.
+
+**P2-3 — public docs state retired route facts.** `RMQPaper.lean:8-9` (retired
+literal), `README.md:82` (old 13/4/4 algebra), `README.md:85` +
+`FAMILY_SUMMARY.md:59` + `Headlines/RMQ.lean:248` (20-source universe; actual is
+22 sources / segments 0-22), `README.md:112-116` + `FAMILY_SUMMARY.md:75-79`
+(fresh segment 21; actual is 23). The topology lint passes because it checks
+identifier topology, not prose values -- a real coverage gap in the lint.
+
+**P3 — matrix rows Closed on process attestation.** Named rows across B2/B3/B4/
+B6 rest on attested command outcomes rather than checked propositions.
+Disposition: relabel attested rows distinctly from kernel-checked rows;
+complete REQ-B6-07's commit list; REQ-B6-05 is now coordinator-confirmed (the
+literal genuinely did not move).
+
+**Verdict on the verdict:** REJECT is correct and the milestone gate did its
+job. The campaign's mathematical core stands; the defects are claim-to-evidence
+gaps, one broken script, and stale prose. Repairs delegated to Codex (which
+authored the original W19 provenance apparatus) on a separate worktree so E1 can
+continue uninterrupted.
