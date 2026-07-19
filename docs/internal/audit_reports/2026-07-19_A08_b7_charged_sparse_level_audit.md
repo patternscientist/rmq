@@ -1,113 +1,148 @@
-# A08 blind audit of the B7 charged sparse level
+# A08-R1 continuation audit of the B7 charged sparse level
 
 Date: 2026-07-19
 
 Auditor: A08
 
-Mode: FRESH BLIND DELTA
+Mode: CONTINUATION
 
-Base: `f6564ec`
+Original audited base: `f6564ec`
 
-Target: `6ad4198`
+Audited B7 target: `6ad4198cf09c0d4e103ae0e1c0a5c7a084d0ae25`
+
+Rejected report amended here: `1bc6b3597b97720c5c5dad0a2e87277cf28fd7ea`
+
+Governance protocol inspected: `bd854edaa65944d5a7fa0fac5667e9572c370bbb:docs/internal/AUDIT_PROTOCOL.md`
 
 Audited branch: `claude/b7-charged-sparse-level`
 
-Audit branch: `codex/a08-b7-sparse-level-audit`
-Permission: REPORT-ONLY
+Report branch: `codex/a08-b7-sparse-level-audit`
 
-## Scope and method
+Permission: REPORT-ONLY. This report is the only edited file.
 
-This was a fresh audit of `f6564ec..6ad4198`. I did not seek out or read prior
-audit reports, worker completion reports, coordinator round logs, or
-`docs/internal/AUDIT_AND_A_DESIGN.md`. I treated the B7 acceptance matrix and
-worklogs as worker-authored claims and re-derived the conclusions from Lean
-source, Git history, executable checks, and direct axiom queries.
+## Correction scope
 
-The only worktree change made by this audit is this report. Lean sources,
-scripts, matrices, and documentation were read-only.
+This continuation corrects A08's first report; it does not re-audit the B7
+implementation from scratch. The exact target remains `6ad4198...`. Accurate
+positive source evidence from the first pass is retained, while the frozen
+matrix reconstruction, literal gate record, evidence-tier labels, public-surface
+inventory, route-inventory conclusion, and protocol verdicts are replaced.
 
-Evidence tiers used below:
+The first report's P1 based on blank cells and `Open` statuses is withdrawn.
+The matrix schema permits evidence in its row-keyed append-only ledger, and
+coordinator-owned `Open` status is not evidence absence. The first report also
+cited nonexistent matrix identifiers. Those identifiers are removed. The
+actual 25 frozen IDs are enumerated below.
 
-- **T1**: Lean definition/theorem body, direct caller/history inspection, or a
-  direct-module `#print axioms` result.
-- **T2**: successful build, executable harness, lint, or repository scan.
-- **T3**: Git diff/history evidence establishing when and how a change landed.
-- **T4**: prose, comments, matrix cells, or worklogs. T4 records a claim but is
-  never sufficient by itself for a positive verdict.
+## Protocol evidence tiers
 
-## Overall verdict
+This report uses the five tiers from `AUDIT_PROTOCOL.md` exactly:
 
-**REJECT.** The charged sparse-level mechanism itself is live and removes the
-identified runtime-derived `Nat.log2`/`bpSparseLogSpan` computation from the
-accepted query route. Its width, space, provenance, atomic storage/read landing,
-and harness behavior are substantially confirmed. The rung nevertheless fails
-acceptance because:
+1. **Kernel theorem** — a Lean theorem checked by the kernel.
+2. **Explicit-model theorem** — a checked theorem about the explicit
+   store/trace/execution model.
+3. **Executable validation** — a harness or executable result.
+4. **Artifact/CI evidence** — a reproducible build, lint, axiom inventory, or
+   other artifact gate.
+5. **Process evidence** — Git history, comments, matrices, worklogs, design
+   logs, and audit reports.
 
-1. 24 of 25 frozen matrix rows still have empty evidence cells and remain Open;
-2. the claimed semantic tightness at 33, and therefore the assertion that the
-   old `cost <= 30` conjunct became unprovable, is not established by the Lean
-   theorems cited for it; and
-3. a public historical identity silently changed from 328 to 352, while the
-   README, family summary, and model-adequacy documentation retain incompatible
-   pre-rung claims.
+Git history, comments, matrix prose, and worklogs are never classified as
+kernel evidence here. Tier 5 can establish a process record; it cannot prove
+mathematics, liveness, model adequacy, or executable behavior.
 
-There is no P0 finding. The audit has three P1 findings, one P2 finding, and two
-P3 findings.
+## Protocol verdicts
+
+- **A08 report quality after this correction: merge-ready.** This is a verdict
+  on the report-only artifact, contingent on the final report-tree gates below;
+  it is not coordinator acceptance of B7.
+- **B7 local-rung verdict at exact `6ad4198...`: blocked.** Two literal frozen
+  gates fail, a frozen historical contract changes under the same name, and
+  load-bearing tightness/value-dependency obligations are not established.
+- **Broader charged-query roadmap node: needs another worker pass.** B7 makes
+  real progress toward an explicit charged upper-bound story, but neither the
+  complete accepted-route inventory nor the frozen acceptance surface closes.
+
+No P0 finding was found.
 
 ## Findings
 
-### P1 — The frozen acceptance matrix is not an evidence-complete freeze
+### P1 — CHK-02 literally fails on a removed theorem name
 
-At freeze commit `19e3a69`, the table at
-`docs/internal/B7_SPARSE_LEVEL_ACCEPTANCE_MATRIX.md:101-127` contains 25 rows.
-Only `REQ-B7-00` has a nonempty “Evidence obtained” cell and status Closed.
-`REQ-B7-01` through `REQ-B7-21`, `CHK-B7-01`, `CHK-B7-02`, and `STR-B7-01`
-have empty evidence cells and remain Open. HEAD itself acknowledges at
-`docs/internal/B7_SPARSE_LEVEL_ACCEPTANCE_MATRIX.md:183-190` that the appended
-material was not written into the frozen cells and that no additional row is
-closed.
+The frozen row `CHK-02` requires exactly:
 
-`git diff --unified=0 19e3a69..6ad4198 --
-docs/internal/B7_SPARSE_LEVEL_ACCEPTANCE_MATRIX.md` shows only appended text
-after the frozen table: no requirement/scope/evidence-needed/consumer/
-anti-vacuity cell was weakened and no table row was added. That preserves the
-words of the freeze, but it does not make 24 empty evidence cells establish
-their requirements. This is especially material for rows whose appended prose
-claims “tight” or “attained” without a corresponding lower-bound theorem.
+```text
+lake env lean scripts/wordram_axiom_check.lean
+```
 
-Evidence: T1/T3 for the table/diff; T4 only for the appended status prose.
+with exit 0. At the audited target,
+`scripts/wordram_axiom_check.lean:197` contains:
 
-### P1 — “Tight at 33” and “the old slack theorem is now impossible” are not proved
+```lean
+#print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_76
+```
 
-The old declaration
+The live theorem is
+`...nonSyntheticWeight_sum_le_210` at
+`RMQ/Core/SuccinctFinalRAM.lean:9510`; the `_76` declaration is absent. The exact
+gate was rerun in this continuation and exited 1 after 255 seconds. The fact
+that this stale reference was known-red or owned by another branch does not
+satisfy `CHK-02`, and no frozen amendment waived it.
+
+Evidence tier: 4 for the literal gate result; 1 for the live `_210` declaration.
+
+### P1 — REQ-B7-10 and CHK-06 literally fail on the tracked WIP patch
+
+The frozen rows require both working-tree `git diff --check` and
+`git diff --check f6564ec..HEAD` to exit 0. Reconstructed against the exact B7
+target:
+
+```text
+git diff --check f6564ec..6ad4198cf09c0d4e103ae0e1c0a5c7a084d0ae25
+```
+
+exits 2. Every diagnostic is a single-space blank context line in the tracked
+`docs/internal/B7_STEP2_WIP.patch`, beginning at lines 13, 14, 19, and 92.
+That may explain why the artifact was committed, and it is not a Lean source
+defect, but the frozen requirement is an exact command/exit condition. The
+first report incorrectly reinterpreted the exception as a pass. It is a literal
+gate failure.
+
+Evidence tier: 4.
+
+### P1 — Upper-bound closure does not establish cost tightness
+
+The sound upper-bound surface is:
+
+- local two-span `cost <= 11` at
+  `InteriorDirectory.lean:5259-5260`;
+- global two-span `cost <= 11` at `:5314-5315`;
+- cross-macro `cost <= 33` at `:5418-5419`; and
+- whole interior `cost <= 33` at `:5461-5467`.
+
+The cross-macro dispatcher closes with direct `exact` at
+`InteriorDirectory.lean:5516-5517`. That shows an available `cost <= 33` fact
+matches the goal without a transitivity step. It does not prove an equality,
+lower bound, reachable witness of cost 33, or negation of `cost <= 30`.
+
+The old slack conjunction had the shape
+`cost <= 30 /\ 30 < cap /\ cap = 33`. The claim that `30 < 33` became
+unprovable is arithmetically false; `30 < cap` is the conjunct that remains
+immediate once `cap = 33`. The conjunct that would have to fail is the first,
+`cost <= 30`, and the target supplies no checked lower bound or counterexample
+over the same reachable object/domain.
+
+Deletion of
 `canonicalRelativeRmmPrincipledInteriorChargedTraceCost_announced_slack_...`
-is absent at HEAD. The tombstone at
-`RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean:5541-5555`
-says the cross-macro branch “attains the cap.” The actual proof surface is only
-an upper-bound surface:
+is confirmed. The finding concerns the stronger attainment/impossibility
+claim, not the validity of the 210 upper-bound algebra.
 
-- local two-span cost `<= 11` at `InteriorDirectory.lean:5259-5260`;
-- global two-span cost `<= 11` at `InteriorDirectory.lean:5314-5315`;
-- cross-macro cost `<= 33` at `InteriorDirectory.lean:5418-5419`; and
-- whole interior cost `<= 33` at `InteriorDirectory.lean:5461-5467`.
+Evidence tiers: 1 for the upper-bound theorems; 5 only for comments and matrix
+claims of attainment.
 
-The cross-macro dispatcher branch ends with bare
-`exact hcross` at `InteriorDirectory.lean:5516-5517`. This gives zero *proof
-slack* against the upper bound, but it is not a witness or lower bound showing
-that an execution has cost 33. A source-wide search found no `cost = 33`,
-`33 <= cost`, or existential witness for this path. Consequently, deletion of
-the old slack artifact is confirmed, but the stronger claim that its middle
-conjunct `30 < cap` “could not have survived because the swap consumes the
-headroom” is literally false: with `cap = 33`, that conjunct remains provable.
-The conjunct that would have to become false is the first, `cost <= 30`, and the
-current upper-bound-only theorem does not refute it.
+### P1 — The same-name historical 328 contract changes to 352 without a frozen amendment
 
-Evidence: T1. Verdict impact: Item 3 is REFUTED as worded; Item 4 is UNCLEAR.
-
-### P1 — A frozen-looking public historical identity silently changed 328 → 352
-
-At the base,
-`f6564ec:RMQ/Core/SuccinctRMQClassic.lean:135-138` states:
+At the base, `f6564ec:RMQ/Core/SuccinctRMQClassic.lean:135-138` states:
 
 ```lean
 theorem canonicalTransitionalQueryCost_eq :
@@ -115,375 +150,373 @@ theorem canonicalTransitionalQueryCost_eq :
   rfl
 ```
 
-At HEAD, the same public theorem name at
-`RMQ/Core/SuccinctRMQClassic.lean:147-150` states `= 352`. The underlying
-definition is still described as the “Checked historical U2 cost” at
-`SuccinctRMQClassic.lean:101-105`, but it depends on a live compact component
-rather than pinned literal components. This is exactly the historical-drift
-failure that the rung says was repaired for 207 and 126. Those two identities
-are pinned correctly; the 328 identity was neither pinned nor renamed.
-
-The frozen matrix requirement at
-`docs/internal/B7_SPARSE_LEVEL_ACCEPTANCE_MATRIX.md:108` explicitly names the
-historical `142/76/328` pattern and requires frozen legacy anchors to remain
-untouched. The same-name change therefore refutes Item 10.
-
-Evidence: T1/T3.
-
-### P2 — Public documentation contradicts the new public theorem surface
-
-HEAD still presents the pre-swap route as current in multiple public places:
-
-- `README.md:70-82`, `README.md:140`, and `README.md:334` state a 207 bound,
-  interior cap 30, or the old component algebra;
-- `docs/FAMILY_SUMMARY.md:9`, `:32-48`, `:133`, `:446`, and `:1041` state the
-  old 207/30 story, including that logs remain uncharged; and
-- `docs/PAPER_MODEL_ADEQUACY.md:229-256` refers to the removed slack theorem and
-  old `...thirty_literal` bridge as live/checkable support.
-
-This conflicts with the current `queryCost_eq = 210` and with the repository
-rule that headline/public theorem changes update `docs/FAMILY_SUMMARY.md` and,
-when relevant, `README.md`.
-
-Evidence: T1/T3.
-
-### P3 — A post-swap theorem name still says “thirty” while its statement uses 33
-
-`InteriorDirectory.lean:5529-5539` retains the compatibility theorem name
-`...cost_le_thirty...`, but the statement is against the live interior cap,
-which is 33. This is not a renamed/weakened survivor of the deleted conjunction,
-but the name is misleading and makes searches for the former cap ambiguous.
-
-Evidence: T1.
-
-### P3 — The headline “readWord of counted store” phrasing outruns the theorem
-
-`RMQ/Headlines/RMQ.lean:502-508` describes the result as “readWord of the counted
-store layout.” The consumed theorem proves `event.isReadWord` over the accepted
-trace; the backing/store-location conclusion comes from separate adequacy and
-provenance theorems. The needed separate results exist, so this is wording drift,
-not a functional or provenance failure.
-
-Evidence: T1.
-
-## Item-by-item verdicts
-
-### 1. Freeze integrity — **REFUTED**
-
-The frozen requirement columns are byte-stable from `19e3a69` to HEAD, and no
-new table row was added post-freeze. However, the evidence column fails its
-purpose: every row except `REQ-B7-00` has an empty evidence cell and Open status
-at `B7_SPARSE_LEVEL_ACCEPTANCE_MATRIX.md:101-127`. The append-only note at
-`:183-190` explicitly confirms that state. Therefore “no row weakened” is
-confirmed, but the requested stronger integrity check fails for 24 rows.
-
-Positive evidence tiers: T1/T3. See P1 finding 1.
-
-### 2. The silent computation is actually gone — **CONFIRMED**
-
-The accepted whole-query caller chain is:
-
-1. `SuccinctFinalRAM.lean:4426-4432`,
-   `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult`;
-2. `SuccinctFinalRAM.lean:3265-3280`, the accepted global evaluator branch;
-3. `SuccinctFinalRAM.lean:2330-2340`, the accepted all-size LCA route;
-4. `ChargedFringeWiring.lean:50-64`, which calls the charged interior route;
-5. `ConcreteDirectoryRAM.lean:1188-1193`; then
-6. `InteriorDirectory.lean:2351-2398`.
-
-At the two executed local/global sites in `InteriorDirectory.lean:2351-2398`,
-the code reads `offsets.localLevel count` or
-`offsets.globalLevel macroSpanCount`, then decodes the one cell with `/ domain`
-and `% domain`. The two Costed twins at `InteriorDirectory.lean:1824-1869` do the
-same through `canonicalRelativeRmmMachineReadNatCosted`. Their correspondence is
-proved in the `_refines` chain at `InteriorDirectory.lean:3440-3480`.
-
-Every surviving `Nat.log2`/`bpSparseLogSpan` occurrence was reclassified:
-
-- `SparseLevelTable.lean:55-56`: table construction;
-- `LocalGlobalSparse.lean:17-39,590-611`: logical/reference specifications;
-- `WordReads.lean:190-207,247-264`: a legacy logical word-list model consumed
-  by the compatibility directory at `InteriorDirectory.lean:938-959`, not by
-  the accepted caller chain; and
-- old `InteriorRAM.lean:559-653,805-900`: compatibility `OfReady`/`OfSizeGe`
-  routes, also outside the accepted chain.
-
-I independently followed the `WordReads.lean` consumers rather than accepting
-their alleged unreachability. They do not reach the accepted headline object.
-
-An initially plausible broader objection also fails: the recursive local BP
-decoder at `LocalBPDecoder.lean:797-805` is compatibility/spec code. The accepted
-same-block branch in `ChargedFringeWiring.lean:50-64` calls
-`bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment`; its definition
-at `ChargedSameBlockChunks.lean:49-64` uses charged chunk reads with a literal
-`Nat.min ... 33`, and its fixed bound is proved at `:66-75`.
-
-Positive evidence tier: T1, supported by T2 builds.
-
-### 3. The slack artifact is deleted, not weakened — **REFUTED**
-
-The named conjunction theorem is absent, and no weakened or renamed conjunction
-survivor was found. The tombstone is present at
-`InteriorDirectory.lean:5541-5555`. What is not confirmed is “it could not have
-survived”: the branch proves only `cost <= 33`, not equality or a lower bound.
-Bare `exact hcross` at `:5516-5517` establishes zero proof slack, not semantic
-attainment. Moreover, the prompt identifies `30 < cap` as the conjunct that
-must become unprovable, but `cap = 33` proves exactly that conjunct. The intended
-load-bearing conjunct is `cost <= 30`, and no checked lower bound refutes it.
-The misleading `...cost_le_thirty...` name at `:5529-5539` is a P3 naming issue,
-not the old artifact.
-
-Positive evidence tier for deletion: T1. Insufficient evidence for
-impossibility: only T4 comments plus an upper-bound theorem.
-
-### 4. The literal is justified by reads, not by slack — **UNCLEAR**
-
-The named algebra is real. `SuccinctFinalRAM.lean:8791-8805` defines the
-component record and algebra; the live components are selected at `:8811-8818`;
-and `:8823-8830` proves close cost 129 and whole cost 210 by `rfl`. This is an
-algebra of named components, not a free-standing asserted numeral.
-
-Direct-module axiom queries reported that both
-`RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`
-and `RMQ.SuccinctClassic.queryCost_eq` do not depend on axioms.
-
-Historical 207/126 is pinned correctly in the definitions, not merely in
-today's equalities: literal component definitions occur at
-`SuccinctFinalRAM.lean:8852`, `:8858`, `:8864`, and `:8874`; the frozen algebra
-uses those definitions at `:8947-8954`; and the 207/126 identities are `rfl` at
-`:8959-8972`.
-
-The four dispatcher bounds at `InteriorDirectory.lean:5461-5517` have the
-claimed proof slack: within-macro 7, adjacent 11, left-middle 11, and cross-macro
-zero. But “the maximizing branch attains the cap” is not derived. Because that
-clause is load-bearing for semantic tightness, the compound item is UNCLEAR.
-
-Positive evidence tiers: T1/T2 for algebra, pinning, and axiom freedom; no
-sufficient evidence for attainment.
-
-### 5. The swap is live, not decorative — **CONFIRMED**
-
-The harness has 21 windows. Source/delta comparison gives exactly nine windows
-with positive interior count moving and twelve without live interior remaining
-unchanged. The nine changes are:
-
-- n=24: 112→114, 107→109, 105→107;
-- n=64: 116→118, 126→128; and
-- the two n=128 shapes: 92→93, 96→97, 93→94, 95→96.
-
-The twelve unchanged cases are three invalid windows, three cross-block windows
-with count zero, and six same-block windows. A fresh harness run confirmed all
-21 current values/results and the 210 cap.
-
-The invocation condition is genuinely
-`leftBlock + 1 < rightBlock` at
-`ConcreteDirectoryRAM.lean:2319-2340`, with count
-`rightBlock - leftBlock - 1`.
-
-The `tie-boundary-live-interior` fixture at `CostHarness.lean:198-233` has n=24,
-base=5, blockSize=10, blockCount=4. Its minimum value occurs at indices
-5, 7, 9, 11, 13, 16, and 18. Cartesian-close mapping places all of those in the
-three interior blocks for the full window; neither endpoint fringe block
-contains a minimum. The harness returns index 5, so the leftmost decision is
-load-bearing on the interior range-min rather than a fringe tie.
-
-The observed shape-determined delta is consistent with the construction. The
-charged table cell is fixed-width for a shape, and the machine-read cost depends
-on that shape's packed-table/word geometry, not monotonically on the queried
-count. Thus +2 at counts 1,2,3,8 for n=24/64 and +1 at counts 9,10,14 for both
-n=128 shapes is expected, not evidence of an unexamined count-dependent loop.
-
-Positive evidence tiers: T1/T2/T3.
-
-### 6. Width fit — **CONFIRMED**
-
-The one-word local/global theorems at `InteriorDirectory.lean:4440-4509` use the
-route's macro-crossing hypothesis, not a public size threshold. The dispatcher
-derives that exact hypothesis from its branch guard and bounds at
-`InteriorDirectory.lean:5481-5493`. The lemma
-`canonicalRelativeRmmBase_ten_le_of_macro_crossing` derives `10 <= base` at
-`:4339-4365`; it is not an assumption.
-
-The small-size case is saved by reachability. At size 4, the raw fit can fail,
-but macro crossing would require `9 < 1`, which is false. It is not excluded by
-a threshold. Branches without macro crossing retain unconditional local/global
-`<= 7`-word bounds at `:4240-4301`, consumed in the `<= 8` read branches at
-`:5190-5209`. Small successful reachability is also exercised in
-`ReviewerReachabilitySmall.lean:2100-2237` and exported at `:2671-2689`.
-
-Positive evidence tier: T1.
-
-### 7. Space — **CONFIRMED**
-
-The width bridge is explicit:
-`bpSparseLevelWidth_le_square_width` at `InteriorDirectory.lean:5883-5898`.
-The raw overhead contains separate local/global table terms at `:5921-5938`,
-the decomposition is proved at `:5976-5982`, and the linear capacity is updated
-from 218 to 527 at `:5984-6170`. The directory payload equality follows at
-`:6172-6196`.
-
-The asymptotic envelopes are genuinely different. The local table is bounded
-through the cube lemma, while the sampled global table has the distinct
-sampled/global envelope at `InteriorDirectory.lean:6313-6363`. Both feed the
-little-o result at `:6429-6494`.
-
-The public statement shape is preserved:
-`FlatPayload.lean:1813-1826` defines the overhead,
-`FlatPayload.lean:1929-1933` proves
-`buildPayload.length <= 2 * n + overhead n`, and
-`SuccinctRMQClassic.lean:958-966` retains the corresponding public theorem and
-`overhead = o(n)` interface.
-
-Positive evidence tier: T1, supported by T2 builds.
-
-### 8. Vocabulary and provenance — **CONFIRMED**
-
-`SuccinctFinalRAM.lean:9708-9725` proves `..._readWord_only` by unfolding and
-induction over the amended accepted whole-query object. It is not an unchanged
-theorem about an obsolete predecessor; the object changed in atomic commit
-`c45e62c` and this proof was rebuilt over that definition.
-
-W19 covers the new local-level successful read at
-`ReviewerReachabilitySmall.lean:2028-2238`, embeds it through the LCA path at
-`:2240-2266`, and exports the canonical-close source occurrence at `:2671-2808`.
-The level tables are subregions of the existing canonical-close source rather
-than a new segment.
-
-`ReviewerPhysical.lean:88-113` maps canonical-close/fringe/select to 20/21/22
-and maps `>= 23` to none; completeness is still equivalent to `< 23` at
-`:891-928`. The accepted whole trace retains `< 23` and occurrence/value
-coverage at `SuccinctFinalRAM.lean:6774-6799` and `:7008-7210`.
-
-Positive evidence tiers: T1/T3. The separate headline wording caveat is P3.
-
-### 9. No dead sources, ever — **CONFIRMED**
-
-Commit history supports the atomicity claim when “counted source” is read as a
-region integrated into the public counted component store:
-
-- `78d15c3` introduces the generic table format and generic reader together;
-- `af6023d` instantiates local/global table values and an overhead definition,
-  but the component payload at
-  `af6023d:InteriorDirectory.lean:1506-1510` still omits those table payloads;
-  therefore no public counted store region is dead in that state; and
-- `c45e62c` adds the local/global table payloads to the component store and, in
-  the same commit, adds offsets/readers and swaps both Costed and Computation
-  paths (`InteriorDirectory.lean:1824-1869,2351-2398`).
-
-`git log -S` confirms that the actual payload append and the live
-`offsets.localLevel count` read first appear together at `c45e62c`. A standalone
-value/overhead definition before that commit is not a counted storage region.
-No intermediate commit was found with integrated counted storage and no reader.
-
-Positive evidence tier: T3, with T1 source confirmation.
-
-### 10. No weakening elsewhere — **REFUTED**
-
-The delta's Lean hygiene is clean, and the 207/126 pinned definitions are
-preserved. Nevertheless, the unchanged-name public historical identity
-`canonicalTransitionalQueryCost_eq` changed 328→352, contrary to the frozen
-legacy requirement; see P1 finding 3. Public documentation also remains stale;
-see P2.
-
-The base-to-target `git diff --check` exits 2 solely because the committed
-`docs/internal/B7_STEP2_WIP.patch` contains single-space blank context lines.
-Those are patch syntax/context by construction and are not reported as a defect.
-
-The restricted hygiene scan found no forbidden declaration/import in `RMQ` or
-`lakefile.toml`. The `native_decide|Lean.ofReduceBool` scan finds only the scan
-strings themselves in scripts, not an actual use in `RMQ` or `RMQExamples`.
-
-Positive evidence tiers: T1/T2/T3. Overall item refuted by the public identity
-and documentation findings.
+At the target, the same public theorem name at
+`RMQ/Core/SuccinctRMQClassic.lean:147-150` states `= 352`. The frozen
+`REQ-B7-05` text at
+`docs/internal/B7_SPARSE_LEVEL_ACCEPTANCE_MATRIX.md:108` explicitly uses the
+`142/76/328` pattern and says frozen legacy anchors are untouched.
+
+This change was not wholly silent:
+`docs/PAPER_MODEL_ADEQUACY.md:129-135` discloses that 328 was implemented as a
+live symbolic abbreviation and therefore moved. That worker-authored
+explanation is useful process evidence, but it does not amend the frozen
+historical-contract requirement. The public surface needed either a pinned 328
+compatibility identity plus a distinctly named live 352 identity, or an
+approved frozen amendment. It has neither.
+
+Evidence tier: 1 for the theorem statements; 5 for history and explanatory
+prose.
+
+### P1 — Current public and policy surfaces contradict the target's 210/33 story
+
+The current theorem surface uses 210 and interior cap 33, but several documents
+still present older values as current:
+
+- `README.md:70-82`, `:140`, and `:334` present 207, interior 30, or the old
+  `13/4/4/30` algebra as current.
+- `docs/FAMILY_SUMMARY.md:9`, `:32-48`, `:133`, `:446`, and `:1041` present the
+  207/30 route and continue to describe the sparse logarithm as uncharged.
+- `docs/PAPER_MODEL_ADEQUACY.md:229-256` names the deleted
+  `...announced_slack...` theorem and old `...thirty_literal...` bridge as live,
+  checkable support, and asserts unsupported tightness.
+- `docs/internal/CLAIM_DRIFT_POLICY.md:127-133` says 76 is the **current**
+  principled canonical charged-trace bound. Its statement that 328 is
+  historical is not enough to repair the same-name numeric drift above.
+- `docs/PAPER_THEOREM_MAP.md:60`, `:141-164` says the current final route is 76
+  and uses the old `13/4/4/30` algebra.
+- `docs/TRUST_AUDIT_PACKET.md:24`, `:84-96` likewise presents 76 and
+  `13/4/4/30` as the current paper/trust boundary.
+
+This is not repository-wide uniform drift: `docs/WHAT_IS_PROVED.md:34,72-84`
+and `docs/PAPER_CLAIM_CORRESPONDENCE.md:7-9,54-56` correctly present 210 and the
+`35/11/37/33` algebra. The coexistence of incompatible current surfaces is the
+finding.
+
+Evidence tier: 5. These are documentary/public-claim failures, not kernel
+failures.
+
+### P1 — INV-VALUE-DEPENDENCY lacks its required decisive corruption witness
+
+The implementation has strong positive value flow: the packed level cell is
+decoded and feeds the addresses of the subsequent sparse-span reads, and the
+full-value refinement theorems preserve the returned
+`Option (Nat × Nat)`. However, the frozen invariant specifically requires a
+corruption at an actually read level slot that changes the returned interior
+candidate, not merely the trace, cost, or decoded local variable.
+
+The checked surfaces found at `InteriorDirectory.lean:2025-2077` establish
+full-value equivalence on the canonical store, while `:3440-3480` establishes
+Computation/Costed refinement and `:3621-3668` establishes agreement
+parametricity. Those are one-direction preservation results. No level-table
+corruption theorem or concrete decisive-corruption witness changing the
+returned candidate was found. Therefore the structural dependence is
+plausible and directly visible, but the row's specified anti-vacuity witness is
+not established.
+
+Evidence tiers: 1 and 2 for the positive refinements; no qualifying tier 1/2/3
+evidence for the required negative/corruption witness.
+
+### P2 — STRETCH-01 is open, so the universal route-inventory claim must be qualified
+
+The first report correctly resolved the two named candidate families:
+
+1. runtime-derived `Nat.log2`/`bpSparseLogSpan` is gone from the inspected
+   accepted sparse-level caller chain; surviving occurrences are construction,
+   specification, or compatibility surfaces; and
+2. the old recursive same-block decoder is compatibility/spec code, while the
+   accepted branch uses the charged, fixed 33-chunk fold in
+   `ChargedSameBlockChunks.lean:49-75`.
+
+That does not satisfy `STRETCH-01`. The target contains no auditable complete
+reachability derivation from the whole-query root, no mechanized enumeration,
+and no exhaustive entry-by-entry bridge/charge classification. Therefore the
+correct conclusion is: **no named input-growing uncharged candidate remains in
+the sparse-level and same-block families A08 inspected.** This report does not
+certify that the accepted route contains no such work anywhere.
+
+Evidence tiers: 1 and 2 for the two inspected families; missing evidence for
+the universal quantifier.
+
+### P2 — REQ-B7-09's atomicity is confirmed, but per-commit green is only process evidence
+
+History reconstruction confirms the substantive no-dead-region design:
+generic table storage and its generic reader land together; instantiated level
+tables remain outside the public counted component store until `c45e62c`; and
+that atomic commit adds both counted store regions and the accepted readers.
+No intermediate integrated counted region without a reader was found.
+
+The separate “library-green-per-commit” clause is evidenced only by the
+worker-authored per-commit ledger. This continuation deliberately did not
+rebuild every historical commit, and a final-target build cannot prove every
+intermediate commit was green. The row is therefore not fully established by
+independent artifact evidence even though its atomic-storage claim is
+confirmed.
+
+Evidence tier: 5 for history/ledger; 2 for the target's integrated store/read
+object identity.
+
+### P3 — Smaller vocabulary drift remains
+
+- `InteriorDirectory.lean:5529-5539` retains a theorem name containing
+  `cost_le_thirty`, while its statement uses the live cap 33.
+- `RMQ/Headlines/RMQ.lean:502-508` says “readWord of the counted store layout,”
+  while the named theorem itself proves `event.isReadWord`; backing is supplied
+  by separate explicit-model adequacy/provenance theorems.
+
+Evidence tiers: 1 and 2.
+
+## Reconstruction of all 25 frozen rows
+
+`SATISFIED` means the proposition requested by that row is supported at the
+target. `FAILED` means a literal requirement is false. `NOT ESTABLISHED` means
+the target may be directionally correct but lacks the row's required evidence.
+These are audit dispositions, not coordinator-owned matrix status changes.
+
+| Frozen ID | Disposition | Independent basis and evidence tier |
+|---|---|---|
+| `REQ-B7-00` | SATISFIED | Mechanism decision `DD-20260718-012` precedes implementation and records address-order, bit-width, and space rejection arguments. Tier 5 for ordering/decision; the cited table/address definitions are tier 1/2. |
+| `REQ-B7-01` | SATISFIED | `bpSparseLevelDomain_covers`, tightened `bpSparseLevelCell_lt`, the local/global width theorems, and separate local/global little-o envelopes cover reachable indices without a public threshold. Tiers 1 and 2. |
+| `REQ-B7-02` | SATISFIED | Local/global full-result equivalence at `InteriorDirectory.lean:2025-2077`, accepted call-site discharge, and Computation refinement at `:3440-3480` cover both packed level and span. Tiers 1 and 2. |
+| `REQ-B7-03` | SATISFIED | The amended store computations read the packed level cell before the two span reads at `:2351-2398`; Computation/Costed refinements, store matching, footprint agreement, and whole-trace `readWord_only` preserve ordered real reads without synthetic replay. Tier 2, supported by tier 1 refinement theorems. |
+| `REQ-B7-04` | SATISFIED IN SUBSTANCE | The frozen prediction that a new reviewer source/segment was necessary is refuted by the construction: the level tables are counted subregions of existing `.canonicalClose`/segment 20. W19 successful occurrence and producer provenance cover the new read, and completeness remains `< 23`. Tier 2. |
+| `REQ-B7-05` | FAILED | The 210 named-component algebra and pinned 207/126 identities are sound, but semantic attainment/negation of `cost <= 30` is not proved and the same-name 328 contract moves to 352 despite the frozen anchor clause. Tiers 1 and 5. |
+| `REQ-B7-06` | SATISFIED | Actual local/global level payloads feed raw overhead, the width bridge, 527 linear capacity, different local/global envelopes, public `buildPayload.length <= 2*n + overhead n`, and `LittleOLinear overhead`. Tiers 1 and 2. |
+| `REQ-B7-07` | SATISFIED | `...WholeQueryGlobalWordTraceResult_readWord_only` at `SuccinctFinalRAM.lean:9708-9725` is proved over the amended whole-query object consumed by the headline chain. Tiers 1 and 2. |
+| `REQ-B7-08` | FAILED | The charge-policy document retains deleted bridge names, old branch caps, unsupported tightness, and no complete residual-work inventory. Tier 5. |
+| `REQ-B7-09` | NOT ESTABLISHED | Atomic counted-store/read landing and no integrated dead region are confirmed, but the universal per-commit green claim rests on process ledger evidence not independently replayed. Tiers 2 and 5. |
+| `REQ-B7-10` | FAILED | The exact base-to-target diff check exits 2. Other recorded hygiene/lint results do not override that conjunct. Tier 4. |
+| `INV-STORE-IDENTITY` | SATISFIED | The exact level-table payloads appended to the canonical interior component store are the objects read by `offsets.localLevel/globalLevel`, and the same payload-length chain feeds public space. Tier 2. |
+| `INV-VALUE-DEPENDENCY` | NOT ESTABLISHED | Canonical value flow/refinement is checked, but the required decisive level-slot corruption witness changing the returned candidate is absent. Tiers 1/2 positive; required counterfactual missing. |
+| `INV-NO-SYNTHETIC` | SATISFIED | The accepted Computation-generated reads refine the Costed twins; whole-trace event classification and `readWord_only` exclude a synthetic cost-only substitute. Tier 2. |
+| `INV-ALL-SIZE` | SATISFIED | No readiness/size threshold is added; macro crossing supplies its own reachability hypothesis, small cases use unconditional bounds, and count zero is covered by the same domain/refinement surface. Tiers 1 and 2. |
+| `INV-PUBLIC-COMPOSITION` | SATISFIED AT THEOREM LEVEL | The live capstone consumes the amended payload, store, trace, and 210 algebra together. Documentary aliases are stale, which is separately a P1 finding. Tiers 1 and 2. |
+| `CHK-01` | SATISFIED | Exact-target RMQ, RMQPaper, and RMQExamples builds were already recorded green by A08 and were not economically repeated. Tier 4. |
+| `CHK-02` | FAILED | Exact command exits 1 at stale `_sum_le_76` line 197. Tier 4. |
+| `CHK-03` | SATISFIED | Exact-target headline axiom inventory exited 0 with the 210 anchor. Tier 4. |
+| `CHK-04` | SATISFIED | The 21-window harness passes; exactly the nine positive-interior windows move, and the n=24 fixture makes the interior minimum/leftmost tie load-bearing. Tier 3. |
+| `CHK-05` | SATISFIED | No forbidden Lean/Mathlib declaration is found; native-decision matches are scan strings in scripts, not RMQ/RMQExamples uses. Tier 4. |
+| `CHK-06` | FAILED | The exact base-to-target diff check exits 2 on tracked `B7_STEP2_WIP.patch`. Tier 4. |
+| `CHK-07` | SATISFIED | The exact-target strict design-decision gate is recorded exit 0; no contrary source fact was found. Tiers 4 and 5. |
+| `CHK-08` | SATISFIED | Exact-target claim drift and paper topology runs were recorded exit 0 with the 210 anchor. Tier 4. |
+| `STRETCH-01` | NOT ESTABLISHED | Two named families were resolved, but no complete auditable/mechanized reachability inventory exists. Tiers 1/2 for inspected entries; completeness missing. |
+
+## Positive B7 implementation findings retained
+
+### Live charged sparse-level reads and identity chain
+
+The accepted chain still reaches the amended objects:
+
+1. `SuccinctFinalRAM.lean:4426-4432`, accepted whole-query result;
+2. `SuccinctFinalRAM.lean:3265-3280`, accepted global evaluator branch;
+3. `SuccinctFinalRAM.lean:2330-2340`, all-size LCA route;
+4. `ChargedFringeWiring.lean:50-64`, charged fringe/interior dispatch;
+5. `ConcreteDirectoryRAM.lean:1188-1193`; and
+6. `InteriorDirectory.lean:2351-2398`, local/global level-cell reads.
+
+The local/global Costed twins at `InteriorDirectory.lean:1824-1869` read one
+packed cell carrying level and span; the executed twins read the corresponding
+component-store offsets and decode with `/ domain` and `% domain`. Full value
+refinement is checked at `:2025-2077`, and store Computation refinement at
+`:3440-3480`. This supports value/trace/store identity on the canonical object;
+it does not supply the separate corruption witness discussed above.
+
+Evidence tiers: 1 and 2.
+
+### Width, capacity, and space
+
+The macro-crossing local/global one-word fits at
+`InteriorDirectory.lean:4440-4509` use the dispatcher's actual reachability
+hypothesis. `10 <= base` is derived at `:4339-4365`, and branches without macro
+crossing use the unconditional bounds at `:4240-4301`. The size-4 raw fit may
+fail, but macro crossing is impossible there; no public size threshold is
+introduced.
+
+The width bridge at `:5883-5898`, raw-overhead decomposition at `:5921-5982`,
+527 linear capacity at `:5984-6170`, payload equality at `:6172-6196`, distinct
+local cube/global sampled envelopes at `:6313-6363`, and little-o closure at
+`:6429-6494` remain coherent. `FlatPayload.lean:1929-1933` and
+`SuccinctRMQClassic.lean:958-966` preserve the exact public upper-bound shape.
+
+Evidence tiers: 1 and 2.
+
+### Provenance, harness liveness, and segment vocabulary
+
+`SuccinctFinalRAM.lean:9708-9725` proves `readWord_only` over the amended
+whole-query object. W19's successful local-level read and producer path are at
+`ReviewerReachabilitySmall.lean:2028-2238,2240-2266,2671-2808`. The new tables
+remain under the existing canonical-close source/segment, while
+`ReviewerPhysical.lean:88-113,891-928` and the whole-trace theorems retain
+`segment < 23`.
+
+The exact-target harness confirms all 21 windows, including the n=24 fixture
+whose minimum values occur only in interior blocks. The moved set is exactly the
+nine windows with positive interior count; the other twelve do not reach the
+new read. The +2 versus +1 delta is consistent with shape-dependent packed-read
+geometry rather than a count-driven loop.
+
+Evidence tiers: 2 and 3.
 
 ## Objections considered and rejected
 
-1. **“The WordReads pair still executes the logarithm.”** Rejected after
-   following its consumers: it feeds a compatibility logical directory, not the
-   accepted `SuccinctFinalRAM` caller chain.
-2. **“The old recursive same-block scan leaves a separate growing silent loop.”**
-   Rejected after resolving the accepted dispatch: it uses the charged, capped
-   33-chunk fold in `ChargedSameBlockChunks.lean`; the recursive decoder is a
-   compatibility/spec layer.
-3. **“Bare exact proves the 33 cap is attained.”** Rejected. It proves only that
-   an already available `<= 33` result closes a `<= 33` goal.
-4. **“Pre-atomic instantiated table values are dead counted storage.”** Rejected.
-   Before `c45e62c` they are definitions outside the integrated component-store
-   payload. Store inclusion and live reads land together.
-5. **“The n=128 +1 versus n=24/64 +2 delta shows a count anomaly.”** Rejected.
-   It follows fixed-width, shape-dependent table-read geometry.
-6. **“Size 4 was excluded by a hidden threshold.”** Rejected. The one-word
-   theorem is guarded by the actual macro-crossing condition, which is
-   unreachable for that shape; unconditional multiword bounds cover the other
-   branches.
-7. **“The committed `.patch` whitespace is a source defect.”** Rejected per
-   direct inspection: the flagged lines are single-space blank patch-context
-   lines, not whitespace damage in Lean or documentation source.
+1. **“Blank matrix cells and Open status prove 24 requirements failed.”**
+   Rejected by the protocol's matrix reconstruction semantics. Substantive
+   row evidence may be append-only; every real row is judged above.
+2. **“The CHK-02 failure is irrelevant because another branch owns it.”**
+   Rejected. Attribution and frozen gate satisfaction are different questions;
+   the exact required command exits 1 and no amendment waives it.
+3. **“Patch context whitespace is not a source defect, so CHK-06 passes.”**
+   Rejected. It may not be a Lean defect, but the exact frozen command exits 2.
+4. **“Bare exact proves the cross-macro branch costs 33.”** Rejected. It proves
+   only an upper bound already matching the goal.
+5. **“The 328→352 change was wholly silent.”** Rejected.
+   `PAPER_MODEL_ADEQUACY.md:129-135` discloses it; the defect is lack of an
+   approved frozen-contract change or pinned compatibility identity.
+6. **“WordReads or the recursive local decoder still executes the silent log on
+   the accepted route.”** Rejected for the inspected caller families: WordReads
+   feeds compatibility/spec surfaces, and the accepted same-block path uses the
+   charged capped chunk fold.
+7. **“The shape-dependent +1/+2 harness delta indicates an unexamined
+   count-dependent loop.”** Rejected. It follows fixed-width word geometry.
+8. **“Every current document is stale.”** Rejected. `WHAT_IS_PROVED.md` and
+   `PAPER_CLAIM_CORRESPONDENCE.md` correctly describe 210/33; the problem is
+   contradictory current surfaces.
 
-## Verification outcomes
+## Command and skipped-command ledger
 
-Durations are wall-clock milliseconds measured by the audit wrapper. Commands
-expected to be heavy were serialized with the named Windows mutex
-`Global\RMQHeavyVerification`; the mutex wait is noted separately. Preliminary
-sandbox/network failures and superseded raced attempts were excluded from these
-authoritative results.
+### New continuation commands
 
 | Command | Exit | Duration | Result |
 |---|---:|---:|---|
-| `git diff --stat f6564ec..6ad4198` | 0 | 2,399 ms | 24 files, 8,362 insertions, 490 deletions |
-| `git diff --check f6564ec..6ad4198` | 2 | 837 ms | Only committed `.patch` context-line whitespace; documented exception |
-| `lake build RMQ` | 0 | 388,281 ms | Pass; mutex wait 7 ms; linter warnings only |
-| `lake build RMQPaper RMQExamples` | 0 | 51,955 ms | Pass |
-| `lake exe rmq_succinct_classic_cost_harness` | 0 | 45,036 ms | All 21 windows pass; route bound 210; mutex wait 4 ms |
-| `lake env lean scripts/headline_axiom_check.lean` | 0 | 68,349 ms | Pass; headline cost alias reports no axioms; mutex wait 8 ms |
-| direct-module `lake env lean --stdin` axiom check for the exact final and classic cost theorems | 0 | 3,803 ms | Both report no axioms; mutex wait 7 ms |
-| `powershell -ExecutionPolicy Bypass -File scripts/paper_topology_lint.ps1` | 0 | 127,207 ms | PASS: 83 broad identifiers; 49 paper identifiers resolved; mutex wait 5 ms |
-| `powershell -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1` | 0 | 10,169 ms | 736 hits, 0 strict failures |
-| `rg -n "\b(sorry\|admit\|axiom\|unsafe\|opaque\|implemented_by\|partial\|extern\|noncomputable)\b\|import Mathlib" RMQ lakefile.toml` | 1 | 85 ms | No matches (clean) |
-| `rg -n "native_decide\|Lean\.ofReduceBool" RMQ RMQExamples scripts` | 0 | 80 ms | Only self-referential scan/gate strings in scripts; no actual RMQ/RMQExamples use |
+| `git branch --show-current; git rev-parse HEAD; git cat-file -t 6ad4198cf09c0d4e103ae0e1c0a5c7a084d0ae25; git cat-file -t bd854edaa65944d5a7fa0fac5667e9572c370bbb; git status --short` | 0 | 3,900 ms | Correct audit branch/head; both exact objects exist; tree initially clean |
+| `git show bd854edaa65944d5a7fa0fac5667e9572c370bbb:docs/internal/AUDIT_PROTOCOL.md` | 0 | 3,500 ms | Protocol read in full |
+| matrix-ID inventory `rg` shown below | 0 | 800 ms | Reconstructed 25 real frozen IDs |
+| `lake env lean scripts/wordram_axiom_check.lean` | 1 | 255,000 ms | CHK-02 fails; line 197 names removed `_sum_le_76` |
+| `git diff --check f6564ec..6ad4198cf09c0d4e103ae0e1c0a5c7a084d0ae25` | 2 | 315 ms | CHK-06 fails on tracked `B7_STEP2_WIP.patch` context whitespace |
+| live/stale theorem inventory `rg` shown below | 0 | 1,100 ms | Script has `_76`; live source/headline have `_210` |
 
-The exact stdin used for the direct-module axiom row was:
+The exact two `rg` commands abbreviated in the table were:
 
 ```powershell
-@'
-import RMQ.Core.SuccinctFinalRAM
-import RMQ.Core.SuccinctRMQClassic
-#print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq
-#print axioms RMQ.SuccinctClassic.queryCost_eq
-'@ | lake env lean --stdin
+rg -n "^\| (REQ-B7-|INV-|CHK-|STRETCH-)" docs/internal/B7_SPARSE_LEVEL_ACCEPTANCE_MATRIX.md
+rg -n "concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_(76|210)|nonSyntheticWeight_sum_le_76" RMQ scripts/wordram_axiom_check.lean
 ```
 
-Known-red checks owned by other branches were recorded but not attributed to B7:
-`scripts/wordram_axiom_check.lean`, `scripts/axiom_check.lean`, and
-`lake exe rmq_succinct_classic_validate`.
+### Exact-target results retained, not rerun
 
-The post-report strict claim-drift and tree `git diff --check` results are
-recorded in the final section below after running them on this exact report tree.
+These were already run and recorded by A08 against exact `6ad4198...`; the
+continuation contract explicitly forbids repeating the multi-minute campaign
+merely to edit the report:
 
-## Explicit answer: remaining uncharged input-growing computation
+- `lake build RMQ`: exit 0, 388,281 ms;
+- `lake build RMQPaper RMQExamples`: exit 0, 51,955 ms;
+- `lake exe rmq_succinct_classic_cost_harness`: exit 0, 45,036 ms, all 21
+  windows agree and bound 210;
+- `lake env lean scripts/headline_axiom_check.lean`: exit 0, 68,349 ms;
+- direct-module axiom check for the final 210 and `queryCost_eq`: exit 0,
+  3,803 ms, no axioms;
+- `powershell -ExecutionPolicy Bypass -File scripts/paper_topology_lint.ps1`:
+  exit 0, 127,207 ms;
+- `powershell -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1`:
+  exit 0, 10,169 ms; and
+- the two hygiene `rg` scans: no forbidden RMQ/Mathlib use and no actual
+  `native_decide`/`Lean.ofReduceBool` use in RMQ/RMQExamples.
 
-**No — none was found on the accepted query route under the repository's
-declared charged-trace model.** The runtime-derived sparse logarithm/span is
-replaced by one charged packed-cell read, and all surviving executable-looking
-logarithm occurrences are construction, specification, or compatibility paths.
-The other tempting candidate, the old recursive same-block decoder, is also not
-the accepted implementation: the live dispatcher uses the charged fixed-cap
-chunk fold.
+Evidence tiers: 3 for the harness; 4 for builds, axiom inventories, lint, and
+scans.
 
-This answer is deliberately model-specific. It says that the accepted route has
-no remaining uncharged operation or loop whose iteration count grows with the
-input. It does not claim that every Lean/Nat arithmetic instruction is assigned
-a conventional CPU-cycle cost, nor does it turn the proof-level trace model into
-an executable-runtime theorem.
+### Deliberately skipped
 
-## Final report-tree checks
+- No root rebuild, harness rerun, headline axiom campaign, or topology rerun:
+  exact-target evidence already exists and the continuation contract says not
+  to repeat it.
+- `scripts/axiom_check.lean`, `lake exe rmq_succinct_classic_validate`, and the
+  retired-name `scripts/wordram_axiom_check.lean` beyond the one required
+  CHK-02 run were not treated as B7 implementation diagnostics.
+- No historical per-commit rebuild campaign was attempted; this is why
+  REQ-B7-09 remains `NOT ESTABLISHED` as a whole.
 
-The required pre-commit checks were run on the worktree containing this report:
+The post-report strict claim-drift, strict design-decision, report-diff, exact
+changed-path, and clean-status checks are recorded in the final section.
+
+## Roadmap alignment
+
+In letter, B7 adds an explicit packed store/read/space layer without changing
+the half-open RMQ contract, leftmost tie policy, value-level `List Int`
+semantics, or Lean/Std plus `omega` footprint. It retains the public
+`2*n + o(n)` payload upper-bound shape and a constant charged-query cap.
+
+In spirit, the mechanism is aligned with the repository's highest-value
+direction: replace an input-growing controller computation used for a read
+address with accounted storage accessed through the accepted explicit store.
+The mechanism therefore advances the succinct upper-bound story rather than
+adding a decorative table.
+
+The roadmap node is not closed because the frozen gate surface and public
+history are inconsistent, semantic tightness/value-dependency anti-vacuity is
+incomplete, and `STRETCH-01` supplies no complete reachability inventory.
+
+## Best next target
+
+The best proof target is a concrete **reachable exact-33 cross-macro execution
+witness on the accepted explicit-store object**, together with a checked
+corollary refuting the corresponding universal `cost <= 30` claim and a
+decisive level-slot corruption witness that changes the returned candidate.
+That closes the semantic anti-vacuity gap instead of inferring tightness from
+proof syntax.
+
+The same repair pass must make the two literal gates green, pin or rename the
+328/352 historical surface, and repair the contradictory current documents.
+After those material corrections, protocol requires a fresh acceptance audit;
+this continuation cannot confer acceptance.
+
+## Proof digestion
+
+**Conceptual change.** B7 moves sparse level/span selection out of silent
+runtime `Nat.log2`/power computation and into a count-indexed packed table read
+through the accepted component store.
+
+**Plain English.** The query now pays to learn which sparse-table level and
+span it will use; the information is stored once and read when needed.
+
+**Live assumptions.** The result is about the repository's charged trace
+model, where attempted payload-word reads are charged and controller
+arithmetic/div/mod/dispatch are not individually CPU-costed. One-word fit on
+the maximizing shape uses the route's actual macro-crossing reachability
+hypothesis; other branches use unconditional multiword bounds. Precomputed
+table construction is outside query cost but inside payload space. This is not
+a compiled-runtime theorem.
+
+**Skeptical next question.** Can the repository mechanize reachability from the
+whole-query root strongly enough to enumerate every uncharged controller
+operation, while also exhibiting an actual accepted execution whose returned
+candidate depends decisively on the level cell and whose cost reaches 33?
+
+## Qualified answer about remaining uncharged input-growing work
+
+For the families actually inspected, no named candidate remains: the
+runtime-derived sparse logarithm/span is replaced by a charged packed-cell read,
+and the recursive same-block decoder is not the accepted implementation. The
+accepted same-block path uses the charged capped chunk fold.
+
+A universal “no remaining input-growing uncharged computation anywhere on the
+accepted route” conclusion is **not established at this target** because
+`STRETCH-01` lacks a complete auditable reachability derivation. That is a
+qualification of inventory completeness, not a retraction of the specific B7
+mechanism finding.
+
+## Final report-tree verification
+
+The following commands were run on the tree containing this corrected report,
+before commit:
 
 | Command | Exit | Duration | Result |
 |---|---:|---:|---|
-| `powershell -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -Strict` | 0 | 4,240 ms | Scan complete: 743 hits, 0 strict failures |
-| `git diff --cached --check` | 0 | 79 ms | Clean; the staged delta is this report only |
+| `powershell -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -Strict` | 0 | 7,081 ms | 749 hits, 0 strict failures |
+| `powershell -ExecutionPolicy Bypass -File scripts/design_decision_check.ps1 -Strict -Base 1bc6b3597b97720c5c5dad0a2e87277cf28fd7ea` | 0 | 1,216 ms | No design-sensitive paths detected; report-only correction is inapplicable to a new design decision |
+| `git diff --check` | 0 | included in 303 ms pair | Clean unstaged delta |
+| `git diff --cached --check` | 0 | included in 303 ms pair | Clean staged report delta |
 
-After inserting this result record, both commands were rerun once more before
-the commit so that the committed report text itself was covered by the gates.
+After this result record was inserted, strict claim drift, strict design-decision
+checking, and the staged diff check were rerun once more on the final report
+text before commit. After commit, the exact base-to-HEAD report diff check,
+changed-path inventory, and clean status were checked as the completion gate.
