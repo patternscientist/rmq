@@ -1164,3 +1164,145 @@ at `:9`, `:43`, `:48`, `:133`, `:446`, `:1041`. Neither gate catches this:
 anchors on identifiers, not prose numerals. Separately, REQ-E1-09 instructs
 fixing four "fresh segment 21" surfaces that ALREADY read `23`, and a 33-cap
 attribution that is ALREADY correct.
+
+---
+
+## 12. Worklog — E1-LaneA2 (cost algebra), 2026-07-19
+
+Branch `claude/e1-cost-algebra`, base `fd59487`. Commits `48a1ac6`,
+`57ef6af` and this one. DD-IDs claimed and WRITTEN into
+`DESIGN_DECISIONS.md`: **`140`, `141`, `142`, `143`**. Band `144-159`
+remains free.
+
+**BUILT.**
+
+- **The `catCount`/`filter` bridge** — `catCount_eq_filter_length` and
+  `catCount_le_of_filter_length_le` (`E1Machine.lean`, beside `catCount`'s
+  own definition). §11 D's absence claim was CORRECT: zero hits.
+- **The bridge EXERCISED, not merely stated** —
+  `interiorChunkFold_readLog_le_eight` (`E1CostAlgebra.lean`, new module)
+  carries `interiorChunkFoldCats_memoryRead_le_eight`, a `filter`-vocabulary
+  block cap, to a bound on the MACHINE'S OWN RECEIPT LENGTH via
+  `RunsTo.readLog_length_eq_memoryRead_count`, which produces a `catCount`.
+- **Per-block charge bounds** — `chunkIters_le_eight`,
+  `interiorChunkFoldCats_length` (the algebra, as an equation) and
+  `interiorChunkFoldCats_length_le` (`<= 156 = 17 + 8*9 + 8*8 + 3`, derived,
+  no size hypothesis).
+- **`E1AmendedFamiliarMachineTarget`** (`E1AmendedTarget.lean`, new) with
+  `amendedTarget_invalidGuard` (its invalid conjunct DISCHARGED outright)
+  and `amendedTarget_of_wholeQueryAgreement` (the reduction: exactly what is
+  still owed).
+- **Validator phases 3j and 4i** — REQ-E1-05's guard skeleton executed on
+  the three named invalid families plus VALID CONTROLS, and a
+  shape-preserving mutation of the out-of-bounds branch.
+
+**FIVE COORDINATOR/FILE CLAIMS CHECKED; FOUR HELD, ONE FAILED ON A COUNT.**
+
+1. §11 D — no `catCount`/`filter` bridge anywhere. **HELD**, zero hits.
+2. No `totalSteps` in the tree; the only `cats.length <= <literal>` is the
+   guard's `<= 10`. **HELD** on both halves.
+3. `E1AmendedFamiliarMachineTarget` absent. **HELD**, zero hits.
+4. §11 E's four precision points about the refuted predecessor — third
+   conjunct is the familiar-local-iteration lower bound; the witness is
+   `e1R3CanonicalSameBlockInvocation_unbounded`; five categories, not six;
+   `publicModeledCost` is an EQUALITY. **ALL FOUR HELD**, read at
+   `7fe5b8b:RMQ/Core/SuccinctFinalSmallStep.lean:37016` and `:37046`.
+5. "`programSkeleton` has no consumer outside its own two files."
+   **FAILED ON THE COUNT.** Three files, and `E1WholeQueryPublic.lean`
+   carries a real consumer, `programSkeleton_valid_matches_public` (`:140`).
+   The residual the row names — the VALIDATOR — was genuinely absent, so the
+   conclusion held and the work was right to do.
+
+**A FINDING THAT CHANGED THE DELIVERABLE: the amended target Prop carries NO
+width conjunct.** REQ-E1-07's evidence column asks for one, and both
+spellings are unusable.
+`ProgramFits (SuccinctRank.machineWordBits n) (programSkeleton n validPath)`
+is FALSE at small `n` — `machineWordBits n = Nat.log2 n + 1`, so at `n = 4`
+the bound is `2 ^ 3 = 8` while this construction's register file reaches
+`152`. And `∀ n, ∃ w, ProgramFits w ...` is VACUOUS, since every finite
+instruction list fits some width. The tree's own certificates resolve this by
+taking `w` PARAMETRICALLY with side conditions
+(`sameBlockLegProgramAt_fits`, `E1ProgramWidth.lean:57`, carries eleven), and
+those cannot be collapsed into a Prop quantified over `xs left right`. Width
+accounting stays as REQ-E1-02's row. DD-20260719-142, and it is documented in
+the Prop's own docstring rather than left for a reader to notice.
+
+**§11 B HELD AND WAS NEVER TESTED.** Every bound here is stated as `<=` per
+the requirement's shape, but none of them passes through `machineWordBits` at
+all — they count instructions, not bits — so `Nat.log2` was not an
+obstruction and never came near one. `interiorChunkFoldCats_length` is left
+as an EQUATION deliberately, being the algebra the `<=` derives from.
+
+**THE TWO `33`s ARE KEPT APART AND NOTHING IS PROVED AGAINST EITHER.**
+`E1CostAlgebra.lean`'s header separates the fringe-window cap inside
+`endpointFringe = 4 + 33 = 37` from
+`canonicalRelativeRmmPrincipledInteriorChargedTraceCost := 33`, and notes
+`3 * rankClose = 33` as a third coincidence. The `8` this lane does prove is
+the interior adapter's, not the fringe's. DD-20260719-141.
+
+**One wrong guess, recorded because the rule caught it.** Mutant J's
+rejection count was predicted `6` and is `5`: the fixture labelled
+`("empty", n = 0, 0, 1)` is genuinely an out-of-bounds query at an empty
+list and escapes with the two labelled ones. The `rfl` failed and the figure
+was EVALUATED. Rule 3 earning its place.
+
+**Validator.** `lake exe rmq_e1_machine_validate` PASS at **16.8 s wall
+clock**. Phase 3j: `guardCases=11`, `guardFailures=0`, `guardRejected=8`,
+`guardValidControlsAccepted=3`, `guardMaxInvalidSteps=10`,
+`guardReadsTotal=0`, `guardMemoryReadCharges=0`. Phase 4i:
+`guardMutationIsReal=true`, `mutantJ_rejected=5`,
+`mutantJ_validControlsAccepted=3`, `mutantJ_caught=true`. Both contribute
+verdict clauses (`okGuard`, `okGuardMutations`); the phase is not
+decorative. **Phase 5 is untouched and still OPEN.**
+
+**NOT BUILT, and the honest resume inventory.** The per-block bound ladder is
+ONE BLOCK DEEP. `interiorChunkFoldCats` is bounded; nothing above it is.
+Still owed, with citations:
+
+- closed leaves with no `.length` bound: `closeDispatchCats`
+  `E1CloseDispatch.lean:96` (4), `dispatchPrologueCats`
+  `E1InteriorDispatchCompose.lean:251` (19, doc-comment claims it, unproved),
+  `windowAddrCats` `E1SameBlockArm.lean:187` (4), `windowRangeCats` `:518`
+  (8), `sameBlockCloseCats` `:296` (2), `legSetupCats`
+  `E1InteriorCombine.lean:152` (4), `candMerge3CloseCats`
+  `E1CandMerge3.lean:244` (2), `fringePrefixCats`/`fringeTailCats`
+  `E1FringeFoldBlock.lean:269`/`:273`, `crossStashCats`
+  `E1CrossBlockArm.lean:376`, `crossPinOneCats` `:441`, `crossRepointCats`
+  `:464`, `rankSeedPosCats` `E1SameBlockLeg.lean:163`, `rankSeedFinishCats`
+  `:208`, `minCandidatePrefixCats`/`minCandidateValueCats`
+  `E1InteriorMinCandidate.lean:262`/`:270`;
+- **every composite log is unbounded**: `fringeFoldCats`
+  `E1FringeFoldBlock.lean:952`, `fringeLegCats`/`fringeArmCats`
+  `E1FringeArmBlock.lean:559`/`:947`, `sameBlockArmCats`
+  `E1SameBlockArm.lean:398`, `sameBlockLegCats` `E1SameBlockLeg.lean:422`,
+  `sameBlockDispatchCats` `E1CloseCompose.lean:78`, `candMerge3Cats`
+  `E1CandMerge3.lean:247`, `geomCats` `E1InteriorSummaryGroup.lean:247`,
+  `legCats`/`spanCats` `E1InteriorSpanBlock.lean:112`/`:197`, `mergeCats`
+  `E1InteriorMerge.lean:125`, `twoSpanCats` `E1InteriorTwoSpan.lean:224`,
+  `twoLegCats`/`crossLegCats` `E1InteriorCombine.lean:294`/`:971`,
+  `dispatchArmCats`/`dispatchCats`
+  `E1InteriorDispatchCompose.lean:264`/`:374`, `crossBlockArmCats`
+  `E1CrossBlockArm.lean:1088`;
+- **the one genuine missing CAP LEMMA**: the fringe fold's `count` is `<= 33`
+  only because every caller writes `Nat.min (relHi / c + 1) 33`
+  (`E1FringeArmBlock.lean:594-596`, `:1020-1022`). There is no `<= 33`
+  lemma, only positivity `cap_count_pos` (`:246`). The interior's twin is
+  free from `chunkIters`'s own definition; the fringe's is not, and
+  `fringeFoldCats`'s body is index-dependent (`fringeMergeArmCats` has four
+  distinct arm lengths), so a bound needs a per-pass maximum rather than the
+  constant-body identity `iterLog_const_length` supplies.
+- **`FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`) is STILL EXECUTED
+  NOWHERE.** Not attempted. It needs the fold run STANDALONE at its own base,
+  not inside `armWitnessProgram`: `FringeFoldUntouched` (`r < 40 ∨ 63 ≤ r`)
+  is STRICTLY STRONGER than `FringeArmUntouched`
+  (`r < 40 ∨ (63 ≤ r ∧ r ≠ 67 ∧ r ≠ 68)`), so running the whole arm and
+  checking the fold's predicate would fail at `67`/`68` CORRECTLY — the arm
+  writes them and the fold does not. The fold loop runs `LB` to `LB + 67`
+  (`fringeFoldLoop_runsTo_accepted`, `E1FringeFoldBlock.lean:1301`); a
+  standalone witness program and store are what is missing, and
+  `E1FringeArmProgram.lean:236-240` is the shape to copy. The validator's own
+  note at `E1MachineValidate.lean:1540` already records this predicate as
+  unexecuted; that note is still accurate.
+
+**No acceptance row is marked closed by this lane.** What is supplied is in
+the report; the judgement is the coordinator's.
