@@ -5692,3 +5692,108 @@ being reusable.
 Scope. `#8` is closed to the same standard as `#6`/`#7`. `#9`'s five-way
 dispatch and the `hInterior` discharge are NOT built. No matrix row is
 closed, and the validator does not exercise any of this.
+
+## DD-20260719-059: `#9`'s five arms exit by explicit branch, except the last, which exits by POSITION -- and that exception is stated as a theorem (E1 M3d-30)
+
+Claimed this session; predecessor `DD-20260719-058` checked before
+claiming.
+
+Context. Not one of the blocks `#9` dispatches into terminates.
+`spanBlock`, `twoSpanBlock`, `twoLegBlock`, `crossLegBlock` and
+`mergeBlock` all end `<regs', exit, false>` -- the halted flag is `false`
+in every one -- although a `halt` instruction exists in the ISA
+(`E1Machine.lean:103`). Each is built to be composed, so an arm that
+ends at its sub-block's exit PC continues executing at whatever sits
+there. The close-leg lane had already found this defect live in
+`crossBlockArmProgramAt`, whose cross arm's exit PC landed exactly on the
+next block's base.
+
+Decision. Four of `#9`'s five arms end with an explicit unconditional
+branch (`brNZ wOne <join>`, the idiom `twoSpanArms` already uses at
+`Q + 42`). `#8` is placed physically last and exits by falling through to
+the join.
+
+A CORRECTION TO THE BRIEF THIS WAS BUILT FROM, recorded because the
+instruction was explicit. The brief said "every one of `#9`'s five arms
+needs an explicit branch to the join point". That is over-stated by
+exactly one. Whichever arm is last exits by fall-through, and giving it a
+branch would be a no-op at best; a branch to `join + 1` would be a fresh
+defect. The real content of the rule is that **an arm's exit must be the
+join, by branch or by position, and never by accident** -- so the
+positional case is stated as `dispatchArm8_exit_is_join` rather than left
+to an arithmetic coincidence that happens to hold.
+
+Why `#8` is the one placed last: it is the longest arm (1574), so the
+join offset is a single addition past it, and the arm whose exit must
+coincide with the join is the one where that coincidence is cheapest to
+state and check.
+
+Why the `count = 0` arm is where the fixture is built: it is the
+shortest (two instructions), so its missing terminator is the cheapest to
+overlook, and its fall-through lands in `#4`'s code, which reads.
+
+Anti-vacuity. `unterminatedDispatch_falls_through` EXECUTES the defect at
+a witness layout with the real one's control shape: same nine-instruction
+selector, same five arms in order, every arm ending un-halted exactly as
+every real sub-block does. On a `count = 0` query the unterminated layout
+runs off `ARM0` into `ARM4` and halts carrying `5`, so `bestOfRegs` reads
+`some (4, _)` where the route reads `none`. A witness arm that HALTED at
+its own end would be the one shape unable to exhibit this, which is how
+the close-leg defect stayed invisible to every check in the battery.
+
+Recorded limit. The witness's receipt is blind to the defect because no
+witness arm reads. That is a property of the FIXTURE, not of the block:
+in the real layout the fall-through lands on `twoSpanBlock`'s
+unconditional head level read, so the real receipt would carry an event
+the route never emitted. Per `E1_LIVE_STATE.md` §6's sixth model, a
+receipt's power over a skipped-code defect is exactly whether the skipped
+code reads, and here it does. The blindness must not be quoted as the
+block's.
+
+## DD-20260719-060: the dispatch bank opens at `146`, and `wOne`'s survival across an arm is the layout's single load-bearing register fact (E1 M3d-30)
+
+Claimed this session; predecessor `DD-20260719-059`, this session's own
+earlier entry, checked before claiming.
+
+Context. There is no unconditional jump in the ISA. The idiom is
+`brNZ cond target` with `cond` a register holding a nonzero constant. So
+every arm's terminator depends on a register set BEFORE the arm and read
+AFTER a sub-block of up to 1574 instructions has run.
+
+Decision. `wOne` at `146`, with `wT` 147, `wStart` 148, `wCount` 149,
+`wRem` 150, `wLeft` 151.
+
+Why `146` and not lower. `crossLegUntouched_of_ge`
+(`E1InteriorCombine.lean:997`) proves the three-leg write set lies below
+`146`; `twoLegUntouched_of_ge` gives `144` and `twoSpanUntouched_of_ge`
+gives `136`. So a register at `146`+ survives every arm, and `wOne` is
+still nonzero at the trailing branch. **If the bank had opened anywhere
+below `146`, an arm could clear its own terminator's condition and the
+branch would silently become a fall-through** -- the DD-059 defect
+reintroduced through the register file instead of through the layout.
+The `of_ge` ladder was built for this and is used rather than re-decided.
+
+THE WRITE-SET CHECK, done against the block's OWN writes and not against
+a consumer's operands. `E1_LIVE_STATE.md` §6 records that
+`..._at_crossBlockArm_operands` passes under both a sound and an unsound
+preservation predicate, because the registers it checks are not the ones
+at issue -- the inherited `TwoLegUntouched` claimed `127`-`130` while
+`twoLegBlock` writes them twice. So `DispatchUntouched` was written by
+enumerating what `#9` itself writes, not by inheriting:
+
+* the dispatch bank `146`-`151`;
+* `#4`'s input registers `tA`/`tStart`/`tN`/`tOff` (`127`-`130`), which
+  the preamble writes -- note `TwoSpanUntouched` deliberately omits these
+  because `twoSpanBlock` only READS them, so inheriting it here would
+  have produced exactly the §6 unsoundness;
+* the combiner input registers `uMacro`/`uLocal`/`uMid`/`uRight`
+  (`136`-`139`), which the preamble writes and which `TwoLegUntouched`
+  does NOT exclude, for the same reason;
+* everything the five sub-blocks write, via `CrossLegUntouched`.
+
+`dispatchUntouched_of_lt` then proves the whole stack leaves every
+register below `77` alone -- `mMV` is the lowest register anything in the
+interior writes -- which subsumes `hInterior`'s four operands
+(`70`/`71`/`75`/`76`) and the close leg's `CloseLegUntouched`
+(`r <= 7 \/ r = 28`) in one structural lemma instead of nine numeral
+cases.
