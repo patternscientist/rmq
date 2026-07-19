@@ -20,7 +20,11 @@ Design (DD-20260718-006):
   then the two-instruction invalid exit at base `8 + validPath.length`.  The
   invalid exit is reachable only through the guard's two conditional
   branches; the valid path terminates by writing `regOut` and halting, so it
-  never falls through into the exit block;
+  never falls through into the exit block.  **That last clause is still
+  prose**: it is a claim about the valid-path block, which does not exist
+  yet, and nothing here proves it.  What IS now proved is the other half -
+  `guard_accept_of_valid` establishes that a valid range REACHES base `8`
+  with the operands intact, which is the part the glue composes against;
 * the guard is computed BY MACHINE INSTRUCTIONS on the input registers -
   `natLt`/`natLe` comparisons, `natEq` negations against the pinned zero
   register, and `brNZ` branches - so rejection charges machine steps in the
@@ -214,6 +218,51 @@ execute before the `none`-packet write and halt. -/
 def guardRejectBoundsCats : List Category :=
   [ .registerWrite, .registerWrite, .comparison, .comparison, .comparison
   , .branch, .comparison, .branch, .registerWrite, .control ]
+
+/--
+The exact category log the guard charges on an invalid range, as a function
+of WHICH invalidity holds.
+
+Which of the two rejection logs runs is decided by `left < right` alone: if
+it fails the first branch fires, and if it holds then invalidity must have
+come from the bounds test, so the second fires.  The size constant `n` is
+therefore NOT a parameter here - it is what makes the two cases invalid, but
+it does not select between them.
+
+This exists so that the combined rejection theorem can name its category log
+positionally instead of quantifying it away.  The aggregate facts that used
+to be the whole content of that theorem are recovered immediately below, and
+are now consequences of the exact log rather than independent claims.
+-/
+def guardRejectCats (left right : Nat) : List Category :=
+  if left < right then guardRejectBoundsCats else guardRejectRangeCats
+
+theorem guardRejectCats_of_not_lt {left right : Nat} (hnot : ¬ left < right) :
+    guardRejectCats left right = guardRejectRangeCats := by
+  simp [guardRejectCats, hnot]
+
+theorem guardRejectCats_of_lt {left right : Nat} (hlt : left < right) :
+    guardRejectCats left right = guardRejectBoundsCats := by
+  simp [guardRejectCats, hlt]
+
+/-- The guard never reads, on either rejection path. -/
+theorem guardRejectCats_memoryRead (left right : Nat) :
+    catCount (guardRejectCats left right) .memoryRead = 0 := by
+  unfold guardRejectCats
+  split <;> decide
+
+/-- The frozen bookkeeping bound, on either rejection path. -/
+theorem guardRejectCats_length_le (left right : Nat) :
+    (guardRejectCats left right).length ≤ 10 := by
+  unfold guardRejectCats
+  split <;> decide
+
+/-- The two rejection logs are DIFFERENT logs, so the branch-indexed
+definition above is not a distinction without a difference.  They also have
+different lengths, but they differ positionally from index six on, which is
+what a category comparison sees. -/
+theorem guardRejectRangeCats_ne_guardRejectBoundsCats :
+    guardRejectRangeCats ≠ guardRejectBoundsCats := by decide
 
 /--
 Guard rejection, empty/reversed ranges: from the query start state, any
@@ -442,41 +491,255 @@ theorem guard_reject_of_out_of_bounds
 /--
 Combined charged invalid rejection: whenever the query range fails the
 route's validity test against the size constant `n`, the hosted guard runs
-the machine to a halted `none`-packet state with an EMPTY receipt log, a
-zero memory-read category count, and at most ten charged bookkeeping steps.
+the machine to a halted `none`-packet state with an EMPTY receipt log and
+EXACTLY the category log `guardRejectCats left right`.
+
+The category log is named POSITIONALLY, not quantified away.  An earlier form
+of this theorem read `∃ cats, … ∧ catCount cats .memoryRead = 0 ∧
+cats.length ≤ 10`, keeping only two aggregates of a log whose exact value was
+already proved twenty lines above.  Both aggregates are blind to the defect
+class that has bitten this campaign repeatedly: a log of the right length
+with one slot changed from `.comparison` to `.branch` satisfies the read
+count and the length bound exactly.  Those two aggregates are now corollaries
+(`guardRejectCats_memoryRead`, `guardRejectCats_length_le`) of the exact log,
+so nothing is lost and the positional content is retained.
 -/
 theorem guard_reject_of_invalid
     (store : ReadStore) {program : E1Machine.Program} {n invalidBase : Nat}
     (hguard : HostedAt program 0 (guardBlock n invalidBase))
     (hexit : HostedAt program invalidBase invalidExitBlock)
     {left right : Nat} (hbad : ¬ (left < right ∧ right ≤ n)) :
-    ∃ (final : State) (cats : List Category),
-      RunsTo store program (initialState left right) final [] cats ∧
-        final.halted = true ∧ final.regs regOut = 0 ∧
-        catCount cats .memoryRead = 0 ∧ cats.length ≤ 10 := by
+    ∃ final : State,
+      RunsTo store program (initialState left right) final []
+          (guardRejectCats left right) ∧
+        final.halted = true ∧ final.regs regOut = 0 := by
   by_cases hlt : left < right
   · have hbound : ¬ right ≤ n := fun h => hbad ⟨hlt, h⟩
     obtain ⟨final, hrun, hhalted, hout⟩ :=
       guard_reject_of_out_of_bounds store hguard hexit hlt hbound
-    exact ⟨final, guardRejectBoundsCats, hrun, hhalted, hout, rfl,
-      by decide⟩
+    exact ⟨final, by rw [guardRejectCats_of_lt hlt]; exact hrun, hhalted,
+      hout⟩
   · obtain ⟨final, hrun, hhalted, hout⟩ :=
       guard_reject_of_not_lt store hguard hexit hlt
-    exact ⟨final, guardRejectRangeCats, hrun, hhalted, hout, rfl,
-      by decide⟩
+    exact ⟨final, by rw [guardRejectCats_of_not_lt hlt]; exact hrun, hhalted,
+      hout⟩
 
 /-- Invalid rejection specialized to the concrete program skeleton. -/
 theorem programSkeleton_reject_of_invalid
+    (store : ReadStore) (n : Nat) (validPath : List Instr)
+    {left right : Nat} (hbad : ¬ (left < right ∧ right ≤ n)) :
+    ∃ final : State,
+      RunsTo store (programSkeleton n validPath)
+          (initialState left right) final []
+          (guardRejectCats left right) ∧
+        final.halted = true ∧ final.regs regOut = 0 :=
+  guard_reject_of_invalid store
+    (programSkeleton_hosts_guardBlock n validPath)
+    (programSkeleton_hosts_invalidExit n validPath) hbad
+
+/--
+The aggregate form the combined theorem used to state, kept because it is
+occasionally the convenient shape, but now DERIVED from the exact log rather
+than proved alongside it.  Stating it this way makes the implication
+one-directional on purpose: the exact log entails these aggregates, and the
+aggregates entail nothing about the log.
+-/
+theorem programSkeleton_reject_of_invalid_aggregate
     (store : ReadStore) (n : Nat) (validPath : List Instr)
     {left right : Nat} (hbad : ¬ (left < right ∧ right ≤ n)) :
     ∃ (final : State) (cats : List Category),
       RunsTo store (programSkeleton n validPath)
           (initialState left right) final [] cats ∧
         final.halted = true ∧ final.regs regOut = 0 ∧
-        catCount cats .memoryRead = 0 ∧ cats.length ≤ 10 :=
-  guard_reject_of_invalid store
-    (programSkeleton_hosts_guardBlock n validPath)
-    (programSkeleton_hosts_invalidExit n validPath) hbad
+        catCount cats .memoryRead = 0 ∧ cats.length ≤ 10 := by
+  obtain ⟨final, hrun, hhalted, hout⟩ :=
+    programSkeleton_reject_of_invalid store n validPath hbad
+  exact ⟨final, guardRejectCats left right, hrun, hhalted, hout,
+    guardRejectCats_memoryRead left right,
+    guardRejectCats_length_le left right⟩
+
+/-! ## Charged VALID fall-through
+
+The theorems above say what the guard does on an invalid range.  Nothing said
+what it does on a valid one.  This module's own header asserted, in prose,
+that "the valid path terminates by writing `regOut` and halting, so it never
+falls through into the exit block" - but no theorem established that a valid
+range even REACHES the valid path.
+
+Without that the guard composes with nothing.  `RunsTo.trans` fixes one
+store across a composition, so the whole-query glue needs an actual `RunsTo`
+segment landing at base `8`, with the query operands intact and the two
+guard constants pinned, to hand to the valid-path block.
+
+Note the absent `hexit` hypothesis: the accepting run never fetches from the
+invalid exit block, so requiring it to be hosted would be a decorative
+premise.  The accept theorem is strictly more widely applicable than the
+rejection theorems for that reason.
+-/
+
+/-- Exact category log charged when the guard ACCEPTS: both constant loads,
+both range comparisons, both negations, and both UNTAKEN branches.  No
+packet write and no halt - the guard falls through into the valid path, so
+this log is a strict prefix of neither rejection log's tail. -/
+def guardAcceptCats : List Category :=
+  [ .registerWrite, .registerWrite, .comparison, .comparison, .comparison
+  , .branch, .comparison, .branch ]
+
+@[simp] theorem guardAcceptCats_length : guardAcceptCats.length = 8 := rfl
+
+/-- The register file the accepting guard hands to the valid path. -/
+def guardAcceptRegs (n left right : Nat) : RegFile :=
+  ((((((initialRegs left right).write regZero 0).write regN n).write regT1
+      1).write regT2 1).write regG 0).write regG 0
+
+/--
+CHARGED VALID FALL-THROUGH.
+
+From the query start state, any program hosting the guard block at base `0`
+runs - with exact fuel, and with an EMPTY receipt log - to the first
+instruction of the valid-path block at pc `8`, not halted, charging exactly
+`guardAcceptCats`.
+
+Both branches are evaluated and both are untaken: the guard pays for its
+checks on the accepting path too, which is what the amended charge policy
+demands and what makes the accept log differ from the rejection logs in
+CONSTRUCTOR CONTENT rather than only in length.
+-/
+theorem guard_accept_of_valid
+    (store : ReadStore) {program : E1Machine.Program} {n invalidBase : Nat}
+    (hguard : HostedAt program 0 (guardBlock n invalidBase))
+    {left right : Nat} (hlt : left < right) (hbound : right ≤ n) :
+    RunsTo store program (initialState left right)
+      ⟨guardAcceptRegs n left right, 8, false⟩ [] guardAcceptCats := by
+  have hf0 : program[0]? = some (.const regZero 0) := by
+    have h := hguard 0 (by simp)
+    simpa [guardBlock] using h
+  have hf1 : program[1]? = some (.const regN n) := by
+    have h := hguard 1 (by simp)
+    simpa [guardBlock] using h
+  have hf2 : program[2]? = some (.natLt regT1 regLeft regRight) := by
+    have h := hguard 2 (by simp)
+    simpa [guardBlock] using h
+  have hf3 : program[3]? = some (.natLe regT2 regRight regN) := by
+    have h := hguard 3 (by simp)
+    simpa [guardBlock] using h
+  have hf4 : program[4]? = some (.natEq regG regT1 regZero) := by
+    have h := hguard 4 (by simp)
+    simpa [guardBlock] using h
+  have hf5 : program[5]? = some (.brNZ regG invalidBase) := by
+    have h := hguard 5 (by simp)
+    simpa [guardBlock] using h
+  have hf6 : program[6]? = some (.natEq regG regT2 regZero) := by
+    have h := hguard 6 (by simp)
+    simpa [guardBlock] using h
+  have hf7 : program[7]? = some (.brNZ regG invalidBase) := by
+    have h := hguard 7 (by simp)
+    simpa [guardBlock] using h
+  have h0 : RunsTo store program (initialState left right)
+      ⟨(initialRegs left right).write regZero 0, 1, false⟩
+      [] [.registerWrite] :=
+    RunsTo.const rfl hf0
+  have h1 : RunsTo store program
+      ⟨(initialRegs left right).write regZero 0, 1, false⟩
+      ⟨((initialRegs left right).write regZero 0).write regN n, 2, false⟩
+      [] [.registerWrite] :=
+    RunsTo.const rfl hf1
+  have h2 : RunsTo store program
+      ⟨((initialRegs left right).write regZero 0).write regN n, 2, false⟩
+      ⟨(((initialRegs left right).write regZero 0).write regN n).write regT1
+          (if left < right then 1 else 0), 3, false⟩
+      [] [.comparison] :=
+    RunsTo.natLt (dst := regT1) (src₁ := regLeft) (src₂ := regRight) rfl hf2
+  rw [if_pos hlt] at h2
+  have h3 : RunsTo store program
+      ⟨(((initialRegs left right).write regZero 0).write regN n).write regT1
+          1, 3, false⟩
+      ⟨((((initialRegs left right).write regZero 0).write regN n).write regT1
+          1).write regT2 (if right ≤ n then 1 else 0), 4, false⟩
+      [] [.comparison] :=
+    RunsTo.natLe (dst := regT2) (src₁ := regRight) (src₂ := regN) rfl hf3
+  rw [if_pos hbound] at h3
+  have h4 : RunsTo store program
+      ⟨((((initialRegs left right).write regZero 0).write regN n).write regT1
+          1).write regT2 1, 4, false⟩
+      ⟨(((((initialRegs left right).write regZero 0).write regN n).write
+          regT1 1).write regT2 1).write regG 0, 5, false⟩
+      [] [.comparison] :=
+    RunsTo.natEq (dst := regG) (src₁ := regT1) (src₂ := regZero) rfl hf4
+  have h5 : RunsTo store program
+      ⟨(((((initialRegs left right).write regZero 0).write regN n).write
+          regT1 1).write regT2 1).write regG 0, 5, false⟩
+      ⟨(((((initialRegs left right).write regZero 0).write regN n).write
+          regT1 1).write regT2 1).write regG 0, 6, false⟩
+      [] [.branch] :=
+    RunsTo.brNZ (cond := regG) (target := invalidBase) rfl hf5
+  have h6 : RunsTo store program
+      ⟨(((((initialRegs left right).write regZero 0).write regN n).write
+          regT1 1).write regT2 1).write regG 0, 6, false⟩
+      ⟨((((((initialRegs left right).write regZero 0).write regN n).write
+          regT1 1).write regT2 1).write regG 0).write regG 0, 7, false⟩
+      [] [.comparison] :=
+    RunsTo.natEq (dst := regG) (src₁ := regT2) (src₂ := regZero) rfl hf6
+  have h7 : RunsTo store program
+      ⟨((((((initialRegs left right).write regZero 0).write regN n).write
+          regT1 1).write regT2 1).write regG 0).write regG 0, 7, false⟩
+      ⟨((((((initialRegs left right).write regZero 0).write regN n).write
+          regT1 1).write regT2 1).write regG 0).write regG 0, 8, false⟩
+      [] [.branch] :=
+    RunsTo.brNZ (cond := regG) (target := invalidBase) rfl hf7
+  exact ((((((h0.trans h1).trans h2).trans h3).trans h4).trans h5).trans
+    h6).trans h7
+
+/-- Valid fall-through specialized to the concrete program skeleton. -/
+theorem programSkeleton_accept_of_valid
+    (store : ReadStore) (n : Nat) (validPath : List Instr)
+    {left right : Nat} (hlt : left < right) (hbound : right ≤ n) :
+    RunsTo store (programSkeleton n validPath) (initialState left right)
+      ⟨guardAcceptRegs n left right, 8, false⟩ [] guardAcceptCats :=
+  guard_accept_of_valid store (programSkeleton_hosts_guardBlock n validPath)
+    hlt hbound
+
+/-! ### What the valid path receives
+
+The glue needs more than "the machine reached base `8`": it needs to know
+what is in the registers when it gets there.
+-/
+
+/-- The accepting guard PRESERVES the query operands and pins the two
+constants the valid path reads. -/
+theorem guardAcceptRegs_operands (n left right : Nat) :
+    guardAcceptRegs n left right regLeft = left ∧
+      guardAcceptRegs n left right regRight = right ∧
+      guardAcceptRegs n left right regZero = 0 ∧
+      guardAcceptRegs n left right regN = n := by
+  refine ⟨?_, ?_, ?_, ?_⟩ <;>
+    simp [guardAcceptRegs, RegFile.write, initialRegs, regLeft, regRight,
+      regZero, regN, regT1, regT2, regG]
+
+/-- Every register reserved for the valid-path component blocks is still
+zero: the guard leaves the component scratch space clean. -/
+theorem guardAcceptRegs_componentRegs_zero (n left right : Nat) {r : Nat}
+    (hr : firstComponentReg ≤ r) : guardAcceptRegs n left right r = 0 := by
+  have h0 : r ≠ regZero := by simp [regZero, firstComponentReg] at *; omega
+  have h1 : r ≠ regN := by simp [regN, firstComponentReg] at *; omega
+  have h2 : r ≠ regT1 := by simp [regT1, firstComponentReg] at *; omega
+  have h3 : r ≠ regT2 := by simp [regT2, firstComponentReg] at *; omega
+  have h4 : r ≠ regG := by simp [regG, firstComponentReg] at *; omega
+  have h5 : r ≠ regLeft := by simp [regLeft, firstComponentReg] at *; omega
+  have h6 : r ≠ regRight := by simp [regRight, firstComponentReg] at *; omega
+  simp [guardAcceptRegs, RegFile.write, initialRegs, h0, h1, h2, h3, h4, h5,
+    h6]
+
+/-- The accept log is not a rejection log: the guard's own category log
+already separates an accepted range from a rejected one, positionally. -/
+theorem guardAcceptCats_ne_rejectRangeCats :
+    guardAcceptCats ≠ guardRejectRangeCats := by decide
+
+/-- Likewise against the out-of-bounds rejection log.  Note this pair has the
+SAME first six entries and differs only from position six on, so a prefix
+check would not separate them. -/
+theorem guardAcceptCats_ne_rejectBoundsCats :
+    guardAcceptCats ≠ guardRejectBoundsCats := by decide
 
 /-! ## Invalid-guard fixtures (kernel-checked machine executions)
 
@@ -537,6 +800,55 @@ example :
 example :
     (run emptyFixtureStore (programSkeleton 5 []) 12
         (initialState 0 9)).catLog = guardRejectBoundsCats := rfl
+
+/- Valid range `[1, 4)` on a size-5 skeleton: the guard accepts.  With eight
+units of fuel the run stops exactly at the fall-through, so these evaluate
+the guard's own behaviour and nothing after it. -/
+example :
+    (run emptyFixtureStore (programSkeleton 5 []) 8
+        (initialState 1 4)).final.pc = 8 := rfl
+
+example :
+    (run emptyFixtureStore (programSkeleton 5 []) 8
+        (initialState 1 4)).final.halted = false := rfl
+
+example :
+    (run emptyFixtureStore (programSkeleton 5 []) 8
+        (initialState 1 4)).readLog = [] := rfl
+
+example :
+    (run emptyFixtureStore (programSkeleton 5 []) 8
+        (initialState 1 4)).catLog = guardAcceptCats := rfl
+
+/- The boundary case `right = n` is accepted, not rejected: the bounds test
+is `right ≤ n`, and an off-by-one there would be invisible to every fixture
+above. -/
+example :
+    (run emptyFixtureStore (programSkeleton 5 []) 8
+        (initialState 0 5)).final.pc = 8 := rfl
+
+example :
+    (run emptyFixtureStore (programSkeleton 5 []) 8
+        (initialState 0 5)).catLog = guardAcceptCats := rfl
+
+/- And `right = n + 1` is rejected, pinning the boundary from the other
+side. -/
+example :
+    (run emptyFixtureStore (programSkeleton 5 []) 12
+        (initialState 0 6)).catLog = guardRejectBoundsCats := rfl
+
+/- The operands survive the accepting guard, evaluated rather than argued. -/
+example :
+    (run emptyFixtureStore (programSkeleton 5 []) 8
+        (initialState 1 4)).final.regs regLeft = 1 := rfl
+
+example :
+    (run emptyFixtureStore (programSkeleton 5 []) 8
+        (initialState 1 4)).final.regs regRight = 4 := rfl
+
+example :
+    (run emptyFixtureStore (programSkeleton 5 []) 8
+        (initialState 1 4)).final.regs regN = 5 := rfl
 
 end E1Query
 end WordRAM
