@@ -4060,3 +4060,76 @@ now reads "write the entry into `docs/internal/DESIGN_DECISIONS.md` and commit
 it; claiming an ID in a report or commit message does not satisfy this." An
 instruction that has been misread twice by careful readers is a defective
 instruction, not a discipline problem.
+
+---
+
+## C05 round 62 — Lane B3 closes #4/#5 and finds the rule that governs when a
+## receipt can catch a skipped-code defect
+
+Lane B3 returned INCOMPLETE at `6b6c293`, five commits. #4 and #5 CLOSED;
+#6/#7/#8/#9 and `hInterior` not — and it was explicit that **#6/#7 are not
+even PARTLY closed**: `twoLegBlock` is defined with length, charge log and
+preservation predicate, but `twoLegBlock_runsTo` does not exist, and the module
+header says so in those words. A worker pre-empting the reading that a defined
+block is a done block.
+
+**MY SEVENTEENTH FAILED CLAIM.** I opened the brief with "Everything you need
+already exists, which is why this is one lane and not three."
+`hexact_localLevel` and `hexact_globalLevel` **did not exist anywhere in the
+tree**. All eight `hagree_*` were present and six tables had `hexact` twins; the
+two LEVEL tables had none. Written this session. The claim was not merely
+imprecise — it was the load-bearing sentence of the brief's scoping argument.
+
+Two more of mine, both partial rather than wrong:
+- §2 said #4/#5 differ only in "which span block they call." They also differ in
+  the **slot map**. One block still covers both — because both maps are
+  `A + level*M + start` — but that is the REASON, and I had asserted the
+  conclusion without it. Second time this campaign my parametric-unification
+  claim was right for a mechanism I had not identified.
+- §3 said the merge shuttle "exists." True one level DOWN, false one level UP:
+  `twoSpanBlock` contains a shuttle and a merge, so it **writes `qLV`/`qLP`
+  itself** and the natural combiner design loses its stash. Proved rather than
+  asserted (`twoSpanUntouched_excludes_mergeStash`), and caught by the type
+  checker rather than a fixture.
+
+**THE FINDING WORTH KEEPING, and it is a general rule this campaign did not
+have.** The `none`-arm impostors here are a **PAIR straddling the receipt
+boundary**:
+- **A** branches past only the first span block, falls into a tail that
+  CONTAINS A READ — the receipt catches it.
+- **B** branches straight to the read-free merge: identical receipt, identical
+  read count, and it returns a **stale left candidate** out of `qLV`/`qLP` where
+  the route returns `none`. Only the category log and the value reject it.
+
+> **A receipt's power over a skipped-code defect is exactly whether the skipped
+> code reads.**
+
+The four prior §6 models never located that boundary because they all happened
+to skip read-free code. This is the first time the campaign can say WHEN the
+receipt discriminator is and is not the right instrument, rather than
+accumulating cases. Both impostors depend on no axioms.
+
+**And a real `hInterior` insight the brief did not contain.** `hInterior`
+quantifies over every `regsS` agreeing on `fClose`/`fRight`, so the interior's
+answer must be a function of those two ALONE — a program reading unpinned
+registers cannot discharge it, no matter how correct it is. The route does fix
+the range, at `ChargedFringeTrace.lean:1164`:
+`startBlock = leftClose / blockSize + 1`,
+`count = rightClose / blockSize - leftClose / blockSize - 1`, both
+`divConst`-computable. That is a discharge **found at the target**, rule 5 in
+its strong form, and it is recorded with my fifth-conjunct requirement verbatim.
+
+**Matrix discipline worth noting.** It did not open the matrix, claims no
+movement, and **deliberately wrote no gloss on any row** — the correct response
+to having been told for weeks by me that rows were whole-query scoped when they
+are not. It flagged only that `twoSpanCats`/`legSetupCats` are written from the
+ROUTE's branch conditions before any machine-side accounting, and left whether
+that bears on a row to whoever reads the row.
+
+Live state updated: §2 rows 4/5 corrected to DONE **and committed alone
+(`1a30631`) before anything else**, exactly as instructed; §3 gained fifteen
+anchors and banks through `143` with next-free `144`; §4 three techniques; §6 the
+sixth model and the stash correction; §10b a file:line-exact resume inventory.
+All 25 citations re-checked after its edits. It correctly did NOT touch the
+`E1CrossBlockArm.lean:1143` prose citations, because that renumbering lives on an
+unmerged branch and `:1143` is still true in this worktree.
