@@ -3417,3 +3417,35 @@ Publication-facing significance:
 This is workflow infrastructure only. It preserves versioned role policy while
 preventing unrelated skill injection from becoming false evidence that a proof
 worker is unqualified to run its assigned theorem campaign.
+
+## WDD-20260718-004: update the aggregate-gate topology comment without changing the gate
+
+Status: Accepted.
+Date: 2026-07-18.
+Scope: the topology description in `scripts/gate.ps1` only.
+
+Decision:
+
+Update the stale physical-payload/76 topology comment to describe the live
+canonical reviewer-payload, `readWord`-only, derived-207 topology.  This is a
+comment-only correction: it changes no workflow command, command ordering,
+failure condition, mutex handling, gate semantics, or executable behavior.
+
+Rejected alternatives:
+
+- Leave the stale comment in place, which would continue to misdescribe the
+  checks performed by the unchanged gate.
+- Change a checker or executable command together with the prose correction;
+  no behavioral change is required for this repair.
+
+Consequences:
+
+- Readers see the topology that the existing gate already checks.
+- Gate scheduling, execution, and verdicts are unchanged.
+
+Evidence:
+
+- The committed-range diff of `scripts/gate.ps1` changes only the topology
+  comment.
+- `scripts/design_decision_check.ps1 -Strict -Base
+  6155d48dde13dfc8e4b3da108b4b81e258300b86` checks this decision record.
