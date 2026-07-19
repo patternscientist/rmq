@@ -1135,3 +1135,72 @@ coordinator adjudicating an audit alarm, and a machine construction forcing
 every quantity to have a provenance. An enumeration is what converts "we fixed
 the ones we found" into "here is the complete list", and it is the single
 highest-value artifact remaining for reviewer confidence.
+
+## 2026-07-19 (C05 round 14) — log2 scout: my citations were wrong; option (A) is dead
+
+**The scout corrected the coordinator, not the worker.** The sites I circulated
+(`InteriorRAM.lean:573/621/819/867`) are cost-model TWINS not on the executed
+route -- their caller chain dead-ends at
+`concreteBPNativeLCACloseWordTraceResultAtSegmentsOfSizeGe`
+(`SuccinctFinalRAM.lean:2238`), which has no definition-level caller. The
+executed route is the `FlatStoreComputation` family, and the class-(a) sites
+that feed a read address are exactly THREE:
+`InteriorDirectory.lean:2117` (local, -> `bpLocalSparseCellSlot`),
+`InteriorDirectory.lean:2131` (global, -> `bpGlobalSparseCellSlot`), and
+`SparseArgMin.lean:599` (sets `rightLocalStart`). Worst case is six `Nat.log2`
+evaluations per query on the cross-macro branch. Corrections relayed to B7
+before it could build on the wrong anchors. **Lesson: I propagated line numbers
+from a worker report without walking the caller chain myself. Verify the
+REACHABILITY, not just the existence, of a cited site.**
+
+**`machineWordBits` is clean** -- every definition-level call on the route takes
+a shape-determined argument (`shape.bpCode.length` or a `canonicalLayout`
+field, itself a pure function of shape). Per-shape constant, not a defect. This
+closes a question that had been open since the model-adequacy work.
+
+**Three findings that change the engineering:**
+1. The level CANNOT come from an existing charged read -- chicken-and-egg, since
+   the address of every candidate read already requires the level. Mechanisms
+   "derive from existing read" and "store in existing entry" collapse into "new
+   table indexed by count, read first".
+2. Charging `Nat.log2` alone is INSUFFICIENT: `bpSparseLogSpan = 2 ^ Nat.log2 n`
+   is a second Theta(level) recursion whose result sets an address argument.
+   Both level and span must come from the row.
+3. No new segment and no new `ReviewerSource` constructor are needed -- the
+   interior execution maps onto ONE segment via
+   `flatStoreExecutionTraceResultAtSegment`. Same property that made B6 cheap.
+
+**The decisive open number:** `canonicalRelativeRmmPrincipledInteriorChargedTrace
+Cost := 30` appears exactly tight (3 two-spans x cost-le-ten). If tight, interior
+30 -> 33, closeLCA 126 -> 129, and the route literal 207 -> 210, dragging the
+full claim-registry/topology/doc migration; if it has >= 3 reads of slack, the
+literal holds and this is a clean B6-shaped rung. The scout established
+tightness by arithmetic and a docstring but did NOT read the cap proof
+(`InteriorDirectory.lean:4457-4505`). B7's first task is now to settle it and
+commit the answer before implementing. A moving literal is authorized and
+mechanical -- 76 -> 142 -> 207 are all already frozen historical constants --
+so this changes cost, not viability.
+
+**Option (A) is dead, on a sharper argument than the coordinator's.** At the
+trace layer cost IS trace length, so an event-free msb instruction costs ZERO
+there: (A) operates at the wrong layer and buys nothing where the route's
+charge policy lives. Worse, the standardness claim for a unit-cost msb is
+**nowhere substantiated in this repository** -- zero hits for msb / most
+significant bit / clz / leading zero / floor-log across `PAPER_MODEL_ADEQUACY`,
+`PAPER_RELATED_WORK`, `RELATED_WORK_AND_LIMITATIONS`, `WORD_RAM_REVIEW_PACKET`,
+`PAPER_MAIN_THEOREM`, and `TRUST_BASE`; the only occurrence is a bare uncited
+assertion in a worklog. Against the project's own ratified decisions preferring
+tables to primitives (`DESIGN_DECISIONS.md:2430-2433`, `:3610-3613`), (A) would
+have been a regression dressed as a shortcut.
+
+**Scout's own recommendation was (B)**, on cost grounds. Overruled: (B) does not
+fix the route-level defect at all -- it only restates E1's machine bound -- and
+the user's instruction was explicitly the most unimpeachable result. Recorded
+because a dissenting recommendation should survive in the record: if the cap
+proves tight AND runway later becomes critical, (B) plus an honest disclosure
+is the fallback, not (A).
+
+**Also corrected:** the note at `E1_WORKLOG.md:2340-2343` rejecting a table read
+as "breaking REQ-E1-04 positional receipt equality" is over-strict. B2, B3 and
+B6 each added reads to the accepted route; changing the trace is a re-freeze
+cost, not an impossibility.
