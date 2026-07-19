@@ -4097,6 +4097,48 @@ theorem canonicalRelativeRmmMachineReadNatCosted_cost_le_one
   · simp [hvalid]
 
 /--
+A positive-width canonical field that fits in one modeled machine word emits
+exactly one physical read.  This statement deliberately does not need an
+in-range premise: the fixed-width machine table charges its canonical
+out-of-range read as one word as well.  Successful-read premises are kept
+separate below, where they control whether the sparse-table consumer proceeds.
+-/
+theorem canonicalRelativeRmmMachineReadNatCosted_cost_eq_one
+    {entries : List Nat} {width : Nat}
+    {shape : Cartesian.CartesianShape}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (hwidthPos : 0 < width)
+    (hwidth : width <=
+      SuccinctRank.machineWordBits shape.bpCode.length)
+    (i : Nat) :
+    (canonicalRelativeRmmMachineReadNatCosted shape table i).cost = 1 := by
+  let wordSize := SuccinctRank.machineWordBits shape.bpCode.length
+  have hwordSize : 0 < wordSize :=
+    SuccinctRank.machineWordBits_pos shape.bpCode.length
+  unfold canonicalRelativeRmmMachineReadNatCosted
+  unfold SuccinctSpace.FixedWidthNatTable.machineReadCosted
+  rw [SuccinctSpace.FixedWidthNatTable.machineReadCostedWithStore_cost]
+  change (if i < entries.length then
+      (SuccinctSpace.fixedWidthNatTableMachineFootprint width wordSize i).length
+    else 1) = 1
+  by_cases hvalid : i < entries.length
+  · rw [if_pos hvalid]
+    unfold SuccinctSpace.fixedWidthNatTableMachineFootprint
+    rw [SuccinctSpace.consecutiveWordIndices_length]
+    by_cases heq : width = wordSize
+    · subst width
+      simp [SuccinctSpace.fixedWidthNatTableMachineChunkCount, hwordSize]
+    · have hlt : width < wordSize := by
+        change width <= wordSize at hwidth
+        omega
+      have hdiv : width / wordSize = 0 := Nat.div_eq_of_lt hlt
+      have hmod : width % wordSize ≠ 0 := by
+        rw [Nat.mod_eq_of_lt hlt]
+        exact Nat.ne_of_gt hwidthPos
+      simp [SuccinctSpace.fixedWidthNatTableMachineChunkCount, hdiv, hmod]
+  · rw [if_neg hvalid]
+
+/--
 Crossing a canonical macro boundary forces enough real block capacity that the
 relative summary field itself fits in one machine word.  This is a structural
 consequence of the queried layout, not a public size-regime test.
@@ -5187,6 +5229,149 @@ theorem canonicalRelativeRmmMachineGlobalSpanCandidateCosted_cost_le_five_of_mac
   simpa [canonicalRelativeRmmMachineGlobalSpanCandidateCosted, read] using
     costed_bind_cost_le read _ hread htail
 
+/-- Every summary field is a positive one-word field under macro crossing. -/
+theorem canonicalRelativeRmmMachineSummaryCosted_cost_eq_four_of_macro_crossing
+    (shape : Cartesian.CartesianShape)
+    (hmacro :
+      (RelativeRmm.canonicalLayout shape).macroSize <
+        (RelativeRmm.canonicalLayout shape).blockCount)
+    (block : Nat) :
+    (canonicalRelativeRmmMachineSummaryCosted shape block).cost = 4 := by
+  have hsuperPos :
+      0 < (RelativeRmm.canonicalLayout shape).superWidth shape := by
+    exact SuccinctRank.machineWordBits_pos shape.bpCode.length
+  have hrelativePos :
+      0 < (RelativeRmm.canonicalLayout shape).relativeWidth :=
+    (RelativeRmm.canonicalLayout_valid shape).relativeWidth_pos
+  have hsuper :
+      (RelativeRmm.canonicalLayout shape).superWidth shape <=
+        SuccinctRank.machineWordBits shape.bpCode.length := by
+    simp [RelativeRmm.Layout.superWidth]
+  have hrelative :=
+    canonicalRelativeRmmRelativeWidth_le_machine_of_macroSize_lt_blockCount
+      (shape := shape) hmacro
+  have hb := canonicalRelativeRmmMachineReadNatCosted_cost_eq_one
+    (canonicalRelativeRmmSummaryTable shape).baselineTable hsuperPos hsuper
+    (block / (RelativeRmm.canonicalLayout shape).blocksPerSuper)
+  have hmin := canonicalRelativeRmmMachineReadNatCosted_cost_eq_one
+    (canonicalRelativeRmmSummaryTable shape).minRelTable hrelativePos hrelative
+    block
+  have hmax := canonicalRelativeRmmMachineReadNatCosted_cost_eq_one
+    (canonicalRelativeRmmSummaryTable shape).maxRelTable hrelativePos hrelative
+    block
+  have harg := canonicalRelativeRmmMachineReadNatCosted_cost_eq_one
+    (canonicalRelativeRmmSummaryTable shape).argOffsetTable hrelativePos
+    hrelative block
+  rw [canonicalRelativeRmmMachineSummaryCosted_cost_eq, hb, hmin, hmax, harg]
+
+theorem canonicalRelativeRmmMachineMinCandidateCosted_cost_eq_four_of_macro_crossing
+    (shape : Cartesian.CartesianShape)
+    (hmacro :
+      (RelativeRmm.canonicalLayout shape).macroSize <
+        (RelativeRmm.canonicalLayout shape).blockCount)
+    (block : Nat) :
+    (canonicalRelativeRmmMachineMinCandidateCosted shape block).cost = 4 := by
+  simpa [canonicalRelativeRmmMachineMinCandidateCosted, Costed.map] using
+    canonicalRelativeRmmMachineSummaryCosted_cost_eq_four_of_macro_crossing
+      shape hmacro block
+
+/-- A live local sparse cell followed by its summary costs exactly five reads. -/
+theorem canonicalRelativeRmmMachineLocalSpanCandidateCosted_cost_eq_five
+    (shape : Cartesian.CartesianShape)
+    (hmacroCrossing :
+      (RelativeRmm.canonicalLayout shape).macroSize <
+        (RelativeRmm.canonicalLayout shape).blockCount)
+    (macroIdx localStart level : Nat)
+    (hmacro : macroIdx <
+      (RelativeRmm.canonicalLayout shape).macroSampleCount)
+    (hlevel : level < (RelativeRmm.canonicalLayout shape).levelCount)
+    (hlocal : localStart < (RelativeRmm.canonicalLayout shape).macroSize) :
+    (canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
+      macroIdx localStart level).cost = 5 := by
+  let layout := RelativeRmm.canonicalLayout shape
+  let read := canonicalRelativeRmmMachineReadNatCosted shape
+    (canonicalRelativeRmmInteriorLocalTable shape).table
+    (bpLocalSparseCellSlot layout.macroSize layout.levelCount
+      macroIdx localStart level)
+  let offset :=
+    bpLocalSparseCellOffset shape layout.blockSize layout.blockCount
+      layout.macroSize macroIdx localStart level
+  have hreadValue : read.value = some offset := by
+    change read.erase = some offset
+    unfold read
+    rw [canonicalRelativeRmmMachineReadNatCosted_erase]
+    simpa [PayloadLiveBPLocalSparseOffsetTable.readOffsetCosted,
+      layout, offset] using
+      (canonicalRelativeRmmInteriorLocalTable shape).readOffsetCosted_erase_of_valid
+        hmacro hlevel hlocal
+  have hoffsetPos : 0 < layout.offsetWidth := by
+    exact SuccinctRank.machineWordBits_pos layout.macroSize
+  have hrelative :=
+    canonicalRelativeRmmRelativeWidth_le_machine_of_macroSize_lt_blockCount
+      (shape := shape) hmacroCrossing
+  have hoffset := Nat.le_trans
+    (canonicalRelativeRmmOffsetWidth_le_relativeWidth shape) hrelative
+  have hreadCost : read.cost = 1 := by
+    exact canonicalRelativeRmmMachineReadNatCosted_cost_eq_one
+      (canonicalRelativeRmmInteriorLocalTable shape).table
+      hoffsetPos hoffset _
+  have hsummary :
+      (canonicalRelativeRmmMachineMinCandidateCosted shape
+        (macroIdx * layout.macroSize + offset)).cost = 4 :=
+    canonicalRelativeRmmMachineMinCandidateCosted_cost_eq_four_of_macro_crossing
+      shape hmacroCrossing _
+  change (Costed.bind read fun offset? =>
+    match offset? with
+    | some offset => canonicalRelativeRmmMachineMinCandidateCosted shape
+        (macroIdx * layout.macroSize + offset)
+    | none => Costed.pure none).cost = 5
+  rw [Costed.cost_bind, hreadValue, hreadCost, hsummary]
+
+/-- A live global sparse cell followed by its summary costs exactly five reads. -/
+theorem canonicalRelativeRmmMachineGlobalSpanCandidateCosted_cost_eq_five
+    (shape : Cartesian.CartesianShape)
+    (hmacroCrossing :
+      (RelativeRmm.canonicalLayout shape).macroSize <
+        (RelativeRmm.canonicalLayout shape).blockCount)
+    (macroStart level : Nat)
+    (hlevel : level <
+      (RelativeRmm.canonicalLayout shape).globalLevelCount)
+    (hmacro : macroStart <
+      (RelativeRmm.canonicalLayout shape).macroSampleCount) :
+    (canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
+      macroStart level).cost = 5 := by
+  let layout := RelativeRmm.canonicalLayout shape
+  let read := canonicalRelativeRmmMachineReadNatCosted shape
+    (canonicalRelativeRmmInteriorGlobalTable shape).table
+    (bpGlobalSparseCellSlot layout.macroSampleCount macroStart level)
+  let block :=
+    bpGlobalSparseCellBlock shape layout.blockSize layout.blockCount
+      layout.macroSize layout.macroSampleCount macroStart level
+  have hreadValue : read.value = some block := by
+    change read.erase = some block
+    unfold read
+    rw [canonicalRelativeRmmMachineReadNatCosted_erase]
+    simpa [PayloadLiveBPGlobalSparseBlockTable.readBlockCosted,
+      layout, block] using
+      (canonicalRelativeRmmInteriorGlobalTable shape).readBlockCosted_erase_of_valid
+        hlevel hmacro
+  have hblockPos : 0 < layout.blockAddressWidth := by
+    exact SuccinctRank.machineWordBits_pos layout.blockCount
+  have hblockWidth := canonicalRelativeRmmBlockWidth_le_machine shape
+  have hreadCost : read.cost = 1 := by
+    exact canonicalRelativeRmmMachineReadNatCosted_cost_eq_one
+      (canonicalRelativeRmmInteriorGlobalTable shape).table
+      hblockPos hblockWidth _
+  have hsummary :
+      (canonicalRelativeRmmMachineMinCandidateCosted shape block).cost = 4 :=
+    canonicalRelativeRmmMachineMinCandidateCosted_cost_eq_four_of_macro_crossing
+      shape hmacroCrossing block
+  change (Costed.bind read fun block? =>
+    match block? with
+    | some block => canonicalRelativeRmmMachineMinCandidateCosted shape block
+    | none => Costed.pure none).cost = 5
+  rw [Costed.cost_bind, hreadValue, hreadCost, hsummary]
+
 /--
 Within-macro branch.  Only `4 <= shape.size` is available here - no macro
 crossing - so the charged level read is bounded at the unconditional
@@ -5359,6 +5544,136 @@ theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_eleven_o
   simpa [canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted, read, domain]
     using hall
 
+/-- A live count-one local two-span call performs `1 + 5 + 5` reads. -/
+theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_eq_eleven_of_one
+    (shape : Cartesian.CartesianShape)
+    (hmacroCrossing :
+      (RelativeRmm.canonicalLayout shape).macroSize <
+        (RelativeRmm.canonicalLayout shape).blockCount)
+    (macroIdx localStart : Nat)
+    (hmacro : macroIdx <
+      (RelativeRmm.canonicalLayout shape).macroSampleCount)
+    (hlocal : localStart <
+      (RelativeRmm.canonicalLayout shape).macroSize) :
+    (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+      macroIdx localStart 1).cost = 11 := by
+  let layout := RelativeRmm.canonicalLayout shape
+  let domain := bpSparseLevelDomain layout.macroSize
+  let read := canonicalRelativeRmmMachineReadNatCosted shape
+    (canonicalRelativeRmmInteriorLocalLevelTable shape).table 1
+  have honeLt : 1 < domain := by
+    have := two_le_bpSparseLevelDomain layout.macroSize
+    simpa [domain] using this
+  have hreadValue : read.value = some 1 := by
+    change read.erase = some 1
+    unfold read
+    rw [canonicalRelativeRmmMachineReadNatCosted_erase,
+      SuccinctSpace.FixedWidthNatTable.readCosted_erase]
+    change (bpSparseLevelEntries domain)[1]? = some 1
+    rw [bpSparseLevelEntries_getElem? honeLt]
+    have hlog : Nat.log2 1 = 0 := by
+      have hpow : (1 : Nat) < 2 ^ (1 : Nat) := by simp
+      have hlt : Nat.log2 1 < 1 :=
+        (Nat.log2_lt (by omega : Not ((1 : Nat) = 0))).2 hpow
+      omega
+    simp [bpSparseLevelCell, bpSparseLogSpan, hlog]
+  have hwidthPos : 0 < bpSparseLevelWidth domain := by
+    simp [bpSparseLevelWidth]
+  have hwidth : bpSparseLevelWidth domain <=
+      SuccinctRank.machineWordBits shape.bpCode.length := by
+    simpa [domain, layout] using
+      bpSparseLevelLocalWidth_le_machine_of_macro_crossing hmacroCrossing
+  have hreadCost : read.cost = 1 := by
+    exact canonicalRelativeRmmMachineReadNatCosted_cost_eq_one
+      (canonicalRelativeRmmInteriorLocalLevelTable shape).table
+      hwidthPos hwidth 1
+  have hlevelPos : 0 < layout.levelCount := by
+    exact SuccinctRank.machineWordBits_pos layout.macroSize
+  have hleft :=
+    canonicalRelativeRmmMachineLocalSpanCandidateCosted_cost_eq_five
+      shape hmacroCrossing macroIdx localStart 0 hmacro hlevelPos hlocal
+  have hright := hleft
+  have hdiv : 1 / domain = 0 := Nat.div_eq_of_lt honeLt
+  have hmod : 1 % domain = 1 := Nat.mod_eq_of_lt honeLt
+  have hrightStart : localStart + 1 - 1 = localStart := by omega
+  change (Costed.bind read fun cell? =>
+    match cell? with
+    | some cell =>
+        Costed.bind
+          (canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
+            macroIdx localStart (cell / domain)) fun left? =>
+          Costed.map (fun right? => bpCandidateMerge? left? right?)
+            (canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
+              macroIdx (localStart + 1 - cell % domain) (cell / domain))
+    | none => Costed.pure none).cost = 11
+  rw [Costed.cost_bind, hreadValue]
+  simp only [hdiv, hmod]
+  rw [hrightStart, Costed.cost_bind, Costed.map_cost, hreadCost, hleft]
+
+/-- A live count-one global two-span call performs `1 + 5 + 5` reads. -/
+theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_eq_eleven_of_one
+    (shape : Cartesian.CartesianShape)
+    (hmacroCrossing :
+      (RelativeRmm.canonicalLayout shape).macroSize <
+        (RelativeRmm.canonicalLayout shape).blockCount)
+    (macroStart : Nat)
+    (hmacro : macroStart <
+      (RelativeRmm.canonicalLayout shape).macroSampleCount) :
+    (canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted shape
+      macroStart 1).cost = 11 := by
+  let layout := RelativeRmm.canonicalLayout shape
+  let domain := bpSparseLevelDomain layout.macroSampleCount
+  let read := canonicalRelativeRmmMachineReadNatCosted shape
+    (canonicalRelativeRmmInteriorGlobalLevelTable shape).table 1
+  have honeLt : 1 < domain := by
+    have := two_le_bpSparseLevelDomain layout.macroSampleCount
+    simpa [domain] using this
+  have hreadValue : read.value = some 1 := by
+    change read.erase = some 1
+    unfold read
+    rw [canonicalRelativeRmmMachineReadNatCosted_erase,
+      SuccinctSpace.FixedWidthNatTable.readCosted_erase]
+    change (bpSparseLevelEntries domain)[1]? = some 1
+    rw [bpSparseLevelEntries_getElem? honeLt]
+    have hlog : Nat.log2 1 = 0 := by
+      have hpow : (1 : Nat) < 2 ^ (1 : Nat) := by simp
+      have hlt : Nat.log2 1 < 1 :=
+        (Nat.log2_lt (by omega : Not ((1 : Nat) = 0))).2 hpow
+      omega
+    simp [bpSparseLevelCell, bpSparseLogSpan, hlog]
+  have hwidthPos : 0 < bpSparseLevelWidth domain := by
+    simp [bpSparseLevelWidth]
+  have hwidth : bpSparseLevelWidth domain <=
+      SuccinctRank.machineWordBits shape.bpCode.length := by
+    simpa [domain, layout] using
+      bpSparseLevelGlobalWidth_le_machine_of_macro_crossing hmacroCrossing
+  have hreadCost : read.cost = 1 := by
+    exact canonicalRelativeRmmMachineReadNatCosted_cost_eq_one
+      (canonicalRelativeRmmInteriorGlobalLevelTable shape).table
+      hwidthPos hwidth 1
+  have hlevelPos : 0 < layout.globalLevelCount := by
+    exact SuccinctRank.machineWordBits_pos layout.macroSampleCount
+  have hleft :=
+    canonicalRelativeRmmMachineGlobalSpanCandidateCosted_cost_eq_five
+      shape hmacroCrossing macroStart 0 hlevelPos hmacro
+  have hright := hleft
+  have hdiv : 1 / domain = 0 := Nat.div_eq_of_lt honeLt
+  have hmod : 1 % domain = 1 := Nat.mod_eq_of_lt honeLt
+  have hrightStart : macroStart + 1 - 1 = macroStart := by omega
+  change (Costed.bind read fun cell? =>
+    match cell? with
+    | some cell =>
+        Costed.bind
+          (canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
+            macroStart (cell / domain)) fun left? =>
+          Costed.map (fun right? => bpCandidateMerge? left? right?)
+            (canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
+              (macroStart + 1 - cell % domain) (cell / domain))
+    | none => Costed.pure none).cost = 11
+  rw [Costed.cost_bind, hreadValue]
+  simp only [hdiv, hmod]
+  rw [hrightStart, Costed.cost_bind, Costed.map_cost, hreadCost, hleft]
+
 theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le_twenty_two_of_macro_crossing
     (shape : Cartesian.CartesianShape)
     (hmacro :
@@ -5445,6 +5760,183 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_thre
     hleft htail
   simpa [canonicalRelativeRmmMachineCrossMacroCandidateCosted,
     left, middle, right] using hall
+
+/-!
+### Canonical exact-cost witness for the charged sparse-level route
+
+The right-spine witness below is deliberately a real Cartesian shape, with an
+ordinary `List Int` representative.  Its list-facing window `[1704, 3469)`
+selects closes `3409` and `6937`; the accepted cross-block consumer therefore
+passes the interior range `(startBlock, count) = (143, 146)`.  That range takes
+the cross-macro branch with parameters `(0, 143, 1, 1)` and performs three
+successful eleven-read two-span calls.
+-/
+
+def canonicalRelativeRmmInteriorCost33RightSpine :
+    Nat -> Cartesian.CartesianShape
+  | 0 => .empty
+  | n + 1 => .node .empty (canonicalRelativeRmmInteriorCost33RightSpine n)
+
+theorem canonicalRelativeRmmInteriorCost33RightSpine_size (n : Nat) :
+    (canonicalRelativeRmmInteriorCost33RightSpine n).size = n := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      simp [canonicalRelativeRmmInteriorCost33RightSpine,
+        Cartesian.CartesianShape.size, ih]
+      omega
+
+def canonicalRelativeRmmInteriorCost33WitnessShape :
+    Cartesian.CartesianShape :=
+  canonicalRelativeRmmInteriorCost33RightSpine 3469
+
+def canonicalRelativeRmmInteriorCost33WitnessInput : List Int :=
+  canonicalRelativeRmmInteriorCost33WitnessShape.representative
+
+theorem canonicalRelativeRmmInteriorCost33WitnessShape_size :
+    canonicalRelativeRmmInteriorCost33WitnessShape.size = 3469 := by
+  exact canonicalRelativeRmmInteriorCost33RightSpine_size 3469
+
+theorem canonicalRelativeRmmInteriorCost33WitnessInput_length :
+    canonicalRelativeRmmInteriorCost33WitnessInput.length = 3469 := by
+  simp [canonicalRelativeRmmInteriorCost33WitnessInput,
+    Cartesian.CartesianShape.representative_length,
+    canonicalRelativeRmmInteriorCost33WitnessShape_size]
+
+theorem canonicalRelativeRmmInteriorCost33WitnessInput_shape :
+    Cartesian.shape canonicalRelativeRmmInteriorCost33WitnessInput =
+      canonicalRelativeRmmInteriorCost33WitnessShape := by
+  simp [canonicalRelativeRmmInteriorCost33WitnessInput,
+    Cartesian.CartesianShape.shape_representative]
+
+theorem canonicalRelativeRmmInteriorCost33RightSpine_close
+    (n i : Nat) (hi : i < n) :
+    SuccinctSpace.bpCloseOfInorder?
+        (canonicalRelativeRmmInteriorCost33RightSpine n) i =
+      some (2 * i + 1) := by
+  induction n generalizing i with
+  | zero => omega
+  | succ n ih =>
+      by_cases hzero : i = 0
+      · subst i
+        simp [canonicalRelativeRmmInteriorCost33RightSpine,
+          SuccinctSpace.bpCloseOfInorder?, Cartesian.CartesianShape.size,
+          Cartesian.CartesianShape.bpCode]
+      · have hpos : 0 < i := Nat.pos_of_ne_zero hzero
+        have htail : i - 1 < n := by omega
+        have ih' := ih (i - 1) htail
+        simp [canonicalRelativeRmmInteriorCost33RightSpine,
+          SuccinctSpace.bpCloseOfInorder?, Cartesian.CartesianShape.size,
+          Cartesian.CartesianShape.bpCode, hzero, ih']
+        omega
+
+theorem canonicalRelativeRmmInteriorCost33Witness_closes :
+    SuccinctSpace.bpCloseOfInorder?
+        canonicalRelativeRmmInteriorCost33WitnessShape 1704 = some 3409 /\
+      SuccinctSpace.bpCloseOfInorder?
+        canonicalRelativeRmmInteriorCost33WitnessShape 3468 = some 6937 := by
+  constructor
+  · simpa [canonicalRelativeRmmInteriorCost33WitnessShape] using
+      canonicalRelativeRmmInteriorCost33RightSpine_close 3469 1704 (by omega)
+  · simpa [canonicalRelativeRmmInteriorCost33WitnessShape] using
+      canonicalRelativeRmmInteriorCost33RightSpine_close 3469 3468 (by omega)
+
+/-- The numeral geometry used by the reachable tightness family. -/
+theorem canonicalRelativeRmmInteriorCost33Layout_of_size_eq
+    (shape : Cartesian.CartesianShape) (hsize : shape.size = 3469) :
+    (RelativeRmm.canonicalLayout shape).blockSize = 24 /\
+      (RelativeRmm.canonicalLayout shape).blocksPerSuper = 12 /\
+      (RelativeRmm.canonicalLayout shape).blockCount = 289 /\
+      (RelativeRmm.canonicalLayout shape).macroSize = 144 /\
+      (RelativeRmm.canonicalLayout shape).macroSampleCount = 3 := by
+  simp only [RelativeRmm.canonicalLayout,
+    RelativeRmm.Layout.macroSize, RelativeRmm.Layout.macroSampleCount,
+    canonicalBPRelativeSummaryBlockSizeRaw,
+    canonicalBPRelativeSummaryBlocksPerSuperRaw,
+    canonicalBPRelativeSummaryBlockCountRaw,
+    canonicalBPRelativeSummaryBase]
+  rw [hsize]
+  have hlower : 11 <= Nat.log2 3469 :=
+    (Nat.le_log2 (by decide : Not ((3469 : Nat) = 0))).2 (by decide)
+  have hupper : Nat.log2 3469 < 12 :=
+    (Nat.log2_lt (by decide : Not ((3469 : Nat) = 0))).2 (by decide)
+  have hlog : Nat.log2 3469 = 11 := by omega
+  rw [hlog]
+  decide
+
+/-- The accepted interior dispatcher takes the three-leaf cross-macro route. -/
+theorem canonicalRelativeRmmInteriorCost33_dispatch_of_size_eq
+    (shape : Cartesian.CartesianShape) (hsize : shape.size = 3469) :
+    canonicalRelativeRmmInteriorRangeMinCosted shape 143 146 =
+      canonicalRelativeRmmMachineCrossMacroCandidateCosted shape 0 143 1 1 := by
+  have hgeometry := canonicalRelativeRmmInteriorCost33Layout_of_size_eq shape hsize
+  rcases hgeometry with ⟨_, _, _, hmacroSize, _⟩
+  simp [canonicalRelativeRmmInteriorRangeMinCosted, hmacroSize]
+
+/--
+Every canonical shape of the witness size has the same exact operational
+count.  The proof composes three successful count-one two-span calls; it does
+not reduce the shape's payload or infer equality from the public upper bound.
+-/
+theorem canonicalRelativeRmmInteriorCost33_cost_eq_of_size_eq
+    (shape : Cartesian.CartesianShape) (hsize : shape.size = 3469) :
+    (canonicalRelativeRmmInteriorRangeMinCosted shape 143 146).cost = 33 := by
+  have hgeometry := canonicalRelativeRmmInteriorCost33Layout_of_size_eq shape hsize
+  rcases hgeometry with ⟨_, _, hblockCount, hmacroSize, hmacroCount⟩
+  have hcrossing :
+      (RelativeRmm.canonicalLayout shape).macroSize <
+        (RelativeRmm.canonicalLayout shape).blockCount := by omega
+  have hleft :=
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_eq_eleven_of_one
+      shape hcrossing 0 143 (by omega) (by omega)
+  have hmiddle :=
+    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_eq_eleven_of_one
+      shape hcrossing 1 (by omega)
+  have hright :=
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_eq_eleven_of_one
+      shape hcrossing 2 0 (by omega) (by omega)
+  rw [canonicalRelativeRmmInteriorCost33_dispatch_of_size_eq shape hsize]
+  unfold canonicalRelativeRmmMachineCrossMacroCandidateCosted
+  simp only [Costed.cost_bind, Costed.map_cost]
+  simp [hmacroSize, hleft, hmiddle, hright]
+
+/--
+The canonical accepted interior object itself reaches the advertised cap.
+This is equality on the live evaluator, not an upper-bound proof.
+-/
+theorem canonicalRelativeRmmInteriorCost33Witness_exact :
+    (canonicalRelativeRmmInteriorRangeMinCosted
+      canonicalRelativeRmmInteriorCost33WitnessShape 143 146).cost = 33 := by
+  exact canonicalRelativeRmmInteriorCost33_cost_eq_of_size_eq
+    canonicalRelativeRmmInteriorCost33WitnessShape
+    canonicalRelativeRmmInteriorCost33WitnessShape_size
+
+/-- The retired `cost <= 30` claim fails on that identical canonical object. -/
+theorem canonicalRelativeRmmInteriorCost33Witness_not_cost_le_thirty :
+    Not ((canonicalRelativeRmmInteriorRangeMinCosted
+      canonicalRelativeRmmInteriorCost33WitnessShape 143 146).cost <= 30) := by
+  rw [canonicalRelativeRmmInteriorCost33Witness_exact]
+  omega
+
+/-- The same exact count holds on the canonical concatenated component store. -/
+theorem canonicalRelativeRmmInteriorCost33Witness_store_exact :
+    (canonicalRelativeRmmInteriorRangeMinCostedWithStore
+      canonicalRelativeRmmInteriorCost33WitnessShape
+      (canonicalRelativeRmmInteriorComponentStore
+        canonicalRelativeRmmInteriorCost33WitnessShape).store.words
+      143 146).cost = 33 := by
+  rw [canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_current]
+  exact canonicalRelativeRmmInteriorCost33Witness_exact
+
+/-- Its recorded physical footprint contains exactly the same 33 reads. -/
+theorem canonicalRelativeRmmInteriorCost33Witness_footprint_length :
+    (canonicalRelativeRmmInteriorRangeFootprintWithStore
+      canonicalRelativeRmmInteriorCost33WitnessShape
+      (canonicalRelativeRmmInteriorComponentStore
+        canonicalRelativeRmmInteriorCost33WitnessShape).store.words
+      143 146).length = 33 := by
+  rw [<- canonicalRelativeRmmInteriorRange_cost_eq_footprint_length]
+  exact canonicalRelativeRmmInteriorCost33Witness_store_exact
 
 /--
 The accepted U2 interior execution costs at most thirty-three charged
@@ -5663,6 +6155,28 @@ theorem canonicalRelativeRmmInteriorRangeMinCostedWithStore_erase_exact
             (RelativeRmm.canonicalLayout shape).blockSize startBlock count) := by
   rw [canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_current]
   exact canonicalRelativeRmmInteriorRangeMinCosted_erase_exact hcount hbound
+
+/-- The exact-cost store-backed witness returns the accepted leftmost candidate. -/
+theorem canonicalRelativeRmmInteriorCost33Witness_store_erase_exact :
+    (canonicalRelativeRmmInteriorRangeMinCostedWithStore
+      canonicalRelativeRmmInteriorCost33WitnessShape
+      (canonicalRelativeRmmInteriorComponentStore
+        canonicalRelativeRmmInteriorCost33WitnessShape).store.words
+      143 146).erase =
+      some
+        (bpRangeMinExcess canonicalRelativeRmmInteriorCost33WitnessShape
+          (RelativeRmm.canonicalLayout
+            canonicalRelativeRmmInteriorCost33WitnessShape).blockSize 143 146,
+          bpRangeArgMinPrefixPos canonicalRelativeRmmInteriorCost33WitnessShape
+            (RelativeRmm.canonicalLayout
+              canonicalRelativeRmmInteriorCost33WitnessShape).blockSize
+            143 146) := by
+  apply canonicalRelativeRmmInteriorRangeMinCostedWithStore_erase_exact
+  · omega
+  · have hgeometry := canonicalRelativeRmmInteriorCost33Layout_of_size_eq
+      canonicalRelativeRmmInteriorCost33WitnessShape
+      canonicalRelativeRmmInteriorCost33WitnessShape_size
+    omega
 
 theorem canonicalRelativeRmmInteriorRangePhysicalWordsRead_length_le_machine
     {shape : Cartesian.CartesianShape} {startBlock count : Nat}

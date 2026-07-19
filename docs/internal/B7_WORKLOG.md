@@ -2455,3 +2455,54 @@ semantic target. The branch remains a clean checkpoint containing only the
 pre-implementation contract freeze and this durable stop record. No original
 B7 row or B7-R1 row is claimed complete, no coordinator acceptance is claimed,
 and no roadmap closure is claimed.
+
+# B7-R2 repair session: governed re-entry and frozen continuation
+
+## Checkout and governance
+
+- Worker: B7-R2.
+- Requested title: `(B7-R2) Complete the charged sparse-level repair on the closed surface set`.
+- Worktree: `C:\Users\poin\.codex\worktrees\25b6\RMQ`.
+- Exact base: `e23875542995ca31404567cba5b128c9271e861a`.
+- Branch: `codex/b7-charged-sparse-level-r2`.
+- Ordered base parents: B7-R1 checkpoint
+  `24a166c5959aa1cac52be6d0aeefb3e2811f056c`, then governance
+  `5fc02e5a8960c4cc5bacba4daa58cc8f4bd8a91f`.
+- `scripts/project_skill_preflight.ps1` with required `rmq-proof-sprint` and
+  runtime RMQ skills `rmq-audit-prompt`, `rmq-coordinator`,
+  `rmq-proof-sprint`: exit 0 in 9.9s.
+
+The B7-R1 frozen acceptance wording and IDs were reread in full before any
+implementation edit.  The B7-R2 continuation note in the matrix records the
+same hard target, the independent tightness and value-dependency challenges,
+the unchanged stretch deferral, and the verification/deadline discipline.
+The repaired 18-path write scope removes B7-R1's only external blocker.
+
+## Parallelization and ownership
+
+The concrete join target is the exact-cost-33 canonical interior execution.
+Three independent read-only inventories ran in parallel: the concrete witness
+and consumer chain; the historical-328/trust/current-surface chain; and the
+21-window replay registry.  B7-R2 retains sole ownership of all source edits,
+shared evidence records, public theorem signatures, verification, and commits.
+No worker writes were merged or copied as proof evidence.
+
+## B7-R2 stop: historical-identity repair needs four unauthorized consumers
+
+After the exact-cost source and accepted-consumer checkpoint kernel-checked,
+the historical-name dependency inventory found that the frozen
+`REQ-B7R1-HISTORICAL-328-IDENTITY` migration cannot be completed inside the
+declared path set. The direct required paths are
+`RMQ/Core/SuccinctFinalStoreParam.lean`,
+`RMQ/Core/SuccinctFinalModelAdequacy.lean`,
+`RMQ/Headlines/RMQCompatibility.lean`, and
+`RMQ/Validation/SuccinctClassic.lean`. In particular, the compatibility
+headline currently gives `Compatibility328` names to the live expression
+whose checked value is `352`. Leaving that surface unchanged would be the
+forbidden historical-name drift; changing only `SuccinctRMQClassic.lean`
+would not close the row.
+
+Per the checkout contract, no unauthorized path was edited. The worktree is
+therefore a partial, uncommitted checkpoint and not a candidate. Required
+coordinator choice: expand write scope to the four named paths (recommended),
+or amend the frozen requirement. No frozen requirement was weakened here.

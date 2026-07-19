@@ -816,3 +816,81 @@ Disposition: `REQ-B7R1-CURRENT-PUBLIC-SURFACES` Open, every other B7-R1 row
 Open, `COMPLETE-B7R1-EVIDENCE` Open. Coordinator authorization to add the five
 paths, or an explicit contract amendment, is required before substantive repair
 work resumes.
+
+## B7-R2 governed continuation (frozen before repair implementation)
+
+Worker B7-R2 continues the unchanged B7-R1 frozen rows on branch
+`codex/b7-charged-sparse-level-r2` in
+`C:\Users\poin\.codex\worktrees\25b6\RMQ`.  The exact base is the two-parent
+join `e23875542995ca31404567cba5b128c9271e861a`, whose ordered parents are the
+clean B7-R1 scope checkpoint `24a166c5959aa1cac52be6d0aeefb3e2811f056c`
+and workflow governance `5fc02e5a8960c4cc5bacba4daa58cc8f4bd8a91f`.
+The exact governed skill preflight passed before this section and before any
+B7-R2 implementation edit.
+
+The repaired prompt authorizes all 18 paths matched at the base by
+`currentFactSurfacePathRegex`; therefore the B7-R1 scope blocker is removed.
+No acceptance wording or ID changes.  The blocking contract is exactly the
+original non-stretch rows `REQ-B7-00`--`REQ-B7-10`,
+`INV-STORE-IDENTITY`, `INV-VALUE-DEPENDENCY`, `INV-NO-SYNTHETIC`,
+`INV-ALL-SIZE`, `INV-PUBLIC-COMPOSITION`, `CHK-01`--`CHK-08`, together with
+all B7-R1 rows from `REQ-B7R1-TIGHTNESS-WITNESS` through
+`REPLAY-SUBPROCESS-DEADLINE`.  `STRETCH-01` remains explicitly deferred until
+that non-stretch contract closes.
+
+The join theorem is the same-object canonical interior statement
+`canonicalRelativeRmmInteriorRangeMinCosted ... .cost = 33`, connected through
+the canonical store-backed structural trace and the list-facing accepted query
+to the live component algebra
+`210 = 2*35 + (2*11 + 2*37 + 33) + 11`.  Its anti-vacuity challenge is the
+identical object's proposition `cost <= 30`.  Separately,
+`INV-VALUE-DEPENDENCY` retains its own frozen corruption challenge; the exact
+cost witness cannot substitute for it.
+
+Verification remains ordered from static/source reconstruction to the focused
+interior theorem, direct public/history consumers, trust inventories, exact
+21-window registry/default/known/unknown controls, strict public scans, then
+the one final aggregate build on an unchanged tree.  Every spawned Lean/Lake
+stage used for replay will run under a positive observed-runtime-based
+deadline with an owned process, process-tree termination on timeout, explicit
+timeout classification, `finally` cleanup/survivor inspection, and clean-tree
+verification.  The Lean harness itself remains child-free.
+
+### B7-R2 scope-blocker evidence (2026-07-19)
+
+`REQ-B7R1-TIGHTNESS-WITNESS` has a kernel-checked implementation checkpoint on
+the authorized tree: the source proves exact cost `33` and rejects `cost <= 30`
+on the identical `(shape, startBlock, count)` object; the accepted structural
+consumer pins the real query `[1704,3469)`, closes `3409/6937`, blocks
+`142/289`, interior invocation `(143,146)`, and trace cost/length `33`. This is
+checkpoint evidence only, not row closure, because the final candidate does
+not yet exist.
+
+Work must stop before `REQ-B7R1-HISTORICAL-328-IDENTITY` is edited. Its frozen
+quantifier requires *every* live `352` declaration to have a distinct accurate
+name and its consumers to name it explicitly. The following required direct
+consumers are outside this task's authorized path set:
+
+- `RMQ/Core/SuccinctFinalStoreParam.lean`:
+  `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_canonicalTransitional`
+  concludes against the live raw expression
+  `3 * sparseDenseFalseSelectQueryCost + canonicalCompactBPCloseQueryCostWithRankSeed ... = 352`;
+- `RMQ/Core/SuccinctFinalModelAdequacy.lean`:
+  `concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_canonicalTransitional`
+  re-exports that live `352` expression;
+- `RMQ/Headlines/RMQCompatibility.lean`: the public declarations
+  `succinctRMQCompatibility328WholeQueryGlobalWordTraceCostedCostLe`,
+  `succinctRMQCompatibility328QueryCostEq`, and
+  `succinctRMQCompatibility328FinalFullModelCostLeOfFootprintGlobal` currently
+  attach `328` names/comments to live `352` propositions;
+- `RMQ/Validation/SuccinctClassic.lean`: the checked historical guard still
+  asserts `canonicalTransitionalQueryCost == 352`.
+
+Restoring only
+`RMQ.SuccinctClassic.canonicalTransitionalQueryCost_eq :
+canonicalTransitionalQueryCost = 328` inside the authorized file would leave
+those descendants mislabeled or ill-typed and would therefore violate the
+same frozen row rather than close it. No implementation obstruction exists:
+the required repair is to literal-pin historical `328`, introduce a distinct
+live-compatibility-`352` definition/theorem, and migrate the four paths above.
+That repair requires coordinator/user expansion of the write scope.

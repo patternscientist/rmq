@@ -2409,6 +2409,114 @@ theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_refines_i
     SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural_refines,
     concreteBPNativeRankCloseWordTraceResultAtSegment_refines_interpretedCosted]
 
+/-!
+### B7 exact charged sparse-level witness on the accepted structural route
+-/
+
+/--
+The real list window `[1704, 3469)` is valid for the canonical witness and its
+two selected BP closes are exactly `3409` and `6937`.
+-/
+theorem concreteBPNativeB7Cost33Witness_query_geometry :
+    1704 < 3469 /\
+      3469 <=
+        SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessInput.length /\
+      Cartesian.shape
+          SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessInput =
+        SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape /\
+      SuccinctSpace.bpCloseOfInorder?
+          SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape 1704 =
+        some 3409 /\
+      SuccinctSpace.bpCloseOfInorder?
+          SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape 3468 =
+        some 6937 := by
+  exact ⟨by omega,
+    by
+      rw [SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessInput_length]
+      omega,
+    SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessInput_shape,
+    SuccinctClose.canonicalRelativeRmmInteriorCost33Witness_closes.1,
+    SuccinctClose.canonicalRelativeRmmInteriorCost33Witness_closes.2⟩
+
+/--
+The exact middle conditional appearing in the accepted chunked cross-block
+consumer selects the canonical structural interior trace at `(143, 146)`.
+The first two tuple fields pin the block arithmetic as part of the theorem.
+-/
+theorem concreteBPNativeB7Cost33Witness_acceptedMiddleInvocation :
+    let shape :=
+      SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape
+    let blockSize :=
+      SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+    let leftBlock := SuccinctClose.blockOfClose blockSize 3409
+    let rightBlock := SuccinctClose.blockOfClose blockSize 6937
+    (leftBlock + 1, rightBlock - leftBlock - 1,
+      if leftBlock + 1 < rightBlock then
+        SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+          shape concreteBPNativeInteriorTraceSegments
+          (leftBlock + 1) (rightBlock - leftBlock - 1)
+      else
+        WordRAM.TraceResult.pure none) =
+      (143, 146,
+        SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+          shape concreteBPNativeInteriorTraceSegments 143 146) := by
+  have hgeometry :=
+    SuccinctClose.canonicalRelativeRmmInteriorCost33Layout_of_size_eq
+      SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape
+      SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape_size
+  rcases hgeometry with ⟨hblockSize, _, _, _, _⟩
+  have hblockSizeRaw :
+      SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw
+        SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape = 24 := by
+    exact hblockSize
+  have hleft :
+      SuccinctClose.blockOfClose
+          (SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw
+            SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape)
+          3409 = 142 := by
+    change 3409 /
+      (SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw
+        SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape) = 142
+    rw [hblockSizeRaw]
+  have hright :
+      SuccinctClose.blockOfClose
+          (SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw
+            SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape)
+          6937 = 289 := by
+    change 6937 /
+      (SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw
+        SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape) = 289
+    rw [hblockSizeRaw]
+  simp [hleft, hright]
+
+/--
+The canonical segment-20 structural trace is the same store-backed object as
+the source witness: cost 33, trace length 33, and not cost at most 30.
+-/
+theorem concreteBPNativeB7Cost33Witness_interiorTrace_exact :
+    let trace :=
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+        SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape
+        concreteBPNativeInteriorTraceSegments 143 146
+    trace.toCosted.cost = 33 /\
+      trace.trace.length = 33 /\
+      Not (trace.toCosted.cost <= 30) := by
+  let trace :=
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+      SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape
+      concreteBPNativeInteriorTraceSegments 143 146
+  have hrefines :=
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_refines
+      SuccinctClose.canonicalRelativeRmmInteriorCost33WitnessShape
+      concreteBPNativeInteriorTraceSegments 143 146
+  have hcost : trace.toCosted.cost = 33 := by
+    rw [hrefines]
+    exact SuccinctClose.canonicalRelativeRmmInteriorCost33Witness_store_exact
+  have hlength : trace.trace.length = 33 := by
+    rw [<- WordRAM.TraceResult.toCosted_cost_eq_trace_length]
+    exact hcost
+  exact ⟨hcost, hlength, by rw [hcost]; omega⟩
+
 private theorem
     concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead_of_ready
     (shape : Cartesian.CartesianShape)
