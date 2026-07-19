@@ -3989,3 +3989,131 @@ decision alone: at the trace layer cost IS trace length, so an event-free
 msb instruction costs ZERO there and buys nothing at the layer where the
 route's charge policy lives. The standardness claim for a unit-cost msb is
 also unsubstantiated anywhere in this repository.
+
+## DD-20260719-001: B7 packed-cell width tightened rather than re-migrating the literal 210 -> 213 (B7 session 8)
+
+Context. B7-07 derived, from the cost model rather than from the mechanism
+prose, that the charged sparse-level cell did not fit in one machine word on
+reachable shapes: `canonicalRelativeRmmMachineReadNatCosted_cost_le_one`
+requires `width <= machineWordBits shape.bpCode.length`, and at `size = 2048`
+the stored width was 15 against a 13-bit word, so each level read cost 2, not
+1. That would have made the cross-macro branch `30 + 3*2 = 36` and the route
+literal `213`, not the `210` commit A had already frozen and migrated.
+
+Two routes were available: tighten the width so that commit A's `210` is
+recovered, or re-migrate `210 -> 213` and freeze `210` as a second historical
+constant. THE COORDINATOR RULED: tighten the width. The reasoning is a POLICY
+point and is recorded here as such, not as a cost preference.
+
+### The policy: the historical record must not accumulate fictions
+
+A frozen historical constant records a value that GENUINELY DESCRIBED THE
+ACCEPTED ROUTE at some point in its history. `76`, `142` and `207` each did.
+`210` never did. It exists only inside commit A's staging window and is an
+artifact of a deliberately loosened cap - commit A widened the interior cap to
+`33` in anticipation of reads that had not yet landed, and the harness
+confirmed at that commit that every interior window was unchanged. Freezing
+`210` would place a value in the permanent historical record that never
+described a real machine. That is worse than redoing a migration, which costs
+only work.
+
+### The engineering: the width fix is independently the better change
+
+`bpSparseLevelCell domain i = bpSparseLogSpan i + domain * Nat.log2 i` was
+bounded by `domain * domain`, which bounds the stored LEVEL by `domain`. But
+the level is `Nat.log2 i` with `i < domain`, so it is bounded by
+`Nat.log2 domain` - exponentially smaller. The old bound was slack by
+construction, not by necessity. The honest bound, now proved as
+`bpSparseLevelCell_lt`, is
+
+    bpSparseLevelCell domain i < domain * (Nat.log2 domain + 1)
+
+and the stored width is correspondingly
+
+    bpSparseLevelWidth domain = Nat.log2 (domain * (Nat.log2 domain + 1)) + 1.
+
+This makes the read genuinely ONE MACHINE WORD, which is what "one charged
+read per two-span call" was always supposed to mean.
+
+### CORRECTION OF RECORD, coordinator-initiated
+
+The phrase "one charged read per two-span call" was the COORDINATOR'S, and it
+was WRONG as stated: in this cost model a read costs one unit PER MACHINE WORD
+TOUCHED, so the phrase asserts a width fact that nobody had checked. B7-07 was
+right to compute actual widths against `machineWordBits` rather than trust it.
+This is the second time this rung has corrected the coordinator (the first was
+DD-20260718-013's executed-family correction, which went the other way).
+
+### The fit is proved for ALL shapes, not sampled
+
+B7-07's evidence was a table of three sizes. A sampled table is NOT sufficient
+evidence for a width claim, and the fit PLAUSIBLY FAILS at small shapes: at
+`size = 4` the base is 3, `macroSize` 9, the domain 11, and the tightened width
+6 against a `machineWordBits` of 4. The claim is saved there not by the width
+but by UNREACHABILITY - macro crossing needs `macroSize < blockCount`, and at
+`size = 4` that is `9 < 1`, which is false.
+
+So the all-size statement carries a reachability hypothesis, and getting that
+hypothesis exactly right IS the work. The hypothesis used is the one THE
+ROUTE'S OWN DISPATCH ALREADY ESTABLISHES, not a size threshold introduced for
+convenience:
+
+    theorem bpSparseLevelLocalWidth_le_machine_of_macro_crossing
+        {shape : Cartesian.CartesianShape}
+        (hmacro : (RelativeRmm.canonicalLayout shape).macroSize <
+            (RelativeRmm.canonicalLayout shape).blockCount) :
+        bpSparseLevelWidth
+            (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize) <=
+          SuccinctRank.machineWordBits shape.bpCode.length
+
+with the global twin
+`bpSparseLevelGlobalWidth_le_machine_of_macro_crossing` over
+`(RelativeRmm.canonicalLayout shape).macroSampleCount`.
+
+`hmacro` is exactly what the interior dispatcher derives before it can reach a
+cross-macro two-span call, from its own branch guard `hcross` together with the
+route-level `hbound`. The precedent is
+`canonicalRelativeRmmRelativeWidth_le_machine_of_macroSize_lt_blockCount`,
+which carries the identical hypothesis for the relative summary field; the new
+lemmas are its analogue and reuse its derivation shape.
+
+The derivation, all steps checked in Lean with no threshold introduced:
+macro crossing gives `base^3 < size`; `size < 2 ^ base` holds by definition of
+`base = Nat.log2 size + 1`; together these force `10 <= base` by eliminating
+`base <= 9` (at `base = 9`, `base^3 = 729` but `2^9 = 512`). With `10 <= base`
+the local domain `base*base + 2` is below `2 ^ base`, so its level is at most
+`base`, so the packed product is at most `2 * base^3 < 2 ^ (base+1)`, giving
+width `<= base + 1 <= machineWordBits shape.bpCode.length` by the existing
+`canonicalRelativeRmmBase_succ_le_machine_of_size_pos`. The global instance
+runs the same way through `base * (size / base^3) <= size`.
+
+The branches that do NOT carry `hmacro` are covered by two UNCONDITIONAL
+theorems, `bpSparseLevelLocalWidth_le_seven_machine` and
+`bpSparseLevelGlobalWidth_le_seven_machine`, which fit the width under
+`7 * machineWordBits` and so charge those reads at the `cost_le_eight` rate.
+Those branches only have to stay under the interior cap and have ample
+headroom, so this is bookkeeping rather than a second obstruction.
+
+### Space accounting re-derived, not assumed
+
+The tighter width makes the table SMALLER, so every space bound gets easier -
+but the four space-accounting links state the width SYNTACTICALLY (13
+occurrences of `Nat.log2 ((x+2)*(x+2)) + 1` across the raw-overhead def, the
+`527` linear feed and the envelope arithmetic), so they do not transport for
+free. Rather than reprove them, a bridge is used:
+
+    private theorem bpSparseLevelWidth_le_square_width
+        {domain : Nat} (hpos : 0 < domain) :
+        bpSparseLevelWidth domain <= Nat.log2 (domain * domain) + 1
+
+so each existing bound is inherited through one `Nat.le_trans`. The `527`
+capacity constant and the `LittleOLinear` envelopes are therefore UNCHANGED and
+remain valid (they are now loose rather than tight, which is sound for upper
+bounds). No row is weakened.
+
+### What this does NOT decide
+
+It does not re-derive the route literal. Commit A's `210` is EXPECTED to be
+recovered, and the width fix is what makes that possible, but REQ-B7-05 demands
+the literal be derived over the AMENDED route with the maximizing branch bound
+exhibited. That derivation is commit B's and is not claimed here.

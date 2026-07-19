@@ -96,15 +96,30 @@ theorem bpSparseLevelCell_mod
   rw [Nat.add_mul_mod_self_left]
   exact Nat.mod_eq_of_lt hspan
 
+/--
+THE TIGHT PACKING BOUND.  The stored level is `Nat.log2 i` with `i < domain`,
+so it is bounded by `Nat.log2 domain`, NOT by `domain`.  Bounding the cell by
+`domain * domain` (as this module originally did) over-states the level's range
+exponentially and makes the stored width roughly twice what the packing needs.
+That slack is not free: it pushes the entry past one machine word on reachable
+shapes and so would cost a second charged read per level lookup.  See the
+width-fit lemmas in `InteriorDirectory.lean`, which are what force this bound
+to be the honest one.
+-/
 theorem bpSparseLevelCell_lt
     {i domain : Nat} (hdomain : 2 <= domain) (hi : i < domain) :
-    bpSparseLevelCell domain i < domain * domain := by
+    bpSparseLevelCell domain i < domain * (Nat.log2 domain + 1) := by
   have hspan : bpSparseLogSpan i < domain :=
     bpSparseLogSpan_lt_of_lt hdomain hi
-  have hlevel : Nat.log2 i + 1 <= domain := log2_lt_of_lt hi
-  have hstep : domain * (Nat.log2 i + 1) <= domain * domain :=
+  have hlevel : Nat.log2 i <= Nat.log2 domain := by
+    have hmono : SuccinctRank.machineWordBits i <=
+        SuccinctRank.machineWordBits domain :=
+      SuccinctRank.machineWordBits_mono_le (Nat.le_of_lt hi)
+    simpa [SuccinctRank.machineWordBits] using hmono
+  have hstep : domain * Nat.log2 i <= domain * Nat.log2 domain :=
     Nat.mul_le_mul_left domain hlevel
-  have hexpand : domain * (Nat.log2 i + 1) = domain * Nat.log2 i + domain := by
+  have hexpand : domain * (Nat.log2 domain + 1)
+      = domain * Nat.log2 domain + domain := by
     rw [Nat.mul_add, Nat.mul_one]
   unfold bpSparseLevelCell
   omega
@@ -127,8 +142,13 @@ theorem bpSparseLevelEntries_getElem?
   rw [List.getElem?_map, List.getElem?_range hi]
   rfl
 
-/-- Stored width: enough for every packed cell. -/
-def bpSparseLevelWidth (domain : Nat) : Nat := Nat.log2 (domain * domain) + 1
+/--
+Stored width: exactly enough for every packed cell, against the TIGHT packing
+bound `bpSparseLevelCell_lt`.  Widening this to `Nat.log2 (domain * domain) + 1`
+still types, but costs a second machine word per read on reachable shapes.
+-/
+def bpSparseLevelWidth (domain : Nat) : Nat :=
+  Nat.log2 (domain * (Nat.log2 domain + 1)) + 1
 
 theorem bpSparseLevelEntries_lt_two_pow
     {domain entry : Nat} (hdomain : 2 <= domain)
@@ -138,7 +158,8 @@ theorem bpSparseLevelEntries_lt_two_pow
   rcases List.mem_map.mp hmem with ⟨i, hi, rfl⟩
   have hilt : i < domain := List.mem_range.mp hi
   have hcell := bpSparseLevelCell_lt hdomain hilt
-  have hpow : domain * domain < 2 ^ bpSparseLevelWidth domain := by
+  have hpow : domain * (Nat.log2 domain + 1)
+      < 2 ^ bpSparseLevelWidth domain := by
     unfold bpSparseLevelWidth
     exact Nat.lt_log2_self
   omega

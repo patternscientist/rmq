@@ -3739,6 +3739,358 @@ theorem canonicalRelativeRmmRelativeWidth_le_machine_of_macroSize_lt_blockCount
       SuccinctRank.machineWordBits shape.bpCode.length
     exact Nat.le_trans hsmall (by simpa [base] using hmachine)
 
+/-! ### Charged sparse-level table: stored width against the machine word
+
+The charged level/span table is read ONCE per two-span call, and that read is
+one machine word only if the stored width fits one.  The four theorems below
+settle the fit for EVERY shape, not for a sampled table of sizes.
+
+The two `_of_macro_crossing` theorems carry the reachability hypothesis
+`macroSize < blockCount`, which is exactly what the interior dispatcher
+already derives before it can reach a cross-macro two-span call (see
+`canonicalRelativeRmmInteriorRangeMinCosted_cost_le_...`, where `hcross` and
+`hbound` produce `hmacro`).  The hypothesis is NOT a size threshold introduced
+for convenience: at small shapes the fit genuinely fails (at `size = 4` the
+stored width is 6 against a 4-bit machine word), and macro crossing is
+precisely what is unreachable there.  The two unconditional theorems cover the
+remaining branches, where the read is charged at the `cost_le_eight` rate and
+the interior cap has ample headroom.
+-/
+
+/--
+CORE WIDTH HELPER.  Any exponent dominating the packed product bounds the
+stored width.  Every fit below feeds this one lemma.
+-/
+private theorem bpSparseLevelWidth_le_of_prod_lt_two_pow
+    {domain m : Nat} (hpos : 0 < domain)
+    (hprod : domain * (Nat.log2 domain + 1) < 2 ^ m) :
+    bpSparseLevelWidth domain <= m := by
+  have hprodPos : 0 < domain * (Nat.log2 domain + 1) :=
+    Nat.mul_pos hpos (Nat.succ_pos _)
+  simpa [bpSparseLevelWidth] using
+    natLog2_succ_le_of_pos_lt_pow hprodPos hprod
+
+/-- A domain below `2 ^ m` has stored width at most `m + m`. -/
+private theorem bpSparseLevelWidth_le_two_mul_of_lt_two_pow
+    {domain m : Nat} (hpos : 0 < domain) (hlt : domain < 2 ^ m) :
+    bpSparseLevelWidth domain <= m + m := by
+  have hpowPos : 0 < 2 ^ m := Nat.pow_pos (by omega : 0 < 2)
+  have hlogLe : Nat.log2 domain + 1 <= m :=
+    natLog2_succ_le_of_pos_lt_pow hpos hlt
+  have hmLe : m <= 2 ^ m := Nat.le_of_lt (Nat.lt_two_pow_self)
+  have hprod : domain * (Nat.log2 domain + 1) < 2 ^ m * 2 ^ m :=
+    Nat.mul_lt_mul_of_lt_of_le hlt (Nat.le_trans hlogLe hmLe) hpowPos
+  exact bpSparseLevelWidth_le_of_prod_lt_two_pow hpos
+    (by simpa [Nat.pow_add] using hprod)
+
+/-- The canonical base never exceeds the physical machine word. -/
+private theorem canonicalRelativeRmmBase_le_machine
+    (shape : Cartesian.CartesianShape) :
+    canonicalBPRelativeSummaryBase shape <=
+      SuccinctRank.machineWordBits shape.bpCode.length := by
+  have hmono :
+      SuccinctRank.machineWordBits shape.size <=
+        SuccinctRank.machineWordBits shape.bpCode.length :=
+    SuccinctRank.machineWordBits_mono_le
+      (by rw [Cartesian.CartesianShape.bpCode_length]; omega)
+  simpa [canonicalBPRelativeSummaryBase, SuccinctRank.machineWordBits] using
+    hmono
+
+/-- Local domain `base*base + 2` sits below `2 ^ (base+base+1)`. -/
+private theorem bpSparseLevelWidth_square_domain_le
+    (base : Nat) (hbase : 0 < base) :
+    bpSparseLevelWidth (bpSparseLevelDomain (base * base)) <=
+      (base + base + 1) + (base + base + 1) := by
+  have hD : bpSparseLevelDomain (base * base) = base * base + 2 := rfl
+  have hb2 : base < 2 ^ base := Nat.lt_two_pow_self
+  have hpowPos : 0 < 2 ^ base := Nat.pow_pos (by omega)
+  have hsq : base * base < 2 ^ base * 2 ^ base :=
+    Nat.mul_lt_mul_of_lt_of_le hb2 (Nat.le_of_lt hb2) hpowPos
+  have hsq' : base * base < 2 ^ (base + base) := by
+    simpa [Nat.pow_add] using hsq
+  have htwo2 : 2 <= 2 ^ (base + base) := by
+    have h : 2 ^ 1 <= 2 ^ (base + base) :=
+      Nat.pow_le_pow_right (by omega) (by omega)
+    simpa using h
+  have hsucc : 2 ^ (base + base + 1) = 2 ^ (base + base) * 2 := by
+    rw [Nat.pow_succ]
+  have hlt : bpSparseLevelDomain (base * base) < 2 ^ (base + base + 1) := by
+    rw [hD, hsucc]; omega
+  have hpos : 0 < bpSparseLevelDomain (base * base) := by rw [hD]; omega
+  exact bpSparseLevelWidth_le_two_mul_of_lt_two_pow hpos hlt
+
+/-- UNCONDITIONAL FIT, local instance. -/
+theorem bpSparseLevelLocalWidth_le_seven_machine
+    (shape : Cartesian.CartesianShape) :
+    bpSparseLevelWidth
+        (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize) <=
+      7 * SuccinctRank.machineWordBits shape.bpCode.length := by
+  have hmacroSize : (RelativeRmm.canonicalLayout shape).macroSize
+      = canonicalBPRelativeSummaryBase shape *
+          canonicalBPRelativeSummaryBase shape := rfl
+  have hbasePos : 0 < canonicalBPRelativeSummaryBase shape := by
+    simp [canonicalBPRelativeSummaryBase]
+  have hw := canonicalRelativeRmmBase_le_machine shape
+  have hwpos := SuccinctRank.machineWordBits_pos shape.bpCode.length
+  rw [hmacroSize]
+  have hmain := bpSparseLevelWidth_square_domain_le _ hbasePos
+  omega
+
+/-- UNCONDITIONAL FIT, global instance. -/
+theorem bpSparseLevelGlobalWidth_le_seven_machine
+    (shape : Cartesian.CartesianShape) :
+    bpSparseLevelWidth
+        (bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSampleCount) <=
+      7 * SuccinctRank.machineWordBits shape.bpCode.length := by
+  have hwpos := SuccinctRank.machineWordBits_pos shape.bpCode.length
+  have hself := SuccinctRank.self_lt_two_pow_machineWordBits shape.bpCode.length
+  have hcode : shape.bpCode.length = 2 * shape.size :=
+    Cartesian.CartesianShape.bpCode_length shape
+  have hsizeLt :
+      shape.size < 2 ^ SuccinctRank.machineWordBits shape.bpCode.length := by
+    omega
+  have hsample :
+      (RelativeRmm.canonicalLayout shape).macroSampleCount <=
+        shape.size + 1 := by
+    have hblock : (RelativeRmm.canonicalLayout shape).blockCount <= shape.size :=
+      Nat.div_le_self _ _
+    have hdiv :
+        (RelativeRmm.canonicalLayout shape).blockCount /
+            (RelativeRmm.canonicalLayout shape).macroSize <=
+          (RelativeRmm.canonicalLayout shape).blockCount :=
+      Nat.div_le_self _ _
+    have heq : (RelativeRmm.canonicalLayout shape).macroSampleCount =
+        (RelativeRmm.canonicalLayout shape).blockCount /
+          (RelativeRmm.canonicalLayout shape).macroSize + 1 := rfl
+    omega
+  have hstep :
+      2 ^ (SuccinctRank.machineWordBits shape.bpCode.length + 2) =
+        2 ^ SuccinctRank.machineWordBits shape.bpCode.length * 2 * 2 := by
+    rw [Nat.pow_succ, Nat.pow_succ]
+  have hD : bpSparseLevelDomain
+      (RelativeRmm.canonicalLayout shape).macroSampleCount =
+    (RelativeRmm.canonicalLayout shape).macroSampleCount + 2 := rfl
+  have hlt :
+      bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSampleCount <
+        2 ^ (SuccinctRank.machineWordBits shape.bpCode.length + 2) := by
+    rw [hD, hstep]; omega
+  have hpos :
+      0 < bpSparseLevelDomain
+        (RelativeRmm.canonicalLayout shape).macroSampleCount := by
+    rw [hD]; omega
+  have hmain := bpSparseLevelWidth_le_two_mul_of_lt_two_pow hpos hlt
+  omega
+
+
+/-- Macro crossing forces a genuine cube of real block capacity. -/
+private theorem canonicalRelativeRmmBase_cube_lt_size_of_macro_crossing
+    {shape : Cartesian.CartesianShape}
+    (hmacro : (RelativeRmm.canonicalLayout shape).macroSize <
+        (RelativeRmm.canonicalLayout shape).blockCount) :
+    canonicalBPRelativeSummaryBase shape *
+        (canonicalBPRelativeSummaryBase shape *
+          canonicalBPRelativeSummaryBase shape) < shape.size := by
+  have hbasePos : 0 < canonicalBPRelativeSummaryBase shape := by
+    simp [canonicalBPRelativeSummaryBase]
+  have hmacroRaw : canonicalBPRelativeSummaryBase shape *
+      canonicalBPRelativeSummaryBase shape <
+        shape.size / canonicalBPRelativeSummaryBase shape := hmacro
+  have hsucc : canonicalBPRelativeSummaryBase shape *
+      canonicalBPRelativeSummaryBase shape + 1 <=
+        shape.size / canonicalBPRelativeSummaryBase shape := by omega
+  have hscaled : (canonicalBPRelativeSummaryBase shape *
+      canonicalBPRelativeSummaryBase shape + 1) *
+        canonicalBPRelativeSummaryBase shape <= shape.size :=
+    (Nat.le_div_iff_mul_le hbasePos).mp hsucc
+  have hstrict : (canonicalBPRelativeSummaryBase shape *
+      canonicalBPRelativeSummaryBase shape) *
+        canonicalBPRelativeSummaryBase shape <
+      (canonicalBPRelativeSummaryBase shape *
+        canonicalBPRelativeSummaryBase shape + 1) *
+        canonicalBPRelativeSummaryBase shape :=
+    Nat.mul_lt_mul_of_pos_right (Nat.lt_succ_self _) hbasePos
+  exact Nat.lt_of_lt_of_le (by simpa [Nat.mul_assoc] using hstrict) hscaled
+
+private theorem canonicalRelativeRmmSize_lt_two_pow_base
+    (shape : Cartesian.CartesianShape) :
+    shape.size < 2 ^ canonicalBPRelativeSummaryBase shape := by
+  simpa [canonicalBPRelativeSummaryBase] using
+    (Nat.lt_log2_self (n := shape.size))
+
+private theorem canonicalRelativeRmmBase_ten_le_of_macro_crossing
+    {shape : Cartesian.CartesianShape}
+    (hmacro : (RelativeRmm.canonicalLayout shape).macroSize <
+        (RelativeRmm.canonicalLayout shape).blockCount) :
+    10 <= canonicalBPRelativeSummaryBase shape := by
+  have hcube := canonicalRelativeRmmBase_cube_lt_size_of_macro_crossing hmacro
+  have hsize := canonicalRelativeRmmSize_lt_two_pow_base shape
+  have hcubePow : canonicalBPRelativeSummaryBase shape *
+      (canonicalBPRelativeSummaryBase shape *
+        canonicalBPRelativeSummaryBase shape) <
+      2 ^ canonicalBPRelativeSummaryBase shape := by omega
+  by_cases hten : 10 <= canonicalBPRelativeSummaryBase shape
+  · exact hten
+  · exfalso
+    have hbasePos : 0 < canonicalBPRelativeSummaryBase shape := by
+      simp [canonicalBPRelativeSummaryBase]
+    have hcases : canonicalBPRelativeSummaryBase shape = 1 ∨
+        canonicalBPRelativeSummaryBase shape = 2 ∨
+        canonicalBPRelativeSummaryBase shape = 3 ∨
+        canonicalBPRelativeSummaryBase shape = 4 ∨
+        canonicalBPRelativeSummaryBase shape = 5 ∨
+        canonicalBPRelativeSummaryBase shape = 6 ∨
+        canonicalBPRelativeSummaryBase shape = 7 ∨
+        canonicalBPRelativeSummaryBase shape = 8 ∨
+        canonicalBPRelativeSummaryBase shape = 9 := by omega
+    rcases hcases with h | h | h | h | h | h | h | h | h <;>
+      rw [h] at hcubePow <;> simp_all <;> omega
+
+/-- TIGHT FIT ARITHMETIC, local: domain `base*base + 2` in one word. -/
+private theorem bpSparseLevelWidth_square_domain_le_succ
+    {base : Nat} (hbase : 10 <= base)
+    (hcube : base * (base * base) < 2 ^ base) :
+    bpSparseLevelWidth (bpSparseLevelDomain (base * base)) <= base + 1 := by
+  have hD : bpSparseLevelDomain (base * base) = base * base + 2 := rfl
+  have hbb : 100 <= base * base := by
+    have h := Nat.mul_le_mul hbase hbase
+    omega
+  have hten : 10 * (base * base) <= base * (base * base) :=
+    Nat.mul_le_mul_right (base * base) hbase
+  have hpos : 0 < bpSparseLevelDomain (base * base) := by rw [hD]; omega
+  have hDlt : bpSparseLevelDomain (base * base) < 2 ^ base := by rw [hD]; omega
+  have hlog : Nat.log2 (bpSparseLevelDomain (base * base)) + 1 <= base :=
+    natLog2_succ_le_of_pos_lt_pow hpos hDlt
+  have hmul : bpSparseLevelDomain (base * base) *
+      (Nat.log2 (bpSparseLevelDomain (base * base)) + 1) <=
+      bpSparseLevelDomain (base * base) * base :=
+    Nat.mul_le_mul_left _ hlog
+  have hexp : bpSparseLevelDomain (base * base) * base =
+      base * (base * base) + 2 * base := by
+    rw [hD, Nat.add_mul, Nat.mul_assoc]
+  have h2b : 2 * base <= base * (base * base) := by
+    have h1 : 2 * base <= base * base :=
+      Nat.mul_le_mul_right base (by omega : 2 <= base)
+    have h2 : 1 * (base * base) <= base * (base * base) :=
+      Nat.mul_le_mul_right (base * base) (by omega : 1 <= base)
+    omega
+  have hsucc : 2 ^ (base + 1) = 2 ^ base * 2 := by rw [Nat.pow_succ]
+  have hprod : bpSparseLevelDomain (base * base) *
+      (Nat.log2 (bpSparseLevelDomain (base * base)) + 1) < 2 ^ (base + 1) := by
+    rw [hsucc]; omega
+  exact bpSparseLevelWidth_le_of_prod_lt_two_pow hpos hprod
+
+/-- TIGHT FIT ARITHMETIC, global: sample domain in one word. -/
+private theorem bpSparseLevelWidth_sample_domain_le_succ
+    {base x size : Nat} (hbase : 10 <= base)
+    (hcube : base * (base * base) < 2 ^ base)
+    (hsize : size < 2 ^ base)
+    (hbx : base * x <= size) :
+    bpSparseLevelWidth (bpSparseLevelDomain (x + 1)) <= base + 1 := by
+  have hD : bpSparseLevelDomain (x + 1) = x + 3 := rfl
+  have hbb : 100 <= base * base := by
+    have h := Nat.mul_le_mul hbase hbase
+    omega
+  have hten : 10 * (base * base) <= base * (base * base) :=
+    Nat.mul_le_mul_right (base * base) hbase
+  have h10x : 10 * x <= base * x := Nat.mul_le_mul_right x hbase
+  have hpos : 0 < bpSparseLevelDomain (x + 1) := by rw [hD]; omega
+  have hDlt : bpSparseLevelDomain (x + 1) < 2 ^ base := by rw [hD]; omega
+  have hlog : Nat.log2 (bpSparseLevelDomain (x + 1)) + 1 <= base :=
+    natLog2_succ_le_of_pos_lt_pow hpos hDlt
+  have hmul : bpSparseLevelDomain (x + 1) *
+      (Nat.log2 (bpSparseLevelDomain (x + 1)) + 1) <=
+      bpSparseLevelDomain (x + 1) * base :=
+    Nat.mul_le_mul_left _ hlog
+  have hexp : bpSparseLevelDomain (x + 1) * base = x * base + 3 * base := by
+    rw [hD, Nat.add_mul]
+  have hcomm : x * base = base * x := Nat.mul_comm x base
+  have h3b : 3 * base <= base * (base * base) := by
+    have h1 : 3 * base <= (base * base) * base :=
+      Nat.mul_le_mul_right base (by omega : 3 <= base * base)
+    have h2 : (base * base) * base = base * (base * base) := by
+      rw [Nat.mul_assoc]
+    omega
+  have hsucc : 2 ^ (base + 1) = 2 ^ base * 2 := by rw [Nat.pow_succ]
+  have hprod : bpSparseLevelDomain (x + 1) *
+      (Nat.log2 (bpSparseLevelDomain (x + 1)) + 1) < 2 ^ (base + 1) := by
+    rw [hsucc]; omega
+  exact bpSparseLevelWidth_le_of_prod_lt_two_pow hpos hprod
+
+
+/-- ALL-SIZE FIT, local instance, under the route's own macro-crossing guard. -/
+theorem bpSparseLevelLocalWidth_le_machine_of_macro_crossing
+    {shape : Cartesian.CartesianShape}
+    (hmacro : (RelativeRmm.canonicalLayout shape).macroSize <
+        (RelativeRmm.canonicalLayout shape).blockCount) :
+    bpSparseLevelWidth
+        (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize) <=
+      SuccinctRank.machineWordBits shape.bpCode.length := by
+  have hmacroSize : (RelativeRmm.canonicalLayout shape).macroSize
+      = canonicalBPRelativeSummaryBase shape *
+          canonicalBPRelativeSummaryBase shape := rfl
+  have hten := canonicalRelativeRmmBase_ten_le_of_macro_crossing hmacro
+  have hcube := canonicalRelativeRmmBase_cube_lt_size_of_macro_crossing hmacro
+  have hsizePow := canonicalRelativeRmmSize_lt_two_pow_base shape
+  have hcubePow : canonicalBPRelativeSummaryBase shape *
+      (canonicalBPRelativeSummaryBase shape *
+        canonicalBPRelativeSummaryBase shape) <
+      2 ^ canonicalBPRelativeSummaryBase shape := by omega
+  have hsizePos : 0 < shape.size := by omega
+  have hmachine := canonicalRelativeRmmBase_succ_le_machine_of_size_pos (shape := shape) hsizePos
+  rw [hmacroSize]
+  exact Nat.le_trans
+    (bpSparseLevelWidth_square_domain_le_succ hten hcubePow) hmachine
+
+/-- ALL-SIZE FIT, global instance, under the route's own macro-crossing guard. -/
+theorem bpSparseLevelGlobalWidth_le_machine_of_macro_crossing
+    {shape : Cartesian.CartesianShape}
+    (hmacro : (RelativeRmm.canonicalLayout shape).macroSize <
+        (RelativeRmm.canonicalLayout shape).blockCount) :
+    bpSparseLevelWidth
+        (bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSampleCount) <=
+      SuccinctRank.machineWordBits shape.bpCode.length := by
+  have hten := canonicalRelativeRmmBase_ten_le_of_macro_crossing hmacro
+  have hcube := canonicalRelativeRmmBase_cube_lt_size_of_macro_crossing hmacro
+  have hsizePow := canonicalRelativeRmmSize_lt_two_pow_base shape
+  have hcubePow : canonicalBPRelativeSummaryBase shape *
+      (canonicalBPRelativeSummaryBase shape *
+        canonicalBPRelativeSummaryBase shape) <
+      2 ^ canonicalBPRelativeSummaryBase shape := by omega
+  have hsizePos : 0 < shape.size := by omega
+  have hmachine := canonicalRelativeRmmBase_succ_le_machine_of_size_pos (shape := shape) hsizePos
+  have hsample : (RelativeRmm.canonicalLayout shape).macroSampleCount =
+      shape.size / (canonicalBPRelativeSummaryBase shape *
+        (canonicalBPRelativeSummaryBase shape *
+          canonicalBPRelativeSummaryBase shape)) + 1 := by
+    show shape.size / canonicalBPRelativeSummaryBase shape /
+        (canonicalBPRelativeSummaryBase shape *
+          canonicalBPRelativeSummaryBase shape) + 1 = _
+    rw [Nat.div_div_eq_div_mul]
+  have hbasePos : 0 < canonicalBPRelativeSummaryBase shape := by omega
+  have hsqPos : 0 < canonicalBPRelativeSummaryBase shape *
+      canonicalBPRelativeSummaryBase shape := Nat.mul_pos hbasePos hbasePos
+  have hNle : canonicalBPRelativeSummaryBase shape <=
+      canonicalBPRelativeSummaryBase shape *
+        (canonicalBPRelativeSummaryBase shape *
+          canonicalBPRelativeSummaryBase shape) :=
+    Nat.le_mul_of_pos_right _ hsqPos
+  have hNdiv := Nat.mul_div_le shape.size
+    (canonicalBPRelativeSummaryBase shape *
+      (canonicalBPRelativeSummaryBase shape *
+        canonicalBPRelativeSummaryBase shape))
+  have hbx : canonicalBPRelativeSummaryBase shape *
+      (shape.size / (canonicalBPRelativeSummaryBase shape *
+        (canonicalBPRelativeSummaryBase shape *
+          canonicalBPRelativeSummaryBase shape))) <= shape.size :=
+    Nat.le_trans (Nat.mul_le_mul_right _ hNle) hNdiv
+  rw [hsample]
+  exact Nat.le_trans
+    (bpSparseLevelWidth_sample_domain_le_succ hten hcubePow hsizePow hbx)
+    hmachine
+
 theorem canonicalRelativeRmmMachineReadNatCosted_cost_le_eight
     {entries : List Nat} {width : Nat}
     {shape : Cartesian.CartesianShape}
