@@ -7,12 +7,13 @@ construction builds an advertised payload of length at most `2 * xs.length +
 overhead xs.length`, where `overhead` is little-o-linear. Every valid half-open RMQ query
 returns the exact leftmost range minimum answer under the repository's
 value-level list semantics, invalid or empty ranges return `none`, and the
-modeled query budget is the uniform charged-trace bound `142`. The final
+modeled query budget is the uniform charged-trace bound `210`. The final
 query also has a checked WordRAM trace/store/payload story: the costed query is
 the projection of a trace, successful reads are backed by counted flat payload
 words, event data are bounded in the model, no synthetic cost-only trace marker
 is used. One pre-execution physical word list, described by an exhaustive typed
-20-source universe including canonical close, erases exactly to that same
+22-source universe over logical segments `0..22`, with BP roles `0` and `19`
+sharing one physical source and canonical close included, erases exactly to that same
 public payload. The existing supplied-store evaluator runs through a checked
 adapter that reads a caller-supplied flat store at translated physical
 addresses. Canonical flat-physical execution refines logical execution while
@@ -30,13 +31,13 @@ primitive operands/results.
   canonical reviewer payload bound and exact physical erasure, direct
   positional physical backing for each successful read, exact answers through
   the canonical global trace, and that trace's non-synthetic-weight equalities
-  to trace length and `Costed.cost`, plus the uniform bound `142`.
+  to trace length and `Costed.cost`, plus the uniform bound `210`.
 - `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`: list-facing main theorem
   with one query-independent reviewer-manifest semantic packet, the inequality
   `buildPayload.length <= 2n + overhead`,
   `LittleOLinear overhead`, exact physical-word erasure to that same
   `buildPayload`, invalid-range rejection, exact valid RMQ answers, leftmost
-  ties, the checked equality `SuccinctClassic.queryCost = 142`, and the
+  ties, the checked equality `SuccinctClassic.queryCost = 210`, and the
   no-synthetic execution story. The payload is not padded to manufacture
   equality.
 - `RMQ.Headlines.succinctRMQFinalFullModelSoundness`: final trace/read-store/
@@ -71,6 +72,9 @@ primitive operands/results.
 - `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal`:
   the canonical modeled cost bound transfers to footprint-agreeing supplied
   stores.
+- `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`:
+  strong current vocabulary theorem proving every event in the accepted
+  canonical global trace is `readWord`.
 - `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`: entropy/Catalan
   lower-bound surface used for the matching information-theoretic story.
 
@@ -83,20 +87,27 @@ paper artifact should not cite it as such.
 ## Current Cost Boundary
 
 The canonical all-size reviewer trace has the principled charged-trace bound
-`142`, proved by
+`210`, proved by
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`
 and its numeric equality theorem. Its algebra is
-`2*13 + (2*4 + 2*4 + 30) + 4`. Every actual emitted event is proved to be
-`readWord`, `wordRank`, or `wordSelect`; the trace has no synthetic marker, so
+`2*35 + (2*11 + 2*37 + 33) + 11`. Every actual emitted event is proved to be
+`readWord` by
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`; the
+trace has no synthetic marker, so
 the `WordRAM.TraceEvent.nonSyntheticWeight` certificate sum equals both emitted
-trace length and the `Costed` cost of the same execution and is at most `142`.
+trace length and the `Costed` cost of the same execution and is at most `210`.
 `TraceResult.toCosted` itself charges trace length and would count a synthetic
 compatibility marker if one were present.
 Historical cost and execution profiles remain kernel-checked through
 `RMQ.Headlines.RMQCompatibility`, under aliases explicitly containing
 `Legacy` or `Compatibility`; that module is not imported by `RMQPaper`.
 
-The `142` result is scoped to the explicit charged-trace model. It
-charges payload reads and word-rank/select primitives, not controller
+The `210` result is scoped to the explicit charged-trace model. It
+charges payload reads, not controller
 arithmetic, branching, decoding, local scanning, or preprocessing. It is not a
 serialized-payload query theorem or conventional word-RAM complexity theorem.
+
+For history, `RMQ.SuccinctClassic.canonicalTransitionalQueryCost_eq` is
+literal-pinned at `328`. The current raw select/close expression is not that
+historical identity: it is separately exported as
+`RMQ.SuccinctClassic.liveCompatibilityQueryCost_eq`, with value `352`.

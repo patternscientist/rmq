@@ -124,8 +124,8 @@ and the headline axiom inventory.
   activated-at, threshold-free, exponent-first, and spaced/unspaced forms.
   Narrow role allowances keep explicit negation, historical records,
   compatibility companions, and proof-only sparse-local witnesses accepted.
-- `207` is the current principled canonical charged-trace bound, with exact
-  algebra `2*35 + (2*11 + 2*37 + 30) + 11 = 207` and cost equal to emitted
+- `210` is the current principled canonical charged-trace bound, with exact
+  algebra `2*35 + (2*11 + 2*37 + 33) + 11 = 210` and cost equal to emitted
   trace length. The current route is `readWord`-only: attempted payload reads
   are charged and `wordRank`/`wordSelect` remain compatibility-only
   constructors that are never emitted by this route. Controller operations
@@ -150,8 +150,12 @@ and the headline axiom inventory.
   route description, including `payload read or bounded word primitive`
   paraphrases, is historical or explicitly compatibility-labeled only.
 - `CLAIM-HISTORY-A07-COST`: retired current bounds `76` and `142` are historical only.
-- `328` is the historical checked transitional U2 bound, retained for audit
-  comparison rather than as the paper-facing cost.
+- `328` is the literal-pinned historical checked transitional U2 bound under
+  `RMQ.SuccinctClassic.canonicalTransitionalQueryCost_eq`, retained for audit
+  comparison rather than as the paper-facing cost. The current raw expression
+  is distinctly named `RMQ.SuccinctClassic.liveCompatibilityQueryCost` and
+  equals `352`; it is a compatibility value, not the historical identity or
+  the paper-facing `210` bound.
 - `4144`, Ready-regime `118`, the zero-block route, and `196727` are
   compatibility/history only, not the canonical reviewer execution.
 - W15's post-hoc physical-result construction and W17's static category join

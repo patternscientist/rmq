@@ -73,16 +73,17 @@ wraparound.
 The canonical component cap is:
 
 ```text
-2 * select13 + (2 * rank4 + 2 * endpointFringe4 + interior30) + rank4 = 76
+2 * select35 + (2 * rank11 + 2 * endpointFringe37 + interior33) + rank11 = 210
 ```
 
 The same execution proves:
 
-1. every emitted event is `readWord`, `wordRank`, or `wordSelect`;
+1. every emitted event is `readWord`, by the strong public theorem
+   `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`;
 2. the synthetic marker is absent;
 3. the `nonSyntheticWeight` sum equals event-list length;
 4. that sum equals the same execution's `Costed.cost`; and
-5. the sum is at most `76`.
+5. the sum is at most `210`.
 
 The construction-facing theorem
 `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
@@ -94,7 +95,7 @@ query semantics.
 The event language does not currently charge controller dispatch,
 input/register access, option tests, arithmetic, branches, fixed-width decode,
 local BP scans, candidate merges, trace assembly, or the public validity guard.
-The checked `76` result is therefore a charged-trace theorem. It is not a claim
+The checked `210` result is therefore a charged-trace theorem. It is not a claim
 about compiled Lean time or a complete conventional word-RAM instruction
 count.
 

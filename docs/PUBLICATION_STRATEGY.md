@@ -64,7 +64,7 @@ candidates, subject to the novelty search described below — are:
 ### P0 — proof blockers closed; paper/artifact work remains
 
 1. **Cost model constant.** The current reviewer route is uniform for every
-   size and has the checked principled charged-trace bound `76`, with exact
+   size and has the checked principled charged-trace bound `210`, with exact
    `nonSyntheticWeight` certificate, emitted-trace-length, and `Costed`
    accounting for the canonical no-synthetic trace.
    Earlier checked cost and dispatch declarations live in the explicit
@@ -123,7 +123,7 @@ side:
 all-size theorem is now in place, so the highest-leverage move is paper/artifact
 packaging: a referee-grade theorem map, claim-to-check table, novelty search,
 related-work calibration, and reproduction script that make the current
-charged-trace `76` impossible to confuse with the explicitly quarantined
+charged-trace `210` impossible to confuse with the explicitly quarantined
 compatibility chronology.
 
 ## 4a. Status update (2026-07-06)

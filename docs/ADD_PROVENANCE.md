@@ -8,8 +8,11 @@ still dispatched through Ready/Active/zero-block compatibility routes.
 
 The rejected W15 candidate embedded a concatenated component and one physical
 word list, but its reviewer-facing capstone mapped an already-computed logical
-value and trace; that was not physical execution. W17 replaces it with one
-typed 20-source manifest and the existing supplied-store evaluator behind an
+value and trace; that was not physical execution. The historical W17 checkpoint
+replaced it with one typed 20-source manifest. <!-- CLAIM-HISTORY-A07-SOURCE-COUNT -->
+The current B7 surface has 22 physical sources over logical segments `0..22`,
+with BP roles `0` and `19` sharing one source, and retains the existing
+supplied-store evaluator behind an
 adapter that actually reads the supplied flat store at checked translated
 addresses. The physical word list still erases exactly to public
 `buildPayload`. Canonical physical execution preserves the complete logical
@@ -22,8 +25,10 @@ guard the small-input failure mode. The public space theorem is the amended
 inequality `buildPayload.length <= 2*n + overhead n`, with little-o overhead
 and no padding to manufacture equality. Invalid or empty list ranges return
 `none` through one validity boundary. The cost was rederived honestly as the
-transitional sum `328`; the implementation did not pad reads to preserve `118`
-or a route-split constant.
+transitional sum `328`; that historical identity is now literal-pinned. The
+live raw expression is separately named and equals `352`; neither is the
+paper-facing current `210` bound. The implementation did not pad reads to
+preserve `118` or a route-split constant.
 
 The coordinator rejected W17's provenance subclaim: it classified
 an emitted segment with a static leaf map and then chose any closed-program
@@ -35,9 +40,14 @@ one global `getElem?` occurrence through its program instruction, folded state,
 component-local position, exact invocation, source, and offset. Symbolic
 closed-valid witnesses cover the large long-super and sparse-local sources;
 small witnesses cover the remaining sources and all shared-BP consumers. A
-common claim relation accepts successful sources and rejects fresh segment
-`21`, with a checked bridge where the positive and mutation quantifiers differ.
-The repeated-equal-event regression checks positions `0` and `12` separately.
+historical common claim relation accepts successful sources and rejects fresh
+segment `21`. <!-- CLAIM-HISTORY-A07-FRESH-SEGMENT -->
+The current manifest instead has live segment `21` and rejects fresh segment
+`23`, with a checked bridge where the positive and mutation quantifiers differ.
+The historical repeated-equal-event regression checked positions `0` and `12`.
+<!-- CLAIM-HISTORY-A07-TRACE-POSITIONS -->
+The current regression checks global positions `0` and `15`, produced by
+instruction positions `0` and `1`, separately.
 Coordinator acceptance remains separate from this candidate evidence and
 requires a fresh blind exact-commit audit.
 

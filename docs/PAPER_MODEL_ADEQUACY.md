@@ -126,13 +126,12 @@ every event of the accepted whole-query global word trace is a
 legacy/compatibility surfaces (the frozen 76/142/207 routes) but are never
 emitted by the accepted route.
 
-CORRECTION OF RECORD (charged sparse-level rung): `328` was previously listed
-here among the frozen routes.  It is NOT frozen.  `canonicalTransitionalQueryCost`
-is a LIVE symbolic abbrev over `canonicalCompactBPCloseQueryCostWithRankSeed`,
-which is in turn defined over the live `canonicalRelativeRmmInteriorQueryCost`;
-it therefore tracks the accepted route and moves whenever that cap moves.  The
-genuinely frozen whole-query constants are `76`, `142` and `207`, each of which
-names only pinned numeral components and so is invariant under a live cap move.
+CORRECTION OF RECORD (B7-R3): the public historical identity
+`RMQ.SuccinctClassic.canonicalTransitionalQueryCost_eq` is literal-pinned at
+`328`; it does not track live component definitions. The current raw
+select/close expression is separately and accurately named
+`RMQ.SuccinctClassic.liveCompatibilityQueryCost`, whose equality theorem gives
+`352`. The other retired whole-query constants remain pinned at `76`, `142`, and `207`. <!-- CLAIM-HISTORY-A07-COST -->
 
 The declared charge policy is therefore:
 
@@ -354,12 +353,11 @@ The current reviewer-route modeled bound is the principled charged-trace sum
 and evaluated by
 `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`. The sum is
 `2*select35 + (2*rank11 + 2*fringe37 + interior33) + rank11`, derived (never
-asserted) from the component algebra; the retired 142 (silent in-word
-rank/select), 76 (silent fringe), and 207 (silent sparse-level) literals stay
-frozen as historical constants with their chains still checked.  The
-transitional cap is NOT among them: it is live, and the charged sparse-level
-recharge moves it `328 -> 352` for the same reason it moves the interior
-component `30 -> 33`.
+asserted) from the component algebra. The literal-pinned historical identity is
+`canonicalTransitionalQueryCost = 328`; the current raw-expression
+compatibility value is distinctly named `liveCompatibilityQueryCost = 352`.
+The retired silent-route constants remain checked as history rather than as
+current-route bounds.
 The operational bridge classifies every event in the actual canonical trace as
 `readWord` (the readWord-only vocabulary theorem above), excludes
 `syntheticCostOnlyPrimitive`, and proves that the direct

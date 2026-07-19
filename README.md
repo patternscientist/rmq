@@ -67,22 +67,22 @@ for checked historical profiles under `Legacy`/`Compatibility` names.
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint` | List-facing supplied-store equality: under final footprint agreement with `SuccinctClassic.globalReadStore xs`, `SuccinctClassic.queryCostedWithStore xs store left right` is the same costed query as canonical `SuccinctClassic.queryCosted xs left right`. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store all-size cost transfer: under the same footprint agreement, the supplied-store query has modeled cost at most `SuccinctClassic.queryCost`. |
-| `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile` | Canonical construction-facing profile: doubled-Catalan space envelopes, the at-most `2*n + o(n)` canonical reviewer payload, exact physical-word erasure, direct positional physical backing for every successful read, exact queries through the same global trace, non-synthetic certificate weight equal to both trace length and its `Costed.cost`, and the uniform bound `207`. |
-| `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size execution-story theorem for the final succinct RMQ query: the costed query refines one globally segmented trace, every event is either a payload read or bounded word primitive, and every read agrees with one concrete global payload store. |
+| `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile` | Canonical construction-facing profile: doubled-Catalan space envelopes, the at-most `2*n + o(n)` canonical reviewer payload, exact physical-word erasure, direct positional physical backing for every successful read, exact queries through the same global trace, non-synthetic certificate weight equal to both trace length and its `Costed.cost`, and the uniform bound `210`. |
+| `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size execution-story theorem for the final succinct RMQ query: the costed query refines one globally segmented trace and every read agrees with one concrete global payload store. The stronger current event-vocabulary theorem is `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`: every emitted event is `readWord`. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | Store-extensional all-size execution story: any read store agreeing with the concrete global store on the emitted payload-read events validates the same final-query trace. |
-| `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` | Canonical all-size interior profile: exactness, component store, execution footprint, successful-read backing, and reviewer-width guarantees. The current execution has the separate charged-trace cap `30`; `240` remains the transitional interface cap. |
+| `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` | Canonical all-size interior profile: exactness, component store, execution footprint, successful-read backing, and reviewer-width guarantees. The current interior execution has the separate charged-trace cap `33`; `240` remains a conservative interface cap. |
 | `RMQ.Headlines.succinctRMQCanonicalReviewerMachineWordsComponentSlice` | Exact physical machine-word placement of the canonical component after the counted prefix. |
 | `RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits` | Every physical address consumed by the canonical interior execution fits the pre-execution reviewer word width. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Paper-facing theorem: the uniform canonical trace has charged-trace cost at most `207`. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Paper-facing theorem: the uniform canonical trace has charged-trace cost at most `210`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength` | Exact accounting bridge: modeled cost equals emitted charged-event trace length. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect` | Every event actually emitted by the canonical whole-query trace is a payload read, word-rank, or word-select event. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` | Strong current vocabulary theorem: every event actually emitted by the canonical whole-query trace is `readWord`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost` | For the canonical no-synthetic trace, the `WordRAM.TraceEvent.nonSyntheticWeight` certificate sum equals the `Costed` cost of the same execution. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe210` | The non-synthetic-weighted actual emitted trace is bounded by `210`. |
 | `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality` | Counterfactual check: a synthetic event anywhere in a trace makes its `nonSyntheticWeight` sum differ from its length. |
-| `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Component cap `2*select13 + (2*rank4 + 2*fringe4 + interior30) + rank4`; the actual-event bridge above connects it to execution. |
+| `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Component cap `2*select35 + (2*rank11 + 2*fringe37 + interior33) + rank11 = 210`; the actual-event bridge above connects it to execution. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | Uniform structural execution story with direct same-block decoding and canonical component-store cross-block replay. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | No-synthetic all-size execution story: the same bounded global trace contains no dedicated synthetic cost-only marker events. |
-| `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Canonical reviewer-payload no-synthetic execution story: successful reads are counted in one exhaustive typed 20-source universe, including canonical close, and cross-block replay is uniform for all sizes. |
+| `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Canonical reviewer-payload no-synthetic execution story: successful reads are counted in one exhaustive typed 22-source universe over logical segments `0..22`, including canonical close; BP roles `0` and `19` share one physical source, live segment `21` is present, segment `23` has no producer, and cross-block replay is uniform for all sizes. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical` | Genuine supplied flat-physical execution: the existing supplied-store evaluator reads the caller's flat store through checked address translation and refines the canonical logical execution, preserving value, cost, ordered successes/failures, repeated reads, and footprint. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint` | Agreement on the first physical execution's consumed ordered footprint determines the complete physical execution. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore` | Projection theorem: the flat physical answer is exactly the existing translated supplied-store evaluator answer. |
@@ -113,7 +113,7 @@ The provenance layer separates two semantic obligations: indexed occurrence
 provenance preserves invocation parameters for the exact current query, while
 a global packet proves every counted source has some actual successful
 closed-valid query witness under the same operational relation used to reject
-segment `21`. The canonical reviewer route has one live public payload,
+fresh segment `23`. The canonical reviewer route has one live public payload,
 `SuccinctClassic.buildPayload`. One pre-execution reviewer physical word list
 erases exactly to that payload. The existing supplied-store evaluator runs
 through a checked adapter that reads the supplied flat store at translated
@@ -133,11 +133,15 @@ dead-source addition, used-source removal, and mismatched consumer labels.
 Occurrence evidence starts from a global `getElem?` witness and retains
 the same position through the program instruction, folded pre-state, local
 component occurrence, and exact select/rank/close parameters. A checked
-singleton regression keeps the equal events at global positions `0` and `12`
+singleton regression keeps the equal events at global positions `0` and `15`,
+arising from producing instruction positions `0` and `1`,
 as distinct obligations. The source witnesses use actual successful closed
 valid executions, including symbolic large witnesses for sources `12`--`19`;
 component may-read and earlier event-value facts remain compatibility facts. The
-current charged-trace cap is `207` (the retired silent in-word rank/select cap `142` is frozen as `canonicalSilentWordRankSelectQueryCost`, and the earlier event-silent-fringe cap `76` as `canonicalSilentFringeQueryCost`); detailed earlier cost and dispatch
+current charged-trace cap is `210`. Historical comparison: the retired silent-sparse-level cap is `207`, the silent in-word rank/select cap is `142`, and the earlier event-silent-fringe cap is `76`. <!-- CLAIM-HISTORY-A07-COST -->
+The public `canonicalTransitionalQueryCost = 328` statement is literal-pinned
+history, while the current raw expression is distinctly named
+`liveCompatibilityQueryCost = 352`; detailed earlier cost and dispatch
 chronology lives only in the
 [`compatibility history`](docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md)
 and has no reverse edge into the reviewer route.
@@ -331,7 +335,7 @@ imports, this material):
 ## Current Development Docket
 
 The RMQ capstone is in place with the uniform canonical reviewer route and its
-principled all-size charged-trace cap `207`.
+principled all-size charged-trace cap `210`.
 Earlier cost and dispatch statements remain in the explicit
 [`compatibility history`](docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
 The development frontier is now to

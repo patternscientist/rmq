@@ -4117,3 +4117,71 @@ It does not re-derive the route literal. Commit A's `210` is EXPECTED to be
 recovered, and the width fix is what makes that possible, but REQ-B7-05 demands
 the literal be derived over the AMENDED route with the maximizing branch bound
 exhibited. That derivation is commit B's and is not claimed here.
+
+## DD-20260719-002: historical canonical 328 is literal-pinned; the live raw-expression compatibility cap is named 352 (B7-R3)
+
+Context. The public name
+`RMQ.SuccinctClassic.canonicalTransitionalQueryCost` historically denoted
+`328`, but the definition at the R3 base named live component constants and
+therefore reduced to `352`. Several direct consumers consequently attached
+`Compatibility328` vocabulary to propositions about the live `352` value.
+That silently rewrote an audit datum whenever a live component moved.
+
+Decision. Preserve the public historical name as the literal-pinned definition
+`328`, with
+`RMQ.SuccinctClassic.canonicalTransitionalQueryCost_eq :
+canonicalTransitionalQueryCost = 328`. Define the current raw component
+expression separately as `liveCompatibilityQueryCost`, with an exact `= 352`
+theorem. The source/store/full-model/list/headline layers each expose distinct
+historical-328 and live-352 bounds, and every `Compatibility328` declaration
+now has a checked proposition about `328`.
+
+Rejected alternatives. (1) Keeping the live expression under the historical
+name was rejected because the next component change would move history again.
+(2) Renaming the historical theorem was rejected because its stable public
+identity is itself part of the audit contract. (3) Deleting the live bound was
+rejected because it remains a useful compatibility comparison and because the
+trust inventory should retain semantic coverage rather than become green by
+subtraction.
+
+Consequences. Historical and live compatibility facts are intentionally not
+definitionally coupled. Consumers must choose which claim they mean; topology
+diagnostics and claim policy label both roles explicitly. The current paper
+cap remains `210`, so neither compatibility constant is a current capstone.
+Evidence is the exact `328`/`352` theorem pair in
+`SuccinctFinalRAM.lean` and `SuccinctRMQClassic.lean`, the paired supplied-store
+and full-model theorems, the paired headline aliases, and the WordRAM axiom
+inventory.
+
+## DD-20260719-003: one typed 21-case registry is the executable B7 replay contract (B7-R3)
+
+Context. The earlier cost harness stored windows inside fixtures and executed
+them recursively, but it had no stable case identity, no pinned pre/post cost
+pair, and no selector. A future filtered run could therefore execute zero cases
+and inherit the recursive base's successful result. Counting fixture windows
+in prose could not reject duplicates, reordering, or a missing load-bearing tie
+case.
+
+Decision. Make `replayRegistry : List ReplayCase` the sole default replay
+source. Each typed entry records stable ID, fixture, half-open window, exact
+answer, route, pre-repair cost, post-repair cost, and disposition. A separate
+literal ordered ID list, de-duplication check, pinned pre-cost vector, and
+disposition checks validate registry structure before query execution. The
+executor returns its actual count. Default mode requires 21 executions in
+registry order; `--case` requires exactly one match; unknown IDs and zero-match
+`--fixture` selections exit nonzero.
+
+Rejected alternatives. (1) A count-only assertion was rejected because a
+duplicate could replace a missing case. (2) Recomputing the pre-repair cost on
+the repaired tree was rejected because that destroys the comparison datum.
+(3) Keeping selectors outside the Lean executable was rejected because a shell
+filter could pass without invoking any case. (4) Spawning replay children from
+Lean was rejected; deadlines and process-tree ownership belong to the external
+verification layer, while the harness stays child-free.
+
+Consequences. The registry is deliberately duplicated only where independence
+is useful: expected IDs and pre-costs are literal guard vectors, while answers
+are also checked against the independent `List Int` reference semantics. The
+load-bearing interior leftmost-tie fixture is a named entry rather than a prose
+claim. Missing/duplicate IDs fail before execution, and known/unknown/zero
+selector controls provide mechanical non-vacuity evidence.

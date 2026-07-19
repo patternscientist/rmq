@@ -1,5 +1,5 @@
 {
-  "version": 18,
+  "version": 19,
   "updated": "2026-07-19",
   "currentFactSurfacePathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\\.md|RMQ_FINAL_ROADMAP\\.md))$",
   "terms": [
@@ -96,9 +96,17 @@
       "allowedLineRegex": ""
     },
     {
-      "id": "canonical-transitional-352",
+      "id": "historical-canonical-transitional-328",
+      "pattern": "\\b328\\b",
+      "status": "literal-pinned-historical-canonical-transitional-bound-not-paper-facing-current",
+      "strict": false,
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "live-compatibility-352",
       "pattern": "\\b352\\b",
-      "status": "historical-canonical-transitional-bound-not-paper-facing-current-table-and-export-enforcement-in-paper-topology-lint",
+      "status": "live-raw-expression-compatibility-bound-must-be-distinctly-named-not-paper-facing-current",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""

@@ -74,6 +74,19 @@ theorem listIntSuccinctRMQCompatibility328FinalFullModelCostLeOfFootprintGlobal
   RMQ.SuccinctClassic.listIntCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
     xs hfoot left right
 
+/-- List-facing transfer of the distinct live raw-expression `352` cap. -/
+theorem listIntSuccinctRMQCompatibility352FinalFullModelCostLeOfFootprintGlobal
+    (xs : List Int) {store : RMQ.WordRAM.ReadStore}
+    (hfoot :
+      RMQ.SuccinctClassic.storesAgreeOnFootprint xs store
+        (RMQ.SuccinctClassic.globalReadStore xs))
+    (left right : Nat) :
+    (RMQ.SuccinctClassic.queryCostedWithStore
+      xs store left right).cost <=
+        RMQ.SuccinctClassic.liveCompatibilityQueryCost :=
+  RMQ.SuccinctClassic.listIntLiveCompatibilityFinalFullModelCostLeOfFootprintGlobal
+    xs hfoot left right
+
 /-- Legacy conservative aggregate bound for the canonical global trace. -/
 abbrev succinctRMQLegacy196727WholeQueryGlobalWordTraceCostedCostLe :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le
@@ -84,7 +97,15 @@ abbrev succinctRMQCompatibility328WholeQueryGlobalWordTraceCostedCostLe :=
 
 /-- The compatibility transitional constant computes to `328`. -/
 abbrev succinctRMQCompatibility328QueryCostEq :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq
+  RMQ.SuccinctClassic.canonicalTransitionalQueryCost_eq
+
+/-- Distinct live raw-expression compatibility bound. -/
+abbrev succinctRMQCompatibility352WholeQueryGlobalWordTraceCostedCostLe :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_liveCompatibility
+
+/-- The distinct live compatibility constant computes to `352`. -/
+abbrev succinctRMQCompatibility352QueryCostEq :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQLiveCompatibilityQueryCost_eq
 
 /-- Compatibility-only route-split all-size bound `4144`. -/
 abbrev succinctRMQCompatibility4144WholeQueryGlobalWordTraceCostedCostLe :=
@@ -122,10 +143,24 @@ theorem succinctRMQCompatibility328FinalFullModelCostLeOfFootprintGlobal
     (left right : Nat) :
     (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
       shape store left right).cost <=
-        3 * RMQ.SuccinctSelect.sparseDenseFalseSelectQueryCost +
-          RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
-            RMQ.SuccinctSelect.sparseDenseFalseSelectQueryCost :=
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_canonicalTransitional
+    hfoot left right
+
+/-- Compatibility full-model transfer of the distinct live `352` cap. -/
+theorem succinctRMQCompatibility352FinalFullModelCostLeOfFootprintGlobal
+    {shape : RMQ.Cartesian.CartesianShape}
+    {store : RMQ.WordRAM.ReadStore}
+    (hfoot :
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store
+          (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore
+            shape))
+    (left right : Nat) :
+    (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left right).cost <=
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQLiveCompatibilityQueryCost :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_liveCompatibility
     hfoot left right
 
 /-- Compatibility size-premised global execution story. -/

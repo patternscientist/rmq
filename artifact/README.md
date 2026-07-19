@@ -142,8 +142,9 @@ things:
   performance;
 - a final global trace with no synthetic cost-only marker events;
 - one pre-execution physical word list erasing exactly to the public
-  `SuccinctClassic.buildPayload`, organized by one exhaustive typed 20-source
-  universe including canonical close;
+  `SuccinctClassic.buildPayload`, organized by one exhaustive typed 22-source
+  universe over logical segments `0..22`, with BP roles `0` and `19` sharing
+  one physical source and canonical close included;
 - genuine supplied flat-physical execution through the existing evaluator and
   a checked address-translation adapter, preserving results, cost, ordered
   successful and failed reads, repetitions, and footprint;
@@ -155,14 +156,15 @@ things:
   parameters, and multiplicity-preserving offset; separately, one
   query-independent manifest packet proves every counted source and shared-BP
   consumer has some successful closed-valid whole-query witness, and rejects
-  fresh segment `21` with the common predicate plus a checked
+  rejected fresh segment `23` with the common predicate plus a checked
   positive-to-mutation bridge;
 - coherent rejection of empty, reversed, and out-of-bounds ranges across the
   canonical, supplied-store, trace, and costed list surfaces;
 - a linear reviewer capacity and query-independent logarithmic word width
   bounding physical words, physical addresses, and primitive operands/results;
-- the checked principled all-size charged-trace query cap `76`: every actual
-  event is a payload read, word-rank, or word-select event, and direct event
+- the checked principled all-size charged-trace query cap `210`: the strong
+  theorem `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`
+  proves every actual event is `readWord`, and direct event
   weights equal both emitted trace length and the same execution's modeled
   cost; and
 - an information-theoretic Catalan/Cartesian-shape RMQ lower bound.
@@ -180,8 +182,11 @@ import examples.
 `lake exe rmq_succinct_classic_cost_harness` prints a compact reviewer-facing
 report for deterministic fixtures: input size, half-open query windows,
 returned answer, reference answer, canonical same-block/cross-block route,
-uniform `76` charged-trace bound, and the modeled `queryCosted.cost` trace/event
-count. Controller work remains uncharged; this harness is not a conventional
+the exact 21-case registry, uniform `210` charged-trace bound, and the modeled
+`queryCosted.cost` trace/event
+count. The registry records historical pre-cost, current post-cost, answer,
+route, and disposition under unique stable IDs. Controller work remains
+uncharged; this harness is not a conventional
 word-RAM runtime benchmark.
 
 The cost harness has an opt-in construction profile for larger experiments:

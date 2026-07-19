@@ -894,3 +894,257 @@ same frozen row rather than close it. No implementation obstruction exists:
 the required repair is to literal-pin historical `328`, introduce a distinct
 live-compatibility-`352` definition/theorem, and migrate the four paths above.
 That repair requires coordinator/user expansion of the write scope.
+
+## B7-R3 governed continuation (frozen before repair implementation)
+
+Worker `B7-R3` owns the local charged-sparse-level repair rung on branch
+`codex/b7-charged-sparse-level-r3` in the fresh worktree
+`C:\\Users\\poin\\Documents\\RMQ\\.worktrees\\b7-charged-sparse-level-r3`.
+The exact base is the two-parent join
+`14e38031a541bcaa2df8d67976078c76dbae975a`; its ordered parents are the
+unaccepted implementation checkpoint
+`16645c60792954b84ad588b56f5b56da720847df` and workflow governance
+`986e8066f9b93f6576edd20e6d25e363eb029fa1`. The governed
+`rmq-proof-sprint` preflight passed before this freeze and before any
+implementation edit.
+
+This continuation changes no acceptance ID, wording, quantifier, or object.
+The frozen non-stretch contract remains `REQ-B7-00`--`REQ-B7-10`,
+`INV-STORE-IDENTITY`, `INV-VALUE-DEPENDENCY`, `INV-NO-SYNTHETIC`,
+`INV-ALL-SIZE`, `INV-PUBLIC-COMPOSITION`, `CHK-01`--`CHK-08`, and every
+B7-R1 row from `REQ-B7R1-TIGHTNESS-WITNESS` through
+`REPLAY-SUBPROCESS-DEADLINE`. `STRETCH-01` remains explicitly deferred.
+The four R2-blocking consumers are now authorized:
+`RMQ/Core/SuccinctFinalStoreParam.lean`,
+`RMQ/Core/SuccinctFinalModelAdequacy.lean`,
+`RMQ/Headlines/RMQCompatibility.lean`, and
+`RMQ/Validation/SuccinctClassic.lean`.
+
+The join target is one clean candidate carrying the canonical reachable
+same-object source/store/accepted-query/structural-trace chain with exact cost
+`33`. Its rejected predicate is `cost <= 30` on the identical execution;
+neither a `<= 33` bound nor a different aggregate object is evidence. The
+separate value-dependency corruption challenge remains independent. Historical
+`canonicalTransitionalQueryCost = 328` is literal-pinned under its public name;
+the live raw-expression value `352` receives a distinct accurate definition
+and theorem, and every direct consumer is migrated explicitly.
+
+The replay target is one typed ordered registry whose literal expected-ID list
+contains exactly 21 unique IDs and whose entries freeze exact answer, route,
+pre-cost, post-cost, and disposition. Default execution must run those 21 in
+registry order; a known exact selector must execute exactly one case; unknown
+and zero-match selectors must exit nonzero. Count-only checks and the empty
+recursive base are not acceptance evidence. External verification stages use
+positive observed-runtime-based deadlines and owned cleanup; the Lean harness
+remains child-free.
+
+### B7-R3 final-evidence ledger
+
+All rows below are `Planned` until recorded against the final unchanged
+candidate. Inherited checkpoint builds and prose are diagnostic only.
+
+| Class | Exact command/evidence | Frozen rows / anti-vacuity | Deadline |
+|---|---|---|---:|
+| Development | focused `lake env lean` on each changed Lean source and its direct consumer | Exact propositions, composition chain, and typechecking | observed runtime plus cold-cache margin |
+| Final | `lake build RMQ RMQPaper RMQExamples` once on the unchanged final tree | `CHK-01`--`CHK-04`, public composition | 45m |
+| Final | `lake env lean scripts/wordram_axiom_check.lean` and `lake env lean scripts/headline_axiom_check.lean` | `REQ-B7R1-WORDRAM-AXIOM-GATE`, `CHK-05` | 20m each |
+| Final | default harness plus known, unknown, and zero-match selector controls | `CHK-04`, `REPLAY-EXACT-REGISTRY`, `REPLAY-SELECTOR-NONVACUITY`, `INV-HALF-OPEN-LEFTMOST` | 20m each |
+| Final | `powershell -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -Strict` | all 18 registered current surfaces, `CHK-08` | 10m |
+| Conditional | `powershell -ExecutionPolicy Bypass -File scripts/claim_drift_policy_regression.ps1` iff policy changes | policy anti-bypass | 15m |
+| Final | `powershell -ExecutionPolicy Bypass -File scripts/paper_topology_lint.ps1` | topology and historical/live symbol roles | 15m |
+| Final | strict design-decision checks with bases `14e38031a541bcaa2df8d67976078c76dbae975a` and `f6564ec` | `CHK-07`, original-rung history | 10m each |
+| Final | hygiene scans required by `AGENTS.md` | `REQ-B7-10`, `CHK-05` | 5m |
+| Final | `git diff --check`; `git diff --check 14e38031a541bcaa2df8d67976078c76dbae975a..HEAD`; `git diff --check f6564ec..HEAD` | `REQ-B7R1-COMMITTED-DIFF-HYGIENE`, `CHK-06` | 2m each |
+| Final | exact changed-path inventory and clean `git status --short --branch` | closed write scope, `COMPLETE-B7R1-EVIDENCE` | 2m |
+
+The aggregate gate, `scripts/axiom_check.lean`, and the unrelated A07 validator
+remain excluded. A timeout is classified only after inspecting its owned
+process tree, artifacts, prerequisites, and narrow failing surface; an
+unchanged quiet command is never blindly repeated.
+
+## B7-R3 final-candidate evidence reconstruction
+
+This section is append-only evidence for the unchanged frozen rows. It does
+not edit a requirement or record coordinator acceptance. The candidate commit
+cannot contain its own hash or post-commit command results; the exact hash and
+exact-commit certification ledger are therefore reported in the B7-R3 handoff
+after this evidence packet is committed and the tree is clean.
+
+### Exact proposition packets and object chains
+
+The charged-table domain and decoded values are universal, not sampled:
+
+```lean
+bpSparseLevelDomain_covers :
+  count <= bound -> count < bpSparseLevelDomain bound
+
+bpSparseLevelCell_div :
+  2 <= domain -> i < domain ->
+    bpSparseLevelCell domain i / domain = Nat.log2 i
+
+bpSparseLevelCell_mod :
+  2 <= domain -> i < domain ->
+    bpSparseLevelCell domain i % domain = bpSparseLogSpan i
+```
+
+`readCellCosted_erase_div` and `readCellCosted_erase_mod` lift those equalities
+to the actual table read. The executed
+`canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_refines` and
+global twin equate the canonical flat-store computations to the accepted
+costed two-span objects. The dispatcher then reaches
+`canonicalRelativeRmmInteriorRangeMinCostedWithStore_erase_exact`, whose exact
+conclusion is the accepted pair
+`some (bpRangeMinExcess shape blockSize startBlock count,
+bpRangeArgMinPrefixPos shape blockSize startBlock count)`.
+
+The tightness packet is one composition chain, not a conjunction of sibling
+objects:
+
+```text
+canonical size-3469 right-spine shape and List representative
+  -> valid List window [1704,3469), closes 3409 and 6937
+  -> endpoint blocks 142 and 289
+  -> accepted middle invocation (startBlock,count)=(143,146)
+  -> canonical component-store execution
+  -> exact interior cost = 33 and footprint length = 33
+  -> segment-20 structural trace cost = trace.length = 33
+  -> Not (cost <= 30) on that same trace
+```
+
+The source propositions are
+`canonicalRelativeRmmInteriorCost33Witness_exact`,
+`canonicalRelativeRmmInteriorCost33Witness_not_cost_le_thirty`,
+`canonicalRelativeRmmInteriorCost33Witness_store_exact`,
+`canonicalRelativeRmmInteriorCost33Witness_footprint_length`, and
+`canonicalRelativeRmmInteriorCost33Witness_store_erase_exact`. The direct
+accepted consumer propositions are
+`concreteBPNativeB7Cost33Witness_query_geometry`,
+`concreteBPNativeB7Cost33Witness_acceptedMiddleInvocation`, and
+`concreteBPNativeB7Cost33Witness_interiorTrace_exact`.
+
+The value-dependency packet is the separate proposition
+`canonicalRelativeRmmInteriorCost33LocalLevelDrop_changes_returned_candidate`.
+For the identical canonical shape and `(0,1)` query it concludes both exact
+read memberships, the canonical accepted `some` result, the dropped-store
+`none` result, and inequality of those two returned `Option (Nat x Nat)`
+values. The two stores differ only at the one-word local-level address
+`offsets.localLevel + 1`. Thus P and Q have identical shape, query, guards, and
+quantifiers; Q is rejected at the returned value rather than only in a log.
+
+Store/public composition is literal:
+
+```text
+local/global charged level tables
+  -> canonicalRelativeRmmInteriorComponentStore
+  -> canonicalRelativeRmmInteriorComponentStore_flattens_payload
+  -> canonicalClose reviewer source
+  -> concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases
+  -> concreteBPNativeSuccinctRMQCanonicalReviewerPayload
+  -> SuccinctClassic.buildPayload
+  -> SuccinctClassic.buildPayload_length and overhead_littleO
+```
+
+The charged level part satisfies
+`canonicalRelativeRmmInteriorLevelPartOverhead_littleO`; the complete raw
+directory satisfies
+`canonicalRelativeRmmInteriorRawPayloadOverhead_littleO` and
+`canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear : ... <=
+527*(n+1)`; the public profile retains exactly
+`buildPayload.length <= 2*n + overhead n` with `LittleOLinear overhead`.
+Amendment 1 remains authoritative: the level words extend the existing
+canonical-close component/source rather than minting a synthetic segment.
+
+Current cost/history propositions are disjoint:
+
+```lean
+concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq :
+  concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 210
+
+RMQ.SuccinctClassic.canonicalTransitionalQueryCost_eq :
+  canonicalTransitionalQueryCost = 328
+
+RMQ.SuccinctClassic.liveCompatibilityQueryCost_eq :
+  liveCompatibilityQueryCost = 352
+```
+
+The first theorem is `rfl` over
+`2*35 + (2*11 + 2*37 + 33) + 11`. Historical `328` is literal-pinned and is
+therefore definitionally independent of every live component. The live raw
+expression is named `352` at the source, store-parametric, adequacy, classic,
+headline, validation, example, topology, and trust consumers. No checked
+`Compatibility328` proposition mentions the live raw expression.
+
+The current physical/public surface reconstructs these checked facts:
+
+- `concreteBPNativeSuccinctRMQReviewerPhysicalSources_length = 22` and
+  `Nodup`; logical segment map exactly `0..22`; segments `0` and `19` resolve
+  to the single `.sharedBPCode` source;
+- segment `21` is live and the counterfactual source at fresh segment `23`
+  has no operational producer;
+- repeated equal successful events retain distinct indexed receipts at
+  global positions `0` and `15`, arising from instruction positions `0` and
+  `1`;
+- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only`
+  concludes `forall event, event in trace -> event.isReadWord`; the exact
+  public alias is
+  `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`.
+
+The current-surface inventory is derived from
+`docs/internal/CLAIM_DRIFT_POLICY.json.currentFactSurfacePathRegex` and has
+exactly 18 paths: `README.md`, `artifact/CLAIMS.md`, `artifact/README.md`,
+`docs/FAMILY_SUMMARY.md`, `docs/PAPER_CLAIM_CORRESPONDENCE.md`,
+`docs/PAPER_MAIN_THEOREM.md`, `docs/PAPER_MODEL_ADEQUACY.md`,
+`docs/PAPER_RELATED_WORK.md`, `docs/PAPER_THEOREM_MAP.md`,
+`docs/PUBLICATION_STRATEGY.md`, `docs/RELATED_WORK_AND_LIMITATIONS.md`,
+`docs/ROADMAP.md`, `docs/TRUST_AUDIT_PACKET.md`, `docs/WHAT_IS_PROVED.md`,
+`docs/WORD_RAM_REVIEW_PACKET.md`,
+`docs/digests/PROJECT_DIGESTION_CURRENT.md`,
+`docs/internal/CLAIM_DRIFT_POLICY.md`, and
+`docs/internal/RMQ_FINAL_ROADMAP.md`. `docs/ADD_PROVENANCE.md` is additionally
+repaired as an explicitly scoped provenance dependency outside that
+regex-based count.
+
+### Every frozen non-stretch row mapped on the candidate content
+
+| Frozen row | Exact candidate evidence and rejected challenge | Candidate disposition |
+|---|---|---|
+| `REQ-B7-00` | DD-20260718-012 is in ancestry before the mechanism implementation. It rejects a pre-span free read by read order: the runtime level forms the later sparse-cell address; mechanisms 2/4 are rejected by the recorded checked arithmetic/size facts. | Evidence complete; coordinator acceptance pending. |
+| `REQ-B7-01` | `bpSparseLevelDomain_covers`; two separate local/global instantiations; `canonicalRelativeRmmInteriorLevelPartOverhead_littleO`; raw capacity `<=527*(n+1)`. Missing/duplicate-domain Q cannot discharge the executed-read refinement. | Evidence complete; coordinator acceptance pending. |
+| `REQ-B7-02` | Exact division and remainder projections, their `readCellCosted` lifts, local/global executed-computation refinement, and dispatcher/store erasure exactness give the full returned `Option (Nat x Nat)` at every reachable site. Sample-only, level-only, and added-readiness Qs do not match these universal theorem types. | Evidence complete; coordinator acceptance pending. |
+| `REQ-B7-03` | `canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment_refines`, `_matchesReadStore`, and `_no_syntheticCostOnlyPrimitive`, plus the AllSizeStructural and WithStore `_eq_of_agree`/`_refines_of_agree`/`_store_parametric`/`_matchesReadStore` twins, map execution-ordered `FlatStoreExecution.reads` positionally. The decisive theorem records the level address in both actual read lists. | Evidence complete; coordinator acceptance pending. |
+| `REQ-B7-04` | Per Amendment 1, no new segment/source: the level table extends the counted canonical-close component. Component-store flattening, reviewer physical erasure/capacity, counted-source producer may-path, occurrence/value provenance, live segment `21`, and fresh `23` rejection remain in the same adequacy/public packet. | Evidence complete; coordinator acceptance pending. |
+| `REQ-B7-05` | The live literal is `rfl`-derived `210`; exact same-object cost `33` and rejected `<=30` prove the three-unit movement is executed, not slack. Frozen `207` remains historical. Mutating the live interior component breaks the `=210` derivation but cannot move historical `207`. | Evidence complete; coordinator acceptance pending. |
+| `REQ-B7-06` | Executed level words are in the flattened counted store; level/raw/public overheads are `LittleOLinear`; public payload theorem retains exactly `<=2*n+overhead n`; all-size capacity path includes the `218 -> 527` directory-envelope migration. The two-payload Q fails the literal erasure/object chain. | Evidence complete; coordinator acceptance pending. |
+| `REQ-B7-07` | The source theorem universally concludes `isReadWord` on the amended whole-query trace; the exact headline alias points to it. The weaker three-constructor theorem has a different type and is labeled compatibility-only. | Evidence complete; coordinator acceptance pending. |
+| `REQ-B7-08` | `docs/PAPER_MODEL_ADEQUACY.md` names the charged sparse-level leg, exact bridge lemmas/caps, representation-versus-algorithmic-work distinction, model categories, and residual assumptions; strict claim/topology checks are the executable consumers. | Evidence complete subject to final exact-commit scans. |
+| `REQ-B7-09` | R3 is one atomic final candidate over the joined checkpoint: source, consumers, trust, replay, docs, and hygiene artifact commit together; no counted-but-unread source is introduced. The single final aggregate build certifies the committed tree. | Evidence complete subject to final exact-commit aggregate. |
+| `REQ-B7-10` | WordRAM inventory retains and extends semantic coverage; forbidden-token/native-decision scans, three diff checks, two strict decision checks, strict claim scan, and topology lint are run on the exact candidate. Forbidden aggregate `gate.ps1`/`axiom_check.lean` remain untouched/unrun. | Evidence complete subject to final exact-commit commands. |
+| `INV-STORE-IDENTITY` | The object chain above is exact: the same local/global level-table terms feed both `machineReadComputationAt` and `canonicalRelativeRmmInteriorComponentStore`, whose erasure reaches `buildPayload`. | Evidence complete; two-payload challenge rejected. |
+| `INV-VALUE-DEPENDENCY` | `canonicalRelativeRmmInteriorCost33LocalLevelDrop_changes_returned_candidate` places the one changed word in both actual read logs and proves canonical `some` versus dropped `none` on the identical shape/query. | Evidence complete; trace-only challenge rejected. |
+| `INV-NO-SYNTHETIC` | Interior and whole-query `_no_syntheticCostOnlyPrimitive` theorems plus the strong readWord-only theorem classify every charged unit as a supplied-store read; the decisive read value changes the returned value. | Evidence complete; decorative-read challenge rejected. |
+| `INV-ALL-SIZE` | Domain/projection/refinement theorems quantify over all shapes/counts under route bounds, including cell `0`; no `Ready`/threshold dispatch is added. Empty/invalid public queries remain guarded pure `none`. | Evidence complete; hidden-threshold challenge rejected. |
+| `INV-PUBLIC-COMPOSITION` | `listInt_two_n_plus_o_constant_query_profile` combines `overhead_littleO`, the same `buildPayload`, guarded query cost, invalid semantics, exact answer, and leftmost result; downstream adequacy/headline consumers use the amended execution. | Evidence complete; sibling-object conjunction challenge rejected. |
+| `CHK-01` | Exact command: `lake build RMQ RMQPaper RMQExamples`, once after the content/ledger freeze and commit. | Post-commit certification recorded in handoff. |
+| `CHK-02` | `lake env lean scripts/wordram_axiom_check.lean` includes the new corruption theorem, exact 33 chain, 210, historical 328, live 352, and strong read-only surface; stabilized-source run exited 0. | Evidence complete; repeated post-commit only if required by source change. |
+| `CHK-03` | Exact command: `lake env lean scripts/headline_axiom_check.lean` after the aggregate supplies the top-level olean. | Post-commit certification recorded in handoff. |
+| `CHK-04` | Typed 21-entry exact registry; default, known exact ID, unknown ID, and zero-match fixture controls. A timeout caused by later-started external builds is classified and cleaned in `B7_WORKLOG.md`; successful exact controls are required before commit. | Evidence complete subject to successful contention-free replay. |
+| `CHK-05` | Required forbidden-token scan and `native_decide|Lean.ofReduceBool` scan over the final candidate. | Post-content-freeze results recorded below/in handoff. |
+| `CHK-06` | Working diff, `14e38031..HEAD`, and `f6564ec..HEAD` exact diff checks. The WIP artifact is a real zero-context nine-path `65c6ab3..c45e62c` patch, replayed with native `patch.exe` in an isolated extraction and verified by nine exact target blob hashes; skip-only `git apply` output was rejected as vacuous. | Evidence complete subject to post-commit exact ranges. |
+| `CHK-07` | Strict decision checks against exact base `14e38031...` and original `f6564ec`; DD-20260719-002/003 and WDD-20260719-008 cover the semantic/process choices. | Evidence complete subject to final rerun. |
+| `CHK-08` | Strict registry-derived claim scan (policy regression because the policy changed) and topology lint distinguish current 210, historical 328, live 352, and the strong read-only identity. | Evidence complete subject to final rerun. |
+| `REQ-B7R1-TIGHTNESS-WITNESS` | Exact source/store/accepted-query/structural-trace chain above concludes `cost=33`, `trace.length=33`, and `Not(cost<=30)` on the identical reachable object. A bare `<=33` theorem is not cited. | Evidence complete; coordinator acceptance pending. |
+| `REQ-B7R1-HISTORICAL-328-IDENTITY` | Required public name concludes literal `=328`; live raw expression has distinct `liveCompatibilityQueryCost=352`; every inventoried direct consumer is migrated. | Evidence complete; mislabeled-352 challenge rejected. |
+| `REQ-B7R1-WORDRAM-AXIOM-GATE` | Curated inventory retains live/historical/public coverage and adds the decisive value theorem; command exits 0. No check was deleted to obtain green. | Evidence complete. |
+| `REQ-B7R1-COMMITTED-DIFF-HYGIENE` | Truthful WIP replay plus all exact diff checks. The original malformed-whitespace artifact is repaired rather than waived or allowlisted. | Evidence complete subject to post-commit exact ranges. |
+| `REQ-B7R1-CURRENT-PUBLIC-SURFACES` | Exact 18-path regex inventory above plus repaired `ADD_PROVENANCE`; checked current algebra/source/segment/position/read-only facts; precise frozen history allowed only in historical context. | Evidence complete subject to final strict scan/lint. |
+| `INV-B7-CHARGED-SPARSE-LEVEL` | Projection, executed refinement, positional reads, exact erasure, one-word crossing width, same store, producer packet, 527 capacity, and public little-o chain are all named above; the decisive corruption closes the returned-value subchallenge. | Evidence complete; coordinator acceptance pending. |
+| `INV-B7-READWORD-ONLY` | Exact source theorem and exact headline alias are separate from the weaker compatibility vocabulary on every current surface. | Evidence complete. |
+| `INV-HALF-OPEN-LEFTMOST` | `queryCosted_exact`, `queryCosted_leftmost`, and `queryCosted_invalid` retain guarded half-open List semantics. Registry entries pin empty, reversed, out-of-bounds, singleton, threshold/tie, and live-interior leftmost cases against independent `expectedAnswer`. | Evidence complete subject to final replay. |
+| `COMPLETE-B7R1-EVIDENCE` | This append-only map, the command ledger, the four-part proof digestion in `B7_WORKLOG.md`, one staged/committed intended path set, exact post-commit checks, and clean status form the candidate packet. | Candidate completion only; roadmap/coordinator audit remains open. |
+| `REPLAY-EXACT-REGISTRY` | `replayRegistry`, `expectedRegistryIds`, and `expectedPreRepairCosts` jointly require exactly 21 ordered unique IDs and exact answer/route/pre/post/disposition fields before execution. Removing or duplicating an ID makes structure validation fail. | Evidence complete subject to final replay. |
+| `REPLAY-SELECTOR-NONVACUITY` | Default selects registry; known `interior-full-leftmost` must report `1/1`; unknown case and zero-match fixture must exit `4`; selection count `0` is rejected before success. | Evidence complete subject to final replay. |
+| `REPLAY-SUBPROCESS-DEADLINE` | Harness is child-free. External stages use positive deadlines; the 1204.1s contention timeout was inspected, classified, cleaned by exact owned PIDs, and not blindly duplicated. Final status verifies no survivor/scratch path. | Evidence complete; final clean check pending. |
+
+`STRETCH-01` remains explicitly deferred. Nothing in the candidate claims a
+complete mechanized inventory of all remaining uncharged computation, and its
+absence does not weaken or substitute for any non-stretch row.

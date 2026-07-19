@@ -162,13 +162,13 @@ $retiredAliasReplacements = [ordered]@{
   'succinctRMQTwoNPlusOConstantQueryGlobalWordTraceLargeRegime' =
     'succinctRMQLegacy196727LargeRegimeGlobalWordTraceTwoNPlusOConstantQuery'
   'listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal' =
-    'listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal or listIntSuccinctRMQCompatibility328FinalFullModelCostLeOfFootprintGlobal'
+    'listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal, listIntSuccinctRMQCompatibility328FinalFullModelCostLeOfFootprintGlobal (historical 328), or listIntSuccinctRMQCompatibility352FinalFullModelCostLeOfFootprintGlobal (live expression)'
   'succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe' =
-    'succinctRMQWholeQueryGlobalWordTraceCostedCostLe or succinctRMQCompatibility328WholeQueryGlobalWordTraceCostedCostLe'
+    'succinctRMQWholeQueryGlobalWordTraceCostedCostLe, succinctRMQCompatibility328WholeQueryGlobalWordTraceCostedCostLe (historical 328), or succinctRMQCompatibility352WholeQueryGlobalWordTraceCostedCostLe (live expression)'
   'succinctRMQCanonicalTransitionalQueryCostEq' =
-    'succinctRMQQueryCostEq or succinctRMQCompatibility328QueryCostEq'
+    'succinctRMQQueryCostEq, succinctRMQCompatibility328QueryCostEq (historical 328), or succinctRMQCompatibility352QueryCostEq (live 352)'
   'succinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal' =
-    'succinctRMQPrincipledAllSizeChargedTraceFinalFullModelCostLeOfFootprintGlobal or succinctRMQCompatibility328FinalFullModelCostLeOfFootprintGlobal'
+    'succinctRMQPrincipledAllSizeChargedTraceFinalFullModelCostLeOfFootprintGlobal, succinctRMQCompatibility328FinalFullModelCostLeOfFootprintGlobal (historical 328), or succinctRMQCompatibility352FinalFullModelCostLeOfFootprintGlobal (live expression)'
   'succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory' =
     'succinctRMQCompatibilityLargeRegimeGlobalPayloadStoreExecutionStory'
   'succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory' =

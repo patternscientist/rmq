@@ -74,8 +74,10 @@ the next data-structure spoke.
 The current cost derivation is landed within the explicit charged-trace model:
 the canonical all-size execution
 has the checked charged-trace algebra
-`2*13 + (2*4 + 2*4 + 30) + 4 = 76`. Its actual emitted events are classified
-as reads/ranks/selects, exclude the synthetic fallback, and have direct weight
+`2*35 + (2*11 + 2*37 + 33) + 11 = 210`. Its actual emitted events are all
+`readWord` by
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`, exclude
+the synthetic fallback, and have direct weight
 sum equal to both trace length and the `Costed` cost of the same execution.
 This does not close the later E1 fully charged small-step machine, M1 serialized
 payload query, preprocessing, or conventional word-RAM obligations.

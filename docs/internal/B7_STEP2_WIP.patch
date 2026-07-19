@@ -2,21 +2,12 @@ diff --git a/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDir
 index 499cbe5..c420702 100644
 --- a/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean
 +++ b/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean
-@@ -1507,7 +1507,9 @@ def canonicalRelativeRmmInteriorDirectoryPayloadLength
-     (shape : Cartesian.CartesianShape) : Nat :=
-   (canonicalRelativeRmmSummaryTable shape).payload.length +
-     (canonicalRelativeRmmInteriorLocalTable shape).payload.length +
+@@ -1510 +1510,3 @@ def canonicalRelativeRmmInteriorDirectoryPayloadLength
 -      (canonicalRelativeRmmInteriorGlobalTable shape).payload.length
 +      (canonicalRelativeRmmInteriorGlobalTable shape).payload.length +
 +        (canonicalRelativeRmmInteriorLocalLevelTable shape).payload.length +
 +          (canonicalRelativeRmmInteriorGlobalLevelTable shape).payload.length
- 
- 
- /-- Machine-word stores for the four summary fields in payload order. -/
-@@ -1545,30 +1547,58 @@ def canonicalRelativeRmmGlobalMachineStore
-   let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
-   exact table.table.machineStore hword
- 
+@@ -1547,0 +1550,20 @@ def canonicalRelativeRmmGlobalMachineStore
 +/-- Machine-word store for the charged local level/span table (B7). -/
 +def canonicalRelativeRmmLocalLevelMachineStore
 +    (shape : Cartesian.CartesianShape) :
@@ -37,33 +28,24 @@ index 499cbe5..c420702 100644
 +  let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
 +  exact table.table.machineStore hword
 +
- /--
+@@ -1549 +1571 @@ def canonicalRelativeRmmGlobalMachineStore
 -One canonical bounded store for all six fixed-width tables, in counted
 +One canonical bounded store for all eight fixed-width tables, in counted
- directory-payload order: baseline, relative minimum, relative maximum,
+@@ -1551 +1573,2 @@ directory-payload order: baseline, relative minimum, relative maximum,
 -arg-min offset, local sparse offset, global sparse block.
 +arg-min offset, local sparse offset, global sparse block, local charged
 +level/span, global charged level/span.
- -/
- def canonicalRelativeRmmInteriorComponentStore
-     (shape : Cartesian.CartesianShape) :
-     let summary := canonicalRelativeRmmSummaryTable shape
-     let localTable := canonicalRelativeRmmInteriorLocalTable shape
-     let globalTable := canonicalRelativeRmmInteriorGlobalTable shape
+@@ -1557,0 +1581,2 @@ def canonicalRelativeRmmInteriorComponentStore
 +    let localLevel := canonicalRelativeRmmInteriorLocalLevelTable shape
 +    let globalLevel := canonicalRelativeRmmInteriorGlobalLevelTable shape
-     BoundedPayloadWordStore
+@@ -1559 +1584 @@ def canonicalRelativeRmmInteriorComponentStore
 -      (((summary.baselineTable.payload ++
 +      (((((summary.baselineTable.payload ++
-           (summary.minRelTable.payload ++
-             (summary.maxRelTable.payload ++ summary.argOffsetTable.payload))) ++
+@@ -1562 +1587,2 @@ def canonicalRelativeRmmInteriorComponentStore
 -        localTable.table.payload) ++ globalTable.table.payload)
 +        localTable.table.payload) ++ globalTable.table.payload) ++
 +        localLevel.table.payload) ++ globalLevel.table.payload)
-       (SuccinctRank.machineWordBits shape.bpCode.length) := by
-   exact
-     BoundedPayloadWordStore.append
-       (BoundedPayloadWordStore.append
+@@ -1567,5 +1593,9 @@ def canonicalRelativeRmmInteriorComponentStore
 -        (canonicalRelativeRmmSummaryMachineStore shape)
 -        (canonicalRelativeRmmLocalMachineStore shape))
 -      (canonicalRelativeRmmGlobalMachineStore shape)
@@ -78,82 +60,42 @@ index 499cbe5..c420702 100644
 +      (canonicalRelativeRmmGlobalLevelMachineStore shape)
 +
 +/-- Explicit flat word offsets for the eight directory components. -/
- structure CanonicalRelativeRmmInteriorComponentOffsets where
-   baseline : Nat
-   minRel : Nat
-@@ -1576,6 +1606,8 @@ structure CanonicalRelativeRmmInteriorComponentOffsets where
-   argOffset : Nat
-   localOffset : Nat
-   globalBlock : Nat
+@@ -1578,0 +1609,2 @@ structure CanonicalRelativeRmmInteriorComponentOffsets where
 +  localLevel : Nat
 +  globalLevel : Nat
-   deadAddress : Nat
- deriving Repr, DecidableEq
- 
-@@ -1594,6 +1626,10 @@ def canonicalRelativeRmmInteriorComponentOffsets
-     (summary.argOffsetTable.machineStore hword).store.words.size
-   let localWords :=
-     (canonicalRelativeRmmLocalMachineStore shape).store.words.size
+@@ -1596,0 +1629,4 @@ def canonicalRelativeRmmInteriorComponentOffsets
 +  let globalWords :=
 +    (canonicalRelativeRmmGlobalMachineStore shape).store.words.size
 +  let localLevelWords :=
 +    (canonicalRelativeRmmLocalLevelMachineStore shape).store.words.size
-   { baseline := 0
-     minRel := baselineWords
-     maxRel := baselineWords + minRelWords
-@@ -1601,6 +1637,12 @@ def canonicalRelativeRmmInteriorComponentOffsets
-     localOffset := baselineWords + minRelWords + maxRelWords + argOffsetWords
-     globalBlock :=
-       baselineWords + minRelWords + maxRelWords + argOffsetWords + localWords
+@@ -1603,0 +1640,6 @@ def canonicalRelativeRmmInteriorComponentOffsets
 +    localLevel :=
 +      baselineWords + minRelWords + maxRelWords + argOffsetWords + localWords +
 +        globalWords
 +    globalLevel :=
 +      baselineWords + minRelWords + maxRelWords + argOffsetWords + localWords +
 +        globalWords + localLevelWords
-     deadAddress :=
-       (canonicalRelativeRmmInteriorComponentStore shape).store.words.size }
- 
-@@ -1611,11 +1653,13 @@ theorem canonicalRelativeRmmInteriorComponentStore_flattens_payload
-           shape).store.words.toList =
-       (canonicalRelativeRmmSummaryTable shape).payload ++
-         (canonicalRelativeRmmInteriorLocalTable shape).payload ++
+@@ -1614,2 +1656,3 @@ theorem canonicalRelativeRmmInteriorComponentStore_flattens_payload
 -
 -          (canonicalRelativeRmmInteriorGlobalTable shape).payload := by
 +          (canonicalRelativeRmmInteriorGlobalTable shape).payload ++
 +            (canonicalRelativeRmmInteriorLocalLevelTable shape).payload ++
 +              (canonicalRelativeRmmInteriorGlobalLevelTable shape).payload := by
-   simpa [PayloadLiveBPRelativeMinMaxArgSummaryTable.payload,
-     PayloadLiveBPLocalSparseOffsetTable.payload,
+@@ -1618 +1661,2 @@ theorem canonicalRelativeRmmInteriorComponentStore_flattens_payload
 -    PayloadLiveBPGlobalSparseBlockTable.payload] using
 +    PayloadLiveBPGlobalSparseBlockTable.payload,
 +    PayloadLiveBPSparseLevelTable.payload] using
-     (canonicalRelativeRmmInteriorComponentStore shape).erases
- 
- theorem canonicalRelativeRmmInteriorComponentStore_words_toList
-@@ -1630,11 +1674,17 @@ theorem canonicalRelativeRmmInteriorComponentStore_words_toList
-               ((canonicalRelativeRmmInteriorLocalTable
-                 shape).table.machineStore hword).store.words.toList ++
-                 ((canonicalRelativeRmmInteriorGlobalTable
+@@ -1633 +1677,5 @@ theorem canonicalRelativeRmmInteriorComponentStore_words_toList
 -                  shape).table.machineStore hword).store.words.toList := by
 +                  shape).table.machineStore hword).store.words.toList ++
 +                  ((canonicalRelativeRmmInteriorLocalLevelTable
 +                    shape).table.machineStore hword).store.words.toList ++
 +                    ((canonicalRelativeRmmInteriorGlobalLevelTable
 +                      shape).table.machineStore hword).store.words.toList := by
-   simp [canonicalRelativeRmmInteriorComponentStore,
-     canonicalRelativeRmmSummaryMachineStore,
-     canonicalRelativeRmmLocalMachineStore,
-     canonicalRelativeRmmGlobalMachineStore,
+@@ -1637,0 +1686,2 @@ theorem canonicalRelativeRmmInteriorComponentStore_words_toList
 +    canonicalRelativeRmmLocalLevelMachineStore,
 +    canonicalRelativeRmmGlobalLevelMachineStore,
-     BoundedPayloadWordStore.append]
- 
- theorem canonicalRelativeRmmInteriorComponentStore_words_size_eq
-@@ -1648,8 +1698,12 @@ theorem canonicalRelativeRmmInteriorComponentStore_words_size_eq
-             ((summary.argOffsetTable.machineStore hword).store.words.size +
-               (((canonicalRelativeRmmInteriorLocalTable
-                 shape).table.machineStore hword).store.words.size +
+@@ -1651,2 +1701,6 @@ theorem canonicalRelativeRmmInteriorComponentStore_words_size_eq
 -                ((canonicalRelativeRmmInteriorGlobalTable
 -                  shape).table.machineStore hword).store.words.size)))) := by
 +                (((canonicalRelativeRmmInteriorGlobalTable
@@ -162,28 +104,19 @@ index 499cbe5..c420702 100644
 +                    shape).table.machineStore hword).store.words.size +
 +                    ((canonicalRelativeRmmInteriorGlobalLevelTable
 +                      shape).table.machineStore hword).store.words.size)))))) := by
-   have h := congrArg List.length
-     (canonicalRelativeRmmInteriorComponentStore_words_toList shape)
-   simpa using h
-@@ -1762,33 +1816,57 @@ def canonicalRelativeRmmMachineGlobalSpanCandidateCosted
-         canonicalRelativeRmmMachineMinCandidateCosted shape block
-     | none => Costed.pure none
- 
+@@ -1764,0 +1819,5 @@ def canonicalRelativeRmmMachineGlobalSpanCandidateCosted
 +/--
 +The level and the span are READ from the charged level table rather than
 +recomputed by `Nat.log2` / `2 ^ Nat.log2`.  One charged read per two-span
 +call delivers both, unpacked by constant-divisor div/mod.
 +-/
- def canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted
-     (shape : Cartesian.CartesianShape)
-     (macroIdx localStart count : Nat) :
-     Costed (Option (Nat × Nat)) :=
+@@ -1769,3 +1828,2 @@ def canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted
 -  let level := Nat.log2 count
 -  let span := bpSparseLogSpan count
 -  let rightLocalStart := localStart + count - span
 +  let domain :=
 +    bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize
-   Costed.bind
+@@ -1773,5 +1831,15 @@ def canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted
 -    (canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
 -      macroIdx localStart level) fun left? =>
 -    Costed.map (fun right? => bpCandidateMerge? left? right?)
@@ -204,18 +137,15 @@ index 499cbe5..c420702 100644
 +            (canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
 +              macroIdx rightLocalStart level)
 +    | none => Costed.pure none
- 
+@@ -1778,0 +1847 @@ def canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted
 +/-- Global twin of `canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted`. -/
- def canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted
-     (shape : Cartesian.CartesianShape)
-     (macroStart macroSpanCount : Nat) :
-     Costed (Option (Nat × Nat)) :=
+@@ -1783,3 +1852,2 @@ def canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted
 -  let level := Nat.log2 macroSpanCount
 -  let spanMacros := bpSparseLogSpan macroSpanCount
 -  let rightMacroStart := macroStart + macroSpanCount - spanMacros
 +  let domain :=
 +    bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSampleCount
-   Costed.bind
+@@ -1787,5 +1855,15 @@ def canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted
 -    (canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
 -      macroStart level) fun left? =>
 -    Costed.map (fun right? => bpCandidateMerge? left? right?)
@@ -236,20 +166,10 @@ index 499cbe5..c420702 100644
 +            (canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
 +              rightMacroStart level)
 +    | none => Costed.pure none
- 
- def canonicalRelativeRmmMachineAdjacentMacroCandidateCosted
-     (shape : Cartesian.CartesianShape)
-@@ -1834,25 +1912,24 @@ def canonicalRelativeRmmMachineCrossMacroCandidateCosted
-         (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
-           rightMacroStart 0 rightCount)
- 
+@@ -1837 +1915 @@ def canonicalRelativeRmmMachineCrossMacroCandidateCosted
 -def canonicalRelativeRmmInteriorQueryCost : Nat := 240
 +def canonicalRelativeRmmInteriorQueryCost : Nat := 264
- 
- /--
- The U3 all-size cap for the physical reads performed by the accepted U2
- interior program.  Controller arithmetic and branching remain uncharged.
- 
+@@ -1843,13 +1921,12 @@ interior program.  Controller arithmetic and branching remain uncharged.
 -DELIBERATELY LOOSE AT THIS COMMIT.  The cap was widened `30 -> 33` ahead of
 -the charged sparse-level swap, so that the whole-query literal migration
 -`207 -> 210` and the sparse-level store extension land as two separately
@@ -275,29 +195,18 @@ index 499cbe5..c420702 100644
 +The announced-slack theorem that recorded the staging compromise has been
 +DELETED, as its own docstring required: its `route <= 30` conjunct is false
 +once the level reads are reachable.
- -/
- def canonicalRelativeRmmPrincipledInteriorChargedTraceCost : Nat := 33
- 
-@@ -1939,33 +2016,70 @@ def canonicalRelativeRmmInteriorRangeMinCosted
-         macroStart level)).erase = value
-   cases value <;> simp [Costed.pure]
- 
+@@ -1941,0 +2019,6 @@ def canonicalRelativeRmmInteriorRangeMinCosted
 +/--
 +THE LEVEL VALUE-EQUIVALENCE, local instance.  The charged read reproduces the
 +level and the span that the accepted specification computes silently, under the
 +route's own domain hypothesis `count <= macroSize` - the same hypothesis the
 +interior dispatcher already derives from its branch guards.
 +-/
- @[simp] theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_refines
-     (shape : Cartesian.CartesianShape)
+@@ -1944 +2027,2 @@ def canonicalRelativeRmmInteriorRangeMinCosted
 -    (macroIdx localStart count : Nat) :
 +    (macroIdx localStart count : Nat)
 +    (hcount : count <= (RelativeRmm.canonicalLayout shape).macroSize) :
-     (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
-       macroIdx localStart count).erase =
-       ((canonicalRelativeRmmInteriorLocalTable shape).twoSpanCandidateCosted
-         (canonicalRelativeRmmSummaryTable shape)
-         macroIdx localStart count).erase := by
+@@ -1950,2 +2034,13 @@ def canonicalRelativeRmmInteriorRangeMinCosted
 -  simp [canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted,
 -    PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateCosted,
 +  have hlt : count <
@@ -313,22 +222,16 @@ index 499cbe5..c420702 100644
 +    FixedWidthNatTable.readCosted_erase]
 +  simp only [bpSparseLevelEntries_getElem? hlt, hdiv, hmod]
 +  simp [PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateCosted,
-     Costed.erase_bind, Costed.map]
- 
+@@ -1953,0 +2049,4 @@ def canonicalRelativeRmmInteriorRangeMinCosted
 +/--
 +THE LEVEL VALUE-EQUIVALENCE, global instance.  Global twin of
 +`canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_refines`.
 +-/
- @[simp] theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_refines
-     (shape : Cartesian.CartesianShape)
+@@ -1956 +2055,2 @@ def canonicalRelativeRmmInteriorRangeMinCosted
 -    (macroStart count : Nat) :
 +    (macroStart count : Nat)
 +    (hcount : count <= (RelativeRmm.canonicalLayout shape).macroSampleCount) :
-     (canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted shape
-       macroStart count).erase =
-       ((canonicalRelativeRmmInteriorGlobalTable shape).twoSpanCandidateCosted
-         (canonicalRelativeRmmSummaryTable shape)
-         macroStart count).erase := by
+@@ -1962,2 +2062,15 @@ def canonicalRelativeRmmInteriorRangeMinCosted
 -  simp [canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted,
 -    PayloadLiveBPGlobalSparseBlockTable.twoSpanCandidateCosted,
 +  have hlt : count <
@@ -346,70 +249,39 @@ index 499cbe5..c420702 100644
 +    FixedWidthNatTable.readCosted_erase]
 +  simp only [bpSparseLevelEntries_getElem? hlt, hdiv, hmod]
 +  simp [PayloadLiveBPGlobalSparseBlockTable.twoSpanCandidateCosted,
-     Costed.erase_bind, Costed.map]
- 
- @[simp] theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_refines
-     (shape : Cartesian.CartesianShape)
+@@ -1968 +2081,2 @@ def canonicalRelativeRmmInteriorRangeMinCosted
 -    (macroStart localStart rightCount : Nat) :
 +    (macroStart localStart rightCount : Nat)
 +    (hright : rightCount <= (RelativeRmm.canonicalLayout shape).macroSize) :
-     (canonicalRelativeRmmMachineAdjacentMacroCandidateCosted shape
-       macroStart localStart rightCount).erase =
-       (bpTwoLevelAdjacentMacroCandidateCosted
-@@ -1973,11 +2087,15 @@ def canonicalRelativeRmmInteriorRangeMinCosted
-         (canonicalRelativeRmmSummaryTable shape)
-         macroStart localStart rightCount).erase := by
-   simp [canonicalRelativeRmmMachineAdjacentMacroCandidateCosted,
+@@ -1976 +2090,3 @@ def canonicalRelativeRmmInteriorRangeMinCosted
 -    bpTwoLevelAdjacentMacroCandidateCosted, Costed.erase_bind, Costed.map]
 +    bpTwoLevelAdjacentMacroCandidateCosted, Costed.erase_bind, Costed.map,
 +    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_refines shape
 +      (macroStart + 1) 0 rightCount hright]
- 
- @[simp] theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_refines
-     (shape : Cartesian.CartesianShape)
+@@ -1980 +2096,3 @@ def canonicalRelativeRmmInteriorRangeMinCosted
 -    (macroStart localStart middleMacroCount : Nat) :
 +    (macroStart localStart middleMacroCount : Nat)
 +    (hmiddle : middleMacroCount <=
 +      (RelativeRmm.canonicalLayout shape).macroSampleCount) :
-     (canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted shape
-       macroStart localStart middleMacroCount).erase =
-       (bpTwoLevelLeftMiddleMacroCandidateCosted
-@@ -1986,11 +2104,16 @@ def canonicalRelativeRmmInteriorRangeMinCosted
-         (canonicalRelativeRmmSummaryTable shape)
-         macroStart localStart middleMacroCount).erase := by
-   simp [canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted,
+@@ -1989 +2107,3 @@ def canonicalRelativeRmmInteriorRangeMinCosted
 -    bpTwoLevelLeftMiddleMacroCandidateCosted, Costed.erase_bind, Costed.map]
 +    bpTwoLevelLeftMiddleMacroCandidateCosted, Costed.erase_bind, Costed.map,
 +    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_refines shape
 +      (macroStart + 1) middleMacroCount hmiddle]
- 
- @[simp] theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_refines
-     (shape : Cartesian.CartesianShape)
+@@ -1993 +2113,4 @@ def canonicalRelativeRmmInteriorRangeMinCosted
 -    (macroStart localStart middleMacroCount rightCount : Nat) :
 +    (macroStart localStart middleMacroCount rightCount : Nat)
 +    (hmiddle : middleMacroCount <=
 +      (RelativeRmm.canonicalLayout shape).macroSampleCount)
 +    (hright : rightCount <= (RelativeRmm.canonicalLayout shape).macroSize) :
-     (canonicalRelativeRmmMachineCrossMacroCandidateCosted shape
-       macroStart localStart middleMacroCount rightCount).erase =
-       (bpTwoLevelCrossMacroCandidateCosted
-@@ -1999,7 +2122,11 @@ def canonicalRelativeRmmInteriorRangeMinCosted
-         (canonicalRelativeRmmSummaryTable shape)
-         macroStart localStart middleMacroCount rightCount).erase := by
-   simp [canonicalRelativeRmmMachineCrossMacroCandidateCosted,
+@@ -2002 +2125,5 @@ def canonicalRelativeRmmInteriorRangeMinCosted
 -    bpTwoLevelCrossMacroCandidateCosted, Costed.erase_bind, Costed.map]
 +    bpTwoLevelCrossMacroCandidateCosted, Costed.erase_bind, Costed.map,
 +    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_refines shape
 +      (macroStart + 1) middleMacroCount hmiddle,
 +    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_refines shape
 +      (macroStart + 1 + middleMacroCount) 0 rightCount hright]
- 
- 
- def canonicalRelativeRmmMachineReadNatComputation
-@@ -2115,6 +2242,38 @@ theorem canonicalRelativeRmmGlobalReadComputation_footprint_le_dead
-     canonicalRelativeRmmInteriorComponentStore_words_size_eq,
-     canonicalRelativeRmmLocalMachineStore] <;> omega
- 
+@@ -2117,0 +2245,32 @@ theorem canonicalRelativeRmmGlobalReadComputation_footprint_le_dead
 +theorem canonicalRelativeRmmLocalLevelReadComputation_footprint_le_dead
 +    (shape : Cartesian.CartesianShape) (i : Nat) :
 +    (canonicalRelativeRmmMachineReadNatComputation shape
@@ -442,29 +314,20 @@ index 499cbe5..c420702 100644
 +    canonicalRelativeRmmGlobalMachineStore,
 +    canonicalRelativeRmmLocalLevelMachineStore] <;> omega
 +
- def canonicalRelativeRmmMachineSummaryComputation
-     (shape : Cartesian.CartesianShape) (block : Nat) :
-     FlatStoreComputation (Option (Prod Nat (Prod Nat (Prod Nat Nat)))) :=
-@@ -2184,33 +2343,59 @@ def canonicalRelativeRmmMachineGlobalSpanCandidateComputation
-         canonicalRelativeRmmMachineMinCandidateComputation shape value
-     | none => FlatStoreComputation.pure none
- 
+@@ -2186,0 +2346,5 @@ def canonicalRelativeRmmMachineGlobalSpanCandidateComputation
 +/--
 +Executed twin of `canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted`:
 +the level and the span come from one charged read of the level table region
 +of the interior component store.
 +-/
- def canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
-     (shape : Cartesian.CartesianShape)
-     (macroIdx localStart count : Nat) :
-     FlatStoreComputation (Option (Prod Nat Nat)) :=
+@@ -2191,3 +2355,3 @@ def canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
 -  let level := Nat.log2 count
 -  let span := bpSparseLogSpan count
 -  let rightLocalStart := localStart + count - span
 +  let domain :=
 +    bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize
 +  let offsets := canonicalRelativeRmmInteriorComponentOffsets shape
-   FlatStoreComputation.bind
+@@ -2195,5 +2359,15 @@ def canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
 -    (canonicalRelativeRmmMachineLocalSpanCandidateComputation
 -      shape macroIdx localStart level) fun left =>
 -    FlatStoreComputation.map (fun right => bpCandidateMerge? left right)
@@ -485,19 +348,16 @@ index 499cbe5..c420702 100644
 +            (canonicalRelativeRmmMachineLocalSpanCandidateComputation
 +              shape macroIdx rightLocalStart level)
 +    | none => FlatStoreComputation.pure none
- 
+@@ -2200,0 +2375 @@ def canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
 +/-- Global twin of `canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation`. -/
- def canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
-     (shape : Cartesian.CartesianShape)
-     (macroStart macroSpanCount : Nat) :
-     FlatStoreComputation (Option (Prod Nat Nat)) :=
+@@ -2205,3 +2380,3 @@ def canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
 -  let level := Nat.log2 macroSpanCount
 -  let spanMacros := bpSparseLogSpan macroSpanCount
 -  let rightMacroStart := macroStart + macroSpanCount - spanMacros
 +  let domain :=
 +    bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSampleCount
 +  let offsets := canonicalRelativeRmmInteriorComponentOffsets shape
-   FlatStoreComputation.bind
+@@ -2209,5 +2384,15 @@ def canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
 -    (canonicalRelativeRmmMachineGlobalSpanCandidateComputation
 -      shape macroStart level) fun left =>
 -    FlatStoreComputation.map (fun right => bpCandidateMerge? left right)
@@ -518,13 +378,7 @@ index 499cbe5..c420702 100644
 +            (canonicalRelativeRmmMachineGlobalSpanCandidateComputation
 +              shape rightMacroStart level)
 +    | none => FlatStoreComputation.pure none
- 
- def canonicalRelativeRmmMachineAdjacentMacroCandidateComputation
-     (shape : Cartesian.CartesianShape)
-@@ -2362,14 +2547,20 @@ theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_footprint_le
-             (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
-   unfold canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
-   apply FlatStoreComputation.bind_footprintWithin
+@@ -2365,8 +2550,14 @@ theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_footprint_le
 -  · exact
 -      canonicalRelativeRmmMachineLocalSpanCandidateComputation_footprint_le_dead
 -        shape _ _ _
@@ -547,13 +401,7 @@ index 499cbe5..c420702 100644
 +          exact
 +            canonicalRelativeRmmMachineLocalSpanCandidateComputation_footprint_le_dead
 +              shape _ _ _
- 
- theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation_footprint_le_dead
-     (shape : Cartesian.CartesianShape)
-@@ -2382,14 +2573,20 @@ theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation_footprint_l
-             (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
-   unfold canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
-   apply FlatStoreComputation.bind_footprintWithin
+@@ -2385,8 +2576,14 @@ theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation_footprint_l
 -  · exact
 -      canonicalRelativeRmmMachineGlobalSpanCandidateComputation_footprint_le_dead
 -        shape _ _
@@ -576,117 +424,72 @@ index 499cbe5..c420702 100644
 +          exact
 +            canonicalRelativeRmmMachineGlobalSpanCandidateComputation_footprint_le_dead
 +              shape _ _
- 
- theorem canonicalRelativeRmmMachineAdjacentMacroCandidateComputation_footprint_le_dead
-     (shape : Cartesian.CartesianShape)
-@@ -2781,17 +2978,25 @@ theorem canonicalRelativeRmmMaxRelReadComputation_refines
-       let globalWords :=
-         ((canonicalRelativeRmmInteriorGlobalTable
-           shape).table.machineStore hword).store.words.toList
+@@ -2783,0 +2981,6 @@ theorem canonicalRelativeRmmMaxRelReadComputation_refines
 +      let localLevelWords :=
 +        ((canonicalRelativeRmmInteriorLocalLevelTable
 +          shape).table.machineStore hword).store.words.toList
 +      let globalLevelWords :=
 +        ((canonicalRelativeRmmInteriorGlobalLevelTable
 +          shape).table.machineStore hword).store.words.toList
-       have hmiddle :
-           ((baselineWords ++ minRelWords) ++ maxRelWords ++
+@@ -2786 +2989,2 @@ theorem canonicalRelativeRmmMaxRelReadComputation_refines
 -            (argWords ++ localWords ++ globalWords))[
 +            (argWords ++ localWords ++ globalWords ++ localLevelWords ++
 +              globalLevelWords))[
-               (baselineWords ++ minRelWords).length + localAddress]? =
-             maxRelWords[localAddress]? :=
-         List.getElem?_append_middle_of_lt
-           (baselineWords ++ minRelWords) maxRelWords
+@@ -2791 +2995,2 @@ theorem canonicalRelativeRmmMaxRelReadComputation_refines
 -          (argWords ++ localWords ++ globalWords) localAddress hlocal
 +          (argWords ++ localWords ++ globalWords ++ localLevelWords ++
 +            globalLevelWords) localAddress hlocal
-       rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
-       simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+@@ -2794 +2999 @@ theorem canonicalRelativeRmmMaxRelReadComputation_refines
 -        argWords, localWords, globalWords,
 +        argWords, localWords, globalWords, localLevelWords, globalLevelWords,
-         canonicalRelativeRmmInteriorComponentOffsets,
-         List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
-     simpa [Array.getElem?_toList] using hlist
-@@ -2835,17 +3040,25 @@ theorem canonicalRelativeRmmArgOffsetReadComputation_refines
-       let globalWords :=
-         ((canonicalRelativeRmmInteriorGlobalTable
-           shape).table.machineStore hword).store.words.toList
+@@ -2837,0 +3043,6 @@ theorem canonicalRelativeRmmArgOffsetReadComputation_refines
 +      let localLevelWords :=
 +        ((canonicalRelativeRmmInteriorLocalLevelTable
 +          shape).table.machineStore hword).store.words.toList
 +      let globalLevelWords :=
 +        ((canonicalRelativeRmmInteriorGlobalLevelTable
 +          shape).table.machineStore hword).store.words.toList
-       have hmiddle :
-           (((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords ++
+@@ -2840 +3051,2 @@ theorem canonicalRelativeRmmArgOffsetReadComputation_refines
 -            (localWords ++ globalWords))[
 +            (localWords ++ globalWords ++ localLevelWords ++
 +              globalLevelWords))[
-               ((baselineWords ++ minRelWords) ++ maxRelWords).length +
-                 localAddress]? = argWords[localAddress]? :=
-         List.getElem?_append_middle_of_lt
-           ((baselineWords ++ minRelWords) ++ maxRelWords) argWords
+@@ -2845 +3057,2 @@ theorem canonicalRelativeRmmArgOffsetReadComputation_refines
 -          (localWords ++ globalWords) localAddress hlocal
 +          (localWords ++ globalWords ++ localLevelWords ++ globalLevelWords)
 +          localAddress hlocal
-       rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
-       simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+@@ -2848 +3061 @@ theorem canonicalRelativeRmmArgOffsetReadComputation_refines
 -        argWords, localWords, globalWords,
 +        argWords, localWords, globalWords, localLevelWords, globalLevelWords,
-         canonicalRelativeRmmInteriorComponentOffsets,
-         List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
-     simpa [Array.getElem?_toList] using hlist
-@@ -2889,18 +3102,26 @@ theorem canonicalRelativeRmmLocalReadComputation_refines
-       let globalWords :=
-         ((canonicalRelativeRmmInteriorGlobalTable
-           shape).table.machineStore hword).store.words.toList
+@@ -2891,0 +3105,6 @@ theorem canonicalRelativeRmmLocalReadComputation_refines
 +      let localLevelWords :=
 +        ((canonicalRelativeRmmInteriorLocalLevelTable
 +          shape).table.machineStore hword).store.words.toList
 +      let globalLevelWords :=
 +        ((canonicalRelativeRmmInteriorGlobalLevelTable
 +          shape).table.machineStore hword).store.words.toList
-       have hmiddle :
-           ((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+@@ -2894 +3113,2 @@ theorem canonicalRelativeRmmLocalReadComputation_refines
 -            localWords ++ globalWords)[
 +            localWords ++ (globalWords ++ localLevelWords ++
 +              globalLevelWords))[
-               (((baselineWords ++ minRelWords) ++ maxRelWords) ++
-                 argWords).length + localAddress]? =
-             localWords[localAddress]? :=
-         List.getElem?_append_middle_of_lt
-           (((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords)
+@@ -2900 +3120,2 @@ theorem canonicalRelativeRmmLocalReadComputation_refines
 -          localWords globalWords localAddress hlocal
 +          localWords (globalWords ++ localLevelWords ++ globalLevelWords)
 +          localAddress hlocal
-       rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
-       simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+@@ -2903 +3124 @@ theorem canonicalRelativeRmmLocalReadComputation_refines
 -        argWords, localWords, globalWords,
 +        argWords, localWords, globalWords, localLevelWords, globalLevelWords,
-         canonicalRelativeRmmInteriorComponentOffsets,
-         canonicalRelativeRmmLocalMachineStore,
-         List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
-@@ -2945,20 +3166,160 @@ theorem canonicalRelativeRmmGlobalReadComputation_refines
-       let globalWords :=
-         ((canonicalRelativeRmmInteriorGlobalTable
-           shape).table.machineStore hword).store.words.toList
+@@ -2947,0 +3169,6 @@ theorem canonicalRelativeRmmGlobalReadComputation_refines
 +      let localLevelWords :=
 +        ((canonicalRelativeRmmInteriorLocalLevelTable
 +          shape).table.machineStore hword).store.words.toList
 +      let globalLevelWords :=
 +        ((canonicalRelativeRmmInteriorGlobalLevelTable
 +          shape).table.machineStore hword).store.words.toList
-       have hmiddle :
-           (((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+@@ -2950 +3177,2 @@ theorem canonicalRelativeRmmGlobalReadComputation_refines
 -            localWords) ++ globalWords ++ [])[
 +            localWords) ++ globalWords ++
 +              (localLevelWords ++ globalLevelWords))[
-               ((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
-                 localWords).length + localAddress]? =
-             globalWords[localAddress]? :=
-         List.getElem?_append_middle_of_lt
-           ((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+@@ -2956 +3184,66 @@ theorem canonicalRelativeRmmGlobalReadComputation_refines
 -            localWords) globalWords [] localAddress hlocal
 +            localWords) globalWords (localLevelWords ++ globalLevelWords)
 +          localAddress hlocal
@@ -754,12 +557,10 @@ index 499cbe5..c420702 100644
 +          (((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
 +            localWords) ++ globalWords) localLevelWords globalLevelWords
 +          localAddress hlocal
-       rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
-       simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+@@ -2959 +3252 @@ theorem canonicalRelativeRmmGlobalReadComputation_refines
 -        argWords, localWords, globalWords,
 +        argWords, localWords, globalWords, localLevelWords, globalLevelWords,
-         canonicalRelativeRmmInteriorComponentOffsets,
-         canonicalRelativeRmmLocalMachineStore,
+@@ -2961,0 +3255,68 @@ theorem canonicalRelativeRmmGlobalReadComputation_refines
 +        canonicalRelativeRmmGlobalMachineStore,
 +        List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
 +    simpa [Array.getElem?_toList] using hlist
@@ -828,13 +629,7 @@ index 499cbe5..c420702 100644
 +        canonicalRelativeRmmLocalMachineStore,
 +        canonicalRelativeRmmGlobalMachineStore,
 +        canonicalRelativeRmmLocalLevelMachineStore,
-         List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
-     simpa [Array.getElem?_toList] using hlist
-   case hdead =>
-@@ -3086,9 +3447,16 @@ theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_refines
-         shape macroIdx localStart count := by
-   unfold canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
-   unfold canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted
+@@ -3089,3 +3450,10 @@ theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_refines
 -  simp only [FlatStoreComputation.bind_run_toCosted,
 -    FlatStoreComputation.map_run_toCosted,
 -    canonicalRelativeRmmMachineLocalSpanCandidateComputation_refines]
@@ -848,13 +643,7 @@ index 499cbe5..c420702 100644
 +      simp only [FlatStoreComputation.bind_run_toCosted,
 +        FlatStoreComputation.map_run_toCosted,
 +        canonicalRelativeRmmMachineLocalSpanCandidateComputation_refines]
- 
- theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation_refines
-     (shape : Cartesian.CartesianShape)
-@@ -3100,9 +3468,16 @@ theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation_refines
-         shape macroStart count := by
-   unfold canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
-   unfold canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted
+@@ -3103,3 +3471,10 @@ theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation_refines
 -  simp only [FlatStoreComputation.bind_run_toCosted,
 -    FlatStoreComputation.map_run_toCosted,
 -    canonicalRelativeRmmMachineGlobalSpanCandidateComputation_refines]
@@ -868,24 +657,12 @@ index 499cbe5..c420702 100644
 +      simp only [FlatStoreComputation.bind_run_toCosted,
 +        FlatStoreComputation.map_run_toCosted,
 +        canonicalRelativeRmmMachineGlobalSpanCandidateComputation_refines]
- 
- theorem canonicalRelativeRmmMachineAdjacentMacroCandidateComputation_refines
-     (shape : Cartesian.CartesianShape)
-@@ -3308,7 +3683,9 @@ theorem canonicalRelativeRmmInteriorRange_successful_read_backed
-             shape).store.words.toList =
-         (canonicalRelativeRmmSummaryTable shape).payload ++
-           (canonicalRelativeRmmInteriorLocalTable shape).payload ++
+@@ -3311 +3686,3 @@ theorem canonicalRelativeRmmInteriorRange_successful_read_backed
 -            (canonicalRelativeRmmInteriorGlobalTable shape).payload := by
 +            (canonicalRelativeRmmInteriorGlobalTable shape).payload ++
 +              (canonicalRelativeRmmInteriorLocalLevelTable shape).payload ++
 +                (canonicalRelativeRmmInteriorGlobalLevelTable shape).payload := by
-   have hmatch :=
-     canonicalRelativeRmmInteriorRangeRead_matches_store
-       shape (canonicalRelativeRmmInteriorComponentStore shape).store.words
-@@ -3367,14 +3744,50 @@ theorem canonicalRelativeRmmInteriorRange_cost_eq_footprint_length
-     canonicalRelativeRmmInteriorRangeFootprintWithRead,
-     canonicalRelativeRmmInteriorRangeMinExecutionWithRead,
-     FlatStoreExecution.footprint]
+@@ -3369,0 +3747,12 @@ theorem canonicalRelativeRmmInteriorRange_cost_eq_footprint_length
 +/--
 +The charged interior route agrees with the accepted logical specification.
 +
@@ -898,17 +675,12 @@ index 499cbe5..c420702 100644
 +something bounded by `blockCount`, hence at most
 +`macroSampleCount = blockCount / macroSize + 1`.
 +-/
- theorem canonicalRelativeRmmInteriorRangeMinCosted_refines_logical
+@@ -3371 +3760,3 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_refines_logical
 -    (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
 +    (shape : Cartesian.CartesianShape) (startBlock count : Nat)
 +    (hbound : startBlock + count <=
 +      (RelativeRmm.canonicalLayout shape).blockCount) :
-     (canonicalRelativeRmmInteriorRangeMinCosted shape startBlock count).erase =
-       (bpTwoLevelInteriorCandidateCosted
-         (canonicalRelativeRmmInteriorLocalTable shape)
-         (canonicalRelativeRmmInteriorGlobalTable shape)
-         (canonicalRelativeRmmSummaryTable shape)
-         startBlock count).erase := by
+@@ -3377,0 +3769,22 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_refines_logical
 +  have hvalid := RelativeRmm.canonicalLayout_valid shape
 +  have hmacroPos : 0 < (RelativeRmm.canonicalLayout shape).macroSize :=
 +    hvalid.macroSize_pos
@@ -931,45 +703,15 @@ index 499cbe5..c420702 100644
 +      k % (RelativeRmm.canonicalLayout shape).macroSize <=
 +        (RelativeRmm.canonicalLayout shape).macroSize :=
 +    fun k => Nat.le_of_lt (Nat.mod_lt k hmacroPos)
-   unfold canonicalRelativeRmmInteriorRangeMinCosted
-     bpTwoLevelInteriorCandidateCosted
-   by_cases hcount : count = 0
-@@ -3390,6 +3803,7 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_refines_logical
-         (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
-         (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
-         count
+@@ -3392,0 +3806 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_refines_logical
 +        (Nat.le_trans hwithin (Nat.sub_le _ _))
-     · simp only [hwithin, if_false]
-       by_cases hmiddle :
-           (count -
-@@ -3405,6 +3819,7 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_refines_logical
-               ((RelativeRmm.canonicalLayout shape).macroSize -
-                 startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
-             (RelativeRmm.canonicalLayout shape).macroSize)
+@@ -3407,0 +3822 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_refines_logical
 +          (hrem _)
-       · simp only [hmiddle, if_false]
-         by_cases hright :
-             (count -
-@@ -3421,6 +3836,7 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_refines_logical
-                   ((RelativeRmm.canonicalLayout shape).macroSize -
-                     startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
-                 (RelativeRmm.canonicalLayout shape).macroSize)
+@@ -3423,0 +3839 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_refines_logical
 +              (hquot _ (Nat.sub_le _ _))
-         · simp only [hright, if_false]
-           exact canonicalRelativeRmmMachineCrossMacroCandidateCosted_refines
-             shape
-@@ -3434,6 +3850,7 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_refines_logical
-                 ((RelativeRmm.canonicalLayout shape).macroSize -
-                   startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
-               (RelativeRmm.canonicalLayout shape).macroSize)
+@@ -3436,0 +3853 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_refines_logical
 +            (hquot _ (Nat.sub_le _ _)) (hrem _)
- 
- theorem canonicalRelativeRmmRelativeWidth_le_seven_machine
-     (shape : Cartesian.CartesianShape) :
-@@ -4291,60 +4708,118 @@ theorem canonicalRelativeRmmMachineGlobalSpanCandidateCosted_cost_le_forty
-     hread htail
-   simpa [canonicalRelativeRmmMachineGlobalSpanCandidateCosted, read] using hall
- 
+@@ -4294 +4711,6 @@ theorem canonicalRelativeRmmMachineGlobalSpanCandidateCosted_cost_le_forty
 -theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
 +/--
 +Generic all-size cap.  The charged level read is bounded unconditionally at the
@@ -977,9 +719,7 @@ index 499cbe5..c420702 100644
 +guard is available here, so no `hmacro` fit may be assumed.
 +-/
 +theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty_eight
-     (shape : Cartesian.CartesianShape)
-     (macroIdx localStart count : Nat) :
-     (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+@@ -4298,20 +4720,46 @@ theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
 -      macroIdx localStart count).cost <= 80 := by
 -  let left :=
 -    canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
@@ -1046,13 +786,11 @@ index 499cbe5..c420702 100644
 +    hread htail
 +  simpa [canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted, read, domain]
 +    using hall
- 
+@@ -4319 +4767,2 @@ theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
 -theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_eighty
 +/-- Global twin of the generic all-size two-span cap. -/
 +theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_eighty_eight
-     (shape : Cartesian.CartesianShape)
-     (macroStart count : Nat) :
-     (canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted shape
+@@ -4323,19 +4772,45 @@ theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_eighty
 -      macroStart count).cost <= 80 := by
 -  let left :=
 -    canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
@@ -1117,109 +855,57 @@ index 499cbe5..c420702 100644
 +    hread htail
 +  simpa [canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted, read, domain]
 +    using hall
- 
- theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le
-     (shape : Cartesian.CartesianShape)
-     (macroStart localStart rightCount : Nat) :
-     (canonicalRelativeRmmMachineAdjacentMacroCandidateCosted shape
+@@ -4347 +4822 @@ theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le
 -      macroStart localStart rightCount).cost <= 160 := by
 +      macroStart localStart rightCount).cost <= 176 := by
-   let left :=
-     canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
-       macroStart localStart
-@@ -4352,12 +4827,12 @@ theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le
-   let right :=
-     canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
-       (macroStart + 1) 0 rightCount
+@@ -4355,2 +4830,2 @@ theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le
 -  have hleft : left.cost <= 80 :=
 -    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
 +  have hleft : left.cost <= 88 :=
 +    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty_eight
-       shape macroStart localStart
-       ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
+@@ -4359,2 +4834,2 @@ theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le
 -  have hright : right.cost <= 80 :=
 -    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
 +  have hright : right.cost <= 88 :=
 +    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty_eight
-       shape (macroStart + 1) 0 rightCount
-   have hall := costed_bind_cost_le left
-     (fun left? => Costed.map (fun right? => bpCandidateMerge? left? right?)
-@@ -4370,7 +4845,7 @@ theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le
-     (shape : Cartesian.CartesianShape)
-     (macroStart localStart middleMacroCount : Nat) :
-     (canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted shape
+@@ -4373 +4848 @@ theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le
 -      macroStart localStart middleMacroCount).cost <= 160 := by
 +      macroStart localStart middleMacroCount).cost <= 176 := by
-   let left :=
-     canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
-       macroStart localStart
-@@ -4378,12 +4853,12 @@ theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le
-   let middle :=
-     canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted shape
-       (macroStart + 1) middleMacroCount
+@@ -4381,2 +4856,2 @@ theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le
 -  have hleft : left.cost <= 80 :=
 -    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
 +  have hleft : left.cost <= 88 :=
 +    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty_eight
-       shape macroStart localStart
-       ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
+@@ -4385,2 +4860,2 @@ theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le
 -  have hmiddle : middle.cost <= 80 :=
 -    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_eighty
 +  have hmiddle : middle.cost <= 88 :=
 +    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_eighty_eight
-       shape (macroStart + 1) middleMacroCount
-   have hall := costed_bind_cost_le left
-     (fun left? => Costed.map (fun middle? => bpCandidateMerge? left? middle?)
-@@ -4396,7 +4871,7 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le
-     (shape : Cartesian.CartesianShape)
-     (macroStart localStart middleMacroCount rightCount : Nat) :
-     (canonicalRelativeRmmMachineCrossMacroCandidateCosted shape
+@@ -4399 +4874 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le
 -      macroStart localStart middleMacroCount rightCount).cost <= 240 := by
 +      macroStart localStart middleMacroCount rightCount).cost <= 264 := by
-   let left :=
-     canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
-       macroStart localStart
-@@ -4407,20 +4882,20 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le
-   let right :=
-     canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
-       (macroStart + 1 + middleMacroCount) 0 rightCount
+@@ -4410,2 +4885,2 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le
 -  have hleft : left.cost <= 80 :=
 -    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
 +  have hleft : left.cost <= 88 :=
 +    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty_eight
-       shape macroStart localStart
-       ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
+@@ -4414,2 +4889,2 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le
 -  have hmiddle : middle.cost <= 80 :=
 -    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_eighty
 +  have hmiddle : middle.cost <= 88 :=
 +    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_eighty_eight
-       shape (macroStart + 1) middleMacroCount
+@@ -4417,2 +4892,2 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le
 -  have hright : right.cost <= 80 :=
 -    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
 +  have hright : right.cost <= 88 :=
 +    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty_eight
-       shape (macroStart + 1 + middleMacroCount) 0 rightCount
-   have htail : forall left?,
-       (Costed.bind middle fun middle? =>
-         Costed.map (fun right? => bpCandidateMerge3? left? middle? right?)
+@@ -4423 +4898 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le
 -          right).cost <= 160 := by
 +          right).cost <= 176 := by
-     intro left?
-     exact costed_bind_cost_le _ _ hmiddle
-       (fun _ => by simpa [Costed.map] using hright)
-@@ -4447,7 +4922,7 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le
-             startBlock % (RelativeRmm.canonicalLayout shape).macroSize
-     · simp only [hwithin, if_true]
-       exact Nat.le_trans
+@@ -4450 +4925 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le
 -        (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
 +        (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty_eight
-           shape
-           (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
-           (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
-@@ -4712,93 +5187,196 @@ theorem canonicalRelativeRmmMachineGlobalSpanCandidateCosted_cost_le_five_of_mac
-   simpa [canonicalRelativeRmmMachineGlobalSpanCandidateCosted, read] using
-     costed_bind_cost_le read _ hread htail
- 
+@@ -4715 +5190,7 @@ theorem canonicalRelativeRmmMachineGlobalSpanCandidateCosted_cost_le_five_of_mac
 -theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighteen_of_size_ge_four
 +/--
 +Within-macro branch.  Only `4 <= shape.size` is available here - no macro
@@ -1228,9 +914,7 @@ index 499cbe5..c420702 100644
 +`26 <= 33`.
 +-/
 +theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_twenty_six_of_size_ge_four
-     (shape : Cartesian.CartesianShape) (hsize : 4 <= shape.size)
-     (macroIdx localStart count : Nat) :
-     (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+@@ -4719,16 +5200,46 @@ theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighteen_
 -      macroIdx localStart count).cost <= 18 := by
 -  let left := canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
 -    macroIdx localStart (Nat.log2 count)
@@ -1293,7 +977,7 @@ index 499cbe5..c420702 100644
 +    hread htail
 +  simpa [canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted, read, domain]
 +    using hall
- 
+@@ -4736 +5247,7 @@ theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighteen_
 -theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_ten_of_macro_crossing
 +/--
 +THE MAXIMIZING-BRANCH LEAF.  Under macro crossing the charged level read fits
@@ -1302,12 +986,7 @@ index 499cbe5..c420702 100644
 +that enters the accounting and moves the route literal.
 +-/
 +theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eleven_of_macro_crossing
-     (shape : Cartesian.CartesianShape)
-     (hmacro :
-       (RelativeRmm.canonicalLayout shape).macroSize <
-         (RelativeRmm.canonicalLayout shape).blockCount)
-     (macroIdx localStart count : Nat) :
-     (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+@@ -4743,16 +5260,46 @@ theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_ten_of_ma
 -      macroIdx localStart count).cost <= 10 := by
 -  let left := canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
 -    macroIdx localStart (Nat.log2 count)
@@ -1370,16 +1049,11 @@ index 499cbe5..c420702 100644
 +    hread htail
 +  simpa [canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted, read, domain]
 +    using hall
- 
+@@ -4760 +5307,2 @@ theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_ten_of_ma
 -theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_ten_of_macro_crossing
 +/-- Global twin of the maximizing-branch leaf: `1 + 5 + 5 = 11`. -/
 +theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_eleven_of_macro_crossing
-     (shape : Cartesian.CartesianShape)
-     (hmacro :
-       (RelativeRmm.canonicalLayout shape).macroSize <
-         (RelativeRmm.canonicalLayout shape).blockCount)
-     (macroStart count : Nat) :
-     (canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted shape
+@@ -4767,16 +5315,46 @@ theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_ten_of_m
 -      macroStart count).cost <= 10 := by
 -  let left := canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
 -    macroStart (Nat.log2 count)
@@ -1442,112 +1116,63 @@ index 499cbe5..c420702 100644
 +    hread htail
 +  simpa [canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted, read, domain]
 +    using hall
- 
+@@ -4784 +5362 @@ theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_ten_of_m
 -theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le_twenty_of_macro_crossing
 +theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le_twenty_two_of_macro_crossing
-     (shape : Cartesian.CartesianShape)
-     (hmacro :
-       (RelativeRmm.canonicalLayout shape).macroSize <
-         (RelativeRmm.canonicalLayout shape).blockCount)
-     (macroStart localStart rightCount : Nat) :
-     (canonicalRelativeRmmMachineAdjacentMacroCandidateCosted shape
+@@ -4791 +5369 @@ theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le_twenty_o
 -      macroStart localStart rightCount).cost <= 20 := by
 +      macroStart localStart rightCount).cost <= 22 := by
-   let left := canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
-     macroStart localStart
-     ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
-   let right := canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
-     (macroStart + 1) 0 rightCount
+@@ -4797,2 +5375,2 @@ theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le_twenty_o
 -  have hleft : left.cost <= 10 :=
 -    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_ten_of_macro_crossing
 +  have hleft : left.cost <= 11 :=
 +    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eleven_of_macro_crossing
-       shape hmacro _ _ _
+@@ -4800,2 +5378,2 @@ theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le_twenty_o
 -  have hright : right.cost <= 10 :=
 -    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_ten_of_macro_crossing
 +  have hright : right.cost <= 11 :=
 +    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eleven_of_macro_crossing
-       shape hmacro _ _ _
-   have hall := costed_bind_cost_le left
-     (fun left? => Costed.map (fun right? => bpCandidateMerge? left? right?) right)
-@@ -4806,24 +5384,24 @@ theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le_twenty_o
-   simpa [canonicalRelativeRmmMachineAdjacentMacroCandidateCosted,
-     left, right] using hall
- 
+@@ -4809 +5387 @@ theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le_twenty_o
 -theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le_twenty_of_macro_crossing
 +theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le_twenty_two_of_macro_crossing
-     (shape : Cartesian.CartesianShape)
-     (hmacro :
-       (RelativeRmm.canonicalLayout shape).macroSize <
-         (RelativeRmm.canonicalLayout shape).blockCount)
-     (macroStart localStart middleMacroCount : Nat) :
-     (canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted shape
+@@ -4816 +5394 @@ theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le_twenty
 -      macroStart localStart middleMacroCount).cost <= 20 := by
 +      macroStart localStart middleMacroCount).cost <= 22 := by
-   let left := canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
-     macroStart localStart
-     ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
-   let middle := canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted shape
-     (macroStart + 1) middleMacroCount
+@@ -4822,2 +5400,2 @@ theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le_twenty
 -  have hleft : left.cost <= 10 :=
 -    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_ten_of_macro_crossing
 +  have hleft : left.cost <= 11 :=
 +    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eleven_of_macro_crossing
-       shape hmacro _ _ _
+@@ -4825,2 +5403,2 @@ theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le_twenty
 -  have hmiddle : middle.cost <= 10 :=
 -    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_ten_of_macro_crossing
 +  have hmiddle : middle.cost <= 11 :=
 +    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_eleven_of_macro_crossing
-       shape hmacro _ _
-   have hall := costed_bind_cost_le left
-     (fun left? => Costed.map (fun middle? => bpCandidateMerge? left? middle?) middle)
-@@ -4831,14 +5409,14 @@ theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le_twenty
-   simpa [canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted,
-     left, middle] using hall
- 
+@@ -4834 +5412 @@ theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le_twenty
 -theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_of_macro_crossing
 +theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_three_of_macro_crossing
-     (shape : Cartesian.CartesianShape)
-     (hmacro :
-       (RelativeRmm.canonicalLayout shape).macroSize <
-         (RelativeRmm.canonicalLayout shape).blockCount)
-     (macroStart localStart middleMacroCount rightCount : Nat) :
-     (canonicalRelativeRmmMachineCrossMacroCandidateCosted shape
+@@ -4841 +5419 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_of_m
 -      macroStart localStart middleMacroCount rightCount).cost <= 30 := by
 +      macroStart localStart middleMacroCount rightCount).cost <= 33 := by
-   let left := canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
-     macroStart localStart
-     ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
-@@ -4846,18 +5424,18 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_of_m
-     (macroStart + 1) middleMacroCount
-   let right := canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
-     (macroStart + 1 + middleMacroCount) 0 rightCount
+@@ -4849,2 +5427,2 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_of_m
 -  have hleft : left.cost <= 10 :=
 -    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_ten_of_macro_crossing
 +  have hleft : left.cost <= 11 :=
 +    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eleven_of_macro_crossing
-       shape hmacro _ _ _
+@@ -4852,2 +5430,2 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_of_m
 -  have hmiddle : middle.cost <= 10 :=
 -    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_ten_of_macro_crossing
 +  have hmiddle : middle.cost <= 11 :=
 +    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_eleven_of_macro_crossing
-       shape hmacro _ _
+@@ -4855,2 +5433,2 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_of_m
 -  have hright : right.cost <= 10 :=
 -    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_ten_of_macro_crossing
 +  have hright : right.cost <= 11 :=
 +    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eleven_of_macro_crossing
-       shape hmacro _ _ _
-   have htail : forall left?,
-       (Costed.bind middle fun middle? =>
+@@ -4860 +5438 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_of_m
 -        Costed.map (fun right? => bpCandidateMerge3? left? middle? right?) right).cost <= 20 := by
 +        Costed.map (fun right? => bpCandidateMerge3? left? middle? right?) right).cost <= 22 := by
-     intro left?
-     exact costed_bind_cost_le _ _ hmiddle
-       (fun _ => by simpa [Costed.map] using hright)
-@@ -4869,18 +5447,24 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_of_m
-     left, middle, right] using hall
- 
- /--
+@@ -4872,4 +5450,10 @@ theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_of_m
 -The accepted U2 interior execution costs at most thirty charged primitive
 -events on every positive bounded range.  The only use of `4 <= shape.size` is
 -the all-size width fact in the within-macro branch; public dispatch remains
@@ -1562,72 +1187,34 @@ index 499cbe5..c420702 100644
 +once (`11 = 1 + 5 + 5`), so `3 * 11 = 33` and the final step is a bare `exact`
 +against the branch bound with no `Nat.le_trans` widening.  The three units
 +over the pre-swap `30` are exactly the three charged level reads.
- -/
+@@ -4877 +5461 @@ uniform and contains no activation threshold.
 -theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_size_ge_four_of_bounded
 +theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_three_literal_of_size_ge_four_of_bounded
-     (shape : Cartesian.CartesianShape) (hsize : 4 <= shape.size)
-     (startBlock count : Nat)
-     (hbound : startBlock + count <=
-       (RelativeRmm.canonicalLayout shape).blockCount) :
-     (canonicalRelativeRmmInteriorRangeMinCosted shape startBlock count).cost <=
+@@ -4883 +5467 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_siz
 -      30 := by
 +      33 := by
-   let layout := RelativeRmm.canonicalLayout shape
-   unfold canonicalRelativeRmmInteriorRangeMinCosted
-   by_cases hcount : count = 0
-@@ -4891,7 +5475,7 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_siz
-           startBlock % (RelativeRmm.canonicalLayout shape).macroSize
-     · simp only [hwithin, if_true]
-       exact Nat.le_trans
+@@ -4894 +5478 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_siz
 -        (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighteen_of_size_ge_four
 +        (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_twenty_six_of_size_ge_four
-           shape hsize _ _ count)
-         (by simp)
-     · have hvalid := RelativeRmm.canonicalLayout_valid shape
-@@ -4914,7 +5498,7 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_siz
-               (RelativeRmm.canonicalLayout shape).macroSize = 0
-       · simp only [hmiddle, if_true]
-         exact Nat.le_trans
+@@ -4917 +5501 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_siz
 -          (canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le_twenty_of_macro_crossing
 +          (canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le_twenty_two_of_macro_crossing
-             shape (by simpa [layout] using hmacro) _ _ _)
-           (by simp)
-       · simp only [hmiddle, if_false]
-@@ -4925,11 +5509,11 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_siz
-                 (RelativeRmm.canonicalLayout shape).macroSize = 0
-         · simp only [hright, if_true]
-           exact Nat.le_trans
+@@ -4928 +5512 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_siz
 -            (canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le_twenty_of_macro_crossing
 +            (canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le_twenty_two_of_macro_crossing
-               shape (by simpa [layout] using hmacro) _ _ _)
-             (by simp)
-         · simp only [hright, if_false]
+@@ -4932 +5516 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_siz
 -          exact canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_of_macro_crossing
 +          exact canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_three_of_macro_crossing
-             shape (by simpa [layout] using hmacro) _ _ _ _
- 
- /--
-@@ -4938,8 +5522,9 @@ cap.  Stated against the cap FIELD rather than against a literal, so every
- consumer of the cap keeps working across a recharge; the tight literal
- content lives in the `_literal` theorem above.
- 
+@@ -4941,2 +5525,3 @@ content lives in the `_literal` theorem above.
 -At this commit the step is `30 <= 33` and therefore strictly loose; see
 -`canonicalRelativeRmmPrincipledInteriorChargedTraceCost_announced_slack_of_size_ge_four_of_bounded`.
 +At this commit the step is `33 <= 33` and therefore TIGHT.  The announced-slack
 +theorem that recorded the staging compromise has been deleted: its `30 < cap`
 +conjunct is unprovable now that the charged sparse-level reads are reachable.
- -/
- theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_four_of_bounded
-     (shape : Cartesian.CartesianShape) (hsize : 4 <= shape.size)
-@@ -4949,41 +5534,25 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_fou
-     (canonicalRelativeRmmInteriorRangeMinCosted shape startBlock count).cost <=
-       canonicalRelativeRmmPrincipledInteriorChargedTraceCost :=
-   Nat.le_trans
+@@ -4952 +5537 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_fou
 -    (canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_size_ge_four_of_bounded
 +    (canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_three_literal_of_size_ge_four_of_bounded
-       shape hsize startBlock count hbound)
-     (by simp [canonicalRelativeRmmPrincipledInteriorChargedTraceCost])
- 
+@@ -4956,17 +5541,14 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_fou
 -/--
 -ANNOUNCED SLACK, deliberately loose, to be retired by the charged
 -sparse-level swap.
@@ -1659,7 +1246,7 @@ index 499cbe5..c420702 100644
 +is no longer provable.  The cap is tight again, and
 +`canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_three_literal_of_size_ge_four_of_bounded`
 +carries the tight content.
- -/
+@@ -4974,13 +5555,0 @@ rather than to weaken it.
 -theorem canonicalRelativeRmmPrincipledInteriorChargedTraceCost_announced_slack_of_size_ge_four_of_bounded
 -    (shape : Cartesian.CartesianShape) (hsize : 4 <= shape.size)
 -    (startBlock count : Nat)
@@ -1673,33 +1260,15 @@ index 499cbe5..c420702 100644
 -      shape hsize startBlock count hbound,
 -    by simp [canonicalRelativeRmmPrincipledInteriorChargedTraceCost],
 -    by simp [canonicalRelativeRmmPrincipledInteriorChargedTraceCost]⟩
- 
- theorem canonicalRelativeRmmInteriorRangeMinCosted_erase_exact
-     {shape : Cartesian.CartesianShape} {startBlock count : Nat}
-@@ -5040,7 +5609,7 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_erase_exact
-       have hsucc := natLog2_succ_le_of_pos_lt_pow hspanPos hcap
-       simpa [RelativeRmm.Layout.globalLevelCount] using hsucc)
-     hvalid.blocksPerSuper_pos hvalid.fullBlocks_fit hsuperIndex
+@@ -5043 +5612 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_erase_exact
 -  rw [canonicalRelativeRmmInteriorRangeMinCosted_refines_logical]
 +  rw [canonicalRelativeRmmInteriorRangeMinCosted_refines_logical shape startBlock count hbound]
-   simpa [layout] using hexact
- 
- theorem canonicalRelativeRmmInteriorWordsRead_length_le_machine
-@@ -5130,7 +5699,9 @@ def canonicalRelativeRmmInteriorDirectory
-   payload :=
-     (canonicalRelativeRmmSummaryTable shape).payload ++
-       (canonicalRelativeRmmInteriorLocalTable shape).payload ++
+@@ -5133 +5702,3 @@ def canonicalRelativeRmmInteriorDirectory
 -        (canonicalRelativeRmmInteriorGlobalTable shape).payload
 +        (canonicalRelativeRmmInteriorGlobalTable shape).payload ++
 +          (canonicalRelativeRmmInteriorLocalLevelTable shape).payload ++
 +            (canonicalRelativeRmmInteriorGlobalLevelTable shape).payload
-   payload_length_eq := by
-     simp [canonicalRelativeRmmInteriorDirectoryPayloadLength,
-       Nat.add_assoc]
-@@ -5291,7 +5862,88 @@ private theorem machineWordBits_two_mul_le_two_mul (n : Nat) :
-       natLog2_succ_le_of_pos_lt_pow (by omega) hlt
-     simpa [SuccinctRank.machineWordBits, w] using hbits
- 
+@@ -5293,0 +5865,56 @@ private theorem machineWordBits_two_mul_le_two_mul (n : Nat) :
 +/-- Adding the sparse-level domain slack costs at most two doublings of the
 +word width (B7). Used to keep the charged level tables' contribution linear
 +in `machineWordBits n` rather than in the domain itself. -/
@@ -1756,7 +1325,7 @@ index 499cbe5..c420702 100644
 +  exact Nat.le_trans hbridge
 +    (by simpa [SuccinctRank.machineWordBits] using hgoal)
 +
- def canonicalRelativeRmmInteriorRawPayloadOverhead (n : Nat) : Nat :=
+@@ -5294,0 +5922,25 @@ def canonicalRelativeRmmInteriorRawPayloadOverhead (n : Nat) : Nat :=
 +  let base := Nat.log2 n + 1
 +  let blockCount := n / base
 +  let relativeWidth := 2 * (Nat.log2 base + 1) + 3
@@ -1782,13 +1351,7 @@ index 499cbe5..c420702 100644
 +charged level tables are dominated separately (B7).
 +-/
 +def canonicalRelativeRmmInteriorLegacyPartOverhead (n : Nat) : Nat :=
-   let base := Nat.log2 n + 1
-   let blockCount := n / base
-   let relativeWidth := 2 * (Nat.log2 base + 1) + 3
-@@ -5306,13 +5958,46 @@ def canonicalRelativeRmmInteriorRawPayloadOverhead (n : Nat) : Nat :=
-     ((macroCount * (offsetWidth * macroSize)) * offsetWidth) +
-       ((globalLevelCount * macroCount) * blockAddressWidth)
- 
+@@ -5308,0 +5961,23 @@ def canonicalRelativeRmmInteriorRawPayloadOverhead (n : Nat) : Nat :=
 +/--
 +The charged sparse-level table part of the raw interior payload overhead,
 +expressed as a closed form in `n` (B7).  This is the `shape`-free twin of
@@ -1812,12 +1375,10 @@ index 499cbe5..c420702 100644
 +    canonicalRelativeRmmInteriorLegacyPartOverhead,
 +    canonicalRelativeRmmInteriorLevelPartOverhead, Nat.add_assoc]
 +
- theorem canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear (n : Nat) :
+@@ -5310 +5985 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear (n : Nat) :
 -    canonicalRelativeRmmInteriorRawPayloadOverhead n <= 218 * (n + 1) := by
 +    canonicalRelativeRmmInteriorRawPayloadOverhead n <= 527 * (n + 1) := by
-   by_cases hn : n = 0
-   case pos =>
-     subst n
+@@ -5313,0 +5989,9 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear (n : Nat) :
 +    have hlog9 : Nat.log2 9 <= 3 := by
 +      have hlt : Nat.log2 9 < 4 :=
 +        (Nat.log2_lt (by omega : Not ((9 : Nat) = 0))).2 (by decide)
@@ -1827,16 +1388,9 @@ index 499cbe5..c420702 100644
 +        bpSparseLevelWidth_le_square_width (by omega)
 +      simp only [show (3 : Nat) * 3 = 9 from rfl] at hbridge
 +      omega
-     simp [canonicalRelativeRmmInteriorRawPayloadOverhead,
-       SuccinctRank.machineWordBits, nat_log2_one_eq_zero]
+@@ -5315,0 +6000 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear (n : Nat) :
 +    omega
-   case neg =>
-     have hnpos : 0 < n := by omega
-     let w := SuccinctRank.machineWordBits n
-@@ -5430,8 +6115,58 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear (n : Nat) :
-           simp [M, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm]
-         _ <= 2 * (5 * n) := Nat.mul_le_mul_left 2 hmM5
-         _ = 10 * n := by omega
+@@ -5432,0 +6118,48 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear (n : Nat) :
 +    -- B7: the two charged sparse-level tables.  The loose `m * M <= 5 * n`
 +    -- is enough for the GLOBAL level term, but NOT for the local one: it
 +    -- would only give `M <= 5 * n` and hence `~ n log n`.  The local term
@@ -1885,47 +1439,28 @@ index 499cbe5..c420702 100644
 +          have h3 : w <= n := hwle
 +          omega
 +        _ = 113 * n + 3 := by omega
-     change (s * sw + 3 * (b * r)) + (m * (o * M)) * o +
+@@ -5434 +6167,3 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear (n : Nat) :
 -      (g * m) * a <= 218 * (n + 1)
 +      (g * m) * a +
 +      ((M + 2) * (bpSparseLevelWidth (M + 2))) +
 +      ((m + 2) * (bpSparseLevelWidth (m + 2))) <= 527 * (n + 1)
-     omega
- 
- theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
-@@ -5443,7 +6178,10 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
-   rw [(canonicalRelativeRmmSummaryTable shape).payload_length]
-   rw [(canonicalRelativeRmmInteriorLocalTable shape).payload_length]
-   rw [(canonicalRelativeRmmInteriorGlobalTable shape).payload_length]
+@@ -5445,0 +6181,2 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
 +  rw [canonicalRelativeRmmInteriorLocalLevelTable_payload_length]
 +  rw [canonicalRelativeRmmInteriorGlobalLevelTable_payload_length]
-   simp [canonicalRelativeRmmInteriorRawPayloadOverhead,
+@@ -5446,0 +6184 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
 +    bpSparseLevelTableOverhead, bpSparseLevelDomain, bpSparseLevelWidth,
-     RelativeRmm.canonicalLayout, RelativeRmm.Layout.superSampleCount,
-     RelativeRmm.Layout.superWidth, RelativeRmm.Layout.macroSize,
-     RelativeRmm.Layout.macroSampleCount, RelativeRmm.Layout.offsetWidth,
-@@ -5464,7 +6202,8 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compac
-     {shape : Cartesian.CartesianShape}
-     (hready : (RelativeRmm.canonicalLayout shape).CompactReady shape) :
-     (canonicalRelativeRmmInteriorDirectory shape).payload.length =
+@@ -5467 +6205,2 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compac
 -      (concreteBPRelativeRmmInteriorDirectory shape).payload.length := by
 +      (concreteBPRelativeRmmInteriorDirectory shape).payload.length +
 +        canonicalRelativeRmmInteriorLevelTableOverhead shape := by
-   let layout := RelativeRmm.canonicalLayout shape
-   have hlegacyReady :=
-     (RelativeRmm.canonicalLayout_compactReady_iff_legacyReady shape).mp hready
-@@ -5546,11 +6285,161 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compac
-   rw [(concreteBPRelativeRmmInteriorDirectory shape).payload_length_eq]
-   simp [canonicalRelativeRmmInteriorDirectoryPayloadLength,
-     concreteBPRelativeRmmInteriorDirectoryPayloadLength, hlegacyReady,
+@@ -5549 +6288,5 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compac
 -    hsummary, hlocal, hglobal, Nat.add_assoc]
 +    hsummary, hlocal, hglobal,
 +    canonicalRelativeRmmInteriorLevelTableOverhead,
 +    canonicalRelativeRmmInteriorLocalLevelTable_payload_length,
 +    canonicalRelativeRmmInteriorGlobalLevelTable_payload_length,
 +    Nat.add_assoc]
- 
- 
+@@ -5552,2 +6295,148 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compac
 -theorem canonicalRelativeRmmInteriorRawPayloadOverhead_littleO :
 -    LittleOLinear canonicalRelativeRmmInteriorRawPayloadOverhead := by
 +/-- The `shape`-indexed level-table overhead agrees with its closed form in
@@ -2076,13 +1611,7 @@ index 499cbe5..c420702 100644
 +
 +theorem canonicalRelativeRmmInteriorLegacyPartOverhead_littleO :
 +    LittleOLinear canonicalRelativeRmmInteriorLegacyPartOverhead := by
-   apply LittleOLinear.of_eventually_le
-     concreteBPRelativeRmmInteriorOverhead_littleO
-   refine ⟨concreteBPRelativeRmmInteriorReadyThreshold, ?_⟩
-@@ -5573,13 +6462,32 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_littleO :
-   have hlegacy :=
-     (concreteBPRelativeRmmInteriorDirectory_profile_of_ready shape hready).2.1
-   rw [canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw] at heq
+@@ -5576,2 +6465,7 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_littleO :
 -  calc
 -    canonicalRelativeRmmInteriorRawPayloadOverhead n =
 +  rw [canonicalRelativeRmmInteriorLevelTableOverhead_eq_levelPart] at heq
@@ -2092,16 +1621,14 @@ index 499cbe5..c420702 100644
 +  --   legacyPart n + levelPart n = legacyPayload + levelPart n
 +  have hcancel :
 +      canonicalRelativeRmmInteriorLegacyPartOverhead n =
-         (concreteBPRelativeRmmInteriorDirectory shape).payload.length := by
+@@ -5579 +6473,5 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_littleO :
 -      simpa [hsize] using heq
 +    omega
 +  calc
 +    canonicalRelativeRmmInteriorLegacyPartOverhead n =
 +        (concreteBPRelativeRmmInteriorDirectory shape).payload.length :=
 +      hcancel
-     _ <= concreteBPRelativeRmmInteriorOverhead shape.size := hlegacy
-     _ = concreteBPRelativeRmmInteriorOverhead n := by rw [hsize]
- 
+@@ -5582,0 +6481,10 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_littleO :
 +theorem canonicalRelativeRmmInteriorRawPayloadOverhead_littleO :
 +    LittleOLinear canonicalRelativeRmmInteriorRawPayloadOverhead := by
 +  have hsum :=
@@ -2112,96 +1639,50 @@ index 499cbe5..c420702 100644
 +  intro n
 +  exact Nat.le_of_eq (canonicalRelativeRmmInteriorRawPayloadOverhead_eq_parts n)
 +
- theorem canonicalRelativeRmmInteriorOverhead_littleO :
-     LittleOLinear canonicalRelativeRmmInteriorOverhead := by
-   simpa [canonicalRelativeRmmInteriorOverhead] using
-@@ -5626,7 +6534,9 @@ structure CanonicalRelativeRmmInteriorStoreProfile
-           shape).store.words.toList =
-       (canonicalRelativeRmmSummaryTable shape).payload ++
-         (canonicalRelativeRmmInteriorLocalTable shape).payload ++
+@@ -5629 +6537,3 @@ structure CanonicalRelativeRmmInteriorStoreProfile
 -          (canonicalRelativeRmmInteriorGlobalTable shape).payload
 +          (canonicalRelativeRmmInteriorGlobalTable shape).payload ++
 +            (canonicalRelativeRmmInteriorLocalLevelTable shape).payload ++
 +              (canonicalRelativeRmmInteriorGlobalLevelTable shape).payload
-   canonical_execution_eq :
-     forall startBlock count,
-       canonicalRelativeRmmInteriorRangeMinCostedWithStore shape
 diff --git a/RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean b/RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean
 index 771decc..c708153 100644
 --- a/RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean
 +++ b/RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean
-@@ -1786,6 +1786,10 @@ private theorem concreteBPNativeSuccinctRMQReviewerCloseWords_length_le
-   let summary := SuccinctClose.canonicalRelativeRmmSummaryTable shape
-   let localTable := SuccinctClose.canonicalRelativeRmmInteriorLocalTable shape
-   let global := SuccinctClose.canonicalRelativeRmmInteriorGlobalTable shape
+@@ -1788,0 +1789,4 @@ private theorem concreteBPNativeSuccinctRMQReviewerCloseWords_length_le
 +  let localLevel :=
 +    SuccinctClose.canonicalRelativeRmmInteriorLocalLevelTable shape
 +  let globalLevel :=
 +    SuccinctClose.canonicalRelativeRmmInteriorGlobalLevelTable shape
-   let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
-   have hbase := fixedWidthNatTable_machineWords_length_le_payload_length
-     summary.baselineTable hword
-@@ -1799,6 +1803,10 @@ private theorem concreteBPNativeSuccinctRMQReviewerCloseWords_length_le
-     localTable.table hword
-   have hglobal := fixedWidthNatTable_machineWords_length_le_payload_length
-     global.table hword
+@@ -1801,0 +1806,4 @@ private theorem concreteBPNativeSuccinctRMQReviewerCloseWords_length_le
 +  have hlocalLevel := fixedWidthNatTable_machineWords_length_le_payload_length
 +    localLevel.table hword
 +  have hglobalLevel := fixedWidthNatTable_machineWords_length_le_payload_length
 +    globalLevel.table hword
-   change
-     (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
-       shape).store.words.toList.length <=
-@@ -1811,8 +1819,10 @@ private theorem concreteBPNativeSuccinctRMQReviewerCloseWords_length_le
-           (summary.maxRelTable.machineStore hword).store.words.toList ++
-             (summary.argOffsetTable.machineStore hword).store.words.toList ++
-               (localTable.table.machineStore hword).store.words.toList ++
+@@ -1814,2 +1822,4 @@ private theorem concreteBPNativeSuccinctRMQReviewerCloseWords_length_le
 -                (global.table.machineStore hword).store.words.toList by
 -      simpa [summary, localTable, global, hword] using
 +                (global.table.machineStore hword).store.words.toList ++
 +                  (localLevel.table.machineStore hword).store.words.toList ++
 +                    (globalLevel.table.machineStore hword).store.words.toList by
 +      simpa [summary, localTable, global, localLevel, globalLevel, hword] using
-         SuccinctClose.canonicalRelativeRmmInteriorComponentStore_words_toList
-           shape]
-   simp only [List.length_append, Array.length_toList]
-@@ -1821,7 +1831,8 @@ private theorem concreteBPNativeSuccinctRMQReviewerCloseWords_length_le
-     SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.payload,
-     SuccinctClose.PayloadLiveBPLocalSparseOffsetTable.payload,
-     SuccinctClose.PayloadLiveBPGlobalSparseBlockTable.payload,
+@@ -1824 +1834,2 @@ private theorem concreteBPNativeSuccinctRMQReviewerCloseWords_length_le
 -    summary, localTable, global] at *
 +    SuccinctClose.PayloadLiveBPSparseLevelTable.payload,
 +    summary, localTable, global, localLevel, globalLevel] at *
-   omega
- 
- private theorem concreteBPNativeSuccinctRMQReviewerFringeWords_length_le
-@@ -1881,15 +1892,15 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_length_le_capacity
-       shape.size
-   have hdirLinear :
-       (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload.length <=
+@@ -1884 +1895 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_length_le_capacity
 -        218 * (shape.size + 1) := by
 +        527 * (shape.size + 1) := by
-     omega
-   have hcloseBound :
-       (concreteBPNativeSuccinctRMQReviewerCloseWords shape).length <=
+@@ -1888 +1899 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_length_le_capacity
 -        218 * (shape.size + 1) :=
 +        527 * (shape.size + 1) :=
-     Nat.le_trans hclose hdirLinear
-   have hcanonicalCloseBound :
-       (concreteBPNativeSuccinctRMQReviewerSourceWords
+@@ -1892 +1903 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_length_le_capacity
 -        shape .canonicalClose).length <= 218 * (shape.size + 1) := by
 +        shape .canonicalClose).length <= 527 * (shape.size + 1) := by
-     simpa [concreteBPNativeSuccinctRMQReviewerCloseWords] using hcloseBound
-   have hfringeBound :=
-     concreteBPNativeSuccinctRMQReviewerFringeWords_length_le shape
 diff --git a/RMQ/Core/SuccinctFinalRAM.lean b/RMQ/Core/SuccinctFinalRAM.lean
 index 7fdb901..6bd3316 100644
 --- a/RMQ/Core/SuccinctFinalRAM.lean
 +++ b/RMQ/Core/SuccinctFinalRAM.lean
-@@ -5961,35 +5961,40 @@ private theorem reviewerCanonicalInterior_mayRead
-         SuccinctClose.canonicalBPRelativeSummaryBlocksPerSuperRaw shape := by
-     exact Nat.one_le_iff_ne_zero.mpr (Nat.mul_ne_zero
-       (Nat.ne_of_gt hraw) (Nat.ne_of_gt hraw))
+@@ -5964,2 +5964,11 @@ private theorem reviewerCanonicalInterior_mayRead
 -  let layout := SuccinctClose.RelativeRmm.canonicalLayout shape
 -  let table := SuccinctClose.canonicalRelativeRmmInteriorLocalTable shape
 +  -- WITNESSED READ CHANGED BY THE CHARGED SPARSE-LEVEL SWAP.
@@ -2215,10 +1696,7 @@ index 7fdb901..6bd3316 100644
 +  -- used to drive this proof into `whnf` is gone rather than merely made cheaper.
 +  let levelTable :=
 +    SuccinctClose.canonicalRelativeRmmInteriorLocalLevelTable shape
-   let offsets := SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets shape
-   let array :=
-     (SuccinctClose.canonicalRelativeRmmInteriorComponentStore shape).store.words
-   let store := SuccinctSpace.FlatWordStore.ofArray array
+@@ -5970,3 +5979,6 @@ private theorem reviewerCanonicalInterior_mayRead
 -  let slot := SuccinctClose.bpLocalSparseCellSlot layout.macroSize
 -    layout.levelCount 0 0 (Nat.log2 1)
 -  rcases machineReadComputationAt_mayRead table.table
@@ -2228,12 +1706,12 @@ index 7fdb901..6bd3316 100644
 +    unfold SuccinctClose.bpSparseLevelWidth
 +    omega
 +  rcases machineReadComputationAt_mayRead levelTable.table
-       (SuccinctRank.machineWordBits shape.bpCode.length)
+@@ -5974,2 +5986,2 @@ private theorem reviewerCanonicalInterior_mayRead
 -      offsets.localOffset offsets.deadAddress slot
 -      (SuccinctRank.machineWordBits_pos layout.macroSize) store with
 +      offsets.localLevel offsets.deadAddress 1
 +      hwidth store with
-     ⟨address, word?, hfirst⟩
+@@ -5977,9 +5988,0 @@ private theorem reviewerCanonicalInterior_mayRead
 -  have hlocalSpan : (address, word?) ∈
 -      ((SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation
 -        shape 0 0 (Nat.log2 1)).run store).reads := by
@@ -2243,103 +1721,52 @@ index 7fdb901..6bd3316 100644
 -    apply List.mem_append_left
 -    simpa [SuccinctClose.canonicalRelativeRmmMachineReadNatComputation,
 -      table, offsets, layout, slot] using hfirst
-   have htwo : (address, word?) ∈
-       ((SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
-         shape 0 0 1).run store).reads := by
-     unfold SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
-     simp only [SuccinctSpace.FlatStoreComputation.bind_run,
-       SuccinctSpace.FlatStoreExecution.append]
+@@ -5992 +5995,3 @@ private theorem reviewerCanonicalInterior_mayRead
 -    exact List.mem_append_left _ hlocalSpan
 +    apply List.mem_append_left
 +    simpa [SuccinctClose.canonicalRelativeRmmMachineReadNatComputation,
 +      levelTable, offsets] using hfirst
-   have hexec : (address, word?) ∈
-       (SuccinctClose.canonicalRelativeRmmInteriorRangeMinExecutionWithStore
-         shape array 0 1).reads := by
-@@ -8870,7 +8875,7 @@ def canonicalSilentSparseLevelHistoricalEndpointFringeChargedTraceCost : Nat :=
- 
- /--
- Frozen historical algebra of the retired event-silent fringe route
+@@ -8873 +8878 @@ Frozen historical algebra of the retired event-silent fringe route
 -(pattern: `canonicalTransitionalQueryCost = 328`).  The retired route's
 +(pattern: `canonicalTransitionalQueryCost = 352`).  The retired route's
- fringe leaves computed their min-excess/argmin scan without charged reads;
- the chunked route replaces the two 4-read fringes by two 37-read fringes.
- 
-@@ -9100,7 +9105,7 @@ theorem concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le
-   have htransitional :
-       3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
-           SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
+@@ -9103 +9108 @@ theorem concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le
 -            SuccinctSelect.sparseDenseFalseSelectQueryCost = 328 := by
 +            SuccinctSelect.sparseDenseFalseSelectQueryCost = 352 := by
-     rfl
-   omega
- 
-@@ -9720,12 +9725,12 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only
-         WholeQueryState.empty)
-       event hmem
- 
+@@ -9723 +9728 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only
 -/-- The canonical transitional whole-query cap computes to 328 modeled ticks. -/
 +/-- The canonical transitional whole-query cap computes to 352 modeled ticks. -/
- theorem concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq :
-     3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
-         SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
-           SuccinctSelect.sparseDenseFalseSelectQueryCost =
+@@ -9728 +9733 @@ theorem concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq :
 -      328 := by
 +      352 := by
-   rfl
- 
- /-- Compatibility with the older conservative aggregate bound. -/
 diff --git a/RMQ/Core/SuccinctRMQClassic.lean b/RMQ/Core/SuccinctRMQClassic.lean
 index 815514d..8a32a71 100644
 --- a/RMQ/Core/SuccinctRMQClassic.lean
 +++ b/RMQ/Core/SuccinctRMQClassic.lean
-@@ -145,7 +145,7 @@ theorem canonicalSilentSparseLevelQueryCost_eq :
-     SuccinctFinal.concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq
- 
- theorem canonicalTransitionalQueryCost_eq :
+@@ -148 +148 @@ theorem canonicalTransitionalQueryCost_eq :
 -    canonicalTransitionalQueryCost = 328 := by
 +    canonicalTransitionalQueryCost = 352 := by
-   exact
-     SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq
- 
 diff --git a/RMQ/Validation/SuccinctClassic.lean b/RMQ/Validation/SuccinctClassic.lean
 index c5c72d2..764b220 100644
 --- a/RMQ/Validation/SuccinctClassic.lean
 +++ b/RMQ/Validation/SuccinctClassic.lean
-@@ -267,7 +267,7 @@ def canonicalBoundOK : Bool :=
-     RMQ.SuccinctClassic.canonicalSilentSparseLevelQueryCost == 207 &&
-     RMQ.SuccinctClassic.canonicalSilentWordRankSelectQueryCost == 142 &&
-     RMQ.SuccinctClassic.canonicalSilentFringeQueryCost == 76 &&
+@@ -270 +270 @@ def canonicalBoundOK : Bool :=
 -    RMQ.SuccinctClassic.canonicalTransitionalQueryCost == 328
 +    RMQ.SuccinctClassic.canonicalTransitionalQueryCost == 352
- 
- def structuralEvidenceOK : Bool :=
-   routeEvidenceOK && physicalErasureOK && physicalBackingOK &&
 diff --git a/RMQExamples/Concrete.lean b/RMQExamples/Concrete.lean
 index da2e1b6..6208edf 100644
 --- a/RMQExamples/Concrete.lean
 +++ b/RMQExamples/Concrete.lean
-@@ -86,7 +86,7 @@ def physicalReadsMatchCanonicalStore
- #guard RMQ.SuccinctClassic.canonicalSilentWordRankSelectQueryCost == 142
- #guard RMQ.SuccinctClassic.canonicalSilentFringeQueryCost == 76
- 
+@@ -89 +89 @@ def physicalReadsMatchCanonicalStore
 -#guard RMQ.SuccinctClassic.canonicalTransitionalQueryCost == 328
 +#guard RMQ.SuccinctClassic.canonicalTransitionalQueryCost == 352
- 
- #guard canonicalQueryRoute tinyRMQInput 2 4 == .sameBlock
- 
 diff --git a/docs/PAPER_MODEL_ADEQUACY.md b/docs/PAPER_MODEL_ADEQUACY.md
 index c7d687b..5740c47 100644
 --- a/docs/PAPER_MODEL_ADEQUACY.md
 +++ b/docs/PAPER_MODEL_ADEQUACY.md
-@@ -123,9 +123,17 @@ concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only
- every event of the accepted whole-query global word trace is a
- `WordRAM.TraceEvent.readWord` constructor, for every shape and query. The
- `wordRank`/`wordSelect` word-local primitives remain defined for
+@@ -126 +126 @@ every event of the accepted whole-query global word trace is a
 -legacy/compatibility surfaces (the frozen 76/142/328 routes) but are never
 +legacy/compatibility surfaces (the frozen 76/142/207 routes) but are never
- emitted by the accepted route.
- 
+@@ -128,0 +129,8 @@ emitted by the accepted route.
 +CORRECTION OF RECORD (charged sparse-level rung): `328` was previously listed
 +here among the frozen routes.  It is NOT frozen.  `canonicalTransitionalQueryCost`
 +is a LIVE symbolic abbrev over `canonicalCompactBPCloseQueryCostWithRankSeed`,
@@ -2348,16 +1775,10 @@ index c7d687b..5740c47 100644
 +genuinely frozen whole-query constants are `76`, `142` and `207`, each of which
 +names only pinned numeral components and so is invariant under a live cap move.
 +
- The declared charge policy is therefore:
- 
- - **Charged**: attempted payload-word reads (`readWord segment index word?`),
-@@ -345,10 +353,13 @@ The current reviewer-route modeled bound is the principled charged-trace sum
- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`
- and evaluated by
- `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`. The sum is
+@@ -348 +356 @@ and evaluated by
 -`2*select35 + (2*rank11 + 2*fringe37 + interior30) + rank11`, derived (never
 +`2*select35 + (2*rank11 + 2*fringe37 + interior33) + rank11`, derived (never
- asserted) from the component algebra; the retired 142 (silent in-word
+@@ -350,2 +358,5 @@ asserted) from the component algebra; the retired 142 (silent in-word
 -rank/select), 76 (silent fringe), and 328 (transitional) literals stay frozen
 -as historical constants with their chains still checked.
 +rank/select), 76 (silent fringe), and 207 (silent sparse-level) literals stay
@@ -2365,34 +1786,19 @@ index c7d687b..5740c47 100644
 +transitional cap is NOT among them: it is live, and the charged sparse-level
 +recharge moves it `328 -> 352` for the same reason it moves the interior
 +component `30 -> 33`.
- The operational bridge classifies every event in the actual canonical trace as
- `readWord` (the readWord-only vocabulary theorem above), excludes
- `syntheticCostOnlyPrimitive`, and proves that the direct
 diff --git a/docs/internal/CLAIM_DRIFT_POLICY.json b/docs/internal/CLAIM_DRIFT_POLICY.json
 index 5a176d9..6fc6f42 100644
 --- a/docs/internal/CLAIM_DRIFT_POLICY.json
 +++ b/docs/internal/CLAIM_DRIFT_POLICY.json
-@@ -95,8 +95,8 @@
-       "allowedLineRegex": ""
-     },
-     {
+@@ -98,2 +98,2 @@
 -      "id": "canonical-transitional-328",
 -      "pattern": "\\b328\\b",
 +      "id": "canonical-transitional-352",
 +      "pattern": "\\b352\\b",
-       "status": "historical-canonical-transitional-bound-not-paper-facing-current-table-and-export-enforcement-in-paper-topology-lint",
-       "strict": false,
-       "allowedPathRegex": "",
 diff --git a/scripts/paper_topology_lint.ps1 b/scripts/paper_topology_lint.ps1
 index 210d92d..801b931 100644
 --- a/scripts/paper_topology_lint.ps1
 +++ b/scripts/paper_topology_lint.ps1
-@@ -188,7 +188,7 @@ $retiredAliasReplacements = [ordered]@{
- $retiredSourcePattern =
-   'builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_(?:profile|whole_query_(?:interpreted|leaf_trace|word_trace(?:_large_regime)?|global_word_trace_large_regime)_profile)'
- $oldRegimePattern =
+@@ -191 +191 @@ $oldRegimePattern =
 -  '(?i)(?:\b(?:196727|328|118|4144)\b|2\s*\^\s*128|zero[- ]?block|\bReady\b|LargeRegime|large[- ]regime|CanonicalTransitional)'
 +  '(?i)(?:\b(?:196727|328|352|118|4144)\b|2\s*\^\s*128|zero[- ]?block|\bReady\b|LargeRegime|large[- ]regime|CanonicalTransitional)'
- 
- # These files intentionally contain the removed vocabulary as enforcement
- # data.  They are not documentary theorem references.

@@ -603,11 +603,22 @@ theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_
     (left right : Nat) :
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
       shape store left right).cost <=
-        3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
-          SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
-            SuccinctSelect.sparseDenseFalseSelectQueryCost := by
+        concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost := by
   exact
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_canonicalTransitional
+      shape store hfoot left right
+
+theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_liveCompatibility
+    {shape : Cartesian.CartesianShape} {store : WordRAM.ReadStore}
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left right).cost <=
+        concreteBPNativeSuccinctRMQLiveCompatibilityQueryCost := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_liveCompatibility
       shape store hfoot left right
 
 theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_principledAllSizeChargedTrace

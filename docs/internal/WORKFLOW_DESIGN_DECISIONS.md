@@ -3949,3 +3949,63 @@ Historical cost identities and live compatibility bounds must remain visibly
 different checked objects throughout the theorem, headline, example, and
 validator chain. Closing that chain before launch prevents a source-level
 repair from leaving public descendants with contradictory names or numerals.
+
+## WDD-20260719-008: replay selectors certify exact executions, not merely a nonempty fixture list
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: executable acceptance replay, selector anti-vacuity, and bounded worker
+verification for B7-R3 and later repair tasks.
+
+Decision:
+
+1. A frozen multi-case replay contract has one typed ordered registry whose
+   entries contain the semantic and comparison fields acceptance actually
+   cites. A literal expected-ID sequence plus uniqueness validation rejects
+   missing, duplicate, extra, or reordered cases; a count alone is insufficient.
+2. The executor returns its actual execution count. Default mode compares that
+   count with the complete registry; a stable-ID selector must match and execute
+   exactly one entry; unknown and zero-match selections exit nonzero.
+3. The in-repository Lean harness remains child-free. External Lean/Lake stages
+   carry positive observed-runtime deadlines, one owned process tree, failure
+   classification, and cleanup; a quiet timed-out command is diagnosed before
+   any changed-state retry.
+
+Trigger and evidence:
+
+The inherited B7 cost harness recursively ran fixture windows but had no stable
+case identity or selector. Its empty recursive base returned success, so a
+future filtered selector could execute zero cases and pass. B7-R3 replaces that
+surface with `replayRegistry : List ReplayCase`, an exact 21-ID sequence,
+de-duplication and pinned pre-cost checks, counted traversal, and `--case` /
+`--fixture` controls. The final control run requires default `21/21`, known
+`1/1`, and exit `4` for both an unknown ID and a zero-match fixture.
+
+Rejected alternatives:
+
+- Treat `registry.length = 21` as sufficient; a duplicate can hide a missing
+  load-bearing case.
+- Recompute historical pre-repair costs on the repaired implementation.
+- Let a shell filter decide which Lean cases ran without receiving an executed
+  count from the harness.
+- Spawn compiler or replay children inside Lean, where the worker's external
+  deadline and process-tree cleanup discipline would be obscured.
+
+Consequences and regression evidence:
+
+- Replay output reports selected and executed counts and validates exact
+  answer, independent reference answer, route, post-cost, and disposition for
+  every selected entry.
+- The load-bearing leftmost interior-tie case has a stable ID and exact pre/post
+  cost, while invalid and zero-interior controls remain explicit.
+- Selector failure is an executable verdict, not prose evidence. Missing or
+  duplicate IDs fail before any query is credited.
+- This changes executable verification structure only; payload bits, proof
+  fields, modeled query ticks, trace semantics, Lean runtime claims, and paper
+  mathematics remain separate.
+
+Publication-facing significance:
+
+An artifact replay claim must identify exactly which cases executed and why
+they are semantically load-bearing. Exact registry and selector verdicts make
+the comparison reproducible without elevating wall-clock behavior to a theorem.

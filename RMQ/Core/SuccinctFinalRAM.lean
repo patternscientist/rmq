@@ -8983,7 +8983,7 @@ def canonicalSilentSparseLevelHistoricalEndpointFringeChargedTraceCost : Nat := 
 
 /--
 Frozen historical algebra of the retired event-silent fringe route
-(pattern: `canonicalTransitionalQueryCost = 352`).  The retired route's
+(pattern: `canonicalTransitionalQueryCost = 328`).  The retired route's
 fringe leaves computed their min-excess/argmin scan without charged reads;
 the chunked route replaces the two 4-read fringes by two 37-read fringes.
 
@@ -9197,24 +9197,46 @@ theorem concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le_princ
               rw [concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq]
               omega
 
-/-- Honest transitional all-size cost bound for the canonical whole query. -/
+/-- Literal-pinned historical U2 cost.  Live component recharges must not move it. -/
+def concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost : Nat := 328
+
+/-- Live compatibility cost obtained from the current raw select/close expression. -/
+def concreteBPNativeSuccinctRMQLiveCompatibilityQueryCost : Nat :=
+  3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
+      SuccinctSelect.sparseDenseFalseSelectQueryCost
+
+/-- Historical U2 cap for the canonical whole query. -/
 theorem concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le
     (shape : Cartesian.CartesianShape) (left right : Nat) :
     (concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted
       shape left right).cost <=
-        3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
-          SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
-            SuccinctSelect.sparseDenseFalseSelectQueryCost := by
+        concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost := by
   have hprincipled :=
     concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le_principledAllSizeChargedTrace
       shape left right
   rw [concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq]
     at hprincipled
-  have htransitional :
+  unfold concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost
+  omega
+
+/-- Live raw-expression compatibility cap for the canonical whole query. -/
+theorem concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le_liveCompatibility
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQLiveCompatibilityQueryCost := by
+  have hprincipled :=
+    concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le_principledAllSizeChargedTrace
+      shape left right
+  rw [concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq]
+    at hprincipled
+  have hlive :
       3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
           SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
             SuccinctSelect.sparseDenseFalseSelectQueryCost = 352 := by
     rfl
+  unfold concreteBPNativeSuccinctRMQLiveCompatibilityQueryCost
   omega
 
 /-- Exact canonical direct query for every valid half-open RMQ window. -/
@@ -9313,13 +9335,22 @@ theorem concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_cost_le
     (shape : Cartesian.CartesianShape) (left right : Nat) :
     (concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
       shape left right).cost <=
-        3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
-          SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
-            SuccinctSelect.sparseDenseFalseSelectQueryCost := by
+        concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost := by
   rw [
     concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_refines_canonicalQueryInterpretedCosted]
   exact concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le
     shape left right
+
+theorem concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_cost_le_liveCompatibility
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQLiveCompatibilityQueryCost := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_refines_canonicalQueryInterpretedCosted]
+  exact
+    concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le_liveCompatibility
+      shape left right
 
 theorem concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_cost_le_principledAllSizeChargedTrace
     (shape : Cartesian.CartesianShape) (left right : Nat) :
@@ -9523,18 +9554,28 @@ theorem concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_exact
     concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_exact
       hshape hlen hbound
 
-/-- The uniform global trace has the direct canonical transitional cost. -/
+/-- The uniform global trace has the literal-pinned historical U2 cap. -/
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
     (shape : Cartesian.CartesianShape) (left right : Nat) :
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
       shape left right).cost <=
-        3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
-          SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
-            SuccinctSelect.sparseDenseFalseSelectQueryCost := by
+        concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost := by
   rw [
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_canonicalInterpretedCosted]
   exact
     concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_cost_le
+      shape left right
+
+/-- The uniform global trace is also bounded by the distinct live `352` cap. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_liveCompatibility
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQLiveCompatibilityQueryCost := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_canonicalInterpretedCosted]
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_cost_le_liveCompatibility
       shape left right
 
 /--
@@ -9833,12 +9874,14 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only
         WholeQueryState.empty)
       event hmem
 
-/-- The canonical transitional whole-query cap computes to 352 modeled ticks. -/
+/-- The literal-pinned historical transitional cap remains `328`. -/
 theorem concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq :
-    3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
-        SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
-          SuccinctSelect.sparseDenseFalseSelectQueryCost =
-      352 := by
+    concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost = 328 := by
+  rfl
+
+/-- The distinctly named live raw-expression compatibility cap is `352`. -/
+theorem concreteBPNativeSuccinctRMQLiveCompatibilityQueryCost_eq :
+    concreteBPNativeSuccinctRMQLiveCompatibilityQueryCost = 352 := by
   rfl
 
 /-- Compatibility with the older conservative aggregate bound. -/
@@ -10087,13 +10130,24 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedOfSizeGe_cost_
     (left right : Nat) :
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedOfSizeGe
       shape hsize left right).cost <=
-        3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
-          SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
-            SuccinctSelect.sparseDenseFalseSelectQueryCost := by
+        concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost := by
   rw [
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedOfSizeGe_refines_canonicalInterpretedCosted]
   exact
     concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_cost_le
+      shape left right
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedOfSizeGe_cost_le_liveCompatibility
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size)
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedOfSizeGe
+      shape hsize left right).cost <=
+        concreteBPNativeSuccinctRMQLiveCompatibilityQueryCost := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedOfSizeGe_refines_canonicalInterpretedCosted]
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_cost_le_liveCompatibility
       shape left right
 
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedOfSizeGe_cost_le

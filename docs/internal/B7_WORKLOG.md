@@ -2506,3 +2506,156 @@ Per the checkout contract, no unauthorized path was edited. The worktree is
 therefore a partial, uncommitted checkpoint and not a candidate. Required
 coordinator choice: expand write scope to the four named paths (recommended),
 or amend the frozen requirement. No frozen requirement was weakened here.
+
+# B7-R3 governed re-entry and contract freeze
+
+- Handle/title: `B7-R3`, `(B7-R3) Finish the charged sparse-level repair with closed consumers`.
+- Branch/worktree: `codex/b7-charged-sparse-level-r3` at
+  `C:\\Users\\poin\\Documents\\RMQ\\.worktrees\\b7-charged-sparse-level-r3`.
+- Exact base: `14e38031a541bcaa2df8d67976078c76dbae975a`.
+- Ordered parents verified before editing: implementation checkpoint
+  `16645c60792954b84ad588b56f5b56da720847df`, then governance
+  `986e8066f9b93f6576edd20e6d25e363eb029fa1`.
+- `scripts/project_skill_preflight.ps1` passed with required
+  `rmq-proof-sprint` and runtime RMQ catalog
+  `rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint` before substantive work.
+- The full completion gate, original B7 matrix, B7-R1/R2 continuations,
+  relevant decision records, source definitions, and enumerated direct
+  consumers were reread. Checkpoint prose remains untrusted; theorem types and
+  consumer composition will be reconstructed on the final tree.
+
+The R3 matrix continuation freezes the unchanged acceptance IDs, exact
+same-object `33` versus rejected `<= 30` challenge, independent value
+corruption challenge, literal historical `328` versus distinctly named live
+`352` split, exact 21-entry replay registry/selector obligations, and final
+command ledger. The newly authorized four Lean consumers remove R2's only
+scope blocker. No implementation or roadmap acceptance is claimed by this
+entry.
+
+# B7-R3 implementation and candidate reconstruction
+
+## Closed-consumer historical/live split
+
+The historical name is literal-pinned again:
+
+```lean
+RMQ.SuccinctClassic.canonicalTransitionalQueryCost_eq :
+  RMQ.SuccinctClassic.canonicalTransitionalQueryCost = 328
+```
+
+The current raw-expression compatibility value is a different object and a
+different proposition:
+
+```lean
+RMQ.SuccinctClassic.liveCompatibilityQueryCost_eq :
+  RMQ.SuccinctClassic.liveCompatibilityQueryCost = 352
+```
+
+The source, store-parametric, model-adequacy, classic, headline,
+validation, example, WordRAM-inventory, topology, WIP-artifact, and paper
+consumers were searched from the five frozen symbols and migrated explicitly.
+`Compatibility328` declarations now conclude against the literal historical
+`328`; the live raw expression is exposed only through `Compatibility352`
+declarations. `scripts/axiom_check.lean` remains byte-for-byte outside the R3
+diff and was not run.
+
+## Exact replay registry
+
+`RMQ/Validation/SuccinctClassicCostHarness.lean` now has one typed ordered
+`List ReplayCase`. Each entry contains its stable ID, fixture, half-open window,
+independently computed List answer, canonical route, pre-repair cost,
+post-repair cost, and disposition. A separate literal expected-ID list pins all
+21 IDs and their order; structure validation checks exact length, exact ordered
+IDs, `Nodup`, and the exact pre-repair vector before executing a query. Default
+mode executes the registry itself. `--case` requires one exact match;
+`--fixture` rejects zero matches. The harness contains no process-launch API.
+
+## Returned-value dependency gap found and repaired
+
+Reconstructing `INV-VALUE-DEPENDENCY` from source exposed a real missing
+theorem: the charged level read was proved to refine the logical computation,
+but no same-query store corruption theorem concluded inequality of the returned
+interior candidate. The exact-cost witness cannot substitute for that row, so
+R3 added the independent theorem
+`canonicalRelativeRmmInteriorCost33LocalLevelDrop_changes_returned_candidate`.
+Its checked proposition uses the canonical size-3469 shape and the identical
+valid interior query `(startBlock,count)=(0,1)` on both sides. It concludes,
+side by side:
+
+```lean
+(address, canonicalStore address) ∈ canonicalRun.reads ∧
+(address, none) ∈ droppedRun.reads ∧
+canonicalRun.value =
+  some (bpRangeMinExcess shape layout.blockSize 0 1,
+        bpRangeArgMinPrefixPos shape layout.blockSize 0 1) ∧
+droppedRun.value = none ∧
+canonicalRun.value ≠ droppedRun.value
+```
+
+`droppedStore` differs from the canonical flat component store only at
+`offsets.localLevel + 1`, the one-word physical footprint of local charged
+level cell `1` on this witness (`level width = 11`, reviewer word size `= 13`,
+chunk count `= 1`). The proof unfolds the real
+`canonicalRelativeRmmInteriorRangeMinComputation` dispatcher, records that
+exact address in both executions, uses
+`canonicalRelativeRmmInteriorRangeMinCostedWithStore_erase_exact` for the
+accepted value, and proves that decoding the dropped first word returns
+`none`. The theorem was added to `scripts/wordram_axiom_check.lean`; semantic
+coverage was extended rather than deleted.
+
+Development evidence on the stabilized Lean source:
+
+- `lake env lean RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean`:
+  exit 0 in 33.3s;
+- `lake build RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory`:
+  exit 0 in 37.0s, `59/59`;
+- `lake env lean scripts/wordram_axiom_check.lean`: exit 0 in 103.6s with
+  the new returned-value theorem, exact-cost chain, historical `328`, live
+  `352`, current `210`, and public strong read-only names all retained.
+
+No new design decision was needed for this theorem: its store, query object,
+and accepted/rejected predicates are dictated verbatim by the frozen
+`INV-VALUE-DEPENDENCY` row. DD-20260719-002 records the historical/live split;
+DD-20260719-003 records the exact registry. WDD-20260719-008 records the
+selector/deadline process policy.
+
+## Replay deadline incident and owned cleanup
+
+The first post-repair four-control shell used a positive 20-minute deadline.
+It timed out after 1204.1s while the default traversal was still responsive.
+Inspection, before any retry, found the owned tree
+`4312 (elan lake) -> 14948 (toolchain lake) -> 4688 (harness)` and three
+unrelated `lake build RMQ` jobs that had started later in other worktrees and
+were simultaneously running four large Lean children. The harness CPU counter
+had advanced to 695.6s and `Responding=True`, so the failure was classified as
+external CPU contention, not a semantic verdict or deadlock. Only the owned
+PIDs `4688`, `14948`, and `4312` were stopped; the unrelated worktrees were not
+touched. Survivor inspection then returned no owned process, and
+`git status --short` showed exactly the pre-existing intended R3 paths with no
+scratch or generated source artifact. An unchanged retry is forbidden until
+the external heavy jobs have exited; the next replay uses the same executable
+only after that observable external-state change.
+
+## Proof digestion
+
+1. **Conceptual change.** History and live compatibility are now two stable
+   cost objects, the replay fixture set is one executable exact registry, and
+   the charged sparse-level word has an explicit returned-value corruption
+   witness.
+2. **Plain-English meaning.** The old route really cost 328, the current raw
+   compatibility expression really costs 352, all current public statements
+   say which one they mean, and the level-table read is indispensable data:
+   removing the word the evaluator actually asks for changes the answer it
+   returns.
+3. **Live assumptions.** The reference semantics remain guarded half-open
+   leftmost RMQ over `List Int`; cost counts modeled trace events rather than
+   Lean runtime; the canonical component store is the counted payload object;
+   and the public upper-bound story is `2*n + overhead n` with
+   `LittleOLinear overhead` under the existing explicit indexed-access model.
+4. **Strongest skeptical graduate-student question.** The new witness proves
+   one charged level word is decisive and the exact-cost witness proves the
+   current cap is attained, but can the next rung mechanize a complete
+   reachability inventory showing that every remaining uncharged operation is
+   either a checked representation bridge or a genuinely constant-time RAM
+   primitive? That is precisely the still-deferred `STRETCH-01`, not a claim
+   made by this rung.

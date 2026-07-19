@@ -6178,6 +6178,230 @@ theorem canonicalRelativeRmmInteriorCost33Witness_store_erase_exact :
       canonicalRelativeRmmInteriorCost33WitnessShape_size
     omega
 
+/-! ### Sparse-level returned-value dependency witness (B7) -/
+
+/--
+The first physical word of local charged level cell `1` on the canonical
+size-3469 witness.  The field is one machine word wide on this witness, so the
+cell-local offset is exactly `1`.
+-/
+def canonicalRelativeRmmInteriorCost33LocalLevelDropAddress : Nat :=
+  (canonicalRelativeRmmInteriorComponentOffsets
+    canonicalRelativeRmmInteriorCost33WitnessShape).localLevel + 1
+
+/--
+The canonical interior component store with exactly the charged local-level
+word above made unavailable.  Every other address is observationally
+identical to the canonical store.
+-/
+def canonicalRelativeRmmInteriorCost33LocalLevelDroppedStore : FlatWordStore :=
+  fun address =>
+    if address = canonicalRelativeRmmInteriorCost33LocalLevelDropAddress then
+      none
+    else
+      FlatWordStore.ofArray
+        (canonicalRelativeRmmInteriorComponentStore
+          canonicalRelativeRmmInteriorCost33WitnessShape).store.words address
+
+/--
+`INV-VALUE-DEPENDENCY`, on one identical object and query.  The canonical and
+dropped executions both issue the charged local-level read at the same
+physical address.  The canonical store returns the accepted range-minimum
+candidate, while changing only that read word to `none` changes the returned
+interior value to `none`; this is value dependence, not merely trace
+dependence.
+-/
+theorem canonicalRelativeRmmInteriorCost33LocalLevelDrop_changes_returned_candidate :
+    let shape := canonicalRelativeRmmInteriorCost33WitnessShape
+    let canonicalStore : FlatWordStore :=
+      FlatWordStore.ofArray
+        (canonicalRelativeRmmInteriorComponentStore shape).store.words
+    let droppedStore :=
+      canonicalRelativeRmmInteriorCost33LocalLevelDroppedStore
+    let address := canonicalRelativeRmmInteriorCost33LocalLevelDropAddress
+    let canonicalRun :=
+      canonicalRelativeRmmInteriorRangeMinExecutionWithRead
+        shape canonicalStore 0 1
+    let droppedRun :=
+      canonicalRelativeRmmInteriorRangeMinExecutionWithRead
+        shape droppedStore 0 1
+    (address, canonicalStore address) ∈ canonicalRun.reads ∧
+      (address, none) ∈ droppedRun.reads ∧
+      canonicalRun.value =
+        some
+          (bpRangeMinExcess shape
+            (RelativeRmm.canonicalLayout shape).blockSize 0 1,
+            bpRangeArgMinPrefixPos shape
+              (RelativeRmm.canonicalLayout shape).blockSize 0 1) ∧
+      droppedRun.value = none ∧
+      canonicalRun.value ≠ droppedRun.value := by
+  let shape := canonicalRelativeRmmInteriorCost33WitnessShape
+  let canonicalStore : FlatWordStore :=
+    FlatWordStore.ofArray
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words
+  let droppedStore :=
+    canonicalRelativeRmmInteriorCost33LocalLevelDroppedStore
+  let address := canonicalRelativeRmmInteriorCost33LocalLevelDropAddress
+  let canonicalRun :=
+    canonicalRelativeRmmInteriorRangeMinExecutionWithRead
+      shape canonicalStore 0 1
+  let droppedRun :=
+    canonicalRelativeRmmInteriorRangeMinExecutionWithRead
+      shape droppedStore 0 1
+  have hgeometry := canonicalRelativeRmmInteriorCost33Layout_of_size_eq
+    shape canonicalRelativeRmmInteriorCost33WitnessShape_size
+  have hmacro : (RelativeRmm.canonicalLayout shape).macroSize = 144 :=
+    hgeometry.2.2.2.1
+  have hblockCount : (RelativeRmm.canonicalLayout shape).blockCount = 289 :=
+    hgeometry.2.2.1
+  have hbpLength : shape.bpCode.length = 6938 := by
+    rw [Cartesian.CartesianShape.bpCode_length]
+    have hsize : shape.size = 3469 := by
+      simpa [shape] using
+        canonicalRelativeRmmInteriorCost33WitnessShape_size
+    omega
+  have hwordSize : SuccinctRank.machineWordBits shape.bpCode.length = 13 := by
+    rw [SuccinctRank.machineWordBits, hbpLength]
+    have hlower : 12 <= Nat.log2 6938 :=
+      (Nat.le_log2 (by decide : Not ((6938 : Nat) = 0))).2 (by decide)
+    have hupper : Nat.log2 6938 < 13 :=
+      (Nat.log2_lt (by decide : Not ((6938 : Nat) = 0))).2 (by decide)
+    omega
+  have hwidth :
+      bpSparseLevelWidth
+          (bpSparseLevelDomain
+            (RelativeRmm.canonicalLayout shape).macroSize) = 11 := by
+    rw [hmacro]
+    unfold bpSparseLevelDomain bpSparseLevelWidth
+    have h146Lower : 7 <= Nat.log2 146 :=
+      (Nat.le_log2 (by decide : Not ((146 : Nat) = 0))).2 (by decide)
+    have h146Upper : Nat.log2 146 < 8 :=
+      (Nat.log2_lt (by decide : Not ((146 : Nat) = 0))).2 (by decide)
+    have h146 : Nat.log2 146 = 7 := by omega
+    rw [h146]
+    have hprod : 146 * (7 + 1) = 1168 := by decide
+    rw [hprod]
+    have h1168Lower : 10 <= Nat.log2 1168 :=
+      (Nat.le_log2 (by decide : Not ((1168 : Nat) = 0))).2 (by decide)
+    have h1168Upper : Nat.log2 1168 < 11 :=
+      (Nat.log2_lt (by decide : Not ((1168 : Nat) = 0))).2 (by decide)
+    omega
+  have hchunk :
+      fixedWidthNatTableMachineChunkCount
+          (bpSparseLevelWidth
+            (bpSparseLevelDomain
+              (RelativeRmm.canonicalLayout shape).macroSize))
+          (SuccinctRank.machineWordBits shape.bpCode.length) = 1 := by
+    rw [hwidth, hwordSize]
+    decide
+  have hchunkConcrete :
+      fixedWidthNatTableMachineChunkCount
+          (bpSparseLevelWidth (bpSparseLevelDomain 144))
+          (SuccinctRank.machineWordBits
+            canonicalRelativeRmmInteriorCost33WitnessShape.bpCode.length) = 1 := by
+    simpa [shape, hmacro] using hchunk
+  have hchunk146 :
+      fixedWidthNatTableMachineChunkCount
+          (bpSparseLevelWidth 146)
+          (SuccinctRank.machineWordBits
+            canonicalRelativeRmmInteriorCost33WitnessShape.bpCode.length) = 1 := by
+    simpa [bpSparseLevelDomain] using hchunkConcrete
+  have hlevelAddresses :
+      (if 1 <
+          bpSparseLevelDomain
+            (RelativeRmm.canonicalLayout shape).macroSize then
+        fixedWidthNatTableMachineFootprintAt
+          (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel
+          (bpSparseLevelWidth
+            (bpSparseLevelDomain
+              (RelativeRmm.canonicalLayout shape).macroSize))
+          (SuccinctRank.machineWordBits shape.bpCode.length) 1
+      else
+        [(canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress]) =
+        [address] := by
+    rw [hmacro]
+    simp [bpSparseLevelDomain, hchunk146,
+      fixedWidthNatTableMachineFootprintAt,
+      fixedWidthNatTableMachineFootprint, consecutiveWordIndices,
+      address, shape,
+      canonicalRelativeRmmInteriorCost33LocalLevelDropAddress]
+  have hfirstRead (store : FlatWordStore) :
+      (address, store address) ∈
+        ((canonicalRelativeRmmMachineReadNatComputation shape
+          (canonicalRelativeRmmInteriorLocalLevelTable shape).table
+          (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel
+          1).run store).reads := by
+    unfold canonicalRelativeRmmMachineReadNatComputation
+    simp only [FixedWidthNatTable.machineReadComputationAt,
+      FlatStoreComputation.map_run_reads,
+      FlatStoreComputation.readMany_run_reads,
+      bpSparseLevelEntries_length]
+    rw [hlevelAddresses]
+    simp
+  have htwoRead (store : FlatWordStore) :
+      (address, store address) ∈
+        ((canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+          shape 0 0 1).run store).reads := by
+    unfold canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+    simp only [FlatStoreComputation.bind_run,
+      FlatStoreExecution.append]
+    apply List.mem_append_left
+    simpa using hfirstRead store
+  have hread (store : FlatWordStore) :
+      (address, store address) ∈
+        (canonicalRelativeRmmInteriorRangeMinExecutionWithRead
+          shape store 0 1).reads := by
+    simpa [canonicalRelativeRmmInteriorRangeMinExecutionWithRead,
+      canonicalRelativeRmmInteriorRangeMinComputation, hmacro] using
+      htwoRead store
+  have hcanonicalValue :
+      canonicalRun.value =
+        some
+          (bpRangeMinExcess shape
+            (RelativeRmm.canonicalLayout shape).blockSize 0 1,
+            bpRangeArgMinPrefixPos shape
+              (RelativeRmm.canonicalLayout shape).blockSize 0 1) := by
+    have hexact :=
+      canonicalRelativeRmmInteriorRangeMinCostedWithStore_erase_exact
+        (shape := shape) (startBlock := 0) (count := 1)
+        (by omega) (by omega)
+    simpa [canonicalRun, canonicalStore,
+      canonicalRelativeRmmInteriorRangeMinCostedWithStore,
+      canonicalRelativeRmmInteriorRangeMinCostedWithRead,
+      canonicalRelativeRmmInteriorRangeMinExecutionWithStore] using hexact
+  have hdroppedAddress : droppedStore address = none := by
+    simp [droppedStore, address,
+      canonicalRelativeRmmInteriorCost33LocalLevelDroppedStore]
+  have hfirstDropped :
+      ((canonicalRelativeRmmMachineReadNatComputation shape
+        (canonicalRelativeRmmInteriorLocalLevelTable shape).table
+        (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel
+        1).run droppedStore).value = none := by
+    unfold canonicalRelativeRmmMachineReadNatComputation
+    simp only [FixedWidthNatTable.machineReadComputationAt,
+      FlatStoreComputation.map_run_value,
+      FlatStoreComputation.readMany_run_value,
+      bpSparseLevelEntries_length]
+    rw [hlevelAddresses]
+    simp [fixedWidthNatTableMachineDecode, collectPayloadWords,
+      hdroppedAddress]
+  have htwoDropped :
+      ((canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+        shape 0 0 1).run droppedStore).value = none := by
+    unfold canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+    simp [FlatStoreComputation.bind, FlatStoreExecution.append,
+      hfirstDropped]
+  have hdroppedValue : droppedRun.value = none := by
+    simpa [droppedRun,
+      canonicalRelativeRmmInteriorRangeMinExecutionWithRead,
+      canonicalRelativeRmmInteriorRangeMinComputation, hmacro] using
+      htwoDropped
+  refine ⟨?_, ?_, hcanonicalValue, hdroppedValue, ?_⟩
+  · simpa [canonicalRun] using hread canonicalStore
+  · simpa [droppedRun, hdroppedAddress] using hread droppedStore
+  · rw [hcanonicalValue, hdroppedValue]
+    simp
+
 theorem canonicalRelativeRmmInteriorRangePhysicalWordsRead_length_le_machine
     {shape : Cartesian.CartesianShape} {startBlock count : Nat}
     {word : List Bool}

@@ -100,7 +100,7 @@ make a theorem true.
 - No compiler, CPU, cache, extraction, benchmark, or production-serialization
   claim is made.
 - The all-size modeled query-cost bound on the canonical reviewer route is the
-  uniform checked charged-trace value `76`. Controller operations remain
+  uniform checked charged-trace value `210`. Controller operations remain
   uncharged; this is not conventional word-RAM complexity. Earlier checked
   cost, dispatch, size-premise, and proof-only chronology lives in the explicit
   [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md),

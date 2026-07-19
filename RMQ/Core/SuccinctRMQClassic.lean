@@ -100,9 +100,11 @@ abbrev queryCost : Nat :=
 
 /-- Checked historical U2 cost, retained without changing the current route. -/
 abbrev canonicalTransitionalQueryCost : Nat :=
-  3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
-    SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
-      SuccinctSelect.sparseDenseFalseSelectQueryCost
+  SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost
+
+/-- Distinct live compatibility cap computed from the current raw expression. -/
+abbrev liveCompatibilityQueryCost : Nat :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQLiveCompatibilityQueryCost
 
 /-- Public operation-aligned cost algebra reusable by the E1 simulation. -/
 abbrev chargedTraceCostAlgebra :=
@@ -145,9 +147,14 @@ theorem canonicalSilentSparseLevelQueryCost_eq :
     SuccinctFinal.concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq
 
 theorem canonicalTransitionalQueryCost_eq :
-    canonicalTransitionalQueryCost = 352 := by
+    canonicalTransitionalQueryCost = 328 := by
   exact
     SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq
+
+theorem liveCompatibilityQueryCost_eq :
+    liveCompatibilityQueryCost = 352 := by
+  exact
+    SuccinctFinal.concreteBPNativeSuccinctRMQLiveCompatibilityQueryCost_eq
 
 
 /-- Shape-sensitive route-split budget over an already prepared shape. -/
@@ -988,6 +995,20 @@ theorem queryCosted_cost_le_canonicalTransitional
   · simp [queryCosted, queryTraceResult, withValidRange, hvalid,
       canonicalTransitionalQueryCost]
 
+/-- Every query also has the distinctly named live raw-expression cap. -/
+theorem queryCosted_cost_le_liveCompatibility
+    (xs : List Int) (left right : Nat) :
+    (queryCosted xs left right).cost <= liveCompatibilityQueryCost := by
+  by_cases hvalid : ValidRange xs left right
+  · rw [queryCosted, queryTraceResult_valid xs left right hvalid]
+    simpa [liveCompatibilityQueryCost,
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted]
+      using
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_liveCompatibility
+          (cartesianShape xs) left right
+  · simp [queryCosted, queryTraceResult, withValidRange, hvalid,
+      liveCompatibilityQueryCost]
+
 /-- Every query has the principled fixed all-size charged-trace cost bound. -/
 theorem queryCosted_cost_le
     (xs : List Int) (left right : Nat) :
@@ -1095,6 +1116,16 @@ theorem listIntCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
       canonicalTransitionalQueryCost := by
   rw [queryCostedWithStore_eq_queryCosted_of_footprint xs hfoot left right]
   exact queryCosted_cost_le_canonicalTransitional xs left right
+
+/-- Footprint agreement transfers the distinct live `352` compatibility cap. -/
+theorem listIntLiveCompatibilityFinalFullModelCostLeOfFootprintGlobal
+    (xs : List Int) {store : WordRAM.ReadStore}
+    (hfoot : storesAgreeOnFootprint xs store (globalReadStore xs))
+    (left right : Nat) :
+    (queryCostedWithStore xs store left right).cost <=
+      liveCompatibilityQueryCost := by
+  rw [queryCostedWithStore_eq_queryCosted_of_footprint xs hfoot left right]
+  exact queryCosted_cost_le_liveCompatibility xs left right
 
 /-- Valid half-open queries return the exact leftmost-minimum index of `xs`. -/
 theorem queryCosted_exact
