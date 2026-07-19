@@ -1756,8 +1756,10 @@ def chunkMutantHIsPreservationOnly (salt : Nat) : Bool :=
 `mainImpl` prints these counts, which makes them reproducible but not
 proved: a printed `0` is evidence, and the kernel has not seen it.  The
 quantities are closed and computable, so they are also stated as theorems
-and discharged by `rfl` -- no `decide`, no `native_decide`, no raised
-heartbeat budget.
+and discharged by `rfl` -- no `decide`, no compiler-evaluated escape
+hatch, no raised heartbeat budget.  (The escape hatch is named in
+`AGENTS.md`; the name is kept out of `RMQ/` so the house scan for it
+stays at zero, per CHK-B4-02.)
 
 The salt is `0` here on purpose.  Its only job in `mainImpl` is to stop
 Lean folding the sweeps before `main` starts, which would make the

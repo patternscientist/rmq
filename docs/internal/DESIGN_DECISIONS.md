@@ -5175,3 +5175,129 @@ the interior leg's receipt, not the whole-query receipt, and it does not
 discharge REQ-E1-04, which is whole-query scoped and remains Open. Nothing
 here touches the span blocks, the two-span blocks or the five-branch
 dispatch, all of which remain unbuilt.
+
+## DD-20260719-030: the interior fold's preservation mutation clobbers `102`, the register the composition instantiates the clause AT (E1 LaneC)
+
+Phase 4h needs a register that (i) satisfies `ChunkFoldUntouched`
+(`E1InteriorChunkFold.lean:928`), (ii) is not a fold input, so it carries a
+sentinel and any write at all is detectable, and (iii) is genuinely consumed
+downstream, so the clobber is a real composition hazard rather than a
+contrived one.
+
+Chosen: `102`, which is `E1InteriorSummaryGroup.sMin`
+(`E1InteriorSummaryGroup.lean:80`). It satisfies (i) through the `99 < r`
+disjunct. It satisfies (ii) because `interiorChunkFold_runsTo` declares
+exactly ONE input, `hIdx : regs iIdx = i`. It satisfies (iii) in the
+strongest available sense: the summary group's own proof instantiates the
+fold's preservation hypotheses at exactly this slot -- `hPres4 sMin`,
+`hPres3 sMin` (`E1InteriorSummaryGroup.lean:427-429`) -- to carry a staged
+minimum across LATER fold invocations. The witness is therefore FOUND at the
+target rather than CONSTRUCTED for the premise (rule 5).
+
+REJECTED: `iIdx` (`85`). It satisfies (i) and (iii) -- it is the caller's
+block index and the fold is composed more than once -- but it FAILS (ii): it
+is the fold's one genuine input, so the fixture must seed it with the real
+index `i` rather than a sentinel, and detection would then depend on the
+mutant happening to write a value differing from `i`. With `102` the seed is
+`presSentinel 102 = 717` and the combine loop can only write `cAcc %
+wordScale`, i.e. `0` or `1` on this witness, so the ranges are provably
+disjoint and detection is not luck.
+
+## DD-20260719-031: the mutation is the COMBINE loop's private scratch, renamed within the combine segment only (E1 LaneC)
+
+Mutant H renames `cU` (`96`) to `102` across its three occurrences in
+`interiorChunkCombine` (`E1InteriorChunkFold.lean:316`), restricted to fold
+indices `26..33`.
+
+Why `cU` in COMBINE is the right locus. It is written at `MB+1` before it is
+read at `MB+2` and `MB+4`, and never read after, so it is a pure private temp
+whose incoming value cannot matter and whose outgoing value nothing consumes:
+a consistent rename performs identical arithmetic into `cRev`. The combine
+loop is also READ-FREE by construction, so the mutation cannot move, add or
+drop a trace event, and its trip count is driven by `cN`, so steps and control
+path are identical. That is what makes it invisible to BOTH other
+discriminators.
+
+Why the rename is SEGMENT-RESTRICTED. `cU` is also used by
+`interiorChunkInitHead` at `Q+3, Q+4, Q+6, Q+7, Q+8`. A global rename would
+still be value-invisible on this witness -- init reads `iIdx` at `Q+1`/`Q+2`,
+before `Q+3` -- but it would make the mutation's locus a coincidence of
+instruction order rather than a property of the block. Restricting to
+`26..33` mirrors the fringe's `mutatedArmScratch`
+(`E1MachineValidate.lean`, phase 4g) and keeps the locus stated rather than
+inferred.
+
+Why substitution is REGISTER-POSITION-ONLY. `substReg` rewrites register
+operands and nothing else. A blanket numeral rewrite would also hit `const`'s
+value, `mulConst`/`divConst`'s scale, `readMem`'s segment, and -- the one that
+silently corrupts control flow rather than failing loudly -- `brNZ`'s absolute
+branch TARGET.
+
+## DD-20260719-032: the clobber target is a documented LITERAL, not an import of the sibling-owned module (E1 LaneC)
+
+The validator does not import `E1InteriorSummaryGroup`; `chunkClobberTarget`
+is the literal `102` with the `sMin` identification recorded in its docstring.
+
+Rationale. What the discriminator NEEDS of `102` is only that it satisfies
+`ChunkFoldUntouched` and is not a fold input -- both local facts, checked
+locally. The `sMin` identification is the LEGITIMACY argument (DD-030), not a
+soundness dependency, so the phase stays correct even if that identification
+drifts. Importing the summary group to spell the target symbolically would
+couple this validator's build to a module owned by a different lane and under
+active edit, for no gain in what the check actually establishes.
+
+KNOWN COST, recorded rather than hidden: if a later session renumbers `sMin`,
+the literal goes stale silently and the phase's LEGITIMACY comment becomes
+wrong while the phase itself keeps passing. The mitigation is that phase 4h
+prints `mutantH_clobberedRegs` and the kernel theorem
+`chunkPres_mutantH_clobbers_exactly_102` names the numeral, so the drift is
+visible in the diff of both.
+
+## DD-20260719-033: the phase's counts are ALSO kernel-checked, not only printed (E1 LaneC)
+
+`mainImpl` prints seven counts; the same seven facts are stated as theorems
+and discharged by `rfl`. A printed `0` is reproducible evidence that the
+kernel has not seen; these quantities are closed and computable, so rule 3
+says they get EVALUATED, and stating them as theorems is what makes the
+evaluation a kernel fact rather than a runtime observation.
+
+All seven come out depending on no axioms whatsoever -- not `propext`, not
+`Classical.choice`. No `decide`, no compiler-evaluated escape hatch, and no
+raised heartbeat budget: `rfl` alone. Cost recorded: the seven `rfl` proofs
+take the validator module's build from roughly 20s to roughly 3m45s, which is
+the price of kernel-reducing four two-run machine sweeps and a 99-register
+filter.
+
+The salt is `0` in the theorems on purpose. Its only job in `mainImpl` is to
+stop Lean folding the sweeps before `main` starts, which would make the
+wall-clock readings meaningless; in a theorem, compile-time evaluation is
+exactly what is wanted.
+
+## DD-20260719-034: the composed 177-instruction leg is NOT given this treatment, and why that is an obstruction rather than a choice (E1 LaneC)
+
+The intended extension was to run the same preservation treatment on
+`summaryMinCandidate_runsTo` (`E1InteriorMinCandidate.lean:929`). It was not
+done, for two independent reasons, neither of which is budget.
+
+FIRST: the composed leg states no preservation clause to execute. Its
+conclusion is exactly two conjuncts -- the `RunsTo` and the `bestOfRegs`
+value equation (`:937-974`). Both of its components DO carry one:
+`canonicalSummaryGroup_runsTo` supplies `hpres1`, and
+`minCandidateBlock_runsTo` concludes `(∀ r, MinCandUntouched r → regs' r =
+regs r)`. The composed proof binds the latter as `_hpres2` at `:991` --
+underscore-prefixed, i.e. deliberately discarded -- and re-exports neither.
+This is the same defect M3d-13 found and fixed in `interiorChunkFold_runsTo`,
+recurring one level up, and it contradicts the standing rule that every block
+state its preservation clause in its HEADLINE and not only in its internal
+segment lemmas.
+
+SECOND, and independent: the leg is instantiated at
+`canonicalSummaryLayout shape`, whose `wordScale` routes through
+`SuccinctRank.machineWordBits`, hence `Nat.log2`, which the compiler
+evaluates but the kernel cannot reduce. So even with a clause to execute, a
+fixture over the leg's real instantiation could only be compiler-evaluated
+evidence, never a `rfl`/`decide` kernel fact of the kind DD-033 supplies for
+the fold.
+
+`E1InteriorMinCandidate.lean` is owned by a different lane, so the first
+obstruction is recorded as a CROSS-LANE DEPENDENCY and not fixed here.

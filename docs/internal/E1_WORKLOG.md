@@ -7737,3 +7737,181 @@ All file:line verified at this session's HEAD.
    index copied from the segment below", which is what the fixture is --
    and the six-entry table exists precisely so the impostor is NOT caught
    by the cheap check, which is the property that makes it a real witness.
+
+## LaneC: the interior fold's preservation clause, EXECUTED, and a mutation only preservation can see
+
+Branch `claude/e1-interior-preservation`, base `3ccda2e`. Changed:
+`RMQ/Validation/E1MachineValidate.lean` (only Lean file touched), plus this
+log and `DESIGN_DECISIONS.md`. Design decisions claimed: **DD-20260719-030
+through -034**, inside the allocated band `030..039`.
+
+### 1. Two supplied claims failed inspection, and one of them changes the shape of the job
+
+I was told the fringe side "has exactly this and DOES run it:
+`FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`)", so that this lane was a
+port of a working check to the interior. **It is not.**
+
+`FringeFoldUntouched` does exist at `E1FringeFoldBlock.lean:962`, exactly as
+cited. But the string `FringeFoldUntouched` does not occur anywhere in
+`E1MachineValidate.lean`. What phase 3h executes is `FringeArmUntouched`
+(`E1FringeArmBlock.lean:951`) -- the ARM's write set, a different and larger
+one, over a different block. The fringe FOLD's preservation clause is as
+unexecuted as the interior fold's was.
+
+So this is the FIRST executed fold-level preservation check in the tree, on
+either side. That is recorded in the phase header in the file itself, not only
+here, because the next reader will make the same assumption I was handed.
+
+Second, smaller: the milestone cited the fold's preservation clause at
+`E1InteriorChunkFold.lean:1011`. That line is real and carries exactly the
+quoted text, but it belongs to `interiorChunkReadLoop_runsTo` -- the READ
+LOOP, one of four segments. The composed FOLD headline's clause is at `:1835`,
+inside `interiorChunkFold_runsTo` (`:1808`). I executed the headline's,
+because that is the one the composition consumes. Also
+`summaryMinCandidate_runsTo` is at `:929`, not `:924`.
+
+Everything else in the prompt checked out verbatim: `ChunkFoldUntouched` at
+`:928` with `r < 89 ∨ 99 < r`; `presFailures` at `:1449`; phase 4g at `:1803`;
+mutant G clobbering `70`; the interior bank `89..99`.
+
+One pre-existing in-repo citation is also stale and I did NOT fix it (not my
+file, not load-bearing): `E1MachineValidate.lean:1361` cites
+`E1FringeArmBlock.lean:948` for `FringeArmUntouched`, which is at `:951`.
+
+### 2. What was built
+
+Phase 3i, `E1MachineValidate.lean`: `chunkUntouchedRegs` mirrors
+`r < 89 ∨ 99 < r` literally over `List.range 110` -- the range deliberately
+runs past the summary group's bank `100..104` so the slots the interior's own
+composition carries across a fold call are among the 99 registers checked.
+`chunkPresRegs i` seeds every register with `presSentinel` (reused from phase
+3h) and writes the fold's ONE declared input `iIdx` over it. The four fixtures
+are the fold's own hosting-witness paths `0, 1, 2, 5`.
+
+Phase 4h: mutant H renames the combine loop's private scratch `cU` (96) to
+`102`, segment-restricted to fold indices `26..33`, via a register-position-only
+substitution (DD-031).
+
+### 3. Anti-vacuity, which is the whole point of the phase
+
+The fold's own witness seeds `fun _ => 0` and writes only `iIdx`
+(`witnessRegs`, `E1InteriorChunkFold.lean:1924`). Reusing it would have made
+this phase VACUOUS in the exact sense M3d-9 named: a fold that ZEROED a
+register it does not own still "preserves" it when the register was already
+zero. Hence the sentinel seeding, and hence `chunkPresSentinelNonZero` and
+`chunkPresTargetSeed` are printed rather than assumed.
+
+Three further anti-vacuity obligations, all discharged by execution rather
+than by argument:
+
+- **The sweep is a FOLD sweep.** `chunkPresMultiChunkCases=3`: three of four
+  fixtures read TWO chunks. A single-chunk sweep would exercise the atom
+  `E1InteriorReadBlock` already covers. Reported as a count, and required
+  `> 0` in the verdict.
+- **The bank is seeded too, and that is a test.** `cW`, `cT`, `cU`, `cOut`
+  are the four bank slots `interiorChunkInit` does NOT initialise. The
+  zero-seeded re-run compares BOTH the returned cell and the read log, so if
+  any of the four were read before being written the two seedings would
+  disagree. `chunkPresSeedDisagreements=0` -- so the fold's input set really
+  is the single `iIdx` it declares.
+- **Detection is not luck.** The target carries `presSentinel 102 = 717`; the
+  combine loop can only write `cAcc % wordScale`, i.e. `0` or `1` on this
+  witness. Disjoint ranges, so the clobber is caught whatever the arithmetic
+  happens to produce (DD-030).
+
+### 4. The mutation evidence
+
+Honest sweep: `chunkPresFailures=0`, `chunkPresClobberedRegs=[]`,
+`chunkPresExitFailures=0`, `chunkPresSeedDisagreements=0`,
+`chunkPresCheckedRegs=99`, `chunkPresCases=4`.
+
+Mutant H: `mutantH_combine_preservationFailures=4` (all four fixtures),
+`mutantH_clobberedRegs=[102]` (exactly the predicted register, nothing else),
+`mutantH_combine_exitFailures=0` (exit pc alone MISSES it),
+`mutantH_isPreservationOnly=true`, `chunkPresMutationIsReal=true`.
+
+`mutantH_isPreservationOnly` compares, case for case, the exit pc, halted
+flag, modeled steps, returned cell AND the read log EVENT BY EVENT. The
+event-by-event part is not decoration on this block:
+`chunkFoldWitness_paths_distinguishable` (`E1InteriorChunkFold.lean:2004`)
+records that its paths 2 and 3 agree on both modeled steps and returned cell
+and are separated ONLY by the read log, so a receipt check by length or count
+would have been the wrong instrument.
+
+So mutant H preserves the receipt and the value and is caught only by
+preservation -- a genuine THIRD discriminator on the interior side, not a
+redundant one.
+
+### 5. Kernel-checked, not merely printed
+
+The same seven facts are stated as theorems and discharged by `rfl` --
+`chunkPres_honest_clobbers_nothing`,
+`chunkPres_mutantH_clobbers_exactly_102`,
+`chunkPres_mutantH_caught_on_every_case`,
+`chunkPres_mutantH_reaches_exit_everywhere`,
+`chunkPres_mutantH_is_preservation_only`, `chunkPres_sweep_is_multiChunk`,
+`chunkPres_target_seed_outside_written_range`. All seven depend on NO axioms
+(DD-033). Cost: the validator module's build goes from roughly 20s to roughly
+3m45s.
+
+### 6. What I did NOT reach, and why it is an obstruction
+
+The composed 177-instruction leg did NOT get this treatment. Two independent
+reasons, neither budget (DD-034):
+
+1. **`summaryMinCandidate_runsTo` (`E1InteriorMinCandidate.lean:929`) states
+   no preservation clause to execute.** Its conclusion is two conjuncts, the
+   `RunsTo` and the value equation. Its component
+   `minCandidateBlock_runsTo` DOES conclude
+   `(∀ r, MinCandUntouched r → regs' r = regs r)`, and the composed proof
+   binds it as `_hpres2` at `:991` -- underscore-prefixed, deliberately
+   discarded -- then re-exports neither it nor `hpres1`. This is the M3d-13
+   defect recurring one level up, and it contradicts the standing rule that
+   the clause belong to the HEADLINE.
+2. **Independently, the leg is kernel-irreducible at its real
+   instantiation.** `canonicalSummaryLayout`'s `wordScale` routes through
+   `SuccinctRank.machineWordBits`, hence `Nat.log2`. Even with a clause, a
+   fixture over the leg could only be compiler-evaluated evidence, never the
+   kernel fact section 5 supplies for the fold.
+
+`E1InteriorMinCandidate.lean` is owned by another lane. **CROSS-LANE
+DEPENDENCY, reported not fixed:** `summaryMinCandidate_runsTo` should
+re-export the preservation clause its two components already prove. Until it
+does, there is nothing for a validator phase to execute at that level.
+
+### 7. Resume inventory
+
+- **OWED, now unblocked once the clause lands:** an executed preservation
+  phase for the composed leg, `E1MachineValidate.lean` alongside phase 3i.
+  Blocked on item 1 of section 6.
+- **OWED, buildable today, NOT done here:** an executed preservation phase
+  for `minCandidateBlock` alone, which unlike the composed leg DOES state its
+  clause (`MinCandUntouched`, `E1InteriorMinCandidate.lean:353`) and DOES have
+  a kernel-reducible literal witness (`witnessProgram`/`witnessStore`,
+  `:777-781`, with `witnessOut_allPresent := by rfl` at `:807`). Note when
+  building it that the block is READ-FREE (receipt `[]`), so preservation
+  there is not a third discriminator but the SECOND of only two -- the
+  receipt discriminator is structurally powerless on that block. A mutation
+  target must be chosen among registers satisfying `MinCandUntouched` that
+  are NOT among the block's five inputs `100..104`, or the DD-030 sentinel
+  argument does not apply.
+- **NOT owed by me, recorded:** `E1MachineValidate.lean:1361` cites
+  `E1FringeArmBlock.lean:948`; the abbrev is at `:951`.
+- **Pre-existing, untouched:** the unused-simp-arg linter warning at
+  `E1InteriorChunkFold.lean:529`, surfaced in my builds only because this
+  lane is the first to import that module into the validator.
+
+### 8. Standing rules
+
+Still five; this session adds no sixth. It supplies a sharp instance of rule
+4: the claim that a check already ran on the fringe side was the load-bearing
+premise of the whole milestone, and it was false. Grepping it took one
+command and changed what the deliverable IS -- from a port to a first.
+
+It also sharpens rule 2 in a direction M3d-9 did not need. M3d-9's vacuity
+trap was the all-zero register file. The trap here is one step further in:
+even WITH sentinel seeding, choosing the block's own INPUT as the clobber
+target reintroduces value-dependent detection, because an input must be
+seeded with its real value rather than a sentinel. A witness of non-vacuity
+therefore has to cover not just the seeding but the TARGET's relationship to
+the seeding.
