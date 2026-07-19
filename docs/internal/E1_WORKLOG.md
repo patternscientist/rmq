@@ -2908,3 +2908,301 @@ NOTHING below is implemented.
    unblocks, the validator hole at
    `RMQ/Validation/E1MachineValidate.lean:549`/`:556` is where the
    end-to-end machine-vs-`refRMQ` comparison attaches.
+
+## M3d-6 (worker E1-R4p): base-parametric leg, the dispatch composition, and composite validation
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `c52e91b`, commits
+`cb0b908` and `72e7020`.
+
+### 1. THE REBASING WORK (resume item 2) - LANDED
+
+The predecessor's diagnosis was correct but understated the good news.
+`sameBlockLegProgram` (`E1SameBlockLeg.lean:447`) is indeed a hosting
+witness only at base `0`, and it hardcodes FOUR internal addresses, not
+the two the resume point named:
+
+* the `rankCloseBlock` segment base `5` (its own first argument),
+* `fringeMerge 97`,
+* the `brNZ fCnt 97` fold back edge,
+* `fringeCandGlobal 164`.
+
+What the resume point did NOT record, and what makes this rung much
+cheaper than budgeted: `sameBlockLeg_runsTo_canonical`
+(`E1SameBlockLeg.lean:333`) was ALREADY base-parametric.  Its binder is
+`{A ...}`, every hosting hypothesis sits at `A + k`, and its targets are
+written `A + 97` / `A + 164` (`:352`, `:356`, `:357`).  The simulation
+theorem needed NO change.  Only the concrete witness program was stuck at
+base `0`.
+
+Landed in `E1SameBlockLeg.lean` (M3d-6 section, after
+`sameBlockLegProgram_runsTo_canonical`):
+
+* `sameBlockLegProgramAt shape fringeSegment blockSize B` - the same
+  173-instruction layout with all four internal addresses `B`-relative.
+* `sameBlockLegProgramAt_length` = 173.
+* `sameBlockLegProgramAt_zero` - specialises to the landed base-`0`
+  layout, so nothing already proved regresses.  (The delegation asked to
+  keep the existing base-0 form working OR to prove the new one
+  specialises to it; this is the second, and it is the stronger.)
+* `sameBlockLegProgramAt_hosts` - all twelve hosting facts at `B + k` from
+  the single assumption `HostedAt program B (sameBlockLegProgramAt ... B)`.
+* `sameBlockLegProgramAt_runsTo_canonical` - the leg at an arbitrary base.
+
+New module `RMQ/Core/WordRAM/E1CloseCompose.lean` (imported at
+`RMQ.lean:35`):
+
+* `sameBlockDispatchProgram shape fringeSegment blockSize crossArm` -
+  dispatch at `0`, `crossArm` at `4`, the leg rebased to
+  `4 + crossArm.length`.  The argument to `sameBlockLegProgramAt` and the
+  branch target `closeDispatchProgram` computes are the SAME expression,
+  so an off-by-one fails to typecheck.
+* `sameBlockDispatchProgram_runsTo` - the composite on the route's own
+  same-block condition, `0 -> 4 + crossArm.length + 173`, reproducing the
+  route trace and value.
+* `sameBlockDispatchProgram_runsTo_witnessCross` - instantiated at the
+  dispatch module's witness cross arm, so the leg's host base is the
+  CONCRETE `6` (internal targets `103` and `170`) and the exit is `179`.
+  This is the anti-vacuity witness for the rung: at base `0` the old
+  layout typechecks by accident because `0 + 97 = 97`.
+* `witnessCross_legBase_eq_six` - `4 + witnessCrossArm.length = 6`, by
+  `decide`, so the layout arithmetic is checked rather than described.
+
+`crossArm` is left a PARAMETER; nothing in the composition depends on its
+contents, only its length, so the finished cross arm drops into the same
+layout without disturbing the same-block result.
+
+### 2. THE CROSS-BLOCK ARM (resume item 3): structural map, verified at source
+
+The delegation asked to assemble it as far as it goes without the interior
+leg, and to state precisely what the interior composition will need.  The
+assembly did NOT proceed, for a reason worth recording rather than
+glossing: the route's cross-block object needs a component that does not
+exist and is NOT the interior leg.  The map below was read at source this
+session, not carried forward.
+
+The else-branch of `ChargedFringeWiring.lean:496` is
+`bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`
+(`RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeTrace.lean:1144`;
+note the `RelativeRmmMacro/` path component, which an earlier survey
+omitted).  It sequences FIVE sub-computations, not the four the M3d-4
+resume point assumed, and the two rank seeds are NOT adjacent - the right
+seed sits between the interior leg and the right arm (`:1154-1181`):
+
+1. `localBPSeedFromRankCloseTraceResult ... leftClose`   (LEFT SEED)
+2. `bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore`  (LEFT ARM)
+3. `if leftBlock + 1 < rightBlock then concreteBPRelativeRmmInteriorRangeMin... else TraceResult.pure none`  (INTERIOR - BLOCKED)
+4. `localBPSeedFromRankCloseTraceResult ... rightClose`  (RIGHT SEED)
+5. `TraceResult.map (fun right? => bpCandidateClose? (bpCandidateMerge3? left? middle? right?)) (bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore ...)`  (RIGHT ARM, merge fused on)
+
+Machine-side coverage, checked this session:
+
+* Arms (2, 5): EXIST and are arm-agnostic.  `fringeArm_runsTo`
+  (`E1FringeArmBlock.lean:904`) is stated over abstract
+  `base/bb/relLo/relHi/seed/start`; `leftArm_value_eq` (`:987`) and
+  `rightArm_value_eq` (`:1018`) are the two instantiations.  Results land
+  in `fRV`/`fRP`.
+* Seeds (1, 4): EXIST (`rankSeedLeg_runsTo_canonical`) but are wired only
+  at the same-block leg's instantiation; they need re-hosting at the
+  cross-block layout.  Assembly, not new construction.
+* Interior (3): BLOCKED, unchanged - see section 3.
+* MERGE (5): DOES NOT EXIST.  `rg` over `RMQ/Core/WordRAM/` for
+  `bpCandidateMerge`, `bpCandidateBetter`, `candMerge`, `merge3` returns
+  NOTHING.  This is a NEW finding: previous resume points listed the
+  cross-block arm as "two fringe arms plus the interior leg plus the
+  select-close leg, then the merge", which reads as though the merge were
+  a known small step.  It is unbuilt, and it is why the cross-block arm
+  cannot be assembled even partially into a running program.
+
+`E1SameBlockArm.sameBlockClose` (`:238`, two instructions) does NOT
+generalise to it.  That epilogue handles `bpCandidateClose?` on a SINGLE
+arm and needs no option dispatch, because `bpFringeCandGlobal` is total
+into `some` (`ChargedFringeChunks.lean:1617`).  In the cross-block object
+`middle?` is genuinely optional - the `leftBlock + 1 < rightBlock` guard
+produces `TraceResult.pure none` - so `bpCandidateMerge3?` needs a real
+three-way option-aware minimum.
+
+### 3. WHAT THE MERGE AND THE INTERIOR COMPOSITION WILL NEED (precise)
+
+THE MERGE (unblocked, read-free, buildable today).  `bpCandidateBetter`
+(`RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/Candidate.lean:15`)
+is `if right.1 < left.1 then right else left` - STRICT `<`, so ties keep
+the left candidate and the leftmost tie-break is inherited for free.
+`bpCandidateMerge?` (`:18`) is the option-lifted version and
+`bpCandidateMerge3?` (`:24`) is `merge? (merge? left middle) right`.
+Since both arms are total into `some`, only `middle?` needs an occupancy
+test, and the whole step is:
+
+    acc := left
+    if middle present and middle.val < acc.val then acc := middle
+    if right.val < acc.val then acc := right
+    result := acc.pos - 1              -- bpCandidateClose?
+
+A 16-instruction, read-free, already-base-parametric block suffices
+(`natLe` + `brNZ` + `move`; no new ISA constructor, no divisor).  The
+house convention for the optional candidate is the `+1` BIAS already used
+by `fringeMerge` (`E1FringeFoldBlock.lean:204`, `.add fBV fCV fOne`):
+`0` encodes `none`, `v+1` encodes `some v`.  DESIGNED BUT NOT BUILT this
+session - the six control paths are a real proof obligation, and the
+remaining budget went to validating what had already landed rather than
+starting a block that could not be finished and verified.
+
+THE INTERFACE OBLIGATION ON THE INTERIOR LEG, when it unblocks: it must
+deliver `middle?` in that biased form - occupancy in one register as
+`0`/`v+1`, position in another - so the merge needs no option dispatch
+beyond a single `brNZ`.  Any other encoding forces a redesign of the
+merge block.  This is the one cross-component contract the interior work
+should be told about BEFORE it is built.
+
+THE INTERIOR ITSELF is unchanged and still blocked.
+`bpSparseLogSpan blockCount = 2 ^ Nat.log2 blockCount`
+(`EndpointFringe/PrefixRange/SparseArgMin.lean:598`) is applied to
+`rightBlock - leftBlock - 1` (`ChargedFringeTrace.lean:1166`) - derived at
+RUNTIME from the query operands - and both `Nat.log2 count` and the span
+reach accepted read addresses.  Contrast the dispatch's own `Nat.log2`,
+applied to `shape.size`, fixed before the machine starts, never reaching a
+read address; that is exactly why the dispatch was buildable and the
+interior is not.
+
+### 4. VALIDATOR (delegation item 3)
+
+`RMQ/Validation/E1MachineValidate.lean` gains phase 3d (composite
+execution) and phase 4c (rebasing mutations).  The whole-query hole
+(`wholeQueryComparisonAvailable` / `wholeQueryMismatches`) is UNTOUCHED
+and still reports `OPEN (interior leg blocked; NOT a pass)`.
+
+Phase 3d is strictly stronger than phase 3b: 3b runs the leg at base `0`,
+where every absolute internal target is correct by accident.  Same-block
+cases must reach `179` with a receipt equal event-for-event to the route's
+independently computed trace; because the dispatch performs no read, this
+also checks the dispatch is read-free IN SITU rather than by inspecting
+its opcodes.  Cross-block cases must halt in the witness cross arm having
+read nothing - which does NOT validate the route's cross-block VALUE, and
+the harness comments say so.
+
+MUTANT B IS THE ONE TO BEAT NEXT.  It moves a SINGLE operand - the fold
+back edge from its rebased `103` to the base-`0` `97` - and it REACHES
+THE CORRECT EXIT PC 179 (exitFailures = 0) while its receipt diverges
+(6 mismatches).  Program length, instruction count and opcodes are all
+unchanged.  Only receipt diffing catches it.
+
+### 5. GOTCHAS RECORDED THIS SESSION (carry forward)
+
+1. `lake build RMQ` DOES NOT BUILD THE VALIDATOR.  It reported
+   `Build completed successfully` while
+   `RMQ/Validation/E1MachineValidate.lean` was failing to compile; that
+   module belongs to the `lean_exe` target, not the `RMQ` lib.  Build
+   `rmq_e1_machine_validate` (or run it) before believing the validator is
+   green.  This is a hole in the "root build is the binding standard"
+   habit and it silently hid three compile errors.
+2. `by decide` closes `0 < [instr].length` at base `0` but NOT under a
+   free base variable: the goal `0 < [Instr.brNZ fCnt (B + 97)].length`
+   contains a free variable and `decide` refuses it outright ("expected
+   type must not contain free variables").  Use `by simp`.  This is the
+   base-parametric analogue of the M3d-4 gotcha 2 and will recur for every
+   rebased witness.
+3. AN EXECUTABLE HARNESS MUST COMPUTE ITS REPORT LIST ONCE.  Deriving each
+   statistic from its own sweep re-runs the machine per statistic; eight
+   statistics over 40 leg-scale cases did not finish in ten minutes.  Fold
+   the counts over a single `List ComposeReport`.
+4. A MIS-REBASED PROGRAM DOES NOT FAIL FAST - IT LOOPS UNTIL FUEL IS
+   EXHAUSTED.  A mutant whose back edge targets a wrong address can burn
+   the full fuel budget on every case, making the mutant sweep hundreds of
+   times more expensive than the honest one.  Give mutant sweeps a reduced
+   budget and case subset, and make the harness CHECK that the budget
+   exceeds the largest honest run (`composeMutantFuelIsSlack`) and that the
+   subset still reaches the mutated arm (`composeMutantCoversSameBlock`),
+   rather than asserting either.  Fuel exhaustion is rejection a fortiori,
+   so this weakens nothing.
+5. A LONG `&&` VERDICT CHAIN BLOWS THE ELABORATOR.  A single `&&` chain
+   over ~20 Bool clauses fails with `failed to synthesize BEq Nat,
+   maximum recursion depth`.  Group into named `let` clauses; the grown
+   `do` block additionally needed `set_option maxRecDepth 8000 in` on
+   `mainImpl` (an elaborator budget only - not a proof option, and it
+   weakens no check).
+6. `Nat` `>` in string interpolation is a `Prop`: `s!"{n > 0}"` fails with
+   `failed to synthesize ToString Prop`.  Use `n != 0`.
+
+### 6. VERIFICATION LEDGER (root builds, not per-file checks)
+
+`lake build RMQ` exit 0 at both commits (`cb0b908`, `72e7020`).
+`lake build rmq_e1_machine_validate` exit 0 at HEAD - recorded separately
+BECAUSE of gotcha 1.
+
+`#print axioms` run AFTER a root build on all nine theorems this session
+claims: `sameBlockLegProgramAt_length`, `sameBlockLegProgramAt_zero`,
+`sameBlockLegProgramAt_hosts`, `sameBlockLegProgramAt_runsTo_canonical`,
+`sameBlockDispatchProgram_length`, `sameBlockDispatchProgram_runsTo`,
+`sameBlockDispatchProgram_runsTo_witnessCross`,
+`witnessCross_legBase_eq_six`, `fringeCandGlobal_fits` - every one reports
+only `propext` / `Classical.choice` / `Quot.sound` (two report fewer),
+never `sorryAx`.
+
+`lake exe rmq_e1_machine_validate` exit 0, `RESULT: PASS (with the
+whole-query comparison still OPEN)`.  Composite figures, modeled and
+wall-clock kept apart: `composeCases=40` (`composeSameCases=27`,
+`composeCrossCases=13`), `composeLegExitFailures=0`,
+`composeReceiptMismatches=0`, `composeCrossArmFailures=0`,
+`composeCrossReads=0`, `composeModeledSteps=9222`,
+`composeMaxModeledSteps=585`, `composeModeledReads=322`;
+`composeWallClockMs=194` (this binary on this host; NOT evidence).
+Mutations: `composeMutationsAreReal=true`, `composeMutantFuel=6000` vs
+honest max `585` with `slack=true`, `composeMutantCoversSameBlock=true`,
+`mutantA_unrebased_exitFailures=6` / `receiptMismatches=6`,
+`mutantB_backEdge_exitFailures=0` / `receiptMismatches=6`.
+
+### 7. WIDTH CERTIFICATES: the gap was ONE segment, not six
+
+Checked rather than assumed.  `rankCloseBlock_fits`
+(`E1RankBlock.lean:1003`) and `fringeLoopBody_fits`
+(`E1FringeFoldBlock.lean:376`, covering `fringePrefix ++ fringeMerge ++
+fringeShift ++ fringeAdvance`) already existed, as did
+`fringeArmPrologue_fits`, `windowAddr_fits`, `windowRange_fits`,
+`sameBlockClose_fits`, `rankSeedPos_fits`, `rankSeedFinish_fits`.  The
+only same-block leg segment with NO width certificate was the
+global-rebase epilogue; `fringeCandGlobal_fits`
+(`E1FringeArmBlock.lean:738`) closes it, constructor-exhaustive with no
+wildcard arm.
+
+STILL OUTSTANDING: no whole-program width certificate for
+`sameBlockLegProgramAt` or `sameBlockDispatchProgram`.  All segment-level
+pieces now exist, so this is assembly - collecting the segments'
+hypotheses into one signature and dispatching `List.mem_append` (with
+`or_assoc` in the simp set, per the M3d-3 flattening gotcha).
+
+### 8. MATRIX STATUS AT YIELD
+
+All rows REQ-E1-01..11 remain OPEN.  This session closed none and weakened
+none.  Matrix closure was impossible by construction: every row is
+whole-query scoped and the whole-query composition is downstream of the
+blocked interior leg.  Evidence accumulated is component-level and does
+NOT discharge any row.
+
+Component-level evidence added: REQ-E1-01 (the composed simulation now has
+an anti-vacuity witness at a NONZERO host base, not only at `0`);
+REQ-E1-02 (`fringeCandGlobal_fits`); REQ-E1-04 (the composite's receipt is
+positionally equal to the route's, executed); REQ-E1-08 (composite
+execution phase plus two rebasing mutations, one of which reaches the
+correct exit pc and is caught only by the receipt diff).
+
+### 9. RESUME POINT (M3d-7)
+
+NOTHING below is implemented.
+
+1. STILL BLOCKED: the interior-leg `Nat.log2` decision (M3d-3 section 2).
+   Items 2-4 are unaffected.
+2. BUILD THE THREE-WAY CANDIDATE MERGE.  Unblocked, read-free, and now the
+   binding obstacle to the cross-block arm - ahead of the interior leg in
+   the sense that the arm cannot be assembled even partially without it.
+   Design, register convention and the exact route semantics are in
+   section 3 above.  Six control paths; budget accordingly.
+3. WHOLE-PROGRAM WIDTH CERTIFICATES for `sameBlockLegProgramAt` and
+   `sameBlockDispatchProgram`.  All segment lemmas now exist (section 7);
+   this is assembly only.
+4. THE CROSS-BLOCK ASSEMBLY still needs, in order: the merge (item 2), the
+   two seeds re-hosted at the cross-block layout, the two arms hosted
+   (both already arm-agnostic), and then the interior leg (blocked).
+5. WHOLE-QUERY GLUE, the derived all-size literal, and the amended target
+   Prop remain out of scope, all downstream of item 1.  The validator hole
+   is at `RMQ/Validation/E1MachineValidate.lean`
+   (`wholeQueryComparisonAvailable` / `wholeQueryMismatches`, phase 5) and
+   is where the end-to-end machine-vs-`refRMQ` comparison attaches.
