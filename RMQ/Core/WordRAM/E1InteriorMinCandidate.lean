@@ -1220,7 +1220,7 @@ theorem geomEvents_eq_summaryReadReceipt_map
 
 /-- THE POSITIONAL RECEIPT EQUALITY, MACHINE AGAINST ROUTE.
 
-The trace `summaryMinCandidate_runsTo` (`:929`) emits IS the read log the
+The trace `summaryMinCandidate_runsTo` (`:963`) emits IS the read log the
 route's summary computation records -- the same events, in the same
 positions, carrying the same segment, addresses and words.
 
@@ -1286,7 +1286,7 @@ theorem minCandidateComputation_reads_eq_summary
 /-- THE COMPOSITE'S RECEIPT, MACHINE AGAINST ROUTE, IN THE FORM THE SPAN
 BLOCKS WILL CONSUME.
 
-`summaryMinCandidate_runsTo` (`:929`) emits the four `geomEvents`; this
+`summaryMinCandidate_runsTo` (`:963`) emits the four `geomEvents`; this
 says that list IS the read log of the min-candidate computation the span
 computations bind against.  The span blocks
 (`InteriorDirectory.lean:2311`, `:2329`) call that computation on their

@@ -21,7 +21,7 @@ both and the two route computations are its instantiations.
 ## The `none` arm is the load-bearing part
 
 The `some` arm falls into the composed 177-instruction min-candidate leg
-(`summaryMinCandidate_runsTo`, `E1InteriorMinCandidate.lean:929`).  The
+(`summaryMinCandidate_runsTo`, `E1InteriorMinCandidate.lean:963`).  The
 `none` arm must branch past ALL 177 of them AND emit nothing.
 
 Branching past only the summary group's 156 -- and so falling into the
