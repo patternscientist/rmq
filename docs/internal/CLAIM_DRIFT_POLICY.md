@@ -126,8 +126,17 @@ and the headline axiom inventory.
   compatibility companions, and proof-only sparse-local witnesses accepted.
 - `207` is the current principled canonical charged-trace bound, with exact
   algebra `2*35 + (2*11 + 2*37 + 30) + 11 = 207` and cost equal to emitted
-  trace length. It charges payload reads and word-rank/select primitives;
-  controller operations remain explicitly uncharged.
+  trace length. The current route is `readWord`-only: attempted payload reads
+  are charged and `wordRank`/`wordSelect` remain compatibility-only
+  constructors that are never emitted by this route. Controller operations
+  remain explicitly uncharged.
+- The canonical current-surface registry includes the reviewer-grade claim
+  correspondence, family summary, and model-adequacy packet as well as the
+  artifact, theorem-map, roadmap, trust, and current-digest surfaces. An
+  exhaustive synchronization task must inspect every path matched by
+  `currentFactSurfacePathRegex`; a prompt-local hand list is not sufficient.
+- `CLAIM-HISTORY-A07-EVENT-VOCABULARY`: the weaker three-constructor current
+  route description is historical or explicitly compatibility-labeled only.
 - `CLAIM-HISTORY-A07-COST`: retired current bounds `76` and `142` are historical only.
 - `328` is the historical checked transitional U2 bound, retained for audit
   comparison rather than as the paper-facing cost.

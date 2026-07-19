@@ -199,6 +199,11 @@ try {
     Stop-Preflight "workflow-sensitive-write-scope-requires-wdd: scripts/gate.ps1 requires docs/internal/WORKFLOW_DESIGN_DECISIONS.md in the same write scope"
   }
 
+  if ($promptText -match '(?i)(?:CURRENT-SURFACE-SYNC|every\s+live(?:\s+current)?(?:\s+public)?(?:/documentation)?\s+surface)' -and
+      $promptText -notmatch '(?m)^- Current-surface inventory:\s*.*docs/internal/CLAIM_DRIFT_POLICY\.json.*currentFactSurfacePathRegex.*$') {
+    Stop-Preflight "exhaustive-current-surface-sync-requires-policy-registry: name docs/internal/CLAIM_DRIFT_POLICY.json currentFactSurfacePathRegex"
+  }
+
   $acceptanceLine = [regex]::Match(
     $promptText,
     '(?m)^- Frozen acceptance IDs:\s*(.+?)\s*$'

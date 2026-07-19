@@ -222,6 +222,28 @@ try {
     $gateWithDecisionScope $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
 
+  $currentSurfaceWithoutRegistry = Join-Path $tempRoot "current-surface-without-registry.txt"
+  $currentSurfaceWithoutRegistryLines = @(Get-Content -LiteralPath $validPrompt) | ForEach-Object {
+    if ($_ -match '^- Frozen acceptance IDs:') {
+      '- Frozen acceptance IDs: REQ-R1R2-CURRENT-SURFACE-SYNC, INV-CATEGORY-SEPARATION, CHK-DIFF.'
+    } else {
+      $_
+    }
+  }
+  $currentSurfaceWithoutRegistryLines | Set-Content -LiteralPath $currentSurfaceWithoutRegistry -Encoding utf8
+  Invoke-Case "current-surface-sync-without-policy-registry-rejected" 2 `
+    $currentSurfaceWithoutRegistry $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("exhaustive-current-surface-sync-requires-policy-registry")
+
+  $currentSurfaceWithRegistry = Join-Path $tempRoot "current-surface-with-registry.txt"
+  $currentSurfaceWithRegistryLines = @($currentSurfaceWithoutRegistryLines) + @(
+    '- Current-surface inventory: docs/internal/CLAIM_DRIFT_POLICY.json currentFactSurfacePathRegex; inspect every matched tracked path and place every expected repair path in write scope.'
+  )
+  $currentSurfaceWithRegistryLines | Set-Content -LiteralPath $currentSurfaceWithRegistry -Encoding utf8
+  Invoke-Case "current-surface-sync-with-policy-registry-accepted" 0 `
+    $currentSurfaceWithRegistry $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
+
   Invoke-Case "returning-runtime-unknown" 2 $validPrompt $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("destination runtime VERIFIED_CURRENT") `
     -DestinationRuntimeEvidence "UNKNOWN"

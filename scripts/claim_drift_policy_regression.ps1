@@ -24,6 +24,30 @@ if (-not (Test-Path -LiteralPath $resolvedScannerPath)) {
 }
 
 $policyObject = Get-Content -Raw -LiteralPath $resolvedPolicyPath | ConvertFrom-Json
+$currentSurfaceRegex = [string]$policyObject.currentFactSurfacePathRegex
+foreach ($requiredCurrentSurface in @(
+    'artifact/CLAIMS.md',
+    'docs/FAMILY_SUMMARY.md',
+    'docs/PAPER_CLAIM_CORRESPONDENCE.md',
+    'docs/PAPER_MODEL_ADEQUACY.md'
+  )) {
+  if (-not [regex]::IsMatch($requiredCurrentSurface, $currentSurfaceRegex)) {
+    Write-Host "CLAIM-POLICY-REGRESSION: FAIL [r1r2-48147cb-current-surface-registry] missing $requiredCurrentSurface"
+    exit 1
+  }
+}
+$currentEventVocabularyTerm = @(
+  $policyObject.terms |
+    Where-Object id -eq 'forbidden-retired-current-event-vocabulary'
+)
+if ($currentEventVocabularyTerm.Count -ne 1 -or
+    -not [bool]$currentEventVocabularyTerm[0].strict -or
+    [string]$currentEventVocabularyTerm[0].scope -ne 'current-fact-surface') {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [r1r2-48147cb-current-event-vocabulary-config]"
+  exit 1
+}
+Write-Host "CLAIM-POLICY-REGRESSION: PASS [r1r2-48147cb-current-surface-registry]"
+
 $sourceManifestTerm = @($policyObject.terms | Where-Object id -eq 'typed-reviewer-source-manifest')
 if ($sourceManifestTerm.Count -ne 1 -or
     [string]$sourceManifestTerm[0].pattern -notmatch '22-source' -or
@@ -94,6 +118,14 @@ $fixtures = @(
   @{ id = "r1r1-current-source-count-22-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; termId = "forbidden-retired-current-source-count"; text = "The canonical reviewer manifest is one typed 22-source universe." },
   @{ id = "r1r1-fresh-segment-23-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; termId = "forbidden-retired-fresh-segment-21"; text = "Fresh unused segment 23 is rejected by the common predicate." },
   @{ id = "r1r1-global-positions-0-15-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; termId = "forbidden-retired-trace-position-12"; text = "The current global positions 0 and 15 remain distinct obligations." },
+
+  # Exact stale-current vocabulary patterns reproduced from rejected R1-R2
+  # candidate 48147cbc67c6c01c4abcf2565f9b981adb5eacb8.
+  @{ id = "r1r2-48147cb-artifact-three-constructor-vocabulary"; relativePath = "artifact/CLAIMS.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "Every actual emitted event is readWord, wordRank, or wordSelect." },
+  @{ id = "r1r2-48147cb-correspondence-three-constructor-vocabulary"; relativePath = "docs/PAPER_CLAIM_CORRESPONDENCE.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "The canonical trace proves every actual event is readWord, wordRank, or wordSelect." },
+  @{ id = "r1r2-48147cb-family-three-constructor-vocabulary"; relativePath = "docs/FAMILY_SUMMARY.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "The canonical trace proves every emitted event is one of the three genuine constructors." },
+  @{ id = "r1r2-current-readword-only-control"; relativePath = "docs/PAPER_CLAIM_CORRESPONDENCE.md"; reject = $false; termId = "forbidden-retired-current-event-vocabulary"; text = "Every emitted event is readWord on the current readWord-only route." },
+  @{ id = "r1r2-current-compatibility-labeled-control"; relativePath = "docs/FAMILY_SUMMARY.md"; reject = $false; termId = "forbidden-retired-current-event-vocabulary"; text = "The current route is readWord-only; wordRank and wordSelect are compatibility-only constructors and are never emitted." },
 
   @{ id = "negated-canonical"; reject = $false; allowedMatch = $true; text = "No canonical execution theorem uses 2^128 as an activation premise." },
   @{ id = "negated-current-canonical"; reject = $false; allowedMatch = $true; text = "No current canonical reviewer route has 2 ^ 128 as an activation premise." },
