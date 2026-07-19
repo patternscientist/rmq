@@ -106,6 +106,12 @@ open RMQ.SuccinctClose
 open E1FringeFoldBlock (bestOfRegs)
 open E1CandMerge3 (mMV mMP)
 open E1InteriorSummaryGroup (sBlock sBase sMin sMax sArg)
+-- the group's own vocabulary, for the composite at the end of this module
+open E1InteriorSummaryGroup (canonicalSummaryLayout summaryGroup
+  summaryGroup_length geomEvents geomCats geomRouteDecode
+  canonicalSummaryGroup_runsTo geomCell_baseline_eq_routeDecode
+  geomCell_minRel_eq_routeDecode geomCell_maxRel_eq_routeDecode
+  geomCell_argOffset_eq_routeDecode)
 
 /-! ## Registers
 
@@ -863,6 +869,164 @@ data-dependent in the route's own terms and the `if` in
 theorem witness_cats_differ :
     minCandidateCats (summaryOfCells 10 5 7 3).isSome ≠
       minCandidateCats (summaryOfCells 10 5 0 3).isSome := by decide
+
+/-! ## THE GROUP AND THE CONSUMER, COMPOSED (M3d-22)
+
+`canonicalSummaryGroup_runsTo` leaves four cells in `sBase`, `sMin`,
+`sMax`, `sArg`; `minCandidateBlock_runsTo` consumes exactly those four.
+Composing them on `RunsTo.trans` gives the interior's whole min-candidate
+leg in one statement, stated in the ROUTE's own decode and carrying NO
+VALIDITY HYPOTHESIS.
+
+THAT IS WHAT THE UNCONDITIONAL BRIDGES BUY.  The consumer's `none` arm is
+reached precisely when a cell is absent, and a cell is absent at indices
+the interior's branch structure does not bound in advance.  A composite
+carrying an `i < entriesLen` premise per read would have been unusable on
+exactly the arm it most needs to cover.  Since M3d-22 the four
+`geomCell_*_eq_routeDecode` bridges hold at every index, so the rewrite
+below is unconditional and the `none` arm composes like any other. -/
+
+/-- The summary tuple assembled from the four ROUTE DECODES of the summary
+group's reads, at the canonical store and layout.
+
+NAMED CAREFULLY.  This is the route's DECODE of the four cells, which is
+what the value bridges deliver.  Showing it equal to the value of
+`canonicalRelativeRmmMachineSummaryComputation`
+(`InteriorDirectory.lean:2277`) is a FURTHER step and is NOT claimed here;
+that link runs through `machineReadComputationAt` and has not been
+built. -/
+def routeDecodedSummary (shape : Cartesian.CartesianShape) (block : Nat) :
+    Option (Nat × Nat × Nat × Nat) :=
+  summaryOfCells
+    (geomRouteDecode (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (canonicalSummaryLayout shape) (canonicalSummaryLayout shape).baseline
+      (block / (canonicalSummaryLayout shape).blocksPerSuper))
+    (geomRouteDecode (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (canonicalSummaryLayout shape) (canonicalSummaryLayout shape).minRel
+      block)
+    (geomRouteDecode (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (canonicalSummaryLayout shape) (canonicalSummaryLayout shape).maxRel
+      block)
+    (geomRouteDecode (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (canonicalSummaryLayout shape) (canonicalSummaryLayout shape).argOffset
+      block)
+
+/--
+THE INTERIOR'S MIN-CANDIDATE LEG: the summary group followed by the
+consumer, 177 instructions, exit `Q + 177`.
+
+The receipt is the group's four route event lists in the route's bind
+order and NOTHING ELSE -- the consumer is read-free, so composition adds
+no event.  The category log is the group's followed by the consumer's, and
+the consumer's arm is selected by the ROUTE's own summary being `some`.
+
+NO VALIDITY HYPOTHESIS, and no store hypothesis. -/
+theorem summaryMinCandidate_runsTo
+    (shape : Cartesian.CartesianShape) {program : E1Machine.Program}
+    {Q block : Nat} {regs : RegFile}
+    (hHost : HostedAt program Q
+      (summaryGroup (canonicalSummaryLayout shape) Q ++
+        minCandidateBlock (RelativeRmm.canonicalLayout shape).blockSize
+          (RelativeRmm.canonicalLayout shape).blocksPerSuper (Q + 156)))
+    (hBlock : regs sBlock = block) :
+    ∃ regs' : RegFile,
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+          ⟨regs, Q, false⟩ ⟨regs', Q + 177, false⟩
+          (geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).baseline
+              (block / (canonicalSummaryLayout shape).blocksPerSuper) ++
+            geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).minRel block ++
+            geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).maxRel block ++
+            geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).argOffset block)
+          ((geomCats (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).baseline Category.arithmetic
+              (block / (canonicalSummaryLayout shape).blocksPerSuper) ++
+            geomCats (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).minRel
+              Category.registerWrite block ++
+            geomCats (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).maxRel
+              Category.registerWrite block ++
+            geomCats (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (canonicalSummaryLayout shape)
+              (canonicalSummaryLayout shape).argOffset
+              Category.registerWrite block) ++
+            minCandidateCats (routeDecodedSummary shape block).isSome) ∧
+        bestOfRegs (regs' mMV) (regs' mMP) =
+          (routeDecodedSummary shape block).map
+            (bpRelativeSummaryMinCandidate
+              (RelativeRmm.canonicalLayout shape).blockSize
+              (RelativeRmm.canonicalLayout shape).blocksPerSuper block) := by
+  obtain ⟨regs1, hrun1, hB, hMn, hMx, hA, hpres1⟩ :=
+    canonicalSummaryGroup_runsTo shape (HostedAt.append_left hHost) hBlock
+  -- the four value bridges, UNCONDITIONAL in the index (M3d-22)
+  rw [geomCell_baseline_eq_routeDecode] at hB
+  rw [geomCell_minRel_eq_routeDecode] at hMn
+  rw [geomCell_maxRel_eq_routeDecode] at hMx
+  rw [geomCell_argOffset_eq_routeDecode] at hA
+  -- the consumer is hosted immediately after the group's 156 instructions
+  have hHost2 : HostedAt program (Q + 156)
+      (minCandidateBlock (RelativeRmm.canonicalLayout shape).blockSize
+        (RelativeRmm.canonicalLayout shape).blocksPerSuper (Q + 156)) := by
+    have h := HostedAt.append_right hHost
+    rwa [summaryGroup_length] at h
+  -- `sBlock` is 100, outside the group's write set
+  have hBlock1 : regs1 sBlock = block := by
+    rw [hpres1 sBlock (by decide)]; exact hBlock
+  obtain ⟨regs2, hrun2, hval, _hpres2⟩ :=
+    minCandidateBlock_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      hHost2 hBlock1 hB hMn hMx hA
+  refine ⟨regs2, ?_, ?_⟩
+  · have h := RunsTo.trans hrun1 hrun2
+    have hpc : Q + 156 + 21 = Q + 177 := by omega
+    rw [hpc] at h
+    simpa [routeDecodedSummary] using h
+  · simpa [routeDecodedSummary] using hval
+
+/-! ### The composite's premises are satisfiable (rule 1)
+
+`hHost` is an OWED premise, so it owes a witness that it can be met at the
+intended instantiation -- not merely that it is well-formed. -/
+
+/-- The leg hosts itself at `Q = 0`, with the consumer landing at exactly
+`156`.  A wrong length would make this fail to match
+`summaryMinCandidate_runsTo`'s premise. -/
+theorem summaryMinCandidate_hosted_self (shape : Cartesian.CartesianShape) :
+    HostedAt
+      (summaryGroup (canonicalSummaryLayout shape) 0 ++
+        minCandidateBlock (RelativeRmm.canonicalLayout shape).blockSize
+          (RelativeRmm.canonicalLayout shape).blocksPerSuper (0 + 156)) 0
+      (summaryGroup (canonicalSummaryLayout shape) 0 ++
+        minCandidateBlock (RelativeRmm.canonicalLayout shape).blockSize
+          (RelativeRmm.canonicalLayout shape).blocksPerSuper (0 + 156)) :=
+  hostedAt_self _
+
+/-- RULE 1 DISCHARGED: `hHost` and `hBlock` are JOINTLY satisfiable at the
+intended instantiation.  The theorem is instantiated at the self-hosting
+composite with `sBlock` actually holding `block`, and the existential is
+carried through to a concrete consequence rather than left abstract. -/
+theorem summaryMinCandidate_premises_satisfiable
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    ∃ regs' : RegFile,
+      bestOfRegs (regs' mMV) (regs' mMP) =
+        (routeDecodedSummary shape block).map
+          (bpRelativeSummaryMinCandidate
+            (RelativeRmm.canonicalLayout shape).blockSize
+            (RelativeRmm.canonicalLayout shape).blocksPerSuper block) := by
+  obtain ⟨regs', _, hval⟩ :=
+    summaryMinCandidate_runsTo shape (summaryMinCandidate_hosted_self shape)
+      (regs := RegFile.write (fun _ => 0) sBlock block) rfl
+  exact ⟨regs', hval⟩
 
 end E1InteriorMinCandidate
 end WordRAM

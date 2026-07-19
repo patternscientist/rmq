@@ -4919,3 +4919,60 @@ are `[]` by kernel reduction, and the two arms charge different category
 logs. The main theorem is also instantiated at the witness fixture, so its
 hypotheses are shown satisfiable at the intended instantiation rather than
 at a fixture built to fit them.
+
+## DD-20260719-016: the interior's value bridges agree with the ROUTE at every index, rather than with `0` out of range (E1 M3d-22)
+
+Claimed this session; the maximum OBSERVED in this file was
+`DD-20260719-015`, checked before claiming.
+
+Context. The four `geomCell_*_eq_routeDecode` bridges
+(`E1InteriorSummaryGroup.lean`) carried a validity premise
+`i < entriesLen`, inherited from routing their `hexact` obligation through
+`E1InteriorStoreConcrete.hexact_*_concrete`. The min-candidate consumer's
+`none` arm is reached when a cell is ABSENT, and absence includes the
+out-of-range read, so the bridges as stated could not cover the arm that
+most needed them. M3d-21 recorded this asymmetry and directed the
+successor to supply a "`geomCell = 0` at invalid indices" fact.
+
+Decision: do NOT prove the zero fact. State the bridges as agreement with
+the ROUTE, holding at EVERY index, and drop the validity premise entirely.
+
+The ground is that the zero fact is FALSE as a geometry fact, and the tree
+already contained the disproof. `stageCell` is `0` out of range only when
+`chunkBad store segment deadAddress 1 <> 0` -- i.e. only when the dead
+address is unreadable IN THE STORE. `chunkFoldWitness_path_dead`
+(`E1InteriorChunkFold.lean`), an `rfl`-checked theorem predating this
+session, runs the real fold at index `5` past `entriesLen = 3` and leaves
+`cOut = 2`, i.e. `some 1`, because `witnessStore` holds a word at the dead
+address `99`. A development that took the zero route would have been
+attempting to prove something false of that store, and would have had to
+import a store-level obligation about `deadAddress` to escape.
+
+The equality route incurs no such obligation. `geomCell_eq_routeDecode`'s
+only substantive premise, `hexact`, constrains NON-FINAL chunks. Out of
+range the fold runs exactly ONE iteration (`chunkIters_of_invalid`), so
+there is no non-final chunk and the premise is VACUOUS -- dischargeable
+knowing nothing about the store. The four bridges are therefore
+unconditional, and the composite
+`summaryMinCandidate_runsTo` (`E1InteriorMinCandidate.lean`) carries no
+validity hypothesis and no store hypothesis.
+
+This is a strengthening: a hypothesis was removed, no statement narrowed.
+The four bridges had no callers, so nothing broke.
+
+Anti-vacuity, EXECUTED. `chunkIters_witness_discriminates` shows the
+iteration count is `1` out of range and `2` at a valid index of the same
+two-chunk table, so `chunkIters_of_invalid` distinguishes the cases rather
+than reporting a constant. `outOfRange_cell_not_always_zero` refutes the
+zero claim on the witness store by kernel computation. The composite's
+`hHost` and `hBlock` are shown JOINTLY satisfiable at the intended
+instantiation by `summaryMinCandidate_premises_satisfiable`, which
+instantiates the theorem at the self-hosting leg with `sBlock` actually
+holding `block` and carries the existential through to a concrete
+consequence.
+
+Scope, stated because the name invites over-reading. `routeDecodedSummary`
+is the summary assembled from the four route DECODES. Showing it equal to
+the value of `canonicalRelativeRmmMachineSummaryComputation`
+(`InteriorDirectory.lean:2277`) is a FURTHER step, through
+`machineReadComputationAt`, and is NOT claimed.

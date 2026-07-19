@@ -1962,6 +1962,26 @@ theorem chunkFoldWitness_path_dead :
     witnessOutcome 5 =
       (37, true, 38, 2, [.readWord 0 99 (some [true])]) := rfl
 
+/-- ANTI-VACUITY FOR `chunkIters_of_invalid`: the lemma DISCRIMINATES
+rather than reporting a constant.  Out of range the count is `1`; at a
+valid index of this two-chunk table it is `2`. -/
+theorem chunkIters_witness_discriminates :
+    (chunkIters 3 2 5, chunkIters 3 2 0) = (1, 2) := rfl
+
+/-- THE "CELL IS ZERO OUT OF RANGE" CLAIM IS REFUTED, BY EXECUTION.
+
+Index `5` is past `entriesLen = 3`, and the real fold leaves `cOut = 2` --
+because `witnessStore` holds a word at the dead address `99`.  So being
+out of range does NOT make the cell zero; that is a STORE fact about
+`deadAddress`, not a geometry fact.
+
+THIS IS WHY THE VALUE BRIDGES ARE STATED AS AGREEMENT WITH THE ROUTE and
+not as agreement with `0` (`geomCell_eq_routeDecode_of_invalid`,
+`E1InteriorSummaryGroup.lean`).  A development that took the zero route
+would be attempting to prove something false of this store. -/
+theorem outOfRange_cell_not_always_zero :
+    (witnessOutcome 5).2.2.2.1 ≠ 0 := by decide
+
 /-- Every path HALTS, at the same exit, having actually run. -/
 theorem chunkFoldWitness_all_halt :
     [ (witnessOutcome 0).2.1, (witnessOutcome 1).2.1
