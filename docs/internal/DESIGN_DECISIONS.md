@@ -6737,3 +6737,57 @@ preservation on both arms would have been claiming something false on one of
 them, which is precisely the too-strong-predicate failure DD-20260719-056
 records at `TwoLegUntouched`. Recorded as an open obligation for whoever
 carries register state across the cross arm.
+
+## DD-20260719-122: the whole-query program stashes below register 8, and the dead-register count after the guard is FIVE, not three (E1 LaneA1)
+
+Claimed by the E1-LaneA1 whole-query assembly session; predecessor
+`DD-20260719-121`.
+
+`wholeQueryValidPathThroughLca` (`E1WholeQueryProgram.lean`) is the first
+definition in the campaign that composes query legs into one runnable program.
+Its register plumbing rests on one arithmetic fact and one correction.
+
+**THE FACT.** The select leg preserves exactly `r ≤ 7 ∨ r = 28`
+(`selectCloseBlock_runsTo_canonical`, `E1SelectCanonical.lean:212`), so the
+first select's answer can be carried across the second select in any register
+below `8`. `xIdx` (28) is preserved too but is the select's own INPUT, so it
+is not available as a stash slot — it is rewritten before each leg.
+
+**THE CORRECTION.** An earlier coordinator note said that of the guard's
+registers "only `5,6,7` are dead" after the guard. That is UNDER-COUNTED by
+two. Read off `guardBlock` (`E1QueryProgram.lean:110`): `regZero` (3) is read
+only by the two `natEq regG _ regZero` instructions and `regN` (4) only by
+`natLe regT2 regRight regN`. All three of those instructions are INSIDE the
+guard block and execute before pc `8`. Nothing in the valid path reads either
+register. So the dead set after the guard is **`{3,4,5,6,7}`** — five
+registers. Live across the valid path are only `regLeft` (0, until the left
+select's setup), `regRight` (1, until the right select's setup), and `regOut`
+(2, written last).
+
+The claim was checked by reading the guard block's instruction list against
+the valid path's, not inherited.
+
+**A CONSEQUENCE WORTH NAMING, because it removes an instruction.** The route's
+second select is at index `right - 1`, and `guardAcceptRegs`
+(`E1QueryProgram.lean:591`) leaves `regT2 = 1` on the accepting path —
+`guardAcceptRegs_operands` (`:710`) and the module's own accepting fixtures
+pin it. So `right - 1` is ONE `sub` against a register that already holds the
+constant, with no constant load. This is not a micro-optimisation dressed up:
+a constant load would have been a fourth glue instruction charging a
+`registerWrite` tick that the route does not charge, and the whole-query
+category function is written from the route
+(`wholeQueryBranchCats`, DD-20260719-090). Spelling the decrement with a
+`const` would have put the machine's category log out of agreement with the
+route's for a difference the route does not observe — the same failure
+`legSetup`'s `mulConst 0` avoids on the interior side (DD-20260719-057).
+
+**WHAT IS NOT CLAIMED.** `wholeQuerySelectPrefix_runsTo` executes the guard
+and both select legs (pc `0` to `821`). The close/LCA leg is defined and
+hosted at `827` but the join's simulation and the rank/output stages are not
+executed, so `WholeQueryMachineAgrees` (`E1WholeQueryPublic.lean:114`) is NOT
+discharged. Two obligations block the remainder and both are recorded in the
+module's closing scope note: the cross arm exports no preservation clause, and
+the cross-block arm's interior object is not reconciled with the route's
+(`crossBlockArmSpec_eq` yields an `if`-guarded interior where
+`crossBlockArm_withCanonicalInterior_runsTo` produces
+`⟨dispatchRouteValue …, dispatchEvents …⟩`, and no theorem identifies them).
