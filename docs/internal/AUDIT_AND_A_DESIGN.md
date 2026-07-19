@@ -1659,3 +1659,54 @@ fails, repair in the generalised style rather than reinstating the deleted hunk.
 the topology lint checks identifier topology, not prose numeric values. Two
 independent campaigns have now been bitten by it. Worth a dedicated numeric-prose
 check rather than another round of manual sweeps.
+
+## 2026-07-19 (C05 round 24) — a third discriminator; E1 pauses at its boundary
+
+**E1's cross-block arm is composed and green** (`cc4adc1`): 370 instructions,
+receipts positionally equal to `crossBlockArmSpec`'s trace, with `hInterior`
+supplying the interior's own `RunsTo` as a HYPOTHESIS — trace, categories and
+value all parameters. Nothing pinned to current interior behaviour, exactly as
+the sequencing constraint required.
+
+**COORDINATOR DECISION: E1 pauses here.** The worker's own summary is decisive —
+"the single remaining cross-block obligation is discharging `hInterior`;
+everything around it is done and green". Discharging `hInterior` IS the interior
+leg, which is B7's. Every remaining E1 item (interior simulation, whole-query
+glue, derived step literal, amended-target Prop, matrix closure) is downstream
+of it, and all eleven rows are whole-query scoped. Launching another E1 worker
+now would be ceremonial parallelism against an invented hypothesis. **B7 is the
+sole critical path until it lands.**
+
+**A THIRD discriminator, and the reasoning that produced it.** Mutant D was
+value-only (caught by the independent reference), mutant E receipt-only (caught
+by receipt diffing). The worker observed that NEITHER has any power over a
+mutation that computes the right answer, performs the right reads, in the right
+step count, and merely scribbles on a register it does not own — which is
+precisely the class the session's new preservation clause excludes. So it added
+a preservation phase: `presCases=36`, `presCheckedRegs=66`, `presFailures=0`.
+**Mutant G** renames the epilogue's scratch register consistently:
+`mutantG_isPreservationOnly=true` (exit pc, steps, value and position all match
+honest, case for case), caught only by preservation, with the clobbered register
+identified as `fClose` in the cross layout.
+
+Three discriminators, three witnessed mutations, none subsuming another. And
+the worker documented its own check's VACUITY CONDITION unprompted: the sentinel
+seeding is load-bearing, because from a zero-seeded register file the
+preservation phase proves nothing. Naming the conditions under which your own
+evidence would be empty is the habit this campaign has been trying to instill.
+
+**Two gaps found by needing them rather than by survey:**
+`rankSeedLeg_runsTo_canonical` carried only the clauses the same-block leg
+happened to need; and `fOne` (register 40) sits INSIDE the fold bank 40..62,
+which `candMerge3_runsTo` requires as a hypothesis without restating — so a
+one-instruction `crossPinOne` re-pins it (layout 369 -> 370). Both are the kind
+of defect that only surfaces at composition time.
+
+**Preservation clause is exact, not conservative:** `FringeArmUntouched` is the
+precise union of the fold and cand-global untouched sets, not an
+under-approximation that would have been easier to prove and weaker to consume.
+
+**Corrections carried forward:** `set` is Mathlib-only here (fails as "unknown
+tactic", then misreports the whole proof as unsolved goals); PC arithmetic stops
+associating definitionally once `interior.length` enters it (`A+176+n+1` is not
+`A+177+n` by defeq), handled by a new `runsTo_pc_congr`.
