@@ -195,6 +195,43 @@ def defaultFixtures : List Fixture :=
         { left := 2, right := 3 }
       ]
     },
+    -- Tie-boundary coverage with a LIVE interior.
+    --
+    -- The fixture above has `shape.size = 6`, hence
+    -- `canonicalBPRelativeSummaryBase = Nat.log2 6 + 1 = 3` and
+    -- `canonicalBPRelativeSummaryBlockCountRaw = 6 / 3 = 2`.  With only two
+    -- blocks a crossBlock query has no block STRICTLY between its endpoint
+    -- blocks, so `canonicalCrossBlockCloseCostedWithRankSeed`
+    -- (`RelativeRmmMacro/ConcreteDirectoryRAM.lean:2336-2340`) takes its
+    -- `Costed.pure none` branch and the interior range-min is never entered.
+    -- That fixture therefore exercises leftmost tie-breaking on the FRINGE
+    -- decoders only; it is kept because the zero-interior path is real
+    -- coverage, but on its own it leaves tie-breaking with a participating
+    -- interior untested.
+    --
+    -- This fixture closes that gap.  `shape.size = 24` gives `base = 5`,
+    -- `blockSize = 10`, `blockCountRaw = 4`, and the windows below invoke the
+    -- interior with `count = 3`, `2` and `1` respectively, plus one
+    -- `count = 0` sameBlock control.  The values are chosen so the minimum
+    -- (`4`) occurs ONLY at indices 5, 7, 9, 11, 13, 16 and 18 -- every one of
+    -- them inside an interior block for the full window -- while the two
+    -- fringe blocks (indices 0-3 and 19-23) carry no minimum at all.  The
+    -- leftmost-tie answer for `[0, 24)` is therefore produced by the interior
+    -- range-min breaking ties ACROSS blocks 1, 2 and 3, not by either fringe.
+    {
+      name := "tie-boundary-live-interior",
+      xs := [9, 8, 9, 7, 9,
+             4, 6, 4, 9, 4,
+             8, 4, 9, 4, 6,
+             8, 4, 9, 4, 8,
+             9, 7, 9, 8],
+      windows := [
+        { left := 0, right := 24 },
+        { left := 4, right := 20 },
+        { left := 10, right := 20 },
+        { left := 11, right := 12 }
+      ]
+    },
     {
       name := "generated-64-canonical",
       xs := generatedInput 64 9,

@@ -588,3 +588,107 @@ KNOWN RED and externally owned: `lake exe rmq_succinct_classic_validate` fails a
 elaboration on the a07-owned fixture `singletonRepeatedEqualReadPositionsOK`
 (`Validation/SuccinctClassic.lean:253`), which the delegation ring-fenced. Not
 caused by, and not repaired by, this rung.
+
+## Evidence at session 11 (B7-11): CHK-04 discharged on a widened observation set
+
+Appended per the matrix's own rule that after freezing only evidence, status and
+coordinator-approved amendments may change. NO REQUIREMENT WORDING IS EDITED. No
+row is weakened. No fixture was removed.
+
+Coordinator ruling implemented (relayed in the B7-11 delegation): session 10
+asked whether to amend CHK-04's window list to exclude the `blockCount = 2`
+`tie-boundary` fixture. The ruling DECLINED that and required ADDING a
+tie-boundary fixture with `blockCount >= 3` instead, on two grounds: excluding a
+fixture because it did not move inverts the purpose of an anti-vacuity row, and
+the probe had independently revealed that leftmost tie-breaking WITH A
+PARTICIPATING INTERIOR was untested. CHK-04's requirement text is therefore
+unchanged and the `blockCount = 2` fixture is retained.
+
+### The added fixture, and the checked reason it reaches the interior
+
+`tie-boundary-live-interior` (n=24, `base=5`, `blockSize=10`, `blockCount=4`) in
+`RMQ/Validation/SuccinctClassicCostHarness.lean`. The interior invocation
+condition is read off the live route rather than inferred from size:
+`canonicalCrossBlockCloseCostedWithRankSeed`
+(`RelativeRmmMacro/ConcreteDirectoryRAM.lean:2336-2340`) enters
+`(canonicalRelativeRmmInteriorDirectory shape).rangeMinCosted (leftBlock + 1)
+(rightBlock - leftBlock - 1)` only when `leftBlock + 1 < rightBlock`. Probed:
+
+    [0,24)  leftBlock=0 rightBlock=4 interiorLive=true  count=3 interiorCost=18
+    [4,20)  leftBlock=1 rightBlock=4 interiorLive=true  count=2 interiorCost=18
+    [10,20) leftBlock=2 rightBlock=4 interiorLive=true  count=1 interiorCost=18
+    [11,12) leftBlock=2 rightBlock=2 interiorLive=false count=0 interiorCost=0
+
+The interior is LOAD-BEARING on this fixture, not merely live: the minimum value
+`4` occurs only at indices 5, 7, 9, 11, 13, 16, 18, all of which lie in interior
+blocks 1-3, while both fringe blocks (indices 0-3 and 19-23) contain no minimum.
+The leftmost-tie answer for `[0,24)` is index 5 (close 11, block 1), so the
+answer is decided by the interior range-min breaking ties across blocks 1, 2 and
+3. This is the coverage gap the ruling identified, and it is now closed.
+
+### CHK-04 - evidence obtained
+
+Both sides measured in this session rather than inherited: a detached scratch
+worktree at the pre-swap commit `714fb4a` received the identical fixture, and
+both harnesses were run. Both exit 0, both report "all reported windows agree
+with reference List Int RMQ semantics", and `canonicalBound=210` /
+`canonicalBoundIs210=true` on all 21 windows on both sides - so the guards are
+consistent with the DERIVED literal.
+
+    fixture (blockCount)             window    route      cnt  before after delta
+    tiny-leftmost-ties     n=5  (1)  [0,5)     crossBlock   0     68    68     0
+                                     [2,4)     sameBlock    -     57    57     0
+                                     [1,1)     invalid      -      0     0     0
+                                     [2,1)     invalid      -      0     0     0
+                                     [0,6)     invalid      -      0     0     0
+    tie-boundary           n=6  (2)  [0,6)     crossBlock   0     76    76     0
+                                     [1,5)     crossBlock   0     72    72     0
+                                     [2,3)     sameBlock    -     54    54     0
+    tie-boundary-live-     n=24 (4)  [0,24)    crossBlock   3    112   114    +2
+      interior  (NEW)                [4,20)    crossBlock   2    107   109    +2
+                                     [10,20)   crossBlock   1    105   107    +2
+                                     [11,12)   sameBlock    0     73    73     0
+    generated-64           n=64 (9)  [0,64)    crossBlock   8    116   118    +2
+                                     [7,39)    crossBlock   3    126   128    +2
+                                     [31,32)   sameBlock    -     62    62     0
+    zigzag-128            n=128 (16) [0,128)   crossBlock  14     92    93    +1
+                                     [17,97)   crossBlock   9     96    97    +1
+                                     [64,65)   sameBlock    -     57    57     0
+    generated-128-alt     n=128 (16) [0,128)   crossBlock  14     93    94    +1
+                                     [15,96)   crossBlock  10     95    96    +1
+                                     [63,64)   sameBlock    -     57    57     0
+
+ACCOUNTING CORRECTION. Session 10's table listed eight crossBlock and four
+sameBlock windows; it omitted the `tiny-leftmost-ties` fixture entirely. The
+true pre-existing counts are NINE crossBlock and FIVE sameBlock. The omission
+was in the write-up, not the harness. The nine pre-existing crossBlock and five
+sameBlock "before" values above reproduce session 10's recorded baseline
+exactly, so that baseline is corroborated by independent measurement.
+
+ANTI-VACUITY, sharper than the row requires. The set of windows that MOVED is
+EXACTLY the set whose interior is invoked with `count > 0`: all nine such
+windows moved, and all twelve windows with no live interior (three crossBlock at
+`count = 0`, five sameBlock, three invalid, one sameBlock in the new fixture)
+did not. No window falls on the wrong side of that partition. The row's stated
+rationale - "windows identical to baseline would mean the store grew and nothing
+reads it" - is answered in both directions: growth WITH reads is observed on
+nine windows including three tie-boundary ones, and the twelve unmoved windows
+are the ones the route provably never charges.
+
+The `blockCount = 2` fixture is RETAINED and its stability is coverage, not a
+defect: it exercises the zero-interior path, where the interior range-min is
+never entered and the answer comes from the fringe decoders alone. A charged
+read added inside the two-span computation MUST NOT change the cost of a route
+that never reaches it; had those windows moved, that would have been the defect.
+
+Store growth is independent of window movement and is observed on every shape:
+`payloadBits` before -> after, tiny 541->616, tie n=6 577->652, new n=24
+1871->2096, gen64 4635->5103, zigzag 10781->11384, gen128alt 10781->11384.
+
+Disposition: CHK-04 evidence complete, on the row's unamended wording. NOT
+closed unilaterally; coordinator acceptance required.
+
+### Verification rows re-observed at the B7-11 candidate state
+
+Re-run in this session rather than inherited from session 10; see the B7-11
+verification ledger in `B7_WORKLOG.md` for the pasted decisive lines.
