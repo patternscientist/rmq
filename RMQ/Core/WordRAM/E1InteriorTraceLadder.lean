@@ -438,6 +438,78 @@ theorem crossArm_reads_eq
   simp [FlatStoreComputation.bind, FlatStoreComputation.map,
     FlatStoreExecution.append]
 
+/-! ## Rung 6 -- `#9`'s RECEIPT, AGAINST THE ROUTE'S OWN READ LOG
+
+**THIS IS THE TOP OF THE LADDER AND THE OBLIGATION BLOCKER 2 NAMES.**
+
+`dispatchEvents` is a five-way `if` in the route's own condition order,
+and `canonicalRelativeRmmInteriorRangeMinComputation`
+(`InteriorDirectory.lean:2444`) is the same five-way `if` on the same
+conditions.  The five route lemmas `interiorRangeMin_of_count_zero`
+(`E1InteriorDispatch.lean:456`) through `interiorRangeMin_of_cross`
+(`:516`) are FULL COMPUTATION equalities, so `.reads` follows from them by
+congruence -- no separate trace argument is needed at this rung, which is
+why the work was all below it.
+
+**THE `count = 0` ARM IS THE ONE WITH TEETH.** The route is
+`FlatStoreComputation.pure none`, whose read log is EMPTY, and the machine's
+arm emits nothing.  So the receipt separates the correct layout from an
+unterminated one that falls through into `twoSpanBlock`'s unconditional
+head level read -- the scope note at `dispatchEvents`' own docstring
+records exactly this, and it is now backed by an equation rather than by
+the docstring.
+
+Positional and hypothesis-free: both sides are lists, and the only
+premises consumed are the five branch conditions, which are exhaustive and
+mutually exclusive by construction. -/
+theorem dispatchEvents_eq_routeReads
+    (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
+    dispatchEvents shape startBlock count =
+      ((canonicalRelativeRmmInteriorRangeMinComputation shape startBlock
+            count).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).reads.map
+        (fun p =>
+          TraceEvent.readWord (canonicalSummaryLayout shape).segment p.1 p.2) := by
+  unfold E1InteriorDispatchCompose.dispatchEvents
+  by_cases hc : count = 0
+  · subst hc
+    rw [if_pos rfl, E1InteriorDispatch.interiorRangeMin_of_count_zero]
+    simp [FlatStoreComputation.pure]
+  · rw [if_neg hc]
+    by_cases hle : count ≤ (RelativeRmm.canonicalLayout shape).macroSize -
+        startBlock % (RelativeRmm.canonicalLayout shape).macroSize
+    · rw [if_pos hle,
+        E1InteriorDispatch.interiorRangeMin_of_local shape startBlock count
+          hc hle]
+      exact localLegEvents_eq_routeReads shape _ _ _
+    · rw [if_neg hle]
+      by_cases hmid : ((count - ((RelativeRmm.canonicalLayout shape).macroSize -
+            startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+          (RelativeRmm.canonicalLayout shape).macroSize = 0)
+      · rw [if_pos hmid,
+          E1InteriorDispatch.interiorRangeMin_of_adjacent shape startBlock
+            count hc hle hmid,
+          adjacentArm_reads_eq, List.map_append,
+          localLegEvents_eq_routeReads, localLegEvents_eq_routeReads]
+      · rw [if_neg hmid]
+        by_cases hright :
+            ((count - ((RelativeRmm.canonicalLayout shape).macroSize -
+                startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
+              (RelativeRmm.canonicalLayout shape).macroSize = 0)
+        · rw [if_pos hright,
+            E1InteriorDispatch.interiorRangeMin_of_leftMiddle shape startBlock
+              count hc hle hmid hright,
+            leftMiddleArm_reads_eq, List.map_append,
+            localLegEvents_eq_routeReads, globalLegEvents_eq_routeReads]
+        · rw [if_neg hright,
+            E1InteriorDispatch.interiorRangeMin_of_cross shape startBlock
+              count hc hle hmid hright,
+            crossArm_reads_eq, List.map_append, List.map_append,
+            localLegEvents_eq_routeReads, globalLegEvents_eq_routeReads,
+            localLegEvents_eq_routeReads, List.append_assoc]
+
 end E1InteriorTraceLadder
 end WordRAM
 end RMQ
