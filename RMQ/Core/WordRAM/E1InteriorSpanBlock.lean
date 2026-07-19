@@ -427,6 +427,112 @@ theorem spanBlock_runsTo
       · rw [hLegVal']
         simp [spanValue, hc]
 
+/-! ## THE `none` ARM'S DISCRIMINATOR (DD-20260719-050)
+
+RIGHT SHAPE, WRONG CONTENT, third variety: a result that is `some` where
+the route is `none`, with an IDENTICAL receipt and an IDENTICAL read
+count.
+
+The impostor is not invented for this section.  It is the single wrong
+numeral available at `spanArms`' `Q + 42`: branching to the leg's
+consumer at `Q + 45 + 156` -- past the summary group -- instead of to the
+block's exit at `Q + 222`.  Skipping only the group is precisely the
+dangerous error, because the group is where the four READS are: an arm
+that fell into the group would be caught by the receipt, whereas the
+consumer is READ-FREE (`minCandidateBlock_readFree`) and leaves the
+receipt untouched while overwriting `mMV`/`mMP` from whatever four cells
+happen to be sitting in `sBase`, `sMin`, `sMax`, `sArg`.
+
+So this fixture holds everything fixed but that numeral, and runs both. -/
+
+/-- The empty store.  Neither arm may depend on the store, and using the
+empty one makes that manifest. -/
+def armStore : ReadStore := ⟨fun _ _ => none⟩
+
+/-- THE TWO ARMS, DIFFERING IN ONE NUMERAL.
+
+Index `0` sets the result to `none`; index `1` jumps to `target`; indices
+`2 .. 22` are the REAL min-candidate consumer at its own base `2`; index
+`23` halts.
+
+`target = 23` is the correct arm -- past the consumer, as `Q + 222` is
+past the leg.  `target = 2` is the impostor that lands ON the consumer,
+as `Q + 45 + 156` would. -/
+def noneArmProgram (target : Nat) : E1Machine.Program :=
+  [ Instr.const mMV 0, Instr.brNZ pOne target ] ++
+    (minCandidateBlock 4 2 2 ++ [Instr.halt])
+
+/-- `pOne` carries the unconditional-jump condition; the four summary
+cells are the STALE ones the impostor would consume. -/
+def armRegs (block cB cMn cMx cA : Nat) : RegFile := fun r =>
+  if r = pOne then 1
+  else if r = sBlock then block
+  else if r = sBase then cB
+  else if r = sMin then cMn
+  else if r = sMax then cMx
+  else if r = sArg then cA
+  else 0
+
+/-- The arm's value, in the form the merge combiners consume. -/
+def armOut (target block cB cMn cMx cA : Nat) : Option (Nat × Nat) :=
+  let final :=
+    (E1Machine.run armStore (noneArmProgram target) 30
+      ⟨armRegs block cB cMn cMx cA, 0, false⟩).final.regs
+  bestOfRegs (final mMV) (final mMP)
+
+/-- The arm's receipt. -/
+def armReadLog (target block cB cMn cMx cA : Nat) : List TraceEvent :=
+  (E1Machine.run armStore (noneArmProgram target) 30
+    ⟨armRegs block cB cMn cMx cA, 0, false⟩).readLog
+
+/-- The arm's charge log. -/
+def armCatLog (target block cB cMn cMx cA : Nat) : List Category :=
+  (E1Machine.run armStore (noneArmProgram target) 30
+    ⟨armRegs block cB cMn cMx cA, 0, false⟩).catLog
+
+/-- The correct arm returns `none`, which is the route's value on the
+`none` arm (`InteriorDirectory.lean:2327`). -/
+theorem armOut_correct : armOut 23 1 10 5 7 3 = none := by rfl
+
+/-- The impostor returns `some`, assembled from four cells the route
+never read on this arm. -/
+theorem armOut_impostor : armOut 2 1 10 5 7 3 = some (5, 6) := by rfl
+
+/-- THE DISCRIMINATOR: the one numeral is load-bearing, and an arm that
+branched past only the group's 156 instructions would be WRONG, not
+merely differently spelled. -/
+theorem spanNoneArm_discriminates :
+    armOut 23 1 10 5 7 3 ≠ armOut 2 1 10 5 7 3 := by decide
+
+/-- THE NON-ENTAILMENT, and the reason this needed a fixture at all: the
+two RECEIPTS ARE EQUAL.  A receipt equation -- the whole content of
+`minCandidateMachineTrace_eq_routeReads` and of this block's own
+`spanEvents` clause -- is FORMALLY INCAPABLE of rejecting the impostor.
+Only the value clause rejects it. -/
+theorem spanNoneArm_traces_agree :
+    armReadLog 23 1 10 5 7 3 = armReadLog 2 1 10 5 7 3 := by rfl
+
+/-- Both receipts are empty, so the read COUNT does not separate them
+either. -/
+theorem spanNoneArm_traces_empty :
+    armReadLog 23 1 10 5 7 3 = [] ∧ armReadLog 2 1 10 5 7 3 = [] :=
+  ⟨by rfl, by rfl⟩
+
+/-- What DOES separate them, besides the value: the charge logs differ,
+because the impostor executes the consumer's 21 instructions.  Recorded
+so the boundary of the previous two theorems is exact -- a POSITIONAL
+category check catches this impostor, a receipt check does not. -/
+theorem spanNoneArm_catLogs_differ :
+    armCatLog 23 1 10 5 7 3 ≠ armCatLog 2 1 10 5 7 3 := by decide
+
+/-- The impostor is not rejected by exit code either: both arms halt. -/
+theorem spanNoneArm_both_halt :
+    (E1Machine.run armStore (noneArmProgram 23) 30
+        ⟨armRegs 1 10 5 7 3, 0, false⟩).final.halted = true ∧
+      (E1Machine.run armStore (noneArmProgram 2) 30
+        ⟨armRegs 1 10 5 7 3, 0, false⟩).final.halted = true :=
+  ⟨by rfl, by rfl⟩
+
 end E1InteriorSpanBlock
 end WordRAM
 end RMQ
