@@ -9,9 +9,10 @@ Use this skill for lead/coordinator work in the RMQ repository.
 
 ## Skill Availability Gate
 
-Before re-entry or any completed-worker audit, verify that the current task's
-runtime skill catalog exposes every repo-local RMQ skill tracked at the declared
-workflow-governance frontier. Run `scripts/project_skill_preflight.ps1` with:
+Before re-entry or any completed-worker audit, verify that the checkout contains
+every repo-local RMQ skill tracked at the declared workflow-governance frontier
+and that the runtime exposes every explicitly required role skill. Run
+`scripts/project_skill_preflight.ps1` with:
 
 - the exact governance ref;
 - `rmq-coordinator` as the required skill;
@@ -19,14 +20,14 @@ workflow-governance frontier. Run `scripts/project_skill_preflight.ps1` with:
 
 The governance frontier controls workflow instructions; an older detached
 source/audit target does not replace it. If the preflight script is absent, the
-governance ref is not in the checkout ancestry, or a required/canonical skill
-is missing or stale in either the checkout or runtime catalog, stop and notify
-the user. Report the working directory, HEAD, governance ref, and the expected,
-checkout, and runtime skill sets. Do not substitute `rmq-proof-sprint` or
-continue a best-effort coordinator run. Resume only after the checkout/catalog
-is corrected and the task is restarted, unless the user explicitly authorizes
-a disclosed fallback; a fallback cannot record acceptance, integration, or
-roadmap closure.
+governance ref is not in the checkout ancestry, a canonical skill is missing or
+stale in the checkout, or an explicitly required role skill is missing from the
+runtime catalog, stop and notify the user. Report the working directory, HEAD,
+governance ref, and the expected, checkout, and runtime skill sets. Do not
+substitute `rmq-proof-sprint` or continue a best-effort coordinator run. Resume
+only after the checkout/catalog is corrected and the task is restarted, unless
+the user explicitly authorizes a disclosed fallback; a fallback cannot record
+acceptance, integration, or roadmap closure.
 
 ## Re-Entry
 
@@ -72,7 +73,7 @@ precise theorem, docs, artifact, or workflow targets.
 
 Use `docs/internal/templates/WORKER_PROMPT.md` for proof or implementation
 workers. Use `docs/internal/templates/AUDIT_PROMPT.md` when packaging a prompt
-for an external auditor, optionally with help from `rmq-audit`.
+for an external auditor, optionally with help from `rmq-audit-prompt`.
 
 Every worker prompt should name:
 
@@ -126,12 +127,12 @@ policy that exists only on another branch.
 
 Verify the destination task separately from the worker base. A returning task
 may be labeled `READY_TO_SEND` only when its latest runtime inventory explicitly
-shows every canonical RMQ skill at the current governance frontier. Repository
-presence, a prompt instruction, or a branch created inside that task is not
-runtime evidence. If the returning task's catalog is unknown or stale, do not
-resend there: start a fresh Codex worktree task from the exact governed repair-
-base branch, mark the prompt `FRESH`, and require project-skill preflight as its
-first action. Record destination task kind and runtime evidence in
+shows every role skill required by that prompt. Repository presence, a prompt
+instruction, or a branch created inside that task is not runtime evidence. If
+the returning task's required-role catalog is unknown or stale, do not resend
+there: start a fresh Codex worktree task from the exact governed repair-base
+branch, mark the prompt `FRESH`, and require project-skill preflight as its first
+action. Record destination task kind and runtime evidence in
 `worker_prompt_preflight.ps1`. Moving an old task to a new branch/worktree does
 not by itself certify that its runtime skill catalog was rebuilt.
 

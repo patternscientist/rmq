@@ -226,7 +226,8 @@ engineers external-auditor prompts and packets.
 Evidence:
 
 - `.agents/skills/rmq-coordinator/SKILL.md`
-- `.agents/skills/rmq-audit/SKILL.md`
+- `.agents/skills/rmq-audit-prompt/SKILL.md` (renamed from `rmq-audit` by
+  WDD-20260718-001)
 - `.agents/skills/rmq-proof-sprint/SKILL.md`
 
 Follow-up:
@@ -287,15 +288,14 @@ imply that normal worker integration is delegated away from the coordinator.
 Evidence:
 
 - `.agents/skills/rmq-coordinator/SKILL.md`
-- `.agents/skills/rmq-audit/SKILL.md`
+- `.agents/skills/rmq-audit-prompt/SKILL.md`
 - `.agents/skills/rmq-proof-sprint/SKILL.md`
 - `docs/internal/templates/AUDIT_PROMPT.md`
 
 Follow-up:
 
-After the next external audit request, evaluate whether `rmq-audit` should be
-renamed to `rmq-external-audit-prompt` or whether the revised description is
-clear enough.
+Completed by WDD-20260718-001: rename the skill to `rmq-audit-prompt` so the
+prompt-authoring boundary is explicit without the longer proposed name.
 
 Supersedes:
 
@@ -741,7 +741,7 @@ finding is accepted with correction.
 
 Consequences:
 
-`docs/internal/AUDIT_PROTOCOL.md`, `.agents/skills/rmq-audit/SKILL.md`, and
+`docs/internal/AUDIT_PROTOCOL.md`, `.agents/skills/rmq-audit-prompt/SKILL.md`, and
 `docs/internal/templates/AUDIT_PROMPT.md` now require or request a durable
 report path for material audits. The first stored report is
 `docs/internal/audit_reports/2026-07-09_A01_rmq_frontier_audit.md`.
@@ -749,7 +749,7 @@ report path for material audits. The first stored report is
 Evidence:
 
 - `docs/internal/AUDIT_PROTOCOL.md`
-- `.agents/skills/rmq-audit/SKILL.md`
+- `.agents/skills/rmq-audit-prompt/SKILL.md`
 - `docs/internal/templates/AUDIT_PROMPT.md`
 - `docs/internal/audit_reports/README.md`
 
@@ -1578,7 +1578,7 @@ Evidence:
 - `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`
 - `.agents/skills/rmq-proof-sprint/SKILL.md`
 - `.agents/skills/rmq-coordinator/SKILL.md`
-- `.agents/skills/rmq-audit/SKILL.md`
+- `.agents/skills/rmq-audit-prompt/SKILL.md`
 - `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`
 - `docs/internal/templates/WORKER_PROMPT.md`
 - `docs/internal/templates/AUDIT_PROMPT.md`
@@ -1756,7 +1756,7 @@ Evidence:
 - `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`.
 - `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`.
 - `.agents/skills/rmq-coordinator/SKILL.md`.
-- `.agents/skills/rmq-audit/SKILL.md`.
+- `.agents/skills/rmq-audit-prompt/SKILL.md`.
 - `docs/internal/templates/WORKER_PROMPT.md`.
 - `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`.
 - `docs/internal/templates/AUDIT_PROMPT.md`.
@@ -2060,7 +2060,7 @@ claimed verification ledger refer to the same object.
 
 Consequences:
 
-- `rmq-audit`, `AUDIT_PROMPT.md`, and `AUDIT_PROTOCOL.md` require post-report
+- `rmq-audit-prompt`, `AUDIT_PROMPT.md`, and `AUDIT_PROTOCOL.md` require post-report
   final-tree checks.
 - `rmq-coordinator` independently verifies report-only commits before recording
   `ACCEPTED`.
@@ -3261,3 +3261,89 @@ An obstruction can force a paper-level model or payload decision.  Requiring a
 checked implication from the frozen target prevents a decomposition-specific
 lower bound from being mistaken for an impossibility of the claimed machine
 architecture.
+
+## WDD-20260718-001: name audit prompt engineering and scope runtime skills by role
+
+Status: Accepted.
+Date: 2026-07-18.
+Scope: project-skill identity, runtime discovery, startup preflight, and worker
+restart policy.
+
+Decision:
+
+1. Rename the coordinator-side `rmq-audit` skill to `rmq-audit-prompt` and make
+   its metadata state explicitly that it engineers external-auditor prompts and
+   evidence packets. It is not an audit-worker execution skill.
+2. Keep the full canonical skill inventory mandatory in the governed checkout
+   and working tree, including frontmatter and freshness checks.
+3. Require the runtime catalog to expose every skill explicitly required by the
+   task's role, but do not require unrelated canonical skills to be injected.
+   A proof-only worker may therefore pass with only `rmq-proof-sprint`; a
+   coordinator must expose `rmq-coordinator`; prompt engineering must expose
+   `rmq-audit-prompt` in addition to any other skill it actually uses.
+4. Continue to hard-stop on an omitted runtime catalog, undefined required
+   skill, missing required runtime skill, incomplete/stale canonical checkout,
+   frontmatter mismatch, or governance ancestry failure.
+
+Trigger and evidence:
+
+R1, titled `(R1) Repair the A07 blocking findings`, was a proof-only repair task
+whose prompt required `rmq-proof-sprint`. Its checkout contained all three
+canonical skills, but the task runtime exposed only `rmq-proof-sprint`. The old
+preflight compared the entire canonical set to the runtime set and stopped R1
+for missing `rmq-audit` and `rmq-coordinator`, although neither was applicable
+to the work. The name `rmq-audit` also suggested an auditor execution skill even
+though WDD-20260708-008 had already repurposed it to coordinator-side prompt
+engineering.
+
+Rejected alternatives:
+
+- Install every canonical skill globally so every task always sees all roles.
+  That duplicates versioned repository policy and can silently drift.
+- Drop canonical checkout validation and check only the required runtime name.
+  That would permit a governed task to start from an incomplete or stale skill
+  frontier.
+- Keep the ambiguous `rmq-audit` name and explain the distinction only in prose.
+- Let proof workers bypass a known failing preflight ad hoc. That weakens a
+  deterministic gate instead of correcting its overly broad predicate.
+
+Consequences:
+
+- Fresh tasks still need a governance-containing checkout because runtime skill
+  discovery occurs when a task is initialized and cannot be repaired by later
+  branch movement alone.
+- Role-specific tasks no longer fail merely because unrelated coordinator-side
+  skills are absent from their injected runtime catalog.
+- External audit workers follow their frozen prompt and
+  `docs/internal/AUDIT_PROTOCOL.md`; coordinators use `rmq-audit-prompt` when
+  authoring that prompt or packet.
+- Historical records may retain the former name when quoting an old catalog;
+  all live paths, metadata, templates, and tooling use the new identity.
+- No Lean proposition, payload bit, proof field, modeled tick, trace event, or
+  runtime claim changes.
+
+Evidence:
+
+- `.agents/skills/rmq-audit-prompt/SKILL.md` and `agents/openai.yaml`.
+- `AGENTS.md` and `.agents/skills/rmq-coordinator/SKILL.md`.
+- `scripts/project_skill_preflight.ps1`.
+- Named regressions `role-runtime-proof-sprint-only-pass`,
+  `coordinator-role-missing-from-runtime`,
+  `audit-prompt-role-missing-from-runtime`, and
+  `legacy-rmq-audit-name-rejected` in
+  `scripts/project_skill_preflight_regression.ps1`.
+- Worker R1 task `019f7801-d565-70e2-83cf-1546a1f62090` and its exact blocked
+  preflight report.
+
+Supersedes:
+
+- WDD-20260708-008 for the skill name only; its responsibility split remains.
+- WDD-20260715-002 points 2 through 4 only where they required the complete
+  canonical set in every runtime. Full canonical checkout validation and hard
+  stops for missing applicable skills remain in force.
+
+Publication-facing significance:
+
+This is workflow infrastructure only. It preserves versioned role policy while
+preventing unrelated skill injection from becoming false evidence that a proof
+worker is unqualified to run its assigned theorem campaign.

@@ -1,12 +1,15 @@
 ---
-name: rmq-audit
-description: Use to engineer independent external-auditor prompts and evidence packets for RMQ. Select fresh-blind, continuation, longitudinal, or whole-frontier mode and fill the repo audit template from exact commits and source evidence.
+name: rmq-audit-prompt
+description: Use to engineer independent external-auditor prompts and evidence packets for RMQ. This is a coordinator-side prompt-authoring skill, not the skill used by audit workers. Select fresh-blind, continuation, longitudinal, or whole-frontier mode and fill the repo audit template from exact commits and source evidence.
 ---
 
-# RMQ External Audit Prompt
+# RMQ External Audit Prompt Engineering
 
-Use this skill to prepare an external audit. The coordinator still audits the
-report, integrates branches, updates the roadmap, and engineers worker prompts.
+Use this coordinator-side skill to prepare an external audit prompt and evidence
+packet. The auditor follows the resulting prompt and `AUDIT_PROTOCOL.md`; the
+auditor does not need this prompt-authoring skill. The coordinator still audits
+the report, integrates branches, updates the roadmap, and engineers worker
+prompts.
 
 ## 1. Choose Independence Mode
 

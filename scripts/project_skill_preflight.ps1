@@ -100,7 +100,7 @@ try {
   $undefinedRequired = @($required | Where-Object { $_ -notin $expectedSkills })
   $missingCheckout = @($expectedSkills | Where-Object { $_ -notin $checkoutSkills })
   $missingWorking = @($expectedSkills | Where-Object { $_ -notin $workingSkills })
-  $missingRuntime = @($expectedSkills | Where-Object { $_ -notin $runtimeSkills })
+  $missingRequiredRuntime = @($required | Where-Object { $_ -notin $runtimeSkills })
   $staleCheckout = @()
   $staleWorking = @()
   $frontmatterMismatch = @()
@@ -139,7 +139,7 @@ try {
         $_ -in $undefinedRequired -or
         $_ -in $missingCheckout -or
         $_ -in $missingWorking -or
-        $_ -in $missingRuntime -or
+        $_ -in $missingRequiredRuntime -or
         $_ -in $staleCheckout -or
         $_ -in $staleWorking
       } |
@@ -160,7 +160,7 @@ try {
   if ($undefinedRequired.Count) { $failures += "required_not_defined=$($undefinedRequired -join ',')" }
   if ($missingCheckout.Count) { $failures += "missing_from_checkout=$($missingCheckout -join ',')" }
   if ($missingWorking.Count) { $failures += "missing_from_working_tree=$($missingWorking -join ',')" }
-  if ($missingRuntime.Count) { $failures += "missing_from_runtime=$($missingRuntime -join ',')" }
+  if ($missingRequiredRuntime.Count) { $failures += "missing_required_from_runtime=$($missingRequiredRuntime -join ',')" }
   if ($staleCheckout.Count) { $failures += "stale_in_checkout=$($staleCheckout -join ',')" }
   if ($staleWorking.Count) { $failures += "stale_in_working_tree=$($staleWorking -join ',')" }
   if ($frontmatterMismatch.Count) { $failures += "frontmatter_mismatch=$($frontmatterMismatch -join ',')" }
@@ -168,7 +168,7 @@ try {
 
   if ($failures.Count) {
     foreach ($failure in $failures) { Write-Host "SKILL-PREFLIGHT: FAIL $failure" }
-    Write-Host "SKILL-PREFLIGHT: ACTION STOP; notify the user and restart from a governance-containing checkout with the complete runtime RMQ skill catalog. Do not substitute another skill."
+    Write-Host "SKILL-PREFLIGHT: ACTION STOP; notify the user and restart from a governance-containing checkout whose runtime exposes every explicitly required RMQ role skill. Do not substitute another skill."
     exit 2
   }
 

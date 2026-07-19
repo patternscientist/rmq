@@ -4,13 +4,17 @@
 
 - The canonical RMQ project skills are the `SKILL.md` packages tracked under
   `.agents/skills` at the task's declared workflow-governance frontier. Before
-  substantive repository work, identify the applicable role skill and confirm
-  that every canonical RMQ skill, especially any explicitly named skill, is
-  present in the task's runtime available-skills catalog.
+  substantive repository work, confirm that the checkout contains the complete
+  canonical set, identify the applicable role skill or skills, and confirm that
+  those explicitly required skills are present in the task's runtime catalog.
+  A role-specific task does not need unrelated coordinator-side skills injected
+  into its runtime.
 - Use `$rmq-coordinator` for coordination, re-entry, completed-worker audit,
   integration, roadmap planning, and handoff work; `$rmq-proof-sprint` for
-  narrow Lean/proof/construction work; and `$rmq-audit` for preparing external
-  audit prompts and evidence packets.
+  narrow Lean/proof/construction work; and `$rmq-audit-prompt` for preparing
+  external audit prompts and evidence packets. `$rmq-audit-prompt` is a
+  coordinator-side authoring skill, not an audit-worker skill. Audit workers
+  follow their frozen prompt and `docs/internal/AUDIT_PROTOCOL.md`.
 - When an exact governance ref is supplied, run
   `scripts/project_skill_preflight.ps1` with that ref, the applicable skill,
   and the RMQ skill names shown in the task's runtime catalog. Keep the
@@ -21,22 +25,22 @@
   powershell -ExecutionPolicy Bypass -File scripts\project_skill_preflight.ps1 `
     -GovernanceRef <EXACT_SHA> `
     -RequiredSkills rmq-coordinator `
-    -RuntimeProjectSkills "rmq-audit,rmq-coordinator,rmq-proof-sprint"
+    -RuntimeProjectSkills "rmq-coordinator"
   ```
 
   Replace the runtime list with the RMQ skills actually exposed to the task; do
   not copy the expected list merely to make the check pass.
 - If the script is absent, a canonical skill is missing or stale in the
-  checkout, the runtime catalog omits a canonical or explicitly required
-  skill, or the governance ref is not in the checkout's ancestry, **stop before
-  substantive work**. Report the working directory, checkout HEAD, governance
-  ref, expected project skills, runtime project skills, and missing/stale
-  names. Do not substitute another skill or continue best-effort.
+  checkout, the runtime catalog omits an explicitly required role skill, or the
+  governance ref is not in the checkout's ancestry, **stop before substantive
+  work**. Report the working directory, checkout HEAD, governance ref, expected
+  project skills, runtime project skills, and missing/stale names. Do not
+  substitute another skill or continue best-effort.
 - Resume only in a new or restarted task rooted at a checkout containing the
-  governing workflow commit and exposing the complete skill catalog, unless
-  the user explicitly authorizes a fallback after the mismatch is disclosed.
-  A fallback run cannot record coordinator acceptance, integration, or roadmap
-  closure.
+  governing workflow commit and exposing every explicitly required role skill,
+  unless the user explicitly authorizes a fallback after the mismatch is
+  disclosed. A fallback run cannot record coordinator acceptance, integration,
+  or roadmap closure.
 
 ## Repository Expectations
 

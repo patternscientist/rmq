@@ -35,11 +35,12 @@ Skill:
 - Workflow-governance ref: [EXACT COMMIT CONTAINING CURRENT RMQ SKILLS/POLICY].
 - Before substantive work, run `scripts/project_skill_preflight.ps1` against
   that ref with `[SKILL_NAME]` required and the RMQ skill names actually shown
-  in the task's runtime available-skills catalog. If the script or any
-  canonical/required skill is missing or stale, stop and notify the user; do
-  not substitute another skill or continue best-effort. Restart from a
-  governance-containing checkout unless the user explicitly authorizes a
-  disclosed fallback.
+  in the task's runtime available-skills catalog. If the script is absent, any
+  canonical checkout skill is missing/stale, or any explicitly required role
+  skill is missing from the runtime, stop and notify the user; do not substitute
+  another skill or continue best-effort. Unrelated coordinator-side skills need
+  not be injected into a proof-only worker. Restart from a governance-containing
+  checkout unless the user explicitly authorizes a disclosed fallback.
 
 Checkout contract:
 - Task mode: [WRITE / READ-ONLY].
