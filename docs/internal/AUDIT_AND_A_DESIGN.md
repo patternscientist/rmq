@@ -4633,3 +4633,62 @@ Both told to say what they supply against each row's own `Evidence needed`
 column and to **leave the closing judgement to me** — no worker marks a row
 Closed. After the false scope claim I put in their briefs for weeks, the
 correction has to include not asking them to adjudicate rows either.
+
+---
+
+## C05 round 72 — the program is assembled; two real obstructions found and
+## reported rather than worked around
+
+Lane A1 returned INCOMPLETE at `c19e28c`, three commits, three new whole-query
+modules. It built the program and stopped honestly at two obstructions, neither
+of which is a matter of effort.
+
+**What landed, and one piece of it was missing from the tree entirely.**
+`lcaLeg_of_sameBlock` / `lcaLeg_of_crossBlock` (`E1WholeQueryLcaLeg.lean:57`/`:83`)
+are the close/LCA leg's own branch split — **absent until now; every split in the
+tree was inline and unexported.** Then `closeLcaProgramAt` with **both arms
+executed** and converging at `A + 4753`, and `wholeQueryValidPathThroughLca`
+with **both select legs**, at every shape and every valid range, receipt
+positionally the two route select traces at `left` and `right - 1`.
+
+**BLOCKER 1: `crossBlockArmProgramAt_runsTo` exports no preservation clause** —
+I verified this directly: its conclusion is `RunsTo … ∧ some (regsF fRes) = …`
+and nothing more, deliberately per its own header. The whole-query composition
+must carry the first select's answer across the close leg, so it needs one. The
+close-leg lane had flagged exactly this and left it as an interface, correctly,
+because an arm cannot promise more than its own hypotheses promise.
+
+**BLOCKER 2: the cross arm's interior object is not reconciled with the route's.**
+`crossBlockArmSpec_eq` (`:181`) yields an **`if`-guarded** interior where
+`crossBlockArm_withCanonicalInterior_runsTo` produces
+`⟨dispatchRouteValue …, dispatchEvents …⟩`, and no theorem identifies them. Until
+one does, the arm's `RunsTo` and the route's object are about different things.
+
+**MY TWENTY-FIRST FAILED CLAIM.** I wrote "instantiate `programSkeleton`'s
+`validPath` with the composed close/LCA leg" as though it were one step. It was
+not: `closeDispatchProgram`'s branch target is **absolute and correct only at
+base 0**, so the existing composition was *inapplicable* in the whole query — and
+the terminator's own jump target cannot be written correctly until the layout is
+parametric in `A`. **The terminator and the rebasing had to land together.** I
+had treated the terminator as a small independent fix; it was coupled.
+
+Two more corrections from the same worker: **the dead register set is
+`{3,4,5,6,7}`, not `{5,6,7}`** — `regZero` and `regN` are read only by
+guard-block instructions executing before pc 8, so my under-count was by two and
+in the safe direction only by luck. And the select leg's "Chunked" object is
+**definitionally** the route's, so that bridge is `rfl` — one less obligation
+than a survey believed.
+
+**A stale artefact moving in the opposite direction.** Validator phase 5 now says
+"no definition composes them into one runnable query program" — and one does. The
+verdict `OPEN` is still correct, since it runs no comparison and contributes no
+clause. That string has now been wrong in both directions within three rounds,
+which is what happens when a status message hard-codes a reason rather than a
+condition. Recorded for the lane that owns the file.
+
+**Lane A3 launched** to clear both blockers and finish: result agreement,
+positional receipt equality, category accounting across all four branches, then
+discharging `WholeQueryMachineAgrees` — the named `def : Prop` the glue lane
+deliberately left so the public corollary could be built and debugged before the
+theorem it consumes existed. That decision is now paying: the public plumbing is
+already done and waiting.
