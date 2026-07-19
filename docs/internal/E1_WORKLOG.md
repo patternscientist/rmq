@@ -2220,3 +2220,237 @@ NOTHING below is implemented.
    supersession), M6 (validator `lean_exe`), M7 (docs + matrix closure +
    final battery, including the coordinator-queued PAPER_MODEL_ADEQUACY
    and B6-matrix edits in the COORDINATOR DIRECTIVES section above).
+
+## M3d-3 (worker E1-R4m): address preamble gate, same-block arm, and a NEW ISA-level finding on the INTERIOR leg
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, session base
+`74ada9e`. `lake build RMQ` exit 0 at EVERY commit. Commits:
+
+- `b3eba0d` M3d-3a: the whole same-block close arm
+- `e4aa8d0` M3d-3b: the address preamble (risk gate discharged)
+
+### 1. THE ADDRESS-PREAMBLE RISK GATE: PASSES (verified at source)
+
+The resume inventory's first task was to establish whether `blockSize` is
+a per-shape constant on the accepted route, since the ISA has `divConst`
+only. IT IS. Verified at source, not assumed:
+
+- `blockOfClose blockSize close = close / blockSize` and
+  `blockStartOf blockSize block = block * blockSize`
+  (`BlockLocal.lean:863`/`:866`) take `blockSize` as a PARAMETER, so the
+  classification lives entirely at the call sites.
+- Every accepted-route call site binds
+  `canonicalBPRelativeSummaryBlockSizeRaw shape`
+  (`ChargedFringeWiring.lean:36` and `:57`,
+  `ChargedFringeTrace.lean:928` and `:1151`,
+  `SuccinctFinalRAM.lean:2356-2360`).
+  `canonicalBPRelativeSummaryBlockSizeRaw shape = 2 * (Nat.log2 shape.size + 1)`
+  (`RelativeSummary.lean:1240`) - a function of `shape` ALONE, never of
+  `close`/`left`/`right` or of any value read from memory, and always
+  `>= 2`.
+- The other route divisors are likewise shape-determined:
+  `wordSize = machineWordBits shape.bpCode.length` (`SuccinctRank.lean:38`,
+  positive by `machineWordBits_pos:41`); the chunk width
+  `c = bpFringeChunkBits shape.bpCode.length` and its mixed radices
+  `c + 1`, `(c+1)*(2*c+2)` (`ChargedFringeChunks.lean:42`, `:1493-1502`);
+  `layout.macroSize = (Nat.log2 shape.size + 1)^2`
+  (`RelativeSummary.lean:1276-1292`, positive by `Valid.macroSize_pos:1361`).
+  In the chunk-entry decode the memory-read value is the NUMERATOR, never
+  the divisor.
+
+GOTCHA WORTH CARRYING: the zero-able twin
+`canonicalBPRelativeSummaryBlockSize` (`RelativeSummary.lean:1469`, which
+is `if active then raw else 0`) is used ONLY by the legacy dispatcher
+`ConcreteDirectory.lean:122-136` behind the near-homonym
+`concreteBPNativeLCACloseGlobalWordTraceResult`
+(`SuccinctFinalRAM.lean:2271`) - the object the delegation correctly told
+us NOT to bind. Machine code must generate its immediates from `...Raw`;
+generating them from the guarded name would produce `k = 0` on inactive
+shapes and fail the `0 < k` arm of `Instr.FieldsFit` for a leg that in
+fact never executes. (Even the legacy route short-circuits the zero case
+before any division, so no route divides by zero.)
+
+Discharged constructively in `e4aa8d0`: `windowAddr` is FOUR instructions
+(`divConst`/`mulConst` with per-shape constant immediates only), with
+`windowAddr_fits` carrying the positivity side conditions and
+`windowAddr_runsTo_route` proving the outputs ARE the route's
+`bpWindowFirstWord` and `localBPWindowBase`. NO new instruction was
+invented and none is needed for the preamble.
+
+### 2. NEW FINDING, NOT THE DIVISOR ONE: the INTERIOR leg needs a RUNTIME `Nat.log2`
+
+This is a DIFFERENT ISA gap in the same class, found while running the
+gate, and it is a COORDINATOR DECISION ITEM. It does not affect the
+fringe or same-block arms; it blocks resume item 3 (the interior leg) and
+therefore items 5-7.
+
+Verified at source. `canonicalRelativeRmmInteriorRangeMinComputation`
+(`InteriorDirectory.lean:2185-2209`) is the five-way `if` the prior
+inventory describes, and its arms call:
+
+- `canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation`
+  (`InteriorDirectory.lean:2112-2126`), which computes
+  `let level := Nat.log2 count` and `let span := bpSparseLogSpan count`;
+- `canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation`
+  (`InteriorDirectory.lean:2128-2142`), same shape on `macroSpanCount`.
+
+`bpSparseLogSpan blockCount = 2 ^ Nat.log2 blockCount`
+(`SparseArgMin.lean:598-599`). The argument `count` / `macroSpanCount` is
+RUNTIME-derived (the interior block span of the query, i.e. a function of
+`left`/`right`), NOT shape-determined. `level` then feeds the address
+`bpGlobalSparseCellSlot macroCount macroStart level = level * macroCount + macroStart`
+(`LocalGlobalSparse.lean:200-202`), so the machine MUST compute it to
+reproduce the accepted read addresses; there is no way to route around it.
+
+WHY THIS IS NOT AN EXPRESSIVENESS OBSTRUCTION: the existing ISA CAN
+compute both, without any new instruction - `level` by repeated
+`divConst _ _ 2` halving, `span` by repeated `mulConst _ _ 2` doubling.
+Both the divisor and the multiplier are the literal constant `2`. So the
+machine exists.
+
+WHY IT IS NEVERTHELESS A BLOCKER FOR THE FROZEN TARGET: the loop runs
+`Nat.log2 count` times, and `count` is bounded only by shape-growing
+quantities (`layout.macroSize` in the local arm, `macroSampleCount` in the
+global arm). There is therefore NO literal all-size cap on the iteration
+count. That contradicts REQ-E1-06(c) as frozen - "an all-size literal
+`totalSteps <= <literal>` derived by `rfl`/omega ..., no size hypothesis" -
+and hence REQ-E1-07, whose Prop bundles that literal bound.
+
+Structurally this is the SAME SHAPE as the refuted
+`E1R3FamiliarMachineTarget` obstruction (event-silent work with no literal
+cap), but MUCH weaker: it is log-many steps, not per-position linear-many,
+and every iteration IS charged. IMPORTANT CONSEQUENCE FOR M5: the
+delegation's planned supersession wording - "after B6 no branch of the
+accepted route performs a per-position scan; every loop is a chunk fold
+under a literal cap" - is TRUE for the first clause but FALSE as written
+for the second. The interior leg's log2/span computation is a loop that is
+NOT a chunk fold and NOT under a literal cap. The M5 note must be
+rewritten to say so, or it would be an overclaim.
+
+OPTIONS FOR THE COORDINATOR (not chosen here; the delegation forbids
+inventing a workaround instruction):
+
+(a) Amend REQ-E1-06(c) to a literal-plus-word-width bound,
+    `totalSteps <= A + B * machineWordBits shape.bpCode.length` with `A`
+    and `B` derived literals. This is the standard word-RAM statement and
+    is honest; it costs an amendment to a frozen row.
+(b) Add an `msb`/`log2` instruction to the ISA. It is a conventional
+    word-RAM primitive, and it would restore a bare literal total. Costs
+    an ISA amendment and a REQ-E1-01 re-justification.
+(c) Precompute a log2 table in the store and read it. REJECTED on
+    inspection: it adds a memory-read event absent from the accepted
+    trace, so it breaks REQ-E1-04 positional receipt equality and would
+    require reopening the accepted route (frozen B-rows).
+
+Recommendation if asked: (a) or (b). (a) changes only the E1 statement;
+(b) preserves the literal but widens the ISA.
+
+HONESTY NOTE: this is a STRUCTURAL finding established by reading the
+route definitions, with exact file:line above. It is NOT a checked Lean
+non-existence theorem - proving "no literal bound exists" would require a
+machine-step lower bound, which was not attempted. It should be treated
+as a well-evidenced blocker to be adjudicated, not as a proved obstruction.
+
+### 3. WHAT LANDED (unblocked work)
+
+New module `RMQ/Core/WordRAM/E1SameBlockArm.lean` (~330 lines), namespace
+`RMQ.WordRAM.E1SameBlockArm`, plus its `RMQ.lean` import line. No
+route-side file modified; purely additive.
+
+The B6 same-block object is structurally the fringe arm already simulated,
+instantiated at the same-block range and post-composed with the PURE
+`bpCandidateClose?`. Because `bpFringeCandGlobal` is total into `some`
+(`ChargedFringeChunks.lean:1617` - both arms yield `some`),
+`bpCandidateClose?` is the single expression `position - 1`, so the
+epilogue is TWO instructions with no option dispatch and NO read event,
+matching the route, whose `TraceResult.map` contributes no trace.
+
+Key objects (file:line exact at `e4aa8d0`):
+
+- `fClose 70` (preamble input), `fRes 69` (close result) - bank extension.
+- `windowAddr` (`:113`, 4 instructions), `windowAddrCats` (`:122`),
+  `windowAddr_fits` (`:128`), `windowAddr_straight` (`:145`),
+  `windowAddr_runsTo` (`:159`), `windowAddr_runsTo_route` (`:196`).
+- `sameBlockClose` (`:239`, 2 instructions), `sameBlockCloseCats` (`:246`),
+  `sameBlockClose_fits` (`:250`), `sameBlockClose_runsTo` (`:266`).
+- `sameBlockSeeded_trace_eq` (`:305`) - POSITIONAL `List` equality of the
+  accepted object's `.trace`.
+- `sameBlockSeeded_value_eq` (`:327`).
+- `sameBlockArm_runsTo` (`:369`) - THE WHOLE SAME-BLOCK ARM, `A -> A+97`.
+
+Same-block arm layout at base `A` (97 instructions): prologue `A..A+20`,
+fold loop base `A+21` (exit `A+88`), global-rebase epilogue `A+88..A+94`,
+close epilogue `A+95..A+96`, exit `A+97`. The preamble's 4 instructions sit
+before `A` and are not yet spliced into that layout.
+
+### 4. GOTCHAS RECORDED THIS SESSION (carry forward)
+
+1. `set ... with ...` is a MATHLIB tactic and is NOT available here. Use
+   `RunsTo.straight` plus the module-local `straight_eval`/`straight_writes`
+   macros (`E1StraightLine.lean:210`/`:217`) for straight segments; that is
+   the house idiom and it is much shorter than hand-chaining step rules.
+2. Preservation side conditions must be stated with NUMERAL register
+   predicates (the house pattern, e.g. `WindowAddrUntouched r` defined as
+   `r != 63` and `r != 64`), not with the `fBase`/`fBB` abbrevs. With the
+   abbrevs, `omega` treats the register names as opaque atoms and fails.
+   This is why every existing module writes its `...Untouched` predicate
+   in numerals.
+3. Per-constructor step rules (`RunsTo.const`, `RunsTo.sub`, ...) need the
+   state given EXPLICITLY via the named argument `s`; otherwise the fetch
+   hypothesis is elaborated before `s` is known and you get a
+   `?m[State.pc ?m]?` mismatch.
+4. The same-block route objects use `have`-bindings in their bodies, so
+   `unfold` leaves `let_fun` in the way and `rw` cannot see through it.
+   Use `simp only` with the definition plus
+   `TraceResult.bind`/`map`/`pure` FIRST to zeta-reduce, THEN `rw` the
+   bridges. (The `ChargedFringeTrace` arm objects have no `have`s, which
+   is why plain `unfold` worked there.)
+5. Finish a trace bridge with `simp only [List.append_nil]`, NOT bare
+   `simp`: plain `simp` normalizes `a + 1 + (b - a + 1) - 1` into
+   `a + 1 + (b - a)` on one side only, after which the two sides no longer
+   match the `abbrev`-level `relHi`.
+
+### 5. VERIFICATION LEDGER (root builds, not per-file checks)
+
+`lake build RMQ` exit 0 at both commits. `#print axioms` run on all
+eleven theorems this session claims: `sameBlockClose_length`,
+`sameBlockClose_fits`, `sameBlockClose_runsTo`, `sameBlockSeeded_trace_eq`,
+`sameBlockSeeded_value_eq`, `sameBlockArm_runsTo`, `windowAddr_length`,
+`windowAddr_fits`, `windowAddr_straight`, `windowAddr_runsTo`,
+`windowAddr_runsTo_route` - every one reports only `propext` /
+`Classical.choice` / `Quot.sound`, never `sorryAx`. Hygiene `rg` clean on
+the new module; `git diff --check` clean.
+
+### 6. MATRIX STATUS AT YIELD
+
+All rows REQ-E1-01..11 remain OPEN. This session closed none and weakened
+none. Evidence accumulated is component-level and does NOT discharge any
+row; all rows are WHOLE-QUERY scoped.
+
+### 7. RESUME POINT (M3d-4)
+
+NOTHING below is implemented.
+
+1. COORDINATOR DECISION REQUIRED on the interior-leg `Nat.log2` finding in
+   section 2 above before items 3-7 of the previous resume point can be
+   completed as frozen. Items 2 and 3 below are unaffected and can proceed
+   in parallel with that decision.
+2. SPLICE THE PREAMBLE into the same-block arm: `windowAddr_runsTo_route`
+   delivers `fBase`/`fBB`, but `fringeArm_runsTo` also needs `fLo`, `fHi`,
+   `fAcc`, `fSeed`, `fStart`. `fStart = leftClose + 1` and
+   `fLo = leftClose + 1 - fBB`,
+   `fHi = leftClose + 1 + (rightClose - leftClose + 1) - 1 - fBB`
+   are add/sub only; `fAcc` and `fSeed` are the rank seed (item 3).
+3. RANK SEED. `localBPSeedFromRankCloseTraceResult`
+   (`ConcreteDirectoryRAM.lean:1530`) is
+   `map (localBPSeedFromRankFalse base) (rankCloseTrace base)`, so the
+   seed leg is `rankCloseBlock_runsTo_canonical`
+   (`E1RankCanonical.lean:263`) at address `base`, then the pure
+   `localBPSeedFromRankFalse`. Composing it in front of
+   `sameBlockArm_runsTo` reaches the delegation's named target
+   `bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore`
+   (`ChargedSameBlockTrace.lean:340`).
+4. CANONICAL-STORE FORM, then whole-query glue, M4-M7 - unchanged from the
+   previous resume point, except that M5's supersession wording MUST be
+   corrected per section 2.
+
