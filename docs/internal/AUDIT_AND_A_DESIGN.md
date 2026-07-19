@@ -1561,3 +1561,47 @@ Workers must keep output flowing, tee to a polled file, or keep builds
 incremental; if a silent cold rebuild is genuinely required, the worker stops
 and the COORDINATOR runs it in a background shell and hands back the result.
 Same division of labour already used for the aggregate gate.
+
+## 2026-07-19 (C05 round 22) — parameterization worked; complementarity executed both ways
+
+**The interior-agnostic structuring succeeded** (E1-R4r, `49d4810`). The
+cross-block arm is stated over `crossBlockArmSpec`, which takes the interior's
+whole `TraceResult` as an ARGUMENT, and `crossBlockArmSpec_eq` proves the
+accepted object at `ChargedFringeTrace.lean:1144` IS that spec at the interior's
+current contents. The interior therefore appears concretely in exactly ONE
+equation. When B7 lands and the interior's trace changes, that equation is
+re-derived and the structure above it is untouched. This was the whole point of
+the sequencing constraint and it held.
+
+Two prior lessons were also applied by construction rather than by repair: the
+arm program is base-parametric from the start (no base-0 version, no `_zero`
+lemma to schedule — the tax the same-block leg paid), and the worker built two
+NEW range preambles after finding `windowRange` is not reusable by either cross
+arm (its high endpoint is the same-block span, while the arms run to a block end
+and from a block start), rather than pinning to arithmetic that happened to
+typecheck.
+
+**Discriminator complementarity is now EXECUTED in both directions**, not
+argued. Mutant E charges a fold read to the next segment: same length, same
+opcode categories, and because the witness store answers every segment
+identically, pc, steps, value and position are ALL unchanged
+(`mutantE_isReceiptOnly=true`) — caught only by receipt diffing. It is the exact
+mirror of the previous session's mutant D, which preserved receipts and was
+caught only by the independent value. Two witnessed failures, one for each
+discriminator, neither subsuming the other. The validator now selects per block
+and the worker must state which and why.
+
+**Correction to the coordinator's own brief.** `rmq_succinct_classic_validate`
+does NOT fail on a stale runtime fixture, as I had been telling workers. It
+fails at COMPILE time — `RMQ/Validation/SuccinctClassic.lean:253:0: expression
+singletonRepeatedEqualReadPositionsOK did not evaluate to 'true'` — so the
+executable never runs. More severe than described, and it means the Validation
+module does not build at all. Corrected in all downstream briefs; R1 owns it.
+That is the fourth consecutive session in which a worker corrected a claim made
+by a predecessor or by me.
+
+**Next unblocked target identified precisely:** `fringeArm_runsTo`
+(`E1FringeArmBlock.lean:940`) states NO register-preservation clause, so the
+left arm's stashed `mLV`/`mLP` cannot be shown to survive to the merge. That is
+a strengthening of an existing theorem and it gates the composed cross-block
+`_runsTo`. Not blocked by the interior.
