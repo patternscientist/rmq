@@ -64,7 +64,24 @@ leaf, preserve and establish the applicable invariants:
 - `INV-WORD-WIDTH`: stored and returned words fit one declared modeled
   machine word;
 - `INV-ADDRESS-WIDTH`: every executed address, dead/sentinel address, and
-  operand fits the modeled machine word, not merely the host array bounds;
+  encoded instruction operand fits the modeled machine word, not merely the
+  host array bounds. Constructor-exhaustive evidence must include register
+  identifiers, branch/jump targets, dormant code, and arithmetic operands;
+- `INV-INSTRUCTION-ATOMICITY`: each modeled small step performs the familiar
+  primitive operation it advertises. A constructor whose evaluator body hides
+  recursion, a variable-length scan, repeated rank/select work, decoding, or
+  several arithmetic categories is a macro-step unless that work is expanded
+  into charged transitions or bounded by an explicitly accepted primitive;
+- `INV-PROGRAM-ACCOUNTING`: input-dependent constants and metadata carried by
+  executable code are counted machine data or are derived uniformly from
+  counted/public inputs. Calling shape-specialized data "program code" does
+  not remove it from the payload/state accounting obligation;
+- `INV-ORACLE-INDEPENDENCE`: executable fixtures and edge-case expected values
+  come from an independent specification or a theorem already connected to it,
+  never from the implementation result being tested;
+- `INV-VALIDATION-REACH`: executable validation imports and runs the new
+  semantic layer. A validator for the predecessor implementation is regression
+  evidence only and does not validate the new machine;
 - `INV-ALL-SIZE`: exactness covers all assigned sizes and edge cases without
   hidden readiness or compatibility dispatch;
 - `INV-PROOF-SEPARATION`: proof-only fields never carry answers or uncharged
@@ -80,6 +97,19 @@ The following IDs apply when the public claim has the corresponding shape:
   provenance, or machine claims proves them about the same construction and
   execution and over the same validity domain. Conjoining true theorems about
   different payloads or guarded and unguarded executions is not closure.
+- `INV-CERTIFICATE-ANTI-BYPASS`: every mandatory field advertised by a public
+  certificate is projected by a checked typed consumer at the exact proposition
+  and object arguments required by the acceptance contract. Deleting or
+  weakening a field, or replacing it with a sibling fact, must break that
+  consumer rather than leave only constructor initializers and prose unchanged.
+- `INV-MUTATION-REPRODUCIBILITY`: when acceptance relies on an exhaustive,
+  production, or public-dependency mutation campaign, the candidate contains a
+  versioned runner or fixtures that replay every claimed case, check the exact
+  expected failure/acceptance surface, restore tracked state, and leave the tree
+  clean. Report prose, copied terminal output, and dangling Git objects are not
+  replayable evidence. A public theorem additionally has a checked exact-type
+  consumer that fails when the advertised dependency is removed; `#print
+  axioms` over the theorem's current type is not such a consumer.
 - `INV-GLOBAL-PHYSICAL-MACHINE`: a physical-machine claim supplies one
   pre-execution store/word array and a checked address translation for every
   executed segment, including failed/dead accesses. A theorem for one suffix or
@@ -170,6 +200,26 @@ modeled address capacity, normally `2 ^ wordWidth`. Array in-range proofs alone
 do not suffice. Include repeated reads, failed reads, and canonical dead or
 sentinel addresses, and prove operand bounds required by the consumer.
 
+### Small-step atomicity, code accounting, and independent validation
+
+For a small-step or fully charged machine, expand every executed instruction
+branch. Record the primitive work performed by its evaluator body and mutate
+scan length or formula complexity; identify the theorem or bound that changes.
+A one-step transition theorem and a category receipt do not establish
+atomicity when the evaluator hides variable or multi-category work.
+
+Enumerate every encoded field of every instruction constructor against the
+width predicate. Mutate a dormant constructor with an oversized register,
+offset, or jump target; the width certificate must fail. Inventory all
+input-dependent literals in code and prove that each is counted, charged from
+the store, or uniformly derived from public inputs.
+
+For executable fixtures, write the expected result from the independent
+reference semantics before running the implementation. A theorem whose
+expected value is the implementation output is vacuous. Confirm that each
+validator imports or invokes the new module and would fail after a deliberate
+mutation to its evaluator.
+
 ### Counted-store provenance
 
 Connect the exact store used by the execution to the payload counted by the
@@ -185,6 +235,28 @@ that payload. If any link is a different definition, require a proved equality,
 erasure, flattening, or extensional-equivalence theorem at the public consumer.
 Compare actual object arguments in theorem statements; matching sizes or
 similar names do not establish identity.
+
+For a public certificate or bundled adequacy record, add a checked typed
+consumer that projects every mandatory advertised field at its exact
+proposition and object arguments. Attempt field deletion, proposition
+weakening, and sibling-theorem substitution. If constructors can be adjusted
+while all public consumers still elaborate, the field is packaging, not a
+load-bearing acceptance dependency.
+
+If the matrix closes a row by citing multiple mutations, commit a replayable
+mutation runner or stable fixture set with the candidate. Each case must name
+the source mutation, expected verdict and failing surface, and must verify
+restoration hashes or a clean tracked tree before continuing. Include expected-
+accept controls that distinguish a deliberately non-load-bearing packet change
+from a required public-dependency failure. A local mutation that once failed is
+useful discovery, but it cannot close `INV-MUTATION-REPRODUCIBILITY`.
+
+For a public theorem dependency, add a checked consumer whose expected type is
+independent of the theorem's mutable current declaration and whose proof route
+actually consumes that theorem. Mutate the public proposition itself and show
+that the committed check fails. Merely running `#print axioms theoremName`,
+`#check theoremName`, or a topology scan that only names nearby declarations
+adapts to the current type and does not pin the dependency.
 
 If a list-facing or public wrapper guards valid ranges, trace that guard through
 every combined adequacy, result, cost, trace, and footprint field. A public
@@ -259,6 +331,54 @@ and after every virtual edit.
 Do not mark the row complete merely because no forbidden token appears in a
 selected claim table. Documentary symbol resolution is the closure evidence.
 
+### Verification coverage, timeout, and rerun discipline
+
+Before running verification, add a compact command ledger to the acceptance
+matrix. For each command record:
+
+- development-loop, final-required, or conditional role;
+- changed paths and acceptance rows covered;
+- unique failure mode not already covered by another planned command;
+- exact tree identity or dirty-diff state;
+- expected runtime from the closest observed run and the chosen timeout;
+- final outcome, observed duration, and any reason a rerun is necessary.
+
+Order checks by information per unit time: static hygiene and diff checks,
+focused module or executable targets, direct public consumers and relevant
+axiom inventories, then broad builds or the aggregate gate. Do not prescribe
+`lake build`, every named root, every validator, and `scripts/gate.ps1` as
+independent mandatory runs when their coverage is duplicated and the frozen
+contract does not require each result. Broad public, integration, artifact, or
+trust-boundary changes normally need the aggregate gate; narrow proof, docs,
+or read-only work may use proportionate focused checks with an explicit skip
+reason.
+
+For checks expected to take several minutes:
+
+1. Run only one heavy Lean/Lake process at a time against a shared build tree.
+2. Never set a wrapper timeout below a recent successful runtime for the same
+   command and comparable tree. Add realistic margin for a cold worktree.
+3. On timeout or prolonged silence, inspect the owned process tree, CPU use,
+   artifact timestamps, direct-import artifacts, and whether a focused script
+   fell back to a full build. Do not infer failure from silence alone.
+4. If the child survived the wrapper timeout, wait for or resume that process;
+   do not launch a duplicate. Stop an orphan only after identifying it as owned
+   by this task and recording why its result cannot be used.
+5. Retry an ended command only after a material change: a source fix, targeted
+   dependency warm-up, corrected environment, narrower target, or a timeout
+   revised from observed evidence. Record the prior run as incomplete, not as
+   a failed semantic check.
+6. If an aggregate gate fails late, reproduce only the failed component while
+   repairing it. Run at most one new aggregate certification on the unchanged
+   final tree after the component passes.
+
+Any source, theorem, executable, or load-bearing checker edit invalidates the
+checks that transitively consume it. A docs-only or matrix-only edit invalidates
+the relevant claim/design/topology checks but does not automatically invalidate
+unrelated Lean compilation. Explain the dependency judgment. The final report
+must distinguish commands rerun, reused only for scheduling/cache purposes,
+and skipped as redundant or disproportionate. Repetition is not independence.
+
 ## 4. No Caveated Completion
 
 The following statements in a final self-audit normally mean the worker must
@@ -292,12 +412,40 @@ A worker may stop only when one of these is true:
 Difficulty, elapsed time, token pressure, a green build, a clean checkpoint,
 or the desire for an independent audit are not stop conditions.
 
+For stop condition 2, the obstruction must match the frozen target's domain,
+objects, guards, and quantifiers.  It must either negate the exact target or
+provide a checked implication from the target to `False`.  Separate theorems
+showing an arbitrary-state mutation, an unbounded shape parameter, and one
+reachable concrete execution do not compose by prose into an unbounded family
+of canonical reachable executions.  When reachability is load-bearing, prove
+one checked family that simultaneously carries the growing parameter and the
+actual invocation.  Also distinguish an obstruction to the current
+implementation or one proposed decomposition from an obstruction to every
+construction permitted by the frozen contract.  A narrower implementation
+obstruction is valuable checkpoint evidence, but it does not authorize
+`Status: OBSTRUCTED` for the target.
+
+If a worker introduces a proxy proposition for an obstruction, every
+load-bearing proxy clause must either quote the frozen requirement verbatim or
+be derived by a checked theorem from the frozen target.  In particular, do not
+add the contradiction-producing lower bound as a field of the proxy and then
+negate that stronger proposition.  Boundary values, same-block arithmetic, or
+accepted logical results are not an actual invocation witness: when execution
+is load-bearing, retain an occurrence index, pre-state, instruction with its
+evaluated operands, post-state, and the exact run/receipt object, or prove a
+checked bridge to an equivalent operational predicate.
+
 A worker's statement that a residual question is "strictly stronger than the
 assigned obligation" is not a stop condition. The worker must first map the
 question to the frozen requirement wording and inherited invariant IDs. Only
 the coordinator may approve a contract amendment that narrows or defers it.
 
 ## 6. Required Candidate Declaration
+
+Before the final candidate declaration, run both working-tree hygiene and the
+committed range check. `git diff --check` on a clean post-commit worktree does
+not certify the candidate commit; run `git diff --check <exact-base>..HEAD` (or
+an equivalent exact committed-range check) after the final commit.
 
 The final report must begin with exactly one worker status. For candidate
 completion, its first two lines must be exactly:

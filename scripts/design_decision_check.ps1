@@ -82,6 +82,8 @@ $workflowPatterns = @(
   "^scripts/paper_topology_lint_regression\.ps1$",
   "^scripts/project_skill_preflight\.ps1$",
   "^scripts/project_skill_preflight_regression\.ps1$",
+  "^scripts/worker_prompt_preflight\.ps1$",
+  "^scripts/worker_prompt_preflight_regression\.ps1$",
   "^scripts/gate\.ps1$",
   "^scripts/design_decision_check\.ps1$",
   "^\.github/"

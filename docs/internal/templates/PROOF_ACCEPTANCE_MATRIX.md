@@ -49,3 +49,35 @@ Rules:
     category boundary, add category-level holdouts and allowance-bypass
     mutations, and test the production final verdict across supported path and
     parser shapes. A copied regex or whole-file bypass cannot close the row.
+14. For small-step machines, inspect evaluator bodies. A constructor/category
+    inventory plus one step per constructor does not close atomicity when one
+    branch hides recursion, variable-length work, or several primitive
+    categories.
+15. Expected executable results must come from an independent specification;
+    an implementation result cannot serve as its own test oracle.
+16. Width evidence must enumerate every encoded constructor field, including
+    dormant instructions, register identifiers, and control-flow operands.
+17. Account for input-dependent constants stored in program code, and verify
+    that executable validators import and mutate the new layer rather than only
+    its predecessor.
+18. After the final commit, run `git diff --check <exact-base>..HEAD`; a clean
+    working tree alone does not certify committed whitespace.
+19. For mandatory public-certificate fields, name a checked typed consumer that
+    projects every exact field proposition and object argument. Record
+    field-deletion, proposition-weakening, and sibling-substitution mutations;
+    opaque record passage and constructor initialization do not establish
+    anti-bypass consumption.
+20. If closure cites a mutation campaign, identify the committed runner or
+    stable fixtures, exact cases, expected verdict/failure surface, expected-
+    accept controls, and restoration/clean-tree check. Report-only experiments
+    and unreferenced Git objects leave `INV-MUTATION-REPRODUCIBILITY` open.
+    For a public dependency, pin an expected type independently of the current
+    theorem declaration and mutate the public proposition itself.
+21. If the worker stops on an obstruction, put the exact frozen target and the
+    obstruction proposition side by side, including domains, objects, guards,
+    and quantifiers. Require a checked target negation or target-to-`False`
+    implication. Separate arbitrary-state, shape-growth, and singleton-
+    reachability witnesses need a checked bridge into one canonical reachable
+    family; prose composition leaves the target row open. State whether the
+    result obstructs only the current implementation/decomposition or every
+    construction allowed by the contract.

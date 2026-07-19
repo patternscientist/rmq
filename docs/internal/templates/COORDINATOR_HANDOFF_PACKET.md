@@ -19,9 +19,11 @@ Repo:
 
 Startup hard stop:
 - Before substantive work, the new task must run the project skill preflight
-  against the workflow-governance ref. If the preflight script or any
-  canonical/required skill is absent or stale in the checkout or runtime
-  catalog, stop and report the mismatch. Do not substitute another skill.
+  against the workflow-governance ref. If the preflight script is absent, any
+  canonical skill is absent/stale in the checkout, or any explicitly required
+  role skill is absent from the runtime catalog, stop and report the mismatch.
+  Unrelated role skills need not be runtime-injected. Do not substitute another
+  skill.
 - A failed preflight requires a governance-containing checkout and task restart
   unless the user explicitly authorizes a disclosed fallback. A fallback may
   not ACCEPT, integrate, or close a roadmap node.

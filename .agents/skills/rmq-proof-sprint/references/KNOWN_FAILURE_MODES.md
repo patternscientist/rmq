@@ -40,6 +40,36 @@ An honest "remaining audit risk" is useful evidence, but it is also evidence
 that an assigned acceptance criterion remains open. Commit the checkpoint and
 continue rather than reporting the task complete.
 
+## Expensive Verification And Blind Reruns
+
+- A quiet Lean process is not necessarily hung. Check the owned process, CPU,
+  and artifact timestamps before terminating or duplicating it.
+- A wrapper timeout is not a semantic failure. If the child is still running,
+  wait for that process instead of starting the same command again.
+- Never retry the same expensive command on the same tree with the same cold
+  dependencies and timeout. Change the condition first: warm the missing
+  import, fix the actual error, narrow the target, or choose a timeout supported
+  by an observed successful runtime.
+- Do not run multiple heavy Lean/Lake commands concurrently against one build
+  tree. Cache contention and memory pressure can turn otherwise bounded checks
+  into misleading timeouts.
+- A late full-gate failure should be debugged with the smallest failing
+  component. Re-running the entire 20- or 30-minute gate after each local edit
+  is waste, not stronger evidence; reserve one aggregate rerun for the final
+  unchanged tree.
+- Avoid double-paying for coverage. If the final aggregate gate includes a
+  build or axiom inventory already run for diagnosis, the earlier run is useful
+  diagnosis and cache warm-up, while the final aggregate result is the
+  certification. Do not add another identical final invocation without a
+  distinct acceptance purpose.
+
+The regression pattern is: an expensive command reaches a tool timeout or
+stays quiet, its surviving process or cache state is not inspected, and the
+same command is launched again unchanged. The verification ledger in
+`COMPLETION_GATE.md` must reject that pattern by recording tree identity,
+runtime evidence, process disposition, and the material reason for every
+rerun.
+
 ## Letter-Complete Semantic Claims
 
 A theorem can have the requested name and still fail the intended semantic
@@ -76,6 +106,112 @@ For semantic coverage, liveness, ownership, dependency, and composition claims,
 expand the load-bearing definitions and identify which checked theorem fails
 under the corresponding mutation. Green builds, exhaustive enumeration, and
 accurate declaration-name inventories do not supply that evidence.
+
+### E1 regression: category labels do not make a fully charged machine
+
+Commit `fd5e3d24d045c9ec503c258dfeb87599fe002e19` is the named regression
+fixture for small-step acceptance. It had a genuine executable transition
+system, simulation, receipts, a uniform fuel bound, and a green Word-RAM review,
+but it did not close the advertised fully charged familiar-machine contract:
+
+- `.localBPWindow` charged a recursive variable-length arg-min/rank scan as one
+  step, while `.candidateOfSummary` hid several arithmetic operations behind a
+  candidate category;
+- invalid-range expected values were copied from the raw machine result being
+  checked;
+- `Instr.NatConstantsFitInBits` constrained `.natConst` and returned `True` for
+  other encoded instruction operands;
+- shape-dependent layout metadata lived in specialized program literals
+  outside the counted physical store;
+- the executable validator and cost harness exercised the predecessor
+  `SuccinctRMQClassic` path rather than the new small-step machine;
+- a post-commit working-tree diff check missed trailing whitespace in the
+  candidate range.
+
+Apply `INV-INSTRUCTION-ATOMICITY`, `INV-ORACLE-INDEPENDENCE`, the constructor-
+exhaustive `INV-ADDRESS-WIDTH`, `INV-PROGRAM-ACCOUNTING`, and
+`INV-VALIDATION-REACH` together. A category inventory, one-step increment
+theorem, theorem-name ledger, or predecessor validator must reject this exact
+evidence pattern rather than close it.
+
+### E1 R2 regression: disconnected witnesses do not prove a target obstruction
+
+Commit `39e97e08b14e8960c484cc7948409d550a97c955` is the named regression
+fixture for obstruction quantifier parity.  It correctly exposed that the
+current `.localBPWindow` evaluator hides a recursive scan behind two charged
+ticks, and it separately proved:
+
+- an arbitrary configuration can be mutated so its count register exceeds any
+  proposed bound;
+- the canonical raw block-size function is unbounded across List inputs; and
+- one fixed canonical query reaches the `.localBPWindow` category.
+
+Those propositions do not share one witness.  They do not prove a family of
+canonical reachable executions whose actual count register is unbounded, and
+they do not rule out every familiar decomposition allowed by the frozen E1
+contract.  Consequently they obstruct the current macro instruction and fixed
+scalar unrolling, not the frozen target itself.
+
+Apply the valid-stop quantifier rule in `COMPLETION_GATE.md`: require either a
+checked negation of the exact frozen target, a checked implication from that
+target to `False`, or a canonical reachable family that preserves the growing
+parameter and actual invocation in one proposition.  Separate existential
+witnesses may be composed only by a checked bridge theorem.  Legitimate
+narrower statements remain useful when labeled as implementation obstructions
+and must not be rejected merely because they do not close the roadmap target.
+
+### M1 regression: opaque certificate consumption does not pin its fields
+
+Commit `9e68c48a52692fa4fb26f1790179d5c623cb47f1` is the named regression
+fixture for certificate anti-bypass. Its reviewer-native machine certificate
+contained mandatory well-formedness and supplied-store agreement fields, and a
+public paper theorem accepted the certificate as an argument, but no checked
+typed consumer projected every mandatory field at the exact propositions and
+object arguments required by the acceptance contract. A field could therefore
+be deleted and constructor initializers repaired while the intended public
+dependency remained untested.
+
+Apply `INV-CERTIFICATE-ANTI-BYPASS`: provide one checked consumer whose type
+names the exact projections and arguments, and record field-deletion,
+proposition-weakening, and sibling-substitution mutations. Passing a certificate
+opaquely, constructing it, listing its field names, or mentioning it in a
+public theorem body does not make every field load-bearing.
+
+### M1 R2 regression: report-only mutations do not pin a public dependency
+
+Commit `1f50e5698a0842b8c50c1e08d101b076152d6bef` is the named regression
+fixture for mutation reproducibility. It repaired the earlier opaque-field
+defect: an independent 24-proposition `RequiredFacts` type projected every
+certificate field literally, and the paper theorem included guarded
+`WellFormed`, guarded `RequiredFacts`, and exact ordered-dynamic complete-
+`TraceResult` agreement.
+
+The acceptance matrix nevertheless claimed a 24-field deletion campaign plus
+11 proposition/object/public mutations without committing a mutation runner or
+fixtures. The cited snapshot was an unreferenced Git object outside the
+candidate ancestry. The committed headline check printed the paper theorem's
+current axiom inventory but did not pin its expected public type. Deleting only
+the paper theorem's guarded `RequiredFacts` conjunct and its tuple proof still
+allowed both `lake build RMQPaper RMQ` and
+`lake env lean scripts/headline_axiom_check.lean` to pass.
+
+Apply `INV-CERTIFICATE-ANTI-BYPASS` and
+`INV-MUTATION-REPRODUCIBILITY` together:
+
+- retain the real 24-field typed projection;
+- add a committed exact-type consumer that extracts the guarded certificate,
+  guarded required facts, and physical ordered-dynamic complete-result
+  obligations from the paper theorem itself;
+- add a versioned runner for every claimed field deletion, weakening, sibling
+  substitution, guard removal, and public-dependency deletion, plus an expected-
+  accept packet-only control;
+- require the runner to check the intended failing surface, restoration hashes,
+  and clean tracked state after every case.
+
+Do not treat matrix prose, an axiom printout that follows the mutable theorem
+type, copied logs, or an unreachable snapshot as committed mutation evidence.
+Legitimate weaker packaging may remain when labeled non-load-bearing and covered
+by the expected-accept control.
 
 ### Public-symbol migration is not a lexical claim scan
 
@@ -127,6 +263,34 @@ invocation parameters used to build the proof. This is the canonical regression
 test for predicate identity, quantifier parity, and provenance information
 preservation. Do not treat a stronger residual theorem as optional merely
 because a worker report labels it future hardening.
+
+### E1 R3 regression: surrogate obstruction by stipulated lower bound
+
+Candidate `7fe5b8ba353b955b8e989ddd2ae8dc2371140518` correctly proved an
+unbounded family of accepted same-block boundary intervals and soundly negated
+a new scalar familiar-run packet.  It did not close the frozen E1 obstruction:
+the proxy target stipulated `localCount <= localBPSteps`, while the frozen
+contract permitted any equally familiar primitive decomposition and contained
+no such numeric lower bound.  No checked frozen-target-to-proxy bridge derived
+that clause.
+
+The candidate also named its boundary predicate a canonical invocation even
+though it retained no run, transition, receipt occurrence, full instruction,
+evaluated operands, pre-state, or post-state.  The arithmetic family would
+remain true if the production route stopped executing the local-BP instruction.
+
+Apply `E1R3-SURROGATE-OBSTRUCTION-REGRESSION`:
+
+- compare every load-bearing proxy clause against the frozen contract;
+- require a checked implication from the frozen target to the full proxy;
+- reject a contradiction-producing lower bound introduced only by definition;
+- distinguish accepted boundary arithmetic from occurrence-indexed operational
+  reachability; and
+- retain the result only as a narrow decomposition obstruction when those
+  bridges are absent.
+
+This regression does not reject useful narrow impossibility theorems.  It
+rejects only their promotion to full-target `OBSTRUCTED` status.
 
 ## Select And Close History
 

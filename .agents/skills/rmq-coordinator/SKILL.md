@@ -9,9 +9,10 @@ Use this skill for lead/coordinator work in the RMQ repository.
 
 ## Skill Availability Gate
 
-Before re-entry or any completed-worker audit, verify that the current task's
-runtime skill catalog exposes every repo-local RMQ skill tracked at the declared
-workflow-governance frontier. Run `scripts/project_skill_preflight.ps1` with:
+Before re-entry or any completed-worker audit, verify that the checkout contains
+every repo-local RMQ skill tracked at the declared workflow-governance frontier
+and that the runtime exposes every explicitly required role skill. Run
+`scripts/project_skill_preflight.ps1` with:
 
 - the exact governance ref;
 - `rmq-coordinator` as the required skill;
@@ -19,14 +20,14 @@ workflow-governance frontier. Run `scripts/project_skill_preflight.ps1` with:
 
 The governance frontier controls workflow instructions; an older detached
 source/audit target does not replace it. If the preflight script is absent, the
-governance ref is not in the checkout ancestry, or a required/canonical skill
-is missing or stale in either the checkout or runtime catalog, stop and notify
-the user. Report the working directory, HEAD, governance ref, and the expected,
-checkout, and runtime skill sets. Do not substitute `rmq-proof-sprint` or
-continue a best-effort coordinator run. Resume only after the checkout/catalog
-is corrected and the task is restarted, unless the user explicitly authorizes
-a disclosed fallback; a fallback cannot record acceptance, integration, or
-roadmap closure.
+governance ref is not in the checkout ancestry, a canonical skill is missing or
+stale in the checkout, or an explicitly required role skill is missing from the
+runtime catalog, stop and notify the user. Report the working directory, HEAD,
+governance ref, and the expected, checkout, and runtime skill sets. Do not
+substitute `rmq-proof-sprint` or continue a best-effort coordinator run. Resume
+only after the checkout/catalog is corrected and the task is restarted, unless
+the user explicitly authorizes a disclosed fallback; a fallback cannot record
+acceptance, integration, or roadmap closure.
 
 ## Re-Entry
 
@@ -72,7 +73,7 @@ precise theorem, docs, artifact, or workflow targets.
 
 Use `docs/internal/templates/WORKER_PROMPT.md` for proof or implementation
 workers. Use `docs/internal/templates/AUDIT_PROMPT.md` when packaging a prompt
-for an external auditor, optionally with help from `rmq-audit`.
+for an external auditor, optionally with help from `rmq-audit-prompt`.
 
 Every worker prompt should name:
 
@@ -98,11 +99,42 @@ Put `Make the title of this chat exactly: ...` as the first line of the pasted
 worker prompt. A title shown only as identity metadata is not an instruction to
 rename the chat.
 
+Classify every proposed prompt as `READY_TO_SEND` or `DRAFT_DO_NOT_SEND`.
+Use `DRAFT_DO_NOT_SEND` whenever an exact base is not yet governed, a dependency
+is unmerged, or the failure-mode feedback loop below is pending. Before marking
+a prompt `READY_TO_SEND`, populate `docs/internal/templates/WORKER_PROMPT.md`
+and run `scripts/worker_prompt_preflight.ps1` with the prompt file, exact
+governance and worker-base SHAs, worker handle/title, required skill, branch,
+and feedback-loop status. Treat a failed preflight as a launch blocker.
+
+Run the preflight for every prompt artifact you emit, including
+`DRAFT_DO_NOT_SEND`. A draft with feedback `PENDING` may pass the draft policy
+without gaining launch authority. If the read-only contract forbids even a
+temporary prompt artifact, report `NOT_RUN` and keep the prompt a non-launchable
+specification. `READY_TO_SEND` always requires a populated template artifact
+and a passing preflight; title/SHA/skill/branch literals alone are insufficient.
+The preflight is a structural lower bound, not a semantic judge. Before
+`READY_TO_SEND`, reread the roadmap target, local-versus-node closure, frozen
+acceptance IDs, scope, forbidden shortcuts, verification, and report contract
+against source evidence; record semantic-contract review `COMPLETE` and pass it
+to the preflight. Trivial filler or merely long text is not a completed review.
+
 Before launch, verify that the worker's exact base contains the current
 workflow skill and prompt policy. If proof and workflow branches are siblings,
 join them in an explicit integration base or require the worker to merge the
 named workflow commit before using the skill. Do not assume a worker can see
 policy that exists only on another branch.
+
+Verify the destination task separately from the worker base. A returning task
+may be labeled `READY_TO_SEND` only when its latest runtime inventory explicitly
+shows every role skill required by that prompt. Repository presence, a prompt
+instruction, or a branch created inside that task is not runtime evidence. If
+the returning task's required-role catalog is unknown or stale, do not resend
+there: start a fresh Codex worktree task from the exact governed repair-base
+branch, mark the prompt `FRESH`, and require project-skill preflight as its first
+action. Record destination task kind and runtime evidence in
+`worker_prompt_preflight.ps1`. Moving an old task to a new branch/worktree does
+not by itself certify that its runtime skill catalog was rebuilt.
 
 When presenting prompts to the user, keep coordinator-facing launch metadata
 outside the worker prompt text:
@@ -116,6 +148,77 @@ For proof work, route narrow implementation to `rmq-proof-sprint`. For ordinary
 completed-worker branch review, this coordinator skill owns the full cycle:
 audit the worker output, integrate accepted work, update public/docs/design
 surfaces, and produce the next ambitious prompt set.
+
+### Opt-In Automated Completion Loop
+
+When the user explicitly authorizes automatic worker launch and follow-up,
+turn the normal coordinator cycle into an audited worker chain:
+
+1. Create each worker as a separate user-owned Codex task at an exact governed
+   branch/ref. Put the full preflighted worker prompt in the initial message;
+   do not use a low-context subagent as a substitute for the requested task.
+2. Register one logical completion-monitor record per worker. When the app
+   permits only one heartbeat per coordinator task, multiplex all exact worker
+   records in that heartbeat instead of creating a cron workaround. While a
+   worker is active, read status without opening or steering it and report only
+   a terse update. Never infer completion from inactivity or a quiet terminal.
+3. On completion, treat the response as untrusted, run the full completed-
+   worker audit at its exact commit, complete the failure-mode feedback loop,
+   and only then engineer successor prompts from the current roadmap.
+4. Automatically launch a successor only when its artifact is
+   `READY_TO_SEND`, `worker_prompt_preflight.ps1` passes, semantic review and
+   reusable-failure feedback are complete, its exact base contains current
+   governance, and no active task already owns the same handle/base/branch.
+   Add the successor's logical monitor record to the heartbeat in the same
+   operation.
+   `AUTO-CHAIN-PRIVATE-REPAIR-BASE`: when the sole launch blocker is that the
+   completed candidate and current governance are sibling commits, create a
+   dedicated local unpublished repair-base branch and worktree, join governance
+   into the candidate, verify exact two-parent ancestry, changed-path scope,
+   `git diff --check`, clean state, and project-skill preflight, then use that
+   exact commit as the successor base. This is workflow construction, not
+   acceptance or integration into the roadmap frontier. Stop if the join has a
+   semantic/public-theorem conflict, needs a proof choice, touches `main` or a
+   published frontier branch, would overwrite an owned branch, or requires a
+   push.
+5. Remove the completed worker's logical record after its audit and successor-
+   launch disposition are delivered. Update the multiplexed heartbeat while
+   other workers remain; delete it only when no logical records remain.
+   `AUTO-CHAIN-MONITOR-RETIREMENT`: do not finish a terminal-worker turn while
+   its old logical watch remains live. Use the automation API first. If deleting
+   the currently executing empty heartbeat cannot acknowledge because it holds
+   its own active-run lock, verify the exact automation ID, target thread, and
+   empty watch set, then move only that exact catalog record recoverably out of
+   the live automation directory and report the retired path. Never alter an
+   unrelated automation. Preserve task/branch evidence; automation does not
+   authorize destructive lifecycle cleanup.
+6. Stop and notify the user instead of launching when a prompt remains a draft
+   after the permitted private repair-base construction, a merge into `main` or
+   another published/frontier branch or any push is required, dependencies
+   conflict, the runtime skill inventory is unknown, the next step needs a new
+   proof architecture choice, the private join has a semantic conflict, or
+   concurrent heavy workers would make the launch unsafe or wasteful.
+
+Before task creation, list current tasks and automations and match the exact
+handle/base/branch tuple. Use a 30-minute heartbeat cadence by default, changing
+it only when measured task duration justifies another interval. Task creation
+and monitor attachment are not atomic: if creation succeeds but monitor setup
+fails, preserve and report the created task ID, retry only monitor attachment,
+and never create a replacement worker. On coordinator restart, reconstruct the
+chain from task and automation inventories before launching anything.
+
+Route nontrivial Lean proofs, public theorem repairs, and architecture-bearing
+work to `gpt-5.6-sol` with `max` reasoning by default. Use `xhigh` for tightly
+bounded mechanically checked repairs and `gpt-5.6-terra` with `xhigh` for
+read-only or lower-risk tooling work. Do not select `ultra` routinely; require
+an explicit coordinator record of why `max` is inadequate for that exact task.
+Model strength does not relax proof-sprint, audit, or verification gates.
+
+This loop automates launch, monitoring, audit, and next-prompt engineering. It
+authorizes only the private governed repair-base joins described above. It does
+not authorize integration into `main` or a published roadmap frontier, pushes,
+branch deletion, worktree cleanup, public-claim publication, or acceptance
+without the ordinary coordinator and blind-audit requirements.
 
 ## Integration
 
@@ -134,11 +237,34 @@ For each completed worker branch:
    used source, replace the predicate by a tautology, or assign a consumer label
    without an evaluator edge. Identify the theorem that fails. If none fails,
    the row is open.
+   When the acceptance contract claims an exhaustive or production mutation
+   campaign, require the cases, expected verdicts, and restoration checks to be
+   committed and replayable from the candidate. Matrix prose, terminal output,
+   an unreferenced Git object, or a one-off edited worktree is scheduling/process
+   evidence only. For a public dependency, also require a checked exact-type
+   consumer whose elaboration fails when the advertised conjunct is removed;
+   printing the current theorem's axioms does not pin its type.
+   A replay harness must also make its own coverage mechanically nonvacuous:
+   declare the exact ordered case registry and any ID-to-object mapping, reject
+   missing or duplicate IDs, require a focused selector to execute exactly one
+   requested frozen ID, and reject unknown selectors. A total pass count is not
+   an exhaustive registry check. If the harness invokes Lean or another child
+   process, require a positive evidence-based per-stage deadline, process-tree
+   termination on timeout, failure classification, and cleanup plus live-tree
+   integrity checks in `finally`. Reproduce these controls without paying for
+   the full semantic campaign before accepting its aggregate gate.
 6. Put the positive predicate `P` and mutation predicate `Q` side by side,
    including guards and quantifiers. Require the same relation or a checked
    `P -> Q` bridge. Compare component versus top-level execution, attempted
    versus successful reads, arbitrary versus valid-query parameters, and
    event-value membership versus actual occurrence production.
+   Audit formal obstructions by the same rule: require negation of the frozen
+   target or a checked target-to-`False` implication on the same objects and
+   quantifiers.  Do not compose an arbitrary-state mutation, an unbounded
+   shape fact, and a singleton reachability witness by prose.  Require one
+   checked canonical reachable family when their conjunction is load-bearing,
+   and distinguish failure of the current implementation from impossibility
+   of every construction the contract permits.
 7. Audit information preservation in the theorem conclusion. If prose claims
    occurrence, multiplicity, or actual invocation provenance, require a global
    position or equivalent decomposition plus the producing instruction, folded
@@ -186,6 +312,40 @@ For each completed worker branch:
 Do not merge a branch that merely reports an honest caveat when a local theorem
 repair is still available.
 
+### Verification Economics
+
+Plan verification from the changed paths and acceptance rows before launching
+commands. Classify each check as development-loop, final-required, or
+conditional, and state what unique failure it can detect. Run cheap static
+checks first, focused Lean targets next, public consumers next, and the
+aggregate gate last only when the scope or frozen contract requires it. A
+narrow proof, docs-only change, or read-only audit does not automatically need
+every repository root, validator, harness, and aggregate gate.
+
+Treat a command expected to take several minutes as an expensive check:
+
+- run only one heavy Lean/Lake process at a time against a shared build tree;
+- use prior exact-command timings to choose a timeout with realistic margin,
+  never one shorter than a recent successful run;
+- before retrying a timeout, inspect whether its child process is still live,
+  whether build artifacts advanced, whether a dependency warm-up is missing,
+  and whether the focused check fell back to a full build;
+- never launch the same expensive command again on an unchanged tree merely
+  because its wrapper timed out or stayed quiet. Resume/wait for the surviving
+  process, or retry only after a material change such as fixing the failure,
+  warming prerequisites, removing an owned orphan, narrowing the target, or
+  revising a timeout shown by observed runtimes to have been too short;
+- after a late aggregate-gate failure, reproduce and repair the failing
+  component first, then run at most one final aggregate certification on the
+  unchanged final tree.
+
+Worker reports are not acceptance evidence, but their command timings and
+failure locations are valid scheduling evidence. Reuse caches and completed
+exact-tree stages without pretending that this replaces independent semantic
+reconstruction. Record commands skipped as redundant or disproportionate and
+why their covered risk was already tested. Full local gate repetition is not a
+proxy for rigor.
+
 ### Failure-Mode Feedback Loop
 
 Every completed-worker audit must classify any miss before the coordinator
@@ -207,6 +367,14 @@ delegates the repair:
    weaker claims that are labeled accurately.
 6. Only then engineer the next ambitious prompt set from the updated roadmap
    frontier.
+
+Record the disposition as a compact table with the precise miss, isolated or
+reusable classification, durable layer, decision-log entry, named regression,
+verification result, owner, and status. If the audit contract forbids edits,
+complete the classification but mark durable patching and regression
+`PENDING`; any requested repair prompt is `DRAFT_DO_NOT_SEND`. A later
+governance-edit turn must complete and verify the loop before the prompt may be
+upgraded to `READY_TO_SEND`.
 
 ## Decision Logging
 
@@ -260,6 +428,8 @@ Final reports should state:
 For each proposed prompt, include coordinator-facing launch metadata outside
 the prompt text:
 
+- prompt status (`READY_TO_SEND` or `DRAFT_DO_NOT_SEND`) and prompt-preflight
+  result;
 - worker/auditor handle;
 - requested chat/thread title when launching a worker;
 - fresh chat or existing worker recommendation;

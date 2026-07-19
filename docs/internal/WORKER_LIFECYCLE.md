@@ -90,6 +90,29 @@ After integration/rejection:
 Cleanup is a coordinator action. Do not automate destructive cleanup without a
 dry-run inventory and explicit approval.
 
+## Automated Completion Monitors
+
+When the user opts into the coordinator's audited worker chain, record one
+logical completion monitor per worker task together with its handle,
+task/thread ID, exact governed base, branch, and owning coordinator task. If the
+app permits only one heartbeat per coordinator task, multiplex all logical
+records in that heartbeat; do not create a cron workaround. A monitor may read
+status but must not open, steer, or mutate an active worker.
+
+Use a 30-minute heartbeat cadence by default. Before creating a task, check the
+current task and automation inventories for the same handle/base/branch. If the
+task is created but monitor attachment fails, retain its task ID and retry the
+monitor only; never create a duplicate worker as recovery. Reconstruct this
+inventory after coordinator restart before launching a successor.
+
+After completion, the owning coordinator must audit the exact candidate,
+finish reusable failure-mode feedback, and decide whether a successor prompt is
+`READY_TO_SEND`. Remove the completed worker's logical record only after that
+disposition is reported and any launched successor is registered. Update the
+heartbeat while other records remain and delete it only when none remain. A
+monitor is coordination state, not branch-retirement evidence, and never
+authorizes merge, push, branch deletion, or worktree cleanup.
+
 ## Audit Interaction
 
 Fresh blind auditors receive exact commits and an audit packet, not a live

@@ -54,7 +54,7 @@ Adopt in order:
 
 Do not add Mathlib or broaden the project Lake dependency graph for tooling.
 
-### Automate Read-Only Work First
+### Automate Read-Only Work First, Then Audited Worker Chains
 
 Good initial Codex automation targets:
 
@@ -64,7 +64,22 @@ Good initial Codex automation targets:
 - automatic audit-packet generation on pull requests.
 
 Do not autonomously merge, delete worktrees, choose proof architecture, or run
-unreviewed proof-writing loops.
+unreviewed proof-writing loops. After prompt/evidence gates have survived real
+cycles, an explicit user opt-in may authorize a reviewed worker chain: create a
+fresh governed Codex task from a preflighted `READY_TO_SEND` prompt, monitor it
+without steering, audit its exact completion independently, complete reusable
+failure-mode feedback, and launch only the next preflighted successor. Keep one
+logical monitor record per worker; when the app permits only one heartbeat on a
+coordinator task, multiplex those exact records rather than creating a cron
+workaround. Suppress duplicate handle/base/branch launches, and stop at
+unresolved integration, skill-runtime, dependency, concurrency, or architecture
+boundaries.
+
+Default nontrivial Lean and public-theorem work to the strongest ordinary
+reasoning setting needed by its contract, normally `gpt-5.6-sol` at `max`.
+Reserve `ultra` for an explicitly recorded exceptional need. The automated
+chain does not expand merge, push, publication, or destructive-cleanup
+authority.
 
 ### Measure Model Routing
 
