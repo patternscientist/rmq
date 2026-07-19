@@ -916,6 +916,36 @@ def routeDecodedSummary (shape : Cartesian.CartesianShape) (block : Nat) :
       (canonicalSummaryLayout shape) (canonicalSummaryLayout shape).argOffset
       block)
 
+/-- What the composed 177-instruction leg LEAVES ALONE: the intersection
+of the group's write set and the consumer's.
+
+M3d-26.  This clause was previously proved and DISCARDED -- the composed
+proof bound the consumer's preservation as `_hpres2` and re-exported
+neither it nor the group's `hpres1`.  That is the M3d-13 defect one level
+up, and it matters more here than it looks: `minCandidateBlock` is
+READ-FREE, so on the consumer the receipt discriminator is structurally
+powerless and preservation is not a third check but the SECOND OF ONLY
+TWO.
+
+The four registers `crossBlockArmProgramAt_runsTo`'s `hInterior`
+(`E1CrossBlockArm.lean:1143`) requires to survive the interior all
+satisfy this predicate; `legUntouched_at_crossBlockArm_operands` below
+evaluates that rather than asserting it. -/
+abbrev LegUntouched (r : Nat) : Prop :=
+  E1InteriorSummaryGroup.GroupUntouched r ∧ MinCandUntouched r
+
+/-- THE FOUR REGISTERS THE CROSS-BLOCK ARM NEEDS, EVALUATED.
+
+`LegUntouched` is a predicate on a NUMERAL, so it is kernel-decidable
+even though the leg it describes is not: `canonicalSummaryLayout`'s
+`wordScale` routes through `machineWordBits`, hence `Nat.log2`, and no
+fixture at the real instantiation can be kernel-evaluated.  Stating the
+write set as a numeral predicate is what moves this particular question
+into kernel-reachable territory. -/
+theorem legUntouched_at_crossBlockArm_operands :
+    LegUntouched 70 ∧ LegUntouched 71 ∧ LegUntouched 75 ∧ LegUntouched 76 := by
+  decide
+
 /--
 THE INTERIOR'S MIN-CANDIDATE LEG: the summary group followed by the
 consumer, 177 instructions, exit `Q + 177`.
@@ -924,6 +954,10 @@ The receipt is the group's four route event lists in the route's bind
 order and NOTHING ELSE -- the consumer is read-free, so composition adds
 no event.  The category log is the group's followed by the consumer's, and
 the consumer's arm is selected by the ROUTE's own summary being `some`.
+
+The third clause is the PRESERVATION the two components already prove
+(M3d-26); before that it was bound and discarded.  On a leg whose
+consumer is read-free it is not a spare check but the second of only two.
 
 NO VALIDITY HYPOTHESIS, and no store hypothesis. -/
 theorem summaryMinCandidate_runsTo
@@ -971,7 +1005,8 @@ theorem summaryMinCandidate_runsTo
           (routeDecodedSummary shape block).map
             (bpRelativeSummaryMinCandidate
               (RelativeRmm.canonicalLayout shape).blockSize
-              (RelativeRmm.canonicalLayout shape).blocksPerSuper block) := by
+              (RelativeRmm.canonicalLayout shape).blocksPerSuper block) ∧
+        (∀ r, LegUntouched r → regs' r = regs r) := by
   obtain ⟨regs1, hrun1, hB, hMn, hMx, hA, hpres1⟩ :=
     canonicalSummaryGroup_runsTo shape (HostedAt.append_left hHost) hBlock
   -- the four value bridges, UNCONDITIONAL in the index (M3d-22)
@@ -988,15 +1023,17 @@ theorem summaryMinCandidate_runsTo
   -- `sBlock` is 100, outside the group's write set
   have hBlock1 : regs1 sBlock = block := by
     rw [hpres1 sBlock (by decide)]; exact hBlock
-  obtain ⟨regs2, hrun2, hval, _hpres2⟩ :=
+  obtain ⟨regs2, hrun2, hval, hpres2⟩ :=
     minCandidateBlock_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
       hHost2 hBlock1 hB hMn hMx hA
-  refine ⟨regs2, ?_, ?_⟩
+  refine ⟨regs2, ?_, ?_, ?_⟩
   · have h := RunsTo.trans hrun1 hrun2
     have hpc : Q + 156 + 21 = Q + 177 := by omega
     rw [hpc] at h
     simpa [routeDecodedSummary] using h
   · simpa [routeDecodedSummary] using hval
+  · intro r hr
+    rw [hpres2 r hr.2, hpres1 r hr.1]
 
 /-! ### The composite's premises are satisfiable (rule 1)
 
@@ -1028,7 +1065,7 @@ theorem summaryMinCandidate_premises_satisfiable
           (bpRelativeSummaryMinCandidate
             (RelativeRmm.canonicalLayout shape).blockSize
             (RelativeRmm.canonicalLayout shape).blocksPerSuper block) := by
-  obtain ⟨regs', _, hval⟩ :=
+  obtain ⟨regs', _, hval, _⟩ :=
     summaryMinCandidate_runsTo shape (summaryMinCandidate_hosted_self shape)
       (regs := RegFile.write (fun _ => 0) sBlock block) rfl
   exact ⟨regs', hval⟩

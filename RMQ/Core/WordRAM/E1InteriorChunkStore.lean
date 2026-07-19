@@ -27,7 +27,7 @@ still answers `some` -- with the NEXT table's word -- while
 This was settled by EVALUATION before anything was built on it, per the
 standing rule.  At the one-node shape the baseline table contributes `2`
 words to a `31`-word store, so the unbounded premise fails first at
-`a = 2`; `probeShape_unbounded_agreement_fails` below states that as a
+`a = 2`; `unbounded_agreement_refuted` below (`:594`) states that as a
 CHECKED theorem rather than a note.
 
 So the inherited premise is the same failure class M3d-14 found in the
@@ -499,6 +499,63 @@ theorem hexact_argOffset
         w.length = SuccinctRank.machineWordBits shape.bpCode.length :=
   hexact_of_segment_agrees _ (interior_wordSize_pos shape) store hcount hvalid
     hentries (hagree_argOffset hstore)
+
+/-! ## `hexact` at the two SPAN tables
+
+The span blocks (`E1InteriorSpanBlock.spanBlock`) read the interior's
+local sparse offset table and its global sparse block table, at the same
+two base offsets the route's own read computations use
+(`InteriorDirectory.lean:2319`, `:2337`).  `hagree_local` and
+`hagree_global` above already supply the store side, so these are the
+same one-line composition as the summary group's four -- only the width
+and the entry list differ.
+-/
+
+theorem hexact_local
+    {store : ReadStore} {segment : Nat} {shape : Cartesian.CartesianShape}
+    (hstore : HoldsInteriorStore store segment shape)
+    {deadAddress entriesLen chunkCount i : Nat}
+    (hcount : chunkCount = fixedWidthNatTableMachineChunkCount
+      (RelativeRmm.canonicalLayout shape).offsetWidth
+      (SuccinctRank.machineWordBits shape.bpCode.length))
+    (hvalid : i < entriesLen)
+    (hentries : i < (bpLocalSparseOffsetEntries shape
+      (RelativeRmm.canonicalLayout shape).blockSize
+      (RelativeRmm.canonicalLayout shape).blockCount
+      (RelativeRmm.canonicalLayout shape).macroSize
+      (RelativeRmm.canonicalLayout shape).macroSampleCount
+      (RelativeRmm.canonicalLayout shape).levelCount).length) :
+    ∀ j, j + 1 < chunkIters entriesLen chunkCount i → ∀ w,
+      store.readWord? segment
+          (chunkStart
+            (canonicalRelativeRmmInteriorComponentOffsets shape).localOffset
+            deadAddress entriesLen chunkCount i + j) = some w →
+        w.length = SuccinctRank.machineWordBits shape.bpCode.length :=
+  hexact_of_segment_agrees _ (interior_wordSize_pos shape) store hcount hvalid
+    hentries (hagree_local hstore)
+
+theorem hexact_global
+    {store : ReadStore} {segment : Nat} {shape : Cartesian.CartesianShape}
+    (hstore : HoldsInteriorStore store segment shape)
+    {deadAddress entriesLen chunkCount i : Nat}
+    (hcount : chunkCount = fixedWidthNatTableMachineChunkCount
+      (RelativeRmm.canonicalLayout shape).blockAddressWidth
+      (SuccinctRank.machineWordBits shape.bpCode.length))
+    (hvalid : i < entriesLen)
+    (hentries : i < (bpGlobalSparseBlockEntries shape
+      (RelativeRmm.canonicalLayout shape).blockSize
+      (RelativeRmm.canonicalLayout shape).blockCount
+      (RelativeRmm.canonicalLayout shape).macroSize
+      (RelativeRmm.canonicalLayout shape).macroSampleCount
+      (RelativeRmm.canonicalLayout shape).globalLevelCount).length) :
+    ∀ j, j + 1 < chunkIters entriesLen chunkCount i → ∀ w,
+      store.readWord? segment
+          (chunkStart
+            (canonicalRelativeRmmInteriorComponentOffsets shape).globalBlock
+            deadAddress entriesLen chunkCount i + j) = some w →
+        w.length = SuccinctRank.machineWordBits shape.bpCode.length :=
+  hexact_of_segment_agrees _ (interior_wordSize_pos shape) store hcount hvalid
+    hentries (hagree_global hstore)
 
 /-! ## Anti-vacuity: the bound is load-bearing, and its necessity is PROVED
 

@@ -213,10 +213,33 @@ def spanValue (shape : Cartesian.CartesianShape) (G : TableGeom)
   | none => none
   | some v => legValue shape (off + v)
 
-/-- What the span block leaves alone: everything below `75` and above
-`122`, minus the banks the leg writes. -/
+/-- What the span block LEAVES ALONE: what the leg leaves alone, minus
+this block's own four scratch slots and the block-index register it
+writes.
+
+SUPERSEDES an earlier form in this module that read
+`(r < 75 ∨ 122 < r) ∧ r ≠ sBlock`.  That version was WRONG IN THE
+DIRECTION THAT MATTERS: it is false at `r = 76`, so it declined to claim
+`mLP` -- one of the four registers `crossBlockArmProgramAt_runsTo`'s
+`hInterior` requires to survive.  The block does preserve `mLP`; the
+predicate simply failed to say so. -/
 abbrev SpanUntouched (r : Nat) : Prop :=
-  (r < 75 ∨ 122 < r) ∧ r ≠ sBlock
+  E1InteriorMinCandidate.LegUntouched r ∧ r ≠ pCell ∧ r ≠ pT ∧
+    r ≠ pOne ∧ r ≠ sBlock
+
+/-- THE FOUR CROSS-BLOCK-ARM OPERANDS SURVIVE THE WHOLE SPAN BLOCK,
+evaluated on numerals for the same reason `LegUntouched`'s twin is. -/
+theorem spanUntouched_at_crossBlockArm_operands :
+    SpanUntouched 70 ∧ SpanUntouched 71 ∧ SpanUntouched 75 ∧
+      SpanUntouched 76 :=
+  ⟨⟨E1InteriorMinCandidate.legUntouched_at_crossBlockArm_operands.1,
+      by decide, by decide, by decide, by decide⟩,
+    ⟨E1InteriorMinCandidate.legUntouched_at_crossBlockArm_operands.2.1,
+      by decide, by decide, by decide, by decide⟩,
+    ⟨E1InteriorMinCandidate.legUntouched_at_crossBlockArm_operands.2.2.1,
+      by decide, by decide, by decide, by decide⟩,
+    ⟨E1InteriorMinCandidate.legUntouched_at_crossBlockArm_operands.2.2.2,
+      by decide, by decide, by decide, by decide⟩⟩
 
 /-! ## Exact simulation -/
 
@@ -249,7 +272,8 @@ theorem spanBlock_runsTo
       RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
           ⟨regs, Q, false⟩ ⟨regs', Q + 222, false⟩
           (spanEvents shape G slot off) (spanCats shape G slot off) ∧
-        bestOfRegs (regs' mMV) (regs' mMP) = spanValue shape G slot off := by
+        bestOfRegs (regs' mMV) (regs' mMP) = spanValue shape G slot off ∧
+        (∀ r, SpanUntouched r → regs' r = regs r) := by
   -- hosting: the constant and the stage, the arm selector, the leg
   have hPre : HostedAt program Q
       (Instr.const pOne 1 ::
@@ -331,6 +355,11 @@ theorem spanBlock_runsTo
     rw [RegFile.write_other _ _ (by decide),
       RegFile.write_other _ _ (by decide)]
     exact hOff
+  -- what survives as far as the arm selector; both arms extend it
+  have hBase : ∀ r, SpanUntouched r → regs2 r = regs r := by
+    intro r hr
+    rw [hStagePres r ⟨hr.1.1.1, hr.2.1⟩, RegFile.write_other _ _ hr.1.1.2.1,
+      RegFile.write_other _ _ hr.2.2.2.1]
   cases hc : spanCell shape G slot with
   | zero =>
       -- THE `none` ARM: result `none`, and past ALL 177 instructions
@@ -366,12 +395,15 @@ theorem spanBlock_runsTo
           (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
           (s := ⟨regs2.write mMV 0, Q + 42, false⟩) (by simp) hF42
         simpa [hOne3] using h
-      refine ⟨regs2.write mMV 0, ?_, ?_⟩
+      refine ⟨regs2.write mMV 0, ?_, ?_, ?_⟩
       · have h := ((hStep0.trans hStageRun').trans hStep1).trans
           (hStep2.trans hStep3)
         simpa [spanEvents, spanCats, hc, List.append_assoc] using h
       · rw [RegFile.write_same]
         simp [spanValue, hc]
+      · intro r hr
+        rw [RegFile.write_other _ _ hr.1.2.1]
+        exact hBase r hr
   | succ v =>
       -- THE `some` ARM: unshift, form the block index, run the leg
       have hCellS : regs2 pCell = v + 1 := by rw [hCell']; exact hc
@@ -407,7 +439,7 @@ theorem spanBlock_runsTo
           (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
           (s := ⟨regs2.write pT v, Q + 44, false⟩) (by simp) hF44
         simpa [hOff3, RegFile.write_same] using h
-      obtain ⟨regs5, hLegRun, hLegVal⟩ :=
+      obtain ⟨regs5, hLegRun, hLegVal, hLegPres⟩ :=
         summaryMinCandidate_runsTo shape hLeg
           (regs := (regs2.write pT v).write sBlock (off + v))
           (block := off + v) (by rw [RegFile.write_same])
@@ -420,12 +452,16 @@ theorem spanBlock_runsTo
           (legCats shape (off + v)) := hLegRun
       have hLegVal' : bestOfRegs (regs5 mMV) (regs5 mMP) =
           legValue shape (off + v) := hLegVal
-      refine ⟨regs5, ?_, ?_⟩
+      refine ⟨regs5, ?_, ?_, ?_⟩
       · have h := (((hStep0.trans hStageRun').trans hStep1).trans
           (hStep2.trans hStep3)).trans hLegRun'
         simpa [spanEvents, spanCats, hc, List.append_assoc] using h
       · rw [hLegVal']
         simp [spanValue, hc]
+      · intro r hr
+        rw [hLegPres r hr.1, RegFile.write_other _ _ hr.2.2.2.2,
+          RegFile.write_other _ _ hr.2.2.1]
+        exact hBase r hr
 
 /-! ## THE `none` ARM'S DISCRIMINATOR (DD-20260719-050)
 
@@ -524,6 +560,44 @@ so the boundary of the previous two theorems is exact -- a POSITIONAL
 category check catches this impostor, a receipt check does not. -/
 theorem spanNoneArm_catLogs_differ :
     armCatLog 23 1 10 5 7 3 ≠ armCatLog 2 1 10 5 7 3 := by decide
+
+/-! ### The preservation clause, EXECUTED
+
+A clause that is proved but never executed passes every check in the
+battery.  `spanBlock_runsTo`'s third clause is therefore run here, on the
+same fixture, with the four operands seeded with DISTINCT MARKS so that
+survival is discriminating rather than trivially true at zero. -/
+
+/-- The fixture's register file with the four cross-block-arm operands
+marked.  None of `70`, `71`, `75`, `76` is read by the consumer, so the
+marks cannot perturb the values above. -/
+def armRegsMarked (block cB cMn cMx cA : Nat) : RegFile := fun r =>
+  if r = 70 then 91
+  else if r = 71 then 92
+  else if r = 75 then 93
+  else if r = 76 then 94
+  else armRegs block cB cMn cMx cA r
+
+/-- The four operands as the run leaves them. -/
+def armOperands (target block cB cMn cMx cA : Nat) : List Nat :=
+  let final :=
+    (E1Machine.run armStore (noneArmProgram target) 30
+      ⟨armRegsMarked block cB cMn cMx cA, 0, false⟩).final.regs
+  [final 70, final 71, final 75, final 76]
+
+/-- EXECUTED: the marks survive the correct arm intact. -/
+theorem armOperands_preserved_correct :
+    armOperands 23 1 10 5 7 3 = [91, 92, 93, 94] := by rfl
+
+/-- EXECUTED, AND A SECOND NON-ENTAILMENT: they survive the IMPOSTOR too.
+
+So preservation does not separate the two arms either.  Of the four
+things one can check about this block -- receipt, read count, exit code,
+preservation -- NONE rejects the impostor.  Only the value does.  That is
+the whole reason `spanBlock_runsTo`'s value clause is stated against the
+route's own `spanValue` rather than against the block's own arithmetic. -/
+theorem armOperands_preserved_impostor :
+    armOperands 2 1 10 5 7 3 = [91, 92, 93, 94] := by rfl
 
 /-- The impostor is not rejected by exit code either: both arms halt. -/
 theorem spanNoneArm_both_halt :
