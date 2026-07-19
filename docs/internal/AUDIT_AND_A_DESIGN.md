@@ -1450,3 +1450,52 @@ worker stopped rather than start it, which was right.
 arrives in `mMV` (77) biased, position in `mMP` (78), unconstrained when absent.
 DD-20260718-012 records why a sentinel encoding would break the accepted route's
 leftmost tie-break under strict `<`.
+
+## 2026-07-19 (C05 round 20) — the frozen constants were not frozen
+
+**Defect of record, campaign-wide, found by B7-04.** The frozen historical
+algebras for 76 and 142 set `interiorDirectory :=
+canonicalRelativeRmmPrincipledInteriorChargedTraceCost` -- the LIVE definition.
+Moving the live interior cap 30 -> 33 therefore rewrites history to 79 and 145
+and breaks two frozen `rfl` identities. **A historical constant parameterised by
+a moving part is not frozen.** This is a defect in how B3 and B6 executed the
+freeze pattern, not merely a B7 obstacle: the campaign has twice claimed to
+preserve a historical record that is in fact a function of current definitions.
+
+Repair ordered as a prerequisite to B7's cap move: mint a pinned literal
+historical interior component (30), repoint the 76 and 142 algebras at it, and
+re-verify both frozen `_eq` identities by `rfl`. A SWEEP for the same defect
+class across all frozen constants is ordered with it -- any frozen constant
+whose definition references a live def rather than a literal is the same bug.
+`328` is reported unaffected; confirmation required, not assumed.
+
+Note what this implies about the earlier reconstruction rounds: B3's and B6's
+literal migrations were audited and passed, because at those moments the
+identities did hold by `rfl`. The defect is only observable when a tracked
+component moves. **An identity that holds today is not evidence that a constant
+is pinned.** Worth carrying into the audit checklist: for any claimed frozen
+value, check whether its DEFINITION is a literal or a reference.
+
+**Staging split approved with the worker's correction adopted.** I proposed
+decoupling the literal migration from the store swap. The worker endorsed it as
+mechanically sound but required that the intermediate slack be SELF-ANNOUNCING
+IN LEAN rather than only recorded in the worklog -- because REQ-B7-05's own
+anti-vacuity challenge exists to catch "the literal moved because a cap was
+loosened", and between commits A and B that state passes every mechanized check
+except CHK-04. Adopted: commit A must carry a checked proposition stating the
+current route's interior cost is <= 30 while the algebra field is 33, so the
+looseness is visible to a checker rather than to a reader of prose. Commit B
+retires it by making the bound tight again. This is the second time a worker has
+improved a coordinator-proposed relaxation rather than simply taking it.
+
+**Measurement humility.** The literal-store-decomposition repair surface is a
+LOWER bound, not a measurement: two further breakages (`ReviewerPhysical.lean:
+1815`, `ReviewerReachabilitySmall.lean:2088`) surfaced only because that
+session's build progressed further than any previous one. Successors are told to
+expect overrun and not to read a surprise breakage as being off-plan.
+
+**Cross-branch routing recorded:** `ReviewerReachabilitySmall.lean:2088` is an
+a07-owned file but a hard build blocker for B7. B7 carries the minimal repair in
+its own clearly-marked single-file commit so the coordinator can drop or keep it
+at merge depending on what a07 landed. B7's history otherwise touches no
+a07-owned file.
