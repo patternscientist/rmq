@@ -819,6 +819,457 @@ theorem twoSpanBlock_runsTo
         rw [ha3, RegFile.write_other _ _ hr.2.2.2.2.2.2.2.2.1]
         exact hBase r hr
 
+/-! ## THE TWO INSTANTIATIONS: `#4` AND `#5`
+
+`twoSpanBlock` is parametric in the level geometry, the span geometry,
+the level stride and the domain.  The two route computations it covers
+are its instantiations at the two pairs below.
+
+The level geometries are DEFINED by the §4 recipe -- each field is the
+ROUTE's own quantity -- so `geomRouteDecode_eq_readComputation_value`'s
+three hypotheses are `rfl` and `hvalid`/`hentries` are the SAME
+proposition, one validity split discharging both.  `entriesLen` is
+`bpSparseLevelEntries`' length at the table's own domain, which is
+exactly the entry list `PayloadLiveBPSparseLevelTable` carries
+(`SparseLevelTable.lean:169`). -/
+
+/-- Read geometry of the interior's LOCAL level/span table, the table
+`canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation` reads. -/
+def localLevelGeom (shape : Cartesian.CartesianShape) : TableGeom :=
+  { base := (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel
+  , entriesLen :=
+      (bpSparseLevelEntries
+        (bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSize)).length
+  , chunkCount :=
+      SuccinctSpace.fixedWidthNatTableMachineChunkCount
+        (bpSparseLevelWidth
+          (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize))
+        (SuccinctRank.machineWordBits shape.bpCode.length) }
+
+/-- Read geometry of the interior's GLOBAL level/span table. -/
+def globalLevelGeom (shape : Cartesian.CartesianShape) : TableGeom :=
+  { base := (canonicalRelativeRmmInteriorComponentOffsets shape).globalLevel
+  , entriesLen :=
+      (bpSparseLevelEntries
+        (bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSampleCount)).length
+  , chunkCount :=
+      SuccinctSpace.fixedWidthNatTableMachineChunkCount
+        (bpSparseLevelWidth
+          (bpSparseLevelDomain
+            (RelativeRmm.canonicalLayout shape).macroSampleCount))
+        (SuccinctRank.machineWordBits shape.bpCode.length) }
+
+/-- `#4`'s level cap, as `twoSpanBlock_runsTo` carries it. -/
+theorem localLevelGeom_cap (shape : Cartesian.CartesianShape) :
+    (localLevelGeom shape).chunkCount ≤ 8 :=
+  E1InteriorChunkCap.chunkCount_le_eight_localLevelWidth shape
+
+/-- `#4`'s level positivity. -/
+theorem localLevelGeom_pos (shape : Cartesian.CartesianShape) :
+    0 < (localLevelGeom shape).chunkCount :=
+  E1InteriorChunkCap.chunkCount_pos_localLevelWidth shape
+
+/-- `#5`'s level cap. -/
+theorem globalLevelGeom_cap (shape : Cartesian.CartesianShape) :
+    (globalLevelGeom shape).chunkCount ≤ 8 :=
+  E1InteriorChunkCap.chunkCount_le_eight_globalLevelWidth shape
+
+/-- `#5`'s level positivity. -/
+theorem globalLevelGeom_pos (shape : Cartesian.CartesianShape) :
+    0 < (globalLevelGeom shape).chunkCount :=
+  E1InteriorChunkCap.chunkCount_pos_globalLevelWidth shape
+
+/-- The cell bridge at `#4`'s level geometry, UNCONDITIONAL IN `slot`.
+
+This is where `hexact_localLevel_concrete` -- which did not exist before
+this session -- is consumed.  The valid case is the substantive one; the
+invalid case has a vacuous premise. -/
+theorem geomCell_localLevel_eq_routeDecode
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    E1InteriorSummaryGroup.geomCell
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape) (localLevelGeom shape) i =
+      E1InteriorSummaryGroup.geomRouteDecode
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape) (localLevelGeom shape) i := by
+  by_cases hvalid : i < (localLevelGeom shape).entriesLen
+  · exact E1InteriorSummaryGroup.geomCell_eq_routeDecode shape _ i
+      (localLevelGeom_cap shape)
+      (E1InteriorStoreConcrete.hexact_localLevel_concrete rfl hvalid hvalid)
+  · exact E1InteriorSummaryGroup.geomCell_eq_routeDecode_of_invalid shape _ i
+      (localLevelGeom_cap shape) hvalid
+
+/-- The cell bridge at `#5`'s level geometry.  UNCONDITIONAL IN `slot`. -/
+theorem geomCell_globalLevel_eq_routeDecode
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    E1InteriorSummaryGroup.geomCell
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape) (globalLevelGeom shape) i =
+      E1InteriorSummaryGroup.geomRouteDecode
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape) (globalLevelGeom shape) i := by
+  by_cases hvalid : i < (globalLevelGeom shape).entriesLen
+  · exact E1InteriorSummaryGroup.geomCell_eq_routeDecode shape _ i
+      (globalLevelGeom_cap shape)
+      (E1InteriorStoreConcrete.hexact_globalLevel_concrete rfl hvalid hvalid)
+  · exact E1InteriorSummaryGroup.geomCell_eq_routeDecode_of_invalid shape _ i
+      (globalLevelGeom_cap shape) hvalid
+
+/-- The two level geometries' bases, as the route spells them.  Needed so
+`cases` can align the machine-side and route-side scrutinees
+SYNTACTICALLY; they are `rfl`, but defeq is not enough for `cases`. -/
+@[simp] theorem localLevelGeom_base (shape : Cartesian.CartesianShape) :
+    (localLevelGeom shape).base =
+      (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel := rfl
+
+@[simp] theorem globalLevelGeom_base (shape : Cartesian.CartesianShape) :
+    (globalLevelGeom shape).base =
+      (canonicalRelativeRmmInteriorComponentOffsets shape).globalLevel := rfl
+
+/-- `#4`'s level cell IS the value of the read computation the route runs,
+option shift INVERTED -- stated on `cellOpt`, the form `twoSpanValue`
+dispatches on.  No validity, cap or store hypothesis survives. -/
+theorem cellOpt_levelCell_localLevel
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    cellOpt (levelCell shape (localLevelGeom shape) i) =
+      ((canonicalRelativeRmmMachineReadNatComputation shape
+            (canonicalRelativeRmmInteriorLocalLevelTable shape).table
+            (localLevelGeom shape).base i).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value := by
+  unfold levelCell
+  rw [geomCell_localLevel_eq_routeDecode,
+    E1InteriorSummaryGroup.geomRouteDecode_eq_readComputation_value shape _
+      (canonicalRelativeRmmInteriorLocalLevelTable shape).table _ _ i rfl rfl
+      rfl,
+    E1InteriorMinCandidate.cellOpt_optShift]
+
+/-- `#5`'s level cell, on the same terms. -/
+theorem cellOpt_levelCell_globalLevel
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    cellOpt (levelCell shape (globalLevelGeom shape) i) =
+      ((canonicalRelativeRmmMachineReadNatComputation shape
+            (canonicalRelativeRmmInteriorGlobalLevelTable shape).table
+            (globalLevelGeom shape).base i).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value := by
+  unfold levelCell
+  rw [geomCell_globalLevel_eq_routeDecode,
+    E1InteriorSummaryGroup.geomRouteDecode_eq_readComputation_value shape _
+      (canonicalRelativeRmmInteriorGlobalLevelTable shape).table _ _ i rfl rfl
+      rfl,
+    E1InteriorMinCandidate.cellOpt_optShift]
+
+/-! ### The slot maps, at the two instantiations
+
+`#4`'s is `rfl`; `#5`'s needs `Nat.zero_add` SUBSTANTIVELY, because
+`Nat.add` recurses on its second argument so `0 + x` does not reduce.
+This is the §4 gotcha at exactly the instantiation it was predicted for --
+the global twin's slot base is `0`. -/
+
+@[simp] theorem twoSpanLeftSlot_local (shape : Cartesian.CartesianShape)
+    (macroIdx localStart v : Nat) :
+    twoSpanLeftSlot
+        (macroIdx * ((RelativeRmm.canonicalLayout shape).levelCount *
+          (RelativeRmm.canonicalLayout shape).macroSize))
+        (RelativeRmm.canonicalLayout shape).macroSize
+        (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize)
+        localStart v =
+      bpLocalSparseCellSlot (RelativeRmm.canonicalLayout shape).macroSize
+        (RelativeRmm.canonicalLayout shape).levelCount macroIdx localStart
+        (v / bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSize) := rfl
+
+@[simp] theorem twoSpanRightSlot_local (shape : Cartesian.CartesianShape)
+    (macroIdx localStart count v : Nat) :
+    twoSpanRightSlot
+        (macroIdx * ((RelativeRmm.canonicalLayout shape).levelCount *
+          (RelativeRmm.canonicalLayout shape).macroSize))
+        (RelativeRmm.canonicalLayout shape).macroSize
+        (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize)
+        localStart count v =
+      bpLocalSparseCellSlot (RelativeRmm.canonicalLayout shape).macroSize
+        (RelativeRmm.canonicalLayout shape).levelCount macroIdx
+        (localStart + count -
+          v % bpSparseLevelDomain
+            (RelativeRmm.canonicalLayout shape).macroSize)
+        (v / bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSize) := rfl
+
+@[simp] theorem twoSpanLeftSlot_global (shape : Cartesian.CartesianShape)
+    (macroStart v : Nat) :
+    twoSpanLeftSlot 0 (RelativeRmm.canonicalLayout shape).macroSampleCount
+        (bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSampleCount)
+        macroStart v =
+      bpGlobalSparseCellSlot
+        (RelativeRmm.canonicalLayout shape).macroSampleCount macroStart
+        (v / bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSampleCount) := by
+  unfold twoSpanLeftSlot bpGlobalSparseCellSlot
+  rw [Nat.zero_add]
+
+@[simp] theorem twoSpanRightSlot_global (shape : Cartesian.CartesianShape)
+    (macroStart macroSpanCount v : Nat) :
+    twoSpanRightSlot 0
+        (RelativeRmm.canonicalLayout shape).macroSampleCount
+        (bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSampleCount)
+        macroStart macroSpanCount v =
+      bpGlobalSparseCellSlot
+        (RelativeRmm.canonicalLayout shape).macroSampleCount
+        (macroStart + macroSpanCount -
+          v % bpSparseLevelDomain
+            (RelativeRmm.canonicalLayout shape).macroSampleCount)
+        (v / bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSampleCount) := by
+  unfold twoSpanRightSlot twoSpanRight bpGlobalSparseCellSlot
+  rw [Nat.zero_add]
+
+/-- **`#4` INSTANTIATED.** The two-span block's value function, at the
+LOCAL level and span geometries and at the route's own parameters, IS the
+value of `canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation`.
+
+NO VALIDITY, CAP OR STORE HYPOTHESIS. -/
+theorem twoSpanValue_local_eq_routeValue
+    (shape : Cartesian.CartesianShape) (macroIdx localStart count : Nat) :
+    twoSpanValue shape (localLevelGeom shape)
+        (E1InteriorSpanBlock.localSpanGeom shape)
+        (macroIdx * ((RelativeRmm.canonicalLayout shape).levelCount *
+          (RelativeRmm.canonicalLayout shape).macroSize))
+        (RelativeRmm.canonicalLayout shape).macroSize
+        (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize)
+        localStart count
+        (macroIdx * (RelativeRmm.canonicalLayout shape).macroSize) =
+      ((canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation shape
+            macroIdx localStart count).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value := by
+  unfold twoSpanValue
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+  rw [cellOpt_levelCell_localLevel, localLevelGeom_base]
+  cases hcell : ((canonicalRelativeRmmMachineReadNatComputation shape
+        (canonicalRelativeRmmInteriorLocalLevelTable shape).table
+        (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel
+        count).run
+      (RMQ.SuccinctClose.flatWordStoreOfReadStore
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape).segment)).value with
+  | none =>
+      simp only [FlatStoreComputation.bind, FlatStoreExecution.append, hcell]
+      rfl
+  | some v =>
+      simp only [FlatStoreComputation.bind, FlatStoreComputation.map,
+        FlatStoreExecution.append, hcell, twoSpanLeftSlot_local,
+        twoSpanRightSlot_local]
+      rw [E1InteriorSpanBlock.spanValue_localSpan_eq_routeValue,
+        E1InteriorSpanBlock.spanValue_localSpan_eq_routeValue]
+      rfl
+
+/-- **`#5` INSTANTIATED.** The global twin, at slot base `0` and block
+offset `0`. -/
+theorem twoSpanValue_global_eq_routeValue
+    (shape : Cartesian.CartesianShape) (macroStart macroSpanCount : Nat) :
+    twoSpanValue shape (globalLevelGeom shape)
+        (E1InteriorSpanBlock.globalSpanGeom shape) 0
+        (RelativeRmm.canonicalLayout shape).macroSampleCount
+        (bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSampleCount)
+        macroStart macroSpanCount 0 =
+      ((canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation shape
+            macroStart macroSpanCount).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value := by
+  unfold twoSpanValue
+    canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+  rw [cellOpt_levelCell_globalLevel, globalLevelGeom_base]
+  cases hcell : ((canonicalRelativeRmmMachineReadNatComputation shape
+        (canonicalRelativeRmmInteriorGlobalLevelTable shape).table
+        (canonicalRelativeRmmInteriorComponentOffsets shape).globalLevel
+        macroSpanCount).run
+      (RMQ.SuccinctClose.flatWordStoreOfReadStore
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape).segment)).value with
+  | none =>
+      simp only [FlatStoreComputation.bind, FlatStoreExecution.append, hcell]
+      rfl
+  | some v =>
+      simp only [FlatStoreComputation.bind, FlatStoreComputation.map,
+        FlatStoreExecution.append, hcell, twoSpanLeftSlot_global,
+        twoSpanRightSlot_global]
+      rw [E1InteriorSpanBlock.spanValue_globalSpan_eq_routeValue,
+        E1InteriorSpanBlock.spanValue_globalSpan_eq_routeValue]
+      rfl
+
+/-! ## THE `none` ARM'S DISCRIMINATORS, AND WHERE THE RECEIPT'S POWER
+COMES FROM (DD-20260719-054)
+
+RIGHT SHAPE, WRONG CONTENT again -- `some` where the route is `none` --
+but this block admits TWO such impostors that fall on OPPOSITE SIDES OF
+THE RECEIPT BOUNDARY, and the pair is the point.
+
+`spanNoneArm_discriminates` (`E1InteriorSpanBlock.lean:540`) established
+that a receipt cannot reject a `none`-arm impostor; `mergePos_discriminates`
+(`E1InteriorMerge.lean:501`) established that a category log cannot reject
+an operand-level one.  Read together those invite the conclusion that the
+receipt is simply the weaker instrument.  IT IS NOT: what decides the
+matter is whether the code the impostor wrongly falls into CONTAINS A
+READ.  Both impostors below are the same defect -- a wrong `none`-arm
+branch target -- at two of this block's own live numerals:
+
+* **A**, target `Q + 275` -- past only the FIRST span block, landing on
+  the shuttle.  The tail it then runs contains the SECOND SPAN READ, so
+  the impostor emits a read event the route never emitted.  **The receipt
+  catches this one.**
+* **B**, target `Q + 500` -- straight to the merge, skipping both span
+  blocks.  `mergeBlock_readFree` (`E1InteriorMerge.lean:115`) makes that
+  tail read-free, so the receipt and the read count are IDENTICAL to the
+  correct arm's.  **The receipt is formally incapable of catching this
+  one**, and it is the more dangerous of the two precisely because it is
+  the quieter: it merges a STALE left candidate left in `qLV`/`qLP` by a
+  previous call and returns it where the route returns `none`.
+
+Both are caught by the positional category log and by the value.  The
+fixture runs all three arms and states each non-entailment. -/
+
+/-- The empty store.  No arm may depend on the store, and using the empty
+one makes that manifest -- the read at index `4` still EMITS its event,
+which is the whole content of impostor A's visibility. -/
+def twoSpanStore : ReadStore := ⟨fun _ _ => none⟩
+
+/-- THE THREE ARMS, DIFFERING IN ONE NUMERAL.
+
+Index `0` sets the result to `none`; index `1` jumps to `target`.  Indices
+`2`-`3` are the shuttle, `4` stands in for the second span block's READ,
+`5`-`6` for its result, `7`-`15` are the REAL two-way merge at its own
+base `7`, and `16` halts.
+
+`target = 16` is the correct arm -- past everything, as `Q + 509` is.
+`target = 2` is impostor A (lands on the shuttle, as `Q + 275` would);
+`target = 7` is impostor B (lands on the merge, as `Q + 500` would). -/
+def twoSpanNoneProgram (target : Nat) : E1Machine.Program :=
+  [ Instr.const mMV 0
+  , Instr.brNZ tOne target
+  , Instr.move qLV mMV
+  , Instr.move qLP mMP
+  , Instr.readMem tCell 0 pSlot
+  , Instr.const mMV 7
+  , Instr.const mMP 3 ] ++ (mergeBlock 7 ++ [Instr.halt])
+
+/-- `tOne` carries the unconditional-jump condition; `qLV`/`qLP` hold the
+STALE left candidate a previous call left behind, which is what impostor
+B returns. -/
+def twoSpanRegs : RegFile := fun r =>
+  if r = tOne then 1
+  else if r = qLV then 9
+  else if r = qLP then 4
+  else 0
+
+/-- The arm's value, in the form the combiners consume. -/
+def twoSpanOut (target : Nat) : Option (Nat × Nat) :=
+  let final :=
+    (E1Machine.run twoSpanStore (twoSpanNoneProgram target) 40
+      ⟨twoSpanRegs, 0, false⟩).final.regs
+  bestOfRegs (final mMV) (final mMP)
+
+/-- The arm's receipt. -/
+def twoSpanReadLog (target : Nat) : List TraceEvent :=
+  (E1Machine.run twoSpanStore (twoSpanNoneProgram target) 40
+    ⟨twoSpanRegs, 0, false⟩).readLog
+
+/-- The arm's charge log. -/
+def twoSpanCatLog (target : Nat) : List Category :=
+  (E1Machine.run twoSpanStore (twoSpanNoneProgram target) 40
+    ⟨twoSpanRegs, 0, false⟩).catLog
+
+/-- The correct arm returns `none`, which is the route's value on the
+`none` arm (`InteriorDirectory.lean:2373`, `:2398`). -/
+theorem twoSpanOut_correct : twoSpanOut 16 = none := by rfl
+
+/-- Impostor A returns the second span's stand-in result. -/
+theorem twoSpanOut_impostorA : twoSpanOut 2 = some (6, 3) := by rfl
+
+/-- Impostor B returns the STALE left candidate -- a value assembled from
+a register the route never wrote on this arm. -/
+theorem twoSpanOut_impostorB : twoSpanOut 7 = some (8, 4) := by rfl
+
+/-- THE DISCRIMINATORS: both wrong targets are WRONG, not merely
+differently spelled. -/
+theorem twoSpanNoneArm_discriminates :
+    twoSpanOut 16 ≠ twoSpanOut 2 ∧ twoSpanOut 16 ≠ twoSpanOut 7 :=
+  ⟨by decide, by decide⟩
+
+/-- **THE RECEIPT CATCHES A.**  The tail impostor A falls into contains
+the second span read, so its receipt carries an event the correct arm's
+does not. -/
+theorem twoSpanNoneArm_receipt_catches_impostorA :
+    twoSpanReadLog 16 ≠ twoSpanReadLog 2 := by decide
+
+/-- **THE RECEIPT IS BLIND TO B**, and this is the sharp half of the
+pair: the merge is read-free, so skipping straight to it leaves the
+receipt EXACTLY the correct arm's -- both empty, so the read COUNT does
+not separate them either.  A receipt equation is formally incapable of
+rejecting impostor B. -/
+theorem twoSpanNoneArm_receipt_blind_to_impostorB :
+    twoSpanReadLog 16 = twoSpanReadLog 7 ∧ twoSpanReadLog 16 = [] :=
+  ⟨by rfl, by rfl⟩
+
+/-- What catches BOTH besides the value: the positional category log.
+Recorded so the boundary is exact rather than implied. -/
+theorem twoSpanNoneArm_catLogs_differ :
+    twoSpanCatLog 16 ≠ twoSpanCatLog 2 ∧ twoSpanCatLog 16 ≠ twoSpanCatLog 7 :=
+  ⟨by decide, by decide⟩
+
+/-- NON-ENTAILMENT: the exit code separates nothing -- all three halt. -/
+theorem twoSpanNoneArm_all_halt :
+    (E1Machine.run twoSpanStore (twoSpanNoneProgram 16) 40
+        ⟨twoSpanRegs, 0, false⟩).final.halted = true ∧
+      (E1Machine.run twoSpanStore (twoSpanNoneProgram 2) 40
+        ⟨twoSpanRegs, 0, false⟩).final.halted = true ∧
+      (E1Machine.run twoSpanStore (twoSpanNoneProgram 7) 40
+        ⟨twoSpanRegs, 0, false⟩).final.halted = true :=
+  ⟨by rfl, by rfl, by rfl⟩
+
+/-! ### The preservation clause, EXECUTED
+
+`twoSpanBlock_runsTo`'s third clause is run here on the same fixture,
+with the four cross-block-arm operands seeded with DISTINCT MARKS so that
+survival is discriminating rather than trivially true at zero. -/
+
+/-- The fixture's register file with `70`, `71`, `75`, `76` marked. -/
+def twoSpanRegsMarked : RegFile := fun r =>
+  if r = 70 then 91
+  else if r = 71 then 92
+  else if r = 75 then 93
+  else if r = 76 then 94
+  else twoSpanRegs r
+
+/-- The four operands as the run leaves them. -/
+def twoSpanOperands (target : Nat) : List Nat :=
+  let final :=
+    (E1Machine.run twoSpanStore (twoSpanNoneProgram target) 40
+      ⟨twoSpanRegsMarked, 0, false⟩).final.regs
+  [final 70, final 71, final 75, final 76]
+
+/-- EXECUTED: the marks survive the correct arm intact. -/
+theorem twoSpanOperands_preserved_correct :
+    twoSpanOperands 16 = [91, 92, 93, 94] := by rfl
+
+/-- EXECUTED, AND THE LAST NON-ENTAILMENT: they survive BOTH impostors,
+so preservation separates neither.  Collecting the instruments: for
+impostor B, receipt, read count, exit code and preservation ALL agree
+with the correct arm; only the category log and the value reject it. -/
+theorem twoSpanOperands_preserved_impostors :
+    twoSpanOperands 2 = [91, 92, 93, 94] ∧
+      twoSpanOperands 7 = [91, 92, 93, 94] :=
+  ⟨by rfl, by rfl⟩
+
 end E1InteriorTwoSpan
 end WordRAM
 end RMQ
