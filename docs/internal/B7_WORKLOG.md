@@ -2283,3 +2283,82 @@ tie-boundary fixture. The row's literal window list included `76` and `72`;
 those windows are still present, still at `76`/`72`, and the reason is now an
 observed structural property of the zero-interior path rather than an excuse.
 NOT closed unilaterally; coordinator acceptance required.
+
+## VERIFICATION LEDGER (B7-11), all as observed at `8131716`
+
+- `lake build RMQ RMQPaper RMQExamples`: `Build completed successfully.`,
+  `LAKE_EXIT=0`, TWELVE warnings - the recorded baseline, and none in a file
+  this session touched (the only touched Lean file is the harness).
+- `lake exe rmq_succinct_classic_cost_harness` at the committed HEAD:
+  `HARNESS_EXIT=0`, `all reported windows agree with reference List Int RMQ
+  semantics`, `canonicalBound=210` / `canonicalBoundIs210=true` on all 21
+  windows. The new fixture at HEAD:
+
+      window=[0, 24)  answer=some 5  expected=some 5  agrees=true crossBlock modeledTraceCost=114
+      window=[4, 20)  answer=some 5  expected=some 5  agrees=true crossBlock modeledTraceCost=109
+      window=[10, 20) answer=some 11 expected=some 11 agrees=true crossBlock modeledTraceCost=107
+      window=[11, 12) answer=some 11 expected=some 11 agrees=true sameBlock  modeledTraceCost=73
+
+  `answer=some 5` on `[0,24)` is the leftmost tie at index 5, which lies in
+  interior block 1 - the harness output itself witnesses that the interior
+  decided the answer.
+- Pre-swap comparison run at `714fb4a` in a detached scratch worktree with the
+  IDENTICAL fixture: `HARNESS_EXIT=0`, same agreement line, same guards. Full
+  21-window table in the session-11 entry above.
+- `lake env lean scripts/headline_axiom_check.lean`: `HEADLINE_EXIT=0`, ZERO
+  `ofReduceBool`, ZERO `sorryAx` (grep count 0 over the whole output).
+- `#print axioms`: NOT APPLICABLE THIS SESSION and not claimed. This session
+  added no theorem, no definition in the library, and no constant - the only
+  Lean change is a `Fixture` value inside the harness executable
+  (`RMQ/Validation/SuccinctClassicCostHarness.lean`), which is not in the
+  theorem trust base. Session 10's `#print axioms` results are NOT restated here
+  as this session's evidence.
+- Hygiene `rg` over the touched Lean file for
+  sorry/admit/native_decide/implemented_by/partial/unsafe/extern/noncomputable/
+  `import Mathlib`/axiom/ofReduceBool: ZERO hits (rg exit 1).
+  `native_decide`/`ofReduceBool` across `RMQ/` and `RMQExamples/`: ZERO hits
+  (rg exit 1).
+- `git diff --check` on the working tree: exit 0.
+  `git diff --check f6564ec..HEAD`: exit 2, hits ONLY
+  `docs/internal/B7_STEP2_WIP.patch` - confirmed by reducing the output to its
+  distinct file list, which is that one path. Structural property of a committed
+  unified diff, documented since B7-03. NOT a defect and NOT "fixed".
+- `design_decision_check.ps1 -Strict -Base f6564ec`: exit 0,
+  `DESIGN-CHECK: checked 24 changed files`.
+- `claim_drift_scan.ps1`: exit 0,
+  `CLAIM-DRIFT: scan complete (736 hits, 0 strict failures)`. Hit count moved
+  736 from session 10's 721; the delta is documentary text added by this
+  session's worklog and matrix entries, and strict failures remain 0.
+- `paper_topology_lint.ps1`: exit 0,
+  `PAPER-TOPOLOGY PASS (83 broad documentary identifiers; 49 paper identifiers
+  resolved)`.
+- KNOWN RED, externally owned, CONFIRMED UNCHANGED and NOT fixed:
+  `lake exe rmq_succinct_classic_validate` exits 1, failing at COMPILE time:
+
+      error: RMQ/Validation/SuccinctClassic.lean:253:0: expression
+        singletonRepeatedEqualReadPositionsOK
+      did not evaluate to `true`
+
+  This is the a07-owned fixture the delegation ring-fenced. Note that this
+  session edited `RMQ/Validation/SuccinctClassicCostHarness.lean`, a DIFFERENT
+  file from `RMQ/Validation/SuccinctClassic.lean`; the two are separate
+  `lean_exe` roots, so the harness runs green while the validate target stays
+  red for a reason this rung neither caused nor touched.
+- Per the delegation, `scripts/axiom_check.lean`,
+  `scripts/wordram_axiom_check.lean` and `gate.ps1` were NOT run.
+
+## B7 MATRIX STATE AT THE END OF THIS SESSION
+
+CHK-04 was the sole row session 10 left without complete evidence. It now has
+complete evidence on its UNAMENDED wording. Every other row's evidence stands as
+recorded in the session 7, 8 and 10 matrix sections; this session did not
+disturb any of them, because it changed no library source - only an executable
+fixture and two documents.
+
+No row is closed unilaterally. Per this project's standing discipline, worker
+sessions record evidence and a disposition; ACCEPTANCE is the coordinator's and
+is not claimed here for CHK-04 or for any other row.
+
+Nothing was weakened: no requirement text edited, no fixture removed, no
+constant asserted, no frozen identity renamed or deleted, and no dead source
+introduced.
