@@ -4260,3 +4260,79 @@ one launches — never concurrently with an active lane in any worktree.** That
 costs a little wall-clock and removes an entire class of coordinator error. It
 also means the natural cadence is lane, battery, lane — which is the same
 sequencing the merge window will need anyway.
+
+---
+
+## C05 round 66 — the combiner tier closes; an UNSOUND preservation predicate
+## that our adequacy check could not have caught; and my fifth conjunct was a
+## proposal I relayed as a fact
+
+Lane B4 returned INCOMPLETE at `46a74b3`, six commits. **#6, #7 and #8 CLOSED**
+— the whole read-free combiner tier, each with its value identified against the
+route's own computation and **no validity, cap or store hypothesis**. #9 and
+`hInterior` not started, on my mid-flight instruction; the worker judged that
+sound, followed it, and then said plainly that a redirection explains a gap but
+does not close it, so the honest status is INCOMPLETE. Exactly right.
+
+**MY EIGHTEENTH FAILED CLAIM, and it would have wasted a session.** I told B4
+that `hInterior` "needs a FIFTH conjunct" and that building without it "will be
+sent back." **`hInterior` does not have and has never had a fifth conjunct.**
+The premise is byte-identical on this branch and on
+`claude/e1-close-leg-structural` — `git diff` shows those lines as unchanged
+context — promising exactly four register equalities. What the close-leg branch
+added was a doc block *proposing* the conjunct as work owed. **I read a proposal
+and relayed it as a fact.** That is a new variety of my failure mode: not a
+wrong address and not a false containment claim, but a **modality error** —
+treating someone's "this should exist" as "this exists."
+
+The worker's correction is the useful part and goes straight into the next
+brief: **prove the clause as a SEPARATE ADDITIONAL EXPORT, not as a conjunct of a
+four-conjunct premise — the latter will not typecheck.**
+
+**AN UNSOUND PRESERVATION PREDICATE, and the reason it matters is what could
+NOT have caught it.** The inherited `TwoLegUntouched` omitted registers 127-130,
+which `twoLegBlock` **writes twice** via its two `legSetup`s. `TwoLegUntouched
+127` closed by `decide` while the block clobbered 127 — so the preservation
+clause stated with it would have been **false**. Caught only by trying to prove
+the simulation.
+
+The sharp part: **the existing `at_crossBlockArm_operands` adequacy evaluation
+passes under BOTH the sound and unsound versions**, because registers 70/71/75/76
+are not at issue there. So the instrument this campaign built to check
+preservation predicates is structurally blind to this defect. We now have the
+pair:
+- **too WEAK** — omits a register the consumer needs (§9's `SpanUntouched`/`mLP`);
+- **UNSOUND** — claims a register the block clobbers (this one).
+The adequacy check catches neither in general. It checks the predicate against
+ONE consumer's operands, not against the block's own write set.
+
+**THE HANDOFF LINE THAT MATTERS MOST, and it is what I asked for.** New §3a
+records program geometry for all six blocks, and this:
+
+> **Not one of these blocks terminates. They all fall through** (`halted = false`
+> in every `runsTo`), so every one of #9's five arms needs an explicit branch to
+> the join point.
+
+That is the cross-arm fall-through defect **pre-empted in a handoff instead of
+discovered at composition**, which is the whole point of having asked. One
+sentence that will save the next lane from the campaign's most expensive
+structural bug.
+
+Two more findings worth keeping. The **stash-pair law is a LADDER**: every
+combiner writes the stash pair of the level below, because that pair is where its
+own sub-block leaves its answer. And `hS2`/`hN2` take a **function from the six
+combiner-bank readings** rather than bare naturals — so a setup that read the
+WRONG register which happened to hold the right value would not satisfy the
+premise. Anti-vacuity designed into a hypothesis rather than tested after it.
+
+Also: #9 is `canonicalRelativeRmmInteriorRangeMinComputation` — **no `Machine`**
+in the name, unlike rows 1-8; the `...` elision in my own table hid it. And the
+worker's first pass of §3 anchors had **nine of thirteen line numbers wrong**,
+caught by grepping before commit. Fourth worker to catch its own citation drift.
+
+DD ledger clean: `056`-`058` its own, `053`-`055` written on Lane B3's behalf
+with substance lifted from B3's commits and attributed to B3, verified absent
+before writing. The corrected instruction worked first time.
+
+**Batteries now running in the quiet window**, per round 65: combined B3+B4
+range, then Lane CL.
