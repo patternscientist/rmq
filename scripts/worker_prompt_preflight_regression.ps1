@@ -241,6 +241,20 @@ try {
     $currentSurfaceWithoutRegistry $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("exhaustive-current-surface-sync-requires-policy-registry")
 
+  $governedCurrentSurfaceWithoutRegistry = Join-Path $tempRoot "governed-current-surface-without-registry.txt"
+  $governedCurrentSurfaceWithoutRegistryLines = @(Get-Content -LiteralPath $validPrompt) | ForEach-Object {
+    if ($_ -match '^- Frozen acceptance IDs:') {
+      '- Frozen acceptance IDs: REQ-B7R1-CURRENT-PUBLIC-SURFACES, INV-CATEGORY-SEPARATION, CHK-DIFF.'
+    } else {
+      $_
+    }
+  }
+  $governedCurrentSurfaceWithoutRegistryLines += '- Synchronize every governed current surface to the exact live cost and theorem identity.'
+  $governedCurrentSurfaceWithoutRegistryLines | Set-Content -LiteralPath $governedCurrentSurfaceWithoutRegistry -Encoding utf8
+  Invoke-Case "b7-governed-current-surface-wording-without-inventory-rejected" 2 `
+    $governedCurrentSurfaceWithoutRegistry $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("exhaustive-current-surface-sync-requires-policy-registry")
+
   $currentSurfaceWithBareRegistry = Join-Path $tempRoot "current-surface-with-bare-registry.txt"
   $currentSurfaceWithBareRegistryLines = @($currentSurfaceWithoutRegistryLines) + @(
     '- Current-surface inventory: registry=docs/internal/CLAIM_DRIFT_POLICY.json; field=currentFactSurfacePathRegex.'
