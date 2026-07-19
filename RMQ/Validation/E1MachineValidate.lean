@@ -1209,9 +1209,13 @@ independent reference for the route's left- and right-fringe window
 ranges, computed from `blockStartOf`/`blockOfClose` rather than from the
 machine's `(c / bs + 1) * bs` form.
 
-This phase is worth more than usual: these two blocks do NOT yet have
-`_runsTo` theorems, so execution against an independent reference is the
-only evidence their arithmetic is right.
+When this phase was written the two blocks had no `_runsTo` theorems, so
+execution was the only evidence their arithmetic was right.  M3d-9 has
+since proved `crossLeftRange_runsTo` / `crossRightRange_runsTo`, and this
+phase's independent reference is now a genuine CROSS-CHECK of them rather
+than the sole evidence -- the reference and the theorem's route-side
+statement were written from `blockStartOf`/`blockOfClose` independently of
+the machine's fused `(c / bs + 1) * bs` form.
 -/
 
 /-- INDEPENDENT reference for the LEFT cross-block fringe range, read off
@@ -1321,6 +1325,177 @@ def rangeMutationIsReal : Bool :=
   let mutant := mutatedRangeCount honest
   honest != mutant && honest.length == mutant.length &&
     honest.map Instr.category == mutant.map Instr.category
+
+/-! ## Phase 3h/4g: REGISTER PRESERVATION, a THIRD discriminator
+
+Phases 3e/4d and 3f/4e established that this harness had two
+discriminators and that they are complementary: mutant D (value-only) is
+invisible to the receipt, mutant E (receipt-only) is invisible to the
+value.  Both were executed, in both directions.
+
+Neither has any power over a mutation that computes the RIGHT answer,
+performs the RIGHT reads, in the RIGHT number of steps, and merely
+scribbles on a register it does not own.  That class is not hypothetical
+here: `fringeArm_runsTo`'s register-preservation clause is the M3d-9
+deliverable and the enabling fact for the whole cross-block composition,
+which needs the left stash's `mLV`/`mLP` to survive the right arm some 194
+instructions later.  A silent extra write is exactly the defect that
+clause exists to exclude, and exactly the defect the other two
+discriminators cannot see.
+
+So this phase checks the clause itself: every register satisfying
+`FringeArmUntouched` (`E1FringeArmBlock.lean:948`) must come out of the
+arm holding what it went in with.
+
+WHY THE SENTINELS MATTER.  Seeded from `fun _ => 0`, preservation is
+vacuous -- a block that zeroes a register it does not own still "preserves"
+it.  `presSentinel` is injective and nowhere zero, so a clobber is
+detectable whatever value it writes, and a register copied from elsewhere
+is distinguishable from one left alone.
+-/
+
+/-- Injective, nowhere-zero sentinel pattern (see the note above on why a
+zero-seeded register file makes this phase vacuous). -/
+def presSentinel (r : Nat) : Nat := r * 7 + 3
+
+/-- Register file for a preservation fixture: every register carries its
+distinct sentinel, then the arm's seven genuine inputs are written over. -/
+def armPresRegs (base relLo relHi seed bb start : Nat) : RegFile :=
+  RegFile.write (RegFile.write (RegFile.write (RegFile.write
+    (RegFile.write (RegFile.write (RegFile.write
+      presSentinel E1FringeArmBlock.fBase base)
+        E1FringeFoldBlock.fLo relLo) E1FringeFoldBlock.fHi relHi)
+        E1FringeFoldBlock.fAcc seed)
+        E1FringeArmBlock.fBB bb) E1FringeArmBlock.fSeed seed)
+        E1FringeArmBlock.fStart start
+
+/-- The registers `FringeArmUntouched` claims survive the arm, as a
+concrete list over the bank the machine actually uses.  Mirrors the
+predicate `r < 40 ∨ (63 ≤ r ∧ r ≠ 67 ∧ r ≠ 68)` literally. -/
+def armUntouchedRegs : List Nat :=
+  (List.range 91).filter fun r =>
+    r < 40 || (63 <= r && r != 67 && r != 68)
+
+/-- What one preservation fixture reports. -/
+structure PresReport where
+  clobbered : List Nat
+  checkedRegs : Nat
+  reachedExit : Bool
+  modeledSteps : Nat
+  value : Nat
+  position : Nat
+  zeroSeedValue : Nat
+  zeroSeedPosition : Nat
+  preserved : Bool
+  agreesWithZeroSeed : Bool
+deriving Repr
+
+/-- RUN THE ARM on a sentinel-seeded register file and check the
+preservation clause register by register.
+
+Also re-runs the SAME fixture zero-seeded and compares the answer: if the
+arm depended on any register it does not initialise, the two runs would
+disagree, so this doubles as evidence that the arm's inputs are exactly
+the seven it declares. -/
+def runPres (salt : Nat) (build : List Instr -> List Instr)
+    (w : List Bool) (S c L base relLo relHi seed bb start : Nat) :
+    PresReport :=
+  let program := build (E1FringeArmProgram.armWitnessProgram S c L)
+  let regs0 := armPresRegs base relLo relHi seed bb start
+  let result :=
+    E1Machine.run (E1FringeArmProgram.armWitnessStore w) program
+      (4000 + salt) ⟨regs0, 0, false⟩
+  let zeroResult :=
+    E1Machine.run (E1FringeArmProgram.armWitnessStore w) program
+      (4000 + salt)
+      ⟨E1FringeArmProgram.armWitnessRegs base relLo relHi seed bb start,
+        0, false⟩
+  let clobbered :=
+    armUntouchedRegs.filter fun r => result.final.regs r != regs0 r
+  { clobbered := clobbered
+    checkedRegs := armUntouchedRegs.length
+    reachedExit := result.final.pc == 97 && result.final.halted
+    modeledSteps := result.steps
+    value := result.final.regs E1FringeArmBlock.fRV
+    position := result.final.regs E1FringeArmBlock.fRP
+    zeroSeedValue := zeroResult.final.regs E1FringeArmBlock.fRV
+    zeroSeedPosition := zeroResult.final.regs E1FringeArmBlock.fRP
+    preserved := clobbered.isEmpty
+    agreesWithZeroSeed :=
+      result.final.regs E1FringeArmBlock.fRV ==
+          zeroResult.final.regs E1FringeArmBlock.fRV &&
+        result.final.regs E1FringeArmBlock.fRP ==
+          zeroResult.final.regs E1FringeArmBlock.fRP }
+
+def presReports (salt : Nat) (build : List Instr -> List Instr) :
+    List PresReport :=
+  armCases.map fun (w, S, c, L, base, relLo, relHi, seed, bb, start) =>
+    runPres salt build w S c L base relLo relHi seed bb start
+
+def presFailures (rs : List PresReport) : Nat :=
+  (rs.filter (fun r => !r.preserved)).length
+
+def presExitFailures (rs : List PresReport) : Nat :=
+  (rs.filter (fun r => !r.reachedExit)).length
+
+def presSeedDisagreements (rs : List PresReport) : Nat :=
+  (rs.filter (fun r => !r.agreesWithZeroSeed)).length
+
+/-- Every register any fixture found clobbered, deduplicated -- so a
+failure names the offending registers rather than just counting. -/
+def presClobberedRegs (rs : List PresReport) : List Nat :=
+  dedupList (rs.flatMap PresReport.clobbered)
+
+def goodPres : List Instr -> List Instr := id
+
+/-- MUTANT G: rename the global-rebase epilogue's SCRATCH register from
+`fT` (60, inside the fold bank) to 70, consistently across all three of
+its occurrences.
+
+The epilogue (`E1FringeArmBlock.lean:715`) uses `fT` as a private unit
+constant: `const fT 1`, `brNZ fT (E+7)`, `sub fRV fBV fT`.  Renaming it
+consistently computes the IDENTICAL `fRV`/`fRP`, in the identical number
+of steps, on the identical control path, with the identical (empty)
+epilogue receipt -- the mutant is invisible to phase 3f's receipt check
+and to any value check whatsoever.
+
+What it does do is scribble on register 70, which `FringeArmUntouched`
+claims survives.  In the cross-block layout 70 is `fClose`, the query
+operand the repoint and both right-hand preambles read -- so this is not
+a contrived target: this exact clobber would silently compute the right
+answer here and the wrong window on the other side of the interior.
+
+The arm sits at host base `2` and its epilogue occupies indices 90..96,
+which is the whole tail of `armWitnessProgram`. -/
+def renameEpilogueScratch : Instr -> Instr
+  | .const d v => if d == 60 then .const 70 v else .const d v
+  | .brNZ c t => if c == 60 then .brNZ 70 t else .brNZ c t
+  | .sub d s1 s2 => if s2 == 60 then .sub d s1 70 else .sub d s1 s2
+  | other => other
+
+def mutatedArmScratch (program : List Instr) : List Instr :=
+  program.take 90 ++ (program.drop 90).map renameEpilogueScratch
+
+def presMutationIsReal : Bool :=
+  let honest := E1FringeArmProgram.armWitnessProgram 7 2 4
+  let mutant := mutatedArmScratch honest
+  honest != mutant && honest.length == mutant.length &&
+    honest.map Instr.category == mutant.map Instr.category
+
+/-- Mutant G is PRESERVATION-ONLY: case for case its exit pc, halted flag,
+modeled step count, value and position all match the honest sweep, so
+neither of this harness's earlier two discriminators can see it.
+
+This is the third corner of the complementarity argument, executed rather
+than asserted: D was value-only, E was receipt-only, G is
+preservation-only. -/
+def presMutantGIsPreservationOnly (salt : Nat) : Bool :=
+  let honest := presReports salt goodPres
+  let mutant := presReports salt mutatedArmScratch
+  honest.length == mutant.length &&
+    (List.zip honest mutant).all fun (h, m) =>
+      h.reachedExit == m.reachedExit && h.modeledSteps == m.modeledSteps &&
+        h.value == m.value && h.position == m.position
 
 def mainImpl : IO UInt32 := do
   IO.println "== E1 amended-machine validator (M6) =="
@@ -1591,6 +1766,41 @@ def mainImpl : IO UInt32 := do
   IO.println s!"rangeMutationWallClockMs={trm1 - trm0}"
   IO.println ""
 
+  -- STEP 3h: the preservation clause this session added, checked by
+  -- execution register by register.
+  IO.println "-- phase 3h: fringe-arm REGISTER PRESERVATION (third discriminator) --"
+  let tp0 <- IO.monoMsNow
+  let presRs := presReports salt goodPres
+  let presFails := presFailures presRs
+  let presExitFails := presExitFailures presRs
+  let presSeedDis := presSeedDisagreements presRs
+  IO.println s!"presCases={presRs.length}"
+  IO.println s!"presCheckedRegs={armUntouchedRegs.length}   (registers FringeArmUntouched claims survive)"
+  IO.println s!"presSentinelNonZero={presSentinel 0 != 0}   (a zero-seeded file makes this phase vacuous)"
+  IO.println s!"presExitFailures={presExitFails}"
+  IO.println s!"presFailures={presFails}   (must be 0: the arm's preservation clause, executed)"
+  IO.println s!"presClobberedRegs={presClobberedRegs presRs}   (must be empty)"
+  IO.println s!"presSeedDisagreements={presSeedDis}   (must be 0: sentinel and zero seeding give the same answer)"
+  let tp1 <- IO.monoMsNow
+  IO.println s!"presWallClockMs={tp1 - tp0}"
+  IO.println ""
+
+  -- STEP 4g: a mutation NO earlier discriminator in this harness can see.
+  IO.println "-- phase 4g: deliberate mutation of the epilogue SCRATCH register (preservation-only visible) --"
+  let tpm0 <- IO.monoMsNow
+  let mutGReports := presReports salt mutatedArmScratch
+  let mutGFails := presFailures mutGReports
+  let mutGExit := presExitFailures mutGReports
+  let mutGPresOnly := presMutantGIsPreservationOnly salt
+  IO.println s!"presMutationIsReal={presMutationIsReal}   (differs; same length AND same opcode categories)"
+  IO.println s!"mutantG_scratch_exitFailures={mutGExit}   (0 expected: exit pc alone MISSES this)"
+  IO.println s!"mutantG_scratch_preservationFailures={mutGFails}   (must be > 0: preservation catches it)"
+  IO.println s!"mutantG_clobberedRegs={presClobberedRegs mutGReports}   (expect [70] -- fClose in the cross layout)"
+  IO.println s!"mutantG_isPreservationOnly={mutGPresOnly}   (exit pc, steps, value and position ALL match the honest sweep)"
+  let tpm1 <- IO.monoMsNow
+  IO.println s!"presMutationWallClockMs={tpm1 - tpm0}"
+  IO.println ""
+
   -- STEP 5: the hole.
   IO.println "-- phase 5: whole-query comparison --"
   IO.println s!"wholeQueryComparisonAvailable={wholeQueryComparisonAvailable}"
@@ -1649,11 +1859,22 @@ def mainImpl : IO UInt32 := do
     lrMismatch == 0 && lrExit == 0 && rrMismatch == 0 && rrExit == 0 &&
       rangeReadsTotal == 0
   let okRangeMutations := rangeMutationIsReal && mutFMismatch != 0
+  -- The arm's PRESERVATION clause, executed: nothing outside the write set
+  -- moves, and sentinel seeding does not change the answer (so the arm
+  -- reads no register it does not initialise).
+  let okPres :=
+    presFails == 0 && presExitFails == 0 && presSeedDis == 0 &&
+      presSentinel 0 != 0
+  -- Mutant G rejected, and confirmed invisible to BOTH earlier
+  -- discriminators -- the third corner of the complementarity argument.
+  let okPresMutations :=
+    presMutationIsReal && mutGFails != 0 && mutGPresOnly
   let okCore := okReference && okLengths && okDispatch && okLeg
   let okComposite := okSelect && okCompose && okComposeCoverage && okMerge
   let okAdversarial := okMutations && okMutantSetup && okMergeMutations
   let okNew := okArm && okArmMutations && okRange && okRangeMutations
-  let ok := okCore && okComposite && okAdversarial && okNew
+  let okPreservation := okPres && okPresMutations
+  let ok := okCore && okComposite && okAdversarial && okNew && okPreservation
   if ok then
     IO.println "RESULT: PASS (with the whole-query comparison still OPEN)"
     return 0
