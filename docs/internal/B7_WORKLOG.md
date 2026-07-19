@@ -2960,7 +2960,42 @@ and the added-line scan likewise found no forbidden token, Mathlib import,
    reject the isolated-evaluator substitution repaired here.
 
 DD-20260719-005 records the nontrivial public proposition and compatibility
-choice. The final post-commit direct builds, aggregate, trust inventories,
-structural gates, exact diff ranges, and clean status are reported in the
-candidate handoff. Document-authority consolidation, stale-prose repair, and
-`STRETCH-01` were not performed and remain coordinator-owned/deferred.
+choice. Document-authority consolidation, stale-prose repair, and `STRETCH-01`
+were not performed and remain coordinator-owned/deferred.
+
+## B7-R4 coordinator evidence closure and integration certificate
+
+The coordinator independently audited exact semantic candidate
+`ba71d1589e8a90ca82f88ce00465d069db034e43` over base
+`07b0dda3878574070ae7ab0332cc61658e56f67a`. The candidate was a clean
+one-parent descendant of that governed base and changed exactly the eleven
+authorized paths. Its diff contained 1,638 additions and no deletions; no
+payload, store, cost, trace-event, executable, policy, public-prose, or
+roadmap definition changed.
+
+The exact candidate handoff preserved these final unchanged-tree results:
+
+- six affected direct targets passed from the validated cache;
+- `lake build RMQ RMQPaper RMQExamples` passed in 49.9s;
+- the WordRAM and headline trust inventories passed in 113.5s and 48.1s;
+- topology lint passed with 82 broad and 48 paper identifiers resolved;
+- strict decision checks passed against both `07b0dda...` and `f6564ec`;
+- both hygiene scans, working/range `git diff --check`, changed-path audit,
+  and final clean status passed.
+
+The coordinator then reconstructed both proposition bodies rather than relying
+on their names. A fresh independent literal expected-type leaf elaborated the
+whole-query containment/cost proposition and the singleton `0`/`15`, `0`/`1`,
+producer/state/local-position/receipt proposition. `#print axioms` on both
+source theorems and both headline aliases reported only `propext`,
+`Classical.choice`, and `Quot.sound`. Independent exact-range diff, forbidden-
+token, ancestry, scope, and strict design checks also passed; worker, audit,
+and coordinator trees ended clean.
+
+The original committed matrix still described post-commit certification as
+pending even though the certification had completed. This evidence-only
+closure repairs that stale disposition. Because the semantic source tree is
+byte-identical to `ba71d15`, the Lean builds, replay, aggregate, and trust
+inventories remain exact evidence and are not rerun. Only documentation-
+sensitive topology/design checks, committed-range checks, and clean status are
+required on the evidence-closure commit before integration.
