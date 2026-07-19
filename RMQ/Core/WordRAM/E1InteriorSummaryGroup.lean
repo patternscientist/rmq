@@ -801,6 +801,312 @@ theorem geomCell_argOffset_eq_routeDecode
   · exact geomCell_eq_routeDecode_of_invalid shape _ i
       (canonicalSummaryLayout_argOffset_cap shape) hvalid
 
+/-! ## THE A-TO-B LINK: the route's decode IS the route computation's value
+
+The four bridges above land the machine's saved cell on `geomRouteDecode`,
+which is route-SHAPED -- a decode of an address list -- but is not yet the
+`FlatStoreComputation` the route actually runs.  This section closes that
+gap, identifying `geomRouteDecode` with the option-shifted `.value` of
+`canonicalRelativeRmmMachineReadNatComputation`
+(`InteriorDirectory.lean:2132`).
+
+THE DECISIVE STEP IS THE ADDRESS LISTS, and it is DEFINITIONAL rather than
+arithmetic.  `chunkAddrs` (`E1InteriorChunkFold.lean:123`) and
+`machineReadComputationAt`'s own `addresses`
+(`MachineChunkedTableProgram.lean:343`) split on the SAME validity test and
+expand to the SAME consecutive block: `fixedWidthNatTableMachineFootprintAt`
+(`:332`) is `(consecutiveWordIndices (i * count) count).map (base + .)`, and
+the valid arm of `chunkAddrs` is that list verbatim.  Only the two geometry
+fields need aligning, and at `canonicalSummaryLayout` they are DEFINED to
+match (`:464`).
+
+NO CAP HYPOTHESIS ENTERS HERE, and the absence is worth stating because a
+neighbouring lemma does carry one.  `chunkAddrs_eq_consecutive`'s `hcap`
+relates `chunkAddrs` to what the MACHINE's fold generates, and it was
+already consumed inside `geomCell_eq_routeDecode`.  Nothing below mentions
+the fold, so nothing below needs the cap.
+
+THIS IS NOT `interiorReadNat_route_atom` (`E1InteriorReadBlock.lean:443`).
+That atom carries `0 < width` and `width <= wordSize` -- it assumes ONE
+chunk per cell, and the interior's reachable shapes are multi-chunk (the
+module header says so at `:33-40`).  Nothing below bounds `width` at all.
+-/
+
+/-- THE TWO ADDRESS LISTS AGREE.
+
+`chunkAddrs`, at any geometry whose `entriesLen` and `chunkCount` are the
+route's own, IS the address list `machineReadComputationAt` issues.  Both
+sides are stated here so the identification is visible rather than buried
+in a `simp` set. -/
+theorem chunkAddrs_eq_machineAddresses
+    {entries : List Nat} {width wordSize : Nat}
+    (base deadAddress entriesLen chunkCount i : Nat)
+    (hentries : entriesLen = entries.length)
+    (hchunk : chunkCount =
+      SuccinctSpace.fixedWidthNatTableMachineChunkCount width wordSize) :
+    chunkAddrs base deadAddress entriesLen chunkCount i =
+      (if i < entries.length then
+        SuccinctSpace.fixedWidthNatTableMachineFootprintAt base width wordSize i
+      else [deadAddress]) := by
+  subst hentries
+  subst hchunk
+  rfl
+
+/-- THE LINK, FULLY PARAMETRIC -- no `shape`, no `machineWordBits`.
+
+Stated in this form ON PURPOSE.  The shape-level statement below routes its
+word size through `machineWordBits`, hence `Nat.log2`, which is
+well-founded recursion the KERNEL cannot evaluate; no numeric fixture can
+exercise it, and `rfl`/`decide` fail there.  This form takes `wordSize` as
+a parameter and IS kernel-evaluable, which is what lets the anti-vacuity
+section below run THE REAL LINK on concrete data rather than argue about
+it.  The shape-level version is a corollary, so the fixtures below exercise
+the same equation the interior actually uses. -/
+theorem routeDecode_eq_machineReadComputation_value
+    (store : ReadStore) (segment : Nat)
+    {entries : List Nat} {width : Nat}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (wordSize base deadAddress entriesLen chunkCount i : Nat)
+    (hentries : entriesLen = entries.length)
+    (hchunk : chunkCount =
+      SuccinctSpace.fixedWidthNatTableMachineChunkCount width wordSize) :
+    (match SuccinctSpace.fixedWidthNatTableMachineDecode
+        ((chunkAddrs base deadAddress entriesLen chunkCount i).map
+          (fun a => store.readWord? segment a)) with
+     | none => 0
+     | some v => v + 1) =
+      (match ((table.machineReadComputationAt wordSize base deadAddress i).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore store segment)).value with
+       | none => 0
+       | some v => v + 1) := by
+  rw [chunkAddrs_eq_machineAddresses (entries := entries) (width := width)
+    (wordSize := wordSize) base deadAddress entriesLen chunkCount i
+    hentries hchunk]
+  unfold SuccinctSpace.FixedWidthNatTable.machineReadComputationAt
+  simp [RMQ.SuccinctClose.flatWordStoreOfReadStore]
+
+/-- THE LINK, generically in the table and the geometry.
+
+`geomRouteDecode` is the option-shifted value of the route's own read
+computation, run against the flat view of the store at the layout's
+segment.  Generic in `table`, `L` and `G`: the three hypotheses are the
+only alignment needed, and each is `rfl` at `canonicalSummaryLayout`. -/
+theorem geomRouteDecode_eq_readComputation_value
+    (shape : Cartesian.CartesianShape) (store : ReadStore)
+    {entries : List Nat} {width : Nat}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (L : SummaryLayout) (G : TableGeom) (i : Nat)
+    (hdead : L.deadAddress =
+      (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress)
+    (hentries : G.entriesLen = entries.length)
+    (hchunk : G.chunkCount =
+      SuccinctSpace.fixedWidthNatTableMachineChunkCount width
+        (SuccinctRank.machineWordBits shape.bpCode.length)) :
+    geomRouteDecode store L G i =
+      (match ((canonicalRelativeRmmMachineReadNatComputation shape table
+            G.base i).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore store L.segment)).value with
+       | none => 0
+       | some v => v + 1) := by
+  unfold geomRouteDecode canonicalRelativeRmmMachineReadNatComputation
+  rw [hdead]
+  exact routeDecode_eq_machineReadComputation_value store L.segment table
+    (SuccinctRank.machineWordBits shape.bpCode.length) G.base
+    (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress
+    G.entriesLen G.chunkCount i hentries hchunk
+
+/-! ### The link at the four canonical tables
+
+Each of the four composes the corresponding bridge above with the generic
+link.  ALL THREE HYPOTHESES ARE `rfl` AT EVERY ONE OF THE FOUR -- that is
+not a coincidence but the point of `canonicalSummaryLayout` (`:464`)
+defining its geometry fields as the route's own.  These four are the A-to-B
+link: the MACHINE's saved cell, stated as the value of the computation the
+ROUTE runs, with no validity, cap or store hypothesis surviving. -/
+
+theorem geomCell_baseline_eq_readComputation_value
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape)
+        (canonicalSummaryLayout shape).baseline i =
+      (match ((canonicalRelativeRmmMachineReadNatComputation shape
+            (canonicalRelativeRmmSummaryTable shape).baselineTable
+            (canonicalSummaryLayout shape).baseline.base i).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value with
+       | none => 0
+       | some v => v + 1) :=
+  (geomCell_baseline_eq_routeDecode shape i).trans
+    (geomRouteDecode_eq_readComputation_value shape _
+      (canonicalRelativeRmmSummaryTable shape).baselineTable _ _ i
+      rfl rfl rfl)
+
+theorem geomCell_minRel_eq_readComputation_value
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape)
+        (canonicalSummaryLayout shape).minRel i =
+      (match ((canonicalRelativeRmmMachineReadNatComputation shape
+            (canonicalRelativeRmmSummaryTable shape).minRelTable
+            (canonicalSummaryLayout shape).minRel.base i).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value with
+       | none => 0
+       | some v => v + 1) :=
+  (geomCell_minRel_eq_routeDecode shape i).trans
+    (geomRouteDecode_eq_readComputation_value shape _
+      (canonicalRelativeRmmSummaryTable shape).minRelTable _ _ i
+      rfl rfl rfl)
+
+theorem geomCell_maxRel_eq_readComputation_value
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape)
+        (canonicalSummaryLayout shape).maxRel i =
+      (match ((canonicalRelativeRmmMachineReadNatComputation shape
+            (canonicalRelativeRmmSummaryTable shape).maxRelTable
+            (canonicalSummaryLayout shape).maxRel.base i).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value with
+       | none => 0
+       | some v => v + 1) :=
+  (geomCell_maxRel_eq_routeDecode shape i).trans
+    (geomRouteDecode_eq_readComputation_value shape _
+      (canonicalRelativeRmmSummaryTable shape).maxRelTable _ _ i
+      rfl rfl rfl)
+
+theorem geomCell_argOffset_eq_readComputation_value
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape)
+        (canonicalSummaryLayout shape).argOffset i =
+      (match ((canonicalRelativeRmmMachineReadNatComputation shape
+            (canonicalRelativeRmmSummaryTable shape).argOffsetTable
+            (canonicalSummaryLayout shape).argOffset.base i).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).value with
+       | none => 0
+       | some v => v + 1) :=
+  (geomCell_argOffset_eq_routeDecode shape i).trans
+    (geomRouteDecode_eq_readComputation_value shape _
+      (canonicalRelativeRmmSummaryTable shape).argOffsetTable _ _ i
+      rfl rfl rfl)
+
+/-! ### ANTI-VACUITY FOR THE LINK, EXECUTED
+
+`routeDecode_eq_machineReadComputation_value` is an equation between two
+`match`es, and an equation of that shape can hold because both sides are
+constant.  So the link is RUN here, on concrete data, and the outcomes are
+checked to DIFFER.
+
+THE FIXTURE IS DELIBERATELY MULTI-CHUNK: three entries at width `20`, word
+size `8`, giving `fixedWidthNatTableMachineChunkCount 20 8 = 3` chunks per
+cell.  This is exactly the regime where `interiorReadNat_route_atom`
+(`E1InteriorReadBlock.lean:443`) does NOT apply, so the fixture exercises
+the reachable interior shape rather than the single-chunk special case.
+
+WHY THIS IS KERNEL-REACHABLE WHEN THE COMPOSITE IS NOT.  The parametric
+core takes `wordSize` as a parameter, so nothing here goes through
+`machineWordBits`/`Nat.log2`.  At the canonical store it WOULD, and
+`rfl`/`decide` would fail; that boundary is real and is not glossed here.
+What these fixtures establish is that the EQUATION discriminates on
+content -- and the canonical corollaries above are instances of the very
+same equation. -/
+
+/-- Fixture table: three entries at width `20`, hence three chunks per cell
+at word size `8`.  Its CONTENT is irrelevant -- `machineReadComputationAt`
+ignores the table argument, using only `entries.length` and `width` -- and
+that is itself worth knowing, since it means the link cannot be smuggling
+information out of the table. -/
+def linkWitnessTable : SuccinctSpace.FixedWidthNatTable [1, 2, 3] 20 :=
+  SuccinctSpace.FixedWidthNatTable.ofEntries [1, 2, 3] 20 (by
+    intro entry hmem
+    cases hmem with
+    | head => decide
+    | tail _ h1 =>
+      cases h1 with
+      | head => decide
+      | tail _ h2 =>
+        cases h2 with
+        | head => decide
+        | tail _ h3 => cases h3)
+
+/-- Fixture store, on segment `7`.  Cells `0` and `1` are fully present and
+differ in ONE chunk's content; cell `2` is missing its last chunk; the dead
+address `999` is present. -/
+def linkWitnessStore : ReadStore :=
+  ⟨fun segment address =>
+    if segment = 7 then
+      if address = 100 then some [true, false, false]
+      else if address = 101 then some [false]
+      else if address = 102 then some [false]
+      else if address = 103 then some [false, true, false]
+      else if address = 104 then some [false]
+      else if address = 105 then some [false]
+      else if address = 106 then some [true, true]
+      else if address = 107 then some [false]
+      else if address = 999 then some [true, false, true]
+      else none
+    else none⟩
+
+/-- The ROUTE-DECODE side of the link, at the fixture. -/
+def linkWitnessDecodeValue (entriesLen chunkCount i : Nat) : Nat :=
+  match SuccinctSpace.fixedWidthNatTableMachineDecode
+      ((chunkAddrs 100 999 entriesLen chunkCount i).map
+        (fun a => linkWitnessStore.readWord? 7 a)) with
+  | none => 0
+  | some v => v + 1
+
+/-- The COMPUTATION side of the link, at the fixture. -/
+def linkWitnessRunValue (i : Nat) : Nat :=
+  match ((linkWitnessTable.machineReadComputationAt 8 100 999 i).run
+      (RMQ.SuccinctClose.flatWordStoreOfReadStore linkWitnessStore 7)).value with
+  | none => 0
+  | some v => v + 1
+
+/-- RULE 1: the link's two hypotheses are JOINTLY SATISFIABLE at a real
+instantiation, and the instance is carried to a concrete consequence
+(`linkWitness_executed` below) rather than left existential. -/
+theorem linkWitness_link_instantiated (i : Nat) :
+    linkWitnessDecodeValue 3 3 i = linkWitnessRunValue i :=
+  routeDecode_eq_machineReadComputation_value linkWitnessStore 7
+    linkWitnessTable 8 100 999 3 3 i rfl rfl
+
+/-- THE LINK, EXECUTED, AT FOUR INDICES.  Both sides are evaluated by the
+kernel and agree -- and the four outcomes are NOT constant: a fully present
+three-chunk cell, a second one differing in one chunk, a cell with a
+missing chunk, and the dead path. -/
+theorem linkWitness_executed :
+    ([ linkWitnessDecodeValue 3 3 0, linkWitnessDecodeValue 3 3 1
+     , linkWitnessDecodeValue 3 3 2, linkWitnessDecodeValue 3 3 5 ],
+     [ linkWitnessRunValue 0, linkWitnessRunValue 1
+     , linkWitnessRunValue 2, linkWitnessRunValue 5 ])
+      = ([2, 3, 0, 6], [2, 3, 0, 6]) := rfl
+
+/-- RIGHT SHAPE, WRONG CONTENT: cells `0` and `1` have the SAME shape --
+three present chunks each -- and differ only in one chunk's stored bits.
+The link separates them.  A link that reported a constant, or that read the
+wrong cell, would collapse these two. -/
+theorem linkWitness_discriminates_content :
+    linkWitnessRunValue 0 ≠ linkWitnessRunValue 1 := by decide
+
+/-- THE `hchunk` HYPOTHESIS IS LOAD-BEARING, not decorative.  At the same
+index, a geometry claiming ONE chunk per cell reads a different address
+list and decodes a different value.  So the link is not true for any
+`chunkCount`; it is true for the route's. -/
+theorem linkWitness_chunkCount_load_bearing :
+    linkWitnessDecodeValue 3 1 1 ≠ linkWitnessDecodeValue 3 3 1 := by decide
+
+/-- THE `hentries` HYPOTHESIS IS LOAD-BEARING TOO.  A geometry claiming one
+entry sends index `1` down the DEAD path, decoding the dead address instead
+of the cell. -/
+theorem linkWitness_entriesLen_load_bearing :
+    linkWitnessDecodeValue 1 3 1 ≠ linkWitnessDecodeValue 3 3 1 := by decide
+
 end E1InteriorSummaryGroup
 end WordRAM
 end RMQ

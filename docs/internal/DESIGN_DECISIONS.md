@@ -4976,3 +4976,70 @@ is the summary assembled from the four route DECODES. Showing it equal to
 the value of `canonicalRelativeRmmMachineSummaryComputation`
 (`InteriorDirectory.lean:2277`) is a FURTHER step, through
 `machineReadComputationAt`, and is NOT claimed.
+
+## DD-20260719-017: the A-to-B link is stated PARAMETRICALLY in the word size, with the shape-level form as a corollary (E1 M3d-23)
+
+Claimed this session; the maximum OBSERVED in this file was
+`DD-20260719-016`, checked before claiming.
+
+Context. DD-20260719-016 landed the four `geomCell_*_eq_routeDecode`
+bridges, which state the machine's saved cell as `geomRouteDecode` -- a
+decode of an address list. That object is route-SHAPED but is not the
+`FlatStoreComputation` the route actually runs, and M3d-22 recorded
+explicitly that equating the two was a FURTHER step and was not claimed.
+This session takes that step.
+
+The natural statement is at shape level: `geomRouteDecode` equals the
+option-shifted `.value` of `canonicalRelativeRmmMachineReadNatComputation`,
+whose word size is `SuccinctRank.machineWordBits shape.bpCode.length`.
+
+Decision: do NOT state it only at shape level. State a PARAMETRIC core,
+`routeDecode_eq_machineReadComputation_value`, taking `wordSize` as an
+ordinary parameter, and derive the shape-level
+`geomRouteDecode_eq_readComputation_value` from it as a corollary.
+
+The ground is ANTI-VACUITY, and it is a real fork rather than a
+preference. The link is an equation between two `match`es, a shape that
+can hold because both sides are constant, so it owes an executed
+discrimination witness. At shape level it cannot have one: the word size
+goes through `machineWordBits`, hence `Nat.log2`, which is well-founded
+recursion the KERNEL cannot evaluate, and `rfl`/`decide` fail on numeric
+fixtures there. M3d-22 established that boundary and correctly declined to
+cross it. Parametrising the word size moves the SAME equation into
+kernel-reachable territory, where it can be run on concrete data; the
+shape-level statement is then an instance, so the fixtures exercise the
+equation the interior actually uses rather than an analogue of it.
+
+What the fixtures establish, EXECUTED. The witness is deliberately
+MULTI-CHUNK -- three entries at width `20`, word size `8`, giving three
+chunks per cell -- which is the regime where `interiorReadNat_route_atom`
+(`E1InteriorReadBlock.lean`) does not apply, so the fixture exercises the
+reachable interior shape and not the single-chunk special case.
+`linkWitness_executed` evaluates BOTH sides at four indices and gets
+`[2, 3, 0, 6]` on each: a fully present three-chunk cell, a second
+differing in one chunk, a cell with a missing chunk, and the dead path.
+`linkWitness_discriminates_content` is the right-shape/wrong-content
+guard: cells `0` and `1` have the SAME shape, three present chunks each,
+and differ only in stored bits, and the link separates them.
+`linkWitness_chunkCount_load_bearing` and
+`linkWitness_entriesLen_load_bearing` show the two hypotheses are not
+decorative -- a wrong `chunkCount` reads a shorter address list and a
+wrong `entriesLen` diverts the index down the dead path, each decoding a
+different value. `linkWitness_link_instantiated` discharges rule 1: both
+hypotheses jointly satisfiable at a real instantiation, carried to a
+concrete consequence rather than left existential.
+
+No cap hypothesis enters the link. `chunkAddrs_eq_consecutive`'s `hcap` is
+a different equation -- it relates `chunkAddrs` to what the MACHINE's fold
+generates -- and it was already consumed inside `geomCell_eq_routeDecode`.
+Nothing in the link mentions the fold, so nothing in it needs the cap. Nor
+is the link `interiorReadNat_route_atom`, which carries `0 < width` and
+`width <= wordSize`: it assumes one chunk per cell, and the interior's
+reachable shapes are multi-chunk. The link bounds `width` nowhere.
+
+Scope, stated because the name invites over-reading. These four
+corollaries link ONE read each: the machine's saved cell to the value of
+the corresponding single-table read computation. Equality of
+`routeDecodedSummary` with the value of
+`canonicalRelativeRmmMachineSummaryComputation`, which binds four such
+reads into a tuple, is a FURTHER step and is still NOT claimed.

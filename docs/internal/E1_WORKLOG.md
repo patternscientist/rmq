@@ -7191,3 +7191,234 @@ All file:line verified at `109eb67`.
    touched.  A supplied premise gets grepped; so does a supplied
    OBLIGATION.  When a prompt says "if it genuinely is absent, prove it",
    check first whether it is absent BECAUSE IT IS FALSE.
+
+## M3d-23 (worker E1-R5f): the A-to-B link, landed parametrically so it could be executed
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, from HEAD
+`abfb681`.  Green.
+
+MISSION ITEM 1 (the A-to-B link) IS DONE.  Items 2-6 are UNBUILT.  This is
+the eighteenth session to land one milestone green rather than start a
+second it could not finish.
+
+### 1. THE INHERITED CLAIMS, GREPPED BEFORE BUDGETING
+
+Rule 4, applied to the delegation and to the predecessor's inventory.  The
+substantive claims held; one count did not.
+
+CONFIRMED AT SOURCE, all at `abfb681`: `map_run_value`
+(`MachineChunkedTableProgram.lean:199`) and `readMany_run_value` (`:213`),
+both `@[simp]`; `machineReadComputationAt` (`:343`);
+`fixedWidthNatTableMachineFootprintAt` (`:332`);
+`canonicalRelativeRmmMachineReadNatComputation`
+(`InteriorDirectory.lean:2132`), a pure alias; `chunkAddrs`
+(`E1InteriorChunkFold.lean:123`); `flatWordStoreOfReadStore`
+(`InteriorRAM.lean:170`); `fixedWidthNatTableMachineDecode`
+(`MachineChunkedTable.lean:215`); the four bridges unconditional at
+`E1InteriorSummaryGroup.lean:737`, `:753`, `:773`, `:789`.
+
+THE WARNING ABOUT `interiorReadNat_route_atom` IS ACCURATE.
+`E1InteriorReadBlock.lean:443` does carry `0 < width` and
+`width <= wordSize`, and it is the ONLY site in `RMQ/Core/WordRAM` that
+touches `machineReadComputationAt ... .run`.  Nothing linked that run value
+to `geomRouteDecode`; the gap was real.
+
+ONE COUNT WAS WRONG, harmlessly.  The inventory says `geomRouteDecode` has
+"six occurrences tree-wide, all in `E1InteriorSummaryGroup.lean`".  It has
+FOURTEEN, in TWO files -- `E1InteriorMinCandidate.lean` carries eight, at
+`:64`, `:111`, `:152` and `:901`-`:910`.  The count was taken before that
+session's own composition landed and was not refreshed.  It changed no
+conclusion: the searched-for equation was genuinely absent.
+
+RE-DERIVED, NOT COPIED, as instructed: `summaryGroup_length = 156`
+(`E1InteriorSummaryGroup.lean:299`, by `simp`) and
+`minCandidateBlock_length = 21` (`E1InteriorMinCandidate.lean:241`,
+`rfl`), so the composite the span blocks must branch past is 177 -- and
+`summaryMinCandidate_runsTo` does exit at `Q + 177`.
+
+### 2. THE LINK, AND WHY IT IS PARAMETRIC
+
+`routeDecode_eq_machineReadComputation_value`
+(`E1InteriorSummaryGroup.lean:865`) is the core: the option-shifted decode
+of `chunkAddrs` IS the option-shifted `.value` of
+`machineReadComputationAt`, given only that the geometry's `entriesLen` and
+`chunkCount` are the route's own.  It takes `wordSize` as an ORDINARY
+PARAMETER and mentions no `shape`.
+
+`geomRouteDecode_eq_readComputation_value` (`:894`) is the shape-level
+corollary, and the four `geomCell_*_eq_readComputation_value` (`:927`,
+`:945`, `:963`, `:981`) compose it with the four bridges.  ALL THREE
+HYPOTHESES ARE `rfl` AT EVERY ONE OF THE FOUR -- the predecessor's
+prediction that the address lists agree by `rfl` at
+`canonicalSummaryLayout` is confirmed by construction.
+
+THE DECISIVE STEP IS DEFINITIONAL, NOT ARITHMETIC.
+`chunkAddrs_eq_machineAddresses` (`:841`) is proved by `subst; subst; rfl`: both
+sides split on the same validity test, and the valid arm of `chunkAddrs` IS
+`(consecutiveWordIndices (i * count) count).map (base + .)`, which is
+exactly `fixedWidthNatTableMachineFootprintAt` unfolded.
+
+NO CAP HYPOTHESIS ENTERS, as predicted.  `chunkAddrs_eq_consecutive`'s
+`hcap` relates `chunkAddrs` to what the MACHINE's fold generates and was
+already consumed inside `geomCell_eq_routeDecode`.  The link never mentions
+the fold.  Nothing in it bounds `width`, so it is not the single-chunk atom
+in disguise.
+
+WHY PARAMETRIC IS A FORK AND NOT A PREFERENCE (DD-20260719-017).  The link
+is an equation between two `match`es, a shape that can hold because both
+sides are constant, so it owes an executed witness.  At shape level it
+CANNOT have one: the word size runs through `machineWordBits`, hence
+`Nat.log2`, well-founded recursion the kernel cannot evaluate.  M3d-22
+established that boundary.  Parametrising the word size moves the SAME
+equation into kernel-reachable territory; the shape-level form is an
+instance of it, so the fixtures exercise the equation the interior uses
+rather than an analogue.
+
+### 3. ANTI-VACUITY, EXECUTED, IN THE MULTI-CHUNK REGIME
+
+The fixture is three entries at width `20`, word size `8`, hence
+`fixedWidthNatTableMachineChunkCount 20 8 = 3` chunks per cell -- the
+regime where `interiorReadNat_route_atom` does NOT apply.
+
+* `linkWitness_executed` (`:1083`) evaluates BOTH sides at four indices,
+  `[2, 3, 0, 6]` on each: a fully present three-chunk cell, a second
+  differing in one chunk, a cell with a missing chunk, and the dead path.
+* `linkWitness_discriminates_content` (`:1094`) is the right-shape /
+  wrong-content guard in the `witness_maxRel_discriminates` model.  Cells
+  `0` and `1` have the SAME shape -- three present chunks each -- and
+  differ only in stored bits.  The link separates them.
+* `linkWitness_chunkCount_load_bearing` (`:1101`) and
+  `linkWitness_entriesLen_load_bearing` (`:1107`): a wrong `chunkCount`
+  reads a shorter address list, a wrong `entriesLen` diverts the index to
+  the dead path, each decoding a different value.  Neither hypothesis is
+  decorative.
+* `linkWitness_link_instantiated` (`:1074`) discharges rule 1: both
+  hypotheses JOINTLY satisfiable at a real instantiation, carried to a
+  concrete consequence rather than left existential.
+
+A LIMIT, STATED RATHER THAN GLOSSED.  These fixtures run the link at
+concrete parameters, NOT at the canonical store, where `Nat.log2` still
+blocks the kernel.  The boundary M3d-22 established has not moved; what
+this session shows is that the boundary was a property of the STATEMENT's
+shape, not of the equation, and that restating it parametrically recovers
+executability without weakening anything.
+
+### 4. VERIFICATION LEDGER
+
+Under the `Global\RMQHeavyVerification` mutex:
+
+    lake build RMQ RMQPaper RMQExamples   Build completed successfully.
+    lake build rmq_e1_machine_validate    Build completed successfully.
+    lake exe rmq_e1_machine_validate      VALIDATOR_RUN_EXIT=0
+
+    [280/283] Built RMQ.Core.WordRAM.E1InteriorSummaryGroup
+    [281/283] Built RMQ.Core.WordRAM.E1InteriorMinCandidate
+    [282/283] Built RMQ
+
+0 errors; 13 warnings, ALL pre-existing and none in the changed module.
+
+Validator: `RESULT: PASS (with the whole-query comparison still OPEN)`,
+`wholeQueryComparisonAvailable=false`, `presFailures=0`,
+`presSentinelNonZero=true`, `mutantG_scratch_preservationFailures=36`,
+`mutantG_scratch_exitFailures=0`, `mutantG_clobberedRegs=[70]`,
+`mutantG_isPreservationOnly=true`.  UNCHANGED from M3d-22, as expected:
+this session added no machine block, only an equation between two existing
+descriptions of one read.  THE INTERIOR ANALOGUE OF PHASE 3h REMAINS
+UNBUILT AND IS STILL OWED.
+
+`#print axioms` after a root build, importing the module DIRECTLY:
+
+    chunkAddrs_eq_machineAddresses            does not depend on any axioms
+    linkWitness_chunkCount_load_bearing       does not depend on any axioms
+    linkWitness_entriesLen_load_bearing       does not depend on any axioms
+    routeDecode_eq_machineReadComputation_value  [propext, Quot.sound]
+    linkWitness_link_instantiated             [propext, Quot.sound]
+    linkWitness_executed                      [propext, Quot.sound]
+    linkWitness_discriminates_content         [propext, Quot.sound]
+    geomRouteDecode_eq_readComputation_value  [propext, Classical.choice, Quot.sound]
+    geomCell_baseline_eq_readComputation_value   [propext, Classical.choice, Quot.sound]
+    geomCell_minRel_eq_readComputation_value     [propext, Classical.choice, Quot.sound]
+    geomCell_maxRel_eq_readComputation_value     [propext, Classical.choice, Quot.sound]
+    geomCell_argOffset_eq_readComputation_value  [propext, Classical.choice, Quot.sound]
+
+Never `sorryAx`.  `maxHeartbeats` was NOT raised anywhere, and NO whnf
+timeout was encountered.
+
+DD-20260719-017 CLAIMED.  Maximum OBSERVED before claiming was
+`DD-20260719-016`, verified by scanning the tree.  The consolidated
+program-layout DD is still owed at the glue.
+
+KNOWN RED, externally owned, unchanged and not touched:
+`scripts/wordram_axiom_check.lean`, `scripts/axiom_check.lean`,
+`lake exe rmq_succinct_classic_validate` (COMPILE-time failure).
+
+### 5. MATRIX STATUS AT YIELD
+
+All eleven rows REQ-E1-01..11 remain OPEN.  This session closed none,
+weakened none, and edited no frozen row text.  The rows are whole-query
+scoped and this session landed a component of the interior leg, so no
+row's status could move; the matrix was left untouched rather than
+annotated, consistent with the seventeen prior sessions.
+
+### 6. RESUME POINT (M3d-24)
+
+All file:line verified at this session's HEAD.
+
+1. MISSION ITEM 1 IS DONE, BOTH HALVES.  The four
+   `geomCell_*_eq_readComputation_value`
+   (`E1InteriorSummaryGroup.lean:927`, `:945`, `:963`, `:981`) state the
+   machine's saved cell as the value of the computation the ROUTE runs,
+   with no validity, cap or store hypothesis.  The parametric core they
+   rest on is `routeDecode_eq_machineReadComputation_value` (`:865`).
+   Registers `105 .. 117` are TAKEN; THE NEXT BLOCK OPENS AT `118`.
+2. WHAT IS STILL NOT CLAIMED, AND IS THE NEXT NATURAL STEP.  The four link
+   ONE read each.  `routeDecodedSummary` (`E1InteriorMinCandidate.lean:898`)
+   equals the value of `canonicalRelativeRmmMachineSummaryComputation`
+   (`InteriorDirectory.lean:2277`) is a FURTHER step: that computation is a
+   three-deep `FlatStoreComputation.bind` closing over a `map`
+   (`:2283`-`:2298`), so the step is `bind_run`
+   (`MachineChunkedTableProgram.lean:191`, `@[simp]`) plus the four links,
+   with the tuple arm decided by the `match` at `:2294`-`:2296`.  This is
+   short and I did not reach it.
+3. THEN THE SPAN BLOCKS (`InteriorDirectory.lean:2311`, `:2329`).  Both are
+   `FlatStoreComputation.pure none` on the `none` arm, so THE `none` ARM
+   MUST BRANCH PAST the composite -- 177 instructions.  RE-DERIVED THIS
+   SESSION and confirmed: `summaryGroup_length = 156`
+   (`E1InteriorSummaryGroup.lean:299`) plus `minCandidateBlock_length = 21`
+   (`E1InteriorMinCandidate.lean:241`), and `summaryMinCandidate_runsTo`
+   (`:924`) exits at `Q + 177`.
+4. THEN THE TWO-SPAN BLOCKS (`:2351`, `:2376`).  THE LEVEL READ IS THE
+   UNCONDITIONAL HEAD of every append chain.  Violating that order presents
+   as a whnf heartbeat timeout, NOT a type error, and must never be met by
+   raising `maxHeartbeats`.
+5. THEN the five-branch dispatch (`:2444`) and `hInterior` at
+   `E1CrossBlockArm.lean:1143`.  The interior has five branches and no scan.
+6. THE CLOSURE LADDER AND THE OWED PRESERVATION CHECK are unchanged and
+   unbuilt: full LCA leg at canonical-store form; whole-query glue via
+   `E1RouteDecomposition` with result agreement on `(...).value` and
+   POSITIONAL receipt equality on `(...).trace`; category accounting across
+   ALL branches including selects-none and lca-none; the public `List Int`
+   corollary; the DERIVED all-size literal step total from the category
+   algebra and the caps 33/8/8 -- derive, never assert; the amended-target
+   Prop with its supersession note; the validator's whole-query phase; docs
+   and matrix closure; the ONE consolidated program-layout DD at the glue;
+   and an EXECUTED preservation check for the interior fold -- the
+   validator's phase 3h is fringe-arm only.
+7. THE M7 DOC CLAIM is scoped to QUERY TIME with construction-time
+   computation carved out as preprocessing (`bpSparseLevelCell`,
+   `SparseLevelTable.lean:55`).  Do not write it until the interior leg
+   exists.  The stale frozen-row anchor is a NOTE, already appended; do not
+   edit frozen requirement text.
+8. THE STALE NAME AT `E1InteriorChunkStore.lean:31` IS STILL THERE, and
+   still correctly deferred: the docstring cites
+   `probeShape_unbounded_agreement_fails`, but the theorem is
+   `unbounded_agreement_refuted` (`:537`).  I did not edit that file, and
+   the standing instruction is to fold it in only when already editing it.
+   Prose only; no theorem affected.
+9. STANDING RULES, still five.  This session adds no sixth.  It sharpens
+   rule 3 from a new direction: the boundary M3d-22 hit -- "this quantity
+   is computable but the kernel cannot reach it" -- was a property of the
+   STATEMENT's shape rather than of the mathematics.  Before accepting that
+   a claim cannot be executed, check whether a parametric restatement makes
+   it executable without weakening it.  Here it did, and the shape-level
+   claim survives as a corollary of the executable one.
