@@ -418,7 +418,131 @@ theorem fringeLoopBody_fits {w S c L LB : Nat}
     (try simp only [<- hMdef]) <;>
     omega
 
-/-! ## The keep-left merge is the identity on an absent candidate -/
+/-! /-! ## Shared symbolic-evaluation macros (module-local instances) -/
+
+/-- Symbolic machine-state evaluation with this module's segments and the
+fringe register-bank numerals. -/
+local macro "fringe_eval" : tactic =>
+  `(tactic| straight_eval [fringePrefix, fringeShift, fringeAdvance,
+      fOne, fC, fW0, fW1, fW2, fW3, fAcc, fBV, fBP, fJC, fLo, fHi, fCnt,
+      fV, fA, fB, fSlot, fE, fCV, fCP, fT, fU, fX])
+
+/-- Destination-register evaluation for preservation side conditions. -/
+local macro "fringe_writes" : tactic =>
+  `(tactic| straight_writes [fOne, fC, fW0, fW1, fW2, fW3, fAcc, fBV, fBP,
+      fJC, fLo, fHi, fCnt, fV, fA, fB, fSlot, fE, fCV, fCP, fT, fU, fX])
+
+/-! ## The decoded chunk-table entry -/
+
+/-- The decoded chunk-table entry the fold consumes at chunk `j`: the
+machine's `fE` register after the read and its bounded decode. -/
+def fringeEntry (store : ReadStore) (S c : Nat) (window : List Bool)
+    (relLo relHi j : Nat) : Nat :=
+  ((store.readWord? S (bpFringeChunkSlotAt c window relLo relHi j)).map
+    bitsToNatLE).getD 0
+
+/-! ## Straight prefix simulation -/
+
+/-- The prefix writes only `fV, fA, fB, fSlot, fE, fCV, fCP, fAcc` and the
+scratch registers `fT, fU, fX`. -/
+def FringePrefixUntouched (r : Nat) : Prop :=
+  r ≠ fV ∧ r ≠ fA ∧ r ≠ fB ∧ r ≠ fSlot ∧ r ≠ fE ∧ r ≠ fCV ∧ r ≠ fCP ∧
+    r ≠ fAcc ∧ r ≠ fT ∧ r ≠ fU ∧ r ≠ fX
+
+/-- Category log of the prefix, independent of its operands. -/
+theorem fringePrefix_cats (S c : Nat) :
+    (fringePrefix S c).map Instr.category = fringePrefixCats := rfl
+
+/--
+Exact simulation of the straight prefix of one fold pass: from the loop
+entry with the pinned constants, the range endpoints, the chunk cursor
+`fJC = j * c`, and the four window registers representing
+`bitsToNatLE window / 2 ^ (j * c)`, the hosted prefix runs to `LB + 32`
+emitting exactly the pass's ONE charged chunk-table read, and leaving the
+gate operands in `fA`/`fB`, the candidate in `fCV`/`fCP`, and the advanced
+accumulator in `fAcc`.
+-/
+theorem fringePrefix_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {LB S c L : Nat}
+    (hc : c ≤ L)
+    (hPre : HostedAt program LB (fringePrefix S c))
+    (window : List Bool) (relLo relHi j acc : Nat)
+    (regs : RegFile)
+    (hOne : regs fOne = 1) (hC : regs fC = c)
+    (hLo : regs fLo = relLo) (hHi : regs fHi = relHi)
+    (hJC : regs fJC = j * c)
+    (hW : windowRegsValue L (regs fW0) (regs fW1) (regs fW2) (regs fW3) =
+      bitsToNatLE window / 2 ^ (j * c))
+    (hAcc : regs fAcc = acc) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, LB, false⟩ ⟨regs', LB + 32, false⟩
+        [bpFringeChunkEventAt store S c window relLo relHi j]
+        fringePrefixCats ∧
+      regs' fA = bpFringeChunkStartOff c relLo j ∧
+      regs' fB = bpFringeChunkEndOff c relHi j ∧
+      regs' fCV =
+        acc + fringeEntry store S c window relLo relHi j / (c + 1) %
+          (2 * c + 2) - c ∧
+      regs' fCP =
+        j * c + fringeEntry store S c window relLo relHi j % (c + 1) ∧
+      regs' fAcc =
+        acc + fringeEntry store S c window relLo relHi j /
+          ((c + 1) * (2 * c + 2)) - c ∧
+      (∀ r, FringePrefixUntouched r -> regs' r = regs r) := by
+  -- the chunk value the prefix reads off the first window register
+  have hchunk : regs fW0 % 2 ^ c = bpFringeWindowChunkValue c window j := by
+    rw [bpFringeWindowChunkValue_eq_div_mod, <- hW, windowRegsValue_mod hc]
+  have hrun := RunsTo.straight store (fringePrefix S c)
+    (fringePrefix_straight S c) LB hPre regs
+  obtain ⟨regsP, hregsP⟩ :
+      ∃ x, straightRegs store (fringePrefix S c) regs = x := ⟨_, rfl⟩
+  rw [hregsP] at hrun
+  -- the pass's one receipt
+  have hreads : straightReads store (fringePrefix S c) regs =
+      [bpFringeChunkEventAt store S c window relLo relHi j] := by
+    fringe_eval <;>
+      simp [hOne, hC, hLo, hHi, hJC, hchunk, bpFringeChunkEventAt,
+        bpFringeChunkSlotAt, bpFringeChunkSlot,
+        bpFringeChunkStartOff_eq_sub, bpFringeChunkEndOff_eq_sub,
+        nat_mod_eq_sub_div_mul]
+  rw [hreads] at hrun
+  rw [fringePrefix_cats] at hrun
+  refine ⟨regsP, hrun, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · rw [<- hregsP, bpFringeChunkStartOff_eq_sub]
+    fringe_eval <;> simp [hOne, hC, hLo, hJC]
+  · rw [<- hregsP, bpFringeChunkEndOff_eq_sub]
+    fringe_eval <;> simp [hOne, hC, hHi, hJC]
+  · rw [<- hregsP, fringeEntry, nat_mod_eq_sub_div_mul]
+    fringe_eval <;>
+      simp [hOne, hC, hAcc, hLo, hHi, hJC, hchunk, bpFringeChunkSlotAt,
+        bpFringeChunkSlot, bpFringeChunkStartOff_eq_sub,
+        bpFringeChunkEndOff_eq_sub, decodeRead_pred_eq_map_getD,
+        nat_mod_eq_sub_div_mul]
+  · rw [<- hregsP, fringeEntry, nat_mod_eq_sub_div_mul]
+    fringe_eval <;>
+      simp [hOne, hC, hLo, hHi, hJC, hchunk, bpFringeChunkSlotAt,
+        bpFringeChunkSlot, bpFringeChunkStartOff_eq_sub,
+        bpFringeChunkEndOff_eq_sub, decodeRead_pred_eq_map_getD,
+        nat_mod_eq_sub_div_mul]
+  · rw [<- hregsP, fringeEntry]
+    fringe_eval <;>
+      simp [hOne, hC, hAcc, hLo, hHi, hJC, hchunk, bpFringeChunkSlotAt,
+        bpFringeChunkSlot, bpFringeChunkStartOff_eq_sub,
+        bpFringeChunkEndOff_eq_sub, decodeRead_pred_eq_map_getD]
+  · intro r hr
+    obtain ⟨h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11⟩ := hr
+    rw [<- hregsP]
+    apply straightRegs_preserves
+    intro i hi
+    simp only [fringePrefix, List.mem_cons, List.not_mem_nil,
+      or_false] at hi
+    rcases hi with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+      | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+      | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+      | rfl <;>
+      fringe_writes
+
+## The keep-left merge is the identity on an absent candidate -/
 
 theorem bpFringeMergeCand_none (best : Option (Nat × Nat)) :
     bpFringeMergeCand best none = best := by
