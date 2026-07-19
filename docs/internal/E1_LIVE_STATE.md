@@ -42,10 +42,36 @@ close leg's signature change to `crossBlockArmProgramAt_runsTo` versus the
 campaign branch's application of it, in two different files with no
 conflict. See the §3 subsection on that signature and DD-20260719-110.
 
-**What is still missing for whole-query is the whole-query PROGRAM
+~~**What is still missing for whole-query is the whole-query PROGRAM
 ITSELF** — no definition composes the close legs and the interior into one
-runnable query program, and no `wholeQueryProgram` exists in the tree.
-Validator phase 5 remains OPEN and states this correctly.
+runnable query program, and no `wholeQueryProgram` exists in the tree.~~
+**PARTLY SUPERSEDED (E1-LaneA1).** A program now exists:
+`wholeQueryValidPathThroughLca` (`E1WholeQueryProgram.lean:155`) composes
+select setup, both select legs, the select join and the terminated close/LCA
+leg, with every stage base computed from the preceding lengths. **The guard
+and BOTH select legs are EXECUTED** (`wholeQuerySelectPrefix_runsTo`,
+`:250`). Left struck through rather than deleted, per the standing rule.
+
+**But `WholeQueryMachineAgrees` (`E1WholeQueryPublic.lean:114`) is still NOT
+discharged, and validator phase 5 is still correctly OPEN.** Two obligations
+block the remainder, both found by E1-LaneA1 and neither a matter of
+assembly effort — see §7 and §10c:
+
+1. `crossBlockArmProgramAt_runsTo` (`E1CrossBlockArm.lean:1181`) exports NO
+   preservation clause, deliberately (its header at `:1143`), so nothing
+   entitles a caller to carry register state across the cross arm;
+2. the cross-block arm's INTERIOR OBJECT is not reconciled with the route's:
+   `crossBlockArmSpec_eq` (`E1CrossBlockArm.lean:181`) yields the interior as
+   `if leftBlock + 1 < rightBlock then … else pure none` while
+   `crossBlockArm_withCanonicalInterior_runsTo` produces
+   `⟨dispatchRouteValue …, dispatchEvents …⟩`, and NO theorem identifies them.
+
+**Validator phase-5 TEXT IS NOW STALE AGAIN**, in the opposite direction from
+the staleness §10b recorded. It reads "no definition composes them into one
+runnable query program"; one now does. The string lives in
+`RMQ/Validation/E1MachineValidate.lean`, which is the category-algebra
+sibling lane's file, so E1-LaneA1 did not edit it. The VERDICT (`OPEN`, not a
+pass) remains correct — only the parenthetical is wrong.
 
 **All eleven rows of `E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md` are Open.**
 
@@ -285,7 +311,47 @@ makes one block cover both.
 | **THE MIS-DISPATCH DISCRIMINATOR** | `missDispatch_runs_armA` `:1431`, `missDispatchImpostor_runs_armB` `:1502` |
 | its boundary, all four sides | `..._exit_and_halt_agree` `:1574`, `..._catLogs_agree` `:1581`, `..._receipts_differ` `:1596`, `..._values_differ` `:1604` |
 | close/LCA dispatch, both arms | `closeDispatch_runsTo_same` / `_cross` — `E1CloseDispatch.lean:187`/`:224` |
-| same-block leg composed | `sameBlockDispatchProgram_runsTo` — `E1CloseCompose.lean:95` |
+| same-block leg composed — **BASE `0` ONLY, see §3b** | `sameBlockDispatchProgram_runsTo` — `E1CloseCompose.lean:95` |
+| **the close/LCA leg's OWN branch split, route-side** | `lcaLeg_of_sameBlock` `E1WholeQueryLcaLeg.lean:57`, `lcaLeg_of_crossBlock` `:83` |
+| its anti-vacuity | `lcaLeg_branches_exhaustive` — `E1WholeQueryLcaLeg.lean:110` |
+| **THE CLOSE/LCA LEG, REBASABLE AND TERMINATED** | `closeLcaProgramAt` — `E1WholeQueryCloseLca.lean:111`, length `4753` at `:117` |
+| its four hosting facts, offsets computed | `closeLcaProgramAt_hosts` — `:132` |
+| **both arms executed, converging at `closeLcaExit A`** | `closeLcaProgramAt_runsTo_same` `:183`, `_runsTo_cross` `:243` |
+| the convergence address checked against the length | `closeLcaExit_eq_end` — `:124` |
+| **THE WHOLE-QUERY PROGRAM** | `wholeQueryValidPathThroughLca` — `E1WholeQueryProgram.lean:155`, length `5572` at `:160` |
+| its select prefix | `wholeQuerySelectPrefix` `E1WholeQueryProgram.lean:143`, length `813` at `:148` |
+| **the guard and BOTH selects, EXECUTED** | `wholeQuerySelectPrefix_runsTo` — `E1WholeQueryProgram.lean:250` |
+| stage hosting, every offset computed | `wholeQuerySelectPrefix_hosts` `:180`, `..._hosts_closeLca` `:206` |
+| the close/LCA leg's base, checked not asserted | `closeLca_base_is_827` — `:169` |
+
+### 3b. THE CLOSE/LCA COMPOSITION WAS PINNED TO BASE `0` — do not reuse it above
+
+`closeDispatchProgram` writes its branch target as `4 + crossArm.length`,
+which is the same-block arm's ABSOLUTE address only when the program is
+hosted at `0`; `sameBlockDispatchProgram_runsTo` (`E1CloseCompose.lean:95`)
+accordingly runs from `⟨regs, 0, false⟩`. In the whole query the close/LCA leg
+sits after the guard and BOTH select legs, so that composition is
+inapplicable there — not weakened, simply unusable.
+
+**Use `closeLcaProgramAt` (`E1WholeQueryCloseLca.lean:111`) instead**, which
+takes its host base `A` and computes every target from it, AND wires the
+cross arm's terminator. Layout: dispatch `4` at `A`, cross arm `4574` at
+`A + 4`, terminator `2` at `A + 4578`, same-block leg `173` at `A + 4580`,
+both arms converging at `A + 4753`.
+
+**The terminator was DEFINED BUT NEVER APPLIED TO A REAL ARM before
+E1-LaneA1.** `crossArmTerminated` (`E1CloseDispatch.lean:625`) and
+`crossArmTerminated_converges` (`:649`) existed only against that module's own
+two-instruction stub `unterminatedCrossArm` (`:444`). DD-20260719-121.
+
+**PRESERVATION IS ASYMMETRIC ACROSS THE TWO ARMS, and that is inherited.**
+`closeLcaProgramAt_runsTo_same` exports `CloseLegUntouched`; the cross twin
+exports NOTHING, because `crossBlockArmProgramAt_runsTo`
+(`E1CrossBlockArm.lean:1181`) has no preservation conjunct — deliberately,
+per its header at `:1143`. A composed leg claiming preservation on both arms
+would be claiming something FALSE on one of them, which is the too-strong
+predicate failure DD-20260719-056 records at `TwoLegUntouched`. Anyone
+carrying register state across the cross arm owes that clause first.
 
 **Register allocation.** Merge bank `75..84`. Interior fold bank `89..99`.
 Summary+min-candidate `105..117`. Span block `118..122` (`pSlot` 118 and
@@ -1075,6 +1141,98 @@ to the verdict, and runs no comparison — building the program is the
 blocking item, and phase 5 must not be flipped to available until there is
 something real for it to run.
 
+
+---
+
+## 10c. Worklog — E1-LaneA1, 2026-07-19 (whole-query assembly)
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `fd59487`. Two commits:
+`d46a7fc`, `fadc4aa`. DD-IDs claimed and WRITTEN into `DESIGN_DECISIONS.md`:
+**`120`, `121`, `122`**. Band `123-139` remains free.
+
+**BUILT.** Three new modules, all registered in `RMQ.lean`.
+
+- `E1WholeQueryLcaLeg.lean` — the close/LCA leg's own branch split
+  (`lcaLeg_of_sameBlock` `:57`, `lcaLeg_of_crossBlock` `:83`), **which was
+  absent from the tree**, plus `lcaLeg_branches_exhaustive` `:110`.
+- `E1WholeQueryCloseLca.lean` — `closeLcaProgramAt` `:111`, the close/LCA leg
+  rebased off base `0` and with the cross arm's terminator wired to a REAL
+  arm for the first time; both arms executed (`:183`, `:243`).
+- `E1WholeQueryProgram.lean` — `wholeQueryValidPathThroughLca` `:155`, the
+  first definition in the campaign composing query legs into one runnable
+  program, and `wholeQuerySelectPrefix_runsTo` `:250`, which EXECUTES the
+  guard and both select legs at every shape and every valid range.
+
+**THREE COORDINATOR/FILE CLAIMS CHECKED; TWO NEEDED CORRECTION.**
+
+1. "The cross arm has a terminator DEFINED BUT NOT YET WIRED" — **held**, and
+   wiring it turned out to be inseparable from a second defect the brief did
+   not name (below). DD-20260719-121.
+2. "`programSkeleton`'s `validPath` instantiated with the composed close/LCA
+   leg" as a one-step task — **the composition was pinned to base `0`.**
+   `closeDispatchProgram`'s branch target `4 + crossArm.length` is absolute
+   and correct only at base `0`, and the whole query puts the close/LCA leg
+   after the guard and both selects. This is now §3b. The terminator and the
+   rebasing HAD to land together: the terminator's jump target is absolute
+   and cannot be written correctly until the layout is parametric in `A`.
+3. "Only `5,6,7` are dead after the guard" — **UNDER-COUNTED BY TWO.** The
+   dead set is `{3,4,5,6,7}`: `regZero` (3) is read only by the two
+   `natEq regG _ regZero` instructions and `regN` (4) only by
+   `natLe regT2 regRight regN`, all inside `guardBlock`
+   (`E1QueryProgram.lean:110`) and all executed before pc `8`. Nothing in the
+   valid path reads either. DD-20260719-122.
+
+**AND ONE FALSE ALARM WORTH RECORDING.** The brief warned that the select
+leg proves the CHUNKED select object while the route decomposition names the
+non-chunked one. There is no gap:
+`concreteBPNativeSelectCloseGlobalWordTraceResult`
+(`SuccinctFinalRAM.lean:1342`) is DEFINITIONALLY the chunked one, so the
+bridge is `rfl`. Grepped before budgeting time for a reconciliation.
+
+**WHAT BLOCKS THE REST OF `WholeQueryMachineAgrees`**, and neither item is a
+matter of assembly effort:
+
+1. **The cross arm exports no preservation clause**
+   (`crossBlockArmProgramAt_runsTo`, `E1CrossBlockArm.lean:1181`, deliberately
+   per its header at `:1143`). Every register fact the rank and output stages
+   need must cross it, and nothing entitles a caller to that. **This is the
+   next thing to build** — its own header says the fix is a fifth conjunct on
+   `hInterior`, and `interiorDispatch_preserves_closeLeg`
+   (`E1InteriorDispatchCompose.lean:1223`) already proves that conjunct for
+   the canonical interior, so the pieces are present.
+2. **The cross-block arm's interior object is not reconciled with the
+   route's.** `crossBlockArmSpec_eq` (`E1CrossBlockArm.lean:181`) yields the
+   interior as `if leftBlock + 1 < rightBlock then … else pure none`; but
+   `crossBlockArm_withCanonicalInterior_runsTo` produces
+   `⟨dispatchRouteValue …, dispatchEvents …⟩`. **No theorem identifies them.**
+   `interiorRangeMin_of_cross` (`E1InteriorDispatch.lean:507`) and
+   `canonicalBlockSize_eq_layoutBlockSize`
+   (`E1InteriorDispatchCompose.lean:1151`) are the relevant pieces; note the
+   two sides also spell the block size differently (Raw vs layout), which is
+   what `canonicalBlockSize_eq_layoutBlockSize` exists to bridge.
+
+**Validator.** `lake exe rmq_e1_machine_validate` PASS at **19 s wall clock**,
+phase 5 `wholeQueryComparisonAvailable=false`. **It does not exercise one line
+of this session's work** — the evidence is the in-tree executed simulations.
+Its phase-5 TEXT is now stale in the opposite direction from §10b's note (it
+says no definition composes the legs; one now does); the verdict `OPEN` is
+still right, and the file belongs to the sibling category-algebra lane, so it
+was not edited here.
+
+**`#print axioms`** on all fourteen exported declarations, through a
+scratchpad driver importing the three modules directly:
+`propext, Classical.choice, Quot.sound` on thirteen, `propext` alone on
+`lcaLeg_branches_exhaustive`. No `sorryAx` anywhere.
+
+**What I would take next, in order.** The cross arm's preservation clause
+(item 1 above — smallest, and it unblocks all register plumbing past the
+close/LCA leg); then the interior object reconciliation (item 2); then the
+select join's simulation, the rank leg and the output stage, which are
+straightforward once 1 and 2 land. The `none`-branch discriminator at the
+whole-query PROGRAM level is still owed and is NOT covered by
+`lcaNone_impostor` (`E1WholeQueryCats.lean`), which is a FIXTURE-level
+category-log discriminator — it establishes that the other three checks
+cannot reject some impostor, not that this program's receipt cannot.
 
 ---
 
