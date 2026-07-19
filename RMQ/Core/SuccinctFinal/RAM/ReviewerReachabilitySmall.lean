@@ -2069,27 +2069,28 @@ private theorem reviewerCanonicalComponent_local_get
     let localWords :=
       ((SuccinctClose.canonicalRelativeRmmInteriorLocalTable
         shape).table.machineStore hword).store.words.toList
-    let globalWords :=
-      ((SuccinctClose.canonicalRelativeRmmInteriorGlobalTable
-        shape).table.machineStore hword).store.words.toList
     have hlocalWords : localAddress < localWords.length := by
       simpa [localWords,
         SuccinctClose.canonicalRelativeRmmLocalMachineStore] using hlocal
-    have hmiddle :
+    -- Quantified over the trailing regions rather than naming them.  Reading
+    -- the local region depends only on what precedes it, so this proof must
+    -- not enumerate what follows: spelling the tail out literally is what
+    -- made it break whenever the component store grew a region.
+    have hmiddle : forall post : List (List Bool),
         ((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
-          localWords ++ globalWords)[
+          localWords ++ post)[
             (((baselineWords ++ minRelWords) ++ maxRelWords) ++
               argWords).length + localAddress]? =
-          localWords[localAddress]? :=
+          localWords[localAddress]? := fun post =>
       SuccinctSpace.List.getElem?_append_middle_of_lt
         (((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords)
-        localWords globalWords localAddress hlocalWords
+        localWords post localAddress hlocalWords
     rw [SuccinctClose.canonicalRelativeRmmInteriorComponentStore_words_toList]
     simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
-      argWords, localWords, globalWords,
+      argWords, localWords,
       SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets,
       SuccinctClose.canonicalRelativeRmmLocalMachineStore,
-      List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
+      List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle _
   simpa [Array.getElem?_toList] using hlist
 
 private theorem reviewerIncreasingCanonicalInterior_successfulRead :
