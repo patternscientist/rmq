@@ -6641,3 +6641,99 @@ Recorded because this is the one merge hazard that no textual tool reports:
 two branches, two files, no conflict, and a type error that only appears
 after both land. A merge that had been resolved file-by-file and committed
 on a green `git status` would have shipped it.
+
+---
+
+## DD-20260719-120: the close/LCA leg's own branch split was ABSENT from the tree and is stated route-side, against the route's condition rather than a machine paraphrase (E1 LaneA1)
+
+Claimed by the E1-LaneA1 whole-query assembly session; predecessor
+`DD-20260719-110`.
+
+The whole query's third leg is
+`concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore`
+(`SuccinctFinalStoreParam.lean:1575`), whose body — one unfold down, at
+`ChargedFringeWiring.lean:487` — is a single `if` on
+`blockOfClose blockSize leftClose = blockOfClose blockSize rightClose`
+with a `let`-bound `blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape`.
+
+**No theorem in the tree split that `if`.** Grepped before building rather
+than after: the five consequents of the inner definition (`_eq_of_agree`
+`:505`, `_refines_of_agree` `:548`, `_store_parametric` `:586`,
+`_matchesReadStore` `:623`, `_no_syntheticCostOnlyPrimitive` `:656`) and the
+five of the outer wrapper (`SuccinctFinalStoreParam.lean:1587`–`:2040`) all
+carry the `if` through intact. Every case split on it in the tree is INLINE
+inside a proof body and never exported; the closest thing to a precedent,
+`finalLcaCloseWithStore_storeTraceLocal` (`SuccinctFinalStoreParam.lean:2015`),
+is `private` and concludes a `StoreTraceLocal`, not an arm equality.
+
+`lcaLeg_of_sameBlock` and `lcaLeg_of_crossBlock`
+(`E1WholeQueryLcaLeg.lean`) state the two halves.
+
+**Why they are stated against the ROUTE's condition.** `closeDispatch`
+(`E1CloseDispatch.lean:83`) computes both block indices by `divConst` and
+compares them, and `closeDispatch_runsTo_same`/`_cross` (`:187`/`:224`) are
+already stated against the route condition rather than a machine-side notion
+of "same block". Stating these two lemmas against that same condition means a
+composition discharges ONE hypothesis and both sides move together — there is
+no machine-side same-block predicate that could drift from the route's.
+
+`lcaLeg_branches_exhaustive` records that the two conditions are
+complementary, so neither lemma is vacuous. That is cheap and it is the
+anti-vacuity obligation a pair of branch lemmas owes: a pair in which one
+side is unreachable would typecheck and say nothing.
+
+## DD-20260719-121: the close/LCA composition is REBASED off zero and the cross arm's terminator is wired to a REAL arm, and the two repairs had to land together (E1 LaneA1)
+
+Claimed by the E1-LaneA1 whole-query assembly session; predecessor
+`DD-20260719-120`.
+
+Two defects, both live at the base commit, both in the way of any whole-query
+program, and NOT independent.
+
+**(1) THE TERMINATOR WAS DEFINED BUT NEVER APPLIED TO A REAL ARM.**
+`crossArmTerminated` (`E1CloseDispatch.lean:625`) and
+`crossArmTerminated_converges` (`:649`) existed, but only against that
+module's own two-instruction stub `unterminatedCrossArm` (`:444`). No
+composition anywhere applied them to `crossBlockArmProgramAt`. Untreated, the
+cross arm's exit PC lands exactly on the same-block leg's base and control
+falls through into the wrong leg — the defect
+`unterminatedCrossArm_falls_through` (`:469`) exhibits.
+
+**(2) THE COMPOSITION WAS PINNED TO BASE ZERO.** `closeDispatchProgram`
+(`E1CloseDispatch.lean`) writes its branch target as `4 + crossArm.length`,
+which is the same-block arm's ABSOLUTE address only when the whole program is
+hosted at `0`; `sameBlockDispatchProgram_runsTo` (`E1CloseCompose.lean:95`)
+accordingly runs from `⟨regs, 0, false⟩`. In the whole query the close/LCA leg
+sits after the guard and BOTH select legs, at a base that is not `0`. So the
+existing composition was unusable for whole-query assembly — not weakened,
+simply inapplicable.
+
+**Why they had to land together.** The terminator's jump target is an
+ABSOLUTE address. It cannot be written correctly until the layout is
+parametric in the host base `A`. Fixing (1) without (2) would have produced a
+terminator that was right at base `0` and wrong everywhere else — which is
+defect (2) reintroduced through the terminator instead of through the branch.
+
+`closeLcaProgramAt` (`E1WholeQueryCloseLca.lean`) is the repaired leg. Layout:
+dispatch `4` at `A`, cross arm `4574` at `A + 4`, terminator `2` at
+`A + 4578`, same-block leg `173` at `A + 4580`, both arms converging at
+`closeLcaExit A = A + 4753`. Every one of those numbers is derived by
+`simp`/`decide` from the component length lemmas
+(`crossBlockArmProgramAt_length` `E1CrossBlockArm.lean:809`,
+`canonicalInteriorDispatchBlock_length` `E1InteriorDispatchCompose.lean:103`,
+`sameBlockLegProgramAt_length` `E1SameBlockLeg.lean:730`) and none is written
+into a `runsTo` by hand. `closeLcaExit_eq_end` checks the convergence address
+against the program's own length, so a layout drift stops the build rather
+than producing a leg that silently runs off its end.
+
+**THE PRESERVATION ASYMMETRY, STATED RATHER THAN PAPERED OVER.**
+`closeLcaProgramAt_runsTo_same` exports `CloseLegUntouched`; the cross twin
+exports NOTHING. That is inherited, not introduced:
+`crossBlockArmProgramAt_runsTo` (`E1CrossBlockArm.lean:1181`) has no
+preservation conjunct, deliberately, per its own header at `:1143` — its
+`hInterior` promises only `fClose`/`fRight`/`mLV`/`mLP` and the interior sits
+mid-arm, so `CloseLegUntouched` is not provable there. A composed leg claiming
+preservation on both arms would have been claiming something false on one of
+them, which is precisely the too-strong-predicate failure DD-20260719-056
+records at `TwoLegUntouched`. Recorded as an open obligation for whoever
+carries register state across the cross arm.

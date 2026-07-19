@@ -55,6 +55,8 @@ import RMQ.Core.WordRAM.E1InteriorTwoSpan
 import RMQ.Core.WordRAM.E1InteriorCombine
 import RMQ.Core.WordRAM.E1InteriorDispatch
 import RMQ.Core.WordRAM.E1InteriorDispatchCompose
+import RMQ.Core.WordRAM.E1WholeQueryLcaLeg
+import RMQ.Core.WordRAM.E1WholeQueryCloseLca
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks
