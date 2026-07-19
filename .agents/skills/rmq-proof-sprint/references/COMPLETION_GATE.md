@@ -398,6 +398,14 @@ Likewise, a matrix row does not close merely because it contains a theorem
 name. If the quoted conclusion is weaker than the requirement, concerns a
 different object, or stops before the named consumer, mark it open.
 
+An upper-bound proof does not establish semantic tightness. If a row says a
+cost cap is *tight*, *attained*, or makes an older smaller cap impossible,
+require a checked equality/lower-bound witness or a counterexample/negation of
+the smaller bound on the same reachable object and domain. Syntactic facts
+about the proof of `cost <= K`—including use of `exact`, absence of
+`Nat.le_trans`, or zero visible arithmetic slack—remain upper-bound evidence
+only. Comments and decision prose must use the same distinction.
+
 ## 5. Valid Stop Conditions
 
 A worker may stop only when one of these is true:

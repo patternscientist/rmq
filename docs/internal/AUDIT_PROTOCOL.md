@@ -118,6 +118,23 @@ worker pass.
 8. Best next target.
 9. Durable report path.
 
+### Matrix reconstruction semantics
+
+Enumerate the actual frozen acceptance IDs verbatim and give a disposition for
+each. Evidence may live in the frozen row, in an append-only evidence section,
+or in another location explicitly permitted by the matrix schema. A blank cell
+or an `Open` status reserved for coordinator acceptance is not, by itself,
+evidence that the requirement failed. The auditor must identify the missing or
+insufficient proposition, consumer, identity chain, executable result, or
+anti-vacuity witness. Appended prose remains process evidence until those
+substantive links are independently checked.
+
+Do not invent row IDs or replace an ID-by-ID reconstruction with a row count.
+For tightness, attainment, or claims that an older bound is impossible, an
+upper-bound theorem alone is insufficient even when its proof uses `exact` and
+has no visible numeric slack. Require an equality/lower-bound witness or a
+checked counterexample/negation over the same reachable object and domain.
+
 ## Coordinator Disposition
 
 The coordinator verifies heads, audits the audit, reconstructs the frozen

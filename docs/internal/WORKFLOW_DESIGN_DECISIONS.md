@@ -3648,3 +3648,59 @@ Publication-facing significance:
 Reviewer navigation must identify which checked theorem actually carries a
 headline conjunct. This prevents a true project-level fact from being attached
 to a weaker declaration in the theorem map, trust packet, or paper digest.
+
+## WDD-20260719-005: separate semantic matrix evidence from cell placement and upper-bound syntax from attainment
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: completed-worker proof gates, external-audit reconstruction, and audit
+prompt engineering.
+
+Decision:
+
+1. Auditors enumerate the real frozen IDs and reconstruct each row from every
+   evidence location explicitly allowed by the matrix schema. A blank cell or
+   coordinator-owned `Open` status is not independently a blocker.
+2. Appended evidence remains untrusted until its proposition, consumer, object
+   identity, executable result, and anti-vacuity obligation are checked.
+3. Tightness, attainment, and impossibility of a smaller cost bound require an
+   equality/lower-bound witness or checked counterexample/negation on the same
+   reachable object. A direct proof of `cost <= K` proves only that upper bound.
+
+Trigger and evidence:
+
+B7 target `6ad4198cf09c0d4e103ae0e1c0a5c7a084d0ae25` promoted a direct
+`cost <= 33` proof to the statements that 33 was attained and the old 30 bound
+was unprovable. A08 report `1bc6b3597b97720c5c5dad0a2e87277cf28fd7ea`
+correctly challenged that promotion, but separately rejected 24 rows from
+blank cell placement and `Open` status, named nonexistent row IDs, and did not
+reconstruct the row-keyed append-only evidence.
+
+Rejected alternatives:
+
+- Treat proof-term shape or absence of transitivity as a semantic lower bound.
+- Require every frozen matrix to rewrite table cells after freeze, which would
+  defeat append-only evidence designs and confuse worker evidence with
+  coordinator acceptance.
+- Accept append-only prose at face value merely because its row ID is present.
+- Repair only the A08 report without making the two general failure patterns
+  durable.
+
+Consequences and regression evidence:
+
+- `B7-UPPER-BOUND-IS-NOT-ATTAINMENT` rejects the exact 6ad4198 evidence pattern
+  while allowing accurately labeled upper-bound theorems.
+- `A08-EVIDENCE-LOCATION-IS-NOT-EVIDENCE-ABSENCE` rejects the exact 1bc6b35
+  row-count argument while still requiring substantive row-by-row evidence.
+- Audit prompts and reports must use the protocol evidence tiers and actual
+  frozen identifiers; process layout cannot substitute for mathematical or
+  executable reconstruction.
+- No Lean proposition, payload, proof-only field, modeled tick, trace,
+  allocation, or runtime behavior changes.
+
+Publication-facing significance:
+
+Reviewers must be able to distinguish a certified upper bound from a witnessed
+worst case and a missing proof from evidence recorded append-only. The rule
+prevents both mathematical overstatement and audit rejection based only on
+document layout.

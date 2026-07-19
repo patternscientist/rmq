@@ -292,6 +292,31 @@ Apply `E1R3-SURROGATE-OBSTRUCTION-REGRESSION`:
 This regression does not reject useful narrow impossibility theorems.  It
 rejects only their promotion to full-target `OBSTRUCTED` status.
 
+### B7/A08 regressions: upper-bound attainment and evidence-location policing
+
+Candidate `6ad4198cf09c0d4e103ae0e1c0a5c7a084d0ae25` proved the amended
+interior cost only as `cost <= 33`. Its proof used the new bound directly, but
+that supplied neither an equality witness nor a lower bound. Treating the lack
+of a transitivity step as proof that 33 is attained also led prose to call the
+older `cost <= 30` statement unprovable without a checked counterexample.
+
+Apply `B7-UPPER-BOUND-IS-NOT-ATTAINMENT` whenever a worker claims tightness:
+require an equality/lower-bound witness or checked negation on the same
+reachable family. A bare upper bound may still close an upper-bound row when
+accurately labeled; this regression rejects only promotion to attainment or
+impossibility.
+
+Audit report `1bc6b3597b97720c5c5dad0a2e87277cf28fd7ea` then inferred that
+24 B7 rows lacked evidence because frozen table cells were blank and statuses
+remained `Open`, despite row-keyed append-only evidence and coordinator-owned
+acceptance. It also named IDs that were not in the frozen matrix.
+
+Apply `A08-EVIDENCE-LOCATION-IS-NOT-EVIDENCE-ABSENCE`: enumerate the real
+frozen IDs, accept every location the matrix schema explicitly permits, and
+reject a row only for a substantive evidence gap. This does not bless appended
+prose as proof; theorem, consumer, identity, executable, and anti-vacuity links
+must still be reconstructed independently.
+
 ## Select And Close History
 
 For historical C1 descriptor-select work, proof fields such as
