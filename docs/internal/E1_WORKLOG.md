@@ -2458,3 +2458,200 @@ NOTHING below is implemented.
 4. CANONICAL-STORE FORM, then whole-query glue, M4-M7 - unchanged from the
    previous resume point, except that M5's supersession wording MUST be
    corrected per section 2.
+
+## M3d-4 (worker E1-R4n): range preamble, rank seed, and the same-block LEG
+
+Session scope was deliberately narrowed by the coordinator: the interior
+leg is BLOCKED pending a user decision on the `Nat.log2` finding recorded
+in M3d-3 section 2, and this session was instructed not to touch it, not
+to invent an msb/log2 instruction, and not to amend any frozen row.
+Nothing below touches the interior leg.
+
+### 1. WHAT LANDED
+
+Commit `d72d3ea` (appended to `E1SameBlockArm.lean`) - the RANGE PREAMBLE:
+
+- `windowRange` (`:447`, 8 instructions), `windowRange_length` (`:457`),
+  `windowRangeCats` (`:461`), `windowRange_fits` (`:468`),
+  `windowRange_straight` (`:493`), `windowRange_runsTo` (`:512`),
+  `windowRange_runsTo_route` (`:553`).
+
+This closes resume-point item 2. `fStart`, `fLo` and `fHi` are add/sub
+only; no divisor is involved, so the divisor risk gate did not have to be
+re-opened. New bank slot `fRight = 71` (`:436`) carries the right close
+position.
+
+ORDERING NOTE WORTH CARRYING: the instruction order mirrors the route's
+`sbRelHi` expression LEFT TO RIGHT on purpose. `sbRelHi` is
+`leftClose + 1 + (rightClose - leftClose + 1) - 1 - base`, and in `Nat`
+the machine must subtract `1` and THEN `base`. Folding them into a single
+subtraction of `1 + base` is NOT the same function at the clamping
+boundary, and the bridge would fail there.
+
+Commit `d231043` (new module `RMQ/Core/WordRAM/E1SameBlockLeg.lean`,
+imported from `RMQ.lean:33`) - the RANK SEED and the whole LEG:
+
+- `rankSeedPos` (`:60`, 1 instruction), `rankSeedPos_length` (`:62`),
+  `rankSeedPosCats` (`:65`), `rankSeedPos_fits` (`:68`),
+  `rankSeedPos_runsTo` (`:77`).
+- `rankSeedFinish` (`:102`, 3 instructions), `rankSeedFinish_length`
+  (`:107`), `rankSeedFinishCats` (`:110`), `rankSeedFinish_fits` (`:114`),
+  `rankSeedFinish_straight` (`:131`), `rankSeedFinish_runsTo` (`:149`).
+- `rankSeedLegCats` (`:188`), `rankSeedLeg_runsTo_canonical` (`:204`) -
+  `P -> P + 64`, receipt POSITIONALLY equal to
+  `localBPSeedFromRankCloseTraceResult`'s trace at the canonical
+  rank-close trace.
+- `canonicalSeed` (`:296`), `sameBlockLegCats` (`:305`),
+  `sameBlockLeg_runsTo_canonical` (`:333`) - `A -> A + 173`.
+
+This closes resume-point item 3 and reaches the delegation's named target
+`bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore`
+(`ChargedSameBlockTrace.lean:340`, NOT `:326`) instantiated at
+`rankCloseTrace := concreteBPNativeChunkedRankCloseGlobalWordTraceResult
+shape`.
+
+Commit `312581f` (same module) - the ANTI-VACUITY HOSTING WITNESS:
+
+- `hostedAt_step` (`:437`, private peeling helper),
+  `sameBlockLegProgram` (`:447`), `sameBlockLegProgram_length` (`:466`,
+  = 173), `sameBlockLegProgram_hosts` (`:477`),
+  `sameBlockLegProgram_runsTo_canonical` (`:537`).
+
+### 2. WHY THE HOSTING WITNESS WAS WORTH DOING
+
+`sameBlockLeg_runsTo_canonical` takes THIRTEEN `HostedAt` hypotheses plus
+a back-edge fetch, all constraining ONE program at offsets that are only
+correct if every segment length in the layout table is right. A composed
+simulation theorem whose hypotheses cannot all hold at once proves
+nothing, and nothing in the previous rungs had discharged that risk for a
+multi-segment composition.
+
+`sameBlockLegProgram_hosts` discharges all thirteen at once against a
+concrete program. Every offset is forced by the preceding segments'
+lengths through `HostedAt.append_left`/`append_right`, so a one-off error
+anywhere in the 173-instruction layout fails to typecheck rather than
+producing a true-but-empty theorem.
+
+`sameBlockLegProgram_runsTo_canonical` is then the leg with hosting fully
+discharged. The hypotheses that remain are genuine route-side facts, not
+plumbing: `sbChunkBits shape <= machineWordBits`, and the three window
+words being full width in the canonical store.
+
+### 3. THE CANONICAL-STORE FORM IS REAL, AND WHY
+
+`rankCloseBlock_runsTo_canonical` (`E1RankCanonical.lean:263`) is fixed at
+`concreteBPNativeSuccinctRMQGlobalReadStore shape`, while
+`sameBlockArm_runsTo` is store-parametric. Composing them FORCES the arm's
+store to be that same canonical store. So the seed leg and the fringe arm
+are not merely both true of their own stores; they are true of a SINGLE
+machine run against a SINGLE store, and the receipt is that run's own log.
+That is the property the whole-query composition will need.
+
+### 4. WHAT THE CROSS-BLOCK / INTERIOR COMPOSITION STILL NEEDS
+
+Stated precisely, as the delegation requires. The same-block leg above is
+complete; NONE of the following is implemented, and the first item is
+blocked on a decision that is not this worker's to make.
+
+1. BLOCKED (not touched this session). The interior leg's runtime
+   `Nat.log2` / `bpSparseLogSpan` computation - see M3d-3 section 2 for
+   the exact file:line and the options. Until the coordinator/user
+   adjudicates, no interior-leg block can be built without either an
+   uncapped loop (contradicting the frozen literal-step-bound row) or a
+   new instruction (forbidden this session).
+2. The CROSS-BLOCK dispatcher. The same-block arm is one branch of the
+   close/LCA dispatch. The other branch needs the left-fringe and
+   right-fringe arms (both already simulated: `fringeLeg_trace_eq_leftArm`
+   / `_rightArm`, `E1FringeArmBlock.lean:618`/`:647`) composed with the
+   interior leg (item 1) and the select-close leg
+   (`E1SelectCanonical.lean`), then merged. The merge itself is register
+   arithmetic and a comparison; the blocker is item 1's leg, not the
+   merge.
+3. The BRANCH between same-block and cross-block. The route-side test is
+   whether the two close positions land in the same summary block. On the
+   machine this is `divConst` on each endpoint plus a `natEq` plus a
+   `brNZ` - all existing instructions, all constant-divisor - so this is
+   NOT a risk item, but it is not written.
+4. The WHOLE-QUERY glue, the derived all-size literal, and the amended
+   target Prop remain out of scope per the delegation, all three
+   downstream of item 1.
+
+### 5. GOTCHAS RECORDED THIS SESSION (carry forward)
+
+1. `lake env lean <file>` does NOT write an olean. A `#print axioms`
+   script that imports the module will report `unknown constant` for
+   everything you just added until you run `lake build RMQ` first. This
+   looks exactly like the "the name is only a comment" failure the
+   axiom-check discipline is designed to catch, and it is not. Build,
+   THEN axiom-check.
+2. Preservation side conditions of the shape
+   `r <= 8 or 28 <= r` discharged against a register ABBREV (`fBB`,
+   `fBase`, ...) need `by decide`, never `by omega` - omega treats the
+   abbrev as an opaque atom and reports a counterexample in which the
+   register number is unconstrained. This is the M3c-6d gotcha recurring
+   at composition sites; expect it wherever a component block's
+   preservation clause meets an arm-bank register.
+3. `hostedAt_step`-style peeling helpers must be given the resulting base
+   EXPLICITLY (`hostedAt_step (n := 97) h ...`). With `n` left as a
+   metavariable the offset side goal becomes `97 = ?n` and `simp` cannot
+   close it.
+4. Finishing a hosted single-instruction fetch with `simpa` can
+   over-normalize `program[i]? = some instr` into a `getElem` form and
+   leave `this : True`. Use a defeq `exact h.append_left 0 (by decide)`.
+5. Multi-argument `runsTo` composition lemmas take their register
+   hypotheses in a FIXED order (`hClose`, `hRight`, `hBB` for
+   `windowRange_runsTo_route`). Supplying them in the wrong order fails
+   with a confusing "did not find instance of the pattern `regs2 fBB`"
+   rewrite error inside a `by` block, not with an arity error.
+
+### 6. VERIFICATION LEDGER (root builds, not per-file checks)
+
+`lake build RMQ` exit 0 at all three commits (`d72d3ea`, `d231043`,
+`312581f`). No new warnings in either touched module; the only warnings in
+the build are the pre-existing sanctioned unused-simp-arg ones in
+`SuccinctFinalRAM.lean`, `ReviewerReachability*.lean` and
+`BPNavigationRAM.lean`.
+
+`#print axioms` run on all seventeen theorems this session claims:
+`windowRange_length`, `windowRange_fits`, `windowRange_straight`,
+`windowRange_runsTo`, `windowRange_runsTo_route`, `rankSeedPos_length`,
+`rankSeedPos_fits`, `rankSeedPos_runsTo`, `rankSeedFinish_length`,
+`rankSeedFinish_fits`, `rankSeedFinish_straight`, `rankSeedFinish_runsTo`,
+`rankSeedLeg_runsTo_canonical`, `sameBlockLeg_runsTo_canonical`,
+`sameBlockLegProgram_length`, `sameBlockLegProgram_hosts`,
+`sameBlockLegProgram_runsTo_canonical` - every one reports only
+`propext` / `Classical.choice` / `Quot.sound`, never `sorryAx`.
+
+### 7. MATRIX STATUS AT YIELD
+
+All rows REQ-E1-01..11 remain OPEN. This session closed none and weakened
+none. Matrix closure was impossible this session by construction: every
+row is whole-query scoped and the whole-query composition is downstream of
+the blocked interior leg.
+
+### 8. RESUME POINT (M3d-5)
+
+NOTHING below is implemented.
+
+1. STILL BLOCKED: the interior-leg `Nat.log2` decision (M3d-3 section 2).
+   Items 2 and 3 below are unaffected.
+2. THE SAME-BLOCK/CROSS-BLOCK BRANCH (section 4 item 3 above). Not a risk
+   item: `divConst` on each endpoint, `natEq`, `brNZ`. Writing it does not
+   require the interior leg, and it is the natural next unblocked step.
+3. M6 PRODUCTION VALIDATOR scaffolding independent of the blocked leg:
+   the independent `List Int` reference implementation (expectations
+   written from the spec, NOT from the machine), the fixture list, the
+   modeled-steps-vs-wall-clock harness, and the deliberate-mutation
+   rejection check. NOT STARTED this session - see section 9.
+4. Everything else is unchanged from the M3d-4 resume point and remains
+   downstream of item 1.
+
+### 9. WHAT THIS SESSION DID NOT DO, AND WHY
+
+The delegation listed the M6 validator scaffolding as a "if you still have
+budget" item. It was NOT started. The three landed commits plus the
+anti-vacuity witness consumed the session's budget, and a partially built
+validator that does not compile would be worse than none - it would have
+to be reverted or repaired by the next worker before any root build could
+go green. Recording it here as genuinely not-started is the honest
+report; it remains resume item 3 above.
