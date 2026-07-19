@@ -322,6 +322,129 @@ def sameBlockLegLengthOk : Bool :=
   (E1SameBlockLeg.sameBlockLegProgram shape 5
     (RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape)).length == 173
 
+/-! ## 6b. The SAME-BLOCK LEG: executed, and its receipt compared to the route
+
+This is the strongest check in the harness, and the one that most directly
+exercises a proved theorem.
+
+`E1SameBlockLeg.sameBlockLegProgram_runsTo_canonical` proves two things
+this section re-establishes by EXECUTION rather than by kernel reduction:
+that the leg runs from pc `0` to pc `173`, and that its receipt is
+POSITIONALLY EQUAL to the accepted route object's trace.  The proof
+asserts it; here the machine is actually run against the canonical store
+and the resulting `readLog` is compared, event by event, with the route's
+own `.trace` computed independently.
+
+Neither side is derived from the other: the left side is `E1Machine.run`
+folding `execInstr` over an instruction list, the right side is the route's
+`TraceResult` built by `ChargedSameBlockTrace`.  They can only agree by
+being right. -/
+
+/-- The canonical store for a fixture's shape. -/
+def legStore (shape : Cartesian.CartesianShape) : ReadStore :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore shape
+
+/-- The segment index the same-block leg's fringe reads are logged at,
+matching the layout the proof uses. -/
+def legFringeSegment : Nat := 5
+
+/-- Initial registers for a leg run: the two endpoints, everything else
+zero -- exactly the `regs` the theorem quantifies over, constrained only
+by `hClose` and `hRight`. -/
+def legRegs (leftClose rightClose : Nat) : RegFile := fun r =>
+  if r = fClose then leftClose
+  else if r = fRight then rightClose
+  else 0
+
+/-- What one same-block leg run reports. -/
+structure LegReport where
+  reachedExit : Bool
+  modeledSteps : Nat
+  machineReads : Nat
+  routeTraceLen : Nat
+  receiptMatchesRoute : Bool
+deriving Repr
+
+/-- RUN THE SAME-BLOCK LEG and compare its receipt against the route.
+`build` lets the caller substitute a mutated program while holding
+everything else fixed. -/
+def runSameBlockLeg (build : List Instr → List Instr)
+    (xs : List Int) (leftClose rightClose : Nat) : LegReport :=
+  let shape := Cartesian.stackCartesianShape xs
+  let blockSize := SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+  let store := legStore shape
+  let program :=
+    build (E1SameBlockLeg.sameBlockLegProgram shape legFringeSegment blockSize)
+  let result :=
+    E1Machine.run store program 40000 ⟨legRegs leftClose rightClose, 0, false⟩
+  let routeTrace :=
+    (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+      shape (SuccinctFinal.concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
+      legFringeSegment store blockSize leftClose rightClose).trace
+  { reachedExit := result.final.pc == 173
+    modeledSteps := result.steps
+    machineReads := result.readLog.length
+    routeTraceLen := routeTrace.length
+    receiptMatchesRoute := result.readLog == routeTrace }
+
+/-- Fixtures and windows the leg is exercised on.  Kept modest because
+each case runs the machine for hundreds of modeled steps against a store
+that rebuilds its directory per read. -/
+def legCases : List (List Int × Nat × Nat) :=
+  ([2, 3, 5, 8, 12].flatMap fun len =>
+    [0, 1].flatMap fun seed =>
+      let xs := generatedInput len seed
+      ([0, 1, 2].flatMap fun l =>
+        [0, 1, 2].map fun d => (xs, l, l + d))).flatMap fun c => [c]
+
+/-- The honest leg program: identity. -/
+def goodLeg : List Instr → List Instr := id
+
+/-- MUTANT: the fold's back edge `brNZ fCnt 97` becomes `brNZ fCnt 98`,
+skipping the first instruction of the fringe prefix on every iteration.
+This is a genuinely nasty mutation -- it does NOT change the program's
+length, and it does NOT stop the leg from reaching its exit pc 173, so an
+exit-pc-only check would MISS it entirely.  The receipt comparison catches
+it.  That is precisely why the harness compares receipts and not just
+control flow. -/
+def mutatedLeg (program : List Instr) : List Instr :=
+  program.map fun instr =>
+    match instr with
+    | .brNZ cond 97 => .brNZ cond 98
+    | other => other
+
+/-- Leg runs whose receipt disagrees with the route, for a given builder. -/
+def legReceiptMismatches (build : List Instr → List Instr) : Nat :=
+  (legCases.filter fun (xs, l, r) =>
+    !(runSameBlockLeg build xs l r).receiptMatchesRoute).length
+
+/-- Leg runs that fail to reach the proved exit pc 173. -/
+def legExitFailures (build : List Instr → List Instr) : Nat :=
+  (legCases.filter fun (xs, l, r) =>
+    !(runSameBlockLeg build xs l r).reachedExit).length
+
+/-- Total modeled steps across the leg sweep: a MODELED quantity. -/
+def legModeledSteps (build : List Instr → List Instr) : Nat :=
+  legCases.foldl (fun acc (xs, l, r) =>
+    acc + (runSameBlockLeg build xs l r).modeledSteps) 0
+
+/-- Total modeled read events across the leg sweep. -/
+def legModeledReads (build : List Instr → List Instr) : Nat :=
+  legCases.foldl (fun acc (xs, l, r) =>
+    acc + (runSameBlockLeg build xs l r).machineReads) 0
+
+/-- The leg mutation must be REJECTED by the receipt comparison. -/
+def legMutationRejected : Bool :=
+  legReceiptMismatches mutatedLeg > 0
+
+/-- The leg mutation genuinely changes the instruction list. -/
+def legMutationIsReal : Bool :=
+  let shape := Cartesian.stackCartesianShape (generatedInput 5 0)
+  let blockSize := SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+  let program :=
+    E1SameBlockLeg.sameBlockLegProgram shape legFringeSegment blockSize
+  program != mutatedLeg program
+
 /-! ## 7. THE HOLE: whole-query comparison
 
 DELIBERATELY NOT IMPLEMENTED, and compiling as a hole rather than as a
@@ -407,6 +530,22 @@ def mainImpl : IO UInt32 := do
     IO.println (renderMismatch m)
   IO.println ""
 
+  -- STEP 3b: the same-block leg, executed, receipt compared to the route.
+  IO.println "-- phase 3b: same-block LEG execution vs route receipt --"
+  let tl0 <- IO.monoMsNow
+  let legExitFails := legExitFailures goodLeg
+  let legReceiptFails := legReceiptMismatches goodLeg
+  let legSteps := legModeledSteps goodLeg
+  let legReads := legModeledReads goodLeg
+  let tl1 <- IO.monoMsNow
+  IO.println s!"legCases={legCases.length}"
+  IO.println s!"legExitFailures={legExitFails}   (proved exit is pc 173)"
+  IO.println s!"legReceiptMismatches={legReceiptFails}   (machine readLog vs route trace)"
+  IO.println s!"legModeledSteps={legSteps}   (machine-modeled, reproducible)"
+  IO.println s!"legModeledReads={legReads}   (machine-modeled receipt events)"
+  IO.println s!"legWallClockMs={tl1 - tl0}   (this binary on this host; NOT evidence)"
+  IO.println ""
+
   -- STEP 4: the mutation must be rejected.
   IO.println "-- phase 4: deliberate mutation --"
   let mutantMismatches := dispatchMismatches mutatedDispatchProgram
@@ -419,6 +558,21 @@ def mainImpl : IO UInt32 := do
   IO.println s!"mutationWallClockMs={tm1 - tm0}"
   for m in mutantMismatches.take 5 do
     IO.println (renderMismatch m)
+  IO.println ""
+
+  -- STEP 4b: mutating a REAL machine component (the same-block leg).
+  IO.println "-- phase 4b: deliberate mutation of the same-block LEG --"
+  let tlm0 <- IO.monoMsNow
+  let legMutExitFails := legExitFailures mutatedLeg
+  let legMutReceiptFails := legReceiptMismatches mutatedLeg
+  let legMutSteps := legModeledSteps mutatedLeg
+  let tlm1 <- IO.monoMsNow
+  IO.println s!"legMutationIsReal={legMutationIsReal}"
+  IO.println s!"legMutantExitFailures={legMutExitFails}   (0 expected: exit pc alone MISSES this mutation)"
+  IO.println s!"legMutantReceiptMismatches={legMutReceiptFails}   (must be > 0: the receipt catches it)"
+  IO.println s!"legMutantModeledSteps={legMutSteps}   (vs honest {legSteps})"
+  IO.println s!"legMutationRejected={legMutationRejected}"
+  IO.println s!"legMutationWallClockMs={tlm1 - tlm0}"
   IO.println ""
 
   -- STEP 5: the hole.
@@ -435,7 +589,9 @@ def mainImpl : IO UInt32 := do
   let ok :=
     refFailures == 0 && dispatchLengthOk && witnessLengthOk &&
       sameBlockLegLengthOk && mismatches.isEmpty && reads == 0 &&
-      mutationIsReal 3 && rejected
+      mutationIsReal 3 && rejected &&
+      legExitFails == 0 && legReceiptFails == 0 &&
+      legMutationIsReal && legMutationRejected
   if ok then
     IO.println "RESULT: PASS (with the whole-query comparison still OPEN)"
     return 0
