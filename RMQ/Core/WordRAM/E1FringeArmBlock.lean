@@ -361,6 +361,161 @@ theorem fringeArmInit_runsTo
       | rfl <;>
       arm_writes <;> omega
 
+
+/-! ## Bridges to the accepted route objects
+
+The machine's window base is a WORD index; the route's `localBPWindowBase`
+(`LocalBPDecoder.lean:205`) is the corresponding BIT base, i.e. this word
+index times the word width.
+-/
+
+/-- The first of the four payload words covering a local BP block. -/
+def bpWindowFirstWord (shape : Cartesian.CartesianShape)
+    (blockSize close : Nat) : Nat :=
+  blockStartOf blockSize (blockOfClose blockSize close) /
+    SuccinctRank.machineWordBits shape.bpCode.length
+
+/-- The route's bit-level window base is the machine's word index scaled
+by the word width. -/
+theorem localBPWindowBase_eq (shape : Cartesian.CartesianShape)
+    (blockSize close : Nat) :
+    localBPWindowBase shape blockSize close =
+      bpWindowFirstWord shape blockSize close *
+        SuccinctRank.machineWordBits shape.bpCode.length := rfl
+
+/--
+RECEIPT BRIDGE.  The window-read sub-block's four-event log is
+POSITIONALLY equal — a `List` equality, not a multiset or membership
+claim — to the accepted store-parameterized four-word BP block read
+`localBPBlockWordsTraceResultWithStore`
+(`ConcreteDirectoryRAMStoreParam.lean:4071`).
+-/
+theorem windowReadEvents_eq_route
+    (shape : Cartesian.CartesianShape) (store : ReadStore)
+    (blockSize close : Nat) :
+    windowReadEvents store (bpWindowFirstWord shape blockSize close) =
+      (localBPBlockWordsTraceResultWithStore shape store blockSize
+        close).trace := by
+  unfold windowReadEvents localBPBlockWordsTraceResultWithStore
+    bpCodeWordReadTraceResultWithStore bpWindowFirstWord
+  simp [WordRAM.TraceResult.bind, WordRAM.TraceResult.map,
+    WordRAM.TraceResult.pure]
+
+/-- The same receipt bridge against the flattened window-bits object. -/
+theorem windowReadEvents_eq_route_windowBits
+    (shape : Cartesian.CartesianShape) (store : ReadStore)
+    (blockSize close : Nat) :
+    windowReadEvents store (bpWindowFirstWord shape blockSize close) =
+      (localBPWindowBitsTraceResultWithStore shape store blockSize
+        close).trace := by
+  rw [windowReadEvents_eq_route shape store blockSize close]
+  unfold localBPWindowBitsTraceResultWithStore
+  simp [WordRAM.TraceResult.map, WordRAM.TraceResult.bind,
+    WordRAM.TraceResult.pure]
+
+/--
+VALUE BRIDGE.  The window bits the accepted route object delivers are
+exactly the concatenation of the four payload words the machine's four
+charged reads return — so the fold's `window` argument is recovered from
+the machine's own reads, not copied from the spec.
+-/
+theorem route_windowBits_eq_windowBitsOfStore
+    (shape : Cartesian.CartesianShape) (store : ReadStore)
+    (blockSize close : Nat) :
+    (localBPWindowBitsTraceResultWithStore shape store blockSize
+        close).value =
+      windowBitsOfStore store (bpWindowFirstWord shape blockSize close) := by
+  unfold localBPWindowBitsTraceResultWithStore
+    localBPBlockWordsTraceResultWithStore bpCodeWordReadTraceResultWithStore
+    windowBitsOfStore bpWindowFirstWord
+  simp only [WordRAM.TraceResult.map, WordRAM.TraceResult.bind,
+    WordRAM.TraceResult.pure, SuccinctSpace.flattenPayloadWords_append,
+    flatten_readStorePayloadWordValue]
+
+/--
+HORNER BRIDGE.  Given the route-side fact that the first three window
+words are full width, the machine's four window registers represent
+exactly the window the fold consumes.  This is the hypothesis
+`fringeFoldLoop_runsTo_accepted` takes as `hW`, and the discipline is the
+one the dense select leg uses for `hlen`: the length facts are route-side
+properties of `chunkPayloadWords`, discharged at canonical instantiation.
+-/
+theorem windowRegsValue_of_readBits {L : Nat} (store : ReadStore)
+    (base : Nat)
+    (h0 : (readBits store base).length = L)
+    (h1 : (readBits store (base + 1)).length = L)
+    (h2 : (readBits store (base + 2)).length = L) :
+    windowRegsValue L
+        (SuccinctSpace.bitsToNatLE (readBits store base))
+        (SuccinctSpace.bitsToNatLE (readBits store (base + 1)))
+        (SuccinctSpace.bitsToNatLE (readBits store (base + 2)))
+        (SuccinctSpace.bitsToNatLE (readBits store (base + 3))) =
+      SuccinctSpace.bitsToNatLE (windowBitsOfStore store base) := by
+  unfold windowBitsOfStore
+  exact (windowRegsValue_eq_bitsToNatLE h0 h1 h2).symm
+
+/-! ## Prologue composition -/
+
+/-- The prologue writes only the pinned constants, the window registers,
+the zeroed fold registers, the counter and the scratch registers.  In
+particular it preserves `fLo`, `fHi`, `fAcc` and `fBase`. -/
+abbrev FringeArmPrologueUntouched (r : Nat) : Prop :=
+  r ≠ 40 ∧ r ≠ 41 ∧ r ≠ 42 ∧ r ≠ 43 ∧ r ≠ 44 ∧ r ≠ 45 ∧ r ≠ 47 ∧
+    r ≠ 48 ∧ r ≠ 49 ∧ r ≠ 52 ∧ r ≠ 60 ∧ r ≠ 61
+
+/--
+Exact simulation of the whole 21-instruction fringe arm prologue: the
+33-cap init followed by the window read.  The exit register file is
+precisely the fold's entry configuration — pinned constants, zeroed cursor
+and best pair, the DERIVED capped count, and the four window registers —
+and the receipt is exactly the four window reads.
+-/
+theorem fringeArmPrologue_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {A c : Nat}
+    (hHost : HostedAt program A (fringeArmPrologue c))
+    (base relHi : Nat) (regs : RegFile)
+    (hBase : regs fBase = base) (hHi : regs fHi = relHi) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, A, false⟩ ⟨regs', A + 21, false⟩
+        (windowReadEvents store base) fringeArmPrologueCats ∧
+      regs' fOne = 1 ∧ regs' fC = c ∧ regs' fJC = 0 ∧
+      regs' fBV = 0 ∧ regs' fBP = 0 ∧
+      regs' fCnt = Nat.min (relHi / c + 1) 33 ∧
+      regs' fW0 = SuccinctSpace.bitsToNatLE (readBits store base) ∧
+      regs' fW1 = SuccinctSpace.bitsToNatLE (readBits store (base + 1)) ∧
+      regs' fW2 = SuccinctSpace.bitsToNatLE (readBits store (base + 2)) ∧
+      regs' fW3 = SuccinctSpace.bitsToNatLE (readBits store (base + 3)) ∧
+      (∀ r, FringeArmPrologueUntouched r -> regs' r = regs r) := by
+  have hInitHost : HostedAt program A (fringeArmInit c) :=
+    HostedAt.append_left hHost
+  have hReadHost : HostedAt program (A + 10) fringeWindowRead := by
+    have := HostedAt.append_right (code₁ := fringeArmInit c)
+      (code₂ := fringeWindowRead) hHost
+    simpa using this
+  obtain ⟨regsI, hrunI, hOne, hC, hJC, hBV, hBP, hCnt, hpresI⟩ :=
+    fringeArmInit_runsTo store hInitHost relHi regs hHi
+  have hBaseI : regsI fBase = base := by
+    rw [hpresI fBase (by decide), hBase]
+  obtain ⟨regsW, hrunW, hW0, hW1, hW2, hW3, hpresW⟩ :=
+    fringeWindowRead_runsTo store hReadHost base regsI hOne hBaseI
+  have htrans := RunsTo.trans hrunI hrunW
+  have hpc : A + 10 + 11 = A + 21 := by omega
+  rw [hpc] at htrans
+  have hev : ([] : List TraceEvent) ++ windowReadEvents store base =
+      windowReadEvents store base := by simp
+  rw [hev] at htrans
+  refine ⟨regsW, htrans, ?_, ?_, ?_, ?_, ?_, ?_, hW0, hW1, hW2, hW3, ?_⟩
+  · rw [hpresW fOne (by decide), hOne]
+  · rw [hpresW fC (by decide), hC]
+  · rw [hpresW fJC (by decide), hJC]
+  · rw [hpresW fBV (by decide), hBV]
+  · rw [hpresW fBP (by decide), hBP]
+  · rw [hpresW fCnt (by decide), hCnt]
+  · intro r hr
+    obtain ⟨h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11, h12⟩ := hr
+    rw [hpresW r ⟨h3, h4, h5, h6, h11⟩,
+      hpresI r ⟨h1, h2, h7, h8, h9, h10, h11, h12⟩]
+
 end E1FringeArmBlock
 end WordRAM
 end RMQ
