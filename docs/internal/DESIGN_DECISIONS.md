@@ -4706,3 +4706,64 @@ Per the satisfiability rule it does not ship unwitnessed: `interiorReadStore`
 subject to the same caution this entry records about `segmentStore` -- it
 shows the hypothesis meetable, NOT that the eventual concrete machine store
 meets it, and whoever wires the interior program owes the latter.
+
+## DD-20260719-013: the interior store hypothesis is ELIMINATED BY INSTANTIATION at the store the route runs against (E1 M3d-18)
+
+Context. DD-20260719-012 re-cut `hagree` bounded and supplied all eight
+clauses at `canonicalRelativeRmmInteriorComponentStore`, but left twelve
+clauses -- eight `hagree_*`, four `hexact_*` -- carrying the setup
+hypothesis `HoldsInteriorStore store segment shape`, witnessed satisfiable
+by `interiorReadStore` / `interiorReadStore_holds`. That session recorded
+against its own output that this is the same shape of witness that hid the
+false unbounded premise: a store built FOR the hypothesis, not found AT the
+target.
+
+Decision. The hypothesis is eliminated rather than witnessed. The delivered
+clauses -- the ones the summary group consumes -- are unconditional.
+
+The target is not a matter of choice. `crossBlockArmProgramAt_runsTo`
+(`E1CrossBlockArm.lean:1143`) names the store in its own `hInterior`
+premise: the interior leg's `RunsTo` must hold at
+`concreteBPNativeSuccinctRMQGlobalReadStore shape`. No other store's
+behaviour is relevant, and the interior's author does not get to pick one.
+
+It holds there, and the tree already knew it.
+`concreteBPNativeSuccinctRMQGlobalReadStore` answers segment `20` with
+`(canonicalRelativeRmmInteriorComponentStore shape).store.words[index]?`
+(`Segments.lean:221`); `concreteBPNativeInteriorTraceSegments`
+(`Segments.lean:60`) sets `canonicalComponent := 20`. The projection
+`concreteBPNativeSuccinctRMQGlobalReadStore_canonicalComponent`
+(`Segments.lean:258`) was introduced by commit `b8ae4aa` ("Close U2 uniform
+reviewer route") and is present at the branch base `d90b062` -- it predates
+this campaign's interior work and was written for the flat reviewer layout,
+not for this premise. `holdsInteriorStore_concrete` is that projection plus
+the `Array`/`List` bridge, and nothing else.
+
+So the discharge is FOUND at the target rather than BUILT for the premise,
+which is the distinction DD-20260719-012's fifth standing rule turns on.
+With no hypothesis left there is no witness to construct and no way for a
+convenient witness to hide a false premise.
+
+Checked, not assumed, that the segment is the right one. The `summary`
+sub-record of `concreteBPNativeInteriorTraceSegments` carries
+`minRel := 21`, `maxRel := 22`, which in the CANONICAL store are the fringe
+and select chunk tables (`Segments.lean:224`, `:228`) -- reading there would
+be silently wrong. It does not arise: the summary group
+(`InteriorDirectory.lean:2277`) reads all four tables at OFFSETS
+(`offsets.baseline`, `.minRel`, `.maxRel`, `.argOffset`) into one flat
+store, and `FlatStoreComputation` (`MachineChunkedTableProgram.lean:66`)
+runs over a single `FlatWordStore`. One segment, four offsets. The eight
+`hagree_*_concrete` are stated in exactly that shape.
+
+Scope. `E1InteriorChunkStore`'s parameterised forms are RETAINED as the
+general lemmas these instantiate, exactly as `readWord?_slice` is retained
+beneath them -- nothing is renamed or deleted. What changes is that the
+delivered clauses carry no agreement hypothesis, matching every prior E1
+module (`E1RankCanonical.lean:127`, `E1CrossBlockArm.lean:1143`,
+`ChargedRankSelectWiring.lean:970`). No E1 module now carries one.
+
+Still owed, and not disguised. `hexact_*_concrete` retain `hcount`,
+`hvalid`, `hentries`. These are facts about the CALLER's index arithmetic,
+fixed when the summary group's program is written, and were never debts
+owed to the store -- but they are premises, and under the standing rule
+they owe a witness at the intended instantiation when that program lands.

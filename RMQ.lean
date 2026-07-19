@@ -43,6 +43,7 @@ import RMQ.Core.WordRAM.E1InteriorChunkValue
 import RMQ.Core.WordRAM.E1InteriorChunkCap
 import RMQ.Core.WordRAM.E1InteriorChunkExact
 import RMQ.Core.WordRAM.E1InteriorChunkStore
+import RMQ.Core.WordRAM.E1InteriorStoreConcrete
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks
