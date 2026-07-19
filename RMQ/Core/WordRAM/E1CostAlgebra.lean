@@ -158,6 +158,114 @@ theorem interiorChunkFoldCats_length_le
     simp [interiorChunkInitCats_valid, interiorChunkInitCats_dead,
       interiorChunkEpilogueCats] <;> omega
 
+/-! ## The FRINGE fold's charge cap
+
+The interior fold's cap above is free from `chunkIters`'s own definition.
+The fringe fold's is NOT, and §12 of the live-state file records why: the
+`33` cap on the trip count holds only because every CALLER writes
+`Nat.min (relHi / c + 1) 33` (`E1FringeArmBlock.lean:594-596`, `:1020-1022`),
+and there was no lemma saying so -- only positivity, `cap_count_pos`
+(`E1FringeArmBlock.lean:246`).
+
+The second half of the gap is that `fringeFoldCats`'s body is
+INDEX-DEPENDENT: `fringeMergeArmCats` has four distinct arm lengths, so
+`iterLog_const_length`'s constant-body identity does not apply and the bound
+needs a per-pass MAXIMUM instead.  `ascLog_length_le` supplies exactly that.
+
+Both halves are derived below.  No numeral is asserted.
+
+DD-20260719-146.
+-/
+
+/-- THE MISSING CAP LEMMA.  The capped chunk count never exceeds `33`.
+Trivial once stated, and it was never stated; `cap_count_pos` gave only the
+other side. -/
+theorem cap_count_le (relHi c : Nat) :
+    Nat.min (relHi / c + 1) 33 ≤ 33 := by
+  show min (relHi / c + 1) 33 ≤ 33
+  generalize relHi / c = q
+  omega
+
+/-- Every merge arm charges at most `8`.  The four arms are `6`, `8`, `7`
+and `3`; the maximum is attained by the "best is `some`, candidate strictly
+better" arm and is DERIVED by case analysis, not read off. -/
+theorem fringeMergeArmCats_length_le
+    (gated : Bool) (best : Option (Nat × Nat)) (candValue : Nat) :
+    (E1FringeFoldBlock.fringeMergeArmCats gated best candValue).length ≤ 8 := by
+  unfold E1FringeFoldBlock.fringeMergeArmCats
+  cases gated <;> cases best <;> simp <;> split <;> simp
+
+theorem fringeMergeCatsAt_length_le
+    (c relLo relHi j : Nat) (best : Option (Nat × Nat)) (candValue : Nat) :
+    (E1FringeFoldBlock.fringeMergeCatsAt c relLo relHi j best
+      candValue).length ≤ 8 :=
+  fringeMergeArmCats_length_le _ _ _
+
+/-- ONE PASS charges at most `62 = 32 + 8 + 21 + 1`: the straight prefix,
+the widest merge arm, the window shift with the cursor advance, and the back
+edge.  This is the per-pass maximum the composite bound needs, and the only
+index-dependent addend in it is the merge arm. -/
+theorem fringePassCats_length_le
+    (c relLo relHi j : Nat) (st : Nat × Option (Nat × Nat)) (entry : Nat) :
+    (E1FringeFoldBlock.fringePassCats c relLo relHi j st entry).length ≤ 62 := by
+  unfold E1FringeFoldBlock.fringePassCats
+  have hmerge := fringeMergeCatsAt_length_le c relLo relHi j st.2
+    (st.1 + entry / (c + 1) % (2 * c + 2) - c)
+  simp only [List.length_append]
+  have hp : E1FringeFoldBlock.fringePrefixCats.length = 32 := rfl
+  have ht : E1FringeFoldBlock.fringeTailCats.length = 21 := rfl
+  simp only [hp, ht, List.length_singleton]
+  omega
+
+/-- A per-index maximum lifts through `ascLog`.  This is the replacement for
+`iterLog_const_length` that an index-dependent body forces: the identity
+becomes an INEQUALITY, which is all REQ-E1-06 conjunct (c) asks for. -/
+theorem ascLog_length_le {alpha : Type} (g : Nat -> List alpha) (M : Nat)
+    (hg : forall j, (g j).length ≤ M) :
+    forall (n j : Nat), (E1FringeFoldBlock.ascLog g j n).length ≤ n * M := by
+  intro n
+  induction n with
+  | zero => intro j; simp [E1FringeFoldBlock.ascLog]
+  | succ n ih =>
+      intro j
+      have hstep := ih (j + 1)
+      have hj := hg j
+      show ((g j) ++ E1FringeFoldBlock.ascLog g (j + 1) n).length ≤ (n + 1) * M
+      rw [List.length_append, Nat.succ_mul]
+      omega
+
+/-- THE FRINGE FOLD'S CHARGE LOG, BOUNDED BY ITS TRIP COUNT.  Per-pass
+maximum times passes; no numeral asserted, and no size hypothesis. -/
+theorem fringeFoldCats_length_le
+    (store : ReadStore) (S c : Nat) (window : List Bool)
+    (relLo relHi seed count : Nat) :
+    (E1FringeFoldBlock.fringeFoldCats store S c window relLo relHi seed
+      count).length ≤ count * 62 := by
+  unfold E1FringeFoldBlock.fringeFoldCats
+  exact ascLog_length_le _ 62
+    (fun j => fringePassCats_length_le c relLo relHi j _ _) count 0
+
+/--
+THE FRINGE FOLD'S CHARGE CAP AT THE CAPPED TRIP COUNT.
+
+`2046 = 33 * 62`.  This is the addend REQ-E1-06 conjunct (c) needs from the
+fringe side, and BOTH of its factors are now derived rather than assumed:
+`33` from `cap_count_le` (the cap every caller writes, finally stated), and
+`62` from `fringePassCats_length_le` (the per-pass maximum, which the
+index-dependent merge arm forces in place of a constant-body identity).
+-/
+theorem fringeFoldCats_length_le_capped
+    (store : ReadStore) (S c : Nat) (window : List Bool)
+    (relLo relHi seed : Nat) :
+    (E1FringeFoldBlock.fringeFoldCats store S c window relLo relHi seed
+      (Nat.min (relHi / c + 1) 33)).length ≤ 2046 := by
+  have hbound := fringeFoldCats_length_le store S c window relLo relHi seed
+    (Nat.min (relHi / c + 1) 33)
+  have hcap := cap_count_le relHi c
+  have hmul : Nat.min (relHi / c + 1) 33 * 62 ≤ 33 * 62 :=
+    Nat.mul_le_mul_right 62 hcap
+  omega
+
 end E1CostAlgebra
 end WordRAM
 end RMQ

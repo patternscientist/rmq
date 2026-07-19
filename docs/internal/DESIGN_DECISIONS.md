@@ -6964,3 +6964,44 @@ best pair and read log ALL match the honest sweep. A harness checking any of
 those -- which is what every other phase on this block checks -- would miss
 this defect completely. That non-entailment is the reason the phase earns
 its place rather than duplicating coverage.
+
+## DD-20260719-146: the fringe fold's cap is derived from a per-pass MAXIMUM, because its body is index-dependent (E1-LaneA4)
+
+§12 named this "the one genuine missing CAP LEMMA". It had two halves and
+both are now closed.
+
+HALF ONE, the cap itself. The fringe fold's trip count is `<= 33` only
+because every caller writes `Nat.min (relHi / c + 1) 33`
+(`E1FringeArmBlock.lean:594-596`, `:1020-1022`). There was no lemma saying
+so -- only positivity, `cap_count_pos` (`E1FringeArmBlock.lean:246`), which
+is the other side of the same `min`. `cap_count_le` states it. It is trivial
+once written, and it had never been written; the interior's twin is free
+from `chunkIters`'s own definition and this one is not.
+
+HALF TWO, and the reason this is not a copy of the interior's proof.
+`interiorChunkFoldCats_length_le` goes through `iterLog_const_length`, whose
+content is that a CONSTANT body of length `k` repeated `n` times has length
+`n * k` -- an EQUATION. The fringe fold's body is not constant:
+`fringeMergeArmCats` (`E1FringeFoldBlock.lean:281`) has four arms and the
+arm taken depends on the pass index through `bpFringeChunkStartOff` and on
+the running best candidate. So the identity is unavailable and the bound
+needs a per-pass MAXIMUM instead. `ascLog_length_le` is that lemma: a
+per-index bound `M` lifts to `n * M` over `ascLog`. The identity becomes an
+inequality, which is all REQ-E1-06 conjunct (c) asks for.
+
+THE NUMERALS, AND THAT THEY ARE TIGHT RATHER THAN MERELY TRUE. A derived
+bound can still be worthless if it is slack, so the arms were evaluated:
+`fringeMergeArmCats` has lengths `[6, 8, 7, 3]`, so `8` is ATTAINED, by the
+"best is `some`, candidate strictly better" arm. `fringePrefixCats` is `32`
+and `fringeTailCats` is `21`, both evaluated. So `62 = 32 + 8 + 21 + 1` is
+the true per-pass maximum and not an overestimate, and
+`2046 = 33 * 62` is the fold's cap at the capped trip count.
+
+Both factors are derived: `33` from `cap_count_le`, `62` from
+`fringePassCats_length_le`. Neither is asserted and then checked after.
+
+WHAT THIS DOES NOT DO. This closes `fringeFoldCats`, which is ONE of the
+seventeen composite logs §12 enumerates. The other sixteen remain unbounded,
+and the closed leaves they rest on remain unbounded too. `ascLog_length_le`
+is the reusable half -- any composite whose body is index-dependent can go
+through it -- but each composite still owes its own per-pass maximum.
