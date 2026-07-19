@@ -4375,3 +4375,69 @@ battery contending for the mutex with the lane it verifies (65), and now a
 chained battery silently skipped (67). The engineering work has been sound; the
 apparatus I built to check it keeps failing open. Failing OPEN is the dangerous
 direction, because it produces false assurance rather than false alarm.
+
+---
+
+## C05 round 68 — #9's program and dispatch built; the arm composition owed;
+## and a worker that distinguished its FIXTURE's blindness from its BLOCK's
+
+Lane B5 returned INCOMPLETE at `59e5a93`, seven commits, `E1InteriorDispatch.lean`
+at 1520 lines and 52 declarations. Built: the 4204-instruction program, the whole
+28-instruction prologue simulated in four pieces, the five-way dispatch proved to
+reach each arm base, and the route side decomposed independently.
+**Owed: `interiorDispatchBlock_runsTo`** — the five arms composed into one
+simulation with receipt, category log, value and preservation — and `hInterior`,
+which needs that composition and nothing else. Its preservation half and the
+close-leg export are already in hand.
+
+**MY NINETEENTH FAILED CLAIM, over-stated by exactly one.** I wrote that "every
+one of #9's five arms needs an explicit branch to the join point." The
+**physically last arm exits by fall-through and cannot have one.** #8 is placed
+there, and `dispatchArm8_exit_is_join` states that coincidence as a theorem
+rather than leaving it to arithmetic — which is the right response to an
+off-by-one in a layout claim: pin it, do not silently rely on it.
+
+**THE DISCRIMINATOR IS BUILT, and it learned the right lesson from the close-leg
+defect.** `unterminatedDispatch_falls_through` shows a `count = 0` query running
+off arm #0 into arm #4 and halting with the wrong arm's marker — `some` where the
+route is `none`. And crucially: **every witness arm ends UN-HALTED, as every
+real sub-block does.** The worker states why that matters — "a halting witness
+arm is the one shape that cannot exhibit this, which is how the close-leg defect
+hid." The fixture is built to be capable of showing the bug, which is the
+property the earlier witness arm lacked.
+
+**The single sharpest sentence in the report, and it is a distinction I have not
+seen a worker draw before.** On where the receipt discriminator stops:
+
+> the witness's receipt is blind because no witness arm reads. **That blindness
+> is the FIXTURE'S, not the block's** — the real fall-through lands on
+> `twoSpanBlock`'s unconditional head read, so the real receipt would catch it.
+> I labelled it that way rather than quoting it as the block's.
+
+A lesser report would have written "the receipt is blind here" and left a false
+general impression about the block. Distinguishing a limitation of the
+INSTRUMENT from a limitation of the SUBJECT is exactly the discipline that the
+whole discriminator programme depends on.
+
+**Preservation was checked against #9's OWN write set, as asked, and the check
+mattered.** `TwoSpanUntouched` omits 127-130 and `TwoLegUntouched` omits 136-139
+because those blocks only READ them — but **#9's preamble WRITES both banks**, so
+inheriting either predicate would have reproduced the round-66 unsoundness
+exactly. It enumerated #9's writes instead, and `dispatchUntouched_of_lt`
+subsumes `hInterior`'s four operands and `CloseLegUntouched` in one structural
+lemma. `CloseLegUntouched` proved as a SEPARATE EXPORT, not a fifth conjunct.
+
+**Two things verified rather than assumed, both load-bearing.** The caller's
+strict guard needs no machine counterpart: when it fails,
+`rightBlock - leftBlock - 1` truncates to 0 in `Nat` and #9's own `count = 0`
+branch answers `pure none` (`interiorRangeMin_guard_subsumed`). And **#9 falling
+through is FORCED, not chosen** — `hInterior`'s target state carries
+`halted = false`, so a #9 ending in `halt` could not discharge it at all.
+
+Also: LaneB4's open block-size question is resolved —
+`(RelativeRmm.canonicalLayout shape).blockSize` **is**
+`canonicalBPRelativeSummaryBlockSizeRaw shape` definitionally
+(`RelativeSummary.lean:1278`), no bridge needed. All 22 line numbers the worker
+first wrote into §3/§3a were wrong and it caught them by grepping its own output
+before committing — fifth worker to do so. DD-059 and -060 **written into the
+log**, not merely claimed; the corrected instruction is holding.
