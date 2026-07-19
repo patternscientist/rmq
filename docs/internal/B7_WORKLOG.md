@@ -1855,6 +1855,17 @@ at `:4042`. The first eight are unmoved; the five cost errors shift by +352:
   "Build completed successfully". `RMQExamples.Concrete` builds, so commit A's
   `#guard`s still pass across the width change.
 - `claim_drift_scan.ps1`: exit 0, "scan complete (782 hits, 0 strict failures)".
+- `paper_topology_lint.ps1`: exit 0, "PAPER-TOPOLOGY PASS (83 broad documentary
+  identifiers; 49 paper identifiers resolved)" - byte-identical counts to the
+  commit A ledger, as expected since no literal moved this session.
+- `lake env lean scripts/headline_axiom_check.lean`: exit 0, zero errors, zero
+  `Lean.ofReduceBool`.
+- `rg` for `native_decide` / `ofReduceBool` across `RMQ/` and `RMQExamples/`:
+  ZERO hits.
+- `git diff --check f6564ec..HEAD`: exit 2, hits ONLY
+  `docs/internal/B7_STEP2_WIP.patch`. Structural committed-patch property,
+  documented since B7-03 (a blank context line in a unified diff is a single
+  space). NOT a source defect; do not "fix" it.
 - `#print axioms` after that root build, importing the module directly:
   `bpSparseLevelLocalWidth_le_machine_of_macro_crossing`,
   `bpSparseLevelGlobalWidth_le_machine_of_macro_crossing`,
