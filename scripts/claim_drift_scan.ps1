@@ -15,6 +15,21 @@ if (-not (Test-Path $PolicyPath)) {
 }
 
 $policy = Get-Content -Raw -Path $PolicyPath | ConvertFrom-Json
+$currentFactSurfacePathRegex = [string]$policy.currentFactSurfacePathRegex
+foreach ($term in @($policy.terms)) {
+  $scope = [string]$term.scope
+  if ([string]::IsNullOrWhiteSpace($scope)) {
+    continue
+  }
+  if ($scope -ne "current-fact-surface") {
+    Write-Host "CLAIM-DRIFT: unknown term scope '$scope' for $($term.id)"
+    exit 1
+  }
+  if ([string]::IsNullOrWhiteSpace($currentFactSurfacePathRegex)) {
+    Write-Host "CLAIM-DRIFT: current-fact-surface scope requires currentFactSurfacePathRegex"
+    exit 1
+  }
+}
 $roots = @($Path | Where-Object { Test-Path $_ })
 
 if ($roots.Count -eq 0) {
@@ -98,6 +113,10 @@ foreach ($term in $policy.terms) {
     $hits += 1
 
     $allowed = $false
+    if ([string]$term.scope -eq "current-fact-surface" -and
+        $fileNorm -notmatch $currentFactSurfacePathRegex) {
+      $allowed = $true
+    }
     if ($term.allowedPathRegex -and $fileNorm -match [string]$term.allowedPathRegex) {
       $allowed = $true
     }
