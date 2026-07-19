@@ -5175,3 +5175,89 @@ the interior leg's receipt, not the whole-query receipt, and it does not
 discharge REQ-E1-04, which is whole-query scoped and remains Open. Nothing
 here touches the span blocks, the two-span blocks or the five-branch
 dispatch, all of which remain unbuilt.
+
+## DD-20260719-050: the span block's `none` arm branches past the WHOLE leg, and the impostor that skips only the summary group is rejected by NOTHING but the value and a positional category log (E1 M3d-25)
+
+Claimed by the M3d-25 session (E1-LaneB) and cited in
+`E1InteriorSpanBlock.lean` at the module header and at the discriminator
+section; the entry itself was omitted from this file at that session's
+commits and is written here by its successor (E1-LaneB2, M3d-27) without
+renumbering. The maximum OBSERVED in this file before writing was
+`DD-20260719-019`; `020`-`049` are other lanes' bands and `050` is the
+identifier the module already carries, so it is used as cited rather than
+compacted. Substance is taken from the module and from the session's own
+report, not reconstructed.
+
+Context. The two span computations
+(`canonicalRelativeRmmMachineLocalSpanCandidateComputation` and its global
+twin, `InteriorDirectory.lean`) share one shape: a staged read, then
+`some value => MinCandidateComputation (BLOCK value)` against
+`none => FlatStoreComputation.pure none`. On the machine side the `some`
+arm falls into the composed 177-instruction min-candidate leg. The `none`
+arm must do two things at once -- branch past ALL 177 instructions, and
+emit nothing.
+
+The decision is a single numeral: `spanArms`' branch target at `Q + 42`.
+
+Decision: the `none` arm targets the block's OWN EXIT at `Q + 222`, past
+the summary group's 156 instructions AND the consumer's 21. The available
+wrong numeral is `Q + 45 + 156`, which branches past the group only and
+lands ON the consumer.
+
+Why that wrong numeral is the dangerous one, demonstrated rather than
+argued. The summary group is where the four READS are, so an arm that fell
+into the GROUP would be caught by the receipt. The consumer is READ-FREE
+(`minCandidateBlock_readFree`), so an arm that falls into the CONSUMER
+leaves the receipt untouched while overwriting `mMV`/`mMP` from whatever
+four cells happen to be sitting in `sBase`, `sMin`, `sMax`, `sArg`. It
+returns `some` where the route returns `none`, with an identical receipt.
+This is RIGHT SHAPE, WRONG CONTENT, third variety, and the impostor is not
+invented for the fixture: it is the one wrong numeral the block admits.
+
+What the fixture establishes, by EXECUTION on the empty store, holding
+everything fixed but that numeral (`noneArmProgram target`, correct arm
+`target = 23`, impostor `target = 2`, the real consumer at its own base):
+
+* the values differ -- `armOut_correct` is `none`, `armOut_impostor` is
+  `some (5, 6)`, and `spanNoneArm_discriminates` separates them;
+* THE RECEIPTS ARE EQUAL -- `spanNoneArm_traces_agree`. A receipt equation
+  is FORMALLY INCAPABLE of rejecting this impostor;
+* both receipts are EMPTY -- `spanNoneArm_traces_empty` -- so the read
+  COUNT does not separate them either;
+* both arms HALT -- `spanNoneArm_both_halt` -- so the exit code does not
+  separate them;
+* PRESERVATION HOLDS ON BOTH -- `armOperands_preserved_correct` and
+  `armOperands_preserved_impostor`, with the four cross-block-arm operands
+  `70`, `71`, `75`, `76` seeded with distinct marks so survival is
+  discriminating rather than trivially true at zero.
+
+So of the four things one can check about this block -- receipt, read
+count, exit code, preservation -- NOT ONE rejects the impostor.
+
+The boundary is stated exactly rather than implied. The value is not the
+sole instrument: `spanNoneArm_catLogs_differ` shows a POSITIONAL CATEGORY
+comparison also catches it, because the impostor executes the consumer's
+21 instructions and logs them. Recording that is the point of the
+non-entailment discipline -- the claim is "receipt, read count, exit code
+and preservation do not suffice", not "only the value can ever work".
+
+What this decides for consumers. `spanBlock_runsTo`'s value clause is
+stated against the ROUTE's own `spanValue` rather than against the block's
+own arithmetic, and that choice is what makes the clause load-bearing. A
+value clause phrased in the block's own terms would have been satisfied by
+the impostor.
+
+The general rule this instances, and it is the one to carry into the
+two-span blocks and the merge combiners: for each new block, identify the
+sub-leg whose branch target differs from its neighbours', build the
+impostor THERE, and state the NON-ENTAILMENTS alongside the discriminator.
+A discriminator alone says a check works; the non-entailments say which
+checks do not, and only the pair locates the obligation.
+
+Scope. This is the SPAN BLOCK's `none` arm, parametric in the read
+geometry, at the canonical store and layout. It does not discharge any row
+of `E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md`, all of which are whole-query
+scoped and remain Open. At the time of the decision the two `TableGeom`s
+instantiating the block were not yet defined, the two-span blocks, the
+macro combiners and the five-branch dispatch were unbuilt, and no two-way
+merge block existed on the machine side.
