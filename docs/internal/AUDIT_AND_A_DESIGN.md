@@ -2007,3 +2007,61 @@ the literal migration legitimately touches the file, the fixture is left alone)
 and `docs/internal/CLAIM_DRIFT_POLICY.json`. Every moved numeral must be listed,
 because the new numeric-prose checker derives expected values from Lean at run
 time and will fail on any documented numeral that did not move with its source.
+
+## 2026-07-19 (C05 round 30) — B7 COMMIT B LANDED; a DD-ID collision across branches
+
+**The swap is committed and green at `d5a9355`.** The last known uncharged
+size-dependent computation on the accepted RMQ route is charged. `lake build RMQ
+RMQPaper RMQExamples` exit 0; the literal re-derives
+`concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq = 210 := by rfl`
+and `#print axioms` reports it and `queryCost_eq` as **"does not depend on any
+axioms"** — computed, not asserted. Cross-macro attains the cap at ZERO slack
+(within-macro 26/slack 7, adjacent 22/11, left-middle 22/11), so the bound is
+tight rather than comfortable. 207 and 126 are frozen over PINNED LITERAL
+components, so they cannot track the live cap — the freezing defect stays fixed.
+The slack artifact is deleted, with a tombstone at `InteriorDirectory.lean:
+5541-5555` recording that it was deleted rather than weakened.
+
+**The coordinator's diagnosis was right about the mechanism and wrong about the
+file.** I named `SuccinctFinalRAM.lean`; the live defect was in
+`ReviewerReachabilitySmall.lean:2096` — the symptom in the file I named had
+already been fixed in the uncommitted tree, which was never logged because
+session 9 produced no worklog entry. The worker VERIFIED rather than assumed
+(checking that `SuccinctFinalRAM.lean` already elaborated and that
+`InteriorDirectory.olean` post-dated its source) instead of chasing my stale
+report. Cause (1) was genuinely live at the real site: `slot := ...
+(Nat.log2 2)` with `exact List.mem_append_left _ hlocalSpan` claiming the SPAN
+read was leftmost, when after the swap the two-span computation binds the LEVEL
+read first. Repaired structurally; `maxHeartbeats` untouched. This is precisely
+the case where raising it would have produced a theorem describing the wrong
+machine.
+
+**CHK-04 ruling: add a fixture, do not exclude one.** Six of eight crossBlock
+windows moved; the two static ones have `blockCount = 2`, so the interior is
+invoked with `count = 0` and costs 0 both before and after. The reasoning is
+sound, but excluding a fixture BECAUSE it did not move — on the strength of an
+argument — is the exact move anti-vacuity rows exist to prevent, and it would
+convert an observation back into an argument. It also exposed a real gap worth
+closing on its own merits: **tie-boundary behaviour with a live interior is
+currently untested**, since every fixture in that group has `blockCount = 2`.
+B7-11 adds a `blockCount >= 3` tie-boundary fixture and keeps the existing one
+as legitimate zero-interior coverage.
+
+**PROCESS DEFECT — parallel branches minted colliding design-decision IDs.**
+Merging B7 into the E1 branch conflicted on `DESIGN_DECISIONS.md`: pre-existing
+entries end at `DD-20260718-011`, and then E1 and B7 INDEPENDENTLY minted
+`DD-20260718-012` for entirely different decisions. Resolved by renumbering E1's
+standalone entry to `-014`, leaving B7's `-012`/`-013` Milestone 0/0b chain
+intact. **A second collision is already pending:** T1 also minted
+`DD-20260719-001`, which B7 has used for the width decision — that one must be
+renumbered when `claude/numeric-prose-lint` merges.
+
+The ID namespace is a shared mutable resource and nothing guards it. Options for
+the merge window: allocate per-branch ID prefixes, or move to a
+content-addressed scheme, or simply have the coordinator assign IDs at launch.
+Recorded rather than fixed now, because changing the convention mid-merge would
+churn every open branch.
+
+**E1 unblocked:** B7 merged into `claude/b1-b2-charged-fringe-tables` at
+`f9b1ecc`, tree clean, 28 E1 modules and B7's `SparseLevelTable` both present.
+Merged-tree build verification running.
