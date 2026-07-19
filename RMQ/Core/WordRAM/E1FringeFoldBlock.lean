@@ -418,7 +418,7 @@ theorem fringeLoopBody_fits {w S c L LB : Nat}
     (try simp only [<- hMdef]) <;>
     omega
 
-/-! /-! ## Shared symbolic-evaluation macros (module-local instances) -/
+/-! ## Shared symbolic-evaluation macros (module-local instances) -/
 
 /-- Symbolic machine-state evaluation with this module's segments and the
 fringe register-bank numerals. -/
@@ -439,15 +439,15 @@ machine's `fE` register after the read and its bounded decode. -/
 def fringeEntry (store : ReadStore) (S c : Nat) (window : List Bool)
     (relLo relHi j : Nat) : Nat :=
   ((store.readWord? S (bpFringeChunkSlotAt c window relLo relHi j)).map
-    bitsToNatLE).getD 0
+    SuccinctSpace.bitsToNatLE).getD 0
 
 /-! ## Straight prefix simulation -/
 
 /-- The prefix writes only `fV, fA, fB, fSlot, fE, fCV, fCP, fAcc` and the
 scratch registers `fT, fU, fX`. -/
-def FringePrefixUntouched (r : Nat) : Prop :=
-  r ≠ fV ∧ r ≠ fA ∧ r ≠ fB ∧ r ≠ fSlot ∧ r ≠ fE ∧ r ≠ fCV ∧ r ≠ fCP ∧
-    r ≠ fAcc ∧ r ≠ fT ∧ r ≠ fU ∧ r ≠ fX
+abbrev FringePrefixUntouched (r : Nat) : Prop :=
+  r ≠ 53 ∧ r ≠ 54 ∧ r ≠ 55 ∧ r ≠ 56 ∧ r ≠ 57 ∧ r ≠ 58 ∧ r ≠ 59 ∧
+    r ≠ 46 ∧ r ≠ 60 ∧ r ≠ 61 ∧ r ≠ 62
 
 /-- Category log of the prefix, independent of its operands. -/
 theorem fringePrefix_cats (S c : Nat) :
@@ -457,7 +457,7 @@ theorem fringePrefix_cats (S c : Nat) :
 Exact simulation of the straight prefix of one fold pass: from the loop
 entry with the pinned constants, the range endpoints, the chunk cursor
 `fJC = j * c`, and the four window registers representing
-`bitsToNatLE window / 2 ^ (j * c)`, the hosted prefix runs to `LB + 32`
+`SuccinctSpace.bitsToNatLE window / 2 ^ (j * c)`, the hosted prefix runs to `LB + 32`
 emitting exactly the pass's ONE charged chunk-table read, and leaving the
 gate operands in `fA`/`fB`, the candidate in `fCV`/`fCP`, and the advanced
 accumulator in `fAcc`.
@@ -472,7 +472,7 @@ theorem fringePrefix_runsTo
     (hLo : regs fLo = relLo) (hHi : regs fHi = relHi)
     (hJC : regs fJC = j * c)
     (hW : windowRegsValue L (regs fW0) (regs fW1) (regs fW2) (regs fW3) =
-      bitsToNatLE window / 2 ^ (j * c))
+      SuccinctSpace.bitsToNatLE window / 2 ^ (j * c))
     (hAcc : regs fAcc = acc) :
     ∃ regs' : RegFile,
       RunsTo store program ⟨regs, LB, false⟩ ⟨regs', LB + 32, false⟩
@@ -490,8 +490,10 @@ theorem fringePrefix_runsTo
           ((c + 1) * (2 * c + 2)) - c ∧
       (∀ r, FringePrefixUntouched r -> regs' r = regs r) := by
   -- the chunk value the prefix reads off the first window register
-  have hchunk : regs fW0 % 2 ^ c = bpFringeWindowChunkValue c window j := by
-    rw [bpFringeWindowChunkValue_eq_div_mod, <- hW, windowRegsValue_mod hc]
+  have hchunk : regs fW0 - regs fW0 / 2 ^ c * 2 ^ c =
+      bpFringeWindowChunkValue c window j := by
+    rw [<- nat_mod_eq_sub_div_mul, bpFringeWindowChunkValue_eq_div_mod,
+      <- hW, windowRegsValue_mod hc]
   have hrun := RunsTo.straight store (fringePrefix S c)
     (fringePrefix_straight S c) LB hPre regs
   obtain ⟨regsP, hregsP⟩ :
@@ -501,7 +503,7 @@ theorem fringePrefix_runsTo
   have hreads : straightReads store (fringePrefix S c) regs =
       [bpFringeChunkEventAt store S c window relLo relHi j] := by
     fringe_eval <;>
-      simp [hOne, hC, hLo, hHi, hJC, hchunk, bpFringeChunkEventAt,
+      simp [hOne, hLo, hHi, hJC, hchunk, bpFringeChunkEventAt,
         bpFringeChunkSlotAt, bpFringeChunkSlot,
         bpFringeChunkStartOff_eq_sub, bpFringeChunkEndOff_eq_sub,
         nat_mod_eq_sub_div_mul]
@@ -540,15 +542,15 @@ theorem fringePrefix_runsTo
       | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
       | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
       | rfl <;>
-      fringe_writes
+      fringe_writes <;> omega
 
 /-! ## Tail simulation (window shift and cursor advance) -/
 
 /-- The tail writes only the window registers, the cursor, the counter,
 and the scratch registers. -/
-def FringeTailUntouched (r : Nat) : Prop :=
-  r ≠ fW0 ∧ r ≠ fW1 ∧ r ≠ fW2 ∧ r ≠ fW3 ∧ r ≠ fJC ∧ r ≠ fCnt ∧
-    r ≠ fT ∧ r ≠ fU ∧ r ≠ fX
+abbrev FringeTailUntouched (r : Nat) : Prop :=
+  r ≠ 42 ∧ r ≠ 43 ∧ r ≠ 44 ∧ r ≠ 45 ∧ r ≠ 49 ∧ r ≠ 52 ∧
+    r ≠ 60 ∧ r ≠ 61 ∧ r ≠ 62
 
 /-- Category log of the tail, independent of its operands. -/
 theorem fringeTail_cats (c L : Nat) :
@@ -559,7 +561,7 @@ theorem fringeTail_cats (c L : Nat) :
 Exact simulation of the fold pass's straight tail: the four-register
 constant-stride window advance followed by the chunk cursor and loop
 counter updates.  The window registers afterwards represent
-`bitsToNatLE window / 2 ^ ((j + 1) * c)` — the SAME Horner invariant one
+`SuccinctSpace.bitsToNatLE window / 2 ^ ((j + 1) * c)` — the SAME Horner invariant one
 chunk further on — which is what makes the loop invariant close.
 -/
 theorem fringeTail_runsTo
@@ -572,12 +574,12 @@ theorem fringeTail_runsTo
     (hJC : regs fJC = j * c)
     (hCnt : regs fCnt = k + 1)
     (hW : windowRegsValue L (regs fW0) (regs fW1) (regs fW2) (regs fW3) =
-      bitsToNatLE window / 2 ^ (j * c)) :
+      SuccinctSpace.bitsToNatLE window / 2 ^ (j * c)) :
     ∃ regs' : RegFile,
       RunsTo store program ⟨regs, LB + 45, false⟩ ⟨regs', LB + 66, false⟩
         [] fringeTailCats ∧
       windowRegsValue L (regs' fW0) (regs' fW1) (regs' fW2) (regs' fW3) =
-        bitsToNatLE window / 2 ^ ((j + 1) * c) ∧
+        SuccinctSpace.bitsToNatLE window / 2 ^ ((j + 1) * c) ∧
       regs' fJC = (j + 1) * c ∧
       regs' fCnt = k ∧
       (∀ r, FringeTailUntouched r -> regs' r = regs r) := by
@@ -596,21 +598,20 @@ theorem fringeTail_runsTo
   have hlen : LB + 45 + (fringeShift c L ++ fringeAdvance).length =
       LB + 66 := by
     simp [List.length_append]
-    omega
   rw [hlen] at hrun
   -- the four shifted window registers
   have hW0 : regsT fW0 =
       regs fW0 / 2 ^ c + regs fW1 % 2 ^ c * 2 ^ (L - c) := by
     rw [<- hregsT]
-    fringe_eval <;> simp [nat_mod_eq_sub_div_mul]
+    fringe_eval <;> (try simp [nat_mod_eq_sub_div_mul])
   have hW1 : regsT fW1 =
       regs fW1 / 2 ^ c + regs fW2 % 2 ^ c * 2 ^ (L - c) := by
     rw [<- hregsT]
-    fringe_eval <;> simp [nat_mod_eq_sub_div_mul]
+    fringe_eval <;> (try simp [nat_mod_eq_sub_div_mul])
   have hW2 : regsT fW2 =
       regs fW2 / 2 ^ c + regs fW3 % 2 ^ c * 2 ^ (L - c) := by
     rw [<- hregsT]
-    fringe_eval <;> simp [nat_mod_eq_sub_div_mul]
+    fringe_eval <;> (try simp [nat_mod_eq_sub_div_mul])
   have hW3 : regsT fW3 = regs fW3 / 2 ^ c := by
     rw [<- hregsT]
     fringe_eval
@@ -618,7 +619,7 @@ theorem fringeTail_runsTo
   · rw [hW0, hW1, hW2, hW3, <- windowRegsValue_shift hc, hW,
       Nat.div_div_eq_div_mul, <- Nat.pow_add]
     congr 2
-    omega
+    exact (Nat.succ_mul j c).symm
   · rw [<- hregsT]
     fringe_eval <;> simp [hC, hJC, Nat.succ_mul]
   · rw [<- hregsT]
@@ -633,12 +634,12 @@ theorem fringeTail_runsTo
         or_false] at h
       rcases h with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
         | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
-        fringe_writes
+        fringe_writes <;> omega
     · simp only [fringeAdvance, List.mem_cons, List.not_mem_nil,
         or_false] at h
-      rcases h with rfl | rfl <;> fringe_writes
+      rcases h with rfl | rfl <;> fringe_writes <;> omega
 
-## The keep-left merge is the identity on an absent candidate -/
+/-! ## The keep-left merge is the identity on an absent candidate -/
 
 theorem bpFringeMergeCand_none (best : Option (Nat × Nat)) :
     bpFringeMergeCand best none = best := by
@@ -910,6 +911,380 @@ theorem fringeMerge_runsTo
       rw [e1, e2, if_neg hab, bpFringeMergeCand_none]
     · intro r hT hU hBV hBP
       simp [RegFile.write, hT]
+
+/-! ## Descending-counter to ascending-order log combinator -/
+
+/-- Ascending concatenation of per-iteration logs from index `j`. -/
+def ascLog {alpha : Type} (g : Nat -> List alpha) : Nat -> Nat -> List alpha
+  | _j, 0 => []
+  | j, n + 1 => g j ++ ascLog g (j + 1) n
+
+/-- A descending-counter `iterLog` over general per-iteration logs is the
+ascending concatenation: the iteration executed with remaining counter
+`k + 1` contributes index `j + (n - (k + 1))`. -/
+theorem iterLog_desc {alpha : Type} (g : Nat -> List alpha) :
+    forall (n j : Nat),
+      iterLog (fun k => g (j + (n - (k + 1)))) n = ascLog g j n := by
+  intro n
+  induction n with
+  | zero =>
+      intro j
+      rfl
+  | succ n ih =>
+      intro j
+      show g (j + (n + 1 - (n + 1))) ++
+          iterLog (fun k => g (j + (n + 1 - (k + 1)))) n =
+        g j ++ ascLog g (j + 1) n
+      have hcongr :
+          iterLog (fun k => g (j + (n + 1 - (k + 1)))) n =
+            iterLog (fun k => g (j + 1 + (n - (k + 1)))) n := by
+        apply iterLog_congr
+        intro k hk
+        have harg : j + (n + 1 - (k + 1)) = j + 1 + (n - (k + 1)) := by
+          omega
+        rw [harg]
+      rw [hcongr, ih (j + 1)]
+      have hhead : j + (n + 1 - (n + 1)) = j := by omega
+      rw [hhead]
+
+/-! ## Whole-fold category log -/
+
+/-- Category log of the whole charged fringe fold, in execution order.
+Every pass contributes its own arm-dependent log; no numeral is
+asserted. -/
+def fringeFoldCats (store : ReadStore) (S c : Nat) (window : List Bool)
+    (relLo relHi seed count : Nat) : List Category :=
+  ascLog
+    (fun j =>
+      fringePassCats c relLo relHi j
+        (bpFringeStateAt store S c window relLo relHi seed j)
+        (fringeEntry store S c window relLo relHi j))
+    0 count
+
+/-- Registers outside the fringe bank are untouched by the fold. -/
+abbrev FringeFoldUntouched (r : Nat) : Prop := r < 40 ∨ 63 ≤ r
+
+/-- A register outside the bank is outside the prefix write set. -/
+theorem fringePrefixUntouched_of_fold {r : Nat} (h : FringeFoldUntouched r) :
+    FringePrefixUntouched r := by omega
+
+/-- A register outside the bank is outside the tail write set. -/
+theorem fringeTailUntouched_of_fold {r : Nat} (h : FringeFoldUntouched r) :
+    FringeTailUntouched r := by omega
+
+/-- A register outside the bank is outside the merge write set. -/
+theorem fringeMergeNe_of_fold {r : Nat} (h : FringeFoldUntouched r) :
+    r ≠ fT ∧ r ≠ fU ∧ r ≠ fBV ∧ r ≠ fBP := by
+  simp only [FringeFoldUntouched] at h
+  simp only [fT, fU, fBV, fBP]
+  omega
+
+/-! ## The fold loop -/
+
+/--
+Exact-fuel simulation of the charged chunked fringe fold.
+
+From the loop entry with the pinned constants, the range endpoints, a
+zeroed chunk cursor, the iteration counter, an empty best candidate, and
+the four window registers representing `SuccinctSpace.bitsToNatLE window`, the hosted
+body plus back edge run to the loop exit at `LB + 67`, emitting exactly
+the fold's ascending chunk-table reads — POSITIONALLY equal to the
+accepted fold's trace — charging the per-pass arm-dependent category
+logs, and leaving the fold's literal iterated state in `fAcc` and the
+option-shifted `fBV`/`fBP` pair.
+-/
+theorem fringeFoldLoop_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {LB S c L : Nat}
+    (hc : c ≤ L)
+    (hPre : HostedAt program LB (fringePrefix S c))
+    (hMrg : HostedAt program (LB + 32) (fringeMerge LB))
+    (hTail : HostedAt program (LB + 45) (fringeShift c L ++ fringeAdvance))
+    (hbr : program[LB + 66]? = some (.brNZ fCnt LB))
+    (window : List Bool) (relLo relHi seed count : Nat)
+    (hcount : 0 < count)
+    (regsL : RegFile)
+    (hOne : regsL fOne = 1) (hC : regsL fC = c)
+    (hLo : regsL fLo = relLo) (hHi : regsL fHi = relHi)
+    (hJC : regsL fJC = 0) (hCnt : regsL fCnt = count)
+    (hAcc : regsL fAcc = seed) (hBV : regsL fBV = 0)
+    (hW : windowRegsValue L (regsL fW0) (regsL fW1) (regsL fW2)
+      (regsL fW3) = SuccinctSpace.bitsToNatLE window) :
+    ∃ regsF : RegFile,
+      RunsTo store program ⟨regsL, LB, false⟩ ⟨regsF, LB + 67, false⟩
+        ((List.range count).map
+          (fun j => bpFringeChunkEventAt store S c window relLo relHi j))
+        (fringeFoldCats store S c window relLo relHi seed count) ∧
+      regsF fAcc =
+        (bpFringeStateAt store S c window relLo relHi seed count).1 ∧
+      bestOfRegs (regsF fBV) (regsF fBP) =
+        (bpFringeStateAt store S c window relLo relHi seed count).2 ∧
+      (∀ r, FringeFoldUntouched r -> regsF r = regsL r) := by
+  let P : Nat -> State -> Prop := fun k s =>
+    k ≤ count ∧ s.halted = false ∧
+    s.pc = (if k = 0 then LB + 67 else LB) ∧
+    s.regs fOne = 1 ∧ s.regs fC = c ∧ s.regs fLo = relLo ∧
+    s.regs fHi = relHi ∧
+    s.regs fJC = (count - k) * c ∧
+    s.regs fCnt = k ∧
+    windowRegsValue L (s.regs fW0) (s.regs fW1) (s.regs fW2)
+        (s.regs fW3) =
+      SuccinctSpace.bitsToNatLE window / 2 ^ ((count - k) * c) ∧
+    s.regs fAcc =
+      (bpFringeStateAt store S c window relLo relHi seed (count - k)).1 ∧
+    bestOfRegs (s.regs fBV) (s.regs fBP) =
+      (bpFringeStateAt store S c window relLo relHi seed (count - k)).2 ∧
+    (∀ r, FringeFoldUntouched r -> s.regs r = regsL r)
+  have hstep : forall k s, P (k + 1) s ->
+      ∃ s', RunsTo store program s s'
+          [bpFringeChunkEventAt store S c window relLo relHi
+            (count - (k + 1))]
+          (fringePassCats c relLo relHi (count - (k + 1))
+            (bpFringeStateAt store S c window relLo relHi seed
+              (count - (k + 1)))
+            (fringeEntry store S c window relLo relHi
+              (count - (k + 1)))) ∧
+        P k s' := by
+    intro k s hP
+    obtain ⟨regs, pc, halted⟩ := s
+    obtain ⟨hkle, hhalt, hpc, hone, hcc, hlo, hhi, hjc, hk, hw, hacc,
+      hbest, hpres⟩ := hP
+    simp only at hhalt hpc hone hcc hlo hhi hjc hk hw hacc hbest hpres
+    subst hhalt
+    have hpcEq : (if k + 1 = 0 then LB + 67 else LB) = LB :=
+      if_neg (Nat.succ_ne_zero k)
+    rw [hpcEq] at hpc
+    subst pc
+    have hik : count - k = (count - (k + 1)) + 1 := by omega
+    have hjcv : regs fJC = (count - (k + 1)) * c := hjc
+    -- the straight prefix
+    obtain ⟨regsP, hrunP, hPA, hPB, hPCV, hPCP, hPAcc, hPpres⟩ :=
+      fringePrefix_runsTo store hc hPre window relLo relHi
+        (count - (k + 1))
+        (bpFringeStateAt store S c window relLo relHi seed
+          (count - (k + 1))).1
+        regs hone hcc hlo hhi hjcv hw hacc
+    have hPone : regsP fOne = 1 := by
+      rw [hPpres fOne (by decide)]
+      exact hone
+    have hPbest : bestOfRegs (regsP fBV) (regsP fBP) =
+        (bpFringeStateAt store S c window relLo relHi seed
+          (count - (k + 1))).2 := by
+      rw [hPpres fBV (by decide),
+        hPpres fBP (by decide)]
+      exact hbest
+    -- the branching merge
+    obtain ⟨regsM, hrunM, hMbest, hMpres⟩ :=
+      fringeMerge_runsTo store hMrg regsP
+        (bpFringeChunkStartOff c relLo (count - (k + 1)))
+        (bpFringeChunkEndOff c relHi (count - (k + 1)))
+        (regsP fCV) (regsP fCP) hPone hPA hPB rfl rfl
+    have hMcats :
+        fringeMergeArmCats
+          (decide (bpFringeChunkStartOff c relLo (count - (k + 1)) <
+            bpFringeChunkEndOff c relHi (count - (k + 1))))
+          (bestOfRegs (regsP fBV) (regsP fBP)) (regsP fCV) =
+        fringeMergeCatsAt c relLo relHi (count - (k + 1))
+          (bpFringeStateAt store S c window relLo relHi seed
+            (count - (k + 1))).2
+          ((bpFringeStateAt store S c window relLo relHi seed
+            (count - (k + 1))).1 +
+            fringeEntry store S c window relLo relHi (count - (k + 1)) /
+              (c + 1) % (2 * c + 2) - c) := by
+      rw [hPbest, hPCV]
+      rfl
+    rw [hMcats] at hrunM
+    have hMone : regsM fOne = 1 := by
+      rw [hMpres fOne (by decide) (by decide) (by decide) (by decide)]
+      exact hPone
+    have hMc : regsM fC = c := by
+      rw [hMpres fC (by decide) (by decide) (by decide) (by decide),
+        hPpres fC (by decide)]
+      exact hcc
+    have hMjc : regsM fJC = (count - (k + 1)) * c := by
+      rw [hMpres fJC (by decide) (by decide) (by decide) (by decide),
+        hPpres fJC (by decide)]
+      exact hjcv
+    have hMcnt : regsM fCnt = k + 1 := by
+      rw [hMpres fCnt (by decide) (by decide) (by decide) (by decide),
+        hPpres fCnt (by decide)]
+      exact hk
+    have hMw : windowRegsValue L (regsM fW0) (regsM fW1) (regsM fW2)
+        (regsM fW3) =
+        SuccinctSpace.bitsToNatLE window / 2 ^ ((count - (k + 1)) * c) := by
+      rw [hMpres fW0 (by decide) (by decide) (by decide) (by decide),
+        hMpres fW1 (by decide) (by decide) (by decide) (by decide),
+        hMpres fW2 (by decide) (by decide) (by decide) (by decide),
+        hMpres fW3 (by decide) (by decide) (by decide) (by decide),
+        hPpres fW0 (by decide),
+        hPpres fW1 (by decide),
+        hPpres fW2 (by decide),
+        hPpres fW3 (by decide)]
+      exact hw
+    -- the straight tail
+    obtain ⟨regsT, hrunT, hTw, hTjc, hTcnt, hTpres⟩ :=
+      fringeTail_runsTo store hc hTail window (count - (k + 1)) k regsM
+        hMone hMc hMjc hMcnt hMw
+    -- the invariant components at the successor state
+    have hNone : regsT fOne = 1 := by
+      rw [hTpres fOne (by decide)]
+      exact hMone
+    have hNc : regsT fC = c := by
+      rw [hTpres fC (by decide)]
+      exact hMc
+    have hNlo : regsT fLo = relLo := by
+      rw [hTpres fLo (by decide),
+        hMpres fLo (by decide) (by decide) (by decide) (by decide),
+        hPpres fLo (by decide)]
+      exact hlo
+    have hNhi : regsT fHi = relHi := by
+      rw [hTpres fHi (by decide),
+        hMpres fHi (by decide) (by decide) (by decide) (by decide),
+        hPpres fHi (by decide)]
+      exact hhi
+    have hNjc : regsT fJC = (count - k) * c := by
+      rw [hTjc, hik]
+    have hNw : windowRegsValue L (regsT fW0) (regsT fW1) (regsT fW2)
+        (regsT fW3) = SuccinctSpace.bitsToNatLE window / 2 ^ ((count - k) * c) := by
+      rw [hTw, hik]
+    have hNacc : regsT fAcc =
+        (bpFringeStateAt store S c window relLo relHi seed
+          (count - k)).1 := by
+      rw [hTpres fAcc (by decide),
+        hMpres fAcc (by decide) (by decide) (by decide) (by decide), hPAcc,
+        hik]
+      show _ =
+        (bpFringeChunkStepDecoded c relLo relHi (count - (k + 1))
+          (bpFringeStateAt store S c window relLo relHi seed
+            (count - (k + 1)))
+          ((store.readWord? S
+            (bpFringeChunkSlotAt c window relLo relHi
+              (count - (k + 1)))).map SuccinctSpace.bitsToNatLE)).1
+      rw [bpFringeChunkStepDecoded_eq_machine]
+      simp [fringeEntry]
+    have hNbest : bestOfRegs (regsT fBV) (regsT fBP) =
+        (bpFringeStateAt store S c window relLo relHi seed
+          (count - k)).2 := by
+      rw [hTpres fBV (by decide),
+        hTpres fBP (by decide), hMbest,
+        hPbest, hPCV, hPCP, hik]
+      show _ =
+        (bpFringeChunkStepDecoded c relLo relHi (count - (k + 1))
+          (bpFringeStateAt store S c window relLo relHi seed
+            (count - (k + 1)))
+          ((store.readWord? S
+            (bpFringeChunkSlotAt c window relLo relHi
+              (count - (k + 1)))).map SuccinctSpace.bitsToNatLE)).2
+      rw [bpFringeChunkStepDecoded_eq_machine]
+      simp [fringeEntry, nat_mod_eq_sub_div_mul]
+    have hNpres : ∀ r, FringeFoldUntouched r -> regsT r = regsL r := by
+      intro r hr
+      obtain ⟨hmT, hmU, hmBV, hmBP⟩ := fringeMergeNe_of_fold hr
+      rw [hTpres r (fringeTailUntouched_of_fold hr),
+        hMpres r hmT hmU hmBV hmBP,
+        hPpres r (fringePrefixUntouched_of_fold hr)]
+      exact hpres r hr
+    -- the back edge
+    by_cases hk0 : k = 0
+    · subst hk0
+      have hbrE := RunsTo.brNZ_not_taken (store := store)
+        (s := (⟨regsT, LB + 66, false⟩ : State)) rfl hbr
+        (by simpa using hTcnt)
+      refine ⟨⟨regsT, LB + 67, false⟩, ?_, ?_⟩
+      · have hrun := ((hrunP.trans hrunM).trans hrunT).trans hbrE
+        simpa [fringePassCats, List.append_assoc]
+          using hrun
+      · exact ⟨Nat.zero_le _, rfl, by simp, hNone, hNc, hNlo, hNhi,
+          hNjc, hTcnt, hNw, hNacc, hNbest, hNpres⟩
+    · have hbrE := RunsTo.brNZ_taken (store := store)
+        (s := (⟨regsT, LB + 66, false⟩ : State)) rfl hbr
+        (by simpa [hTcnt] using hk0)
+      refine ⟨⟨regsT, LB, false⟩, ?_, ?_⟩
+      · have hrun := ((hrunP.trans hrunM).trans hrunT).trans hbrE
+        simpa [fringePassCats, List.append_assoc]
+          using hrun
+      · exact ⟨by omega, rfl, by simp [hk0], hNone, hNc, hNlo, hNhi,
+          hNjc, hTcnt, hNw, hNacc, hNbest, hNpres⟩
+  -- start state satisfies the invariant at the full count
+  have hstart : P count ⟨regsL, LB, false⟩ := by
+    refine ⟨Nat.le_refl _, rfl, ?_, hOne, hC, hLo, hHi, ?_, hCnt, ?_, ?_,
+      ?_, fun r _ => rfl⟩
+    · have hne : count ≠ 0 := by omega
+      simp [hne]
+    · simp [Nat.sub_self, hJC]
+    · simp [Nat.sub_self, hW]
+    · simp [Nat.sub_self, hAcc, bpFringeStateAt]
+    · simp [Nat.sub_self, bpFringeStateAt, bestOfRegs, hBV]
+  obtain ⟨sEnd, hloopRun, hPEnd⟩ :=
+    RunsTo.iterate P
+      (fun k => [bpFringeChunkEventAt store S c window relLo relHi
+        (count - (k + 1))])
+      (fun k =>
+        fringePassCats c relLo relHi (count - (k + 1))
+          (bpFringeStateAt store S c window relLo relHi seed
+            (count - (k + 1)))
+          (fringeEntry store S c window relLo relHi (count - (k + 1))))
+      hstep count ⟨regsL, LB, false⟩ hstart
+  obtain ⟨regsE, pcE, haltE⟩ := sEnd
+  obtain ⟨_, hEhalt, hEpc, _, _, _, _, _, _, _, hEacc, hEbest, hEpres⟩ :=
+    hPEnd
+  simp only at hEhalt hEpc hEacc hEbest hEpres
+  subst hEhalt
+  simp at hEpc
+  subst hEpc
+  -- receipts in ascending chunk order
+  have hreadsIter :
+      iterLog (fun k => [bpFringeChunkEventAt store S c window relLo relHi
+        (count - (k + 1))]) count =
+      (List.range count).map
+        (fun j => bpFringeChunkEventAt store S c window relLo relHi j) := by
+    have h1 :
+        iterLog (fun k => [bpFringeChunkEventAt store S c window relLo
+          relHi (count - (k + 1))]) count =
+        iterLog (fun k => [bpFringeChunkEventAt store S c window relLo
+          relHi (0 + (count - (k + 1)))]) count := by
+      apply iterLog_congr
+      intro kk _
+      rw [Nat.zero_add]
+    rw [h1, iterLog_singleton_desc]
+    apply List.map_congr_left
+    intro dd _
+    rw [Nat.zero_add]
+  -- category log in ascending chunk order
+  have hcatsIter :
+      iterLog (fun k =>
+        fringePassCats c relLo relHi (count - (k + 1))
+          (bpFringeStateAt store S c window relLo relHi seed
+            (count - (k + 1)))
+          (fringeEntry store S c window relLo relHi (count - (k + 1))))
+        count =
+      fringeFoldCats store S c window relLo relHi seed count := by
+    have h1 :
+        iterLog (fun k =>
+          fringePassCats c relLo relHi (count - (k + 1))
+            (bpFringeStateAt store S c window relLo relHi seed
+              (count - (k + 1)))
+            (fringeEntry store S c window relLo relHi (count - (k + 1))))
+          count =
+        iterLog (fun k =>
+          (fun j =>
+            fringePassCats c relLo relHi j
+              (bpFringeStateAt store S c window relLo relHi seed j)
+              (fringeEntry store S c window relLo relHi j))
+            (0 + (count - (k + 1)))) count := by
+      apply iterLog_congr
+      intro kk _
+      rw [Nat.zero_add]
+    rw [h1]
+    exact iterLog_desc
+      (fun j =>
+        fringePassCats c relLo relHi j
+          (bpFringeStateAt store S c window relLo relHi seed j)
+          (fringeEntry store S c window relLo relHi j))
+      count 0
+  rw [hreadsIter, hcatsIter] at hloopRun
+  refine ⟨regsE, hloopRun, ?_, ?_, hEpres⟩
+  · simpa using hEacc
+  · simpa using hEbest
 
 end E1FringeFoldBlock
 end WordRAM
