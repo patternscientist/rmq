@@ -756,6 +756,111 @@ theorem candMerge3_runsTo
   · intro r hr
     rw [hpres2 r hr, hpres1 r hr]
 
+/-! ## ANTI-VACUITY: the six paths EXECUTE onto distinguishable halts
+
+`candMerge3_runsTo` is a simulation theorem, and a reader is entitled to
+ask whether its six arms are ever actually taken -- a block that
+collapsed two arms would still admit a simulation theorem, just one whose
+case split was decorative.
+
+This section RUNS the block rather than merely hosting it: `run` is
+applied to six concrete register files, one per control path, and the
+outcomes are observed as numerals.  The paths are separated by BOTH
+observables the machine offers:
+
+* the MODELED STEP COUNT (`10, 11, 13, 14, 12, 13`), which alone
+  separates five of the six; and
+* the CLOSE PAYLOAD in `fRes` (`99, 200, 201, 302, 103, 304`), pairwise
+  distinct, which separates the two 13-step paths.
+
+Concrete failures these numerals reject: testing `natLe` instead of
+`natLt` at either comparison site collapses the tie behaviour and changes
+`fRes`; dropping the `middle?` occupancy test at `E+2` makes paths 1/2
+read an unoccupied middle register and changes both observables; a merge
+that returned the accumulator VALUE rather than its POSITION would report
+`4`/`2` rather than the position-derived payloads.
+
+Every run also halts with an EMPTY read log, which is the executed form
+of `candMerge3_readFree` and matches the route, whose epilogue rides a
+`TraceResult.map` and contributes no trace event.
+-/
+
+/-- Witness store.  A read-free block cannot consult it; the empty store
+makes that testable rather than assumed. -/
+def witnessStore : ReadStore := ⟨fun _ _ => none⟩
+
+/-- Witness program: the block at base `0`, then `halt`. -/
+def candMerge3Witness : E1Machine.Program := candMerge3 0 ++ [.halt]
+
+/-- The witness program hosts the block at base `0`. -/
+theorem candMerge3Witness_hosts :
+    HostedAt candMerge3Witness 0 (candMerge3 0) :=
+  HostedAt.append_left (hostedAt_self candMerge3Witness)
+
+/-- Register file for one path: the house constant `1` in `fOne`, the two
+fringe candidates occupied (`+1` bias), the middle candidate as given. -/
+def witnessRegs (lv lp mv mp rv rp : Nat) : RegFile :=
+  RegFile.write (RegFile.write (RegFile.write (RegFile.write
+    (RegFile.write (RegFile.write (RegFile.write
+      (fun _ => 0) fOne 1) mLV (lv + 1)) mLP lp) mMV mv) mMP mp)
+        mRV (rv + 1)) mRP rp
+
+/-- The observable outcome of running the witness on one path: exit pc,
+halted flag, modeled steps, close payload, read log. -/
+def witnessOutcome (lv lp mv mp rv rp : Nat) :
+    Nat × Bool × Nat × Nat × List TraceEvent :=
+  let r := run witnessStore candMerge3Witness 32
+    ⟨witnessRegs lv lp mv mp rv rp, 0, false⟩
+  (r.final.pc, r.final.halted, r.steps, r.final.regs fRes, r.readLog)
+
+/-- PATH 1: middle absent, right not better. -/
+theorem candMerge3Witness_path1 :
+    witnessOutcome 5 100 0 0 9 200 = (16, true, 10, 99, []) := rfl
+
+/-- PATH 2: middle absent, right strictly better. -/
+theorem candMerge3Witness_path2 :
+    witnessOutcome 5 101 0 0 2 201 = (16, true, 11, 200, []) := rfl
+
+/-- PATH 3: middle present and strictly better, right not better. -/
+theorem candMerge3Witness_path3 :
+    witnessOutcome 5 102 4 202 9 302 = (16, true, 13, 201, []) := rfl
+
+/-- PATH 4: middle present and strictly better, right strictly better. -/
+theorem candMerge3Witness_path4 :
+    witnessOutcome 5 103 4 203 1 303 = (16, true, 14, 302, []) := rfl
+
+/-- PATH 5: middle present and NOT better, right not better. -/
+theorem candMerge3Witness_path5 :
+    witnessOutcome 5 104 8 204 9 304 = (16, true, 12, 103, []) := rfl
+
+/-- PATH 6: middle present and NOT better, right strictly better. -/
+theorem candMerge3Witness_path6 :
+    witnessOutcome 5 105 8 205 1 305 = (16, true, 13, 304, []) := rfl
+
+/-- The six executed paths are PAIRWISE DISTINGUISHABLE on the
+`(modeled steps, close payload)` pair.  This is the statement that would
+fail if any two control paths collapsed. -/
+theorem candMerge3Witness_paths_distinguishable :
+    let obs := fun (o : Nat × Bool × Nat × Nat × List TraceEvent) =>
+      (o.2.2.1, o.2.2.2.1)
+    [ obs (witnessOutcome 5 100 0 0 9 200)
+    , obs (witnessOutcome 5 101 0 0 2 201)
+    , obs (witnessOutcome 5 102 4 202 9 302)
+    , obs (witnessOutcome 5 103 4 203 1 303)
+    , obs (witnessOutcome 5 104 8 204 9 304)
+    , obs (witnessOutcome 5 105 8 205 1 305) ].Nodup := by decide
+
+/-- Executed form of `candMerge3_readFree`: every path halts having read
+nothing. -/
+theorem candMerge3Witness_readLogs_empty :
+    [ (witnessOutcome 5 100 0 0 9 200).2.2.2.2
+    , (witnessOutcome 5 101 0 0 2 201).2.2.2.2
+    , (witnessOutcome 5 102 4 202 9 302).2.2.2.2
+    , (witnessOutcome 5 103 4 203 1 303).2.2.2.2
+    , (witnessOutcome 5 104 8 204 9 304).2.2.2.2
+    , (witnessOutcome 5 105 8 205 1 305).2.2.2.2 ]
+      = [[], [], [], [], [], []] := rfl
+
 end E1CandMerge3
 end WordRAM
 end RMQ
