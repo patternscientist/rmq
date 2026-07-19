@@ -27,6 +27,7 @@ import RMQ.Core.WordRAM.E1SelectLegBlocks
 import RMQ.Core.WordRAM.E1SelectDispatch
 import RMQ.Core.WordRAM.E1SelectCanonical
 import RMQ.Core.GenericSelect.RAMStoreParam
+import RMQ.Core.GenericSelectBPCompat
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeTableFacts
@@ -70,3 +71,4 @@ import RMQ.Impl.LCACost
 import RMQ.Impl.LCAFischerHeun
 import RMQ.Impl.Equivalence
 import RMQ.Headlines
+import RMQUnionFind
