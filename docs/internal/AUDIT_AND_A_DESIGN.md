@@ -1860,3 +1860,63 @@ Reason recorded so a successor does not read the delay as an oversight.
 row, also touched by B7. The reconciler must keep the word "transitional" in
 that clause — if B7 rewords it, the checker will fail rather than let it drift,
 which is intended behaviour.
+
+## 2026-07-19 (C05 round 27) — width closed all-size; a false-negative trap in our own check
+
+**The width obstruction is CLOSED**, committed green at `fa5e94d`:
+
+```
+theorem bpSparseLevelLocalWidth_le_machine_of_macro_crossing
+    {shape : Cartesian.CartesianShape}
+    (hmacro : (RelativeRmm.canonicalLayout shape).macroSize <
+        (RelativeRmm.canonicalLayout shape).blockCount) :
+    bpSparseLevelWidth
+        (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize) <=
+      SuccinctRank.machineWordBits shape.bpCode.length
+```
+
+plus the global twin. The requirement held: this is an ALL-SIZE proposition
+under the route's OWN hypothesis, not a sampled table and not a convenience
+threshold. `hmacro` is what the interior dispatcher already derives from its
+branch guard plus route-level bounds before any cross-macro two-span call is
+reachable, and the pre-existing relative-width lemma carries the identical
+hypothesis. The coordinator's small-size worry was confirmed exactly: at
+`size = 4` the width is 6 against a 4-bit word and the fit FAILS — saved only
+because macro crossing there needs `9 < 1`. And `10 <= base` is DERIVED by
+eliminating `base <= 9` against `base^3 < size < 2^base`, not introduced.
+Branches without `hmacro` are covered unconditionally at the `cost_le_eight`
+rate.
+
+The old bound was exponentially slack by construction — it bounded the stored
+LEVEL by `domain` when the level is `Nat.log2 i` for `i < domain`. Tightening to
+`domain * (Nat.log2 domain + 1)` is strictly stronger, so nothing was weakened.
+The width appears SYNTACTICALLY in 13 places, so the worker bridged with
+`bpSparseLevelWidth_le_square_width` rather than reproving, leaving `527` and
+both `LittleOLinear` envelopes untouched and sound.
+
+**A FALSE-NEGATIVE TRAP IN OUR OWN EXISTENCE CHECK — sixth instance of the
+family.** `import RMQ` does NOT reach `InteriorDirectory`, so `#print axioms`
+on a declaration there reports `unknown constant` EVEN AFTER A GREEN ROOT
+BUILD. That is indistinguishable from "the theorem was never built" — precisely
+the signal this campaign adopted `#print axioms` to detect (a name inside a
+comment has no constant). An auditor using an indirect import could therefore
+conclude a real theorem is missing. **Rule: when confirming axioms, import the
+module DIRECTLY, and never read `unknown constant` from an indirect import as
+evidence of absence.** Added to the standing standards.
+
+The running tally of checks whose scope was narrower than their reader assumed:
+the deferred aggregate gate; per-file `lake env lean` on commented-out code; the
+omitted executable validator; `lake build <lib>` skipping `lean_exe` targets;
+strict design checking passing vacuously on unenumerated script paths; and now
+`#print axioms` through an indirect import. Six, all found by doing rather than
+by reviewing. The doctrine stands: **name what a check covers and assume it
+covers nothing else.**
+
+Also of record: splicing Lean source with Windows Python at default encoding
+produces mojibake that Lean reports as "unknown tactic" — a misleading error for
+an encoding fault.
+
+**Commit B did not land**, correctly: no swap, so the literal is not re-justified
+by reads, the slack artifact is still present and still true, and REQ-B7-05 and
+CHK-04 remain Open and unclaimed with the harness unrun. Five workers in a row
+have now declined to commit a partial swap.
