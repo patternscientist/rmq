@@ -3317,3 +3317,63 @@ compiler-escape-hatch token in a DOCSTRING, which would have taken the house
 scan over `RMQ/` from 0 to 1 and regressed Closed row CHK-B4-02 — a row that
 exists because a prior mention was reworded to keep that scan at zero. Reworded;
 both scans re-verified at 0. A Closed row nearly reopened by a comment.
+
+---
+
+## C05 round 51 — I ran a check that examined nothing, and the second look
+## found the check could not have examined it anyway
+
+Lane C's docs/lint battery, run by me rather than by the worker under the new
+budget-transfer rule: `lake build RMQ RMQPaper RMQExamples` exit 0 in 68.5s,
+`headline_axiom_check` exit 0, `claim_drift_scan` 749 hits / 0 strict failures,
+`paper_topology_lint` PASS, both `git diff --check` forms exit 0, hygiene scan 0
+hits.
+
+**One line of that battery was a vacuous pass, and I nearly reported it as a
+real one.** `design_decision_check.ps1 -Strict` printed "no changed files
+detected" and exited 0 — because I invoked it WITHOUT `-Base`, and its
+fallback is the worktree-and-index diff, which on a clean tree is empty. It
+examined nothing and said so, and "exit 0" is what I would have relayed. This is
+precisely the rule I have been putting in every brief — a green check is
+evidence only of what it examined — failing against its author.
+
+**Looking again found something worse, and it is a real gap.** Re-run with
+`-Base 3ccda2e`, it printed "no design-sensitive paths detected" and exited 0
+AGAIN. `$codePatterns` enumerated `^RMQ/Core/WordRAM`, `^RMQ/Core/SuccinctClose`,
+`^RMQ/Headlines` and others — and **nothing matching `RMQ/Validation`**. So the
+tool that exists to require a design decision was structurally incapable of
+requiring one for the validator, which is where all three discriminators live. A
+phase could be added, weakened or deleted and this check would say nothing.
+Lane C's five design decisions were never examined by it.
+
+Fixed on a dedicated branch `claude/dd-check-validation-coverage` off Lane C's
+head, deliberately NOT on the candidate itself, so `bde70da` stays pristine and
+the repair is separately auditable — matching this campaign's existing
+`*-repair-base` precedent.
+
+**The fix self-tests, and the self-test caught a measurement error of mine.**
+Adding `^RMQ/Validation` turns Lane C's diff from "no design-sensitive paths"
+into "checked 4 changed files" with the code arm satisfied by the candidate's
+own DD entries. But my first exit-code reading said 0 when the truth was 1: I
+piped the script through `tail`, so `$?` reported TAIL's status, not the
+script's. A masking mechanism worth remembering — it is the same shape as the
+vacuous pass, an exit code that describes something other than what you think it
+describes. Recorded in the WDD entry.
+
+And the failing arm was correct: `scripts/design_decision_check.ps1` is itself
+on `$workflowPatterns`, so the check demanded a workflow design decision **for
+my own change to it**. WDD-20260719-002 written; both arms now satisfied,
+5 files examined, exit 0 — a real pass this time.
+
+**Alternative deliberately rejected and recorded**: inverting the enumeration to
+a denylist so coverage is opt-out. It is the better long-run shape — the present
+design's coverage is exactly the list someone remembered to write, which is why
+the hole existed — but it would demand design entries across the whole tree and
+is a strictly larger change than the one that closes the observed gap. Logged as
+a candidate cleanup rather than smuggled into a repair commit.
+
+**Standing note for the merge window**: this is the second concrete instance of
+the `design_decision_check.ps1` enumeration problem I deferred earlier. The
+first deferral cost nothing; this one produced a vacuous strict pass over real
+work carrying five design decisions. The class is not closed by this fix — only
+the observed hole is.
