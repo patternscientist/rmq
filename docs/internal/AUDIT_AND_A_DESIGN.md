@@ -1605,3 +1605,57 @@ by a predecessor or by me.
 left arm's stashed `mLV`/`mLP` cannot be shown to survive to the merge. That is
 a strengthening of an existing theorem and it gates the composed cross-block
 `_runsTo`. Not blocked by the interior.
+
+## 2026-07-19 (C05 round 23) — commit A lands; a self-retiring honesty artifact
+
+**B7 commit A is green and verified** (`f6000c3`..`21544b4`): interior cap
+30 -> 33, literal 207 -> 210 re-derived by `rfl`, 207 frozen with ALL-LITERAL
+algebra fields (each frozen algebra now owns its own pinned components, so the
+freezing defect cannot recur), consumers and both axiom scripts migrated.
+
+**The worker improved on a coordinator-verified fix — third time this
+campaign.** I supplied a per-branch `Nat.le_trans` wrapper for the zero-slack
+cross-macro `exact`. It declined and instead kept the tight proof body VERBATIM
+under a new name concluding at the literal `30`, then re-derived the cap-facing
+theorem from it. Consequences: no branch mentions the cap at all, so all four
+branches close unchanged including the bare `exact`; the tight content stays
+independently checkable; and because the CONSUMED name did not change, external
+consumers and both axiom scripts needed no edits. A structural fix where mine
+was a patch.
+
+**The slack artifact is self-retiring by construction**, which is better than
+what I specified:
+`..._announced_slack_...` asserts `cost <= 30 /\ 30 < cap /\ cap = 33`. The
+middle conjunct makes it an ANNOUNCEMENT rather than a bound, and it becomes
+UNPROVABLE once the swap consumes the headroom. Commit B must therefore DELETE
+it; it cannot be quietly weakened. An honesty artifact that expires on its own
+is worth more than one that relies on someone remembering to remove it.
+
+**Two rows correctly kept OPEN though they superficially read as closed** --
+this is the round's most important disposition:
+- REQ-B7-05: the literal now reads 210 and re-derives by `rfl`, but the row
+  demands it move BECAUSE NEW READS ENTERED THE ACCOUNTING, "not because a cap
+  was loosened". At commit A it moved because a cap was loosened -- exactly the
+  condition the row exists to reject.
+- CHK-04: the harness exits 0 with `canonicalBoundIs210=true` everywhere, yet
+  all twelve `modeledTraceCost` values are BYTE-IDENTICAL to the pre-swap
+  baseline. Correct for a commit that adds no reads, and independent empirical
+  confirmation that the slack theorem is honest -- but the anti-vacuity half is
+  unmet.
+A worker declining two rows whose mechanized checks all pass is the completion
+gate working exactly as designed.
+
+**Inherited finding to settle at commit B's first build:** the WIP patch section
+repairing `ReviewerReachabilitySmall.lean` was DROPPED, because commit `0445d1d`
+already repairs the same proof and does it better -- quantifying `hmiddle` over
+`forall post` (store-growth-invariant) where the patch enumerated the new tail
+literally, which is the very brittleness that caused the original breakage.
+Unverified: whether the generalised proof survives the store extension. If it
+fails, repair in the generalised style rather than reinstating the deleted hunk.
+
+**Lint coverage gap, recurring.** a07-owned stale numerals persist at
+`README.md:70,76,140,334` and `docs/FAMILY_SUMMARY.md:9,43,48,133,446,1041`
+(`:9` carries `interior30`) with BOTH lints exiting 0. Same class as A07's P2-3:
+the topology lint checks identifier topology, not prose numeric values. Two
+independent campaigns have now been bitten by it. Worth a dedicated numeric-prose
+check rather than another round of manual sweeps.
