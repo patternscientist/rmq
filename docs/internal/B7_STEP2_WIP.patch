@@ -950,3 +950,40 @@ index 771decc..c708153 100644
      simpa [concreteBPNativeSuccinctRMQReviewerCloseWords] using hcloseBound
    have hfringeBound :=
      concreteBPNativeSuccinctRMQReviewerFringeWords_length_le shape
+diff --git a/RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean b/RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean
+index 5be5484..7619f07 100644
+--- a/RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean
++++ b/RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean
+@@ -2072,21 +2072,29 @@ private theorem reviewerCanonicalComponent_local_get
+     let globalWords :=
+       ((SuccinctClose.canonicalRelativeRmmInteriorGlobalTable
+         shape).table.machineStore hword).store.words.toList
++    let localLevelWords :=
++      ((SuccinctClose.canonicalRelativeRmmInteriorLocalLevelTable
++        shape).table.machineStore hword).store.words.toList
++    let globalLevelWords :=
++      ((SuccinctClose.canonicalRelativeRmmInteriorGlobalLevelTable
++        shape).table.machineStore hword).store.words.toList
+     have hlocalWords : localAddress < localWords.length := by
+       simpa [localWords,
+         SuccinctClose.canonicalRelativeRmmLocalMachineStore] using hlocal
+     have hmiddle :
+         ((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+-          localWords ++ globalWords)[
++          localWords ++
++            (globalWords ++ localLevelWords ++ globalLevelWords))[
+             (((baselineWords ++ minRelWords) ++ maxRelWords) ++
+               argWords).length + localAddress]? =
+           localWords[localAddress]? :=
+       SuccinctSpace.List.getElem?_append_middle_of_lt
+         (((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords)
+-        localWords globalWords localAddress hlocalWords
++        localWords (globalWords ++ localLevelWords ++ globalLevelWords)
++        localAddress hlocalWords
+     rw [SuccinctClose.canonicalRelativeRmmInteriorComponentStore_words_toList]
+     simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+-      argWords, localWords, globalWords,
++      argWords, localWords, globalWords, localLevelWords, globalLevelWords,
+       SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets,
+       SuccinctClose.canonicalRelativeRmmLocalMachineStore,
+       List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle

@@ -1070,3 +1070,171 @@ GROUNDWORK, not as a closed inventory:
 STRETCH-01 remains Open. This is a candidate list for the interior leg
 with stated limits, not the auditable complete enumeration the row asks
 for.
+
+## DECISIVE FINDING: THE FROZEN HISTORICAL CONSTANTS TRACK THE LIVE INTERIOR CAP
+
+This blocks the 30 -> 33 move under EVERY staging plan, atomic or split,
+and it appears in no previous inventory. Found by reading the freeze
+pattern before migrating the literal, not by a build failure.
+
+Both frozen historical algebras in `SuccinctFinalRAM.lean` set their
+`interiorDirectory` field to the LIVE def, not to a frozen numeral:
+
+    def concreteBPNativeSuccinctRMQSilentFringeChargedTraceCostAlgebra ... where
+      selectClose := 13
+      rankClose := 4
+      endpointFringe := ...canonicalEndpointFringeChargedTraceCost
+      interiorDirectory :=
+        SuccinctClose.canonicalRelativeRmmPrincipledInteriorChargedTraceCost
+
+    def concreteBPNativeSuccinctRMQSilentWordRankSelectChargedTraceCostAlgebra ... where
+      selectClose := 13
+      rankClose := 4
+      endpointFringe := ...bpChunkedEndpointFringeChargedTraceCost
+      interiorDirectory :=
+        SuccinctClose.canonicalRelativeRmmPrincipledInteriorChargedTraceCost
+
+With `wholeQuery = 2*selectClose + (2*rankClose + 2*endpointFringe +
+interiorDirectory) + rankClose`:
+
+- 76 block:  26 + (8 + 8 + 30) + 4 = 76   -> with 33: 79
+- 142 block: 26 + (8 + 74 + 30) + 4 = 142 -> with 33: 145
+
+Both `_eq` theorems are `rfl` and both BREAK. The standing rule is that
+frozen legacy anchors stay untouched and no historical constant is
+deleted, so `canonicalRelativeRmmPrincipledInteriorChargedTraceCost`
+CANNOT simply be edited 30 -> 33 in place.
+
+REQUIRED SHAPE OF THE FIX (the established freeze pattern, applied one
+level DOWN - at the component, not just at the whole-query literal):
+mint a frozen historical interior component constant pinned at 30, e.g.
+
+    def canonicalRelativeRmmSilentSparseLevelInteriorChargedTraceCost : Nat := 30
+
+re-point BOTH historical algebras at it so history stops tracking the
+live route, and only then move the live def to 33. Verify afterwards that
+`..._SilentFringeChargedTraceCost_eq = 76` and
+`..._SilentWordRankSelectChargedTraceCost_eq = 142` still hold by `rfl`.
+
+`canonicalTransitionalQueryCost = 328` (`SuccinctRMQClassic.lean:135-138`)
+does NOT go through this algebra and is unaffected.
+
+## SECOND NEW OBSTRUCTION: `ReviewerReachabilitySmall.lean:2088`
+
+With `ReviewerPhysical.lean` repaired the build advanced to [243/244] and
+failed at `RMQ.Core.SuccinctFinal.RAM.ReviewerReachabilitySmall`, a THIRD
+instance of the literal-store-decomposition defect class:
+
+    error: RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean:2088:4:
+    type mismatch, term ...
+
+Its `hmiddle` spells the component store out literally and passes
+`globalWords` as the `post` argument of
+`SuccinctSpace.List.getElem?_append_middle_of_lt`. Repaired exactly as
+B7-02 prescribed for the four in-file `_refines` proofs: two new `let`s
+(`localLevelWords`, `globalLevelWords`), `post` becomes
+`(globalWords ++ localLevelWords ++ globalLevelWords)`, and the two names
+added to the trailing `simpa` set. `lake env lean` on the file then shows
+ONLY the three pre-existing warnings B7-03's baseline already recorded
+(`:463`, `:1484` twice) and no errors.
+
+### CONCURRENCY BOUNDARY CROSSED - COORDINATOR ACTION NEEDED
+
+`RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean` is owned by
+`claude/a07-blocker-repairs` (provenance witnesses). B7-02's worklog
+already flagged that a later B7 worker would have to coordinate before
+editing it. That moment has arrived, and it arrived as a BUILD BLOCKER
+rather than as an optional edit: the store extension cannot compile
+without this repair.
+
+HOW THIS WORKER HANDLED IT, deliberately and conservatively: the repair
+is carried ONLY in `docs/internal/B7_STEP2_WIP.patch`. It is NOT committed
+as source. So B7's committed history still touches none of a07's files and
+no merge conflict exists yet; what exists is a RECORDED REQUIREMENT.
+
+The edit is mechanical and semantically inert with respect to a07's
+concerns: it does not change the theorem's statement, its provenance
+witness, or the segment it exhibits. It only keeps an existing proof
+working as the component store grows two regions. The coordinator should
+decide whether a07 absorbs it or B7 lands it at swap time.
+
+## STATE OF THE TREE AT THE END OF THIS SESSION
+
+Source tree: HOLDS the full patch (step 2 + space accounting links 1-4 +
+the 527 migration + the two new store-decomposition repairs). NOT
+committed, per the atomicity rule - the level tables are counted but not
+yet read, which would be a dead counted source.
+
+Committed: docs only (`8bfe3a5` and this commit).
+
+The `git apply --check` of the committed patch against a clean tree was
+verified CLEAN this session (stash / check / pop, with the restored tree
+diffed byte-for-byte modulo git's CRLF round-trip).
+## VERIFICATION LEDGER FOR THIS SESSION (B7-04)
+
+All results as observed in this worktree, with the full patch applied to
+the source tree unless stated otherwise.
+
+- `lake build RMQ` WITH the full patch applied: EXIT 0, 67.7s incremental,
+  "Build completed successfully", 243/244 jobs, ZERO errors and TWELVE
+  warnings - byte-identical in count to B7-03's recorded pre-existing
+  warning baseline, so the patch adds NO new warning. THIS IS THE FIRST
+  COMPLETED ROOT BUILD IN THE RUNG'S HISTORY WITH THE STORE EXTENSION
+  APPLIED; sessions 2 and 3 never got past `InteriorDirectory.lean`, which
+  is why the two store-decomposition breakages above had never been seen.
+- `lake env lean` on `InteriorDirectory.lean`: no output, exit 0 (zero
+  errors, zero warnings). Iterate aid only.
+- `lake env lean` on `ReviewerPhysical.lean`: no output, exit 0.
+- `lake env lean` on `ReviewerReachabilitySmall.lean`: zero errors; only
+  the three PRE-EXISTING warnings (`:463`, `:1484` twice) already in
+  B7-03's baseline.
+- Hygiene `rg` over all four B7-touched files (the three above plus
+  `SparseLevelTable.lean`): ZERO hits for
+  sorry/admit/native_decide/implemented_by/partial/unsafe/extern/
+  noncomputable/`import Mathlib`/axiom.
+- `git diff --check` on the working tree: exit 0.
+- `git diff --check f6564ec..HEAD`: exit 2, hits ONLY
+  `docs/internal/B7_STEP2_WIP.patch`. This is the structural
+  committed-patch property B7-03 documented (a blank context line in a
+  unified diff is a single space); the `B3_M5_WIP.patch` precedent has the
+  identical property. NOT a source defect.
+- `git apply --check docs/internal/B7_STEP2_WIP.patch` against a CLEAN
+  tree: CLEAN. Verified by stash / check / pop, with the restored files
+  diffed against scratchpad backups and found identical modulo git's
+  CRLF round-trip.
+
+NOT RUN this session, and NOT claimed: the cost harness (CHK-04), the
+headline axiom check, `#print axioms` on the new names,
+`design_decision_check.ps1`, `claim_drift_scan.ps1`,
+`paper_topology_lint.ps1`, and `lake build RMQ RMQPaper RMQExamples`.
+The rung is not at a candidate state, so the final battery was not the
+right use of the remaining budget; the next session should run it once
+the swap lands. Per the delegation, `scripts/axiom_check.lean` and
+`gate.ps1` were NOT run.
+
+KNOWN RED, externally owned, NOT re-verified this session and NOT claimed:
+`scripts/wordram_axiom_check.lean`, `scripts/axiom_check.lean`,
+`lake exe rmq_succinct_classic_validate`. All belong to
+`claude/a07-blocker-repairs`.
+
+## STATUS AT END OF THIS SESSION: INCOMPLETE
+
+No acceptance-matrix row changed status. No row was weakened. No
+constant is asserted. The 207 -> 210 chain is NOT started and remains to
+be derived at the commit that lands it.
+
+NEXT ACTION, in order:
+
+1. Apply `docs/internal/B7_STEP2_WIP.patch` (989 lines; step 2 + space
+   accounting links 1-4 + the 527 migration + three store-decomposition
+   repairs). It builds GREEN as-is - but it is NOT committable alone,
+   because the level tables are counted and not yet read.
+2. Decide the staging question with the coordinator (see the evaluation
+   recorded above). If the split is taken, commit A must FIRST mint a
+   frozen historical interior constant pinned at 30 and re-point the 76
+   and 142 algebras at it, or those two frozen `rfl` identities break.
+3. Wire the FOUR reachable sites (`:1823`, `:1837` Costed; `:2263`,
+   `:2277` Computation, in the PATCHED file's numbering).
+4. Repair the theorem bands, then the caps, then the literal.
+5. Provenance, adequacy, docs, matrix, and the final battery including
+   CHK-04 against the pre-swap harness baseline recorded in session 2.
