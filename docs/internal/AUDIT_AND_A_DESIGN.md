@@ -2268,3 +2268,76 @@ E1-R4t landed the read atom with the validity test performed BY THE MACHINE
 (`natLt` on its own index register, branched) rather than by a Lean-level `if`
 around the block, so the dead-address path is a charged path — the anti-vacuity
 shape REQ-E1-05 asks for.
+
+## 2026-07-19 (C05 round 34) — a coordinator claim corrected; interior block ruling
+
+**A worker refused to write a coordinator-supplied claim into a public-facing
+doc because it failed inspection. That refusal was correct and is the headline
+of this round.** I gave E1-R4u a "coordinator-verified scope precision" for
+`docs/PAPER_MODEL_ADEQUACY.md`. It checked rather than transcribed, found the
+wording did not survive, and recorded the discrepancy for adjudication instead
+of shipping it. **Never let a coordinator assertion enter a public claim surface
+unchecked** — that is exactly how a repository acquires a statement a reviewer
+can refute in five minutes.
+
+**Adjudication, verified at source by the coordinator this round.** Part of the
+refutation was a misreading of my compressed phrasing, and part was a genuine
+correction. The precise, defensible statement is:
+
+- Runtime `bpSparseLogSpan count` — hence `Nat.log2` on a RUNTIME-derived
+  argument — survives in trace-producing definitions at
+  `InteriorRAM.lean:574, 622, 820, 868`. **CONFIRMED**: `:574` and `:622` both
+  read `let span := bpSparseLogSpan count`.
+- Those are reachable from
+  `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe`
+  (`SuccinctFinalRAM.lean:4486`), which is guarded by `2 ^ 128 <= shape.size`,
+  and from the `...WithStoreLegacy` mirror. **`:4486` itself contains no
+  `Nat.log2`** — it is the ENTRY POINT, not the site. My phrasing listed both on
+  one line and invited exactly the misreading the worker had.
+- The `OfSizeGe` family is exposed only through `RMQCompatibility.lean:133,137`
+  — coordinator's own grep, unchanged.
+- **The `Nat.log2` occurrences in `Headlines/` and `WHAT_IS_PROVED.md:542` are
+  NOT counterexamples.** `WHAT_IS_PROVED.md:542` reads "`Nat.log2 bits.length +
+  1` word size" — that is the WORD-SIZE definition on a shape-determined
+  argument, which the round-7 principle classifies as structural, not as
+  uncharged runtime computation. The worker was right that the string appears
+  there and wrong that it refutes the point.
+
+So the doc sentence must be about **`Nat.log2` applied to a RUNTIME argument in
+an EXECUTED evaluator position**, not about the string `Nat.log2` appearing
+anywhere. Written loosely it is refutable by `grep`; written precisely it is
+true, provable, and exactly the distinction the representation-artifact
+principle already draws. That precision is now the requirement handed forward.
+
+**RULING on the pending interior-block decision.** Two blocks now exist and are
+not interchangeable: the 7-instruction atom assuming `width <= wordSize`, and
+the 37-instruction fold assuming only `0 < chunkCount <= 8`. **Compose the
+interior on the FOLD, uniformly across all five branches.** Reasons: the atom's
+hypothesis is exactly the conditional single-chunk fit that holds only under
+macro crossing, so using it everywhere would require discharging on the
+within-macro branch what is not available there; a per-shape generator choice
+would introduce a size-dependent branch that must then be checked against
+INV-ALL-SIZE, which forbids size dispatch on the public route — a real risk for
+a marginal instruction saving; and one block means one layout for the whole
+interior, which is cheaper to compose and far cheaper to audit. Retain the atom
+as a proven component; it is not wasted, and the fold's cap being
+MACHINE-ENFORCED (`chunkCount - (chunkCount - 8)` computed at runtime) keeps the
+no-size-dispatch property trivially true.
+
+**Two engineering notes worth preserving.** The fold's two-loop shape was FORCED,
+not chosen: the ISA has `mulConst`/`divConst` but no register-by-register
+multiply, so the route's little-endian `2^(j*wordSize) * chunk j` cannot be
+formed, only Horner's big-endian accumulation — hence an ascending read loop
+matching the route's receipt order plus a read-free digit reversal. Reading
+descending would have collapsed it to one loop, and the worker rejected that
+because it would trade a read-free loop for a wrong trace order, "precisely B7's
+failure class". And it deliberately gave `interiorChunkCount_le_eight` NO
+`0 < wordSize` hypothesis because it does not need one, noting that a decorative
+hypothesis "would silently owe it to every consumer" — the same discipline that
+kept `FringeArmUntouched` an exact union rather than an under-approximation.
+
+**New M6 data point:** on the fold, paths 2 and 3 agree on BOTH modeled steps
+(52) and returned value (0), and are separated only by the read log. So on that
+block neither value checking nor step counting has any power — only
+event-by-event receipt diffing does. Three discriminators, and the block that
+needs each of them is now witnessed.
