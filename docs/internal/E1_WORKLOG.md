@@ -2655,3 +2655,256 @@ validator that does not compile would be worse than none - it would have
 to be reverted or repaired by the next worker before any root build could
 go green. Recording it here as genuinely not-started is the honest
 report; it remains resume item 3 above.
+
+## M3d-5 (worker E1-R4o): branch dispatch, and the M6 machine validator
+
+Scope was narrowed by the coordinator exactly as in M3d-4: the interior
+leg remains BLOCKED pending the user decision on `bpSparseLogSpan` /
+`Nat.log2` (M3d-3 section 2).  Nothing below touches the interior leg, no
+msb/log2 instruction was invented, and no frozen row was amended.
+
+### 1. WHAT LANDED
+
+Commit `9b3ecd0` (new module `RMQ/Core/WordRAM/E1CloseDispatch.lean`,
+imported from `RMQ.lean:34`) - the SAME-BLOCK/CROSS-BLOCK DISPATCH.
+This closes M3d-4 resume item 2.
+
+- Bank slots `dLB = 72` (`:64`), `dRB = 73` (`:67`), `dSame = 74` (`:70`).
+  The fringe/same-block bank ended at `fRight = 71`; the dispatch takes
+  the next three and READS `fClose`/`fRight` without writing them, since
+  both arms consume the endpoints afterwards.
+- `closeDispatchPrefix` (`:77`, 3 instructions), `closeDispatch` (`:85`,
+  4 instructions), `closeDispatchPrefix_length` (`:88`),
+  `closeDispatch_length` (`:91`), `closeDispatchCats` (`:96`),
+  `closeDispatchCats_no_read` (`:100`), `closeDispatch_fits` (`:106`),
+  `closeDispatchPrefix_straight` (`:125`),
+  `CloseDispatchUntouched` (`:138`), `closeDispatchPrefix_runsTo` (`:144`).
+- `closeDispatch_runsTo_same` (`:187`) and `closeDispatch_runsTo_cross`
+  (`:224`) - the two branch directions.
+- Anti-vacuity: `closeDispatchProgram` (`:277`),
+  `closeDispatchProgram_length` (`:281`), `closeDispatchProgram_hosts`
+  (`:291`), `witnessCrossArm` (`:320`), `witnessSameArm` (`:323`),
+  `witnessProgram` (`:326`), `witnessProgram_length` (`:329`),
+  `witnessProgram_runs_same` (`:337`), `witnessProgram_runs_cross`
+  (`:377`).
+
+Commits `46297fd`, `ff7da19`, `ccc740d` (new module
+`RMQ/Validation/E1MachineValidate.lean`, new `lean_exe`
+`rmq_e1_machine_validate` in `lakefile.toml`) - the M6 VALIDATOR.  This
+closes M3d-4 resume item 3, which the predecessor deliberately did not
+start.
+
+### 2. WHY THE DISPATCH IS UNBLOCKED, STATED PRECISELY
+
+This deserves recording because the dispatch and the blocked interior leg
+both involve `Nat.log2`, and the difference is the whole reason one is
+writable and the other is not.
+
+The route condition (`ChargedFringeWiring.lean:496`, and identically at
+`:39` costed / `:57` structural) is
+`blockOfClose blockSize leftClose = blockOfClose blockSize rightClose`
+with `blockSize = canonicalBPRelativeSummaryBlockSizeRaw shape`
+(`RelativeSummary.lean:1240`) `= 2 * (Nat.log2 shape.size + 1)`
+(`:1237`).
+
+That `Nat.log2` is applied to `shape.size`.  It is fully determined before
+the machine starts, so `blockSize` is an ENCODABLE IMMEDIATE and
+`divConst` applies with no new instruction.  Positivity, which the
+`divConst` width arm additionally requires, is
+`canonicalBPRelativeSummaryBlockSizeRaw_pos` (`RelativeSummary.lean:2488`)
+and is carried as the `hpos` hypothesis of `closeDispatch_fits`.
+
+The interior leg `bpSparseLogSpan blockCount`
+(`EndpointFringe/PrefixRange/SparseArgMin.lean:598`) applies `Nat.log2` to
+a RUNTIME-DERIVED `blockCount` and feeds the result to an accepted read
+address.  No immediate encodes it.  That distinction, not the presence of
+a logarithm, is what blocks the interior leg.
+
+### 3. THE DISPATCH ANTI-VACUITY IS EXECUTION, NOT JUST HOSTING
+
+`closeDispatch_runsTo_same`/`_cross` are hypothetical in `program` AND
+take a bare `Nat` branch `target`.  Hosting alone is therefore not enough:
+a theorem about a target that falls off the end of the program would be
+equally true and equally worthless.
+
+`closeDispatchProgram` (`:277`) places the same-block target at
+`4 + crossArm.length`, i.e. COMPUTED from the layout rather than asserted,
+and `closeDispatchProgram_hosts` (`:291`) discharges all three `HostedAt`
+obligations against that one program.  `witnessProgram_runs_same` (`:337`)
+and `witnessProgram_runs_cross` (`:377`) then RUN the machine on the same
+concrete program in both directions, each landing on a distinguishable
+`halt`.  A wrong branch target or a wrong fall-through offset makes them
+unprovable rather than vacuous.
+
+### 4. THE M6 VALIDATOR, AND WHAT IT ACTUALLY ESTABLISHES
+
+`lake exe rmq_e1_machine_validate`, exit 0.  It is a NEW executable; the
+existing `rmq_succinct_classic_validate` was not modified (it belongs to
+the concurrent repair worker).
+
+FINDING WORTH CARRYING: before this harness, `E1Machine.run`
+(`E1Machine.lean:226`) had NO caller anywhere in the repository.  Every
+machine fact was a `RunsTo` proposition discharged in the kernel and no
+modeled instruction had ever been executed.  This is the first execution
+of the machine, so anything it finds is ground that proofs never covered.
+
+- INDEPENDENT REFERENCE: `refRMQ` (`:66`) is half-open leftmost RMQ over
+  `List Int` written from the specification.  It does not call the route,
+  the machine, `Cartesian`, `SuccinctClassic`, or `RMQ.scanWindow`.
+  `expectationTable` (`:136`) is computed from it and is materialised in
+  phase 1, BEFORE any machine run.  `expectationSelfConsistent` (`:152`)
+  brute-force checks the reference own answers (in-window, minimal,
+  leftmost): 0 failures over 576 expectations.
+- FIXTURES: 31 (`allFixtures:105`) - empty, singleton, size-two in both
+  orders, all-equal, ties, ascending, descending, negatives, wide, plus 21
+  deterministic generated - crossed with every window including the
+  invalid ones (`windowsFor:113`: empty, reversed, past-the-end) = 576
+  expectations, 258 `none` / 318 `some`.
+- DISPATCH vs ROUTE: 405 cases (`:231`), machine executed against the
+  route condition (`routeOutcome:222`), 0 mismatches, 2430 modeled steps,
+  0 modeled reads.
+- SAME-BLOCK LEG: `runSameBlockLeg` (`:373`) executes
+  `sameBlockLegProgram` against
+  `concreteBPNativeSuccinctRMQGlobalReadStore` and diffs its `readLog`
+  against the route own `.trace`.  90 cases: 0 exit failures (proved exit
+  pc 173), 0 receipt mismatches, 30343 modeled steps, 1080 modeled read
+  events.  This is an EXECUTABLE confirmation of the
+  `sameBlockLegProgram_runsTo_canonical` receipt clause - the two sides
+  are `E1Machine.run` folding `execInstr` on one hand and
+  `ChargedSameBlockTrace` on the other, neither derived from the other.
+- SELECT LEG: `runSelectLeg` (`:484`) does the same for the
+  405-instruction select dispatch at base 0.  32 cases: 0 exit failures
+  (proved exit pc 405), 0 receipt mismatches, 8273 modeled steps, 475
+  modeled read events.
+- MUTATIONS, BOTH REJECTED.  `mutatedDispatchProgram` (`:287`) turns the
+  dispatch `natEq` into `natLt`: 266 machine/route disagreements.
+  `mutatedLeg` (`:413`) turns the same-block fold back edge
+  `brNZ fCnt 97` into `brNZ fCnt 98` - a mutation of a REAL machine
+  component that preserves program length AND still reaches exit pc 173,
+  so `legMutantExitFailures` is 0.  An exit-pc-only check would MISS it
+  entirely.  The receipt comparison catches it: 81 mismatches, 30060
+  modeled steps against the honest 30343.  The report prints the 0
+  deliberately, because it is the argument for diffing receipts rather
+  than control flow.
+- MODELED vs WALL-CLOCK: reported in separate labelled columns, never
+  combined, with wall-clock explicitly called non-evidence.  Measured at
+  HEAD: dispatch 2ms, same-block leg 2127ms, select leg 754ms, leg
+  mutation 2082ms.
+- THE HOLE: `wholeQueryComparisonAvailable` (`:549`) is `false` and
+  `wholeQueryMismatches` (`:556`) returns `none`, reported as
+  `wholeQueryComparison=OPEN (interior leg blocked; NOT a pass)`.  It
+  compiles, is clearly marked, and is deliberately NOT a passing check.
+
+### 5. GOTCHAS RECORDED THIS SESSION (carry forward)
+
+1. LEAN LIFTS CLOSED SWEEPS OUT OF `main`, AND IT SILENTLY FALSIFIES
+   TIMING.  A harness expression like `legModeledSteps mutatedLeg` has no
+   free variables, so Lean evaluates it as a top-level constant BEFORE
+   `main` runs.  Bracketing it with `IO.monoMsNow` then measures nothing
+   and prints a confident `0 ms` for phases that really take seconds.
+   Forcing inside the bracket does NOT help - the value already exists -
+   and `if n == n then` is optimised away entirely.  The fix that works is
+   threading a runtime-derived `salt` into the sweep (added to the already
+   generous fuel, always `0`, so no result changes), which makes the term
+   non-closed.  Modeled step counts were never affected; only wall-clock
+   was.  This harness reported `0 ms` for every phase across two attempted
+   fixes before the cause was found.
+2. `IO.monoMsNow` returns `Nat`, not a fixed-width integer: `.toNat` on it
+   is `unknown constant Nat.toNat`.
+3. The M3d-4 gotcha 4 recurs verbatim for any hosted single-instruction
+   fetch: `have := hHost i (by decide); simpa using this` over-normalises
+   `program[i]? = some instr` into a `getElem` form and fails with a type
+   mismatch against `witnessSameArm[0]?`.  `exact hHost i (by decide)`
+   closes it by defeq.  This cost four of the five errors in the dispatch
+   module first compile.
+4. `one_ne_zero` is Mathlib-only and unavailable here; use `decide`.
+5. `E1SelectCanonical.selData` is `private`, so a validator cannot reach
+   it.  Its body is
+   `GenericSelect.sparseExceptionSelectData shape.bpCode false`
+   (`E1SelectCanonical.lean:41`) and must be repeated, not imported.
+   Likewise the `E1CloseDispatch` import closure does NOT include the
+   select modules; a harness touching both needs an explicit
+   `import RMQ.Core.WordRAM.E1SelectCanonical`.
+6. `State`/`RunResult` have no `Repr` (`RegFile := Nat -> Nat` is a
+   function), so an executable harness must project `.steps`, `.pc`,
+   `.halted`, `.readLog` and read registers individually.
+
+### 6. VERIFICATION LEDGER (root builds, not per-file checks)
+
+`lake build RMQ` exit 0 at all four commits (`9b3ecd0`, `46297fd`,
+`ff7da19`, `ccc740d`).  `lake build RMQ RMQPaper RMQExamples` exit 0 at
+HEAD.  No new warnings in either new module; the only warnings are the
+pre-existing sanctioned unused-simp-arg ones.
+
+`#print axioms` run AFTER a root build on all thirteen theorems this
+session claims: `closeDispatch_length`, `closeDispatchPrefix_length`,
+`closeDispatchCats_no_read`, `closeDispatch_fits`,
+`closeDispatchPrefix_straight`, `closeDispatchPrefix_runsTo`,
+`closeDispatch_runsTo_same`, `closeDispatch_runsTo_cross`,
+`closeDispatchProgram_length`, `closeDispatchProgram_hosts`,
+`witnessProgram_length`, `witnessProgram_runs_same`,
+`witnessProgram_runs_cross` - every one reports only `propext` /
+`Quot.sound` (two report no axioms at all), never `sorryAx`.
+
+`lake exe rmq_e1_machine_validate` exit 0.  Hygiene `rg` clean on both new
+files; no `native_decide` anywhere.  `git diff --check` clean both in the
+working tree and over `d90b062..HEAD`.
+`design_decision_check.ps1 -Strict -Base d90b062` exit 0 (45 changed
+files).  `claim_drift_scan.ps1` exit 0.  `paper_topology_lint.ps1` exit 0;
+neither lint reports anything in the two files this session added.
+
+### 7. TWO PRE-EXISTING BASE DEFECTS, REPORTED NOT FIXED
+
+Both files belong to the concurrent `claude/a07-blocker-repairs` worker.
+
+1. `lake exe rmq_succinct_classic_validate` FAILS at this base, as the
+   delegation anticipated: `singletonRepeatedEqualReadPositionsOK ... did
+   not evaluate to true` in `RMQ/Validation/SuccinctClassic.lean`.  Not
+   this session file and not fixed here.
+2. NEW FINDING: `scripts/wordram_axiom_check.lean` now EXITS 1, and it is
+   the same stale-constant defect the M3d-3 session found in
+   `scripts/axiom_check.lean`.  Line 197 prints axioms for
+   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_76`,
+   an UNKNOWN CONSTANT; the tree carries only `..._sum_le_207`
+   (`SuccinctFinalRAM.lean:9411`/`:9843`,
+   `SuccinctFinalModelAdequacy.lean:67`/`:302`/`:303`,
+   `Headlines/RMQ.lean:499`).
+   `git diff d90b062..HEAD -- scripts/wordram_axiom_check.lean` is EMPTY,
+   so this branch did not introduce it.  NOTE that the M3d-3 log records
+   this script as exiting 0; that statement is now false, whether through
+   drift since or through an inaccurate reading then.  Substantively the
+   run is clean - 311 axiom lines, ZERO `sorryAx` - but the script aborts
+   and therefore certifies nothing past line 197.
+   `scripts/headline_axiom_check.lean` exits 0.
+
+### 8. MATRIX STATUS AT YIELD
+
+All rows REQ-E1-01..11 remain OPEN.  This session closed none and weakened
+none.  Matrix closure was impossible by construction: every row is
+whole-query scoped and the whole-query composition is downstream of the
+blocked interior leg.  Evidence accumulated is component-level and does
+NOT discharge any row.
+
+### 9. RESUME POINT (M3d-6)
+
+NOTHING below is implemented.
+
+1. STILL BLOCKED: the interior-leg `Nat.log2` decision (M3d-3 section 2).
+   Items 2-4 are unaffected.
+2. COMPOSE THE DISPATCH WITH THE SAME-BLOCK LEG.  `closeDispatch`
+   (`E1CloseDispatch.lean:85`) and `sameBlockLegProgram`
+   (`E1SameBlockLeg.lean:447`) cannot yet be placed in ONE program,
+   because `sameBlockLegProgram` hardcodes its internal branch targets
+   `97` and `164` as ABSOLUTE addresses, correct only at base 0.  Hosting
+   it behind a 4-instruction dispatch needs a base-parametric
+   `sameBlockLegProgramAt B` with targets `B + 97` / `B + 164`, which does
+   not exist.  This is a real, bounded piece of work and is the natural
+   next step; it is NOT blocked by the interior leg.
+3. THE CROSS-BLOCK ARM remains as described in M3d-4 section 4 item 2:
+   two fringe arms plus the interior leg (blocked) plus the select-close
+   leg, then the merge.
+4. WHOLE-QUERY GLUE, the derived all-size literal, and the amended target
+   Prop remain out of scope, all downstream of item 1.  When item 1
+   unblocks, the validator hole at
+   `RMQ/Validation/E1MachineValidate.lean:549`/`:556` is where the
+   end-to-end machine-vs-`refRMQ` comparison attaches.
