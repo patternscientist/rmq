@@ -344,6 +344,50 @@ theorem wholeQuerySelectPrefix_runsTo (shape : Cartesian.CartesianShape)
     simp [RegFile.write, regT1, xIdx]
     exact hval1
 
+/-! ## THE MISSING OUTPUT STAGE, AS AN EXECUTED FACT RATHER THAN A TODO
+
+`programSkeleton`'s own docstring (`E1QueryProgram.lean:130`) says "the valid
+path ends by writing `regOut` and halting".  THIS VALID PATH DOES NEITHER:
+there is no `.halt` and no write to `regOut` anywhere in
+`wholeQueryValidPathThroughLca`.
+
+That is not merely an absence, and the difference matters enough to pin with a
+theorem.  The close/LCA leg's exit pc is `closeLcaExit 827 = 5580`, and the
+skeleton places `invalidExitBlock` at `8 + validPath.length`, which is ALSO
+`5580`.  So the valid path does not stop at its exit — it FALLS THROUGH into
+`invalidExitBlock`, whose two instructions are `.const regOut 0` and `.halt`.
+`regOut = 0` is the NONE packet.
+
+**Consequently the composed program, as it currently stands, would halt
+carrying `none` for every valid query, including those whose route value is
+`some`.**  Nothing proved in this module or in `E1WholeQueryCloseLca` is
+wrong — no theorem here claims the whole path runs, and the legs' own
+`runsTo`s stop at their exits.  But a reader who assumed the remaining work
+was "compose the executed legs" would be composing toward a program that
+answers `none` unconditionally, and the composition would fail at
+`WholeQueryMachineAgrees`'s value clause rather than anywhere near the code
+responsible.
+
+An output stage must therefore be BUILT — decode `fRes` into `regOut`'s packet
+and halt — and the valid path's length will change when it lands, which moves
+`invalidExitBlock` with it.  Stated as an executed equality so that the
+coincidence cannot drift silently. -/
+theorem wholeQueryValidPath_exit_is_invalidExit
+    (shape : Cartesian.CartesianShape) (noneExit : Nat) :
+    E1WholeQueryCloseLca.closeLcaExit 827 =
+      8 + (wholeQueryValidPathThroughLca shape noneExit).length := by
+  simp [E1WholeQueryCloseLca.closeLcaExit]
+
+/-- The skeleton really does host `.const regOut 0; .halt` at the address the
+valid path exits to — so the fall-through above is a fact about the composed
+program, not about the arithmetic alone. -/
+theorem wholeQueryValidPath_falls_into_noneWriter
+    (shape : Cartesian.CartesianShape) (n noneExit : Nat) :
+    HostedAt (programSkeleton n (wholeQueryValidPathThroughLca shape noneExit))
+        (E1WholeQueryCloseLca.closeLcaExit 827) invalidExitBlock := by
+  rw [wholeQueryValidPath_exit_is_invalidExit shape noneExit]
+  exact programSkeleton_hosts_invalidExit n _
+
 /-! ## SCOPE, STATED HONESTLY
 
 What is EXECUTED above is the guard and both select legs — pc `0` to `821`.
@@ -353,22 +397,55 @@ defined, but the join's own simulation and the rank/output stages are NOT
 executed here, so `WholeQueryMachineAgrees` (`E1WholeQueryPublic.lean:114`) is
 NOT discharged by this module.
 
-Two obligations block the remainder, and neither is a matter of assembly
-effort:
+Of the two obligations this note previously listed as blocking, the FIRST IS
+NOW CLEARED and the second stands.
 
-1. **The cross arm exports no preservation clause**
-   (`crossBlockArmProgramAt_runsTo`, `E1CrossBlockArm.lean:1181`, deliberately
-   — see its header at `:1143`). Every register fact the rank and output
-   stages need would have to be carried across it, and nothing currently
-   entitles a caller to do that.
-2. **The cross-block arm's interior object is not reconciled with the route's.**
-   `crossBlockArmSpec_eq` (`E1CrossBlockArm.lean:181`) yields the interior as
+1. **CLEARED (E1-LaneA3, DD-20260719-160).** `crossBlockArmProgramAt_runsTo`
+   (`E1CrossBlockArm.lean:1199`) now exports
+   `∀ r, CloseLegUntouched r → regsF r = regs r`, and so does
+   `closeLcaProgramAt_runsTo_cross` (`E1WholeQueryCloseLca.lean:258`),
+   matching its same-block twin at `:191`. Register facts may now be carried
+   across BOTH dispatch arms.
+
+2. **STANDS. The cross-block arm's interior object is not reconciled with the
+   route's.** `crossBlockArmSpec_eq` (`E1CrossBlockArm.lean:181`) yields the
+   interior as
    `if leftBlock + 1 < rightBlock then concreteBPRelativeRmmInteriorRangeMin… else pure none`,
-   while `crossBlockArm_withCanonicalInterior_runsTo` produces
+   while `crossBlockArm_withCanonicalInterior_runsTo`
+   (`E1InteriorDispatchCompose.lean:1291`) produces
    `⟨dispatchRouteValue …, dispatchEvents …⟩`. Those are not the same term and
    no theorem in the tree identifies them.
 
-Both are recorded rather than worked around. A composition that assumed either
+   **The gap is on the TRACE side only, and that is the load-bearing fact for
+   whoever takes it.** The VALUE side is already route-linked:
+   `dispatchRouteValue` (`E1InteriorDispatchCompose.lean:381`) is by
+   definition a `.value` projection of the route's own
+   `canonicalRelativeRmmInteriorRangeMinComputation`, and the whole
+   `twoSpanValue_*_eq_routeValue` ladder
+   (`E1InteriorTwoSpan.lean:1085`, `:1123`) links the machine's values to the
+   route's. But `dispatchEvents` (`:194`) is built from `twoSpanEvents`
+   (`E1InteriorTwoSpan.lean:212`), which is a FREESTANDING list of events —
+   grepped, and it is never once equated to any computation's `.reads`. Every
+   theorem mentioning it supplies it as a `RunsTo` receipt argument.
+
+   So the missing ladder is three lemmas, at
+   `spanEvents`, `twoSpanEvents` and `dispatchEvents` level, each equating a
+   machine event list to `(…Computation …).run … |>.reads.map
+   (TraceEvent.readWord segment ·.1 ·.2)`. The precedent to copy is
+   `minCandidateMachineTrace_eq_routeReads`
+   (`E1InteriorMinCandidate.lean:1296`), which does exactly this one rung
+   lower, resting on `:1172`, `:1210` and `:1273`. The five-way `if` in
+   `dispatchEvents` branches on the SAME guards as
+   `interiorRangeMin_of_count_zero` (`E1InteriorDispatch.lean:456`) through
+   `interiorRangeMin_of_cross` (`:516`), which are full computation
+   equalities, so `.reads` follows from them by congruence.
+
+   Budget a segment/store reconciliation too: the machine side is fixed at
+   `(canonicalSummaryLayout shape).segment` with
+   `concreteBPNativeSuccinctRMQGlobalReadStore shape`, while the route object
+   is parametric in `segments.canonicalComponent` and `store`.
+
+This is recorded rather than worked around. A composition that assumed it
 would be a witness constructed FOR a premise rather than found at the target.
 -/
 

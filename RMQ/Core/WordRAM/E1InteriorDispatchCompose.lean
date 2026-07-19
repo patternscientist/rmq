@@ -1155,7 +1155,7 @@ theorem canonicalBlockSize_eq_layoutBlockSize
 
 /-! ## `hInterior`, DISCHARGED
 
-`crossBlockArmProgramAt_runsTo`'s `hInterior` (`E1CrossBlockArm.lean:1181`)
+`crossBlockArmProgramAt_runsTo`'s `hInterior` (`E1CrossBlockArm.lean:1199`)
 promises, for EVERY entry register file agreeing on `fClose` and `fRight`:
 a `RunsTo` at base `A + 176` to `A + 176 + interior.length`, the value in
 `mMV`/`mMP`, four register equalities -- `fClose`, `fRight`, `mLV`, `mLP`

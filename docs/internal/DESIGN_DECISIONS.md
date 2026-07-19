@@ -6873,3 +6873,39 @@ any instruction, and the composed leg's claim is therefore not too strong.
 
 The `hCrossPres` escape-hatch hypothesis the module header used to advertise
 is now unnecessary and should not be reintroduced.
+
+## DD-20260719-162 — the composed valid path falls through into the `none` writer
+
+**Status.** Found and pinned with two executed theorems, E1-LaneA3. Build green.
+NOT fixed: the output stage it calls for is a new stage, not a composition step.
+
+`wholeQueryValidPath_exit_is_invalidExit` (`E1WholeQueryProgram.lean:375`) and
+`wholeQueryValidPath_falls_into_noneWriter` (`:384`).
+
+**THE FACT.** `programSkeleton`'s docstring (`E1QueryProgram.lean:130`) says
+"the valid path ends by writing `regOut` and halting".
+`wholeQueryValidPathThroughLca` (`:155`) does NEITHER — grepped: there is no
+`.halt` and no `regOut` write anywhere in it. And the omission is not inert.
+The close/LCA leg's exit is `closeLcaExit 827 = 827 + 4753 = 5580`; the
+skeleton places `invalidExitBlock` at `8 + validPath.length = 8 + 5572 = 5580`.
+The two addresses COINCIDE, so the valid path falls straight into
+`.const regOut 0` followed by `.halt`. `regOut = 0` is the `none` packet.
+
+**WHY THIS IS RECORDED AS A FINDING RATHER THAN A TODO.** As composed, the
+program would halt carrying `none` for EVERY valid query, including every
+branch whose route value is `some`. Nothing currently proved is wrong: no
+theorem claims the whole path runs, and each leg's `runsTo` stops at its own
+exit. The hazard is to the NEXT lane. A worker who reads the standing
+two-blocker list and concludes the remainder is "compose the executed legs"
+would be composing toward a program that answers `none` unconditionally, and
+would discover it at `WholeQueryMachineAgrees`'s value clause — arbitrarily
+far from the code responsible, with no failing build in between to localise it.
+
+**WHAT IT IMPLIES FOR BUDGETING.** The remaining work past blocker 2 is not
+two items (join simulation, then agreement) but three: the join's simulation,
+a NEW output stage that decodes `fRes` into `regOut`'s packet and halts, and
+only then the agreement. When the output stage lands, `validPath.length`
+changes and `invalidExitBlock` moves with it; the first theorem above is
+stated as an executed equality precisely so that the coincidence cannot drift
+silently, and it will break the build when the stage is added — which is the
+intended behaviour, not a regression.

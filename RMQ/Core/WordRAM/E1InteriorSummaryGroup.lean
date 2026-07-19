@@ -549,7 +549,7 @@ THE SUMMARY GROUP AT THE STORE THE COMPOSITION NAMES.
 All eight chunk-count premises are supplied, not assumed.  The store is
 `concreteBPNativeSuccinctRMQGlobalReadStore shape` -- the one
 `crossBlockArmProgramAt_runsTo`'s `hInterior` premise fixes
-(`E1CrossBlockArm.lean:1181`) -- and the segment is the one the interior
+(`E1CrossBlockArm.lean:1199`) -- and the segment is the one the interior
 route's reads are emitted at.
 -/
 theorem canonicalSummaryGroup_runsTo

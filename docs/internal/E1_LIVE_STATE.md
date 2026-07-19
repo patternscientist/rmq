@@ -53,18 +53,60 @@ and BOTH select legs are EXECUTED** (`wholeQuerySelectPrefix_runsTo`,
 `:250`). Left struck through rather than deleted, per the standing rule.
 
 **But `WholeQueryMachineAgrees` (`E1WholeQueryPublic.lean:114`) is still NOT
-discharged, and validator phase 5 is still correctly OPEN.** Two obligations
-block the remainder, both found by E1-LaneA1 and neither a matter of
-assembly effort — see §7 and §10c:
+discharged, and validator phase 5 is still correctly OPEN.** Of the two
+obligations E1-LaneA1 found, **the first is now CLEARED (E1-LaneA3) and the
+second stands** - see 10d:
 
-1. `crossBlockArmProgramAt_runsTo` (`E1CrossBlockArm.lean:1181`) exports NO
-   preservation clause, deliberately (its header at `:1143`), so nothing
-   entitles a caller to carry register state across the cross arm;
-2. the cross-block arm's INTERIOR OBJECT is not reconciled with the route's:
-   `crossBlockArmSpec_eq` (`E1CrossBlockArm.lean:181`) yields the interior as
-   `if leftBlock + 1 < rightBlock then … else pure none` while
-   `crossBlockArm_withCanonicalInterior_runsTo` produces
-   `⟨dispatchRouteValue …, dispatchEvents …⟩`, and NO theorem identifies them.
+1. ~~`crossBlockArmProgramAt_runsTo` exports NO preservation clause~~
+   **CLEARED, DD-20260719-160.** `crossBlockArmProgramAt_runsTo`
+   (`E1CrossBlockArm.lean:1199`) exports
+   `forall r, CloseLegUntouched r -> regsF r = regs r`, its `hInterior` having
+   gained a matching fifth conjunct supplied by `interiorDispatch_hInterior`
+   (`E1InteriorDispatchCompose.lean:1181`). `closeLcaProgramAt_runsTo_cross`
+   (`E1WholeQueryCloseLca.lean:258`) exports it too, so preservation across
+   the close/LCA leg is now SYMMETRIC with the same-block twin at `:191`
+   (DD-20260719-161). Register state may be carried across BOTH arms.
+
+2. **STANDS.** The cross-block arm's INTERIOR OBJECT is not reconciled with
+   the route's: `crossBlockArmSpec_eq` (`E1CrossBlockArm.lean:181`) yields the
+   interior as `if leftBlock + 1 < rightBlock then ... else pure none` while
+   `crossBlockArm_withCanonicalInterior_runsTo`
+   (`E1InteriorDispatchCompose.lean:1291`) produces
+   `<dispatchRouteValue ..., dispatchEvents ...>`, and NO theorem identifies
+   them. **The gap is on the TRACE side only** - the value side is already
+   route-linked - and closing it needs three new ladder lemmas, NOT assembly.
+   Scoped in detail in 10d; budget it as a moderate proof.
+
+**BEYOND THOSE TWO, AND THIS IS THE ONE THAT WILL COST SOMEONE A SESSION:
+THE COMPOSED VALID PATH FALLS THROUGH INTO THE `none` WRITER.**
+DD-20260719-162, pinned by two executed theorems,
+`wholeQueryValidPath_exit_is_invalidExit` (`E1WholeQueryProgram.lean:375`) and
+`wholeQueryValidPath_falls_into_noneWriter` (`:384`).
+
+`programSkeleton`'s docstring (`E1QueryProgram.lean:130`) says "the valid path
+ends by writing `regOut` and halting". `wholeQueryValidPathThroughLca`
+(`E1WholeQueryProgram.lean:155`) does NEITHER - grepped, there is no `.halt`
+and no `regOut` write anywhere in it. And the omission is not inert: the
+close/LCA leg's exit is `closeLcaExit 827 = 5580`, and the skeleton puts
+`invalidExitBlock` at `8 + 5572 = 5580`. The addresses COINCIDE, so the valid
+path falls straight into `.const regOut 0` then `.halt`, and `regOut = 0` is
+the NONE packet.
+
+**So the program as composed would halt carrying `none` for every valid
+query**, including every branch whose route value is `some`. Nothing currently
+proved is wrong - no theorem claims the whole path runs, and each leg's
+`runsTo` stops at its own exit. The hazard is entirely to the next lane:
+anyone who reads the two-blocker list and concludes the remainder is "compose
+the executed legs" is composing toward a program that answers `none`
+unconditionally, and will find out at `WholeQueryMachineAgrees`'s value clause,
+far from the code responsible.
+
+**Budget the remainder as THREE items past blocker 2, not one**: the select
+join's simulation, a NEW output stage decoding `fRes` into `regOut` and
+halting, and only then the agreement. When the output stage lands,
+`validPath.length` changes and `invalidExitBlock` moves; the first theorem
+above is an executed equality so that the coincidence cannot drift silently,
+and it WILL break the build when the stage is added. That is intended.
 
 **Validator phase-5 TEXT IS NOW STALE AGAIN**, in the opposite direction from
 the staleness §10b recorded. It reads "no definition composes them into one
@@ -250,7 +292,7 @@ makes one block cover both.
 | block lengths (177 = 156 + 21) | `summaryGroup_length` `:299`, `minCandidateBlock_length` `E1InteriorMinCandidate.lean:241` |
 | read-free 3-way merge — **fringe-shaped, see §2 correction** | `candMerge3` — `E1CandMerge3.lean:198`, `candMerge3_readFree` `:206` |
 | merge algebra | `bpCandidateMerge?_some_left` `:132`, `bpCandidateMerge3?_some_left_right` `:139` |
-| cross-block arm — **SIGNATURE CHANGED, see below** | `crossBlockArmProgramAt_runsTo` — `E1CrossBlockArm.lean:1181` |
+| cross-block arm — **SIGNATURE CHANGED, see below** | `crossBlockArmProgramAt_runsTo` — `E1CrossBlockArm.lean:1199` |
 | interior fold preservation clause — **COMPOSED HEADLINE** | `interiorChunkFold_runsTo` `E1InteriorChunkFold.lean:1808`, clause at `:1835` |
 | **the #2/#3 span block, both arms** | `spanBlock_runsTo` — `E1InteriorSpanBlock.lean:262` |
 | **its `none`-arm discriminator** | `spanNoneArm_discriminates` — `E1InteriorSpanBlock.lean:540` |
@@ -289,16 +331,16 @@ makes one block cover both.
 | **the combiner preservation predicates** | `TwoLegUntouched` `:333` (SUPERSEDED form, see §6), `CrossLegUntouched` `:983` |
 | four route branch decompositions | `E1RouteDecomposition.lean:41`, `:85`, `:121`, `:148` |
 | **#9's program, 4204 instrs** | `interiorDispatchBlock` — `E1InteriorDispatch.lean:251` |
-| its four prologue simulations | `rangePreamble_runsTo` `E1InteriorDispatch.lean:578`, `indexDecomp_runsTo` `:706`, `localArmSetup_runsTo` `:898`, and the selector below |
-| **the five arm-reachability lemmas** | `dispatchSelector_reaches_arm0` `E1InteriorDispatch.lean:1002`, `_arm4` `:1030`, `_arm6` `:1067`, `_arm7` `:1124`, `_arm8` `:1189` |
-| **THE FALL-THROUGH DISCRIMINATOR** | `unterminatedDispatch_falls_through` — `E1InteriorDispatch.lean:1410` |
+| its four prologue simulations | `rangePreamble_runsTo` `E1InteriorDispatch.lean:587`, `indexDecomp_runsTo` `:715`, `localArmSetup_runsTo` `:907`, and the selector below |
+| **the five arm-reachability lemmas** | `dispatchSelector_reaches_arm0` `E1InteriorDispatch.lean:1011`, `_arm4` `:1039`, `_arm6` `:1076`, `_arm7` `:1133`, `_arm8` `:1198` |
+| **THE FALL-THROUGH DISCRIMINATOR** | `unterminatedDispatch_falls_through` — `E1InteriorDispatch.lean:1419` |
 | its correct twin, and the boundary | `witnessDispatch_runs_none` `:1358`, `unterminatedDispatch_receipts_agree` `:1499`, `..._catLogs_differ` `:1511` |
 | **#9's preservation, checked against its OWN writes** | `DispatchUntouched` `E1InteriorDispatch.lean:335`, `dispatchUntouched_of_lt` `:380` |
-| **the close leg's clause, as a SEPARATE export** | `dispatchUntouched_of_closeLegUntouched` — `E1InteriorDispatch.lean:427` |
-| the route's five branches, machine-free | `interiorRangeMin_of_count_zero` `E1InteriorDispatch.lean:447`, `_of_local` `:455`, `_of_adjacent` `:468`, `_of_leftMiddle` `:486`, `_of_cross` `:507` |
-| the caller's guard is subsumed | `interiorRangeMin_guard_subsumed` — `E1InteriorDispatch.lean:544` |
+| **the close leg's clause, as a SEPARATE export** | `dispatchUntouched_of_closeLegUntouched` — `E1InteriorDispatch.lean:436` |
+| the route's five branches, machine-free | `interiorRangeMin_of_count_zero` `E1InteriorDispatch.lean:456`, `_of_local` `:464`, `_of_adjacent` `:477`, `_of_leftMiddle` `:495`, `_of_cross` `:516` |
+| the caller's guard is subsumed | `interiorRangeMin_guard_subsumed` — `E1InteriorDispatch.lean:553` |
 | **`#9`'s FIVE ARMS COMPOSED — the interior leg's top** | `interiorDispatchBlock_runsTo` — `E1InteriorDispatchCompose.lean:816` |
-| **`hInterior`, DISCHARGED** | `interiorDispatch_hInterior` — `E1InteriorDispatchCompose.lean:1171` |
+| **`hInterior`, DISCHARGED** | `interiorDispatch_hInterior` — `E1InteriorDispatchCompose.lean:1181` |
 | **and CONSUMED, which is what proves it fits** | `crossBlockArm_withCanonicalInterior_runsTo` — `:1274` |
 | the close leg's clause, as a SEPARATE export | `interiorDispatch_preserves_closeLeg` — `:1223` |
 | `#9`'s receipt and charge log, written FROM THE ROUTE | `dispatchEvents` `:194`, `dispatchCats` `:374`, `dispatchArmCats` `:264` |
@@ -314,7 +356,7 @@ makes one block cover both.
 | same-block leg composed — **BASE `0` ONLY, see §3b** | `sameBlockDispatchProgram_runsTo` — `E1CloseCompose.lean:95` |
 | **the close/LCA leg's OWN branch split, route-side** | `lcaLeg_of_sameBlock` `E1WholeQueryLcaLeg.lean:57`, `lcaLeg_of_crossBlock` `:83` |
 | its anti-vacuity | `lcaLeg_branches_exhaustive` — `E1WholeQueryLcaLeg.lean:110` |
-| **THE CLOSE/LCA LEG, REBASABLE AND TERMINATED** | `closeLcaProgramAt` — `E1WholeQueryCloseLca.lean:111`, length `4753` at `:117` |
+| **THE CLOSE/LCA LEG, REBASABLE AND TERMINATED** | `closeLcaProgramAt` — `E1WholeQueryCloseLca.lean:119`, length `4753` at `:125` |
 | its four hosting facts, offsets computed | `closeLcaProgramAt_hosts` — `:132` |
 | **both arms executed, converging at `closeLcaExit A`** | `closeLcaProgramAt_runsTo_same` `:183`, `_runsTo_cross` `:243` |
 | the convergence address checked against the length | `closeLcaExit_eq_end` — `:124` |
@@ -333,7 +375,7 @@ accordingly runs from `⟨regs, 0, false⟩`. In the whole query the close/LCA l
 sits after the guard and BOTH select legs, so that composition is
 inapplicable there — not weakened, simply unusable.
 
-**Use `closeLcaProgramAt` (`E1WholeQueryCloseLca.lean:111`) instead**, which
+**Use `closeLcaProgramAt` (`E1WholeQueryCloseLca.lean:119`) instead**, which
 takes its host base `A` and computes every target from it, AND wires the
 cross arm's terminator. Layout: dispatch `4` at `A`, cross arm `4574` at
 `A + 4`, terminator `2` at `A + 4578`, same-block leg `173` at `A + 4580`,
@@ -344,14 +386,35 @@ E1-LaneA1.** `crossArmTerminated` (`E1CloseDispatch.lean:625`) and
 `crossArmTerminated_converges` (`:649`) existed only against that module's own
 two-instruction stub `unterminatedCrossArm` (`:444`). DD-20260719-121.
 
-**PRESERVATION IS ASYMMETRIC ACROSS THE TWO ARMS, and that is inherited.**
-`closeLcaProgramAt_runsTo_same` exports `CloseLegUntouched`; the cross twin
-exports NOTHING, because `crossBlockArmProgramAt_runsTo`
-(`E1CrossBlockArm.lean:1181`) has no preservation conjunct — deliberately,
-per its header at `:1143`. A composed leg claiming preservation on both arms
-would be claiming something FALSE on one of them, which is the too-strong
-predicate failure DD-20260719-056 records at `TwoLegUntouched`. Anyone
-carrying register state across the cross arm owes that clause first.
+**~~PRESERVATION IS ASYMMETRIC ACROSS THE TWO ARMS~~ — SUPERSEDED
+2026-07-19 by E1-LaneA3. PRESERVATION IS NOW SYMMETRIC.** Both
+`closeLcaProgramAt_runsTo_same` (`E1WholeQueryCloseLca.lean:191`) and
+`_runsTo_cross` (`:258`) export
+`∀ r, CloseLegUntouched r → regsF r = regs r`, because
+`crossBlockArmProgramAt_runsTo` (`E1CrossBlockArm.lean:1199`) now does.
+DD-20260719-160, DD-20260719-161.
+
+**Read the superseded warning carefully before reusing its reasoning**, because
+its conclusion was right for the wrong reason and the difference matters. It
+said a composed leg claiming preservation on both arms "would be claiming
+something FALSE on one of them" — the too-strong predicate failure
+DD-20260719-056 records at `TwoLegUntouched`. That was NOT the situation. The
+cross arm's write set has always been disjoint from `{0..7} ∪ {28}`: each of
+its fourteen segments admits the band by its own predicate, and the two writes
+that look like counterexamples (`crossRepoint` writes `fClose` = 70, the merge
+writes `fRes` = 69) are outside it. Nothing about the claim was ever false.
+
+The obstruction was the INTERFACE, not the code: `hInterior` promised only
+`fClose`/`fRight`/`mLV`/`mLP` across the mid-arm interior hole, so the arm
+could not promise a caller more than its own hypothesis promised it. Widening
+`hInterior` with a fifth conjunct closed the hole, and the clause then threaded
+with **no change to any instruction**.
+
+**The generalisable lesson**: "arm X exports no preservation clause" is a fact
+about a signature. Before treating it as a fact about the arm's behaviour —
+and especially before invoking the too-strong-predicate precedent — check the
+arm's own WRITE SET. An operands-style check (`..._at_crossBlockArm_operands`)
+cannot settle it either way, because it tests one consumer's reads.
 
 **Register allocation.** Merge bank `75..84`. Interior fold bank `89..99`.
 Summary+min-candidate `105..117`. Span block `118..122` (`pSlot` 118 and
@@ -415,7 +478,7 @@ laid out without it and it is expensive to re-derive.
 **#9 DOES NOT TERMINATE EITHER, AND THAT IS FORCED, NOT INHERITED**
 (E1-LaneB5). `hInterior`'s target state is
 `⟨regsI, A + 176 + interior.length, false⟩` — the halted flag is
-**`false`** (`E1CrossBlockArm.lean:1181`, re-read this session). So a
+**`false`** (`E1CrossBlockArm.lean:1199`, re-read this session). So a
 `#9` that ended in `halt` could not discharge the premise at all. The
 rule "every block here falls through" is, at this one block, not a
 convention that could have gone the other way.
@@ -511,7 +574,7 @@ output convention for #4–#9.
 ### `crossBlockArmProgramAt_runsTo` LOST SEVEN PREMISES — do not re-supply them
 
 Landed with the close-leg merge (E1-LaneM). `crossBlockArmProgramAt_runsTo`
-(`E1CrossBlockArm.lean:1181`) no longer takes `hc`, and no longer takes the
+(`E1CrossBlockArm.lean:1199`) no longer takes `hc`, and no longer takes the
 six `readBits ... .length = machineWordBits` window premises (`hL0`, `hL1`,
 `hL2`, `hR0`, `hR1`, `hR2`). `hc` is discharged internally; the six window
 premises were REMOVED because they are FALSE across contiguous regions of
@@ -524,7 +587,7 @@ application type mismatch in which `hc` lands in `hHost`'s position. **The
 fix is to DELETE the arguments, never to re-add the premises.**
 
 `crossBlockArm_withCanonicalInterior_runsTo`
-(`E1InteriorDispatchCompose.lean:1274`) has had the same seven binders
+(`E1InteriorDispatchCompose.lean:1291`) has had the same seven binders
 removed for the same reason, so it too is now
 `shape hHost regs hClose hRight`. Retaining them would have obliged every
 caller to prove facts that do not hold. See DD-20260719-110.
@@ -714,7 +777,7 @@ look uniformly weak. It is not — it is weak precisely there.
 
 **A SEVENTH MODEL, AND IT IS AT THE PROGRAM-LAYOUT LEVEL RATHER THAN
 INSIDE A BLOCK** (E1-LaneB5). `unterminatedDispatch_falls_through`
-(`E1InteriorDispatch.lean:1410`) is the first discriminator here whose
+(`E1InteriorDispatch.lean:1419`) is the first discriminator here whose
 impostor is not a wrong operand or a wrong branch target but a MISSING
 TERMINATOR — the defect the close-leg lane found live in
 `crossBlockArmProgramAt`. On a `count = 0` query the unterminated layout
@@ -745,7 +808,7 @@ preserves it.
 (E1-LaneB6). The seventh model's impostor is a MISSING terminator. This
 one's is a PRESENT, correct, terminating branch whose target is a
 DIFFERENT ARM'S BASE — the defect the arm composition could have
-shipped. `missDispatch_runs_armA` (`E1InteriorDispatchCompose.lean:1411`)
+shipped. `missDispatch_runs_armA` (`E1InteriorDispatchCompose.lean:1429`)
 against `missDispatchImpostor_runs_armB` (`:1502`), one instruction
 apart (`missDispatch_differ_at_one_index`, `:1422`).
 
@@ -882,7 +945,7 @@ then #6/#7/#8; then #9's five-branch dispatch; then `hInterior`.
 
 **On `hInterior` specifically — the shape is known and the arithmetic checks
 out, so do not re-derive it.** `crossBlockArmProgramAt_runsTo`
-(`E1CrossBlockArm.lean:1181`) needs, at base `A + 176`: a `RunsTo` to
+(`E1CrossBlockArm.lean:1199`) needs, at base `A + 176`: a `RunsTo` to
 `A + 176 + interior.length`, `bestOfRegs (regsI mMV) (regsI mMP) = interiorValue`,
 and preservation of `fClose` (70), `fRight` (71), `mLV` (75), `mLP` (76).
 All four survive the 177-leg — `legUntouched_at_crossBlockArm_operands`
@@ -1029,7 +1092,7 @@ recording rather than papering over — the file has been edited by five
 workers since the last coordinator pass, and it shows.
 
 1. `hInterior` has exactly FOUR register equalities — **held**, re-read
-   at `E1CrossBlockArm.lean:1181` before writing anything against it.
+   at `E1CrossBlockArm.lean:1199` before writing anything against it.
 2. `#9` falls through and MUST, because `hInterior`'s target state
    carries `halted = false` — **held**, and now executed: the composition
    ends `⟨regs', Q + 4204, false⟩`.
@@ -1105,7 +1168,7 @@ no longer has to reason about which lane a fact came from. It may assume,
 without rebuilding any of it:
 
 - **The interior leg is complete AND consumed.** `interiorDispatch_hInterior`
-  (`E1InteriorDispatchCompose.lean:1171`) is not merely `hInterior`-shaped;
+  (`E1InteriorDispatchCompose.lean:1181`) is not merely `hInterior`-shaped;
   `crossBlockArm_withCanonicalInterior_runsTo` (`:1274`) APPLIES
   `crossBlockArmProgramAt_runsTo` to it, so the shape is known to UNIFY.
   Assembly consumes the wrapper and does not re-derive `hInterior`.
@@ -1192,20 +1255,20 @@ bridge is `rfl`. Grepped before budgeting time for a reconciliation.
 **WHAT BLOCKS THE REST OF `WholeQueryMachineAgrees`**, and neither item is a
 matter of assembly effort:
 
-1. **The cross arm exports no preservation clause**
-   (`crossBlockArmProgramAt_runsTo`, `E1CrossBlockArm.lean:1181`, deliberately
+1. **The cross arm exports no preservation clause** [SUPERSEDED 2026-07-19 by E1-LaneA3, DD-20260719-160: it now exports one; see 10d. Left as written, per the standing rule.]
+   (`crossBlockArmProgramAt_runsTo`, `E1CrossBlockArm.lean:1199`, deliberately
    per its header at `:1143`). Every register fact the rank and output stages
    need must cross it, and nothing entitles a caller to that. **This is the
    next thing to build** — its own header says the fix is a fifth conjunct on
    `hInterior`, and `interiorDispatch_preserves_closeLeg`
-   (`E1InteriorDispatchCompose.lean:1223`) already proves that conjunct for
+   (`E1InteriorDispatchCompose.lean:1240`) already proves that conjunct for
    the canonical interior, so the pieces are present.
 2. **The cross-block arm's interior object is not reconciled with the
    route's.** `crossBlockArmSpec_eq` (`E1CrossBlockArm.lean:181`) yields the
    interior as `if leftBlock + 1 < rightBlock then … else pure none`; but
    `crossBlockArm_withCanonicalInterior_runsTo` produces
    `⟨dispatchRouteValue …, dispatchEvents …⟩`. **No theorem identifies them.**
-   `interiorRangeMin_of_cross` (`E1InteriorDispatch.lean:507`) and
+   `interiorRangeMin_of_cross` (`E1InteriorDispatch.lean:516`) and
    `canonicalBlockSize_eq_layoutBlockSize`
    (`E1InteriorDispatchCompose.lean:1151`) are the relevant pieces; note the
    two sides also spell the block size differently (Raw vs layout), which is
@@ -1233,6 +1296,149 @@ whole-query PROGRAM level is still owed and is NOT covered by
 `lcaNone_impostor` (`E1WholeQueryCats.lean`), which is a FIXTURE-level
 category-log discriminator — it establishes that the other three checks
 cannot reject some impostor, not that this program's receipt cannot.
+
+---
+
+## 10d. Worklog - E1-LaneA3, 2026-07-19 (blocker 1 cleared; blocker 2 scoped)
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `c19e28c`. DD-IDs claimed
+and WRITTEN into `DESIGN_DECISIONS.md`: **`160`, `161`**. Band `162-179` free.
+
+**BLOCKER 1 IS CLEARED.** `crossBlockArmProgramAt_runsTo`
+(`E1CrossBlockArm.lean:1199`) exports a third conjunct
+`forall r, CloseLegUntouched r -> regsF r = regs r`; its `hInterior` gains a
+matching fifth conjunct; `interiorDispatch_hInterior`
+(`E1InteriorDispatchCompose.lean:1181`) supplies it; and
+`closeLcaProgramAt_runsTo_cross` (`E1WholeQueryCloseLca.lean:258`) now
+exports the same clause as its same-block twin at `:191`. Preservation across
+the close/LCA leg is SYMMETRIC. Full `lake build RMQ` green.
+
+**THE STRUCTURAL POINT THAT MADE IT A FIFTH CONJUNCT AND NOT A NEW LEMMA.**
+`interiorDispatch_preserves_closeLeg` (`:1240`) already proved the fact and
+its docstring explicitly declined to widen `hInterior` ("THE ADDITIONAL
+EXPORT, NOT A FIFTH CONJUNCT"). That cannot be substituted for the conjunct:
+preservation is a statement about the register file `hInterior`'s EXISTENTIAL
+BINDS, so a standalone lemma is about a different witness. A sibling premise
+has no way to name that witness. Widening was forced, not stylistic. Both are
+now derived from ONE `interiorDispatchBlock_runsTo` invocation so they cannot
+drift apart.
+
+**SOUNDNESS WAS CHECKED AGAINST THE ARM'S WRITE SET, NOT A CONSUMER'S
+OPERANDS** - the brief's warning was apt and the check is recorded in
+DD-20260719-160 segment by segment. Adequacy is the separate question and was
+already answered by two EVALUATED checks that existed:
+`closeLegUntouched_at_query_operands` (`E1SameBlockArm.lean:87`) and
+`closeLegUntouched_at_guard_scratch` (`:94`).
+
+**ONE THING THE BAND DELIBERATELY EXCLUDES, worth knowing before someone
+"fixes" it.** `rVal` (9) carries the SECOND select's answer and is NOT
+protected. That is correct: the select join consumes `rVal` before the
+close/LCA leg begins, so it has nothing to survive. The FIRST select's answer
+is the one that must cross, and it is stashed in the guard's dead bank
+`{3,4,5,6,7}` (DD-20260719-122), inside the band. Widening the band to cover
+`9` would be carrying a decorative clause.
+
+**BLOCKER 2 STANDS, AND THE BRIEF'S FRAMING OF IT NEEDED CORRECTION.** My
+brief said of the two blockers that "the pieces already exist and this is
+assembly, not research". That is TRUE of blocker 1 and FALSE of blocker 2.
+
+The gap is on the TRACE side only. The VALUE side is already route-linked:
+`dispatchRouteValue` (`E1InteriorDispatchCompose.lean:381`) is by definition a
+`.value` projection of the route's own
+`canonicalRelativeRmmInteriorRangeMinComputation`, and the
+`twoSpanValue_*_eq_routeValue` ladder (`E1InteriorTwoSpan.lean:1085`, `:1123`)
+links machine values to route values. But `dispatchEvents` (`:194`) is built
+from `localLegEvents`/`globalLegEvents` (`:119`, `:152`), both built from
+`twoSpanEvents` (`E1InteriorTwoSpan.lean:212`) - a FREESTANDING list of events
+that is **never once equated to any computation's `.reads`**. Grepped: every
+theorem mentioning `twoSpanEvents` supplies it as a `RunsTo` receipt argument
+(`E1InteriorTwoSpan.lean:369`, `E1InteriorCombine.lean:460`, `:462`, `:1040`).
+`concreteBPRelativeRmmInteriorRangeMinTraceResult...` appears in ZERO
+`E1Interior*` files - the two name-sets are disjoint, so no theorem in the
+tree can relate them.
+
+**The missing ladder is three new lemmas**, each equating a machine event list
+to `(...Computation ...).run ... |>.reads.map (TraceEvent.readWord segment)`:
+at `spanEvents`, at `twoSpanEvents`, and at `dispatchEvents` level. Estimate:
+a moderate proof, not a research problem, on three pieces of evidence.
+
+* The precedent to copy is `minCandidateMachineTrace_eq_routeReads`
+  (`E1InteriorMinCandidate.lean:1296`), which does exactly this one rung
+  lower, resting on `:1172`, `:1210`, `:1273`. Its proof is one `rw` chain
+  distributing `List.map_append`.
+* The route side already decomposes at COMPUTATION level, not value level:
+  `interiorRangeMin_of_count_zero` (`E1InteriorDispatch.lean:456`) through
+  `interiorRangeMin_of_cross` (`:516`) are full computation equalities, so
+  `.reads` follows by congruence, and their five guards are the SAME
+  expressions `dispatchEvents` branches on, in the same order.
+* The target unfolds to the right shape: the route object is
+  `flatStoreExecutionTraceResultAtSegment ...`, whose `trace` is literally
+  `execution.reads.map fun read => TraceEvent.readWord segment read.1 read.2`.
+
+**Two cautions for whoever takes it.** (1) Budget a segment/store
+reconciliation: the machine side is fixed at
+`(canonicalSummaryLayout shape).segment` with
+`concreteBPNativeSuccinctRMQGlobalReadStore shape`, while the route object is
+parametric in `segments.canonicalComponent` and `store`. (2) The `spanEvents`
+rung's `none` arm will be TRUE BUT LOAD-FREE: `spanNoneArm_traces_empty`
+(`E1InteriorSpanBlock.lean:553`) already records that the receipt is formally
+incapable of separating the `none`-arm impostor there. It buys shape, not
+discrimination.
+
+**A THIRD FINDING, and the one most likely to cost the next lane a session:
+THE COMPOSED VALID PATH FALLS THROUGH INTO THE `none` WRITER.**
+DD-20260719-162, pinned by `wholeQueryValidPath_exit_is_invalidExit`
+(`E1WholeQueryProgram.lean:375`) and `wholeQueryValidPath_falls_into_noneWriter`
+(`:384`). `closeLcaExit 827 = 5580` and `invalidExitBlock` sits at
+`8 + 5572 = 5580` - the SAME address - so the valid path falls into
+`.const regOut 0; .halt`. The program as composed would answer `none` for every
+valid query. Nothing proved is wrong; the hazard is to whoever assumes the
+remainder is "compose the executed legs". Full reasoning in DESIGN_DECISIONS.
+
+**NOT ATTEMPTED, AND WHY.** The three agreement obligations and
+`WholeQueryMachineAgrees` (`E1WholeQueryPublic.lean:114`) were not reached.
+Beyond blocker 2 they need the select join's simulation, and an OUTPUT STAGE
+that does not exist in the tree at all - `WholeQueryMachineAgrees` requires
+`final.halted = true` and `decodePacket (final.regs regOut) = ...`, and
+`wholeQueryValidPathThroughLca` (`E1WholeQueryProgram.lean:155`) currently
+ends at the close/LCA leg's exit with no `regOut` write and no halt. That is a
+new stage, not a composition step. Nothing was weakened to make anything
+close.
+
+**The `none`-branch discriminator at PROGRAM level is still owed**, and my
+predecessor's characterisation of it is confirmed: `lcaNone_impostor`
+(`E1WholeQueryCats.lean`) is a FIXTURE-level discriminator. One observation to
+carry forward, from the governing rule that a receipt's power over a
+skipped-code defect is exactly whether the skipped code reads: on a
+`selectNone` branch the skipped code is `closeLcaProgramAt` - 4753
+instructions that unquestionably read - so at the REAL BLOCK the receipt is
+NOT blind to a spurious close/LCA leg, unlike at the fixture, where
+`fixtureStageCats` makes it read-free. The fixture's blindness is therefore
+STRICTLY WIDER than the block's, and a program-level discriminator should say
+so rather than inherit the fixture's statement. I did not build it.
+
+**Validator.** `lake exe rmq_e1_machine_validate` PASS at **13 s wall clock**,
+phase 5 `wholeQueryComparisonAvailable=false`, verdict `OPEN`. It does not
+exercise this session's work. Its phase-5 TEXT remains stale in the direction
+10c recorded (it says "no definition composes them into one runnable query
+program"; one does) - the file is the sibling cost-algebra lane's, so it was
+NOT edited here. Its citation `interiorDispatch_hInterior:1171` is also now
+stale (`:1181`); likewise reported, not edited.
+
+**`#print axioms`**, scratchpad driver importing the four modules directly:
+`propext, Classical.choice, Quot.sound` on all six of
+`crossBlockArmProgramAt_runsTo`, `interiorDispatch_hInterior`,
+`interiorDispatch_preserves_closeLeg`,
+`crossBlockArm_withCanonicalInterior_runsTo`,
+`closeLcaProgramAt_runsTo_cross`, `closeLcaProgramAt_runsTo_same`. No
+`sorryAx`.
+
+**Citations repaired.** Widening the header moved
+`crossBlockArmProgramAt_runsTo` from `:1181` to `:1199`; eight in-tree
+citations were updated across seven files, and two notes stale in CONTENT (not
+merely line number) were rewritten: `E1InteriorDispatch.lean:403` ("It is NOT
+a fifth conjunct ... and never has") and `E1WholeQueryProgram.lean`'s
+two-blocker scope note.
 
 ---
 

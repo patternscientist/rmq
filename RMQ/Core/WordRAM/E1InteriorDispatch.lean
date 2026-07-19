@@ -400,15 +400,24 @@ theorem dispatchUntouched_at_crossBlockArm_operands :
 at `E1SameBlockArm.lean:72` on the unmerged `claude/e1-close-leg-structural`
 branch, because that branch is not merged and this one may not edit it.
 
-**It is NOT a fifth conjunct of `hInterior`.**  A coordinator brief said
-`hInterior` "needs a fifth conjunct"; it does not, and never has.
-`crossBlockArmProgramAt_runsTo`'s `hInterior` promises exactly FOUR
-register equalities (`fClose`, `fRight`, `mLV`, `mLP`) and is
-byte-identical on both branches -- re-checked this session at
-`E1CrossBlockArm.lean:1181`.  Stating this clause as a fifth conjunct of
-a four-conjunct premise does not typecheck.  It is proved here as a
-SEPARATE, ADDITIONAL export, so that it is already in hand when the
-close-leg branch merges and widens the premise. -/
+**IT IS NOW A FIFTH CONJUNCT OF `hInterior` (E1-LaneA3,
+DD-20260719-160).**  This note previously read "It is NOT a fifth
+conjunct ... it does not, and never has", against a coordinator brief
+that said `hInterior` needed one.  The correction is worth stating
+precisely, because both sides were partly right.
+
+The note was RIGHT that a fifth conjunct does not typecheck against a
+four-conjunct premise, and right to prove the clause as a separate export
+rather than edit a premise its lane did not own.  It was WRONG to
+conclude the conjunct was avoidable.  Preservation here is a statement
+about the register file `hInterior`'s existential BINDS, so a separate
+lemma -- however true -- is about a different witness and cannot be
+threaded through the arm's composition.  Widening the premise was forced.
+
+`crossBlockArmProgramAt_runsTo` (`E1CrossBlockArm.lean:1199`) now promises
+FIVE clauses, and `interiorDispatch_hInterior` supplies the fifth from the
+export below.  Both are derived from one `interiorDispatchBlock_runsTo`
+invocation, so the separate export and the conjunct cannot drift apart. -/
 abbrev CloseLegUntouched (r : Nat) : Prop := r ≤ 7 ∨ r = 28
 
 /-- **THE ADDITIONAL EXPORT.**  Every register the close leg needs
