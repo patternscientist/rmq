@@ -5274,3 +5274,200 @@ What M3d-14 changes about it:
    check for the interior fold.  The clause is proof-side only; the
    validator has no interior analogue of phase 3h, and phase 3h's own
    note records that sentinel seeding is load-bearing.
+
+## M3d-15 (worker E1-R4x): the cap audit passed, and it turned up a false vacuity one rung down
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, from HEAD
+`e90c5d6` (M3d-14's yield) to this commit.  Green.
+
+TASK ZERO was the whole session and it earned that.  M3d-13's resume items
+1-5 remain UNBUILT; nothing was composed on the fold, because the audit
+that had to precede composition produced a second finding of the same
+family as M3d-14's and it needed settling first.
+
+### 1. THE CAP IS SATISFIABLE -- BUT NOT BY THE ROUTE THAT WAS EXPECTED
+
+`hcap : chunkCount <= 8` DISCHARGES at
+`canonicalRelativeRmmInteriorComponentStore`, for ALL EIGHT tables,
+UNCONDITIONALLY in `shape`.  So does the fold's other carried hypothesis
+`hccPos : 0 < chunkCount`, which was audited alongside it: a cap that held
+only because the count were always zero would settle nothing, and checking
+one without the other is not an audit.
+
+Both are landed as executable Lean, twelve theorems, in the new module
+`RMQ/Core/WordRAM/E1InteriorChunkCap.lean` -- so the composition cites a
+proof, not a note.  This is the form the standing rule asks for.
+
+THE EXPECTED ROUTE DOES NOT WORK.  The delegation named `chunkCount <= 1`
+via `canonicalRelativeRmmMachineReadNatCosted_cost_le_one`
+(`InteriorDirectory.lean:4060`), with `interiorChunkCount_le_eight` as the
+general fallback.  It is the fallback that is the only route:
+
+* WRONG SHAPE.  `cost_le_one` concludes `(...).cost <= 1`, about the
+  route's COST.  `hcap` is about `fixedWidthNatTableMachineChunkCount`.
+* HYPOTHESIS UNAVAILABLE.  `cost_le_one` needs
+  `width <= machineWordBits shape.bpCode.length`.  For `minRelTable`,
+  `maxRelTable` and `argOffsetTable` that is NOT unconditional.  The only
+  `relativeWidth` bounds against one word are
+  `..._lt_two_machine_of_size_ge_four` (`:3970`) and
+  `..._le_machine_of_macroSize_lt_blockCount` (`:4104`).  The
+  unconditional bound is `..._le_seven_machine` (`:3855`), against SEVEN.
+* AND IT IS FALSE at reachable shapes (section 2).
+
+The five `_le_seven_machine` lemmas (`:3855`, `:3875`, `:3899`, `:4240`,
+`:4257`) are hypothesis-free apart from the shape; with the `superWidth`
+case they cover all eight tables, and `interiorChunkCount_le_eight` wants
+exactly `width <= 7 * wordSize` with no positivity side condition.
+Positivity is equally unconditional: every width is `machineWordBits _`,
+`2 * _ + 3`, or `Nat.log2 _ + 1`.
+
+This independently corroborates the standing instruction to compose on the
+FOLD and not the 7-instruction atom.  The atom's `width <= wordSize`
+obligation is precisely the conditional one.
+
+### 2. THE INTERIOR IS NOT SINGLE-CHUNK, AND DD-20260719-009's VACUITY CLAIM DOES NOT HOLD
+
+`machineWordBits n = Nat.log2 n + 1` (`SuccinctRank.lean:38`), so the chunk
+counts are COMPUTABLE and there was no need to reason about them.
+Evaluating `(size, wordSize, relativeWidth, chunkCount)`:
+
+    (1, 2, 5, 3)   (2, 3, 7, 3)   (4, 4, 7, 2)   (8, 5, 9, 2)
+    (16, 6, 9, 2)  (64, 8, 9, 2)  (256, 10, 11, 2)
+    (1024, 12, 11, 1)  (4096, 14, 11, 1)  (65536, 18, 13, 1)
+
+Every `shape.size` below roughly `1024` is MULTI-chunk; the smallest are
+three-chunk.  Single-chunkness arrives only asymptotically, as
+`2 * log2 (log2 size)` falls behind `log2 (2 * size)`.
+
+Two consequences.
+
+FIRST, the cap is not trivial -- `chunkCount` really exceeds one at
+reachable shapes -- and the `<= 1` route was worth rejecting on more than
+shape grounds, since at `size = 4` it is simply false.
+
+SECOND, AND THIS IS THE FINDING.  DD-20260719-009 discharged the value
+bridge's exactness premise at this store by declaring it "VACUOUS there,
+because the interior tables are single-chunk", citing `cost_le_one`.  M3d-14
+section 2 and resume item 0 say the same.  IT IS NOT VACUOUS.  For
+`shape.size < 1024`, `hexact` is a LIVE obligation, at exactly the small
+shapes an all-size claim must cover.
+
+Nothing is retracted.  DD-009's CUT -- exactness demanded only of non-final
+chunks -- is correct and untouched, and the premise is still satisfiable.
+What changes is how it must be discharged: substantively, from
+`chunkPayloadWords`'s own structure, which emits chunks of length exactly
+`wordSize` except possibly the last.
+`chunkPayloadWords_get?_eq_take_drop` (`WordStore.lean:274`) presents the
+chunk at index `k` as a `take wordSize` of a `drop`, which is full whenever
+a later chunk exists.  Whoever composes the value bridge must use THAT and
+must not cite vacuity.  Recorded as DD-20260719-010 (claimed this session;
+the maximum OBSERVED was `DD-20260719-009`).
+
+WHY TWO AUDITS FOUND TWO DEFECTS IN THE SAME PLACE.  Satisfiability and
+vacuity are the same question from opposite ends.  M3d-14 asked whether a
+premise could ever be met and found one that could not.  This session asked
+whether a premise was ever exercised and found one believed dead that is
+alive.  A `<=` bound answers neither: it says nothing about whether the
+quantity is ever large.  The fastest way to settle it was to EVALUATE the
+count, which took one `#eval` after a week of prose about it.
+
+### 3. THE FROZEN-ROW ANCHOR: NOTED, NOT EDITED
+
+Reconfirmed independently at this HEAD.
+`E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md` cites the accepted whole-query
+trace as `RMQ/Core/SuccinctFinalRAM.lean:4337`; that line is inside a doc
+comment closing at `:4339`, documenting
+`concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted` (`:4340`).  The
+intended `def concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult`
+is at `:4426`.  The path is correct.
+
+Per the coordinator decision this is a NOTE, not an edit: an EVIDENCE NOTE
+was APPENDED after the frozen anchor block, and no frozen requirement text
+was touched.
+
+### 4. WHAT WAS NOT DONE, AND WHY
+
+The M7 doc row was NOT written.  It is not blocked -- the coordinator
+supplied the query-time scoping and the construction-time carve-out, and
+M3d-14 drafted an approvable sentence -- but it sits in resume item 5,
+downstream of items 1-4, and this session's budget went to TASK ZERO and
+the finding it produced.  Writing a doc row about the accepted route while
+that route's interior leg is unbuilt would be writing ahead of the
+evidence, which is what M3d-12 and M3d-13 both declined to do.
+
+Resume items 1-5 are otherwise unchanged and are not restated.
+
+### 5. VERIFICATION LEDGER
+
+`lake build RMQ RMQPaper RMQExamples` exit 0 (twice: cap only, then with
+positivity), under the `Global\RMQHeavyVerification` mutex:
+
+    [276/278] Built RMQ.Core.WordRAM.E1InteriorChunkCap
+    [277/278] Built RMQ
+    Build completed successfully.
+    BUILD_EXIT=0
+
+The new module emits NO warning; its only line in the build log is the
+Built line.  The 13 warning lines in the log are pre-existing and elsewhere.
+
+`lake build rmq_e1_machine_validate` exit 0; `lake exe
+rmq_e1_machine_validate` exit 0, UNCHANGED from M3d-14 as expected, since
+this session added no machine block:
+
+    presSentinelNonZero=true
+    presFailures=0
+    mutantE_segment_receiptFailures=36   (must be > 0)
+    mutantG_scratch_preservationFailures=36   (must be > 0)
+    mutantG_isPreservationOnly=true
+    wholeQueryComparison=OPEN (interior leg UNBUILT, not blocked; NOT a pass)
+    RESULT: PASS (with the whole-query comparison still OPEN)
+    VALEXE_EXIT=0
+
+`#print axioms` AFTER a root build, importing
+`RMQ.Core.WordRAM.E1InteriorChunkCap` DIRECTLY -- all twelve theorems
+`[propext, Classical.choice, Quot.sound]`, never `sorryAx`.
+`maxHeartbeats` was NOT raised anywhere.
+
+### 6. MATRIX STATUS AT YIELD
+
+All rows REQ-E1-01..11 remain OPEN.  None closed, none weakened, no frozen
+row text edited.
+
+Component-level evidence is, as in M3d-14, partly a subtraction: REQ-E1-03's
+interior value evidence was resting on `hexact` believed vacuous at the
+target store.  It is not vacuous.  The evidence is not withdrawn -- the
+premise is still satisfiable and the cut is still right -- but it is now
+correctly labelled as a live obligation with a named discharge route rather
+than a closed one.
+
+### 7. RESUME POINT (M3d-16)
+
+All file:line verified at this commit.
+
+1. THE FOLD'S TWO PREMISES ARE SETTLED.  Compose item 1 (the summary group)
+   citing `E1InteriorChunkCap.chunkCount_le_eight_*` and `..._pos_*`, one
+   per width.  Do not re-derive them and do not cite `cost_le_one` for
+   either.
+2. `hexact` IS THE REMAINING PREMISE AND IT IS LIVE.  Before composing the
+   VALUE bridge (`interiorChunkFold_cOut_eq_routeDecode`), prove the
+   non-final-chunk exactness lemma from
+   `chunkPayloadWords_get?_eq_take_drop` (`WordStore.lean:274`).  It does
+   not exist yet -- the existing length lemmas
+   (`chunkPayloadWords_word_length_le`, `:234`;
+   `chunkPayloadWords_length_eq_div_add_indicator`, `:390`) are about
+   bounds and counts, not per-index exactness.  `hle` is unaffected and
+   still discharges verbatim from
+   `canonicalRelativeRmmInteriorComponentStore_words_bounded`
+   (`InteriorDirectory.lean:1711`).
+3. STANDING, AND NEWLY LEARNED, alongside M3d-13's preservation rule and
+   M3d-14's satisfiability rule: a premise recorded as VACUOUS at an
+   instantiation owes a witness that it is vacuous there, on the same terms
+   a premise recorded as owed owes a witness that it is satisfiable.
+   "Vacuous because the tables are single-chunk" survived a session, a
+   design decision and a coordinator review, and one `#eval` refuted it.
+   WHERE A QUANTITY IS COMPUTABLE, EVALUATE IT.
+4. Items 2-5 of M3d-13's list are unchanged.  The M7 doc row (section 4)
+   has an approved scope and a drafted sentence and needs only the interior
+   leg to exist.
+5. STILL OWED, carried from M3d-13: an EXECUTED preservation check for the
+   interior fold; the validator has no interior analogue of phase 3h.

@@ -4489,3 +4489,73 @@ difference only appears when someone tries to discharge it against the
 concrete object. A hypothesis stated as a visible debt should name the store
 it is owed against and be checked for satisfiability there AT THE TIME IT IS
 STATED, not at the time it is consumed.
+
+## DD-20260719-010: the chunk fold's cap and positivity discharge unconditionally, and the interior is NOT single-chunk (E1 M3d-15)
+
+Context. M3d-14's resume point directed that the `<= 8` cap receive the same
+satisfiability audit the width premise had just failed, BEFORE anything was
+composed on it. `interiorChunkFold_runsTo` (`E1InteriorChunkFold.lean:1795`)
+carries two hypotheses that no consumer has yet discharged: `hccPos :
+0 < chunkCount` and `hccCap : chunkCount <= 8`. Both are audited here, at
+`canonicalRelativeRmmInteriorComponentStore`, for all eight of its tables.
+
+Verdict. BOTH ARE SATISFIABLE, UNCONDITIONALLY IN `shape`. The discharge is
+landed as executable Lean in `RMQ/Core/WordRAM/E1InteriorChunkCap.lean`, one
+theorem per width, so the composition cites a proof rather than a note.
+
+Decision -- the cap is discharged via `interiorChunkCount_le_eight`, NOT via
+the anticipated `chunkCount <= 1`. The expected route was
+`canonicalRelativeRmmMachineReadNatCosted_cost_le_one`
+(`InteriorDirectory.lean:4060`). It fails three ways, the third fatally:
+
+1. WRONG SHAPE. It concludes `(...).cost <= 1`, a statement about the route's
+   COST. `hcap` is about `fixedWidthNatTableMachineChunkCount`. The two agree
+   only on the valid arm of the `i < entries.length` split.
+2. HYPOTHESIS UNAVAILABLE. It needs `width <= machineWordBits
+   shape.bpCode.length`. For `minRelTable`, `maxRelTable` and
+   `argOffsetTable` that bound is not unconditional: the only `relativeWidth`
+   bounds against ONE word are `..._lt_two_machine_of_size_ge_four` (`:3970`)
+   and `..._le_machine_of_macroSize_lt_blockCount` (`:4104`). The
+   unconditional bound is `..._le_seven_machine` (`:3855`), against SEVEN.
+3. FALSE AT REACHABLE SHAPES. See below.
+
+The five `_le_seven_machine` lemmas (`:3855`, `:3875`, `:3899`, `:4240`,
+`:4257`) are hypothesis-free apart from the shape, and together with the
+`superWidth` case they cover all eight tables. `interiorChunkCount_le_eight`
+wants exactly `width <= 7 * wordSize` and carries no positivity side
+condition, so it composes directly. Positivity is likewise unconditional:
+every width is `machineWordBits _` (positive by `machineWordBits_pos`),
+`2 * _ + 3`, or `Nat.log2 _ + 1`.
+
+THE FINDING THAT MATTERS MOST, and it corrects a previous decision. The
+interior tables are NOT single-chunk. `machineWordBits n = Nat.log2 n + 1`
+(`SuccinctRank.lean:38`), so the counts are computable, and evaluating
+`(size, wordSize, relativeWidth, chunkCount)` gives `(1,2,5,3)`, `(2,3,7,3)`,
+`(4,4,7,2)`, `(8,5,9,2)`, `(16,6,9,2)`, `(64,8,9,2)`, `(256,10,11,2)`,
+`(1024,12,11,1)`, `(4096,14,11,1)`, `(65536,18,13,1)`. Every `shape.size`
+below roughly `1024` is multi-chunk; the smallest are three-chunk. The tables
+become single-chunk only asymptotically, as `2 * log2 (log2 size)` falls
+behind `log2 (2 * size)`.
+
+CONSEQUENCE FOR DD-20260719-009. That decision discharged the value bridge's
+exactness premise `hexact` at this store by declaring it "VACUOUS there,
+because the interior tables are single-chunk". That justification does not
+hold. At `shape.size < 1024` the premise is LIVE, at precisely the small
+shapes an all-size claim must cover. The CUT that DD-009 made -- exactness
+only for non-final chunks -- remains correct and is untouched; only its
+discharge story was wrong. `hexact` is still satisfiable, but substantively:
+`chunkPayloadWords` emits chunks of length exactly `wordSize` except possibly
+the last, and `chunkPayloadWords_get?_eq_take_drop` (`WordStore.lean:274`)
+presents the chunk at index `k` as a `take wordSize` of a `drop`, which is
+full whenever a later chunk exists. Whoever composes the value bridge must
+discharge `hexact` from that, and must NOT cite vacuity. Nothing is retracted
+and nothing weakened; a justification is replaced by a correct one.
+
+Why the audit found this and a review did not. The satisfiability question
+and the vacuity question are the same question asked from opposite ends, and
+answering only one of them is what let both defects through. A premise can be
+unsatisfiable (M3d-14's width premise), or satisfiable but believed vacuous
+when it is live (this one). Neither is visible at the definition site, and
+neither is visible from a bound alone -- a `<=` fact says nothing about
+whether the quantity is ever large, and the fastest way to find out here was
+to EVALUATE the count rather than reason about it.
