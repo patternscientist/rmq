@@ -1145,35 +1145,9 @@ theorem crossBlockArmProgramAt_runsTo
     {A fringeSegment leftClose rightClose : Nat}
     {interior : List Instr} {interiorTrace : List WordRAM.TraceEvent}
     {interiorCats : List Category} {interiorValue : Option (Nat × Nat)}
-    (hc : sbChunkBits shape ≤
-      SuccinctRank.machineWordBits shape.bpCode.length)
     (hHost : HostedAt program A
       (crossBlockArmProgramAt shape fringeSegment
         (canonicalBPRelativeSummaryBlockSizeRaw shape) A interior))
-    (hL0 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        leftClose)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hL1 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        leftClose + 1)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hL2 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        leftClose + 2)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hR0 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        rightClose)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hR1 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        rightClose + 1)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (hR2 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
-        rightClose + 2)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
     (hInterior : ∀ regsS : RegFile, regsS fClose = leftClose →
       regsS fRight = rightClose →
       ∃ regsI : RegFile,
@@ -1219,11 +1193,15 @@ theorem crossBlockArmProgramAt_runsTo
       (by rw [hbb2]; exact hbb1)
   -- 4. LEFT ARM
   obtain ⟨r4, hrun4, hval4, hpres4⟩ :=
-    fringeArmProgramAt_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) hc q5
+    fringeArmProgramAt_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (bpFringeChunkBits_le_machineWordBits shape.bpCode.length) q5
       (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose) (sbBB shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose)
       (crossLeftRelLo shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose)
       (crossLeftRelHi shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose)
-      (canonicalSeed shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose) (leftClose + 1) hL0 hL1 hL2 r3
+      (canonicalSeed shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose) (leftClose + 1)
+      (SuccinctRank.machineWordBits_pos shape.bpCode.length)
+      (canonicalWindowDense shape
+        (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose)) r3
       (by rw [hpres3 fBase (by decide), hb2]; exact hbase1)
       hlo3 hhi3
       (by rw [hpres3 fAcc (by decide)]; exact hacc2)
@@ -1281,12 +1259,16 @@ theorem crossBlockArmProgramAt_runsTo
       (by rw [hbb9]; exact hbb8)
   -- 11. RIGHT ARM
   obtain ⟨r11, hrun11, hval11, hpres11⟩ :=
-    fringeArmProgramAt_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) hc q14
+    fringeArmProgramAt_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (bpFringeChunkBits_le_machineWordBits shape.bpCode.length) q14
       (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose) (sbBB shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)
       (crossRightRelLo shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)
       (crossRightRelHi shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)
       (canonicalSeed shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)
-      (blockStartOf (canonicalBPRelativeSummaryBlockSizeRaw shape) (blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)) hR0 hR1 hR2 r10
+      (blockStartOf (canonicalBPRelativeSummaryBlockSizeRaw shape) (blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose))
+      (SuccinctRank.machineWordBits_pos shape.bpCode.length)
+      (canonicalWindowDense shape
+        (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)) r10
       (by rw [hpres10 fBase (by decide), hb9]; exact hbase8)
       hlo10 hhi10
       (by rw [hpres10 fAcc (by decide)]; exact hacc9)

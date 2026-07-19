@@ -384,9 +384,8 @@ theorem sameBlockArm_runsTo
     (hEpi : HostedAt program (A + 88) (fringeCandGlobal (A + 88)))
     (hCls : HostedAt program (A + 95) sameBlockClose)
     (blockSize leftClose rightClose seed : Nat)
-    (h0 : (readBits store (sbBase shape blockSize leftClose)).length = L)
-    (h1 : (readBits store (sbBase shape blockSize leftClose + 1)).length = L)
-    (h2 : (readBits store (sbBase shape blockSize leftClose + 2)).length = L)
+    (hL : 0 < L)
+    (hW : WindowDense store (sbBase shape blockSize leftClose) L)
     (regs : RegFile)
     (hBase : regs fBase = sbBase shape blockSize leftClose)
     (hLo : regs fLo = sbRelLo shape blockSize leftClose)
@@ -412,7 +411,7 @@ theorem sameBlockArm_runsTo
       (sbBase shape blockSize leftClose) (sbBB shape blockSize leftClose)
       (sbRelLo shape blockSize leftClose)
       (sbRelHi shape blockSize leftClose rightClose) seed
-      (sbStart leftClose) h0 h1 h2 regs hBase hLo hHi hAcc hBB hSeed hStart
+      (sbStart leftClose) hL hW regs hBase hLo hHi hAcc hBB hSeed hStart
   obtain ⟨regsF, hrunC, hresC, _hpresC⟩ :=
     sameBlockClose_runsTo store hCls regsA
   have htrans := RunsTo.trans hrunA hrunC

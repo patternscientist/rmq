@@ -60,10 +60,6 @@ theorem sameBlockLegProgramAt_fits
     (hreg : 74 < 2 ^ w)
     (hseg : fringeSegment < 2 ^ w)
     (hbspos : 0 < blockSize) (hbs : blockSize < 2 ^ w)
-    (hcpos : 0 < sbChunkBits shape)
-    (hcL : sbChunkBits shape ≤
-      SuccinctRank.machineWordBits shape.bpCode.length)
-    (hLpos : 0 < SuccinctRank.machineWordBits shape.bpCode.length)
     (hLw : SuccinctRank.machineWordBits shape.bpCode.length < 2 ^ w)
     (hcode : shape.bpCode.length < 2 ^ w)
     (hpowL : 2 ^ SuccinctRank.machineWordBits shape.bpCode.length < 2 ^ w)
@@ -76,6 +72,14 @@ theorem sameBlockLegProgramAt_fits
     (hB : B + 171 < 2 ^ w) :
     ∀ instr ∈ sameBlockLegProgramAt shape fringeSegment blockSize B,
       Instr.FieldsFit w instr := by
+  -- the three width facts that are UNCONDITIONAL, not caller obligations
+  have hcpos : 0 < sbChunkBits shape :=
+    bpFringeChunkBits_pos shape.bpCode.length
+  have hcL : sbChunkBits shape ≤
+      SuccinctRank.machineWordBits shape.bpCode.length :=
+    bpFringeChunkBits_le_machineWordBits shape.bpCode.length
+  have hLpos : 0 < SuccinctRank.machineWordBits shape.bpCode.length :=
+    SuccinctRank.machineWordBits_pos shape.bpCode.length
   -- derived side facts
   have hlin : 2 * sbChunkBits shape + 2 < 2 ^ w := by
     have hle : 2 * sbChunkBits shape + 2 ≤
@@ -144,10 +148,6 @@ theorem sameBlockDispatchProgram_fits
     (hreg : 74 < 2 ^ w)
     (hseg : fringeSegment < 2 ^ w)
     (hbspos : 0 < blockSize) (hbs : blockSize < 2 ^ w)
-    (hcpos : 0 < sbChunkBits shape)
-    (hcL : sbChunkBits shape ≤
-      SuccinctRank.machineWordBits shape.bpCode.length)
-    (hLpos : 0 < SuccinctRank.machineWordBits shape.bpCode.length)
     (hLw : SuccinctRank.machineWordBits shape.bpCode.length < 2 ^ w)
     (hcode : shape.bpCode.length < 2 ^ w)
     (hpowL : 2 ^ SuccinctRank.machineWordBits shape.bpCode.length < 2 ^ w)
@@ -162,7 +162,7 @@ theorem sameBlockDispatchProgram_fits
     ∀ instr ∈ sameBlockDispatchProgram shape fringeSegment blockSize
       crossArm, Instr.FieldsFit w instr := by
   have hleg := sameBlockLegProgramAt_fits shape (B := 4 + crossArm.length)
-    hreg hseg hbspos hbs hcpos hcL hLpos hLw hcode hpowL hmix hG hWSpos
+    hreg hseg hbspos hbs hLw hcode hpowL hmix hG hWSpos
     hWS hBPSpos hBPS hlen
   intro instr hinstr
   simp only [sameBlockDispatchProgram, closeDispatchProgram,

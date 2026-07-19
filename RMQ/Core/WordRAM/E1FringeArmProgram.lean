@@ -141,9 +141,7 @@ theorem fringeArmProgramAt_runsTo
     (hc : c ≤ L)
     (hHost : HostedAt program A (fringeArmProgramAt S c L A))
     (base bb relLo relHi seed start : Nat)
-    (h0 : (readBits store base).length = L)
-    (h1 : (readBits store (base + 1)).length = L)
-    (h2 : (readBits store (base + 2)).length = L)
+    (hL : 0 < L) (hW : WindowDense store base L)
     (regs : RegFile)
     (hBase : regs fBase = base) (hLo : regs fLo = relLo)
     (hHi : regs fHi = relHi) (hAcc : regs fAcc = seed)
@@ -165,7 +163,7 @@ theorem fringeArmProgramAt_runsTo
       (∀ r, FringeArmUntouched r -> regsF r = regs r) := by
   obtain ⟨p0, p1, p2, p3, p4, p5⟩ := fringeArmProgramAt_hosts S c L A hHost
   exact fringeArm_runsTo store hc p0 p1 p2 p3 p4 p5 base bb relLo relHi
-    seed start h0 h1 h2 regs hBase hLo hHi hAcc hBB hSeed hStart
+    seed start hL hW regs hBase hLo hHi hAcc hBB hSeed hStart
 
 /-! ## Width certificate (REQ-E1-02 machinery, arm scope) -/
 

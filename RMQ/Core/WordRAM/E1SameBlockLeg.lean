@@ -52,6 +52,104 @@ open RMQ.SuccinctClose
 open RMQ.SuccinctFinal
 open RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory
 
+/-! ## The canonical store's window widths
+
+The composed legs below used to carry, undischarged, the demand that the
+first three window words be FULL WIDTH.  That demand is FALSE at the
+canonical store, and not marginally: evaluated at the left spine of 16
+nodes the three words measure `2, 0, 0` against a required `L = 6`, and 12
+of that shape's 32 close positions fail.  The BP code's last bit is a
+CLOSE, so the failing positions are reachable endpoints, and
+`ofChunksWithSentinel` would not rescue it — its sentinel words are
+`List.replicate ... []`, of length `0`.
+
+What the store DOES guarantee is density (`WindowDense`,
+`E1FringeArmBlock.lean`): a word is full width whenever the NEXT word is
+nonempty.  That is enough for the Horner decode, because a short word's
+weight only ever multiplies an empty tail.  This is the repair M3d-14 made
+one layer down at the interior chunk store, applied to the same defect.
+
+PADDING THE BP CODE IS NOT THE FIX and was not considered: it would reshape
+the accepted artifact to spare a proof, and would ripple into space
+accounting and the frozen constants.
+-/
+
+/-- The canonical BP store's word at index `j` is exactly the code's `j`-th
+`wordSize`-slice.  Unconditional: past the end both sides are empty. -/
+theorem canonicalReadBits_eq (shape : Cartesian.CartesianShape) (j : Nat) :
+    readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape) j =
+      (shape.bpCode.drop
+          (j * SuccinctRank.machineWordBits shape.bpCode.length)).take
+        (SuccinctRank.machineWordBits shape.bpCode.length) := by
+  unfold readBits
+  rw [concreteBPNativeSuccinctRMQGlobalReadStore_bpCode shape j,
+    List.getElem?_toArray]
+  rcases Nat.lt_or_ge
+      (j * SuccinctRank.machineWordBits shape.bpCode.length)
+      shape.bpCode.length with hlt | hge
+  · obtain ⟨word, hword⟩ :=
+      SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt
+        (SuccinctRank.machineWordBits_pos shape.bpCode.length) hlt
+    rw [hword]
+    exact SuccinctSpace.chunkPayloadWords_get?_eq_take_drop hword
+  · rw [SuccinctSpace.chunkPayloadWords_get?_none_of_length_le_mul hge]
+    rw [List.drop_eq_nil_of_le hge]
+    rfl
+
+/-- Hence the word's length is the truncated slice width. -/
+theorem canonicalReadBits_length (shape : Cartesian.CartesianShape)
+    (j : Nat) :
+    (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape) j).length =
+      Nat.min (SuccinctRank.machineWordBits shape.bpCode.length)
+        (shape.bpCode.length -
+          j * SuccinctRank.machineWordBits shape.bpCode.length) := by
+  rw [canonicalReadBits_eq shape j, List.length_take, List.length_drop]
+
+/--
+THE DISCHARGE.  The canonical store's window is DENSE at every base, so
+none of the nine full-width premises the composed legs used to carry is
+needed.  A nonempty successor word forces its predecessor to be full,
+because `chunkPayloadWords` truncates only the FINAL word.
+-/
+theorem canonicalWindowDense (shape : Cartesian.CartesianShape)
+    (base : Nat) :
+    WindowDense (concreteBPNativeSuccinctRMQGlobalReadStore shape) base
+      (SuccinctRank.machineWordBits shape.bpCode.length) := by
+  have step : ∀ j : Nat,
+      readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape) (j + 1) ≠
+          [] ->
+        (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            j).length =
+          SuccinctRank.machineWordBits shape.bpCode.length := by
+    intro j hne
+    have hlen1 :
+        (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (j + 1)).length ≠ 0 := by
+      intro h
+      exact hne (List.eq_nil_of_length_eq_zero h)
+    rw [canonicalReadBits_length shape (j + 1)] at hlen1
+    -- `omega` sees `Nat.min` as an atom, so bound it explicitly first.
+    have hle1 :
+        Nat.min (SuccinctRank.machineWordBits shape.bpCode.length)
+            (shape.bpCode.length -
+              (j + 1) * SuccinctRank.machineWordBits shape.bpCode.length) ≤
+          shape.bpCode.length -
+            (j + 1) * SuccinctRank.machineWordBits shape.bpCode.length :=
+      Nat.min_le_right _ _
+    have hsucc :
+        (j + 1) * SuccinctRank.machineWordBits shape.bpCode.length =
+          j * SuccinctRank.machineWordBits shape.bpCode.length +
+            SuccinctRank.machineWordBits shape.bpCode.length :=
+      Nat.succ_mul j _
+    have hfull :
+        SuccinctRank.machineWordBits shape.bpCode.length ≤
+          shape.bpCode.length -
+            j * SuccinctRank.machineWordBits shape.bpCode.length := by
+      omega
+    rw [canonicalReadBits_length shape j]
+    exact Nat.min_eq_left hfull
+  exact ⟨step base, step (base + 1), step (base + 2)⟩
+
 /-! ## Feeding the rank-close component its position -/
 
 /-- One instruction: the rank-close component reads its query position from
@@ -355,7 +453,6 @@ it still needs.
 theorem sameBlockLeg_runsTo_canonical
     (shape : Cartesian.CartesianShape) {program : E1Machine.Program}
     {A fringeSegment blockSize leftClose rightClose : Nat}
-    (hc : sbChunkBits shape ≤ SuccinctRank.machineWordBits shape.bpCode.length)
     (hAddr : HostedAt program A
       (windowAddr blockSize
         (SuccinctRank.machineWordBits shape.bpCode.length)))
@@ -378,15 +475,6 @@ theorem sameBlockLeg_runsTo_canonical
     (hbr : program[A + 163]? = some (.brNZ fCnt (A + 97)))
     (hEpi : HostedAt program (A + 164) (fringeCandGlobal (A + 164)))
     (hCls : HostedAt program (A + 171) sameBlockClose)
-    (h0 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (h1 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose + 1)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (h2 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose + 2)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
     (regs : RegFile)
     (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose) :
     ∃ regsF : RegFile,
@@ -423,8 +511,11 @@ theorem sameBlockLeg_runsTo_canonical
   -- 4. the same-block arm at the route's own seed
   obtain ⟨regsF, hrunA, hvalA⟩ :=
     sameBlockArm_runsTo shape (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      hc hPro hPre hMrg hTail hbr hEpi hCls blockSize leftClose rightClose
-      (canonicalSeed shape blockSize leftClose) h0 h1 h2 regs3
+      (bpFringeChunkBits_le_machineWordBits shape.bpCode.length)
+      hPro hPre hMrg hTail hbr hEpi hCls blockSize leftClose rightClose
+      (canonicalSeed shape blockSize leftClose)
+      (SuccinctRank.machineWordBits_pos shape.bpCode.length)
+      (canonicalWindowDense shape (sbBase shape blockSize leftClose)) regs3
       (by rw [hpres3 fBase (by decide), hb2]; exact hbase1)
       hlo3 hhi3
       (by rw [hpres3 fAcc (by decide)]; exact hacc2)
@@ -552,23 +643,15 @@ theorem sameBlockLegProgram_hosts
 THE SAME-BLOCK CLOSE LEG, HOSTING-UNCONDITIONAL.
 
 `sameBlockLeg_runsTo_canonical` with every `HostedAt` hypothesis
-discharged by the concrete `sameBlockLegProgram`.  What remains are only
-genuine route-side facts: the chunk width fits the machine word, and the
-three window words the arm reads are full-width in the canonical store.
+discharged by the concrete `sameBlockLegProgram`.  NOTHING route-side
+remains: the chunk-width fact is unconditional
+(`bpFringeChunkBits_le_machineWordBits`) and the window-width demand has
+been replaced by density, which the canonical store satisfies outright
+(`canonicalWindowDense`).
 -/
 theorem sameBlockLegProgram_runsTo_canonical
     (shape : Cartesian.CartesianShape)
     {fringeSegment blockSize leftClose rightClose : Nat}
-    (hc : sbChunkBits shape ≤ SuccinctRank.machineWordBits shape.bpCode.length)
-    (h0 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (h1 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose + 1)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (h2 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose + 2)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
     (regs : RegFile)
     (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose) :
     ∃ regsF : RegFile,
@@ -589,8 +672,8 @@ theorem sameBlockLegProgram_runsTo_canonical
   obtain ⟨p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11⟩ :=
     sameBlockLegProgram_hosts shape fringeSegment blockSize
   have h :=
-    sameBlockLeg_runsTo_canonical (A := 0) shape hc p0 p1 p2 p3 p4 p5 p6 p7
-      p8 p9 p10 p11 h0 h1 h2 regs hClose hRight
+    sameBlockLeg_runsTo_canonical (A := 0) shape p0 p1 p2 p3 p4 p5 p6 p7
+      p8 p9 p10 p11 regs hClose hRight
   simpa using h
 
 /-! ## BASE-PARAMETRIC HOSTING (M3d-6)
@@ -713,16 +796,6 @@ theorem sameBlockLegProgramAt_runsTo_canonical
     {fringeSegment blockSize leftClose rightClose B : Nat}
     (hHost : HostedAt program B
       (sameBlockLegProgramAt shape fringeSegment blockSize B))
-    (hc : sbChunkBits shape ≤ SuccinctRank.machineWordBits shape.bpCode.length)
-    (h0 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (h1 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose + 1)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
-    (h2 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (sbBase shape blockSize leftClose + 2)).length =
-        SuccinctRank.machineWordBits shape.bpCode.length)
     (regs : RegFile)
     (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose) :
     ∃ regsF : RegFile,
@@ -741,8 +814,8 @@ theorem sameBlockLegProgramAt_runsTo_canonical
           blockSize leftClose rightClose).value := by
   obtain ⟨p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11⟩ :=
     sameBlockLegProgramAt_hosts shape fringeSegment blockSize B hHost
-  exact sameBlockLeg_runsTo_canonical (A := B) shape hc p0 p1 p2 p3 p4 p5 p6
-    p7 p8 p9 p10 p11 h0 h1 h2 regs hClose hRight
+  exact sameBlockLeg_runsTo_canonical (A := B) shape p0 p1 p2 p3 p4 p5 p6
+    p7 p8 p9 p10 p11 regs hClose hRight
 
 end E1SameBlockLeg
 end WordRAM
