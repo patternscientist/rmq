@@ -81,7 +81,8 @@ def physicalReadsMatchCanonicalStore
       (RMQ.SuccinctClassic.reviewerPhysicalWords tinyRMQInput) ==
     RMQ.SuccinctClassic.buildPayload tinyRMQInput
 
-#guard RMQ.SuccinctClassic.queryCost == 207
+#guard RMQ.SuccinctClassic.queryCost == 210
+#guard RMQ.SuccinctClassic.canonicalSilentSparseLevelQueryCost == 207
 #guard RMQ.SuccinctClassic.canonicalSilentWordRankSelectQueryCost == 142
 #guard RMQ.SuccinctClassic.canonicalSilentFringeQueryCost == 76
 

@@ -351,7 +351,7 @@ $weightLengthAlias =
 $weightCostAlias =
   'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost'
 $weightBoundAlias =
-  'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe207'
+  'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe210'
 $readWordOnlyAlias =
   'succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly'
 $canonicalText = Read-Text $canonicalModule

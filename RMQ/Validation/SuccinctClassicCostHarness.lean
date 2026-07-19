@@ -115,7 +115,7 @@ def reportWindow
     | .sameBlock, some _ => true
     | .crossBlock, some _ => true
     | _, _ => false
-  let canonicalBoundIs207 := RMQ.SuccinctClassic.queryCost == 207
+  let canonicalBoundIs210 := RMQ.SuccinctClassic.queryCost == 210
   let underCanonicalBound := query.cost <= RMQ.SuccinctClassic.queryCost
   IO.println
     ("  window=" ++ windowLabel window ++
@@ -126,9 +126,9 @@ def reportWindow
       " routeAgrees=" ++ boolString routeAgrees ++
       " modeledTraceCost=" ++ toString query.cost ++
       " canonicalBound=" ++ toString RMQ.SuccinctClassic.queryCost ++
-      " canonicalBoundIs207=" ++ boolString canonicalBoundIs207 ++
+      " canonicalBoundIs210=" ++ boolString canonicalBoundIs210 ++
       " underCanonicalBound=" ++ boolString underCanonicalBound)
-  pure (agrees && routeAgrees && canonicalBoundIs207 && underCanonicalBound)
+  pure (agrees && routeAgrees && canonicalBoundIs210 && underCanonicalBound)
 
 def reportWindows
     (emitPhases : Bool)

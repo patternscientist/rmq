@@ -1839,8 +1839,22 @@ def canonicalRelativeRmmInteriorQueryCost : Nat := 240
 /--
 The U3 all-size cap for the physical reads performed by the accepted U2
 interior program.  Controller arithmetic and branching remain uncharged.
+
+DELIBERATELY LOOSE AT THIS COMMIT.  The cap was widened `30 -> 33` ahead of
+the charged sparse-level swap, so that the whole-query literal migration
+`207 -> 210` and the sparse-level store extension land as two separately
+green commits rather than one unreviewable one.  The route reachable at
+this commit still costs at most `30`; the three units of headroom are for
+the level reads that the swap will make reachable.
+
+The looseness is not left to prose.  It is stated and checked by
+`canonicalRelativeRmmPrincipledInteriorChargedTraceCost_announced_slack_of_size_ge_four_of_bounded`
+below, which proves BOTH that the current route stays under `30` AND that
+this field strictly exceeds `30`.  When the swap lands, the level reads
+consume the headroom, that theorem stops being provable, and it is retired
+in the same commit that makes the bound tight again.
 -/
-def canonicalRelativeRmmPrincipledInteriorChargedTraceCost : Nat := 30
+def canonicalRelativeRmmPrincipledInteriorChargedTraceCost : Nat := 33
 
 def canonicalRelativeRmmInteriorRangeMinCosted
     (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
@@ -4508,18 +4522,17 @@ events on every positive bounded range.  The only use of `4 <= shape.size` is
 the all-size width fact in the within-macro branch; public dispatch remains
 uniform and contains no activation threshold.
 -/
-theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_four_of_bounded
+theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_size_ge_four_of_bounded
     (shape : Cartesian.CartesianShape) (hsize : 4 <= shape.size)
     (startBlock count : Nat)
     (hbound : startBlock + count <=
       (RelativeRmm.canonicalLayout shape).blockCount) :
     (canonicalRelativeRmmInteriorRangeMinCosted shape startBlock count).cost <=
-      canonicalRelativeRmmPrincipledInteriorChargedTraceCost := by
+      30 := by
   let layout := RelativeRmm.canonicalLayout shape
   unfold canonicalRelativeRmmInteriorRangeMinCosted
   by_cases hcount : count = 0
-  · simp [hcount, canonicalRelativeRmmPrincipledInteriorChargedTraceCost,
-      Costed.pure]
+  · simp [hcount, Costed.pure]
   · simp only [hcount, if_false]
     by_cases hwithin : count <=
         (RelativeRmm.canonicalLayout shape).macroSize -
@@ -4528,7 +4541,7 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_fou
       exact Nat.le_trans
         (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighteen_of_size_ge_four
           shape hsize _ _ count)
-        (by simp [canonicalRelativeRmmPrincipledInteriorChargedTraceCost])
+        (by simp)
     · have hvalid := RelativeRmm.canonicalLayout_valid shape
       have hwithin' :
           ¬ count <= layout.macroSize - startBlock % layout.macroSize := by
@@ -4551,7 +4564,7 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_fou
         exact Nat.le_trans
           (canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le_twenty_of_macro_crossing
             shape (by simpa [layout] using hmacro) _ _ _)
-          (by simp [canonicalRelativeRmmPrincipledInteriorChargedTraceCost])
+          (by simp)
       · simp only [hmiddle, if_false]
         by_cases hright :
             (count -
@@ -4562,10 +4575,63 @@ theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_fou
           exact Nat.le_trans
             (canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le_twenty_of_macro_crossing
               shape (by simpa [layout] using hmacro) _ _ _)
-            (by simp [canonicalRelativeRmmPrincipledInteriorChargedTraceCost])
+            (by simp)
         · simp only [hright, if_false]
           exact canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le_thirty_of_macro_crossing
             shape (by simpa [layout] using hmacro) _ _ _ _
+
+/--
+The accepted U2 interior execution respects the declared all-size interior
+cap.  Stated against the cap FIELD rather than against a literal, so every
+consumer of the cap keeps working across a recharge; the tight literal
+content lives in the `_literal` theorem above.
+
+At this commit the step is `30 <= 33` and therefore strictly loose; see
+`canonicalRelativeRmmPrincipledInteriorChargedTraceCost_announced_slack_of_size_ge_four_of_bounded`.
+-/
+theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_four_of_bounded
+    (shape : Cartesian.CartesianShape) (hsize : 4 <= shape.size)
+    (startBlock count : Nat)
+    (hbound : startBlock + count <=
+      (RelativeRmm.canonicalLayout shape).blockCount) :
+    (canonicalRelativeRmmInteriorRangeMinCosted shape startBlock count).cost <=
+      canonicalRelativeRmmPrincipledInteriorChargedTraceCost :=
+  Nat.le_trans
+    (canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_size_ge_four_of_bounded
+      shape hsize startBlock count hbound)
+    (by simp [canonicalRelativeRmmPrincipledInteriorChargedTraceCost])
+
+/--
+ANNOUNCED SLACK, deliberately loose, to be retired by the charged
+sparse-level swap.
+
+This is the checked statement of the staging compromise described on
+`canonicalRelativeRmmPrincipledInteriorChargedTraceCost`.  It certifies two
+things at once, so that the looseness is visible to a CHECKER and not only
+to a reader of prose:
+
+* the interior route reachable at this commit still costs at most `30`; and
+* the declared cap STRICTLY exceeds `30`.
+
+The second conjunct is what makes this an announcement rather than a bound.
+It is the reason this theorem must not survive the swap: once the charged
+sparse-level reads become reachable the first conjunct fails, and the
+commit that makes the cap tight again is required to delete this theorem
+rather than to weaken it.
+-/
+theorem canonicalRelativeRmmPrincipledInteriorChargedTraceCost_announced_slack_of_size_ge_four_of_bounded
+    (shape : Cartesian.CartesianShape) (hsize : 4 <= shape.size)
+    (startBlock count : Nat)
+    (hbound : startBlock + count <=
+      (RelativeRmm.canonicalLayout shape).blockCount) :
+    (canonicalRelativeRmmInteriorRangeMinCosted shape startBlock count).cost <=
+        30
+      /\ 30 < canonicalRelativeRmmPrincipledInteriorChargedTraceCost
+      /\ canonicalRelativeRmmPrincipledInteriorChargedTraceCost = 33 :=
+  ⟨canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_size_ge_four_of_bounded
+      shape hsize startBlock count hbound,
+    by simp [canonicalRelativeRmmPrincipledInteriorChargedTraceCost],
+    by simp [canonicalRelativeRmmPrincipledInteriorChargedTraceCost]⟩
 
 theorem canonicalRelativeRmmInteriorRangeMinCosted_erase_exact
     {shape : Cartesian.CartesianShape} {startBlock count : Nat}
