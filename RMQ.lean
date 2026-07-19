@@ -46,6 +46,7 @@ import RMQ.Core.WordRAM.E1InteriorChunkStore
 import RMQ.Core.WordRAM.E1InteriorStoreConcrete
 import RMQ.Core.WordRAM.E1InteriorSummaryGroup
 import RMQ.Core.WordRAM.E1InteriorMinCandidate
+import RMQ.Core.WordRAM.E1InteriorSpanBlock
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks
