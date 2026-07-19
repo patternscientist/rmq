@@ -5797,3 +5797,148 @@ interior writes -- which subsumes `hInterior`'s four operands
 (`70`/`71`/`75`/`76`) and the close leg's `CloseLegUntouched`
 (`r <= 7 \/ r = 28`) in one structural lemma instead of nine numeral
 cases.
+
+## DD-20260719-061: `#9`'s receipt and charge log are written as five-way `if`s in the ROUTE's condition order, and the value clause is ONE equation across all five arms (E1 LaneB6)
+
+Claimed this session; band `061`-`069`, `059`/`060` spent by the
+predecessor and checked before claiming.
+
+Context. `interiorDispatchBlock_runsTo` has to carry a receipt, a
+category log and a value that all differ per branch. Three shapes were
+available: existentially quantify the trace and cats (weak, and it would
+have let a wrong log through); state five separate theorems (no single
+`hInterior` instantiation, since `hInterior` binds `interiorTrace` and
+`interiorCats` OUTSIDE its quantifier over entry register files); or
+define trace and cats as functions of the route's own inputs.
+
+Decision. `dispatchEvents shape startBlock count` and
+`dispatchCats shape startBlock count` are five-way `if`s testing
+`count = 0`, `count <= macroSize - localStart`, `middleMacroCount = 0`,
+`rightCount = 0` -- exactly the order
+`canonicalRelativeRmmInteriorRangeMinComputation` tests them in and
+exactly the order `dispatchSelector` branches on. Each branch's body is
+the corresponding sub-block's own `twoSpanEvents` / `twoSpanCats` /
+`twoLegCats` / `crossLegCats` at the ROUTE's own arguments.
+
+Why route-first. `E1_LIVE_STATE.md` section 11 F: *a category function
+written after the machine is a category function fitted to the machine.*
+The same argument applies to a receipt. These two functions mention no
+register, no `RunsTo` and no program base; the simulation then
+case-splits against `interiorRangeMin_of_*` rather than against its own
+shape.
+
+The value clause is deliberately NOT a five-way function. It is the
+single equation
+
+    bestOfRegs (regs' mMV) (regs' mMP) = dispatchRouteValue shape startBlock count
+
+with `dispatchRouteValue` the route's run-value at the canonical store.
+Each arm reaches it by rewriting with its own `interiorRangeMin_of_*` and
+then with the matching value link
+(`twoSpanValue_local_eq_routeValue`,
+`twoLegValue_adjacentMacro_eq_routeValue`,
+`twoLegValue_leftMiddleMacro_eq_routeValue`,
+`crossLegValue_crossMacro_eq_routeValue`). A five-way value function
+would have been a second place for the branch conditions to be written
+down, and therefore a second place for them to disagree with the route.
+
+Consequence for the prologue. Because `rangePreamble`, `indexDecomp` and
+`localArmSetup` are unconditional, every branch shares a 19-category
+prefix, and `dispatchCats` is literally
+`dispatchPrologueCats ++ dispatchArmCats ...`. `localArmSetup` writes
+`#4`'s input bank `127`-`130` even on branches that never enter `#4`;
+that is sound because `127`-`130` and `136`-`139` are disjoint and no arm
+reads the other's bank, and it is what keeps the prologue's log
+branch-independent. The cost is that `DispatchUntouched` must exclude
+`127`-`130` on every branch, which it does.
+
+## DD-20260719-062: `hInterior` is discharged by CONSUMING `crossBlockArmProgramAt_runsTo`, not by proving something with `hInterior`'s shape (E1 LaneB6)
+
+Context. A premise-shaped theorem and a discharged premise are different
+claims. `hInterior` mentions `interior`, `interiorTrace`, `interiorCats`
+and `interiorValue` as parameters of `crossBlockArmProgramAt_runsTo`, and
+the target PC is `A + 176 + interior.length`. A theorem stating
+`hInterior`'s body at a chosen instantiation can typecheck while still
+failing to unify with the premise -- for instance if `interior.length`
+does not reduce, or if the route's
+`canonicalBPRelativeSummaryBlockSizeRaw shape` and the sub-blocks'
+`(RelativeRmm.canonicalLayout shape).blockSize` were not the same term.
+
+Decision. Both are proved. `interiorDispatch_hInterior` states
+`hInterior`'s body -- four register equalities, `fClose`, `fRight`,
+`mLV`, `mLP`, and no fifth. `crossBlockArm_withCanonicalInterior_runsTo`
+then APPLIES `crossBlockArmProgramAt_runsTo` to it, taking the interior's
+hosting out of `crossBlockArmProgramAt_hosts`'s eighth component. Only
+the second establishes that the premise fits.
+
+Two facts it forced into the open, both now checked rather than assumed:
+
+* `canonicalBlockSize_eq_layoutBlockSize` is `rfl`. An earlier lane
+  flagged this as an open question and a later one recorded the answer as
+  a remark; it is now a kernel check, and if the two definitions ever
+  diverge that line stops compiling before any `hInterior` instantiation
+  does.
+* `canonicalInteriorDispatchBlock_length` is `4204`, so the premise's
+  `A + 176 + interior.length` and the composition's `Q + 4204` are the
+  same PC.
+
+`CloseLegUntouched` is a SEPARATE ADDITIONAL EXPORT
+(`interiorDispatch_preserves_closeLeg`), not a fifth conjunct. A
+coordinator brief once relayed a sibling branch's proposal as if it were
+this premise's actual shape; it is not, and a fifth conjunct does not
+typecheck against a four-conjunct premise. Proving it separately means it
+is already in hand when the close-leg branch merges and widens the
+premise, without anyone widening `hInterior` to get it.
+
+`E1CrossBlockArm.lean` is NOT edited. Discharging `hInterior` is
+instantiation of that theorem's implicit parameters from the interior's
+side.
+
+## DD-20260719-063: the EIGHTH discriminator model -- right join, wrong arm -- and the receipt is the instrument that catches it (E1 LaneB6)
+
+Context. `E1_LIVE_STATE.md` section 6 records seven models. The seventh
+(`unterminatedDispatch_falls_through`) is a MISSING TERMINATOR. The
+composition built this session could have shipped its sibling instead: a
+selector branch that is present, correct in form and terminating, but
+whose target is a DIFFERENT ARM'S BASE.
+
+Why the obvious checks miss it. Every arm of `#9` reaches the same join;
+every arm ends un-halted; every arm's write set lies inside
+`DispatchUntouched`. So exit PC, halted flag and preservation are
+identical under a mis-dispatch. That is the same non-entailment the
+seventh model established for a missing terminator, arrived at from the
+opposite direction.
+
+Decision. `missSelector` / `missSelectorImpostor` differ in one branch
+target (`missDispatch_differ_at_one_index`), over two witness arms of
+IDENTICAL instruction shape that read DIFFERENT addresses. The result:
+
+* exit PC and halted flag agree (`missDispatch_exit_and_halt_agree`);
+* the positional category log agrees (`missDispatch_catLogs_agree`);
+* preservation cannot separate them -- both arms write the same three
+  registers;
+* **the receipt separates them** (`missDispatch_receipts_differ`), at
+  EVERY store, because a `readWord` event carries its address and the two
+  addresses are different numerals whatever the store returns -- the
+  inequality survives a store answering `none` to both;
+* the value separates them (`missDispatch_values_differ`).
+
+This is section 6's sixth-model rule in its favourable direction: *a
+receipt's power over a skipped-code defect is exactly whether the skipped
+code reads.* `#4`, `#6`, `#7` and `#8` all begin with an unconditional
+level read, so at the real block a mis-dispatch changes the first event
+of the receipt. Against `#9`, the receipt is a real instrument.
+
+TWO SCOPE NOTES, because the fixture and the block differ and only one of
+these limits is the block's.
+
+1. The category-log AGREEMENT is the FIXTURE's, engineered by giving the
+   two witness arms identical instruction shapes so that the receipt is
+   left as the only non-value discriminator. `#9`'s real arms are 510,
+   1045, 1045 and 1574 instructions long with different logs, so the real
+   category log would ALSO catch a mis-dispatch. Quoting the fixture's
+   agreement as the block's would understate the block.
+2. Both witness arms end UN-HALTED, as every real sub-block does. A
+   halting witness arm cannot exhibit a control-flow defect at all --
+   which is exactly how the close-leg lane's cross-arm defect stayed
+   invisible to the whole battery.
