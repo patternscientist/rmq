@@ -2341,3 +2341,50 @@ kept `FringeArmUntouched` an exact union rather than an under-approximation.
 block neither value checking nor step counting has any power — only
 event-by-event receipt diffing does. Three discriminators, and the block that
 needs each of them is now witnessed.
+
+## 2026-07-19 (C05 round 35) — standing decision authority recorded
+
+**User authorization (stepping away):** drive E1 to completion and resolve
+blockers autonomously, without waiting for input on design decisions.
+
+**The decision rule, restated in the user's own framing:** the goal is the
+strongest version of the RMQ spoke with "reviewers have to spend brainpower
+auditing the justifications as opposed to pattern matching against precedent"
+MINIMIZED. So where options differ, choose whichever yields the most
+UNIMPEACHABLE result — the one a reviewer recognises from the literature rather
+than has to audit as a bespoke construction. Cost and session count are
+secondary.
+
+This is now settled preference rather than a per-case question: the user has
+twice chosen the more expensive precedent-matching route when offered a cheaper
+one (Option B over Option A at the campaign's start; the charged sparse-level
+fix over an `msb` primitive or a weakened bound), and has never preferred the
+cheaper option.
+
+**Precedents this rule has already produced, to keep autonomous decisions
+consistent with the ones the user made personally:**
+- tables over primitives — four-Russians lookup is the literature's move; a
+  declared unit-cost primitive is exactly the precedent-free justification being
+  minimised;
+- charge it rather than assume it — never add an instruction that makes an
+  uncharged computation free, never weaken a bound to accommodate one;
+- never mint a historical constant for a value that never described a real route
+  (a staging artifact is a fiction; redo the migration instead);
+- prove, do not sample — a table of sizes is not an all-size proof, and
+  hypotheses must be the route's own rather than a size threshold introduced for
+  convenience, since size dispatch on the public route is forbidden;
+- observation over argument — a row that exists to convert an argument into an
+  observation must not be closed with a second argument;
+- one layout over per-shape dispatch when the alternative introduces a
+  size-dependent branch;
+- state claims to their actual scope, naming what sits on the other side of the
+  boundary rather than making an absolute a reviewer can refute by grep.
+
+**Still escalated, not decided alone:** removing public surface (B5b alias
+consolidation, compatibility pruning), merging to `main`, recording formal
+ACCEPTED, and anything that would weaken a frozen acceptance row. Those are
+ownership decisions rather than engineering ones, and the disclosed-fallback
+constraint on this runtime bars the last two regardless.
+
+Recorded in coordinator memory as well, so the authority and its precedents
+survive context compaction and any handoff.
