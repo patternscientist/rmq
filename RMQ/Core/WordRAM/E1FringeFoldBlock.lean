@@ -542,6 +542,102 @@ theorem fringePrefix_runsTo
       | rfl <;>
       fringe_writes
 
+/-! ## Tail simulation (window shift and cursor advance) -/
+
+/-- The tail writes only the window registers, the cursor, the counter,
+and the scratch registers. -/
+def FringeTailUntouched (r : Nat) : Prop :=
+  r ≠ fW0 ∧ r ≠ fW1 ∧ r ≠ fW2 ∧ r ≠ fW3 ∧ r ≠ fJC ∧ r ≠ fCnt ∧
+    r ≠ fT ∧ r ≠ fU ∧ r ≠ fX
+
+/-- Category log of the tail, independent of its operands. -/
+theorem fringeTail_cats (c L : Nat) :
+    (fringeShift c L ++ fringeAdvance).map Instr.category =
+      fringeTailCats := rfl
+
+/--
+Exact simulation of the fold pass's straight tail: the four-register
+constant-stride window advance followed by the chunk cursor and loop
+counter updates.  The window registers afterwards represent
+`bitsToNatLE window / 2 ^ ((j + 1) * c)` — the SAME Horner invariant one
+chunk further on — which is what makes the loop invariant close.
+-/
+theorem fringeTail_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {LB c L : Nat}
+    (hc : c ≤ L)
+    (hTail : HostedAt program (LB + 45) (fringeShift c L ++ fringeAdvance))
+    (window : List Bool) (j k : Nat)
+    (regs : RegFile)
+    (hOne : regs fOne = 1) (hC : regs fC = c)
+    (hJC : regs fJC = j * c)
+    (hCnt : regs fCnt = k + 1)
+    (hW : windowRegsValue L (regs fW0) (regs fW1) (regs fW2) (regs fW3) =
+      bitsToNatLE window / 2 ^ (j * c)) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, LB + 45, false⟩ ⟨regs', LB + 66, false⟩
+        [] fringeTailCats ∧
+      windowRegsValue L (regs' fW0) (regs' fW1) (regs' fW2) (regs' fW3) =
+        bitsToNatLE window / 2 ^ ((j + 1) * c) ∧
+      regs' fJC = (j + 1) * c ∧
+      regs' fCnt = k ∧
+      (∀ r, FringeTailUntouched r -> regs' r = regs r) := by
+  have hrun := RunsTo.straight store (fringeShift c L ++ fringeAdvance)
+    (fringeTail_straight c L) (LB + 45) hTail regs
+  obtain ⟨regsT, hregsT⟩ :
+      ∃ x, straightRegs store (fringeShift c L ++ fringeAdvance) regs = x :=
+    ⟨_, rfl⟩
+  rw [hregsT] at hrun
+  have hreads :
+      straightReads store (fringeShift c L ++ fringeAdvance) regs = [] := by
+    simp [fringeShift, fringeAdvance, straightReads_cons,
+      straightStepEvent]
+  rw [hreads] at hrun
+  rw [fringeTail_cats] at hrun
+  have hlen : LB + 45 + (fringeShift c L ++ fringeAdvance).length =
+      LB + 66 := by
+    simp [List.length_append]
+    omega
+  rw [hlen] at hrun
+  -- the four shifted window registers
+  have hW0 : regsT fW0 =
+      regs fW0 / 2 ^ c + regs fW1 % 2 ^ c * 2 ^ (L - c) := by
+    rw [<- hregsT]
+    fringe_eval <;> simp [nat_mod_eq_sub_div_mul]
+  have hW1 : regsT fW1 =
+      regs fW1 / 2 ^ c + regs fW2 % 2 ^ c * 2 ^ (L - c) := by
+    rw [<- hregsT]
+    fringe_eval <;> simp [nat_mod_eq_sub_div_mul]
+  have hW2 : regsT fW2 =
+      regs fW2 / 2 ^ c + regs fW3 % 2 ^ c * 2 ^ (L - c) := by
+    rw [<- hregsT]
+    fringe_eval <;> simp [nat_mod_eq_sub_div_mul]
+  have hW3 : regsT fW3 = regs fW3 / 2 ^ c := by
+    rw [<- hregsT]
+    fringe_eval
+  refine ⟨regsT, hrun, ?_, ?_, ?_, ?_⟩
+  · rw [hW0, hW1, hW2, hW3, <- windowRegsValue_shift hc, hW,
+      Nat.div_div_eq_div_mul, <- Nat.pow_add]
+    congr 2
+    omega
+  · rw [<- hregsT]
+    fringe_eval <;> simp [hC, hJC, Nat.succ_mul]
+  · rw [<- hregsT]
+    fringe_eval <;> simp [hOne, hCnt]
+  · intro r hr
+    obtain ⟨h1, h2, h3, h4, h5, h6, h7, h8, h9⟩ := hr
+    rw [<- hregsT]
+    apply straightRegs_preserves
+    intro i hi
+    rcases List.mem_append.mp hi with h | h
+    · simp only [fringeShift, List.mem_cons, List.not_mem_nil,
+        or_false] at h
+      rcases h with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+        | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
+        fringe_writes
+    · simp only [fringeAdvance, List.mem_cons, List.not_mem_nil,
+        or_false] at h
+      rcases h with rfl | rfl <;> fringe_writes
+
 ## The keep-left merge is the identity on an absent candidate -/
 
 theorem bpFringeMergeCand_none (best : Option (Nat × Nat)) :
