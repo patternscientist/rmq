@@ -101,12 +101,29 @@ the executed legs" is composing toward a program that answers `none`
 unconditionally, and will find out at `WholeQueryMachineAgrees`'s value clause,
 far from the code responsible.
 
-**Budget the remainder as THREE items past blocker 2, not one**: the select
+~~**Budget the remainder as THREE items past blocker 2, not one**: the select
 join's simulation, a NEW output stage decoding `fRes` into `regOut` and
-halting, and only then the agreement. When the output stage lands,
-`validPath.length` changes and `invalidExitBlock` moves; the first theorem
-above is an executed equality so that the coincidence cannot drift silently,
-and it WILL break the build when the stage is added. That is intended.
+halting, and only then the agreement.~~ **THE FALL-THROUGH IS REPAIRED
+(E1-LaneA5, DD-20260719-180/-183); the two theorems above are RETAINED as the
+record of what the repair prevents, and are still true of
+`wholeQueryValidPathThroughLca`, which is still the path THROUGH the
+close/LCA leg.** The repaired path is `wholeQueryValidPath`; it appends a
+64-instruction output stage, so `invalidExitBlock` moves from `5580` to
+`5644`. See §10e.
+
+**AND THE PARAGRAPH ABOVE UNDER-SPECIFIED THE OUTPUT STAGE, WHICH IS THE
+FINDING WORTH CARRYING.** A stage that "decodes `fRes` into `regOut` and
+halts" would have halted at the RIGHT ADDRESS CARRYING THE WRONG NUMBER. The
+route's `.full` value is `some ((rank ... (answerClose + 1)).value - 1)`
+(`wholeQueryBranchValue`, `E1RouteDecomposition.lean:330`) — a RANK LEG sits
+between the close/LCA leg's answer and the output packet. `fRes` is a close
+POSITION; the answer is an INDEX. The four-instruction stage would have
+produced a program that halts, answers `some`, passes every layout check, and
+is wrong — the same defect class as the three address coincidences, one level
+up, and invisible to exactly the same checks. The stage that landed is 64
+instructions: rank setup, rank leg, packet write, halt.
+
+The select join's simulation is also now DONE, on all three of its exits.
 
 **Validator phase-5 TEXT IS NOW STALE AGAIN**, in the opposite direction from
 the staleness §10b recorded. It reads "no definition composes them into one
@@ -354,15 +371,15 @@ makes one block cover both.
 | its boundary, all four sides | `..._exit_and_halt_agree` `:1574`, `..._catLogs_agree` `:1581`, `..._receipts_differ` `:1596`, `..._values_differ` `:1604` |
 | close/LCA dispatch, both arms | `closeDispatch_runsTo_same` / `_cross` — `E1CloseDispatch.lean:187`/`:224` |
 | same-block leg composed — **BASE `0` ONLY, see §3b** | `sameBlockDispatchProgram_runsTo` — `E1CloseCompose.lean:95` |
-| **the close/LCA leg's OWN branch split, route-side** | `lcaLeg_of_sameBlock` `E1WholeQueryLcaLeg.lean:57`, `lcaLeg_of_crossBlock` `:83` |
-| its anti-vacuity | `lcaLeg_branches_exhaustive` — `E1WholeQueryLcaLeg.lean:110` |
+| **the close/LCA leg's OWN branch split, route-side** | `lcaLeg_of_sameBlock` `E1WholeQueryLcaLeg.lean:64`, `lcaLeg_of_crossBlock` `:83` |
+| its anti-vacuity | `lcaLeg_branches_exhaustive` — `E1WholeQueryLcaLeg.lean:149` |
 | **THE CLOSE/LCA LEG, REBASABLE AND TERMINATED** | `closeLcaProgramAt` — `E1WholeQueryCloseLca.lean:119`, length `4753` at `:125` |
 | its four hosting facts, offsets computed | `closeLcaProgramAt_hosts` — `:132` |
 | **both arms executed, converging at `closeLcaExit A`** | `closeLcaProgramAt_runsTo_same` `:183`, `_runsTo_cross` `:243` |
 | the convergence address checked against the length | `closeLcaExit_eq_end` — `:124` |
 | **THE WHOLE-QUERY PROGRAM** | `wholeQueryValidPathThroughLca` — `E1WholeQueryProgram.lean:155`, length `5572` at `:160` |
 | its select prefix | `wholeQuerySelectPrefix` `E1WholeQueryProgram.lean:143`, length `813` at `:148` |
-| **the guard and BOTH selects, EXECUTED** | `wholeQuerySelectPrefix_runsTo` — `E1WholeQueryProgram.lean:250` |
+| **the guard and BOTH selects, EXECUTED** | `wholeQuerySelectPrefix_runsTo` — `E1WholeQueryProgram.lean:268` |
 | stage hosting, every offset computed | `wholeQuerySelectPrefix_hosts` `:180`, `..._hosts_closeLca` `:206` |
 | the close/LCA leg's base, checked not asserted | `closeLca_base_is_827` — `:169` |
 
@@ -1439,6 +1456,171 @@ citations were updated across seven files, and two notes stale in CONTENT (not
 merely line number) were rewritten: `E1InteriorDispatch.lean:403` ("It is NOT
 a fifth conjunct ... and never has") and `E1WholeQueryProgram.lean`'s
 two-blocker scope note.
+
+---
+
+## 10e. Worklog - E1-LaneA5, 2026-07-19 (layout defect repaired; three branches executed)
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `86cbbb6`. DD-IDs claimed
+and WRITTEN into `DESIGN_DECISIONS.md`: **`180`, `181`, `182`, `183`, `184`**.
+Band `185-199` free. Full `lake build RMQ` green at every commit.
+
+**ITEM 1 IS CLOSED: THE LAYOUT DEFECT IS REPAIRED, AND THE REPAIR IS
+EXECUTED.**
+
+`wholeQueryOutputStage` (`E1WholeQueryProgram.lean`), 64 instructions at the
+close/LCA leg's own exit `5580`:
+
+    5580   rank setup      2    rPos := fRes + 1
+    5582   rank leg       60    `rankCloseBlock` at the canonical rank data
+    5642   packet write    2    regOut := rVal ; halt
+    5644   `invalidExitBlock`, ONE PAST the halt
+
+The repaired valid path `wholeQueryValidPath` is 5636 instructions, so the
+`none` writer moves from `5580` to `5644`.
+
+**THE BRIEF'S DESCRIPTION OF THE STAGE WAS UNDER-SPECIFIED, AND THAT IS THE
+FINDING MOST WORTH CARRYING FORWARD.** DD-20260719-162 and my own brief both
+called for a stage that "decodes `fRes` into `regOut`'s packet and halts".
+That stage halts at the right address CARRYING THE WRONG NUMBER: the route's
+`.full` value is `some ((rank ... (answerClose + 1)).value - 1)`
+(`E1RouteDecomposition.lean:330`), so a RANK LEG sits between the close/LCA
+leg's answer and the output packet. `fRes` is a close POSITION; the answer is
+an INDEX. Four instructions would have produced a program that halts, answers
+`some`, passes every layout check, and is wrong. DD-20260719-180.
+
+**`regOut := rVal` carries NO shift instruction, and that is derived, not
+lucky.** The packet convention is `decodePacket (v + 1) = some v` and the
+route's value is `rank.value - 1`; the two shifts cancel. No increment or
+decrement appears in the stage.
+
+**THE REPAIR IS CONFIRMED AT THREE LEVELS, THE THIRD BY EXECUTION**
+(DD-20260719-183). A layout argument is not evidence here, three address
+coincidences over:
+
+1. `wholeQueryValidPath_exit_is_not_invalidExit` (`E1WholeQueryProgram.lean:884`) - `5580` against
+   `5644`.
+2. `wholeQueryProgram_at_closeLcaExit_is_not_noneWriter`
+   (`E1WholeQueryProgram.lean:897`) - the
+   program holds `.const rPos 1` at `5580`, not `invalidExitBlock`'s first
+   instruction. An address argument alone does NOT settle this: two different
+   blocks can begin at two different addresses and both be `none` writers.
+3. `wholeQueryValidPath_does_not_reach_noneWriter`
+   (`E1WholeQueryProgram.lean:927`) - from `5580` the
+   program RUNS to a halted state at pc `5643`. `RunsTo` is exact-fuel
+   (`E1MachineCalculus.lean:96`), so every step is enumerated and none is at
+   `5644`.
+
+The two theorems pinning the DEFECT are RETAINED and re-documented, not
+deleted: `wholeQueryValidPath_exit_is_invalidExit` (`E1WholeQueryProgram.lean:418`)
+and `wholeQueryValidPath_falls_into_noneWriter`
+(`E1WholeQueryProgram.lean:435`) are still true of
+`wholeQueryValidPathThroughLca`, which is still the path THROUGH the leg. Both
+the defect and its repair are now pinned by theorems that break under a layout
+drift.
+
+**THREE OF THE ROUTE'S FOUR BRANCHES ARE EXECUTED END TO END, FROM
+`initialState` TO A HALTED STATE.**
+
+* `wholeQueryProgram_runsTo_sameBlock` (`E1WholeQueryProgram.lean:1034`) - the `.full` branch on the
+  SAME-BLOCK arm. Guard, both selects, join, close/LCA same-block arm, rank
+  leg, halt: ONE `RunsTo` to `<regsF, 5643, true>`, receipt positionally the
+  concatenation of the four legs' route receipts, `regOut` the rank leg's
+  value. Universally quantified in shape, `n` and the range - no sampling, no
+  readiness guard, no size threshold.
+* `wholeQueryProgram_runsTo_leftSelectNone`
+  (`E1WholeQueryProgram.lean:1169`) and
+  `_rightSelectNone` (`E1WholeQueryProgram.lean:1252`) - both `none` branches, against the route's OWN
+  objects: receipt `= wholeQueryBranchTrace shape left right ...` and
+  `decodePacket regOut = wholeQueryBranchValue shape ...`, halting at `5645`.
+
+**THE SELECT JOIN IS SIMULATED ON ALL THREE OF ITS EXITS** -
+`selectJoin_runsTo_hit` (`E1WholeQueryProgram.lean:692`), `_leftMiss`, `_rightMiss`. It was defined by
+E1-LaneA1 and never executed.
+
+**TWO PREMISE/CITATION DEFECTS FOUND BY TRYING TO INSTANTIATE AT THE REAL
+TARGET.**
+
+1. **DD-20260719-181.** `wholeQuerySelectPrefix_runsTo`'s `hguard` was pinned
+   to `guardBlock n (8 + (813 : Nat))` - branch target `821`. The skeleton
+   builds its guard as `guardBlock n (8 + validPath.length)`
+   (`E1QueryProgram.lean:136`), which for the repaired path is
+   `guardBlock n 5644`. **The premise was UNSATISFIABLE at the intended
+   instantiation** - the rule-1 failure. `guard_accept_of_valid`
+   (`E1QueryProgram.lean:608`) was ALREADY universal in `invalidBase` (the
+   accepting path never reads the target), so the specialisation bought
+   nothing. Generalised; no proof changed.
+2. **DD-20260719-182.** `lcaLeg_of_sameBlock`'s docstring cited
+   `lcaLeg_sameBlock_rankSeed_eq` "below". Grepped: **the name occurred
+   exactly once in the whole tree - in that sentence.** The lemma did not
+   exist. It is now supplied (`E1WholeQueryLcaLeg.lean:132`), as a FUNCTION
+   equality because the seed enters the arm partially applied.
+
+`wholeQuerySelectPrefix_runsTo` also now exports `regZero = 0` and
+`regT2 = 1` at pc `821`, the two operands the join's tests and `sub`s consume.
+
+**THE `none`-BRANCH DISCRIMINATOR: WHAT IS NOW ESTABLISHED AND WHAT IS NOT**
+(DD-20260719-184). The value clause degenerates to `none = none` and rejects
+no impostor. What is NOT degenerate: the receipt equality is POSITIONAL on the
+WHOLE receipt and pinned to exactly `selL ++ selR` with nothing appended,
+while the code the machine skips is `closeLcaProgramAt` - 4753 instructions
+whose arms read memory on every path. **So at the REAL BLOCK the receipt is
+NOT blind to a spurious close/LCA leg.** That is STRICTLY NARROWER blindness
+than the fixture's: at `lcaNone_impostor` (`E1WholeQueryCats.lean`) the
+skipped stage is `fixtureStageCats`, which is READ-FREE, so the receipt is
+formally powerless there. **The fixture's blindness is WIDER; the block's is
+narrower**, and a program-level discriminator must not inherit the fixture's
+statement. Category accounting still has no discriminator anywhere, and this
+lane did not change that.
+
+**BLOCKER 2 WAS NOT ATTEMPTED, AND THE REASON IS SCOPE, NOT DISAGREEMENT.**
+E1-LaneA3's scoping in 10d was re-checked and stands: `twoSpanEvents`
+(`E1InteriorTwoSpan.lean:212`) is still never equated to any computation's
+`.reads`. The three ladder lemmas plus the segment/store reconciliation
+remain the next thing to build, and the cross arm's `.full` branch cannot be
+stated against the route's receipt until they land. `minCandidateMachineTrace_eq_routeReads`
+(`E1InteriorMinCandidate.lean:1296`) is still the precedent to copy.
+
+**`WholeQueryMachineAgrees` IS NOT DISCHARGED.** What remains, named:
+
+* the `.full` branch on the CROSS arm (blocked on blocker 2);
+* the same-block run's receipt is in the ARM's vocabulary, not
+  `wholeQueryBranchTrace`'s. Both bridging rewrites now exist
+  (`lcaLeg_of_sameBlock` `E1WholeQueryLcaLeg.lean:64`, and
+  `lcaLeg_sameBlock_rankSeed_eq` `E1WholeQueryLcaLeg.lean:132`); the bridge itself is not written;
+* **the `.lcaNone` branch has NO machine stage at all, and its status is
+  genuinely unsettled.** The composed leg's arm theorems conclude
+  `some (regsF fRes) = arm.value`, so on this composition the leg's value is
+  always `some`. Whether `.lcaNone` is therefore unreachable at these arms, or
+  whether a dispatch stage is owed, was NOT determined here and should not be
+  assumed either way by the next lane;
+* category accounting across all four branches.
+
+**Validator.** `lake build rmq_e1_machine_validate` green;
+`lake exe rmq_e1_machine_validate` **PASS at 17.2 s wall clock**, phase 5
+`wholeQueryComparisonAvailable=false`, verdict `OPEN`. Modeled steps
+(reproducible): dispatch 2430, leg 30343, select 8273, compose 9222, merge
+431, arm 6276. Wall-clock figures in the output are host-specific and are NOT
+evidence. **It does not exercise one line of this session's work** - the
+evidence is the in-tree executed simulations. Its phase-5 TEXT is now stale in
+the SAME direction 10c and 10d recorded, and one notch worse: it says "no
+definition composes them into one runnable query program", and one now does
+AND is executed end to end on three branches. The file is the sibling
+cost-algebra lane's, so it was NOT edited here.
+
+**`#print axioms`**, scratchpad driver importing the two modules directly, 19
+declarations: `propext, Classical.choice, Quot.sound` on eighteen, and
+`propext, Quot.sound` on `packet_of_decodePacket_eq_some`. **No `sorryAx`
+anywhere.** No `sorry`/`admit`/`axiom`/`native_decide`/`partial`/`unsafe`/
+`implemented_by`/Mathlib in either file.
+
+**Citations repaired.** The output stage moved the two pinned defect theorems
+from `:375`/`:384` to `:418`/`:435`, and `wholeQuerySelectPrefix_runsTo` from
+`:250` to `:268`; the rank-seed lemma's docstring moved
+`lcaLeg_of_sameBlock` from `:57` to `:64` and `lcaLeg_branches_exhaustive`
+from `:110` to `:149`. All four repaired in this file and in
+`DESIGN_DECISIONS.md`, and every citation this section makes was verified
+against the declaration it names after the edits.
 
 ---
 

@@ -1333,12 +1333,34 @@ theorem wholeQueryProgram_runsTo_rightSelectNone
 
 /-! ## SCOPE, STATED HONESTLY
 
-What is EXECUTED above is the guard and both select legs — pc `0` to `821`.
-The close/LCA leg is DEFINED and HOSTED at `827` (`closeLcaProgramAt`, both
-arms executed in `E1WholeQueryCloseLca`), and the join between them is
-defined, but the join's own simulation and the rank/output stages are NOT
-executed here, so `WholeQueryMachineAgrees` (`E1WholeQueryPublic.lean:114`) is
-NOT discharged by this module.
+**UPDATED BY E1-LaneA5.**  What is EXECUTED above is now THREE of the route's
+four branches, each from `initialState` to a halted state:
+
+* `.leftSelectNone` and `.rightSelectNone` — `wholeQueryProgram_runsTo_leftSelectNone`
+  and `_rightSelectNone`, receipt and value against the route's OWN objects
+  (`wholeQueryBranchTrace`, `wholeQueryBranchValue`), halting at `5645`;
+* `.full` ON THE SAME-BLOCK ARM — `wholeQueryProgram_runsTo_sameBlock`, all
+  four legs, halting at `5643`, receipt positionally the concatenation of the
+  four legs' route receipts.
+
+`WholeQueryMachineAgrees` (`E1WholeQueryPublic.lean:114`) is STILL NOT
+discharged, and the remaining gaps are named rather than papered over:
+
+* the `.full` branch ON THE CROSS ARM is not executed here, and cannot be
+  stated against the route's receipt until blocker 2 below closes — the cross
+  arm's receipt names `dispatchEvents`, which is not equated to any
+  computation's `.reads`;
+* the same-block run's receipt is in the ARM's vocabulary, not
+  `wholeQueryBranchTrace`'s.  `lcaLeg_of_sameBlock`
+  (`E1WholeQueryLcaLeg.lean:64`) and `lcaLeg_sameBlock_rankSeed_eq` are the two
+  rewrites that bridge it, and both now exist; the bridge itself is not
+  written here;
+* the `.lcaNone` branch has no machine stage at all.  The composed leg's arm
+  theorems conclude `some (regsF fRes) = arm.value`, so on this composition
+  the leg's value is always `some` — whether `.lcaNone` is therefore
+  unreachable at these arms, or whether a dispatch stage is owed, is NOT
+  settled here and should not be assumed either way;
+* category accounting across all four branches is not established.
 
 Of the two obligations this note previously listed as blocking, the FIRST IS
 NOW CLEARED and the second stands.

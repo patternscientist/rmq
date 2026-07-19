@@ -6879,8 +6879,8 @@ is now unnecessary and should not be reintroduced.
 **Status.** Found and pinned with two executed theorems, E1-LaneA3. Build green.
 NOT fixed: the output stage it calls for is a new stage, not a composition step.
 
-`wholeQueryValidPath_exit_is_invalidExit` (`E1WholeQueryProgram.lean:375`) and
-`wholeQueryValidPath_falls_into_noneWriter` (`:384`).
+`wholeQueryValidPath_exit_is_invalidExit` (`E1WholeQueryProgram.lean:418`) and
+`wholeQueryValidPath_falls_into_noneWriter` (`:435`).
 
 **THE FACT.** `programSkeleton`'s docstring (`E1QueryProgram.lean:130`) says
 "the valid path ends by writing `regOut` and halting".
