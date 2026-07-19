@@ -1920,3 +1920,41 @@ an encoding fault.
 by reads, the slack artifact is still present and still true, and REQ-B7-05 and
 CHK-04 remain Open and unclaimed with the harness unrun. Five workers in a row
 have now declined to commit a partial swap.
+
+## 2026-07-19 (C05 round 28) — post-B7 prompts pre-staged
+
+Both follow-on prompts are written and committed at
+`docs/internal/PREPARED_C05_POST_B7_PROMPTS.md`, needing only the B7 candidate
+SHA substituted. Written now rather than at the handoff for two reasons: a
+session spent drafting is a session not spent proving, and this conversation is
+long enough that the prompts should survive a coordinator handoff independently
+of anyone's context.
+
+**Prompt 1 — B7 reconstruction audit (read-only).** Ten items. The ones that
+carry the rung's weight: that the silent computation is gone from every
+REACHABLE path (with the `WordReads` unreachability re-verified rather than
+inherited, since it is the difference between closing the rung and leaving a
+Theta(log n) hole); that the slack artifact is DELETED and could not have
+survived; that the literal is justified BY READS rather than by slack, which is
+REQ-B7-05's entire point; that CHK-04 shows interior windows actually moved off
+the recorded baseline; that the width fit rests on the route's own hypothesis
+rather than a convenience threshold, with the small-size case handled by
+reachability rather than exclusion; and that NO commit in the sequence ever had
+counted storage without a reader. It also carries forward the `#print axioms`
+indirect-import trap so the auditor cannot mistake it for a missing theorem.
+
+**Prompt 2 — E1 unblock.** Discharges `hInterior` against the AMENDED interior,
+which now performs more reads than when the cross-block arm was written, then
+composes the full LCA leg, the whole-query glue, the derived step literal, the
+amended-target Prop, the validator's whole-query phase, and matrix closure. It
+carries an explicit warning that the supersession sentence "every loop is a
+chunk fold under a literal cap" was FALSE while the interior recursion existed
+and must not be shipped from an older draft — it becomes true only with the B7
+dependency stated.
+
+**One decision recorded ahead of firing:** E1 cannot discharge `hInterior`
+against an interior not in its tree. Recommendation is to merge B7 into the E1
+branch and run the audit in parallel, since the audit is read-only against the
+B7 commit itself — a finding is repaired on the B7 branch and re-merged, and
+E1's additive machine modules do not modify the interior, so a repair does not
+invalidate them.
