@@ -945,8 +945,8 @@ survives the right arm.
 
 NOTE FOR CALLERS (the recurring abbrev-opacity gotcha, M3d-4/M3d-8): the
 bounds are register NUMERALS, so a side condition stated with an abbrev
-(`FringeArmUntouched mLV`) is opaque to `omega`.  Instantiate CLOSED
-conditions with `by decide`.
+(`FringeArmUntouched mLV`) is not transparent to `omega`.  Instantiate
+CLOSED conditions with `by decide`.
 -/
 abbrev FringeArmUntouched (r : Nat) : Prop :=
   r < 40 ∨ (63 ≤ r ∧ r ≠ 67 ∧ r ≠ 68)

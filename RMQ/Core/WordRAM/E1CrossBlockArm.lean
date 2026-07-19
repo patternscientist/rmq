@@ -106,6 +106,23 @@ open RMQ.SuccinctClose
 open RMQ.SuccinctFinal
 open RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory
 
+/--
+Retarget a run's exit pc along a proved equation.
+
+Needed because the cross-block layout's addresses carry the VARIABLE
+`interior.length`: `A + 176 + n + 1` and `A + 177 + n` are equal but NOT
+definitionally so, whereas the all-literal offsets of the same-block leg
+compose without help.  This is the whole reason the composition below
+normalises every segment's exit rather than fixing the pc once at the end
+the way `sameBlockLeg_runsTo_canonical` does.
+-/
+private theorem runsTo_pc_congr {store : ReadStore}
+    {program : E1Machine.Program} {regs regs' : RegFile} {p q q' : Nat}
+    {ev : List WordRAM.TraceEvent} {cats : List Category}
+    (h : RunsTo store program ⟨regs, p, false⟩ ⟨regs', q, false⟩ ev cats)
+    (hq : q = q') :
+    RunsTo store program ⟨regs, p, false⟩ ⟨regs', q', false⟩ ev cats := hq ▸ h
+
 private theorem hostedAt_step {program : E1Machine.Program} {base : Nat}
     {code₁ code₂ : List Instr} {n : Nat}
     (h : HostedAt program base (code₁ ++ code₂))
@@ -978,37 +995,422 @@ theorem crossBlockArmProgramAt_fits (shape : Cartesian.CartesianShape)
   · exact candMerge3_fits w (A + 354 + interior.length) (by omega)
       (by omega) instr h
 
+/-! ## The composed cross-block arm, over an ABSTRACT interior
+
+The two arms' window ranges, named so the statements below stay readable.
+Each is the ROUTE's own expression, read off `leftArm_value_eq` /
+`rightArm_value_eq` (`E1FringeArmBlock.lean:1062`/`:1093`).
+-/
+
+/-- The LEFT cross arm's window-relative low endpoint. -/
+abbrev crossLeftRelLo (shape : Cartesian.CartesianShape)
+    (blockSize leftClose : Nat) : Nat :=
+  leftClose + 1 - localBPWindowBase shape blockSize leftClose
+
+/-- The LEFT cross arm's window-relative high endpoint: the fringe runs to
+the END OF THE LEFT BLOCK. -/
+abbrev crossLeftRelHi (shape : Cartesian.CartesianShape)
+    (blockSize leftClose : Nat) : Nat :=
+  leftClose + 1 +
+    (blockStartOf blockSize (blockOfClose blockSize leftClose) + blockSize -
+      leftClose) - 1 - localBPWindowBase shape blockSize leftClose
+
+/-- The RIGHT cross arm's window-relative low endpoint: the fringe starts
+at the RIGHT BLOCK'S START. -/
+abbrev crossRightRelLo (shape : Cartesian.CartesianShape)
+    (blockSize rightClose : Nat) : Nat :=
+  blockStartOf blockSize (blockOfClose blockSize rightClose) -
+    localBPWindowBase shape blockSize rightClose
+
+/-- The RIGHT cross arm's window-relative high endpoint. -/
+abbrev crossRightRelHi (shape : Cartesian.CartesianShape)
+    (blockSize rightClose : Nat) : Nat :=
+  blockStartOf blockSize (blockOfClose blockSize rightClose) +
+    (rightClose - blockStartOf blockSize (blockOfClose blockSize rightClose) +
+      2) - 1 - localBPWindowBase shape blockSize rightClose
+
+/-- The accepted LEFT cross arm object at the canonical store and seed. -/
+abbrev crossLeftArm (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize leftClose : Nat) :
+    WordRAM.TraceResult (Option (Nat × Nat)) :=
+  bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore shape
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape) fringeSegment
+    blockSize leftClose (canonicalSeed shape blockSize leftClose)
+
+/-- The accepted RIGHT cross arm object at the canonical store and seed. -/
+abbrev crossRightArm (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize rightClose : Nat) :
+    WordRAM.TraceResult (Option (Nat × Nat)) :=
+  bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore shape
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape) fringeSegment
+    blockSize rightClose (canonicalSeed shape blockSize rightClose)
+
+/-- Category log of the LEFT arm, indexed by route-side data throughout. -/
+abbrev crossLeftArmCats (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize leftClose : Nat) : List Category :=
+  fringeArmCats (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+    fringeSegment (sbChunkBits shape)
+    (windowBitsOfStore (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (sbBase shape blockSize leftClose))
+    (crossLeftRelLo shape blockSize leftClose)
+    (crossLeftRelHi shape blockSize leftClose)
+    (canonicalSeed shape blockSize leftClose)
+    (Nat.min (crossLeftRelHi shape blockSize leftClose /
+      sbChunkBits shape + 1) 33)
+
+/-- Category log of the RIGHT arm. -/
+abbrev crossRightArmCats (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize rightClose : Nat) : List Category :=
+  fringeArmCats (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+    fringeSegment (sbChunkBits shape)
+    (windowBitsOfStore (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (sbBase shape blockSize rightClose))
+    (crossRightRelLo shape blockSize rightClose)
+    (crossRightRelHi shape blockSize rightClose)
+    (canonicalSeed shape blockSize rightClose)
+    (Nat.min (crossRightRelHi shape blockSize rightClose /
+      sbChunkBits shape + 1) 33)
+
+/--
+CATEGORY LOG OF THE WHOLE CROSS-BLOCK ARM.
+
+Every component is a FUNCTION of route-side data -- the two seed legs'
+route-indexed logs, the two arms' route-indexed logs, and the merge's log
+on the route's OWN three candidates -- with the interior's log carried as
+a PARAMETER.  No numeral is asserted anywhere.
+
+The merge arm is selected by `.getD (0, 0)` on the arms' values, which is
+not a defaulting hack: both arms answer `some` unconditionally
+(`bpFringeCandGlobal_isSome`, `E1CandMerge3.lean:84`), so the default is
+unreachable and the proof discharges it by rewriting with the arms' own
+value clauses.
+-/
+def crossBlockArmCats (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize : Nat) (interiorCats : List Category)
+    (interiorValue : Option (Nat × Nat)) (leftClose rightClose : Nat) :
+    List Category :=
+  windowAddrCats ++
+    (rankSeedLegCats shape (sbBB shape blockSize leftClose) ++
+      (crossLeftRangeCats ++
+        (crossLeftArmCats shape fringeSegment blockSize leftClose ++
+          (crossStashCats ++
+            (interiorCats ++
+              (crossRepointCats ++
+                (windowAddrCats ++
+                  (rankSeedLegCats shape (sbBB shape blockSize rightClose) ++
+                    (crossRightRangeCats ++
+                      (crossRightArmCats shape fringeSegment blockSize
+                          rightClose ++
+                        (crossStashCats ++
+                          (crossPinOneCats ++
+                            candMerge3Cats
+                              ((crossLeftArm shape fringeSegment blockSize
+                                leftClose).value.getD (0, 0))
+                              interiorValue
+                              ((crossRightArm shape fringeSegment blockSize
+                                rightClose).value.getD
+                                  (0, 0))))))))))))))
+
+/--
+EXACT SIMULATION OF THE WHOLE CROSS-BLOCK ARM AT THE CANONICAL STORE,
+WITH THE INTERIOR AS AN ABSTRACT HYPOTHESIS.
+
+Receipts are POSITIONALLY EQUAL -- a `List` equality, not a multiset or
+membership claim -- to `crossBlockArmSpec`'s trace at the supplied
+interior, and `fRes` carries its `.value`.
+
+## The interior is a hypothesis, not a pin
+
+`hInterior` supplies the interior leg's own `RunsTo` at ITS OWN base
+`A + 176`, for any entry register file that carries the two query
+operands.  Its trace, categories and value are PARAMETERS.  Nothing in
+this theorem's statement or proof depends on the interior's contents, so
+worker B7's change to the interior (new reads, route literal `207 -> 210`)
+instantiates this theorem differently and does not restate it.
+
+The interior's four preservation obligations are exactly what the
+composition consumes downstream and nothing more: the two query operands
+`fClose`/`fRight` (the repoint and the right preambles recompute
+everything else), and the left stash's merge slots `mLV`/`mLP`, which must
+survive to the merge some 194 instructions later.
+
+RECORDED, NOT PAPERED OVER: if the interior leg turns out to need pinned
+machine inputs beyond the two query operands, `hInterior`'s antecedent
+gains those conjuncts and this proof gains the matching obligation to
+establish them at `A + 176`.  That is a hypothesis change, not a
+restatement, and the four preservation clauses are unaffected.
+-/
+theorem crossBlockArmProgramAt_runsTo
+    (shape : Cartesian.CartesianShape) {program : E1Machine.Program}
+    {A fringeSegment leftClose rightClose : Nat}
+    {interior : List Instr} {interiorTrace : List WordRAM.TraceEvent}
+    {interiorCats : List Category} {interiorValue : Option (Nat × Nat)}
+    (hc : sbChunkBits shape ≤
+      SuccinctRank.machineWordBits shape.bpCode.length)
+    (hHost : HostedAt program A
+      (crossBlockArmProgramAt shape fringeSegment
+        (canonicalBPRelativeSummaryBlockSizeRaw shape) A interior))
+    (hL0 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
+        leftClose)).length =
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (hL1 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
+        leftClose + 1)).length =
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (hL2 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
+        leftClose + 2)).length =
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (hR0 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
+        rightClose)).length =
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (hR1 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
+        rightClose + 1)).length =
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (hR2 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape)
+        rightClose + 2)).length =
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (hInterior : ∀ regsS : RegFile, regsS fClose = leftClose →
+      regsS fRight = rightClose →
+      ∃ regsI : RegFile,
+        RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+            ⟨regsS, A + 176, false⟩
+            ⟨regsI, A + 176 + interior.length, false⟩
+          interiorTrace interiorCats ∧
+        bestOfRegs (regsI mMV) (regsI mMP) = interiorValue ∧
+        regsI fClose = regsS fClose ∧ regsI fRight = regsS fRight ∧
+        regsI mLV = regsS mLV ∧ regsI mLP = regsS mLP)
+    (regs : RegFile)
+    (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose) :
+    ∃ regsF : RegFile,
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+          ⟨regs, A, false⟩
+          ⟨regsF, A + 370 + interior.length, false⟩
+        (crossBlockArmSpec shape
+          (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
+          fringeSegment (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          ⟨interiorValue, interiorTrace⟩ leftClose rightClose).trace
+        (crossBlockArmCats shape fringeSegment
+          (canonicalBPRelativeSummaryBlockSizeRaw shape) interiorCats
+          interiorValue leftClose rightClose) ∧
+      some (regsF fRes) =
+        (crossBlockArmSpec shape
+          (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
+          fringeSegment (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          ⟨interiorValue, interiorTrace⟩ leftClose rightClose).value := by
+  obtain ⟨q0, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14,
+    q15, q16, q17⟩ :=
+    crossBlockArmProgramAt_hosts shape fringeSegment (canonicalBPRelativeSummaryBlockSizeRaw shape) A interior hHost
+  -- 1. LEFT window address preamble
+  obtain ⟨r1, hrun1, hbase1, hbb1, hpres1⟩ :=
+    windowAddr_runsTo_route shape (concreteBPNativeSuccinctRMQGlobalReadStore shape) q0 regs leftClose hClose
+  -- 2. LEFT seed leg
+  obtain ⟨r2, hrun2, hacc2, hseed2, hb2, hbb2, hcl2, hri2, hpres2⟩ :=
+    rankSeedLeg_runsTo_canonical shape (blockSize := (canonicalBPRelativeSummaryBlockSizeRaw shape))
+      (leftClose := leftClose) q1 q2 q3 r1 hbb1
+  -- 3. LEFT range preamble
+  obtain ⟨r3, hrun3, hstart3, hlo3, hhi3, hpres3⟩ :=
+    crossLeftRange_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) q4 r2 leftClose (sbBB shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose)
+      (by rw [hcl2, hpres1 fClose (by decide)]; exact hClose)
+      (by rw [hbb2]; exact hbb1)
+  -- 4. LEFT ARM
+  obtain ⟨r4, hrun4, hval4, hpres4⟩ :=
+    fringeArmProgramAt_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) hc q5
+      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose) (sbBB shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose)
+      (crossLeftRelLo shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose)
+      (crossLeftRelHi shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose)
+      (canonicalSeed shape (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose) (leftClose + 1) hL0 hL1 hL2 r3
+      (by rw [hpres3 fBase (by decide), hb2]; exact hbase1)
+      hlo3 hhi3
+      (by rw [hpres3 fAcc (by decide)]; exact hacc2)
+      (by rw [hpres3 fBB (by decide), hbb2]; exact hbb1)
+      (by rw [hpres3 fSeed (by decide)]; exact hseed2)
+      hstart3
+  -- 5. LEFT stash
+  obtain ⟨r5, hrun5, hlv5, hlp5, hpres5⟩ := crossStashLeft_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) q6 r4
+  -- 6. THE INTERIOR (hypothesis)
+  obtain ⟨r6, hrun6, hmid6, hcl6, hri6, hlv6, hlp6⟩ :=
+    hInterior r5
+      (by
+        rw [hpres5 fClose (by decide), hpres4 fClose (by decide),
+          hpres3 fClose (by decide), hcl2, hpres1 fClose (by decide)]
+        exact hClose)
+      (by
+        rw [hpres5 fRight (by decide), hpres4 fRight (by decide),
+          hpres3 fRight (by decide), hri2, hpres1 fRight (by decide)]
+        exact hRight)
+  -- 7. repoint: fClose := fRight
+  obtain ⟨r7, hrun7, hcl7, hpres7⟩ := crossRepoint_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) q8 r6
+  have hclose7 : r7 fClose = rightClose := by
+    rw [hcl7, hri6, hpres5 fRight (by decide), hpres4 fRight (by decide),
+      hpres3 fRight (by decide), hri2, hpres1 fRight (by decide)]
+    exact hRight
+  -- 8. RIGHT window address preamble
+  obtain ⟨r8, hrun8, hbase8, hbb8, hpres8⟩ :=
+    windowAddr_runsTo_route shape (concreteBPNativeSuccinctRMQGlobalReadStore shape) q9 r7 rightClose hclose7
+  -- 9. RIGHT seed leg.  Its two internal hosting facts must be restated at
+  -- `P + 1` / `P + 61` for `P = A + 181 + n`; with a variable `n` those are
+  -- not definitionally the layout's `A + 182 + n` / `A + 242 + n`.
+  have q11' : HostedAt program (A + 181 + interior.length + 1)
+      (rankCloseBlock (A + 181 + interior.length + 1)
+        concreteBPNativeRankCloseTraceSegmentBase
+        (bpFringeChunkBits shape.bpCode.length) shape.bpCode.length
+        (builtRelativeSplitBPCloseRankData shape).wordSize
+        (builtRelativeSplitBPCloseRankData shape).blocksPerSuper) := by
+    have h : A + 181 + interior.length + 1 = A + 182 + interior.length := by
+      omega
+    rw [h]
+    exact q11
+  have q12' : HostedAt program (A + 181 + interior.length + 61)
+      rankSeedFinish := by
+    have h : A + 181 + interior.length + 61 = A + 242 + interior.length := by
+      omega
+    rw [h]
+    exact q12
+  obtain ⟨r9, hrun9, hacc9, hseed9, hb9, hbb9, hcl9, hri9, hpres9⟩ :=
+    rankSeedLeg_runsTo_canonical shape (blockSize := (canonicalBPRelativeSummaryBlockSizeRaw shape))
+      (leftClose := rightClose) q10 q11' q12' r8 hbb8
+  -- 10. RIGHT range preamble
+  obtain ⟨r10, hrun10, hstart10, hlo10, hhi10, hpres10⟩ :=
+    crossRightRange_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) q13 r9 rightClose (sbBB shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)
+      (by rw [hcl9, hpres8 fClose (by decide)]; exact hclose7)
+      (by rw [hbb9]; exact hbb8)
+  -- 11. RIGHT ARM
+  obtain ⟨r11, hrun11, hval11, hpres11⟩ :=
+    fringeArmProgramAt_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) hc q14
+      (sbBase shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose) (sbBB shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)
+      (crossRightRelLo shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)
+      (crossRightRelHi shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)
+      (canonicalSeed shape (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)
+      (blockStartOf (canonicalBPRelativeSummaryBlockSizeRaw shape) (blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose)) hR0 hR1 hR2 r10
+      (by rw [hpres10 fBase (by decide), hb9]; exact hbase8)
+      hlo10 hhi10
+      (by rw [hpres10 fAcc (by decide)]; exact hacc9)
+      (by rw [hpres10 fBB (by decide), hbb9]; exact hbb8)
+      (by rw [hpres10 fSeed (by decide)]; exact hseed9)
+      hstart10
+  -- 12. RIGHT stash
+  obtain ⟨r12, hrun12, hrv12, hrp12, hpres12⟩ :=
+    crossStashRight_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) q15 r11
+  -- 13. unit pin
+  obtain ⟨r13, hrun13, hone13, hpres13⟩ := crossPinOne_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) q16 r12
+  -- the LEFT stash's slots survived the interior and the whole right half
+  have hLV : r13 mLV = r4 fRV + 1 := by
+    rw [hpres13 mLV (by decide), hpres12 mLV (by decide),
+      hpres11 mLV (by decide), hpres10 mLV (by decide),
+      hpres9 mLV (by decide), hpres8 mLV (by decide),
+      hpres7 mLV (by decide), hlv6]
+    exact hlv5
+  have hLP : r13 mLP = r4 fRP := by
+    rw [hpres13 mLP (by decide), hpres12 mLP (by decide),
+      hpres11 mLP (by decide), hpres10 mLP (by decide),
+      hpres9 mLP (by decide), hpres8 mLP (by decide),
+      hpres7 mLP (by decide), hlp6]
+    exact hlp5
+  -- the interior's answer survived the right half
+  have hMV : r13 mMV = r6 mMV := by
+    rw [hpres13 mMV (by decide), hpres12 mMV (by decide),
+      hpres11 mMV (by decide), hpres10 mMV (by decide),
+      hpres9 mMV (by decide), hpres8 mMV (by decide),
+      hpres7 mMV (by decide)]
+  have hMP : r13 mMP = r6 mMP := by
+    rw [hpres13 mMP (by decide), hpres12 mMP (by decide),
+      hpres11 mMP (by decide), hpres10 mMP (by decide),
+      hpres9 mMP (by decide), hpres8 mMP (by decide),
+      hpres7 mMP (by decide)]
+  -- 14. THE MERGE
+  obtain ⟨r14, hrun14, _hacc14, hres14, _hpres14⟩ :=
+    candMerge3_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) q17 r13 (r4 fRV) (r4 fRP) (r6 mMV) (r6 mMP)
+      (r11 fRV) (r11 fRP) hone13 hLV hLP hMV hMP
+      (by rw [hpres13 mRV (by decide)]; exact hrv12)
+      (by rw [hpres13 mRP (by decide)]; exact hrp12)
+  -- route-side identification of the three candidates
+  have hleft : (crossLeftArm shape fringeSegment (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose).value =
+      some (r4 fRV, r4 fRP) := by
+    rw [crossLeftArm, leftArm_value_eq]
+    exact hval4.symm
+  have hright : (crossRightArm shape fringeSegment (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose).value =
+      some (r11 fRV, r11 fRP) := by
+    rw [crossRightArm, rightArm_value_eq]
+    exact hval11.symm
+  -- every post-hole segment's exit is renormalised to the layout's own
+  -- address before composition (see `runsTo_pc_congr`)
+  have n7 := runsTo_pc_congr hrun7
+    (by omega : A + 176 + interior.length + 1 = A + 177 + interior.length)
+  have n8 := runsTo_pc_congr hrun8
+    (by omega : A + 177 + interior.length + 4 = A + 181 + interior.length)
+  have n9 := runsTo_pc_congr hrun9
+    (by omega : A + 181 + interior.length + 64 = A + 245 + interior.length)
+  have n10 := runsTo_pc_congr hrun10
+    (by omega : A + 245 + interior.length + 10 = A + 255 + interior.length)
+  have n11 := runsTo_pc_congr hrun11
+    (by omega : A + 255 + interior.length + 95 = A + 350 + interior.length)
+  have n12 := runsTo_pc_congr hrun12
+    (by omega : A + 350 + interior.length + 3 = A + 353 + interior.length)
+  have n13 := runsTo_pc_congr hrun13
+    (by omega : A + 353 + interior.length + 1 = A + 354 + interior.length)
+  have n14 := runsTo_pc_congr hrun14
+    (by omega : A + 354 + interior.length + 16 = A + 370 + interior.length)
+  refine ⟨r14, ?_, ?_⟩
+  · have htrans :=
+      ((((((((((((hrun1.trans hrun2).trans hrun3).trans hrun4).trans
+        hrun5).trans hrun6).trans n7).trans n8).trans n9).trans
+        n10).trans n11).trans n12).trans n13).trans n14
+    have hmc : candMerge3Cats (r4 fRV, r4 fRP) (bestOfRegs (r6 mMV) (r6 mMP))
+        (r11 fRV, r11 fRP) =
+        candMerge3Cats
+          ((crossLeftArm shape fringeSegment (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose).value.getD (0, 0))
+          interiorValue
+          ((crossRightArm shape fringeSegment (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose).value.getD
+            (0, 0)) := by
+      rw [hleft, hright, hmid6]
+      rfl
+    rw [hmc] at htrans
+    simpa [crossBlockArmSpec, crossBlockArmCats, crossLeftArm, crossRightArm,
+      crossLeftArmCats, crossRightArmCats, crossLeftRelLo, crossLeftRelHi,
+      crossRightRelLo, crossRightRelHi, sbBase, sbBB, sbChunkBits,
+      canonicalSeed, fringeLeg_trace_eq_leftArm, fringeLeg_trace_eq_rightArm,
+      List.append_assoc] using htrans
+  · rw [hres14, hleft.symm, hright.symm, hmid6]
+    simp [crossBlockArmSpec, crossLeftArm, crossRightArm, canonicalSeed]
+
 /-! ## Remaining (NOT implemented here)
 
-What this module does NOT have, stated precisely so the next session does
-not have to rediscover it:
+Items 1-3 of the M3d-8 list are DONE (M3d-9): both range preambles, both
+stashes, the repoint, the new unit pin, and the composed
+`crossBlockArmProgramAt_runsTo` over an abstract interior.  Three
+structural findings came out of doing them, all recorded at their
+definitions above:
 
-1. `crossLeftRange_runsTo` / `crossRightRange_runsTo` -- the two range
-   preambles' simulations, against `sbStart`-style route abbreviations for
-   the LEFT-FRINGE and RIGHT-FRINGE ranges read off
-   `fringeLeg_trace_eq_leftArm` / `_rightArm`.  Both blocks are
-   straight-line, so `RunsTo.straight` plus a `straight_eval`-style macro
-   applies directly; the route-side obligations are
-   `(leftClose / blockSize + 1) * blockSize - leftClose =
-   blockStartOf blockSize (blockOfClose blockSize leftClose) + blockSize -
-   leftClose` (true by `blockStartOf`/`blockOfClose` unfolding plus
-   `Nat.succ_mul`) and its right-hand analogue.
-2. `crossStashLeft_runsTo` / `crossStashRight_runsTo` -- three
-   instructions each, `RunsTo.straight`.
-3. The composed `crossBlockArmProgramAt_runsTo`, stated over
-   `crossBlockArmSpec` with the interior's `RunsTo` as a HYPOTHESIS
-   (abstract entry/exit, trace, cats, and the two-register post-condition
-   `regs mMV` biased / `regs mMP` positional, per the M3d-7 section 6
-   contract).  This is composition, but it must thread register
-   preservation across ~370 instructions: the binding new obligation is
-   that the LEFT stash's `mLV`/`mLP` survive the interior, the right seed
-   leg, the right range preamble and the right arm.  `mLV = 75` and
-   `mLP = 76` sit above every existing block's write set, so each block's
-   existing preservation clause should already cover them -- but
-   `fringeArmProgramAt` inherits `fringeArm_runsTo`, which states NO
-   preservation clause at all.  That is the one certificate that must be
-   ADDED before the composition can be written, and it is a strengthening
-   of an existing theorem rather than new simulation.
+* `fringeArm_runsTo` had no preservation clause; it now has one
+  (`FringeArmUntouched`).
+* `rankSeedLeg_runsTo_canonical` had only the four specific clauses the
+  same-block leg needed; it now has a general one
+  (`RankSeedLegUntouched`).
+* `fOne` (40) is INSIDE the fold bank, so the arms may clobber the merge's
+  unit constant.  Hence `crossPinOne`, and the layout is 370 instructions,
+  not 369.
+
+What this module still does NOT have:
+
+1. THE INTERIOR ITSELF.  `crossBlockArmProgramAt_runsTo` takes it as
+   `hInterior` and is blocked on the `Nat.log2` decision (M3d-3 section 2)
+   only for its INSTANTIATION, not for its statement.  Discharging
+   `hInterior` is the whole remaining cross-block obligation.
+2. ANTI-VACUITY BY EXECUTION for the composed arm.  The layout's hosting
+   facts are derived from one assumption (`crossBlockArmProgramAt_hosts`),
+   but no concrete program has yet been RUN through the whole cross arm the
+   way `armWitness_path1..7` (`E1FringeArmProgram.lean:288`) runs the
+   single arm.  That needs a concrete interior to fill the hole, so it is
+   downstream of item 1.
+3. If the interior leg needs pinned machine inputs beyond the two query
+   operands, `hInterior`'s antecedent gains those conjuncts and the proof
+   gains the matching obligation to establish them at `A + 176`.  The four
+   preservation clauses are unaffected either way.
 4. Nothing here closes or weakens any matrix row; all of REQ-E1-01..11 are
    whole-query scoped and remain OPEN.
 -/
