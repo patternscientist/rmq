@@ -115,3 +115,132 @@ family.
 - Baseline `lake build RMQ` at `f6564ec` under the
   `Global\RMQHeavyVerification` mutex: launched at session start, fresh
   tree, 243 jobs.
+
+## Milestone 1 - the generic charged table (commit 3)
+
+`RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/SparseLevelTable.lean`,
+new module, imported from `InteriorDirectory.lean:3` so the root build
+compiles it. Nothing consumes it yet - this is the parallel half of
+parallel-then-swap, matching the B2/B6 precedent.
+
+Contents (all green, no sorry/axiom/native_decide):
+
+- `bpSparseLevelDomain bound = bound + 2`, with
+  `two_le_bpSparseLevelDomain` and `bpSparseLevelDomain_covers`
+  (`count <= bound -> count < domain`), the coverage feed for both
+  instantiations.
+- `bpSparseLevelCell domain i = bpSparseLogSpan i + domain * Nat.log2 i`.
+- THE TWO PROJECTIONS, which are the value-equivalence core of REQ-B7-02:
+  `bpSparseLevelCell_div : cell / domain = Nat.log2 i` and
+  `bpSparseLevelCell_mod : cell % domain = bpSparseLogSpan i`, both under
+  `2 <= domain` and `i < domain` only. Supporting:
+  `bpSparseLogSpan_lt_of_lt` (the `i = 0` case matters -
+  `bpSparseLogSpan 0 = 1`, which is why the domain is `bound + 2`),
+  `log2_lt_of_lt`, `bpSparseLevelCell_lt : cell < domain * domain`.
+- `bpSparseLevelEntries`, `_length`, `_getElem?`, `bpSparseLevelWidth
+  domain = Nat.log2 (domain * domain) + 1`,
+  `bpSparseLevelEntries_lt_two_pow` (the `ofEntries` obligation).
+- `PayloadLiveBPSparseLevelTable domain overhead` wrapping
+  `FixedWidthNatTable`, with `payload`, `payload_length`,
+  `readCellCosted` (the single charged read), `readCellCosted_cost = 1`,
+  `_cost_le_one`, `_erase`, and the two equivalences
+  `readCellCosted_erase_div` / `readCellCosted_erase_mod`.
+- `bpSparseLevelTableOverhead domain = domain * bpSparseLevelWidth domain`,
+  `bpSparseLevelTable_payload_length`, and the construction
+  `bpSparseLevelTable bound`.
+
+Deliberately generic in `domain` so it can be instantiated twice per
+DD-20260718-013 correction 3, rather than merged over a summed domain.
+
+## RESUME INVENTORY (verified file:line, for the next session)
+
+Remaining work in dependency order. Steps 1-3 are the swap; 4 is the
+literal migration; 5-6 close the rung.
+
+STEP 1 - instantiate the table twice, beside the existing tables.
+  `canonicalRelativeRmmInteriorLocalTable` (`InteriorDirectory.lean:1418`)
+  and `canonicalRelativeRmmInteriorGlobalTable` (`:1432`) are the models.
+  Local instance: `bound = (RelativeRmm.canonicalLayout shape).macroSize`.
+  Global instance: `bound = (RelativeRmm.canonicalLayout shape).macroSampleCount`
+  (NOTE: the global slot function uses `layout.macroSampleCount`, see
+  `InteriorDirectory.lean:2105-2107`, not `macroCount`).
+
+STEP 2 - extend the interior component store and offsets.
+  `canonicalRelativeRmmInteriorComponentStore` (`InteriorDirectory.lean:1494`)
+  is a right-nested `BoundedPayloadWordStore.append` over SIX tables in
+  counted directory-payload order (baseline, minRel, maxRel, argOffset,
+  local sparse offset, global sparse block). Append the two new tables as
+  regions 7 and 8. Then extend
+  `CanonicalRelativeRmmInteriorComponentOffsets` (`:1513`, a 7-field
+  structure with `deriving Repr, DecidableEq`) with `localLevel` and
+  `globalLevel` fields, and `canonicalRelativeRmmInteriorComponentOffsets`
+  (`:1523`) with their word offsets; `deadAddress` (last field) must move
+  past both. NO new segment and NO new `ReviewerSource`: the whole interior
+  execution is mapped onto one component segment by
+  `flatStoreExecutionTraceResultAtSegment` (`InteriorRAM.lean:175-180`),
+  consumed at `ConcreteDirectoryRAM.lean:1113`.
+
+STEP 3 - amend the two executed sites.
+  `canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation`
+  (`InteriorDirectory.lean:2112`, `let level := Nat.log2 count` at `:2117`,
+  `bpSparseLogSpan` at `:2118`) and
+  `canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation`
+  (`:2126`, log2 at `:2131`, span at `:2132`). Replace both `let`s with a
+  `FlatStoreComputation.bind` on
+  `canonicalRelativeRmmMachineReadNatComputation` (`:1932`, the existing
+  read combinator) against the new table at the new offset, then unpack by
+  `/ domain` and `% domain` using `bpSparseLevelCell_div` / `_mod`. The
+  read must be sequenced BEFORE both span reads, since the level is the
+  address argument of the first one
+  (`canonicalRelativeRmmMachineLocalSpanCandidateComputation`, `:2079`).
+
+STEP 4 - cost caps and the literal, 207 -> 210.
+  Per-two-span cap 10 -> 11:
+  `canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_ten_of_macro_crossing`
+  (`InteriorDirectory.lean:4310`) and the global twin (`:4334`); the
+  underlying span caps at `:4224` / `:4260` are UNCHANGED (the new read is
+  per two-span, not per span). Branch caps: within-macro `:4289`
+  (18 -> 20), adjacent `:4358` (20 -> 22), left-middle (20 -> 22), all still
+  under 30; cross-macro `..._cost_le_thirty_of_macro_crossing` 30 -> 33 -
+  THIS is the one with zero slack. Then
+  `canonicalRelativeRmmPrincipledInteriorChargedTraceCost` (`:1783`)
+  30 -> 33 and the branch dispatcher
+  `canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_four_of_bounded`
+  (`:4451`). NOTE the lemma NAMES embed the numerals ("ten", "thirty");
+  decide rename-versus-keep against the frozen-identity rule before
+  touching them, and check `SuccinctCloseProposal.lean:95`, which consumes
+  `bpTwoLevelInteriorCandidateCosted_cost_le_thirty`.
+  Then the algebra at `SuccinctFinalRAM.lean:8810-8820`
+  (`interiorDirectory := 30` -> 33), `..._CloseCost_eq = 126` -> 129
+  (`:8818`), `..._TraceCost_eq = 207` -> 210 (`:8822`), all by `rfl`.
+  Freeze 207 as
+  `concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost` following
+  the 142/76/328 pattern already at `SuccinctFinalRAM.lean:8825-8875`.
+  Consumers to migrate: `Headlines/RMQ.lean:70/:497/:529`,
+  `Validation/SuccinctClassic.lean:266`,
+  `Validation/SuccinctClassicCostHarness.lean:118` (`canonicalBoundIs207`),
+  `RMQExamples/Concrete.lean:84`, `scripts/paper_topology_lint.ps1`
+  (`SumLe207`), `scripts/headline_axiom_check.lean`. Frozen legacy anchors
+  untouched.
+
+STEP 5 - space accounting (REQ-B7-06).
+  Two overheads, each dominated separately. Global instance: reuse
+  `logLogSampledDirectoryOverhead_littleO` (`Asymptotics.lean:243`) via
+  `LittleOLinear.of_le` (`:35`). Local instance: repackage
+  `eventually_scale_log2_succ_cube_le_self` (`Asymptotics.lean:516`).
+  Do NOT copy `bpFringeTableOverhead_littleO` - its exponential-slack
+  threshold step is vacuous for a count-indexed table. Linear-capacity
+  feed analogues of `bpFringeChunkRowCount_le_linear` and
+  `bpChunkSelectEntryWidth_le_machineWordBits_capacity` are still needed.
+  Public statement shape template: `ChargedFringeSpace.lean:37-77`.
+
+STEP 6 - provenance, vocabulary theorem, docs.
+  Regenerate the producer-provenance packets with a level-read path and a
+  W19 successful-occurrence witness on an execution that actually reads
+  the level table; re-prove
+  `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only`
+  over the amended route; repair the charge-policy section of
+  `docs/PAPER_MODEL_ADEQUACY.md` with the representation-artifact versus
+  algorithmic-work principle and named bridge lemmas; then the stretch
+  inventory (STRETCH-01), whose first known entry is the dead `maxRel`
+  read recorded in DD-20260718-012.

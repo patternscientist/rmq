@@ -1,5 +1,6 @@
 import RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.TwoLevelCandidate
 import RMQ.Core.SuccinctSpace.MachineChunkedTableProgram
+import RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseLevelTable
 
 /-!
 # Endpoint-fringe relative-rmM interior directory
