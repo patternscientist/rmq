@@ -428,6 +428,141 @@ theorem dispatchUntouched_of_closeLegUntouched {r : Nat}
     (h : CloseLegUntouched r) : DispatchUntouched r :=
   dispatchUntouched_of_lt (by rcases h with h | h <;> omega)
 
+/-! ## THE ROUTE SIDE, WRITTEN FIRST
+
+`E1_LIVE_STATE.md` §11 F: *a category function written after the machine
+is a category function fitted to the machine.*  The same applies to a
+branch decomposition.  These five lemmas are pure route algebra -- no
+`RunsTo`, no register, no store -- and they fix what each of `#9`'s arms
+is obliged to compute BEFORE any arm is simulated.  The machine side then
+case-splits against them rather than against its own shape.
+
+The five conditions are mutually exclusive and exhaustive in the route's
+own `if`-order, which is the order the selector tests them in. -/
+
+/-- Branch 1: `count = 0` is `pure none`.
+
+This is also the branch that absorbs the CALLER's guard -- see
+`interiorRangeMin_guard_subsumed`. -/
+theorem interiorRangeMin_of_count_zero (shape : Cartesian.CartesianShape)
+    (startBlock : Nat) :
+    canonicalRelativeRmmInteriorRangeMinComputation shape startBlock 0 =
+      FlatStoreComputation.pure none := by
+  unfold canonicalRelativeRmmInteriorRangeMinComputation
+  simp
+
+/-- Branch 2: a range inside one macro block is `#4`. -/
+theorem interiorRangeMin_of_local (shape : Cartesian.CartesianShape)
+    (startBlock count : Nat) (hc : count ≠ 0)
+    (hle : count ≤ (RelativeRmm.canonicalLayout shape).macroSize -
+      startBlock % (RelativeRmm.canonicalLayout shape).macroSize) :
+    canonicalRelativeRmmInteriorRangeMinComputation shape startBlock count =
+      canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation shape
+        (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+        (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+        count := by
+  unfold canonicalRelativeRmmInteriorRangeMinComputation
+  rw [if_neg hc, if_pos hle]
+
+/-- Branch 3: no whole middle macro is `#6`. -/
+theorem interiorRangeMin_of_adjacent (shape : Cartesian.CartesianShape)
+    (startBlock count : Nat) (hc : count ≠ 0)
+    (hgt : ¬ (count ≤ (RelativeRmm.canonicalLayout shape).macroSize -
+      startBlock % (RelativeRmm.canonicalLayout shape).macroSize))
+    (hmid : (count - ((RelativeRmm.canonicalLayout shape).macroSize -
+        startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+      (RelativeRmm.canonicalLayout shape).macroSize = 0) :
+    canonicalRelativeRmmInteriorRangeMinComputation shape startBlock count =
+      canonicalRelativeRmmMachineAdjacentMacroCandidateComputation shape
+        (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+        (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+        ((count - ((RelativeRmm.canonicalLayout shape).macroSize -
+            startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
+          (RelativeRmm.canonicalLayout shape).macroSize) := by
+  unfold canonicalRelativeRmmInteriorRangeMinComputation
+  rw [if_neg hc, if_neg hgt, if_pos hmid]
+
+/-- Branch 4: whole middle macros and no right remainder is `#7`. -/
+theorem interiorRangeMin_of_leftMiddle (shape : Cartesian.CartesianShape)
+    (startBlock count : Nat) (hc : count ≠ 0)
+    (hgt : ¬ (count ≤ (RelativeRmm.canonicalLayout shape).macroSize -
+      startBlock % (RelativeRmm.canonicalLayout shape).macroSize))
+    (hmid : ¬ ((count - ((RelativeRmm.canonicalLayout shape).macroSize -
+        startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+      (RelativeRmm.canonicalLayout shape).macroSize = 0))
+    (hright : (count - ((RelativeRmm.canonicalLayout shape).macroSize -
+        startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
+      (RelativeRmm.canonicalLayout shape).macroSize = 0) :
+    canonicalRelativeRmmInteriorRangeMinComputation shape startBlock count =
+      canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation shape
+        (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+        (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+        ((count - ((RelativeRmm.canonicalLayout shape).macroSize -
+            startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+          (RelativeRmm.canonicalLayout shape).macroSize) := by
+  unfold canonicalRelativeRmmInteriorRangeMinComputation
+  rw [if_neg hc, if_neg hgt, if_neg hmid, if_pos hright]
+
+/-- Branch 5: everything else is `#8`. -/
+theorem interiorRangeMin_of_cross (shape : Cartesian.CartesianShape)
+    (startBlock count : Nat) (hc : count ≠ 0)
+    (hgt : ¬ (count ≤ (RelativeRmm.canonicalLayout shape).macroSize -
+      startBlock % (RelativeRmm.canonicalLayout shape).macroSize))
+    (hmid : ¬ ((count - ((RelativeRmm.canonicalLayout shape).macroSize -
+        startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+      (RelativeRmm.canonicalLayout shape).macroSize = 0))
+    (hright : ¬ ((count - ((RelativeRmm.canonicalLayout shape).macroSize -
+        startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
+      (RelativeRmm.canonicalLayout shape).macroSize = 0)) :
+    canonicalRelativeRmmInteriorRangeMinComputation shape startBlock count =
+      canonicalRelativeRmmMachineCrossMacroCandidateComputation shape
+        (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+        (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+        ((count - ((RelativeRmm.canonicalLayout shape).macroSize -
+            startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+          (RelativeRmm.canonicalLayout shape).macroSize)
+        ((count - ((RelativeRmm.canonicalLayout shape).macroSize -
+            startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
+          (RelativeRmm.canonicalLayout shape).macroSize) := by
+  unfold canonicalRelativeRmmInteriorRangeMinComputation
+  rw [if_neg hc, if_neg hgt, if_neg hmid, if_neg hright]
+
+/-! ### The caller's guard needs no machine counterpart
+
+`bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`
+(`ChargedFringeTrace.lean:1144`) wraps the interior in
+
+    if leftBlock + 1 < rightBlock then <interior> else pure none
+
+a STRICT guard, with `leftBlock = blockOfClose blockSize leftClose` and
+`blockOfClose blockSize close = close / blockSize` (`BlockLocal.lean:865`).
+
+`#9`'s machine program does not test it, and does not need to: when the
+guard fails, the count the interior would be called with truncates to `0`
+in `Nat`, and `#9`'s own first branch already answers `pure none`.  So
+the two `none` paths coincide and the block carries ONE. -/
+theorem interiorRangeMin_guard_subsumed (blockSize leftClose rightClose : Nat)
+    (h : ¬ (blockOfClose blockSize leftClose + 1 <
+      blockOfClose blockSize rightClose)) :
+    blockOfClose blockSize rightClose -
+      blockOfClose blockSize leftClose - 1 = 0 := by
+  unfold blockOfClose at *
+  omega
+
+/-- And on the other side of the guard the range is exactly what the
+preamble computes: `startBlock = leftClose / blockSize + 1` and
+`count = rightClose / blockSize - leftClose / blockSize - 1`, both
+`divConst`-computable from `fClose` and `fRight` alone.  **That is what
+makes `hInterior` dischargeable at all**: the premise quantifies over
+every entry register file agreeing on those two registers, with the
+interior's value bound outside the quantifier, so an interior reading any
+unpinned register could not satisfy it however correct it was. -/
+theorem interiorRange_from_operands (blockSize leftClose rightClose : Nat) :
+    blockOfClose blockSize leftClose + 1 = leftClose / blockSize + 1 ∧
+      blockOfClose blockSize rightClose - blockOfClose blockSize leftClose - 1
+        = rightClose / blockSize - leftClose / blockSize - 1 :=
+  ⟨rfl, rfl⟩
+
 /-! ## THE WITNESS LAYOUT AND ITS IMPOSTOR
 
 The real block is 4204 instructions over five heavyweight sub-blocks and
