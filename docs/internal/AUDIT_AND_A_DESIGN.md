@@ -4892,3 +4892,58 @@ Worth noting what this changes about the closing sequence: the A08 audit report
 is already integrated on `main`, so the external audit of B7 that was outstanding
 when this session began is done and accepted. That removes one of the open items
 I had been carrying.
+
+---
+
+## C05 round 76 — my repair spec would have shipped the defect it was fixing
+
+Lane A5 returned INCOMPLETE at `a15ef15`, eight commits. Item 1 closed; item 2
+not attempted, and it said so plainly and called the trade a judgement I may
+disagree with.
+
+**MY TWENTY-FOURTH FAILED CLAIM, and the worst kind.** My brief and DD-162 both
+specified an output stage that "decodes `fRes` into `regOut`'s packet and halts."
+That stage **halts at the right address carrying the wrong number.** The route's
+`.full` value is `some ((rank … (answerClose + 1)).value - 1)` — **a rank leg
+sits between the close/LCA answer and the output packet.** `fRes` is a close
+POSITION; the answer is an INDEX.
+
+In the worker's words: four instructions would have produced a program that
+"halts, answers `some`, passes every layout check, and is wrong — **the same
+defect class, one level up, invisible to the same checks.**" My repair for a
+right-shape/wrong-content defect was itself a right-shape/wrong-content defect.
+The stage that landed is 64 instructions. A nice detail: `regOut := rVal` needs
+no shift, because `decodePacket (v+1) = some v` while the route's value is
+`rank.value - 1` — the shifts cancel.
+
+**The repair was EXECUTED and proved not to reach the `none` writer, three
+ways** — exact-fuel enumeration from `5580` with no step at `5644`, an address
+theorem, and an instruction-identity theorem. And end to end, **three of the
+four route branches now run from `initialState` to a halted state**: `.full` on
+the same-block arm, and **both `none` branches against the route's own
+`wholeQueryBranchTrace`/`wholeQueryBranchValue`.** The two theorems pinning the
+old defect are retained rather than deleted.
+
+**Two more defects found by instantiating at the real target, which is rule 1
+working exactly as intended.** `wholeQuerySelectPrefix_runsTo`'s `hguard` was
+pinned to target `821` while the skeleton builds `5644` — **unsatisfiable at the
+intended instantiation**, caught only because someone tried to use it. And a
+docstring cited a lemma "below" whose name occurred **exactly once in the tree —
+in that sentence.** Now supplied.
+
+**A correction to MY framing of the danger.** I have been saying the positional
+category log is the SOLE discriminator on the `none` branches. At the real block
+it is not: the receipt is positional on the WHOLE receipt, pinned to exactly
+`selL ++ selR` with nothing appended, and the skipped code is `closeLcaProgramAt`
+— **4753 instructions that read.** So the receipt DOES catch a spurious close/LCA
+leg there. The block's blindness is strictly narrower than the fixture's. My
+claim was true of a small fixture and I generalised it to the block. Category
+accounting still has no discriminator anywhere; that part stands.
+
+**One thing the worker refused to guess at, and it is the right call.** The
+`.lcaNone` branch has no machine stage, and the composed leg's arm theorems
+conclude `some (regsF fRes) = arm.value` — so on this composition the leg's value
+is always `some`. Whether `.lcaNone` is UNREACHABLE at these arms, or a dispatch
+stage is owed, is genuinely open. **This is rule 2 territory: if the branch is
+unreachable, that owes a witness of vacuity, not an assumption.** Handed to the
+next lane as an explicit question to settle by proof.
