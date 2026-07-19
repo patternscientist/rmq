@@ -280,3 +280,68 @@ no `Lean.ofReduceBool`, so no `native_decide` leaked in.
   hygiene rg clean; `git diff --check` clean.
 - M2 (this commit): `lake build RMQ` exit 0, 384.9s, 0 errors.
 - `#print axioms` on the ten M1 names: clean (see above).
+
+## Verification battery at `af6023d` (M2)
+
+- `lake build RMQ` exit 0 (384.9s, 0 errors).
+- `lake build RMQ RMQPaper RMQExamples` exit 0 (55.6s incremental, 0 errors).
+- `git diff --check` exit 0; `git diff --check f6564ec..HEAD` exit 0.
+- `design_decision_check.ps1 -Strict -Base f6564ec` exit 0 (5 changed files).
+- `claim_drift_scan.ps1` exit 0. (The four `[fail]` substrings in the
+  output are fixture TEXT quoted inside W15/W21 matrix rows, not
+  classifications, matching the B6 ledger.)
+- `paper_topology_lint.ps1` PASS, exit 0 (83 broad documentary
+  identifiers; 49 paper identifiers resolved) - byte-identical counts to
+  the B6 ledger, as expected since the literal has not moved yet.
+  NOTE: this lint FAILS with `unknown module prefix 'RMQPaper'` until
+  `lake build RMQPaper` has run in the worktree. That is a build-state
+  precondition of the lint, not a claim regression; worth knowing because
+  it looks alarming.
+- `lake env lean scripts/headline_axiom_check.lean` exit 0, no errors, no
+  `Lean.ofReduceBool`.
+- `#print axioms` on the ten new names (after a root build):
+  `[propext, Quot.sound]` or `[propext]` only. No `Classical.choice`, no
+  `Lean.ofReduceBool`.
+- Hygiene `rg` over the new module: zero hits for
+  sorry/admit/native_decide/implemented_by/partial/unsafe/extern/
+  noncomputable/`import Mathlib`/axiom.
+
+### PRE-EXISTING, EXTERNALLY OWNED BLOCKER (not caused by this rung)
+
+`lake env lean scripts/wordram_axiom_check.lean` FAILS, exit 1:
+
+    scripts/wordram_axiom_check.lean:197:14: error: unknown constant
+    'RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_76'
+
+Verified pre-existing and NOT attributable to B7: the name occurs nowhere
+in `RMQ/`; it is referenced only by `scripts/wordram_axiom_check.lean:197`
+and `scripts/axiom_check.lean:975`. The delegation already records
+`axiom_check.lean` as broken for two independent reasons and assigned
+elsewhere; this is evidently the same defect reaching the second script.
+Both files are owned by `claude/a07-blocker-repairs`, so B7 does NOT touch
+them. B7's diff touches only its own five files, none in `SuccinctFinal`
+and none in `scripts/`. Flagged for the coordinator: the B7 final battery
+cannot be completed while this script is red, through no fault of this
+rung.
+
+## STATUS AT END OF SESSION: INCOMPLETE
+
+Resume steps 1 of 6 complete (M2). Steps 2-6 remain, as written in the
+RESUME INVENTORY above, unchanged and still file:line accurate. The next
+action is RESUME STEP 2 (extend `canonicalRelativeRmmInteriorComponentStore`
+at `InteriorDirectory.lean:1494` and
+`CanonicalRelativeRmmInteriorComponentOffsets` at `:1513`/`:1523` with the
+two level-table regions). That step was deliberately NOT started: it is
+the first structurally risky edit of the rung (a right-nested
+`BoundedPayloadWordStore.append` chain plus a `deriving DecidableEq`
+structure with a trailing `deadAddress` field that must move past both new
+regions), and starting it without budget to finish would have left the
+tree red rather than green.
+
+Coordinator ruling received and recorded for the next session: the
+207 -> 210 move is AUTHORIZED, to be executed in the established pattern -
+freeze 207 as a named historical constant with its `_eq` theorem and
+guards exactly as 142/76/328 are, update every Lean consumer, move the
+CURRENT topology anchor `SumLe207` in `scripts/paper_topology_lint.ps1`
+and `scripts/headline_axiom_check.lean`, leave the frozen legacy anchor
+list untouched, and delete no historical constant.
