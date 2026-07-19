@@ -3704,3 +3704,61 @@ Reviewers must be able to distinguish a certified upper bound from a witnessed
 worst case and a missing proof from evidence recorded append-only. The rule
 prevents both mathematical overstatement and audit rejection based only on
 document layout.
+
+## WDD-20260719-006: detect exhaustive current-surface contracts by semantics, not one phrase
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: worker-prompt preflight, transitive documentation write scope, and the
+B7-R1 repair chain.
+
+Decision:
+
+1. Treat a prompt as an exhaustive current-surface synchronization task when
+   it names `currentFactSurfacePathRegex`, uses a stable
+   `CURRENT-PUBLIC-SURFACES` acceptance ID, or requires every registered,
+   governed, live, current, public, or documentation surface to agree.
+2. Apply the existing exact registry-attestation gate to all such wordings:
+   matched count, complete inspected path set, expected repair paths, and write
+   ownership must agree with the exact worker base.
+3. Keep the registry-derived read set distinct from the narrower repair set;
+   this hardening does not grant blanket documentation write access.
+
+Trigger and evidence:
+
+B7-R1 prompt base `55e2b9ae3704a16129aaecc9c12f487aee5df12e`
+required every governed/registered current surface to state the live B7 facts,
+but its hand-written scope omitted five of the 18 paths matched by
+`currentFactSurfacePathRegex`. The structural preflight passed because its
+trigger recognized `CURRENT-SURFACE-SYNC` and one `every live ... surface`
+spelling, but not the B7 acceptance ID or governed/registered variants. Worker
+checkpoint `24a166c5959aa1cac52be6d0aeefb3e2811f056c` then stopped correctly
+before implementation.
+
+Rejected alternatives:
+
+- Accept recurring clean scope stops as the normal discovery mechanism.
+- Add only the five B7 paths without repairing the preflight trigger.
+- Trigger on every occurrence of the word `current`, which would impose an
+  exhaustive registry contract on unrelated prompts.
+- Grant all documentation paths to every public-claim worker.
+
+Consequences and regression evidence:
+
+- `worker_prompt_preflight.ps1` recognizes the B7 stable ID, the registry field,
+  and governed/registered exhaustive wording.
+- Named regression
+  `b7-governed-current-surface-wording-without-inventory-rejected` reproduces
+  the missed launch pattern and requires the existing registry-attestation
+  failure.
+- Existing positive exact-inventory and accurately scoped weaker-task controls
+  remain unchanged.
+- No Lean proposition, payload, proof field, modeled cost, trace, allocation,
+  runtime behavior, or public mathematical claim changes.
+
+Publication-facing significance:
+
+Submission-freeze repairs cannot silently omit current reviewer surfaces merely
+because their prompts express exhaustiveness with different natural language.
+The worker receives a closed evidence surface before editing, avoiding repeated
+documentation-only repair loops and scope stops.

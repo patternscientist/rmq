@@ -200,7 +200,7 @@ try {
   }
 
   $isCurrentSurfaceSync =
-    $promptText -match '(?i)(?:CURRENT-SURFACE-SYNC|every\s+live(?:\s+current)?(?:\s+public)?(?:/documentation)?\s+surface)'
+    $promptText -match '(?i)(?:CURRENT-SURFACE-SYNC|CURRENT-PUBLIC-SURFACES|currentFactSurfacePathRegex|every\s+(?:(?:registered|governed|live|current|public|documentation)\s+){0,5}surface|every\s+surface\s+registered)'
   if ($isCurrentSurfaceSync) {
     $inventoryMatch = [regex]::Match(
       $promptText,
