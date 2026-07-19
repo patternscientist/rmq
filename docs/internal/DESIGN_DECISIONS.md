@@ -4843,3 +4843,79 @@ shape tried, so the single-chunk premise behind the gloss is false. The
 theorem itself is correct and unaffected -- only its docstring's
 justification is out of date. Left for the owner of that module rather than
 edited here.
+
+## DD-20260719-015: the min-candidate consumer implements ALL FOUR presence tests, because `maxRel` is discarded by the FUNCTION and load-bearing through the OPTION STRUCTURE (E1 M3d-21)
+
+Claimed this session; the maximum OBSERVED in this file was
+`DD-20260719-014`, checked before claiming.
+
+Context. `canonicalRelativeRmmMachineMinCandidateComputation`
+(`InteriorDirectory.lean:2300`) is `summary.map (bpRelativeSummaryMinCandidate
+layout.blockSize layout.blocksPerSuper block)` over the summary group's
+four cells. `bpRelativeSummaryMinCandidate`
+(`EndpointFringe/PrefixRange/RelativeSummaryCandidate.lean:15`) reads
+`summary.1`, `summary.2.1` and `summary.2.2.2`. `maxRel` is `summary.2.2.1`
+and is NEVER READ -- confirmed at source, not taken on report.
+
+Decision: test all four cells for presence anyway, and do not collapse the
+`maxRel` test.
+
+The ground is not only the positional receipt. The summary's own assembly
+(`InteriorDirectory.lean:2293-2296`) is a four-way match whose sole `some`
+arm requires all four to be `some`, with `| _, _, _, _ => none` as the
+catch-all. So `maxRel = none` forces the summary to `none`, hence the
+min-candidate to `none`. `maxRel` is discarded by the FUNCTION and
+load-bearing through the OPTION STRUCTURE.
+
+This matters because the receipt-only reading licenses an UNSOUND block. A
+block that keeps the `maxRel` READ -- satisfying the positional receipt,
+the read count, the trace length and the exit code -- but ignores its
+VALUE returns `some` exactly where the route returns `none`. Right shape,
+wrong content, invisible to every aggregate check. The prior session
+recorded this as a live fork; this entry closes it.
+
+The `none` arm is REACHABLE, not hypothetical.
+`FixedWidthNatTable.machineReadComputationAt`
+(`SuccinctSpace/MachineChunkedTableProgram.lean:343`) reads `[deadAddress]`
+when the index is out of range, and that decodes to `none`.
+
+The alternative considered and REJECTED. Proving
+`maxRel.entriesLen = minRel.entriesLen` would let the four-way test
+collapse to two. It is rejected on two independent grounds. The equality is
+evaluated equal at four sizes -- `(1,2,2,2)`, `(1,3,3,3)`, `(2,9,9,9)`,
+`(4,28,28,28)` -- and proved NOWHERE in the tree, so assuming it would be
+unsound; and even once proved it would make the machine's control flow
+DIVERGE from the route's, where the unimpeachable option is a structural
+correspondence a reviewer can diff arm-for-arm. Assuming the equality
+without proving it was the one unsound option available.
+
+Consequence for the statement. The result is stated as the ROUTE'S OWN
+EXPRESSION with the route's four reads replaced by the four saved cells:
+`summaryOfCells` is arm-for-arm `InteriorDirectory.lean:2293-2296`, `mx`
+binder present and unused on the left exactly as it is there. The `maxRel`
+cell therefore appears on BOTH sides of the theorem and is not an argument
+the statement could drop.
+
+Decision 2: `none` is the FALLTHROUGH, not a branch destination. The block
+writes the `none` encoding into the output pair first and conditionally
+skips the value computation. That mirrors the route's catch-all arm, and it
+costs one instruction less than the alternative because no unconditional
+jump -- and so no always-nonzero register -- is needed.
+
+Decision 3: the option shift is applied LAST. The saved cells are
+option-shifted and so is the output value register, but the shifts do not
+cancel: the route's value is `baseline + minRel - span` with TRUNCATING Nat
+subtraction. The block computes `(cB + cMn) - (span + 2)` -- folding both
+shifts into the constant, valid because `a + k - (b + k) = a - b` holds
+unconditionally in `Nat` -- and only then adds `1`. Adding the `1` before
+the subtraction would give `(b + mn + 1) - span`, which differs from
+`(b + mn - span) + 1` at every `span > b + mn`.
+
+Anti-vacuity, EXECUTED rather than argued. The kernel runs the block on
+fixtures differing in exactly one cell and the outputs differ, for each of
+the four cells in turn; the `maxRel` pair is the decisive one, since that
+is the mutation a receipt-only block would survive. Both arms' read logs
+are `[]` by kernel reduction, and the two arms charge different category
+logs. The main theorem is also instantiated at the witness fixture, so its
+hypotheses are shown satisfiable at the intended instantiation rather than
+at a fixture built to fit them.

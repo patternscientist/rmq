@@ -261,13 +261,26 @@ The baseline read is at `block / blocksPerSuper` and the other three at
 uniformly before stages 2, 3 and 4 keeps every stage's index premise local
 and costs three instructions.
 
-THE `maxRel` STAGE IS NOT OPTIMISABLE AWAY.  Its value IS bound into the
-summary tuple (`InteriorDirectory.lean:2295`) and then discarded by
-`bpRelativeSummaryMinCandidate` (`:2300`), so a value-only reading would
-license dropping the read.  It is kept because the block owes the route's
-POSITIONAL RECEIPT: the trace below is the concatenation of four route
-event lists, and dropping the third would break the receipt equality even
-though no consumer inspects the value.
+THE `maxRel` STAGE IS NOT OPTIMISABLE AWAY, FOR TWO INDEPENDENT REASONS.
+
+First, the POSITIONAL RECEIPT: the trace below is the concatenation of
+four route event lists, and dropping the third would break the receipt
+equality.
+
+Second -- and this is the reason a receipt-only reading MISSES -- the
+value is load-bearing through the OPTION STRUCTURE.  `maxRel` is bound
+into the summary tuple by a four-way match whose sole `some` arm needs
+all four components present (`InteriorDirectory.lean:2293-2296`), so
+`maxRel = none` forces the whole summary, and hence the min-candidate, to
+`none`.  It is true that `bpRelativeSummaryMinCandidate` (`:2300`) never
+READS `summary.2.2.1`; it does not follow that the cell may be ignored.
+A block that kept this read but discarded its value would return `some`
+exactly where the route returns `none` -- with an identical trace, read
+count and exit code.
+
+The consumer that depends on this is
+`E1InteriorMinCandidate.minCandidateBlock`, whose `maxRel` presence test
+is justified at DD-20260719-015.
 -/
 def summaryGroup (L : SummaryLayout) (Q : Nat) : List Instr :=
   summaryStage (Instr.divConst iIdx sBlock L.blocksPerSuper) L.segment
@@ -705,10 +718,11 @@ theorem geomCell_minRel_eq_routeDecode (shape : Cartesian.CartesianShape)
     (canonicalSummaryLayout_minRel_cap shape)
     (E1InteriorStoreConcrete.hexact_minRel_concrete rfl hvalid hvalid)
 
-/-- maxRel: the third read.  ITS VALUE IS DISCARDED DOWNSTREAM and the
-bridge is provided anyway -- the read is owed to the positional receipt,
-and a bridge that existed only where a consumer inspects the value would
-invite exactly the optimisation the receipt forbids. -/
+/-- maxRel: the third read.  Its value is never READ by
+`bpRelativeSummaryMinCandidate`, but the bridge is load-bearing rather
+than merely defensive: the route's summary is `none` whenever this cell
+is `none` (`InteriorDirectory.lean:2293-2296`), so the consumer's
+`none`/`some` split is decided in part HERE.  See DD-20260719-015. -/
 theorem geomCell_maxRel_eq_routeDecode (shape : Cartesian.CartesianShape)
     {i : Nat}
     (hvalid : i < (canonicalSummaryLayout shape).maxRel.entriesLen) :
