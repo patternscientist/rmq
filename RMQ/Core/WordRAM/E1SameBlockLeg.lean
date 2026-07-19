@@ -571,6 +571,157 @@ theorem sameBlockLegProgram_runsTo_canonical
       p8 p9 p10 p11 h0 h1 h2 regs hClose hRight
   simpa using h
 
+/-! ## BASE-PARAMETRIC HOSTING (M3d-6)
+
+`sameBlockLegProgram` above is a witness only at base `0`: three of its
+internal branch targets are ABSOLUTE addresses (`fringeMerge 97`, the
+`brNZ fCnt 97` fold back edge, and `fringeCandGlobal 164`), plus the
+rank-close block's own segment base `5`.  Hosting the leg BEHIND a
+dispatch prefix moves the whole block off `0`, so those four internal
+addresses must move with it.
+
+`sameBlockLegProgramAt B` is the same 173-instruction layout with every
+internal address rebased to `B`.  Note that `sameBlockLeg_runsTo_canonical`
+was ALREADY stated base-parametrically -- its hosting hypotheses sit at
+`A + k` and its targets are written `A + 97` / `A + 164` -- so the
+simulation theorem needs no change.  What was missing, and what this
+section supplies, is a witness program able to satisfy those hypotheses at
+a NONZERO base.
+-/
+
+/-- The 173-instruction same-block close leg laid out for host base `B`:
+identical to `sameBlockLegProgram` except that the four internal addresses
+are `B`-relative. -/
+def sameBlockLegProgramAt (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize B : Nat) : List Instr :=
+  windowAddr blockSize (SuccinctRank.machineWordBits shape.bpCode.length) ++
+    (rankSeedPos ++
+      (rankCloseBlock (B + 5) concreteBPNativeRankCloseTraceSegmentBase
+          (bpFringeChunkBits shape.bpCode.length) shape.bpCode.length
+          (builtRelativeSplitBPCloseRankData shape).wordSize
+          (builtRelativeSplitBPCloseRankData shape).blocksPerSuper ++
+        (rankSeedFinish ++
+          (windowRange ++
+            (fringeArmPrologue (sbChunkBits shape) ++
+              (fringePrefix fringeSegment (sbChunkBits shape) ++
+                (fringeMerge (B + 97) ++
+                  ((fringeShift (sbChunkBits shape)
+                        (SuccinctRank.machineWordBits shape.bpCode.length) ++
+                      fringeAdvance) ++
+                    ([Instr.brNZ fCnt (B + 97)] ++
+                      (fringeCandGlobal (B + 164) ++ sameBlockClose))))))))))
+
+@[simp] theorem sameBlockLegProgramAt_length
+    (shape : Cartesian.CartesianShape) (fringeSegment blockSize B : Nat) :
+    (sameBlockLegProgramAt shape fringeSegment blockSize B).length = 173 := by
+  simp [sameBlockLegProgramAt]
+
+/-- The base-parametric layout SPECIALISES to the landed base-`0` one, so
+nothing already proved about `sameBlockLegProgram` regresses. -/
+theorem sameBlockLegProgramAt_zero
+    (shape : Cartesian.CartesianShape) (fringeSegment blockSize : Nat) :
+    sameBlockLegProgramAt shape fringeSegment blockSize 0 =
+      sameBlockLegProgram shape fringeSegment blockSize := by
+  simp [sameBlockLegProgramAt, sameBlockLegProgram]
+
+/--
+EVERY hosting hypothesis of `sameBlockLeg_runsTo_canonical` at base `B`
+follows from the single assumption that `sameBlockLegProgramAt ... B` is
+hosted at `B`.  Each offset is forced by the preceding segments' lengths
+through `append_right`, so the layout table is CHECKED, not asserted -- an
+off-by-one anywhere makes this fail to typecheck.
+-/
+theorem sameBlockLegProgramAt_hosts
+    (shape : Cartesian.CartesianShape) {program : E1Machine.Program}
+    (fringeSegment blockSize B : Nat)
+    (hHost : HostedAt program B
+      (sameBlockLegProgramAt shape fringeSegment blockSize B)) :
+    HostedAt program B
+        (windowAddr blockSize
+          (SuccinctRank.machineWordBits shape.bpCode.length)) ∧
+      HostedAt program (B + 4) rankSeedPos ∧
+      HostedAt program (B + 5)
+        (rankCloseBlock (B + 5) concreteBPNativeRankCloseTraceSegmentBase
+          (bpFringeChunkBits shape.bpCode.length) shape.bpCode.length
+          (builtRelativeSplitBPCloseRankData shape).wordSize
+          (builtRelativeSplitBPCloseRankData shape).blocksPerSuper) ∧
+      HostedAt program (B + 65) rankSeedFinish ∧
+      HostedAt program (B + 68) windowRange ∧
+      HostedAt program (B + 76) (fringeArmPrologue (sbChunkBits shape)) ∧
+      HostedAt program (B + 97)
+        (fringePrefix fringeSegment (sbChunkBits shape)) ∧
+      HostedAt program (B + 129) (fringeMerge (B + 97)) ∧
+      HostedAt program (B + 142)
+        (fringeShift (sbChunkBits shape)
+          (SuccinctRank.machineWordBits shape.bpCode.length) ++
+          fringeAdvance) ∧
+      program[B + 163]? = some (.brNZ fCnt (B + 97)) ∧
+      HostedAt program (B + 164) (fringeCandGlobal (B + 164)) ∧
+      HostedAt program (B + 171) sameBlockClose := by
+  rw [sameBlockLegProgramAt] at hHost
+  have h1 := hostedAt_step (n := B + 4) hHost (by simp)
+  have h2 := hostedAt_step (n := B + 5) h1 (by simp)
+  have h3 := hostedAt_step (n := B + 65) h2 (by simp)
+  have h4 := hostedAt_step (n := B + 68) h3 (by simp)
+  have h5 := hostedAt_step (n := B + 76) h4 (by simp)
+  have h6 := hostedAt_step (n := B + 97) h5 (by simp)
+  have h7 := hostedAt_step (n := B + 129) h6 (by simp)
+  have h8 := hostedAt_step (n := B + 142) h7 (by simp)
+  have h9 := hostedAt_step (n := B + 163) h8 (by simp)
+  have h10 := hostedAt_step (n := B + 164) h9 (by simp)
+  have h11 := hostedAt_step (n := B + 171) h10 (by simp)
+  refine ⟨hHost.append_left, h1.append_left, h2.append_left, h3.append_left,
+    h4.append_left, h5.append_left, h6.append_left, h7.append_left,
+    h8.append_left, ?_, h10.append_left, h11⟩
+  -- NOTE: `by decide` closes this at base `0` but NOT here: with `B` free
+  -- the goal `0 < [Instr.brNZ fCnt (B + 97)].length` contains a free
+  -- variable and `decide` refuses it.  `simp` computes the length instead.
+  exact h9.append_left 0 (by simp)
+
+/--
+THE SAME-BLOCK CLOSE LEG AT AN ARBITRARY HOST BASE.
+
+`sameBlockLegProgram_runsTo_canonical` generalised off base `0`: given only
+that the rebased layout is hosted at `B`, the leg runs from `B` to
+`B + 173` reproducing the route's own trace and value.  This is the form a
+dispatch prefix needs.
+-/
+theorem sameBlockLegProgramAt_runsTo_canonical
+    (shape : Cartesian.CartesianShape) {program : E1Machine.Program}
+    {fringeSegment blockSize leftClose rightClose B : Nat}
+    (hHost : HostedAt program B
+      (sameBlockLegProgramAt shape fringeSegment blockSize B))
+    (hc : sbChunkBits shape ≤ SuccinctRank.machineWordBits shape.bpCode.length)
+    (h0 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (sbBase shape blockSize leftClose)).length =
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (h1 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (sbBase shape blockSize leftClose + 1)).length =
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (h2 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (sbBase shape blockSize leftClose + 2)).length =
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (regs : RegFile)
+    (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose) :
+    ∃ regsF : RegFile,
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          program ⟨regs, B, false⟩ ⟨regsF, B + 173, false⟩
+        (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+          shape (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
+          fringeSegment (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          blockSize leftClose rightClose).trace
+        (sameBlockLegCats shape fringeSegment blockSize leftClose
+          rightClose) ∧
+      some (regsF fRes) =
+        (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+          shape (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
+          fringeSegment (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          blockSize leftClose rightClose).value := by
+  obtain ⟨p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11⟩ :=
+    sameBlockLegProgramAt_hosts shape fringeSegment blockSize B hHost
+  exact sameBlockLeg_runsTo_canonical (A := B) shape hc p0 p1 p2 p3 p4 p5 p6
+    p7 p8 p9 p10 p11 h0 h1 h2 regs hClose hRight
+
 end E1SameBlockLeg
 end WordRAM
 end RMQ
