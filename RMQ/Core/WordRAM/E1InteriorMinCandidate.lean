@@ -1088,6 +1088,309 @@ theorem routeDecodedSummary_eq_summaryComputation_value
   simp [FlatStoreExecution.append]
   rfl
 
+/-! ## THE RECEIPT, POSITIONALLY, IN THE ROUTE'S BIND ORDER
+
+The theorem above settles the summary tuple's VALUE.  IT DOES NOT SETTLE
+THE RECEIPT, and the independence is not a technicality -- the fixtures at
+the end of this section EXHIBIT two four-segment receipts that
+* have the same number of segments,
+* have the same total length,
+* have segments of the same respective lengths, and
+* PRODUCE THE SAME VALUE,
+and that are nevertheless different receipts, because the head segment
+reads the wrong CELL.  Every aggregate check the harness performs -- read
+count, trace length, segment count, and the value equation proved above --
+accepts both.  Only element-by-element comparison rejects the impostor.
+
+THE DEFECT MODELLED IS THE ROUTE'S OWN MOST LIKELY ONE.  The baseline read
+is issued at `block / blocksPerSuper`; the other three are issued at
+`block`.  The head is therefore the ONE segment whose index differs from
+its neighbours', which makes "copy the index from the segment below" a
+live error.  The stale-head fixture is exactly that error.
+
+The equation below is stated per-constructor and in issue order, with each
+segment's INDEX written out, so the head's `block / blocksPerSuper` is
+visible in the statement rather than buried in a definition. -/
+
+/-- THE RECEIPT OF ONE SUMMARY COMPONENT READ, at the canonical store and
+layout: the component's own address list, each address paired with the word
+the canonical store returns there. -/
+def summaryReadReceipt (shape : Cartesian.CartesianShape)
+    (G : E1InteriorSummaryGroup.TableGeom) (i : Nat) :
+    List (Prod Nat (Option (List Bool))) :=
+  (E1InteriorChunkFold.chunkAddrs G.base
+      (canonicalSummaryLayout shape).deadAddress G.entriesLen G.chunkCount i).map
+    (fun a =>
+      (a, (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        (canonicalSummaryLayout shape).segment a))
+
+/-- THE SUMMARY COMPUTATION'S RECEIPT IS THE FOUR COMPONENT RECEIPTS,
+CONCATENATED IN THE ROUTE'S BIND ORDER.
+
+Baseline at the SUPERBLOCK index `block / blocksPerSuper`, then minRel,
+maxRel and argOffset at `block` -- in that order, with no aggregation
+anywhere in the statement.  No validity, cap or store hypothesis, inherited
+from the hypothesis-free receipt lemma exactly as the value theorem above
+inherits from the hypothesis-free links. -/
+theorem summaryComputation_reads_eq_routeReceipt
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    ((canonicalRelativeRmmMachineSummaryComputation shape block).run
+        (RMQ.SuccinctClose.flatWordStoreOfReadStore
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (canonicalSummaryLayout shape).segment)).reads =
+      summaryReadReceipt shape (canonicalSummaryLayout shape).baseline
+            (block / (canonicalSummaryLayout shape).blocksPerSuper)
+        ++ summaryReadReceipt shape (canonicalSummaryLayout shape).minRel block
+        ++ summaryReadReceipt shape (canonicalSummaryLayout shape).maxRel block
+        ++ summaryReadReceipt shape (canonicalSummaryLayout shape).argOffset
+            block := by
+  unfold canonicalRelativeRmmMachineSummaryComputation
+    canonicalRelativeRmmMachineReadNatComputation summaryReadReceipt
+  simp only [FlatStoreComputation.bind_run, FlatStoreComputation.map_run_reads,
+    FlatStoreExecution.append]
+  rw [E1InteriorSummaryGroup.machineReadComputation_reads
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape) _
+        (canonicalRelativeRmmSummaryTable shape).baselineTable _ _ _ _ _ _
+        rfl rfl,
+      E1InteriorSummaryGroup.machineReadComputation_reads
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape) _
+        (canonicalRelativeRmmSummaryTable shape).minRelTable _ _ _ _ _ _
+        rfl rfl,
+      E1InteriorSummaryGroup.machineReadComputation_reads
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape) _
+        (canonicalRelativeRmmSummaryTable shape).maxRelTable _ _ _ _ _ _
+        rfl rfl,
+      E1InteriorSummaryGroup.machineReadComputation_reads
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape) _
+        (canonicalRelativeRmmSummaryTable shape).argOffsetTable _ _ _ _ _ _
+        rfl rfl]
+  simp [canonicalSummaryLayout]
+
+/-- ONE SEGMENT, MACHINE AGAINST ROUTE.  The machine's emitted events for a
+component read are that component's receipt, respelled event-wise.  Both
+sides are the SAME `chunkAddrs` list under the SAME store lookup, so this
+is a change of vocabulary and nothing more. -/
+theorem geomEvents_eq_summaryReadReceipt_map
+    (shape : Cartesian.CartesianShape)
+    (G : E1InteriorSummaryGroup.TableGeom) (i : Nat) :
+    geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (canonicalSummaryLayout shape) G i =
+      (summaryReadReceipt shape G i).map
+        (fun p =>
+          TraceEvent.readWord (canonicalSummaryLayout shape).segment p.1 p.2) := by
+  simp [geomEvents, E1InteriorChunkFold.chunkRouteEvents, summaryReadReceipt,
+    List.map_map, Function.comp]
+
+/-- THE POSITIONAL RECEIPT EQUALITY, MACHINE AGAINST ROUTE.
+
+The trace `summaryMinCandidate_runsTo` (`:929`) emits IS the read log the
+route's summary computation records -- the same events, in the same
+positions, carrying the same segment, addresses and words.
+
+THIS IS THE OBLIGATION MISSION ITEM 1 NAMES, and it is what
+`summaryComputation_reads_eq_routeReceipt` exists to support: the machine
+side is four `geomEvents`, the route side is four `summaryReadReceipt`
+segments, and both reduce to the SAME `chunkAddrs` list mapped through the
+SAME store lookup.  Nothing here is an aggregate: the equation is between
+two lists, so it constrains every position.
+
+The map is the injection `(address, word) => TraceEvent.readWord segment
+address word`, which is how the operational read log and the machine's
+trace vocabulary differ; it is a change of spelling, not of content. -/
+theorem summaryMachineTrace_eq_routeReads
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    (geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (canonicalSummaryLayout shape)
+          (canonicalSummaryLayout shape).baseline
+          (block / (canonicalSummaryLayout shape).blocksPerSuper) ++
+        geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (canonicalSummaryLayout shape)
+          (canonicalSummaryLayout shape).minRel block ++
+        geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (canonicalSummaryLayout shape)
+          (canonicalSummaryLayout shape).maxRel block ++
+        geomEvents (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (canonicalSummaryLayout shape)
+          (canonicalSummaryLayout shape).argOffset block) =
+      ((canonicalRelativeRmmMachineSummaryComputation shape block).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalSummaryLayout shape).segment)).reads.map
+        (fun p =>
+          TraceEvent.readWord (canonicalSummaryLayout shape).segment p.1 p.2) := by
+  rw [summaryComputation_reads_eq_routeReceipt, List.map_append,
+    List.map_append, List.map_append, geomEvents_eq_summaryReadReceipt_map,
+    geomEvents_eq_summaryReadReceipt_map, geomEvents_eq_summaryReadReceipt_map,
+    geomEvents_eq_summaryReadReceipt_map]
+
+/-! ### ANTI-VACUITY: THE STALE HEAD, EXECUTED
+
+Parametric in `wordSize` for the reason recorded in the summary group: the
+shape-level receipt routes through `machineWordBits`, hence `Nat.log2`,
+which the kernel cannot evaluate.  These fixtures run the SAME receipt
+lemma the theorem above consumes, at `wordSize = 8`.
+
+DELIBERATELY MULTI-CHUNK, and the count is EVALUATED rather than inherited
+(`receiptWitness_chunkCount` below), because the inherited figure is the
+kind of quantity that goes stale silently. -/
+
+/-- Fixture table: SIX entries, so that BOTH the true head index `1` and
+the stale head index `5` are VALID cells.  That is the whole point -- if
+the stale index fell off the end it would take the dead path, the segment
+lengths would differ, and a length check would catch the defect.  It must
+not. -/
+def receiptWitnessTable : SuccinctSpace.FixedWidthNatTable [1, 2, 3, 4, 5, 6] 20 :=
+  SuccinctSpace.FixedWidthNatTable.ofEntries [1, 2, 3, 4, 5, 6] 20 (by
+    intro entry hmem
+    cases hmem with
+    | head => decide
+    | tail _ h1 =>
+      cases h1 with
+      | head => decide
+      | tail _ h2 =>
+        cases h2 with
+        | head => decide
+        | tail _ h3 =>
+          cases h3 with
+          | head => decide
+          | tail _ h4 =>
+            cases h4 with
+            | head => decide
+            | tail _ h5 =>
+              cases h5 with
+              | head => decide
+              | tail _ h6 => cases h6)
+
+/-- Fixture store on segment `7`.  CELLS `1` AND `5` OF THE BASELINE TABLE
+HOLD THE SAME WORDS -- addresses `203,204,205` and `215,216,217` carry
+identical content.  So the two reads DECODE TO THE SAME VALUE and differ
+only in the addresses they logged, which is what makes the value equation
+blind to the substitution. -/
+def receiptWitnessStore : ReadStore :=
+  ⟨fun segment address =>
+    if segment = 7 then
+      if address = 203 then some [true, false, false]
+      else if address = 204 then some [false]
+      else if address = 205 then some [false]
+      else if address = 215 then some [true, false, false]
+      else if address = 216 then some [false]
+      else if address = 217 then some [false]
+      else if address = 315 then some [false, true, false]
+      else if address = 316 then some [false]
+      else if address = 317 then some [false]
+      else if address = 415 then some [true, true]
+      else if address = 416 then some [false]
+      else if address = 417 then some [false]
+      else if address = 515 then some [false, false, true]
+      else if address = 516 then some [false]
+      else if address = 517 then some [false]
+      else if address = 999 then some [true, false, true]
+      else none
+    else none⟩
+
+/-- RULE 3, APPLIED TO AN INHERITED COUNT: three chunks per cell at width
+`20`, word size `8`, EVALUATED here rather than carried. -/
+theorem receiptWitness_chunkCount :
+    SuccinctSpace.fixedWidthNatTableMachineChunkCount 20 8 = 3 := rfl
+
+/-- One component segment of the fixture receipt. -/
+def receiptWitnessSegment (base i : Nat) : List (Prod Nat (Option (List Bool))) :=
+  ((receiptWitnessTable.machineReadComputationAt 8 base 999 i).run
+      (RMQ.SuccinctClose.flatWordStoreOfReadStore receiptWitnessStore 7)).reads
+
+/-- One component segment's VALUE, for the agreement check below. -/
+def receiptWitnessValue (base i : Nat) : Nat :=
+  E1InteriorSummaryGroup.optShift
+    ((receiptWitnessTable.machineReadComputationAt 8 base 999 i).run
+      (RMQ.SuccinctClose.flatWordStoreOfReadStore receiptWitnessStore 7)).value
+
+/-- RULE 1: the receipt lemma's two hypotheses are JOINTLY SATISFIABLE at a
+real instantiation, and the instance is carried to concrete consequences
+below rather than left existential. -/
+theorem receiptWitness_reads_instantiated (base i : Nat) :
+    receiptWitnessSegment base i =
+      (E1InteriorChunkFold.chunkAddrs base 999 6 3 i).map
+        (fun a => (a, receiptWitnessStore.readWord? 7 a)) :=
+  E1InteriorSummaryGroup.machineReadComputation_reads receiptWitnessStore 7
+    receiptWitnessTable 8 base 999 6 3 i rfl rfl
+
+/-- THE ROUTE'S RECEIPT at `block = 5`, `blocksPerSuper = 4`: the head is
+issued at the SUPERBLOCK index `5 / 4 = 1`, the other three at `5`. -/
+def receiptWitnessTrue : List (Prod Nat (Option (List Bool))) :=
+  receiptWitnessSegment 200 (5 / 4)
+    ++ receiptWitnessSegment 300 5
+    ++ receiptWitnessSegment 400 5
+    ++ receiptWitnessSegment 500 5
+
+/-- THE STALE HEAD: the head segment issued at `block` instead of
+`block / blocksPerSuper`.  Everything else is identical -- same segments,
+same order, same three trailing indices. -/
+def receiptWitnessStaleHead : List (Prod Nat (Option (List Bool))) :=
+  receiptWitnessSegment 200 5
+    ++ receiptWitnessSegment 300 5
+    ++ receiptWitnessSegment 400 5
+    ++ receiptWitnessSegment 500 5
+
+/-- THE RECEIPT, EXECUTED.  Not a length, not a count: the actual pairs, in
+order, addresses and stored words both. -/
+theorem receiptWitness_executed :
+    receiptWitnessTrue =
+      [ (203, some [true, false, false]), (204, some [false]), (205, some [false])
+      , (315, some [false, true, false]), (316, some [false]), (317, some [false])
+      , (415, some [true, true]), (416, some [false]), (417, some [false])
+      , (515, some [false, false, true]), (516, some [false]), (517, some [false])
+      ] := rfl
+
+/-- VALUE EQUALITY DOES NOT ENTAIL RECEIPT EQUALITY, and this is the
+instantiation that proves the non-entailment.  Here the true head and the
+stale head decode to the SAME value while (below) logging DIFFERENT
+receipts.  So a value equation of the form
+`routeDecodedSummary_eq_summaryComputation_value` -- however strong -- is
+formally incapable of rejecting the impostor, which is what makes the
+receipt a genuinely separate obligation rather than a corollary.
+
+WHAT THIS DOES NOT CLAIM: that the CANONICAL store makes these two cells
+agree.  It claims only that agreement is possible, which is all that is
+needed to show the value equation cannot be doing the receipt's work. -/
+theorem receiptWitness_staleHead_value_agrees :
+    receiptWitnessValue 200 (5 / 4) = receiptWitnessValue 200 5 := rfl
+
+/-- AND THE AGGREGATE CHECKS ARE BLIND TOO: same total length, and the same
+FOUR segment lengths respectively.  A harness comparing read counts,
+segment counts, or per-segment lengths accepts the impostor. -/
+theorem receiptWitness_staleHead_lengths_agree :
+    (receiptWitnessTrue.length, receiptWitnessStaleHead.length,
+      [ (receiptWitnessSegment 200 (5 / 4)).length
+      , (receiptWitnessSegment 300 5).length
+      , (receiptWitnessSegment 400 5).length
+      , (receiptWitnessSegment 500 5).length ],
+      [ (receiptWitnessSegment 200 5).length
+      , (receiptWitnessSegment 300 5).length
+      , (receiptWitnessSegment 400 5).length
+      , (receiptWitnessSegment 500 5).length ])
+      = (12, 12, [3, 3, 3, 3], [3, 3, 3, 3]) := rfl
+
+/-- THE DISCRIMINATION.  Same length, same segment lengths, same value --
+and STILL NOT EQUAL, because the head logged `215,216,217` where the route
+logs `203,204,205`.  Positional comparison is the only check that sees it. -/
+theorem receiptWitness_staleHead_discriminates :
+    receiptWitnessTrue ≠ receiptWitnessStaleHead := by decide
+
+/-- THE HEAD IS WHERE THEY DIFFER, AND ONLY IN THE ADDRESSES.  The route's
+head logs `203,204,205`; the stale head logs `215,216,217`. -/
+theorem receiptWitness_staleHead_addresses_differ :
+    ((receiptWitnessSegment 200 (5 / 4)).map Prod.fst,
+      (receiptWitnessSegment 200 5).map Prod.fst)
+      = ([203, 204, 205], [215, 216, 217]) := rfl
+
+/-- AND THE STORED WORDS AGREE.  The two head segments carry the SAME words
+in the same order, so a check on the receipt's CONTENT alone -- as opposed
+to its address/content PAIRS -- also accepts the impostor.  Together with
+the value agreement above, this closes off every non-positional check. -/
+theorem receiptWitness_staleHead_words_agree :
+    (receiptWitnessSegment 200 (5 / 4)).map Prod.snd =
+      (receiptWitnessSegment 200 5).map Prod.snd := rfl
+
 end E1InteriorMinCandidate
 end WordRAM
 end RMQ

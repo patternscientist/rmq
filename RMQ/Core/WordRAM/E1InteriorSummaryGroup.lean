@@ -1103,6 +1103,83 @@ of the cell. -/
 theorem linkWitness_entriesLen_load_bearing :
     linkWitnessDecodeValue 1 3 1 ≠ linkWitnessDecodeValue 3 3 1 := by decide
 
+/-! ## THE RECEIPT, POSITIONALLY: what the route LOGS, not what it returns
+
+Everything above this point concerns a read's VALUE.  THE RECEIPT IS A
+SEPARATE OBLIGATION, and it is the one the right-shape/wrong-content class
+bites hardest.  A receipt list in the right ORDER with a STALE HEAD carries
+the right number of segments, the right total length and the right read
+count, so it passes every AGGREGATE check the harness performs.  Only
+element-by-element comparison against the route's OWN address list rejects
+it.
+
+The lemma below states the receipt POSITIONALLY -- entry `k` is the pair
+`(address k, the word the store returns there)` -- rather than as a length
+or a count.  Both halves are pinned, and both matter: a read of the right
+LENGTH at the wrong INDEX and a read at the right addresses reporting STALE
+WORDS are each refuted by this equation, and neither is refuted by a length.
+
+STATED PARAMETRICALLY IN `wordSize` for the reason recorded above the link:
+the shape-level spelling routes its word size through `machineWordBits`,
+hence `Nat.log2`, which the kernel cannot evaluate, so no fixture could
+exercise a shape-level receipt.  This form IS kernel-evaluable, and the
+fixtures below run it rather than argue about it. -/
+
+/-- THE RECEIPT OF ONE ROUTE READ, POSITIONALLY.
+
+The read logs EXACTLY its own address list, each address paired with the
+word the supplied store returns there -- in order, with no aggregation.
+
+Carries the same two hypotheses as
+`routeDecode_eq_machineReadComputation_value`, and for the same reason:
+they align the geometry with the route's own.  No cap, validity or store
+hypothesis enters. -/
+theorem machineReadComputation_reads
+    (store : ReadStore) (segment : Nat)
+    {entries : List Nat} {width : Nat}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (wordSize base deadAddress entriesLen chunkCount i : Nat)
+    (hentries : entriesLen = entries.length)
+    (hchunk : chunkCount =
+      SuccinctSpace.fixedWidthNatTableMachineChunkCount width wordSize) :
+    ((table.machineReadComputationAt wordSize base deadAddress i).run
+        (RMQ.SuccinctClose.flatWordStoreOfReadStore store segment)).reads =
+      (chunkAddrs base deadAddress entriesLen chunkCount i).map
+        (fun a => (a, store.readWord? segment a)) := by
+  rw [chunkAddrs_eq_machineAddresses (entries := entries) (width := width)
+    (wordSize := wordSize) base deadAddress entriesLen chunkCount i
+    hentries hchunk]
+  unfold SuccinctSpace.FixedWidthNatTable.machineReadComputationAt
+  simp [RMQ.SuccinctClose.flatWordStoreOfReadStore]
+
+/-- THE RECEIPT OF ONE ROUTE READ, at the shape-level spelling.
+
+The corollary of the parametric lemma at the route's own word size,
+generic in `table`, `L` and `G` exactly as
+`geomRouteDecode_eq_readComputation_value` is, with the same three
+alignment hypotheses -- each `rfl` at `canonicalSummaryLayout`. -/
+theorem geomReadComputation_reads
+    (shape : Cartesian.CartesianShape) (store : ReadStore)
+    {entries : List Nat} {width : Nat}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (L : SummaryLayout) (G : TableGeom) (i : Nat)
+    (hdead : L.deadAddress =
+      (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress)
+    (hentries : G.entriesLen = entries.length)
+    (hchunk : G.chunkCount =
+      SuccinctSpace.fixedWidthNatTableMachineChunkCount width
+        (SuccinctRank.machineWordBits shape.bpCode.length)) :
+    ((canonicalRelativeRmmMachineReadNatComputation shape table G.base i).run
+        (RMQ.SuccinctClose.flatWordStoreOfReadStore store L.segment)).reads =
+      (chunkAddrs G.base L.deadAddress G.entriesLen G.chunkCount i).map
+        (fun a => (a, store.readWord? L.segment a)) := by
+  unfold canonicalRelativeRmmMachineReadNatComputation
+  rw [hdead]
+  exact machineReadComputation_reads store L.segment table
+    (SuccinctRank.machineWordBits shape.bpCode.length) G.base
+    (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress
+    G.entriesLen G.chunkCount i hentries hchunk
+
 end E1InteriorSummaryGroup
 end WordRAM
 end RMQ

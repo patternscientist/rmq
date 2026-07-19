@@ -5099,3 +5099,79 @@ tuple's VALUE. The receipt -- positional trace equality for the four reads
 in the route's bind order -- is a separate obligation and is NOT claimed
 here, nor is any statement about the min-candidate consumer's own output
 beyond what `summaryMinCandidate_runsTo` already carries.
+
+## DD-20260719-019: the receipt is not a corollary of the value, and the separation is EXECUTED (E1 M3d-24)
+
+Claimed this session; the maximum OBSERVED in this file before claiming was
+`DD-20260719-018`, verified by scanning the tree for `DD-` identifiers.
+
+THIS ENTRY SUPERSEDES THE CLOSING SCOPE NOTE OF DD-20260719-018. That note
+said positional trace equality for the four reads in the route's bind order
+"is a separate obligation and is NOT claimed here". It is separate, and it
+is now claimed and proved. The note was true when written and is recorded
+here as superseded rather than edited away.
+
+Context. `routeDecodedSummary_eq_summaryComputation_value` settles what the
+summary computation RETURNS. The harness compares what the machine LOGS.
+The natural temptation is to treat the second as bookkeeping on the first --
+the same four reads, so surely the same receipt.
+
+Why that is wrong, demonstrated rather than argued. The fixtures
+`receiptWitness_*` (`E1InteriorMinCandidate.lean`) exhibit two four-segment
+receipts that agree on EVERY aggregate an implementation is likely to check
+and still differ:
+
+* same segment count (four), same total length (12), same per-segment
+  lengths (`[3,3,3,3]` both) -- `receiptWitness_staleHead_lengths_agree`;
+* the SAME DECODED VALUE -- `receiptWitness_staleHead_value_agrees`, so the
+  value equation is formally incapable of rejecting the impostor;
+* the same stored WORDS in the same order --
+  `receiptWitness_staleHead_words_agree`;
+* and yet different receipts -- `receiptWitness_staleHead_discriminates`,
+  because the head logged `215,216,217` where the route logs `203,204,205`
+  (`receiptWitness_staleHead_addresses_differ`).
+
+THE DEFECT MODELLED IS THE ROUTE'S OWN MOST LIKELY ONE. The baseline read is
+issued at `block / blocksPerSuper`; the other three at `block`. The head is
+the one segment whose index differs from its neighbours', which makes
+"copy the index from the segment below" a live error rather than a
+hypothetical one. The fixture is that error, and it is deliberately built on
+a SIX-entry table so that the stale index `5` is a VALID cell: had it fallen
+off the end it would take the dead path, the segment lengths would diverge,
+and a length check would have caught it. It must not.
+
+Decision: state the receipt POSITIONALLY AND PER-CONSTRUCTOR, never as a
+length, a count, or a membership. `summaryComputation_reads_eq_routeReceipt`
+writes the four segments out in issue order with each segment's INDEX
+visible in the statement -- so the head's `block / blocksPerSuper` is read
+off the theorem rather than trusted to a definition.
+
+What is now claimed. `summaryMachineTrace_eq_routeReads`
+(`E1InteriorMinCandidate.lean`): the trace `summaryMinCandidate_runsTo`
+emits IS the read log the route's summary computation records -- same
+events, same positions, same segment, addresses and words -- at the
+canonical store and layout, with NO validity, cap or store hypothesis. The
+bridge is `geomEvents_eq_summaryReadReceipt_map`, one segment at a time; the
+machine and route spellings differ only by the injection
+`(address, word) => TraceEvent.readWord segment address word`.
+
+The general rule this instances: a VALUE equation and a RECEIPT equation are
+independent obligations, and an executed witness that they can come apart is
+cheap to build and worth building. Where a component already has a value
+bridge, the receipt still owes its own positional statement.
+
+Kernel boundary, restated because it shaped the fixtures. The shape-level
+receipt routes its word size through `machineWordBits`, hence `Nat.log2`,
+which the kernel cannot evaluate. So the executable core is the parametric
+`machineReadComputation_reads` (`E1InteriorSummaryGroup.lean`), taking
+`wordSize` as a parameter; the shape-level `geomReadComputation_reads` is
+its corollary, and the fixtures run the parametric form at `wordSize = 8`,
+width `20`, three chunks per cell -- the multi-chunk regime, with the chunk
+count EVALUATED (`receiptWitness_chunkCount`) rather than inherited.
+
+Scope, stated because this one invites over-reading too. This is the SUMMARY
+GROUP's receipt, four reads, at the canonical store and layout. It is not
+the interior leg's receipt, not the whole-query receipt, and it does not
+discharge REQ-E1-04, which is whole-query scoped and remains Open. Nothing
+here touches the span blocks, the two-span blocks or the five-branch
+dispatch, all of which remain unbuilt.

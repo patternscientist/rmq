@@ -7518,3 +7518,222 @@ STILL UNBUILT AND STILL OWED.
 Never `sorryAx`.  DD-20260719-018 CLAIMED; maximum OBSERVED before claiming
 was `DD-20260719-017`, this session's own earlier entry, verified by
 scanning the tree.
+
+## M3d-24 (worker E1-R5g): the receipt, positionally, and the witness that it is not the value's corollary
+
+### 1. THE INHERITED CLAIMS, GREPPED BEFORE BUDGETING
+
+Ten `File.lean:NNN` anchors from the delegation were checked against the
+tree before any work started.  EIGHT WERE EXACT.  Two were not, and both
+errors were in the FILENAME rather than the line number:
+
+* `linkWitness_discriminates_content` was cited at
+  `E1InteriorMinCandidate.lean:1090`.  The theorem is at
+  `E1InteriorSummaryGroup.lean:1090` -- right line, WRONG FILE.  The
+  delegation attributed both model theorems to one file; they live in two.
+* `witness_maxRel_discriminates` was cited at the same `:1090`.  It is at
+  `E1InteriorMinCandidate.lean:817`.
+
+Two further citations were stale by a few lines in the direction the
+predecessor's own supplement predicted (`summaryMinCandidate_runsTo` at
+`:929` not `:924`; `routeDecodedSummary` at `:903` not `:898`).  Neither
+changed any decision.  Recorded because the delegation's citation convention
+warns that DIRECTORY memory drifts while line numbers hold; here it was the
+FILENAME that drifted while the line number was exact.
+
+THE `177` WAS RE-DERIVED, NOT COPIED, as instructed: `summaryGroup_length`
+= 156 (`E1InteriorSummaryGroup.lean:299`) plus `minCandidateBlock_length`
+= 21 (`E1InteriorMinCandidate.lean:241`), and `summaryMinCandidate_runsTo`
+(`:929`) exits at `Q + 177`.  It holds.
+
+### 2. THE OBLIGATION WAS BIGGER THAN THE BRIEF, AND IN A GOOD DIRECTION
+
+The brief scoped mission item 1 to "positional receipt equality for the
+four summary reads in the route's bind order" -- a statement about the
+ROUTE.  While reading, `chunkRouteEvents` (`E1InteriorChunkFold.lean:1740`)
+turned out to be literally
+
+    (chunkAddrs ...).map
+      (fun a => TraceEvent.readWord segment a (store.readWord? segment a))
+
+which is the same list as the route's read log under a single injection.
+So the MACHINE side and the ROUTE side were already one rewrite apart, and
+the item could be landed in its stronger form: not "here is the route's
+receipt" but "the machine's trace IS the route's read log".
+
+That is what landed.  `summaryMachineTrace_eq_routeReads`
+(`E1InteriorMinCandidate.lean`): the trace `summaryMinCandidate_runsTo`
+emits equals the read log of `canonicalRelativeRmmMachineSummaryComputation`
+(`InteriorDirectory.lean:2277`), at the canonical store and layout, with NO
+validity, cap or store hypothesis.
+
+Built from, in dependency order:
+
+* `machineReadComputation_reads` (`E1InteriorSummaryGroup.lean`), PARAMETRIC
+  in `wordSize`: one route read logs exactly its own address list, each
+  address paired with the word the store returns there.  This is the
+  kernel-evaluable core, and it exists in this form for the reason M3d-23
+  recorded -- the shape-level spelling goes through `machineWordBits`, hence
+  `Nat.log2`, which the kernel cannot reach.
+* `geomReadComputation_reads`, its shape-level corollary, three alignment
+  hypotheses, all `rfl` at `canonicalSummaryLayout`.
+* `summaryComputation_reads_eq_routeReceipt`: the four segments in the
+  route's bind order, WITH EACH SEGMENT'S INDEX WRITTEN OUT in the
+  statement, so the head's `block / blocksPerSuper` is read off the theorem
+  rather than trusted to a definition.
+* `geomEvents_eq_summaryReadReceipt_map`: one segment, machine against
+  route.
+
+### 3. THE ANTI-VACUITY TARGETS THE CLASS THE BRIEF NAMED
+
+The brief said the right-shape/wrong-content class bites hardest here, and
+asked for a deliberately built discriminating witness.  It was built to
+model THE ROUTE'S OWN MOST LIKELY DEFECT: the baseline read is issued at
+`block / blocksPerSuper` while the other three are issued at `block`, so
+the head is the one segment whose index differs from its neighbours', and
+"copy the index from the segment below" is a live error.
+
+The stale-head impostor agrees with the honest receipt on EVERY aggregate:
+
+    segment count           4         vs 4
+    total length            12        vs 12
+    per-segment lengths     [3,3,3,3] vs [3,3,3,3]
+    stored words            identical
+    DECODED VALUE           identical
+
+and is separated ONLY by positional comparison
+(`receiptWitness_staleHead_discriminates`), because the head logged
+`215,216,217` where the route logs `203,204,205`.
+
+THE VALUE AGREEMENT IS THE POINT, not a curiosity.
+`receiptWitness_staleHead_value_agrees` is what proves the receipt is a
+genuinely separate obligation: since the two reads decode to the same
+value, a value equation of the form
+`routeDecodedSummary_eq_summaryComputation_value` is FORMALLY INCAPABLE of
+rejecting the impostor.  The witness therefore establishes a
+non-entailment, not merely an example.
+
+WHAT IT DOES NOT CLAIM, stated in the docstring as well: that the CANONICAL
+store makes those two cells agree.  Only that agreement is possible, which
+is all the non-entailment needs.
+
+The fixture is deliberately built on a SIX-entry table so the stale index
+`5` is a VALID cell.  Had it fallen off the end it would take the dead path,
+the segment lengths would diverge, and a length check would have caught the
+defect -- which would have made the witness prove the opposite of what is
+wanted.  The chunk count is EVALUATED (`receiptWitness_chunkCount`, three
+chunks at width 20 / word size 8) rather than inherited, per rule 3.
+
+### 4. VERIFICATION LEDGER
+
+Under the `Global\RMQHeavyVerification` mutex:
+
+    lake build RMQ RMQPaper RMQExamples   LIB_BUILD_EXIT=0        (24s)
+    lake build rmq_e1_machine_validate    VALIDATOR_BUILD_EXIT=0  (1s)
+    lake exe rmq_e1_machine_validate      VALIDATOR_RUN_EXIT=0    (10s)
+    lake env lean scripts/headline_axiom_check.lean
+                                          HEADLINE_AXIOM_EXIT=0   (46s)
+
+Validator counts UNCHANGED, and for the same reason as the last two
+sessions: NO MACHINE BLOCK WAS ADDED, so no modeled-step count could move.
+`RESULT: PASS (with the whole-query comparison still OPEN)`,
+`presFailures=0`, `presSentinelNonZero=true`,
+`mutantG_scratch_preservationFailures=36`, `mutantG_clobberedRegs=[70]`,
+`mutantG_isPreservationOnly=true`,
+`wholeQueryComparison=OPEN (interior leg UNBUILT ...)`.
+THE INTERIOR ANALOGUE OF PHASE 3h IS STILL UNBUILT AND STILL OWED -- this
+session did not build it and does not claim it.
+
+`#print axioms`, after a root build, importing the modules DIRECTLY:
+
+    machineReadComputation_reads              [propext, Quot.sound]
+    geomReadComputation_reads                 [propext, Classical.choice, Quot.sound]
+    summaryComputation_reads_eq_routeReceipt  [propext, Classical.choice, Quot.sound]
+    geomEvents_eq_summaryReadReceipt_map      [propext, Classical.choice, Quot.sound]
+    summaryMachineTrace_eq_routeReads         [propext, Classical.choice, Quot.sound]
+    receiptWitness_chunkCount                 does not depend on any axioms
+    receiptWitness_reads_instantiated         [propext, Quot.sound]
+    receiptWitness_executed                   [propext, Quot.sound]
+    receiptWitness_staleHead_value_agrees     [propext, Quot.sound]
+    receiptWitness_staleHead_lengths_agree    [propext, Quot.sound]
+    receiptWitness_staleHead_discriminates    [propext, Quot.sound]
+    receiptWitness_staleHead_addresses_differ [propext, Quot.sound]
+    receiptWitness_staleHead_words_agree      [propext, Quot.sound]
+
+Never `sorryAx`.  `maxHeartbeats` was NOT raised and no whnf timeout was
+encountered.
+
+DD-20260719-019 CLAIMED; maximum OBSERVED before claiming was
+`DD-20260719-018`, verified by scanning the tree.
+
+### 5. WHAT THIS SESSION'S OWN WORK FALSIFIED
+
+DD-20260719-018's closing scope note said positional trace equality for the
+four reads "is a separate obligation and is NOT claimed here".  It is still
+separate; it is no longer unclaimed.  Marked SUPERSEDED in DD-20260719-019
+rather than edited away, per standing instruction.  Worklog section 7b of
+M3d-23 carries the same sentence and is superseded by this section, not
+rewritten.
+
+### 6. MATRIX STATUS AT YIELD
+
+All eleven rows REQ-E1-01..11 remain OPEN.  This session closed none and
+weakened none, and edited no frozen requirement text.  REQ-E1-04's EVIDENCE
+cell was appended to -- that row's evidence cell has accumulated component
+entries from M3d-4, M3d-6 and M3d-9, and this session's work is a component
+of the same kind (a receipt, positional, inside the interior's
+parameterised trace).  Status left `Open`; the row is whole-query scoped and
+the span blocks, two-span blocks and five-branch dispatch remain unbuilt.
+
+### 7. RESUME POINT (M3d-25)
+
+All file:line verified at this session's HEAD.
+
+1. MISSION ITEM 1 IS DONE, AND IN ITS STRONGER MACHINE-VS-ROUTE FORM.
+   `summaryMachineTrace_eq_routeReads` (`E1InteriorMinCandidate.lean`).
+   Registers `105 .. 117` are TAKEN; THE NEXT BLOCK OPENS AT `118`
+   (unchanged -- this session added no machine block).
+2. THE SPAN BLOCKS (`InteriorDirectory.lean:2311`, `:2329`) are the next
+   step and are UNBUILT.  Both are `FlatStoreComputation.pure none` on the
+   `none` arm, so THE `none` ARM MUST BRANCH PAST 177 instructions.
+   RE-DERIVED THIS SESSION: 156 + 21 = 177, and `summaryMinCandidate_runsTo`
+   (`E1InteriorMinCandidate.lean:929`) exits at `Q + 177`.
+3. THEN THE TWO-SPAN BLOCKS (`:2351`, `:2376`).  THE LEVEL READ IS THE
+   UNCONDITIONAL HEAD of every append chain.  Violating that order presents
+   as a whnf heartbeat timeout, NOT a type error, and must never be met by
+   raising `maxHeartbeats`.
+4. THEN the five-branch dispatch (`:2444`) and `hInterior` at
+   `E1CrossBlockArm.lean:1143`.  The interior has five branches and no scan.
+5. THE CLOSURE LADDER AND THE OWED PRESERVATION CHECK are unchanged and
+   unbuilt: full LCA leg at canonical-store form; whole-query glue via
+   `E1RouteDecomposition` with result agreement on `(...).value` and
+   POSITIONAL receipt equality on the trace; category accounting across ALL
+   branches including selects-none and lca-none; the public `List Int`
+   corollary; the DERIVED all-size literal step total from the category
+   algebra and the caps 33/8/8 -- derive, never assert; the amended-target
+   Prop with its supersession note; the validator's whole-query phase; docs
+   and matrix closure; the ONE consolidated program-layout DD at the glue;
+   and an EXECUTED preservation check for the interior fold.
+6. A RECEIPT TECHNIQUE IS NOW AVAILABLE AND SHOULD BE REUSED.  The span and
+   two-span blocks will each need their own receipt.  The pattern is:
+   parametric `machineReadComputation_reads` for the executable core, a
+   per-segment `geomEvents_eq_*_map` bridge, then a per-constructor
+   concatenation with every index written out in the statement.  The
+   stale-head fixture generalises: for each new block, ask which segment's
+   index differs from its neighbours', and build the impostor there.
+7. THE M7 DOC CLAIM is scoped to QUERY TIME with construction-time
+   computation carved out as preprocessing (`bpSparseLevelCell`,
+   `SparseLevelTable.lean:55`).  Do not write it until the interior leg
+   exists.  The stale frozen-row anchor is a NOTE, already appended; do not
+   edit frozen requirement text.
+8. THE STALE NAME AT `E1InteriorChunkStore.lean:31` IS STILL THERE, and
+   still correctly deferred: the docstring cites
+   `probeShape_unbounded_agreement_fails`, but the theorem is
+   `unbounded_agreement_refuted` (`:537`).  I did not edit that file.
+9. STANDING RULES, still five.  This session adds no sixth.  It sharpens
+   rule 5 from a new direction: a witness built FOR a premise can be made
+   to serve the target by asking what the DEFECT would actually look like
+   in the code under test, and building that.  Here the answer was "the head
+   index copied from the segment below", which is what the fixture is --
+   and the six-entry table exists precisely so the impostor is NOT caught
+   by the cheap check, which is the property that makes it a real witness.
