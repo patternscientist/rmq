@@ -2659,3 +2659,82 @@ only after that observable external-state change.
    either a checked representation bridge or a genuinely constant-time RAM
    primitive? That is precisely the still-deferred `STRETCH-01`, not a claim
    made by this rung.
+
+# B7-R3 replay-runtime diagnosis and repaired content freeze
+
+## Final-candidate replay exposed two runtime-category defects
+
+Commit `024e33eb922355bb811ed20191215c5992328ebc` was the first committed
+candidate checkpoint. Its exact aggregate build passed in 184.999s, and its
+WordRAM/headline inventories passed in 111.300s and 45.649s. It was not treated
+as completion because the required default replay did not return inside its
+positive 20-minute deadline. That run accumulated approximately 1057.9s of
+harness CPU. Its exact owned chain was inspected and only
+`20396 -> 11500 -> 24980` was stopped; a separately owned E1 validator was not
+touched. No semantic verdict was assigned to the timeout.
+
+Source reconstruction found two distinct defects, neither part of the RMQ
+model:
+
+1. the exact registry called `prepareInput` once per case rather than once per
+   typed fixture; and
+2. the returned-value proof exported closed address/store definitions over the
+   size-3469 witness, making imported executables initialize proof-only witness
+   data before `main`.
+
+The first repair is `ReplayPreparedCache`, keyed only by `FixtureId`. Registry
+order remains authoritative and every case still checks answer, independent
+List answer, route, post-cost, and disposition. Successful execution also
+requires the cache length to equal the number of distinct selected fixtures.
+The second repair moves the address and dropped store into explicit lets in the
+proposition and proof of
+`canonicalRelativeRmmInteriorCost33LocalLevelDrop_changes_returned_candidate`.
+Its theorem type and accepted/rejected object pair are unchanged, but the
+size-3469 data is proof-erased rather than an executable module constant.
+
+The diagnosis was measured rather than inferred:
+
+- focused harness-cache elaboration: exit 0 in 4.322s;
+- first cache-only executable build: exit 0 in 9.298s;
+- cache-only default replay still crossed 304.1s; exact PID `26388` was
+  inspected and cleaned;
+- cache-only `tiny-leftmost-ties` crossed 184.1s; exact PID `24912` was
+  inspected and cleaned;
+- cache-only shape-only size-5 probe crossed its 120.034s deadline, proving the
+  remaining cost was below registry/query traversal; its child-free PID and
+  exact temporary files were cleaned;
+- generated C trace confirmed `clang -O3 -DNDEBUG`, rejecting a debug-profile
+  explanation;
+- theorem-local witness elaboration: exit 0 in 20.945s;
+- focused transitive harness rebuild: exit 0 in 321.330s;
+- the identical shape-only size-5 probe then exited 0 in 2.135s.
+
+## Exact replay controls now close mechanically
+
+On the repaired content, with no competing process at launch and under
+`Global\\RMQHeavyVerification`:
+
+- default registry: exit 0 in 29.158s,
+  `selectedCases=21`, `executedCases=21`,
+  `exactExecutionCount=true`, `preparedFixtures=6`,
+  `expectedPreparedFixtures=6`, and
+  `exactPreparedFixtureCount=true`;
+- known `--case interior-full-leftmost`: exit 0 in 282ms, exactly `1/1`, one
+  prepared fixture, answer `some 5`, cross-block route, and charged cost
+  `112 -> 114`;
+- unknown `--case __unknown_b7r3__`: exit 4 in 142ms;
+- zero-match `--fixture __zero_b7r3__`: exit 4 in 143ms.
+
+All 21 entries reported exact answer/reference/route/post-cost/disposition and
+bound predicates true. The invalid entries cover empty, reversed, and
+out-of-bounds ranges; the registry also includes singleton, tiny ties, live
+interior leftmost ties, and the size-64/128 charged routes. No replay process,
+temporary probe directory, or generated source file survived. DD-20260719-004
+records proof-local witness data; WDD-20260719-009 records typed fixture reuse.
+These repairs change Lean host runtime only, not payload bits, proof
+propositions, modeled ticks, traces, stores, or public mathematical claims.
+
+The first checkpoint's aggregate/trust results are development evidence only
+after this source amendment. The amended tree must be committed and receive a
+fresh exact-commit aggregate, both trust inventories, strict public/decision
+gates, and final clean-tree checks before candidate completion is reported.

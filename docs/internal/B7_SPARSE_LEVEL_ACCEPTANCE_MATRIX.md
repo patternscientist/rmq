@@ -1148,3 +1148,45 @@ regex-based count.
 `STRETCH-01` remains explicitly deferred. Nothing in the candidate claims a
 complete mechanized inventory of all remaining uncharged computation, and its
 absence does not weaken or substitute for any non-stretch row.
+
+## B7-R3 late replay-runtime amendment and exact control evidence
+
+This append-only refinement records the in-scope repair found by the final
+replay; it does not alter any frozen row. The exact proposition of
+`canonicalRelativeRmmInteriorCost33LocalLevelDrop_changes_returned_candidate`
+is unchanged. Its size-3469 address and dropped store now occur as explicit
+theorem-local lets instead of closed executable definitions, so the checked
+same-object P/Q challenge is proof-erased and cannot contaminate an importing
+executable's wall-clock startup. DD-20260719-004 records that category
+separation.
+
+The exact registry now reuses one `PreparedInput` per typed `FixtureId` while
+recursing over the same ordered `List ReplayCase`. Its success predicate also
+requires `preparedCache.length` to equal the number of distinct selected
+fixture IDs. WDD-20260719-009 rejects deadline inflation, case removal, and
+untyped/result-based caching.
+
+Measured anti-vacuity on the repaired content:
+
+- default: exit 0 in 29.158s; exactly 21 selected and 21 executed cases in
+  registry order; exactly six expected and six actual prepared fixtures;
+- known `interior-full-leftmost`: exit 0 in 282ms; exactly one selected and
+  executed case and one prepared fixture; `some 5`, cross-block, `112 -> 114`;
+- unknown ID: exit 4 in 142ms;
+- zero-match fixture: exit 4 in 143ms.
+
+Every default entry reported exact answer, independent List answer, route,
+post-cost, disposition, and `<=210` bound success. Thus `CHK-04`,
+`REPLAY-EXACT-REGISTRY`, `REPLAY-SELECTOR-NONVACUITY`, and the executable part
+of `INV-HALF-OPEN-LEFTMOST` are closed on the repaired content. Timeout
+anti-vacuity is also concrete: every expired stage was inspected, its exact
+owned PID tree was cleaned, no external tree was touched, and no unchanged
+opaque command was repeated. A shape-only size-5 probe isolated the closed
+witness initialization (>120.034s before theorem-localization, 2.135s after),
+and the final successful default used the resulting repaired binary.
+
+The amended source invalidates the first checkpoint's broad-build/trust
+results as final-candidate evidence. `CHK-01`--`CHK-03`, strict public and
+decision gates, exact diff ranges, and clean status remain subject to the new
+post-commit certification ledger reported in the handoff. `STRETCH-01` remains
+explicitly deferred.

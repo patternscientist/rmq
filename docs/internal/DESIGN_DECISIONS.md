@@ -4185,3 +4185,36 @@ are also checked against the independent `List Int` reference semantics. The
 load-bearing interior leftmost-tie fixture is a named entry rather than a prose
 claim. Missing/duplicate IDs fail before execution, and known/unknown/zero
 selector controls provide mechanical non-vacuity evidence.
+
+## DD-20260719-004: closed corruption-witness data stays theorem-local (B7-R3)
+
+Context. The B7 returned-value dependency proof initially exposed two closed
+definitions for the canonical size-3469 local-level address and its dropped
+component store. Their values were useful only inside one theorem, but because
+they lived in an imported executable module they entered generated runtime
+initialization. The cost harness then spent more than 120 seconds before even
+completing a shape-only size-5 probe. This host-runtime cost is unrelated to
+the WordRAM trace cost proved by the theorem.
+
+Decision. Keep the address and one-word-dropped store as explicit `let`s in
+both the proposition and proof of
+`canonicalRelativeRmmInteriorCost33LocalLevelDrop_changes_returned_candidate`.
+The theorem still places the identical concrete expressions on its accepted
+and rejected sides, and still proves both read memberships, exact canonical
+`some`, dropped `none`, and returned-value inequality. No separately callable
+closed runtime constant is minted for proof-only witness data.
+
+Rejected alternatives. (1) Keep the closed definitions and increase replay
+deadlines; that would conflate proof-witness initialization with modeled query
+cost. (2) Remove the corruption theorem; that would reopen
+`INV-VALUE-DEPENDENCY`. (3) Replace the exact witness with a smaller or
+different object; that would break the frozen identical-object challenge.
+(4) Hide the definitions with an execution escape hatch; the project trust
+and hygiene contract forbids such shortcuts.
+
+Consequences. Focused elaboration preserves the exact theorem proposition and
+WordRAM trust name. After rebuilding its consumers, the same shape-only size-5
+probe fell from a 120.034-second timeout to 2.135 seconds, and the exact
+21-case replay completed in 29.158 seconds. Payload bits, proof fields, modeled
+ticks, traces, allocated cells, Lean runtime, and measured wall time remain
+separate categories.

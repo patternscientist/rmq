@@ -461,9 +461,10 @@ def replayRegistryStructureOK : Bool :=
       expectedPreRepairCosts &&
     replayRegistry.all replayDispositionOK
 
-def reportReplayCase (entry : ReplayCase) : IO Bool := do
-  let xs := fixtureInput entry.fixture
-  let prepared := RMQ.SuccinctClassic.prepareInput xs
+def reportReplayCase
+    (prepared : RMQ.SuccinctClassic.PreparedInput)
+    (entry : ReplayCase) : IO Bool := do
+  let xs := prepared.xs
   let query :=
     RMQ.SuccinctClassic.preparedQueryCosted
       prepared entry.window.left entry.window.right
@@ -500,12 +501,52 @@ def reportReplayCase (entry : ReplayCase) : IO Bool := do
     (answerOK && referenceOK && routeOK && postCostOK &&
       dispositionOK && boundOK)
 
-def reportReplayCases : List ReplayCase -> IO (Bool × Nat)
-  | [] => pure (true, 0)
+abbrev ReplayPreparedCache :=
+  List (FixtureId × RMQ.SuccinctClassic.PreparedInput)
+
+structure ReplayRunResult where
+  ok : Bool
+  count : Nat
+  preparedCache : ReplayPreparedCache
+
+def findReplayPrepared
+    (fixture : FixtureId) : ReplayPreparedCache ->
+      Option RMQ.SuccinctClassic.PreparedInput
+  | [] => none
+  | (cachedFixture, prepared) :: rest =>
+      if cachedFixture == fixture then
+        some prepared
+      else
+        findReplayPrepared fixture rest
+
+/-- Reuse the theorem-backed prepared input across adjacent registry entries
+for the same typed fixture.  The registry remains the sole execution order;
+this cache removes only repeated pure construction work. -/
+def getReplayPrepared
+    (cache : ReplayPreparedCache) (fixture : FixtureId) :
+      RMQ.SuccinctClassic.PreparedInput × ReplayPreparedCache :=
+  match findReplayPrepared fixture cache with
+  | some prepared => (prepared, cache)
+  | none =>
+      let prepared :=
+        RMQ.SuccinctClassic.prepareInput (fixtureInput fixture)
+      (prepared, (fixture, prepared) :: cache)
+
+def reportReplayCasesCached
+    (cache : ReplayPreparedCache) : List ReplayCase -> IO ReplayRunResult
+  | [] => pure { ok := true, count := 0, preparedCache := cache }
   | entry :: rest => do
-      let okHere <- reportReplayCase entry
-      let result <- reportReplayCases rest
-      pure (okHere && result.1, result.2 + 1)
+      let preparedAndCache := getReplayPrepared cache entry.fixture
+      let okHere <- reportReplayCase preparedAndCache.1 entry
+      let result <- reportReplayCasesCached preparedAndCache.2 rest
+      pure {
+        ok := okHere && result.ok
+        count := result.count + 1
+        preparedCache := result.preparedCache
+      }
+
+def reportReplayCases (entries : List ReplayCase) : IO ReplayRunResult :=
+  reportReplayCasesCached [] entries
 
 def runReplaySelection (selector : String) (selected : List ReplayCase) : IO Unit := do
   if !replayRegistryStructureOK then
@@ -517,13 +558,20 @@ def runReplaySelection (selector : String) (selected : List ReplayCase) : IO Uni
     IO.Process.exit 4
   else
     let result <- reportReplayCases selected
-    let exactCount := result.2 == selected.length
+    let exactCount := result.count == selected.length
+    let expectedPreparedCount :=
+      (selected.map (fun entry => entry.fixture)).eraseDups.length
+    let exactPreparedCount :=
+      result.preparedCache.length == expectedPreparedCount
     IO.println
       ("selector=" ++ selector ++
         " selectedCases=" ++ toString selected.length ++
-        " executedCases=" ++ toString result.2 ++
-        " exactExecutionCount=" ++ boolString exactCount)
-    if result.1 && exactCount then
+        " executedCases=" ++ toString result.count ++
+        " exactExecutionCount=" ++ boolString exactCount ++
+        " preparedFixtures=" ++ toString result.preparedCache.length ++
+        " expectedPreparedFixtures=" ++ toString expectedPreparedCount ++
+        " exactPreparedFixtureCount=" ++ boolString exactPreparedCount)
+    if result.ok && exactCount && exactPreparedCount then
       IO.println "all selected replay cases matched the exact registry"
     else
       IO.eprintln "at least one selected replay case violated the exact registry"

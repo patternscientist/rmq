@@ -6181,29 +6181,6 @@ theorem canonicalRelativeRmmInteriorCost33Witness_store_erase_exact :
 /-! ### Sparse-level returned-value dependency witness (B7) -/
 
 /--
-The first physical word of local charged level cell `1` on the canonical
-size-3469 witness.  The field is one machine word wide on this witness, so the
-cell-local offset is exactly `1`.
--/
-def canonicalRelativeRmmInteriorCost33LocalLevelDropAddress : Nat :=
-  (canonicalRelativeRmmInteriorComponentOffsets
-    canonicalRelativeRmmInteriorCost33WitnessShape).localLevel + 1
-
-/--
-The canonical interior component store with exactly the charged local-level
-word above made unavailable.  Every other address is observationally
-identical to the canonical store.
--/
-def canonicalRelativeRmmInteriorCost33LocalLevelDroppedStore : FlatWordStore :=
-  fun address =>
-    if address = canonicalRelativeRmmInteriorCost33LocalLevelDropAddress then
-      none
-    else
-      FlatWordStore.ofArray
-        (canonicalRelativeRmmInteriorComponentStore
-          canonicalRelativeRmmInteriorCost33WitnessShape).store.words address
-
-/--
 `INV-VALUE-DEPENDENCY`, on one identical object and query.  The canonical and
 dropped executions both issue the charged local-level read at the same
 physical address.  The canonical store returns the accepted range-minimum
@@ -6216,9 +6193,10 @@ theorem canonicalRelativeRmmInteriorCost33LocalLevelDrop_changes_returned_candid
     let canonicalStore : FlatWordStore :=
       FlatWordStore.ofArray
         (canonicalRelativeRmmInteriorComponentStore shape).store.words
-    let droppedStore :=
-      canonicalRelativeRmmInteriorCost33LocalLevelDroppedStore
-    let address := canonicalRelativeRmmInteriorCost33LocalLevelDropAddress
+    let address :=
+      (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel + 1
+    let droppedStore : FlatWordStore := fun queriedAddress =>
+      if queriedAddress = address then none else canonicalStore queriedAddress
     let canonicalRun :=
       canonicalRelativeRmmInteriorRangeMinExecutionWithRead
         shape canonicalStore 0 1
@@ -6239,9 +6217,10 @@ theorem canonicalRelativeRmmInteriorCost33LocalLevelDrop_changes_returned_candid
   let canonicalStore : FlatWordStore :=
     FlatWordStore.ofArray
       (canonicalRelativeRmmInteriorComponentStore shape).store.words
-  let droppedStore :=
-    canonicalRelativeRmmInteriorCost33LocalLevelDroppedStore
-  let address := canonicalRelativeRmmInteriorCost33LocalLevelDropAddress
+  let address :=
+    (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel + 1
+  let droppedStore : FlatWordStore := fun queriedAddress =>
+    if queriedAddress = address then none else canonicalStore queriedAddress
   let canonicalRun :=
     canonicalRelativeRmmInteriorRangeMinExecutionWithRead
       shape canonicalStore 0 1
@@ -6323,8 +6302,7 @@ theorem canonicalRelativeRmmInteriorCost33LocalLevelDrop_changes_returned_candid
     simp [bpSparseLevelDomain, hchunk146,
       fixedWidthNatTableMachineFootprintAt,
       fixedWidthNatTableMachineFootprint, consecutiveWordIndices,
-      address, shape,
-      canonicalRelativeRmmInteriorCost33LocalLevelDropAddress]
+      address, shape]
   have hfirstRead (store : FlatWordStore) :
       (address, store address) ∈
         ((canonicalRelativeRmmMachineReadNatComputation shape
@@ -6370,8 +6348,7 @@ theorem canonicalRelativeRmmInteriorCost33LocalLevelDrop_changes_returned_candid
       canonicalRelativeRmmInteriorRangeMinCostedWithRead,
       canonicalRelativeRmmInteriorRangeMinExecutionWithStore] using hexact
   have hdroppedAddress : droppedStore address = none := by
-    simp [droppedStore, address,
-      canonicalRelativeRmmInteriorCost33LocalLevelDroppedStore]
+    simp [droppedStore]
   have hfirstDropped :
       ((canonicalRelativeRmmMachineReadNatComputation shape
         (canonicalRelativeRmmInteriorLocalLevelTable shape).table

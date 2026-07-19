@@ -4009,3 +4009,65 @@ Publication-facing significance:
 An artifact replay claim must identify exactly which cases executed and why
 they are semantically load-bearing. Exact registry and selector verdicts make
 the comparison reproducible without elevating wall-clock behavior to a theorem.
+
+## WDD-20260719-009: exact replay preparation is cached by typed fixture identity
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: B7 exact-registry execution cost and bounded final-candidate replay.
+
+Decision:
+
+1. Exact-registry traversal remains the sole source of case order and semantic
+   expectations, but theorem-backed `PreparedInput` construction is performed
+   once per distinct typed `FixtureId` selected by that traversal.
+2. The executor carries a cache keyed only by `FixtureId`; every case still
+   computes and checks its own answer, independent List answer, route, post
+   cost, and disposition from the cached prepared object.
+3. Successful output checks that the cache contains exactly the number of
+   distinct selected fixture IDs. Default replay therefore requires 21
+   executed cases and six prepared fixtures; a one-case selector requires one
+   of each.
+
+Trigger and evidence:
+
+Diagnosis of a final default replay that accumulated about 1058 seconds of
+harness CPU and crossed its positive 20-minute deadline found two independent
+runtime-category mistakes. First, the exact-registry implementation called
+`prepareInput` inside `reportReplayCase`, repeating the same pure
+Cartesian-shape and payload construction for every window; the prior
+fixture-based harness had deliberately prepared once per fixture. Second, the
+new value-dependency proof had exported closed size-3469 witness values, which
+DD-20260719-004 moves into proof-erased theorem-local lets. This workflow
+decision governs the separate registry-sharing issue rather than attributing
+the whole timeout to it.
+
+Rejected alternatives:
+
+- Raise the deadline and repeat the unchanged opaque command.
+- Drop, reorder, or summarize registry cases to shorten the replay.
+- Treat 21 individually selected cases as a substitute for exercising default
+  ordered traversal.
+- Cache by an untyped string or by query result, which could become a routing
+  oracle rather than construction reuse.
+
+Consequences and regression evidence:
+
+- `ReplayPreparedCache` stores only `(FixtureId, PreparedInput)` pairs;
+  `reportReplayCasesCached` still recurses over the exact selected registry.
+- `exactPreparedFixtureCount` is part of the executable success verdict, not a
+  prose observation.
+- After DD-20260719-004 removed the independent import-time regression, final
+  default replay reported `selectedCases=21`, `executedCases=21`, and exactly
+  six prepared fixtures in 29.158 seconds; the known one-case selector reported
+  one prepared fixture in 282 ms.
+- This changes verification runtime only. It does not change a fixture,
+  expected answer, route, modeled tick, trace, payload bit, proof field,
+  theorem proposition, or public mathematical claim.
+
+Publication-facing significance:
+
+Exact artifact replay should be complete and bounded without confusing
+repeated host-language reconstruction with the modeled query cost. Typed
+fixture sharing preserves the case contract while keeping runtime evidence in
+its proper category.
