@@ -1127,6 +1127,210 @@ theorem wholeQueryProgram_runsTo_sameBlock (shape : Cartesian.CartesianShape)
   have htrans := ((hrunP.trans hrunJ).trans hrunC).trans hrunO
   simpa [List.append_assoc] using htrans
 
+/-! ## THE TWO `none` BRANCHES, EXECUTED AGAINST THE ROUTE'S OWN OBJECTS
+
+These two are the branches the brief singles out as dangerous, and they are
+also the two that need NOTHING from the interior trace ladder: neither the
+close/LCA leg nor the rank leg appears in their receipts, so
+`wholeQueryBranchTrace_selectNone_needs_no_swap`
+(`E1WholeQueryObjects.lean:169`) applies and the machine receipt is the
+route's on the nose.
+
+**WHERE THE DISCRIMINATION ACTUALLY COMES FROM HERE, said precisely.**
+
+The value clause degenerates: both branches answer `none`, so `none = none`
+rejects no impostor.  The receipt clause is the two select traces, which an
+impostor that ALSO ran the close/LCA leg would extend, not alter — so receipt
+equality restricted to the legs that ran would not see it either.
+
+What does see it is that these are POSITIONAL equalities on the WHOLE
+receipt, and the skipped code READS.  On a select-miss branch the code the
+machine skips is `closeLcaProgramAt` — 4753 instructions, of which the
+close/LCA leg's own arms perform memory reads on every path.  An impostor
+that ran it would emit those reads into the receipt, and the receipt here is
+pinned to exactly `selL ++ selR` with nothing appended.  So at the REAL BLOCK
+the receipt is NOT blind to a spurious close/LCA leg.
+
+**This is strictly NARROWER blindness than the fixture's.**  At
+`lcaNone_impostor` (`E1WholeQueryCats.lean`) the skipped stage is
+`fixtureStageCats`, which is READ-FREE, so appending it changes the receipt by
+`t ++ [] = t` and the receipt is formally powerless there.  The fixture's
+blindness is WIDER; the block's is narrower.  Which is which matters: a
+program-level discriminator must not inherit the fixture's statement, because
+the fixture's statement concedes more than the block has to concede.
+
+The residual blind spot at the block is category accounting, which has no
+discriminator anywhere in the validator, and that is unchanged by this lane.
+-/
+
+/-- THE LEFT SELECT MISSED: the machine runs both selects, the join's first
+branch is taken, and the `none` writer halts the machine with `regOut = 0`.
+The receipt is exactly the route's `.leftSelectNone` receipt. -/
+theorem wholeQueryProgram_runsTo_leftSelectNone
+    (shape : Cartesian.CartesianShape) {n left right : Nat}
+    (hlt : left < right) (hbound : right ≤ n)
+    (hleftVal :
+      (concreteBPNativeSelectCloseGlobalWordTraceResult shape left).value =
+        none) :
+    ∃ regsF : RegFile,
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (wholeQueryProgram shape n) (initialState left right)
+          ⟨regsF, 5645, true⟩
+        (wholeQueryBranchTrace shape left right .leftSelectNone)
+        (guardAcceptCats ++
+          ([Category.registerWrite] ++
+            (selectCloseCats (wholeQuerySelData shape)
+              concreteBPNativeSelectCloseTraceSegmentLayout
+              concreteBPNativeRankCloseTraceSegmentBase
+              concreteBPNativeSelectChunkTraceSegment
+              (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (bpFringeChunkBits shape.bpCode.length) left ++
+              ([Category.registerWrite, Category.arithmetic] ++
+                selectCloseCats (wholeQuerySelData shape)
+                  concreteBPNativeSelectCloseTraceSegmentLayout
+                  concreteBPNativeRankCloseTraceSegmentBase
+                  concreteBPNativeSelectChunkTraceSegment
+                  (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+                  (bpFringeChunkBits shape.bpCode.length) (right - 1)))) ++
+          ([Category.comparison, Category.branch] ++
+            [Category.registerWrite, Category.control])) ∧
+      decodePacket (regsF regOut) =
+        wholeQueryBranchValue shape .leftSelectNone := by
+  have hguard : HostedAt (wholeQueryProgram shape n) 0
+      (guardBlock n (8 + (wholeQueryValidPath shape wholeQueryNoneExit).length)) :=
+    programSkeleton_hosts_guardBlock n _
+  have hvp : HostedAt (wholeQueryProgram shape n) 8
+      (wholeQueryValidPath shape wholeQueryNoneExit) :=
+    programSkeleton_hosts_validPath n _
+  obtain ⟨hthrough, _hout⟩ := wholeQueryValidPath_hosts_outputStage shape hvp
+  obtain ⟨hprefix, hjoin, _hcloseLca⟩ :=
+    wholeQueryValidPathThroughLca_hosts_closeLca shape hthrough
+  have hexit : HostedAt (wholeQueryProgram shape n) wholeQueryNoneExit
+      invalidExitBlock := by
+    have h := programSkeleton_hosts_invalidExit n
+      (wholeQueryValidPath shape wholeQueryNoneExit)
+    rwa [wholeQueryNoneExit_is_invalidExit_base shape] at h
+  obtain ⟨regs2, hrunP, hT1, _hV, hZ, _hOne⟩ :=
+    wholeQuerySelectPrefix_runsTo shape hguard hprefix hlt hbound
+  rw [hleftVal] at hT1
+  have hT1z : regs2 regT1 = 0 := by
+    by_cases hz : regs2 regT1 = 0
+    · exact hz
+    · exact absurd hT1 (by simp [decodePacket, hz])
+  have hrunJ := selectJoin_runsTo_leftMiss shape hjoin regs2 hT1z hZ
+  -- the `none` writer
+  have hf0 : (wholeQueryProgram shape n)[wholeQueryNoneExit]? =
+      some (.const regOut 0) := hexit.head
+  have hf1 : (wholeQueryProgram shape n)[wholeQueryNoneExit + 1]? =
+      some .halt := (hexit.tail).head
+  have hs0 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (wholeQueryProgram shape n)
+      ⟨(regs2.write regG 1), wholeQueryNoneExit, false⟩
+      ⟨(regs2.write regG 1).write regOut 0, wholeQueryNoneExit + 1, false⟩ []
+      [Category.registerWrite] :=
+    RunsTo.const (s := ⟨regs2.write regG 1, wholeQueryNoneExit, false⟩) rfl hf0
+  have hs1 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (wholeQueryProgram shape n)
+      ⟨(regs2.write regG 1).write regOut 0, wholeQueryNoneExit + 1, false⟩
+      ⟨(regs2.write regG 1).write regOut 0, wholeQueryNoneExit + 1, true⟩ []
+      [Category.control] :=
+    RunsTo.halt
+      (s := ⟨(regs2.write regG 1).write regOut 0, wholeQueryNoneExit + 1,
+        false⟩) rfl hf1
+  refine ⟨(regs2.write regG 1).write regOut 0, ?_, by
+    simp [wholeQueryBranchValue]⟩
+  have hpc : wholeQueryNoneExit + 1 = 5645 := by simp [wholeQueryNoneExit]
+  rw [hpc] at hs1
+  have htrans := ((hrunP.trans hrunJ).trans hs0).trans hs1
+  simpa [wholeQueryBranchTrace, List.append_assoc] using htrans
+
+/-- THE RIGHT SELECT MISSED: the join's SECOND branch is taken, two
+instructions later.  The receipt is the same as the left-miss one — both
+select legs ran in both cases — but the CATEGORY LOG differs by one
+`comparison`/`branch` pair, which is the only thing separating the two
+branches. -/
+theorem wholeQueryProgram_runsTo_rightSelectNone
+    (shape : Cartesian.CartesianShape) {n left right cl : Nat}
+    (hlt : left < right) (hbound : right ≤ n)
+    (hleftVal :
+      (concreteBPNativeSelectCloseGlobalWordTraceResult shape left).value =
+        some cl)
+    (hrightVal :
+      (concreteBPNativeSelectCloseGlobalWordTraceResult shape
+        (right - 1)).value = none) :
+    ∃ regsF : RegFile,
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (wholeQueryProgram shape n) (initialState left right)
+          ⟨regsF, 5645, true⟩
+        (wholeQueryBranchTrace shape left right (.rightSelectNone cl))
+        (guardAcceptCats ++
+          ([Category.registerWrite] ++
+            (selectCloseCats (wholeQuerySelData shape)
+              concreteBPNativeSelectCloseTraceSegmentLayout
+              concreteBPNativeRankCloseTraceSegmentBase
+              concreteBPNativeSelectChunkTraceSegment
+              (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (bpFringeChunkBits shape.bpCode.length) left ++
+              ([Category.registerWrite, Category.arithmetic] ++
+                selectCloseCats (wholeQuerySelData shape)
+                  concreteBPNativeSelectCloseTraceSegmentLayout
+                  concreteBPNativeRankCloseTraceSegmentBase
+                  concreteBPNativeSelectChunkTraceSegment
+                  (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+                  (bpFringeChunkBits shape.bpCode.length) (right - 1)))) ++
+          ([Category.comparison, Category.branch, Category.comparison,
+              Category.branch] ++
+            [Category.registerWrite, Category.control])) ∧
+      decodePacket (regsF regOut) =
+        wholeQueryBranchValue shape (.rightSelectNone cl) := by
+  have hguard : HostedAt (wholeQueryProgram shape n) 0
+      (guardBlock n (8 + (wholeQueryValidPath shape wholeQueryNoneExit).length)) :=
+    programSkeleton_hosts_guardBlock n _
+  have hvp : HostedAt (wholeQueryProgram shape n) 8
+      (wholeQueryValidPath shape wholeQueryNoneExit) :=
+    programSkeleton_hosts_validPath n _
+  obtain ⟨hthrough, _hout⟩ := wholeQueryValidPath_hosts_outputStage shape hvp
+  obtain ⟨hprefix, hjoin, _hcloseLca⟩ :=
+    wholeQueryValidPathThroughLca_hosts_closeLca shape hthrough
+  have hexit : HostedAt (wholeQueryProgram shape n) wholeQueryNoneExit
+      invalidExitBlock := by
+    have h := programSkeleton_hosts_invalidExit n
+      (wholeQueryValidPath shape wholeQueryNoneExit)
+    rwa [wholeQueryNoneExit_is_invalidExit_base shape] at h
+  obtain ⟨regs2, hrunP, hT1, hV, hZ, _hOne⟩ :=
+    wholeQuerySelectPrefix_runsTo shape hguard hprefix hlt hbound
+  rw [hleftVal] at hT1
+  rw [hrightVal] at hV
+  have hVz : regs2 rVal = 0 := by
+    by_cases hz : regs2 rVal = 0
+    · exact hz
+    · exact absurd hV (by simp [decodePacket, hz])
+  obtain ⟨regs3, hrunJ⟩ :=
+    selectJoin_runsTo_rightMiss shape hjoin regs2
+      (packet_of_decodePacket_eq_some hT1) hVz hZ
+  have hf0 : (wholeQueryProgram shape n)[wholeQueryNoneExit]? =
+      some (.const regOut 0) := hexit.head
+  have hf1 : (wholeQueryProgram shape n)[wholeQueryNoneExit + 1]? =
+      some .halt := (hexit.tail).head
+  have hs0 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (wholeQueryProgram shape n)
+      ⟨regs3, wholeQueryNoneExit, false⟩
+      ⟨regs3.write regOut 0, wholeQueryNoneExit + 1, false⟩ []
+      [Category.registerWrite] :=
+    RunsTo.const (s := ⟨regs3, wholeQueryNoneExit, false⟩) rfl hf0
+  have hs1 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (wholeQueryProgram shape n)
+      ⟨regs3.write regOut 0, wholeQueryNoneExit + 1, false⟩
+      ⟨regs3.write regOut 0, wholeQueryNoneExit + 1, true⟩ []
+      [Category.control] :=
+    RunsTo.halt
+      (s := ⟨regs3.write regOut 0, wholeQueryNoneExit + 1, false⟩) rfl hf1
+  refine ⟨regs3.write regOut 0, ?_, by simp [wholeQueryBranchValue]⟩
+  have hpc : wholeQueryNoneExit + 1 = 5645 := by simp [wholeQueryNoneExit]
+  rw [hpc] at hs1
+  have htrans := ((hrunP.trans hrunJ).trans hs0).trans hs1
+  simpa [wholeQueryBranchTrace, List.append_assoc] using htrans
+
 /-! ## SCOPE, STATED HONESTLY
 
 What is EXECUTED above is the guard and both select legs — pc `0` to `821`.
