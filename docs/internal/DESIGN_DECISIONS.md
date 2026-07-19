@@ -6803,3 +6803,83 @@ The sharpest thing the mutant shows is a NON-ENTAILMENT:
 valid query behaves exactly as before. A harness that checked only that
 valid queries still work -- which is the natural thing to check -- would miss
 this defect completely.
+
+## DD-20260719-144: the width question is settled by EVALUATION, and it settles at the REVIEWER width, not the size-indexed one (E1-LaneA4)
+
+REQ-E1-02's evidence column asks for a checked theorem that every
+instruction of the concrete program fits the modeled width AT EVERY SIZE.
+Two predecessor claims made this look unsatisfiable. Both were wrong, and
+the correction came from numbers rather than from argument, per the standing
+rule that a computable quantity is evaluated and not reasoned about.
+
+WHAT WAS EVALUATED. A scratchpad driver assembled the concrete program at
+canonical parameters -- `blockSize = canonicalBPRelativeSummaryBlockSizeRaw
+shape`, `fringeSegment = 5`, the same instantiation `E1MachineValidate.lean`
+uses at `:361` and `:383` -- and computed the maximum `ProgramFits`-
+constrained FIELD, constructor by constructor, at sizes `1` through `1024`.
+
+THREE CORRECTIONS TO THE RECORD.
+
+1. The register file reaches `84`, NOT `152`. `152` appears nowhere as a
+   register index; `crossBlockArmProgramAt_fits` (`E1CrossBlockArm.lean:915`)
+   independently carries `84 < 2 ^ w` and no certificate anywhere carries a
+   larger register hypothesis. The largest `hreg` in the tree is `117`.
+
+2. THE BINDING FIELD IS NOT A REGISTER. `ProgramFits` constrains every
+   field, including `const` VALUES and `brNZ` TARGETS, not merely register
+   indices. Up to size `256` the maximum field is `555`, the guard's
+   invalid-exit branch target `8 + validPath.length`. From size `512` upward
+   it is instead `2 ^ machineWordBits shape.bpCode.length`, the fold's
+   stride constant, which grows linearly.
+
+3. `ProgramFits (machineWordBits n) ...` IS FALSE AT EVERY SIZE, not "at
+   small `n`". Because the program carries the field
+   `2 ^ machineWordBits shape.bpCode.length` and
+   `shape.bpCode.length = 2 * shape.size`, the field the program needs
+   always exceeds the bound the model supplies. There is NO crossover size.
+   This matters for governance: had it failed only below a threshold, a size
+   dispatch would have looked tempting, and size dispatch on the public
+   route is forbidden in this campaign. It fails everywhere, so the spelling
+   is simply wrong and nothing is to be repaired by thresholding.
+
+THE DECISION. Width accounting is stated at
+`concreteBPNativeSuccinctRMQReviewerWordBits` (`ReviewerPhysical.lean:1474`),
+the one pre-execution reviewer word width, which is already a frozen public
+quantity and is NOT invented for this purpose. It holds at every evaluated
+shape with three orders of magnitude of headroom.
+
+WHY THE OTHER DIRECTION OF THE ARGUMENT WAS BACKWARDS. It was put to this
+lane that register `152` needs `2 ^ w > 152`, hence `w >= 8`, hence
+"capacity `>= 128`", as though the capacity might fail to be large enough.
+The capacity envelope is `400000 * (n + 1)`, so it is at least `400000` at
+`n = 0` and grows from there. It is never near `128`. `capacity_ge`
+(`E1ReviewerWidth.lean`) records this because the inference is easy to run
+in the wrong direction.
+
+WHY THE KERNEL BOUNDARY DOES NOT BITE. Everything reduces through one step,
+`lt_reviewerWordBits_of_lt_capacity`: a quantity fits the reviewer width as
+soon as it is below the capacity envelope. Past that reduction no goal
+mentions `Nat.log2`, so its irreducibility is never reached. Only two
+monotone facts about it survive, and they are isolated at the top of the
+module (`two_pow_machineWordBits_le`, `machineWordBits_le`).
+
+THE ONE PLACE THE LOGARITHM HAD TO BE USED HONESTLY. The `hmix` side
+condition is `(c + 1) * (2 * c + 2)`, QUADRATIC in the chunk width, while
+the envelope is only LINEAR in the size. It cannot be closed by bounding the
+chunk width crudely. It closes because
+`bpFringeChunkBits m = Nat.log2 m / 8 + 1` is genuinely logarithmic: below
+`Nat.log2 L = 41` the product is under the absolute constant `98`, and above
+it the quadratic is dominated via `m * m <= 2 ^ m`, proved here by
+Mathlib-free induction (`sq_le_two_pow`) because the step inequality needs
+`4 * k <= k * k` and `omega` cannot supply a nonlinear step on its own.
+
+A FINDING ABOUT THE EXISTING CERTIFICATES, which is the reason this module
+is worth more than its statement. `sameBlockLegProgramAt_fits`,
+`sameBlockDispatchProgram_fits` and `crossBlockArmProgramAt_fits` take `w`
+parametrically with eleven to seventeen side conditions each. Grepping for
+their names finds only their own statements and ONE internal use
+(`E1ProgramWidth.lean:164`). NOTHING IN THE TREE HAD EVER DISCHARGED THOSE
+SIDE CONDITIONS AT ANY INSTANTIATION. They were OWED premises with no
+satisfiability witness, so a reader could not tell whether the width story
+closes or is vacuous. This module supplies the missing witness on the same
+terms as the premises.
