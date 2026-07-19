@@ -2977,3 +2977,70 @@ into it produces the round-43 defect exactly: right trace, right read count,
 
 First application of the round-44 citation fix: every anchor in the brief is
 `File.lean:NNN` with no directory path.
+
+---
+
+## C05 round 46 — the obligation was FALSE, and its disproof predated the session
+
+E1-R5e returned INCOMPLETE at `abfb681` (three commits from `88f9605`), having
+delivered task zero and mission item 1 and nothing further. The reason task zero
+consumed the session is the finding itself.
+
+**I asked for a fact that is not true.** Round 44 flagged, and round 45 amplified,
+an obligation to prove "`geomCell = 0` at invalid indices" so the min-candidate's
+`none` arm could compose. Both halves of that framing were wrong:
+
+- **The fact is not needed.** `geomCell_eq_routeDecode`
+  (`E1InteriorSummaryGroup.lean:674`) takes only `hcap` and `hexact`, and
+  `hexact` constrains NON-FINAL chunks. Out of range,
+  `chunkIters entriesLen chunkCount i = 1` (`E1InteriorChunkFold.lean:135`), so
+  `j + 1 < 1` is uninhabited and the premise discharges vacuously with no store
+  fact at all.
+- **The fact is FALSE.** `chunkFoldWitness_path_dead`
+  (`E1InteriorChunkFold.lean:1947`) — `rfl`-checked and PREDATING this session —
+  runs the real fold at index `5` past `entriesLen = 3` and leaves `cOut = 2`,
+  i.e. `some 1`, not `0`, because the witness store holds a word at dead address
+  `99`.
+
+So the four bridges are now unconditional in the index (`hvalid` deleted from
+all four, at `:737`/`:753`/`:773`/`:789`), and the asymmetry I told a worker to
+budget for does not exist. **The disproof was sitting in the very file the work
+would have edited.**
+
+**This is my sixth failed claim, and it is a NEW failure mode.** The previous
+five were claims about what the tree contains (rule 4). This one is a claim
+about what NEEDS PROVING — I inherited an obligation from a worker's honest
+"I did not find this" and promoted it to "prove or find this" without testing
+whether it was true. Rule 3 already covers it and I did not apply it: "geomCell
+is zero at invalid indices" is a COMPUTABLE quantity, there was a fixture in
+reach, and evaluating it takes one command. **Rule 3 now explicitly binds
+inherited obligations: before an obligation is budgeted, it is evaluated.** A
+worker's "I did not find it" is evidence about the worker's search, not about
+the mathematics — and promoting the former to the latter is exactly the
+inversion rule 5 warns about in a different costume.
+
+Credit where it is due: the worker did to my obligation precisely what the
+protocol asks, and declined to prove a false thing that a compliant session
+would have burned days on.
+
+**What actually landed.** The composed leg
+(`E1InteriorMinCandidate.lean:924`) carries the group's four route event lists
+as its receipt, is read-free, and needs neither a validity nor a store
+hypothesis. Three anti-vacuity witnesses depend on NO axioms. DD-20260719-016
+claimed, maximum observed `...-015`, verified by tree scan.
+
+**One limit the worker refused to paper over**, and it is the right call: the
+composite was NOT run end-to-end on a numeric fixture, because the group's reads
+go through `machineWordBits` → `Nat.log2`, which the kernel cannot evaluate. So
+the round-43 discrimination model does not extend upward; content discrimination
+stays witnessed at the consumer level where it is kernel-reachable. Stated
+rather than glossed, which is what the earlier "right shape, wrong content"
+defects punished us for not doing.
+
+Also flagged and correctly NOT fixed as concern-mixing:
+`E1InteriorChunkStore.lean:31` prose cites `probeShape_unbounded_agreement_fails`;
+the theorem is `unbounded_agreement_refuted` (`:537`).
+
+All eleven matrix rows remain Open — they are whole-query scoped and this was an
+interior-leg component. The interior analogue of validator phase 3h is still
+owed.
