@@ -5425,3 +5425,239 @@ composition is not built. No row of the matrix is closed. No receipt or
 charge-log link to the route's `FlatStoreComputation.map` is claimed --
 only the machine-side charge log as a function of the route's branch
 conditions.
+
+## DD-20260719-090: the whole-query category function is written from the ROUTE, before the machine, and is indexed by a route-side branch classifier so that "a function of the route's branch conditions" holds by construction (E1 LaneG)
+
+Claimed by the E1-LaneG session (whole-query glue foundations). The maximum
+OBSERVED in this file before writing was `DD-20260719-052`; this lane's
+assigned band is `090`-`109`, so numbering starts at `090` rather than
+compacting into the gap.
+
+Context. The whole-query control program
+(`concreteBPNativeSuccinctRMQWholeQueryProgram`, `SuccinctFinalRAM.lean:4248`)
+has five instructions. Its two `selectClose` instructions run
+unconditionally; `lcaClose` scrutinises the two select results;
+`rankCloseIfSome` and `outputPredIfSome` scrutinise the LCA result. So the
+control flow is determined by exactly THREE `Option` scrutinees. The rank
+leg's own result is a `Nat`, written with `setNat` and read back without
+being tested, so it is NOT a fourth determinant. This was read off the
+evaluator (`SuccinctFinalRAM.lean:3265`) and the program itself, not taken on
+report.
+
+Decision, and it is an ORDERING decision as much as a structural one: the
+whole-query category function is written BEFORE any whole-query machine-side
+statement exists.
+
+Why the ordering is the substance. A category function written after the
+machine exists is a category function fitted to the machine: it agrees by
+construction and can never report anything. Written from the route alone it
+is a PREDICTION. If it later fails to match the machine, that is a finding
+about the machine -- and it can only be a finding if this came first. The
+alternative available here was to wait for the machine legs and read the
+charge off them, which would have been easier and worthless.
+
+Structural half of the decision: `wholeQueryBranchCats` is indexed by
+`WholeQueryBranch`, the route's own classifier (`E1RouteDecomposition.lean`),
+rather than by the raw endpoints. So "always a function of the route's branch
+conditions, never a numeral" is true by construction rather than by
+convention, and no numeral appears anywhere in the definition.
+
+Two sub-decisions worth recording because each had a wrong alternative.
+
+* The two select-miss constructors are kept APART although they induce the
+  same receipt and the same charge. Collapsing them would have been
+  tempting. They record WHICH determinant fired, which is exactly what a
+  category-level discriminator needs.
+* The `lcaSkipped` and `rankSkipped` stages are NOT padding. The evaluator's
+  `lcaClose` writes `none` WITHOUT running its leaf when either select
+  missed, and `rankCloseIfSome` returns the state untouched when the LCA
+  missed. Both are executed instructions, so both charge. A machine that
+  charged nothing there would be as wrong as one that ran the leg, and a
+  category function without these slots could not say so.
+
+The per-stage charges are PARAMETERS, following `crossBlockArmCats`
+(`E1CrossBlockArm.lean:1088`), which takes `interiorCats` as a parameter for
+the same reason: the select/LCA/rank machine legs belong to other lanes and
+are not final. What this module asserts is therefore not the legs' content
+but the CONTROL STRUCTURE -- which stages appear, in which order, on which
+branch. That is the part read off the route, and it is the part a spurious
+leg violates.
+
+THE DISCRIMINATOR, AND WHY IT MATTERS MORE HERE THAN ELSEWHERE. On the
+`lcaNone` and both `selectNone` branches the route value is `none`, so result
+agreement degenerates to `none = none` -- satisfied by any impostor that also
+answers `none`. A machine that ran a leg it should have skipped STILL answers
+`none`, because the output instruction branches on the LCA result and not on
+the skipped leg. The impostor built here runs the skipped rank leg, and the
+fixture establishes by EVALUATION that:
+
+* the category logs DIFFER -- `lcaNone_impostor_catLogs_differ`;
+* the LENGTHS AGREE (6 = 6) -- `lcaNone_impostor_lengths_agree` -- because
+  the spurious leg charges as many ticks as the skip arm it displaced;
+* the memory-read COUNTS AGREE, and are `2` rather than the degenerate `0` --
+  `lcaNone_impostor_memoryRead_counts_agree` and
+  `lcaNone_impostor_memoryRead_count_is_two` -- because the spurious leg is
+  READ-FREE;
+* the VALUE cannot see it -- `lcaNone_value_is_none` holds for EVERY shape,
+  and the value function does not mention the rank stage at all;
+* the RECEIPT cannot see it -- stated as an iff,
+  `impostor_traces_agree_iff_readFree`: receipts agree if and only if the
+  spurious leg is read-free.
+
+That last is deliberately an iff rather than the trivial append-nil form. The
+trivial form is true of any list and would say nothing about this machine;
+the iff states the EXACT reach of the receipt check, recording that it is not
+useless, merely blind in precisely the case the category log alone must
+catch.
+
+So of value, receipt, read count and length, NOT ONE rejects this impostor.
+Only a positional, per-constructor category comparison does. This is the
+`spanNoneArm_discriminates` shape (DD-20260719-050), applied at the whole
+query, with the non-entailments stated rather than implied.
+
+Scope. Nothing here is a machine-side claim and no matrix row is closed. The
+function is a prediction awaiting the machine legs; if it disagrees with them
+that disagreement is the deliverable.
+
+## DD-20260719-091: the guard's accepting fall-through is a theorem with NO invalid-exit premise, and the rejection theorem names its category log positionally instead of quantifying it away (E1 LaneG)
+
+Claimed by the E1-LaneG session; predecessor `DD-20260719-090`, this
+session's own.
+
+Context, and the gap. `E1QueryProgram.lean` proved what the charged validity
+guard does on an INVALID range -- `guard_reject_of_not_lt` and
+`guard_reject_of_out_of_bounds`, each pinning its exact category log. It
+proved nothing at all about a VALID one. The module header asserted, in
+prose, that the valid path terminates by writing `regOut` and halting so it
+never falls through into the exit block, but no theorem established that a
+valid range even REACHES the valid path. Grepped before acting:
+`guard_accept`, `guard_pass`, `guardAccept`, `falls_through`, `_of_valid` --
+no hit anywhere in the tree; every `RunsTo` from `initialState` in both query
+modules sat under a rejection hypothesis.
+
+Without an accept theorem the guard composes with NOTHING. `RunsTo.trans`
+fixes one store across a composition, so the whole-query glue needs an actual
+`RunsTo` segment landing at base `8`.
+
+Decision 1: `guard_accept_of_valid` takes NO `hexit` premise.
+
+Both rejection theorems require the invalid exit block to be hosted, and
+symmetry would have suggested carrying it. The accepting run never fetches
+from the exit block, so requiring it hosted would be a DECORATIVE PREMISE.
+Dropping it also makes the accept theorem strictly more widely applicable
+than its rejection siblings, which is the correct relationship: fewer
+hypotheses for the path that does less.
+
+The same discipline removed a decorative PARAMETER elsewhere in the lane:
+`wholeQueryBranchValue` was first written taking `left right` and never using
+them, because its sibling `wholeQueryBranchTrace` needs them. It is defined
+without them. The whole-query value depends on the endpoints ONLY through the
+branch classification, which is a real structural fact that the decorative
+parameters would have hidden.
+
+Decision 2: `guard_reject_of_invalid` names its category log.
+
+The combined rejection theorem existentially quantified `cats` and kept only
+two clauses constraining it: the memory-read count is zero, and the length is
+at most ten. Both are AGGREGATES, and the exact logs already existed twenty
+lines above and were discarded. A log of the right length with one slot
+changed from `.comparison` to `.branch` satisfies the read count and the
+length bound EXACTLY -- this is the right-shape, wrong-content class the
+campaign has been bitten by repeatedly.
+
+`guardRejectCats left right` now names the log as a function of which
+invalidity holds. The size constant `n` is deliberately NOT a parameter: it
+is what makes the range invalid, but `left < right` ALONE selects between the
+two logs. The two aggregates are now corollaries
+(`guardRejectCats_memoryRead`, `guardRejectCats_length_le`), so nothing is
+lost and the implication runs one way only -- the exact log entails the
+aggregates, the aggregates entail nothing about the log.
+
+Decision 3: the weakening is repaired where it mattered most, at the public
+surface. `E1QueryBridge.lean` carries the ONLY category statement the E1
+machine puts on the public `List Int` boundary, so whatever it can
+distinguish is the whole of what that boundary can distinguish about charge.
+All four theorems there now carry the exact log. The three named
+specializations had each dropped clauses the general theorem already
+established -- the trace clause in all three, cost and the bookkeeping bound
+in two -- leaving the named boundary cases WEAKER than the statement they
+were derived from. They now carry the full clause set.
+
+Two of the three say MORE than the general theorem rather than less: an empty
+range and a reversed range both fail `left < right`, so their exact log is
+known to be `guardRejectRangeCats` and is named as such. The out-of-bounds
+case genuinely cannot be sharpened -- `xs.length < right` does not decide
+`left < right` -- so it keeps the branch-indexed form.
+`out_of_bounds_reaches_both_reject_logs` EVALUATES witnesses that both logs
+are reachable there, so that choice is necessary rather than merely cautious.
+
+Anti-vacuity. `guardAcceptCats_ne_rejectBoundsCats` is the pair worth
+noting: the accept log and the out-of-bounds rejection log share their first
+SIX entries and differ only from position six on, so a prefix check would not
+separate them. The accept behaviour is additionally established by EXECUTION
+rather than only by the hand-written `RunsTo` chain -- fall-through pc,
+halted flag, empty read log, exact category log and surviving operands all by
+`rfl` -- and the boundary cases `right = n` and `right = n + 1` are pinned
+from both sides, where an off-by-one would otherwise be invisible to every
+fixture.
+
+## DD-20260719-092: the whole query's two object reconciliations were FOUND in the tree, not built, and the lane applies them instead of duplicating them (E1 LaneG)
+
+Claimed by the E1-LaneG session; predecessor `DD-20260719-091`, this
+session's own.
+
+FINDING, CONTRARY TO THE LANE BRIEF, recorded because acting on the brief as
+written would have duplicated frozen machinery.
+
+The lane was briefed to BUILD two object reconciliations in a new module: the
+rank leg's SEED-store versus GLOBAL-store mismatch, and the close/LCA arm's
+`AtSegment` versus `AtSegmentWithStore` mismatch. The brief supplied the
+ingredients -- `bpChunkedRankTraceResultWithStore_store_parametric`
+(`ChargedRankSelectLeafTrace.lean:431`) and eight store-agreement witnesses
+-- and prescribed routing through the full `TraceResult` equality rather than
+any `_refines` or `toCosted` form.
+
+Both reconciliations ALREADY EXIST, assembled, by exactly that route.
+
+* `concreteBPNativeRankCloseWordTraceResultAtSegment_canonical_eq`
+  (`SuccinctFinalRAM.lean:1550`) states as a FULL `TraceResult` equality that
+  at the canonical base `17` the route's seed-store rank leg IS the
+  global-store one. Its proof applies
+  `bpChunkedRankTraceResultWithStore_store_parametric` and discharges the
+  four goals with the four seed witnesses and the four global witnesses, with
+  the chunk-segment bridge `17 + 4 = 21` by `rfl`. That is the prescribed
+  construction, already in the tree.
+* `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_globalReadStore`
+  (`SuccinctFinalStoreParam.lean:1633`) glues the store-parametric close/LCA
+  arm at the global store to the canonical arm the route names, routing the
+  rank seed through the theorem above.
+
+The machine target was verified independently rather than assumed:
+`rankCloseBlock_runsTo_canonical` (`E1RankCanonical.lean:257`) emits receipts
+from `concreteBPNativeChunkedRankCloseGlobalWordTraceResult`, which is the
+right-hand side of the rank equality above. So the gap the brief described is
+closed, in the direction the glue needs.
+
+Decision: do not rebuild either. A reconciliation constructed FOR this lane's
+premise, when one already exists AT the target, satisfies the letter of the
+witness rule and defeats its purpose -- and a second, independently written
+copy of a store-swap proof is a drift hazard against frozen machinery.
+
+What was genuinely missing, and is what the new module supplies: the route's
+BRANCH RECEIPT written in the objects the machine's own leg theorems produce.
+No statement did that. `wholeQueryBranchTrace_full_machineObjects` performs
+both swaps at once; `wholeQueryBranchTrace_lcaNone_machineObjects` performs
+only the close/LCA swap, because the rank leg does not appear on that branch
+-- which is the practical payoff of keeping the branches apart. Every proof
+in the module is a rewrite by an existing theorem and cites the theorem it
+uses.
+
+Also recorded there, so the glue does not go looking for a reconciliation
+that is not needed: the two select-miss branches need NO swap at all, since
+the select legs are already named in global form by the route and neither the
+close/LCA leg nor the rank leg appears.
+
+Technique note. The three match-on-constructor goals needed a typed `show`
+ascription rather than `unfold`, which leaves the match unreduced even on a
+literal constructor. This is the defeq-conversion move from the live state's
+technique section, in its cheapest form.
