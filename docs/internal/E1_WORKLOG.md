@@ -6460,4 +6460,3 @@ All file:line verified at this commit.
    effect on registers -- two heads of the same arity and the same log
    length can charge differently, and the resulting error is invisible to
    both length and read-count checks (section 4, finding A).
-
