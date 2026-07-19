@@ -193,6 +193,35 @@ try {
   Invoke-Case "ready-governed" 0 $validPrompt $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
 
+  $gateWithoutDecisionScope = Join-Path $tempRoot "gate-without-workflow-decision-scope.txt"
+  $gateWithoutDecisionScopeLines = @(Get-Content -LiteralPath $validPrompt) | ForEach-Object {
+    if ($_ -match '^- Write scope:') {
+      '- Write scope: E1 source, scripts/gate.ps1, its matrix, and directly required checks.'
+    } else {
+      $_
+    }
+  }
+  $gateWithoutDecisionScopeLines += '- Outside-scope dependency note: docs/internal/WORKFLOW_DESIGN_DECISIONS.md exists but is not owned.'
+  $gateWithoutDecisionScopeLines += '- powershell -ExecutionPolicy Bypass -File scripts/design_decision_check.ps1 -Strict'
+  $gateWithoutDecisionScopeLines | Set-Content -LiteralPath $gateWithoutDecisionScope -Encoding utf8
+  Invoke-Case "gate-strict-wdd-outside-write-scope-rejected" 2 `
+    $gateWithoutDecisionScope $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("workflow-sensitive-write-scope-requires-wdd")
+
+  $gateWithDecisionScope = Join-Path $tempRoot "gate-with-workflow-decision-scope.txt"
+  $gateWithDecisionScopeLines = @(Get-Content -LiteralPath $validPrompt) | ForEach-Object {
+    if ($_ -match '^- Write scope:') {
+      '- Write scope: E1 source, scripts/gate.ps1, docs/internal/WORKFLOW_DESIGN_DECISIONS.md, its matrix, and directly required checks.'
+    } else {
+      $_
+    }
+  }
+  $gateWithDecisionScopeLines += '- powershell -ExecutionPolicy Bypass -File scripts/design_decision_check.ps1 -Strict'
+  $gateWithDecisionScopeLines | Set-Content -LiteralPath $gateWithDecisionScope -Encoding utf8
+  Invoke-Case "gate-strict-wdd-in-write-scope-accepted" 0 `
+    $gateWithDecisionScope $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
+
   Invoke-Case "returning-runtime-unknown" 2 $validPrompt $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("destination runtime VERIFIED_CURRENT") `
     -DestinationRuntimeEvidence "UNKNOWN"

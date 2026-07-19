@@ -188,6 +188,17 @@ try {
       Stop-Preflight "prompt field '$($field.Label)' is not substantively populated"
     }
   }
+
+  $writeScopeLine = [regex]::Match(
+    $promptText,
+    '(?m)^- Write scope:\s*(.+?)\s*$'
+  ).Groups[1].Value
+  if ($TaskMode -eq "WRITE" -and
+      $writeScopeLine -match 'scripts[\\/]gate\.ps1' -and
+      $writeScopeLine -notmatch 'docs[\\/]internal[\\/]WORKFLOW_DESIGN_DECISIONS\.md') {
+    Stop-Preflight "workflow-sensitive-write-scope-requires-wdd: scripts/gate.ps1 requires docs/internal/WORKFLOW_DESIGN_DECISIONS.md in the same write scope"
+  }
+
   $acceptanceLine = [regex]::Match(
     $promptText,
     '(?m)^- Frozen acceptance IDs:\s*(.+?)\s*$'

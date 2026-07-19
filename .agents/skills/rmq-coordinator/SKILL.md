@@ -95,6 +95,11 @@ Every worker prompt should name:
 - completion report requirements, including branch name, worktree path, base
   branch, and commit hash for write tasks.
 
+Close transitive write scope before launch. In particular, any prompt that may
+edit `scripts/gate.ps1` must also include
+`docs/internal/WORKFLOW_DESIGN_DECISIONS.md`; the strict workflow-decision check
+requires that companion even when the gate edit changes comments only.
+
 Put `Make the title of this chat exactly: ...` as the first line of the pasted
 worker prompt. A title shown only as identity metadata is not an instruction to
 rename the chat.

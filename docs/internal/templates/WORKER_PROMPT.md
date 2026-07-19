@@ -62,6 +62,10 @@ Roadmap contract:
 - Goal: [ONE SENTENCE EXACT TARGET]
 - Required theorem/file/tool: [EXACT TARGET]
 - Write scope: [PATHS]
+- Write-scope closure: if the task may edit `scripts/gate.ps1`, include
+  `docs/internal/WORKFLOW_DESIGN_DECISIONS.md` in the same scope because the
+  strict workflow-decision checker requires a durable process entry even for a
+  comment-only gate edit.
 - Non-goals: [BOUNDARIES]
 - Explicitly deferred work: [ITEMS]. A deferred item is non-blocking only when
   it is not required for this target or its inherited invariants to be true.

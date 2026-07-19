@@ -3449,3 +3449,132 @@ Evidence:
   comment.
 - `scripts/design_decision_check.ps1 -Strict -Base
   6155d48dde13dfc8e4b3da108b4b81e258300b86` checks this decision record.
+## WDD-20260718-005: strict drift policy separates live claims from frozen history
+
+Status: Accepted.
+Date: 2026-07-18.
+Scope: current RMQ public surfaces, historical evidence, claim-drift policy,
+and completed-worker public-claim audits.
+
+Decision:
+
+1. Treat the pre-A07 current constants and fixtures as strict failures on live
+   public/current surfaces: cost bounds `76` or `142`, a 20-source manifest,
+   fresh or rejected segment `21`, and repeated-read global positions `0` and
+   `12`.
+2. Admit those literals only in explicitly frozen historical surfaces such as
+   dated digests, audit reports, acceptance matrices, worklogs, and design-
+   decision ledgers. A broad `docs/internal` allowance is not sufficient.
+3. Keep the production scanner's final strict verdict as the policy result and
+   reproduce the failed candidate's exact evidence pattern with named
+   regression fixtures plus current-value expected-accept controls.
+4. The live replacement facts are cost `207` with algebra
+   `2*35 + (2*11 + 2*37 + 30) + 11 = 207`, 22 physical sources over logical
+   segments `0..22` with segments `0` and `19` sharing BP, live segment `21`,
+   rejected fresh segment `23`, and repeated-read positions `0` and `15` from
+   producing instruction positions `0` and `1`.
+
+Trigger and evidence:
+
+The exact-commit audit of R1-R1 candidate
+`3a2b47261ba6a15829a3160a7fce352b62c88380` found its Lean theorem and manifest
+consumer sound but found retired current facts across live artifact, paper,
+roadmap, review-packet, and current-digest surfaces. The candidate worklog
+claimed those values remained only in historical records, while
+`scripts/claim_drift_scan.ps1 -Strict` exited successfully with 746 hits and no
+strict failure. The policy had marked `76` and the 20-source manifest as current
+and did not classify the stale fresh-segment or trace-position fixtures.
+
+Rejected alternatives:
+
+- Rely on a worker's repository-wide search transcript without checking the
+  policy classifier and its allowances.
+- Ban the retired literals everywhere, which would corrupt frozen audit and
+  design history.
+- Add one broad `docs/internal` exception, which would also exempt the live
+  final roadmap and current claim policy.
+- Repair prose alone while leaving the scanner blind to the reproduced miss.
+
+Consequences:
+
+- A docs-only repair cannot report a clean current surface while these exact
+  retired formulations remain live.
+- Frozen historical evidence remains readable and truthful.
+- The strict policy is a lower-bound consistency check; coordinators still
+  reconstruct source theorem identities and semantics independently.
+- No Lean proposition, payload bit, proof field, modeled tick, trace event, or
+  runtime behavior changes.
+
+Evidence:
+
+- `docs/internal/CLAIM_DRIFT_POLICY.json` and `.md`.
+- Named `r1r1-3a2b472-*` reject and current-value control fixtures in
+  `scripts/claim_drift_policy_regression.ps1`.
+- Exact rejected candidate
+  `3a2b47261ba6a15829a3160a7fce352b62c88380`.
+
+Publication-facing significance:
+
+The artifact's numeric cost, physical-source universe, freshness witness, and
+trace-position provenance are reviewer-visible claims. The strict live-versus-
+historical boundary prevents obsolete but once-valid facts from surviving a
+submission freeze under a green consistency gate.
+
+## WDD-20260718-006: worker write scopes include workflow-sensitive companions
+
+Status: Accepted.
+Date: 2026-07-18.
+Scope: worker-prompt construction, write-scope preflight, and strict workflow-
+decision evidence.
+
+Decision:
+
+1. Close transitive write scope before a prompt is marked `READY_TO_SEND`.
+2. If a write prompt may edit `scripts/gate.ps1`, require
+   `docs/internal/WORKFLOW_DESIGN_DECISIONS.md` in the same declared write
+   scope. This applies even when the gate edit is comment-only because the
+   strict decision checker intentionally treats the gate as process-sensitive.
+3. Enforce the relation in `worker_prompt_preflight.ps1`, document it in the
+   worker template and coordinator skill, and retain both failing and passing
+   regression cases.
+
+Trigger and evidence:
+
+R1-R1 was assigned a stale-comment correction in `scripts/gate.ps1` while its
+frozen write scope omitted the workflow-decision ledger. The worker completed
+the substantive theorem repair, then correctly stopped when
+`design_decision_check.ps1 -Strict` required a workflow entry it lacked
+authority to write. A later coordinator scope amendment was safe but avoidable.
+
+Rejected alternatives:
+
+- Let workers silently expand their scope when a strict checker requests a
+  companion file.
+- Exempt comment-only gate edits from process-sensitive classification.
+- Mention the companion only in prose without making prompt preflight reject
+  the incomplete scope.
+- Add every design ledger to every prompt regardless of changed paths.
+
+Consequences:
+
+- Gate-edit prompts arrive with enough authority to satisfy their known strict
+  workflow evidence dependency.
+- Workers still stop on any other unanticipated scope expansion.
+- Narrow prompts that do not touch the gate gain no extra write authority.
+- The rule changes no command, gate order, Lean proposition, payload data,
+  modeled cost, trace, or runtime semantics.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md`.
+- `docs/internal/templates/WORKER_PROMPT.md`.
+- `scripts/worker_prompt_preflight.ps1`.
+- Named regressions `gate-strict-wdd-outside-write-scope-rejected` and
+  `gate-strict-wdd-in-write-scope-accepted` in
+  `scripts/worker_prompt_preflight_regression.ps1`.
+
+Publication-facing significance:
+
+This is workflow infrastructure. It prevents a mechanically predictable scope
+block from interrupting a submission-hardening repair while preserving the
+same strict audit trail for aggregate-gate changes.

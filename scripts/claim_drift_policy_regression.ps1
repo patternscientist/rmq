@@ -23,6 +23,23 @@ if (-not (Test-Path -LiteralPath $resolvedScannerPath)) {
   exit 1
 }
 
+$policyObject = Get-Content -Raw -LiteralPath $resolvedPolicyPath | ConvertFrom-Json
+$sourceManifestTerm = @($policyObject.terms | Where-Object id -eq 'typed-reviewer-source-manifest')
+if ($sourceManifestTerm.Count -ne 1 -or
+    [string]$sourceManifestTerm[0].pattern -notmatch '22-source' -or
+    [string]$sourceManifestTerm[0].pattern -match '20-source') {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [r1r1-3a2b472-current-source-policy-config] expected current 22-source advisory pattern"
+  exit 1
+}
+$retiredCostTerm = @($policyObject.terms | Where-Object id -eq 'principled-charged-trace-76')
+if ($retiredCostTerm.Count -ne 1 -or
+    [string]$retiredCostTerm[0].status -notmatch 'historical' -or
+    [string]$retiredCostTerm[0].status -match '^current-') {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [r1r1-3a2b472-current-cost-policy-config] retired cost advisory is still current"
+  exit 1
+}
+Write-Host "CLAIM-POLICY-REGRESSION: PASS [r1r1-3a2b472-current-policy-config]"
+
 $fixtures = @(
   @{ id = "canonical-uses-unspaced"; reject = $true; text = "The canonical execution uses 2^128 as an activation premise." },
   @{ id = "canonical-uses-spaced"; reject = $true; text = "The canonical execution uses 2 ^ 128 as an activation premise." },
@@ -66,6 +83,17 @@ $fixtures = @(
   @{ id = "retired-large-regime-story-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory" },
   @{ id = "renamed-w18-list-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.listIntSuccinctRMQEventValueProducerProvenanceOfValid" },
   @{ id = "renamed-w18-program-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQProgramEventValueProducer" },
+
+  # Exact stale-current evidence pattern reproduced from rejected R1-R1
+  # candidate 3a2b47261ba6a15829a3160a7fce352b62c88380.
+  @{ id = "r1r1-3a2b472-current-cost-76"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "The current principled charged-trace bound is 76." },
+  @{ id = "r1r1-3a2b472-current-source-count-20"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $true; termId = "forbidden-retired-current-source-count"; text = "The canonical reviewer manifest is one typed 20-source universe." },
+  @{ id = "r1r1-3a2b472-fresh-segment-21"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $true; termId = "forbidden-retired-fresh-segment-21"; text = "Fresh unused segment 21 is rejected by the common predicate." },
+  @{ id = "r1r1-3a2b472-global-positions-0-12"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $true; termId = "forbidden-retired-trace-position-12"; text = "The current global positions 0 and 12 remain distinct obligations." },
+  @{ id = "r1r1-current-cost-207-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; termId = "forbidden-retired-current-cost-bound"; text = "The current principled charged-trace bound is 207." },
+  @{ id = "r1r1-current-source-count-22-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; termId = "forbidden-retired-current-source-count"; text = "The canonical reviewer manifest is one typed 22-source universe." },
+  @{ id = "r1r1-fresh-segment-23-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; termId = "forbidden-retired-fresh-segment-21"; text = "Fresh unused segment 23 is rejected by the common predicate." },
+  @{ id = "r1r1-global-positions-0-15-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; termId = "forbidden-retired-trace-position-12"; text = "The current global positions 0 and 15 remain distinct obligations." },
 
   @{ id = "negated-canonical"; reject = $false; allowedMatch = $true; text = "No canonical execution theorem uses 2^128 as an activation premise." },
   @{ id = "negated-current-canonical"; reject = $false; allowedMatch = $true; text = "No current canonical reviewer route has 2 ^ 128 as an activation premise." },
@@ -269,9 +297,15 @@ try {
     Test-AbsoluteWindowsScannerPath
   } else {
     foreach ($fixture in $fixtures) {
-      $fixturePath = $fixture.id + ".txt"
+      $fixturePath = if ($fixture.ContainsKey("relativePath")) {
+        [string]$fixture.relativePath
+      } else {
+        $fixture.id + ".txt"
+      }
+      $fixtureFullPath = Join-Path $absoluteFixtureRoot $fixturePath
+      [System.IO.Directory]::CreateDirectory((Split-Path -Parent $fixtureFullPath)) | Out-Null
       [System.IO.File]::WriteAllText(
-        (Join-Path $absoluteFixtureRoot $fixturePath),
+        $fixtureFullPath,
         [string]$fixture.text + [Environment]::NewLine
       )
       $termId = "forbidden-2pow128-canonical-activation"
@@ -332,6 +366,28 @@ try {
       -Content "[FROZEN-HISTORY: casual] $retiredAlias"
     Test-FinalVerdict -Id 'casual-history-word-does-not-bypass' -Path $casualFrozenShadow.RelativePath -WorkingDirectory $casualFrozenShadow.Root -Reject $true -TermId $retiredTerm -CheckTrackedState $true
     $contextCount += 6
+
+    $historicalR1Shadow = New-ShadowFileRoot `
+      -RelativePath 'docs/internal/audit_reports/r1r1-3a2b472-frozen-evidence.md' `
+      -Content @'
+The historical current bound at the audited candidate was 76.
+The historical canonical manifest was a typed 20-source universe.
+Fresh unused segment 21 was rejected in that frozen candidate.
+The historical global positions 0 and 12 were distinct.
+'@
+    foreach ($historicalTerm in @(
+        'forbidden-retired-current-cost-bound',
+        'forbidden-retired-current-source-count',
+        'forbidden-retired-fresh-segment-21',
+        'forbidden-retired-trace-position-12'
+      )) {
+      Test-FinalVerdict -Id "r1r1-3a2b472-historical-$historicalTerm" `
+        -Path $historicalR1Shadow.RelativePath `
+        -WorkingDirectory $historicalR1Shadow.Root `
+        -Reject $false -RequireAllowed $true -TermId $historicalTerm `
+        -CheckTrackedState $true
+      $contextCount += 1
+    }
   }
 } finally {
   if ([System.IO.Directory]::Exists($absoluteFixtureRoot)) {
