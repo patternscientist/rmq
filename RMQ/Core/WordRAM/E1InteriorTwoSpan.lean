@@ -287,6 +287,53 @@ chained caller can compose the two certificates without re-deciding. -/
 theorem twoSpanUntouched_span {r : Nat} (h : TwoSpanUntouched r) :
     SpanUntouched r := h.1
 
+/-- **THE WHOLE WRITE SET LIES BELOW `136`.**
+
+Stated once so a combiner built on top of this block can carry its own
+register bank across a sub-leg without re-deciding ten conjuncts at every
+use.  `136` is not arbitrary: it is one past `tOne`, the highest register
+this block writes.
+
+THE NUMERALS ARE SPELLED OUT rather than left as the register abbrevs
+because `omega` collects an `abbrev` as an OPAQUE ATOM -- it reports "a
+possible counterexample may satisfy `a >= 136` where `a := iIdx`" -- so a
+proof written against the names fails while the identical proof against
+the numerals succeeds by defeq.  Each `show` below is the same
+proposition as the conjunct it discharges. -/
+theorem twoSpanUntouched_of_ge {r : Nat} (h : 136 ≤ r) :
+    TwoSpanUntouched r :=
+  ⟨⟨⟨⟨Or.inr (show 99 < r by omega), show r ≠ 85 by omega,
+        show r ≠ 101 by omega, show r ≠ 102 by omega,
+        show r ≠ 103 by omega, show r ≠ 104 by omega⟩,
+      show r ≠ 77 by omega, show r ≠ 78 by omega,
+      Or.inr (show 117 < r by omega)⟩,
+    show r ≠ 120 by omega, show r ≠ 121 by omega, show r ≠ 122 by omega,
+    show r ≠ 100 by omega⟩,
+  ⟨show r ≠ 77 by omega, show r ≠ 78 by omega, show r ≠ 125 by omega,
+    show r ≠ 126 by omega⟩,
+  ⟨show r ≠ 123 by omega, show r ≠ 124 by omega⟩,
+  show r ≠ 118 by omega, show r ≠ 119 by omega, show r ≠ 131 by omega,
+  show r ≠ 132 by omega, show r ≠ 133 by omega, show r ≠ 134 by omega,
+  show r ≠ 135 by omega⟩
+
+/-- **AND `qLV`/`qLP` ARE INSIDE IT.**
+
+`twoSpanBlock` contains a `mergeShuttle` and a `mergeBlock`, so it WRITES
+the two-way merge's left-stash pair.  A caller that stashes a candidate
+there and then runs a two-span sub-leg loses it.
+
+This is recorded as a theorem rather than a comment because the natural
+combiner design -- stash into `qLV`/`qLP`, run the next sub-leg, merge --
+is WRONG for exactly this reason, and nothing about the block's type says
+so.  `E1_LIVE_STATE.md` §2's "chaining does need a two-instruction
+shuttle, which exists" is true one level down and NOT sufficient one level
+up: each nesting level needs its own stash pair. -/
+theorem twoSpanUntouched_excludes_mergeStash :
+    ¬ TwoSpanUntouched E1InteriorMerge.qLV ∧
+      ¬ TwoSpanUntouched E1InteriorMerge.qLP :=
+  ⟨fun h => absurd h.2.2.1.1 (by decide),
+    fun h => absurd h.2.2.1.2 (by decide)⟩
+
 /-! ## Exact simulation -/
 
 /--
