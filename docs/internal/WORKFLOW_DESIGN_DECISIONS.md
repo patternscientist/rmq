@@ -3348,7 +3348,7 @@ This is workflow infrastructure only. It preserves versioned role policy while
 preventing unrelated skill injection from becoming false evidence that a proof
 worker is unqualified to run its assigned theorem campaign.
 
-## WDD-20260718-004: strict drift policy separates live claims from frozen history
+## WDD-20260718-005: strict drift policy separates live claims from frozen history
 
 Status: Accepted.
 Date: 2026-07-18.
@@ -3419,7 +3419,7 @@ trace-position provenance are reviewer-visible claims. The strict live-versus-
 historical boundary prevents obsolete but once-valid facts from surviving a
 submission freeze under a green consistency gate.
 
-## WDD-20260718-005: worker write scopes include workflow-sensitive companions
+## WDD-20260718-006: worker write scopes include workflow-sensitive companions
 
 Status: Accepted.
 Date: 2026-07-18.
