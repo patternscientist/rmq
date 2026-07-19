@@ -1306,3 +1306,143 @@ Still owed, with citations:
 
 **No acceptance row is marked closed by this lane.** What is supplied is in
 the report; the judgement is the coordinator's.
+
+## 13. Worklog — E1-LaneA4 (width + fold preservation + fringe cap), 2026-07-19
+
+Branch `claude/e1-cost-algebra`, base `9151705`. Commits `34f0ca4`,
+`8facc13`, `73cc485`, `9f15fb3` and this one. DD-IDs claimed and WRITTEN
+into `DESIGN_DECISIONS.md`: **`144`, `145`, `146`**. Band `147-159` free.
+
+### ITEM 1 — THE WIDTH QUESTION, SETTLED BY EVALUATION. ANSWER: (a).
+
+**Evaluated first, argued second.** A scratchpad driver assembled the
+concrete program at canonical parameters (`blockSize =
+canonicalBPRelativeSummaryBlockSizeRaw shape`, `fringeSegment = 5`, matching
+`E1MachineValidate.lean:361`) and computed the maximum
+`ProgramFits`-constrained FIELD at sizes `1..1024`.
+
+| n | bpCode len | mwb(n) | 2^mwb(n) | rwb(n) | maxReg | maxField | fits@mwb | fits@rwb |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 2 | 1 | 2 | 20 | 84 | 555 | false | true |
+| 4 | 8 | 3 | 8 | 21 | 84 | 555 | false | true |
+| 16 | 32 | 5 | 32 | 23 | 84 | 555 | false | true |
+| 64 | 128 | 7 | 128 | 25 | 84 | 555 | false | true |
+| 256 | 512 | 9 | 512 | 27 | 84 | 555 | false | true |
+| 512 | 1024 | 10 | 1024 | 28 | 84 | 1024 | false | true |
+| 1024 | 2048 | 11 | 2048 | 29 | 84 | 2048 | false | true |
+
+**THREE COORDINATOR PREMISES FAILED INSPECTION.**
+
+1. **"the register file reaches `152`" — WRONG, it reaches `84`.** `152` is
+   not a register index anywhere. `crossBlockArmProgramAt_fits`
+   (`E1CrossBlockArm.lean:915`) carries `84 < 2 ^ w`; the largest `hreg` in
+   the tree is `117`. The `152` figure was inherited from
+   `E1AmendedTarget.lean:108` and is not supported.
+2. **The binding field is NOT a register.** `ProgramFits` constrains every
+   field including `const` VALUES and `brNZ` TARGETS. Up to `n = 256` the
+   maximum is `555`, the guard invalid-exit target `8 + 547`; from `512`
+   up it is `2 ^ machineWordBits |bpCode|`.
+3. **`ProgramFits (machineWordBits n) ...` is FALSE AT EVERY `n`**, not "at
+   small `n`". There is no crossover, so answer **(b) is ruled out
+   structurally** and no size threshold could repair it.
+
+**The reviewer-width inference was backwards.** It was put to this lane that
+register `152` forces `w >= 8` hence "capacity `>= 128`". Capacity is
+`400000 * (n + 1)`, so it is `>= 400000` at `n = 0` and grows. It is never
+near `128`. `capacity_ge` records this.
+
+**BUILT (`E1ReviewerWidth.lean`, new).** `#print axioms` clean on all.
+
+- `programSkeleton_fits_reviewerWordBits (shape) : ProgramFits (shapeWidth
+  shape) (programSkeleton shape.size (assembledValidPath shape))` — no size
+  hypothesis, no parametric `w`, no threshold.
+- `programSkeleton_not_fits_machineWordBits (shape) (hsmall : shape.size <=
+  255)` — the ANTI-VACUITY half: the same program FAILS the same predicate
+  at the other width, on the named instruction `brNZ regG 555`. The `255` is
+  an artifact of cheap statement, not of where failure stops.
+- Arithmetic core: `two_pow_machineWordBits_le`, `machineWordBits_le`,
+  `sq_le_two_pow` (needed because `hmix` is QUADRATIC in the chunk width
+  while the envelope is only LINEAR in the size).
+- The one reduction: `lt_reviewerWordBits_of_lt_capacity`. Past it no goal
+  mentions `Nat.log2`, so section 11 B kernel boundary is never reached.
+
+**A FINDING WORTH MORE THAN THE THEOREM.** `sameBlockLegProgramAt_fits`
+(`E1ProgramWidth.lean:57`), `sameBlockDispatchProgram_fits` (`:145`) and
+`crossBlockArmProgramAt_fits` (`E1CrossBlockArm.lean:913`) take eleven to
+seventeen side conditions each. Grep finds only their own statements and ONE
+internal use (`E1ProgramWidth.lean:164`). **NOTHING IN THE TREE HAD EVER
+DISCHARGED THEM AT ANY INSTANTIATION** — owed premises with no satisfiability
+witness, so the width story could have been vacuous and no reader could tell.
+That is now closed.
+
+### ITEM 2 — `FringeFoldUntouched` EXECUTED. Validator phases 3k/4j.
+
+New module `E1FringeFoldProgram.lean`: `foldWitnessProgram` hosts the fold
+STANDALONE at loop base `2` (padding makes the base nonzero, per
+`armWitnessProgram` discipline at `E1FringeArmProgram.lean:240`), and
+`foldWitnessProgram_hosts` discharges ALL FOUR hosting hypotheses of
+`fringeFoldLoop_runsTo_accepted` (`E1FringeFoldBlock.lean:1301`) at once.
+`foldWitnessProgram_fold_eq` proves by `rfl` that this IS `fringeLoopBody`.
+
+Checked bank is `40..62`, the fold OWN write set (`E1FringeFoldBlock.lean`
+`:62`-`:106`), not a neighbour.
+
+Phase 3k: `foldPresCases=27`, `foldPresCheckedRegs=87`,
+`foldPresFailures=0`, `foldPresClobberedRegs=[]`,
+`foldPresSeedDisagreements=0`, `foldPresReadBearingCases=27`.
+Phase 4j (mutant K, consistent rename of the private scratch `fX` to `105`):
+`foldPresMutationIsReal=true`, `mutantK_fold_preservationFailures=27`,
+`mutantK_clobberedRegs=[105]`, `mutantK_fold_exitFailures=0`,
+`mutantK_isPreservationOnly=true`. Five figures also kernel-checked by
+`rfl`. Both phases contribute verdict clauses.
+
+**The receipt argument here is NOT the interior one.** Mutant H could lean on
+its block being read-free. The fringe fold is READ-BEARING and `fX` actually
+reaches the read address (`fX` to `fB` to `fSlot` to `readMem fE S fSlot`).
+It is invisible only because the rename is CONSISTENT. A partial rename
+would move a read and the receipt would catch it, correctly.
+
+### ITEM 4 — THE MISSING CAP LEMMA, closed in both halves.
+
+`cap_count_le` states the `<= 33` every caller writes
+(`E1FringeArmBlock.lean:594-596`, `:1020-1022`); only `cap_count_pos`
+(`:245`) had covered the other side. `ascLog_length_le` supplies the
+per-pass MAXIMUM that an index-dependent body forces in place of
+`iterLog_const_length` constant-body identity.
+
+`fringeFoldCats_length_le_capped : ... <= 2046 = 33 * 62`. Both factors
+derived. **`62 = 32 + 8 + 21 + 1` is TIGHT**, checked by evaluating the arms:
+`fringeMergeArmCats` lengths are `[6, 8, 7, 3]`, so the widest is attained.
+
+### ITEM 3 — LARGELY NOT DONE. ONE of seventeen.
+
+`fringeFoldCats` (`E1FringeFoldBlock.lean:952`) is now bounded. **The other
+sixteen composites are still unbounded**, and the closed leaves they rest on
+are still unbounded. Section 12 two lists stand except for that one entry.
+
+`ascLog_length_le` (`E1CostAlgebra.lean`) is the REUSABLE half: any
+composite with an index-dependent body can go through it. What each still
+owes is its own per-pass maximum, and for the leaf logs a `.length` bound at
+all. Suggested order, cheapest first: the closed leaves section 12 lists
+(they are `List` literals or `.map`s of literals, so `rfl`/`decide` should
+do), then `fringeLegCats`/`fringeArmCats`
+(`E1FringeArmBlock.lean:559`/`:947`) which sit directly above the
+now-bounded fold.
+
+### Validator and build
+
+`lake build RMQ` green. `lake exe rmq_e1_machine_validate` **PASS** at
+**10 s wall clock**; phase 3k `foldPresWallClockMs=23`, phase 4j
+`foldPresMutationWallClockMs=79` (modeled steps per pass are `61`, so
+`61`/`122`/`183` for trip counts `1`/`2`/`3`). **Phase 5 untouched and still
+OPEN.**
+
+### Citations re-verified after the edits
+
+All the file:line references above were re-grepped post-edit. Two of this
+lane own first-pass numbers were WRONG and were corrected: `cap_count_pos`
+is `E1FringeArmBlock.lean:245` (section 12 said `246`), and
+`armWitnessProgram` is `E1FringeArmProgram.lean:240` (this lane first wrote
+`238`).
+
+**No acceptance row is marked closed by this lane.**

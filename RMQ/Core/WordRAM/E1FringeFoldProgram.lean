@@ -52,7 +52,7 @@ body at base `2`, the back edge, then `halt`.
 The padding is what makes the loop base NONZERO, so an address the fold
 computes absolutely instead of relative to its base shows up as a wrong
 target rather than typechecking by accident.  This is the same discipline
-`armWitnessProgram` (`E1FringeArmProgram.lean:238`) applies, and it is the
+`armWitnessProgram` (`E1FringeArmProgram.lean:240`) applies, and it is the
 reason the base is `2` rather than `0`.
 -/
 def foldWitnessProgram (S c L : Nat) : E1Machine.Program :=

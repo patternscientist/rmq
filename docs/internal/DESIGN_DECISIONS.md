@@ -6910,7 +6910,7 @@ at once. The offsets are forced through `hostedAt_step`, so an off-by-one
 anywhere fails to typecheck rather than passing quietly.
 
 The base is `2` rather than `0` on purpose, matching `armWitnessProgram`'s
-discipline (`E1FringeArmProgram.lean:238`): a nonzero loop base is what
+discipline (`E1FringeArmProgram.lean:240`): a nonzero loop base is what
 makes an address computed absolutely instead of base-relative show up as a
 wrong target instead of typechecking by accident.
 
@@ -6973,7 +6973,7 @@ both are now closed.
 HALF ONE, the cap itself. The fringe fold's trip count is `<= 33` only
 because every caller writes `Nat.min (relHi / c + 1) 33`
 (`E1FringeArmBlock.lean:594-596`, `:1020-1022`). There was no lemma saying
-so -- only positivity, `cap_count_pos` (`E1FringeArmBlock.lean:246`), which
+so -- only positivity, `cap_count_pos` (`E1FringeArmBlock.lean:245`), which
 is the other side of the same `min`. `cap_count_le` states it. It is trivial
 once written, and it had never been written; the interior's twin is free
 from `chunkIters`'s own definition and this one is not.
