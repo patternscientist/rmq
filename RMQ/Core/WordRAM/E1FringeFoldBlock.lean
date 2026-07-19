@@ -505,27 +505,24 @@ theorem fringePrefix_runsTo
     fringe_eval <;>
       simp [hOne, hLo, hHi, hJC, hchunk, bpFringeChunkEventAt,
         bpFringeChunkSlotAt, bpFringeChunkSlot,
-        bpFringeChunkStartOff_eq_sub, bpFringeChunkEndOff_eq_sub,
-        nat_mod_eq_sub_div_mul]
+        bpFringeChunkStartOff_eq_sub, bpFringeChunkEndOff_eq_sub]
   rw [hreads] at hrun
   rw [fringePrefix_cats] at hrun
   refine ⟨regsP, hrun, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · rw [<- hregsP, bpFringeChunkStartOff_eq_sub]
-    fringe_eval <;> simp [hOne, hC, hLo, hJC]
+    fringe_eval <;> simp [hLo, hJC]
   · rw [<- hregsP, bpFringeChunkEndOff_eq_sub]
-    fringe_eval <;> simp [hOne, hC, hHi, hJC]
+    fringe_eval <;> simp [hOne, hHi, hJC]
   · rw [<- hregsP, fringeEntry, nat_mod_eq_sub_div_mul]
     fringe_eval <;>
       simp [hOne, hC, hAcc, hLo, hHi, hJC, hchunk, bpFringeChunkSlotAt,
         bpFringeChunkSlot, bpFringeChunkStartOff_eq_sub,
-        bpFringeChunkEndOff_eq_sub, decodeRead_pred_eq_map_getD,
-        nat_mod_eq_sub_div_mul]
+        bpFringeChunkEndOff_eq_sub, decodeRead_pred_eq_map_getD]
   · rw [<- hregsP, fringeEntry, nat_mod_eq_sub_div_mul]
     fringe_eval <;>
-      simp [hOne, hC, hLo, hHi, hJC, hchunk, bpFringeChunkSlotAt,
+      simp [hOne, hLo, hHi, hJC, hchunk, bpFringeChunkSlotAt,
         bpFringeChunkSlot, bpFringeChunkStartOff_eq_sub,
-        bpFringeChunkEndOff_eq_sub, decodeRead_pred_eq_map_getD,
-        nat_mod_eq_sub_div_mul]
+        bpFringeChunkEndOff_eq_sub, decodeRead_pred_eq_map_getD]
   · rw [<- hregsP, fringeEntry]
     fringe_eval <;>
       simp [hOne, hC, hAcc, hLo, hHi, hJC, hchunk, bpFringeChunkSlotAt,
@@ -1285,6 +1282,55 @@ theorem fringeFoldLoop_runsTo
   refine ⟨regsE, hloopRun, ?_, ?_, hEpres⟩
   · simpa using hEacc
   · simpa using hEbest
+
+/-! ## Simulation against the ACCEPTED fold trace object -/
+
+/--
+The fold block simulates the ACCEPTED charged fringe fold
+`bpFringeChunkFoldTraceResultAtSegmentWithStore`
+(`ChargedFringeTrace.lean:185`) — the object BOTH arms of the close/LCA
+dispatcher consume after B6.
+
+Receipts are POSITIONALLY equal to that object's `.trace` (a `List`
+equality, not a multiset or membership claim), and that object's `.value`
+is recovered from the machine's own registers: the accumulator `fAcc` and
+the option-shifted best pair `fBV`/`fBP`.  Every value the machine
+returns is computed from its own charged reads through the step
+semantics.
+-/
+theorem fringeFoldLoop_runsTo_accepted
+    (store : ReadStore) {program : E1Machine.Program} {LB S c L : Nat}
+    (hc : c ≤ L)
+    (hPre : HostedAt program LB (fringePrefix S c))
+    (hMrg : HostedAt program (LB + 32) (fringeMerge LB))
+    (hTail : HostedAt program (LB + 45) (fringeShift c L ++ fringeAdvance))
+    (hbr : program[LB + 66]? = some (.brNZ fCnt LB))
+    (window : List Bool) (relLo relHi seed count : Nat)
+    (hcount : 0 < count)
+    (regsL : RegFile)
+    (hOne : regsL fOne = 1) (hC : regsL fC = c)
+    (hLo : regsL fLo = relLo) (hHi : regsL fHi = relHi)
+    (hJC : regsL fJC = 0) (hCnt : regsL fCnt = count)
+    (hAcc : regsL fAcc = seed) (hBV : regsL fBV = 0)
+    (hW : windowRegsValue L (regsL fW0) (regsL fW1) (regsL fW2)
+      (regsL fW3) = SuccinctSpace.bitsToNatLE window) :
+    ∃ regsF : RegFile,
+      RunsTo store program ⟨regsL, LB, false⟩ ⟨regsF, LB + 67, false⟩
+        (bpFringeChunkFoldTraceResultAtSegmentWithStore store S c window
+          seed relLo relHi count).trace
+        (fringeFoldCats store S c window relLo relHi seed count) ∧
+      (regsF fAcc, bestOfRegs (regsF fBV) (regsF fBP)) =
+        (bpFringeChunkFoldTraceResultAtSegmentWithStore store S c window
+          seed relLo relHi count).value ∧
+      (∀ r, FringeFoldUntouched r -> regsF r = regsL r) := by
+  obtain ⟨regsF, hrun, hacc, hbest, hpres⟩ :=
+    fringeFoldLoop_runsTo store hc hPre hMrg hTail hbr window relLo relHi
+      seed count hcount regsL hOne hC hLo hHi hJC hCnt hAcc hBV hW
+  refine ⟨regsF, ?_, ?_, hpres⟩
+  · rw [bpFringeChunkFoldTraceResultAtSegmentWithStore_trace_map]
+    exact hrun
+  · rw [bpFringeChunkFoldTraceResultAtSegmentWithStore_value_stateAt,
+      hacc, hbest]
 
 end E1FringeFoldBlock
 end WordRAM
