@@ -1609,7 +1609,156 @@ analogous characterization is
 `chunkPayloadWords_length_eq_div_add_indicator` (`:390`) - the same pair
 `builtRankData_wordOffset_le` uses (`E1RankCanonical.lean:49-122`).
 
-## RESUME POINT (M3d-1b: the fringe fold BLOCK) - NOT IMPLEMENTED
+
+## M3d-1b COMPLETE: the charged fringe fold BLOCK (worker E1-R4k)
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, HEAD at yield
+`56b03dd`. `lake build RMQ` exit 0 at HEAD. The fold block planned in the
+RESUME POINT below is now IMPLEMENTED and compiled; the plan's four-way
+merge analysis was correct and is discharged.
+
+### PROCESS DEFECT FOUND AND CORRECTED (read this first)
+
+Two intermediate commits of this session (`06673fd`, `9320bbf`) claimed
+working lemmas that were in fact INERT COMMENT TEXT. Cause: new sections
+were spliced into the file at a marker that was a SUBSTRING of a `/-!`
+doc-comment line, so the insertion landed mid-comment and produced a
+nested unterminated comment which swallowed the whole inserted region.
+Per-file `lake env lean` reported clean because commented-out code
+produces no errors.
+
+Repaired in `22a8b90`, which also fixes every error that then surfaced.
+BINDING ON SUCCESSORS: `lake build RMQ` (exit 0) is the verification
+standard, not per-file `lake env lean`. A per-file check cannot
+distinguish "proved" from "commented out", and cannot see stale
+dependency oleans either (this session's per-file checks were also
+resolving against a stale `E1FringeBridge` olean until the first real
+`lake build`).
+
+### WHAT LANDED
+
+`RMQ/Core/WordRAM/E1FringeBridge.lean` (extended, commit `b23a20f`) -
+positional shape of the accepted fold, mirroring the rank bridge:
+
+- `bpFringeChunkSlotAt` (`:260`), `bpFringeChunkEventAt` (`:266`)
+- `bpFringeChunkFoldComputationFrom_run_reads` (`:275`) - the fold's
+  operational read log is the literal ascending-chunk list
+- `bpFringeChunkFoldTraceResultAtSegmentWithStore_trace_map` (`:315`)
+- `bpFringeStateAt` (`:349`) - the literal iterated fold state
+- `bpFringeChunkFoldComputationFrom_run_value_stateAt` (`:361`)
+- `bpFringeChunkFoldTraceResultAtSegmentWithStore_value_stateAt` (`:399`)
+
+`RMQ/Core/WordRAM/E1FringeFoldBlock.lean` (NEW, ~1340 lines) - layout,
+certificates, and the full simulation:
+
+- register bank `40..62` (`:62-106`), recorded as DD-20260718-009
+- `bestOfRegs` (`:114`) + `bestOfRegs_merge_some` (`:125`) - the
+  option-shift convention and the shifted comparison bridge
+- segments: `fringePrefix` (`:146`, 32 instrs), `fringeMerge` (`:199`,
+  13), `fringeShift` (`:223`, 19), `fringeAdvance` (`:248`, 2),
+  `fringeLoopBody` (`:255`, 66 total)
+- cats: `fringePrefixCats` (`:269`), `fringeTailCats` (`:273`),
+  `fringeMergeArmCats` (`:281`), `fringeMergeCatsAt` (`:300`),
+  `fringePassCats` (`:309`), `fringeFoldCats` (`:952`)
+- `fringeLoopBody_hosting` (`:319`), straightness certificates
+  (`:336/:344/:351/:359`), width certificate `fringeLoopBody_fits` (`:376`)
+- `fringePrefix_runsTo` (`:465`) - straight prefix, ONE charged read
+- `fringeTail_runsTo` (`:564`) - four-register constant-stride shift
+- `fringeMerge_runsTo` (`:661`) - THE FOUR-WAY MERGE
+- `ascLog` (`:915`) + `iterLog_desc` (`:922`) - descending-counter to
+  ascending-order log combinator, the general-list analogue of
+  `iterLog_singleton_desc`
+- `fringeFoldLoop_runsTo` (`:993`) - the whole fold
+- `fringeFoldLoop_runsTo_accepted` (`:1301`) - the same against the
+  ACCEPTED object `bpFringeChunkFoldTraceResultAtSegmentWithStore`
+
+The plan's instruction counts were checked and one was wrong: the window
+shift is 19 instructions, not the plan's "(17)" - three 6-instruction
+Horner levels plus the final `divConst`. Body total is 66, not ~63.
+
+### CORRECTIONS TO THE PLAN WORTH CARRYING FORWARD
+
+1. `bitsToNatLE` is AMBIGUOUS in a `WordRAM` module: bare use resolves to
+   `RMQ.WordRAM.bitsToNatLE`, but every route-side lemma is stated with
+   `SuccinctSpace.bitsToNatLE`. Qualify it explicitly, as the rank block
+   modules do.
+2. The chunk value must be stated in the machine's SUB-DIV-MUL normal
+   form (`W0 - W0 / 2^c * 2^c`), not `W0 % 2^c`: the `fringe_eval` simp
+   set rewrites `%` away via `nat_mod_eq_sub_div_mul`, so a `%`-form
+   hypothesis will not match.
+3. Write-set predicates must be stated on LITERAL bank slots
+   (`r ≠ 53 ∧ ...`), not on the register abbrevs (`r ≠ fV ∧ ...`): omega
+   does not see through the abbrevs in HYPOTHESES, so the preservation
+   side conditions fail. Concrete-register side conditions then discharge
+   by `decide`, and generic-`r` ones by the three coercion lemmas
+   `fringePrefixUntouched_of_fold` / `fringeTailUntouched_of_fold` /
+   `fringeMergeNe_of_fold` (`:965/:969/:973`).
+4. `fringeMergeCatsAt` must NEVER be handed to `simp`: it unfolds to
+   `fringeMergeArmCats (decide (startOff < endOff)) ...` and simp will
+   try to evaluate the `decide`, blowing the whnf heartbeat limit. Align
+   the merge segment's cats by rewriting with the prefix's `hPbest`/
+   `hPCV` facts instead (pattern at `:1092`).
+5. The shift exponent step `j * c + c = (j + 1) * c` is `Nat.succ_mul`,
+   not omega (nonlinear in two variables).
+
+### RESUME POINT (M3d-2: window reads, then the two dispatcher arms)
+
+NOTHING below is implemented.
+
+1. WINDOW-READ SUB-BLOCK. Four straight reads at segment 0 producing the
+   four window registers `fW0..fW3` in the `windowRegsValue` form the
+   fold consumes. Route object `localBPWindowBitsTraceResult`
+   (`ConcreteDirectoryRAM.lean:208`). The caller must discharge
+   `windowRegsValue_eq_bitsToNatLE` (`E1FringeBridge.lean:99`), whose
+   hypotheses are that the first three window words have length exactly
+   `L` - a route-side fact about `chunkPayloadWords`, to be discharged at
+   canonical instantiation (same discipline the dense select leg uses for
+   `hlen`).
+2. THE 33-CAP INIT. The fold's iteration count is literally
+   `Nat.min (relHi / c + 1) 33` (`ChargedSameBlockTrace.lean:52` for the
+   same-block arm; `ChargedFringeTrace.lean:509/:529` for the two
+   cross-block arms). Derive the count register by the truncated-
+   subtraction cap chain `rankAtInit` uses for its 8-cap
+   (`E1RankAtBlock.lean:56-62`). `fringeFoldLoop_runsTo` already takes
+   `hcount : 0 < count`, which the cap identity supplies.
+3. SAME-BLOCK ARM (B6's object): rank seed
+   (`rankCloseBlock_runsTo_canonical`, `E1RankCanonical.lean:263`,
+   already exists); window reads; the fold; then the PURE merge
+   `bpCandidateClose? (bpFringeCandGlobal ...)` - no reads. Target
+   `bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment`
+   (`ChargedSameBlockTrace.lean:326`) - the POST-B6 object.
+4. CROSS-BLOCK ARM: two fringe folds plus the INTERIOR leg. The interior
+   leg is NOT a loop:
+   `canonicalRelativeRmmInteriorRangeMinComputation`
+   (`InteriorDirectory.lean:2185`), a five-way `if` into fixed-shape
+   sparse span reads; its `else` arm is receipt-EMPTY but still costs
+   comparison/branch ticks.
+5. CANONICAL-STORE FORM mirroring `rankCloseBlock_runsTo_canonical` /
+   `selectCloseBlock_runsTo_canonical`. Segment agreement lemmas: seg 0
+   `..._bpCode` (`Segments.lean:281`), seg 17/18/19
+   `..._rankCloseSuper/Block/Word`
+   (`ChargedRankSelectWiring.lean:154/165/176`), seg 20
+   `..._canonicalComponent` (`Segments.lean:258`), seg 21
+   `..._fringeChunkTable` (`Segments.lean:247`). Segment 28 is INERT
+   after B6 - no machine code should reference it.
+6. WHOLE-QUERY GLUE via `E1RouteDecomposition`. NAME THE ACCEPTED OBJECT
+   EXPLICITLY: `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`
+   (`SuccinctFinalRAM.lean:2330`, consumed at `:3279`/`:3733`), NOT the
+   legacy near-homonym `concreteBPNativeLCACloseGlobalWordTraceResult`
+   (`:2271`). They differ by one suffix and sit 59 lines apart.
+7. Then M4 (derived literal step total), M5 (amended target Prop +
+   obstruction supersession), M6 (validator `lean_exe`), M7 (docs +
+   matrix closure + final battery, including the coordinator-queued
+   PAPER_MODEL_ADEQUACY and B6-matrix edits recorded in the COORDINATOR
+   DIRECTIVES section below).
+
+### MATRIX STATUS AT YIELD
+
+All rows REQ-E1-01..11 remain OPEN. This session closed none and weakened
+none. Partial evidence accumulated for REQ-E1-01/02/04/06 is recorded in
+the matrix evidence column; it is component-level (the fringe fold block)
+and does NOT discharge any row, all of which are whole-query scoped.
+## RESUME POINT (M3d-1b: the fringe fold BLOCK) - SUPERSEDED, IMPLEMENTED in M3d-1b above
 
 Everything below is a PLAN, verified against source this session but NOT
 written as Lean.  It is recorded in the style that the M3c-5c "STAGE-2
