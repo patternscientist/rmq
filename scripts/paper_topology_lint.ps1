@@ -188,7 +188,7 @@ $retiredAliasReplacements = [ordered]@{
 $retiredSourcePattern =
   'builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_(?:profile|whole_query_(?:interpreted|leaf_trace|word_trace(?:_large_regime)?|global_word_trace_large_regime)_profile)'
 $oldRegimePattern =
-  '(?i)(?:\b(?:196727|328|118|4144)\b|2\s*\^\s*128|zero[- ]?block|\bReady\b|LargeRegime|large[- ]regime|CanonicalTransitional)'
+  '(?i)(?:\b(?:196727|328|352|118|4144)\b|2\s*\^\s*128|zero[- ]?block|\bReady\b|LargeRegime|large[- ]regime|CanonicalTransitional)'
 
 # These files intentionally contain the removed vocabulary as enforcement
 # data.  They are not documentary theorem references.
@@ -351,7 +351,7 @@ $weightLengthAlias =
 $weightCostAlias =
   'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost'
 $weightBoundAlias =
-  'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe207'
+  'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe210'
 $readWordOnlyAlias =
   'succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly'
 $canonicalText = Read-Text $canonicalModule

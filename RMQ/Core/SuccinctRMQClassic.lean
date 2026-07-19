@@ -108,7 +108,7 @@ abbrev canonicalTransitionalQueryCost : Nat :=
 abbrev chargedTraceCostAlgebra :=
   SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra
 
-theorem queryCost_eq : queryCost = 207 := by
+theorem queryCost_eq : queryCost = 210 := by
   exact
     SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq
 
@@ -132,8 +132,20 @@ theorem canonicalSilentWordRankSelectQueryCost_eq :
   exact
     SuccinctFinal.concreteBPNativeSuccinctRMQSilentWordRankSelectChargedTraceCost_eq
 
+/-- Checked historical U3 cost of the retired pre-sparse-level chunked
+route: the value `queryCost` held before the charged sparse-level interior
+recharge moved the interior component `30 -> 33`.  Retained, not deleted,
+so the migration `207 -> 210` stays auditable from the public surface. -/
+abbrev canonicalSilentSparseLevelQueryCost : Nat :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost
+
+theorem canonicalSilentSparseLevelQueryCost_eq :
+    canonicalSilentSparseLevelQueryCost = 207 := by
+  exact
+    SuccinctFinal.concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq
+
 theorem canonicalTransitionalQueryCost_eq :
-    canonicalTransitionalQueryCost = 328 := by
+    canonicalTransitionalQueryCost = 352 := by
   exact
     SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq
 

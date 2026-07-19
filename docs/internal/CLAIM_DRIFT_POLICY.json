@@ -95,8 +95,8 @@
       "allowedLineRegex": ""
     },
     {
-      "id": "canonical-transitional-328",
-      "pattern": "\\b328\\b",
+      "id": "canonical-transitional-352",
+      "pattern": "\\b352\\b",
       "status": "historical-canonical-transitional-bound-not-paper-facing-current-table-and-export-enforcement-in-paper-topology-lint",
       "strict": false,
       "allowedPathRegex": "",

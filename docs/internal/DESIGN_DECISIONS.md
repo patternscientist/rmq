@@ -3622,7 +3622,7 @@ is in tension with REQ-E1-06(c) as frozen. This is flagged for coordinator
 adjudication in `docs/internal/E1_WORKLOG.md` (M3d-3 section 2) and is NOT
 decided here.
 
-## DD-20260718-012: E1 three-way candidate merge — biased option encoding as the cross-component interface, bank extension `75..84` (E1-R4q M3d-7)
+## DD-20260718-014: E1 three-way candidate merge — biased option encoding as the cross-component interface, bank extension `75..84` (E1-R4q M3d-7)
 
 Date: 2026-07-18. Scope: the machine realization of the fused epilogue of
 the accepted cross-block close object
@@ -3692,3 +3692,498 @@ Consequence for the ISA: NONE. The block introduces no constructor, no
 divisor, and no variable-operand arithmetic — it is `move`, `natLt`,
 `brNZ`, `const` and one `sub`. The ISA decision of DD-20260718-005 is
 unchanged.
+## DD-20260718-012: B7 sparse-level mechanism determination - charged floor-log2/span table, one packed read per two-span call (B7 Milestone 0)
+
+Date: 2026-07-18. Scope: the last known uncharged size-dependent
+computation on the accepted RMQ query route - the sparse-table level.
+Decided by: worker B7-01 (branch `claude/b7-charged-sparse-level`, base
+`f6564ec`) under the B7 delegation prompt. This entry records the
+MECHANISM DETERMINATION only; it is committed BEFORE implementation, and
+before the B7 acceptance matrix is frozen. It resolves, on the route
+side, the open item recorded at the end of DD-20260718-011 (E1-R4m),
+which flagged the same `Nat.log2` / `2 ^ Nat.log2` computation as an
+ISA-level question and explicitly did not decide it.
+
+### The finding, verified at source in this worktree at `f6564ec`
+
+FOUR executed evaluator sites bind the level by a `Nat.log2` recursion on
+a runtime-derived argument:
+
+- `PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateTraceResult`
+  (`RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorRAM.lean:559`,
+  `let level := Nat.log2 count` at `:573`)
+- `...twoSpanCandidateTraceResultAtSegments` (`InteriorRAM.lean:606`, log2 at `:621`)
+- `PayloadLiveBPGlobalSparseBlockTable.twoSpanCandidateTraceResult`
+  (`InteriorRAM.lean:805`, `let level := Nat.log2 macroSpanCount` at `:819`)
+- `...twoSpanCandidateTraceResultAtSegments` (`InteriorRAM.lean:852`, log2 at `:867`)
+
+with cost-model twins `PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateCosted`
+(`EndpointFringe/InteriorCandidate/LocalGlobalSparse.lean:17`, log2 at `:30`)
+and `PayloadLiveBPGlobalSparseBlockTable.twoSpanCandidateCosted`
+(`LocalGlobalSparse.lean:590`, log2 at `:603`), and store-parametric twins
+`bpLocalSparseTwoSpanCandidateTraceResultAtSegmentsWithStore`
+(`RelativeRmmMacro/ConcreteDirectoryRAMStoreParam.lean:1405`) and
+`bpGlobalSparseTwoSpanCandidateTraceResultAtSegmentsWithStore` (`:1995`).
+
+THE SPAN IS PART OF THE FINDING, not a separate issue. Each site also
+evaluates `bpSparseLogSpan count = 2 ^ Nat.log2 count`
+(`EndpointFringe/PrefixRange/SparseArgMin.lean:598-599`), consumed as
+`rightLocalStart := localStart + count - span`. `Nat.pow` is a recursion
+of `level` multiplications, so the span is a SECOND Theta(log n)
+uncharged computation at the same site, and each site in fact evaluates
+`Nat.log2 count` twice at the term level (once directly, once inside
+`bpSparseLogSpan`). Any fix that charges only the level leaves the span
+uncharged and does not close the rung.
+
+The level reaches an accepted READ ADDRESS: `bpLocalSparseCellSlot
+macroSize levelCount macroIdx localStart level = macroIdx * (levelCount *
+macroSize) + level * macroSize + localStart`
+(`EndpointFringe/PrefixRange/LocalSparseOffset.lean:15-17`) and
+`bpGlobalSparseCellSlot macroCount macroStart level = level * macroCount +
+macroStart` (`LocalGlobalSparse.lean:199-201`).
+
+### Why this is ALGORITHMIC WORK, not a representation artifact
+
+Under the project's round-7 principle a traversal is a representation
+artifact only when its value is checked-equal to an input parameter or to
+a charged read. The level fails that test in the strongest way: it is an
+address INPUT computed from runtime data, and it is never checked against
+anything. The argument provenance is arithmetic on the query operands
+(`bpTwoLevelInteriorCandidateTraceResult`, `InteriorRAM.lean:1515-1525`;
+identical in `TwoLevelCandidate.lean:32-42`):
+
+    let macroStart := startBlock / macroSize
+    let localStart := startBlock % macroSize
+    let leftCount := macroSize - localStart
+    let remaining := count - leftCount
+    let middleMacroCount := remaining / macroSize
+    let rightCount := remaining % macroSize
+
+so the four arguments that reach a `Nat.log2` are `count` (within-macro
+fast path, `InteriorRAM.lean:1520`), `leftCount` (`:1166`, `:1218`,
+`:1278`), `rightCount` (`:1171`, `:1287`), and `middleMacroCount`
+(`:1223`, `:1282`). None is a structural parameter and none is a charged
+read. The ONLY facts the route ever establishes about them are the
+monotonicity side conditions `0 < count /\ count <= macroSize` (local) and
+`0 < macroSpanCount /\ macroSpanCount <= macroCount` (global), converted
+to `Nat.log2 _ < levelCount` through the ASSUMED hypotheses `hlocalLevel`
+/ `hglobalLevel` at `TwoLevelCandidate.lean:241-248`. The level is
+therefore obtained from computation, never from data.
+
+### DECISION: mechanism 3 (new o(n) charged table), in a single-source,
+### single-read-per-call form
+
+A new counted source `bpSparseLevelTable`, read once per two-span call,
+returning a PACKED `(level, span)` pair unpacked by constant arithmetic.
+
+- ONE table, ONE region, indexed directly by the count. Domain
+  `bpSparseLevelDomain shape = macroSize + macroCount + 1`, which covers
+  BOTH consumers: local counts satisfy `count <= macroSize` and global
+  counts satisfy `macroSpanCount <= macroCount`, so a single region
+  indexed by the raw count is in range for both. This avoids a `max` in
+  the size bound (sums are what the erasure and littleO proofs want) and
+  avoids a second counted source with its own erasure, capacity, littleO,
+  and provenance obligations.
+- Cell `i` stores `Nat.log2 i * D + bpSparseLogSpan i` where
+  `D = bpSparseLevelDomain shape`, and `bpSparseLogSpan i <= i < D` for
+  every index actually read, so `cell / D = Nat.log2 i` and
+  `cell % D = bpSparseLogSpan i`. Unpacking is one division and one
+  modulus by a per-shape constant. That is the SAME arithmetic the
+  accepted route already performs uncharged at `InteriorRAM.lean:1515-1516`
+  (`startBlock / macroSize`, `startBlock % macroSize`), and it is
+  constant-divisor arithmetic in exactly the sense DD-20260718-011
+  established for the E1 address preamble - so it introduces no new class
+  of uncharged work and no ISA extension.
+- ONE charged read per two-span call, not two. This matters for the cost
+  cap: see the literal derivation below.
+
+Entry width `machineWordBits (D * D)` bounds every stored cell, since
+`Nat.log2 i * D + bpSparseLogSpan i < D * D` for `i < D`.
+
+SIZE, and why it stays o(n). With `base = canonicalBPRelativeSummaryBase
+shape = Nat.log2 shape.size + 1` (`RelativeSummary.lean:1238`),
+`blockSize = 2 * base` (`:1242`), `macroSize = base * base`
+(`RelativeSummary.lean:2733-2736`), and `macroCount = blockCount /
+macroSize` with `blockCount ~ n / base`, the domain is
+`D ~ base^2 + n / base^3` and the table is `D * machineWordBits (D * D)`
+bits, i.e. `~ 2 n log n / base^3 = Theta(n / (log n)^2)` bits, plus a
+polylogarithmic term. That is o(n) with room to spare, and it is sized
+over the values that ACTUALLY OCCUR (the `count` / `macroSpanCount`
+ranges) rather than over all of `Nat`, as the delegation required.
+
+### Rejected alternatives, with the evidence that rejected them
+
+MECHANISM 1 - already available from a charged read: REJECTED on a
+structural argument, not a survey. The level is consumed by
+`bpLocalSparseCellSlot` / `bpGlobalSparseCellSlot` to FORM the address of
+the first read of the span, so it must be known strictly BEFORE any
+charged read of that span occurs. There is no read at or before the
+level-consumption point that could carry it. The reads that do occur
+(`readOffsetCosted`, `LocalSparseOffset.lean:355-364`; `readBlockCosted`,
+`LocalGlobalSparse.lean:405-414`) are `FixedWidthNatTable.readCosted`
+(`SuccinctSpace/Tables.lean:86-91`), each returning a single
+`Costed (Option Nat)` of width `offsetWidth` / `blockWidth` - one field,
+no spare capacity.
+
+MECHANISM 2 - widen an existing counted entry: REJECTED, and the reason is
+arithmetic rather than aesthetic. A single widened entry cannot carry the
+level, because ONE query needs the levels of up to THREE DIFFERENT runtime
+values (`leftCount`, `middleMacroCount`, `rightCount` on the cross-macro
+branch, `InteriorRAM.lean:1278-1287`). Carrying three runtime-indexed
+values requires an object indexed by the count - which IS mechanism 3.
+Widening the offset cell was checked and is independently impossible: it
+is `offsetWidth = Nat.log2 macroSize + 1` bits holding a value `<
+macroSize`, roughly one spare bit, not the `machineWordBits levelCount`
+needed. A related observation, recorded but NOT relied on: `summaryCosted`
+(`RelativeSummary.lean:735-754`) charges four reads and
+`bpRelativeSummaryMinCandidate`
+(`EndpointFringe/PrefixRange/RelativeSummaryCandidate.lean:15-22`) never
+projects the `maxRel` field, so one of the four is dead at the
+min-candidate site. That is a genuine finding about the accepted route,
+but it is sequenced AFTER the level is needed and so cannot supply it; it
+is logged for the B7 uncharged-computation inventory rather than used
+here.
+
+MECHANISM 4 - restructure so no runtime log2 is needed: REJECTED with a
+size computation. The natural restructuring is to index the sparse cell by
+the SPAN rather than the level, which removes the need for the level
+entirely. It was costed and fails: the row count of the local table would
+grow from `levelCount = Nat.log2 macroSize + 1` to `macroSize`, taking the
+table from `macroCount * levelCount * macroSize` cells to `macroCount *
+macroSize * macroSize ~ n * macroSize` bits, which is Theta(n polylog) and
+destroys the o(n) overhead. A fixed maximal level was also considered and
+does not type as an algorithm: the two-span cover is only correct when the
+span is the largest power of two at most `count`, so a level fixed
+independently of `count` either overshoots the range or fails to cover it.
+
+EXPLICITLY NOT CONSIDERED, per the user decision recorded in the
+delegation: adding an `msb`/`log2` machine instruction to the ISA, and
+weakening any bound to accept Theta(log n) work. Both were declined by the
+user in favour of the unimpeachable result, so neither was evaluated.
+
+### The route literal MOVES: 207 -> 210. Derived, not assumed.
+
+The cost chain is exactly tight, with no slack to absorb the new read:
+
+- `spanCandidateCosted_cost_le_five` (`LocalSparseOffset.lean:450`,
+  `LocalGlobalSparse.lean:494`): 1 offset/block read + 4 summary reads = 5.
+- `twoSpanCandidateCosted_cost_le_ten` (`LocalGlobalSparse.lean:41`,
+  `:613`): two span candidates = 10.
+- `bpTwoLevelInteriorCandidateCosted_cost_le_thirty`
+  (`TwoLevelCandidate.lean:53`): the cross-macro branch is THREE two-span
+  calls = 30, and 30 is attained, so the cap is exactly met.
+- `canonicalRelativeRmmPrincipledInteriorChargedTraceCost = 30`
+  (`InteriorDirectory.lean:1783`).
+
+Adding one packed table read per two-span call takes the two-span cap from
+10 to 11 and the interior cap from 30 to 33 (the interior bound is a MAX
+over the three branches, and the maximizing cross-macro branch carries all
+three new reads). Feeding that through the named component algebra
+(`concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra`,
+`SuccinctFinalRAM.lean:8810-8820`, with `selectClose := 35`,
+`rankClose := 11`, `endpointFringe := 37`):
+
+    closeLCA  = 2*rankClose + 2*endpointFringe + interiorDirectory
+              = 2*11 + 2*37 + 33 = 22 + 74 + 33 = 129   (was 126)
+    wholeQuery = 2*selectClose + closeLCA + rankClose
+              = 2*35 + 129 + 11 = 70 + 129 + 11 = 210   (was 207)
+
+This is the first of the three uncharged-computation rungs whose literal
+moves; B6 (DD-20260718-008) fit under the existing cap and left 207
+unmoved, because it recharged a leaf that was NOT at the maximizing
+branch. Per the delegation, 207 is therefore to be frozen as a named
+historical constant with its `_eq` theorem and guards, following the
+established 142/76/328 pattern already in
+`SuccinctFinalRAM.lean:8825-8875`
+(`concreteBPNativeSuccinctRMQSilentFringeChargedTraceCost = 76`,
+`...SilentWordRankSelectChargedTraceCost = 142`), under the name
+`concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost = 207`, and
+every Lean consumer plus the topology anchor `SumLe207` in
+`scripts/paper_topology_lint.ps1` and `scripts/headline_axiom_check.lean`
+must move to 210. Frozen legacy anchors are not touched.
+
+## DD-20260718-013: B7 correction of record - the executed sites are the FlatStoreComputation family, and the interior cap is genuinely tight (B7 Milestone 0b)
+
+Date: 2026-07-18. Scope: corrects two factual errors in DD-20260718-012
+and settles the decisive cost question the coordinator posed. Decided by:
+worker B7-01, after a coordinator relay of read-only scout findings that
+contradicted this worker's own subagent survey, and after verifying both
+accounts at source. Supersedes the cited SITES of DD-20260718-012; the
+MECHANISM decision in that entry stands, and the literal derivation in it
+is now confirmed by reading the cap proof rather than inferred from a
+docstring.
+
+### CORRECTION 1: the four cited sites are cost-model twins, not executed
+
+DD-20260718-012 cited `InteriorRAM.lean:573`, `:621`, `:819`, `:867` as
+the executed evaluator sites. That is WRONG. Verified at source in this
+worktree at `f6564ec`:
+
+`canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment`
+(`RelativeRmmMacro/ConcreteDirectoryRAM.lean:1113-1119`) is defined as
+
+    flatStoreExecutionTraceResultAtSegment componentSegment
+      (canonicalRelativeRmmInteriorRangeMinExecutionWithStore shape
+        (canonicalRelativeRmmInteriorComponentStore shape).store.words
+        startBlock count)
+
+so the executed object is the `FlatStoreComputation` family rooted at
+`canonicalRelativeRmmInteriorRangeMinComputation`
+(`InteriorDirectory.lean:2185`), NOT the `PayloadLive*` family. The
+`PayloadLive*.twoSpanCandidateTraceResultAtSegments` chain is the
+refinement/specification ladder; walking its callers up dead-ends at
+`concreteBPNativeLCACloseWordTraceResultAtSegmentsOfSizeGe`
+(`SuccinctFinalRAM.lean:2238`), which has no definition-level caller.
+
+THE EXECUTED CLASS-(a) SITES ARE EXACTLY THREE:
+
+- `canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation`,
+  `let level := Nat.log2 count` (`InteriorDirectory.lean:2117`), whose
+  level reaches `bpLocalSparseCellSlot` (`:2088`);
+- `canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation`,
+  `let level := Nat.log2 macroSpanCount` (`InteriorDirectory.lean:2131`),
+  whose level reaches `bpGlobalSparseCellSlot` (`:2106`);
+- `bpSparseLogSpan` (`SparseArgMin.lean:599`), invoked at `:2118` and
+  `:2132`, setting `rightLocalStart` / `rightMacroStart` - the address
+  argument of the SECOND span read.
+
+The worst case is the cross-macro branch
+(`canonicalRelativeRmmMachineCrossMacroCandidateComputation`, reached from
+`InteriorDirectory.lean:2208`): two local two-spans and one global
+two-span, i.e. SIX `Nat.log2` evaluations per query (each two-span
+evaluates `Nat.log2` once directly and once inside `bpSparseLogSpan`).
+
+This worker's own subagent survey found these same declarations but
+classified them as a dead parallel family, which was exactly backwards.
+Recorded because the error is instructive: the `Costed`/`TraceResult`
+refinement ladder and the `FlatStoreComputation` execution ladder are
+near-homonyms, and a caller-chain walk that starts from the wrong ladder
+terminates plausibly rather than visibly failing.
+
+### CORRECTION 2: no new segment and no new ReviewerSource are required
+
+`flatStoreExecutionTraceResultAtSegment` (`InteriorRAM.lean:175-180`) maps
+the WHOLE flat-store interior execution onto ONE component segment. The
+new table therefore joins the existing interior component store
+(`canonicalRelativeRmmInteriorComponentStore`, addressed through
+`canonicalRelativeRmmInteriorComponentOffsets`) as an additional region,
+exactly as the local and global sparse tables already do. This is the
+property that made B6 cheap and it holds here. REQ-B7-04 is correspondingly
+lighter than frozen: `canonical_segments_complete` does NOT move, and no
+new `ReviewerSource` constructor is added.
+
+### THE DECISIVE NUMBER: the interior cap is genuinely tight. 207 -> 210.
+
+Settled by reading the cap proof
+`canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_four_of_bounded`
+(`InteriorDirectory.lean:4451-4510`) rather than inferring it. The four
+branches discharge against
+`canonicalRelativeRmmPrincipledInteriorChargedTraceCost = 30`
+(`InteriorDirectory.lean:1783`) as follows:
+
+- within-macro: `...LocalTwoSpanCandidateCosted_cost_le_eighteen_of_size_ge_four`
+  (`:4289`), then `Nat.le_trans` to 30. SLACK 12.
+- adjacent: `...AdjacentMacroCandidateCosted_cost_le_twenty_of_macro_crossing`
+  (`:4358`), then `Nat.le_trans` to 30. SLACK 10.
+- left-middle: `...LeftMiddleMacroCandidateCosted_cost_le_twenty_of_macro_crossing`,
+  then `Nat.le_trans` to 30. SLACK 10.
+- cross-macro: `...CrossMacroCandidateCosted_cost_le_thirty_of_macro_crossing`
+  applied DIRECTLY, with NO `Nat.le_trans` and no numeric slack. SLACK 0.
+
+The cross-macro branch is three two-spans at
+`...TwoSpanCandidateCosted_cost_le_ten_of_macro_crossing` (`:4310`,
+`:4334`), each two span candidates at
+`...SpanCandidateCosted_cost_le_five_of_macro_crossing` (`:4224`, `:4260`):
+3 * 2 * 5 = 30, attained. THE CAP IS EXACTLY TIGHT AND HAS ZERO SLACK.
+
+Note the machine family's caps differ from the `PayloadLive` family's
+under a different hypothesis: `..._cost_le_eighteen_of_size_ge_four` (span
+<= 9, `:4164`) versus `..._cost_le_ten_of_macro_crossing` (span <= 5).
+DD-20260718-012 reasoned from the `PayloadLive` numbers and reached the
+right conclusion for a partly wrong reason; the conclusion is now
+established on the executed family.
+
+Adding one packed level/span read per two-span call therefore gives, on
+the maximizing cross-macro branch, 3 * 11 = 33, and through the named
+algebra (`SuccinctFinalRAM.lean:8810-8820`):
+
+    closeLCA   = 2*11 + 2*37 + 33 = 129   (was 126)
+    wholeQuery = 2*35 + 129 + 11  = 210   (was 207)
+
+The other three branches absorb their added read inside existing slack
+(18 -> 20, 20 -> 22, 20 -> 22, all <= 30), so the cross-macro branch alone
+drives the move. 207 is to be frozen as
+`concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost` by the
+142/76/328 pattern, with every consumer and the `SumLe207` topology anchor
+migrated to 210, and frozen legacy anchors untouched.
+
+CONSEQUENCE FOR PLANNING, recorded honestly: this makes the rung a
+3-4 session job rather than a B6-shaped 2-session one, because the moved
+literal drags the full claim-registry and documentation migration surface.
+
+### CORRECTION 3: sizing should reuse the existing envelopes, via two
+### instantiations of one generic table
+
+DD-20260718-012 proposed a single merged table over
+`macroSize + macroCount + 1`. That merged domain matches no existing
+asymptotic envelope and would require a fresh `LittleOLinear` argument.
+Superseded: build ONE generic count-indexed table construction and
+INSTANTIATE IT TWICE - a local table indexed by `count <= macroSize`
+(~`b^2` rows) and a global table indexed by
+`macroSpanCount <= macroSampleCount` (~`n / b^3` rows), with
+`b = Nat.log2 shape.size + 1`. The global instance's budget is exactly
+`logLogSampledDirectoryOverhead_littleO` (`Asymptotics.lean:243`), the
+envelope the existing global sparse block table already uses, dominated
+via `LittleOLinear.of_le` (`:35`); the local instance repackages
+`eventually_scale_log2_succ_cube_le_self` (`Asymptotics.lean:516`). One
+set of lemmas, two sources, no new asymptotics.
+
+Explicitly NOT to be copied: the chunk-table pattern
+(`bpFringeTableOverhead_littleO`), whose exponential-slack threshold
+argument exists only because chunk tables have `2^c` rows. Those steps are
+vacuous for a count-indexed table. Analogues of the linear-capacity feeds
+(`bpFringeChunkRowCount_le_linear`,
+`bpChunkSelectEntryWidth_le_machineWordBits_capacity`) ARE still needed and
+are easier here.
+
+### Also superseded
+
+The E1 note at `E1_WORKLOG.md:2340-2343`, which rejected a table read
+because it "breaks REQ-E1-04 positional receipt equality", is over-strict
+and is not a constraint on this rung: B2, B3 and B6 each added reads to
+the accepted route. Changing the accepted trace is a re-freeze cost, not
+an impossibility.
+
+The msb/log2 ISA option is dead for a sharper reason than the user
+decision alone: at the trace layer cost IS trace length, so an event-free
+msb instruction costs ZERO there and buys nothing at the layer where the
+route's charge policy lives. The standardness claim for a unit-cost msb is
+also unsubstantiated anywhere in this repository.
+
+## DD-20260719-001: B7 packed-cell width tightened rather than re-migrating the literal 210 -> 213 (B7 session 8)
+
+Context. B7-07 derived, from the cost model rather than from the mechanism
+prose, that the charged sparse-level cell did not fit in one machine word on
+reachable shapes: `canonicalRelativeRmmMachineReadNatCosted_cost_le_one`
+requires `width <= machineWordBits shape.bpCode.length`, and at `size = 2048`
+the stored width was 15 against a 13-bit word, so each level read cost 2, not
+1. That would have made the cross-macro branch `30 + 3*2 = 36` and the route
+literal `213`, not the `210` commit A had already frozen and migrated.
+
+Two routes were available: tighten the width so that commit A's `210` is
+recovered, or re-migrate `210 -> 213` and freeze `210` as a second historical
+constant. THE COORDINATOR RULED: tighten the width. The reasoning is a POLICY
+point and is recorded here as such, not as a cost preference.
+
+### The policy: the historical record must not accumulate fictions
+
+A frozen historical constant records a value that GENUINELY DESCRIBED THE
+ACCEPTED ROUTE at some point in its history. `76`, `142` and `207` each did.
+`210` never did. It exists only inside commit A's staging window and is an
+artifact of a deliberately loosened cap - commit A widened the interior cap to
+`33` in anticipation of reads that had not yet landed, and the harness
+confirmed at that commit that every interior window was unchanged. Freezing
+`210` would place a value in the permanent historical record that never
+described a real machine. That is worse than redoing a migration, which costs
+only work.
+
+### The engineering: the width fix is independently the better change
+
+`bpSparseLevelCell domain i = bpSparseLogSpan i + domain * Nat.log2 i` was
+bounded by `domain * domain`, which bounds the stored LEVEL by `domain`. But
+the level is `Nat.log2 i` with `i < domain`, so it is bounded by
+`Nat.log2 domain` - exponentially smaller. The old bound was slack by
+construction, not by necessity. The honest bound, now proved as
+`bpSparseLevelCell_lt`, is
+
+    bpSparseLevelCell domain i < domain * (Nat.log2 domain + 1)
+
+and the stored width is correspondingly
+
+    bpSparseLevelWidth domain = Nat.log2 (domain * (Nat.log2 domain + 1)) + 1.
+
+This makes the read genuinely ONE MACHINE WORD, which is what "one charged
+read per two-span call" was always supposed to mean.
+
+### CORRECTION OF RECORD, coordinator-initiated
+
+The phrase "one charged read per two-span call" was the COORDINATOR'S, and it
+was WRONG as stated: in this cost model a read costs one unit PER MACHINE WORD
+TOUCHED, so the phrase asserts a width fact that nobody had checked. B7-07 was
+right to compute actual widths against `machineWordBits` rather than trust it.
+This is the second time this rung has corrected the coordinator (the first was
+DD-20260718-013's executed-family correction, which went the other way).
+
+### The fit is proved for ALL shapes, not sampled
+
+B7-07's evidence was a table of three sizes. A sampled table is NOT sufficient
+evidence for a width claim, and the fit PLAUSIBLY FAILS at small shapes: at
+`size = 4` the base is 3, `macroSize` 9, the domain 11, and the tightened width
+6 against a `machineWordBits` of 4. The claim is saved there not by the width
+but by UNREACHABILITY - macro crossing needs `macroSize < blockCount`, and at
+`size = 4` that is `9 < 1`, which is false.
+
+So the all-size statement carries a reachability hypothesis, and getting that
+hypothesis exactly right IS the work. The hypothesis used is the one THE
+ROUTE'S OWN DISPATCH ALREADY ESTABLISHES, not a size threshold introduced for
+convenience:
+
+    theorem bpSparseLevelLocalWidth_le_machine_of_macro_crossing
+        {shape : Cartesian.CartesianShape}
+        (hmacro : (RelativeRmm.canonicalLayout shape).macroSize <
+            (RelativeRmm.canonicalLayout shape).blockCount) :
+        bpSparseLevelWidth
+            (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize) <=
+          SuccinctRank.machineWordBits shape.bpCode.length
+
+with the global twin
+`bpSparseLevelGlobalWidth_le_machine_of_macro_crossing` over
+`(RelativeRmm.canonicalLayout shape).macroSampleCount`.
+
+`hmacro` is exactly what the interior dispatcher derives before it can reach a
+cross-macro two-span call, from its own branch guard `hcross` together with the
+route-level `hbound`. The precedent is
+`canonicalRelativeRmmRelativeWidth_le_machine_of_macroSize_lt_blockCount`,
+which carries the identical hypothesis for the relative summary field; the new
+lemmas are its analogue and reuse its derivation shape.
+
+The derivation, all steps checked in Lean with no threshold introduced:
+macro crossing gives `base^3 < size`; `size < 2 ^ base` holds by definition of
+`base = Nat.log2 size + 1`; together these force `10 <= base` by eliminating
+`base <= 9` (at `base = 9`, `base^3 = 729` but `2^9 = 512`). With `10 <= base`
+the local domain `base*base + 2` is below `2 ^ base`, so its level is at most
+`base`, so the packed product is at most `2 * base^3 < 2 ^ (base+1)`, giving
+width `<= base + 1 <= machineWordBits shape.bpCode.length` by the existing
+`canonicalRelativeRmmBase_succ_le_machine_of_size_pos`. The global instance
+runs the same way through `base * (size / base^3) <= size`.
+
+The branches that do NOT carry `hmacro` are covered by two UNCONDITIONAL
+theorems, `bpSparseLevelLocalWidth_le_seven_machine` and
+`bpSparseLevelGlobalWidth_le_seven_machine`, which fit the width under
+`7 * machineWordBits` and so charge those reads at the `cost_le_eight` rate.
+Those branches only have to stay under the interior cap and have ample
+headroom, so this is bookkeeping rather than a second obstruction.
+
+### Space accounting re-derived, not assumed
+
+The tighter width makes the table SMALLER, so every space bound gets easier -
+but the four space-accounting links state the width SYNTACTICALLY (13
+occurrences of `Nat.log2 ((x+2)*(x+2)) + 1` across the raw-overhead def, the
+`527` linear feed and the envelope arithmetic), so they do not transport for
+free. Rather than reprove them, a bridge is used:
+
+    private theorem bpSparseLevelWidth_le_square_width
+        {domain : Nat} (hpos : 0 < domain) :
+        bpSparseLevelWidth domain <= Nat.log2 (domain * domain) + 1
+
+so each existing bound is inherited through one `Nat.le_trans`. The `527`
+capacity constant and the `LittleOLinear` envelopes are therefore UNCHANGED and
+remain valid (they are now loose rather than tight, which is sound for upper
+bounds). No row is weakened.
+
+### What this does NOT decide
+
+It does not re-derive the route literal. Commit A's `210` is EXPECTED to be
+recovered, and the width fix is what makes that possible, but REQ-B7-05 demands
+the literal be derived over the AMENDED route with the maximizing branch bound
+exhibited. That derivation is commit B's and is not claimed here.

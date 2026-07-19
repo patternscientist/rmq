@@ -580,18 +580,6 @@ private theorem reviewer_log2_sixteen : Nat.log2 16 = 4 := by
     omega
   · exact (Nat.le_log2 (n := 16) (by omega)).2 (by omega)
 
-private theorem reviewer_log2_twentyFive : Nat.log2 25 = 4 := by
-  apply Nat.le_antisymm
-  · by_cases hle : Nat.log2 25 ≤ 4
-    · exact hle
-    have hfive : 5 ≤ Nat.log2 25 := by omega
-    have hmono : 2 ^ 5 ≤ 2 ^ Nat.log2 25 :=
-      Nat.pow_le_pow_right (by omega) hfive
-    have hself : 2 ^ Nat.log2 25 ≤ 25 :=
-      Nat.log2_self_le (by omega)
-    omega
-  · exact (Nat.le_log2 (n := 25) (by omega)).2 (by omega)
-
 private theorem reviewerSingleton_super_not_marked :
     GenericSelect.relativeSplitSelectEntryIsMarked
       (GenericSelect.superEntry
@@ -2037,25 +2025,36 @@ private theorem reviewerIncreasingSixteenBeforeLCAState_closes :
     reviewerIncreasingSixteen_select_right_value,
     WholeQueryState.empty, WholeQueryState.setOpt, WholeQueryState.opt]
 
-private theorem reviewerCanonicalComponent_local_get
-    (shape : Cartesian.CartesianShape) (localAddress : Nat)
-    (hlocal :
-      localAddress <
-        (SuccinctClose.canonicalRelativeRmmLocalMachineStore
+/-- Component-store accessor for the CHARGED LOCAL LEVEL region.  This replaced
+the local-offset accessor that stood here: once the charged sparse-level swap
+made the level read the leftmost read of the two-span computation, the reachable
+successful read this file witnesses is a LEVEL read, and the local-offset
+accessor had no remaining caller.
+
+The level region sits after the global-block region, so this names the six
+regions that precede it and quantifies over everything that follows: reading the
+level region depends only on what precedes it, and spelling the tail out
+literally is exactly what made the predecessor accessor break whenever the
+component store grew a region. -/
+private theorem reviewerCanonicalComponent_localLevel_get
+    (shape : Cartesian.CartesianShape) (levelAddress : Nat)
+    (hlevel :
+      levelAddress <
+        (SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore
           shape).store.words.size) :
     (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
       shape).store.words[
         (SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
-          shape).localOffset + localAddress]? =
-      (SuccinctClose.canonicalRelativeRmmLocalMachineStore
-        shape).store.words[localAddress]? := by
+          shape).localLevel + levelAddress]? =
+      (SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore
+        shape).store.words[levelAddress]? := by
   have hlist :
       (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
         shape).store.words.toList[
           (SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
-            shape).localOffset + localAddress]? =
-        (SuccinctClose.canonicalRelativeRmmLocalMachineStore
-          shape).store.words.toList[localAddress]? := by
+            shape).localLevel + levelAddress]? =
+        (SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore
+          shape).store.words.toList[levelAddress]? := by
     let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
     let summary := SuccinctClose.canonicalRelativeRmmSummaryTable shape
     let baselineWords :=
@@ -2072,24 +2071,30 @@ private theorem reviewerCanonicalComponent_local_get
     let globalWords :=
       ((SuccinctClose.canonicalRelativeRmmInteriorGlobalTable
         shape).table.machineStore hword).store.words.toList
-    have hlocalWords : localAddress < localWords.length := by
-      simpa [localWords,
-        SuccinctClose.canonicalRelativeRmmLocalMachineStore] using hlocal
-    have hmiddle :
-        ((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
-          localWords ++ globalWords)[
-            (((baselineWords ++ minRelWords) ++ maxRelWords) ++
-              argWords).length + localAddress]? =
-          localWords[localAddress]? :=
+    let localLevelWords :=
+      ((SuccinctClose.canonicalRelativeRmmInteriorLocalLevelTable
+        shape).table.machineStore hword).store.words.toList
+    have hlevelWords : levelAddress < localLevelWords.length := by
+      simpa [localLevelWords,
+        SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore] using hlevel
+    have hmiddle : forall post : List (List Bool),
+        (((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+          localWords ++ globalWords) ++ localLevelWords ++ post)[
+            ((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+              localWords ++ globalWords).length + levelAddress]? =
+          localLevelWords[levelAddress]? := fun post =>
       SuccinctSpace.List.getElem?_append_middle_of_lt
-        (((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords)
-        localWords globalWords localAddress hlocalWords
+        ((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+          localWords ++ globalWords)
+        localLevelWords post levelAddress hlevelWords
     rw [SuccinctClose.canonicalRelativeRmmInteriorComponentStore_words_toList]
     simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
-      argWords, localWords, globalWords,
+      argWords, localWords, globalWords, localLevelWords,
       SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets,
       SuccinctClose.canonicalRelativeRmmLocalMachineStore,
-      List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
+      SuccinctClose.canonicalRelativeRmmGlobalMachineStore,
+      SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore,
+      List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle _
   simpa [Array.getElem?_toList] using hlist
 
 private theorem reviewerIncreasingCanonicalInterior_successfulRead :
@@ -2099,18 +2104,29 @@ private theorem reviewerIncreasingCanonicalInterior_successfulRead :
         concreteBPNativeInteriorTraceSegments 1 2).trace := by
   let shape := Cartesian.shape reviewerIncreasingSixteenInput
   let layout := SuccinctClose.RelativeRmm.canonicalLayout shape
-  let table := SuccinctClose.canonicalRelativeRmmInteriorLocalTable shape
+  -- WITNESSED READ CHANGED BY THE CHARGED SPARSE-LEVEL SWAP.
+  -- The two-span computation now reads the charged level table FIRST and
+  -- derives the level from that read, so the sparse-offset span read is no
+  -- longer the head of the append chain and `List.mem_append_left` no longer
+  -- places it there.  This witness therefore exhibits the LEVEL read, which the
+  -- outer bind performs unconditionally before the match on the read value and
+  -- which is consequently the leftmost read of the execution.  Witnessing it
+  -- needs no `Nat.log2` at proof level and no `bpLocalSparseCellSlot` address
+  -- arithmetic: the level slot IS the count the route presents, which is why
+  -- the concrete `slot` unfolding that used to drive this proof into `whnf` is
+  -- gone rather than merely made cheaper.
+  let levelTable :=
+    SuccinctClose.canonicalRelativeRmmInteriorLocalLevelTable shape
   let offsets :=
     SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets shape
   let array :=
     (SuccinctClose.canonicalRelativeRmmInteriorComponentStore shape).store.words
   let store := SuccinctSpace.FlatWordStore.ofArray array
   let wordSize := SuccinctRank.machineWordBits shape.bpCode.length
-  let slot := SuccinctClose.bpLocalSparseCellSlot layout.macroSize
-    layout.levelCount 0 1 (Nat.log2 2)
+  let width :=
+    SuccinctClose.bpSparseLevelWidth
+      (SuccinctClose.bpSparseLevelDomain layout.macroSize)
   have hlogSixteen := reviewer_log2_sixteen
-  have hlogTwentyFive := reviewer_log2_twentyFive
-  have hlogTwo := reviewerSingleton_log2_two
   have hmacroSize : layout.macroSize = 25 := by
     dsimp [layout, shape]
     rw [reviewerIncreasingSixteenInput_shape]
@@ -2118,124 +2134,85 @@ private theorem reviewerIncreasingCanonicalInterior_successfulRead :
       SuccinctClose.canonicalBPRelativeSummaryBlocksPerSuperRaw,
       SuccinctClose.canonicalBPRelativeSummaryBase, reviewerRightSpine,
       Cartesian.CartesianShape.size, hlogSixteen]
-  have hlevelCount : layout.levelCount = 5 := by
-    dsimp [layout, shape]
-    rw [reviewerIncreasingSixteenInput_shape]
-    simp [SuccinctClose.canonicalBPRelativeSummaryBlocksPerSuperRaw,
-      SuccinctClose.canonicalBPRelativeSummaryBase, reviewerRightSpine,
-      Cartesian.CartesianShape.size, SuccinctRank.machineWordBits,
-      hlogSixteen, hlogTwentyFive]
-  have hstart : 1 < layout.macroSize := by omega
-  have hfits : 2 <= layout.macroSize - 1 := by omega
-  have hqueryLevel : Nat.log2 2 < layout.levelCount := by
-    rw [hlevelCount, hlogTwo]
-    omega
   have hmacroShape :
       (SuccinctClose.RelativeRmm.canonicalLayout shape).macroSize = 25 := by
     simpa [layout] using hmacroSize
-  have hmacro : 0 < layout.macroSampleCount := by
-    simp [layout, SuccinctClose.RelativeRmm.Layout.macroSampleCount]
-  have hlayoutLevelPos : 0 < layout.levelCount := by
-    simpa [layout, SuccinctClose.RelativeRmm.Layout.levelCount,
-      SuccinctClose.RelativeRmm.Layout.offsetWidth] using
-      SuccinctRank.machineWordBits_pos layout.macroSize
-  have hlocal : 0 < layout.macroSize := by
-    have hraw :=
-      SuccinctClose.canonicalBPRelativeSummaryBlocksPerSuperRaw_pos shape
-    simpa [layout, SuccinctClose.RelativeRmm.Layout.macroSize,
-      SuccinctClose.RelativeRmm.canonicalLayout] using Nat.mul_pos hraw hraw
+  -- The level slot is the COUNT the route presents (`2`), not a level computed
+  -- at proof level; the domain covers every count the route can present.
   have hslot :
-      slot <
-        (SuccinctClose.bpLocalSparseOffsetEntries shape layout.blockSize
-          layout.blockCount layout.macroSize layout.macroSampleCount
-          layout.levelCount).length := by
-    have hentry :=
-      SuccinctClose.bpLocalSparseOffsetEntries_get?_of_valid
-        (shape := shape) (blockSize := layout.blockSize)
-        (blockCount := layout.blockCount) (macroSize := layout.macroSize)
-        (macroCount := layout.macroSampleCount)
-        (levelCount := layout.levelCount) (macroIdx := 0)
-        (localStart := 1) (level := Nat.log2 2)
-        (by omega) (by simpa [layout] using hqueryLevel)
-        (by simpa [layout] using hstart)
-    exact (List.getElem?_eq_some_iff.mp hentry).1
-  have hslotCanonical := hslot
-  dsimp [layout] at hslotCanonical
+      2 < (SuccinctClose.bpSparseLevelEntries
+        (SuccinctClose.bpSparseLevelDomain layout.macroSize)).length := by
+    rw [SuccinctClose.bpSparseLevelEntries_length, hmacroSize]
+    unfold SuccinctClose.bpSparseLevelDomain
+    omega
+  have hwidthPos : 0 < width := by
+    show 0 < SuccinctClose.bpSparseLevelWidth
+      (SuccinctClose.bpSparseLevelDomain layout.macroSize)
+    unfold SuccinctClose.bpSparseLevelWidth
+    omega
   let count :=
-    SuccinctSpace.fixedWidthNatTableMachineChunkCount
-      layout.offsetWidth wordSize
-  let localAddress := slot * count
-  have hfootprint :
-      localAddress ∈
-        SuccinctSpace.fixedWidthNatTableMachineFootprint
-          layout.offsetWidth wordSize slot := by
-    have hcount : 0 < count := by
-      apply reviewerFixedWidthMachineChunkCount_pos
-      simpa [layout, SuccinctClose.RelativeRmm.Layout.offsetWidth] using
-        SuccinctRank.machineWordBits_pos layout.macroSize
-    obtain ⟨tail, hcountEq⟩ := Nat.exists_eq_succ_of_ne_zero
-      (Nat.ne_of_gt hcount)
-    simp [SuccinctSpace.fixedWidthNatTableMachineFootprint, localAddress,
-      count, hcountEq, SuccinctSpace.consecutiveWordIndices]
+    SuccinctSpace.fixedWidthNatTableMachineChunkCount width wordSize
+  let levelAddress := 2 * count
   have hwordSize : 0 < wordSize := by
     simpa [wordSize] using SuccinctRank.machineWordBits_pos shape.bpCode.length
-  rcases table.table.machineFootprint_successful_read_backed
+  have hfootprint :
+      levelAddress ∈
+        SuccinctSpace.fixedWidthNatTableMachineFootprint width wordSize 2 := by
+    have hcount : 0 < count := by
+      apply reviewerFixedWidthMachineChunkCount_pos
+      exact hwidthPos
+    obtain ⟨tail, hcountEq⟩ := Nat.exists_eq_succ_of_ne_zero
+      (Nat.ne_of_gt hcount)
+    simp [SuccinctSpace.fixedWidthNatTableMachineFootprint, levelAddress,
+      count, hcountEq, SuccinctSpace.consecutiveWordIndices]
+  rcases levelTable.table.machineFootprint_successful_read_backed
       hwordSize hslot hfootprint with
     ⟨word, hwordRead, _hwordMem, _herases⟩
-  have hlocalGet :
-      (SuccinctClose.canonicalRelativeRmmLocalMachineStore
-        shape).store.words[localAddress]? = some word := by
-    simpa [table, wordSize,
-      SuccinctClose.canonicalRelativeRmmLocalMachineStore,
-      Costed.erase] using hwordRead
-  have hlocalLt :
-      localAddress <
-        (SuccinctClose.canonicalRelativeRmmLocalMachineStore
+  have hlevelGet :
+      (SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore
+        shape).store.words[levelAddress]? = some word := by
+    simpa [levelTable, wordSize,
+      SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore] using hwordRead
+  have hlevelLt :
+      levelAddress <
+        (SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore
           shape).store.words.size :=
-    (Array.getElem?_eq_some_iff.mp hlocalGet).1
+    (Array.getElem?_eq_some_iff.mp hlevelGet).1
   have hcomponentGet :
-      array[offsets.localOffset + localAddress]? = some word := by
+      array[offsets.localLevel + levelAddress]? = some word := by
     have hslice :=
-      reviewerCanonicalComponent_local_get shape localAddress hlocalLt
+      reviewerCanonicalComponent_localLevel_get shape levelAddress hlevelLt
     rw [hslice]
-    exact hlocalGet
+    exact hlevelGet
   have hfirst :
-      (offsets.localOffset + localAddress, some word) ∈
-        ((table.table.machineReadComputationAt wordSize offsets.localOffset
-          offsets.deadAddress slot).run store).reads := by
+      (offsets.localLevel + levelAddress, some word) ∈
+        ((levelTable.table.machineReadComputationAt wordSize offsets.localLevel
+          offsets.deadAddress 2).run store).reads := by
     unfold SuccinctSpace.FixedWidthNatTable.machineReadComputationAt
-    rw [if_pos (by simpa [slot, layout] using hslot)]
+    rw [if_pos (by simpa [layout] using hslot)]
     simp only [
       SuccinctSpace.FlatStoreComputation.map_run_reads,
       SuccinctSpace.FlatStoreComputation.readMany_run_reads, List.mem_map]
-    refine ⟨offsets.localOffset + localAddress, ?_, ?_⟩
+    refine ⟨offsets.localLevel + levelAddress, ?_, ?_⟩
     · exact List.mem_map_of_mem
-        (f := fun address => offsets.localOffset + address) hfootprint
+        (f := fun address => offsets.localLevel + address) hfootprint
     · simp [store, SuccinctSpace.FlatWordStore.ofArray, hcomponentGet]
-  have hlocalSpan :
-      (offsets.localOffset + localAddress, some word) ∈
-        ((SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation
-          shape 0 1 (Nat.log2 2)).run store).reads := by
-    unfold SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation
-    simp only [SuccinctSpace.FlatStoreComputation.bind_run,
-      SuccinctSpace.FlatStoreExecution.append]
-    apply List.mem_append_left
-    change
-      (offsets.localOffset + localAddress, some word) ∈
-        ((table.table.machineReadComputationAt wordSize offsets.localOffset
-          offsets.deadAddress slot).run store).reads
-    exact hfirst
   have htwo :
-      (offsets.localOffset + localAddress, some word) ∈
+      (offsets.localLevel + levelAddress, some word) ∈
         ((SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
           shape 0 1 2).run store).reads := by
     unfold
       SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
     simp only [SuccinctSpace.FlatStoreComputation.bind_run,
       SuccinctSpace.FlatStoreExecution.append]
-    exact List.mem_append_left _ hlocalSpan
+    apply List.mem_append_left
+    change
+      (offsets.localLevel + levelAddress, some word) ∈
+        ((levelTable.table.machineReadComputationAt wordSize offsets.localLevel
+          offsets.deadAddress 2).run store).reads
+    exact hfirst
   have hexec :
-      (offsets.localOffset + localAddress, some word) ∈
+      (offsets.localLevel + levelAddress, some word) ∈
         (SuccinctClose.canonicalRelativeRmmInteriorRangeMinExecutionWithStore
           shape array 1 2).reads := by
     unfold
@@ -2249,19 +2226,15 @@ private theorem reviewerIncreasingCanonicalInterior_successfulRead :
       omega)]
     rw [hmacroShape]
     rw [show 1 / 25 = 0 by omega, show 1 % 25 = 1 by omega]
-    unfold
-      SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
-    simp only [SuccinctSpace.FlatStoreComputation.bind_run,
-      SuccinctSpace.FlatStoreExecution.append]
-    exact List.mem_append_left _ hlocalSpan
-  refine ⟨offsets.localOffset + localAddress, word, ?_⟩
+    exact htwo
+  refine ⟨offsets.localLevel + levelAddress, word, ?_⟩
   unfold
     SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
   unfold
     SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment
   unfold SuccinctClose.flatStoreExecutionTraceResultAtSegment
   apply List.mem_map.mpr
-  exact ⟨(offsets.localOffset + localAddress, some word), hexec, by
+  exact ⟨(offsets.localLevel + levelAddress, some word), hexec, by
     simp [concreteBPNativeInteriorTraceSegments]⟩
 
 private theorem reviewerIncreasing_lca_interior_mem

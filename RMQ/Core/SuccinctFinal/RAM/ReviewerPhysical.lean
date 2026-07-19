@@ -1786,6 +1786,10 @@ private theorem concreteBPNativeSuccinctRMQReviewerCloseWords_length_le
   let summary := SuccinctClose.canonicalRelativeRmmSummaryTable shape
   let localTable := SuccinctClose.canonicalRelativeRmmInteriorLocalTable shape
   let global := SuccinctClose.canonicalRelativeRmmInteriorGlobalTable shape
+  let localLevel :=
+    SuccinctClose.canonicalRelativeRmmInteriorLocalLevelTable shape
+  let globalLevel :=
+    SuccinctClose.canonicalRelativeRmmInteriorGlobalLevelTable shape
   let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
   have hbase := fixedWidthNatTable_machineWords_length_le_payload_length
     summary.baselineTable hword
@@ -1799,6 +1803,10 @@ private theorem concreteBPNativeSuccinctRMQReviewerCloseWords_length_le
     localTable.table hword
   have hglobal := fixedWidthNatTable_machineWords_length_le_payload_length
     global.table hword
+  have hlocalLevel := fixedWidthNatTable_machineWords_length_le_payload_length
+    localLevel.table hword
+  have hglobalLevel := fixedWidthNatTable_machineWords_length_le_payload_length
+    globalLevel.table hword
   change
     (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
       shape).store.words.toList.length <=
@@ -1811,8 +1819,10 @@ private theorem concreteBPNativeSuccinctRMQReviewerCloseWords_length_le
           (summary.maxRelTable.machineStore hword).store.words.toList ++
             (summary.argOffsetTable.machineStore hword).store.words.toList ++
               (localTable.table.machineStore hword).store.words.toList ++
-                (global.table.machineStore hword).store.words.toList by
-      simpa [summary, localTable, global, hword] using
+                (global.table.machineStore hword).store.words.toList ++
+                  (localLevel.table.machineStore hword).store.words.toList ++
+                    (globalLevel.table.machineStore hword).store.words.toList by
+      simpa [summary, localTable, global, localLevel, globalLevel, hword] using
         SuccinctClose.canonicalRelativeRmmInteriorComponentStore_words_toList
           shape]
   simp only [List.length_append, Array.length_toList]
@@ -1821,7 +1831,8 @@ private theorem concreteBPNativeSuccinctRMQReviewerCloseWords_length_le
     SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.payload,
     SuccinctClose.PayloadLiveBPLocalSparseOffsetTable.payload,
     SuccinctClose.PayloadLiveBPGlobalSparseBlockTable.payload,
-    summary, localTable, global] at *
+    SuccinctClose.PayloadLiveBPSparseLevelTable.payload,
+    summary, localTable, global, localLevel, globalLevel] at *
   omega
 
 private theorem concreteBPNativeSuccinctRMQReviewerFringeWords_length_le
@@ -1881,15 +1892,15 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_length_le_capacity
       shape.size
   have hdirLinear :
       (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload.length <=
-        218 * (shape.size + 1) := by
+        527 * (shape.size + 1) := by
     omega
   have hcloseBound :
       (concreteBPNativeSuccinctRMQReviewerCloseWords shape).length <=
-        218 * (shape.size + 1) :=
+        527 * (shape.size + 1) :=
     Nat.le_trans hclose hdirLinear
   have hcanonicalCloseBound :
       (concreteBPNativeSuccinctRMQReviewerSourceWords
-        shape .canonicalClose).length <= 218 * (shape.size + 1) := by
+        shape .canonicalClose).length <= 527 * (shape.size + 1) := by
     simpa [concreteBPNativeSuccinctRMQReviewerCloseWords] using hcloseBound
   have hfringeBound :=
     concreteBPNativeSuccinctRMQReviewerFringeWords_length_le shape

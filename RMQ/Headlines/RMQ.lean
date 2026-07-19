@@ -24,7 +24,7 @@ Canonical construction-facing capstone. Its checked type combines the
 canonical reviewer payload bound and physical erasure with the exact canonical
 global execution, direct positional backing in the physical reviewer words for
 every successful payload read, both non-synthetic-weight equalities (to trace
-length and `Costed.cost`), the literal uniform bound `207`, exact RMQ answers,
+length and `Costed.cost`), the literal uniform bound `210`, exact RMQ answers,
 and the doubled-Catalan space envelopes.
 -/
 abbrev succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile :=
@@ -67,7 +67,7 @@ occurrence provenance remain under each current query's validity premise.
 -/
 theorem listIntSuccinctRMQPaperMainTheorem :
     RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy /\
-    RMQ.SuccinctClassic.queryCost = 207 /\
+    RMQ.SuccinctClassic.queryCost = 210 /\
     RMQ.SuccinctSpace.LittleOLinear RMQ.SuccinctClassic.overhead /\
       forall xs : List Int,
         (RMQ.SuccinctClassic.buildPayload xs).length <=
@@ -494,9 +494,9 @@ exactly to the `Costed.cost` of the same execution.
 abbrev succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_cost
 
-/-- The non-synthetic-weighted actual trace has the checked all-size bound `207`. -/
-abbrev succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe207 :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_207
+/-- The non-synthetic-weighted actual trace has the checked all-size bound `210`. -/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe210 :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_210
 
 /--
 B3 vocabulary signature: every event of the accepted whole-query global word
@@ -526,7 +526,7 @@ abbrev succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGloba
 /-- Uniform canonical modeled query-cost constant for the final reviewer path. -/
 abbrev succinctRMQQueryCost := RMQ.SuccinctClassic.queryCost
 
-/-- The uniform canonical final-query charged-trace cost computes to `207`. -/
+/-- The uniform canonical final-query charged-trace cost computes to `210`. -/
 abbrev succinctRMQQueryCostEq :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq
 

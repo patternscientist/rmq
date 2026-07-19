@@ -5961,35 +5961,40 @@ private theorem reviewerCanonicalInterior_mayRead
         SuccinctClose.canonicalBPRelativeSummaryBlocksPerSuperRaw shape := by
     exact Nat.one_le_iff_ne_zero.mpr (Nat.mul_ne_zero
       (Nat.ne_of_gt hraw) (Nat.ne_of_gt hraw))
-  let layout := SuccinctClose.RelativeRmm.canonicalLayout shape
-  let table := SuccinctClose.canonicalRelativeRmmInteriorLocalTable shape
+  -- WITNESSED READ CHANGED BY THE CHARGED SPARSE-LEVEL SWAP.
+  -- The two-span computation now reads the charged level table FIRST and
+  -- derives the level from that read, so the sparse-offset span read is no
+  -- longer the head of the append chain.  This witness therefore exhibits the
+  -- LEVEL read, which is unconditionally performed by the outer bind before
+  -- the match on the read value and so is the leftmost read of the execution.
+  -- Witnessing it needs no `Nat.log2` at proof level and no `bpLocalSparseCellSlot`
+  -- address arithmetic, which is why the concrete `layout`/`slot` unfolding that
+  -- used to drive this proof into `whnf` is gone rather than merely made cheaper.
+  let levelTable :=
+    SuccinctClose.canonicalRelativeRmmInteriorLocalLevelTable shape
   let offsets := SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets shape
   let array :=
     (SuccinctClose.canonicalRelativeRmmInteriorComponentStore shape).store.words
   let store := SuccinctSpace.FlatWordStore.ofArray array
-  let slot := SuccinctClose.bpLocalSparseCellSlot layout.macroSize
-    layout.levelCount 0 0 (Nat.log2 1)
-  rcases machineReadComputationAt_mayRead table.table
+  have hwidth : 0 < SuccinctClose.bpSparseLevelWidth
+      (SuccinctClose.bpSparseLevelDomain
+        (SuccinctClose.RelativeRmm.canonicalLayout shape).macroSize) := by
+    unfold SuccinctClose.bpSparseLevelWidth
+    omega
+  rcases machineReadComputationAt_mayRead levelTable.table
       (SuccinctRank.machineWordBits shape.bpCode.length)
-      offsets.localOffset offsets.deadAddress slot
-      (SuccinctRank.machineWordBits_pos layout.macroSize) store with
+      offsets.localLevel offsets.deadAddress 1
+      hwidth store with
     ⟨address, word?, hfirst⟩
-  have hlocalSpan : (address, word?) ∈
-      ((SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation
-        shape 0 0 (Nat.log2 1)).run store).reads := by
-    unfold SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation
-    simp only [SuccinctSpace.FlatStoreComputation.bind_run,
-      SuccinctSpace.FlatStoreExecution.append]
-    apply List.mem_append_left
-    simpa [SuccinctClose.canonicalRelativeRmmMachineReadNatComputation,
-      table, offsets, layout, slot] using hfirst
   have htwo : (address, word?) ∈
       ((SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
         shape 0 0 1).run store).reads := by
     unfold SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
     simp only [SuccinctSpace.FlatStoreComputation.bind_run,
       SuccinctSpace.FlatStoreExecution.append]
-    exact List.mem_append_left _ hlocalSpan
+    apply List.mem_append_left
+    simpa [SuccinctClose.canonicalRelativeRmmMachineReadNatComputation,
+      levelTable, offsets] using hfirst
   have hexec : (address, word?) ∈
       (SuccinctClose.canonicalRelativeRmmInteriorRangeMinExecutionWithStore
         shape array 0 1).reads := by
@@ -8817,27 +8822,76 @@ def concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost : Nat :=
 
 theorem concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCloseCost_eq :
     concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra.closeLCA =
-      126 := by
+      129 := by
   rfl
 
 theorem concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq :
-    concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 207 := by
+    concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 210 := by
   rfl
+
+/-! ### Frozen historical component costs
+
+A frozen historical constant records what a RETIRED route cost at the time
+it was retired.  It must therefore be pinned to a literal.  A historical
+constant whose definition names a LIVE definition is not frozen at all: it
+silently tracks the live route, so a later recharge rewrites history and
+breaks the very `rfl` identity that was supposed to certify it.
+
+The three constants below are the literal values that the two frozen
+algebras used to obtain by naming live definitions.  Each is stated with
+the live definition it was captured from, and with the value that
+definition held at capture time.  Nothing here may be changed when a live
+route is recharged; that is the entire point.
+-/
+
+/-- Frozen historical interior-directory component of the retired routes:
+the value `SuccinctClose.canonicalRelativeRmmPrincipledInteriorChargedTraceCost`
+held (`30`) before the charged sparse-level recharge moved the live
+interior cap.  Pinned, so the frozen `76` and `142` identities below do not
+track the live interior route. -/
+def canonicalRelativeRmmSilentSparseLevelInteriorChargedTraceCost : Nat := 30
+
+/-- Frozen historical endpoint-fringe component of the retired
+event-silent fringe route: the value
+`SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalEndpointFringeChargedTraceCost`
+held (`4`) when that route was retired. -/
+def canonicalSilentFringeHistoricalEndpointFringeChargedTraceCost : Nat := 4
+
+/-- Frozen historical endpoint-fringe component of the retired silent
+in-word rank/select route: the value
+`SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedEndpointFringeChargedTraceCost`
+held (`37`) when that route was retired. -/
+def canonicalSilentWordRankSelectHistoricalEndpointFringeChargedTraceCost : Nat := 37
+
+/-- Frozen historical endpoint-fringe component of the retired
+pre-sparse-level chunked route: the value
+`SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedEndpointFringeChargedTraceCost`
+held (`37`) when the charged sparse-level interior recharge retired the
+`207` whole-query literal.  Deliberately a SEPARATE constant from the
+identically-valued silent-rank/select capture above: each frozen algebra
+owns its own pinned components, so a later recharge of one retired route's
+narrative cannot silently edit another's. -/
+def canonicalSilentSparseLevelHistoricalEndpointFringeChargedTraceCost : Nat := 37
 
 /--
 Frozen historical algebra of the retired event-silent fringe route
-(pattern: `canonicalTransitionalQueryCost = 328`).  The retired route's
+(pattern: `canonicalTransitionalQueryCost = 352`).  The retired route's
 fringe leaves computed their min-excess/argmin scan without charged reads;
 the chunked route replaces the two 4-read fringes by two 37-read fringes.
+
+All four fields are literals (three numerals and one pinned historical
+component), so this algebra is genuinely frozen: no live recharge can move
+it.  It previously named the live endpoint-fringe and interior-directory
+definitions, which made the `76` below track the current route.
 -/
 def concreteBPNativeSuccinctRMQSilentFringeChargedTraceCostAlgebra :
     CanonicalRMQChargedTraceCostAlgebra where
   selectClose := 13
   rankClose := 4
   endpointFringe :=
-    SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalEndpointFringeChargedTraceCost
+    canonicalSilentFringeHistoricalEndpointFringeChargedTraceCost
   interiorDirectory :=
-    SuccinctClose.canonicalRelativeRmmPrincipledInteriorChargedTraceCost
+    canonicalRelativeRmmSilentSparseLevelInteriorChargedTraceCost
 
 /-- Frozen historical whole-query literal of the retired silent-fringe route. -/
 def concreteBPNativeSuccinctRMQSilentFringeChargedTraceCost : Nat :=
@@ -8853,15 +8907,20 @@ Frozen historical algebra of the retired silent in-word rank/select route
 without charged reads; pattern: `canonicalSilentFringeQueryCost = 76`).
 The B3 chunked route replaces the 13-tick select closes and 4-tick rank
 seeds by 35-tick and 11-tick charged chunk-table executions.
+
+All four fields are literals (three numerals and one pinned historical
+component), so this algebra is genuinely frozen: no live recharge can move
+it.  It previously named the live endpoint-fringe and interior-directory
+definitions, which made the `142` below track the current route.
 -/
 def concreteBPNativeSuccinctRMQSilentWordRankSelectChargedTraceCostAlgebra :
     CanonicalRMQChargedTraceCostAlgebra where
   selectClose := 13
   rankClose := 4
   endpointFringe :=
-    SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedEndpointFringeChargedTraceCost
+    canonicalSilentWordRankSelectHistoricalEndpointFringeChargedTraceCost
   interiorDirectory :=
-    SuccinctClose.canonicalRelativeRmmPrincipledInteriorChargedTraceCost
+    canonicalRelativeRmmSilentSparseLevelInteriorChargedTraceCost
 
 /-- Frozen historical whole-query literal of the retired silent in-word
 rank/select route (the B2 candidate value). -/
@@ -8870,6 +8929,46 @@ def concreteBPNativeSuccinctRMQSilentWordRankSelectChargedTraceCost : Nat :=
 
 theorem concreteBPNativeSuccinctRMQSilentWordRankSelectChargedTraceCost_eq :
     concreteBPNativeSuccinctRMQSilentWordRankSelectChargedTraceCost = 142 := by
+  rfl
+
+/--
+Frozen historical algebra of the retired pre-sparse-level chunked route
+(pattern: `canonicalSilentWordRankSelectQueryCost = 142`).  This is the
+route whose whole-query literal was `207`: the B3 chunked route as it stood
+before the charged sparse-level interior recharge moved the interior
+component `30 -> 33`.  Its select, rank and fringe components are unchanged
+by that recharge; only the interior component moved, which is why this
+algebra differs from the live one in exactly one field.
+
+All four fields are literals (two numerals and two pinned historical
+components), so this algebra is genuinely frozen: no live recharge can move
+it.
+-/
+def concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCostAlgebra :
+    CanonicalRMQChargedTraceCostAlgebra where
+  selectClose := 35
+  rankClose := 11
+  endpointFringe :=
+    canonicalSilentSparseLevelHistoricalEndpointFringeChargedTraceCost
+  interiorDirectory :=
+    canonicalRelativeRmmSilentSparseLevelInteriorChargedTraceCost
+
+/-- Frozen historical whole-query literal of the retired pre-sparse-level
+chunked route (the value the live literal held before the charged
+sparse-level interior recharge). -/
+def concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost : Nat :=
+  concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCostAlgebra.wholeQuery
+
+theorem concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq :
+    concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost = 207 := by
+  rfl
+
+/-- Frozen historical close/LCA component of the retired pre-sparse-level
+chunked route, retained beside the whole-query literal so that both halves
+of the migrated `126 / 207` pair stay checkable. -/
+theorem concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCloseCost_eq :
+    concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCostAlgebra.closeLCA =
+      126 := by
   rfl
 
 theorem concreteBPNativeSelectCloseRegisterInterpretedCosted_cost_le_thirteen
@@ -8967,7 +9066,7 @@ theorem concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le_princ
           have hlcaBound :
               (SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalLcaCloseCostedWithRankSeed
                 shape (concreteBPNativeRankCloseInterpretedCosted shape)
-                leftClose rightClose).cost <= 126 := by
+                leftClose rightClose).cost <= 129 := by
             simpa [
               SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedPrincipledBPCloseChargedTraceCostWithRankSeed,
               SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedEndpointFringeChargedTraceCost,
@@ -9006,7 +9105,7 @@ theorem concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le
   have htransitional :
       3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
           SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
-            SuccinctSelect.sparseDenseFalseSelectQueryCost = 328 := by
+            SuccinctSelect.sparseDenseFalseSelectQueryCost = 352 := by
     rfl
   omega
 
@@ -9407,18 +9506,18 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticW
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
       shape left right
 
-/-- The non-synthetic-weighted actual canonical trace has the checked literal bound `207`. -/
-theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_207
+/-- The non-synthetic-weighted actual canonical trace has the checked literal bound `210`. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_210
     (shape : Cartesian.CartesianShape) (left right : Nat) :
     ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
-        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum <= 207 := by
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum <= 210 := by
   calc
     ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
         shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum <=
         concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost :=
       concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_principledAllSizeChargedTrace
         shape left right
-    _ = 207 :=
+    _ = 210 :=
       concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq
 
 /-! ### The B3 vocabulary theorem: `readWord`-only charged events -/
@@ -9626,12 +9725,12 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only
         WholeQueryState.empty)
       event hmem
 
-/-- The canonical transitional whole-query cap computes to 328 modeled ticks. -/
+/-- The canonical transitional whole-query cap computes to 352 modeled ticks. -/
 theorem concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq :
     3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
         SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
           SuccinctSelect.sparseDenseFalseSelectQueryCost =
-      328 := by
+      352 := by
   rfl
 
 /-- Compatibility with the older conservative aggregate bound. -/
@@ -9717,7 +9816,7 @@ Canonical construction-facing two-sided profile for the accepted reviewer
 payload and execution.  The space clause counts exactly the payload erased by
 the physical reviewer words, while every query clause names the canonical
 global trace whose non-synthetic certificate weight equals its `Costed.cost`
-and is bounded by `207`.
+and is bounded by `210`.
 
 The numeric lower comparisons are space envelopes.  The query bound remains
 scoped to the explicit charged-trace model; this theorem does not charge
@@ -9726,7 +9825,7 @@ controller operations or assert conventional word-RAM complexity.
 theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile :
     SuccinctSpace.LittleOLinear
         concreteBPNativeSuccinctRMQCanonicalReviewerOverhead /\
-      concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 207 /\
+      concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 210 /\
       forall n : Nat,
         EncodingLowerBound.doubledLogSlackLower n <=
           2 *
@@ -9775,7 +9874,7 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_
               shape left right).trace) /\
         (forall shape left right,
           (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
-            shape left right).cost <= 207) /\
+            shape left right).cost <= 210) /\
         (forall shape left right,
           ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
               shape left right).trace.map
@@ -9789,7 +9888,7 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_
                 shape left right).cost /\
           ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
               shape left right).trace.map
-              WordRAM.TraceEvent.nonSyntheticWeight).sum <= 207) /\
+              WordRAM.TraceEvent.nonSyntheticWeight).sum <= 210) /\
         (forall {shape : Cartesian.CartesianShape},
           List.Mem shape (Cartesian.shapesOfSize n) ->
             forall {left len : Nat},
@@ -9840,7 +9939,7 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_
           shape left right,
         concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_cost
           shape left right,
-        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_207
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_210
           shape left right⟩
   · intro shape hshape left len hlen hbound
     exact concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact

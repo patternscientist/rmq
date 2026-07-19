@@ -2541,3 +2541,61 @@ Options considered:
 
 Evidence: B4 M2 commit `954baea` (diff hunks limited to the two W19
 sentences); `design_decision_check.ps1 -Strict` green after this entry.
+
+## WDD-20260719-001: B7 topology-anchor migration `SumLe207` -> `SumLe210`
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: `scripts/paper_topology_lint.ps1` and `scripts/headline_axiom_check.lean`
+(workflow-sensitive files) edited in B7 commit A (`f6000c3`), plus the
+single-line README reconciliation carried separately in `34a1c9d`.
+
+Decision:
+
+The charged sparse-level recharge moves the live whole-query literal
+`207 -> 210`, so the CURRENT topology anchor moves with it:
+
+  succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe207
+  -> succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe210
+
+in `paper_topology_lint.ps1` (`$weightBoundAlias`) and in the
+`#print axioms` inventory line of `headline_axiom_check.lean`. The frozen
+legacy anchors are untouched, per the coordinator ruling recorded in
+`docs/internal/B7_WORKLOG.md`.
+
+The numeral is carried in the IDENTIFIER, not only in the statement, so a
+migration that moved the literal while leaving the anchor name would leave
+a theorem named `...SumLe207` asserting `<= 210`. Renaming is therefore
+mandatory rather than cosmetic. The anchor is a LIVE anchor; nothing
+frozen is renamed or deleted, and the retired `207` is preserved as
+`concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq`.
+
+Options considered:
+
+- Keep the anchor name and move only the bound (rejected: produces a
+  self-contradictory name, and the rung's own rules forbid asserted or
+  misdescribed constants).
+- Introduce a numeral-free anchor name so future recharges need no script
+  edit (rejected for THIS rung, though it is the better long-run shape:
+  it would rename a paper-facing identifier that four documentary
+  registries cite, which is a strictly larger blast radius than the
+  migration itself, and it would do so in a commit whose purpose is a
+  cost migration. Recorded here as a candidate cleanup.)
+- Defer the script edits to the swap commit (rejected: the anchor must
+  resolve at every commit or the topology gate is red in between, and the
+  rename is forced by commit A, not by the swap).
+
+Consequences: `paper_topology_lint.ps1` resolves every documentary
+headline identifier against the real `RMQ.Headlines` namespace, so any
+documentary registry still naming `...SumLe207` fails the gate
+structurally. This is what forced the README reconciliation in `34a1c9d`;
+it is also why README.md and `docs/FAMILY_SUMMARY.md` still carrying the
+stale `207` NUMERAL do not fail the gate (prose numerals are not resolved
+as identifiers) and are reported as outstanding rather than silently
+taken from `claude/a07-blocker-repairs`.
+
+Evidence: `paper_topology_lint.ps1` before the README line moved:
+"PAPER-TOPOLOGY: FAIL [broad-documentary-symbol-resolution] ... unknown
+identifier '...SumLe207'", 1 failure, exit 1. After: "PAPER-TOPOLOGY PASS
+(83 broad documentary identifiers; 49 paper identifiers resolved)", exit
+0. `lake env lean scripts/headline_axiom_check.lean` exit 0.

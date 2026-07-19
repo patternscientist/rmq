@@ -64,9 +64,9 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
         shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum =
       (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
         shape left right).cost
-  nonSyntheticWeight_sum_le_207 :
+  nonSyntheticWeight_sum_le_210 :
     ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
-        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum <= 207
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum <= 210
   matches_global_read_store :
     forall event,
       event ∈
@@ -299,8 +299,8 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
       nonSyntheticWeight_sum_eq_cost :=
         concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_cost
           shape left right
-      nonSyntheticWeight_sum_le_207 :=
-        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_207
+      nonSyntheticWeight_sum_le_210 :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_210
           shape left right
       matches_global_read_store := hstore
       event_bounds := fun event hmem =>

@@ -88,7 +88,7 @@ The construction-facing join theorem is
 `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`.
 It places the canonical payload bound, physical erasure, exact global trace,
 direct positional physical backing for each successful read, non-synthetic
-weight equality to trace length and `Costed.cost`, and uniform `207` bound in
+weight equality to trace length and `Costed.cost`, and uniform `210` bound in
 one checked type.
 
 It packages existing checked theorem surfaces. It does not introduce a new
@@ -123,8 +123,16 @@ concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only
 every event of the accepted whole-query global word trace is a
 `WordRAM.TraceEvent.readWord` constructor, for every shape and query. The
 `wordRank`/`wordSelect` word-local primitives remain defined for
-legacy/compatibility surfaces (the frozen 76/142/328 routes) but are never
+legacy/compatibility surfaces (the frozen 76/142/207 routes) but are never
 emitted by the accepted route.
+
+CORRECTION OF RECORD (charged sparse-level rung): `328` was previously listed
+here among the frozen routes.  It is NOT frozen.  `canonicalTransitionalQueryCost`
+is a LIVE symbolic abbrev over `canonicalCompactBPCloseQueryCostWithRankSeed`,
+which is in turn defined over the live `canonicalRelativeRmmInteriorQueryCost`;
+it therefore tracks the accepted route and moves whenever that cap moves.  The
+genuinely frozen whole-query constants are `76`, `142` and `207`, each of which
+names only pinned numeral components and so is invariant under a live cap move.
 
 The declared charge policy is therefore:
 
@@ -169,13 +177,83 @@ caps:
   cost <= rankCost + 37` once the directory rank seed is threaded.
 - `canonicalLcaCloseCostedWithRankSeed_cost_le_principled` - the branch cap is
   a MAX over the two arms, not a sum, and the cross-block arm's existing
-  `2*rankCost + 2*37 + 30` absorbs the same-block arm's `rankCost + 37`
-  (at `rankCost = 11`: 48 <= 126), so no cost-algebra field changes.
+  `2*rankCost + 2*37 + interior` absorbs the same-block arm's `rankCost + 37`
+  (at `rankCost = 11` and the current interior cap: 48 <= 129), so B6 changed
+  no cost-algebra field.
 - `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq` therefore
-  re-derives by `rfl` to **207, unchanged**. The literal did not move because
-  the branch cap genuinely absorbs the new reads, not because the new reads
-  were left out of the accounting - the per-chunk `readWord 21 _ _` events are
-  in the trace and are counted.
+  re-derived by `rfl` to **207 at B6, unchanged**. The literal did not move
+  *at B6* because the branch cap genuinely absorbed the new reads, not because
+  the new reads were left out of the accounting - the per-chunk
+  `readWord 21 _ _` events are in the trace and are counted.
+
+  It has since moved, for a different and equally accounted reason: see the
+  next subsection.
+
+## Why the Literal Moved: Representation Artifact vs Algorithmic Work
+
+B7 recharges the interior directory's sparse-level reads and moves the
+interior component `30 -> 33`, hence `closeLCA 126 -> 129` and the
+whole-query literal `207 -> 210`. That movement is the charge policy working
+as intended, and it is worth being precise about why, because "the constant
+went up" and "the algorithm got slower" are different statements and only the
+first is true.
+
+The distinction the charge policy draws is between:
+
+- **Algorithmic work** - the comparisons, merges and candidate selections that
+  the RMQ algorithm performs. These are what an algorithms paper counts, and
+  B7 changes none of them: the interior route decides the same candidates from
+  the same operands in the same order.
+- **Representation artifacts** - the memory touches required to get an operand
+  out of the chosen succinct encoding at all. A sparse level table must be
+  read before its entry can be compared. Nothing about the algorithm requires
+  those reads; they are the price of the representation, and a different
+  encoding of the same algorithm would pay a different price.
+
+A word-RAM charge policy must charge BOTH, because the model's unit of cost is
+the memory touch, not the comparison. That is the whole point of running the
+accounting in `Costed` against an explicit store rather than counting
+operations on paper. So when B7 makes the sparse-level reads reachable, three
+more `readWord` events genuinely appear in the trace, and the literal must
+absorb them or the accounting would be false.
+
+What must NOT happen - and is the failure mode this section exists to rule out
+- is the reverse: leaving a representation artifact uncharged on the grounds
+that it is "not algorithmic work". That is exactly the event-silent defect
+that B2, B3 and B6 each removed one instance of. An uncharged read is not a
+cheaper algorithm; it is an unmodelled one.
+
+The bridge lemmas that carry the moved literal, so the chain is checkable
+rather than asserted:
+
+- `canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_literal_of_size_ge_four_of_bounded`
+  - the tight interior content, stated against the literal `30`, proved from
+  the four branch caps (`18`, `20`, `20`, `30`).
+- `canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_four_of_bounded`
+  - the same fact restated against the cap FIELD, so consumers survive a
+  recharge. Derived from the `_literal` form by `Nat.le_trans`.
+- `canonicalRelativeRmmPrincipledInteriorChargedTraceCost_announced_slack_of_size_ge_four_of_bounded`
+  - the staging artifact described below.
+- `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCloseCost_eq`
+  (`= 129`) and `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`
+  (`= 210`) - the re-derived algebra identities, both by `rfl`.
+- `concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq` (`= 207`)
+  - the retired literal, frozen rather than deleted, pinned to literal
+  components so no later recharge can silently rewrite it.
+
+### Announced slack at the staging commit
+
+The interior cap and the sparse-level store extension land as two commits, so
+that each is separately reviewable and separately green. Between them the cap
+is `33` while the route reachable at that commit still costs at most `30`.
+
+That looseness is not left to prose. It is stated and checked by
+`canonicalRelativeRmmPrincipledInteriorChargedTraceCost_announced_slack_of_size_ge_four_of_bounded`,
+which proves both that the current route stays within `30` and that the
+declared cap strictly exceeds `30`. A reader who wants to know whether the
+published constant is tight can ask the checker instead of trusting this
+paragraph. The theorem is retired - deleted, not weakened - by the commit that
+makes the bound tight again, and it is not provable after that commit.
 
 What remains uncharged on the accepted route after B6 is exactly the register
 list above, and it is bounded per step at every leg: each charged read is
@@ -271,14 +349,17 @@ not form part of this current model-adequacy statement.
 ## The Constant
 
 The current reviewer-route modeled bound is the principled charged-trace sum
-`207`. It is proved by
+`210`. It is proved by
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`
 and evaluated by
 `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`. The sum is
-`2*select35 + (2*rank11 + 2*fringe37 + interior30) + rank11`, derived (never
+`2*select35 + (2*rank11 + 2*fringe37 + interior33) + rank11`, derived (never
 asserted) from the component algebra; the retired 142 (silent in-word
-rank/select), 76 (silent fringe), and 328 (transitional) literals stay frozen
-as historical constants with their chains still checked.
+rank/select), 76 (silent fringe), and 207 (silent sparse-level) literals stay
+frozen as historical constants with their chains still checked.  The
+transitional cap is NOT among them: it is live, and the charged sparse-level
+recharge moves it `328 -> 352` for the same reason it moves the interior
+component `30 -> 33`.
 The operational bridge classifies every event in the actual canonical trace as
 `readWord` (the readWord-only vocabulary theorem above), excludes
 `syntheticCostOnlyPrimitive`, and proves that the direct
@@ -286,11 +367,11 @@ The operational bridge classifies every event in the actual canonical trace as
 length and the `Costed` cost of the same execution. This equality is proved for
 the canonical no-synthetic trace; `TraceResult.toCosted` itself charges trace
 length and would count a synthetic compatibility marker if one were present.
-The non-synthetic-weighted trace is then bounded by `207`. A counterfactual
+The non-synthetic-weighted trace is then bounded by `210`. A counterfactual
 theorem proves that inserting a synthetic event anywhere would make the
 certificate sum strictly smaller than trace length.
 
-The supplied-store and full-model companions transfer the same `207` bound
+The supplied-store and full-model companions transfer the same `210` bound
 under final footprint agreement. Earlier execution stories are compatibility
 facts only and are not current reviewer-route claims.
 The paper-level claim is that the query is constant in the stated model and
