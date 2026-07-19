@@ -2109,3 +2109,57 @@ interior performed no level-table reads. Either is acceptable, but the worker
 must STATE which it used and let the coordinator rule. The difference between a
 measurement and a derivation belongs in the evidence record, not buried in a
 worker's reasoning, because the eventual auditor must weigh them differently.
+
+## 2026-07-19 (C05 round 31) — B7 CANDIDATE-COMPLETE; CHK-04 closed on observation
+
+**B7 reports CANDIDATE_COMPLETE at `6ad4198`.** CHK-04's evidence is sharper
+than the row required: across all 21 windows, **the set that moved is EXACTLY
+the set with a live interior** — all nine crossBlock windows with `count > 0`
+moved, all twelve without a live interior held still, and no window falls on the
+wrong side. The new `tie-boundary-live-interior` fixture (n=24, base=5,
+blockSize=10, blockCount=4) moves 112->114, 107->109, 105->107 while its
+`count = 0` control holds at 73.
+
+**Two dispositions worth preserving.**
+
+The worker MEASURED BOTH SIDES rather than carrying the recorded baseline
+forward — a detached scratch worktree at the pre-swap commit received the
+identical fixture — and the nine pre-existing values reproduced the recorded
+baseline exactly. The baseline is therefore corroborated rather than inherited,
+which is strictly better evidence than the row asked for.
+
+And it DECLINED the coordinator's a-priori shortcut. I had offered that a window
+provably invoking the interior with `count > 0` and costing 18 post-swap cannot
+have cost 18 pre-swap, since the pre-swap interior made no level-table reads.
+The worker did not use it, and its reason is exactly right: **"CHK-04 exists to
+convert an argument into an observation, and answering it with a second argument
+would repeat the shape of the move the ruling rejected."** Fourth
+coordinator-offered shortcut declined in this campaign, and right every time.
+
+**Also recorded:** the previous window table was short by one — `tiny-leftmost-
+ties` was omitted entirely — so the "6 of 8 moved" framing I ruled on rested on
+an incomplete inventory. The ruling stands on coverage grounds regardless. And
+the tie-boundary group's coverage gap is genuinely closed: on that group, store
+growth had been visible on every shape (`payloadBits` 541->616, 577->652,
+1871->2096, 4635->5103, 10781->11384) but had NEVER been paired with an observed
+read, because every fixture in it had `blockCount = 2`.
+
+**One honest non-derivation flagged by the worker:** the delta is
+shape-determined rather than count-determined (+2 at counts 1,2,3,8 on n=24 and
+n=64; +1 at counts 9,10,14 on both n=128 shapes). The natural reading is a
+differing branch through the interior, but the worker declined to assert it as a
+checked fact. Handed to the audit as an explicit question.
+
+**A08 reconstruction audit launched** against `6ad4198`, carrying the three
+traps this rung produced: the indirect-import `#print axioms` false negative, the
+`whnf`-timeout-as-structural-evidence lesson, and the instruction to treat every
+enumerated inventory as provisional. Its closing question is the one the whole
+rung exists to settle: **does the accepted route now have ANY remaining
+uncharged computation whose cost grows with input size?**
+
+**Gate deliberately NOT run at this rung boundary**, contrary to my own standing
+rule, and the exception is recorded so it is not mistaken for the lapse that
+rule was written to prevent: `gate.ps1` aborts early on the a07-owned
+`wordram_axiom_check` red, so it would fail before reaching anything this rung
+could have broken and would establish nothing. The full gate runs at the merge
+window once R1 lands.
