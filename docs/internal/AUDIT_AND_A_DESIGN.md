@@ -4692,3 +4692,84 @@ discharging `WholeQueryMachineAgrees` — the named `def : Prop` the glue lane
 deliberately left so the public corollary could be built and debugged before the
 theorem it consumes existed. That decision is now paying: the public plumbing is
 already done and waiting.
+
+---
+
+## C05 round 73 — the bridge lands and is exercised; the amended target is
+## stated; and a width fact that may bear on REQ-E1-02
+
+Lane A2 returned INCOMPLETE at `9151705`. Item 1 CLOSED, item 2 partial one
+block deep, item 3 CLOSED, item 4 half.
+
+**The bridge exists and — the part that matters — it is EXERCISED.**
+`catCount_eq_filter_length` joins the two accounting vocabularies that had zero
+lemmas between them, and `interiorChunkFold_readLog_le_eight` makes it do work:
+a `filter`-vocabulary block cap becomes a bound on the machine's own receipt
+length via `RunsTo.readLog_length_eq_memoryRead_count`. Both ends existed and
+nothing joined them. A bridge stated but unused would have been the same shape as
+a clause proved but never executed.
+
+**REQ-E1-01's Named-consumer column now points at an existing Prop.**
+`E1AmendedFamiliarMachineTarget` is stated, with the invalid conjunct discharged
+outright for every `validPath`, and a reduction taking exactly two inputs. That
+was the only thing standing between REQ-E1-01 and its own evidence column.
+
+**THE FINDING THAT MAY MATTER MOST, and I am recording it rather than acting on
+it.** The target Prop deliberately carries **no width conjunct**, because
+`ProgramFits (machineWordBits n) …` is **FALSE at small `n`** — at `n = 4` the
+bound is `2^3 = 8` while this construction's register file reaches **152** — and
+`∀ n, ∃ w, ProgramFits w …` is vacuous. The tree's existing certificates resolve
+this by taking `w` parametrically with side conditions
+(`sameBlockLegProgramAt_fits` carries eleven), which cannot collapse into a Prop
+quantified over `xs left right`.
+
+I checked the obvious escape and it does not save it: the matrix's other word
+model, `concreteBPNativeSuccinctRMQReviewerWordBits`, is
+`machineWordBits (concreteBPNativeSuccinctRMQReviewerCapacity n)` — a bigger
+argument, but register `152` needs `2^w > 152`, hence `w ≥ 8`, hence a capacity
+of at least 128. Small shapes still fail.
+
+**Why this bears on REQ-E1-02.** Its evidence column demands "a checked theorem:
+every instruction of the concrete program satisfies it at the modeled width **for
+every size**." If "the modeled width" means a log-based function of the shape,
+that theorem is false at small shapes — not unproved, false. This is the same
+shape as the round-55 width premises and the round-57 `207`: **a frozen
+requirement naming something the accepted construction cannot satisfy
+literally.**
+
+**I am NOT escalating it yet, deliberately.** The discipline that worked twice
+already is: settle it by EVALUATION before deciding. Nobody has yet tried to
+close REQ-E1-02 and reported concrete numbers. The in-tree precedent —
+parametric `w` with side conditions plus a satisfiability witness at the real
+instantiation — may well satisfy the row's evidence column even though it does
+not match a literal reading of "the modeled width." That is a judgement to make
+with a worker's numbers in hand, not with my inference. Recorded in the live
+state and made an explicit task for the closure lane, with instructions to
+evaluate first.
+
+**MY TWENTY-SECOND FAILED CLAIM**, though the conclusion survived:
+"`programSkeleton` has no consumer outside its own two files." It has **three** —
+`E1WholeQueryPublic.lean` carries `programSkeleton_valid_matches_public` (`:140`).
+The validator residual I inferred from it was real, so the conclusion held and
+the count did not. That is the second time this campaign a claim of mine has been
+wrong in its evidence and right in its conclusion, which is the most dangerous
+kind because nothing downstream catches it.
+
+**Two things the worker did that are worth naming.** It predicted mutant J would
+reject 6 fixtures; the `rfl` failed, it **evaluated** rather than adjusting the
+claim, and found 5 — the fixture labelled `("empty", n=0, 0, 1)` is genuinely an
+out-of-bounds query. Recorded rather than quietly corrected. And the mutation's
+sharpest output is its non-entailment: **valid controls behave IDENTICALLY under
+mutant J**, so a harness checking only that valid queries still work would miss
+it entirely.
+
+**Resume items carried forward.** `FringeFoldUntouched` is still executed
+nowhere, and the worker established WHY the obvious approach fails:
+`FringeFoldUntouched` (`r < 40 ∨ 63 ≤ r`) is strictly STRONGER than
+`FringeArmUntouched` (`r < 40 ∨ (63 ≤ r ∧ r ≠ 67 ∧ r ≠ 68)`), so running the arm
+and checking the fold's predicate would fail at 67/68 **correctly** — the arm
+writes them, the fold does not. It needs the fold run STANDALONE. Seventeen
+composite category logs remain unbounded. And one genuine missing cap lemma: the
+fringe fold's `count ≤ 33` holds only because every caller writes
+`Nat.min (relHi / c + 1) 33`, with no lemma to that effect — unlike the
+interior's twin, it is not free from a definition.
