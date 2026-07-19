@@ -38,15 +38,22 @@ difference that is not observable in the route.
 
 ## STATE OF THIS MODULE -- READ BEFORE BUILDING ON IT
 
-**PROVED:** `legSetup_runsTo` (exact simulation of one leg's four-input
-setup, with the bank premise that makes it sound).
+**PROVED:** `legSetup_runsTo`, and now `twoLegBlock_runsTo` -- the exact
+simulation of the whole 1044-instruction combiner, with receipt, charge
+log, route value and preservation.
 
-**DEFINED BUT NOT YET SIMULATED:** `twoLegBlock`, its length, its charge
-log `twoLegCats`, and `TwoLegUntouched` with its cross-block-arm
-evaluation.  **`twoLegBlock_runsTo` DOES NOT EXIST**, so nothing here yet
-entitles anyone to say `#6` or `#7` is closed.  The definition is
-committed rather than dropped because it encodes a design CORRECTION that
-cost a rebuild to find, described next.
+~~**DEFINED BUT NOT YET SIMULATED:** `twoLegBlock` ... **`twoLegBlock_runsTo`
+DOES NOT EXIST**, so nothing here yet entitles anyone to say `#6` or `#7`
+is closed.~~ **SUPERSEDED (E1-LaneB4).** The simulation exists; `#6` and
+`#7` are instantiated below.  Left struck through rather than deleted, per
+the standing rule.
+
+**A DEFECT THE SIMULATION EXPOSED, recorded because it is the module's
+main lesson.**  `TwoLegUntouched` as first written was UNSOUND for its own
+block -- it omitted the four two-span inputs `tA`/`tStart`/`tN`/`tOff`,
+which this combiner WRITES in its two `legSetup`s, so it was provable at
+four registers the block clobbers.  Nothing catches that while a block is
+merely DEFINED.  See the predicate's own doc comment; DD-20260719-056.
 
 ## THE CORRECTION, AND WHY THE BLOCK LOOKS THE WAY IT DOES
 
@@ -296,23 +303,459 @@ def twoLegCats (catsA catsB : List Category)
               ([Category.registerWrite, Category.registerWrite] ++
                 mergeCats valA valB))))))
 
-/-- What the combiner LEAVES ALONE. -/
+/-- What the combiner LEAVES ALONE.
+
+**THIS SUPERSEDES THE FIRST VERSION OF THIS PREDICATE, WHICH WAS UNSOUND
+FOR ITS OWN BLOCK.**  The original read
+
+    TwoSpanUntouched r ∧ MergeUntouched r ∧ ShuttleUntouched r ∧
+      r ≠ uT ∧ r ≠ uZero ∧ r ≠ uSV ∧ r ≠ uSP
+
+and omitted the four two-span INPUTS `tA`, `tStart`, `tN`, `tOff`
+(`127`-`130`).  `TwoSpanUntouched` omits them DELIBERATELY and correctly --
+`twoSpanBlock` only READS them, never writes them, and saying so is what
+lets `#6`-`#9` chain two sub-legs with only some inputs rewritten between.
+But `twoLegBlock` WRITES all four, TWICE, in its two `legSetup`s.  So the
+old predicate was provable at four registers the combiner clobbers
+(`TwoLegUntouched 127` closed by `decide`), and the preservation clause of
+`twoLegBlock_runsTo` stated with it would have been FALSE.
+
+Nothing catches this while a block is only DEFINED: a preservation
+predicate is not executed until a simulation quantifies over it, and the
+`at_crossBlockArm_operands` evaluation below passes under BOTH versions,
+because `70`/`71`/`75`/`76` are not among the registers at issue.  A
+predicate can be too WEAK (the `SpanUntouched`/`mLP` case recorded in
+`E1_LIVE_STATE.md` §9) or, as here, too STRONG, and only the consumer's
+proof obligation distinguishes them.
+
+Recorded rather than silently repaired, per the standing rule.
+DD-20260719-056. -/
 abbrev TwoLegUntouched (r : Nat) : Prop :=
   TwoSpanUntouched r ∧ MergeUntouched r ∧ ShuttleUntouched r ∧
+    r ≠ tA ∧ r ≠ tStart ∧ r ≠ tN ∧ r ≠ tOff ∧
     r ≠ uT ∧ r ≠ uZero ∧ r ≠ uSV ∧ r ≠ uSP
 
-/-- THE FOUR CROSS-BLOCK-ARM OPERANDS SURVIVE THE WHOLE COMBINER. -/
+/-- THE FOUR CROSS-BLOCK-ARM OPERANDS SURVIVE THE WHOLE COMBINER.
+
+The ten numeral conjuncts are EVALUATED; only the leading
+`TwoSpanUntouched` comes from the sub-block's own twin.  A whole-statement
+`by decide` does NOT work here and the failure is worth recording: with
+eleven conjuncts, four of them instantiated, `Decidable` instance
+synthesis gives up ("failed to synthesize Decidable (TwoLegUntouched 70 ∧
+...)") even though every leaf is a decidable numeral comparison and the
+SAME predicate decides fine at a single register.  Depth, not
+decidability. -/
 theorem twoLegUntouched_at_crossBlockArm_operands :
     TwoLegUntouched 70 ∧ TwoLegUntouched 71 ∧ TwoLegUntouched 75 ∧
       TwoLegUntouched 76 :=
   ⟨⟨E1InteriorTwoSpan.twoSpanUntouched_at_crossBlockArm_operands.1,
-      by decide, by decide, by decide, by decide, by decide, by decide⟩,
+      by decide, by decide, by decide, by decide, by decide, by decide,
+      by decide, by decide, by decide, by decide⟩,
     ⟨E1InteriorTwoSpan.twoSpanUntouched_at_crossBlockArm_operands.2.1,
-      by decide, by decide, by decide, by decide, by decide, by decide⟩,
+      by decide, by decide, by decide, by decide, by decide, by decide,
+      by decide, by decide, by decide, by decide⟩,
     ⟨E1InteriorTwoSpan.twoSpanUntouched_at_crossBlockArm_operands.2.2.1,
-      by decide, by decide, by decide, by decide, by decide, by decide⟩,
+      by decide, by decide, by decide, by decide, by decide, by decide,
+      by decide, by decide, by decide, by decide⟩,
     ⟨E1InteriorTwoSpan.twoSpanUntouched_at_crossBlockArm_operands.2.2.2,
-      by decide, by decide, by decide, by decide, by decide, by decide⟩⟩
+      by decide, by decide, by decide, by decide, by decide, by decide,
+      by decide, by decide, by decide, by decide⟩⟩
+
+/-- **THE WHOLE WRITE SET LIES BELOW `144`.**
+
+The combiner's twin of `twoSpanUntouched_of_ge`, and the reason `#8` can
+carry a THIRD stash pair at `144`/`145` across a two-leg sub-block without
+re-deciding eleven conjuncts.  `144` is one past `uSP`, the highest
+register this block writes.
+
+Numerals, not the register abbrevs, for the reason
+`twoSpanUntouched_of_ge` records: `omega` collects an `abbrev` as an
+opaque atom. -/
+theorem twoLegUntouched_of_ge {r : Nat} (h : 144 ≤ r) : TwoLegUntouched r :=
+  ⟨E1InteriorTwoSpan.twoSpanUntouched_of_ge (by omega),
+    ⟨show r ≠ 77 by omega, show r ≠ 78 by omega, show r ≠ 125 by omega,
+      show r ≠ 126 by omega⟩,
+    ⟨show r ≠ 123 by omega, show r ≠ 124 by omega⟩,
+    show r ≠ 127 by omega, show r ≠ 128 by omega, show r ≠ 129 by omega,
+    show r ≠ 130 by omega, show r ≠ 140 by omega, show r ≠ 141 by omega,
+    show r ≠ 142 by omega, show r ≠ 143 by omega⟩
+
+/-! ## Exact simulation of the two-leg combiner -/
+
+/--
+EXACT SIMULATION OF THE TWO-LEG COMBINER, PARAMETRIC IN BOTH SUB-LEGS.
+
+Exit `Q + 1044`.  The receipt is the two sub-legs' receipts CONCATENATED
+and nothing else: everything outside them -- prologue, both setups, stash,
+bump, restore, merge -- is read-free, which is exactly what `#6` and `#7`
+being `bind`/`map` combinations of sub-legs means
+(`InteriorDirectory.lean:2406`, `:2419`).  The value is the ROUTE's own
+`bpCandidateMerge?` of the two sub-legs' route values, not the block's
+arithmetic.
+
+NO STORE HYPOTHESIS AND NO VALIDITY HYPOTHESIS, both inherited from
+`twoSpanBlock_runsTo`.
+
+**`hS2`/`hN2` ARE WHAT MAKE `#6` AND `#7` ONE BLOCK, AND THEY ARE NOT
+DECORATIVE.**  The second leg's start and count come from DIFFERENT
+registers at the two instantiations -- `(uZero, uRight)` at `#6`,
+`(uT, uMid)` at `#7` -- so the block cannot name them.  It instead takes a
+function from the six combiner-bank readings that hold when the second
+setup runs to the value that source carries.  At each instantiation the
+witness is a PROJECTION of those six readings, so the premise is
+discharged by picking one hypothesis and not by an argument:
+`#6`'s start witness is the `uZero` reading, `#7`'s is the `uT` reading
+(see `adjacentMacro_runsTo` and `leftMiddleMacro_runsTo`).
+
+The premise is NOT vacuous: the six readings constrain six DISTINCT
+registers (`136`, `137`, `138`, `139`, `141`, `140`) at independent
+values, so a `RegFile` satisfying all six exists, and the two
+instantiations below exhibit one each.  A block that instead took
+`start2`/`n2` as bare naturals with no tie to a register would be
+satisfied by a setup reading the WRONG register that happened to hold the
+right value.
+-/
+theorem twoLegBlock_runsTo
+    (shape : Cartesian.CartesianShape) {program : E1Machine.Program}
+    {GL1 GS1 GL2 GS2 : TableGeom}
+    {M1 D1 M2 D2 kA1 kO1 kA2 kO2 srcStart2 srcN2 macroSize Q : Nat}
+    {macroStart localStart mid right start2 n2 : Nat} {regs : RegFile}
+    (hHost : HostedAt program Q
+      (twoLegBlock (canonicalSummaryLayout shape) GL1 GS1 GL2 GS2
+        M1 D1 M2 D2 kA1 kO1 kA2 kO2 srcStart2 srcN2 macroSize
+        (RelativeRmm.canonicalLayout shape).blockSize
+        (RelativeRmm.canonicalLayout shape).blocksPerSuper Q))
+    (hMacro : regs uMacro = macroStart) (hLocal : regs uLocal = localStart)
+    (hMid : regs uMid = mid) (hRight : regs uRight = right)
+    (hbS2 : 136 ≤ srcStart2) (hbN2 : 136 ≤ srcN2)
+    (hS2 : ∀ r : RegFile, r uMacro = macroStart → r uLocal = localStart →
+      r uMid = mid → r uRight = right → r uZero = 0 →
+      r uT = macroStart + 1 → r srcStart2 = start2)
+    (hN2 : ∀ r : RegFile, r uMacro = macroStart → r uLocal = localStart →
+      r uMid = mid → r uRight = right → r uZero = 0 →
+      r uT = macroStart + 1 → r srcN2 = n2)
+    (hL1Pos : 0 < GL1.chunkCount) (hL1Cap : GL1.chunkCount ≤ 8)
+    (hS1Pos : 0 < GS1.chunkCount) (hS1Cap : GS1.chunkCount ≤ 8)
+    (hL2Pos : 0 < GL2.chunkCount) (hL2Cap : GL2.chunkCount ≤ 8)
+    (hS2Pos : 0 < GS2.chunkCount) (hS2Cap : GS2.chunkCount ≤ 8) :
+    ∃ regs' : RegFile,
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+          ⟨regs, Q, false⟩ ⟨regs', Q + 1044, false⟩
+          (twoSpanEvents shape GL1 GS1 (macroStart * kA1) M1 D1 localStart
+              (macroSize - localStart) (macroStart * kO1) ++
+            twoSpanEvents shape GL2 GS2 ((macroStart + 1) * kA2) M2 D2
+              start2 n2 ((macroStart + 1) * kO2))
+          (twoLegCats
+            (twoSpanCats shape GL1 GS1 (macroStart * kA1) M1 D1 localStart
+              (macroSize - localStart) (macroStart * kO1))
+            (twoSpanCats shape GL2 GS2 ((macroStart + 1) * kA2) M2 D2
+              start2 n2 ((macroStart + 1) * kO2))
+            (twoSpanValue shape GL1 GS1 (macroStart * kA1) M1 D1 localStart
+              (macroSize - localStart) (macroStart * kO1))
+            (twoSpanValue shape GL2 GS2 ((macroStart + 1) * kA2) M2 D2
+              start2 n2 ((macroStart + 1) * kO2))) ∧
+        bestOfRegs (regs' mMV) (regs' mMP) =
+          bpCandidateMerge?
+            (twoSpanValue shape GL1 GS1 (macroStart * kA1) M1 D1 localStart
+              (macroSize - localStart) (macroStart * kO1))
+            (twoSpanValue shape GL2 GS2 ((macroStart + 1) * kA2) M2 D2
+              start2 n2 ((macroStart + 1) * kO2)) ∧
+        (∀ r, TwoLegUntouched r → regs' r = regs r) := by
+  -- ## hosting, peeled in the block's own append order.  Each suffix's BASE
+  -- is normalised IN PLACE rather than re-ascribed: ascribing would mean
+  -- spelling out the remaining sub-blocks at every one of the eight steps,
+  -- and a `_` for the suffix does not elaborate.
+  have hPro : HostedAt program Q
+      [Instr.const uZero 0, Instr.const uT macroSize,
+        Instr.sub uT uT uLocal] := hHost.append_left
+  have hR1 := hHost.append_right (code₁ := [Instr.const uZero 0,
+    Instr.const uT macroSize, Instr.sub uT uT uLocal])
+  rw [show Q + [Instr.const uZero 0, Instr.const uT macroSize,
+    Instr.sub uT uT uLocal].length = Q + 3 from rfl] at hR1
+  have hSet1 : HostedAt program (Q + 3)
+      (legSetup kA1 kO1 uMacro uLocal uT) := hR1.append_left
+  have hR2 := hR1.append_right (code₁ := legSetup kA1 kO1 uMacro uLocal uT)
+  rw [show Q + 3 + (legSetup kA1 kO1 uMacro uLocal uT).length = Q + 7 from by
+    simp only [legSetup_length]] at hR2
+  have hSpan1 : HostedAt program (Q + 7)
+      (twoSpanBlock (canonicalSummaryLayout shape) GL1 GS1 M1 D1
+        (RelativeRmm.canonicalLayout shape).blockSize
+        (RelativeRmm.canonicalLayout shape).blocksPerSuper (Q + 7)) :=
+    hR2.append_left
+  have hR3 := hR2.append_right
+    (code₁ := twoSpanBlock (canonicalSummaryLayout shape) GL1 GS1 M1 D1
+      (RelativeRmm.canonicalLayout shape).blockSize
+      (RelativeRmm.canonicalLayout shape).blocksPerSuper (Q + 7))
+  rw [show Q + 7 + (twoSpanBlock (canonicalSummaryLayout shape) GL1 GS1 M1 D1
+      (RelativeRmm.canonicalLayout shape).blockSize
+      (RelativeRmm.canonicalLayout shape).blocksPerSuper (Q + 7)).length
+      = Q + 516 from by
+    simp only [E1InteriorTwoSpan.twoSpanBlock_length]] at hR3
+  have hStash : HostedAt program (Q + 516)
+      [Instr.move uSV mMV, Instr.move uSP mMP] := hR3.append_left
+  have hR4 := hR3.append_right
+    (code₁ := [Instr.move uSV mMV, Instr.move uSP mMP])
+  rw [show Q + 516 + [Instr.move uSV mMV, Instr.move uSP mMP].length
+    = Q + 518 from rfl] at hR4
+  have hBump : HostedAt program (Q + 518)
+      [Instr.const uT 1, Instr.add uT uMacro uT] := hR4.append_left
+  have hR5 := hR4.append_right
+    (code₁ := [Instr.const uT 1, Instr.add uT uMacro uT])
+  rw [show Q + 518 + [Instr.const uT 1, Instr.add uT uMacro uT].length
+    = Q + 520 from rfl] at hR5
+  have hSet2 : HostedAt program (Q + 520)
+      (legSetup kA2 kO2 uT srcStart2 srcN2) := hR5.append_left
+  have hR6 := hR5.append_right (code₁ := legSetup kA2 kO2 uT srcStart2 srcN2)
+  rw [show Q + 520 + (legSetup kA2 kO2 uT srcStart2 srcN2).length = Q + 524
+    from by simp only [legSetup_length]] at hR6
+  have hSpan2 : HostedAt program (Q + 524)
+      (twoSpanBlock (canonicalSummaryLayout shape) GL2 GS2 M2 D2
+        (RelativeRmm.canonicalLayout shape).blockSize
+        (RelativeRmm.canonicalLayout shape).blocksPerSuper (Q + 524)) :=
+    hR6.append_left
+  have hR7 := hR6.append_right
+    (code₁ := twoSpanBlock (canonicalSummaryLayout shape) GL2 GS2 M2 D2
+      (RelativeRmm.canonicalLayout shape).blockSize
+      (RelativeRmm.canonicalLayout shape).blocksPerSuper (Q + 524))
+  rw [show Q + 524 + (twoSpanBlock (canonicalSummaryLayout shape) GL2 GS2 M2 D2
+      (RelativeRmm.canonicalLayout shape).blockSize
+      (RelativeRmm.canonicalLayout shape).blocksPerSuper (Q + 524)).length
+      = Q + 1033 from by
+    simp only [E1InteriorTwoSpan.twoSpanBlock_length]] at hR7
+  have hRest : HostedAt program (Q + 1033)
+      [Instr.move qLV uSV, Instr.move qLP uSP] := hR7.append_left
+  have hMergeH : HostedAt program (Q + 1035) (mergeBlock (Q + 1035)) := by
+    have h := hR7.append_right
+      (code₁ := [Instr.move qLV uSV, Instr.move qLP uSP])
+    rw [show Q + 1033 + [Instr.move qLV uSV, Instr.move qLP uSP].length
+      = Q + 1035 from rfl] at h
+    exact h
+  -- ## Q+0 .. Q+2: the prologue
+  have f0 : program[Q]? = some (Instr.const uZero 0) := hPro.head
+  have f1 : program[Q + 1]? = some (Instr.const uT macroSize) := by
+    have h := hPro.tail.head
+    simpa using h
+  have f2 : program[Q + 2]? = some (Instr.sub uT uT uLocal) := by
+    have h := hPro.tail.tail.head
+    have harith : Q + 1 + 1 = Q + 2 := by omega
+    rwa [harith] at h
+  obtain ⟨r1, hr1⟩ : ∃ z : RegFile, z = regs.write uZero 0 := ⟨_, rfl⟩
+  have s0 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regs, Q, false⟩ ⟨r1, Q + 1, false⟩ [] [Category.registerWrite] := by
+    have h := RunsTo.const
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨regs, Q, false⟩ : State)) rfl f0
+    simpa [hr1] using h
+  obtain ⟨r2, hr2⟩ : ∃ z : RegFile, z = r1.write uT macroSize := ⟨_, rfl⟩
+  have s1 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨r1, Q + 1, false⟩ ⟨r2, Q + 2, false⟩ [] [Category.registerWrite] := by
+    have h := RunsTo.const
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨r1, Q + 1, false⟩ : State)) rfl f1
+    simpa [hr2] using h
+  have hr2T : r2 uT = macroSize := by rw [hr2, RegFile.write_same]
+  have hr2L : r2 uLocal = localStart := by
+    rw [hr2, RegFile.write_other _ _ (by decide), hr1,
+      RegFile.write_other _ _ (by decide)]
+    exact hLocal
+  obtain ⟨r3, hr3⟩ : ∃ z : RegFile, z = r2.write uT (macroSize - localStart) :=
+    ⟨_, rfl⟩
+  have s2 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨r2, Q + 2, false⟩ ⟨r3, Q + 3, false⟩ [] [Category.arithmetic] := by
+    have h := RunsTo.sub
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨r2, Q + 2, false⟩ : State)) rfl f2
+    simpa [hr3, hr2T, hr2L] using h
+  -- what the prologue leaves for the first setup
+  have h3M : r3 uMacro = macroStart := by
+    rw [hr3, RegFile.write_other _ _ (by decide), hr2,
+      RegFile.write_other _ _ (by decide), hr1,
+      RegFile.write_other _ _ (by decide)]
+    exact hMacro
+  have h3L : r3 uLocal = localStart := by
+    rw [hr3, RegFile.write_other _ _ (by decide)]; exact hr2L
+  have h3T : r3 uT = macroSize - localStart := by
+    rw [hr3, RegFile.write_same]
+  -- ## Q+3 .. Q+6: the left leg's setup
+  obtain ⟨r4, sSet1, h4A, h4S, h4N, h4O, h4P⟩ :=
+    legSetup_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (regs := r3) hSet1 (by decide) (by decide) (by decide)
+  rw [h3M] at h4A
+  rw [h3L] at h4S
+  rw [h3T] at h4N
+  rw [h3M] at h4O
+  -- ## Q+7 .. Q+515: the left sub-leg
+  obtain ⟨r5, sSpan1, hVal1, hPres1⟩ :=
+    E1InteriorTwoSpan.twoSpanBlock_runsTo shape hSpan1 h4A h4S h4N h4O hL1Pos hL1Cap hS1Pos
+      hS1Cap
+  -- ## Q+516, Q+517: the OUTER stash
+  have f516 : program[Q + 516]? = some (Instr.move uSV mMV) := hStash.head
+  have f517 : program[Q + 517]? = some (Instr.move uSP mMP) := by
+    have h := hStash.tail.head
+    have harith : Q + 516 + 1 = Q + 517 := by omega
+    rwa [harith] at h
+  obtain ⟨r6, hr6⟩ : ∃ z : RegFile, z = r5.write uSV (r5 mMV) := ⟨_, rfl⟩
+  have s516 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨r5, Q + 516, false⟩ ⟨r6, Q + 517, false⟩ [] [Category.registerWrite] := by
+    have h := RunsTo.move
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨r5, Q + 516, false⟩ : State)) rfl f516
+    simpa [hr6] using h
+  have hr6P : r6 mMP = r5 mMP := by
+    rw [hr6, RegFile.write_other _ _ (by decide)]
+  obtain ⟨r7, hr7⟩ : ∃ z : RegFile, z = r6.write uSP (r5 mMP) := ⟨_, rfl⟩
+  have s517 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨r6, Q + 517, false⟩ ⟨r7, Q + 518, false⟩ [] [Category.registerWrite] := by
+    have h := RunsTo.move
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨r6, Q + 517, false⟩ : State)) rfl f517
+    simpa [hr7, hr6P] using h
+  -- ## Q+518, Q+519: `macroStart + 1`
+  have f518 : program[Q + 518]? = some (Instr.const uT 1) := hBump.head
+  have f519 : program[Q + 519]? = some (Instr.add uT uMacro uT) := by
+    have h := hBump.tail.head
+    have harith : Q + 518 + 1 = Q + 519 := by omega
+    rwa [harith] at h
+  obtain ⟨r8, hr8⟩ : ∃ z : RegFile, z = r7.write uT 1 := ⟨_, rfl⟩
+  have s518 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨r7, Q + 518, false⟩ ⟨r8, Q + 519, false⟩ [] [Category.registerWrite] := by
+    have h := RunsTo.const
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨r7, Q + 518, false⟩ : State)) rfl f518
+    simpa [hr8] using h
+  -- a combiner-bank register survives the stash, the bump seed and the sub-leg
+  -- A combiner-bank register survives the left setup, the left sub-leg, the
+  -- stash and the bump seed.  `r ≠ uZero` is REQUIRED and was missing from
+  -- the first version of this helper: the prologue's `const uZero 0` is the
+  -- very first instruction, so the claim is FALSE at `141`.  The four
+  -- disequalities against the setup's destinations are spelled as NUMERALS
+  -- because `omega` collects a register `abbrev` as an opaque atom -- the
+  -- same trap `twoSpanUntouched_of_ge` records.
+  have hBank : ∀ r : Nat, 136 ≤ r → r ≠ uT → r ≠ uZero → r ≠ uSV → r ≠ uSP →
+      r8 r = regs r := by
+    intro r hge hT hZ hV hP
+    rw [hr8, RegFile.write_other _ _ hT, hr7, RegFile.write_other _ _ hP,
+      hr6, RegFile.write_other _ _ hV,
+      hPres1 r (E1InteriorTwoSpan.twoSpanUntouched_of_ge hge),
+      h4P r (show r ≠ 127 by omega) (show r ≠ 128 by omega)
+        (show r ≠ 129 by omega) (show r ≠ 130 by omega), hr3,
+      RegFile.write_other _ _ hT, hr2, RegFile.write_other _ _ hT, hr1,
+      RegFile.write_other _ _ hZ]
+  have h8M : r8 uMacro = macroStart := by
+    rw [hBank uMacro (by decide) (by decide) (by decide) (by decide) (by decide)]
+    exact hMacro
+  have h8T : r8 uT = 1 := by rw [hr8, RegFile.write_same]
+  obtain ⟨r9, hr9⟩ : ∃ z : RegFile, z = r8.write uT (macroStart + 1) :=
+    ⟨_, rfl⟩
+  have s519 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨r8, Q + 519, false⟩ ⟨r9, Q + 520, false⟩ [] [Category.arithmetic] := by
+    have h := RunsTo.add
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨r8, Q + 519, false⟩ : State)) rfl f519
+    simpa [hr9, h8M, h8T] using h
+  -- the six readings that pin the second leg's sources
+  have h9M : r9 uMacro = macroStart := by
+    rw [hr9, RegFile.write_other _ _ (by decide)]; exact h8M
+  have h9L : r9 uLocal = localStart := by
+    rw [hr9, RegFile.write_other _ _ (by decide),
+      hBank uLocal (by decide) (by decide) (by decide) (by decide) (by decide)]
+    exact hLocal
+  have h9Mid : r9 uMid = mid := by
+    rw [hr9, RegFile.write_other _ _ (by decide),
+      hBank uMid (by decide) (by decide) (by decide) (by decide) (by decide)]
+    exact hMid
+  have h9R : r9 uRight = right := by
+    rw [hr9, RegFile.write_other _ _ (by decide),
+      hBank uRight (by decide) (by decide) (by decide) (by decide) (by decide)]
+    exact hRight
+  have h9Z : r9 uZero = 0 := by
+    rw [hr9, RegFile.write_other _ _ (by decide), hr8,
+      RegFile.write_other _ _ (by decide), hr7,
+      RegFile.write_other _ _ (by decide), hr6,
+      RegFile.write_other _ _ (by decide),
+      hPres1 uZero (E1InteriorTwoSpan.twoSpanUntouched_of_ge (by decide)),
+      h4P uZero (by decide) (by decide) (by decide) (by decide), hr3,
+      RegFile.write_other _ _ (by decide), hr2,
+      RegFile.write_other _ _ (by decide), hr1, RegFile.write_same]
+  have h9T : r9 uT = macroStart + 1 := by rw [hr9, RegFile.write_same]
+  -- ## Q+520 .. Q+523: the second leg's setup
+  obtain ⟨r10, sSet2, h10A, h10S, h10N, h10O, h10P⟩ :=
+    legSetup_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (regs := r9) hSet2 (by decide) hbS2 hbN2
+  rw [h9T] at h10A h10O
+  rw [hS2 r9 h9M h9L h9Mid h9R h9Z h9T] at h10S
+  rw [hN2 r9 h9M h9L h9Mid h9R h9Z h9T] at h10N
+  -- ## Q+524 .. Q+1032: the second sub-leg
+  obtain ⟨r11, sSpan2, hVal2, hPres2⟩ :=
+    E1InteriorTwoSpan.twoSpanBlock_runsTo shape hSpan2 h10A h10S h10N h10O hL2Pos hL2Cap hS2Pos
+      hS2Cap
+  -- ## Q+1033, Q+1034: the RESTORE, after the second sub-leg
+  have f1033 : program[Q + 1033]? = some (Instr.move qLV uSV) := hRest.head
+  have f1034 : program[Q + 1034]? = some (Instr.move qLP uSP) := by
+    have h := hRest.tail.head
+    have harith : Q + 1033 + 1 = Q + 1034 := by omega
+    rwa [harith] at h
+  have h11V : r11 uSV = r5 mMV := by
+    rw [hPres2 uSV (E1InteriorTwoSpan.twoSpanUntouched_of_ge (by decide)),
+      h10P uSV (by decide) (by decide) (by decide) (by decide), hr9,
+      RegFile.write_other _ _ (by decide), hr8,
+      RegFile.write_other _ _ (by decide), hr7,
+      RegFile.write_other _ _ (by decide), hr6, RegFile.write_same]
+  have h11P : r11 uSP = r5 mMP := by
+    rw [hPres2 uSP (E1InteriorTwoSpan.twoSpanUntouched_of_ge (by decide)),
+      h10P uSP (by decide) (by decide) (by decide) (by decide), hr9,
+      RegFile.write_other _ _ (by decide), hr8,
+      RegFile.write_other _ _ (by decide), hr7, RegFile.write_same]
+  obtain ⟨r12, hr12⟩ : ∃ z : RegFile, z = r11.write qLV (r5 mMV) := ⟨_, rfl⟩
+  have s1033 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      program ⟨r11, Q + 1033, false⟩ ⟨r12, Q + 1034, false⟩ []
+      [Category.registerWrite] := by
+    have h := RunsTo.move
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨r11, Q + 1033, false⟩ : State)) rfl f1033
+    simpa [hr12, h11V] using h
+  have hr12P : r12 uSP = r5 mMP := by
+    rw [hr12, RegFile.write_other _ _ (by decide)]; exact h11P
+  obtain ⟨r13, hr13⟩ : ∃ z : RegFile, z = r12.write qLP (r5 mMP) := ⟨_, rfl⟩
+  have s1034 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      program ⟨r12, Q + 1034, false⟩ ⟨r13, Q + 1035, false⟩ []
+      [Category.registerWrite] := by
+    have h := RunsTo.move
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := (⟨r12, Q + 1034, false⟩ : State)) rfl f1034
+    simpa [hr13, hr12P] using h
+  -- ## Q+1035 .. Q+1043: the merge
+  have h13LV : r13 qLV = r5 mMV := by
+    rw [hr13, RegFile.write_other _ _ (by decide), hr12, RegFile.write_same]
+  have h13LP : r13 qLP = r5 mMP := by rw [hr13, RegFile.write_same]
+  have h13MV : r13 mMV = r11 mMV := by
+    rw [hr13, RegFile.write_other _ _ (by decide), hr12,
+      RegFile.write_other _ _ (by decide)]
+  have h13MP : r13 mMP = r11 mMP := by
+    rw [hr13, RegFile.write_other _ _ (by decide), hr12,
+      RegFile.write_other _ _ (by decide)]
+  obtain ⟨r14, sMerge, hValM, hPresM⟩ :=
+    E1InteriorMerge.mergeBlock_runsTo
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape) hMergeH r13
+      (r5 mMV) (r5 mMP) (r11 mMV) (r11 mMP) h13LV h13LP h13MV h13MP
+  rw [hVal1, hVal2] at sMerge hValM
+  have harithEnd : Q + 1035 + 9 = Q + 1044 := by omega
+  rw [harithEnd] at sMerge
+  refine ⟨r14, ?_, ?_, ?_⟩
+  · have h := ((((((((((((s0.trans s1).trans s2).trans sSet1).trans
+      sSpan1).trans s516).trans s517).trans s518).trans s519).trans
+      sSet2).trans sSpan2).trans s1033).trans s1034).trans sMerge
+    simpa [twoLegCats, legSetupCats, List.append_assoc] using h
+  · exact hValM
+  · intro r hr
+    obtain ⟨hTS, hM, hSh, hTA, hTSt, hTN, hTO, hUT, hUZ, hUSV, hUSP⟩ := hr
+    rw [hPresM r hM, hr13, RegFile.write_other _ _ hSh.2, hr12,
+      RegFile.write_other _ _ hSh.1, hPres2 r hTS,
+      h10P r hTA hTSt hTN hTO, hr9, RegFile.write_other _ _ hUT, hr8,
+      RegFile.write_other _ _ hUT, hr7, RegFile.write_other _ _ hUSP, hr6,
+      RegFile.write_other _ _ hUSV, hPres1 r hTS,
+      h4P r hTA hTSt hTN hTO, hr3, RegFile.write_other _ _ hUT, hr2,
+      RegFile.write_other _ _ hUT, hr1, RegFile.write_other _ _ hUZ]
 
 end E1InteriorCombine
 end WordRAM
