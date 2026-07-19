@@ -510,6 +510,52 @@ theorem dispatchEvents_eq_routeReads
             localLegEvents_eq_routeReads, globalLegEvents_eq_routeReads,
             localLegEvents_eq_routeReads, List.append_assoc]
 
+/-! ## Rung 7 -- THE CROSS-BLOCK ARM'S INTERIOR OBJECT, RECONCILED
+
+**THIS IS THE OBLIGATION THE WHOLE-QUERY SCOPE NOTE LISTS AS STANDING**
+(`E1WholeQueryProgram.lean`, obligation 2): `crossBlockArmSpec_eq`
+(`E1CrossBlockArm.lean:181`) hands the arm its interior as
+`concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore …`,
+while `crossBlockArm_withCanonicalInterior_runsTo`
+(`E1InteriorDispatchCompose.lean:1291`) produces
+`⟨dispatchRouteValue …, dispatchEvents …⟩`.  Those are not the same term
+and no theorem identified them.
+
+**THE VALUE HALF AND THE SEGMENT ARE DEFINITIONAL; ONLY THE TRACE HALF
+NEEDED THE LADDER -- WHICH IS EXACTLY WHAT THE SCOPE NOTE PREDICTED.**
+
+* `…WithStore` (`ConcreteDirectoryRAMStoreParam.lean:3639`) is DEFINED as
+  `flatStoreExecutionTraceResultAtSegment segments.canonicalComponent
+  ((canonicalRelativeRmmInteriorRangeMinComputation …).run
+  (flatWordStoreOfReadStore store segments.canonicalComponent))`, so its
+  `.value` IS the run's `.value`, which is `dispatchRouteValue`'s
+  definition (`:381`).
+* The two segment spellings coincide BY DEFINITION rather than by
+  coincidence: `(canonicalSummaryLayout shape).segment` is
+  `E1InteriorStoreConcrete.interiorSegment`
+  (`E1InteriorSummaryGroup.lean:469`), which is an `abbrev` for
+  `concreteBPNativeInteriorTraceSegments.canonicalComponent`
+  (`E1InteriorStoreConcrete.lean:67`) -- the machine side was written
+  against the segment record from the start.  **The segment/store
+  reconciliation the ladder's brief budgeted for is therefore already
+  paid**, and this rung records that finding rather than performing work.
+* The `.trace` half is `.reads` mapped through the event injection, and
+  identifying THAT with `dispatchEvents` is precisely
+  `dispatchEvents_eq_routeReads` -- the rung above, and the only part that
+  required proof.
+
+So the interior is no longer a hole: the arm's object and the machine's
+object are one term. -/
+theorem canonicalInterior_traceResult_eq_dispatch
+    (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
+    ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+        shape concreteBPNativeInteriorTraceSegments
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape) startBlock count =
+      ⟨E1InteriorDispatchCompose.dispatchRouteValue shape startBlock count,
+        dispatchEvents shape startBlock count⟩ := by
+  rw [dispatchEvents_eq_routeReads]
+  rfl
+
 end E1InteriorTraceLadder
 end WordRAM
 end RMQ
