@@ -563,6 +563,131 @@ theorem interiorRange_from_operands (blockSize leftClose rightClose : Nat) :
         = rightClose / blockSize - leftClose / blockSize - 1 :=
   ⟨rfl, rfl⟩
 
+/-! ## THE RANGE PREAMBLE, SIMULATED
+
+The six instructions that recover the interior's whole range from
+`fClose` and `fRight`.  This is the half of `hInterior` that is not
+preservation: the premise binds the interior's value OUTSIDE its
+quantifier over entry register files, so the range has to be a function
+of those two registers and nothing else.  The simulation below says
+exactly that -- `regs'`'s two range readings mention `leftClose` and
+`rightClose` and no other register's contents.
+
+Read-free: `[]` on both sides.  The charge log is one `registerWrite`
+(the unit seed) and five `arithmetic`. -/
+theorem rangePreamble_runsTo (store : ReadStore) {program : E1Machine.Program}
+    {blockSize Q : Nat} (hHost : HostedAt program Q (rangePreamble blockSize))
+    (regs : RegFile) (leftClose rightClose : Nat)
+    (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, Q, false⟩ ⟨regs', Q + 6, false⟩ []
+          [Category.registerWrite, Category.arithmetic, Category.arithmetic,
+            Category.arithmetic, Category.arithmetic, Category.arithmetic] ∧
+        regs' wOne = 1 ∧
+        regs' wStart = leftClose / blockSize + 1 ∧
+        regs' wCount =
+          rightClose / blockSize - leftClose / blockSize - 1 ∧
+        (∀ r, r ≠ wOne → r ≠ wT → r ≠ wStart → r ≠ wCount → r ≠ wRem →
+          regs' r = regs r) := by
+  have hf : ∀ (k m : Nat) (instr : Instr), k < 6 →
+      (rangePreamble blockSize)[k]? = some instr → Q + k = m →
+      program[m]? = some instr := by
+    intro k m instr hk hget hm
+    rw [← hm, hHost k hk, hget]
+  have h0 : program[Q]? = some (.const wOne 1) :=
+    hf 0 Q _ (by omega) rfl (by omega)
+  have h1 : program[Q + 1]? = some (.divConst wT fClose blockSize) :=
+    hf 1 _ _ (by omega) rfl (by omega)
+  have h2 : program[Q + 2]? = some (.divConst wRem fRight blockSize) :=
+    hf 2 _ _ (by omega) rfl (by omega)
+  have h3 : program[Q + 3]? = some (.add wStart wT wOne) :=
+    hf 3 _ _ (by omega) rfl (by omega)
+  have h4 : program[Q + 4]? = some (.sub wCount wRem wT) :=
+    hf 4 _ _ (by omega) rfl (by omega)
+  have h5 : program[Q + 5]? = some (.sub wCount wCount wOne) :=
+    hf 5 _ _ (by omega) rfl (by omega)
+  -- the six register files, named so the terms stay small
+  obtain ⟨r1, hr1⟩ : ∃ z : RegFile, z = regs.write wOne 1 := ⟨_, rfl⟩
+  obtain ⟨r2, hr2⟩ : ∃ z : RegFile,
+      z = r1.write wT (leftClose / blockSize) := ⟨_, rfl⟩
+  obtain ⟨r3, hr3⟩ : ∃ z : RegFile,
+      z = r2.write wRem (rightClose / blockSize) := ⟨_, rfl⟩
+  obtain ⟨r4, hr4⟩ : ∃ z : RegFile,
+      z = r3.write wStart (leftClose / blockSize + 1) := ⟨_, rfl⟩
+  obtain ⟨r5, hr5⟩ : ∃ z : RegFile,
+      z = r4.write wCount
+        (rightClose / blockSize - leftClose / blockSize) := ⟨_, rfl⟩
+  obtain ⟨r6, hr6⟩ : ∃ z : RegFile,
+      z = r5.write wCount
+        (rightClose / blockSize - leftClose / blockSize - 1) := ⟨_, rfl⟩
+  -- readings, each one `write_other` past the banks above
+  have e1c : r1 fClose = leftClose := by
+    rw [hr1, RegFile.write_other _ _ (by decide), hClose]
+  have e1r : r1 fRight = rightClose := by
+    rw [hr1, RegFile.write_other _ _ (by decide), hRight]
+  have e2r : r2 fRight = rightClose := by
+    rw [hr2, RegFile.write_other _ _ (by decide), e1r]
+  have e3t : r3 wT = leftClose / blockSize := by
+    rw [hr3, RegFile.write_other _ _ (by decide), hr2, RegFile.write_same]
+  have e3o : r3 wOne = 1 := by
+    rw [hr3, RegFile.write_other _ _ (by decide),
+      hr2, RegFile.write_other _ _ (by decide), hr1, RegFile.write_same]
+  have e4t : r4 wT = leftClose / blockSize := by
+    rw [hr4, RegFile.write_other _ _ (by decide), e3t]
+  have e4m : r4 wRem = rightClose / blockSize := by
+    rw [hr4, RegFile.write_other _ _ (by decide), hr3, RegFile.write_same]
+  have e5c : r5 wCount =
+      rightClose / blockSize - leftClose / blockSize := by
+    rw [hr5, RegFile.write_same]
+  have e5o : r5 wOne = 1 := by
+    rw [hr5, RegFile.write_other _ _ (by decide),
+      hr4, RegFile.write_other _ _ (by decide), e3o]
+  -- the six steps
+  have s0 : RunsTo store program ⟨regs, Q, false⟩ ⟨r1, Q + 1, false⟩ []
+      [Category.registerWrite] := by
+    have h := RunsTo.const (store := store)
+      (s := (⟨regs, Q, false⟩ : State)) rfl h0
+    simpa [hr1] using h
+  have s1 : RunsTo store program ⟨r1, Q + 1, false⟩ ⟨r2, Q + 2, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.divConst (store := store)
+      (s := (⟨r1, Q + 1, false⟩ : State)) rfl h1
+    simpa [hr2, e1c] using h
+  have s2 : RunsTo store program ⟨r2, Q + 2, false⟩ ⟨r3, Q + 3, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.divConst (store := store)
+      (s := (⟨r2, Q + 2, false⟩ : State)) rfl h2
+    simpa [hr3, e2r] using h
+  have s3 : RunsTo store program ⟨r3, Q + 3, false⟩ ⟨r4, Q + 4, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.add (store := store)
+      (s := (⟨r3, Q + 3, false⟩ : State)) rfl h3
+    simpa [hr4, e3t, e3o] using h
+  have s4 : RunsTo store program ⟨r4, Q + 4, false⟩ ⟨r5, Q + 5, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.sub (store := store)
+      (s := (⟨r4, Q + 4, false⟩ : State)) rfl h4
+    simpa [hr5, e4t, e4m] using h
+  have s5 : RunsTo store program ⟨r5, Q + 5, false⟩ ⟨r6, Q + 6, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.sub (store := store)
+      (s := (⟨r5, Q + 5, false⟩ : State)) rfl h5
+    simpa [hr6, e5c, e5o] using h
+  refine ⟨r6, ?_, ?_, ?_, ?_, ?_⟩
+  · have := ((s0.trans s1).trans s2).trans ((s3.trans s4).trans s5)
+    simpa using this
+  · rw [hr6, RegFile.write_other _ _ (by decide), e5o]
+  · rw [hr6, RegFile.write_other _ _ (by decide),
+      hr5, RegFile.write_other _ _ (by decide), hr4, RegFile.write_same]
+  · rw [hr6, RegFile.write_same]
+  · intro r hOne hT hStart hCount hRem
+    rw [hr6, RegFile.write_other _ _ hCount,
+      hr5, RegFile.write_other _ _ hCount,
+      hr4, RegFile.write_other _ _ hStart,
+      hr3, RegFile.write_other _ _ hRem,
+      hr2, RegFile.write_other _ _ hT,
+      hr1, RegFile.write_other _ _ hOne]
+
 /-! ## THE WITNESS LAYOUT AND ITS IMPOSTOR
 
 The real block is 4204 instructions over five heavyweight sub-blocks and
