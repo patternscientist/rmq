@@ -4837,3 +4837,58 @@ subject.
 
 Forty-three citations re-verified programmatically against the declaration each
 names, and forty-three stale ones repaired.
+
+---
+
+## C05 round 75 — `main` has moved; the campaign carries an EARLIER B7; and the
+## divergence turns out to be safe for E1
+
+The owner reports B7 and R1 were audited, repaired and merged by Codex. `main`
+is now `0b8490c`, eight-plus commits ahead of where I last looked: B7-R4's
+semantic repair base, "B7: finish charged sparse-level repair", "Prove B7
+execution occurrence bridges", the R1-R4 lineage, and the A08 audit report, all
+integrated.
+
+**The campaign branch diverged at `d5a9355` — a B7 session-10 commit — so it
+carries an EARLIER, pre-audit B7.** Everything E1 has built sits on top of that.
+The obvious fear was that the repairs changed something underneath us.
+
+**They did not, and I checked rather than assumed:**
+
+- **The public constant is identical.** `queryCost_eq : queryCost = 210` on
+  BOTH branches. The thing REQ-E1-06 and the whole cost story depend on did not
+  move.
+- **`InteriorDirectory.lean` is +715 insertions, ZERO deletions** — purely
+  additive — and the nine route computations the entire interior leg targets sit
+  at **identical line numbers** on main: `2300`, `2311`, `2329`, `2351`, `2376`,
+  `2400`, `2413`, `2426`, `2444`. Rows #1 through #9 target exactly what they
+  targeted.
+- **`concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_globalReadStore`
+  is still at `SuccinctFinalStoreParam.lean:1633`** — the same line Lane A1
+  cited when it found the LCA reconciliation already existed.
+- Every symbol E1 cites is present: `queryTraceResult_valid`,
+  `queryCosted_invalid`, `cartesianShape`,
+  `prepareInput_shape_eq_cartesianShape`,
+  `bpChunkedRankTraceResultWithStore_store_parametric`,
+  `concreteBPNativeRankCloseWordTraceResultAtSegment_canonical_eq`, and the
+  headline execution story.
+- **The only deletions in the public file touch
+  `canonicalTransitionalQueryCost = 352`**, a frozen HISTORICAL constant E1 does
+  not use.
+
+So E1's foundation survives the repairs intact. That is a real piece of luck and
+also a vindication of a choice made early: E1 targets the ROUTE's own objects by
+name rather than reproducing their internals, so a repair that strengthens those
+objects without changing their interfaces passes straight through.
+
+**Deferred deliberately.** I am NOT merging `main` now: Lane A5 holds the
+campaign worktree and a worktree is a single-writer resource (round 65), and
+merging under a live lane is precisely the hazard I built twice already.
+Scheduled for the next quiet window, followed by a full battery — **E1's
+acceptance must be against current `main`, not a stale base**, and the longer the
+divergence runs the worse the eventual reconciliation.
+
+Worth noting what this changes about the closing sequence: the A08 audit report
+is already integrated on `main`, so the external audit of B7 that was outstanding
+when this session began is done and accepted. That removes one of the open items
+I had been carrying.
