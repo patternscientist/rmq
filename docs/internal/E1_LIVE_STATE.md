@@ -67,7 +67,18 @@ blocks and the dispatch that were never enumerated.
 | 6 | `...AdjacentMacroCandidateComputation` | 2400 | **none** — two #4, merged | **DONE** |
 | 7 | `...LeftMiddleMacroCandidateComputation` | 2413 | **none** — #4 + #5, merged | **DONE** |
 | 8 | `...CrossMacroCandidateComputation` | 2426 | **none** — #4 + #5 + #4, TWO two-way merges | **DONE** |
-| 9 | `...InteriorRangeMinComputation` | 2444 | **none** — 5-way dispatch | owed |
+| 9 | `...InteriorRangeMinComputation` | 2444 | **none** — 5-way dispatch | **PROGRAM + PROLOGUE + DISPATCH DONE; ARM COMPOSITION OWED** |
+
+**#9's STATE, precisely** (E1-LaneB5). The 4204-instruction program
+exists (`interiorDispatchBlock`, `E1InteriorDispatch.lean:251`) and its
+28-instruction prologue is simulated in four separate pieces, all
+read-free: `rangePreamble_runsTo`, `indexDecomp_runsTo`,
+`localArmSetup_runsTo`, and the five `dispatchSelector_reaches_arm*`
+lemmas. The route side is decomposed independently
+(`interiorRangeMin_of_*`). **What is NOT built is the composition of the
+five arms into one `interiorDispatchBlock_runsTo`**, and therefore
+`hInterior` is not discharged. No partial artefact for either exists and
+nothing in the tree should be read as one.
 
 **NAME CORRECTION (E1-LaneB4), checked by grep across `RMQ/`.** Row 9's
 identifier is `canonicalRelativeRmmInteriorRangeMinComputation` — there is
@@ -211,6 +222,15 @@ makes one block cover both.
 | the combiner write-set ladder | `twoLegUntouched_of_ge` (<`144`) `:374`, `twoLegUntouched_of_bank` `:390`, `crossLegUntouched_of_ge` (<`146`) `:997` |
 | **the combiner preservation predicates** | `TwoLegUntouched` `:333` (SUPERSEDED form, see §6), `CrossLegUntouched` `:983` |
 | four route branch decompositions | `E1RouteDecomposition.lean:41`, `:85`, `:121`, `:148` |
+| **#9's program, 4204 instrs** | `interiorDispatchBlock` — `E1InteriorDispatch.lean:251` |
+| its four prologue simulations | `rangePreamble_runsTo` `E1InteriorDispatch.lean:578`, `indexDecomp_runsTo` `:706`, `localArmSetup_runsTo` `:898`, and the selector below |
+| **the five arm-reachability lemmas** | `dispatchSelector_reaches_arm0` `E1InteriorDispatch.lean:1002`, `_arm4` `:1030`, `_arm6` `:1067`, `_arm7` `:1124`, `_arm8` `:1189` |
+| **THE FALL-THROUGH DISCRIMINATOR** | `unterminatedDispatch_falls_through` — `E1InteriorDispatch.lean:1410` |
+| its correct twin, and the boundary | `witnessDispatch_runs_none` `:1358`, `unterminatedDispatch_receipts_agree` `:1499`, `..._catLogs_differ` `:1511` |
+| **#9's preservation, checked against its OWN writes** | `DispatchUntouched` `E1InteriorDispatch.lean:335`, `dispatchUntouched_of_lt` `:380` |
+| **the close leg's clause, as a SEPARATE export** | `dispatchUntouched_of_closeLegUntouched` — `E1InteriorDispatch.lean:427` |
+| the route's five branches, machine-free | `interiorRangeMin_of_count_zero` `E1InteriorDispatch.lean:447`, `_of_local` `:455`, `_of_adjacent` `:468`, `_of_leftMiddle` `:486`, `_of_cross` `:507` |
+| the caller's guard is subsumed | `interiorRangeMin_guard_subsumed` — `E1InteriorDispatch.lean:544` |
 | close/LCA dispatch, both arms | `closeDispatch_runsTo_same` / `_cross` — `E1CloseDispatch.lean:187`/`:224` |
 | same-block leg composed | `sameBlockDispatchProgram_runsTo` — `E1CloseCompose.lean:95` |
 
@@ -225,7 +245,19 @@ Combiner `136..143` (`uMacro` 136, `uLocal` 137, `uMid` 138, `uRight` 139 are
 INPUTS; `uT` 140, `uZero` 141 scratch; `uSV` 142, `uSP` 143 the combiner's
 OWN stash pair — see §6).
 Three-leg combiner `144..145` (`vSV` 144, `vSP` 145, the THIRD stash pair).
-**Next free block opens at `146`.**
+Dispatch bank `146..151` (`wOne` 146 the unconditional-branch condition,
+`wT` 147 scratch, `wStart` 148, `wCount` 149, `wRem` 150, `wLeft` 151).
+**Next free block opens at `152`.**
+
+**`wOne` AT `146` IS LOAD-BEARING, NOT ARBITRARY.** There is no
+unconditional jump in the ISA, so every arm's terminator is
+`brNZ wOne <join>` — a register set before the arm and read after up to
+1574 instructions have run. `crossLegUntouched_of_ge` puts the whole
+three-leg write set below `146`, which is exactly what keeps `wOne`
+nonzero at the branch. **A dispatch bank opening anywhere below `146`
+would let an arm clear its own terminator's condition, turning the branch
+into a silent fall-through** — the DD-20260719-059 defect reintroduced
+through the register file instead of the layout. DD-20260719-060.
 
 **THE STASH-PAIR LADDER, which determines where the next bank goes.** Each
 combiner WRITES the stash pair of the level below it, because that pair is
@@ -259,6 +291,42 @@ laid out without it and it is expensive to re-derive.
 | `twoLegBlock` (#6/#7) | 1044 | `Q` | `Q + 1044` | **FALLS THROUGH** |
 | `crossLegBlock` (#8) | 1574 | `Q` | `Q + 1574` | **FALLS THROUGH** |
 | `mergeBlock` | 9 | `Q` | `Q + 9` | **FALLS THROUGH** |
+| `interiorDispatchBlock` (#9) | 4204 | `Q` | `Q + 4204` | **FALLS THROUGH — AND MUST** |
+
+**#9 DOES NOT TERMINATE EITHER, AND THAT IS FORCED, NOT INHERITED**
+(E1-LaneB5). `hInterior`'s target state is
+`⟨regsI, A + 176 + interior.length, false⟩` — the halted flag is
+**`false`** (`E1CrossBlockArm.lean:1143`, re-read this session). So a
+`#9` that ended in `halt` could not discharge the premise at all. The
+rule "every block here falls through" is, at this one block, not a
+convention that could have gone the other way.
+
+**#9's INTERNAL GEOMETRY**, for whoever composes the arms:
+
+| Piece | Offset from `Q` | Length |
+|---|---|---|
+| `rangePreamble` | `0` | 6 |
+| `indexDecomp` | `6` | 9 |
+| `localArmSetup` | `15` | 4 |
+| `dispatchSelector` | `19` | 9 |
+| `#0` arm (`pure none`) | `28` | 2 |
+| `#4` arm (`twoSpanBlock` + branch) | `30` | 510 |
+| `#6` arm (`twoLegBlock` + branch) | `540` | 1045 |
+| `#7` arm (`twoLegBlock` + branch) | `1585` | 1045 |
+| `#8` arm (`crossLegBlock`, NO branch) | `2630` | 1574 |
+| join | `4204` | — |
+
+Four arms end with `brNZ wOne (Q + 4204)`; `#8` is physically last and
+exits by fall-through. **The coordinator brief's "every one of #9's five
+arms needs an explicit branch" is over-stated by exactly one** — the last
+arm cannot have one. `dispatchArm8_exit_is_join` states the coincidence
+rather than leaving it to arithmetic. DD-20260719-059.
+
+Note `dispatchSelector` takes the BLOCK base `Q`, not its own base: it is
+hosted at `Q + 19` and its targets are written in terms of `Q`. A
+`HostedAt program (Q + 19) (dispatchSelector Q)` premise is the correct
+one and `HostedAt program (Q + 19) (dispatchSelector (Q + 19))` would be
+satisfiable and wrong.
 
 **NOT ONE OF THESE BLOCKS TERMINATES. THEY ALL FALL THROUGH.** Every
 `runsTo` above ends in the state `⟨regs', <exit>, false⟩` — the third
@@ -470,6 +538,35 @@ over a skipped-code defect is exactly whether the skipped code READS.** §6's
 first four models all happened to skip read-free code, which made the receipt
 look uniformly weak. It is not — it is weak precisely there.
 
+**A SEVENTH MODEL, AND IT IS AT THE PROGRAM-LAYOUT LEVEL RATHER THAN
+INSIDE A BLOCK** (E1-LaneB5). `unterminatedDispatch_falls_through`
+(`E1InteriorDispatch.lean:1410`) is the first discriminator here whose
+impostor is not a wrong operand or a wrong branch target but a MISSING
+TERMINATOR — the defect the close-leg lane found live in
+`crossBlockArmProgramAt`. On a `count = 0` query the unterminated layout
+runs off `#9`'s `pure none` arm into `#4`'s code and halts carrying the
+other arm's marker, so `bestOfRegs` reads `some` where the route reads
+`none`. Same store, same entry registers, same correct selector, same
+correct arm; one instruction's control effect apart.
+
+Two things about it are worth copying:
+
+- **The witness arms end UN-HALTED**, because every real sub-block does.
+  A witness arm that halted at its own end is the one shape that cannot
+  exhibit this defect, and that is precisely how the close-leg cross arm
+  stayed invisible to the whole battery.
+- **Its receipt blindness is the FIXTURE's, not the block's**, and is
+  labelled as such. No witness arm reads, so both runs emit `[]`. In the
+  real layout the fall-through lands on `twoSpanBlock`'s unconditional
+  head level read, so by the sixth model's rule the real receipt WOULD
+  catch it. A non-entailment recorded without that scope note would
+  understate the instrument.
+
+The exit PC and halted flag agree across both layouts, which is the
+sharpest of the non-entailments: "ends at the join, halted" is the
+property a layout check would most naturally verify, and this defect
+preserves it.
+
 **AND A PRESERVATION PREDICATE CAUGHT A REAL DESIGN ERROR AT A COMPOSITION
 SITE.** The natural combiner for `#6`/`#7` stashes the first sub-leg's
 candidate in `qLV`/`qLP` and merges after the second. That is WRONG:
@@ -652,107 +749,107 @@ add -A` will otherwise take them.
 
 ---
 
-## 10b. Worklog — E1-LaneB4, 2026-07-19 (M3d-29)
+## 10b. Worklog — E1-LaneB5, 2026-07-19 (M3d-30)
 
-Branch `claude/b1-b2-charged-fringe-tables`, base `6b6c293`. Five commits.
-DD-IDs claimed: **`056`, `057`, `058`**. Band `059-069` remains free.
-**Also WROTE `053`, `054`, `055`** into `DESIGN_DECISIONS.md` on
-E1-LaneB3's behalf — it claimed them in its commit bodies but never
-entered them in the file, and the coordinator confirmed the gap was its
-own instruction wording, not the lane's discipline. Substance lifted from
-`f86aa3b`, `e34b750`, `5914260`; attributed to their author; not
-renumbered.
+Branch `claude/b1-b2-charged-fringe-tables`, base `46a74b3`. Six commits.
+DD-IDs claimed and WRITTEN into `DESIGN_DECISIONS.md`: **`059`, `060`**.
+Band `061-069` remains free.
 
-**Built and CLOSED: `#6`, `#7` and `#8`.**
+**This section replaces E1-LaneB4's worklog per the coordinator's
+instruction. Its two still-live findings are carried forward below rather
+than dropped; the rest has been folded into §2, §3, §3a and §6.**
 
-- `twoLegBlock_runsTo` (`E1InteriorCombine.lean:434`) — the simulation of
-  the 1044-instruction two-leg combiner that did not exist at all. Exit
-  `Q + 1044`, receipt = the two sub-legs' receipts CONCATENATED and
-  nothing else, value = the route's own `bpCandidateMerge?`, plus
-  preservation. No store and no validity hypothesis.
-- `#6`/`#7` instantiated (`:801`, `:837`), with the `hS2`/`hN2` witnesses
-  exhibited at both (`:886`, `:900`).
-- `crossLegBlock` (`:944`, 1574 instrs) and `crossLegBlock_runsTo`
-  (`:1011`); `#8` instantiated at `:1332`. 1044 of `#8`'s 1574
-  instructions are `twoLegBlock` unchanged, because `bpCandidateMerge3?`
-  is definitionally two two-way merges.
+**Built: `#9`'s PROGRAM, its whole PROLOGUE, its DISPATCH, and the
+fall-through discriminator. NOT built: the arm composition, and therefore
+not `hInterior`.**
 
-**NOT built: `#9` and `hInterior`.** Not started; no partial artefact
-exists for either, and nothing in the tree should be read as one.
+- `interiorDispatchBlock` (`E1InteriorDispatch.lean:251`), 4204
+  instructions, with `interiorDispatchBlock_length`,
+  `dispatchArm8_exit_is_join`, `dispatch_arm_bases_distinct`.
+- The prologue in four separately simulated pieces, all read-free:
+  `rangePreamble_runsTo` (6 instrs, the range from `fClose`/`fRight`),
+  `indexDecomp_runsTo` (9, both of the route's `%`s via
+  `mod_eq_sub_div_mul`), `localArmSetup_runsTo` (4), and
+  `dispatchSelector_reaches_arm{0,4,6,7,8}` (9, five paths).
+- The route side decomposed FIRST and independently:
+  `interiorRangeMin_of_*`, five lemmas, no `RunsTo` anywhere in them.
+- `unterminatedDispatch_falls_through` with four non-entailments — §6's
+  seventh model.
+- `DispatchUntouched` + `dispatchUntouched_of_lt`, and
+  `dispatchUntouched_of_closeLegUntouched`, the close leg's clause as a
+  SEPARATE export.
 
-**A COORDINATOR CLAIM FAILED INSPECTION, and it changes what `hInterior`
-means.** The brief said `hInterior` "needs a FIFTH conjunct" and that
-building it without one "will be sent back". **`hInterior` does not have,
-and has never had, a fifth conjunct.** `crossBlockArmProgramAt_runsTo`'s
-`hInterior` premise is BYTE-IDENTICAL on this branch and on
-`claude/e1-close-leg-structural` — `git diff HEAD
-claude/e1-close-leg-structural -- RMQ/Core/WordRAM/E1CrossBlockArm.lean`
-shows those lines as unchanged context — and promises exactly four
-register equalities (`fClose`, `fRight`, `mLV`, `mLP`). What that branch
-actually added is a 38-line DOC BLOCK *proposing* the fifth conjunct as
-work owed, and explaining that the close leg cannot export its own
-preservation clause without it.
+**WHAT IS OWED, and it is the largest single piece left on this lane.**
+`interiorDispatchBlock_runsTo` — the five arms composed into one
+simulation with receipt, category log, value and preservation, case-split
+against `interiorRangeMin_of_*`. Every input it needs now exists; what it
+requires is the assembly, which is comparable in size to
+`twoLegBlock_runsTo` and `crossLegBlock_runsTo` together. Then
+`hInterior`, which needs only that.
 
-`CloseLegUntouched` itself is real and exactly as described:
-`abbrev CloseLegUntouched (r : Nat) : Prop := r <= 7 \/ r = 28`, at
-`E1SameBlockArm.lean:72` on that branch, absent from this worktree.
+**Five coordinator/file claims checked. Three held, one was over-stated,
+one had a wrong path.**
 
-**So the correct move for the next lane is NOT to satisfy a conjunct that
-does not exist.** It is to prove the clause as a SEPARATE, ADDITIONAL
-export of the interior program — `(forall r, CloseLegUntouched r -> regsI r
-= regsS r)`, with the predicate stated LOCALLY — so that it is already in
-hand when the close-leg branch merges and widens `hInterior`. Stating it
-as a fifth conjunct of a four-conjunct premise will not typecheck.
+1. `hInterior` has exactly FOUR register equalities and no fifth
+   conjunct — **held**, re-verified byte-for-byte at
+   `E1CrossBlockArm.lean:1143`. LaneB4's correction of the earlier
+   coordinator claim stands. Carried forward: the clause wanted is
+   `(∀ r, CloseLegUntouched r → regsI r = regsS r)` as a SEPARATE
+   export, which is now proved.
+2. "Every one of `#9`'s five arms needs an explicit branch to the join
+   point" — **OVER-STATED BY ONE**. The physically last arm exits by
+   fall-through and cannot have one. See §3a and DD-20260719-059.
+3. Next free register bank is `146` — **held**; highest allocated was
+   `vSP` = 145, nothing at 146+.
+4. The route object for `#9` is `canonicalRelativeRmm`**`Interior`**
+   `RangeMinComputation`, no `Machine` — **held**.
+5. `ChargedFringeTrace.lean:1164` for the range preamble — line
+   **held**, but the file is at
+   `RMQ/Core/SuccinctClose/RelativeRmmMacro/`, not under
+   `EndpointFringe/`. Under the campaign's filename-only citation
+   convention this is not an error in the file; recorded because two
+   sessions have now lost time to a guessed directory.
 
-**Resume inventory, in the order I would take it.**
+**LaneB4's OPEN QUESTION, RESOLVED.** It flagged that the route's block
+size is `canonicalBPRelativeSummaryBlockSizeRaw shape` while the
+sub-blocks take `(RelativeRmm.canonicalLayout shape).blockSize`, and said
+"confirm they agree before assuming it." **They agree definitionally**:
+`canonicalLayout`'s `blockSize` field IS
+`canonicalBPRelativeSummaryBlockSizeRaw shape`
+(`RelativeSummary.lean:1278`). No bridge lemma is needed.
 
-1. **`#9`, the five-branch dispatch. START AT §3a**, which has the entry
-   PC convention, length and exit PC of every block `#9` dispatches into,
-   and the fact that governs the whole layout: **none of them terminates,
-   they all fall through**, so every arm needs an explicit branch to the
-   join point. Coordinator C05 stopped this lane before `#9` deliberately
-   — a five-branch dispatch built at the end of a budget is the
-   highest-risk artefact left, and the close-leg lane already found a
-   cross arm with no terminator whose exit PC landed on the next block's
-   base. Build it rested.
-   The branch conditions, read off
-   `InteriorDirectory.lean:2444-2467` and verified this session, are, in
-   order: `count = 0` -> `pure none`; `count <= macroSize - localStart` ->
-   `#4`; `middleMacroCount = 0` -> `#6`; `rightCount = 0` -> `#7`; else
-   `#8`. The `let` bindings are `macroStart := startBlock / macroSize`,
-   `localStart := startBlock % macroSize`, `leftCount := macroSize -
-   localStart`, `remaining := count - leftCount`, `middleMacroCount :=
-   remaining / macroSize`, `rightCount := remaining % macroSize`. Note
-   `leftCount` is bound in `#9` but NEVER PASSED — `#6`/`#7`/`#8` each
-   re-derive `macroSize - localStart` internally, and the two spellings
-   coincide only because `#9` passes its own `localStart` through
-   unchanged. There is no modulus instruction; use `mod_eq_sub_div_mul`
-   (`E1InteriorTwoSpan.lean:143`) as §4 records.
-2. **`hInterior`.** Needs `#9`. Its range preamble is
-   `startBlock = leftBlock + 1` and `count = rightBlock - leftBlock - 1`
-   with `leftBlock = blockOfClose blockSize leftClose`, at
-   `ChargedFringeTrace.lean:1162-1169`, inside
-   `bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`
-   (`:1144`). `blockOfClose blockSize close = close / blockSize`
-   (`BlockLocal.lean:864`). **Two details my predecessor's note did not
-   have, both checked this session:** the guard is STRICT
-   (`if leftBlock + 1 < rightBlock`), and the `else` arm returns
-   `WordRAM.TraceResult.pure none`, so the machine needs no separate
-   guard; and the block size there is
-   `canonicalBPRelativeSummaryBlockSizeRaw shape`, **not**
-   `(RelativeRmm.canonicalLayout shape).blockSize` — confirm they agree
-   before assuming it.
-3. **The fifth-conjunct export**, per the correction above.
+**A SECOND RECONCILIATION, done rather than assumed.** The caller's guard
+is STRICT (`if leftBlock + 1 < rightBlock`, `ChargedFringeTrace.lean:1164`)
+and its `else` is `pure none`. `#9` has no guard. They agree because when
+the guard fails `rightBlock - leftBlock - 1` truncates to `0` in `Nat`
+and `#9`'s own `count = 0` branch answers `pure none`.
+`interiorRangeMin_guard_subsumed` proves it. **So `#9` carries ONE `none`
+path, not two** — which also means the `count = 0` arm is reachable on
+strictly more inputs than the route's `count = 0` condition alone
+suggests, and is the arm the discriminator is built at.
 
-**What I would NOT redo.** The three `of_ge` ladder lemmas and
-`twoLegUntouched_of_bank` exist precisely so `#9` does not re-decide
-preservation; `crossLegUntouched_of_ge` already covers `146`+.
+**Two traps met, recorded because both are live.**
+(1) `simp` does not unfold the register `abbrev`s — §4 already says so,
+and it cost a build cycle anyway. Every `write_other` discharge in the
+selector is an explicit `show` at the numerals.
+(2) `rw [show (⟨regs, pc, false⟩ : State).regs = _ from rfl, ...]` does
+NOT fire; the projection is already reduced, so the rewrite finds no
+pattern. Use `show <the reduced form>` and then `rw`.
 
-**Validator.** `lake exe rmq_e1_machine_validate` is PASS, but phase 5
-still reports `wholeQueryComparisonAvailable=false` and
-`wholeQueryComparison=OPEN (interior leg UNBUILT)`. **It does not exercise
-anything built this session.** The evidence for `#6`, `#7` and `#8` is the
-in-tree simulations and route-value links, not the validator run.
+**Validator.** `lake exe rmq_e1_machine_validate` is PASS, 14.4 s wall
+clock, phase 3 `dispatchCases=405`/`modeledSteps=2430`, phase 3b
+`legCases=90`/`legModeledSteps=30343`, phase 3d
+`composeCases=40`/`composeModeledSteps=9222`. Phase 5 still reports
+`wholeQueryComparisonAvailable=false` and
+`wholeQueryComparison=OPEN (interior leg UNBUILT)`. **It does not
+exercise one line of what this session built.** The evidence for `#9`'s
+prologue and dispatch is the in-tree simulations; the evidence for the
+terminator rule is `unterminatedDispatch_falls_through`.
+
+**Process note.** A commit message passed to `git commit -m` with
+backtick-quoted identifiers had one word eaten by shell command
+substitution (commit `f14941a`). Use a quoted heredoc for commit bodies.
+
 ---
 
 ## 11. Findings from the four read-only surveys (2026-07-19)
