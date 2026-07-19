@@ -53,6 +53,13 @@ close/LCA leg IS the same-block arm at the canonical block size.
 This is the object `sameBlockDispatchProgram_runsTo` (`E1CloseCompose.lean:95`)
 produces, modulo the rank-seed argument, which
 `lcaLeg_sameBlock_rankSeed_eq` below identifies.
+
+**E1-LaneA5: `lcaLeg_sameBlock_rankSeed_eq` DID NOT EXIST when this docstring
+was written** (DD-20260719-182).  Grepped: the name occurred exactly once in
+the whole tree, here, in this sentence.  The identification it names is real
+and now supplied below, so the sentence is true as of this commit; it is
+recorded rather than quietly fixed because a docstring promising a lemma that
+was never written is indistinguishable, to a reader, from one that exists.
 -/
 theorem lcaLeg_of_sameBlock (shape : Cartesian.CartesianShape)
     (store : WordRAM.ReadStore) (leftClose rightClose : Nat)
@@ -98,6 +105,38 @@ theorem lcaLeg_of_crossBlock (shape : Cartesian.CartesianShape)
   unfold
     SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
   simp only [hcross, if_false]
+
+/-! ## The rank-seed identification the two arm lemmas are stated "modulo" -/
+
+/--
+THE RANK SEED, IDENTIFIED (E1-LaneA5).
+
+`lcaLeg_of_sameBlock` and `lcaLeg_of_crossBlock` hand the close/LCA arm the
+seed `concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore shape store
+rankBase`, while every machine-side arm theorem
+(`closeLcaProgramAt_runsTo_same`, `E1WholeQueryCloseLca.lean:191`) produces
+`concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape`.  At the global
+read store these are the SAME FUNCTION, so the two sides compose.
+
+Stated as a function equality rather than pointwise because the seed enters
+the arm as a partially applied argument: a pointwise lemma could not be
+rewritten under it without an extra `funext` at every use site.
+
+Both rewrites are existing theorems -
+`concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_globalReadStore`
+(`SuccinctFinalStoreParam.lean:473`) and
+`concreteBPNativeRankCloseWordTraceResultAtSegment_canonical_eq`
+(`SuccinctFinalRAM.lean:1550`).  Nothing is reconciled here that was not
+already reconciled; this supplies the composition the docstring named.
+-/
+theorem lcaLeg_sameBlock_rankSeed_eq (shape : Cartesian.CartesianShape) :
+    concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore shape
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        concreteBPNativeRankCloseTraceSegmentBase =
+      concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape := by
+  funext pos
+  rw [concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_globalReadStore,
+    concreteBPNativeRankCloseWordTraceResultAtSegment_canonical_eq]
 
 /-! ## ANTI-VACUITY: both arms are reachable
 

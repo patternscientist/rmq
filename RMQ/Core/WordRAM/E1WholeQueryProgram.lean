@@ -246,10 +246,28 @@ The two answer packets are left where the join reads them: the LEFT one in
 
 `hn` is the skeleton's size constant premise, discharged by the caller from
 `ValidRange`; it is not decorative — without it the guard rejects.
+
+**`hguard` IS GENERAL IN THE GUARD'S BRANCH TARGET, AND MUST BE**
+(E1-LaneA5, DD-20260719-181).  This premise was originally written
+`HostedAt program 0 (guardBlock n (8 + (813 : Nat)))`, pinning the target to
+`821`.  That premise is UNSATISFIABLE at the intended instantiation: the
+skeleton builds its guard as `guardBlock n (8 + validPath.length)`
+(`E1QueryProgram.lean:136`), and the valid path is 5636 instructions, so the
+real guard is `guardBlock n 5644`.  `821` is the address the guard would
+branch to only if the valid path were the select prefix alone.
+
+Nothing was wrong with the proof — `guard_accept_of_valid`
+(`E1QueryProgram.lean:608`) is already universally quantified in
+`invalidBase`, because on the ACCEPTING path neither branch is taken and the
+target is never read.  The specialisation was gratuitous, and it would have
+blocked every whole-program composition with an error pointing at the guard
+rather than at the layout.  Recorded because it is the same failure mode as
+the three address coincidences: a number written down once, correct in the
+context it was written in, and silently wrong one layer up.
 -/
 theorem wholeQuerySelectPrefix_runsTo (shape : Cartesian.CartesianShape)
-    {program : E1Machine.Program} {n left right : Nat}
-    (hguard : HostedAt program 0 (guardBlock n (8 + (813 : Nat))))
+    {program : E1Machine.Program} {n left right invalidBase : Nat}
+    (hguard : HostedAt program 0 (guardBlock n invalidBase))
     (hprefix : HostedAt program 8 (wholeQuerySelectPrefix shape))
     (hlt : left < right) (hbound : right ≤ n) :
     ∃ regsF : RegFile,
@@ -277,7 +295,8 @@ theorem wholeQuerySelectPrefix_runsTo (shape : Cartesian.CartesianShape)
         (concreteBPNativeSelectCloseGlobalWordTraceResult shape left).value ∧
       decodePacket (regsF rVal) =
         (concreteBPNativeSelectCloseGlobalWordTraceResult shape
-          (right - 1)).value := by
+          (right - 1)).value ∧
+      regsF regZero = 0 ∧ regsF regT2 = 1 := by
   obtain ⟨hsetup, hleg1, hmid, hleg2⟩ := wholeQuerySelectPrefix_hosts shape hprefix
   -- the guard accepts and falls through to pc 8
   have hg := guard_accept_of_valid
@@ -333,7 +352,7 @@ theorem wholeQuerySelectPrefix_runsTo (shape : Cartesian.CartesianShape)
       ((regs1.write regT1 (regs1 rVal)).write xIdx
         ((regs1.write regT1 (regs1 rVal)) regRight -
           (regs1.write regT1 (regs1 rVal)) regT2)) (right - 1) hIdx2
-  refine ⟨regs2, ?_, ?_, hval2⟩
+  refine ⟨regs2, ?_, ?_, hval2, ?_, ?_⟩
   · have htrans :=
       ((((hg.trans hs8).trans hrun1).trans hs414).trans hs415).trans hrun2
     have hpc : (416 : Nat) + 405 = 821 := by decide
@@ -343,6 +362,18 @@ theorem wholeQuerySelectPrefix_runsTo (shape : Cartesian.CartesianShape)
     rw [hpres2 regT1 (by decide)]
     simp [RegFile.write, regT1, xIdx]
     exact hval1
+  · -- the pinned zero survives both selects: `regZero = 3 ≤ 7`
+    rw [hpres2 regZero (by decide)]
+    simp only [RegFile.write_other _ _ (by decide : regZero ≠ xIdx),
+      RegFile.write_other _ _ (by decide : regZero ≠ regT1)]
+    rw [hpres1 regZero (by decide)]
+    rw [RegFile.write_other _ _ (by decide : regZero ≠ xIdx)]
+    exact (guardAcceptRegs_operands n left right).2.2.1
+  · -- the pinned `1` the join's two `sub`s consume: `regT2 = 6 ≤ 7`
+    rw [hpres2 regT2 (by decide)]
+    simp only [RegFile.write_other _ _ (by decide : regT2 ≠ xIdx),
+      RegFile.write_other _ _ (by decide : regT2 ≠ regT1)]
+    exact hOneSurv
 
 /-! ## THE MISSING OUTPUT STAGE, AS AN EXECUTED FACT RATHER THAN A TODO
 
