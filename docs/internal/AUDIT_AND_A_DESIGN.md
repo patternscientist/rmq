@@ -1958,3 +1958,52 @@ branch and run the audit in parallel, since the audit is read-only against the
 B7 commit itself — a finding is repaired on the B7 branch and re-merged, and
 E1's additive machine modules do not modify the interior, so a repair does not
 invalidate them.
+
+## 2026-07-19 (C05 round 29) — the swap is in the tree; one diagnosed blocker
+
+**The full swap is applied and uncommitted** in the B7 worktree: nine files
+covering the store extension, the four wired sites, the cap and literal
+migration, the model-adequacy doc, the claim-drift policy and the topology lint.
+Working-tree state survives agent death, so nothing was at risk — but the worker
+exhausted its budget cycling on silent builds and was handed off rather than
+resumed again.
+
+**The blocker is one root cause with a cascade.** `lake build RMQ` exits 1 at
+294.7s with `whnf` heartbeat timeouts in `reviewerCanonicalInterior_mayRead`
+(`SuccinctFinalRAM.lean:5953`, `:5992`), and the third error — `(kernel) unknown
+constant` at `:6020` — is purely downstream: that theorem never elaborated, so
+its constant never existed. Note this is the SAME SHAPE as the indirect-import
+trap logged last round, and here it genuinely means "not built". The two are
+visually identical, which is precisely why that trap is dangerous.
+
+**Coordinator diagnosis, from reading the proof rather than the error.** The
+witness discharges membership through a `List.mem_append_left` cascade that
+encodes the READ ORDERING. After the swap the local span computation reads the
+LEVEL FIRST, so the level-table read is now leftmost and the span read is no
+longer the head of that chain — the cascade describes a route that no longer
+exists. The `Nat.log2 1` sitting in the slot expression is the same tell: it
+computes at proof level exactly what the amended route now obtains from a
+charged read. Secondary and probably contributory: the enlarged `offsets` and
+component store push bigger concrete structures through `whnf` in the `simpa`
+unfoldings.
+
+**`maxHeartbeats` is explicitly forbidden as the fix**, and the reason is worth
+recording as a general rule. Raising it would make the build pass while leaving
+a proof that encodes a stale read order — a theorem that typechecks and
+describes the wrong machine. That is strictly worse than a red build, and it
+survives review precisely because it presents as a performance tweak. **A
+timeout in a proof about an execution's structure is evidence about the
+structure, not about the budget.**
+
+**Build-discipline handoff now used three times on this rung.** A cold rebuild
+runs 300-700s silent; a watchdogged agent cannot wait on it without burning its
+budget or being killed. The worker commits, says so, and the coordinator runs
+the build in a background shell and returns the result with a diagnosis. This is
+the same division of labour as the aggregate gate and it is working.
+
+**Merge-reconciliation items recorded:** the swap touches
+`RMQ/Validation/SuccinctClassic.lean` (which also carries an a07-owned fixture —
+the literal migration legitimately touches the file, the fixture is left alone)
+and `docs/internal/CLAIM_DRIFT_POLICY.json`. Every moved numeral must be listed,
+because the new numeric-prose checker derives expected values from Lean at run
+time and will fail on any documented numeral that did not move with its source.
