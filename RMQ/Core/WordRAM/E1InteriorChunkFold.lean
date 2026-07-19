@@ -625,6 +625,294 @@ theorem interiorChunkFold_fits
   · exact interiorChunkCombine_fits hw (by omega) hscale0 hscale instr hi
   · exact interiorChunkEpilogue_fits hw (by omega) instr hi
 
+/-! ## Spec side of the fold
+
+The three functions below describe what the read loop is accumulating, as
+functions of the store and the ascending chunk index -- never numerals.
+`chunkAcc` is BIG-endian by construction (see DD-20260719-004); the
+reversal loop is what restores the route's little-endian value.
+-/
+
+/-- The ascending trace the fold must emit: one `readWord` per chunk, at
+the route's addresses, in the route's order. -/
+def chunkEventsAt (store : ReadStore) (segment start n : Nat) :
+    List TraceEvent :=
+  (consecutiveWordIndices start n).map
+    (fun a => TraceEvent.readWord segment a (store.readWord? segment a))
+
+/-- The big-endian accumulator after `j` chunks, in the option-shift
+convention: a missing chunk contributes the truncated `0 - 1 = 0` and is
+recorded separately by `chunkBad`, so the accumulator is never consulted
+when a chunk was missing. -/
+def chunkAcc (store : ReadStore) (segment scale start : Nat) : Nat → Nat
+  | 0 => 0
+  | j + 1 =>
+      chunkAcc store segment scale start j * scale
+        + (decodeRead (store.readWord? segment (start + j)) - 1)
+
+/-- The number of missing chunks among the first `j`.  `0` exactly when
+every chunk was present, which is the route's `some`/`none` verdict. -/
+def chunkBad (store : ReadStore) (segment start : Nat) : Nat → Nat
+  | 0 => 0
+  | j + 1 =>
+      chunkBad store segment start j
+        + (if decodeRead (store.readWord? segment (start + j)) = 0 then 1
+           else 0)
+
+/-- Registers the read-loop body writes. -/
+abbrev ChunkReadBodyUntouched (r : Nat) : Prop :=
+  r ≠ cW ∧ r ≠ cAddr ∧ r ≠ cT ∧ r ≠ cBad ∧ r ≠ cAcc ∧ r ≠ cCnt
+
+/-- Local congruence for iterated logs (a copy of the combinator used by
+the rank and fringe bridges, kept module-local to avoid depending on their
+import order). -/
+theorem iterLog_congr_local {α : Type} {f g : Nat → List α} :
+    ∀ (n : Nat), (∀ k, k < n → f k = g k) → iterLog f n = iterLog g n := by
+  intro n
+  induction n with
+  | zero => intro _; rfl
+  | succ n ih =>
+      intro h
+      show f n ++ iterLog f n = g n ++ iterLog g n
+      rw [h n (by omega), ih (fun k hk => h k (by omega))]
+
+/-! ## One read-loop iteration
+
+The eight intermediate register files are named rather than written as
+nested `write` towers, so that each simulation step states the value it
+writes in already-normalised form.  They are definitions, not tactic-local
+abbreviations, because this development is Mathlib-free and `set` is not
+available.
+-/
+
+/-- After `LB+0`: the chunk lands in `cW`, option-shifted. -/
+def rbR1 (regs : RegFile) (dw : Nat) : RegFile := regs.write cW dw
+
+/-- After `LB+1`: the address ascends. -/
+def rbR2 (regs : RegFile) (dw addr : Nat) : RegFile :=
+  (rbR1 regs dw).write cAddr (addr + 1)
+
+/-- After `LB+2`: the miss verdict, `cW = 0` in the option shift. -/
+def rbR3 (regs : RegFile) (dw addr : Nat) : RegFile :=
+  (rbR2 regs dw addr).write cT (if dw < 1 then 1 else 0)
+
+/-- After `LB+3`: the miss counter accumulates. -/
+def rbR4 (regs : RegFile) (dw addr bad : Nat) : RegFile :=
+  (rbR3 regs dw addr).write cBad (bad + (if dw < 1 then 1 else 0))
+
+/-- After `LB+4`: the option shift is removed. -/
+def rbR5 (regs : RegFile) (dw addr bad : Nat) : RegFile :=
+  (rbR4 regs dw addr bad).write cW (dw - 1)
+
+/-- After `LB+5`: the Horner shift. -/
+def rbR6 (regs : RegFile) (dw addr bad acc wordScale : Nat) : RegFile :=
+  (rbR5 regs dw addr bad).write cAcc (acc * wordScale)
+
+/-- After `LB+6`: the Horner add. -/
+def rbR7 (regs : RegFile) (dw addr bad acc wordScale : Nat) : RegFile :=
+  (rbR6 regs dw addr bad acc wordScale).write cAcc
+    (acc * wordScale + (dw - 1))
+
+/-- After `LB+7`: the counter decrements. -/
+def rbR8 (regs : RegFile) (dw addr bad acc wordScale cnt : Nat) : RegFile :=
+  (rbR7 regs dw addr bad acc wordScale).write cCnt cnt
+
+/-- Every unfolding needed to evaluate the iteration's register tower. -/
+theorem rbR8_apply
+    (regs : RegFile) (dw addr bad acc wordScale cnt r : Nat) :
+    rbR8 regs dw addr bad acc wordScale cnt r =
+      if r = cCnt then cnt
+      else if r = cAcc then acc * wordScale + (dw - 1)
+      else if r = cW then dw - 1
+      else if r = cBad then bad + (if dw < 1 then 1 else 0)
+      else if r = cT then (if dw < 1 then 1 else 0)
+      else if r = cAddr then addr + 1
+      else regs r := by
+  unfold rbR8 rbR7 rbR6 rbR5 rbR4 rbR3 rbR2 rbR1 RegFile.write
+  simp only [cCnt, cAcc, cW, cBad, cT, cAddr]
+  by_cases h1 : r = 90
+  · simp [h1]
+  · by_cases h2 : r = 92
+    · simp [h2]
+    · by_cases h3 : r = 94
+      · simp [h3]
+      · by_cases h4 : r = 93
+        · simp [h4]
+        · by_cases h5 : r = 95
+          · simp [h5]
+          · by_cases h6 : r = 91
+            · simp [h6]
+            · simp [h1, h2, h3, h4, h5, h6]
+
+/-! ## One read-loop iteration -/
+
+/--
+ONE ITERATION OF THE READ LOOP.
+
+Exactly one `readWord`, at the running address; the address ascends by
+one; the miss counter takes the option-shift's `cW = 0` verdict; the
+accumulator takes one Horner step; the counter decrements; and the back
+edge is taken exactly when iterations remain.
+
+`cN` is stated preserved explicitly because it lives INSIDE the fold's own
+bank (`98`), so the outside-the-bank preservation clause does not cover
+it, and the reversal loop depends on it surviving the read loop intact.
+-/
+theorem interiorChunkReadBody_step
+    (store : ReadStore) {program : E1Machine.Program}
+    {segment wordScale LB : Nat}
+    (hHost : HostedAt program LB (interiorChunkReadBody segment wordScale LB))
+    (regs : RegFile) (addr cnt acc bad : Nat)
+    (hOne : regs cOne = 1) (hAddr : regs cAddr = addr)
+    (hCnt : regs cCnt = cnt + 1) (hAcc : regs cAcc = acc)
+    (hBad : regs cBad = bad) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, LB, false⟩
+          ⟨regs', if cnt = 0 then LB + 9 else LB, false⟩
+          [.readWord segment addr (store.readWord? segment addr)]
+          interiorChunkReadBodyCats ∧
+        regs' cOne = 1 ∧
+        regs' cAddr = addr + 1 ∧
+        regs' cCnt = cnt ∧
+        regs' cAcc =
+          acc * wordScale
+            + (decodeRead (store.readWord? segment addr) - 1) ∧
+        regs' cBad =
+          bad
+            + (if decodeRead (store.readWord? segment addr) = 0 then 1
+               else 0) ∧
+        regs' cN = regs cN ∧
+        (∀ r, ChunkReadBodyUntouched r → regs' r = regs r) := by
+  have hf : ∀ (k m : Nat) (instr : Instr), k < 9 →
+      (interiorChunkReadBody segment wordScale LB)[k]? = some instr →
+      LB + k = m → program[m]? = some instr := by
+    intro k m instr hk hget hm
+    rw [← hm, hHost k hk, hget]
+  have h0 : program[LB]? = some (.readMem cW segment cAddr) :=
+    hf 0 LB _ (by omega) rfl (by omega)
+  have h1 : program[LB + 1]? = some (.add cAddr cAddr cOne) :=
+    hf 1 _ _ (by omega) rfl (by omega)
+  have h2 : program[LB + 2]? = some (.natLt cT cW cOne) :=
+    hf 2 _ _ (by omega) rfl (by omega)
+  have h3 : program[LB + 3]? = some (.add cBad cBad cT) :=
+    hf 3 _ _ (by omega) rfl (by omega)
+  have h4 : program[LB + 4]? = some (.sub cW cW cOne) :=
+    hf 4 _ _ (by omega) rfl (by omega)
+  have h5 : program[LB + 5]? = some (.mulConst cAcc cAcc wordScale) :=
+    hf 5 _ _ (by omega) rfl (by omega)
+  have h6 : program[LB + 6]? = some (.add cAcc cAcc cW) :=
+    hf 6 _ _ (by omega) rfl (by omega)
+  have h7 : program[LB + 7]? = some (.sub cCnt cCnt cOne) :=
+    hf 7 _ _ (by omega) rfl (by omega)
+  have h8 : program[LB + 8]? = some (.brNZ cCnt LB) :=
+    hf 8 _ _ (by omega) rfl (by omega)
+  have s0 : RunsTo store program ⟨regs, LB, false⟩
+      ⟨rbR1 regs (decodeRead (store.readWord? segment addr)), LB + 1,
+        false⟩
+      [.readWord segment addr (store.readWord? segment addr)]
+      [Category.memoryRead] := by
+    have h := RunsTo.readMem (store := store)
+      (s := (⟨regs, LB, false⟩ : State)) rfl h0
+    simpa [rbR1, hAddr] using h
+  have s1 : RunsTo store program
+      ⟨rbR1 regs (decodeRead (store.readWord? segment addr)), LB + 1,
+        false⟩
+      ⟨rbR2 regs (decodeRead (store.readWord? segment addr)) addr, LB + 2,
+        false⟩ [] [Category.arithmetic] := by
+    have h := RunsTo.add (store := store)
+      (s := (⟨rbR1 regs (decodeRead (store.readWord? segment addr)),
+        LB + 1, false⟩ : State)) rfl h1
+    simpa [rbR2, rbR1, RegFile.write, cAddr, cW, cOne, hAddr, hOne] using h
+  have s2 : RunsTo store program
+      ⟨rbR2 regs (decodeRead (store.readWord? segment addr)) addr, LB + 2,
+        false⟩
+      ⟨rbR3 regs (decodeRead (store.readWord? segment addr)) addr, LB + 3,
+        false⟩ [] [Category.comparison] := by
+    have h := RunsTo.natLt (store := store)
+      (s := (⟨rbR2 regs (decodeRead (store.readWord? segment addr)) addr,
+        LB + 2, false⟩ : State)) rfl h2
+    simpa [rbR3, rbR2, rbR1, RegFile.write, cAddr, cW, cOne, hOne] using h
+  have s3 : RunsTo store program
+      ⟨rbR3 regs (decodeRead (store.readWord? segment addr)) addr, LB + 3,
+        false⟩
+      ⟨rbR4 regs (decodeRead (store.readWord? segment addr)) addr bad,
+        LB + 4, false⟩ [] [Category.arithmetic] := by
+    have h := RunsTo.add (store := store)
+      (s := (⟨rbR3 regs (decodeRead (store.readWord? segment addr)) addr,
+        LB + 3, false⟩ : State)) rfl h3
+    simpa [rbR4, rbR3, rbR2, rbR1, RegFile.write, cAddr, cW, cT, cBad,
+      hBad] using h
+  have s4 : RunsTo store program
+      ⟨rbR4 regs (decodeRead (store.readWord? segment addr)) addr bad,
+        LB + 4, false⟩
+      ⟨rbR5 regs (decodeRead (store.readWord? segment addr)) addr bad,
+        LB + 5, false⟩ [] [Category.arithmetic] := by
+    have h := RunsTo.sub (store := store)
+      (s := (⟨rbR4 regs (decodeRead (store.readWord? segment addr)) addr
+        bad, LB + 4, false⟩ : State)) rfl h4
+    simpa [rbR5, rbR4, rbR3, rbR2, rbR1, RegFile.write, cAddr, cW, cT,
+      cBad, cOne, hOne] using h
+  have s5 : RunsTo store program
+      ⟨rbR5 regs (decodeRead (store.readWord? segment addr)) addr bad,
+        LB + 5, false⟩
+      ⟨rbR6 regs (decodeRead (store.readWord? segment addr)) addr bad acc
+        wordScale, LB + 6, false⟩ [] [Category.arithmetic] := by
+    have h := RunsTo.mulConst (store := store)
+      (s := (⟨rbR5 regs (decodeRead (store.readWord? segment addr)) addr
+        bad, LB + 5, false⟩ : State)) rfl h5
+    simpa [rbR6, rbR5, rbR4, rbR3, rbR2, rbR1, RegFile.write, cAddr, cW,
+      cT, cBad, cAcc, hAcc] using h
+  have s6 : RunsTo store program
+      ⟨rbR6 regs (decodeRead (store.readWord? segment addr)) addr bad acc
+        wordScale, LB + 6, false⟩
+      ⟨rbR7 regs (decodeRead (store.readWord? segment addr)) addr bad acc
+        wordScale, LB + 7, false⟩ [] [Category.arithmetic] := by
+    have h := RunsTo.add (store := store)
+      (s := (⟨rbR6 regs (decodeRead (store.readWord? segment addr)) addr
+        bad acc wordScale, LB + 6, false⟩ : State)) rfl h6
+    simpa [rbR7, rbR6, rbR5, rbR4, rbR3, rbR2, rbR1, RegFile.write, cAcc,
+      cW] using h
+  have s7 : RunsTo store program
+      ⟨rbR7 regs (decodeRead (store.readWord? segment addr)) addr bad acc
+        wordScale, LB + 7, false⟩
+      ⟨rbR8 regs (decodeRead (store.readWord? segment addr)) addr bad acc
+        wordScale cnt, LB + 8, false⟩ [] [Category.arithmetic] := by
+    have h := RunsTo.sub (store := store)
+      (s := (⟨rbR7 regs (decodeRead (store.readWord? segment addr)) addr
+        bad acc wordScale, LB + 7, false⟩ : State)) rfl h7
+    simpa [rbR8, rbR7, rbR6, rbR5, rbR4, rbR3, rbR2, rbR1, RegFile.write,
+      cCnt, cAcc, cW, cAddr, cT, cBad, cOne, hCnt, hOne] using h
+  have s8 : RunsTo store program
+      ⟨rbR8 regs (decodeRead (store.readWord? segment addr)) addr bad acc
+        wordScale cnt, LB + 8, false⟩
+      ⟨rbR8 regs (decodeRead (store.readWord? segment addr)) addr bad acc
+        wordScale cnt, if cnt = 0 then LB + 9 else LB, false⟩ []
+      [Category.branch] := by
+    have h := RunsTo.brNZ (store := store)
+      (s := (⟨rbR8 regs (decodeRead (store.readWord? segment addr)) addr
+        bad acc wordScale cnt, LB + 8, false⟩ : State)) rfl h8
+    have hcnt8 :
+        rbR8 regs (decodeRead (store.readWord? segment addr)) addr bad acc
+          wordScale cnt cCnt = cnt := by
+      rw [rbR8_apply]; simp
+    simpa [hcnt8] using h
+  refine ⟨rbR8 regs (decodeRead (store.readWord? segment addr)) addr bad
+    acc wordScale cnt, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · have hrun :=
+      ((((s0.trans s1).trans (s2.trans s3)).trans
+        ((s4.trans s5).trans (s6.trans s7))).trans s8)
+    simpa [interiorChunkReadBodyCats, interiorChunkReadBody] using hrun
+  · rw [rbR8_apply]; simp [cOne, cCnt, cAcc, cW, cBad, cT, cAddr, hOne]
+  · rw [rbR8_apply]; simp [cAddr, cCnt, cAcc, cW, cBad, cT]
+  · rw [rbR8_apply]; simp
+  · rw [rbR8_apply]; simp [cAcc, cCnt]
+  · rw [rbR8_apply]; simp [cBad, cCnt, cAcc, cW]
+  · rw [rbR8_apply]; simp [cN, cCnt, cAcc, cW, cBad, cT, cAddr]
+  · intro r hr
+    obtain ⟨hW, hAd, hT, hB, hAc, hC⟩ := hr
+    rw [rbR8_apply]
+    simp [hW, hAd, hT, hB, hAc, hC]
+
 end E1InteriorChunkFold
 end WordRAM
 end RMQ
