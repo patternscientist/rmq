@@ -3890,3 +3890,66 @@ headlines and two width certificates.
 
 Items 3 (the cross arm's missing terminator) and 4 (the composed arms' absent
 preservation clauses) are in progress — five files modified in the worktree.
+
+---
+
+## C05 round 59 — Lane G closes all six; my FIFTEENTH failed claim sent a worker
+## to rebuild two theorems that already existed
+
+Lane G returned CANDIDATE_COMPLETE at `9de91a6`, seven commits, all six items,
+and — per the brief's mandated ordering — the route side written before any
+machine-side statement existed.
+
+**MY FIFTEENTH FAILED CLAIM, and this one I relayed from a survey without
+checking.** I briefed item 3 as two OBJECT MISMATCHES needing new reconciliation
+theorems, quoting Survey 3's "no theorem currently states the resulting object
+equality." **Both already exist.** `concreteBPNativeRankCloseWordTraceResultAtSegment_canonical_eq`
+(`SuccinctFinalRAM.lean:1550`) is a full `TraceResult` equality proved by exactly
+the route I prescribed — the store-parametricity theorem plus the eight witnesses,
+with `17 + 4 = 21` by `rfl`; `...AllSizeStructuralWithStore_globalReadStore`
+(`SuccinctFinalStoreParam.lean:1633`) does the LCA half.
+
+The worker's handling is the point: it recognised that rebuilding them "would
+have been a witness constructed FOR the premise rather than found at the
+target" — rule 5, applied to a coordinator instruction — **applied** the existing
+theorems, and spent the recovered budget on what was genuinely missing, the
+branch receipt in machine-form objects. That is the fourth time this campaign a
+"this does not exist" from me has been false, and the fourth time a worker
+declined to build the duplicate.
+
+Two smaller corrections of mine: `E1QueryBridge.lean:44` was not the ONLY public
+category statement (`:70` carried one too), and all three specialisations dropped
+`cats.length ≤ 10`, not merely the trace and cost clauses. Both now moot.
+
+**The worker also retracted a claim of its OWN**, unprompted: it had checked
+"zero hits outside their own DEFINING file" when my brief said "outside their own
+TWO files" — the brief was right as written and the error was its paraphrase. A
+worker auditing its own restatement of an instruction is the discipline working
+in the direction it least often runs.
+
+**Three results worth extracting.**
+
+1. **`guard_accept_of_valid` takes NO `hexit`.** The accepting run never fetches
+   the exit block, so that premise would have been decorative — caught by asking
+   what the headline leaves alone, rather than by a failed proof.
+
+2. **The `lcaNone` impostor discriminator is the sharpest yet.** Lengths agree
+   (6 = 6); read counts agree and are **2, not 0**; the value is `none` for every
+   shape; and receipts agree **iff the spurious leg is read-free — stated as an
+   IFF, not as the vacuous `t ++ [] = t`.** That last choice is what makes it
+   evidence: it says exactly when the receipt discriminator is powerless, instead
+   of quietly relying on a trivial equality that would have looked like coverage.
+   Five theorems in this lane depend on **no axioms at all**.
+
+3. **A technique that should generalise, and it is load-bearing rather than
+   stylistic.** `wholeQueryBranchCats` takes the branch as an ARGUMENT rather
+   than recomputing it, because `wholeQueryBranch` unfolds into the concrete
+   store and thence `machineWordBits`/`Nat.log2`, which the kernel cannot reduce.
+   A self-computing definition would not have been evaluable at a literal and
+   **the discriminator fixtures could not have existed at all.** This is the same
+   kernel boundary that has shaped four sessions, dodged a third distinct way:
+   parametrise the statement (M3d-23), state the target as an inequality (§11 B),
+   or take the branch as a parameter. Filed for §4.
+
+Base `db81641` confirmed green; the worker's earlier "baseline not green"
+reading was its own `lake` contention and it said so.
