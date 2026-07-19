@@ -1499,3 +1499,33 @@ a07-owned file but a hard build blocker for B7. B7 carries the minimal repair in
 its own clearly-marked single-file commit so the coordinator can drop or keep it
 at merge depending on what a07 landed. B7's history otherwise touches no
 a07-owned file.
+
+## 2026-07-19 (C05 round 21) — watchdog stall; coordinator runs the experiment
+
+**B7-05 stalled** (agent watchdog, no output for 600s) while running the very
+experiment its plan called for. Two ordered prerequisites had already landed
+committed, which is why the stall cost almost nothing:
+- `228ae8f` — **the freezing-discipline defect is repaired.** The frozen 76/142
+  algebras no longer reference the live interior cap.
+- `0445d1d` — the cross-branch build repair for the a07-owned
+  `ReviewerReachabilitySmall.lean`, in its own clearly-marked single-file commit
+  so the coordinator can drop or keep it at merge.
+Uncommitted state was a single clean line: the live interior cap 30 -> 33.
+
+**Root cause worth naming:** a Lean rebuild after changing a core constant can
+sit silent for well over ten minutes, and the agent watchdog kills at 600s of no
+output. The campaign's longest builds already run ~380s at baseline and much
+longer on a cold cache. **Long silent builds are structurally hostile to
+watchdogged agents.** Mitigation adopted: when a worker's next step is a
+whole-library rebuild triggered by a core-definition change, the COORDINATOR
+runs it in a background shell (no watchdog) and hands the result back, rather
+than having the worker block on it. This is the same division of labour already
+used for the aggregate gate.
+
+Coordinator therefore ran the 30 -> 33 experiment directly. Expected shape of
+the result, recorded BEFORE seeing it so the prediction is falsifiable: the cap
+PROOFS should still pass, because widening a cap makes `cost <= cap` strictly
+easier; what should break is the `rfl` identities that COMPUTE from the live
+field — `closeLCA = 126` and `wholeQuery = 207` — which is precisely what
+commit A exists to migrate to 129 and 210. If instead a cap proof fails, the
+staging split is unsound and the rung returns to a single atomic commit.
