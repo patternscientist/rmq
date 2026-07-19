@@ -245,6 +245,28 @@ global trace positions alone. -/
 def singletonLogicalTrace :=
   (RMQ.SuccinctClassic.queryTraceResult ([7] : List Int) 0 1).trace
 
+def singletonFirstSelectInstructionTrace :=
+  match
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProgram[0]? with
+  | some instr =>
+      (instr.evalGlobalWordTrace (RMQ.Cartesian.shape ([7] : List Int)) 0 1
+        RMQ.SuccinctFinal.WholeQueryState.empty).trace
+  | none => []
+
+def singletonAfterFirstSelectState :=
+  (RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace
+    (RMQ.Cartesian.shape ([7] : List Int)) 0 1
+    (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProgram.take 1)
+    RMQ.SuccinctFinal.WholeQueryState.empty).value
+
+def singletonSecondSelectInstructionTrace :=
+  match
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProgram[1]? with
+  | some instr =>
+      (instr.evalGlobalWordTrace (RMQ.Cartesian.shape ([7] : List Int)) 0 1
+        singletonAfterFirstSelectState).trace
+  | none => []
+
 def singletonRepeatedEqualReadInstructionPositionsOK : Bool :=
   match
       RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProgram[0]?,
@@ -252,7 +274,10 @@ def singletonRepeatedEqualReadInstructionPositionsOK : Bool :=
   | some firstInstr, some secondInstr =>
       firstInstr.reviewerReadLeaf? == some .selectClose &&
         secondInstr.reviewerReadLeaf? == some .selectClose &&
-        (0 : Nat) != 1
+        (0 : Nat) != 1 &&
+        singletonFirstSelectInstructionTrace.length == 15 &&
+        singletonFirstSelectInstructionTrace[0]? == singletonLogicalTrace[0]? &&
+        singletonSecondSelectInstructionTrace[0]? == singletonLogicalTrace[15]?
   | _, _ => false
 
 def singletonRepeatedEqualReadPositionsOK : Bool :=
