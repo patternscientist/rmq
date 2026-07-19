@@ -1751,6 +1751,65 @@ def chunkMutantHIsPreservationOnly (salt : Nat) : Bool :=
       h.reachedExit == m.reachedExit && h.modeledSteps == m.modeledSteps &&
         h.cell == m.cell && h.reads == m.reads
 
+/-! ### The same three facts, KERNEL-CHECKED rather than printed
+
+`mainImpl` prints these counts, which makes them reproducible but not
+proved: a printed `0` is evidence, and the kernel has not seen it.  The
+quantities are closed and computable, so they are also stated as theorems
+and discharged by `rfl` -- no `decide`, no `native_decide`, no raised
+heartbeat budget.
+
+The salt is `0` here on purpose.  Its only job in `mainImpl` is to stop
+Lean folding the sweeps before `main` starts, which would make the
+wall-clock readings meaningless; in a theorem compile-time evaluation is
+exactly what is wanted.
+-/
+
+/-- The honest fold disturbs NOTHING outside its bank, on all four paths.
+This is `ChunkFoldUntouched`'s content at the fold's own witness. -/
+theorem chunkPres_honest_clobbers_nothing :
+    chunkPresClobberedRegs (chunkPresReports 0 goodChunkPres) = [] := rfl
+
+/-- Mutant H disturbs EXACTLY register `102` and nothing else -- so the
+phase does not merely report a failure, it names the register the
+interior's composition would have lost. -/
+theorem chunkPres_mutantH_clobbers_exactly_102 :
+    chunkPresClobberedRegs (chunkPresReports 0 mutatedCombineScratch)
+      = [102] := rfl
+
+/-- Every one of the four fixtures catches mutant H. -/
+theorem chunkPres_mutantH_caught_on_every_case :
+    chunkPresFailures (chunkPresReports 0 mutatedCombineScratch) = 4 := rfl
+
+/-- ...and none of them catches it by exit pc, which is what makes the
+previous theorem a statement about PRESERVATION rather than about the
+mutant merely crashing. -/
+theorem chunkPres_mutantH_reaches_exit_everywhere :
+    chunkPresExitFailures (chunkPresReports 0 mutatedCombineScratch) = 0 :=
+  rfl
+
+/-- THE DISCRIMINATOR STATEMENT, kernel-checked: mutant H agrees with the
+honest sweep case for case on exit pc, halted flag, modeled steps,
+returned cell and read log.  With the two theorems above, this says the
+mutation is caught by preservation and by nothing else this harness
+has. -/
+theorem chunkPres_mutantH_is_preservation_only :
+    chunkMutantHIsPreservationOnly 0 = true := rfl
+
+/-- ANTI-VACUITY, kernel-checked: three of the four fixtures read more
+than one chunk, so the sweep exercises the FOLD and not the single-chunk
+atom that `E1InteriorReadBlock` already covers. -/
+theorem chunkPres_sweep_is_multiChunk :
+    chunkPresMultiChunkCases (chunkPresReports 0 goodChunkPres) = 3 := rfl
+
+/-- ANTI-VACUITY, kernel-checked: the seeded file is nowhere zero at the
+clobber target, and the seed lies outside the range of values the combine
+loop can write there (`cAcc % wordScale`, so `0` or `1` on this witness).
+Detection therefore does not depend on the mutant writing a value that
+happens to differ from the seed. -/
+theorem chunkPres_target_seed_outside_written_range :
+    presSentinel chunkClobberTarget = 717 := rfl
+
 def mainImpl : IO UInt32 := do
   IO.println "== E1 amended-machine validator (M6) =="
   IO.println ""
