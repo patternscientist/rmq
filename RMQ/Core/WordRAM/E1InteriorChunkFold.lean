@@ -1678,7 +1678,8 @@ theorem interiorChunkEpilogue_runsTo
     ∃ regs' : RegFile,
       RunsTo store program ⟨regs, E, false⟩ ⟨regs', E + 3, false⟩ []
           (interiorChunkEpilogueCats (decide (bad = 0))) ∧
-        regs' cOut = (if bad = 0 then rev + 1 else 0) := by
+        regs' cOut = (if bad = 0 then rev + 1 else 0) ∧
+        (∀ r, ChunkFoldUntouched r → regs' r = regs r) := by
   have h0 : program[E]? = some (.const cOut 0) := by
     simpa using hHost.head
   have h1 : program[E + 1]? = some (.brNZ cBad (E + 3)) := by
@@ -1708,10 +1709,14 @@ theorem interiorChunkEpilogue_runsTo
       have h := RunsTo.add (store := store)
         (s := (⟨regs.write cOut 0, E + 2, false⟩ : State)) rfl h2
       simpa [RegFile.write, cOut, cRev, cOne, hRev, hOne] using h
-    refine ⟨(regs.write cOut 0).write cOut (rev + 1), ?_, ?_⟩
+    refine ⟨(regs.write cOut 0).write cOut (rev + 1), ?_, ?_, ?_⟩
     · have hrun := (s0.trans sbr).trans sadd
       simpa [interiorChunkEpilogueCats, hzero] using hrun
     · simp [RegFile.write, hzero]
+    · intro r hr
+      simp only [ChunkFoldUntouched] at hr
+      have hne : r ≠ cOut := by simp only [cOut]; omega
+      simp [RegFile.write, hne]
   · -- some chunk missing: the branch keeps the `none` default
     have sbr : RunsTo store program ⟨regs.write cOut 0, E + 1, false⟩
         ⟨regs.write cOut 0, E + 3, false⟩ [] [Category.branch] := by
@@ -1719,10 +1724,14 @@ theorem interiorChunkEpilogue_runsTo
         (s := (⟨regs.write cOut 0, E + 1, false⟩ : State)) rfl h1
         (by show regs.write cOut 0 cBad ≠ 0; rw [hbadv]; exact hzero)
       simpa using h
-    refine ⟨regs.write cOut 0, ?_, ?_⟩
+    refine ⟨regs.write cOut 0, ?_, ?_, ?_⟩
     · have hrun := s0.trans sbr
       simpa [interiorChunkEpilogueCats, hzero] using hrun
     · simp [RegFile.write, hzero]
+    · intro r hr
+      simp only [ChunkFoldUntouched] at hr
+      have hne : r ≠ cOut := by simp only [cOut]; omega
+      simp [RegFile.write, hne]
 
 /-! ## The whole fold -/
 
@@ -1808,7 +1817,8 @@ theorem interiorChunkFold_runsTo
                 (chunkStart base deadAddress entriesLen chunkCount i)
                 (chunkIters entriesLen chunkCount i))
               (chunkIters entriesLen chunkCount i)).2 + 1
-          else 0) := by
+          else 0) ∧
+        (∀ r, ChunkFoldUntouched r → regs' r = regs r) := by
   have hIters : 0 < chunkIters entriesLen chunkCount i :=
     chunkIters_pos hccPos
   -- hosting decomposition
@@ -1829,8 +1839,8 @@ theorem interiorChunkFold_runsTo
     simpa using h
   -- the four segments
   obtain ⟨r1, rInit, h1One, h1Addr, h1Cnt, h1N, h1Acc, h1Bad, h1Rev,
-    _h1Pres⟩ := interiorChunkInit_runsTo store hInit regs i hIdx
-  obtain ⟨r2, rRead, h2One, _h2Cnt, h2Acc, h2Bad, h2N, h2Rev, _h2Pres⟩ :=
+    h1Pres⟩ := interiorChunkInit_runsTo store hInit regs i hIdx
+  obtain ⟨r2, rRead, h2One, _h2Cnt, h2Acc, h2Bad, h2N, h2Rev, h2Pres⟩ :=
     interiorChunkReadLoop_runsTo store hRead r1
       (chunkStart base deadAddress entriesLen chunkCount i)
       (chunkIters entriesLen chunkCount i) hIters h1One h1Addr h1Cnt
@@ -1838,7 +1848,7 @@ theorem interiorChunkFold_runsTo
   have h2Nv : r2 cN = chunkIters entriesLen chunkCount i := by
     rw [h2N, h1N]
   have h2Revv : r2 cRev = 0 := by rw [h2Rev, h1Rev]
-  obtain ⟨r3, rComb, h3One, h3Rev, _h3N, h3Bad, _h3Pres⟩ :=
+  obtain ⟨r3, rComb, h3One, h3Rev, _h3N, h3Bad, h3Pres⟩ :=
     interiorChunkCombineLoop_runsTo store hComb r2
       (chunkAcc store segment wordScale
         (chunkStart base deadAddress entriesLen chunkCount i)
@@ -1849,12 +1859,17 @@ theorem interiorChunkFold_runsTo
         (chunkStart base deadAddress entriesLen chunkCount i)
         (chunkIters entriesLen chunkCount i) := by
     rw [h3Bad, h2Bad]
-  obtain ⟨r4, rEpi, h4Out⟩ :=
+  obtain ⟨r4, rEpi, h4Out, h4Pres⟩ :=
     interiorChunkEpilogue_runsTo store hEpi r3 _ _ h3One h3Rev h3Badv
-  refine ⟨r4, ?_, h4Out⟩
-  have hrun := ((rInit.trans rRead).trans rComb).trans rEpi
-  rw [chunkEventsAt_eq_route store hccCap] at hrun
-  simpa [interiorChunkFoldCats] using hrun
+  refine ⟨r4, ?_, h4Out, ?_⟩
+  · have hrun := ((rInit.trans rRead).trans rComb).trans rEpi
+    rw [chunkEventsAt_eq_route store hccCap] at hrun
+    simpa [interiorChunkFoldCats] using hrun
+  · -- OUTSIDE THE BANK `89 .. 99` NOTHING MOVES: chain the four segments'
+    -- own preservation clauses.  This is what makes the fold composable
+    -- more than once in a single program (M3d-13 item 2).
+    intro r hr
+    rw [h4Pres r hr, h3Pres r hr, h2Pres r hr, h1Pres r hr]
 
 /-! ## Hosting witness: the paths EXECUTE, onto distinguishable halts
 
