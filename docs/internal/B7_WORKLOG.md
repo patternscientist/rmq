@@ -1452,3 +1452,248 @@ clean-applying refreshed patch - the state the delegation prescribes here.
 8. Finish REQ-B7-08 (the doc section already states the principle and names
    the bridge lemmas, but describes commit A's route; it must be made true
    of the AMENDED route), then the matrix and the full battery.
+
+# Session 7 (B7-07)
+
+Commit B was ATTEMPTED and is NOT landed. Two durable results, one of which
+is a DECISIVE OBSTRUCTION that invalidates an arithmetic assumption shared by
+DD-20260718-012, the frozen acceptance matrix, and commit A's already-landed
+`33` / `210`. No Lean change is committed; the source tree is reverted and
+green, and the WIP patch is refreshed 952 -> 1107 lines.
+
+## RESULT 1: the inherited `ReviewerReachabilitySmall` question is SETTLED, POSITIVE
+
+B7-06 dropped the patch section that repaired `ReviewerReachabilitySmall.lean`,
+on the ground that `0445d1d` already repairs the same proof in a
+store-growth-INVARIANT style (`hmiddle` quantified over `forall post`), and
+flagged the prediction as UNVERIFIED pending commit B's first build.
+
+VERIFIED THIS SESSION, POSITIVE. With the 952-line patch applied and nothing
+else changed, `lake build RMQ` completed EXIT 0, 244/244, zero errors, and
+`RMQ.Core.SuccinctFinal.RAM.ReviewerReachabilitySmall` built at [229/244].
+
+The generalised proof absorbs the two new store regions untouched. The dropped
+hunk was correctly dropped and must NOT be reinstated. The concurrency boundary
+with `claude/a07-blocker-repairs` recorded by B7-04 is therefore NOT crossed by
+this rung after all: B7 needs no edit to that file.
+
+This also re-confirms the rest of the patch against a completed root build:
+`FlatPayload` [217/244] and `ReviewerPhysical` [220/244] both green, so the
+store extension, the four space-accounting links and the `218 -> 527` capacity
+migration are all sound as carried.
+
+## THE FOUR SITES ARE WIRED (carried in the patch, not committed)
+
+All four reachable sites now take the level and the span from ONE charged read
+of the new table, unpacked by constant-divisor div/mod:
+
+- `canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted`
+- `canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted`
+- `canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation`
+- `canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation`
+
+`Nat.log2` and `bpSparseLogSpan` no longer occur in any of the four bodies.
+The `none` arm is `pure none`, NOT a fallback that recomputes `Nat.log2`; that
+choice is deliberate and is discussed under "design decision" below.
+
+LINE-NUMBER CORRECTION OF RECORD: the delegation and B7-06's resume point give
+the two `Computation` sites as `:2263` and `:2277` in the patched file. They
+are at `:2277` and `:2291`; the `Costed` pair at `:1823` / `:1837` is correct.
+The sites are unambiguous by name regardless.
+
+## RESULT 2 - THE DECISIVE OBSTRUCTION: the packed cell does not fit in one machine word
+
+THE MECHANISM'S CENTRAL ARITHMETIC CLAIM IS FALSE AS STATED, and this was found
+by deriving the new read's cost rather than assuming it.
+
+DD-20260718-012, the frozen matrix, and commit A all rest on "ONE charged read
+per two-span call", hence interior `30 -> 33`, `closeLCA 126 -> 129`, literal
+`207 -> 210`. In this cost model a read does NOT cost one unit: it costs one
+unit PER MACHINE WORD TOUCHED.
+`canonicalRelativeRmmMachineReadNatCosted_cost_le_one`
+(`InteriorDirectory.lean:3945`) requires
+
+    width <= SuccinctRank.machineWordBits shape.bpCode.length
+
+and the level table does not satisfy it on reachable shapes.
+
+The numbers, with `b = canonicalBPRelativeSummaryBase = Nat.log2 size + 1`,
+`macroSize = blocksPerSuper^2 = b^2` (`RelativeSummary.lean:1244-1246`),
+`domain = macroSize + 2`, stored width
+`bpSparseLevelWidth domain = Nat.log2 (domain * domain) + 1`
+(`SparseLevelTable.lean:131`), and machine word
+`machineWordBits (bpCode.length) = Nat.log2 (2 * size) + 1`:
+
+    size    b   macroSize  domain  width  machineWord  read cost
+    2048    12  144        146     15     13           2
+    8192    14  196        198     16     15           2
+    16384   15  225        227     16     16           2
+    32768   16  256        258     17     17           2
+    65536   17  289        291     17     18           1
+
+These are not edge cases. Macro crossing is `macroSize < blockCount`, i.e.
+`b^2 < size / b`, i.e. `size > b^3`; at `size = 2048`, `b^3 = 1728 < 2048`, so
+the CROSS-MACRO branch - the maximizing branch, the one carrying all three new
+reads - is reachable at a size where each level read costs 2.
+
+CONSEQUENCE, and it is not small: the cross-macro branch bound becomes
+`30 + 3*2 = 36`, not 33. Interior 36 gives `closeLCA = 2*11 + 2*37 + 36 = 132`
+and `wholeQuery = 2*35 + 132 + 11 = 213`, not 210. Commit A has ALREADY frozen
+`207`, moved the live literal to `210`, and migrated every consumer plus the
+topology anchor (`SumLe207 -> SumLe210`) to a value the amended route cannot
+attain. REQ-B7-05's anti-vacuity challenge - the literal must move BECAUSE of
+the reads - is exactly what exposes this: derived over the amended route the
+value is not the value commit A assumed.
+
+### THE FIX IS AVAILABLE AND IS A WIDTH FIX, NOT A CAP FIX
+
+The cell is over-wide by construction, not by necessity.
+`bpSparseLevelCell domain i = bpSparseLogSpan i + domain * Nat.log2 i` is
+bounded in `bpSparseLevelCell_lt` (`SparseLevelTable.lean:99`) by
+`domain * domain`, which bounds the LEVEL by `domain`. But the level is
+`Nat.log2 i` with `i < domain`, so it is bounded by `Nat.log2 domain`, which is
+exponentially smaller. The honest bound is
+
+    bpSparseLevelCell domain i < domain * (Nat.log2 domain + 1)
+
+giving
+`bpSparseLevelWidth domain = Nat.log2 (domain * (Nat.log2 domain + 1)) + 1`.
+Recomputed over the same shapes that fail above, this width is 11, 11, 11, 12,
+12 against machine words 13, 15, 16, 17, 18 - it FITS IN ONE WORD with margin at
+every one of them, restoring cost 1 per two-span call and with it the `33` /
+`210` that commit A already froze.
+
+So commit A's frozen literal is very likely RECOVERABLE and does not need a
+second migration. That is the recommended route and it is why this session did
+not start a `210 -> 213` re-migration.
+
+### WHAT THE WIDTH FIX COSTS, stated so it is not under-budgeted
+
+1. `bpSparseLevelWidth`, `bpSparseLevelCell_lt` and
+   `bpSparseLevelEntries_lt_two_pow` in `SparseLevelTable.lean` all move.
+2. A NEW arithmetic lemma is required, and it is the real work:
+   `bpSparseLevelWidth (bpSparseLevelDomain macroSize) <= machineWordBits
+   shape.bpCode.length` UNDER THE MACRO-CROSSING HYPOTHESIS. This is a
+   `log2`-of-`log2` inequality against `size > b^3` and it is the analogue of
+   `canonicalRelativeRmmOffsetWidth_le_relativeWidth` /
+   `canonicalRelativeRmmRelativeWidth_lt_two_machine_of_size_ge_four` (the
+   pattern the existing sparse reads use, `InteriorDirectory.lean:4551-4557`).
+3. The four space-accounting links B7-04 completed are stated over the OLD
+   width. A narrower width makes every space bound EASIER, but the proofs are
+   not automatically re-usable: `sparseLevelWidth_add_two_le_of_pos` and
+   `levelPartOverhead_le_envelope` are written against
+   `Nat.log2 ((x+2)*(x+2)) + 1` and must be restated.
+4. The WITHIN-MACRO branch (`..._cost_le_eighteen_of_size_ge_four`, which
+   carries only `4 <= shape.size` and so must hold at tiny shapes where NO
+   width fits one word) needs the `cost_le_two`-style route, not `cost_le_one`.
+   It has ample headroom - it only has to stay under the interior cap - so this
+   is bookkeeping, not a new obstruction.
+
+## MEASURED REPAIR SURFACE OF THE WIRING ITSELF
+
+With the four sites wired and nothing else changed, `lake env lean` on
+`InteriorDirectory.lean` reports EXACTLY 13 errors in five groups. Recorded so
+the next worker does not re-measure:
+
+- `:2027`, `:2039` - the `Costed`-to-spec `_refines` pair. These need the domain
+  hypothesis (`count <= macroSize`, resp.
+  `macroSpanCount <= macroSampleCount`); the goal is otherwise stuck on
+  `(bpSparseLevelEntries domain)[count]?`. Both are `@[simp]`.
+- `:2498`, `:2502`, `:2518`, `:2522` - `whnf` / tactic-execution HEARTBEAT
+  TIMEOUTS in the two-span `footprint_le_dead` lemmas, not logical failures.
+  The added bind/match deepens the term; these will need restructuring or
+  `set_option maxHeartbeats`.
+- `:3386`, `:3400` - the `Computation`-to-`Costed` `_refines` pair. IMPORTANT
+  AND GOOD NEWS: these need NO hypothesis, because both sides were amended
+  identically. Proof repair only (the `simp only` set must step through the new
+  outer bind and the match).
+- `:4266`, `:4290` - `..._cost_le_eighty` (the generic caps).
+- `:4683`, `:4707`, `:4731` - `..._cost_le_eighteen_of_size_ge_four` and the two
+  `..._cost_le_ten_of_macro_crossing`.
+
+All five cost errors have the same mechanical shape: the proof must become an
+outer `costed_bind_cost_le` over the level read with a
+`htail : forall cell?, (match cell? with ...).cost <= K` obligation, the `none`
+arm closing by `simp [Costed.pure]`. The template to copy is
+`canonicalRelativeRmmMachineLocalSpanCandidateCosted_cost_le_nine_of_size_ge_four`
+(`InteriorDirectory.lean:4540-4570`), which already has exactly this shape.
+
+### THE HYPOTHESIS CASCADE IS BOUNDED - measured, not assumed
+
+Adding the domain hypothesis to the two `Costed`-to-spec `_refines` lemmas
+propagates to the adjacent / left-middle / cross twins and then to
+`canonicalRelativeRmmInteriorRangeMinCosted_refines_logical` (`:3672`). At that
+dispatcher the branch guards discharge most of it: `hwithin` gives
+`count <= macroSize` directly; `leftCount = macroSize - localStart <= macroSize`
+and `rightCount = _ % macroSize < macroSize` are immediate. ONLY
+`middleMacroCount = _ / macroSize <= macroSampleCount` needs more, and it
+follows from `hbound : startBlock + count <= blockCount` via
+`macroSampleCount = blockCount / macroSize + 1`. `hbound` is ALREADY carried by
+the route-level theorems (e.g.
+`canonicalRelativeRmmInteriorRangeMinCosted_erase_exact`), so the cascade
+terminates inside this file rather than escaping to the cross-file consumers.
+
+## DESIGN DECISION RECORDED: the `none` arm is `pure none`, not a recompute
+
+The alternative was `| none => <recompute via Nat.log2>`, which would make
+every `_refines` theorem unconditional and erase the entire hypothesis cascade
+above - a materially cheaper commit. It was REJECTED: it would leave
+`Nat.log2 count` textually present in the executed definitions, so the claim
+"no silent Theta(log n) computation remains on the route" would rest on a
+reachability argument about a dead branch rather than on the definitions. The
+frozen REQ-B7-02 explicitly contemplates the equivalence carrying the route's
+own hypotheses (`0 < count`, `count <= macroSize`), so the conditional form is
+what the contract asks for. Flagged for coordinator visibility because it is
+the single biggest cost driver left in the rung.
+
+## VERIFICATION LEDGER (B7-07)
+
+- `lake build RMQ` with the 952-line patch applied, nothing else: EXIT 0,
+  244/244, "Build completed successfully", ZERO errors, warnings only from the
+  recorded pre-existing baseline. `ReviewerReachabilitySmall` at [229/244],
+  `FlatPayload` at [217/244], `ReviewerPhysical` at [220/244].
+- `lake env lean InteriorDirectory.lean` with the four sites wired: EXIT 1,
+  exactly 13 errors, enumerated above. ITERATE AID ONLY (no olean written).
+- `git apply --check docs/internal/B7_STEP2_WIP.patch` (refreshed, 1107 lines)
+  against the reverted tree: CLEAN.
+- `lake build RMQ` on the REVERTED tree at this commit: recorded below.
+- Source tree reverted to `21544b4`; this commit is DOCS ONLY.
+- NOT RUN and NOT claimed this session: the cost harness (CHK-04), the headline
+  axiom check, `#print axioms`, `design_decision_check.ps1`,
+  `claim_drift_scan.ps1`, `paper_topology_lint.ps1`,
+  `lake build RMQ RMQPaper RMQExamples`. The rung is not at a candidate state.
+  Per the delegation, `scripts/axiom_check.lean` and `gate.ps1` were NOT run.
+- KNOWN RED, externally owned, NOT re-verified and NOT claimed:
+  `scripts/wordram_axiom_check.lean`, `scripts/axiom_check.lean`,
+  `lake exe rmq_succinct_classic_validate`. Also not taken: the a07-owned stale
+  `207` prose numerals in `README.md` and `docs/FAMILY_SUMMARY.md`.
+
+## STATUS AT END OF THIS SESSION: INCOMPLETE
+
+No acceptance-matrix row changed status. No row was weakened. No constant is
+asserted. REQ-B7-05 and CHK-04 remain OPEN and are NOT claimed - the harness was
+not run because no swap landed, so the twelve interior windows are necessarily
+still at commit A's baseline. The slack artifact
+`canonicalRelativeRmmPrincipledInteriorChargedTraceCost_announced_slack_of_size_ge_four_of_bounded`
+is STILL PRESENT and still true, which is the correct state for a tree where the
+swap has not landed.
+
+## RESUME POINT, in order
+
+1. FIRST, settle the width obstruction, because the cap arithmetic depends on it
+   and nothing else should be built on the old width. Tighten
+   `bpSparseLevelWidth` per "the fix is available" above and re-prove
+   `bpSparseLevelCell_lt` / `bpSparseLevelEntries_lt_two_pow`.
+2. Restate the two space-accounting envelope helpers over the new width
+   (`sparseLevelWidth_add_two_le_of_pos`, `levelPartOverhead_le_envelope`). The
+   bounds get easier; the statements still change.
+3. Prove the new macro-crossing width lemma (item 2 of "what the width fix
+   costs"). This is the one genuinely novel piece of arithmetic remaining in the
+   rung and should be budgeted as such.
+4. Apply `docs/internal/B7_STEP2_WIP.patch` (1107 lines, includes the four wired
+   sites) and clear the 13 measured errors, group by group, using the templates
+   and the cascade analysis above.
+5. Only then the caps, the re-derived literal (expected to come back to `33` /
+   `210`, but DERIVE it - that is the whole point of REQ-B7-05), the deletion of
+   the slack artifact, provenance/W19, the vocabulary theorem, the docs, the
+   matrix, and the full battery including CHK-04 against the session-2 baseline.

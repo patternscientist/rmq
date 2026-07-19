@@ -1,5 +1,5 @@
 diff --git a/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean b/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean
-index d4e6434..73d662a 100644
+index 8d68095..4b19669 100644
 --- a/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean
 +++ b/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean
 @@ -1507,7 +1507,9 @@ def canonicalRelativeRmmInteriorDirectoryPayloadLength
@@ -165,7 +165,81 @@ index d4e6434..73d662a 100644
    have h := congrArg List.length
      (canonicalRelativeRmmInteriorComponentStore_words_toList shape)
    simpa using h
-@@ -2101,6 +2155,38 @@ theorem canonicalRelativeRmmGlobalReadComputation_footprint_le_dead
+@@ -1762,33 +1816,57 @@ def canonicalRelativeRmmMachineGlobalSpanCandidateCosted
+         canonicalRelativeRmmMachineMinCandidateCosted shape block
+     | none => Costed.pure none
+ 
++/--
++The level and the span are READ from the charged level table rather than
++recomputed by `Nat.log2` / `2 ^ Nat.log2`.  One charged read per two-span
++call delivers both, unpacked by constant-divisor div/mod.
++-/
+ def canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted
+     (shape : Cartesian.CartesianShape)
+     (macroIdx localStart count : Nat) :
+     Costed (Option (Nat × Nat)) :=
+-  let level := Nat.log2 count
+-  let span := bpSparseLogSpan count
+-  let rightLocalStart := localStart + count - span
++  let domain :=
++    bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize
+   Costed.bind
+-    (canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
+-      macroIdx localStart level) fun left? =>
+-    Costed.map (fun right? => bpCandidateMerge? left? right?)
+-      (canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
+-        macroIdx rightLocalStart level)
++    (canonicalRelativeRmmMachineReadNatCosted shape
++      (canonicalRelativeRmmInteriorLocalLevelTable shape).table count)
++    fun cell? =>
++    match cell? with
++    | some cell =>
++        let level := cell / domain
++        let span := cell % domain
++        let rightLocalStart := localStart + count - span
++        Costed.bind
++          (canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
++            macroIdx localStart level) fun left? =>
++          Costed.map (fun right? => bpCandidateMerge? left? right?)
++            (canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
++              macroIdx rightLocalStart level)
++    | none => Costed.pure none
+ 
++/-- Global twin of `canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted`. -/
+ def canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted
+     (shape : Cartesian.CartesianShape)
+     (macroStart macroSpanCount : Nat) :
+     Costed (Option (Nat × Nat)) :=
+-  let level := Nat.log2 macroSpanCount
+-  let spanMacros := bpSparseLogSpan macroSpanCount
+-  let rightMacroStart := macroStart + macroSpanCount - spanMacros
++  let domain :=
++    bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSampleCount
+   Costed.bind
+-    (canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
+-      macroStart level) fun left? =>
+-    Costed.map (fun right? => bpCandidateMerge? left? right?)
+-      (canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
+-        rightMacroStart level)
++    (canonicalRelativeRmmMachineReadNatCosted shape
++      (canonicalRelativeRmmInteriorGlobalLevelTable shape).table macroSpanCount)
++    fun cell? =>
++    match cell? with
++    | some cell =>
++        let level := cell / domain
++        let spanMacros := cell % domain
++        let rightMacroStart := macroStart + macroSpanCount - spanMacros
++        Costed.bind
++          (canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
++            macroStart level) fun left? =>
++          Costed.map (fun right? => bpCandidateMerge? left? right?)
++            (canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
++              rightMacroStart level)
++    | none => Costed.pure none
+ 
+ def canonicalRelativeRmmMachineAdjacentMacroCandidateCosted
+     (shape : Cartesian.CartesianShape)
+@@ -2115,6 +2193,38 @@ theorem canonicalRelativeRmmGlobalReadComputation_footprint_le_dead
      canonicalRelativeRmmInteriorComponentStore_words_size_eq,
      canonicalRelativeRmmLocalMachineStore] <;> omega
  
@@ -204,7 +278,83 @@ index d4e6434..73d662a 100644
  def canonicalRelativeRmmMachineSummaryComputation
      (shape : Cartesian.CartesianShape) (block : Nat) :
      FlatStoreComputation (Option (Prod Nat (Prod Nat (Prod Nat Nat)))) :=
-@@ -2767,17 +2853,25 @@ theorem canonicalRelativeRmmMaxRelReadComputation_refines
+@@ -2184,33 +2294,59 @@ def canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+         canonicalRelativeRmmMachineMinCandidateComputation shape value
+     | none => FlatStoreComputation.pure none
+ 
++/--
++Executed twin of `canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted`:
++the level and the span come from one charged read of the level table region
++of the interior component store.
++-/
+ def canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+     (shape : Cartesian.CartesianShape)
+     (macroIdx localStart count : Nat) :
+     FlatStoreComputation (Option (Prod Nat Nat)) :=
+-  let level := Nat.log2 count
+-  let span := bpSparseLogSpan count
+-  let rightLocalStart := localStart + count - span
++  let domain :=
++    bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize
++  let offsets := canonicalRelativeRmmInteriorComponentOffsets shape
+   FlatStoreComputation.bind
+-    (canonicalRelativeRmmMachineLocalSpanCandidateComputation
+-      shape macroIdx localStart level) fun left =>
+-    FlatStoreComputation.map (fun right => bpCandidateMerge? left right)
+-      (canonicalRelativeRmmMachineLocalSpanCandidateComputation
+-        shape macroIdx rightLocalStart level)
++    (canonicalRelativeRmmMachineReadNatComputation shape
++      (canonicalRelativeRmmInteriorLocalLevelTable shape).table
++      offsets.localLevel count) fun cell =>
++    match cell with
++    | some value =>
++        let level := value / domain
++        let span := value % domain
++        let rightLocalStart := localStart + count - span
++        FlatStoreComputation.bind
++          (canonicalRelativeRmmMachineLocalSpanCandidateComputation
++            shape macroIdx localStart level) fun left =>
++          FlatStoreComputation.map (fun right => bpCandidateMerge? left right)
++            (canonicalRelativeRmmMachineLocalSpanCandidateComputation
++              shape macroIdx rightLocalStart level)
++    | none => FlatStoreComputation.pure none
+ 
++/-- Global twin of `canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation`. -/
+ def canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+     (shape : Cartesian.CartesianShape)
+     (macroStart macroSpanCount : Nat) :
+     FlatStoreComputation (Option (Prod Nat Nat)) :=
+-  let level := Nat.log2 macroSpanCount
+-  let spanMacros := bpSparseLogSpan macroSpanCount
+-  let rightMacroStart := macroStart + macroSpanCount - spanMacros
++  let domain :=
++    bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSampleCount
++  let offsets := canonicalRelativeRmmInteriorComponentOffsets shape
+   FlatStoreComputation.bind
+-    (canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+-      shape macroStart level) fun left =>
+-    FlatStoreComputation.map (fun right => bpCandidateMerge? left right)
+-      (canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+-        shape rightMacroStart level)
++    (canonicalRelativeRmmMachineReadNatComputation shape
++      (canonicalRelativeRmmInteriorGlobalLevelTable shape).table
++      offsets.globalLevel macroSpanCount) fun cell =>
++    match cell with
++    | some value =>
++        let level := value / domain
++        let spanMacros := value % domain
++        let rightMacroStart := macroStart + macroSpanCount - spanMacros
++        FlatStoreComputation.bind
++          (canonicalRelativeRmmMachineGlobalSpanCandidateComputation
++            shape macroStart level) fun left =>
++          FlatStoreComputation.map (fun right => bpCandidateMerge? left right)
++            (canonicalRelativeRmmMachineGlobalSpanCandidateComputation
++              shape rightMacroStart level)
++    | none => FlatStoreComputation.pure none
+ 
+ def canonicalRelativeRmmMachineAdjacentMacroCandidateComputation
+     (shape : Cartesian.CartesianShape)
+@@ -2781,17 +2917,25 @@ theorem canonicalRelativeRmmMaxRelReadComputation_refines
        let globalWords :=
          ((canonicalRelativeRmmInteriorGlobalTable
            shape).table.machineStore hword).store.words.toList
@@ -233,7 +383,7 @@ index d4e6434..73d662a 100644
          canonicalRelativeRmmInteriorComponentOffsets,
          List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
      simpa [Array.getElem?_toList] using hlist
-@@ -2821,17 +2915,25 @@ theorem canonicalRelativeRmmArgOffsetReadComputation_refines
+@@ -2835,17 +2979,25 @@ theorem canonicalRelativeRmmArgOffsetReadComputation_refines
        let globalWords :=
          ((canonicalRelativeRmmInteriorGlobalTable
            shape).table.machineStore hword).store.words.toList
@@ -262,7 +412,7 @@ index d4e6434..73d662a 100644
          canonicalRelativeRmmInteriorComponentOffsets,
          List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
      simpa [Array.getElem?_toList] using hlist
-@@ -2875,18 +2977,26 @@ theorem canonicalRelativeRmmLocalReadComputation_refines
+@@ -2889,18 +3041,26 @@ theorem canonicalRelativeRmmLocalReadComputation_refines
        let globalWords :=
          ((canonicalRelativeRmmInteriorGlobalTable
            shape).table.machineStore hword).store.words.toList
@@ -292,7 +442,7 @@ index d4e6434..73d662a 100644
          canonicalRelativeRmmInteriorComponentOffsets,
          canonicalRelativeRmmLocalMachineStore,
          List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
-@@ -2931,20 +3041,160 @@ theorem canonicalRelativeRmmGlobalReadComputation_refines
+@@ -2945,18 +3105,26 @@ theorem canonicalRelativeRmmGlobalReadComputation_refines
        let globalWords :=
          ((canonicalRelativeRmmInteriorGlobalTable
            shape).table.machineStore hword).store.words.toList
@@ -315,16 +465,17 @@ index d4e6434..73d662a 100644
 -            localWords) globalWords [] localAddress hlocal
 +            localWords) globalWords (localLevelWords ++ globalLevelWords)
 +          localAddress hlocal
-+      rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
-+      simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+       rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
+       simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+-        argWords, localWords, globalWords,
 +        argWords, localWords, globalWords, localLevelWords, globalLevelWords,
-+        canonicalRelativeRmmInteriorComponentOffsets,
-+        canonicalRelativeRmmLocalMachineStore,
-+        List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
-+    simpa [Array.getElem?_toList] using hlist
-+  case hdead =>
-+    simp [canonicalRelativeRmmInteriorComponentOffsets]
-+
+         canonicalRelativeRmmInteriorComponentOffsets,
+         canonicalRelativeRmmLocalMachineStore,
+         List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
+@@ -2964,6 +3132,138 @@ theorem canonicalRelativeRmmGlobalReadComputation_refines
+   case hdead =>
+     simp [canonicalRelativeRmmInteriorComponentOffsets]
+ 
 +theorem canonicalRelativeRmmLocalLevelReadComputation_refines
 +    (shape : Cartesian.CartesianShape) (i : Nat) :
 +    ((canonicalRelativeRmmMachineReadNatComputation shape
@@ -379,12 +530,11 @@ index d4e6434..73d662a 100644
 +          (((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
 +            localWords) ++ globalWords) localLevelWords globalLevelWords
 +          localAddress hlocal
-       rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
-       simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
--        argWords, localWords, globalWords,
++      rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
++      simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
 +        argWords, localWords, globalWords, localLevelWords, globalLevelWords,
-         canonicalRelativeRmmInteriorComponentOffsets,
-         canonicalRelativeRmmLocalMachineStore,
++        canonicalRelativeRmmInteriorComponentOffsets,
++        canonicalRelativeRmmLocalMachineStore,
 +        canonicalRelativeRmmGlobalMachineStore,
 +        List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
 +    simpa [Array.getElem?_toList] using hlist
@@ -453,10 +603,15 @@ index d4e6434..73d662a 100644
 +        canonicalRelativeRmmLocalMachineStore,
 +        canonicalRelativeRmmGlobalMachineStore,
 +        canonicalRelativeRmmLocalLevelMachineStore,
-         List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
-     simpa [Array.getElem?_toList] using hlist
-   case hdead =>
-@@ -3294,7 +3544,9 @@ theorem canonicalRelativeRmmInteriorRange_successful_read_backed
++        List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
++    simpa [Array.getElem?_toList] using hlist
++  case hdead =>
++    simp [canonicalRelativeRmmInteriorComponentOffsets]
++
+ theorem canonicalRelativeRmmMachineSummaryComputation_refines
+     (shape : Cartesian.CartesianShape) (block : Nat) :
+     ((canonicalRelativeRmmMachineSummaryComputation shape block).run
+@@ -3308,7 +3608,9 @@ theorem canonicalRelativeRmmInteriorRange_successful_read_backed
              shape).store.words.toList =
          (canonicalRelativeRmmSummaryTable shape).payload ++
            (canonicalRelativeRmmInteriorLocalTable shape).payload ++
@@ -467,7 +622,7 @@ index d4e6434..73d662a 100644
    have hmatch :=
      canonicalRelativeRmmInteriorRangeRead_matches_store
        shape (canonicalRelativeRmmInteriorComponentStore shape).store.words
-@@ -4712,7 +4964,9 @@ def canonicalRelativeRmmInteriorDirectory
+@@ -4778,7 +5080,9 @@ def canonicalRelativeRmmInteriorDirectory
    payload :=
      (canonicalRelativeRmmSummaryTable shape).payload ++
        (canonicalRelativeRmmInteriorLocalTable shape).payload ++
@@ -478,7 +633,7 @@ index d4e6434..73d662a 100644
    payload_length_eq := by
      simp [canonicalRelativeRmmInteriorDirectoryPayloadLength,
        Nat.add_assoc]
-@@ -4873,7 +5127,67 @@ private theorem machineWordBits_two_mul_le_two_mul (n : Nat) :
+@@ -4939,7 +5243,67 @@ private theorem machineWordBits_two_mul_le_two_mul (n : Nat) :
        natLog2_succ_le_of_pos_lt_pow (by omega) hlt
      simpa [SuccinctRank.machineWordBits, w] using hbits
  
@@ -546,7 +701,7 @@ index d4e6434..73d662a 100644
    let base := Nat.log2 n + 1
    let blockCount := n / base
    let relativeWidth := 2 * (Nat.log2 base + 1) + 3
-@@ -4888,13 +5202,41 @@ def canonicalRelativeRmmInteriorRawPayloadOverhead (n : Nat) : Nat :=
+@@ -4954,13 +5318,41 @@ def canonicalRelativeRmmInteriorRawPayloadOverhead (n : Nat) : Nat :=
      ((macroCount * (offsetWidth * macroSize)) * offsetWidth) +
        ((globalLevelCount * macroCount) * blockAddressWidth)
  
@@ -589,7 +744,7 @@ index d4e6434..73d662a 100644
    case neg =>
      have hnpos : 0 < n := by omega
      let w := SuccinctRank.machineWordBits n
-@@ -5012,8 +5354,58 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear (n : Nat) :
+@@ -5078,8 +5470,58 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear (n : Nat) :
            simp [M, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm]
          _ <= 2 * (5 * n) := Nat.mul_le_mul_left 2 hmM5
          _ = 10 * n := by omega
@@ -649,7 +804,7 @@ index d4e6434..73d662a 100644
      omega
  
  theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
-@@ -5025,7 +5417,10 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
+@@ -5091,7 +5533,10 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
    rw [(canonicalRelativeRmmSummaryTable shape).payload_length]
    rw [(canonicalRelativeRmmInteriorLocalTable shape).payload_length]
    rw [(canonicalRelativeRmmInteriorGlobalTable shape).payload_length]
@@ -660,7 +815,7 @@ index d4e6434..73d662a 100644
      RelativeRmm.canonicalLayout, RelativeRmm.Layout.superSampleCount,
      RelativeRmm.Layout.superWidth, RelativeRmm.Layout.macroSize,
      RelativeRmm.Layout.macroSampleCount, RelativeRmm.Layout.offsetWidth,
-@@ -5046,7 +5441,8 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compac
+@@ -5112,7 +5557,8 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compac
      {shape : Cartesian.CartesianShape}
      (hready : (RelativeRmm.canonicalLayout shape).CompactReady shape) :
      (canonicalRelativeRmmInteriorDirectory shape).payload.length =
@@ -670,7 +825,7 @@ index d4e6434..73d662a 100644
    let layout := RelativeRmm.canonicalLayout shape
    have hlegacyReady :=
      (RelativeRmm.canonicalLayout_compactReady_iff_legacyReady shape).mp hready
-@@ -5128,11 +5524,161 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compac
+@@ -5194,11 +5640,161 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compac
    rw [(concreteBPRelativeRmmInteriorDirectory shape).payload_length_eq]
    simp [canonicalRelativeRmmInteriorDirectoryPayloadLength,
      concreteBPRelativeRmmInteriorDirectoryPayloadLength, hlegacyReady,
@@ -835,7 +990,7 @@ index d4e6434..73d662a 100644
    apply LittleOLinear.of_eventually_le
      concreteBPRelativeRmmInteriorOverhead_littleO
    refine ⟨concreteBPRelativeRmmInteriorReadyThreshold, ?_⟩
-@@ -5155,13 +5701,32 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_littleO :
+@@ -5221,13 +5817,32 @@ theorem canonicalRelativeRmmInteriorRawPayloadOverhead_littleO :
    have hlegacy :=
      (concreteBPRelativeRmmInteriorDirectory_profile_of_ready shape hready).2.1
    rw [canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw] at heq
@@ -871,7 +1026,7 @@ index d4e6434..73d662a 100644
  theorem canonicalRelativeRmmInteriorOverhead_littleO :
      LittleOLinear canonicalRelativeRmmInteriorOverhead := by
    simpa [canonicalRelativeRmmInteriorOverhead] using
-@@ -5208,7 +5773,9 @@ structure CanonicalRelativeRmmInteriorStoreProfile
+@@ -5274,7 +5889,9 @@ structure CanonicalRelativeRmmInteriorStoreProfile
            shape).store.words.toList =
        (canonicalRelativeRmmSummaryTable shape).payload ++
          (canonicalRelativeRmmInteriorLocalTable shape).payload ++

@@ -290,3 +290,69 @@ positive note: the new literal interior theorem and the slack artifact
 carry exactly the hypotheses the pre-existing cap theorem carried
 (`4 <= shape.size` and the block bound) and add no readiness or threshold
 predicate.
+
+## Evidence at session 7 (B7-07): an obstruction to REQ-B7-05's predicted value
+
+Appended per the matrix's own rule that after freezing only evidence, status
+and coordinator-approved amendments may change. NO ROW IS CLOSED by this
+section and no row is weakened. The swap (commit B) is still not landed.
+
+Statuses that MOVE: none.
+Statuses that gain evidence while remaining Open: REQ-B7-01, REQ-B7-05.
+
+### REQ-B7-05 / REQ-B7-01 - the "one charged read per two-span call" premise is FALSE as stated
+
+This matrix's "Derived consequence" section, DD-20260718-012, Amendment 1
+point 3, and commit A all rest on each two-span call gaining exactly ONE unit
+of charged cost, hence interior `30 -> 33` and literal `207 -> 210`.
+
+DERIVED THIS SESSION over the amended route, and it contradicts that
+prediction. In this cost model a table read costs one unit PER MACHINE WORD
+TOUCHED, not one unit per read:
+`canonicalRelativeRmmMachineReadNatCosted_cost_le_one`
+(`InteriorDirectory.lean:3945`) is available only under
+`width <= SuccinctRank.machineWordBits shape.bpCode.length`.
+
+The charged level table's stored width is
+`bpSparseLevelWidth domain = Nat.log2 (domain * domain) + 1`
+(`SparseLevelTable.lean:131`) with `domain = macroSize + 2` and
+`macroSize = b^2`, `b = Nat.log2 size + 1`. That width EXCEEDS the machine
+word on reachable macro-crossing shapes:
+
+    size    b   macroSize  domain  width  machineWord  read cost
+    2048    12  144        146     15     13           2
+    8192    14  196        198     16     15           2
+    32768   16  256        258     17     17           2
+    65536   17  289        291     17     18           1
+
+Macro crossing is `size > b^3`; at `size = 2048`, `b^3 = 1728 < 2048`, so the
+CROSS-MACRO branch - the maximizing branch carrying all three new reads - is
+reachable where each level read costs 2. The cross-macro bound is therefore
+`30 + 3*2 = 36`, giving `closeLCA 132` and `wholeQuery 213`, NOT the `33` and
+`210` commit A already froze and migrated every consumer to.
+
+This is precisely the outcome REQ-B7-05's anti-vacuity challenge exists to
+catch: commit A moved the literal because a cap was loosened, and deriving it
+over the amended route yields a different number.
+
+RECOMMENDED ROUTE, recorded so the row is not closed against the wrong value:
+the cell is over-wide by construction, not by necessity. `bpSparseLevelCell_lt`
+(`SparseLevelTable.lean:99`) bounds the level by `domain` when it is in fact
+bounded by `Nat.log2 domain`. Tightening the width to
+`Nat.log2 (domain * (Nat.log2 domain + 1)) + 1` yields widths 11-12 against
+machine words 13-18 on exactly the shapes above - one word, with margin -
+restoring cost 1 per two-span call and with it `33` / `210`. The literal must
+still be DERIVED over the amended route, not assumed back into place.
+
+REQ-B7-01 gains this as evidence too: the row requires the sizing to be derived
+over the domain of values that ACTUALLY OCCUR. The same over-approximation that
+inflates the width (bounding the level by `domain` rather than by
+`Nat.log2 domain`) is a sizing defect in the table as built, not only a cost
+defect.
+
+### Verification rows - unchanged and NOT re-claimed
+
+CHK-01 through CHK-08 were not re-run this session; the rung is not at a
+candidate state. CHK-04 in particular remains OPEN and unclaimed: no swap
+landed, so the twelve interior windows are necessarily still identical to the
+commit A baseline. The slack artifact remains present and true.
