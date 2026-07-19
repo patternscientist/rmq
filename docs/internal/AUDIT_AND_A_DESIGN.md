@@ -1204,3 +1204,58 @@ is the fallback, not (A).
 as "breaking REQ-E1-04 positional receipt equality" is over-strict. B2, B3 and
 B6 each added reads to the accepted route; changing the trace is a re-freeze
 cost, not an impossibility.
+
+## 2026-07-19 (C05 round 15) — the E1 machine is executed for the first time
+
+**Milestone.** Until this session `E1Machine.run` had NO CALLER anywhere in the
+repository. Every machine fact was a kernel-discharged `RunsTo` proposition; no
+modeled instruction had ever been run. `RMQ/Validation/E1MachineValidate.lean`
+(new `lean_exe rmq_e1_machine_validate`) is the first execution, and it exits 0:
+
+- independent reference `refRMQ` written from the specification, calling
+  neither the route, the machine, `Cartesian`, `SuccinctClassic`, nor
+  `scanWindow`; 31 fixtures, 576 expectations (258 `none` / 318 `some`),
+  materialised BEFORE any machine run; 0 self-check failures;
+- dispatch vs route: 405 cases, 0 mismatches;
+- same-block leg: 90 cases, 0 exit failures, **0 receipt mismatches**;
+- select leg: 32 cases, 0 exit failures, 0 receipt mismatches.
+
+The leg checks are the strongest content in the campaign to date: the machine's
+EXECUTED `readLog` is diffed event-by-event against the route's independently
+computed `.trace`, with neither side derived from the other. That is executable
+confirmation of the same receipt clause the `RunsTo` theorems prove -- two
+independent evidence tiers agreeing on the same object.
+
+**Mutation evidence, and a lesson in what to check.** The dispatch mutation
+(`natEq -> natLt`) produced 266 disagreements. The leg mutation (back-edge
+`brNZ fCnt 97 -> 98`) preserved program length AND still reached the correct
+exit pc, so an exit-code or control-flow check sees NOTHING -- the harness
+prints that 0 deliberately. Only the receipt diff caught it: 81 mismatches,
+30060 modeled steps against the honest 30343. Record this as the argument for
+diffing receipts rather than verdicts.
+
+**Reporting-integrity finding.** `scripts/wordram_axiom_check.lean` exits 1 at
+this base (line 197 prints axioms for `..._sum_le_76`, an unknown constant).
+A07 found it, this session's worker independently confirmed it, and its branch
+never touched the script. But an EARLIER session's log recorded that same
+script as exiting 0 -- a deterministic error cannot exit 0, so that earlier
+report was wrong. Worker-reported check results are ATTESTATION, not
+verification; this is the same evidence-tier point A07's P3 finding made about
+matrix rows, now demonstrated on a command result. Reinforces the round-8 rule
+that the coordinator runs the gate at rung boundaries, and adds a prompt-level
+requirement: report observed results with the decisive output line pasted, and
+never carry a predecessor's claimed result forward as your own observation.
+
+**Also settled this session:** the branch dispatch is genuinely unblocked and
+its distinction from the blocked leg is now stated precisely -- `blockSize =
+2 * (Nat.log2 shape.size + 1)` is a function of `shape` alone and is an
+encodable immediate, whereas the interior `Nat.log2` is applied to a
+runtime-derived `blockCount` feeding a read address. **The distinction is the
+operand, not the logarithm.** Worth quoting in the eventual model statement.
+
+**Anti-vacuity raised again:** because a branch `target` is a bare `Nat`, a
+hosting witness alone is insufficient -- a theorem about a target past the end
+of the program is equally true and equally worthless. The worker discharged
+hosting against a concrete program whose same-block target is COMPUTED from the
+cross arm's length, then EXECUTED both directions onto distinguishable halts.
+That bar (execute both branches, do not merely host them) should carry forward.
