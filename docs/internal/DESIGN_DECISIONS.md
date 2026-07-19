@@ -3621,3 +3621,213 @@ gap, but the resulting loop has no literal all-size iteration cap, which
 is in tension with REQ-E1-06(c) as frozen. This is flagged for coordinator
 adjudication in `docs/internal/E1_WORKLOG.md` (M3d-3 section 2) and is NOT
 decided here.
+
+## DD-20260718-012: B7 sparse-level mechanism determination - charged floor-log2/span table, one packed read per two-span call (B7 Milestone 0)
+
+Date: 2026-07-18. Scope: the last known uncharged size-dependent
+computation on the accepted RMQ query route - the sparse-table level.
+Decided by: worker B7-01 (branch `claude/b7-charged-sparse-level`, base
+`f6564ec`) under the B7 delegation prompt. This entry records the
+MECHANISM DETERMINATION only; it is committed BEFORE implementation, and
+before the B7 acceptance matrix is frozen. It resolves, on the route
+side, the open item recorded at the end of DD-20260718-011 (E1-R4m),
+which flagged the same `Nat.log2` / `2 ^ Nat.log2` computation as an
+ISA-level question and explicitly did not decide it.
+
+### The finding, verified at source in this worktree at `f6564ec`
+
+FOUR executed evaluator sites bind the level by a `Nat.log2` recursion on
+a runtime-derived argument:
+
+- `PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateTraceResult`
+  (`RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorRAM.lean:559`,
+  `let level := Nat.log2 count` at `:573`)
+- `...twoSpanCandidateTraceResultAtSegments` (`InteriorRAM.lean:606`, log2 at `:621`)
+- `PayloadLiveBPGlobalSparseBlockTable.twoSpanCandidateTraceResult`
+  (`InteriorRAM.lean:805`, `let level := Nat.log2 macroSpanCount` at `:819`)
+- `...twoSpanCandidateTraceResultAtSegments` (`InteriorRAM.lean:852`, log2 at `:867`)
+
+with cost-model twins `PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateCosted`
+(`EndpointFringe/InteriorCandidate/LocalGlobalSparse.lean:17`, log2 at `:30`)
+and `PayloadLiveBPGlobalSparseBlockTable.twoSpanCandidateCosted`
+(`LocalGlobalSparse.lean:590`, log2 at `:603`), and store-parametric twins
+`bpLocalSparseTwoSpanCandidateTraceResultAtSegmentsWithStore`
+(`RelativeRmmMacro/ConcreteDirectoryRAMStoreParam.lean:1405`) and
+`bpGlobalSparseTwoSpanCandidateTraceResultAtSegmentsWithStore` (`:1995`).
+
+THE SPAN IS PART OF THE FINDING, not a separate issue. Each site also
+evaluates `bpSparseLogSpan count = 2 ^ Nat.log2 count`
+(`EndpointFringe/PrefixRange/SparseArgMin.lean:598-599`), consumed as
+`rightLocalStart := localStart + count - span`. `Nat.pow` is a recursion
+of `level` multiplications, so the span is a SECOND Theta(log n)
+uncharged computation at the same site, and each site in fact evaluates
+`Nat.log2 count` twice at the term level (once directly, once inside
+`bpSparseLogSpan`). Any fix that charges only the level leaves the span
+uncharged and does not close the rung.
+
+The level reaches an accepted READ ADDRESS: `bpLocalSparseCellSlot
+macroSize levelCount macroIdx localStart level = macroIdx * (levelCount *
+macroSize) + level * macroSize + localStart`
+(`EndpointFringe/PrefixRange/LocalSparseOffset.lean:15-17`) and
+`bpGlobalSparseCellSlot macroCount macroStart level = level * macroCount +
+macroStart` (`LocalGlobalSparse.lean:199-201`).
+
+### Why this is ALGORITHMIC WORK, not a representation artifact
+
+Under the project's round-7 principle a traversal is a representation
+artifact only when its value is checked-equal to an input parameter or to
+a charged read. The level fails that test in the strongest way: it is an
+address INPUT computed from runtime data, and it is never checked against
+anything. The argument provenance is arithmetic on the query operands
+(`bpTwoLevelInteriorCandidateTraceResult`, `InteriorRAM.lean:1515-1525`;
+identical in `TwoLevelCandidate.lean:32-42`):
+
+    let macroStart := startBlock / macroSize
+    let localStart := startBlock % macroSize
+    let leftCount := macroSize - localStart
+    let remaining := count - leftCount
+    let middleMacroCount := remaining / macroSize
+    let rightCount := remaining % macroSize
+
+so the four arguments that reach a `Nat.log2` are `count` (within-macro
+fast path, `InteriorRAM.lean:1520`), `leftCount` (`:1166`, `:1218`,
+`:1278`), `rightCount` (`:1171`, `:1287`), and `middleMacroCount`
+(`:1223`, `:1282`). None is a structural parameter and none is a charged
+read. The ONLY facts the route ever establishes about them are the
+monotonicity side conditions `0 < count /\ count <= macroSize` (local) and
+`0 < macroSpanCount /\ macroSpanCount <= macroCount` (global), converted
+to `Nat.log2 _ < levelCount` through the ASSUMED hypotheses `hlocalLevel`
+/ `hglobalLevel` at `TwoLevelCandidate.lean:241-248`. The level is
+therefore obtained from computation, never from data.
+
+### DECISION: mechanism 3 (new o(n) charged table), in a single-source,
+### single-read-per-call form
+
+A new counted source `bpSparseLevelTable`, read once per two-span call,
+returning a PACKED `(level, span)` pair unpacked by constant arithmetic.
+
+- ONE table, ONE region, indexed directly by the count. Domain
+  `bpSparseLevelDomain shape = macroSize + macroCount + 1`, which covers
+  BOTH consumers: local counts satisfy `count <= macroSize` and global
+  counts satisfy `macroSpanCount <= macroCount`, so a single region
+  indexed by the raw count is in range for both. This avoids a `max` in
+  the size bound (sums are what the erasure and littleO proofs want) and
+  avoids a second counted source with its own erasure, capacity, littleO,
+  and provenance obligations.
+- Cell `i` stores `Nat.log2 i * D + bpSparseLogSpan i` where
+  `D = bpSparseLevelDomain shape`, and `bpSparseLogSpan i <= i < D` for
+  every index actually read, so `cell / D = Nat.log2 i` and
+  `cell % D = bpSparseLogSpan i`. Unpacking is one division and one
+  modulus by a per-shape constant. That is the SAME arithmetic the
+  accepted route already performs uncharged at `InteriorRAM.lean:1515-1516`
+  (`startBlock / macroSize`, `startBlock % macroSize`), and it is
+  constant-divisor arithmetic in exactly the sense DD-20260718-011
+  established for the E1 address preamble - so it introduces no new class
+  of uncharged work and no ISA extension.
+- ONE charged read per two-span call, not two. This matters for the cost
+  cap: see the literal derivation below.
+
+Entry width `machineWordBits (D * D)` bounds every stored cell, since
+`Nat.log2 i * D + bpSparseLogSpan i < D * D` for `i < D`.
+
+SIZE, and why it stays o(n). With `base = canonicalBPRelativeSummaryBase
+shape = Nat.log2 shape.size + 1` (`RelativeSummary.lean:1238`),
+`blockSize = 2 * base` (`:1242`), `macroSize = base * base`
+(`RelativeSummary.lean:2733-2736`), and `macroCount = blockCount /
+macroSize` with `blockCount ~ n / base`, the domain is
+`D ~ base^2 + n / base^3` and the table is `D * machineWordBits (D * D)`
+bits, i.e. `~ 2 n log n / base^3 = Theta(n / (log n)^2)` bits, plus a
+polylogarithmic term. That is o(n) with room to spare, and it is sized
+over the values that ACTUALLY OCCUR (the `count` / `macroSpanCount`
+ranges) rather than over all of `Nat`, as the delegation required.
+
+### Rejected alternatives, with the evidence that rejected them
+
+MECHANISM 1 - already available from a charged read: REJECTED on a
+structural argument, not a survey. The level is consumed by
+`bpLocalSparseCellSlot` / `bpGlobalSparseCellSlot` to FORM the address of
+the first read of the span, so it must be known strictly BEFORE any
+charged read of that span occurs. There is no read at or before the
+level-consumption point that could carry it. The reads that do occur
+(`readOffsetCosted`, `LocalSparseOffset.lean:355-364`; `readBlockCosted`,
+`LocalGlobalSparse.lean:405-414`) are `FixedWidthNatTable.readCosted`
+(`SuccinctSpace/Tables.lean:86-91`), each returning a single
+`Costed (Option Nat)` of width `offsetWidth` / `blockWidth` - one field,
+no spare capacity.
+
+MECHANISM 2 - widen an existing counted entry: REJECTED, and the reason is
+arithmetic rather than aesthetic. A single widened entry cannot carry the
+level, because ONE query needs the levels of up to THREE DIFFERENT runtime
+values (`leftCount`, `middleMacroCount`, `rightCount` on the cross-macro
+branch, `InteriorRAM.lean:1278-1287`). Carrying three runtime-indexed
+values requires an object indexed by the count - which IS mechanism 3.
+Widening the offset cell was checked and is independently impossible: it
+is `offsetWidth = Nat.log2 macroSize + 1` bits holding a value `<
+macroSize`, roughly one spare bit, not the `machineWordBits levelCount`
+needed. A related observation, recorded but NOT relied on: `summaryCosted`
+(`RelativeSummary.lean:735-754`) charges four reads and
+`bpRelativeSummaryMinCandidate`
+(`EndpointFringe/PrefixRange/RelativeSummaryCandidate.lean:15-22`) never
+projects the `maxRel` field, so one of the four is dead at the
+min-candidate site. That is a genuine finding about the accepted route,
+but it is sequenced AFTER the level is needed and so cannot supply it; it
+is logged for the B7 uncharged-computation inventory rather than used
+here.
+
+MECHANISM 4 - restructure so no runtime log2 is needed: REJECTED with a
+size computation. The natural restructuring is to index the sparse cell by
+the SPAN rather than the level, which removes the need for the level
+entirely. It was costed and fails: the row count of the local table would
+grow from `levelCount = Nat.log2 macroSize + 1` to `macroSize`, taking the
+table from `macroCount * levelCount * macroSize` cells to `macroCount *
+macroSize * macroSize ~ n * macroSize` bits, which is Theta(n polylog) and
+destroys the o(n) overhead. A fixed maximal level was also considered and
+does not type as an algorithm: the two-span cover is only correct when the
+span is the largest power of two at most `count`, so a level fixed
+independently of `count` either overshoots the range or fails to cover it.
+
+EXPLICITLY NOT CONSIDERED, per the user decision recorded in the
+delegation: adding an `msb`/`log2` machine instruction to the ISA, and
+weakening any bound to accept Theta(log n) work. Both were declined by the
+user in favour of the unimpeachable result, so neither was evaluated.
+
+### The route literal MOVES: 207 -> 210. Derived, not assumed.
+
+The cost chain is exactly tight, with no slack to absorb the new read:
+
+- `spanCandidateCosted_cost_le_five` (`LocalSparseOffset.lean:450`,
+  `LocalGlobalSparse.lean:494`): 1 offset/block read + 4 summary reads = 5.
+- `twoSpanCandidateCosted_cost_le_ten` (`LocalGlobalSparse.lean:41`,
+  `:613`): two span candidates = 10.
+- `bpTwoLevelInteriorCandidateCosted_cost_le_thirty`
+  (`TwoLevelCandidate.lean:53`): the cross-macro branch is THREE two-span
+  calls = 30, and 30 is attained, so the cap is exactly met.
+- `canonicalRelativeRmmPrincipledInteriorChargedTraceCost = 30`
+  (`InteriorDirectory.lean:1783`).
+
+Adding one packed table read per two-span call takes the two-span cap from
+10 to 11 and the interior cap from 30 to 33 (the interior bound is a MAX
+over the three branches, and the maximizing cross-macro branch carries all
+three new reads). Feeding that through the named component algebra
+(`concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra`,
+`SuccinctFinalRAM.lean:8810-8820`, with `selectClose := 35`,
+`rankClose := 11`, `endpointFringe := 37`):
+
+    closeLCA  = 2*rankClose + 2*endpointFringe + interiorDirectory
+              = 2*11 + 2*37 + 33 = 22 + 74 + 33 = 129   (was 126)
+    wholeQuery = 2*selectClose + closeLCA + rankClose
+              = 2*35 + 129 + 11 = 70 + 129 + 11 = 210   (was 207)
+
+This is the first of the three uncharged-computation rungs whose literal
+moves; B6 (DD-20260718-008) fit under the existing cap and left 207
+unmoved, because it recharged a leaf that was NOT at the maximizing
+branch. Per the delegation, 207 is therefore to be frozen as a named
+historical constant with its `_eq` theorem and guards, following the
+established 142/76/328 pattern already in
+`SuccinctFinalRAM.lean:8825-8875`
+(`concreteBPNativeSuccinctRMQSilentFringeChargedTraceCost = 76`,
+`...SilentWordRankSelectChargedTraceCost = 142`), under the name
+`concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost = 207`, and
+every Lean consumer plus the topology anchor `SumLe207` in
+`scripts/paper_topology_lint.ps1` and `scripts/headline_axiom_check.lean`
+must move to 210. Frozen legacy anchors are not touched.
