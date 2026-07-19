@@ -989,3 +989,38 @@ CI blocker is new detail on a known gap:
 does not exist on Ubuntu runners (`pwsh` does), plus Windows-shaped child paths
 and `GIT_CONFIG_GLOBAL=NUL`; the smallest fix is redispatching via
 `(Get-Process -Id $PID).Path` as sibling scripts already do.
+
+## 2026-07-19 (C05 round 11) — second defect in axiom_check.lean; R1 scope amended
+
+**Finding (E1-R4l, reported not edited — correct, the file belongs to the
+concurrent repair worker).** `scripts/axiom_check.lean` exits 1 at the accepted
+base `d90b062` for TWO independent reasons, only one of which A07 identified:
+
+1. (A07 P1-1, known) line 975 requests `..._nonSyntheticWeight_sum_le_76`; the
+   tree carries `..._le_207`.
+2. (NEW) it imports `RMQ.Core.GenericSelectBPCompat`, which `lake build RMQ`
+   never builds, so the script fails to LOAD at all — independent of the stale
+   name. Fixing only the name leaves the script broken.
+
+Substantively the run is clean once the dependency is built (zero `sorryAx`
+across 2430 lines), but the script cannot certify that while it aborts.
+Consequence: the battery item "`axiom_check.lean` MUST exit 0" is currently
+unsatisfiable by any worker until BOTH defects are repaired. R1's scope is
+amended accordingly.
+
+**Process note, positive:** this is the first rung executed under the round-9
+and round-10 rule changes, and both took effect. E1-R4l cited root builds
+rather than per-file checks, ran `#print axioms` on all 23 claimed theorems to
+confirm they are real constants (no `sorryAx`, no comment-swallowed
+declarations), and caught roughly twenty wrong line numbers in its own resume
+inventory before committing it. The rules are doing what they were written to
+do.
+
+**Risk flagged for the successor:** the address preamble must first establish
+whether `blockSize` is a per-shape constant on the accepted route, because the
+ISA deliberately has no variable-divisor instruction (`divConst` only). Expected
+to be fine — `canonicalBPRelativeSummaryBlockSizeRaw shape = 2 * (Nat.log2
+shape.size + 1)` is determined by the shape, and machine programs are
+constructed per shape — but it must be confirmed, not assumed, and if it fails
+it is a genuine ISA-level obstruction requiring a coordinator decision rather
+than a worker workaround.
