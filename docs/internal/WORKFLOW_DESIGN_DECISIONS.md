@@ -227,7 +227,7 @@ Evidence:
 
 - `.agents/skills/rmq-coordinator/SKILL.md`
 - `.agents/skills/rmq-audit-prompt/SKILL.md` (renamed from `rmq-audit` by
-  WDD-20260718-001)
+  WDD-20260718-003)
 - `.agents/skills/rmq-proof-sprint/SKILL.md`
 
 Follow-up:
@@ -294,7 +294,7 @@ Evidence:
 
 Follow-up:
 
-Completed by WDD-20260718-001: rename the skill to `rmq-audit-prompt` so the
+Completed by WDD-20260718-003: rename the skill to `rmq-audit-prompt` so the
 prompt-authoring boundary is explicit without the longer proposed name.
 
 Supersedes:
@@ -3262,7 +3262,7 @@ checked implication from the frozen target prevents a decomposition-specific
 lower bound from being mistaken for an impossibility of the claimed machine
 architecture.
 
-## WDD-20260718-001: name audit prompt engineering and scope runtime skills by role
+## WDD-20260718-003: name audit prompt engineering and scope runtime skills by role
 
 Status: Accepted.
 Date: 2026-07-18.
