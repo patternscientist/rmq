@@ -4219,3 +4219,44 @@ Two deviations it flagged rather than absorbed, both fine: the session tag reads
 first column reads `bpCode length` rather than `|bpCode|` because a literal pipe
 breaks a markdown table. Flagging a formatting compromise instead of silently
 making it is the habit that has been catching real defects all campaign.
+
+---
+
+## C05 round 65 — batteries deferred to a quiet window; the structural fix
+
+Second `MUTEX_TIMEOUT` in a row. Lane B4 holds `Global\RMQHeavyVerification`
+across its build cycle, and my verification batteries are losing the race for it
+even at a thirty-minute wait.
+
+**Decision: defer all outstanding batteries until B4 yields, and stop paying to
+contend.** Running them without the mutex would work — the worktrees are
+separate directories with separate build outputs, so the risk is CPU thrash
+rather than incorrectness — but it would slow the lane that is on the critical
+path, which is the wrong trade under the owner's "spend usage on semantic work"
+direction.
+
+What is actually deferred, stated so the coverage gap is explicit rather than
+implied:
+- Lane CL over `bbd04de..ace8683`. Its source tree is already verified green at
+  `be0291e` by its own build, and the DD commit is docs-only with a
+  **proven-empty** `git diff -- RMQ/`. So the residual exposure is prose drift
+  and paper-topology on a documentation commit.
+- Lane B3 over `4241de4..6b6c293`, which will be covered by one run over the
+  combined B3+B4 range, since B3's commits are ancestors of B4's branch.
+
+The DD check — the one that has actually caught defects three times — was run by
+grep in both cases and is satisfied for CL, outstanding for B3 and routed to B4.
+
+**THE STRUCTURAL FIX, and it generalises past this incident.** I have now
+created the same hazard three times in different costumes: a check taken onto
+myself and then invoked in a form that examined nothing (round 51); a lane
+launched into a worktree with a battery still queued on it (round 63); and now a
+battery contending with a live lane for a global mutex. The common cause is that
+I treat verification as something I can interleave freely, when it is a
+**single-writer operation competing with the work it verifies**.
+
+So: **batteries run in a QUIET WINDOW — after a lane yields and before the next
+one launches — never concurrently with an active lane in any worktree.** That
+costs a little wall-clock and removes an entire class of coordinator error. It
+also means the natural cadence is lane, battery, lane — which is the same
+sequencing the merge window will need anyway.
