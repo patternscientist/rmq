@@ -8986,3 +8986,43 @@ caller discharges it: at the intended instantiation the block sits at
 `Q = 1007` (`closeLcaCrossArm`'s `A + 4 + 176` with `A = 827`), where
 `1007 + 4204 = 5211` is far below `2 ^ shapeWidth shape`, whose floor is
 `400000` at every size.
+
+## DD-20260719-302: the select-close dispatch block fits, parametrically (E1-LaneN)
+
+`selectCloseBlock` (`E1SelectDispatch.lean:157`, 405 instructions) is the
+block `wholeQuerySelectLeg` runs TWICE, once per query endpoint. Before this
+module it had no `FieldsFit` lemma of any kind; only its four LEAVES did.
+`E1SelectCloseWidth.lean` supplies the four straight-line segments
+(`selectPrologue`, `selectSuperSlotSeg`, `selectLocalSlotSeg`,
+`selectDenseBaseSeg`), the thirteen inline glue instructions and the
+composition, parametrically in `w`.
+
+This is the second of E1-LaneM's three residuals; residual 1 closed as
+DD-20260719-301.
+
+### The register bound is a single number
+
+`40 <= 2 ^ w`. `39` is `xBOcc` (`E1SelectBridge.lean:91`), the global maximum
+of the select register map -- nothing above it is defined -- so this one
+bound dominates the leaves' own `28 <= 2 ^ w` (`entryReadBlock_fits`) and
+`40 <= 2 ^ w` (the three legs). `reg_bound` is the same tactic idiom
+DD-20260719-261 introduced for the interior, and for the same reason:
+register indices are `abbrev`s and are OPAQUE to `omega`.
+
+### The three divisor positivities are load-bearing
+
+`0 < SS` (`selectSuperSlotSeg`'s `divConst`), `0 < LS`
+(`selectLocalSlotSeg`'s), and `0 < c` in the legs. `Instr.FieldsFit`
+(`E1Machine.lean:535`) has a `0 < k` arm on `divConst` and NO wildcard arm,
+so none of the three can be dropped. They are stated as hypotheses here and
+owed a witness at the canonical instantiation.
+
+### What this does NOT yet do
+
+It is parametric. `selectCloseBlockAt` (`E1SelectDispatch.lean:650`)
+instantiates the twelve numeric parameters from `wholeQuerySelData shape` and
+the trace segment layout, and those bounds -- `localSlotsPerSuper` among them
+-- are a separate obligation. E1-LaneM's residual 2 recorded correctly that
+`SparseExceptionSelectData` (`Source.lean:1693`) carries no
+`localSlotsPerSuper_pos` and no `_le_machine`, so that bound must come from
+the canonical builder rather than from a projection.
