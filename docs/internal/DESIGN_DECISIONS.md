@@ -9026,3 +9026,44 @@ the trace segment layout, and those bounds -- `localSlotsPerSuper` among them
 `SparseExceptionSelectData` (`Source.lean:1693`) carries no
 `localSlotsPerSuper_pos` and no `_le_machine`, so that bound must come from
 the canonical builder rather than from a projection.
+
+## DD-20260719-303: the close/LCA leg fits — and `hinterior` finally has a witness (E1-LaneN)
+
+`closeLcaProgramAt` (`E1WholeQueryCloseLca.lean:119`) is 4753 of the executed
+program's 5646 instructions, the largest single component by a wide margin.
+`E1CloseLcaWidth.lean` certifies all of them at `shapeWidth shape`, at every
+shape, with `hA : A + 4753 < 2 ^ shapeWidth shape` as the only hypothesis.
+
+### The premise this discharges is the one the campaign has been carrying
+
+`crossBlockArmProgramAt_fits` (`E1CrossBlockArm.lean:913`) was written with
+`hinterior` as a hypothesis BEFORE any interior existed, precisely so the
+interior would have to be certified when it landed. E1-LaneK recorded that it
+landed as `canonicalInteriorDispatchBlock` and was never certified, leaving
+`hinterior` an OWED premise with no witness at any instantiation.
+`closeLcaCrossArm_fits` is the first place that premise is discharged with the
+real 4204-instruction interior, via `canonicalInteriorDispatchBlock_fits`
+(DD-20260719-301). Nothing is assumed about the interior here.
+
+### What could be reused, and what could not
+
+`crossArm_fits_reviewerWidth` (`E1ReviewerWidth.lean:261`) already discharges
+the same seventeen premises — but for `crossBlockArmProgramAt shape
+shapeFringeSegment (shapeBlockSize shape) 0 []`: the ASSEMBLED path's cross
+arm, at segment `5`, base `0`, and with `interior = []`, whose `hinterior` is
+the vacuous `by intro instr h; cases h` and whose `hA` is `0 + 370 + 0`.
+
+The executed leg's cross arm is at segment
+`concreteBPNativeFringeChunkTraceSegment = 21` (`Segments.lean:79`), at base
+`A + 4`, and carries 4204 real instructions. Neither is an instance of the
+other. The fifteen shape-dependent side conditions are therefore
+re-discharged here by the same route (`blockSizeRaw_le`, `mix_le`,
+`wordSize_le`, `blocksPerSuper_le`), while `hinterior` and `hA` are genuinely
+new. Recording this because the superficial similarity of the two theorems
+invites the assumption that one implies the other, and it does not — the same
+trap E1-LaneK and E1-LaneM both flagged about `assembledValidPath` versus
+`wholeQueryValidPath`.
+
+The segment constant needed an explicit `rfl` bridge
+(`concreteBPNativeFringeChunkTraceSegment = 21`) in both arms: it is a `def`,
+hence opaque to `omega`, exactly as register `abbrev`s are.
