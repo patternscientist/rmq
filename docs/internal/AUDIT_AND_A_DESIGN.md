@@ -6315,3 +6315,175 @@ answer.
 
 Q2 prices whichever path is taken and is needed under **all** outcomes — the
 paper-facing prose has to be rewritten whether we fix or reframe.
+
+---
+
+## C05 round 94 — the o(n) scope returns. THE TERM WE WERE ABOUT TO SPEND A
+## CAMPAIGN FIXING IS IDENTICALLY ZERO AT EVERY SIZE ANYONE WILL RUN.
+
+Three scouts in (Q1 crux, Q2 blast radius, Q3 tightness). Q4 (classical
+mechanism) still out. **Both of my framing hypotheses were wrong and the
+conclusion inverts the plan.**
+
+### FIRST, MY ERROR — anchors invented, and it reached four briefs
+
+I gave both call sites as `RMQ/Core/SuccinctFinal/RAM/...`. The real paths are
+`RMQ/Core/GenericSelect/RelativeTables.lean:1192` and
+`RMQ/Core/GenericSelect/Source.lean:20`. **The survey handed me BARE filenames
+and I supplied the directory prefix myself** because neighbouring files live
+there. Same failure as #40: filling in a plausible detail I had not read.
+Failure #41.
+
+**And it nearly cost more than time.** There is a **namespace-shadowed twin** —
+`SuccinctSelect/CloseSelect/BuiltRouting/SpanBudgets.lean:540` defines a second
+`sparseExceptionRelativeTableOverhead` in a different namespace with a
+**different body** (`idDivLogLogOverhead 512 (2 * n) + 512`). 27 occurrences
+across 3 files bind to the twin. Anyone grepping by bare name over-scopes and
+may audit the wrong definition entirely.
+
+### MY TWO HYPOTHESES, BOTH REFUTED
+
+**"`loglog n` is a sampling density."** No. `ell n = Nat.log2 (wordBits n) + 1`
+(`GenericSelect/Params.lean:22`) is an **offset field width** — bits to address a
+position INSIDE a machine word. Nothing is sampled every `loglog n` positions.
+The quantity is **(exception block count) x (bits per block)**.
+
+**"The query scans a group, so density is forced" / "there is no dense/sparse
+split."** Both false. `selectCosted` (`Source.lean:1860`) is a chain of INDEXED
+reads, no scan; and there are **TWO** splits (`:1875` long/short, `:1894`
+sparse/dense). `selectCosted_cost_le_thirteen` (`:2010`) is **stride-agnostic** —
+strides are structure fields carrying only positivity (`:1700-1703`), so the
+13-read bound holds for ANY stride.
+
+### Q1 — MIXED, and the dominant half is FORCED
+
+- **(B) `longSuperRelativeTableOverhead` is INCIDENTAL.** Its `ell` is literally
+  the `ell` factor written into `superLongSpan` (`Params.lean:31`), cancelled by
+  one `simpa` (`RelativeTables.lean:295`). Retunable to `w^4` for the classical
+  `n/log n`. **But it buys NOTHING**: (B) carries `slots = 1`, (A) carries
+  `slots = 512`. The headline `Theta(n/loglog n)` is entirely (A).
+- **(A) is FORCED — and not by read counts.** By a **correctness precondition**:
+  the dense leaf resolves a position by reading at most TWO machine words, so it
+  reaches only `wordSize` past base (`Primitives.lean:531`,
+  `hposSpan : pos < basePosition + wordSize`). That pins the sparse threshold at
+  one word. Blocks spanning more have **no mechanism** and must be stored
+  explicitly. That is the `n/ell`.
+- **Ceiling: sqrt(log), not log.** Retuning `localStride` trades sparse table
+  against local table, balancing at `L ~ sqrt(w)` for
+  `Theta(n loglog n / sqrt(log n))` — better than today, still short of classical.
+
+**Four-Russians is NOT portable, and we already ran the experiment.**
+`bpFringeChunkEntries` (`ChargedFringeChunks.lean:426`) takes only `c : Nat` —
+no `f : chunk -> answer` parameter, semantics hardwired to BP excess. Zero matches
+for `tabulate|ofFunction|fourRussians` across `RMQ/`. `ChargedWordChunks.lean`
+DUPLICATES the whole ladder rather than instantiating the fringe one. Decisively:
+`bpChunkedSelectCosted` (`ChargedRankSelectLeaves.lean:462`) already applied
+four-Russians **to this exact query path**, left the strides and the two-word
+reach untouched, and moved cost 13 -> 35 and **space not at all**.
+
+### Q3 — THE FINDING THAT CHANGES THE PLAN
+
+**`localStride n = max 1 (wordBits n / (ell n * ell n))` equals 1 for all
+n < 2^97.** With stride 1, `shortSuperLocalSpan = 1`, and `wordBits < 1` is never
+true, so **no slot is ever exceptional and the sparse-exception table is EMPTY.**
+
+Verified exhaustively over ALL 2^m bit strings for m <= 16, plus random and
+adversarial patterns to m = 65536. **Max entries = 0 in every case.**
+
+| n | ACTUAL sparse-exception bits | CHARGED |
+|---|---|---|
+| 2^10 | **0** | 131,584 |
+| 2^16 | **0** | 6,711,296 |
+| 2^20 | **0** | 107,374,592 |
+
+Above ~2^97 the term goes live and IS order-tight in the worst case — so it
+cannot be re-proved away in general. But **the term the entire scope was about
+contributes literally nothing at any size that will ever be instantiated.**
+
+Also: `hcodec` (`RelativeTables.lean:1174`) charges **512 where ~3 is true** —
+roughly **170x** constant slack, recoverable by a single-lemma fix.
+
+### THE STRATEGIC INVERSION
+
+At n = 2^20 the (A) term is **107M bits of a ~1.43e10 total — under 1%.** The
+practical bulk is the `logLogCubedSampledDirectoryOverhead` family
+(`Asymptotics.lean:601`), whose shape is **already the classical one** and whose
+`slots` constants sum to roughly 1180.
+
+**So the asymptotic problem and the practical problem are DIFFERENT PROBLEMS IN
+DIFFERENT TERMS:**
+
+- **Asymptotically** (above 2^97): (A) dominates, is forced, ceiling sqrt(log).
+- **Practically** (every real n): (A) is ZERO; the 6,811x comes from
+  classical-SHAPED terms carrying large constants.
+
+**Fixing the asymptotic would change the n = 2^20 ratio from 6,811x to 6,811x.**
+The number that would embarrass us in front of a reviewer is untouched by the
+entire campaign we were scoping. That is the single most decision-relevant fact
+returned.
+
+And a caveat larger than the original question: the `logLogCubed` terms exceed
+`2n` by ~1000-2000x **even at n = 2^512**. The `o(n)` proofs are honest, but
+their crossover thresholds are astronomical throughout — not only at the two
+sites we flagged.
+
+### Q2 — cheap, with one real risk
+
+**5 value-dependent sites, ~200 transparent** (the `_littleO` spine is
+shape-agnostic combinators). The target lemma
+`logLogCubedSampledDirectoryOverhead_littleO` (`Asymptotics.lean:607`) **already
+exists, is already proven, is already in the trust base**, and is already used by
+sibling terms inside the very definitions that would change. Two of the five
+repairs are one-line swaps.
+
+**The risk is not the o(n) skeleton — it is TRUTH in the tail.** The new
+envelope crosses BELOW the old at `log n ~ ell^4` (about n = 2^10^5). Existing
+accounting yields only `payload <= old`, which cannot reach the new bound past
+the crossover. Items 3 and 4 would need strictly stronger accounting **or they
+are false as stated.** Note this interacts with Q3: below 2^97 the payload is
+zero, so the tail is exactly where the statement has to earn itself.
+
+### GATES: ZERO WOULD FIRE, AND THE EXAMINED-NOTHING PATTERN IS STILL LIVE
+
+The headline quantifies over `LittleOLinear overhead` — byte-identical before and
+after any of this. Worse:
+
+- `claim_drift_scan.ps1:7` roots are `README.md, artifact, docs` — **nothing
+  under `RMQ/` is EVER scanned.** Its one space-adjacent term is `strict: false`
+  and can only emit `review`, never `fail`.
+- `design_decision_check.ps1` `$codePatterns` **omits `RMQ/Core/GenericSelect`
+  entirely** — this edit would print "no design-sensitive paths detected".
+- `succinct_cost_lint.ps1` scan paths also exclude GenericSelect.
+- `axiom_check.lean` covers both `_littleO` lemmas, but `#print axioms` checks
+  WHICH AXIOMS, not what is stated — a redone proof emits identical output.
+
+**Only `lake build` gates this, and it gates truth, not tightness.** We could
+change the headline space claim's shape and every gate would exit 0.
+
+### PAPER SURFACE: essentially free
+
+Exactly **one** shape-committed sentence
+(`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md:217`), and its purpose —
+defending against the vacuous-constant objection — gets STRONGER under any
+change. ~60 other locations are shape-agnostic. Frozen requirement rows pin the
+public STATEMENT shape, never the asymptotic, and all remain satisfied.
+**REQ-B7-06** (`B7_SPARSE_LEVEL_ACCEPTANCE_MATRIX.md:109`, still Open) explicitly
+demands the o(n) proof hold at every n "with no threshold" — worth re-reading
+against any case-split proposal.
+
+### RECOMMENDATION — three items, none of them the campaign we scoped
+
+1. **Do NOT chase the classical asymptotic.** It is forced by the two-word leaf
+   reach; reaching it means a new dense-leaf mechanism with reach beyond one word,
+   which is a new branch and reopens the cost bound. The ceiling short of that is
+   sqrt(log), and it would be invisible at every real n anyway.
+2. **DO prove the practical-range theorem.** "The sparse-exception table is empty
+   for all n < 2^97" is provable, striking, and turns the worst-looking term into
+   a non-issue over the entire instantiable range. Check it against REQ-B7-06's
+   no-threshold clause first.
+3. **DO attack the constants, because that is where the 6,811x lives** — the
+   ~170x in `hcodec`, and hard scrutiny of the `logLogCubed` `slots` values.
+   **This is the only work that would move the number a reviewer actually
+   computes.**
+
+(B)'s retune to `w^4` is cheap and tidies the shape; it changes no headline.
