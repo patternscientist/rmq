@@ -7202,3 +7202,125 @@ Affeldt, Garrigue, Qi, Tanaka, from the LIPIcs cover page), and one asserted an
 AFP entry that does not exist. The lane caught both because every citation was
 required to name a retrieved artifact. **The "search fabricates citations"
 warning is not theoretical and the discipline paid for itself in a single run.**
+
+---
+
+## C05 round 101 — every prior-art gap closed. The field STOPPED in 2019, which
+## strengthens the claim. And a correction that makes the thesis sharper, not
+## weaker.
+
+### THE GAP THAT MATTERED MOST: nobody continued this work
+
+**The succinct-structures thread stops at ITP 2019.** Forward citation graph
+closed across three independent sources (Semantic Scholar, OpenCitations COCI,
+OpenAlex), with the complete citing set of both papers enumerated and accounted
+for: three are the group's own follow-ups (JIP 2018, ITP 2019, CoqWS 2019), and
+the remaining three are unrelated (Burrows-Wheeler correctness, frequency-moment
+approximation, red-black separation logic). **Not one is a succinct-space or
+asymptotic-bound paper.**
+
+The **code-generation** thread continued (into PEPM@POPL 2021); the
+**succinct-structures** thread did not. That is the single most decision-relevant
+fact from this pass, and it cuts in our favour.
+
+### THE OTHER GAPS, ALL CLOSED CLEAN
+
+- **opam index: 624 unique packages** enumerated across `coq/opam-coq-archive`
+  released + extra-dev and the `rocq-prover/opam` mirror. **No succinct, compact,
+  rank/select, RMQ, wavelet, LOUDS, or balanced-parentheses package exists.** The
+  keyword hits are all false positives. Also swept the community org, which **had
+  been renamed** — `coq-community` now reports 0 public repos, the live org is
+  `rocq-community` — 101 repos, nothing relevant.
+  **Worth one line in the paper:** `affeldt-aist/succinct` ships an `opam` file
+  in-repo but **was never published to the archive**. Their succinct work has no
+  packaged, installable release.
+- **AFP at ABSTRACT level, properly this time.** The first pass was title-only.
+  Sparse-cloned `isabelle-prover/mirror-afp-devel` for `metadata/entries` — 1010
+  per-entry TOML files with full abstracts. Four hits, all false positives, and
+  the closest (`CVM_Distinct_Elements`) checked in detail: its "close to optimal
+  logarithmic space complexity" is quoted background, and the entry verifies
+  correctness. **The AFP negative is now solid at abstract level.**
+- **Xuanrui Qi**: DBLP returns only ITP 2019 and its preprint. No thesis. The
+  asymptotic framework ITP 2019 deferred was never written up.
+- **Japanese venues**: `jssst18.pdf` is a preliminary version of ITP 2019 with no
+  space or asymptotic material the English version lacks. Nothing appeared in
+  Japanese first.
+
+### THE CORRECTION — and it makes the thesis STRONGER
+
+The lane's first report said "neither prior work machine-checks a cost model at
+all." **That was wrong.** JIP 2018 section 6 monadifies `rank` into a counting
+monad and proves exact bit-examination counts in Coq (`RankInitNumBitsExamined`,
+`RankLookupNumBitsExamined`).
+
+**But it follows the IDENTICAL pattern as their space results.** The Coq lemma is
+an *exact closed-form count*; the `O(n)` / `O(1)` reading is **prose**. Their
+constant-time claim additionally leans on a hardware assumption (POPCNT /
+`uint64_t`) and a footnote-level dominance argument, and their cost unit is a
+domain-specific proxy — "bits examined" — **not a machine model.**
+
+**So the pattern is now confirmed across THREE papers and BOTH axes: exact
+quantities in Coq, asymptotics on paper.** That is a stronger and more defensible
+thesis than "they have no cost model", because it is a claim about METHOD rather
+than about absence, and it is verifiable by anyone who opens their sources.
+
+### THE C QUESTION, SETTLED — AND ROUND 87'S REASON #4 IS WRONG
+
+**ICFEM 2016 does NOT extract C.** JIP 2018 section 1.1, **VERBATIM**: "in our
+previous work [26], we resorted to embedding of C snippets into OCaml code.
+However, this resulted in an arguably involved process for code extraction."
+ICFEM 2016 extracts **OCaml**; the C is hand-written snippets inside an
+unverified bitstring library. Genuine C generation is the separate JIP 2018.
+
+**And their C generator is TRUSTED, NOT VERIFIED.** JIP 2018 section 1.3,
+**VERBATIM**: "the C code generation is trusted but small". Their section 7 is
+titled "Evaluation of the Trusted Base of Our C Code Generation Scheme" and
+self-reports "less than 1,000 lines of code to the trusted base."
+
+**Benchmarking is one self-disclaimed data point.** ICFEM section 7, **VERBATIM**:
+"We have not yet undertaken a thorough benchmark comparison with existing
+libraries... the libraries we have checked so far do not seem to implement the
+same rank algorithm, making comparison difficult." One SDSL number, admitted
+algorithm mismatch. **JIP 2018 contains no runtime benchmark at all** — its
+tables count lines of code. **No artifact badge on either**, and the project
+website both cite now 404s.
+
+**ROUND 87 RECORDED REASON #4 AS "precedent says not shipping code is
+unremarkable." THAT IS NOT ACCURATE AND MUST BE REWRITTEN.** The closest line
+ships extracted OCaml and a C generator. The defensible version is narrower:
+
+> The C generator is unverified and sits in the TCB; it appears in a SEPARATE
+> paper from the succinct-structures result; neither paper benchmarks the C
+> output; the only competitor comparison anywhere in the line is a single
+> self-disclaimed SDSL data point; and neither carries an artifact badge.
+
+**Shipping code is a differentiator we are DECLINING, not table stakes we are
+failing — but it IS a differentiator, and a referee from this community may
+ask.** The verdict stands; the reasoning changes. This is the second time round
+87's reasoning has been corrected while its verdict survived, which is itself
+worth noticing about how that decision was argued.
+
+### THE SENTENCE, AMENDED FOR THE COST AXIS
+
+> "To our knowledge this is the first mechanized range-minimum-query structure of
+> any kind, and the first machine-checked ASYMPTOTIC bound — in space or in query
+> cost — for a succinct data structure. The closest prior line (Tanaka et al.,
+> ICFEM 2016; Tanaka et al., JIP 2018; Affeldt et al., ITP 2019) mechanizes exact
+> closed-form quantities in Coq — directory sizes, LOUDS length, bits examined —
+> and takes every asymptotic step, `o(n)` and `O(1)` alike, in prose."
+
+**Still do not use "end-to-end", now for a SECOND reason:** JIP 2018 reaches
+running C, so on that axis the prior work goes further than we do.
+
+### RESIDUAL RISK, stated plainly rather than buried
+
+Citation coverage is imperfect: S2 reported 3 and 4 citers, OpenCitations 2, and
+OpenAlex's `cited_by_count=4` disagreed with its own `cites:` filter returning 0.
+**Google Scholar was unreachable and would likely show more.** Three sources
+agreeing on a small, fully-accounted-for citing set is good evidence, not proof.
+Two items remain unread (PEPM@POPL 2021; the CoqWS 2019 experience report). And
+**the ICFEM 2016 companion artifact is still unreadable (404)**, so an
+unpublished asymptotic lemma in that specific development is not fully excluded.
+
+**One email to Affeldt would close the last of it** — owner's call, external
+contact.
