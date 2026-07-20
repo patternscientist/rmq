@@ -2255,6 +2255,37 @@ machine and prove its simulation. M1 must still
 connect querying to a serialized payload representation, and construction
 work must still account for preprocessing.
 
+NOTE (added 2026-07-19, owner-approved; the Consequences text above is
+UNCHANGED). Two corrections to this block, neither altering the decision it
+records.
+
+1. **The M1 sentence was a scope disclaimer, not an amendment to M1.** It read
+   as though it added a requirement to rung `M1`, and `RMQ_FINAL_ROADMAP.md`'s
+   `M1` section — authored 2026-07-09 and unchanged since — never carried one.
+   The worker who drafted this block was asked directly and recalls the intent
+   as a `U3` scope disclaimer: that the `76` result covered the then-current
+   explicit trace-cost model while serialization, preprocessing and a fully
+   charged machine remained downstream. It specifically does **not** recall
+   assigning serialized-payload querying to `M1`, and does **not** recall
+   distinguishing a word-addressed from a bit-addressed target — "I do not think
+   I distinguished those targets when drafting that sentence." So the ambiguity
+   later found in the sentence was in the writing, not in anyone's reading of
+   it. DD-20260714-008, the next record the same day, restates the same
+   obligation neutrally as a "downstream obligation" with no `M1` attribution;
+   the drafting worker does not recall that removal as deliberate either.
+   **Disposition:** bit-addressed serialized-payload querying is now rung `S1`
+   in `RMQ_FINAL_ROADMAP.md`, deferred and explicitly not gating `V1`. `M1`'s
+   scope is its four roadmap clauses.
+
+2. **This block's constant is superseded.** Its Consequences still say the
+   public constant is `76`. `DD-20260717-C05-001` froze `76` as a historical
+   constant, and the live all-size bound is `210`
+   (`concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`), migrated
+   by commit `f6000c3`. The reasoning recorded here remains valid for the model
+   it was written about; only the numeral is historical. Frozen historical
+   constants are not edited, so this note records the supersession rather than
+   rewriting the block.
+
 Evidence:
 
 - `GenericSelect.SparseExceptionSelectData.selectCosted_cost_le_thirteen`.

@@ -62,11 +62,18 @@ N1 naming/module design ------------+----------------------------+
                           +--------------------------------------+------+
                           v                                             v
                  M1 exact adequacy/certificate                 E1 machine model
+                          |  |                                          |
+                          |  +--> S1 bit-addressed serialized query      |
+                          |       (deferred; does NOT gate V1)           |
                           |                                             |
                           +----------------------+----------------------+
                                                  v
                                       V1 artifact and paper freeze
 ```
+
+`M1` and `E1` are SIBLINGS under `U3`, not sequential — neither waits on the
+other. `S1` hangs off `M1` because it consumes the supplied-store transfer
+lemma `M1` makes primary, and is deferred out of the `V1` path deliberately.
 
 The `F0`/`P1`/`N1` scouts are complete and joined in
 `RMQ_DECLARATION_CLOSURE_2026_07_10.md` and
@@ -277,6 +284,63 @@ list query
   = supplied-store execution under exact read agreement
   = first-order controller execution
 ```
+
+SCOPE RULING (2026-07-19, owner-approved). The four clauses above are M1's
+scope. They are unchanged since 2026-07-09 and are correct as written.
+
+`DESIGN_DECISIONS.md`'s DD-20260714-007 contains the sentence "M1 must still
+connect querying to a serialized payload representation". That sentence did
+NOT amend this rung. Its drafting worker was asked and recalls it as a `U3`
+scope disclaimer — noting that serialization, preprocessing and a fully charged
+machine remained downstream — and specifically does not recall assigning
+serialized-payload querying to M1, nor distinguishing a word-addressed from a
+bit-addressed target when drafting it. The next record the same day,
+DD-20260714-008, restates the same obligation neutrally as a "downstream
+obligation" without the M1 attribution. Bit-addressed serialized-payload
+querying is now rung `S1` below; it does not gate `V1`.
+
+NAMING NOTE (evidence only; the requirement text above is unchanged). "first-order
+controller execution" is a roadmap phrase with no counterpart in the codebase —
+it occurs only in this document. The Lean object the chain's last step denotes
+is `canonicalInterpretedQueryCosted`
+(`RMQ/Core/SuccinctRMQClassic.lean`), reached through the certificate field
+`refines_canonical_interpreted`. A worker grepping the roadmap's phrase will
+find nothing.
+
+M1's residual is smaller than the status line implies: four of the five named
+invariant families are already certified on `main` by
+`ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy`
+(`RMQ/Core/SuccinctFinalModelAdequacy.lean`), the missing one being
+**word-width**; and all four clauses are proved on the unmerged branch
+`codex/m1-reviewer-native-machine-adequacy-r4`, which cannot compile against
+`main` because it proves a field via `nonSyntheticWeight_sum_le_76` and `76` is
+now a frozen historical constant superseded by `210`.
+
+### S1. Bit-Addressed Serialized-Payload Querying (deferred)
+
+Status: deferred, named so it is not homeless. **Does not gate `V1`.**
+
+State the canonical charged query against the raw `List Bool` payload —
+`buildPayload` (`RMQ/Core/SuccinctRMQClassic.lean`), the object the
+`2 * n + o(n)` bound is stated over — rather than against the word-addressed
+physical store.
+
+Why it is deferred rather than folded into `M1`: `flattenPayloadWords` is **not
+proven invertible**, because the payload words carry only
+`word.length <= reviewerWordBits` and no uniform-width equality. So a
+bit-addressed statement needs either a uniform-width theorem or an explicit
+chunking decoder, neither of which exists. That is new construction, not
+composition, and it consumes exactly the supplied-store transfer lemma `M1` is
+meant to make primary — so it must follow `M1`, not ride inside it.
+
+Not unexplored territory: `BPCloseRMQNavigationDirectory.queryEncodedCosted`
+already takes a `List Bool` payload and has an exactness theorem plus a
+`2n + o(n)` encoded profile, at the family layer rather than as a paper
+capstone. The open work is lifting that to the canonical charged route.
+
+Do not describe any word-addressed composition as "serialized-payload
+querying". Four reviewer-facing surfaces currently disclaim this capability;
+claiming it before `S1` lands would overclaim against all four.
 
 ### A1. Refactor Around The Stable Argument
 
