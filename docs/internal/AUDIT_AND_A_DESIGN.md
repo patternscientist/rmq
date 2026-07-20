@@ -5846,3 +5846,88 @@ checking not done.**
 
 I passed its reasoning on before verifying it. The owner pushed back on the
 weakest of the four reasons, which is what prompted the verification at all.
+
+---
+
+## C05 round 88 — Lane L closes the validator side; Lane M declines to ship a
+## weakly-stated theorem; and my "construction not discovery" was circular
+
+**Lane L: CANDIDATE_COMPLETE at `09faa6e`, all four validator gaps closed.**
+
+**Phase 5 is no longer OPEN — it is a real comparison.** 24 cases, 0 answer
+mismatches against the independent reference, expectation computed before the
+machine. Measured maximum **3267 steps against the proved 11886**, and executed
+`run.steps` agrees with the cost model's `wholeQueryCats` length on **all 20
+valid cases** — an independent cross-check, one folding `execInstr`, the other
+summing a category algebra. `11886` is not transcribed:
+`wholeQueryStepBound_isTheProvedBound` discharges by the proved lemma, so
+changing the numeral breaks the build.
+
+**And the status text is now RENDERED FROM A CONDITION, not stored.** Its words:
+"there is no sentence left to go stale." After that string was wrong in both
+directions across four rounds, the durable fix landed.
+
+**Two constructions worth extracting.** Its first store-dependency formulation
+demanded every fixture be read-dependent and **failed 21 of 36** — because on
+the seed-fallback arm the answer is the caller's seed and depends on no read. It
+**sharpened rather than weakened**: the claim became a biconditional —
+corrupting a read cell moves the answer *exactly when* the arm is occupied — and
+holds **36/36**, with both arms present for anti-vacuity. And **mutant L**
+(`move d s` → `mulConst d s 1`: same value, same register, one step, no read, no
+control-flow change) is caught by the positional category log and **invisible to
+every discriminator the harness previously had**, including catLog LENGTH and
+the `memoryRead` charge count. It also states the scope honestly — a per-category
+census would also catch it.
+
+**MY THIRTY-FIFTH FAILED CLAIM.** The "1270 steps, ~9x loose, same-block arm"
+figure I relayed **does not reproduce**. The prior table passed **query
+endpoints where the constructor expects CLOSES**. The real measurement is
+**1765 on the cross-block arm**; both decompose exactly and the entire
+difference sits in the close/LCA slot. The looseness is real and the bound is
+genuinely all-size; the *attribution* was wrong, and the "9x" was measured at
+the smallest fixture against the wrong arm. Measured maximum is **3.6x**, not 9x.
+
+---
+
+**Lane M: INCOMPLETE at `c4da94b`, and it was right to be.**
+
+**It refused to state the certificate weakly.** Stating `ProgramFits` for the
+executed program with the interior/select/composition premises as hypotheses
+"would be a premise with no witness at the intended instantiation — precisely
+what this campaign has been paying down, and what `hinterior` was criticised
+for." **Left unstated rather than stated weakly.** That is the correct call and
+it is the campaign's own lesson applied to a worker's own deliverable.
+
+**What it did land is the piece REQ-E1-02's anti-vacuity column actually
+demanded**: `wholeQueryProgram_not_fits_machineWordBits` — a rejection witness
+**about the executed program**, whose witness is the guard's own `brNZ regG
+5644`. The pre-existing rejection witness is about `assembledValidPath`, and
+**neither implies the other**, so this was genuinely owed.
+
+**The numbers reproduce at all six sizes** — `len = 5646`, `maxField = 5644`,
+`fits = true`, `zeroDivs = 0` — with a driver mirroring `Instr.FieldsFit`
+constructor-for-constructor and reporting `List.all`, not a maximum. **It fits.**
+
+**MY THIRTY-SIXTH FAILED CLAIM, and this one was circular.** I called item 2
+"construction, not discovery." Residual 1 is blocked on `deadAddress < 2^w`, and
+the tree's only bound is stated against a capacity that **contains
+`deadAddress` as a `Nat.max` argument** — true of any store whatsoever, and
+unusable against the pre-execution envelope. **Chasing it is circular**, and
+that is now recorded so nobody re-derives the circle.
+
+It closed the largest single piece anyway — `canonicalSummaryLayout_fits`, all
+ten conjuncts — and found the `527*(n+1)` chain existed only as a local `have`
+behind a `private` lemma. It also refuted a tempting shortcut concretely:
+`lt_capacity_of_le_linear` has slope 8, and `527*(n+1) ≤ 8n + 399999` is false
+from `n = 770`.
+
+**The byte-count lesson held.** "Every scratchpad run was byte-count-checked
+before being read as a result, and every declaration confirmed by `#print
+axioms` as a positive check — the zero-byte failure mode did not recur." And it
+flagged `pow4_le_two_pow` as infrastructure **not yet consumed**, rather than
+counting it as a result.
+
+**E1's remaining gap is now exactly one thing**: the positive `ProgramFits` for
+the executed program. §17 carries the corrected residual, including the single
+missing arithmetic fact (`levelCount ≤ 2 * base`) that unlocks the level
+quantities.
