@@ -8746,7 +8746,7 @@ conclusion was assembled only as a LOCAL `have` inside
 it, and the decomposition lemma is `private`.
 
 `canonicalRelativeRmmInteriorComponentStore_words_size_le_linear`
-(`ReviewerPhysical.lean:2258`) states it. It is placed in
+(`ReviewerPhysical.lean:2280`) states it. It is placed in
 `ReviewerPhysical.lean` precisely because the decomposition it consumes is
 private to that file; nothing was de-privated, renamed, or restated.
 

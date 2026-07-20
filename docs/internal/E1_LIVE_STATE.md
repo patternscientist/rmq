@@ -2884,3 +2884,159 @@ fixed: `E1WholeQueryCats.lean:145` was written for the kernel-irreducibility
 note, which is at **`:129`**; `:145` lands in `wholeQueryBranchCats`'s
 `leftSelectNone` arm. Corrected in both `E1AmendedTarget.lean` and
 DD-20260719-260.
+
+## 17. Worklog — E1-LaneM (REQ-E1-02: the executed program's width), 2026-07-19
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `097e21f`. DD-IDs claimed
+and WRITTEN into `DESIGN_DECISIONS.md`: **`262`, `263`, `264`**. Band
+`265-279` free. Full `lake build RMQ` green at every commit; validator
+`RESULT: PASS` (whole-query comparison still OPEN, unchanged by this lane).
+
+### THE SUBJECT WAS CONFIRMED BEFORE ANYTHING WAS BUILT
+
+Section 16's identification re-grepped and correct. `assembledValidPath` has
+**12 line-hits, all in `E1ReviewerWidth.lean`** (`:249`-`:402`), zero
+elsewhere. `wholeQueryMachineAgrees_of_bounds`
+(`E1WholeQueryAgreement.lean:68`) runs
+`programSkeleton n (wholeQueryValidPath shape wholeQueryNoneExit)`, which is
+`wholeQueryProgram shape n` by definition (`E1WholeQueryProgram.lean:878`).
+`wholeQueryNoneExit = 5644` (`E1WholeQueryProgram.lean:532`).
+
+### THE NUMBERS, RE-EVALUATED AT ALL SIX SIZES — SECTION 16's TABLE REPRODUCED
+
+Independent driver over `Cartesian.stackCartesianShape`, mirroring
+`Instr.FieldsFit` constructor for constructor including the `0 < k` divisor
+arm, reporting `List.all` of the executable mirror rather than a maximum
+alone:
+
+| `shape.size` | len | max field | `w` | `2 ^ w` | fits | zero divisors |
+|---|---|---|---|---|---|---|
+| `0` | `5646` | `5644` | `19` | `524288` | `true` | `0` |
+| `1` | `5646` | `5644` | `20` | `1048576` | `true` | `0` |
+| `5` | `5646` | `5644` | `22` | `4194304` | `true` | `0` |
+| `40` | `5646` | `5644` | `24` | `16777216` | `true` | `0` |
+| `64` | `5646` | `5644` | `25` | `33554432` | `true` | `0` |
+| `300` | `5646` | `5644` | `27` | `134217728` | `true` | `0` |
+
+Every cell agrees with section 16. **The certificate is TRUE.** What follows
+is about proving it, and none of it is a refutation.
+
+### THE FRAMING "CONSTRUCTION, NOT DISCOVERY" WAS WRONG ON ONE POINT
+
+Residual 1 was blocked on `LayoutFits`'s `deadAddress < 2 ^ w`, and the
+tree's ONLY bound on that quantity is CIRCULAR.
+`canonicalRelativeRmmInteriorDeadAddress_fits_reviewerWordBits`
+(`InteriorDirectory.lean:2771`) is stated against
+`canonicalRelativeRmmInteriorReviewerCapacity` (`InteriorDirectory.lean:2724`),
+a `Nat.max` whose third argument IS the store's own word count — true of any
+store whatsoever, and carrying no information about the pre-execution
+envelope. This is recorded so nobody re-derives the circle. DD-20260719-262.
+
+### WHAT THIS LANE CLOSED
+
+1. **`canonicalRelativeRmmInteriorComponentStore_words_size_le_linear`**
+   (`ReviewerPhysical.lean:2280`), bounding the count by `527 * (size + 1)`.
+   Every step already existed; the CONCLUSION did not — it was a local `have`
+   inside `concreteBPNativeSuccinctRMQReviewerPhysicalWords_length_le_capacity`
+   (`ReviewerPhysical.lean:1893`), and the decomposition it rests on is
+   `private` to that file, which is why the new theorem is stated there.
+   Nothing de-privated, renamed or restated. DD-20260719-262.
+2. **`canonicalSummaryLayout_fits`** (`E1CanonicalInteriorWidth.lean`) —
+   `LayoutFits (shapeWidth shape) (canonicalSummaryLayout shape)`, all ten
+   conjuncts, every shape, no size hypothesis. The largest single piece of
+   residual 1. DD-20260719-263.
+   - `lt_capacity_of_le_linear` (`E1ReviewerWidth.lean:135`) **could not be
+     used**: its slope is `8`, and `527 * (n + 1) <= 8 * n + 399999` is FALSE
+     from `n = 770` upward. `lt_capacity_of_le_mul` parameterises the slope
+     and asks only that it be below `400000`. The old lemma is untouched and
+     still carries every other side condition.
+   - The three offset bases needed no new bound: they are PREFIX SUMS of the
+     eight stores whose total is `deadAddress`
+     (`InteriorDirectory.lean:1690`).
+   - The four `chunkCount`s were already capped at `8`
+     (`E1InteriorSummaryGroup.lean:506` through `:541`).
+   - The four `entriesLen` length lemmas (`RelativeSummary.lean:559`, `:566`,
+     `:573`, `:580`) carry **no `@[simp]`** and must be named explicitly.
+3. **`wholeQueryProgram_not_fits_machineWordBits`**
+   (`E1WholeQueryWidth.lean`) — the anti-vacuity witness FOR THE EXECUTED
+   PROGRAM, on the window `shape.size <= 2821`, witnessed by the guard's own
+   `brNZ regG 5644`. The existing refutation is about `assembledValidPath`
+   with constant `555` and window `<= 255`; **neither implies the other**.
+   DD-20260719-264.
+
+### WHAT IS STILL OWED — the corrected residual list
+
+**The positive certificate is NOT stated, deliberately.** Writing
+`wholeQueryProgram_fits_reviewerWordBits` with the interior, select and
+composition premises as hypotheses would be a premise with no witness at the
+intended instantiation — the shape this campaign has been paying down. It is
+left unstated rather than stated weakly.
+
+1. `canonicalInteriorDispatchBlock_fits` — `LayoutFits` is DONE. Still open:
+   - `GeomFits` for the four span/level geoms. Their `chunkCount` caps ALL
+     exist already (`E1InteriorSpanBlock.lean:654`, `:659`;
+     `E1InteriorTwoSpan.lean:912`, `:917`, `:922`, `:927`); their bases are
+     four more prefix offsets (`localOffset`, `globalBlock`, `localLevel`,
+     `globalLevel`), a mechanical extension of `offsets_le_deadAddress`.
+   - The `entriesLen` bounds are the real remaining arithmetic, and they are
+     PRODUCTS that are only sublinear after dividing through by the base:
+     `localSpanGeom` is `macroSampleCount * (levelCount * macroSize)`
+     (`LocalGlobalSparse.lean:838`), `globalSpanGeom` is
+     `levelCount * macroSampleCount` (`LocalGlobalSparse.lean:866`). Route:
+     `macroSampleCount = blockCount / macroSize + 1` plus
+     `Nat.div_mul_le_self`, giving at most `blockCount * levelCount` plus the
+     level slab.
+   - One arithmetic fact is missing and is the key to the level quantities:
+     **`levelCount <= 2 * base`**, i.e. `machineWordBits (base * base)` is at
+     most `2 * base`, from `Nat.log2 b < b`. With it the level slab is at
+     most twice the cube of the base, hence at most twice its fourth power,
+     and `pow4_le_two_pow` (supplied, `E1CanonicalInteriorWidth.lean`)
+     finishes it.
+   - The seven numerals: `macroSize` (use `base_sq_le`, supplied),
+     `macroSampleCount`, the level slab, the two sparse-level divisors
+     (`bpSparseLevelDomain k = k + 2`, `SparseLevelTable.lean:41`),
+     `blockSize`, the span, and the host base (parametric; discharged at the
+     call site, where it is `1007`).
+2. `selectCloseBlockAt_fits` — **the `localSlotsPerSuper` gap is CONFIRMED by
+   inspection of the structure.** `SparseExceptionSelectData`
+   (`Source.lean:1693`) carries `wordSize_pos` and `wordSize_le_machine` but
+   **no `localSlotsPerSuper_pos` and no `localSlotsPerSuper_le_machine`** —
+   `localSlotsPerSuper` (`Source.lean:1704`) is a bare `Nat`.
+   `superFieldWidth`, `longSuperRelativeWidth` and `localFieldWidth` have
+   neither either. So the bound must come from the canonical builder. Note
+   this contradicts the module doc at `E1InteriorDispatchWidth.lean:27`,
+   which describes those as free projections; that is true of `wordSize`
+   only.
+3. Composition: `closeLcaProgramAt_fits` is the cheapest of the three once
+   item 1 lands — it splits into `closeDispatch` (certified,
+   `E1CloseDispatch.lean:106`), `closeLcaCrossArm` (certified modulo
+   `hinterior`, `E1CrossBlockArm.lean:913`), a two-instruction jump, and
+   `closeLcaSameArm` (certified, `E1ProgramWidth.lean:57`). Then
+   `wholeQuerySelectPrefix`, `selectJoin`, `wholeQueryOutputStage` and
+   `wholeQueryRankLeg` — all four have NO `_fits` lemma of any kind.
+
+### THE WIDTH CONJUNCT WAS NOT ADDED TO `E1AmendedFamiliarMachineTarget`
+
+DD-20260719-142's reasoning still stands, for the same reason E1-LaneK gave:
+the only width fact this lane has about the executed program is a REFUTATION.
+A conjunct spelled from it would state that the program does NOT fit a width,
+which is not what the target should assert; the positive one is not available
+until residuals 1 through 3 close. `amendedFamiliarMachineTarget_holds`
+(`E1AmendedTarget.lean:603`) is untouched and still proves.
+
+### Citations re-verified after the edits
+
+All thirty-four citations written by this lane were re-checked against the
+declarations they name AFTER the edits, by reading the cited line. Thirty-two
+held. Two did not and are fixed:
+
+- `ReviewerPhysical.lean:2258` was written for this lane's own new theorem,
+  but `:2258` lands on its DOCSTRING; the `theorem` line is **`:2280`**.
+  Corrected in `E1CanonicalInteriorWidth.lean`, DD-20260719-262 and above.
+- `E1InteriorDispatchWidth.lean:26` was written for the module doc's claim
+  that `SparseExceptionSelectData`'s `_pos`/`_le_machine` fields are free
+  projections; `:26` is the preceding sentence and the claim is on **`:27`**.
+  The claim itself is real and the correction does not affect the finding:
+  that description is accurate for `wordSize` and inaccurate for
+  `localSlotsPerSuper`, `superFieldWidth`, `longSuperRelativeWidth` and
+  `localFieldWidth`, which carry neither field.

@@ -23,7 +23,7 @@ any store whatsoever and carries no information about the pre-execution
 envelope; chasing it is circular.
 
 `canonicalRelativeRmmInteriorComponentStore_words_size_le_linear`
-(`ReviewerPhysical.lean:2258`, DD-20260719-262) supplies the non-circular
+(`ReviewerPhysical.lean:2280`, DD-20260719-262) supplies the non-circular
 bound, and `lt_capacity_of_le_mul` below is the capacity step that can consume
 it: `lt_capacity_of_le_linear` (`E1ReviewerWidth.lean:135`) has slope `8`,
 which `527 * (n + 1)` outruns from `n = 770` upward.
