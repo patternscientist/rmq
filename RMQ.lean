@@ -71,6 +71,7 @@ import RMQ.Core.WordRAM.E1CostLadder
 import RMQ.Core.WordRAM.E1AmendedTarget
 import RMQ.Core.WordRAM.E1CanonicalInteriorWidth
 import RMQ.Core.WordRAM.E1ReviewerWidth
+import RMQ.Core.WordRAM.E1WholeQueryWidth
 import RMQ.Core.WordRAM.E1FringeFoldProgram
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam

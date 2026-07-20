@@ -8811,3 +8811,46 @@ are: `macroSize` `1/1/9/36/49`, `levelSlab` `1/1/36/216/294`,
 `blocksPerSuper` `1/1/3/6/7`, `deadAddress` `21/31/69/334/456`. All are
 polylogarithmic except `deadAddress`, which is the only one that needed a
 linear bound.
+
+## DD-20260719-264: the rejection witness for the program that ACTUALLY EXECUTES (E1-LaneM)
+
+`E1WholeQueryWidth.lean`. REQ-E1-02's anti-vacuity column asks for a width at
+which the certificate FAILS, so that the width it succeeds at is known to
+discriminate. `programSkeleton_not_fits_machineWordBits`
+(`E1ReviewerWidth.lean:399`) supplies one — but for
+`assembledValidPath`, which is not the executed program, and its constant
+(`555`) and window (`<= 255`) are that program's, not this one's.
+
+`wholeQueryProgram_not_fits_machineWordBits` is the same refutation about
+`wholeQueryProgram shape n` — definitionally
+`programSkeleton n (wholeQueryValidPath shape wholeQueryNoneExit)`
+(`E1WholeQueryProgram.lean:878`), which is what
+`wholeQueryMachineAgrees_of_bounds` (`E1WholeQueryAgreement.lean:68`) runs.
+The witness is the guard's own invalid-exit branch `brNZ regG 5644`; `5644`
+is `8 + 5636`, the skeleton's invalid-exit base, and equals
+`wholeQueryNoneExit` (`E1WholeQueryProgram.lean:532`). The window is
+`shape.size <= 2821`, from `2 ^ machineWordBits n <= 2 * n + 2`.
+
+**Neither refutation implies the other.** The two programs are siblings under
+one `programSkeleton`, of lengths `547` and `5636`, related by NO lemma —
+`assembledValidPath` passes `interior = []`. This is the same gap E1-LaneK
+recorded, and it applies to the anti-vacuity column exactly as it applies to
+the positive one.
+
+**The positive certificate is NOT supplied and is NOT stated conditionally.**
+Stating `wholeQueryProgram_fits_reviewerWordBits` with the interior, select
+and composition premises as hypotheses would produce precisely the shape this
+campaign has been paying down: a premise with no witness at the intended
+instantiation. It is left unstated. See `E1_LIVE_STATE.md` §17 for what it
+still owes.
+
+**That the executed program DOES fit is settled by evaluation, not assumed.**
+A scratchpad driver over `Cartesian.stackCartesianShape` mirroring
+`Instr.FieldsFit` constructor for constructor, including the `0 < k` divisor
+arm, reports at `shape.size = 0/1/5/40/64/300`: length `5646`, largest encoded
+field `5644` at EVERY size, `fits = true`, zero-divisor `divConst` count `0`;
+reviewer widths `19/20/22/24/25/27`. The binding field is constant because it
+is `wholeQueryNoneExit`, a branch target fixed by the program's own length,
+which dominates every shape-dependent field while `2 ^ w` grows. The tightest
+case is `n = 0`, where the envelope is `524288` and the headroom is about
+`93x`. This reproduces E1-LaneK's table at all six sizes.
