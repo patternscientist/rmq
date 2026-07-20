@@ -6159,3 +6159,83 @@ examined.
 
 To be handled in one final pass after Lane W's parametric width work lands,
 rather than as a separate round.
+
+---
+
+## C05 round 92 — THE SPACE CLAIM IS NOT A PARITY CLAIM. Our o(n) is a log
+## factor worse than Fischer & Heun.
+
+Settled by survey against primary sources on both sides.
+
+### THE FINDING
+
+| | overhead term |
+|---|---|
+| **Ours** | **Θ(n / log log n)** |
+| Fischer & Heun, SIAM J. Comput. 40(2), Thm 5.8 | **O(n log log n / log n)** |
+| Frontier (F&H Cor 5.9; Navarro-Sadakane) | O(n / log^c n), any c |
+
+**Worse by `log n / (log log n)²` — essentially a full log factor.**
+
+And the concrete consequence is worse than the asymptotics suggest. At `n = 2^20`
+the payload bound is about **6,811 times `2n`**. The overhead does not drop
+below `n` until roughly **`2^(2^1025)`**. So the `o(n)` is true and the proof is
+real, but at every size anyone will ever instantiate, the "lower-order" term is
+`10³`-`10⁴` times `n`.
+
+**Where it comes from, precisely.** Two call sites, both in the sparse-exception
+select tables: `idDivLogLogOverhead 512` (`RelativeTables.lean:1192`) and
+`idDivLogLogOverhead 1` (`GenericSelect/Source.lean:20`), where
+`idDivLogLogOverhead slots n = slots * (n / (log2 (log2 n + 1) + 1))`. These are
+in the **definitional chain** of the overhead the headline quantifies over — not
+in a discardable lemma. Every other component is already the good shape,
+`Θ(slots · n (loglog n)³ / log n)`.
+
+### WHAT IS GENUINELY STRONG, and should not be lost in the bad news
+
+- **The `o(n)` predicate is STANDARD.** `LittleOLinear`
+  (`Asymptotics.lean:22`) is the textbook `∀ε>0 ∃N ∀n≥N, f n ≤ ε·n`,
+  rationalised over `Nat` as `∀ scale > 0, ∃ threshold, ∀ n ≥ threshold,
+  scale * f n ≤ n`. Not bespoke, not weakened — a reviewer pattern-matches it.
+- **The `2n` is exactly `2n`** — `shape.bpCode.length = 2 * shape.size`
+  (`Shape.lean:51`), and the payload is one flat `List Bool` with **nothing held
+  outside the counted structure.**
+- **Query cost is genuinely constant** — `210` charged reads, `11886` machine
+  steps, both with no size hypothesis, at `Θ(log n)` word width. And it is
+  **more honest than the literature**: papers state `O(1)` and hide the
+  constant; we state the literal.
+
+### THE HONEST CLAIM, and it is not the one we have been implying
+
+Not "a formalization of the classical `2n + o(n)` bound." Rather: **a
+formalization of the `2n + o(n)` SHAPE, with an exact `2n`, a standard `o(n)`,
+and a weaker lower-order term.** The reviewer challenge — "your `o(n)` is
+`n/loglog n`, Fischer & Heun is `n loglog n/log n`, that is a log factor worse"
+— **is correct and is not answerable from what exists.**
+
+### TWO FURTHER GAPS THE SURVEY SURFACED
+
+**No construction-time theorem exists at all.** Classical claims `O(n)`
+construction; we prove nothing about it. A reviewer comparing full profiles will
+notice.
+
+**A mitigation exists but is unproved.** The dominant term enters via `≤`
+(`SuccinctFinal.lean:1755`), so a tighter envelope on those two call sites might
+recover `n (loglog n)³ / log n` — which would put us within `(loglog n)²` of
+classical, a defensible "matches up to polyloglog" claim. **But that is a
+DATA-STRUCTURE change, not a proof change**: the sparse-exception tables are
+sampled at `loglog n` granularity and would need `log n`. Cost unknown and
+probably substantial.
+
+### WHY THIS MATTERS MORE THAN ANY ROW IN THE MATRIX
+
+Eighty-odd rounds have optimised the CORRECTNESS axis, and it is in good shape.
+This is the first hard datum on the INTEREST axis, and it says the headline
+result is weaker than the framing has implied. **Better to have it now than from
+a reviewer** — and it was cheap to get, which is its own comment on how long it
+went unasked.
+
+It also outranks A1 in my judgement, because it determines what the paper can
+claim, and A1 determines how pleasantly a reviewer reads a claim already made.
+That is the owner's call, not mine, and it is now theirs to make with numbers in
+hand.
