@@ -5115,3 +5115,72 @@ charged, and it reads nothing.
 
 **Lane A8 launched** on both, plus the cross-arm value identification and the
 category finish.
+
+---
+
+## C05 round 79 — the cost ladder closes: sixteen of sixteen, and the summation
+## is DERIVED
+
+Lane A7 returned CANDIDATE_COMPLETE at `1e8dcc5`. **All sixteen remaining
+composite category logs bounded, plus all seventeen leaf logs** — which owed a
+`.length` bound at all — in a new `E1CostLadder.lean`, 856 lines, 52 theorems.
+
+**And it reached the summation.**
+`crossBlockArmCats_withCanonicalInterior_length_le : ... ≤ 10167`, **all-size, no
+size hypothesis, no asserted constant**, `10167 = 5498 + 4669` with both halves
+derived — and stated at the instantiation
+`crossBlockArm_withCanonicalInterior_runsTo` actually composes, so it bounds an
+**executed run** rather than a hypothetical one.
+
+**The connection that makes conjunct (c) real, and it is better than a lemma.**
+`cats.length` **IS** `totalSteps` — not by a bridge that could be missing, but by
+`RunsTo`'s own definition, whose last component is the `steps` field.
+`RunsTo.steps_le` states it and **depends on no axioms at all.** After a campaign
+spent hunting for missing bridges, this one was never needed: the identity is
+definitional.
+
+**It refused to invent the whole-query literal**, and the reason is the standing
+rule stated at its sharpest: the other three stage slots belong to other lanes,
+and "filling them with plausible figures would produce a number that **reads as
+derived and is not.**" That is precisely the failure mode "no asserted constants"
+exists to prevent, refused at the exact moment it would have been easiest to
+commit.
+
+**A distinction it recorded unprompted, and I want it preserved.** The `210`
+constant was **not exercised** by this lane — **`210` bounds READS; this lane
+counts STEPS** — and it said so explicitly "so nobody infers a connection I did
+not make." A worker fencing off an inference a reader might draw from adjacency
+is the same discipline as distinguishing a fixture's blindness from a block's.
+
+**Its own claim failed and evaluation caught it.** Its first docstring said the
+five dispatch arms "measure" 4/1814/3650/3651/5479. **Four of those are BOUNDS;
+only the `count = 0` arm's `4` is exact** — at the fixture shape a one-block
+range charges `602` against a bound of `1814`. Corrected in place, DD-20260719-224.
+
+**Anti-vacuity evaluated rather than argued**, at a real shape: `rankSeedLegCats`
+63 against 238, `sameBlockArmCats` 388 against 2074, `dispatchCats` 621 against
+5498, the cross-block arm 1031–1631 against 10167. So the logs are substantial
+and **the bounds are loose at small size by roughly 6x** — the honest price of
+"all-size, no hypothesis" — and both facts are in the module rather than left to
+be discovered by a reviewer.
+
+**Three stale sentences corrected, none of them its own**, and one is a small
+gem: a note in the validator asserting **"the string `FringeFoldUntouched` does
+not occur in this file"** — it now occurs **ten times**, because Lane A4's phases
+3k/4j execute exactly that clause. Its verdict: "a sentence asserting its own
+file's contents is grep-checkable, and one that has stopped being true is worse
+than no note." That note was written truthfully and was falsified by the very
+work it was pointing at.
+
+Three of my claims checked: `ascLog_length_le` held but **was not needed again**
+— none of the sixteen has an index-dependent iterated body, which it grepped
+rather than assumed. The leaf-logs-are-literals claim and the cheapest-order
+suggestion both held.
+
+Still owed from this lane's side: the three whole-query stage slots and hence the
+whole-query literal, which belong to the assembly lane; and a dispatcher between
+the two close-leg branches, which does not exist — so `closeLcaLegCats_length_le`
+**takes the disjunction as a hypothesis rather than inventing one.**
+
+`claude/e1-cost-algebra` is complete and green; its battery and merge are queued
+for the next quiet window, since Lane A8 is live on the campaign branch.
