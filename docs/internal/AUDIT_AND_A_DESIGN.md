@@ -5020,3 +5020,98 @@ Sixteen composite category logs remain unbounded. `ascLog_length_le` is the
 reusable half for any index-dependent body; the cheapest next targets are the
 leaf logs, then `fringeLegCats`/`fringeArmCats`, which sit directly above the
 now-bounded fold.
+
+---
+
+## C05 round 78 — the trace ladder closes; `.lcaNone` proved unreachable on the
+## same-block arm; and the ROUTE has a latent `Nat` truncation
+
+Lane A6 returned INCOMPLETE at `b8766c9`. **1343 insertions, ZERO deletions.**
+Items 1, 2 (same-block half) and 3 CLOSED; item 4 blocked on two obstructions it
+reported rather than forced.
+
+**The trace ladder is closed — eight rungs**, ending in
+`dispatchEvents_eq_routeReads`. And **rung 7 additionally closed the cross arm's
+interior-object identification**, which A3 had scoped as a separate obligation.
+The ladder is the value ladder's exact twin and **reuses its cell-correspondence
+lemmas rather than restating them**, so trace and value dispatch on the same
+decoded cell and cannot drift — which is the structural answer to the
+right-shape/wrong-content class rather than another fixture against it.
+
+**`.lcaNone` settled by PROOF on the same-block arm**, and the way it was settled
+matters. A5's presupposition worry — that `some (regsF fRes) = arm.value`
+*presupposes* someness — was the right worry, so A6 **inspected every hypothesis
+on the producing chain** and found **not one is `Option`-shaped**: no
+`arm.value = some x`, no `isSome`, no `Nat` standing in for a decoded answer. The
+someness is derived by execution, not assumed by the statement. And the witness
+is **found at the target**: the proof consumes a theorem already proven at the
+real `wholeQueryProgram` from `initialState`, with `n := right` making the bound
+`Nat.le_refl` so neither `n` nor the bound survives. Rule 5 in its strong form.
+The cross arm is explicitly NOT settled and it said so.
+
+**MY BUDGETED RECONCILIATION DID NOT EXIST** — twenty-eighth failed claim. I
+budgeted a segment/store reconciliation for rung 7;
+`(canonicalSummaryLayout shape).segment` is an `abbrev` chain to
+`concreteBPNativeInteriorTraceSegments.canonicalComponent`, so the rung closes by
+**`rfl`** after the trace rewrite. The worker recorded that rather than building
+a bridge and "using" it. Fifth time a brief of mine budgeted work that a
+definition already did.
+
+### OBSTRUCTION 1 — and the interesting part is WHOSE defect it is
+
+`decodePacket v = if v = 0 then none else some (v - 1)`. The route's `.full`
+value is `some (rank.value - 1)` **unconditionally**, and `0 - 1 = 0` in `Nat`.
+So machine and route disagree exactly when `rank.value = 0`: machine `none`,
+route `some 0`.
+
+**Read carefully, that is a latent truncation in the ROUTE, not in the machine.**
+The answer index is `rank(answerClose + 1) - 1`; for that to denote anything the
+rank must be at least 1. The route's `- 1` silently presupposes it and produces
+`some 0` when it fails; the machine's `decodePacket` encodes the same
+presupposition as `none`. Where the route is meaningful they agree; where they
+differ, the route is the one emitting garbage.
+
+**The resolution is therefore to prove the disagreement VACUOUS, not to weaken
+either side.** The discharge exists one layer down —
+`bpCloseOfInorder?_rankFalse_succ` (`BPShape.lean:156`), with a worked chain at
+`BPNavigationRAM.lean:1969`. The real work is linking `answerClose` to
+`bpCloseOfInorder?` and ruling out a **second** route to `0` via the read-failure
+fallback (`ChargedRankSelectLeafTrace.lean:181`).
+
+The worker did none of the tempting things: it did not weaken a side, and it
+**declined to carry `rank.value ≠ 0` as a hypothesis** because that would owe a
+satisfiability witness (rule 1) it could not supply. It also corrected the output
+stage docstring's claim that "the two shifts cancel … not a coincidence to be
+checked at runtime" — valid only on `rank.value ≥ 1`. DD-20260719-205.
+
+### OBSTRUCTION 2 — a coordinator decision, and here is my ruling
+
+`wholeQueryBranchCats` puts the two select legs **adjacent**; the machine
+separates them by `[registerWrite, arithmetic]` — the join computing `right - 1`
+— while charging only `[registerWrite]` before the first. Since `S.select` is one
+function at two positions, it must carry the connective as prefix, suffix or
+split, and all three clash. Fixing it changes `WholeQueryStageCats`, hence
+`WholeQueryMachineAgrees` and a public-facing signature, so the worker escalated
+rather than acting. Correct.
+
+**RULING: add an EXPLICIT CONNECTIVE STAGE to `WholeQueryStageCats`. Do NOT fold
+it into `select`.**
+
+The reasoning, since this decides how a public surface reads. The category
+function was deliberately written **from the route before the machine existed**,
+so that it could not be fitted to the machine — and that discipline is exactly
+why this mismatch surfaced as a finding instead of being absorbed. But what it
+found is that **the route's leg decomposition omits an inter-leg computation the
+machine must perform.** The route's four legs are adjacent in the TRACE because
+the join performs no reads; they are not adjacent in the CHARGE, because the join
+executes instructions. A category function that models the machine as running
+leg-then-leg with nothing between is not describing this machine.
+
+So the honest repair names the connective. Folding it into `select` would be
+precisely the fitting the worker warned against — it would make one function mean
+two different things at its two occurrences to avoid admitting a stage exists.
+Adding the stage says what is true: there is work between the selects, it is
+charged, and it reads nothing.
+
+**Lane A8 launched** on both, plus the cross-arm value identification and the
+category finish.
