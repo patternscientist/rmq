@@ -5333,3 +5333,92 @@ correction — and recorded the check instead of the finding.
    numeral that will need care not to conflate with either.
 5. **Tightness, which cannot be had without giving up the all-size property** —
    and all-size is the more valuable of the two.
+
+---
+
+## C05 round 82 — the evidence table: 3 SATISFIED, 6 PARTIAL, 2 NOT SATISFIED.
+## Construction is done; acceptance is not, and I said "~done" too early.
+
+Lane J returned CANDIDATE_COMPLETE at `e9bbb30` with the eleven-row table quoted
+from the cells rather than paraphrased. **SATISFIED: 01, 04, 05. PARTIAL: 02,
+03, 06, 08, 10, 11. NOT SATISFIED: 07, 09.**
+
+**MY THIRTY-SECOND FAILED CLAIM, ninth of its family: the supersession note was
+ALREADY WRITTEN** — it is the module docstring of `E1AmendedTarget.lean`, and it
+already named the third conjunct, the refuting witness, the five→six refreeze,
+the preserved equality and the width scoping decision. My §15 said "unwritten";
+the matrix cell says "Not started". Both false at HEAD. What was actually owed
+was the DD entry and the corrections that checking turned up.
+
+### THE TWO FINDINGS THAT MATTER MOST
+
+**1. REQ-E1-07's Prop is not proved, and three STATEMENT-LEVEL mismatches block
+it — one of which makes it FALSE.** `hagree` demands `∀ (store : ReadStore)`,
+but `WholeQueryMachineAgrees` pins the receipt to `wholeQueryRouteTrace shape
+left right` — values fixed by the shape — so a store answering differently
+falsifies it. **The universal form is not merely unproved; it looks false.** And
+the target binds one `validPath` and one `S` OUTSIDE the `xs` quantification
+while both discharged facts are shape-indexed. As the worker put it: these are
+properties of the statements, so **no amount of proving closes them.**
+
+**2. THE WIDTH CERTIFICATE IS ABOUT A DIFFERENT PROGRAM, and I missed it
+entirely.** `programSkeleton_fits_reviewerWordBits` is exactly as strong as
+advertised — but it certifies `assembledValidPath`, **547 instructions, with
+ZERO occurrences outside its own module**, while the agreement executes
+`wholeQueryValidPath`, **5636 instructions**. **No `ProgramFits` fact exists for
+the program that actually runs.** Lane A4 built the width certificate before
+Lanes A5-A8 built the real program, and nobody — least of all me — checked that
+the two were the same object. This is the round-70 lesson recurring: I verified
+the constant matched and did not verify the SUBJECT matched.
+
+### THE DAMAGE FROM MY FALSE SCOPE CLAIM, now quantified
+
+> "**REQ-E1-01 reads `Local` and is fully answered by local evidence**, yet its
+> matrix cell closes 'Does NOT discharge the row (whole-query scope)'. Several
+> rows have been held open on a framing their own Scope cells contradict."
+
+Rows were held open for weeks on something I invented. The worker correctly did
+not act on it.
+
+### RULING 1 — the `Local` vs whole-query scope question, resolved
+
+Lane J reported the tension rather than resolving it, correctly. **My ruling: a
+whole-query theorem DOES answer a `Local`-scoped row.** The Scope column's
+values are `Local`, `Local+roadmap`, `Public surface`, `Process` — it classifies
+**where the work lands**, not how large the claim is. `Local+roadmap` means the
+rung also moves roadmap text; `Public surface` means it touches published docs.
+Nothing in that vocabulary is about component-versus-whole-query, and REQ-E1-06's
+own evidence cell says "for every valid query", which is whole-query by its own
+text. So REQ-E1-06's conjuncts (a)/(b)/(c) are answered in the right form.
+
+### RULING 2 — REQ-E1-07's Prop must be REPAIRED, not proved as written
+
+A Prop whose `∀ store` clause is false cannot be proved and must not be. The row
+says "state the amended target Prop (`E1AmendedFamiliarMachineTarget` **or
+similar**)" — that latitude is exactly for this. **Correcting a statement that is
+false is not weakening a row**; shipping a proof of a false-as-written Prop, or
+leaving it unproved while calling the row satisfied, would be. The store must be
+the canonical one the agreement is about, and `validPath`/`S` must be
+shape-indexed to match the facts that exist. Record the change and its reason as
+a DD.
+
+### The remaining gaps, all real
+- **02**: no width fact for the executed program.
+- **03**: no witness that corrupting a READ VALUE IN THE STORE changes the
+  output — the mutants alter operands and instructions, not store contents, so
+  INV-VALUE-DEPENDENCY's specific challenge is unmet.
+- **06**: **no category-log discriminator anywhere** — `catLog`/`catCount`
+  appear 2+2 times in a 2766-line validator, both inside `runGuard`; ten
+  execution phases never inspect the category log.
+- **08**: `threshold-boundary` fixtures absent (zero hits for "threshold"),
+  same-block/cross-interior absent as fixture CLASSES, **and the literal `11886`
+  is never exercised**. Phase 5's stated reason is stale for the fourth time.
+- **09**: the charge-policy bullet list is un-updated and **E1 is referenced only
+  in FUTURE TENSE** ("will define", "must define") though the machine exists and
+  executes.
+- **10/11**: per-commit ledger and cross-matrix non-weakening audit unverified —
+  coordinator-side.
+
+**I called E1 "~done" one round too early.** The construction is complete and
+that was worth saying; the acceptance is not, and the distinction is exactly the
+one this campaign has spent eighty rounds learning to make.
