@@ -2707,14 +2707,14 @@ deriving Repr
 
 Expectation first, from `refRMQ` alone; only then the shape, the store,
 the program and the run. -/
-def runWholeQuery (salt : Nat) (name : String) (xs : List Int) (l r : Nat) :
-    WQReport :=
+def runWholeQuery (salt : Nat) (build : List Instr -> List Instr)
+    (name : String) (xs : List Int) (l r : Nat) : WQReport :=
   -- EXPECTATION FIRST, from the independent reference alone.
   let expected := refRMQ xs l r
   let (cls, thr) := classifyQuery xs l r
   -- ONLY NOW the machine.
   let shape := Cartesian.stackCartesianShape xs
-  let program := E1Query.wholeQueryProgram shape xs.length
+  let program := build (E1Query.wholeQueryProgram shape xs.length)
   let result :=
     E1Machine.run (legStore shape) program (wholeQueryStepBound + salt)
       (E1Query.initialState l r)
@@ -2743,8 +2743,13 @@ def runWholeQuery (salt : Nat) (name : String) (xs : List Int) (l r : Nat) :
     withinBound := result.steps <= wholeQueryStepBound
     reads := result.readLog.length }
 
-def wholeQueryReports (salt : Nat) : List WQReport :=
-  wholeQueryCases.map fun (name, xs, l, r) => runWholeQuery salt name xs l r
+/-- The honest whole-query builder: identity. -/
+def goodWholeQuery : List Instr -> List Instr := id
+
+def wholeQueryReports (salt : Nat) (build : List Instr -> List Instr) :
+    List WQReport :=
+  wholeQueryCases.map fun (name, xs, l, r) =>
+    runWholeQuery salt build name xs l r
 
 /-- Cases whose machine answer disagrees with the reference. -/
 def wqMismatches (rs : List WQReport) : List WQReport :=
@@ -2815,14 +2820,57 @@ report.  If the corpus were emptied, this would go `false` on its own and
 say so, without anyone editing a docstring. -/
 def wholeQueryComparisonAvailable : Bool :=
   wholeQueryCases.length > 0 &&
-    (wholeQueryReports 0).length == wholeQueryCases.length
+    (wholeQueryReports 0 goodWholeQuery).length == wholeQueryCases.length
 
 /-- The disagreements, or `none` when no comparison is available. -/
 def wholeQueryMismatches (salt : Nat) : Option (List WQReport) :=
   if wholeQueryComparisonAvailable then
-    some (wqMismatches (wholeQueryReports salt))
+    some (wqMismatches (wholeQueryReports salt goodWholeQuery))
   else
     none
+
+/-! ### MUTANT M: the whole-query comparison is FALSIFIABLE
+
+A phase that prints a pass without comparing is worse than an honest OPEN,
+so this is the check that the comparison above is live.
+
+**MUTANT M turns every `natLt` in the whole-query program into `natLe`.**
+The specification's answer is the LEFTMOST minimiser, and `refRMQ`
+(`:78`) is written to match: its fold "replaces the incumbent only on a
+STRICTLY smaller value".  Relaxing `<` to `≤` makes the machine replace the
+incumbent on a TIE as well, so it answers with a later minimiser.
+
+What makes this the right mutant rather than merely a broken one:
+
+* **it still HALTS**, on every case, and still writes a well-formed answer
+  packet -- so an exit-pc check, a halted-flag check, a receipt check and a
+  step-count check would all pass it.  `wqMutantStillHalts` asserts this,
+  which is what stops the phase claiming credit for catching a crash;
+* it is caught **only** by the value comparison against the independent
+  reference;
+* and it is NOT caught on every case -- a window with no tie answers
+  identically under `<` and `≤`.  So the corpus having tie-bearing
+  fixtures is load-bearing, exactly as `mergePathCoverage` (`:936`) is
+  load-bearing for mutant D. -/
+
+def mutatedWholeQuery (program : List Instr) : List Instr :=
+  program.map fun instr =>
+    match instr with
+    | .natLt d a b => .natLe d a b
+    | other => other
+
+/-- Mutant M genuinely changes the program and preserves its length. -/
+def wholeQueryMutationIsReal : Bool :=
+  let honest := E1Query.wholeQueryProgram (Cartesian.stackCartesianShape [3, 1, 4, 1, 5]) 5
+  let mutant := mutatedWholeQuery honest
+  honest != mutant && honest.length == mutant.length
+
+/-- Cases on which the answer comparison REJECTS mutant M. -/
+def wqMutantCaught (rs : List WQReport) : Nat := (wqMismatches rs).length
+
+/-- Mutant M halts on every case, so nothing here is credit for a crash. -/
+def wqMutantStillHalts (rs : List WQReport) : Bool :=
+  rs.all (fun r => r.halted)
 
 /-- **The status line, RENDERED FROM THE CONDITION rather than stored.**
 
@@ -3304,7 +3352,7 @@ def mainImpl : IO UInt32 := do
   -- step literal exercised.  No longer a hole.
   IO.println "-- phase 5: WHOLE-QUERY comparison, fixture classes, and the 11886 step bound --"
   let tw0 <- IO.monoMsNow
-  let wqRs := wholeQueryReports salt
+  let wqRs := wholeQueryReports salt goodWholeQuery
   let wqBad := wqMismatches wqRs
   let wqSteps := wqStepDisagreements wqRs
   let wqCompared := wqStepsCompared wqRs
@@ -3335,6 +3383,20 @@ def mainImpl : IO UInt32 := do
     IO.println (renderWQ m)
   let tw1 <- IO.monoMsNow
   IO.println s!"wholeQueryWallClockMs={tw1 - tw0}   (this binary on this host; NOT evidence)"
+  IO.println ""
+
+  -- STEP 4m: mutant M, the proof that phase 5 actually compares.
+  IO.println "-- phase 4m: deliberate mutation of the WHOLE-QUERY program (value-only visible) --"
+  let twm0 <- IO.monoMsNow
+  let wqMutRs := wholeQueryReports salt mutatedWholeQuery
+  let wqMutCaught := wqMutantCaught wqMutRs
+  let wqMutHalts := wqMutantStillHalts wqMutRs
+  IO.println s!"wholeQueryMutationIsReal={wholeQueryMutationIsReal}   (differs; SAME length)"
+  IO.println s!"mutantM_answerMismatches={wqMutCaught}   (must be > 0: the refRMQ comparison catches it)"
+  IO.println s!"mutantM_stillHalts={wqMutHalts}   (must be true: exit pc, halted flag and step count all MISS it)"
+  IO.println s!"mutantM_casesUnaffected={wqMutRs.length - wqMutCaught}   (windows with no tie answer identically under < and <=)"
+  let twm1 <- IO.monoMsNow
+  IO.println s!"wholeQueryMutationWallClockMs={twm1 - twm0}   (this binary on this host; NOT evidence)"
   IO.println ""
 
   -- Verdict.  Grouped into named clauses: a single `&&` chain over all of
@@ -3446,6 +3508,10 @@ def mainImpl : IO UInt32 := do
     wholeQueryComparisonAvailable && wqBad.isEmpty && wqHalt == 0 &&
       wqSteps == 0 && wqCompared > 0 && wqBound == 0
   let okWholeQueryCoverage := wqCov
+  -- Mutant M rejected BY THE VALUE COMPARISON while still halting: this is
+  -- what makes phase 5 a comparison rather than a printed pass.
+  let okWholeQueryMutation :=
+    wholeQueryMutationIsReal && wqMutCaught > 0 && wqMutHalts
   let okCore := okReference && okLengths && okDispatch && okLeg
   let okComposite := okSelect && okCompose && okComposeCoverage && okMerge
   let okAdversarial := okMutations && okMutantSetup && okMergeMutations
@@ -3453,7 +3519,8 @@ def mainImpl : IO UInt32 := do
   let okPreservation := okPres && okPresMutations
   let okChunkPreservation := okChunkPres && okChunkPresMutations
   let okNewDiscriminators :=
-    okDependence && okCategory && okWholeQuery && okWholeQueryCoverage
+    okDependence && okCategory && okWholeQuery && okWholeQueryCoverage &&
+      okWholeQueryMutation
   let ok :=
     okCore && okComposite && okAdversarial && okNew && okPreservation &&
       okChunkPreservation && okGuard && okGuardMutations &&

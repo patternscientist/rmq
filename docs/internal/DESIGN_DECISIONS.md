@@ -8756,3 +8756,48 @@ TWO counts -- the executed `run`'s `steps`, and the cost model's
 cases, with the comparison count itself a verdict clause so the agreement
 cannot be vacuous. Neither side is derived from the other: one folds
 `execInstr` over an instruction list, the other sums a category algebra.
+
+---
+
+## DD-20260719-286: MUTANT M makes phase 5 FALSIFIABLE -- `natLt` to `natLe` in the whole-query program (E1-LaneL)
+
+**Status.** New validator phase 4m, executed, mutant caught on 12 of 24
+cases.
+
+A phase that prints a pass without comparing is worse than an honest OPEN.
+DD-20260719-283 turned phase 5 into a comparison; this is the check that
+the comparison is LIVE rather than a formality that would report `0
+mismatches` no matter what the machine did.
+
+**MUTANT M turns every `natLt` in the whole-query program into `natLe`.**
+The specification's answer is the LEFTMOST minimiser, and `refRMQ`
+(`E1MachineValidate.lean:78`) is written to match -- its fold "replaces the
+incumbent only on a STRICTLY smaller value, which is what makes the answer
+the LEFTMOST minimiser rather than an arbitrary one". Relaxing `<` to `<=`
+makes the machine replace the incumbent on a TIE as well, so it answers
+with a later minimiser.
+
+Three properties make this the right mutant rather than merely a broken
+program:
+
+* **It still HALTS on every case** (`mutantM_stillHalts = true`), and still
+  writes a well-formed answer packet. An exit-pc check, a halted-flag
+  check, a receipt check and a step-count check would ALL pass it. This
+  clause is in the verdict specifically so the phase cannot take credit for
+  catching a crash.
+* It is caught **only** by the value comparison against the independent
+  reference: `mutantM_answerMismatches = 12`.
+* It is **not** caught on every case -- `mutantM_casesUnaffected = 12`,
+  because a window with no tie answers identically under `<` and `<=`. So
+  the corpus containing tie-bearing fixtures is LOAD-BEARING, exactly as
+  `mergePathCoverage` (`:936`) is load-bearing for mutant D. A corpus of
+  tie-free windows would report `0` here and the phase would be vacuous
+  without saying so.
+
+Measured behaviour on the five-element fixture: honest answers `some 1` at
+`[0,4)` (values `3,1,4,1` -- the minimum `1` occurs at indices `1` and `3`,
+and the leftmost is required); mutant M answers `some 3`. On `[1,1,2,1]`
+at `[0,4)` honest answers `some 0` and mutant M answers `some 3`. On
+`[3,1,4,1,5]` at `[0,2)` both answer `some 1`, since that window has no
+tie -- the unaffected case that shows the mutant is not simply destroying
+the program.
