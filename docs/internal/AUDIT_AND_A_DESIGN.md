@@ -5422,3 +5422,75 @@ a DD.
 **I called E1 "~done" one round too early.** The construction is complete and
 that was worth saying; the acceptance is not, and the distinction is exactly the
 one this campaign has spent eighty rounds learning to make.
+
+---
+
+## C05 round 83 — the M1 scout refutes my hypothesis, and would have aimed a
+## lane at the wrong branch entirely
+
+**MY THIRTY-THIRD FAILED CLAIM, tenth of the "budgeting work that already
+exists" family, and the most consequential of them.** I hypothesised that E1 had
+discharged much of M1. **E1 has discharged essentially NONE of it.** But M1 is
+nonetheless far more complete than its status line says — because most of it was
+already on `main` before E1 existed, and the rest sits **proved on the unmerged
+`codex/m1-...-r4` branch**. A lane dispatched on my hypothesis would have been
+pointed at the wrong branch and re-funded finished work.
+
+**Two structural facts refute it before any Lean is read, and I read neither.**
+The roadmap's own **DAG (`RMQ_FINAL_ROADMAP.md:64`) places M1 and E1 as
+SIBLINGS under U3**, both feeding V1 — not sequential. And empirically the two
+share no vocabulary: `storesAgreeOnOrderedReadFootprint` and
+`orderedReadFootprintWithStore` occur **zero times in any E1 file.** I inferred a
+dependency from adjacency in my own head.
+
+**The categorical difference, which is the survey's central answer.** M1's clause
+is a **supplied-store** theorem: two stores agreeing on the dynamic read set
+produce identical executions. E1's is a **single-store receipt**: one fixed store
+produces this exact event list — `wholeQueryMachineAgrees_of_bounds` **does not
+quantify over stores at all**, it instantiates at the canonical store. Along one
+axis E1 is stronger (it fixes order and read VALUES, not just an address set);
+along the axis M1 cares about it is silent.
+
+And the two facts connect: **because `RunsTo`'s receipt pins the values read, the
+∀-store form is not merely unproved but FALSE** — the same store-quantifier
+mismatch already blocking `E1AmendedFamiliarMachineTarget`. One defect, surfacing
+in two rungs.
+
+**Clause verdicts.** On `main`: PARTIAL / NOT ADDRESSED / PARTIAL (four of five
+invariant families; the missing one is **word-width**) / PARTIAL. On the r4
+branch: **SATISFIED / SATISFIED / SATISFIED (24 fields, all five families) /
+PARTIAL.** So M1's real state is "nearly done on an unmerged branch", not
+"partially present".
+
+**And r4 CANNOT COMPILE against `main`** — its field `certificate_weight_le_76`
+is proved by `nonSyntheticWeight_sum_le_76`, **which no longer exists on main**.
+Merge-base `5f59455`; the branch is 12 commits ahead of it while main is **189
+ahead**. Disposition: **rebase and re-audit — not merge as-is** (it would
+republish a superseded cost literal in a public paper-theorem conjunct) **and not
+supersede** (nothing on main or in E1 replaces it, both certificate theorems are
+fully proved and unconditional, and the certificate is genuinely consumed by
+`listIntSuccinctRMQPaperMainTheorem`).
+
+### THREE DEFECTS IN M1'S ROADMAP TEXT, and the third must be settled first
+
+1. **"Status: partially present; strengthen after `U3`" is the dangerous line** —
+   it reads as an invitation to build, when four families are already certified
+   on main and all four clauses are proved on a branch. Left as-is it re-funds
+   existing work, which is the failure this campaign has hit ten times.
+2. **"first-order controller execution" is not a name in the codebase.** It
+   occurs only in the roadmap. The Lean object is `canonicalInterpretedQueryCosted`.
+   A worker will grep for it and find nothing.
+3. **TWO GOVERNANCE DOCS DISAGREE ABOUT M1'S SCOPE.**
+   `DESIGN_DECISIONS.md:2254` says "M1 must still connect querying to a
+   serialized payload representation" — a different requirement from the
+   roadmap's four clauses, and one **r4's own acceptance matrix explicitly places
+   OUTSIDE the candidate.** Until that is reconciled **M1's completion criteria
+   are undefined**, and nobody should be dispatched at the rung. This is an
+   ownership question about what a rung requires, not an engineering one.
+
+**Also confirmed, and it is a timing artefact rather than a finding:** E1's width
+defect was still present at `e9bbb30` when the scout looked — both E1 worktrees
+clean at the same commit — because Lane K had not yet landed its repair. The
+scout independently confirmed the defect's shape, including that the
+anti-vacuity witness does not transfer either, since its branch numeral
+`555 = 8 + 547` is derived from the short path.
