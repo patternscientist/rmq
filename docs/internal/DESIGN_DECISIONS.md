@@ -8292,3 +8292,249 @@ Stating "the bounds are loose" would have been true and useless. The
 attribution is what tells a reader which theorem to sharpen if anyone ever
 wants tightness -- and sharpening it means giving up the all-size property,
 which is what the requirement actually asks for.
+
+---
+
+## DD-20260719-245: REQ-E1-07's supersession note — where it lives, and the four precision points checked at source (E1-LaneJ)
+
+**Status.** Landed, E1-LaneJ, branch `claude/b1-b2-charged-fringe-tables`.
+This entry is REQ-E1-07's required "design-decision entry"; the required "doc
+note" is the module docstring of `E1AmendedTarget.lean`, amended by this lane.
+
+**THE NOTE WAS ALREADY WRITTEN, AND THE RECORD SAID IT WAS NOT.** The
+acceptance matrix's REQ-E1-07 cell reads "Not started" and
+`E1_LIVE_STATE.md` §15 item 3 reads "The note itself is unwritten." Both are
+FALSE at this HEAD: the supersession note is the module docstring of
+`RMQ/Core/WordRAM/E1AmendedTarget.lean`, and it already named the third
+conjunct, the refuting witness, the five-to-six category refreeze, the
+preserved cost equality and the width scoping decision. This lane VERIFIED
+each of those against source rather than reconstructing them from prose, then
+amended the note where checking found it wrong (DD-20260719-246, -247).
+Ninth recorded instance of a brief budgeting work already done; settled by
+grepping before budgeting, per rule 4.
+
+**PRECISION POINT 1 — the refuted conjunct is the THIRD, and it is the
+conjunction that fails.** `E1R3FamiliarMachineTarget`
+(`7fe5b8b:RMQ/Core/SuccinctFinalSmallStep.lean:37016`) has three top-level
+conjuncts. The failing one is the familiar-local-iteration LOWER bound
+`∀ xs left right localCount, E1R3CanonicalSameBlockInvocation xs left right
+localCount → localCount ≤ (execute xs left right).localBPSteps`. The refuting
+witness is `e1R3CanonicalSameBlockInvocation_unbounded` (`:36941`), which for
+ANY proposed `literalTotal` produces a canonical same-block invocation whose
+`localCount` exceeds it. `e1R3FamiliarMachineTarget_obstruction` (`:37046`)
+then chains `localCount ≤ localBPSteps ≤ totalSmallSteps ≤ literalTotal` and
+closes by `omega`. Read at the commit, not reconstructed.
+
+It is the CONJUNCTION that is refuted, not either clause alone: an all-size
+literal step cap and an unbounded local-iteration lower bound cannot both
+hold. The amended route eliminates the third clause's SUBJECT — the
+same-block close is a charged-table lookup and no branch performs a
+per-position scan — which is why the amended Prop omits the clause instead of
+restating it with a bound. **The old target is superseded, NOT proved.**
+
+**PRECISION POINT 2 — the category set is REFROZEN, not inherited.** The
+refuted target carried FIVE step categories as fields of
+`E1R3FamiliarRunPacket`: `controllerSteps`, `decodingSteps`,
+`arithmeticSteps`, `localBPSteps`, `mergeSteps`. The amended machine freezes
+SIX as constructors of `Category` (`E1Machine.lean:107`, checked
+constructor-by-constructor: `memoryRead`, `registerWrite`, `arithmetic`,
+`comparison`, `branch`, `control`), per DD-20260718-005. These are partitions
+of DIFFERENT machines. `localBPSteps` — the category the refutation turned on
+— has NO successor among the six. The accounting conjunct is therefore stated
+against the six with `catCount_partition` (`E1Machine.lean:296`) as its
+identity, and not as an inherited five-way sum.
+
+**PRECISION POINT 3 — the cost clause stays an EQUALITY.** The refuted target
+demanded `packet.publicModeledCost = accepted.toCosted.cost`. Checked at
+source in the amended Prop (`E1AmendedTarget.lean`, valid-path conjunct): it
+is preserved as `catCount (wholeQueryCats S ...) Category.memoryRead =
+(SuccinctClassic.queryCosted xs left right).cost`, an equality, NOT weakened
+to `≤`. Only the total-step clause is an inequality, which is the shape
+REQ-E1-06 conjunct (c) itself asks for. Reported as checked and holding.
+
+**PRECISION POINT 4 — the numerals.** See DD-20260719-246. The row's own
+phrase "literal cap 33/8" conflates constants that are not the same constant.
+
+**THE ABSENT WIDTH CONJUNCT IS A SCOPING DECISION, NOT AN OMISSION.** Per
+DD-20260719-142, and re-checked here: `ProgramFits (machineWordBits n) ...`
+is FALSE at small `n` (at `n = 4` the modeled width is `3`, bounding
+registers at `8`, while the construction allocates to `152`), and
+`∀ n, ∃ w, ProgramFits w ...` is VACUOUS since every finite instruction list
+fits some width. Neither spelling is honest, so width accounting stays where
+it lives, as REQ-E1-02's row. The certificate that holds with NO size
+hypothesis is `programSkeleton_fits_reviewerWordBits`
+(`E1ReviewerWidth.lean:349`), which takes exactly one argument, `shape`.
+**But see DD-20260719-248: that certificate is about a different program than
+the one the whole-query agreement executes**, so the scoping decision's
+REASON survives checking while its reassurance does not.
+
+---
+
+## DD-20260719-246: there are THREE `33`s and TWO `8`s, and the first pair had never been flagged (E1-LaneJ)
+
+**Status.** Landed, E1-LaneJ. Recorded into the supersession note itself
+(`E1AmendedTarget.lean`), because that note is where the conflation would
+otherwise be published.
+
+REQ-E1-07's frozen text describes the amended route as one where "every loop
+is a chunk fold with literal cap 33/8". After B7 that sentence is true, but
+its numerals name different constants in different terms of the same sum.
+The two `8`s were flagged as distinct by the M3d-11 and M3d-12 matrix notes.
+**The two `33`s never were**, and they are the more dangerous pair, because
+one sits INSIDE the other's sibling term. All checked at source this round:
+
+* **fringe-window chunk-read cap** — the literal `33` in
+  `Nat.min (relHi / c + 1) 33` (`ChargedFringeChunks.lean:1647`, `:1665`),
+  discharged by `Nat.add_le_add_left (Nat.min_le_right _ 33) 4` (`:1676`,
+  `:1687`). It does NOT enter the whole-query sum on its own: it sits inside
+  `endpointFringe`, and that constant is DECLARED as a literal,
+  `bpChunkedEndpointFringeChargedTraceCost : Nat := 37`
+  (`ChargedFringeSubstitution.lean:25`). `37 = 4 + 33` is the JUSTIFICATION,
+  not the declaration — worth stating, because a reader who greps `37`
+  expecting an addition finds a numeral.
+* **whole-interior-directory read cap** —
+  `canonicalRelativeRmmPrincipledInteriorChargedTraceCost : Nat := 33`
+  (`InteriorDirectory.lean:1934`). This one DOES enter the sum directly, as
+  the `interiorDirectory` field (`SuccinctFinalRAM.lean:8817`).
+* **`3 * rankClose = 33`** — coincidence of value only. `rankClose := 11`
+  (`SuccinctFinalRAM.lean:8814`). Nothing in the algebra multiplies
+  `rankClose` by three; it is used twice inside `closeLCA` and once outside.
+
+The sum two of the three sit in is `2*35 + (2*11 + 2*37 + 33) + 11 = 210`
+with `closeLCA = 129`, both `rfl` (`SuccinctFinalRAM.lean:8828`, `:8823`).
+
+The two `8`s, re-checked: the fringe's per-word chunk cap
+(`machineWordBits_le_8_mul_bpFringeChunkBits`, `ChargedWordChunks.lean:39`;
+with `bpWordChunkCount_le_eight` at `:153` capping inside the definition at
+`:150`), and the interior table adapter's per-read chunk cap
+(`interiorChunkCount_le_eight`). **The interior one lives at
+`E1InteriorChunkFold.lean:189`, NOT in `E1InteriorChunkCap.lean`** despite
+that module's name; earlier drafts of the note cited the identifier with no
+file, and the obvious guess is wrong. The loop the row's `8` must mean, for
+the frozen sentence to be true, is the interior adapter's.
+
+Finally, `11886` (steps) and `210` (reads) are not comparable and neither is
+derived from the other. Recorded because the two will now sit adjacent in
+every summary of this work, and adjacency is precisely how the two `33`s came
+to be conflated in the first place.
+
+---
+
+## DD-20260719-247: `E1AmendedFamiliarMachineTarget` is STATED, not proved, and three quantifier mismatches block the obvious composition (E1-LaneJ)
+
+**Status.** Finding, recorded not repaired. Escalated for coordinator
+adjudication; the repair changes a Prop that REQ-E1-07 names by identifier.
+
+REQ-E1-07 demands the amended target be stated AND "prove[d] via your
+construction". The statement exists. **The proof does not, anywhere in the
+tree.** `E1AmendedFamiliarMachineTarget` occurs in exactly four places, all
+inside `E1AmendedTarget.lean` (two prose, the `def`, and the conclusion of
+the reduction). `amendedTarget_of_wholeQueryAgreement` has NO consumer. So
+REQ-E1-07's central obligation is unmet, and it is not unmet for want of a
+last composition step.
+
+**THREE MISMATCHES SEPARATE THE REDUCTION'S `hagree` FROM WHAT IS
+DISCHARGED.** Each is a property of the STATEMENTS, not of the proofs, so
+none can be closed by more proving:
+
+1. **Store.** `hagree` demands agreement for `∀ (store : ReadStore)`.
+   `wholeQueryMachineAgrees_of_bounds` (`E1WholeQueryAgreement.lean:64`)
+   supplies it only at `concreteBPNativeSuccinctRMQGlobalReadStore shape`.
+   The universal form is not merely unproved but appears FALSE:
+   `WholeQueryMachineAgrees` (`E1WholeQueryPublic.lean:114`) pins the run's
+   receipt slot to `wholeQueryRouteTrace shape left right`, a list of values
+   fixed by the shape, so a store answering differently falsifies it. The
+   invalid conjunct survives `∀ store` only because the guard path performs
+   no read — which is exactly why `amendedTarget_invalidGuard` discharges.
+2. **`validPath`.** The target binds ONE `validPath : List Instr` OUTSIDE the
+   quantification over `xs`. The discharged agreement runs the SHAPE-INDEXED
+   `wholeQueryValidPath shape wholeQueryNoneExit`
+   (`E1WholeQueryProgram.lean:518`).
+3. **`S`.** The target binds ONE `S : WholeQueryStageCats` outside the `xs`
+   quantification. Both the agreement and the literal
+   (`wholeQueryCats_machineS_length_le`,
+   `E1WholeQueryCostLiteral.lean:538`) are stated at the SHAPE-INDEXED
+   `wholeQueryMachineS shape` (`E1WholeQueryAgreement.lean:49`).
+
+Mismatches 2 and 3 are the same defect: a binder placed outside a
+quantification it depends on. The apparent fix — making `validPath` and `S`
+functions of the shape — is a change to the Prop REQ-E1-07 names, so it is
+NOT taken here.
+
+`E1AmendedTarget.lean` also does not import `E1WholeQueryAgreement`; its only
+import is `E1CostAlgebra`. That is a consequence of the above and not the
+cause, and adding the import would not close any of the three.
+
+**Two sentences in the note were corrected rather than left.** The header
+said the proof "needs the whole-query program, which does not exist in the
+tree" — it exists (`E1WholeQueryProgram.lean:518`, length `5636` at `:523`).
+The reduction's blurb said "Nothing else is owed" — more is owed, as above.
+A supersession note that misdescribes its own subject is the defect
+REQ-E1-07 exists to prevent, so both were fixed in place and the correction
+recorded here.
+
+---
+
+## DD-20260719-248: the reviewer width certificate covers a 547-instruction program; the whole-query agreement executes a 5636-instruction one (E1-LaneJ)
+
+**Status.** Finding, recorded not repaired. Bears on REQ-E1-02 and on
+REQ-E1-07's width scoping decision.
+
+`programSkeleton_fits_reviewerWordBits` (`E1ReviewerWidth.lean:349`) is the
+certificate the amended target's width discussion points to, and it is as
+strong as advertised in one respect: it takes exactly one argument, `shape`,
+with **no size hypothesis and no parametric width**, at the reviewer width
+`shapeWidth` (`E1ReviewerWidth.lean:233`, aliasing
+`concreteBPNativeSuccinctRMQReviewerWordBits`, `ReviewerPhysical.lean:1474`).
+
+**But it certifies `programSkeleton shape.size (assembledValidPath shape)`,
+and the whole-query agreement runs `programSkeleton n (wholeQueryValidPath
+shape wholeQueryNoneExit)`. These are different programs.**
+
+* `assembledValidPath` (`E1ReviewerWidth.lean:249`) is the same-block
+  dispatch composed with the cross-block arm at base `0` with an EMPTY
+  interior; its length is `547` (`:254`).
+* `wholeQueryValidPath` (`E1WholeQueryProgram.lean:518`) has length `5636`
+  (`:523`).
+* `assembledValidPath` has **zero occurrences outside
+  `E1ReviewerWidth.lean`** — it is not the path any agreement, cost or
+  receipt theorem runs.
+* **No `ProgramFits` or `FieldsFit` fact exists for `wholeQueryValidPath`**:
+  no `E1WholeQuery*.lean` module mentions either predicate.
+
+So the tree has a width certificate with no size hypothesis, and a
+whole-query simulation, and they are about different instruction lists. The
+gap is not that the width certificate is weak; it is that its subject is not
+the executed program. Recorded with exact citations so that whoever closes
+REQ-E1-02 aims at `wholeQueryValidPath` rather than re-deriving `547`.
+
+This does NOT weaken DD-20260719-142's reasoning for omitting the width
+conjunct from the amended target — the two bad spellings it rejects are still
+bad. It removes the reassurance that the omission is harmless because the
+accounting "already lives" in REQ-E1-02's row: for the executed program, it
+does not yet live anywhere.
+
+---
+
+## DD-20260719-249: `E1_LIVE_STATE.md` §11 D is retired — the `catCount`/`filter` bridge exists (E1-LaneJ)
+
+**Status.** Correction to live guidance, checked at source.
+
+§11 D of `E1_LIVE_STATE.md` reads: machine-level accounting uses
+`catCount log c`, every block-level cap uses `(log.filter (· == c)).length`,
+and "There is **no lemma connecting them anywhere**" — offered as work
+"absent, buildable today ... currently invisible to everyone".
+
+**The lemma exists**: `catCount_eq_filter_length` (`E1Machine.lean:321`),
+proved by induction with `by_cases` on constructor equality, together with
+the one-directional companion `catCount_le_of_filter_length_le` (`:333`)
+which is the direction block caps are actually stated in.
+
+The document is internally inconsistent rather than uniformly stale: §12 of
+the same file records the bridge as BUILT, and `E1CostAlgebra.lean:11-15`
+and its table at `:68` document the composition the bridge enables. Only §11
+D's sentence survives from before it landed.
+
+Recorded rather than edited into §11, per the convention §12 and §15 both
+use for inherited text that was accurate when written. Anyone acting on §11
+D should read `E1Machine.lean:321` first — the work it budgets is done.

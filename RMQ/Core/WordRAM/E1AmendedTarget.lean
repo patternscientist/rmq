@@ -3,8 +3,7 @@
 
 This module STATES `E1AmendedFamiliarMachineTarget` and records precisely how
 it relates to the refuted `E1R3FamiliarMachineTarget`.  It does not prove the
-target: the proof needs the whole-query program, which does not exist in the
-tree.  The STATEMENT does not need it, and stating it now is what lets
+target.  The STATEMENT does not need the proof, and stating it is what lets
 downstream rows name a real consumer instead of a hypothetical one.
 
 What IS proved here:
@@ -12,9 +11,52 @@ What IS proved here:
 * `amendedTarget_invalidGuard` -- the target's INVALID conjunct, discharged
   outright for every `validPath`, so that conjunct is known satisfiable at the
   intended instantiation rather than merely written down;
-* `amendedTarget_of_wholeQueryAgreement` -- the REDUCTION: exactly what is
-  still owed.  Supply width accounting, whole-query agreement on valid ranges,
-  and the derived literal cap, and the target follows.  Nothing else is owed.
+* `amendedTarget_of_wholeQueryAgreement` -- the REDUCTION: supply whole-query
+  agreement on valid ranges and the derived literal cap, and the target
+  follows.
+
+## STATUS OF THE TARGET, corrected 2026-07-19 (E1-LaneJ, DD-20260719-247)
+
+TWO SENTENCES THAT STOOD HERE WERE FALSE AT THIS HEAD AND ARE CORRECTED
+RATHER THAN LEFT, because this module is the supersession note's home and a
+note that misdescribes its own subject is the defect REQ-E1-07 exists to
+prevent.
+
+1. This header said the proof "needs the whole-query program, which does not
+   exist in the tree".  IT EXISTS: `wholeQueryValidPath`
+   (`E1WholeQueryProgram.lean:518`, length `5636` at `:523`), run by
+   `wholeQueryMachineAgrees_of_bounds` (`E1WholeQueryAgreement.lean:64`).
+2. The reduction's blurb said "Nothing else is owed."  MORE IS OWED, and it is
+   not a matter of filling the two slots.  `E1AmendedFamiliarMachineTarget` is
+   NOT PROVED anywhere in the tree -- it appears only in this file -- and
+   `amendedTarget_of_wholeQueryAgreement` HAS NO CONSUMER.  Three quantifier
+   mismatches separate the reduction's `hagree` from what is discharged, and
+   each is a property of the STATEMENTS, not of the proofs:
+
+   * **Store.**  `hagree` demands agreement for `∀ (store : ReadStore)`.
+     `wholeQueryMachineAgrees_of_bounds` supplies it only at
+     `concreteBPNativeSuccinctRMQGlobalReadStore shape`.  The universal form
+     is moreover not merely unproved: `WholeQueryMachineAgrees` pins the run's
+     receipt to `wholeQueryRouteTrace shape left right`, a list of values
+     fixed by the shape, so a store answering differently falsifies it.  The
+     invalid conjunct survives `∀ store` only because the guard path performs
+     no read.
+   * **`validPath`.**  The target binds ONE `validPath : List Instr` outside
+     the quantification over `xs`; the discharged agreement runs the
+     SHAPE-INDEXED `wholeQueryValidPath shape wholeQueryNoneExit`.
+   * **`S`.**  The target binds ONE `S : WholeQueryStageCats` outside the
+     quantification over `xs`; both the agreement and the literal
+     (`wholeQueryCats_machineS_length_le`,
+     `E1WholeQueryCostLiteral.lean:538`) are stated at the SHAPE-INDEXED
+     `wholeQueryMachineS shape` (`E1WholeQueryAgreement.lean:49`).
+
+   Recorded, not repaired.  Whether the target's binders should move inside
+   the `xs` quantification -- making `validPath` and `S` functions of the
+   shape -- changes a Prop that REQ-E1-07 names, so it is a coordinator
+   decision and not this lane's to take.
+
+   This module also does not import `E1WholeQueryAgreement`; its only import
+   is `E1CostAlgebra`.  That is a consequence of the above, not the cause.
 
 ## THE SUPERSESSION NOTE
 
@@ -70,17 +112,49 @@ inequality, and that is the shape REQ-E1-06 conjunct (c) itself asks for.
 **ON THE ROW'S OWN PHRASE "literal cap 33/8".**  REQ-E1-07's frozen text
 describes the amended route as one where "every loop is a chunk fold with
 literal cap 33/8".  That sentence is true after B7 but its numerals are
-ambiguous, and this note does not repeat it unqualified.  There are TWO
-distinct `33`s in this algebra -- the fringe-window chunk-read cap INSIDE
-`endpointFringe = 4 + 33 = 37` (`ChargedFringeChunks.lean:1624-1687`), and the
-whole-interior-directory read cap
-`canonicalRelativeRmmPrincipledInteriorChargedTraceCost := 33`
-(`InteriorDirectory.lean:1934`); `3 * rankClose = 33` is a third coincidence
-of value.  There are likewise two distinct `8`s: the fringe's per-word chunk
-cap (`machineWordBits_le_8_mul_bpFringeChunkBits`, `ChargedWordChunks.lean:39`)
-and the interior table adapter's per-read chunk cap
-(`interiorChunkCount_le_eight`).  The loop the row's `8` must mean, for the
-sentence to be true, is the interior adapter's.
+ambiguous, and this note does not repeat it unqualified.
+
+THERE ARE THREE `33`s.  All three were checked at source, 2026-07-19
+(E1-LaneJ, DD-20260719-246); the first two had never been flagged as
+distinct, and they are the dangerous pair because one sits INSIDE the other's
+sibling term in the same sum.
+
+* the **fringe-window chunk-read cap**, the literal `33` in the chunk count
+  `Nat.min (relHi / c + 1) 33` (`ChargedFringeChunks.lean:1647`, `:1665`),
+  discharged to a bound by `Nat.add_le_add_left (Nat.min_le_right _ 33) 4`
+  (`:1676`, `:1687`).  It does NOT appear in the whole-query sum on its own:
+  it sits inside `endpointFringe`, whose constant is declared as the literal
+  `bpChunkedEndpointFringeChargedTraceCost : Nat := 37`
+  (`ChargedFringeSubstitution.lean:25`).  The reading `37 = 4 + 33` is the
+  JUSTIFICATION -- four window-word reads plus the capped fold -- and not the
+  declaration.
+* the **whole-interior-directory read cap**,
+  `canonicalRelativeRmmPrincipledInteriorChargedTraceCost : Nat := 33`
+  (`InteriorDirectory.lean:1934`).  This one DOES appear in the sum, as the
+  `interiorDirectory` field (`SuccinctFinalRAM.lean:8817`).
+* `3 * rankClose = 33`, a pure coincidence of value: `rankClose := 11`
+  (`SuccinctFinalRAM.lean:8814`).  Nothing multiplies `rankClose` by three;
+  the sum uses it twice inside `closeLCA` and once outside.
+
+The whole-query algebra in which two of the three sit is
+`2*35 + (2*11 + 2*37 + 33) + 11 = 210`, with `closeLCA = 129`
+(`concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`,
+`SuccinctFinalRAM.lean:8828`; `...CloseCost_eq`, `:8823`).
+
+THERE ARE TWO `8`s, already flagged distinct by the M3d-11/M3d-12 matrix
+notes and re-checked here: the fringe's per-word chunk cap
+(`machineWordBits_le_8_mul_bpFringeChunkBits`, `ChargedWordChunks.lean:39`,
+with `bpWordChunkCount_le_eight` at `:153` capping inside the definition at
+`:150`), and the interior table adapter's per-read chunk cap
+(`interiorChunkCount_le_eight`, `E1InteriorChunkFold.lean:189` -- note the
+FILE, which earlier drafts of this note omitted; it is not in
+`E1InteriorChunkCap.lean` despite that module's name).  The loop the row's
+`8` must mean, for the sentence to be true, is the interior adapter's.
+
+`11886` -- the derived all-size STEP literal -- is none of these and is not
+comparable with `210`, which bounds READS.  Recorded here because the two
+numerals will now sit near each other in every summary of this work, and
+adjacency is exactly how the two `33`s came to be conflated.
 -/
 import RMQ.Core.WordRAM.E1CostAlgebra
 
