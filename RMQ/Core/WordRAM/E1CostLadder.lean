@@ -636,6 +636,180 @@ theorem crossBlockArmCats_length_le (shape : Cartesian.CartesianShape)
     crossRepointCats_length]
   omega
 
+/-! ## 11. THE SUMMATION
+
+REQ-E1-06 conjunct (c) asks for "an all-size literal `totalSteps <=
+<literal>` derived by `rfl`/omega from the per-phase algebra, no size
+hypothesis".  Three things have to be true for what is above to BE that, and
+each is checked rather than assumed.
+
+**First, `cats.length` IS `totalSteps`.**  Not approximately, and not by a
+lemma that could be missing: `RunsTo store program s s' reads cats` is
+DEFINED as `run store program cats.length s = <s', reads, cats, cats.length>`
+(`E1MachineCalculus.lean:96`), whose last component is the `steps` field.  So
+a bound on a charge log's length is a bound on the machine's step count with
+no bridging lemma in between.  `RunsTo.steps_le` below states this so that no
+reader has to unfold a definition to see it, and `run_steps_eq_catLog_length`
+(`E1Machine.lean:340`) is its run-level twin.
+
+**Second, no size hypothesis.**  Every bound above is universally quantified
+over `shape`, and none carries a hypothesis about `shape.size`,
+`bpCode.length`, or any width.  The caps that make this possible are all
+structural: `chunkIters_le_eight` and `bpWordChunkCount_le_eight` from the
+chunk arithmetic's own truncated-subtraction form, and `cap_count_le` from
+the `Nat.min ... 33` every fringe caller writes literally.
+
+**Third, no literal is asserted.**  `10167 = 5498 + 4669` is what
+`dispatchCats_length_le` and `crossBlockArmCats_length_le` produce when
+composed; it was not chosen and then checked.
+
+DD-20260719-228, DD-20260719-229.
+-/
+
+/-- The machine's charged step count is the charge log's length, hence any
+bound on the log bounds the steps.  True by `RunsTo`'s definition; stated
+because REQ-E1-06 conjunct (c) is phrased about `totalSteps` and a reader
+should not have to unfold `RunsTo` to see that this module answers it. -/
+theorem RunsTo.steps_le {store : ReadStore} {program : E1Machine.Program}
+    {s s' : State} {reads : List TraceEvent} {cats : List Category} {n : Nat}
+    (h : E1Machine.RunsTo store program s s' reads cats)
+    (hcats : cats.length ≤ n) :
+    (E1Machine.run store program cats.length s).steps ≤ n := by
+  rw [h]
+  exact hcats
+
+/--
+THE DERIVED ALL-SIZE LITERAL FOR THE CROSS-BLOCK CLOSE LEG.
+
+`10167 = 5498 + 4669`.  This is `crossBlockArmCats` at the interior log the
+tree actually composes it with -- `crossBlockArm_withCanonicalInterior_runsTo`
+(`E1InteriorDispatchCompose.lean:1302`) passes exactly
+`dispatchCats shape startBlock count` as `interiorCats` -- so this is a bound
+on an EXECUTED run's charge log, not on a hypothetical instantiation.
+
+Quantified over `startBlock` and `count`, so the specific route-side
+block arithmetic that site supplies is covered without this theorem having to
+mention it.
+-/
+theorem crossBlockArmCats_withCanonicalInterior_length_le
+    (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize startBlock count leftClose rightClose : Nat)
+    (interiorValue : Option (Nat × Nat)) :
+    (E1CrossBlockArm.crossBlockArmCats shape fringeSegment blockSize
+      (E1InteriorDispatchCompose.dispatchCats shape startBlock count)
+      interiorValue leftClose rightClose).length ≤ 10167 := by
+  have h1 := crossBlockArmCats_length_le shape fringeSegment blockSize
+    (E1InteriorDispatchCompose.dispatchCats shape startBlock count)
+    interiorValue leftClose rightClose
+  have h2 := dispatchCats_length_le shape startBlock count
+  omega
+
+/--
+THE CLOSE/LCA LEG, EITHER BRANCH, UNDER ONE LITERAL.
+
+The route takes the same-block leg when both closes fall in one block and the
+cross-block leg otherwise.  Both are bounded, and `10167` covers both because
+the cross-block leg is the wider by a factor of four.
+
+Stated as a disjunction on the log rather than as an `if`, deliberately: the
+tree has no single definition that dispatches between these two, and
+inventing one here would be a witness constructed FOR the premise rather than
+found at the target.
+-/
+theorem closeLcaLegCats_length_le (cats : List Category)
+    (h : (∃ (shape : Cartesian.CartesianShape)
+            (fringeSegment blockSize leftClose rightClose : Nat),
+          cats = E1CloseCompose.sameBlockDispatchCats shape fringeSegment
+            blockSize leftClose rightClose) ∨
+      (∃ (shape : Cartesian.CartesianShape)
+          (fringeSegment blockSize startBlock count leftClose rightClose : Nat)
+          (interiorValue : Option (Nat × Nat)),
+        cats = E1CrossBlockArm.crossBlockArmCats shape fringeSegment blockSize
+          (E1InteriorDispatchCompose.dispatchCats shape startBlock count)
+          interiorValue leftClose rightClose)) :
+    cats.length ≤ 10167 := by
+  rcases h with ⟨shape, fs, bs, lc, rc, rfl⟩ |
+    ⟨shape, fs, bs, sb, cnt, lc, rc, iv, rfl⟩
+  · have := sameBlockDispatchCats_length_le shape fs bs lc rc
+    omega
+  · exact crossBlockArmCats_withCanonicalInterior_length_le shape fs bs sb cnt
+      lc rc iv
+
+/--
+THE WHOLE-QUERY SUMMATION, OVER ALL FOUR ROUTE BRANCHES.
+
+`wholeQueryCats`'s per-stage logs are PARAMETERS (`E1WholeQueryCats.lean:98`)
+because the select, close/LCA and rank machine legs belong to other lanes and
+their category functions are not final.  So the summation this lane can
+honestly perform is the one over the CONTROL STRUCTURE: given a bound on each
+stage, the whole-query log is bounded by their sum, on every branch.
+
+`prologue + 2 * select + lca + rank + output` -- two selects on every branch,
+and one each of the close/LCA, rank and output stages, the skipped arms being
+covered by the same bound as the run arms.  The `2 *` is not an assumption
+about the route: all four branches charge `S.select left` and
+`S.select (right - 1)`, and the proof is a case split that would fail if any
+branch charged a third.
+
+What this lane supplies for the `lca` slot is `10167`
+(`closeLcaLegCats_length_le`).  The other three slots are not this lane's to
+fill, and no numeral is invented for them.
+-/
+theorem wholeQueryBranchCats_length_le_of (S : E1Query.WholeQueryStageCats)
+    (left right : Nat) (br : SuccinctFinal.WholeQueryBranch)
+    (p sel lca rank out : Nat)
+    (hp : S.prologue.length ≤ p)
+    (hsel : ∀ i, (S.select i).length ≤ sel)
+    (hlcaRun : ∀ i j, (S.lcaRun i j).length ≤ lca)
+    (hlcaSkip : S.lcaSkipped.length ≤ lca)
+    (hrankRun : ∀ i, (S.rankRun i).length ≤ rank)
+    (hrankSkip : S.rankSkipped.length ≤ rank)
+    (houtSome : S.outputSome.length ≤ out)
+    (houtNone : S.outputNone.length ≤ out) :
+    (E1Query.wholeQueryBranchCats S left right br).length ≤
+      p + sel + sel + lca + rank + out := by
+  cases br with
+  | leftSelectNone =>
+      simp only [E1Query.wholeQueryBranchCats, List.length_append]
+      have h1 := hsel left
+      have h2 := hsel (right - 1)
+      omega
+  | rightSelectNone _ =>
+      simp only [E1Query.wholeQueryBranchCats, List.length_append]
+      have h1 := hsel left
+      have h2 := hsel (right - 1)
+      omega
+  | lcaNone lc rc =>
+      simp only [E1Query.wholeQueryBranchCats, List.length_append]
+      have h1 := hsel left
+      have h2 := hsel (right - 1)
+      have h3 := hlcaRun lc rc
+      omega
+  | full lc rc ac =>
+      simp only [E1Query.wholeQueryBranchCats, List.length_append]
+      have h1 := hsel left
+      have h2 := hsel (right - 1)
+      have h3 := hlcaRun lc rc
+      have h4 := hrankRun (ac + 1)
+      omega
+
+/-- The same summation at the branch the route actually takes. -/
+theorem wholeQueryCats_length_le_of (S : E1Query.WholeQueryStageCats)
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (p sel lca rank out : Nat)
+    (hp : S.prologue.length ≤ p)
+    (hsel : ∀ i, (S.select i).length ≤ sel)
+    (hlcaRun : ∀ i j, (S.lcaRun i j).length ≤ lca)
+    (hlcaSkip : S.lcaSkipped.length ≤ lca)
+    (hrankRun : ∀ i, (S.rankRun i).length ≤ rank)
+    (hrankSkip : S.rankSkipped.length ≤ rank)
+    (houtSome : S.outputSome.length ≤ out)
+    (houtNone : S.outputNone.length ≤ out) :
+    (E1Query.wholeQueryCats S shape left right).length ≤
+      p + sel + sel + lca + rank + out :=
+  wholeQueryBranchCats_length_le_of S left right _ p sel lca rank out hp hsel
+    hlcaRun hlcaSkip hrankRun hrankSkip houtSome houtNone
+
 end E1CostLadder
 end WordRAM
 end RMQ
