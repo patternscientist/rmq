@@ -6729,3 +6729,110 @@ recorded failures this campaign have been anchor failures, and this sweep found
 nine more that no lane introduced deliberately. **A1 will move modules wholesale
 and will invalidate anchors at a scale nothing here approaches.** Anchor
 convention is worth settling BEFORE A1 starts, not after.
+
+---
+
+## C05 round 97 — REQ-E1-11 closed by an audit that was RUN rather than
+## asserted; and it found a false proposition on public headline surface.
+
+Owner directed a Codex decision review of the `o(n)` finding, and asked whether
+the remaining E1 work should go first. **Answered: parallel, not serial.** The
+`o(n)` question is about the SPACE claim (`GenericSelect`/`SuccinctFinal`); E1 is
+about the COST claim. They touch at exactly one point — my recommendation rests
+on "the fix reopens `210`" — which a reviewer needs as a paragraph, not as a
+finished campaign. Only REQ-E1-09 and -11 are constant-sensitive, and a "fix it"
+verdict would make those cheap re-runs rather than wasted work.
+
+Three E1 lanes launched (-03, -08 in isolated worktrees; -11 read-only).
+
+### REQ-E1-11 — the audit holds, on per-row evidence
+
+**82 closed rows enumerated individually by frozen ID: 0 weakened, 0 falsified,
+11 stale-wording, 71 unaffected.** The row's own residual text made the point
+that mattered — "AMENDMENT A1's scope note ASSERTS that no Closed row was
+altered; **that assertion is not the audit and is not evidence for it**" — and
+that distinction is exactly what this round paid off.
+
+**Scope correction: there are no standalone B3 or B4 matrix FILES.** They are
+continuation sections of `B2_CHARGED_FRINGE_ACCEPTANCE_MATRIX.md` (B3 `:212-240`,
+B4 `:371-392`). Anyone searching for separate files finds nothing and could
+mistake that for absence of rows.
+
+**Both conflation hazards were real, not theoretical.** Five closed rows
+(REQ-B2-03, -10, INV-ALL-SIZE, REQ-B3-02, INV-B3-ALL-SIZE) are written to the
+bare "33" shorthand. All five mean the FRINGE cap (`ChargedFringeChunks.lean:1647`),
+which did NOT move — not the interior cap (`InteriorDirectory.lean:1934`), which
+did. Had the audit not checked identity before adjudicating, it would have
+reported five false positives or, worse, five false clears.
+
+And rows stated against frozen HISTORICAL constants are **not** weakened by a
+live constant moving — that is precisely why those were pinned to literals. So
+the `30` in REQ-B2-15 and REQ-B3-09 remains CORRECT.
+
+**Two candidate P0s chased and cleared.** A theorem whose `route <= 30` conjunct
+is now false was **DELETED, not weakened**, and no in-scope row depends on it.
+Two survivors named `..._cost_le_thirty_...` are stated against the cap FIELD
+rather than a literal, so they still hold at 33 — stale names only.
+
+### TWO FINDINGS BEYOND THE ROW'S CHARTER
+
+**1. The residual-gap text I had been working from was INCOMPLETE. B7 moved
+THREE constants, not two.** Commit `c45e62c` also moved
+`canonicalRelativeRmmInteriorQueryCost` `240 -> 264`, carrying
+`canonicalTransitionalQueryCost` `328 -> 352`. Four in-scope rows are stale
+against `328`; none weakened, since none asserts the value as its own
+proposition. **Unlike `207`, no frozen historical `328` was minted** — `328`
+appears nowhere in the Lean sources, so the alias name is the only place it
+survives. Worth noting as an asymmetry in how the two retirements were handled.
+
+**2. A FALSE PROPOSITION ON PUBLIC HEADLINE SURFACE — found and repaired.**
+`RMQCompatibility.lean:85` docstringed `succinctRMQCompatibility328QueryCostEq`
+as "computes to `328`", while the theorem it aliases proves **`= 352`**
+(`SuccinctFinalRAM.lean:9729-9734`). The frozen public NAME was preserved
+untouched — renaming it is on the escalate list and would be wrong anyway — and
+only the docstring corrected, now recording why name and value differ. Headlines
+module builds clean.
+
+**The same defect is on `main` (`:98` there).** Repaired on the campaign branch
+only; `main` is Codex's to carry, and is recorded for them.
+
+**And it is a direct instance of the round-94 gate finding.** No gate scans
+`RMQ/`, so a false claim sat in the public headline surface with every gate
+green. The claim-drift pattern migrated to `352` would not have caught it,
+because it looks for the NEW numeral in prose, not for the OLD one attached to a
+live identifier.
+
+### THE CODEX REVIEW PROMPT
+
+Engineered per the canonical `rmq-audit-prompt` skill read from `main` — not the
+local wrapper, which still defers to the pre-rename path. Committed at
+`docs/internal/CODEX_REVIEW_REQUEST_ON_2N_PLUS_ON_2026_07_20.md`.
+
+Mode declared as **DECISION REVIEW**, since all four of the skill's modes
+presuppose a candidate commit and the subject here is a recommendation. The
+skill's substantive demands carry over.
+
+Independence is compromised in exactly one direction — the owner asked for review
+OF the recommendation, so it must appear — and that is handled by quarantining it
+behind a written PHASE 1 verdict, **with the compromise disclosed in the prompt
+itself** rather than papered over.
+
+All nineteen load-bearing claims are tagged with the evidence tier they actually
+rest on, and the reviewer is pointed at our four WEAKEST rather than our
+strongest:
+
+- **C6** (the term is zero below `2^97`) is a **Python transcription** — the
+  weakest tier in the skill's own hierarchy.
+- **C7** (order-tightness) is precisely what the skill says to distrust: a
+  claimed tightness with **no lower-bound witness**, where the scout itself said
+  it could not enumerate the achievability argument. Per the skill, an upper
+  bound proves only an upper bound.
+- **C8** (forced) rests on a precondition that may be an artifact of one leaf.
+- **C15** (fixing moves `210`) is **my own inference and the load-bearing premise
+  of the entire recommendation.** If a reviewer finds a route that changes what
+  is STORED without changing what is READ, the recommendation collapses. Made it
+  Q4 and said so explicitly.
+
+Also asked directly whether recommendation item 3 is **self-serving** — "document
+it as future work" being what a team says when it does not want to do the work —
+and told the reviewer to answer as a program-committee reviewer would.
