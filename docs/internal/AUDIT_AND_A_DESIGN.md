@@ -6940,3 +6940,137 @@ migration, in Codex's existing handoff. **Plus the rung's real gate, which no
 amount of internal work substitutes for: a fresh blind external audit.** Ten
 SATISFIED rows adjudicated by the coordinator who commissioned the work is not
 the same thing, and should never be presented as if it were.
+
+---
+
+## C05 round 99 — THE CODEX DECISION REVIEW REFUTED TWO OF MY THREE
+## JUSTIFICATIONS, INCLUDING THE LOAD-BEARING ONE. The direction survives; the
+## reasoning does not.
+
+The review was run in two genuinely separated phases — the Codex coordinator
+noticed my prompt's PHASE 2 was visible from the start and **withheld it until
+the reviewer had frozen its independent PHASE 1 verdict.** That is the correct
+execution of the design I described but did not enforce. Recorded because the
+next prompt of this shape should be built that way from the start.
+
+### WHAT WAS REFUTED
+
+**1. C15 IS FALSE — "fixing this necessarily reopens `210` and `11886`."** This
+was **the load-bearing premise of my entire recommendation.** I flagged it as the
+thing most worth attacking, and it did not survive.
+
+The `210` theorem charges the fixed logical read/rank/select event algebra
+`2*35 + (2*11 + 2*37 + 33) + 11 = 210`. **Payload length and address width do
+not occur in that sum.** A storage refinement preserving the same logical
+one-read interfaces could preserve `210` unchanged. And `11886` is a separately
+derived machine-step/category bound — the source explicitly distinguishes it from
+`210` rather than deriving it. A particular redesign might move either, but
+improving the space bound **does not make that necessary.**
+
+My inference ran: `bpChunkedSelectCosted` rebuilt these leaves and moved cost
+13 -> 35, therefore rebuilding them again moves cost. That is precedent
+reasoning, not proof, and it conflated *changing the leaf's read pattern* with
+*changing what is stored behind an unchanged interface.*
+
+**2. C7 IS NOT ESTABLISHED — the `Theta(n/loglog n)` term is NOT proved tight.**
+Lean proves only that the data-dependent sparse-exception payload is BOUNDED by
+that allowance. **There is no reachable Cartesian-tree/BP family, no equality
+witness, and no lower-bound theorem** showing the actual table is
+`Omega(n/loglog n)`. The envelope is asymptotically LOOSE until a matching
+reachable witness is found.
+
+**This is exactly what the audit-prompt skill's own standard predicted**, and I
+had quoted it in the prompt: an upper bound establishes only an upper bound. I
+recorded Q3's "order-tight" verdict into round 94 as a finding anyway. **I should
+not have accepted it — the scout itself said it could not enumerate the
+achievability argument, and I logged it as settled.**
+
+**3. C8 "forced" is not established.** The two-word dense leaf explains the
+PRESENT IMPLEMENTATION; it does not establish architectural forcedness.
+Unexcluded: compressed count-summary routing, storage-only compression or
+omission of unused entries, hierarchical tables, an encoding representation,
+constant-many reads through a different leaf, and — most importantly —
+preserving the current logical lookup interface over different physical storage.
+
+**4. Golynski's bound was applied with the wrong model sensitivity.** It is for
+the more specific exposed-bitvector-plus-index model and **does not automatically
+bar encoding structures here.** I presented it as a hard floor on us. It is not.
+
+**5. The threshold `n` was wrong.** `localStride m = 1` holds for BITVECTOR
+LENGTH `m < 2^97`. The BP bitvector has length `2n`, so the **public RMQ-input
+threshold is `n < 2^96`, not `2^97`.** I propagated `2^97` into the round-94 log
+and into a memory file. Both corrected.
+
+**6. The finite-size number was wrong.** At `n = 2^20` the disputed term is about
+**1.50%** of the advertised envelope, not "under 1%", and `logLogCubed` is about
+**98.45%**. The qualitative conclusion — the cubed-log families dominate — holds.
+The number I quoted did not.
+
+**7. "Exactly `2n`" needs phrasing care.** What is exact is the BP CORE,
+`bpCode.length = 2n`. The complete counted flat payload satisfies
+`payload.length <= 2n + h(n)` with `h = o(n)` proved. Input values, proof-only
+fields and construction workspace are not thereby counted, and **there is no
+construction-time or construction-working-space theorem at all.**
+
+### WHAT SURVIVED
+
+The near-term ACTION was broadly right: reframe and tighten now, do not
+immediately redesign. But it was right for different reasons than I gave —
+because the term is **not known to be tight**, not because it is **forced**.
+That distinction is the whole finding.
+
+### THE DECISION-BEARING QUESTION, RESTATED PROPERLY
+
+Not "is it forced?" but:
+
+> **Is there a reachable Cartesian-shape/BP family making the REAL
+> sparse-exception payload `Omega(n / log log n)`?**
+
+- If such a family exists -> architectural improvement is justified.
+- If it does not -> the right fix is **tighter analysis or a piecewise budget,
+  not a new query mechanism.**
+
+That is a concrete missing theorem in place of my hand-wave, and it is a strictly
+better framing than anything I produced.
+
+### REVISED ORDER (adopted from the review)
+
+1. **Do not block or reopen E1.** Finish against the current `210`/`11886`
+   interfaces. Nothing here proves either must change. *(Matches what we are
+   already doing — the only justification that survived intact.)*
+2. **Prove the zero-range theorem.** Chain: `bits.length < 2^97 -> localStride
+   bits.length = 1`; `localStride = 1 -> sparseExceptionRelativeTable.payload =
+   []`; public BP corollary `n < 2^96 -> payload = []`. Proof-only; does not
+   touch query execution or cost.
+3. **Expose a piecewise/practical-range space result**, retaining the existing
+   all-size `o(n)` theorem.
+4. **Correct public wording** — exact `2n` BP core; total payload `<= 2n + h(n)`;
+   `h = o(n)` proved; the explicit envelope contains an `n/loglog n` allowance
+   **not known tight**; `210` is a charged read/rank/select bound, **not
+   conventional word-RAM time**; no construction-time or workspace theorem
+   claimed.
+5. **Before any redesign, require the reachable lower-bound family.**
+6. **If redesign becomes justified, try STORAGE REFINEMENT first** — preserve the
+   logical lookup interface, and **explicitly test** whether `210` and `11886`
+   move rather than assuming either way.
+7. **Only then constants** — and note tuning the `512` alone is NOT the
+   highest-value practical intervention, since `logLogCubed` dominates the finite
+   envelope.
+
+### TWO THINGS TO STOP SAYING
+
+The future-work write-up **must not** say the term is forced, and **must not**
+say improving it necessarily reopens E1. Both are now known false. It should name
+the missing reachable-family theorem and distinguish indexing lower bounds from
+encoding alternatives.
+
+### AND ONE GAP WE HAVE NOT CLOSED
+
+**Any "first mechanized" claim still requires a systematic literature search,
+which has never been performed.** Cheap, and currently load-bearing for the
+framing.
+
+### VENUE
+
+Plausibly publishable at **ITP or CPP** as a mechanized succinct-data-structure
+result — **not** as a classically competitive RMQ construction.
