@@ -231,7 +231,7 @@ theorem no_uniform_store_run
 
 Not by evaluation: the concrete traces do not reduce in the kernel (the
 branch classifier unfolds into `machineWordBits`/`Nat.log2`, as
-`E1WholeQueryCats.lean:145` records).  It is derived instead from the
+`E1WholeQueryCats.lean:129` records).  It is derived instead from the
 machine's own CHARGE, which is symbolic. -/
 
 /-- Category counts add over `++`. -/

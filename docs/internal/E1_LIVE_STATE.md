@@ -2735,3 +2735,150 @@ construction.
 **No acceptance row is marked closed by this lane.** What is supplied against
 REQ-E1-06's and REQ-E1-02's evidence columns is in the report; the judgement is
 the coordinator's.
+
+## 16. Worklog — E1-LaneK (REQ-E1-07 repaired and proved; REQ-E1-02's interior chain), 2026-07-19
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `e9bbb30`. DD-IDs claimed
+and WRITTEN into `DESIGN_DECISIONS.md`: **`260`, `261`**. Band `262-279` free.
+Full `lake build RMQ` green at every commit.
+
+### ITEM 1 — REQ-E1-07: the target was FALSE as written; it is repaired, the old form REFUTED, and the new one PROVED
+
+All three audit findings were checked at source and all three held.
+
+**The `∀ store` clause is not merely unproved — it is false.** `execInstr`
+(`E1Machine.lean:160`) writes into each trace event the answer THE SUPPLIED
+STORE gives, so every event of a `RunsTo` receipt is
+`readWord segment index (store.readWord? segment index)`
+(`run_readLog_readWord_shape`, `E1Machine.lean:430`). The conjunct pinned the
+receipt to `(queryTraceResult xs left right).trace`, fixed by `xs` alone. A
+store-independent NONEMPTY receipt cannot be produced under two stores that
+answer differently. `no_uniform_store_run` states exactly that, with witnesses
+`⟨fun _ _ => none⟩` and `⟨fun _ _ => some []⟩`.
+
+**Nonemptiness was NOT available by evaluation, and that is worth knowing.**
+Two `decide` probes — on `(queryTraceResult [0,0] 0 2).trace ≠ []` and on the
+select leg alone — both got stuck at `hasDecEq`. These traces do not reduce in
+the kernel, which `E1WholeQueryCats.lean:129` already records about its own
+fixtures. It is derived instead from the machine's symbolic CHARGE:
+`wholeQueryCats_machineS_memoryRead_pos` — every one of the four route
+branches runs the left select leg, the leg's in-range arm reaches
+`entryReadCats` (`E1SelectBridge.lean:258`, first four entries `memoryRead`),
+and `left` is in range because
+`occurrenceCount shape.bpCode false = shape.size`
+(`falseSelectOccurrenceCount_eq_size`). `RunsTo.readLog_length_eq_memoryRead_count`
+carries it to the receipt.
+
+`uniformStore_amendedTarget_refuted : ¬ E1AmendedFamiliarMachineTargetUniformStore`
+is quantified over ALL `validPath`, `S`, `literalTotal`.
+
+**The repair.** Valid-path conjunct at the CANONICAL store; `validPath` and
+`S` become `Cartesian.CartesianShape → _` FUNCTIONS; the invalid conjunct
+KEEPS `∀ store`, because the guard reads nothing and the universal form is
+true and stronger there. The binders became functions rather than moving the
+existential inside `∀ xs` deliberately: the inside spelling asserts only that
+each input has SOME program, which is not one machine.
+
+`amendedFamiliarMachineTarget_holds` proves it by exhibiting
+`wholeQueryValidPath` (`E1WholeQueryProgram.lean:518`, `5636` at `:523`),
+`wholeQueryMachineS` (`E1WholeQueryAgreement.lean:49`) and `11886`
+(`E1WholeQueryCostLiteral.lean:538`). It is also the consumer
+`amendedTarget_of_wholeQueryAgreement` was found to lack. DD-20260719-260.
+
+**No width conjunct was added.** DD-20260719-142's reasoning still stands
+because ITEM 2 did not reach a width fact for the executed program; see below.
+
+### ITEM 2 — REQ-E1-02: the gap is CONFIRMED, the interior chain is supplied, the end certificate is NOT
+
+**The audit's claim is exactly right, re-grepped here.**
+`programSkeleton_fits_reviewerWordBits` (`E1ReviewerWidth.lean:349`) certifies
+`programSkeleton shape.size (assembledValidPath shape)`. `assembledValidPath`
+has **12 line-hits, all inside `E1ReviewerWidth.lean`** — zero elsewhere. The
+agreement executes `programSkeleton n (wholeQueryValidPath shape wholeQueryNoneExit)`,
+which is definitionally `wholeQueryProgram shape n`
+(`E1WholeQueryProgram.lean:876`). The two are siblings under the same
+`programSkeleton`, related by NO lemma, of different lengths (547 vs 5636) and
+different structure — `assembledValidPath` passes `interior = []`.
+
+**What is supplied: `E1InteriorDispatchWidth.lean`.** The reason the interior
+mattered is rule 1. `crossBlockArmProgramAt_fits` (`E1CrossBlockArm.lean:913`)
+takes the interior as the hypothesis `hinterior`, stated before an interior
+existed so it would have to be certified later. The interior landed as
+`canonicalInteriorDispatchBlock` (`E1InteriorDispatchCompose.lean:89`, `4204`
+at `:103`) and was NEVER certified — only the two leaves had `FieldsFit`
+lemmas — so `hinterior` was an OWED premise with no witness at any
+instantiation. Seventeen theorems now close that, parametrically in `w`, up to
+`interiorDispatchBlock_fits` over all 4204 instructions. DD-20260719-261.
+
+**WHAT IS STILL OWED for the end certificate**, precisely, so nobody
+re-derives it:
+
+1. `canonicalInteriorDispatchBlock_fits` — the CANONICAL instantiation of the
+   chain. `LayoutFits`/`GeomFits` must be discharged at
+   `canonicalSummaryLayout` and the four geoms. The bounds are reachable but
+   are real arithmetic: `blocksPerSuper = Nat.log2 shape.size + 1`
+   (`RelativeSummary.lean:1236`/`:1244`), `macroSize = blocksPerSuper ^ 2`,
+   `levelSlab = levelCount * macroSize`, and
+   `wordScale = 2 ^ machineWordBits shape.bpCode.length`
+   (`E1InteriorSummaryGroup.lean:471`). The entry lengths reduce to
+   `superCount`/`blockCount` (`RelativeSummary.lean:559`, `:566`). The
+   quadratic-in-a-logarithm ones need the `mix_le`/`sq_le_two_pow` pattern
+   already in `E1ReviewerWidth.lean:174`/`:93`.
+2. `selectCloseBlockAt_fits` — four sub-blocks already have `_fits`
+   (`entryReadBlock_fits`, `denseSelectLegBlock_fits`, `longLegBlock_fits`,
+   `sparseLegBlock_fits`) plus four literal segments and 12 glue
+   instructions. **One genuine gap:** `data.localSlotsPerSuper` carries no
+   `_pos` and no `_le_machine` in `SparseExceptionSelectData`, so its
+   `< 2 ^ w` has to come from the canonical builder, not a projection.
+3. Composition: `closeLcaCrossArm`, `closeLcaSameArm`, `closeLcaProgramAt`,
+   `wholeQueryRankLeg`, `wholeQueryOutputStage`, the literal glue, and the
+   final `programSkeleton_fits` application.
+
+**THE NUMBERS, evaluated not argued.** The executed program
+`programSkeleton shape.size (wholeQueryValidPath shape wholeQueryNoneExit)`
+is `5646` instructions. Evaluated in a scratchpad driver over
+`Cartesian.stackCartesianShape`, taking the LARGEST field any instruction
+encodes and comparing it against the reviewer envelope:
+
+| `shape.size` | max encoded field | reviewer `w` | `2 ^ w` | fits | zero divisors |
+|---|---|---|---|---|---|
+| `0` | `5644` | `19` | `524288` | yes | `0` |
+| `1` | `5644` | `20` | `1048576` | yes | `0` |
+| `5` | `5644` | `22` | `4194304` | yes | `0` |
+| `8` | `5644` | `22` | `4194304` | yes | `0` |
+| `40` | `5644` | `24` | `16777216` | yes | `0` |
+
+**The max field is CONSTANT at `5644` across every size measured**, because
+the binding field is `wholeQueryNoneExit` — a BRANCH TARGET fixed by the
+program's own length — and it dominates every shape-dependent field at these
+sizes, while `2 ^ w` grows. The tightest case is `n = 0`, where the envelope
+is `524288` and the headroom is still about `93x`. No `divConst` anywhere in
+the program has a zero divisor, so the positivity arm is satisfiable too.
+
+Size `5` is the validator's own fixture (`[3,1,4,1,5]`).
+
+**So the expected answer is that it DOES fit and the certificate is
+constructible; this lane simply did not finish constructing it.** That is an
+unproved residual, NOT a refutation, and it must not be reported as one.
+
+### A CLAIM OF THIS LANE'S OWN THAT FAILED, and how
+
+An intermediate version of the entire interior chain was reported green and
+was NOT. A scratchpad edit run through Python's default Windows encoding hit
+`UnicodeEncodeError` on a `∧` AFTER opening the draft for writing, which
+truncated it to ZERO BYTES; an empty Lean file compiles silently, so six
+consecutive `lake env lean` runs returned no output and were read as
+successes. Caught by checking the file's byte count. The chain was rebuilt
+from scratch, and `#print axioms interiorDispatchBlock_fits` was then used as
+a POSITIVE check that the declarations exist rather than trusting the absence
+of errors. **"No output" from a Lean run is inconclusive until the input's
+byte count is checked.**
+
+### Citations re-verified after the edits
+
+All sixteen citations written by this lane were re-checked against the
+declarations they name AFTER the edits. Fifteen held. One did not and is
+fixed: `E1WholeQueryCats.lean:145` was written for the kernel-irreducibility
+note, which is at **`:129`**; `:145` lands in `wholeQueryBranchCats`'s
+`leftSelectNone` arm. Corrected in both `E1AmendedTarget.lean` and
+DD-20260719-260.

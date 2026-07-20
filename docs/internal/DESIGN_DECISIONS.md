@@ -8586,7 +8586,7 @@ That argument is now the checked theorem `no_uniform_store_run`
 
 Nonemptiness is discharged rather than assumed, and NOT by evaluation: these
 traces do not reduce in the kernel, because the branch classifier unfolds
-into `machineWordBits`/`Nat.log2` (a fact `E1WholeQueryCats.lean:145` already
+into `machineWordBits`/`Nat.log2` (a fact `E1WholeQueryCats.lean:129` already
 records about its own fixtures, and which two `decide` probes in this round
 confirmed for `queryTraceResult` and for the select leg alone). It is derived
 instead from the machine's own CHARGE, which is symbolic:
