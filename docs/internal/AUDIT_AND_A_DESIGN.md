@@ -5184,3 +5184,74 @@ the two close-leg branches, which does not exist — so `closeLcaLegCats_length_
 
 `claude/e1-cost-algebra` is complete and green; its battery and merge are queued
 for the next quiet window, since Lane A8 is live on the campaign branch.
+
+---
+
+## C05 round 80 — THE WHOLE-QUERY PROGRAM IS COMPLETE
+
+Lane A8 returned CANDIDATE_COMPLETE at `54ceaf4`, all four items. **All four
+route branches execute from `initialState` to a halted state with receipt,
+charge and value in the ROUTE's own vocabulary; `WholeQueryMachineAgrees` is
+discharged; and the public `List Int` corollary lands on `ValidRange` and
+nothing more.**
+
+**The value disagreement is proved VACUOUS with neither side weakened and no
+hypothesis carried.** `decodePacket` keeps its zero guard, `wholeQueryBranchValue`
+keeps its unconditional `- 1`, and `rank.value ≠ 0` appears nowhere. Three steps,
+each worth recording:
+
+1. `rankCloseTrace_value_eq_rankPrefix` **closes the read-failure fallback** I
+   flagged as a second route to zero: the refinement lemma is unconditional and
+   base-generic, the store is definitionally the seed store, so the reads cannot
+   miss and `pure 0` is not the value. **A grep for `.value = Succinct.rankPrefix`
+   returned ZERO matches tree-wide** — the composition existed only inside two
+   proof bodies and had never been named.
+2. The `answerClose` ↔ `bpCloseOfInorder?` link, supplied **CONSTRUCTIVELY
+   rather than by inversion**, because there is no inversion lemma — only four
+   introduction lemmas. That is strictly stronger than what was asked: it is
+   simultaneously the identification **and** the rule-1 satisfiability witness
+   that `.full` is reached, **found at the target rather than built for the
+   premise**.
+3. `bpCloseOfInorder?_rankFalse_succ` then makes the value a successor.
+
+And the bounds are `ValidRange` **through the shape — the hypothesis the public
+corollary already carries. Nothing new is assumed.**
+
+**MY RULING WAS INCOMPLETE, and the way it was incomplete is the best finding
+here.** I ruled that a connective stage be added. The worker also split the two
+select-miss arms, and the reason is exact: the machine tests the two select
+results **in order**, so left-miss short-circuits after `[comparison, branch]`
+while right-miss pays for both. The old record used one `lcaSkipped` on both
+branches, **making those two cases literally the same term** — so
+`selectNone_branches_separable` now states a proposition that was previously
+**FALSE BY `rfl`**. A category record that could not distinguish two branches the
+machine distinguishes. Second finding of DD-206's class, and neither was
+anticipated by me.
+
+**Execution witnesses were not cut under the push-through directive**, which is
+what I most wanted to be true. The cross arm's one real hazard was executed
+rather than argued: the machine carries its interior **unguarded** while the
+route **guards** it, and they agree only because the guard collapses — at count
+`0` that arm is `pure none` with an empty read log. `dispatchTraceResult_of_not_lt`
+proves it, and the worker states the counterfactual: **had that arm read
+anything, the receipts would differ and the equation would have failed there.**
+
+**MY TWENTY-NINTH AND THIRTIETH FAILED CLAIMS**, both the same shape and both
+caught by grepping first: the cross arm was a **composition, not a lane** —
+`closeLcaProgramAt_runsTo_cross` already existed as the exact twin, and the run
+is the same-block proof with one lemma swapped — and the rank/`rankPrefix`
+bridge was already present, unnamed. **Sixth and seventh instances of a brief of
+mine budgeting work a definition already did.** That is now the single most
+reliable defect in my briefs, and the mitigation that works is the one the
+workers apply without being told: grep before budgeting.
+
+Eight of its own citations were off by 2-9 lines and it caught all eight by
+re-verifying after its edits. DD-207/208/209 written into the log.
+
+**What remains of E1's substance:** the whole-query step literal — A7 derived the
+close/LCA leg at `10167` and deliberately left three stage slots rather than
+invent numerals; A8 has now supplied the machine-side stage record those slots
+describe, so the summation can complete. Then the merge of
+`claude/e1-cost-algebra`, and the matrix adjudication, which is mine.
+
+Batteries running on both lanes in the quiet window.
