@@ -7437,3 +7437,93 @@ files) and will keep.
 
 **Merge after the E1 audit reports**, or route it to `main` separately. Recorded
 so nobody merges it "because it is green".
+
+---
+
+## C05 round 103 — the E1 address-width defect: real but bounded, and the
+## overflow scout repeated FINDING H. Verifying caught it.
+
+An external Codex audit of E1 at `8e7e3ee` found, and its coordinator confirmed,
+a semantic defect: `ProgramFits w` bounds ENCODED instruction fields (register
+indices), but `.readMem` reads the runtime address held in `s.regs addrReg`, and
+registers are unbounded `Nat`. Kernel counterexample: `.readMem 0 0 0` satisfies
+`FieldsFit w` while register 0 holds `2^w`. So `INV-ADDRESS-WIDTH` is not
+delivered by the certificate its own text names (REQ-E1-02's predicate).
+
+### SEVERITY — incompleteness, not falsehood
+
+`INV-ADDRESS-WIDTH` status is **Open**, never Satisfied. Nothing false was
+accepted. Every existing correctness theorem (value agreement, positional
+receipt, `210`, `<= 11886`) is TRUE under the current `Nat` semantics and none
+depends on the address-width invariant. The fix is ADDITIVE. What is missing is
+the WORD-RAM INTERPRETATION — that registers fit `Theta(log n)` bits.
+
+### THE EXCHANGE, and what I got wrong
+
+Three rounds of coordinator-to-coordinator audit. My corrected positions:
+- **My "INV-ADDRESS-WIDTH was over-read" — WRONG.** Line 83 demands "every
+  executed address/operand (including guard comparisons and dead branches)". It
+  genuinely demands all operands, and names a false bridge (REQ-E1-02).
+- **My "successful-read backing suffices" — WRONG.** `deadAddress` is emitted as
+  a read REGARDLESS of success (`E1InteriorReadBlock.lean:361`); the operand
+  predicate assigns `True` to `readWord` (`BoundedProfile.lean:54`).
+- **My tombstone migration — WRONG.** Old E1 DD ids are occupied by accepted B7
+  entries (6 verified collisions); a tombstone would sit on the accepted entry.
+- **My "no register machinery exists anywhere" — LITERALLY FALSE.**
+  `Register.lean` (39KB, same directory) defines `NatValuesFitInBits`, `NatExpr`,
+  `NoOverflow`. A narrow grep + a false universal — the exact failure the owner
+  had just warned against.
+- **My "overflow makes the bounded machine impossible" — overstated.** It kills
+  the cheap same-width exact simulation; widen/repair/modular remain.
+- **My "second machine is optional packaging" — withdrew.** Under the north star,
+  `Fin (2^w)` registers pattern-match as a word-RAM machine where `Nat + invariant`
+  does not. Codex has the better of the endpoint.
+
+Converged joint recommendation: (1) prove one canonical-execution fit certificate
+first — every register/PC/operand/result/address including failed/dead reads
+`< 2^reviewerWidth`, intrinsic to the accepted run, no caller premise; (2) then
+the two-layer endpoint — `Nat` reference machine + bounded reviewer-facing
+machine + one refinement bridge carrying output, receipt, category log, `210`
+reads and `11886` steps; (3) if fit fails, widen the constant envelope or repair
+arithmetic before weakening the invariant; (4) governance: fresh id for the map,
+no tombstones on occupied ids, dispose the duplicate `WDD-20260719-001`.
+
+### THE TWO GATING SCOUTS
+
+**(b) Is `Register.lean`'s calculus reusable? REBUILD (clean).** Incompatible
+representations, no E1 import, and `add`/`mulConst` are proved by TAKING the
+result-fit as hypothesis — zero leverage where it matters. **This refuted my own
+hopeful "may lower the cost."** Reuse E1's OWN capacity-envelope machinery
+(`lt_capacity_of_le_linear`, `WordAddressesStructure`) instead. `WholeQueryNatExpr`
+is a different route-side type carrying no fit calculus.
+
+**(a) Does the canonical run overflow? HALF-ANSWERED — and the scout repeated
+FINDING H.** It analyzed `assembledValidPath` (`E1ReviewerWidth.lean:430`), whose
+interior hole is `[]`, and concluded the interior does not execute. But the
+agreement theorem runs `wholeQueryProgram` -> `closeLcaCrossArm`
+(`E1WholeQueryCloseLca.lean:47`), which threads **`canonicalInteriorDispatchBlock`,
+length 4204** (`E1InteriorDispatchCompose.lean:105`), into the cross arm — the
+BULK of the executed cross arm (4574 = 370 + 4204). `assembledValidPath` appears
+only in the width files, never in execution. **This is DD-20260719-248 (finding H)
+recurring exactly**, and it was caught only by verifying the confident verdict
+against source rather than accepting it.
+
+Established so far: NO OVERFLOW for the ~370-instruction non-interior shell
+(select/rank/fringe/cross-arm-proper/output), well grounded — every product a
+monotone digit-build (max intermediate = final slot, sublinear) or floor-realign
+or index*stride; every sum `base + offset`; max value `~4*size` vs capacity slope
+400000. OPEN: the 4204-instruction interior dispatch (interior reads incl.
+`deadAddress`, interior mixed-radix chunk arithmetic). Redirect running.
+
+### THE PROCESS POINT, recorded because it keeps proving itself
+
+This defect, and the scout's repeat of finding H, are two more draws from the
+project's signature distribution: a plausible statement, false on inspection,
+surviving until adversarial reading. Neither was caught by the author; both by an
+independent read against source. The error rate is real on BOTH the artifact and
+the coordinator, and the only thing containing it is verify-against-source +
+adversarial cross-check + freeze-nothing-on-assertion. Do not relax it on E1's
+next increment — that is exactly where the remaining gaps of this class live.
+
+**No architecture is frozen. Nothing merged. E1 remains rejected and paused
+pending the interior overflow answer and the fit-certificate contract.**
