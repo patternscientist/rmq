@@ -8652,3 +8652,58 @@ This changes a Prop that REQ-E1-07 names. The row's own text asks for
 `E1AmendedFamiliarMachineTarget` **"or similar"**, and the coordinator ruling
 for this round was to repair the statement and then prove it rather than
 prove it as written. No acceptance row is marked closed here.
+
+---
+
+## DD-20260719-261: the interior dispatch block's width certificate, the chain `crossBlockArmProgramAt_fits`'s `hinterior` was waiting for (E1-LaneK)
+
+**Status.** New machinery. REQ-E1-02.
+
+`crossBlockArmProgramAt_fits` (`E1CrossBlockArm.lean:913`) takes the
+interior's instructions as a HYPOTHESIS, `hinterior`, deliberately stated
+before any interior existed so that the interior would have to be certified
+when it landed. It landed as `canonicalInteriorDispatchBlock`
+(`E1InteriorDispatchCompose.lean:89`, 4204 instructions) and was never
+certified.
+
+Before this round the only `FieldsFit` lemmas below it were the two LEAVES,
+`interiorChunkFold_fits` and `minCandidateBlock_fits`. Every intermediate
+layer had none, so `hinterior` was an OWED premise with no witness at any
+instantiation — rule 1.
+
+`E1InteriorDispatchWidth.lean` supplies the chain, parametrically in `w`:
+`summaryStage_fits`, `summaryGroup_fits`, `spanArms_fits`, `spanBlock_fits`,
+`mergeBlock_fits`, `mergeShuttle_fits`, `legSetup_fits`,
+`twoSpanArms_fits`, `twoSpanBlock_fits`, `twoLegBlock_fits`,
+`crossLegBlock_fits`, the five dispatch-literal lemmas, and
+`interiorDispatchBlock_fits` over all 4204 instructions.
+
+**Two findings recorded rather than worked around.**
+
+1. `TableGeom` and `SummaryLayout` (`E1InteriorSummaryGroup.lean:199`) carry
+   NO positivity or bound fields — unlike `SparseExceptionSelectData`, whose
+   `wordSize_pos`/`_le_machine` are free projections. So every geometry bound
+   is a genuine side condition. They are bundled as `GeomFits`/`LayoutFits`
+   rather than spelled out at each of the twelve call sites, but nothing is
+   assumed away: four divisor positivities (`L.blocksPerSuper`, the level
+   divisor `D`, `blockSize`, `macroSize`) are load-bearing and named.
+2. Register indices are `abbrev`s and are OPAQUE to `omega` — the same trap
+   the M3d-7 note records for `fCnt`. The `reg_bound` macro unfolds them
+   first. Its `try` is load-bearing: `simp only` FAILS when it makes no
+   progress, and most goals in the chain carry no register at all, so without
+   the `try` the tactic fails on exactly the goals it was not needed for.
+
+The register bound is `151 < 2 ^ w` throughout: `151` is `wLeft`
+(`E1InteriorDispatch.lean:117`) and is the global maximum of the WordRAM
+register map, so it dominates the leaves' own `99` and `117`.
+
+**A process note, recorded because it invalidated intermediate work.** A
+scratchpad edit performed with Python's default Windows encoding raised
+`UnicodeEncodeError` on a `∧` AFTER opening the draft file for writing, which
+TRUNCATED it to zero bytes. An empty Lean file compiles silently with no
+output, so several subsequent "green" runs of this chain were vacuous. The
+chain above was rebuilt from scratch and re-verified, and
+`#print axioms interiorDispatchBlock_fits` was used as the positive check
+that the declarations exist rather than relying on the absence of errors.
+Anyone iterating Lean in a scratchpad should treat "no output" as
+inconclusive until the file's byte count is checked.
