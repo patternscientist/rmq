@@ -136,11 +136,20 @@ Acceptance contract:
 - `REPLAY-SELECTOR-NONVACUITY`: focused selection must execute exactly one
   requested frozen ID and must reject unknown IDs. Add cheap named controls for
   an omitted middle ID, duplicated middle ID, valid frozen ID, and unknown ID.
+  Distinguish an omitted selector parameter from an explicitly bound empty or
+  whitespace value at the real script boundary; only omission may select the
+  full registry when the frozen contract permits that mode.
 - `REPLAY-SUBPROCESS-DEADLINE`: every external compiler/tool stage in a replay
   harness must have a positive evidence-based deadline, classify timeout as
   failure, terminate its owned process tree, and run cleanup plus live-tree
-  integrity checks in `finally`. Add a cheap sleeper self-test; do not discover
-  this control by hanging the full semantic campaign.
+  integrity checks in `finally`. Implement and exercise owned-tree termination
+  on every operating system that runs the required gate. Add a cheap sleeper
+  self-test that spawns a descendant and proves both root and child are absent;
+  do not discover this control by hanging the full semantic campaign.
+- When ordered dynamic-read agreement is primary and safe-footprint agreement
+  is a corollary, prove the read-region/segment containment bridge directly
+  from execution or program structure. It must not invoke the legacy safe
+  complete-result equality before reaching the ordered-dynamic theorem.
 - If a public wrapper guards valid inputs, ensure every combined field uses the
   same guard/domain. Raw adequacy may occur only under the valid-range premise
   or in a guarded packet with matching invalid semantics; a bridge theorem does
@@ -221,6 +230,8 @@ Verification:
   failure, reproduce and repair the smallest failing component before the one
   final aggregate rerun. Do not separately duplicate checks already included
   by the aggregate gate unless the prompt names a distinct acceptance purpose.
+  In particular, do not run standalone full replay/topology suites on the same
+  frozen tree immediately before a gate that owns those exact suites.
 - Run broad trust, policy, topology, and aggregate certification only after
   executable startup, one exact selector, and the full replay pass on frozen
   content when those controls are part of the contract.

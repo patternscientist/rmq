@@ -4652,3 +4652,74 @@ Publication-facing significance:
 None by itself. The decision makes the proposition-level M1 dependency and its
 anti-bypass evidence replayable; it does not change the machine, payload, cost
 model, theorem domain, or acceptance authority.
+## WDD-20260720-001: close M1-R5 dependency and replay-boundary blind spots
+
+Status: Accepted.
+Date: 2026-07-20.
+Scope: M1 proof-dependency audits, focused replay selectors, cross-platform
+process ownership, and exact-tree verification economics.
+
+Decision:
+
+1. A claimed dependency inversion is audited through theorem bodies, not only
+   final theorem types. If safe/static equality is meant to be a corollary of
+   ordered dynamic-read equality, the read-region containment bridge must be
+   derived from execution/program structure without invoking the legacy safe
+   complete-result equality.
+2. Full-suite omission and explicitly bound empty selection are distinct API
+   states. Only omission may select the full registry; bound empty, whitespace,
+   zero, unknown, missing, and duplicate selection fail at the production
+   script boundary before semantic execution.
+3. A timeout wrapper certifies every operating system that runs the required
+   gate. Root-only termination on non-Windows hosts is insufficient when the
+   bounded stage can spawn descendants. A sleeper must prove root and child
+   absence on the exercised gate OS.
+4. Focused development controls precede final certification. Do not run full
+   replay and topology suites separately on a frozen tree and then run an
+   aggregate gate that owns those exact suites, absent a distinct ledgered
+   purpose.
+
+Trigger and named regressions:
+
+Independent audit of rejected candidate
+`60a63888300c051041d95c0141e169bf93a6e98e` found that its advertised
+safe-primary route used the legacy safe equality to prove read containment, an
+explicitly bound empty selector executed the full registry, its Windows-only
+Job ownership did not certify Ubuntu CI, and standalone final replay/topology
+suites duplicated about 40 minutes inside the later aggregate gate.
+
+- `M1R5-SAFE-PRIMARY-CANNOT-DEPEND-ON-LEGACY-SAFE-EQUALITY`
+- `M1R5-BOUND-EMPTY-SELECTOR-IS-NOT-OMISSION`
+- `M1R5-OWNED-PROCESS-TREE-MUST-MATCH-GATE-OS`
+- `M1R5-EXACT-TREE-GATE-STAGE-DUPLICATION`
+
+Rejected alternatives:
+
+- Accept the final theorem shape while leaving the legacy safe theorem
+  load-bearing upstream.
+- Treat `''` as omission after the caller explicitly bound `-OnlyCase`.
+- Infer descendant termination from a root-only `Stop-Process` call.
+- Repeat expensive suites because repetition appears more independent.
+
+Consequences:
+
+- M1-R5 needs a narrow proof/tooling repair before external audit or
+  integration; the 24-field certificate and principled `210` derivation are
+  preserved.
+- Future worker prompts and completion audits enforce the same dependency,
+  selector, portability, and exact-tree economics boundaries.
+- This workflow decision itself changes no Lean proposition, payload, store,
+  trace, cost, runtime, or public mathematical claim.
+
+Verification:
+
+- The proof-sprint completion gate, known-failure reference, and worker prompt
+  template contain all four rules and named regression fixture.
+- `git diff --check` and strict design-decision checking pass on this governance
+  commit.
+
+Publication-facing significance:
+
+None directly. The proof-dependency rule prevents a reviewer-facing machine
+adequacy claim from presenting a reordered wrapper as a genuinely primary
+dynamic-store argument.

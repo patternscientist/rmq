@@ -333,6 +333,39 @@ reject a row only for a substantive evidence gap. This does not bless appended
 prose as proof; theorem, consumer, identity, executable, and anti-vacuity links
 must still be reconstructed independently.
 
+### M1 R5 regressions: dependency inversion, bound-empty selectors, and portable ownership
+
+Candidate `60a63888300c051041d95c0141e169bf93a6e98e` packaged the current
+24-field machine certificate and the derived `210` cost field correctly, but
+its advertised safe-to-dynamic proof route still used the legacy safe/static
+complete-result equality to obtain read containment before invoking the new
+ordered-dynamic equality. Apply `M1R5-SAFE-PRIMARY-CANNOT-DEPEND-ON-LEGACY-SAFE-EQUALITY`:
+the read-region or `segment < 23` containment bridge must be proved from the
+execution/program structure without any supplied-store result-equality theorem;
+the safe-footprint result may then be a corollary of the ordered dynamic result.
+Add a dependency mutation that fails if the legacy theorem is reintroduced.
+
+The same candidate mapped an explicitly bound empty `-OnlyCase` to the full
+registry because it compared only the parameter value with `''`. Apply
+`M1R5-BOUND-EMPTY-SELECTOR-IS-NOT-OMISSION`: omission may mean full-suite mode,
+but an explicitly bound empty or whitespace value must fail before semantic
+execution. Exercise the actual script boundary and inspect bound-parameter
+state; a helper-only zero/whitespace test is insufficient.
+
+Its timeout wrappers used a Windows Job on Win32 and root-only `Stop-Process`
+elsewhere, while the repository gate runs on Ubuntu and the sleeper spawns a
+child. Apply `M1R5-OWNED-PROCESS-TREE-MUST-MATCH-GATE-OS`: every supported gate
+OS needs an owned-tree termination implementation and a sleeper proving that
+both root and descendant are absent. Windows-only evidence cannot certify the
+Ubuntu gate.
+
+The candidate also repeated standalone full replay and topology suites before
+an aggregate gate that runs both again, duplicating about 40 minutes on the
+same final tree. Apply `M1R5-EXACT-TREE-GATE-STAGE-DUPLICATION`: after focused
+controls close development uncertainty, run either the aggregate owner or its
+full component separately for final evidence, not both on the unchanged tree,
+unless the ledger names a distinct acceptance purpose.
+
 ## Select And Close History
 
 For historical C1 descriptor-select work, proof fields such as
