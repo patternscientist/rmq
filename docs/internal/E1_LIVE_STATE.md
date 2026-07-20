@@ -77,6 +77,25 @@ leg, with every stage base computed from the preceding lengths. **The guard
 and BOTH select legs are EXECUTED** (`wholeQuerySelectPrefix_runsTo`,
 `:250`). Left struck through rather than deleted, per the standing rule.
 
+> **SUPERSEDED IN FULL, 2026-07-20 — EVERYTHING FROM HERE TO THE END OF THIS
+> SUBSECTION (through the `none`-writer passage below) DESCRIBES A TREE THAT NO
+> LONGER EXISTS.** It is retained per the standing rule that superseded analysis
+> is struck rather than deleted, but **do not act on any of it.** The adjacent
+> paragraph above was marked "PARTLY SUPERSEDED" while this one was not, so it
+> has been reading as current — that is exactly the defect this banner fixes.
+>
+> - `WholeQueryMachineAgrees` **IS discharged**:
+>   `wholeQueryMachineAgrees_of_bounds` (`E1WholeQueryAgreement.lean:64`).
+> - Validator **phase 5 is not OPEN**; it executes 24 cases, and phases 5b/5c
+>   have since been added on top (REQ-E1-03).
+> - Obligation 2 below ("STANDS") **no longer stands.**
+> - The `none`-writer fall-through **was repaired**, pinned at
+>   `E1WholeQueryProgram.lean:884`.
+>
+> The address-coincidence analysis below is still worth reading as a WORKED
+> EXAMPLE — it is one of three coincidences this campaign found that were
+> invisible until executed — but it is history, not a live defect.
+
 **But `WholeQueryMachineAgrees` (`E1WholeQueryPublic.lean:114`) is still NOT
 discharged, and validator phase 5 is still correctly OPEN.** Of the two
 obligations E1-LaneA1 found, **the first is now CLEARED (E1-LaneA3) and the
