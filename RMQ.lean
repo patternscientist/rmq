@@ -114,3 +114,4 @@ import RMQ.Impl.LCACost
 import RMQ.Impl.LCAFischerHeun
 import RMQ.Impl.Equivalence
 import RMQ.Headlines
+import RMQ.Core.WordRAM.E1WholeQueryCostLiteral

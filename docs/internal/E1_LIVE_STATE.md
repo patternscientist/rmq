@@ -18,6 +18,31 @@ Campaign branch `claude/b1-b2-charged-fringe-tables`. **Get the head with
 branch's HEAD can never name the commit that updates the file, so any hash
 written here is stale by construction — it has already been wrong twice.
 
+**THE COST-ALGEBRA BRANCH IS NOW MERGED TOO, AND THE WHOLE-QUERY STEP
+LITERAL IS DERIVED (E1-LaneF).** `claude/e1-cost-algebra` (`1e8dcc5`) is in.
+There is no unmerged E1 sibling lane left at all, and §11 G's list of live
+lanes is history. What that merge added to this tree, on top of everything
+below:
+
+- the **charge-length ladder** — `E1CostLadder.lean`, all sixteen composite
+  category-log bounds plus seventeen leaf logs, each derived by `unfold` +
+  `omega` from its own algebra;
+- the **`catCount`/`filter` bridge**, exercised rather than merely stated —
+  `E1CostAlgebra.lean`;
+- **REQ-E1-07's amended Prop** — `E1AmendedTarget.lean`;
+- the **whole-program width certificate** — `E1ReviewerWidth.lean`;
+- `E1FringeFoldProgram.lean` and validator phases 3k/4j executing
+  `FringeFoldUntouched`.
+
+**REQ-E1-06 CONJUNCT (c) IS CLOSED AT `11886`** —
+`wholeQueryCats_machineS_length_le` (`E1WholeQueryCostLiteral.lean`), all
+four branches, every shape, every query, NO size hypothesis.
+`11886 = 9 + 729 + 2 + 729 + 10179 + 2 + 234 + 2`, every summand derived.
+Section 15 is that lane's worklog and states what is left.
+
+**`11886` IS A STEP BOUND. `210` IS A READ BOUND. They are not comparable**,
+and neither is derived from the other — see §11 A and DD-20260719-244.
+
 **ALL FIVE BRANCHES ARE MERGED. There is no unmerged sibling lane left**
 (E1-LaneM). The campaign branch now carries, in ONE TREE:
 
@@ -2182,6 +2207,19 @@ section 14 for what remains after it.)*
 **No acceptance row is marked closed by this lane.** What is supplied is in
 the report; the judgement is the coordinator's.
 
+**POST-MERGE NOTE (E1-LaneF).** This section's resume inventory is fully
+closed, and so is the stage-slot list section 14 left open — the whole-query
+literal is `11886` (`E1WholeQueryCostLiteral.lean`, section 15,
+DD-20260719-244).
+
+**Nothing in this section needed correcting.** The one sentence that reads
+stale — "that note is still accurate", about
+`E1MachineValidate.lean:1540` and `FringeFoldUntouched` — sits inside the
+`Original text:` quotation of the same item, whose own preamble already
+records the item as CLOSED by E1-LaneA4 and the note as NO LONGER accurate.
+Checked because it looked like drift and is not; recorded so the next reader
+does not re-check it.
+
 ## 13. Worklog — E1-LaneA4 (width + fold preservation + fringe cap), 2026-07-19
 
 Branch `claude/e1-cost-algebra`, base `9151705`. Commits `34f0ca4`,
@@ -2420,13 +2458,29 @@ All twenty-two ladder theorems clean under `#print axioms` (`propext`,
 
 ### Still owed after this lane
 
-- The three whole-query stage slots (`prologue`, `select`, `rank`, `output`)
-  and hence the whole-query literal. Owned by whole-query assembly, not here.
-- Phase 5 of the validator, still OPEN for the same reason it has been: no
-  definition composes the legs into one runnable query program.
-- A dispatcher between the same-block and cross-block close legs. None
+*(ALL THREE ARE NOW CLOSED OR SUPERSEDED — by E1-LaneF, after the merge. The
+list is kept with its closures marked rather than deleted, per the same
+convention section 12 used. See section 15.)*
+
+- ~~The three whole-query stage slots (`prologue`, `select`, `rank`, `output`)
+  and hence the whole-query literal. Owned by whole-query assembly, not
+  here.~~ **CLOSED by E1-LaneF** (`E1WholeQueryCostLiteral.lean`). The slots
+  are `9`, `729`, `234`, `2`, plus the two connectives at `2` each that this
+  lane's record did not yet have; the literal is `11886`. DD-20260719-244.
+- Phase 5 of the validator, still OPEN — but **no longer for the reason
+  stated.** "No definition composes the legs into one runnable query program"
+  was already false when this was written: `wholeQueryProgram`
+  (`E1WholeQueryProgram.lean:876`) and E1-LaneA8's four executed branches
+  falsify it, as section 10g records. What phase 5 actually lacks is a
+  VALIDATOR-side comparison surface, not a definition.
+- ~~A dispatcher between the same-block and cross-block close legs. None
   exists; `closeLcaLegCats_length_le` takes the disjunction as a hypothesis
-  rather than inventing one. DD-20260719-230.
+  rather than inventing one. DD-20260719-230.~~ **CLOSED by E1-LaneF.**
+  `wholeQueryLcaRunCats` (`E1WholeQueryAgreement.lean:39`) is that dispatcher
+  and predates the discharge — it was written for the agreement proof, which
+  is what makes it a witness found at the target rather than built for the
+  premise. `wholeQueryLcaRunCats_length_le` bounds it at `10179` with no
+  disjunction left standing. DD-20260719-241.
 
 ### Citations re-verified after the edits
 
@@ -2450,3 +2504,211 @@ the tree -- is preserved and marked as history.
 **No acceptance row is marked closed by this lane.** What is supplied against
 REQ-E1-06's evidence column is in the report; the judgement is the
 coordinator's.
+
+---
+
+## 15. Worklog — E1-LaneF (the cost-algebra merge + the whole-query step literal), 2026-07-19
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `54ceaf4`. Merge commit of
+`claude/e1-cost-algebra` (`1e8dcc5`), then this lane's own commit. DD-IDs
+claimed and WRITTEN into `DESIGN_DECISIONS.md`: **`240`-`244`**. Band
+`245-259` free. Full build set green at every commit.
+
+**Numbering note.** The brief for this lane asked for updates to "§12" and a
+final "§13". Those numbers were the pre-merge ones; the merge brings the
+cost-algebra branch's own §12, §13 and §14, so the cost ladder's stage slots
+live in **§14** (updated in place) and this final section is **§15**.
+
+### ITEM 1 — the merge
+
+Three conflicts, two textual and one semantic.
+
+- `RMQ.lean` — append-only, resolved as the union of both import blocks.
+- `DESIGN_DECISIONS.md` — resolved BY ID, nothing renumbered. This branch's
+  `120-122` and `160-209` interleave with the other branch's `140-146` and
+  `220-230`. Each side's bytes are preserved exactly; the two sides use
+  different separator conventions (this branch uses `---` between entries,
+  the cost-algebra branch does not), so separators were added at the two
+  splice points only. 146 entries after this lane's five, no duplicate IDs.
+- `E1_LIVE_STATE.md` auto-merged; §1-§14 all present.
+
+**THE SEMANTIC CONFLICT GIT MERGED CLEANLY AND LEAN REJECTED, exactly as the
+brief predicted.** `E1WholeQueryCats.lean` was edited on THIS branch only, so
+git took it silently, while `E1CostLadder.lean`'s summation on the other
+branch was written against the OLDER record. Two files, two branches, no
+conflict, and a type error only after both land — the second instance of the
+pattern DD-20260719-122's round first recorded.
+
+`wholeQueryBranchCats_length_le_of` and `wholeQueryCats_length_le_of`
+referenced `S.lcaSkipped`, a field DD-20260719-208 had split into
+`lcaSkippedLeftMiss`/`lcaSkippedRightMiss`; the record had also gained the
+`selectJoin` and `rankJoin` connective stages. **Repaired by ACCOUNTING for
+the new stages, not by reinstating the old field** — the sum is now
+`prologue + 2*select + selectJoin + lca + rankJoin + rank + output`, both
+connectives as their own summands. Reinstating `lcaSkipped` would have made
+`selectNone_branches_separable` (`E1WholeQueryCats.lean:424`) false by `rfl`
+again. DD-20260719-240.
+
+### ITEM 2 — THE WHOLE-QUERY STEP LITERAL IS `11886`
+
+New module `E1WholeQueryCostLiteral.lean`.
+`wholeQueryCats_machineS_length_le`: on every shape, every query and all four
+branches, with **no size hypothesis**,
+
+```
+  prologue        9      guardAcceptCats ++ [registerWrite]
+  select        729      twice
+  selectJoin      2
+  lca         10179
+  rankJoin        2
+  rank          234
+  output          2
+  ------------------
+               11886
+```
+
+`11886 = 9 + 729 + 2 + 729 + 10179 + 2 + 234 + 2`. Every summand is derived by
+`unfold`/`rfl` plus `omega` from the algebra beneath it; `omega` performs the
+addition, so the literal is kernel-checked rather than transcribed. Four of the
+eight slots are frozen literal lists and are therefore EXACT.
+
+`wholeQuery_totalSteps_le` carries the bound across `RunsTo`'s definitional
+identity to `(run ... ).steps ≤ 11886`, via `RunsTo.steps_le`, which depends on
+NO axioms.
+
+**THE SELECT SLOT WAS THE ONLY ONE NEEDING NEW MATHEMATICS, AND THE THING THAT
+COULD HAVE OBSTRUCTED IT DOES NOT EXIST.** `selectCloseCats`
+(`E1SelectDispatch.lean:287`) is a four-level `if`/`match` tree over three legs
+and nothing in the tree bounded it. It is bounded at `729` here. The all-size
+property survives because `bpWordChunkCount c e := Nat.min ((e-1)/c+1) 8`
+(`ChargedWordChunks.lean:150`) caps INSIDE its own definition, so
+`bpWordChunkCount_le_eight` (`:153`) is `Nat.min_le_right` with no side
+condition — and every chunk count reachable from the select tree is written
+literally as a `bpWordChunkCount`. **Eighth instance of a brief budgeting work
+a definition had already done**; settled by reading the body before proving
+anything. DD-20260719-243.
+
+**DD-20260719-230's HYPOTHESIS IS DISCHARGED.** `wholeQueryLcaRunCats`
+(`E1WholeQueryAgreement.lean:39`) is the dispatcher that lane said did not
+exist, and it PREDATES the discharge — written for the agreement proof, not for
+this premise, which is what makes it a witness found at the target (rule 5).
+`wholeQueryLcaRunCats_length_le` bounds it at `10179` outright.
+`10179 = 6 + (4 + (10167 + 2))`: the dispatcher also charges the two select
+tests, the address arithmetic and the cross arm's terminator, which the
+leg-level `10167` did not include because at that level they had not happened.
+DD-20260719-241.
+
+**`length_cons_le`** is added beside `length_append_le` for the same reason
+DD-20260719-227 gives: the select tree is built from `::` as well as `++`, and
+without the cons form the proof would have to TRANSCRIBE the tree's index
+expressions. Every intermediate numeral is pinned rather than inferred — with a
+metavariable in the bound slot the arithmetic side condition cannot be
+discharged at all, which is how the first draft failed in five places.
+DD-20260719-242.
+
+### ANTI-VACUITY, evaluated not argued
+
+At the validator's fixture shape (`Cartesian.stackCartesianShape [3,1,4,1,5]`),
+against `wholeQueryMachineS` — the real record, not a stand-in:
+
+| stage | measured | bound |     | branch | measured |
+|---|---|---|---|---|---|
+| `prologue` | `9` | `9` |  | `.full 0 4 3` | `1270` |
+| `select 0` | `335` | `729` |  | `.full 1 3 2` | `1256` |
+| `select 3` | `387` | `729` |  | `.lcaNone 0 4` | `1209` |
+| `selectJoin` | `2` | `2` |  | `.leftSelectNone` | `737` |
+| `lcaRun 0 4` | `474` | `10179` |  | `.rightSelectNone 0` | `739` |
+| `lcaRun 1 3` | `410` | `10179` |  | | |
+| `rankJoin` | `2` | `2` |  | | |
+| `rankRun 5` | `59` | `234` |  | | |
+| `outputSome` | `2` | `2` |  | | |
+
+The logs are substantial — four figures on the answering branch at a
+five-element input. **The bound is about nine times loose there**, against the
+six times §14 recorded for its own bounds, and the excess is ATTRIBUTED rather
+than described: of the `10616` steps of slack, `9705` are in the close/LCA slot
+alone, because that bound assumes the cross-block arm with a full interior
+dispatch while a five-element shape takes the same-block arm and charges `474`.
+That is the price of "all-size, no size hypothesis", which is what REQ-E1-06
+conjunct (c) asks for. DD-20260719-244.
+
+### A claim of this lane's own that it corrected
+
+The first draft of the post-merge note in §12 asserted that two pointers in
+that section had gone stale. **They had not.** The sentence that reads stale
+sits inside the `Original text:` quotation of an item whose own preamble
+already records it as closed and the pointer as no longer accurate. Rule 4
+caught it — the claim about what a file contains was checked against the file
+before it was allowed to stand — and the note now records the check instead of
+the false finding.
+
+### `11886` AND `210` ARE NOT COMPARABLE
+
+`11886` bounds STEPS. `210` bounds READS. §11 A and §14 both record the
+distinction; it is repeated here because the two numbers will now sit near each
+other in every summary of this work, and adjacency is exactly how the two `33`s
+got conflated. Nothing in this lane is proved against `210`, and neither number
+is derived from the other.
+
+### Build, validator, axioms
+
+`lake build RMQ RMQPaper RMQExamples` green; `lake build
+rmq_e1_machine_validate` green; `lake exe rmq_e1_machine_validate` **PASS**,
+phase 5 `wholeQueryComparisonAvailable=false`, verdict `OPEN` — unchanged by
+this lane, which added no validator phase (the ladder is symbolic arithmetic
+over category lists with no executed machine surface of its own, and a phase
+re-evaluating `#eval`-able lengths would duplicate the `rfl`s).
+
+`#print axioms`, importing the new and changed modules directly: every new
+declaration is `[propext, Classical.choice, Quot.sound]` or a SUBSET —
+`selectCloseCats_length_le`, `denseLegCats_length_le` and `length_cons_le`
+depend on `[propext, Quot.sound]` only, and `RunsTo.steps_le` on nothing at
+all. **No `sorryAx` anywhere.** The frozen public identity
+`listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story` is
+unchanged and still `[propext, Classical.choice, Quot.sound]`. No
+`sorry`/`admit`/`axiom`/`native_decide`/`partial`/`unsafe`/`implemented_by`/
+Mathlib/`maxHeartbeats` in any new or edited file.
+
+### WHAT REMAINS FOR COORDINATOR ADJUDICATION
+
+This is the last substantive E1 lane. What is left is judgement, not
+construction.
+
+1. **The acceptance matrix.** No row is marked closed by this lane, by any
+   lane in the merge, or by anyone since. REQ-E1-06 and REQ-E1-02 are the two
+   this work bears on; what is supplied against each row's own
+   `Evidence needed` column is in this lane's report. **The rows are NOT
+   whole-query scoped** — most read `Local`, and the whole-query framing was a
+   coordinator invention. Adjudicating REQ-E1-06 means deciding whether a
+   `Local`-scoped row is answered by a whole-query theorem, which is a scope
+   question, not a proof question.
+
+2. **Validator phase 5, still OPEN.** Its stated reason is now FALSE and has
+   been since E1-LaneA8: the phase text says no definition composes the legs
+   into one runnable query program, and `wholeQueryProgram`
+   (`E1WholeQueryProgram.lean:876`) plus four executed branches falsify it.
+   What phase 5 actually lacks is a validator-side comparison surface. Whether
+   that is worth building, or whether the phase text should simply be
+   corrected and the verdict re-judged, is a coordinator call.
+
+3. **REQ-E1-07's supersession note.** `E1AmendedTarget.lean` supplies the
+   amended Prop and `amendedTarget_of_wholeQueryAgreement` the reduction;
+   §11 E's four precision points about what was refuted were checked and all
+   four held. The note itself is unwritten.
+
+4. **The `207`/`210` prose drift**, owed to REQ-E1-09's closure pass and
+   deliberately left unfixed under owner direction (§11's closing paragraph).
+   `README.md` is internally inconsistent and `docs/FAMILY_SUMMARY.md` carries
+   the pre-B7 algebra. Neither gate catches it. **A new numeral, `11886`, now
+   also exists**, and it will drift the same way if it enters prose before
+   that pass runs.
+
+5. **Tightness, if anyone wants it.** §14's bounds and this lane's are loose by
+   six to nine times at small shapes, and the attribution above says exactly
+   which theorem holds the slack. Sharpening it means giving up the all-size,
+   no-hypothesis property. Nobody should do that without an explicit ruling
+   that the requirement wants tightness more than generality.
+
+**No acceptance row is marked closed by this lane.** What is supplied against
+REQ-E1-06's and REQ-E1-02's evidence columns is in the report; the judgement is
+the coordinator's.

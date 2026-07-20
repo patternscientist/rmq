@@ -8114,3 +8114,181 @@ stated instead as a hypothesis that the log IS one of the two, discharged by
 `rcases` into the two existing bounds. When whole-query assembly lands a real
 dispatcher the hypothesis will be discharged at the call site, and until then
 the statement does not pretend a structure exists that does not.
+
+---
+
+## DD-20260719-240: the cost ladder's summation is REVISED to account for the machine's stage record, not weakened to close against it (E1-LaneF)
+
+**Status.** Landed, E1-LaneF, branch `claude/b1-b2-charged-fringe-tables`,
+merge commit of `claude/e1-cost-algebra`.
+
+**THE MERGE HAZARD THAT NO TEXTUAL TOOL REPORTS, second instance.**
+`E1WholeQueryCats.lean` was edited on the charged-fringe branch only, and
+`E1CostLadder.lean` on the cost-algebra branch only. Two branches, two files,
+no `git` conflict, and a type error that appears only after both land.
+DD-20260719-122's round recorded the first instance in exactly those words;
+this is the second, and it was predicted in the brief rather than discovered,
+which is why it cost minutes instead of a session.
+
+**WHAT BROKE.** `wholeQueryBranchCats_length_le_of` and
+`wholeQueryCats_length_le_of` referenced `S.lcaSkipped`. That field no longer
+exists: DD-20260719-208 SPLIT it into `lcaSkippedLeftMiss` and
+`lcaSkippedRightMiss`, because the machine tests the two select results in
+order and a left miss short-circuits after one comparison/branch pair while a
+right miss costs two. The same round added `selectJoin` and `rankJoin` as
+named connective stages (DD-20260719-206).
+
+**THE REPAIR ACCOUNTS, IT DOES NOT ABSORB.** The summation is now
+`prologue + 2*select + selectJoin + lca + rankJoin + rank + output`. Both
+connectives are carried as their OWN summands rather than folded into a
+neighbouring slot, which is the same argument the record itself makes: `select`
+and `lcaRun` each occur TWICE, so absorbing a connective into either would give
+one function two meanings at its two occurrences. The two skip arms each take
+the `lca` bound, which is where they sit in the log.
+
+**The alternative considered and rejected** was to reinstate a single
+`lcaSkipped` field so the older theorem would compile unchanged. That is
+precisely the weakening DD-20260719-208 argued against: it makes the two
+select-miss branches the same term, separable by no `S` whatsoever, and
+`selectNone_branches_separable` (`E1WholeQueryCats.lean:424`) would become
+false by `rfl` again. A merge is not a licence to undo a semantic ruling.
+
+---
+
+## DD-20260719-241: `closeLcaLegCats_length_le`'s disjunction is DISCHARGED at a dispatcher that already existed, not at one written for it (E1-LaneF)
+
+**Status.** Landed, E1-LaneF, `E1WholeQueryCostLiteral.lean`.
+
+DD-20260719-230 stated the close/LCA bound as a hypothesis that the log IS one
+of the two branch logs, declining to invent a dispatcher on the grounds that a
+witness constructed FOR a premise defeats rule 1. It closed by saying the
+hypothesis would be discharged at the call site when whole-query assembly
+landed a real dispatcher.
+
+It has. `wholeQueryLcaRunCats` (`E1WholeQueryAgreement.lean:39`) dispatches on
+`blockOfClose ... leftClose = blockOfClose ... rightClose` -- the route's own
+arm selector, the same condition
+`lcaCloseTraceResultWithRankSeedAllSizeStructural` (`ChargedFringeWiring.lean:50`)
+dispatches on. **It was written for the AGREEMENT proof, a separate obligation
+away from this premise, which is exactly what makes it a witness FOUND at the
+target rather than built for the hypothesis.** Rule 5 is satisfied on its own
+terms, not by assertion.
+
+`wholeQueryLcaRunCats_length_le` bounds it outright at `10179`, with no
+disjunction left standing. The two arms ARE the disjuncts:
+`sameBlockLcaRunCats` wraps `sameBlockDispatchCats` exactly, that being
+`closeDispatchCats ++ sameBlockLegCats` by definition (`E1CloseCompose.lean:78`),
+and the cross arm wraps `crossBlockArmCats` at the canonical interior.
+
+**`10179`, not `10167`, and the difference is not slack.** The dispatcher also
+charges the two select tests, the two address-arithmetic ticks and, on the
+cross arm, the two-tick terminator: `10179 = 6 + (4 + (10167 + 2))`. That work
+is real and the leg-level bound did not include it because at that level it had
+not happened yet. Restating the dispatcher's bound as `10167` would have been
+an arithmetic error dressed as consistency.
+
+---
+
+## DD-20260719-242: `length_cons_le`, the cons companion to `length_append_le`, and why the select tree needed one (E1-LaneF)
+
+**Status.** Landed, E1-LaneF, `E1WholeQueryCostLiteral.lean`.
+
+DD-20260719-227 introduced `length_append_le` so that route-side index
+expressions -- running to five and six lines each -- are never TRANSCRIBED into
+a proof: every index is inferred by unification against the goal, so a
+mismatched instantiation is a unification failure rather than a silently weaker
+theorem.
+
+`selectCloseCats` (`E1SelectDispatch.lean:287`) is built from `::` as well as
+`++`, and every block the ladder had reached before this one is an append, so
+the cons form did not exist. `length_cons_le` is it. Without it the select
+bound would have had to name the four-level tree's index expressions --
+`selectSuperSlot idx data.superStride`, the compact-slot arithmetic, the
+nested rank trace results -- and each transcription is a place a wrong index
+typechecks.
+
+**Every intermediate numeral in the composed bounds is PINNED rather than
+inferred** (`(a := ...)`, `(b := ...)`). This is not decoration: with a
+metavariable in the bound slot the arithmetic side condition cannot be
+discharged at all, and the first draft of this module failed on exactly that in
+five places. Pinning also makes each rung separately readable and separately
+falsifiable by the kernel, which is what lets the module's own docstrings state
+the ladder as a table.
+
+---
+
+## DD-20260719-243: the select leg's bound rests on a cap in `bpWordChunkCount`'s DEFINITION, so the all-size property survives (E1-LaneF)
+
+**Status.** Landed, E1-LaneF, `E1WholeQueryCostLiteral.lean` sections 4-5.
+
+The `select` slot was the only one of the four open stage slots that needed new
+mathematics, and it was the one that could have made the whole-query literal
+unreachable. `selectCloseCats` is a four-level `if`/`match` tree over three
+legs (long, sparse, dense) and NOTHING in the tree bounded its length.
+
+**The structural risk does not exist, and that is a fact about a definition
+rather than a hypothesis anyone supplies.**
+`bpWordChunkCount c e := Nat.min ((e - 1) / c + 1) 8` (`ChargedWordChunks.lean:150`).
+The cap is INSIDE the definition, so `bpWordChunkCount_le_eight`
+(`ChargedWordChunks.lean:153`) is `Nat.min_le_right` with no side condition on
+`c`, `e`, `bits` or `shape`. Every chunk count reachable from `selectCloseCats`
+is written literally as a `bpWordChunkCount` -- in both sparse legs, in both
+dense head counts and at both dense fold call sites -- so no sub-log's length
+depends on an unbounded quantity and REQ-E1-06's "no size hypothesis" survives
+intact.
+
+This is the same shape as `cap_count_le`'s `Nat.min ... 33` (DD-20260719-146)
+and `chunkIters_le_eight`, and it is the third time a cap that looked like it
+would need a per-caller argument turned out to be definitional. **It is also
+the eighth instance of a brief budgeting work a definition had already done**:
+the risk was scoped as the item that might obstruct the literal, and a read of
+`bpWordChunkCount`'s body settled it before any proof was attempted.
+
+The one recursion below `selectCloseCats` is `selectFoldCats`
+(`E1SelectBlock.lean:214`), which is early-exit rather than `iterLog`, so
+`iterLog_const_length` does not apply; its own `selectFoldCats_length_le`
+(`:227`) covers it and its trip count is again a `bpWordChunkCount`.
+
+**`729` is attained, not rounded.** The maximum runs through the dense path:
+`6 + 1 + 2 + 12 + 1 + 2 + 6 + 12 + 1 + 2 + 9 + 673 + 2`. The out-of-range arm
+charges `9`, the long-leg arm `241` and the sparse-leg arm `245`.
+
+---
+
+## DD-20260719-244: the whole-query step literal is `11886`, and its looseness is measured and attributed rather than described (E1-LaneF)
+
+**Status.** Landed, E1-LaneF, `E1WholeQueryCostLiteral.lean` sections 8-9.
+
+REQ-E1-06 conjunct (c) is closed: `wholeQueryCats_machineS_length_le` gives
+`(wholeQueryCats (wholeQueryMachineS shape) shape left right).length <= 11886`
+for every shape and every query, with no size hypothesis, and
+`wholeQuery_totalSteps_le` carries it across `RunsTo`'s definitional identity
+to a bound on `run ... .steps`.
+
+`11886 = 9 + 729 + 2 + 729 + 10179 + 2 + 234 + 2`. Every summand is derived and
+`omega` performs the addition, so the literal is checked by the kernel rather
+than transcribed. E1-LaneA7 filled the `lca` slot and deliberately left the
+other three unfilled, writing that plausible figures would produce "a number
+that reads as derived and is not"; that restraint is why this was clean to
+finish, and the same standard is kept here.
+
+**THE SUMMATION IS STATED TWICE, PARAMETRIC THEN INSTANTIATED.**
+`wholeQueryBranchCats_machineStageCats_length_le` keeps the close/LCA stage a
+PARAMETER under a bound, so the summation does not depend on which dispatcher
+fills that slot; only then is it instantiated at `wholeQueryLcaRunCats`. A
+future dispatcher change re-instantiates rather than reproves.
+
+**THE LOOSENESS IS MEASURED, AND IT IS NOT UNIFORM.** At the validator's own
+fixture shape the answering branch charges `1270` against `11886` -- about nine
+times loose, where `E1CostLadder.lean` recorded six for its own bounds. The
+table in section 9 shows why, and the answer is specific rather than general:
+**four of the eight slots are EXACT** (`prologue`, `selectJoin`, `rankJoin` and
+`output` are frozen literal lists, so their bounds are their lengths), and of
+the `10616` steps of slack, `9705` sit in the close/LCA slot alone, because
+that bound assumes the cross-block arm with a full interior dispatch while a
+five-element shape takes the same-block arm and charges `474`.
+
+Stating "the bounds are loose" would have been true and useless. The
+attribution is what tells a reader which theorem to sharpen if anyone ever
+wants tightness -- and sharpening it means giving up the all-size property,
+which is what the requirement actually asks for.
