@@ -36,10 +36,14 @@ namespace WordRAM
 namespace E1CanonicalInteriorWidth
 
 open RMQ.SuccinctClose
+open E1Machine
 open RMQ.SuccinctFinal
 open E1ReviewerWidth
 open E1InteriorSummaryGroup
+open E1InteriorSpanBlock
+open E1InteriorTwoSpan
 open E1InteriorDispatchWidth
+open E1InteriorDispatchCompose
 
 /-! ## Arithmetic: the fourth-power companion of `sq_le_two_pow` -/
 
@@ -374,6 +378,348 @@ theorem levelSlab_le (shape : Cartesian.CartesianShape) :
         canonicalBPRelativeSummaryBase shape)) (by omega)
   have hp4 := base_pow4_le shape
   omega
+
+/-! ## The four geometry bases
+
+The four span/level bases are four more PREFIX SUMS of the same eight stores
+whose total is `deadAddress`, exactly as `offsets_le_deadAddress`'s four are.
+The three `rfl` bridges are needed because the offsets name the later stores
+through their own abbreviations (`canonicalRelativeRmmLocalMachineStore` and
+friends, `InteriorDirectory.lean:1532`) while the sum names them through
+`.table.machineStore`; the two are definitionally equal but not syntactically,
+and `omega` is syntactic. -/
+
+theorem span_offsets_le_deadAddress (shape : Cartesian.CartesianShape) :
+    (canonicalRelativeRmmInteriorComponentOffsets shape).localOffset
+        <= (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress ∧
+      (canonicalRelativeRmmInteriorComponentOffsets shape).globalBlock
+        <= (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress ∧
+      (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel
+        <= (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress ∧
+      (canonicalRelativeRmmInteriorComponentOffsets shape).globalLevel
+        <= (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress := by
+  have hsum := canonicalRelativeRmmInteriorComponentStore_words_size_eq shape
+  have heq : (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress =
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words.size := rfl
+  have hlocal : (canonicalRelativeRmmLocalMachineStore shape).store.words.size =
+      ((canonicalRelativeRmmInteriorLocalTable shape).table.machineStore
+        (SuccinctRank.machineWordBits_pos shape.bpCode.length)).store.words.size :=
+    rfl
+  have hglobal :
+      (canonicalRelativeRmmGlobalMachineStore shape).store.words.size =
+      ((canonicalRelativeRmmInteriorGlobalTable shape).table.machineStore
+        (SuccinctRank.machineWordBits_pos shape.bpCode.length)).store.words.size :=
+    rfl
+  have hlocalLevel :
+      (canonicalRelativeRmmLocalLevelMachineStore shape).store.words.size =
+      ((canonicalRelativeRmmInteriorLocalLevelTable shape).table.machineStore
+        (SuccinctRank.machineWordBits_pos shape.bpCode.length)).store.words.size :=
+    rfl
+  simp only [canonicalRelativeRmmInteriorComponentOffsets] at *
+  omega
+
+/-! ## The four geometry entry lengths -/
+
+theorem span_rearr (q lc M : Nat) : q * (lc * M) = lc * (q * M) := by
+  simp [Nat.mul_left_comm]
+
+theorem lc_div_bound {lc b sz : Nat} (hlc : lc <= 3 * b) :
+    lc * (sz / b) <= 3 * sz := by
+  have h1 : lc * (sz / b) <= (3 * b) * (sz / b) := Nat.mul_le_mul_right _ hlc
+  have h2 : (3 * b) * (sz / b) = 3 * (b * (sz / b)) := Nat.mul_assoc 3 b (sz / b)
+  have h2' : b * (sz / b) = sz / b * b := Nat.mul_comm b (sz / b)
+  have h3 : sz / b * b <= sz := Nat.div_mul_le_self sz b
+  omega
+
+theorem g_div_bound {g M bc : Nat} (hg : g <= 4 * M) :
+    g * (bc / M) <= 4 * bc := by
+  have h1 : g * (bc / M) <= (4 * M) * (bc / M) := Nat.mul_le_mul_right _ hg
+  have h2 : (4 * M) * (bc / M) = 4 * (M * (bc / M)) := Nat.mul_assoc 4 M (bc / M)
+  have h2' : M * (bc / M) = bc / M * M := Nat.mul_comm M (bc / M)
+  have h3 : bc / M * M <= bc := Nat.div_mul_le_self bc M
+  omega
+
+/-- LOCAL SPAN: `macroSampleCount * (levelCount * macroSize)`
+(`LocalGlobalSparse.lean:838`), LINEAR in the size.  The division inside
+`macroSampleCount` is absorbed by `prod_div_bound` and `blockCount`'s own
+division by the base is absorbed by `lc_div_bound`; cancelling either would
+leave the product superlinear against a linear envelope. -/
+theorem localSpanGeom_entriesLen_le (shape : Cartesian.CartesianShape) :
+    (localSpanGeom shape).entriesLen <= 9 * shape.size + 196608 := by
+  simp only [localSpanGeom, bpLocalSparseOffsetEntries_length,
+    RelativeRmm.canonicalLayout_blockSize, RelativeRmm.canonicalLayout_blockCount,
+    RelativeRmm.canonicalLayout_macroSize,
+    RelativeRmm.canonicalLayout_macroSampleCount,
+    RelativeRmm.canonicalLayout_levelCount]
+  rw [Nat.add_mul, Nat.one_mul,
+    span_rearr
+      (canonicalBPRelativeSummaryBlockCountRaw shape /
+        (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+          canonicalBPRelativeSummaryBlocksPerSuperRaw shape))
+      (SuccinctRank.machineWordBits
+        (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+          canonicalBPRelativeSummaryBlocksPerSuperRaw shape))
+      (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+        canonicalBPRelativeSummaryBlocksPerSuperRaw shape)]
+  have hb := base_pos shape
+  have habs := prod_div_bound
+    (SuccinctRank.machineWordBits
+      (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+        canonicalBPRelativeSummaryBlocksPerSuperRaw shape))
+    (canonicalBPRelativeSummaryBlockCountRaw shape)
+    (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+      canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+  have hbc : canonicalBPRelativeSummaryBlockCountRaw shape =
+      shape.size / canonicalBPRelativeSummaryBase shape := rfl
+  have hlc := levelCount_le shape
+  have hfinal : SuccinctRank.machineWordBits
+        (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+          canonicalBPRelativeSummaryBlocksPerSuperRaw shape) *
+      canonicalBPRelativeSummaryBlockCountRaw shape <= 3 * shape.size := by
+    rw [hbc]
+    exact lc_div_bound (by omega)
+  have hslab := levelSlab_le shape
+  omega
+
+/-- GLOBAL SPAN: `globalLevelCount * macroSampleCount`
+(`LocalGlobalSparse.lean:866`), LINEAR in the size. -/
+theorem globalSpanGeom_entriesLen_le (shape : Cartesian.CartesianShape) :
+    (globalSpanGeom shape).entriesLen <= 8 * shape.size + 8 := by
+  simp only [globalSpanGeom, bpGlobalSparseBlockEntries_length,
+    RelativeRmm.canonicalLayout_blockSize, RelativeRmm.canonicalLayout_blockCount,
+    RelativeRmm.canonicalLayout_macroSize,
+    RelativeRmm.canonicalLayout_macroSampleCount,
+    RelativeRmm.canonicalLayout_globalLevelCount]
+  rw [Nat.mul_add, Nat.mul_one]
+  have hglc := globalLevelCount_le shape
+  have hb := base_pos shape
+  have hbps : canonicalBPRelativeSummaryBlocksPerSuperRaw shape =
+      canonicalBPRelativeSummaryBase shape := rfl
+  have hbpspos : 0 < canonicalBPRelativeSummaryBlocksPerSuperRaw shape := hb
+  have hsq : canonicalBPRelativeSummaryBlocksPerSuperRaw shape <=
+      canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+        canonicalBPRelativeSummaryBlocksPerSuperRaw shape :=
+    Nat.le_mul_of_pos_left _ hbpspos
+  have hg4 : SuccinctRank.machineWordBits
+        (canonicalBPRelativeSummaryBlockCountRaw shape /
+          (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+            canonicalBPRelativeSummaryBlocksPerSuperRaw shape) + 1)
+      <= 4 * (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+          canonicalBPRelativeSummaryBlocksPerSuperRaw shape) := by omega
+  have hgd := g_div_bound (bc := canonicalBPRelativeSummaryBlockCountRaw shape) hg4
+  have hbc := blockCountRaw_le shape
+  have hbase := base_le shape
+  omega
+
+/-- LOCAL LEVEL: `bpSparseLevelDomain macroSize = macroSize + 2`. -/
+theorem localLevelGeom_entriesLen_le (shape : Cartesian.CartesianShape) :
+    (localLevelGeom shape).entriesLen <= 2 * shape.size + 13 := by
+  simp only [localLevelGeom, bpSparseLevelEntries_length, bpSparseLevelDomain,
+    RelativeRmm.canonicalLayout_macroSize]
+  have hsq := base_sq_le shape
+  have hbps : canonicalBPRelativeSummaryBlocksPerSuperRaw shape =
+      canonicalBPRelativeSummaryBase shape := rfl
+  rw [hbps]
+  omega
+
+/-- GLOBAL LEVEL: `bpSparseLevelDomain macroSampleCount`. -/
+theorem globalLevelGeom_entriesLen_le (shape : Cartesian.CartesianShape) :
+    (globalLevelGeom shape).entriesLen <= shape.size + 3 := by
+  simp only [globalLevelGeom, bpSparseLevelEntries_length, bpSparseLevelDomain,
+    RelativeRmm.canonicalLayout_macroSampleCount]
+  have h := macroSampleCount_le shape
+  omega
+
+/-! ## `GeomFits` at the four canonical geometries -/
+
+theorem localSpanGeom_fits (shape : Cartesian.CartesianShape) :
+    GeomFits (shapeWidth shape) (localSpanGeom shape) := by
+  obtain ⟨hlo, _, _, _⟩ := span_offsets_le_deadAddress shape
+  refine ⟨?_, ?_, ?_⟩
+  · exact Nat.lt_of_le_of_lt (by simpa [localSpanGeom] using hlo)
+      (deadAddress_lt shape)
+  · refine lt_reviewerWordBits_of_lt_capacity
+      (lt_capacity_of_le_mul (c := 196608) (by omega) ?_)
+    have := localSpanGeom_entriesLen_le shape
+    omega
+  · refine lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_)
+    have := localSpanGeom_cap shape
+    omega
+
+theorem globalSpanGeom_fits (shape : Cartesian.CartesianShape) :
+    GeomFits (shapeWidth shape) (globalSpanGeom shape) := by
+  obtain ⟨_, hgb, _, _⟩ := span_offsets_le_deadAddress shape
+  refine ⟨?_, ?_, ?_⟩
+  · exact Nat.lt_of_le_of_lt (by simpa [globalSpanGeom] using hgb)
+      (deadAddress_lt shape)
+  · refine lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_)
+    have := globalSpanGeom_entriesLen_le shape
+    omega
+  · refine lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_)
+    have := globalSpanGeom_cap shape
+    omega
+
+theorem localLevelGeom_fits (shape : Cartesian.CartesianShape) :
+    GeomFits (shapeWidth shape) (localLevelGeom shape) := by
+  obtain ⟨_, _, hll, _⟩ := span_offsets_le_deadAddress shape
+  refine ⟨?_, ?_, ?_⟩
+  · exact Nat.lt_of_le_of_lt (by simpa [localLevelGeom] using hll)
+      (deadAddress_lt shape)
+  · refine lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_)
+    have := localLevelGeom_entriesLen_le shape
+    omega
+  · refine lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_)
+    have := localLevelGeom_cap shape
+    omega
+
+theorem globalLevelGeom_fits (shape : Cartesian.CartesianShape) :
+    GeomFits (shapeWidth shape) (globalLevelGeom shape) := by
+  obtain ⟨_, _, _, hgl⟩ := span_offsets_le_deadAddress shape
+  refine ⟨?_, ?_, ?_⟩
+  · exact Nat.lt_of_le_of_lt (by simpa [globalLevelGeom] using hgl)
+      (deadAddress_lt shape)
+  · refine lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_)
+    have := globalLevelGeom_entriesLen_le shape
+    omega
+  · refine lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_)
+    have := globalLevelGeom_cap shape
+    omega
+
+/-! ## The seven numerals -/
+
+theorem macroSize_pos (shape : Cartesian.CartesianShape) :
+    0 < (RelativeRmm.canonicalLayout shape).macroSize := by
+  simp only [RelativeRmm.canonicalLayout_macroSize]
+  have hb := base_pos shape
+  have hbps : canonicalBPRelativeSummaryBlocksPerSuperRaw shape =
+      canonicalBPRelativeSummaryBase shape := rfl
+  rw [hbps]
+  exact Nat.mul_pos hb hb
+
+theorem macroSize_lt (shape : Cartesian.CartesianShape) :
+    (RelativeRmm.canonicalLayout shape).macroSize < 2 ^ shapeWidth shape := by
+  refine lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_)
+  simp only [RelativeRmm.canonicalLayout_macroSize]
+  have hsq := base_sq_le shape
+  have hbps : canonicalBPRelativeSummaryBlocksPerSuperRaw shape =
+      canonicalBPRelativeSummaryBase shape := rfl
+  rw [hbps]
+  omega
+
+theorem macroSampleCount_lt (shape : Cartesian.CartesianShape) :
+    (RelativeRmm.canonicalLayout shape).macroSampleCount <
+      2 ^ shapeWidth shape := by
+  refine lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_)
+  simp only [RelativeRmm.canonicalLayout_macroSampleCount]
+  have h := macroSampleCount_le shape
+  omega
+
+theorem levelSlab_lt (shape : Cartesian.CartesianShape) :
+    (RelativeRmm.canonicalLayout shape).levelCount *
+        (RelativeRmm.canonicalLayout shape).macroSize <
+      2 ^ shapeWidth shape := by
+  refine lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_)
+  simp only [RelativeRmm.canonicalLayout_levelCount,
+    RelativeRmm.canonicalLayout_macroSize]
+  have h := levelSlab_le shape
+  omega
+
+theorem Dl_pos (shape : Cartesian.CartesianShape) :
+    0 < bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize := by
+  unfold bpSparseLevelDomain; omega
+
+theorem Dl_lt (shape : Cartesian.CartesianShape) :
+    bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize <
+      2 ^ shapeWidth shape := by
+  refine lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_)
+  simp only [bpSparseLevelDomain, RelativeRmm.canonicalLayout_macroSize]
+  have hsq := base_sq_le shape
+  have hbps : canonicalBPRelativeSummaryBlocksPerSuperRaw shape =
+      canonicalBPRelativeSummaryBase shape := rfl
+  rw [hbps]
+  omega
+
+theorem Dg_pos (shape : Cartesian.CartesianShape) :
+    0 < bpSparseLevelDomain
+      (RelativeRmm.canonicalLayout shape).macroSampleCount := by
+  unfold bpSparseLevelDomain; omega
+
+theorem Dg_lt (shape : Cartesian.CartesianShape) :
+    bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSampleCount <
+      2 ^ shapeWidth shape := by
+  refine lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_)
+  simp only [bpSparseLevelDomain, RelativeRmm.canonicalLayout_macroSampleCount]
+  have h := macroSampleCount_le shape
+  omega
+
+theorem blockSize_pos (shape : Cartesian.CartesianShape) :
+    0 < (RelativeRmm.canonicalLayout shape).blockSize := by
+  simp only [RelativeRmm.canonicalLayout_blockSize,
+    canonicalBPRelativeSummaryBlockSizeRaw]
+  have := base_pos shape
+  omega
+
+theorem blockSize_lt (shape : Cartesian.CartesianShape) :
+    (RelativeRmm.canonicalLayout shape).blockSize < 2 ^ shapeWidth shape := by
+  refine lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_)
+  simp only [RelativeRmm.canonicalLayout_blockSize]
+  have := blockSizeRaw_le shape
+  omega
+
+/-- The span the dispatch preamble carries: `blocksPerSuper * blockSize + 2`,
+which at canonical parameters is `2 * base ^ 2 + 2`. -/
+theorem span_lt (shape : Cartesian.CartesianShape) :
+    (RelativeRmm.canonicalLayout shape).blocksPerSuper *
+        (RelativeRmm.canonicalLayout shape).blockSize + 2 <
+      2 ^ shapeWidth shape := by
+  refine lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_)
+  simp only [RelativeRmm.canonicalLayout_blocksPerSuper,
+    RelativeRmm.canonicalLayout_blockSize, canonicalBPRelativeSummaryBlockSizeRaw,
+    canonicalBPRelativeSummaryBlocksPerSuperRaw]
+  have hsq := base_sq_le shape
+  have hre : canonicalBPRelativeSummaryBase shape *
+      (2 * canonicalBPRelativeSummaryBase shape) =
+      2 * (canonicalBPRelativeSummaryBase shape *
+        canonicalBPRelativeSummaryBase shape) := by
+    simp [Nat.mul_left_comm]
+  omega
+
+/-- The register bound, `151` being `wLeft` (`E1InteriorDispatch.lean:117`). -/
+theorem reg_lt (shape : Cartesian.CartesianShape) :
+    151 < 2 ^ shapeWidth shape :=
+  lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear (by omega))
+
+/-! ## THE CANONICAL INTERIOR DISPATCH BLOCK FITS -/
+
+/--
+**ALL 4204 INSTRUCTIONS OF `canonicalInteriorDispatchBlock` FIT THE REVIEWER
+WIDTH, AT EVERY SHAPE.**
+
+This is E1-LaneM's residual 1, closed.  `interiorDispatchBlock_fits`
+(`E1InteriorDispatchWidth.lean:386`) is parametric in a layout, four
+geometries and seven numerals; every one of those parameters is discharged
+here at the canonical instantiation, so the theorem carries no premise about
+the interior beyond `hQ`, which is about the block's own host address and is
+discharged by its caller.
+
+`hQ` is the ONE remaining hypothesis and it is not an owed premise in the
+sense rule 1 forbids: at the intended instantiation the block is hosted at
+`Q = 1007` (`closeLcaCrossArm`'s `A + 4 + 176` with `A = 827`), where
+`1007 + 4204 = 5211` is far below the envelope.
+-/
+theorem canonicalInteriorDispatchBlock_fits (shape : Cartesian.CartesianShape)
+    {Q : Nat} (hQ : Q + 4204 < 2 ^ shapeWidth shape) :
+    ∀ instr ∈ canonicalInteriorDispatchBlock shape Q,
+      Instr.FieldsFit (shapeWidth shape) instr := by
+  intro instr hmem
+  rw [canonicalInteriorDispatchBlock] at hmem
+  exact interiorDispatchBlock_fits (canonicalSummaryLayout_fits shape)
+    (localLevelGeom_fits shape) (localSpanGeom_fits shape)
+    (globalLevelGeom_fits shape) (globalSpanGeom_fits shape)
+    (reg_lt shape) hQ (macroSize_pos shape) (macroSize_lt shape)
+    (macroSampleCount_lt shape) (levelSlab_lt shape) (Dl_pos shape)
+    (Dl_lt shape) (Dg_pos shape) (Dg_lt shape) (blockSize_pos shape)
+    (blockSize_lt shape) (span_lt shape) instr hmem
 
 end E1CanonicalInteriorWidth
 end WordRAM

@@ -8919,3 +8919,70 @@ failure was silent in the sense that matters — the file still produced output
 — but `#print axioms globalLevelCount_le` reported `sorryAx` in the axiom
 list, which is how it was caught. This is the positive-check discipline
 E1-LaneK's zero-byte incident established, and it worked as intended.
+
+## DD-20260719-301: the canonical interior dispatch block fits — E1-LaneM's residual 1, closed (E1-LaneN)
+
+`canonicalInteriorDispatchBlock_fits` (`E1CanonicalInteriorWidth.lean`) now
+certifies all 4204 instructions of `canonicalInteriorDispatchBlock`
+(`E1InteriorDispatchCompose.lean:89`) at `shapeWidth shape`, at EVERY shape,
+with `hQ : Q + 4204 < 2 ^ shapeWidth shape` as its only hypothesis.
+
+`interiorDispatchBlock_fits` (`E1InteriorDispatchWidth.lean:386`,
+DD-20260719-261) is parametric in a layout, four geometries and seven
+numerals. `canonicalSummaryLayout_fits` (DD-20260719-263) had already
+discharged the layout. This closes the rest:
+
+* **Four `GeomFits`.** Each needs `base`, `entriesLen`, `chunkCount`.
+  - The four BASES (`localOffset`, `globalBlock`, `localLevel`,
+    `globalLevel`) are four more prefix sums of the same eight stores whose
+    total is `deadAddress`, and `span_offsets_le_deadAddress` extends
+    `offsets_le_deadAddress` mechanically — with one wrinkle worth recording:
+    the offsets name the three later stores through their own abbreviations
+    (`canonicalRelativeRmmLocalMachineStore`, `InteriorDirectory.lean:1532`)
+    while `canonicalRelativeRmmInteriorComponentStore_words_size_eq`
+    (`InteriorDirectory.lean:1690`) names them through `.table.machineStore`.
+    The two are definitionally equal but NOT syntactically, and `omega` is
+    syntactic, so three `rfl` bridges are required. Without them `omega`
+    fails with an unlinked-atom counterexample.
+  - The four `chunkCount`s were already capped at `8`
+    (`E1InteriorSpanBlock.lean:654`, `:659`; `E1InteriorTwoSpan.lean:912`,
+    `:917`).
+  - The four `entriesLen`s are the real arithmetic; see below.
+* **Seven numerals**, plus positivity where they land in `divConst`:
+  `macroSize`, `macroSampleCount`, the level slab, the two sparse-level
+  divisors, `blockSize`, and the span `blocksPerSuper * blockSize + 2`.
+
+### The entry lengths, and why the order of two steps is load-bearing
+
+`localSpanGeom.entriesLen = macroSampleCount * (levelCount * macroSize)`
+(`LocalGlobalSparse.lean:838`) and
+`globalSpanGeom.entriesLen = globalLevelCount * macroSampleCount`
+(`LocalGlobalSparse.lean:866`). Both are PRODUCTS; the reviewer envelope is
+LINEAR. They close only because `macroSampleCount = blockCount / macroSize + 1`
+and `blockCount = size / base` each carry a division that must be ABSORBED
+against the matching factor rather than cancelled first:
+
+```
+macroSampleCount * (levelCount * macroSize)
+  = levelCount * (blockCount / macroSize * macroSize) + levelCount * macroSize
+  <= levelCount * blockCount + levelCount * macroSize          (prod_div_bound)
+  <= 3 * size + (6 * size + 196608)                            (lc_div_bound,
+                                                                levelSlab_le)
+```
+
+Cancelling the first division instead would leave `size * macroSize`, which
+is `n log^2 n` and outruns the envelope at every large size. The final bounds
+are `9 * size + 196608` (local span), `8 * size + 8` (global span),
+`2 * size + 13` (local level) and `size + 3` (global level) — all linear.
+
+The local span's slope `9` exceeds `lt_capacity_of_le_linear`'s slope `8`, so
+it is discharged through `lt_capacity_of_le_mul` (DD-20260719-263) with
+`c = 196608`; the other three fit the older lemma.
+
+### `hQ` is not an owed premise
+
+It is about the block's own host address, not about the interior, and the
+caller discharges it: at the intended instantiation the block sits at
+`Q = 1007` (`closeLcaCrossArm`'s `A + 4 + 176` with `A = 827`), where
+`1007 + 4204 = 5211` is far below `2 ^ shapeWidth shape`, whose floor is
+`400000` at every size.
