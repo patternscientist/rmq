@@ -227,6 +227,14 @@ space theorem. Check offsets, component order, successful-read backing, word
 width, and trace/footprint equality at the composed consumer, not only inside a
 detached adapter.
 
+When a contract makes ordered dynamic-read agreement primary and safe/static
+footprint agreement a corollary, inspect theorem bodies as well as types. The
+dynamic-read or source-region containment bridge must come from execution or
+program structure, not by first invoking the legacy safe/static complete-result
+equality. Otherwise the old theorem remains load-bearing and the claimed
+dependency inversion is circular in proof architecture even if the final
+proposition is true.
+
 ### Public composition and object identity
 
 Expand the relevant definitions. Write an explicit chain from the public
@@ -372,6 +380,19 @@ equivalent proof-erased boundary before increasing the replay deadline. Run
 broad trust, policy, topology, or aggregate certification only after these
 controls pass and the content tree is frozen.
 
+A focused selector must distinguish an omitted parameter from a parameter that
+was explicitly bound to the empty string. Omission may select the full frozen
+registry only when that behavior is part of the contract; bound empty,
+whitespace, zero, unknown, missing, and duplicate selection must fail at the
+actual command boundary before semantic execution. Test parameter-binding state
+rather than only calling an internal selector helper with nonempty sentinels.
+
+Timeout ownership must work on every operating system that runs the required
+gate. If the gate runs on Windows and Ubuntu, use an owned-tree implementation
+on both and run a sleeper that spawns a descendant and proves the root and child
+are absent after timeout. Killing only the root process on a non-Windows host
+does not establish process-tree cleanup.
+
 For checks expected to take several minutes:
 
 1. Run only one heavy Lean/Lake process at a time against a shared build tree.
@@ -390,6 +411,11 @@ For checks expected to take several minutes:
 6. If an aggregate gate fails late, reproduce only the failed component while
    repairing it. Run at most one new aggregate certification on the unchanged
    final tree after the component passes.
+
+Do not run a standalone full replay or full topology suite on the frozen final
+tree and then run an aggregate gate that executes the same suite again. Focused
+development cases may precede the gate; duplicate final-tree suite ownership
+requires a distinct acceptance purpose recorded in the ledger.
 
 Any source, theorem, executable, or load-bearing checker edit invalidates the
 checks that transitively consume it. A docs-only or matrix-only edit invalidates
