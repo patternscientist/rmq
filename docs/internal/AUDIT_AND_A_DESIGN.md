@@ -5255,3 +5255,81 @@ describe, so the summation can complete. Then the merge of
 `claude/e1-cost-algebra`, and the matrix adjudication, which is mine.
 
 Batteries running on both lanes in the quiet window.
+
+---
+
+## C05 round 81 — E1's CONSTRUCTION IS COMPLETE. The all-size step literal is
+## 11886, derived.
+
+Lane F returned CANDIDATE_COMPLETE at `3725205`. The cost-algebra branch is
+merged, the semantic conflict repaired, and the final literal derived.
+Independently verified by me: `main` is untouched at `0b8490c`, the campaign
+branch is not an ancestor of it, and `claude/e1-cost-algebra` IS an ancestor of
+the campaign head.
+
+**THE WHOLE-QUERY STEP LITERAL:**
+
+```
+prologue 9 | select 729 (x2) | selectJoin 2 | lca 10179 | rankJoin 2 | rank 234 | output 2
+11886 = 9 + 729 + 2 + 729 + 10179 + 2 + 234 + 2
+```
+
+All four branches, **every shape, every query, no size hypothesis.** Every
+summand derived by `unfold`/`rfl` plus `omega`, and **`omega` performs the
+addition, so the literal is kernel-checked** rather than transcribed.
+`wholeQuery_totalSteps_le` then carries it across `RunsTo`'s definitional
+identity to `run(...).steps ≤ 11886`.
+
+**The merge repair was right for the right reason.** `E1CostLadder`'s summation
+was written against the pre-A8 record and broke on `lcaSkipped`, which
+DD-208 had split into left-miss and right-miss. The worker **accounted for the
+new stages rather than reinstating the old field**, and said why: reinstating it
+"would have made `selectNone_branches_separable` false by `rfl` again — **a
+merge is not a licence to undo a semantic ruling.**" That is exactly the hazard
+a merge poses to a ruling made three lanes earlier.
+
+**The dispatcher the cost lane said did not exist, does — and it PREDATES the
+discharge.** `wholeQueryLcaRunCats` was written for the agreement proof, not for
+this premise, so discharging DD-230's hypothesis with it is a witness **found at
+the target**. The `10179` it yields exceeds the leg-level `10167` by twelve: the
+two select tests, the address arithmetic, and the cross arm's terminator — real
+work the leg-level bound did not include, named rather than absorbed.
+
+**Anti-vacuity was not merely evaluated but ATTRIBUTED.** At the validator's
+fixture shape the measured cost is `1270` against the bound of `11886` — about
+9x loose — and the worker localised the slack instead of describing it: **of the
+10616 steps of slack, 9705 sit in the close/LCA slot alone**, because the bound
+assumes the cross-block arm while a five-element shape takes the same-block arm
+and charges 474. That is the difference between admitting a bound is loose and
+knowing where its looseness lives.
+
+**And it kept the two constants apart**, unprompted: `11886` bounds STEPS, `210`
+bounds READS, and nothing here is proved against `210`.
+
+**MY THIRTY-FIRST FAILED CLAIM**, and the eighth of the same family: the select
+slot's cap is **definitional** — `bpWordChunkCount c e := Nat.min ((e-1)/c+1) 8`
+carries no side condition — so the all-size property survived without new
+hypotheses. The worker checked that before proving anything. Eighth instance of a
+brief budgeting work a definition had already done.
+
+Full battery green with 11 files examined by the design check; 146 DD entries,
+no duplicates; zero `sorryAx`; the frozen public identity unchanged. It also
+caught a **false finding of its own** by rule 4 — a sentence it thought stale sat
+inside an `Original text:` quotation whose preamble already recorded the
+correction — and recorded the check instead of the finding.
+
+### WHAT IS LEFT IS MINE, AND IT IS JUDGEMENT RATHER THAN CONSTRUCTION
+
+1. **The acceptance matrix.** No row is marked closed by anyone. The sharpest
+   question, which Lane F framed precisely: adjudicating REQ-E1-06 means deciding
+   **whether a `Local`-scoped row is answered by a whole-query theorem** — a
+   scope question, not a proof one.
+2. **Validator phase 5** — still legitimately OPEN, but its STATED REASON is now
+   false for the third time in this campaign. It says no definition composes the
+   legs; `wholeQueryProgram` falsifies that. What it actually lacks is a
+   validator-side comparison surface.
+3. **REQ-E1-07's supersession note**, unwritten.
+4. The `207`/`210` prose drift (with Codex), to which `11886` now adds a fourth
+   numeral that will need care not to conflate with either.
+5. **Tightness, which cannot be had without giving up the all-size property** —
+   and all-size is the more valuable of the two.
