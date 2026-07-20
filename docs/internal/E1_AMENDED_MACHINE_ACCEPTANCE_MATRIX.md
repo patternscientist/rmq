@@ -610,3 +610,113 @@ as the anti-vacuity witness for the width family alongside
 distinct fact about a distinct program. And it does not resolve REQ-E1-02's
 phrase "the modeled word width", which the matrix's own accepted-route block
 already defines as naming both widths; that row is adjudicated, not amended.
+
+## Evidence added by E1-Req08, no row closed, no row weakened
+
+Lane scope: REQ-E1-08's two recorded gaps. **No frozen requirement text is
+edited, no `Status` cell is set to ACCEPTED, and no row is closed here** --
+acceptance is the coordinator's to record, not this lane's.
+
+### Anchor correction, stated rather than edited into the frozen cell
+
+The `Evidence obtained` cell above cites the reference implementation as
+`refRMQ` (`:78`), a line reference into
+`RMQ/Validation/E1MachineValidate.lean`. **That anchor is now stale**, and it
+is stale by this lane's own doing: `refRMQ` has moved to
+`RMQ/Validation/E1RefRMQ.lean`. Its NAME is unchanged --
+`RMQ.Validation.E1MachineValidate.refRMQ`, namespace deliberately retained
+across the move -- so every by-name citation in this matrix still resolves.
+Only the file-and-line pair moved. Recorded here rather than rewritten into
+the cell, per the standing rule that these cells are not this lane's to edit.
+
+### Gap (b) -- the independence clause -- is addressed
+
+`refRMQ` now lives in `RMQ/Validation/E1RefRMQ.lean`, a module with **no
+`import` lines at all**, so its entire ambient context is Lean's `Init`:
+the "basic prelude" the anti-vacuity column allows, and nothing else. The
+independence the clause asks for is now enforced by the module system on
+every build rather than by reviewer attention -- a machine or route constant
+used from that module does not elaborate.
+
+Two specification clauses are proved there as well:
+`refRMQ_eq_none_of_hi_le_lo` and `refRMQ_eq_none_of_length_lt`. Both report
+"does not depend on any axioms". See DD-20260720-010, which also records a
+near-miss: under `split` the second proof's hypothesis is consumed by the
+split rather than by the simp, the linter then flags it unused, and the
+theorem reads as vacuous. It is not -- deleting the hypothesis breaks the
+proof -- and the proof was rewritten explicitly so the next reader need not
+re-derive that.
+
+### Gap (a) -- the whole-query positional receipt diff -- is addressed
+
+`WQReport` carried `reads : Nat`, a COUNT. It now also carries
+`routeTraceLen`, `receiptMatchesRoute` and `receiptEmpty`, and
+`runWholeQuery` compares the machine's `readLog` against the route's
+`wholeQueryRouteTrace` with `==` on `List TraceEvent`. `TraceEvent` derives
+`DecidableEq`, so that comparison is decided **constructor by constructor and
+field by field, in order** -- segment, index AND word. It is not a length,
+not a count, and not a multiset.
+
+Comparing against `wholeQueryRouteTrace` is comparing against the accepted
+trace this row names:
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_decompose`
+(`E1RouteDecomposition.lean`) proves, with no branch hypothesis, that the
+route object's `.trace` IS `wholeQueryRouteTrace`.
+
+Executed, un-mutated:
+
+```
+wholeQueryRouteTraceEvents=1415        (route side)
+wholeQueryModeledReads=1415            (machine side)
+wholeQueryReceiptMismatches=0          (event for event)
+wholeQueryReceiptComparisons=20
+wholeQueryComparableCases=20           (equality is the anti-vacuity check)
+wholeQueryInvalidReceiptViolations=0   (a rejected query reads NOTHING)
+RESULT: PASS                           (exit 0)
+```
+
+`.invalid` cases are excluded from the diff for the reason `modelSteps`
+already excludes them -- the guard exits before the route's stage record
+applies -- and are NOT waived: `wqInvalidReceiptViolations` checks the
+stronger property that the machine read nothing at all, and gates the exit
+code. The comparison count is required to EQUAL the comparable-case count
+rather than merely exceed zero, so a case dropping out of the diff fails the
+run.
+
+The clause is exit-code-visible: `okWholeQuery` now also requires
+`wqReceiptBad == 0`, `wqReceiptCmp == wqComparable`, `wqReceiptCmp > 0` and
+`wqInvalidReceipt == 0`.
+
+### The diff is load-bearing, and it OUTRANKS the value comparison on mutant M
+
+A check that nothing can fail is the vacuity this matrix exists to police, so
+the receipt diff was run against the existing machine mutant rather than
+asserted to be live. Mutant M (`natLt` -> `natLe` throughout the whole-query
+program) was recorded here as "whole-query value-only".
+
+```
+mutantM_answerMismatches=12    (of 24 cases; the value comparison)
+mutantM_casesUnaffected=12     (windows with no tie answer identically)
+mutantM_receiptMismatches=20   (of 20 comparable cases; the receipt)
+```
+
+**The receipt rejects mutant M on every comparable case, including the eight
+the value comparison cannot see**, because relaxing `<` to `<=` re-routes
+control through read-bearing code even on windows whose final answer
+coincides. Mutant M's "value-only" label in the `Evidence obtained` cell
+above is therefore now understated -- stated here rather than edited into the
+cell. See DD-20260720-011, which also records why this does not contradict
+the §6 models where receipts are weaker than the value.
+
+### What this lane did NOT do
+
+- No `Status` cell changed; **REQ-E1-08 remains as the table records it**.
+  Whether the two gaps being addressed closes the row is the coordinator's
+  call, not this lane's.
+- No frozen requirement text edited.
+- No public identity renamed or deleted -- `refRMQ` kept its namespace
+  precisely so the move would not become a rename.
+- `class_select-miss=0` is UNCHANGED and remains a real corpus hole: no
+  fixture in `wholeQueryCases` reaches a select-miss branch, so that class is
+  named but unpopulated. `wqClassesAllPopulated` does not require it, and
+  this lane did not add one.

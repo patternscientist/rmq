@@ -7,6 +7,7 @@ import RMQ.Core.WordRAM.E1FringeFoldProgram
 import RMQ.Core.WordRAM.E1InteriorChunkFold
 import RMQ.Core.WordRAM.E1CostAlgebra
 import RMQ.Core.WordRAM.E1WholeQueryCostLiteral
+import RMQ.Validation.E1RefRMQ
 
 /-!
 # M6: executable validation of the E1 amended machine
@@ -60,34 +61,28 @@ open RMQ.WordRAM.E1CloseDispatch
 open RMQ.WordRAM.E1FringeArmBlock
 open RMQ.WordRAM.E1SameBlockArm
 
-/-! ## 1. The independent reference implementation
+/-! ## 1. The independent reference implementation -- MOVED OUT OF THIS FILE
 
-Written from the specification of half-open leftmost RMQ.  Nothing in this
-section mentions the machine, the route, or any repository construction. -/
+`refRMQ` used to be defined here.  It is now defined in
+`RMQ/Validation/E1RefRMQ.lean`, which this module imports, and it kept its
+fully-qualified name `RMQ.Validation.E1MachineValidate.refRMQ` across the
+move, so every use below and every citation of it elsewhere reads exactly as
+it did before.
 
-/-- Half-open leftmost range minimum over `xs` on `[lo, hi)`.
+**The move is what discharges REQ-E1-08's independence clause, and it is not
+cosmetic.**  The clause requires the reference to share "only `List Int` and
+basic prelude" with the machine.  Defined here, the reference was
+FUNCTIONALLY independent -- it called neither the machine nor the route --
+but it sat in a module importing nine machine modules, so on the clause's
+literal wording it failed, and the matrix carried that as gap (b).  In a
+module with no imports the independence is structural: a machine constant
+used from there does not elaborate, because it is not in scope.  Reviewer
+attention is no longer what holds the property up.
 
-Specification, restated: the result is `some i` where `lo ≤ i < hi`,
-`xs[i]` is minimal over the window, and no `j < i` in the window attains
-that minimum; the result is `none` exactly when the window is empty
-(`hi ≤ lo`) or reaches past the end of `xs` (`xs.length < hi`).
-
-The fold replaces the incumbent only on a STRICTLY smaller value, which is
-what makes the answer the LEFTMOST minimiser rather than an arbitrary
-one. -/
-def refRMQ (xs : List Int) (lo hi : Nat) : Option Nat :=
-  if hi ≤ lo then none
-  else if xs.length < hi then none
-  else
-    ((List.range (hi - lo)).map (fun k => lo + k)).foldl
-      (fun best i =>
-        match best with
-        | none => some i
-        | some b =>
-            match xs[i]?, xs[b]? with
-            | some v, some bv => if v < bv then some i else some b
-            | _, _ => best)
-      none
+The two specification clauses that quantify over all inputs
+(`refRMQ_eq_none_of_hi_le_lo`, `refRMQ_eq_none_of_length_lt`) are proved
+there too.  Its positive content is still checked by EXECUTION here, by
+`expectationSelfConsistent` below. -/
 
 /-! ## 2. Fixtures
 
@@ -2701,6 +2696,19 @@ structure WQReport where
   stepsAgree : Bool
   withinBound : Bool
   reads : Nat
+  /-- The route's own whole-query receipt LENGTH, or `none` on a query the
+  guard rejects.  Reported beside `reads` so a length agreement that hides a
+  positional disagreement is visible as such. -/
+  routeTraceLen : Option Nat
+  /-- **THE POSITIONAL RECEIPT DIFF.**  The machine's `readLog` compared
+  event for event with the route's `wholeQueryRouteTrace` -- same
+  constructor, same segment, same index, same word, same order.  `none` on a
+  query the guard rejects; see `runWholeQuery` for why those are excluded
+  rather than compared. -/
+  receiptMatchesRoute : Option Bool
+  /-- Whether the machine emitted no read events at all.  Checked against
+  the `.invalid` class, where the guard must exit before reading. -/
+  receiptEmpty : Bool
 deriving Repr
 
 /-- RUN THE WHOLE QUERY end to end and compare against the reference.
@@ -2727,6 +2735,33 @@ def runWholeQuery (salt : Nat) (build : List Instr -> List Instr)
     else
       some (E1Query.wholeQueryCats (E1Query.wholeQueryMachineS shape) shape
         l r).length
+  -- THE ROUTE'S OWN WHOLE-QUERY RECEIPT, for the positional diff.
+  --
+  -- `wholeQueryRouteTrace` IS the accepted trace the row names, not a
+  -- restatement of it:
+  -- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_decompose`
+  -- (`E1RouteDecomposition.lean`) proves, with no branch hypothesis,
+  --   (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+  --      shape left right).trace = wholeQueryRouteTrace shape left right
+  -- so comparing against it is comparing against `(...).trace`.
+  --
+  -- `TraceEvent` derives `DecidableEq`, so the `==` below is decided
+  -- CONSTRUCTOR BY CONSTRUCTOR AND FIELD BY FIELD in order -- a `readWord`
+  -- with the right segment and index but a stale word, or the right events
+  -- in the wrong order, is a mismatch.  It is not a length, not a count and
+  -- not a multiset.
+  --
+  -- Excluded on `.invalid` for the same reason `modelSteps` is: the guard
+  -- exits before the route's stage record applies, so the machine's receipt
+  -- is legitimately empty while the route object would still describe the
+  -- selects it would have performed.  Comparing there would manufacture a
+  -- failure out of a case the machine handles CORRECTLY.  Those cases are
+  -- not waived -- `receiptEmpty` below checks the stronger property that
+  -- the machine read nothing at all, which is REQ-E1-05's read-projection
+  -- clause, and `wqInvalidReceiptViolations` gates it.
+  let routeTrace : Option (List WordRAM.TraceEvent) :=
+    if cls == .invalid then none
+    else some (SuccinctFinal.wholeQueryRouteTrace shape l r)
   { name := name
     cls := cls
     threshold := thr
@@ -2741,7 +2776,10 @@ def runWholeQuery (salt : Nat) (build : List Instr -> List Instr)
       | none => true
       | some m => m == result.steps
     withinBound := result.steps <= wholeQueryStepBound
-    reads := result.readLog.length }
+    reads := result.readLog.length
+    routeTraceLen := routeTrace.map (fun t => t.length)
+    receiptMatchesRoute := routeTrace.map (fun t => result.readLog == t)
+    receiptEmpty := result.readLog.isEmpty }
 
 /-- The honest whole-query builder: identity. -/
 def goodWholeQuery : List Instr -> List Instr := id
@@ -2782,6 +2820,45 @@ def wqTotalSteps (rs : List WQReport) : Nat :=
 
 def wqTotalReads (rs : List WQReport) : Nat :=
   rs.foldl (fun a r => a + r.reads) 0
+
+/-! ### The whole-query receipt diff, aggregated
+
+This is REQ-E1-08's "machine read projection = accepted trace" clause at
+WHOLE-QUERY scope.  Before this, `WQReport` carried `reads : Nat` and
+nothing else, so the receipt was COUNTED here and only diffed positionally
+at composite scope (phase 3d).  A count is exactly the check the campaign's
+recurring defect class walks through: §6 of `E1_LIVE_STATE.md` records four
+separate impostors that a read COUNT cannot distinguish from the honest
+block, two of which produce an identical count with different events. -/
+
+/-- Cases whose machine receipt differs POSITIONALLY from the route's.
+Must be `0`. -/
+def wqReceiptMismatches (rs : List WQReport) : Nat :=
+  (rs.filter (fun r => r.receiptMatchesRoute == some false)).length
+
+/-- How many cases actually COMPARED receipts.  If this is `0` the line
+above is vacuous, exactly as `wqStepsCompared` is for the step model. -/
+def wqReceiptsCompared (rs : List WQReport) : Nat :=
+  (rs.filter (fun r => r.receiptMatchesRoute.isSome)).length
+
+/-- Cases the guard does NOT reject -- the population the receipt diff is
+supposed to cover.  The verdict requires `wqReceiptsCompared` to equal this
+rather than merely be positive, so that a case silently dropping out of the
+comparison is a FAILURE and not just a smaller number. -/
+def wqComparableCases (rs : List WQReport) : Nat :=
+  (rs.filter (fun r => r.cls != .invalid)).length
+
+/-- Invalid cases whose machine receipt is NOT empty.  Must be `0`: this is
+REQ-E1-05's read-projection clause, checked here at whole-query scope on the
+cases the diff above deliberately excludes. -/
+def wqInvalidReceiptViolations (rs : List WQReport) : Nat :=
+  (rs.filter (fun r => r.cls == .invalid && !r.receiptEmpty)).length
+
+/-- Total route-side receipt events over the compared cases.  Printed beside
+`wqTotalReads` so the two sides of the diff are both visible; equal totals
+with a nonzero mismatch count would say the disagreement is positional. -/
+def wqTotalRouteTrace (rs : List WQReport) : Nat :=
+  rs.foldl (fun a r => a + r.routeTraceLen.getD 0) 0
 
 /-- Population of one class in the corpus. -/
 def wqClassPopulation (rs : List WQReport) (c : QueryClass) : Nat :=
@@ -2892,7 +2969,9 @@ def renderWQ (r : WQReport) : String :=
   s!"    {r.name} [{queryClassName r.cls}]" ++
     (if r.threshold then " (threshold)" else "") ++
     s!" expected={repr r.expected} machine={repr r.machine} " ++
-    s!"steps={r.executedSteps} model={repr r.modelSteps}"
+    s!"steps={r.executedSteps} model={repr r.modelSteps} " ++
+    s!"reads={r.reads} routeTrace={repr r.routeTraceLen} " ++
+    s!"receiptMatches={repr r.receiptMatchesRoute}"
 
 def mainImpl : IO UInt32 := do
   IO.println "== E1 amended-machine validator (M6) =="
@@ -3359,6 +3438,10 @@ def mainImpl : IO UInt32 := do
   let wqBound := wqBoundViolations wqRs
   let wqHalt := wqNotHalted wqRs
   let wqCov := wqClassesAllPopulated wqRs
+  let wqReceiptBad := wqReceiptMismatches wqRs
+  let wqReceiptCmp := wqReceiptsCompared wqRs
+  let wqComparable := wqComparableCases wqRs
+  let wqInvalidReceipt := wqInvalidReceiptViolations wqRs
   IO.println s!"wholeQueryComparisonAvailable={wholeQueryComparisonAvailable}   (DERIVED from the corpus, not declared)"
   IO.println s!"wholeQueryComparison={wholeQueryStatusLine wqRs}"
   IO.println s!"wholeQueryCases={wqRs.length}"
@@ -3370,6 +3453,12 @@ def mainImpl : IO UInt32 := do
   IO.println s!"wholeQueryStepModelDisagreements={wqSteps}   (must be 0: executed steps vs wholeQueryCats length)"
   IO.println s!"wholeQueryStepComparisons={wqCompared}   (must be > 0, else the line above is vacuous)"
   IO.println s!"wholeQueryBoundViolations={wqBound}   (must be 0: executed steps within {wholeQueryStepBound})"
+  IO.println "-- whole-query RECEIPT, diffed POSITIONALLY against the route's own trace --"
+  IO.println s!"wholeQueryRouteTraceEvents={wqTotalRouteTrace wqRs}   (route side; machine side is wholeQueryModeledReads above)"
+  IO.println s!"wholeQueryReceiptMismatches={wqReceiptBad}   (must be 0: readLog vs wholeQueryRouteTrace, event for event)"
+  IO.println s!"wholeQueryReceiptComparisons={wqReceiptCmp}   (must equal wholeQueryComparableCases, else a case dropped out)"
+  IO.println s!"wholeQueryComparableCases={wqComparable}   (the non-invalid corpus)"
+  IO.println s!"wholeQueryInvalidReceiptViolations={wqInvalidReceipt}   (must be 0: a rejected query must read NOTHING)"
   IO.println "-- fixture classes, COMPUTED from the route's own closes --"
   IO.println s!"class_same-block={wqClassPopulation wqRs .sameBlock}"
   IO.println s!"class_cross-adjacent={wqClassPopulation wqRs .crossAdjacent}"
@@ -3381,6 +3470,11 @@ def mainImpl : IO UInt32 := do
   IO.println s!"wholeQueryClassesAllPopulated={wqCov}   (must be true: a named class with no members is not a fixture class)"
   for m in wqBad.take 10 do
     IO.println (renderWQ m)
+  -- Receipt mismatches are printed separately from answer mismatches: a
+  -- case can agree on the answer and still have run a different read
+  -- sequence, which is the whole reason the diff is here.
+  for m in (wqRs.filter (fun r => r.receiptMatchesRoute == some false)).take 10 do
+    IO.println ("    RECEIPT " ++ renderWQ m)
   let tw1 <- IO.monoMsNow
   IO.println s!"wholeQueryWallClockMs={tw1 - tw0}   (this binary on this host; NOT evidence)"
   IO.println ""
@@ -3395,6 +3489,19 @@ def mainImpl : IO UInt32 := do
   IO.println s!"mutantM_answerMismatches={wqMutCaught}   (must be > 0: the refRMQ comparison catches it)"
   IO.println s!"mutantM_stillHalts={wqMutHalts}   (must be true: exit pc, halted flag and step count all MISS it)"
   IO.println s!"mutantM_casesUnaffected={wqMutRs.length - wqMutCaught}   (windows with no tie answer identically under < and <=)"
+  -- WHERE THE RECEIPT'S POWER ENDS, measured rather than asserted.
+  --
+  -- §6 of E1_LIVE_STATE records that a discriminator is only understood
+  -- once its NON-entailments are stated, so this reports what the new
+  -- positional receipt diff does to mutant M rather than claiming it as a
+  -- second catcher.  Mutant M swaps `natLt` for `natLe`, which changes the
+  -- answer on tie-bearing windows; whether it also perturbs the READ
+  -- SEQUENCE is a question about the program's control flow, not about the
+  -- value, and the number below is the answer.  A `0` here is not a defect
+  -- in the diff -- it is the honest statement that on this mutant the value
+  -- comparison is the load-bearing check and the receipt is blind, which is
+  -- exactly the boundary `mergePos_discriminates` draws inside a block.
+  IO.println s!"mutantM_receiptMismatches={wqReceiptMismatches wqMutRs}   (the receipt's INDEPENDENT power over mutant M; 0 = value-only, see note)"
   let twm1 <- IO.monoMsNow
   IO.println s!"wholeQueryMutationWallClockMs={twm1 - twm0}   (this binary on this host; NOT evidence)"
   IO.println ""
@@ -3504,9 +3611,16 @@ def mainImpl : IO UInt32 := do
   -- executed step count agrees with the cost model on a nonempty set of
   -- cases, every run is within the proved bound, and every named fixture
   -- class is populated.
+  -- The receipt clause is gated here rather than merely printed: the row
+  -- asks for read-projection correspondence, and a number nobody consults
+  -- is not a check.  `wqReceiptCmp == wqComparable` is the anti-vacuity
+  -- half -- it fails if a case stops being compared, which a `> 0` floor
+  -- would not catch.
   let okWholeQuery :=
     wholeQueryComparisonAvailable && wqBad.isEmpty && wqHalt == 0 &&
-      wqSteps == 0 && wqCompared > 0 && wqBound == 0
+      wqSteps == 0 && wqCompared > 0 && wqBound == 0 &&
+      wqReceiptBad == 0 && wqReceiptCmp == wqComparable &&
+      wqReceiptCmp > 0 && wqInvalidReceipt == 0
   let okWholeQueryCoverage := wqCov
   -- Mutant M rejected BY THE VALUE COMPARISON while still halting: this is
   -- what makes phase 5 a comparison rather than a printed pass.

@@ -9727,3 +9727,173 @@ instructions whose largest encoded field, `5644`, does not grow with `n`.
 Monotonicity (DD-20260719-330) plus these two theorems jointly imply
 `machineWordBits shape.size < shapeWidth shape` for shapes of size ≤ 2821,
 which is a consistency check the tree now supports directly.
+
+## DD-20260720-010: the independent reference moves to a module with no imports, and KEEPS its namespace (E1-Req08)
+
+REQ-E1-08's anti-vacuity column requires the reference implementation to
+"not import the machine or succinct modules' answers (independence audit: it
+may share only `List Int` and basic prelude)". `refRMQ` met that
+FUNCTIONALLY from the start -- it calls neither the machine nor the route --
+but it was defined inside `RMQ/Validation/E1MachineValidate.lean`, which
+imports nine machine modules. On the clause's literal wording that failed,
+and the matrix carried it as gap (b) of REQ-E1-08.
+
+`refRMQ` now lives in `RMQ/Validation/E1RefRMQ.lean`, which has **no `import`
+lines at all**, so its whole ambient context is Lean's own `Init` -- exactly
+the "basic prelude" the clause allows.
+
+**The point of the move is that independence stops being a claim and becomes
+a structural property.** Before, nothing prevented a later edit from reaching
+for a route constant to "simplify" an expectation; only reviewer attention
+stood in the way, and this campaign has repeatedly found that reviewer
+attention is the weakest link available. From a module with no imports such
+an edit does not elaborate, because the constant is not in scope. The
+independence audit the row asks for is now performed by the module system on
+every build.
+
+### The namespace deliberately does NOT follow the file
+
+The declarations stay in `namespace RMQ.Validation.E1MachineValidate`, so the
+reference's fully-qualified name is still
+`RMQ.Validation.E1MachineValidate.refRMQ`. Lean permits a namespace to span
+modules, and using that here is what keeps the move from being a rename.
+
+This matters because the campaign's standing rule forbids renaming a frozen
+public identity without owner approval, and `refRMQ` is cited by name in the
+acceptance matrix. Had the module been given its own namespace, the move
+would have silently become a rename requiring escalation -- a large cost for
+a purely cosmetic gain. As landed, **no identity, no call site, and no
+citation moves**; only the file does. The one anchor that does go stale is
+the matrix's line reference `refRMQ` (`:78`), which is recorded in this
+lane's matrix note rather than edited into the frozen cell.
+
+### The two all-input clauses are proved there as well
+
+`refRMQ_eq_none_of_hi_le_lo` and `refRMQ_eq_none_of_length_lt` state the
+specification's two `none` clauses. They are proved in the prelude-only
+module rather than in the harness for a reason beyond tidiness: a theorem
+that elaborates with no imports is itself evidence that the reference needs
+nothing beyond the prelude to be characterised. A reference whose properties
+could only be established with the machine in scope would not be independent
+of it in any sense the row cares about.
+
+The harness continues to check the reference's POSITIVE content by execution
+(`expectationSelfConsistent`), which brute-forces leftmost-minimality against
+every other window index. Proof and execution are covering different clauses
+here, not duplicating one.
+
+### A recorded near-miss in the proof of the second clause
+
+`refRMQ_eq_none_of_length_lt` was first written as `unfold; split; simp [h]`.
+That compiles, but Lean's linter reports `h` as an unused simp argument, and
+the two remaining goals both print `none = none` -- which reads exactly like
+a theorem that does not depend on its hypothesis, i.e. like a reference that
+returns `none` unconditionally.
+
+It was checked rather than assumed, and the appearance is misleading in a
+specific way worth recording. `split` splits BOTH `if`s and uses `h` itself
+to discharge the branch where `¬(xs.length < hi)`; the hypothesis is consumed
+by the split, not by the simp. Deleting `h` from the statement makes the
+proof fail on exactly that branch with the `foldl` still in the goal, and
+`refRMQ` evaluates to `some 1` / `some 0` on concrete fixtures, so the
+degenerate reading is false twice over.
+
+The proof was nevertheless rewritten as explicit `if_pos`/`if_neg` under a
+`by_cases`, because the diagnosis should not have to be re-derived by the
+next reader. **The general point: a linter reporting an unused hypothesis on
+a specification lemma deserves a check that the lemma is not vacuous, and the
+cheapest conclusive check is to delete the hypothesis and confirm the proof
+breaks.**
+
+Evidence: `lake env lean` on the module is clean; `#print axioms` reports
+"does not depend on any axioms" for `refRMQ`,
+`refRMQ_eq_none_of_hi_le_lo` and `refRMQ_eq_none_of_length_lt`.
+
+## DD-20260720-011: the whole-query receipt is DIFFED POSITIONALLY, and the diff turns out to outrank the value comparison (E1-Req08)
+
+REQ-E1-08's `Evidence needed` column asks for "machine read projection =
+accepted trace". Phase 5 carried `WQReport.reads : Nat` -- a COUNT -- so at
+whole-query scope the receipt was counted and never compared event by event,
+while phase 3d diffed positionally at composite scope. The matrix recorded
+that as gap (a).
+
+`WQReport` now carries `routeTraceLen`, `receiptMatchesRoute` and
+`receiptEmpty`, and `runWholeQuery` compares `result.readLog` against
+`SuccinctFinal.wholeQueryRouteTrace shape l r` with `==`. `TraceEvent`
+derives `DecidableEq`, so the comparison is decided constructor by
+constructor and field by field in order: a `readWord` with the right segment
+and index but a stale word, or the right events in the wrong order, is a
+mismatch. It is not a length, not a count and not a multiset.
+
+### Why comparing against `wholeQueryRouteTrace` IS comparing against the accepted trace
+
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_decompose`
+(`E1RouteDecomposition.lean`) proves, with NO branch hypothesis, that
+`(concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult shape left
+right).trace = wholeQueryRouteTrace shape left right`. So the harness is not
+comparing against a convenient restatement of the route object; it is
+comparing against the object the row names, with a proved identification in
+between. Nothing here re-derives the route's trace, and neither side of the
+diff is computed from the other.
+
+### The invalid class is excluded, and NOT waived
+
+The diff is `none` on `.invalid`, for the reason `modelSteps` already is:
+the guard exits before the route's stage record applies, so the machine's
+receipt is legitimately empty while the route object would still describe
+the selects it would have performed. Comparing there would manufacture a
+failure out of a case the machine handles correctly.
+
+Those cases are not dropped. `wqInvalidReceiptViolations` checks the STRONGER
+property that the machine read nothing whatsoever on a rejected query --
+REQ-E1-05's read-projection clause -- and it gates the exit code.
+Anti-vacuity is `wqReceiptsCompared == wqComparableCases`, an EQUALITY rather
+than a `> 0` floor, so a case silently dropping out of the comparison is a
+failure and not merely a smaller number.
+
+### The measured result, and the part that was not expected
+
+Executed: `wholeQueryReceiptMismatches=0` over
+`wholeQueryReceiptComparisons=20` comparable cases, with
+`wholeQueryRouteTraceEvents=1415` equal to `wholeQueryModeledReads=1415`,
+and `wholeQueryInvalidReceiptViolations=0`. The whole-query receipt agrees
+with the route's trace event for event on every case in the corpus.
+
+**The finding worth carrying is what the diff does to mutant M.** Mutant M
+turns every `natLt` in the whole-query program into `natLe`. Its recorded
+character in this harness was "value-only visible": the value comparison
+catches it on 12 of 24 cases and `mutantM_casesUnaffected=12` records that a
+window with no tie answers identically under `<` and `<=`.
+
+The receipt catches it on **20 of 20** comparable cases
+(`mutantM_receiptMismatches=20`). So on this mutant the positional receipt is
+STRICTLY STRONGER than the value comparison -- it rejects eight cases the
+value cannot see, because relaxing `<` to `<=` perturbs control flow in the
+select and close legs and therefore the READ SEQUENCE, on windows where the
+final answer happens to coincide.
+
+This inverts the harness's previous mutant taxonomy for M and is worth
+stating explicitly, because §6 of `E1_LIVE_STATE.md` has been accumulating
+evidence in the opposite direction: `spanNoneArm_discriminates`,
+`mergePos_discriminates` and `twoSpanNoneArm_receipt_blind_to_impostorB` all
+exhibit receipts that are WEAKER than the value or the category log. The rule
+those established -- "a receipt constrains WHICH READS HAPPENED, so its power
+over a skipped-code defect is exactly whether the skipped code READS" -- is
+not contradicted. It is confirmed from the other side: mutant M does not skip
+read-free code, it re-routes control through code that READS, so the receipt
+sees all of it. **The generalisable point is that receipt power is a property
+of the MUTANT'S relationship to reads, not a fixed rank among the checks, and
+a harness that assumes a fixed ranking will mis-predict in both directions.**
+
+### Gating
+
+`okWholeQuery` now additionally requires `wqReceiptBad == 0`,
+`wqReceiptCmp == wqComparable`, `wqReceiptCmp > 0` and
+`wqInvalidReceipt == 0`. It feeds `okNewDiscriminators` into `ok` into the
+process return, so the receipt clause is exit-code-visible rather than a
+printed number. Receipt mismatches print separately from answer mismatches,
+because a case can agree on the answer and still have run a different read
+sequence -- which is the whole reason the diff is here.
+
+Evidence: `lake build RMQ` and `lake build rmq_e1_machine_validate` both
+completed successfully; the validator runs `RESULT: PASS` at exit 0.
