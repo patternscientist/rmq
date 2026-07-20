@@ -7527,3 +7527,78 @@ next increment — that is exactly where the remaining gaps of this class live.
 
 **No architecture is frozen. Nothing merged. E1 remains rejected and paused
 pending the interior overflow answer and the fit-certificate contract.**
+
+---
+
+## C05 round 104 — both E1 gating questions RESOLVED and verified. No overflow;
+## the fit certificate is feasible and its crux is ONE nameable lemma.
+
+The interior re-scout landed and I verified its two load-bearing claims against
+source. Both gating questions for the E1 repair contract are now answered.
+
+### (a) DOES THE CANONICAL RUN OVERFLOW? NO — over the WHOLE executed program.
+
+Re-run on the executed `canonicalInteriorDispatchBlock` (4204 instrs, threaded at
+`E1WholeQueryCloseLca.lean:89`), not the interior-empty `assembledValidPath`.
+Every interior `mulConst`/`add` falls into a safe family:
+- floor-realign `(x/k)*k <= x`;
+- `(v/D)*M <= v` because `M <= D` by domain definition (`Dl = macroSize+2 > M = macroSize`);
+- big-endian Horner, max intermediate = the reconstructed value V;
+- `index*stride` yielding a bounded address/slot/position;
+- `base + offset`.
+
+**Neither dangerous pattern occurs anywhere in the executed program** — no
+`capacity-scale * k>=2`, no `address + address`. Max register value is `O(size)`
+(value-slopes <= ~17) against capacity slope 400000. `deadAddress` (emitted as a
+read regardless of success) is PROVEN `< capacity` (`deadAddress_le/_lt`,
+`E1CanonicalInteriorWidth.lean:138,146`, verified present).
+
+### THE ONE NAMEABLE RESIDUAL — verified absent, so it is real contract work
+
+The verdict is a DERIVED result. Most interior products reduce to already-proven
+width lemmas (`lt_capacity_of_le_linear/_mul`; entriesLen/levelSlab/blockSize/
+chunkCount<=8 all proven). But the SHARPEST site — `mulConst tP sBlock blockSize`
+(min-candidate, `E1InteriorMinCandidate.lean:237`) — is linear only because the
+decoded argmin offset is `< macroSize`, i.e. `sBlock <= blockCount`. On loose
+bounds `sBlock <= 2*size, blockSize <= 4*size` it would be `8*size^2` — QUADRATIC,
+exceeding capacity for `size > ~50000`.
+
+**I verified this bound is NOT a checked theorem** (grep for
+`sBlock<=blockCount` / `argmin<macroSize` / `decodedInteriorCell<` returns
+nothing). So the scout is right: it is an inferred route-encoding invariant. The
+one lemma that makes the whole fit certificate unconditional is
+`decodedInteriorCell < capacity` on `concreteBPNativeSuccinctRMQGlobalReadStore`
+(equivalently `sBlock <= blockCount`, `levelCell < levelCount*D`). Every interior
+product then reduces to it plus the proven width bounds. If it were FALSE the
+route's own argmin correctness would be broken — heavily tested elsewhere — so
+the risk it is false is low; but it must be PROVED for the certificate, not
+assumed.
+
+### (b) IS `Register.lean` REUSABLE? REBUILD (from round 103, stands).
+
+The fit certificate is fresh, on E1's own capacity-envelope machinery.
+
+### WHAT THIS MEANS FOR THE FROZEN CONTRACT
+
+- **The two-layer architecture is VIABLE, not blocked.** No overflow ⇒ exact
+  simulation into `Fin(2^w)` is observation-preserving ⇒ Codex's bounded
+  reviewer-facing machine can be built and the refinement bridge carries `210`
+  and `11886` intact. No arithmetic repair and no width widening are needed.
+- **Step 1 (the fit certificate) is feasible and its remaining substance is
+  pinned**: prove the decoded-interior-cell `< capacity` lemma (the crux), then
+  the per-instruction fit reduces mechanically over the scout's enumerated
+  families to that lemma + the existing proven width bounds. First place a worker
+  should look: whether the ROUTE proofs already establish argmin-offset `<
+  macroSize` in some form, making the lemma a lift rather than fresh work.
+- Everything else in the converged recommendation (round 103) stands unchanged.
+
+### PROCESS NOTE
+
+Round 103's scout gave a confident "NO OVERFLOW, high confidence" on the WRONG
+(interior-empty) program — finding H recurring. Round 104's scout, redirected to
+the executed program, reached the same top-line verdict BUT surfaced a
+load-bearing inferred invariant the first pass never saw, because the first pass
+believed the interior did not execute. The difference between "high confidence on
+the wrong object" and "high confidence on the right object with the residual
+named" is the entire value of verifying against source. Both gating answers are
+now safe to freeze a contract on.
