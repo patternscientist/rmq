@@ -8759,3 +8759,55 @@ consumer needs the generous form.
 **Evaluated, not argued.** `deadAddress` at sizes `0/1/5/40/64` is
 `21/31/69/334/456`, against a `527 * (n + 1)` allowance of
 `527/1054/3162/21607/34255`.
+
+## DD-20260719-263: `LayoutFits` at the canonical summary layout, and the capacity step that can consume a slope-527 bound (E1-LaneM)
+
+`E1CanonicalInteriorWidth.lean`. `canonicalSummaryLayout_fits` discharges
+`LayoutFits (shapeWidth shape) (canonicalSummaryLayout shape)` — all ten
+conjuncts, at every shape, no size hypothesis. This is the largest single
+piece of residual 1 of E1-LaneK's §16 list.
+
+**`lt_capacity_of_le_linear` COULD NOT BE USED and that is the point.** Its
+slope is `8` (`E1ReviewerWidth.lean:135`), and the interior store's bound is
+`527 * (n + 1)` (DD-20260719-262). `527 * (n + 1) <= 8 * n + 399999` is FALSE
+from `n = 770` upward, so the existing step is not merely inelegant here, it
+is unavailable. `lt_capacity_of_le_mul` takes the slope as a parameter and
+asks only `c < 400000`, which is what the envelope
+`400000 * (n + 1)` actually supports. The older lemma is untouched; every
+other side condition below still goes through it.
+
+**Where each conjunct comes from.**
+
+* `segment` is `20` (`Segments.lean:62`), a constant.
+* `deadAddress` — `deadAddress_lt`, via DD-20260719-262 and the new capacity
+  step.
+* `wordScale = 2 ^ machineWordBits shape.bpCode.length` — positivity is
+  `Nat.two_pow_pos`; the bound is `two_pow_machineWordBits_le` plus
+  `bpCode_length_eq`, giving `<= 4 * shape.size + 2`.
+* `blocksPerSuper` is `canonicalBPRelativeSummaryBase shape`, i.e.
+  `Nat.log2 shape.size + 1`; positivity is immediate from the `+ 1` and the
+  bound is `machineWordBits_le`.
+* The four `TableGeom` `base` fields are the component offsets. `baseline` is
+  literally `0`; `minRel`, `maxRel`, `argOffset` are PREFIX SUMS of the same
+  eight machine stores whose total is `deadAddress`, so `offsets_le_deadAddress`
+  bounds each by it using `canonicalRelativeRmmInteriorComponentStore_words_size_eq`
+  (`InteriorDirectory.lean:1690`). No new bound is needed for any of them.
+* The four `entriesLen` fields reduce by the four `_length` lemmas
+  (`RelativeSummary.lean:559`, `:566`, `:573`, `:580`) to `superSampleCount`
+  once and `blockCount` three times; both are `Nat.div_le_self` away from
+  `shape.size`. NOTE these four carry no `@[simp]`, so they must be named
+  explicitly — `simp` alone does not fire them.
+* The four `chunkCount` fields were ALREADY bounded by `<= 8`
+  (`E1InteriorSummaryGroup.lean:506`-`:541`); nothing was proved here.
+
+**`pow4_le_two_pow` is added to the `sq_le_two_pow` family** for the level
+slab, which is `levelCount * macroSize` and therefore quartic in
+`Nat.log2 shape.size`. It is not consumed yet — the four span/level
+geometries and the seven numerals are still open — and it is recorded as
+infrastructure rather than claimed as a result.
+
+**Evaluated, not argued.** At sizes `0/1/5/40/64` the layout's own numerals
+are: `macroSize` `1/1/9/36/49`, `levelSlab` `1/1/36/216/294`,
+`blocksPerSuper` `1/1/3/6/7`, `deadAddress` `21/31/69/334/456`. All are
+polylogarithmic except `deadAddress`, which is the only one that needed a
+linear bound.
