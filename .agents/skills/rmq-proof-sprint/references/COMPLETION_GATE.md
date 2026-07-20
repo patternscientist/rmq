@@ -295,6 +295,10 @@ Before closing a classifier/linter row:
   normalization, and allowance logic, rather than a copied regex or helper;
 - cover parser shapes that can change classification, including focused
   single-file and absolute-path input when the production tool accepts them.
+- for branch certification, invoke scripts/design_decision_check.ps1 with
+  -Strict -Base and the task's exact 40-character base commit. A strict run
+  without a base must fail closed; a no-Base invocation is evidence only for
+  an explicitly non-strict local-worktree mode.
 
 Known examples are minimum fixtures. Completion requires evidence that the
 declared category and its allowance boundaries, not merely those sentences,
@@ -464,6 +468,10 @@ Before the final candidate declaration, run both working-tree hygiene and the
 committed range check. `git diff --check` on a clean post-commit worktree does
 not certify the candidate commit; run `git diff --check <exact-base>..HEAD` (or
 an equivalent exact committed-range check) after the final commit.
+
+When the candidate changes a design-sensitive path, its final design-policy
+evidence is `scripts/design_decision_check.ps1 -Strict -Base <exact-40-character-base>`.
+Do not substitute a strict no-Base run: production intentionally rejects it.
 
 The final report must begin with exactly one worker status. For candidate
 completion, its first two lines must be exactly:

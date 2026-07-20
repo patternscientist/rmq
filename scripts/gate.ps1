@@ -38,6 +38,11 @@ if ($LASTEXITCODE -ne 0) { Fail "project_skill_preflight_regression.ps1 found is
 & "$PSScriptRoot\worker_prompt_preflight_regression.ps1"
 if ($LASTEXITCODE -ne 0) { Fail "worker_prompt_preflight_regression.ps1 found issues" }
 
+# Default-sensitive design classification and strict-base behavior must be
+# exercised through the production checker before broad repository work.
+& "$PSScriptRoot\design_decision_check_regression.ps1"
+if ($LASTEXITCODE -ne 0) { Fail "design_decision_check_regression.ps1 found issues" }
+
 # 1. Build must be green.
 lake build
 if ($LASTEXITCODE -ne 0) { Fail "lake build failed" }
@@ -104,7 +109,7 @@ if ($LASTEXITCODE -ne 0) { Fail "claim_drift_policy_regression.ps1 found issues"
 if ($LASTEXITCODE -ne 0) { Fail "claim_drift_scan.ps1 found strict violations" }
 
 # 8. The paper root must expose only the canonical reviewer-payload,
-# readWord-only, derived-207 query topology; historical profiles remain in the
+# readWord-only, derived-210 query topology; historical profiles remain in the
 # explicit compatibility module.
 & "$PSScriptRoot\paper_topology_lint.ps1"
 if ($LASTEXITCODE -ne 0) { Fail "paper_topology_lint.ps1 found issues" }

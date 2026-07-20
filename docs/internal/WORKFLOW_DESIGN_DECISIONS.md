@@ -19,9 +19,10 @@ WDD-20260709-015 through WDD-20260709-019, WDD-20260710-001 through
 WDD-20260710-002, WDD-20260711-001 through WDD-20260711-002, and
 WDD-20260716-001 govern the current audit-context, obstruction, skill-context,
 lifecycle, scout, durable read-only-report, model-routing, proof-completion,
-and worker-prompt-readiness policies. Earlier entries retain stable IDs and
-historical insertion order; read their Status rather than inferring current
-priority from file order.
+and worker-prompt-readiness policies. WDD-20260719-011 governs current-cost
+claim enforcement and default-sensitive design classification. Earlier entries
+retain stable IDs and historical insertion order; read their Status rather
+than inferring current priority from file order.
 
 ## WDD-20260708-001: Log ADD Improvements As Workflow Design Decisions
 
@@ -4184,3 +4185,109 @@ Publication-facing significance:
 
 Artifact evidence remains complete without confusing proof-witness
 initialization or repeated host construction with the charged RAM cost model.
+
+## WDD-20260719-011: fail closed on retired current costs and unclassified design paths
+
+Status: Candidate decision; coordinator acceptance pending.
+Date: 2026-07-19.
+Scope: claim-drift policy, design-decision classification, worker certification
+commands, aggregate-gate ordering, and replayable workflow regression.
+
+Decision:
+
+1. The current-cost claim category treats 76, 142, and 207 as retired tokens
+   whenever a registered current-fact line presents one as current, canonical,
+   principled, uniform, modeled, query, charged-trace, trace-length, or
+   Costed.cost. The current 210 token remains accepted.
+2. CLAIM-HISTORY-A07-COST is a controlled trailing marker. It admits a single
+   historical clause and the two existing truthful compound shapes:
+   current-210 followed by retired comparison, or distinctly named live
+   compatibility 352 followed by retired comparison. A marker or history word
+   in an unrelated clause cannot authorize a stale-current statement.
+3. Design classification is opt-out/default-sensitive. The narrow neutral
+   classes are the two decision records themselves, internal worklogs and
+   acceptance matrices, audit reports, historical digests other than the
+   current publication digest, and the digestion evidence log. Workflow roots
+   are .agents, .codex, .github, scripts, AGENTS.md, and docs/internal. Lean
+   remains code-sensitive under any root; every other non-neutral path defaults
+   to code-sensitive. Thus a previously unknown path cannot pass merely because
+   its name was absent from an enumeration.
+4. Strict design certification requires a resolvable Base and never falls back
+   to worktree-only inspection. Production retains symbolic-ref compatibility
+   for CI, while governed worker prompts and the proof completion gate require
+   the task's exact 40-character base commit. Omitting Base is allowed only in
+   deliberate non-strict local-worktree advisory mode.
+5. Both production regressions bound every external Git or PowerShell child,
+   classify timeouts as failures, clean the owned process tree, and run a cheap
+   sleeper control. The claim regression also pins its exact ordered fixture
+   registry and verdict totals and proves duplicate, missing, and verdict-drift
+   mutations fail.
+6. Aggregate ordering is: project-skill and worker-prompt preflight
+   regressions; the design-decision production regression; broad builds and
+   trust checks; the existing claim-policy regression; the strict repository
+   claim scan; topology checks; and final diff hygiene. Each new or existing
+   policy regression is invoked exactly once and its exit is checked
+   immediately.
+
+Trigger:
+
+The governed claim regression still accepted "The current principled
+charged-trace bound is 207" after the live bound moved to 210. Separately,
+design_decision_check.ps1 named sensitive paths one by one and a strict
+invocation without Base could report no changed files on a clean committed
+branch. Both failures let omission from a hand-maintained list or command
+argument masquerade as certification.
+
+Options considered and rejected:
+
+- Add 207 to one sentence fixture but retain the broad marker-word allowance.
+  That leaves an unrelated historical clause as a bypass.
+- Continue appending new Lean, documentation, validation, and script names to
+  the sensitive arrays. The next invented path would recreate the same hole.
+- Treat every docs/internal path as neutral evidence. That would exempt live
+  workflow policy, templates, roadmaps, and scanners.
+- Require production Base to be a literal SHA only. Existing CI intentionally
+  passes origin/base or HEAD~1; resolvability is the production compatibility
+  boundary, while emitted governed prompts pin exact SHAs.
+- Reimplement either classifier inside its regression. Divergent copied logic
+  could make both suites green.
+- Rely on the aggregate gate alone. Isolated production regressions provide
+  faster exact failure surfaces and make child deadlines and restoration
+  replayable.
+
+Consequences:
+
+- A new non-neutral repository path is design-sensitive by default.
+- Decision/evidence/history records remain nonrecursive and can record the
+  required rationale without demanding another decision entry.
+- Strict branch evidence is base-relative and nonvacuous; local no-Base advice
+  remains available but cannot be presented as certification.
+- Historical 76, 142, 207, and 328 evidence and distinctly named compatibility
+  352 remain truthful, while current-surface use of 207 becomes gate-failing.
+- This changes workflow policy only. It changes no Lean proposition, public
+  theorem identity, payload bit, proof field, modeled tick, machine state,
+  runtime behavior, or measured-performance claim.
+
+Regression evidence:
+
+- design_decision_check_regression.ps1 development run: 10 production
+  rejections and 8 production acceptances across isolated Git repositories,
+  including missing Base, unresolvable Base, held-out RMQ and validation Lean,
+  workflow script, public doc, unknown path, missing/correct decisions,
+  nonrecursive evidence/history, non-strict local mode, a drive-qualified
+  Windows repository root, sleeper timeout cleanup, and caller-tree
+  restoration; exit 0 in 34 seconds.
+- claim_drift_policy_regression.ps1 pins 94 ordered sentence fixtures and 15
+  ordered path/context fixtures before
+  final certification, including the retired-207 category, current-210 and
+  historical/compatibility controls, marker-bypass mutations, inherited
+  attribution and topology fixtures, and exact-registry mutations.
+- Final command outcomes and durations are recorded in
+  docs/internal/P1_POLICY_HARDENING_WORKLOG.md.
+
+Publication-facing significance:
+
+Submission-facing consistency no longer depends on remembering the last cost
+numeral or the next sensitive filename. Reviewers can distinguish live 210
+from frozen cost history, and future branches must carry durable design
+rationale before their new paths can pass strict certification.

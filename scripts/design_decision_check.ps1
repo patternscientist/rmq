@@ -8,107 +8,209 @@ param(
 
 $ErrorActionPreference = "Continue"
 
+function Stop-DesignCheck {
+  param([string]$Message)
+
+  Write-Host "DESIGN-CHECK: $Message"
+  exit 1
+}
+
+$repositoryRoot = @(& git rev-parse --show-toplevel 2>$null)
+if ($LASTEXITCODE -ne 0 -or $repositoryRoot.Count -ne 1) {
+  Stop-DesignCheck "not inside a Git repository"
+}
+$repositoryRoot = [System.IO.Path]::GetFullPath([string]$repositoryRoot[0])
+$pathComparison = if ($env:OS -eq "Windows_NT") {
+  [System.StringComparison]::OrdinalIgnoreCase
+} else {
+  [System.StringComparison]::Ordinal
+}
+
+function ConvertTo-RepositoryPath {
+  param([string]$Path)
+
+  if ([string]::IsNullOrWhiteSpace($Path)) {
+    return ""
+  }
+
+  try {
+    if ([System.IO.Path]::IsPathRooted($Path)) {
+      $fullPath = [System.IO.Path]::GetFullPath($Path)
+      $rootWithSeparator = $repositoryRoot.TrimEnd(
+        [System.IO.Path]::DirectorySeparatorChar,
+        [System.IO.Path]::AltDirectorySeparatorChar
+      ) + [System.IO.Path]::DirectorySeparatorChar
+      if ($fullPath.StartsWith($rootWithSeparator, $pathComparison)) {
+        return ($fullPath.Substring($rootWithSeparator.Length) -replace "\\", "/")
+      }
+    }
+  } catch {
+    # Git normally returns repository-relative paths. Preserve unusual text so
+    # the default-sensitive branch still fails closed.
+  }
+
+  $normalized = $Path -replace "\\", "/"
+  while ($normalized.StartsWith("./", [System.StringComparison]::Ordinal)) {
+    $normalized = $normalized.Substring(2)
+  }
+  return $normalized
+}
+
+function Resolve-BaseRef {
+  param(
+    [string]$BaseRef,
+    [bool]$FailClosed
+  )
+
+  if ([string]::IsNullOrWhiteSpace($BaseRef)) {
+    if ($FailClosed) {
+      Stop-DesignCheck "strict certification requires -Base; refusing an implicit zero-change range"
+    }
+    return ""
+  }
+
+  $resolved = @(& git rev-parse --verify "$BaseRef^{commit}" 2>$null)
+  if ($LASTEXITCODE -ne 0 -or $resolved.Count -ne 1) {
+    if ($FailClosed) {
+      Stop-DesignCheck "strict certification could not resolve base '$BaseRef'"
+    }
+    Write-Host "DESIGN-CHECK: could not resolve base '$BaseRef'; using non-strict local-worktree mode"
+    return ""
+  }
+  return [string]$resolved[0]
+}
+
 function Get-ChangedFiles {
-  param([string]$BaseRef)
+  param([string]$ResolvedBase)
 
   $files = @()
-  if ($BaseRef) {
-    $files += @(& git diff --name-only $BaseRef -- 2>$null)
+  if ($ResolvedBase) {
+    $files += @(& git diff --name-only $ResolvedBase -- 2>$null)
     if ($LASTEXITCODE -ne 0) {
-      Write-Host "DESIGN-CHECK: could not diff against '$BaseRef'; falling back to worktree and index"
+      Stop-DesignCheck "could not diff against resolved base '$ResolvedBase'"
+    }
+  } else {
+    $files += @(& git diff --name-only -- 2>$null)
+    if ($LASTEXITCODE -ne 0) {
+      Stop-DesignCheck "could not inspect worktree changes"
+    }
+    $files += @(& git diff --cached --name-only -- 2>$null)
+    if ($LASTEXITCODE -ne 0) {
+      Stop-DesignCheck "could not inspect index changes"
     }
   }
 
-  if ($files.Count -eq 0) {
-    $files += @(& git diff --name-only -- 2>$null)
-    $files += @(& git diff --cached --name-only -- 2>$null)
+  $files += @(& git ls-files --others --exclude-standard 2>$null)
+  if ($LASTEXITCODE -ne 0) {
+    Stop-DesignCheck "could not inspect untracked files"
   }
 
-  $files += @(& git ls-files --others --exclude-standard 2>$null)
-
-  return @($files | Where-Object { $_ } | Sort-Object -Unique)
+  return @(
+    $files |
+      ForEach-Object { ConvertTo-RepositoryPath -Path ([string]$_) } |
+      Where-Object { $_ } |
+      Sort-Object -Unique
+  )
 }
 
-function Any-Match {
+function Test-AnyPattern {
   param(
-    [string[]]$Files,
+    [string]$Path,
     [string[]]$Patterns
   )
 
-  foreach ($file in $Files) {
-    foreach ($pattern in $Patterns) {
-      if ($file -match $pattern) {
-        return $true
-      }
+  foreach ($pattern in $Patterns) {
+    if ($Path -match $pattern) {
+      return $true
     }
   }
   return $false
 }
 
-$files = Get-ChangedFiles -BaseRef $Base
+# These are semantic opt-outs, not a remembered list of sensitive paths.
+# Decision records do not recursively require themselves. Durable worklogs,
+# acceptance matrices, audit reports, and historical digests are evidence
+# about prior work rather than new proof/code or workflow design.
+$neutralEvidencePatterns = @(
+  "^docs/internal/(?:DESIGN_DECISIONS|WORKFLOW_DESIGN_DECISIONS)\.md$",
+  "^docs/internal/audit_reports/",
+  "^docs/internal/[^/]*(?:_WORKLOG|_ACCEPTANCE_MATRIX|_AUDIT_REPORT)\.md$",
+  "^docs/digests/(?!PROJECT_DIGESTION_CURRENT\.md$)",
+  "^docs/DIGESTION_LOG\.md$"
+)
+
+# Workflow roots define process, automation, review, or repository operation.
+# A Lean file remains code-sensitive as well, even if placed under one of these
+# roots.
+$workflowRootPatterns = @(
+  "^\.agents/",
+  "^\.codex/",
+  "^\.github/",
+  "^scripts/",
+  "^AGENTS\.md$",
+  "^docs/internal/"
+)
+
+function Get-PathDisposition {
+  param([string]$Path)
+
+  if (Test-AnyPattern -Path $Path -Patterns $neutralEvidencePatterns) {
+    return [PSCustomObject]@{
+      Path = $Path
+      Neutral = $true
+      NeedsCode = $false
+      NeedsWorkflow = $false
+    }
+  }
+
+  $needsWorkflow = Test-AnyPattern -Path $Path -Patterns $workflowRootPatterns
+  $isLeanCode = $Path -match "(?i)\.lean$"
+  $needsCode = $isLeanCode -or -not $needsWorkflow
+  return [PSCustomObject]@{
+    Path = $Path
+    Neutral = $false
+    NeedsCode = $needsCode
+    NeedsWorkflow = $needsWorkflow
+  }
+}
+
+$resolvedBase = Resolve-BaseRef -BaseRef $Base -FailClosed ([bool]$Strict)
+$files = Get-ChangedFiles -ResolvedBase $resolvedBase
 
 if ($files.Count -eq 0) {
-  Write-Host "DESIGN-CHECK: no changed files detected"
+  $range = if ($resolvedBase) { " relative to $resolvedBase" } else { "" }
+  Write-Host "DESIGN-CHECK: no changed files detected$range"
   exit 0
 }
 
-$codePatterns = @(
-  "^RMQPaper\.lean$",
-  "^RMQ/Headlines",
-  "^RMQ/Core/SuccinctRMQClassic\.lean$",
-  "^RMQ/Core/SuccinctFinal",
-  "^RMQ/Core/SuccinctClose",
-  "^RMQ/Core/WordRAM",
-  "^artifact/",
-  "^docs/PAPER_",
-  "^docs/WHAT_IS_PROVED\.md$",
-  "^docs/FAMILY_SUMMARY\.md$",
-  "^README\.md$"
-)
-
-$workflowPatterns = @(
-  "^\.agents/skills/",
-  "^AGENTS\.md$",
-  "^docs/internal/AUDIT_PROTOCOL\.md$",
-  "^docs/internal/ADD_WORKFLOW_TOOLING_PLAN\.md$",
-  "^docs/internal/WORKFLOW_DESIGN_DECISIONS\.md$",
-  "^docs/internal/RMQ_FINAL_ROADMAP\.md$",
-  "^docs/internal/CLAIM_DRIFT_POLICY",
-  "^docs/internal/templates/",
-  "^scripts/make_audit_packet\.ps1$",
-  "^scripts/claim_drift_scan\.ps1$",
-  "^scripts/claim_drift_policy_regression\.ps1$",
-  "^scripts/paper_topology_lint\.ps1$",
-  "^scripts/paper_topology_lint_regression\.ps1$",
-  "^scripts/project_skill_preflight\.ps1$",
-  "^scripts/project_skill_preflight_regression\.ps1$",
-  "^scripts/worker_prompt_preflight\.ps1$",
-  "^scripts/worker_prompt_preflight_regression\.ps1$",
-  "^scripts/gate\.ps1$",
-  "^scripts/design_decision_check\.ps1$",
-  "^\.github/"
-)
-
-$needsCodeDecision = Any-Match -Files $files -Patterns $codePatterns
-$needsWorkflowDecision = Any-Match -Files $files -Patterns $workflowPatterns
+$dispositions = @($files | ForEach-Object { Get-PathDisposition -Path $_ })
+$codeSensitive = @($dispositions | Where-Object NeedsCode)
+$workflowSensitive = @($dispositions | Where-Object NeedsWorkflow)
+$neutralEvidence = @($dispositions | Where-Object Neutral)
 $hasCodeDecision = $files -contains "docs/internal/DESIGN_DECISIONS.md"
 $hasWorkflowDecision = $files -contains "docs/internal/WORKFLOW_DESIGN_DECISIONS.md"
 $failures = 0
 
-if ($needsCodeDecision -and -not $hasCodeDecision) {
-  Write-Host "DESIGN-CHECK: proof/code/artifact-sensitive files changed; inspect docs/internal/DESIGN_DECISIONS.md"
-  if ($Strict) { $failures += 1 }
+if ($codeSensitive.Count -gt 0 -and -not $hasCodeDecision) {
+  Write-Host "DESIGN-CHECK: code/public/repository-sensitive paths changed; update docs/internal/DESIGN_DECISIONS.md"
+  $codeSensitive.Path | ForEach-Object { Write-Host "  code: $_" }
+  if ($Strict) {
+    $failures += 1
+  }
 }
 
-if ($needsWorkflowDecision -and -not $hasWorkflowDecision) {
-  Write-Host "DESIGN-CHECK: workflow/process-sensitive files changed; inspect docs/internal/WORKFLOW_DESIGN_DECISIONS.md"
-  if ($Strict) { $failures += 1 }
+if ($workflowSensitive.Count -gt 0 -and -not $hasWorkflowDecision) {
+  Write-Host "DESIGN-CHECK: workflow/process-sensitive paths changed; update docs/internal/WORKFLOW_DESIGN_DECISIONS.md"
+  $workflowSensitive.Path | ForEach-Object { Write-Host "  workflow: $_" }
+  if ($Strict) {
+    $failures += 1
+  }
 }
 
-if (-not $needsCodeDecision -and -not $needsWorkflowDecision) {
-  Write-Host "DESIGN-CHECK: no design-sensitive paths detected"
+if ($codeSensitive.Count -eq 0 -and $workflowSensitive.Count -eq 0) {
+  Write-Host "DESIGN-CHECK: only neutral decision/evidence/history/report paths changed"
 } else {
-  Write-Host "DESIGN-CHECK: checked $($files.Count) changed files"
+  Write-Host "DESIGN-CHECK: checked $($files.Count) changed files ($($codeSensitive.Count) code, $($workflowSensitive.Count) workflow, $($neutralEvidence.Count) neutral)"
 }
 
 if ($failures -gt 0) {

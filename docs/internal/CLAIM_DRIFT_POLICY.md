@@ -71,6 +71,24 @@ allowance bypasses without claiming unrestricted semantic understanding.
 
 The strict detector treats a canonical execution's 2^128 mention as suspicious before role allowance; this policy-file example is admitted only by the exact policy-file path allowance.
 
+The strict current-cost detector uses the same production-verdict discipline
+over the registered current-fact surfaces. Its controlled category pairs one
+of current, canonical, principled, uniform, modeled, query, charged-trace,
+trace-length, or Costed.cost language with a member of the registered retired
+set within one bounded line. The retired set is 76, 142, and 207. The accepted
+current bound is 210.
+
+CLAIM-HISTORY-A07-COST is a controlled trailing marker, not a filename-wide or
+word-only exemption. It admits a single explicitly historical clause, the
+current-210-then-historical-comparison form used by the current publication
+surfaces, or the distinctly named live-compatibility-352-then-retired-
+comparison form. A marker or the word "historical" in an unrelated clause does
+not authorize a stale-current statement later on the line. The production
+regression exercises that bypass boundary through claim_drift_scan.ps1 -Strict.
+The exact supersession arrow 207 -> 210 is also a precise historical marker;
+it exempts only that arrow occurrence. A second clause that presents a retired
+token as live remains a violation.
+
 ## Canonical Paper Topology
 
 Policy version 14 rejects every spelling removed during the W21 paper-surface
@@ -149,7 +167,11 @@ and the headline axiom inventory.
 - `CLAIM-HISTORY-A07-EVENT-VOCABULARY`: the weaker three-constructor current
   route description, including `payload read or bounded word primitive`
   paraphrases, is historical or explicitly compatibility-labeled only.
-- `CLAIM-HISTORY-A07-COST`: retired current bounds `76` and `142` are historical only.
+- `CLAIM-HISTORY-A07-COST`: the retired bounds `76`, `142`, and `207` are
+  historical only. On a registered current surface, place this exact marker at
+  the end of the explicitly historical clause or use one of the two documented
+  current-210/live-compatibility-352 comparison forms; a marker in an unrelated
+  clause is not an allowance.
 - `328` is the literal-pinned historical checked transitional U2 bound under
   `RMQ.SuccinctClassic.canonicalTransitionalQueryCost_eq`, retained for audit
   comparison rather than as the paper-facing cost. The current raw expression

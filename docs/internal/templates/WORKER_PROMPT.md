@@ -156,6 +156,10 @@ Acceptance contract:
   production final verdict, including strictness, path/line context, focused
   single-file input, and absolute-path normalization where supported. Do not
   validate a copied detector in place of the production classifier.
+- Strict branch certification with scripts/design_decision_check.ps1 must use
+  -Strict -Base followed by the task's exact 40-character base commit.
+  Omitting -Base is a production failure, not a clean zero-change result.
+  Reserve the no-Base form for deliberate non-strict local-worktree advice.
 
 Forbidden shortcuts:
 - No prose substitute for proof.
@@ -222,7 +226,9 @@ Verification:
   content when those controls are part of the contract.
 - git diff --check
 - after committing, git diff --check [EXACT BASE SHA]..HEAD
-- powershell -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1
+- powershell -ExecutionPolicy Bypass -File
+  scripts\design_decision_check.ps1 -Strict -Base
+  [EXACT 40-CHARACTER BASE COMMIT]
 - powershell -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1
   [only if public prose changed]
 
