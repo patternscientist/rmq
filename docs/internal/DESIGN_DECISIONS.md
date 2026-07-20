@@ -8854,3 +8854,68 @@ is `wholeQueryNoneExit`, a branch target fixed by the program's own length,
 which dominates every shape-dependent field while `2 ^ w` grows. The tightest
 case is `n = 0`, where the envelope is `524288` and the headroom is about
 `93x`. This reproduces E1-LaneK's table at all six sizes.
+
+## DD-20260719-300: the level quantities are LOGARITHMIC, and the fact E1-LaneM called missing was already in the tree (E1-LaneN)
+
+E1-LaneM's residual list (`E1_LIVE_STATE.md` §17, residual 1) named one
+arithmetic fact as "missing and the key to the level quantities":
+`levelCount <= 2 * base`, i.e. `machineWordBits (base * base) <= 2 * base`,
+to be derived "from `Nat.log2 b < b`".
+
+**It did not need deriving.** `SuccinctRank.machineWordBits_mul_self_log_bound`
+(`SuccinctRank.lean:1656`) already states
+`machineWordBits (m * m) <= 2 * machineWordBits m + 1`, and
+`machineWordBits_le_self` (`E1CanonicalInteriorWidth.lean:47`, supplied by
+E1-LaneM itself) closes `machineWordBits base <= base`. Composing them gives
+`levelCount <= 2 * base + 1` — one more than predicted, and equally usable
+everywhere it is consumed. `levelCount_le` records it.
+
+`pow4_le_two_pow`, which E1-LaneM supplied and explicitly flagged as NOT YET
+CONSUMED, is consumed here: `levelSlab_le` routes through `base_pow4_le`,
+which is its only consumer.
+
+### Why these quantities are linear at all, and the step that makes them so
+
+The four geometry `entriesLen` fields are PRODUCTS, and the reviewer capacity
+envelope is LINEAR (`400000 * (n + 1)`). The products close only because each
+one contains a division by the base that must be ABSORBED rather than
+cancelled:
+
+* `localSpanGeom.entriesLen = macroSampleCount * (levelCount * macroSize)`
+  (`LocalGlobalSparse.lean:838`), with
+  `macroSampleCount = blockCount / macroSize + 1`. Distributing gives
+  `levelCount * (blockCount / macroSize * macroSize) + levelCount * macroSize`,
+  and `prod_div_bound` sends the first summand to `levelCount * blockCount`.
+  Cancelling the division instead would leave `size * macroSize`, which is
+  `n log^2 n` and OUTRUNS the envelope.
+* `blockCount = size / base` divides a second time, so
+  `levelCount * blockCount <= 3 * base * (size / base) <= 3 * size`.
+
+`prod_div_bound` is named once and used at every such site so that the order
+of the two steps is visible rather than re-derived.
+
+### The global level count needs a different route from the local one
+
+`globalLevelCount = machineWordBits (macroSampleCount)`, and the obvious
+`machineWordBits_le` is LINEAR in its argument (`<= 2 * L + 1`), which would
+leave `globalSpanGeom.entriesLen = globalLevelCount * macroSampleCount`
+quadratic in the size. `globalLevelCount_le` instead goes through
+`machineWordBits_le_of_lt_pow` and `size_lt_two_pow_base`
+(`size < 2 ^ base`, which is `Nat.lt_log2_self` at the canonical base),
+giving `globalLevelCount <= 2 * base + 2` — logarithmic, which is what the
+product needs.
+
+`machineWordBits_le_of_lt_pow` carries a real `0 < n` hypothesis:
+`machineWordBits 0 = 1`, so the statement is FALSE at `n = k = 0`. It is
+discharged at every call site by `Nat.succ_pos`, the argument always being a
+`_ + 1`.
+
+### A check that earned its keep
+
+The first version of `globalLevelCount_le` discharged `0 < macroSampleCount`
+with `omega`, which FAILED: `omega` casts `Nat` division to `Int` and loses
+the nonnegativity of the atom, so it could not see `0 < x / y + 1`. The
+failure was silent in the sense that matters — the file still produced output
+— but `#print axioms globalLevelCount_le` reported `sorryAx` in the axiom
+list, which is how it was caught. This is the positive-check discipline
+E1-LaneK's zero-byte incident established, and it worked as intended.

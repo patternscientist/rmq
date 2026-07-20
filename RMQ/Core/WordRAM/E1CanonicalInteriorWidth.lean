@@ -253,6 +253,128 @@ theorem canonicalSummaryLayout_fits (shape : Cartesian.CartesianShape) :
     have := canonicalSummaryLayout_argOffset_cap shape
     omega
 
+/-! ## The level quantities
+
+E1-LaneM's residual list named `levelCount <= 2 * base` as the one missing
+arithmetic fact behind the level slab and the two span products.  It is
+NOT missing: `SuccinctRank.machineWordBits_mul_self_log_bound`
+(`SuccinctRank.lean:1656`) already gives
+`machineWordBits (m * m) <= 2 * machineWordBits m + 1`, and
+`machineWordBits_le_self` above closes the gap to the base itself.  The
+bound proved here is `2 * base + 1`, one more than predicted and equally
+usable.  DD-20260719-300.
+
+The reason these quantities close LINEARLY at all is that every one of them
+is a product in which a DIVISION by the same base is never cancelled.
+`prod_div_bound` is that step, named once: `macroSampleCount` carries
+`blockCount / macroSize`, and multiplying it back by `macroSize` returns at
+most `blockCount`, never the product of the two factors.  Cancelling the
+division first would leave a genuinely superlinear quantity, and the
+envelope is linear, so the order of these two steps is load-bearing. -/
+
+theorem slab_bound {lc b : Nat} (hb : 0 < b) (hlc : lc <= 3 * b) :
+    lc * (b * b) <= 3 * (b * b * b * b) := by
+  have h1 : lc * (b * b) <= (3 * b) * (b * b) := Nat.mul_le_mul_right _ hlc
+  have h2 : (3 * b) * (b * b) = 3 * (b * b * b) := by simp [Nat.mul_assoc]
+  have h3 : b * b * b <= b * b * b * b := Nat.le_mul_of_pos_right _ hb
+  have h4 : 3 * (b * b * b) <= 3 * (b * b * b * b) := Nat.mul_le_mul_left _ h3
+  omega
+
+/-- THE STEP THAT KEEPS THE SPAN PRODUCTS LINEAR: the division inside
+`macroSampleCount` is absorbed, never cancelled. -/
+theorem prod_div_bound (m a d : Nat) : m * (a / d * d) <= m * a :=
+  Nat.mul_le_mul_left _ (Nat.div_mul_le_self a d)
+
+/-- `machineWordBits n <= k` from `n < 2 ^ k`.  The `0 < n` hypothesis is
+real: `machineWordBits 0 = 1`, so the statement is false at `n = k = 0`. -/
+theorem machineWordBits_le_of_lt_pow {n k : Nat} (hn : 0 < n)
+    (h : n < 2 ^ k) : SuccinctRank.machineWordBits n <= k := by
+  unfold SuccinctRank.machineWordBits
+  have hne : n ≠ 0 := by omega
+  have := (Nat.log2_lt hne).2 h
+  omega
+
+/-- `size < 2 ^ base`: the base really is a logarithm of the size. -/
+theorem size_lt_two_pow_base (shape : Cartesian.CartesianShape) :
+    shape.size < 2 ^ canonicalBPRelativeSummaryBase shape := by
+  unfold canonicalBPRelativeSummaryBase
+  exact Nat.lt_log2_self
+
+/-- **THE LEVEL COUNT IS LOGARITHMIC**, not linear: at most `2 * base + 1`. -/
+theorem levelCount_le (shape : Cartesian.CartesianShape) :
+    SuccinctRank.machineWordBits
+        (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+          canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+      <= 2 * canonicalBPRelativeSummaryBase shape + 1 := by
+  have h1 := SuccinctRank.machineWordBits_mul_self_log_bound
+    (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+  have h2 : SuccinctRank.machineWordBits
+      (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+      <= canonicalBPRelativeSummaryBlocksPerSuperRaw shape := by
+    refine machineWordBits_le_self ?_
+    unfold canonicalBPRelativeSummaryBlocksPerSuperRaw
+      canonicalBPRelativeSummaryBase
+    omega
+  have h3 : canonicalBPRelativeSummaryBlocksPerSuperRaw shape =
+      canonicalBPRelativeSummaryBase shape := rfl
+  omega
+
+/-- The GLOBAL level count is at most `2 * base + 2`.  Proved through
+`size < 2 ^ base` rather than through `machineWordBits_le`, because the
+latter is LINEAR in its argument and would leave the global span product
+quadratic. -/
+theorem globalLevelCount_le (shape : Cartesian.CartesianShape) :
+    SuccinctRank.machineWordBits
+        (canonicalBPRelativeSummaryBlockCountRaw shape /
+          (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+            canonicalBPRelativeSummaryBlocksPerSuperRaw shape) + 1)
+      <= 2 * canonicalBPRelativeSummaryBase shape + 2 := by
+  refine machineWordBits_le_of_lt_pow (Nat.succ_pos _) ?_
+  have hdiv : canonicalBPRelativeSummaryBlockCountRaw shape /
+      (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+        canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+      <= canonicalBPRelativeSummaryBlockCountRaw shape := Nat.div_le_self _ _
+  have hbc := blockCountRaw_le shape
+  have hsz := size_lt_two_pow_base shape
+  have hmono : (2 : Nat) ^ canonicalBPRelativeSummaryBase shape <
+      2 ^ (2 * canonicalBPRelativeSummaryBase shape + 2) :=
+    Nat.pow_lt_pow_right (by omega) (by omega)
+  omega
+
+/-- The macro sample count is at most the size plus one. -/
+theorem macroSampleCount_le (shape : Cartesian.CartesianShape) :
+    canonicalBPRelativeSummaryBlockCountRaw shape /
+        (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+          canonicalBPRelativeSummaryBlocksPerSuperRaw shape) + 1
+      <= shape.size + 1 := by
+  have h1 : canonicalBPRelativeSummaryBlockCountRaw shape /
+      (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+        canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+      <= canonicalBPRelativeSummaryBlockCountRaw shape := Nat.div_le_self _ _
+  have h2 := blockCountRaw_le shape
+  omega
+
+/-- **THE LEVEL SLAB IS LINEAR IN THE SIZE.**  This is the quantity
+`localArmSetup` carries, and the one E1-LaneM flagged as blocked. -/
+theorem levelSlab_le (shape : Cartesian.CartesianShape) :
+    SuccinctRank.machineWordBits
+        (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+          canonicalBPRelativeSummaryBlocksPerSuperRaw shape) *
+        (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+          canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+      <= 6 * shape.size + 196608 := by
+  have hb : 0 < canonicalBPRelativeSummaryBase shape := base_pos shape
+  have hlc := levelCount_le shape
+  have hbps : canonicalBPRelativeSummaryBlocksPerSuperRaw shape =
+      canonicalBPRelativeSummaryBase shape := rfl
+  rw [hbps] at hlc ⊢
+  have hs := slab_bound (b := canonicalBPRelativeSummaryBase shape) hb
+    (lc := SuccinctRank.machineWordBits
+      (canonicalBPRelativeSummaryBase shape *
+        canonicalBPRelativeSummaryBase shape)) (by omega)
+  have hp4 := base_pow4_le shape
+  omega
+
 end E1CanonicalInteriorWidth
 end WordRAM
 end RMQ
