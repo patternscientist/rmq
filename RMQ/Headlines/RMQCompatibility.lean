@@ -82,7 +82,14 @@ abbrev succinctRMQLegacy196727WholeQueryGlobalWordTraceCostedCostLe :=
 abbrev succinctRMQCompatibility328WholeQueryGlobalWordTraceCostedCostLe :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
 
-/-- The compatibility transitional constant computes to `328`. -/
+/-- The compatibility transitional constant. **The `328` in this alias's name is
+a frozen public identity and is deliberately NOT renamed. The constant the
+underlying theorem actually computes is now `352`**, moved when B7 landed the
+charged sparse-level swap (`canonicalRelativeRmmInteriorQueryCost` `240 -> 264`,
+which carried `canonicalTransitionalQueryCost` `328 -> 352`). Unlike `207`, no
+frozen historical `328` was minted, so `328` appears nowhere in the Lean sources
+and this name is the only place it survives. See
+`concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq`. -/
 abbrev succinctRMQCompatibility328QueryCostEq :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq
 
