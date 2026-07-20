@@ -610,3 +610,131 @@ as the anti-vacuity witness for the width family alongside
 distinct fact about a distinct program. And it does not resolve REQ-E1-02's
 phrase "the modeled word width", which the matrix's own accepted-route block
 already defines as naming both widths; that row is adjudicated, not amended.
+
+## Evidence added by E1-LaneR3 (REQ-E1-03, whole-query value dependency), no row closed, no row weakened
+
+No frozen requirement text was edited. No `Status` cell was changed, and no
+acceptance verdict is recorded here: acceptance is the coordinator's and the
+owner's. This section records evidence, and two citation defects found while
+checking this row's own anchors.
+
+Module touched: `RMQ/Validation/E1MachineValidate.lean` ONLY. No `Core` module
+was modified; no theorem elsewhere was restated, weakened or renamed.
+
+- **REQ-E1-03** (result agreement) — THE RESIDUAL THIS ROW'S OWN STATUS CELL
+  NAMES IS NOW WITNESSED AT WHOLE-QUERY SCOPE. The cell records that
+  `INV-VALUE-DEPENDENCY` was demonstrated OF AN ARM: phase 3l/4k (`:2194`)
+  perturbs `E1FringeArmProgram.armWitnessStore` and observes
+  `E1FringeArmBlock.fRV`/`fRP`, never `regOut` of `wholeQueryProgram` at the
+  canonical store. **Phase 5b** perturbs THE CANONICAL STORE
+  `concreteBPNativeSuccinctRMQGlobalReadStore`, one receipt cell at a time,
+  and observes `E1Query.decodePacket (final.regs E1Query.regOut)` of
+  `E1Query.wholeQueryProgram` — the exact object the row's clauses are about.
+  It compares the FULL packet, not a projection dropping the index component.
+
+  Measured, at the commit that adds it: **119 receipt cells probed across five
+  cases (four valid, one invalid); 70 of them move the answer, and all 70 runs
+  still HALT** (`wqDepProbesThatDidNotHalt=0`, so no crash is being counted as
+  a dependency). Per case, `movedHalted / negatable`: same-block `16/26`,
+  cross-adjacent `15/26`, full-span-five `16/26`, cross-interior-wide `23/41`.
+  Every valid case answers the independent reference (`agrees=true`) and
+  `wqDepReadIndependentValidCases=0`. The probe cap did not bind: every
+  negatable receipt cell was probed. Phase wall clock `6774 ms`.
+
+- **The perturbation's premises are PROVED, not asserted.** Three new theorems
+  about the operator: `perturbedStoreAt_agrees_off_cell` (LOCALITY — away from
+  the perturbed address the store is unchanged, which is what makes this
+  evidence about ONE cell rather than a claim about how the code looks),
+  `perturbedStoreAt_length_preserved` (the corrupted word is exactly as long as
+  the honest one, so a moved answer cannot be blamed on a width change reaching
+  `decodeRead`'s magnitude), and `perturbedStoreAt_differs` (at a negatable cell
+  the store really answers something else).
+
+- **MUTANT N: the row's named failure mode, EXECUTED and rejected.** The row
+  demands the value be "computed from machine registers fed by the machine's own
+  reads, not copied from the spec trace". The machine violating it answers
+  without consulting the store at all. `readIgnoringProgram` is exactly that —
+  the skeleton at `guardStubValidPath` (`:1825`), `const regOut 1; halt`, with
+  no `readMem` anywhere — and phase 5c runs it through the SAME phase 5b
+  machinery. Measured: it READS NOTHING, still HALTS, and still ANSWERS with a
+  well-formed packet, so the receipt, category, exit-pc, halted-flag and
+  step-count discriminators all pass it; phase 5b rejects it on all four valid
+  cases (`mutantN_readIndependentValidCases=4`).
+
+- **A VACUITY TRAP IN THE CONTROL, FOUND BY EXECUTION AND CLOSED.** Phase 3l's
+  `perturbedArmStore` (`:2252`) answers `some w` at EVERY address, so its
+  control cell is automatically a real negatable word. The canonical store does
+  not: it answers `none` off the payload, and the negation of `none` is `none`.
+  A control drawn from unmapped space is therefore a perturbation that CHANGES
+  NOTHING, and `controlMoved=false` would hold for a reason with no connection
+  to the receipt. Checked at source rather than reasoned about: phase 3l's own
+  control address shape is UNMAPPED here — `(0, 100000)`, `(5, 100000)` and
+  `(0, 100002)` all answer `none` at the five-element fixture's shape — so
+  transplanting that phase's control would have produced a decorative check
+  that always passes. Phase 5b instead SEARCHES for a control that is mapped,
+  negatable and off the receipt, then RE-CHECKS all three independently of the
+  search that produced it (`wqDepControlUnsound=0`, `wqDepControlLeaks=0`).
+
+- Validator verdict with both phases in: `RESULT: PASS`. Every new declaration
+  depends on at most `propext`, `Classical.choice`, `Quot.sound`.
+
+### Two citation defects found while checking this row's own anchors
+
+Reported, not corrected: frozen text and the coordinator-maintained live-state
+document are outside this lane's authority.
+
+1. **The row's public-corollary anchor names the CONDITIONAL lemma.** The
+   `Evidence obtained` cell cites `programSkeleton_valid_matches_public`
+   (`E1WholeQueryPublic.lean:140`) as "the composed corollary through to the
+   public `List Int` query answer". That theorem carries
+   `hagree : WholeQueryMachineAgrees ...` as a HYPOTHESIS and is therefore not
+   composed. The unconditional instantiation exists and is
+   `programSkeleton_valid_matches_public_at_machineS`
+   (`E1WholeQueryAgreement.lean:111`), which takes only `xs` and
+   `hvalid : ValidRange xs left right`, runs at
+   `concreteBPNativeSuccinctRMQGlobalReadStore`, and whose own docstring says
+   the conditional form "was written against the hypothesised agreement and
+   could not be discharged. It now is." **This does not weaken the row — the
+   evidence exists and is stronger than its anchor suggests.** The citation
+   points one step short of it.
+
+2. **`E1_LIVE_STATE.md` section 1 carries a stale paragraph that is NOT marked
+   superseded.** Lines 80-118 state that "`WholeQueryMachineAgrees`
+   (`E1WholeQueryPublic.lean:114`) is still NOT discharged, and validator phase
+   5 is still correctly OPEN", then describe the composed valid path falling
+   through into the `none` writer. All three are superseded:
+   `wholeQueryMachineAgrees_of_bounds` (`E1WholeQueryAgreement.lean:64`)
+   discharges the agreement and is consumed by
+   `amendedFamiliarMachineTarget_holds`; validator phase 5 is EXECUTED over a
+   24-case corpus; and the fall-through was repaired, pinned by
+   `wholeQueryValidPath_exit_is_not_invalidExit`
+   (`E1WholeQueryProgram.lean:884`). The ADJACENT paragraph at line 70 is
+   struck through and marked "PARTLY SUPERSEDED"; this one is not, so a reader
+   can take it at face value.
+
+### What phase 5b does NOT establish, stated so no consumer over-reads it
+
+- It is a WITNESS, not a universal claim. Universality is the theorem clauses'
+  job (`E1AmendedTarget.lean:381-395`, discharged at `:620`), which this row
+  already records as met. Phase 5b discharges the anti-vacuity column.
+- It shows SOME receipt cell is load-bearing on each valid case, not that every
+  one is: the measured fraction is well under one (`70` of `119`). A machine
+  padding its receipt with decorative reads would NOT be caught here. What
+  constrains that is REQ-E1-04's positional receipt equality with the route's
+  own trace.
+- Its control shows the perturbation is not globally destructive and is pinned
+  to the receipt at ONE unread cell per case. It does NOT show the receipt is
+  COMPLETE — that every cell the machine consults is logged. Receipt
+  completeness is REQ-E1-04's, again by positional equality.
+- It does not distinguish a read value consumed arithmetically from one that
+  steered a branch. Both are genuine read-dependence and both refute the machine
+  the invariant is aimed at, so the distinction does not affect the discharge,
+  but this is not evidence about HOW the value is consumed.
+- A kernel-checked analogue was considered and is not the right instrument here:
+  proving whole-query machine value dependency in the kernel means reducing a
+  ~1200-step run against a store that rebuilds its directories per read, twice,
+  with `native_decide` forbidden. The route-level analogues that ARE proved
+  (`ChargePolicyDependency.lean`) are at a different scope and a different
+  projection — whole-`TraceResult` inequality of the ROUTE object, not `.value`
+  of the MACHINE's output register — and that module's own header records the
+  projection limit.
