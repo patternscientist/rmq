@@ -3122,13 +3122,22 @@ the `0 < k` divisor arm, reporting `List.all` of the executable mirror:
 | `0` | `5646` | `5644` | `19` | `524288` | `true` | `0` |
 | `1` | `5646` | `5644` | `20` | `1048576` | `true` | `0` |
 | `5` | `5646` | `5644` | `22` | `4194304` | `true` | `0` |
+| `40` | `5646` | `5644` | `24` | `16777216` | `true` | `0` |
+| `64` | `5646` | `5644` | `25` | `33554432` | `true` | `0` |
+| `300` | `5646` | `5644` | `27` | `134217728` | `true` | `0` |
 
-Every cell agrees with §16 and §17. Sizes `40`, `64` and `300` did NOT
-complete: `#eval` of `wholeQueryProgram` materialises
+**Every cell agrees with §16 and §17, at all six sizes.** The max field is
+constant at `5644` because it is `wholeQueryNoneExit`, a branch target fixed
+by the program's own length; the tightest case is `n = 0`, where the envelope
+is `524288` and the headroom is about `93x`.
+
+The evaluation is slow — `#eval` of `wholeQueryProgram` materialises
 `canonicalRelativeRmmInteriorComponentOffsets`, hence the whole interior
-store, and the run had not terminated after ~40 minutes. **This is a limit of
-the evaluation, not a disagreement** — and it no longer carries the argument,
-because the theorem is proved for EVERY shape rather than checked at a
+store, and the six-size run took roughly an hour. An intermediate draft of
+this section claimed sizes `40`, `64` and `300` had NOT completed; that was
+written while the run was still in flight and is **corrected here** — they
+completed and they agree. The numbers no longer carry the argument in any
+case, the theorem being proved for EVERY shape rather than checked at a
 sample.
 
 ### THE WIDTH CONJUNCT WAS ADDED
