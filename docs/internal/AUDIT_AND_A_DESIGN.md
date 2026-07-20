@@ -6102,3 +6102,60 @@ would have cost the audit.
 **Not recording ACCEPTED.** The rung still owes a fresh blind external audit,
 and this runtime bars recording acceptance regardless. Rows get accurate
 evidence and status; the rung's acceptance is the owner's and the auditor's.
+
+---
+
+## C05 round 91 — the matrix now reflects the tree; and SIX of my anchors in a
+## single brief did not resolve
+
+Lane P returned CANDIDATE_COMPLETE at `d4138b7`. Rows as adjudicated —
+**01, 02, 04, 05, 06, 07, 10 SATISFIED; 03, 08, 11 PARTIAL; 09 NOT SATISFIED** —
+with all five live "Does NOT discharge the row (whole-query scope)" disclaimers
+withdrawn.
+
+**Frozen columns 1-6 of all eleven rows verified BYTE-IDENTICAL to HEAD~,
+checked programmatically, drift count 0.** No `.lean` file touched. No DD
+renumbered. The word ACCEPTED appears nowhere it wrote — its single occurrence
+in the diff is pre-existing frozen text in row 06's anti-vacuity column,
+re-emitted because a row is one physical line, and verified byte-identical.
+That is the right way to prove a docs-only edit is docs-only.
+
+**MY FORTIETH FAILED CLAIM, and it is six anchors in one brief** — written
+immediately after a survey whose entire purpose was to give me correct ones:
+the eleven rejection witnesses are `E1Machine.lean:561-607` not `:562-631`;
+`fieldsFit_rejects_zero_divisor` `:589` not `:590`; the second DD is `:3178` not
+`:3180`; `Instr.FieldsFit` `:535` not `:503`; two anchors I left unfiled
+entirely; and **my "five prose-only hygiene hits" is nine** under CHK-E1-02's
+pattern, three under REQ-E1-11's narrower one — zero declarations either way, so
+the conclusion held and the count did not. Again.
+
+The worker also caught two of its OWN first-pass anchors (`ProgramFits`
+`:553`→`:552`, `guardBlock_length` `:121`→`:120`). Twelve consecutive workers
+have now found their own line numbers wrong by re-grepping after editing. The
+practice is the only reason any of these citations are right.
+
+### TWO DEVIATIONS IT FLAGGED, and I endorse both
+
+**1. Six disclaimers remain inside DATED historical worker notes** (M3d-11/13/16).
+It declined to delete them — "rewriting another lane's attributed point-in-time
+record isn't this lane's call" — and added a superseding note above them instead,
+directing readers to the table for current status. **Correct, and it is the same
+principle a predecessor applied to the worklog's `:1143` citations: a historical
+record is not stale, it is dated.** Deleting an attributed observation because it
+later became false would destroy the evidence of how the campaign actually went,
+which is exactly what the round log exists to preserve.
+
+**2. The "Inherited invariants" and CHK battery tables still read `Open`.** Not
+in my adjudication, and it correctly declined to invent one —
+INV-VALUE-DEPENDENCY especially, since that is precisely row 03's recorded gap
+and ruling on it would have been judgement it was told not to exercise.
+
+**Those tables are mine and remain outstanding.** INV-VALUE-DEPENDENCY should
+track row 03's PARTIAL. The CHK battery has a green run behind it
+(`E1FINAL`, 12 tag lines, every check exit 0), but I will read what each CHK
+literally demands before recording it rather than inferring from a green
+battery — the campaign's own rule that a green check is evidence only of what it
+examined.
+
+To be handled in one final pass after Lane W's parametric width work lands,
+rather than as a separate round.
