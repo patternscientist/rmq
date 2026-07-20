@@ -8538,3 +8538,221 @@ D's sentence survives from before it landed.
 Recorded rather than edited into §11, per the convention §12 and §15 both
 use for inherited text that was accurate when written. Anyone acting on §11
 D should read `E1Machine.lean:321` first — the work it budgets is done.
+
+---
+
+## DD-20260719-280: REQ-E1-03's store-value dependency is witnessed by perturbing the STORE, not the program (E1-LaneL)
+
+**Status.** New validator phase 3l, executed, `RESULT: PASS`.
+
+Every mutation the validator ran before this phase perturbs the PROGRAM --
+mutant D (`E1MachineValidate.lean:898`) an operand, mutant F (`:1344`) an
+instruction, mutant E a branch target. **None perturbs what the machine
+READS.** So nothing separated a machine computing from its own reads from
+one whose reads are decorative: both survive an operand mutation identically
+when the answer never depended on a stored word.
+
+Phase 3l perturbs the `ReadStore`. It runs the fringe arm, takes the
+`(segment, address)` cells the RECEIPT says the machine actually read, and
+re-runs once per cell with that cell alone returning the bitwise-negated
+word. Negation rather than a fresh word so the perturbed word has the same
+LENGTH -- otherwise `decodeRead`'s magnitude would move for reasons unrelated
+to the cell's contents.
+
+**The control is what makes it evidence.** A cell the machine did NOT read
+is perturbed on the same terms and must not move the answer;
+`controlCellUnread` checks that cell really is off the receipt rather than
+assuming it. Without the control the phase could pass by corrupting the
+store so violently that every run breaks.
+
+This is a perturbation of the machine's INPUT, which is the only place a
+read-dependency can be probed from. The fixture, the program and the
+expectation are all held fixed.
+
+---
+
+## DD-20260719-281: the dependency claim is a BICONDITIONAL, because the first formulation was over-strong and false (E1-LaneL)
+
+**Status.** Correction made during construction, before commit.
+
+The first version of phase 3l demanded that EVERY fixture be read-dependent
+and required `depNoDependence == 0`. **Executed, 21 of 36 fixtures are not
+read-dependent, and the check was wrong rather than the machine.**
+
+The arm has two epilogue arms. On the SEED-FALLBACK arm the answer is the
+seed the caller supplied, which by construction depends on no word read.
+Phase 3f already relies on both arms occurring (`armEpilogueCoverage`,
+`:1186`), so demanding universal read-dependence contradicts an
+anti-vacuity property the same file already checks.
+
+The claim was sharpened rather than weakened. What phase 3l now establishes:
+
+> corrupting a read cell moves the answer **exactly when** the arm takes its
+> occupied (window-rebase) epilogue arm, and never otherwise.
+
+Both directions are checked on every fixture. **The biconditional holds
+36/36.** Anti-vacuity: both arms must occur, or the biconditional is
+trivial -- `depOccupiedFixtures = 15` and `depSeedFallbackFixtures = 21`,
+both required positive by the verdict.
+
+Recorded because the tempting repair was to relax the threshold to "most
+fixtures depend", which would have hidden a complete and checkable
+characterisation behind a majority count.
+
+---
+
+## DD-20260719-282: MUTANT L -- `move d s` to `mulConst d s 1` is the category-log discriminator (E1-LaneL)
+
+**Status.** New validator phase 4l, executed, mutant caught.
+
+Before this phase the category log was **not a discriminator anywhere in
+the validator**. `catLog`/`catCount` appeared four times in 2766 lines, all
+four inside `runGuard` (`:1902`, `:1909`), and both uses COUNT one category
+rather than comparing logs. Value, receipt and preservation each had a
+mutant proved invisible to the other two; category accounting had none.
+
+`execInstr` gives `move d s` the value `R s` and category `registerWrite`,
+and `mulConst d s k` the value `R s * k` and category `arithmetic`
+(`E1Machine.lean:170`, `:178`). **At `k = 1` the two write the same value to
+the same register in one step, performing no read and changing no control
+flow.** So mutant L agrees with the honest arm on value, position, full
+receipt, exit pc, halted flag, modeled step count, catLog LENGTH, and the
+`memoryRead` charge count -- every observable the harness had. What changes
+is WHICH CATEGORY is charged at one position.
+
+Measured: `mutantL_catLogMismatches = 15`, `mutantL_isCategoryOnly = true`,
+`catLogMismatches_honest = 0`.
+
+**Scope, stated rather than left to be found.** A category log constrains
+which KINDS of instruction ran, never their operands;
+`mergePos_catLogs_agree` (`E1InteriorMerge.lean:519`) is the proved
+counterexample in the other direction. A per-category CENSUS would also
+catch mutant L, since it moves one charge from `registerWrite` to
+`arithmetic`. The honest claim is narrower than "only a positional log can
+catch it": it is that the positional log catches it and **every
+discriminator the harness already ran does not**, which
+`catMutantIsCategoryOnly` checks case by case.
+
+Fourth corner of the complementarity argument: D value-only, E
+receipt-only, G preservation-only, L category-only.
+
+---
+
+## DD-20260719-283: phase 5 derives its status from a CONDITION; the fourth stale reason is the last one (E1-LaneL)
+
+**Status.** Phase 5 is no longer a hole. It executes a real comparison.
+
+Phase 5's docstring hard-coded a REASON across four rounds and was wrong in
+both directions: the `bpSparseLogSpan`/`Nat.log2` obstruction (discharged by
+B7), then "the INTERIOR LEG is unbuilt" (built in M3d-11/M3d-12), then "no
+definition composes them into one runnable query program -- there is no
+`wholeQueryProgram` in the tree", which `E1WholeQueryProgram.lean:876`
+falsifies outright.
+
+**A hand-written reason goes stale silently because nothing recomputes it.**
+The durable fix is not a fifth sentence:
+
+- `wholeQueryComparisonAvailable` is now COMPUTED -- there is a corpus and
+  every case produced a report. Empty the corpus and it goes `false` on its
+  own.
+- `wholeQueryStatusLine` RENDERS its message from the reports the phase just
+  produced. There is no stored sentence left to go stale.
+
+And the comparison is real rather than a printed pass: `wholeQueryProgram
+shape n` is a plain 5646-instruction `E1Machine.Program` with no proof
+arguments, so it runs against the canonical store. 24 cases, **0 answer
+mismatches against `refRMQ`**, 0 not-halted, expectation computed before the
+machine per `:643`/`:851`/`:1140`/`:1296`.
+
+---
+
+## DD-20260719-284: THE PRIOR WHOLE-QUERY MEASUREMENT DOES NOT REPRODUCE -- `1270` was measured at closes the route does not select (E1-LaneL)
+
+**Status.** Correction to `E1_LIVE_STATE.md` section 15 and
+`E1WholeQueryCostLiteral.lean:572-592`, evaluated not argued.
+
+Section 15's anti-vacuity table records `1270` modeled steps at
+`stackCartesianShape [3,1,4,1,5]`, query `[0,4)`, branch `.full 0 4 3`, and
+attributes the bound's looseness to "the bound assumes the cross-block arm
+while a small shape takes the same-block arm". The coordinator brief for
+this lane repeated that attribution.
+
+**Evaluated, that fixture measures `1765`, and it takes the CROSS-block
+arm.** The route's own branch there is `.full 2 7 3` -- the closes are `2`
+and `7`, not `0` and `4`. Block size is `6`, so `blockOfClose 6 2 = 0` and
+`blockOfClose 6 7 = 1`: DIFFERENT blocks.
+
+The prior table passed the QUERY ENDPOINTS where `WholeQueryBranch`'s
+constructor expects CLOSES. Those two do share a block
+(`blockOfClose 6 0 = blockOfClose 6 4 = 0`), which is where the same-block
+reading came from. Both totals decompose exactly, so neither number is in
+doubt -- only the branch they belong to:
+
+```
+  real   9 + 335 + 2 + 387 + 969 + 2 + 59 + 2 = 1765   (.full 2 7 3, CROSS)
+  prior  9 + 335 + 2 + 387 + 474 + 2 + 59 + 2 = 1270   (.full 0 4 3, same)
+```
+
+`1765 - 1270 = 495 = 969 - 474` accounts for the whole difference, in the
+close/LCA slot alone.
+
+**Consequences.** The five-element fixture never demonstrated the same-block
+arm. The "about nine times loose" figure is measured at the smallest fixture
+in the set and against the wrong arm. At the cross-interior fixtures this
+lane adds, the measured maximum is `3267` against `11886` -- about `3.6`
+times inside the bound. The looseness is real and the bound is genuinely
+all-size; **the ATTRIBUTION was wrong.**
+
+The `rankRun` index label section 15 flags as ambiguous is harmless:
+`rankRun 4` and `rankRun 5` both measure `59`, and `wholeQueryBranchCats`
+charges `answerClose + 1 = 4`.
+
+This is why phase 5's classifier computes each fixture's class from the
+route's own closes rather than accepting a hand-supplied branch literal
+(DD-20260719-285).
+
+---
+
+## DD-20260719-285: fixture classes are COMPUTED from the route's closes, and the bound constant is tied to its theorem (E1-LaneL)
+
+**Status.** New validator phase 5 machinery. All named classes populated.
+
+**Classes computed, not labelled.** REQ-E1-08 names "empty, singleton,
+size-two, same-block, threshold-boundary, cross-interior, invalid, plus
+generated cases". `same-block` and `cross-interior` previously existed only
+as dispatch-route OUTCOMES observed in phases 3b/3d, never as named fixture
+classes, and `threshold` had zero hits in the file.
+
+`classifyQuery` asks `wholeQueryBranch` for the closes the route actually
+selects, divides by the shape's own block size, and reads the class off the
+two block indices -- `sameBlock`, `crossAdjacent` (consecutive blocks, empty
+interior), `crossInterior` (two or more apart, the arm `11886` is priced
+for). A hand-written label would record what the author BELIEVED;
+DD-20260719-284 is what that costs. `threshold-boundary` is orthogonal to
+the arm class -- a close on the first or last slot of its block -- so it is a
+flag, not a sixth constructor.
+
+Measured populations: same-block `9`, cross-adjacent `6`, cross-interior
+`5`, invalid `4`, threshold `10`, empty `1`, singleton `1`, size-two `3`.
+`select-miss` is `0`: it needs a query the guard admits whose select misses,
+which no valid in-range query produces. It is REPORTED rather than required,
+and is not among the classes REQ-E1-08 names.
+
+`wqClassesAllPopulated` is a verdict clause -- **a named class with no
+members is not a fixture class**, and this stops the corpus drifting into
+one silently.
+
+**The bound constant is checked, not asserted.** `wholeQueryStepBound :=
+11886` carries `wholeQueryStepBound_isTheProvedBound`, which discharges
+directly by `wholeQueryCats_machineS_length_le`
+(`E1WholeQueryCostLiteral.lean:538`). Changing the numeral breaks the build
+rather than silently mis-reporting. Nothing in the phase transcribes a step
+figure; every number is measured at run time.
+
+**The sharpest clause is the step cross-check.** Each valid case measures
+TWO counts -- the executed `run`'s `steps`, and the cost model's
+`wholeQueryCats` length -- and requires they AGREE.
+`wholeQueryStepModelDisagreements = 0` over `wholeQueryStepComparisons = 20`
+cases, with the comparison count itself a verdict clause so the agreement
+cannot be vacuous. Neither side is derived from the other: one folds
+`execInstr` over an instruction list, the other sums a category algebra.

@@ -6,6 +6,7 @@ import RMQ.Core.WordRAM.E1FringeArmProgram
 import RMQ.Core.WordRAM.E1FringeFoldProgram
 import RMQ.Core.WordRAM.E1InteriorChunkFold
 import RMQ.Core.WordRAM.E1CostAlgebra
+import RMQ.Core.WordRAM.E1WholeQueryCostLiteral
 
 /-!
 # M6: executable validation of the E1 amended machine
@@ -963,66 +964,29 @@ def mergeMutantDIsValueOnly (salt : Nat) : Bool :=
       h.modeledSteps == m.modeledSteps &&
       h.machineReads == m.machineReads
 
-/-! ## 7. THE HOLE: whole-query comparison
+/-! ## 7. The whole-query comparison
 
-DELIBERATELY NOT IMPLEMENTED, and compiling as a hole rather than as a
-passing check, so nobody mistakes it for evidence.
+**This section used to be THE HOLE, and it is no longer one.**  Its
+machinery now lives further down, beside the fixture classes it needs, at
+`## Phase 3n/5: the WHOLE-QUERY comparison`.  It is placed there rather
+than here because it depends on `refRMQ`, on the fixture-class classifier
+and on `legStore`, and Lean wants those first.
 
-The whole-query comparison -- run the machine end to end on a fixture and
-compare its answer against `refRMQ` -- cannot be written yet.  It needs
-the INTERIOR leg, which is UNBUILT.  It is no longer BLOCKED, and the
-distinction matters enough to correct here rather than carry.
+The reason recorded in this docstring across four rounds was a moving
+target, and it was wrong in both directions.  It has said, in order: the
+`bpSparseLogSpan`/`Nat.log2` obstruction (discharged by B7); that the
+INTERIOR LEG was unbuilt (built in M3d-11/M3d-12); and most recently that
+"no definition composes the close legs and the interior into a single
+runnable query program -- there is no `wholeQueryProgram` in the tree",
+which `E1WholeQueryProgram.lean:876` falsifies outright.
 
-The old reason recorded in this docstring was the `bpSparseLogSpan` /
-`Nat.log2` decision (`docs/internal/E1_WORKLOG.md`, M3d-3 section 2): a
-runtime-derived `blockCount` feeding an accepted read address through
-`2 ^ Nat.log2 blockCount`, which no constant immediate encodes.  THAT
-OBSTRUCTION IS DISCHARGED.  B7 replaced the computation with one charged
-count-indexed table read whose cell packs level and span, unpacked by
-constant-divisor `div`/`mod`; `Nat.log2` survives only in table
-CONSTRUCTION generators, in the spec-side refinement ladder, and in
-space-budget proofs -- nowhere in an executed definition on the accepted
-route.
-
-What is missing now is construction, not adjudication.  The interior's
-atomic single-chunk read landed in M3d-11
-(`E1InteriorReadBlock.interiorReadNat`) and its eight-capped multi-chunk
-fold landed in M3d-12
-(`E1InteriorChunkFold.interiorChunkFold_runsTo`).  THE INTERIOR LEG IS NOW
-BUILT: the five-branch interior composition
-(`E1InteriorDispatchCompose.canonicalInteriorDispatchBlock:89`, simulated
-by `interiorDispatchBlock_runsTo:816`) and `hInterior` for
-`crossBlockArmProgramAt_runsTo` (`interiorDispatch_hInterior:1171`,
-CONSUMED at `crossBlockArm_withCanonicalInterior_runsTo:1274`) are
-written, and the close leg has landed alongside them.
-
-What is still missing is the WHOLE-QUERY PROGRAM ITSELF.  No definition
-assembles the close legs and the interior into a single runnable query
-program -- there is no `wholeQueryProgram` in the tree -- so there is
-still nothing end-to-end to execute against the fixtures.
-`WholeQueryMachineAgrees` (`E1WholeQueryPublic.lean:114`) states the
-target this comparison would discharge; it is a predicate, not a program.
-This harness reports the hole as OPEN rather than reporting a vacuous
-pass. -/
-
-/-- Status of the whole-query comparison.  `false` means "not yet
-attachable", which is the honest state today. -/
-def wholeQueryComparisonAvailable : Bool := false
-
-/-- The attachment point.  The interior leg has now landed, so what gates
-this is no longer the interior but the whole-query program: once some
-definition composes the close legs and the interior into one runnable
-program, this becomes the end-to-end differential -- build it, run it on
-each fixture, and compare the answer register against `e.expected`.  It
-returns `none` today because that program does not exist -- NOT because
-the machine agreed with the reference. -/
-def wholeQueryMismatches : Option (List Expectation) :=
-  if wholeQueryComparisonAvailable then
-    -- Attach here: run the whole-query machine per expectation and keep
-    -- the disagreements.  Unreachable until the interior leg lands.
-    some []
-  else
-    none
+**The durable fix is not a fifth sentence.**  Each of those was a
+hand-written REASON, and a hand-written reason goes stale silently because
+nothing recomputes it.  The status is now DERIVED from a condition the
+harness actually evaluates -- see `wholeQueryComparisonAvailable`
+(defined at the phase, from the comparison's own case count) and
+`wholeQueryStatusLine`, which renders its message from that condition
+rather than storing one. -/
 
 /-! ## 8. Report -/
 
@@ -2227,6 +2191,661 @@ that the block reaches its exit would miss this defect completely. -/
 theorem foldPres_mutantK_invisible_to_exit :
     foldPresExitFailures (foldPresReports 0 mutatedFoldScratch) = 0 := rfl
 
+/-! ## Phase 3l/4k: STORE-VALUE DEPENDENCY, the missing anti-vacuity
+witness for REQ-E1-03's `INV-VALUE-DEPENDENCY`
+
+Every mutation this harness ran before this phase perturbs the PROGRAM:
+mutant D (`:898`) an operand, mutant F (`:1344`) an instruction, mutant E a
+branch target.  **None of them perturbs what the machine READS.**  So
+nothing here yet separated a machine computing its answer from its own
+reads from one whose answer never depended on a stored word at all -- both
+survive an operand mutation in exactly the same way when the read is
+decorative.
+
+This phase perturbs the STORE.  It runs the fringe arm against
+`armWitnessStore`, takes the `(segment, address)` cells the RECEIPT says
+the machine actually read, and re-runs the arm once per cell with THAT CELL
+ALONE returning a different word.  The claim established is a DEPENDENCY,
+not a value: the answer MOVES when a word the machine read is corrupted.
+Value correctness remains phase 3f's job, and this phase does not restate
+it.
+
+**The control is what makes this evidence rather than vandalism.**  A cell
+the machine did NOT read is perturbed on the same terms, and the answer
+must NOT move.  Without that control the phase could pass by corrupting the
+store so violently that every run breaks; with it, the dependency is pinned
+to exactly the cells on the receipt.  `controlCellUnread` checks the
+control cell really is absent from the receipt rather than assuming it.
+
+### THE DEPENDENCE IS A BICONDITIONAL, NOT A MAJORITY
+
+The first version of this phase demanded that EVERY fixture be
+read-dependent, and 21 of the 36 are not.  That was the check being wrong,
+not the machine: the arm has two epilogue arms, and on the SEED-FALLBACK
+arm the answer is the seed the caller supplied, which by construction does
+not depend on any word read.  Phase 3f already relies on both arms
+occurring (`armEpilogueCoverage`, `:1186`).
+
+So the claim this phase establishes is sharper than "the answer usually
+depends on the reads".  It is:
+
+> corrupting a read cell moves the answer **exactly when** the arm takes
+> its occupied (window-rebase) epilogue arm, and never otherwise.
+
+Both directions are checked on every fixture by `dependenceMatchesArm`,
+and the biconditional holds `36/36`.  The anti-vacuity clause is that BOTH
+arms must actually occur in the sweep -- if every fixture took the
+seed-fallback arm the biconditional would hold trivially and demonstrate
+nothing, so `depOccupiedFixtures` and `depFallbackFixtures` must both be
+positive.  They are `15` and `21`.
+
+Note on the discipline: the perturbation is in the machine's INPUT, which
+is the only place a read-dependency can be probed from.  It is not a
+fixture edit -- the fixture, the program and the expectation are all held
+fixed, and the reference side of this phase is the structural claim above,
+which is not computed by calling the machine. -/
+
+/-- `armWitnessStore w` with ONE cell returning a different word.  Bitwise
+negation is used so the perturbed word has the same LENGTH as the honest
+one: a shorter or longer word would change `decodeRead`'s magnitude for
+reasons unrelated to the cell's contents. -/
+def perturbedArmStore (w : List Bool) (seg addr : Nat) : ReadStore :=
+  ⟨fun s a =>
+    if s == seg && a == addr then some (w.map (fun b => !b)) else some w⟩
+
+/-- What one store-dependency fixture reports. -/
+structure DepReport where
+  distinctReadCells : Nat
+  movedCells : Nat
+  controlMoved : Bool
+  controlCellUnread : Bool
+  wordDiffers : Bool
+  readBearing : Bool
+  /-- The arm ended on its SEED-FALLBACK epilogue arm, identified the way
+  phase 3f identifies it (`:1182`): the position register still holds the
+  seed's `start` rather than a window rebase. -/
+  seedFallback : Bool
+  /-- THE BICONDITIONAL: read-dependence is present exactly when the arm
+  did NOT take the seed-fallback arm. -/
+  dependenceMatchesArm : Bool
+deriving Repr
+
+/-- Run the arm honestly, then once per distinct receipt cell with that
+cell alone corrupted, then once more on a cell it never read. -/
+def runDep (salt : Nat) (w : List Bool)
+    (S c L base relLo relHi seed bb start : Nat) : DepReport :=
+  let program := E1FringeArmProgram.armWitnessProgram S c L
+  let regs := E1FringeArmProgram.armWitnessRegs base relLo relHi seed bb start
+  let honest :=
+    E1Machine.run (E1FringeArmProgram.armWitnessStore w) program (4000 + salt)
+      ⟨regs, 0, false⟩
+  let cells := dedupList (honest.readLog.filterMap eventAddr)
+  let baseV := honest.final.regs E1FringeArmBlock.fRV
+  let baseP := honest.final.regs E1FringeArmBlock.fRP
+  let moved := cells.filter fun cell =>
+    let r :=
+      E1Machine.run (perturbedArmStore w cell.1 cell.2) program (4000 + salt)
+        ⟨regs, 0, false⟩
+    r.final.regs E1FringeArmBlock.fRV != baseV ||
+      r.final.regs E1FringeArmBlock.fRP != baseP
+  -- CONTROL: a cell the machine did not read, perturbed on the same terms.
+  let ctlCell : Nat × Nat := (0, base + 100000)
+  let ctl :=
+    E1Machine.run (perturbedArmStore w ctlCell.1 ctlCell.2) program
+      (4000 + salt) ⟨regs, 0, false⟩
+  let fallback := baseP == start
+  { distinctReadCells := cells.length
+    movedCells := moved.length
+    controlMoved :=
+      ctl.final.regs E1FringeArmBlock.fRV != baseV ||
+        ctl.final.regs E1FringeArmBlock.fRP != baseP
+    controlCellUnread := !cells.contains ctlCell
+    wordDiffers := w.map (fun b => !b) != w
+    readBearing := !honest.readLog.isEmpty
+    seedFallback := fallback
+    dependenceMatchesArm := (moved.length == 0) == fallback }
+
+def depReports (salt : Nat) : List DepReport :=
+  armCases.map fun (w, S, c, L, base, relLo, relHi, seed, bb, start) =>
+    runDep salt w S c L base relLo relHi seed bb start
+
+/-- Fixtures violating the biconditional: read-dependent on the fallback
+arm, or read-INdependent on the occupied arm.  Must be `0`. -/
+def depArmMismatches (rs : List DepReport) : Nat :=
+  (rs.filter (fun r => !r.dependenceMatchesArm)).length
+
+/-- Fixtures on the OCCUPIED epilogue arm, where the answer is a window
+rebase and read-dependence is therefore required. -/
+def depOccupiedFixtures (rs : List DepReport) : Nat :=
+  (rs.filter (fun r => !r.seedFallback)).length
+
+/-- Fixtures on the SEED-FALLBACK arm, where the answer is the caller's
+seed and read-independence is correct rather than a defect. -/
+def depFallbackFixtures (rs : List DepReport) : Nat :=
+  (rs.filter (fun r => r.seedFallback)).length
+
+/-- Fixtures where corrupting an UNREAD cell moved the answer.  Must be
+`0`: a nonzero count would mean the perturbation is not localised and the
+phase proves nothing about the receipt. -/
+def depControlLeaks (rs : List DepReport) : Nat :=
+  (rs.filter (fun r => r.controlMoved)).length
+
+/-- Fixtures whose control cell turned out to be ON the receipt after all,
+which would make `depControlLeaks` meaningless.  Must be `0`. -/
+def depControlUnsound (rs : List DepReport) : Nat :=
+  (rs.filter (fun r => !r.controlCellUnread)).length
+
+/-- Total read cells whose corruption moved the answer, across the sweep. -/
+def depTotalMovedCells (rs : List DepReport) : Nat :=
+  rs.foldl (fun a r => a + r.movedCells) 0
+
+/-- Total distinct read cells probed across the sweep. -/
+def depTotalCells (rs : List DepReport) : Nat :=
+  rs.foldl (fun a r => a + r.distinctReadCells) 0
+
+/-- Fixtures where the perturbed word is not actually different, or the run
+charged no read at all -- either makes the fixture vacuous.  Must be `0`. -/
+def depVacuous (rs : List DepReport) : Nat :=
+  (rs.filter (fun r => !r.wordDiffers || !r.readBearing)).length
+
+/-! ## Phase 3m/4l: THE CATEGORY LOG as a discriminator in its own right
+
+Before this phase the category log was **not a discriminator anywhere in
+this file**.  `catLog` and `catCount` appeared four times in total, all
+four inside `runGuard` (`:1902`, `:1909`), and both uses count ONE category
+(`memoryRead`) rather than comparing logs.  Value, receipt and preservation
+each had a mutant proved invisible to the other two; category accounting
+had none.
+
+This phase supplies one.
+
+**MUTANT L is a category-neutral rewrite of a single instruction.**
+`execInstr` gives `move d s` the value `R s` and the category
+`registerWrite`, and `mulConst d s k` the value `R s * k` and the category
+`arithmetic` (`E1Machine.lean:170` and `:178`).  At `k = 1` the two write
+THE SAME VALUE into THE SAME REGISTER in ONE step, performing no read and
+changing no control flow.  So the mutant agrees with the honest arm on
+every observable this harness had: value, position, full receipt, exit pc,
+halted flag, modeled step count, the LENGTH of the category log, and the
+`memoryRead` charge count that is the only category statistic the file
+computed before now.  What it changes is WHICH CATEGORY IS CHARGED at one
+position.
+
+**Scope, stated rather than left to be discovered.**  A category log
+constrains which KINDS of instruction ran; it never constrains their
+operands.  `mergePos_catLogs_agree` (`E1InteriorMerge.lean:519`) is the
+proved counterexample in the other direction -- mutant-D-style operand
+substitution takes the identical path and is invisible to a positional
+category log, which is exactly why this phase does not replace the value
+comparison but sits beside it.  A per-category CENSUS would also catch
+mutant L (it moves one charge from `registerWrite` to `arithmetic`); what
+no census, no length check and no step count can catch is nothing here --
+the honest claim is that the positional log catches it and every
+discriminator this harness ALREADY RAN does not.  `catMutantIsCategoryOnly`
+checks that last clause case by case rather than asserting it. -/
+
+/-- MUTANT L: the arm's FIRST `move dst src` becomes `mulConst dst src 1`.
+Rewriting exactly one instruction, at the first `move` in program order
+(index `60` in `armWitnessProgram`, inside the arm body -- the two padding
+instructions at `0` and `1` are `const`, not `move`). -/
+def moveToMulConst (program : List Instr) : List Instr :=
+  match (List.range program.length).find? (fun i =>
+      match program[i]? with
+      | some (.move _ _) => true
+      | _ => false) with
+  | none => program
+  | some i =>
+      program.take i ++
+        (match program[i]? with
+         | some (.move d s) => [Instr.mulConst d s 1]
+         | some other => [other]
+         | none => []) ++
+        program.drop (i + 1)
+
+/-- The arm's category log for one fixture, under a given builder. -/
+def armCatLogOf (salt : Nat) (build : List Instr -> List Instr)
+    (w : List Bool) (S c L base relLo relHi seed bb start : Nat) :
+    List Category :=
+  (E1Machine.run (E1FringeArmProgram.armWitnessStore w)
+    (build (E1FringeArmProgram.armWitnessProgram S c L)) (4000 + salt)
+    ⟨E1FringeArmProgram.armWitnessRegs base relLo relHi seed bb start,
+      0, false⟩).catLog
+
+def armCatLogs (salt : Nat) (build : List Instr -> List Instr) :
+    List (List Category) :=
+  armCases.map fun (w, S, c, L, base, relLo, relHi, seed, bb, start) =>
+    armCatLogOf salt build w S c L base relLo relHi seed bb start
+
+/-- The arm's full RECEIPT for one fixture, under a given builder -- used to
+check mutant L against receipt EQUALITY rather than receipt length. -/
+def armReadLogOf (salt : Nat) (build : List Instr -> List Instr)
+    (w : List Bool) (S c L base relLo relHi seed bb start : Nat) :
+    List TraceEvent :=
+  (E1Machine.run (E1FringeArmProgram.armWitnessStore w)
+    (build (E1FringeArmProgram.armWitnessProgram S c L)) (4000 + salt)
+    ⟨E1FringeArmProgram.armWitnessRegs base relLo relHi seed bb start,
+      0, false⟩).readLog
+
+def armReadLogs (salt : Nat) (build : List Instr -> List Instr) :
+    List (List TraceEvent) :=
+  armCases.map fun (w, S, c, L, base, relLo, relHi, seed, bb, start) =>
+    armReadLogOf salt build w S c L base relLo relHi seed bb start
+
+/-- THE DISCRIMINATOR: fixtures whose category log differs POSITIONALLY
+from the honest run's. -/
+def catLogMismatches (salt : Nat) (build : List Instr -> List Instr) : Nat :=
+  (((armCatLogs salt goodArm).zip (armCatLogs salt build)).filter
+    (fun p => p.1 != p.2)).length
+
+/-- Mutant L genuinely changes the program, keeps its LENGTH, and -- unlike
+every other mutant in this file -- genuinely changes the opcode-category
+sequence.  That last clause is the point of the mutant, so it is asserted
+in the opposite direction from `mergeMutationsAreReal` (`:944`). -/
+def catMutationIsReal : Bool :=
+  let honest := E1FringeArmProgram.armWitnessProgram 7 2 4
+  let mutant := moveToMulConst honest
+  honest != mutant && honest.length == mutant.length &&
+    honest.map Instr.category != mutant.map Instr.category
+
+/-- MUTANT L IS CATEGORY-ONLY.  Checked case by case against the reports
+the earlier phases already build, not asserted:
+
+* phase 3f's `ArmReport` -- value, position, receipt length, window
+  addresses, fold segments, exit pc and modeled steps all agree;
+* the full `readLog`, compared event for event, agrees;
+* phase 3h's `PresReport` -- clobbered set, preservation verdict and
+  zero-seed agreement all agree;
+* the two blunt category statistics agree: the logs have the SAME LENGTH
+  (so a step count cannot see it) and the SAME `memoryRead` charge count
+  (so the only category machinery this file had before now cannot see it).
+
+This is the fourth corner of the complementarity argument: D was
+value-only, E receipt-only, G preservation-only, L category-only. -/
+def catMutantIsCategoryOnly (salt : Nat) : Bool :=
+  let ha := armReports salt goodArm
+  let ma := armReports salt moveToMulConst
+  let hp := presReports salt goodPres
+  let mp := presReports salt moveToMulConst
+  let hc := armCatLogs salt goodArm
+  let mc := armCatLogs salt moveToMulConst
+  let hr := armReadLogs salt goodArm
+  let mr := armReadLogs salt moveToMulConst
+  let armOk :=
+    (ha.zip ma).all fun (h, m) =>
+      h.reachedExit == m.reachedExit && h.modeledSteps == m.modeledSteps &&
+        h.value == m.value && h.position == m.position &&
+        h.machineReads == m.machineReads &&
+        h.machineWindowAddrs == m.machineWindowAddrs &&
+        h.foldSegmentsOk == m.foldSegmentsOk
+  let presOk :=
+    (hp.zip mp).all fun (h, m) =>
+      h.clobbered == m.clobbered && h.preserved == m.preserved &&
+        h.agreesWithZeroSeed == m.agreesWithZeroSeed &&
+        h.value == m.value && h.position == m.position
+  let receiptOk := (hr.zip mr).all fun (h, m) => h == m
+  let blindOk :=
+    (hc.zip mc).all fun (h, m) =>
+      h.length == m.length &&
+        catCount h Category.memoryRead == catCount m Category.memoryRead
+  armOk && presOk && receiptOk && blindOk
+
+/-! ### The category-log facts, KERNEL-CHECKED rather than printed
+
+`catMutationIsReal` is pure list surgery on a program value, so the kernel
+can settle it directly; the run-based clauses stay in the executed report
+where the fold's arithmetic is compiled rather than reduced. -/
+
+theorem catMutation_isReal : catMutationIsReal = true := rfl
+
+theorem catMutation_changesCategorySequence :
+    (E1FringeArmProgram.armWitnessProgram 7 2 4).map Instr.category !=
+      (moveToMulConst (E1FringeArmProgram.armWitnessProgram 7 2 4)).map
+        Instr.category := rfl
+
+theorem catMutation_preservesLength :
+    (moveToMulConst (E1FringeArmProgram.armWitnessProgram 7 2 4)).length =
+      (E1FringeArmProgram.armWitnessProgram 7 2 4).length := rfl
+
+/-! ## Phase 3n/5: the WHOLE-QUERY comparison, the named fixture CLASSES,
+and the step literal EXERCISED (REQ-E1-08)
+
+Three gaps close here at once, because they are the same gap seen from
+three sides.
+
+**(a) The fixture classes.**  REQ-E1-08 names "empty, singleton, size-two,
+same-block, threshold-boundary, cross-interior, invalid, plus generated
+cases".  Before this phase, `same-block` and `cross-interior` existed only
+as dispatch-route OUTCOMES observed in phases 3b/3d, never as named
+fixture classes; `threshold-boundary` did not appear in this file at all.
+
+They are named here, and -- this is the part that matters -- **a case's
+class is COMPUTED from the route's own closes, not hand-labelled**.
+`classifyQuery` asks `wholeQueryBranch` for the closes the route actually
+selects, divides them by the shape's own block size, and reads the class
+off the two block indices.  A hand-written label would record what the
+author BELIEVED; this records what the route does.  That distinction is
+not theoretical: the measurement note below exists because a hand-supplied
+branch literal disagreed with the computed one.
+
+**(b) The comparison.**  `wholeQueryProgram` (`E1WholeQueryProgram.lean:876`)
+is a plain `E1Machine.Program` -- 5646 instructions, no proof arguments --
+so it RUNS.  This phase runs it against the canonical store on every case
+and compares its decoded output packet with `refRMQ`.  The expectation is
+computed FIRST, from the reference alone, before the shape, the store or
+the program is built, following `:643`/`:851`/`:1140`/`:1296`.
+
+**(c) The step literal, EXERCISED.**  `wholeQueryCats_machineS_length_le`
+(`E1WholeQueryCostLiteral.lean:538`) proves the all-size bound `11886` and
+nothing ran against it.  This phase measures TWO step counts per valid
+case -- the executed `run`'s `steps`, and the cost model's
+`wholeQueryCats` length -- and checks both that they AGREE and that the
+executed count is within the bound.  The agreement is the sharper of the
+two: it is an independent cross-check of the cost algebra against
+execution, and neither side is derived from the other.
+
+### THE PRIOR MEASUREMENT DOES NOT REPRODUCE, and the discrepancy is
+attributed
+
+`E1_LIVE_STATE.md` §15 and `E1WholeQueryCostLiteral.lean:572-592` record a
+measured `1270` steps at the validator's own fixture shape
+(`stackCartesianShape [3,1,4,1,5]`, query `[0,4)`), on branch
+`.full 0 4 3`, and attribute the bound's looseness to "the bound assumes
+the cross-block arm while a small shape takes the same-block arm".
+
+**Evaluated here, that fixture measures `1765`, and it takes the CROSS-block
+arm.**  The route's own branch at that shape and query is `.full 2 7 3`:
+the closes are `2` and `7`, not `0` and `4`.  The block size is `6`, so
+`blockOfClose 6 2 = 0` and `blockOfClose 6 7 = 1` -- DIFFERENT blocks.
+The prior table passed the QUERY ENDPOINTS `0` and `4` where the branch
+constructor expects CLOSES; those two do fall in the same block
+(`blockOfClose 6 0 = blockOfClose 6 4 = 0`), which is where the
+same-block reading came from.  The close/LCA slot measures `969` at the
+real closes against `474` at the endpoint pair, and `1765 - 1270 = 495 =
+969 - 474` accounts for the whole difference.
+
+Both totals decompose exactly, so neither number is in doubt -- only the
+branch they belong to:
+
+```
+  real   9 + 335 + 2 + 387 + 969 + 2 + 59 + 2 = 1765   (.full 2 7 3, CROSS)
+  prior  9 + 335 + 2 + 387 + 474 + 2 + 59 + 2 = 1270   (.full 0 4 3, same)
+```
+
+The consequence for REQ-E1-06's looseness story is that the five-element
+fixture never demonstrated the same-block arm at all, and the "about nine
+times loose" figure is measured at the smallest fixture in the set.  At
+the cross-interior fixtures this phase adds, the measured count rises to
+`3267`, which is about `3.6` times inside the bound.  The looseness is
+real and the bound is genuinely all-size; the ATTRIBUTION was wrong.
+
+This phase carries no hand-transcribed step figure of its own: every
+number it reports is measured at run time, and the bound constant is tied
+to the theorem by `wholeQueryStepBound_isTheProvedBound` below. -/
+
+/-- The proved all-size step bound.  NOT an asserted constant: the theorem
+directly below fails to typecheck unless this is exactly the bound
+`wholeQueryCats_machineS_length_le` proves, so changing this numeral
+breaks the build rather than silently mis-reporting. -/
+def wholeQueryStepBound : Nat := 11886
+
+theorem wholeQueryStepBound_isTheProvedBound
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (E1Query.wholeQueryCats (E1Query.wholeQueryMachineS shape) shape left
+      right).length ≤ wholeQueryStepBound :=
+  E1WholeQueryCostLiteral.wholeQueryCats_machineS_length_le shape left right
+
+/-- The fixture classes REQ-E1-08 names, as a computed classification of a
+query rather than a label attached to it. -/
+inductive QueryClass where
+  /-- The guard rejects: empty range, reversed, or past the end. -/
+  | invalid
+  /-- Both closes in one block; the close/LCA leg takes the same-block arm. -/
+  | sameBlock
+  /-- Closes in consecutive blocks; cross-block arm, EMPTY interior. -/
+  | crossAdjacent
+  /-- Closes at least two blocks apart; cross-block arm with a NONEMPTY
+  interior -- the arm the `11886` bound is priced for. -/
+  | crossInterior
+  /-- A select leg missed, so the close/LCA leg never runs. -/
+  | selectMiss
+deriving Repr, DecidableEq, BEq
+
+def queryClassName : QueryClass → String
+  | .invalid => "invalid"
+  | .sameBlock => "same-block"
+  | .crossAdjacent => "cross-adjacent"
+  | .crossInterior => "cross-interior"
+  | .selectMiss => "select-miss"
+
+/-- The arm class of a close pair, from the block indices alone. -/
+def armClassOf (blockSize leftClose rightClose : Nat) : QueryClass :=
+  let bl := SuccinctClose.blockOfClose blockSize leftClose
+  let br := SuccinctClose.blockOfClose blockSize rightClose
+  if bl == br then .sameBlock
+  else if br == bl + 1 then .crossAdjacent
+  else .crossInterior
+
+/-- THRESHOLD-BOUNDARY: a close sitting on the first or last slot of its
+block -- the exact positions the block dispatch's comparisons turn on, and
+where an off-by-one in `blockOfClose` would first show.  Orthogonal to the
+arm class, so it is reported as its own flag rather than as a sixth
+constructor. -/
+def atBlockThreshold (blockSize leftClose rightClose : Nat) : Bool :=
+  blockSize != 0 &&
+    (leftClose % blockSize == 0 || rightClose % blockSize == 0 ||
+      leftClose % blockSize == blockSize - 1 ||
+      rightClose % blockSize == blockSize - 1)
+
+/-- Classify one query BY ASKING THE ROUTE.  Validity is decided first, on
+the query alone, because `wholeQueryBranch` is not meaningful on a query
+the guard rejects. -/
+def classifyQuery (xs : List Int) (l r : Nat) : QueryClass × Bool :=
+  if !(decide (l < r) && decide (r <= xs.length)) then (.invalid, false)
+  else
+    let shape := Cartesian.stackCartesianShape xs
+    let bs := SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+    match SuccinctFinal.wholeQueryBranch shape l r with
+    | .leftSelectNone => (.selectMiss, false)
+    | .rightSelectNone _ => (.selectMiss, false)
+    | .lcaNone lc rc => (armClassOf bs lc rc, atBlockThreshold bs lc rc)
+    | .full lc rc _ => (armClassOf bs lc rc, atBlockThreshold bs lc rc)
+
+/-- A twelve-element fixture and a twenty-four-element one, kept as named
+values because the cross-interior classes need shapes big enough to have
+an interior at all -- at five elements the block size is `6` and no query
+reaches a third block. -/
+def wqWide : List Int := [8, 6, 7, 5, 3, 0, 9, 1, 4, 2, 6, 6]
+
+def wqRamp : List Int := (List.range 24).map (fun i => Int.ofNat ((i * 7) % 13))
+
+/-- The whole-query corpus.  Every class REQ-E1-08 names appears, and the
+phase CHECKS that rather than trusting this list -- see
+`wqClassPopulation` and `okWholeQueryCoverage`. -/
+def wholeQueryCases : List (String × List Int × Nat × Nat) :=
+  [ ("empty", [], 0, 0)
+  , ("singleton", [42], 0, 1)
+  , ("size-two-inc", [1, 2], 0, 2)
+  , ("size-two-dec", [2, 1], 0, 2)
+  , ("size-two-left", [1, 2], 0, 1)
+  , ("same-block-lo", [3, 1, 4, 1, 5], 0, 2)
+  , ("same-block-hi", [3, 1, 4, 1, 5], 2, 4)
+  , ("same-block-point", [3, 1, 4, 1, 5], 0, 1)
+  , ("cross-adjacent", [3, 1, 4, 1, 5], 0, 4)
+  , ("cross-adjacent-mid", [3, 1, 4, 1, 5], 1, 3)
+  , ("full-span-five", [3, 1, 4, 1, 5], 0, 5)
+  , ("same-block-wide", wqWide, 0, 2)
+  , ("cross-adjacent-wide", wqWide, 0, 4)
+  , ("cross-interior-wide", wqWide, 0, 12)
+  , ("cross-interior-wide-mid", wqWide, 6, 12)
+  , ("same-block-ramp", wqRamp, 0, 4)
+  , ("cross-interior-ramp", wqRamp, 0, 12)
+  , ("cross-interior-ramp-deep", wqRamp, 0, 24)
+  , ("cross-interior-ramp-off", wqRamp, 8, 16)
+  , ("invalid-empty-range", [3, 1, 4, 1, 5], 2, 2)
+  , ("invalid-reversed", [3, 1, 4, 1, 5], 3, 1)
+  , ("invalid-past-end", [3, 1, 4, 1, 5], 0, 6)
+  , ("gen-6-1", generatedInput 6 1, 0, 6)
+  , ("gen-9-2", generatedInput 9 2, 1, 8) ]
+
+/-- What one whole-query case reports. -/
+structure WQReport where
+  name : String
+  cls : QueryClass
+  threshold : Bool
+  expected : Option Nat
+  machine : Option Nat
+  agrees : Bool
+  halted : Bool
+  executedSteps : Nat
+  modelSteps : Option Nat
+  stepsAgree : Bool
+  withinBound : Bool
+  reads : Nat
+deriving Repr
+
+/-- RUN THE WHOLE QUERY end to end and compare against the reference.
+
+Expectation first, from `refRMQ` alone; only then the shape, the store,
+the program and the run. -/
+def runWholeQuery (salt : Nat) (name : String) (xs : List Int) (l r : Nat) :
+    WQReport :=
+  -- EXPECTATION FIRST, from the independent reference alone.
+  let expected := refRMQ xs l r
+  let (cls, thr) := classifyQuery xs l r
+  -- ONLY NOW the machine.
+  let shape := Cartesian.stackCartesianShape xs
+  let program := E1Query.wholeQueryProgram shape xs.length
+  let result :=
+    E1Machine.run (legStore shape) program (wholeQueryStepBound + salt)
+      (E1Query.initialState l r)
+  let machine := E1Query.decodePacket (result.final.regs E1Query.regOut)
+  -- The cost model's own count, on the VALID cases only: on a rejected
+  -- query the guard exits before the route's stage record applies, and
+  -- comparing the model there would be a comparison with itself.
+  let modelSteps : Option Nat :=
+    if cls == .invalid then none
+    else
+      some (E1Query.wholeQueryCats (E1Query.wholeQueryMachineS shape) shape
+        l r).length
+  { name := name
+    cls := cls
+    threshold := thr
+    expected := expected
+    machine := machine
+    agrees := expected == machine
+    halted := result.final.halted
+    executedSteps := result.steps
+    modelSteps := modelSteps
+    stepsAgree :=
+      match modelSteps with
+      | none => true
+      | some m => m == result.steps
+    withinBound := result.steps <= wholeQueryStepBound
+    reads := result.readLog.length }
+
+def wholeQueryReports (salt : Nat) : List WQReport :=
+  wholeQueryCases.map fun (name, xs, l, r) => runWholeQuery salt name xs l r
+
+/-- Cases whose machine answer disagrees with the reference. -/
+def wqMismatches (rs : List WQReport) : List WQReport :=
+  rs.filter (fun r => !r.agrees)
+
+def wqNotHalted (rs : List WQReport) : Nat :=
+  (rs.filter (fun r => !r.halted)).length
+
+/-- Cases where the executed step count and the cost model's count
+disagree.  Must be `0`. -/
+def wqStepDisagreements (rs : List WQReport) : Nat :=
+  (rs.filter (fun r => !r.stepsAgree)).length
+
+/-- How many cases actually COMPARED the two step counts.  If this is `0`
+the agreement above is vacuous, so the verdict requires it positive. -/
+def wqStepsCompared (rs : List WQReport) : Nat :=
+  (rs.filter (fun r => r.modelSteps.isSome)).length
+
+def wqBoundViolations (rs : List WQReport) : Nat :=
+  (rs.filter (fun r => !r.withinBound)).length
+
+/-- The largest executed step count observed, for reporting against the
+bound.  A maximum well under `11886` is not a failure -- the bound is
+all-size -- but it is the number that says how loose the bound is HERE. -/
+def wqMaxSteps (rs : List WQReport) : Nat :=
+  rs.foldl (fun a r => Nat.max a r.executedSteps) 0
+
+def wqTotalSteps (rs : List WQReport) : Nat :=
+  rs.foldl (fun a r => a + r.executedSteps) 0
+
+def wqTotalReads (rs : List WQReport) : Nat :=
+  rs.foldl (fun a r => a + r.reads) 0
+
+/-- Population of one class in the corpus. -/
+def wqClassPopulation (rs : List WQReport) (c : QueryClass) : Nat :=
+  (rs.filter (fun r => r.cls == c)).length
+
+def wqThresholdPopulation (rs : List WQReport) : Nat :=
+  (rs.filter (fun r => r.threshold)).length
+
+/-- Cases whose fixture is empty or a singleton, by the fixture itself --
+the two classes REQ-E1-08 names that are properties of the INPUT rather
+than of the route. -/
+def wqSizeClassPopulation (rs : List WQReport) (n : Nat) : Nat :=
+  ((wholeQueryCases.zip rs).filter
+    (fun (c, _) => c.2.1.length == n)).length
+
+/-- ANTI-VACUITY FOR THE FIXTURE CLASSES: every class REQ-E1-08 names is
+actually POPULATED.  A named class with no members is not a fixture class,
+and this is the check that stops the corpus above from silently drifting
+into one. -/
+def wqClassesAllPopulated (rs : List WQReport) : Bool :=
+  wqClassPopulation rs .sameBlock > 0 &&
+    wqClassPopulation rs .crossInterior > 0 &&
+      wqClassPopulation rs .invalid > 0 &&
+        wqThresholdPopulation rs > 0 &&
+          wqSizeClassPopulation rs 0 > 0 &&
+            wqSizeClassPopulation rs 1 > 0 &&
+              wqSizeClassPopulation rs 2 > 0
+
+/-- **Availability, DERIVED rather than declared.**
+
+The four previous versions of this flag were hand-set to `false` beside a
+hand-written sentence explaining why, and the sentence went stale three
+times because nothing recomputed it.  This computes it: the comparison is
+available exactly when there is a corpus and every case in it produced a
+report.  If the corpus were emptied, this would go `false` on its own and
+say so, without anyone editing a docstring. -/
+def wholeQueryComparisonAvailable : Bool :=
+  wholeQueryCases.length > 0 &&
+    (wholeQueryReports 0).length == wholeQueryCases.length
+
+/-- The disagreements, or `none` when no comparison is available. -/
+def wholeQueryMismatches (salt : Nat) : Option (List WQReport) :=
+  if wholeQueryComparisonAvailable then
+    some (wqMismatches (wholeQueryReports salt))
+  else
+    none
+
+/-- **The status line, RENDERED FROM THE CONDITION rather than stored.**
+
+This is the durable fix for the defect that made phase 5's reason wrong in
+both directions across four rounds: there is no sentence here to go stale,
+because every clause is computed from the reports the phase just produced. -/
+def wholeQueryStatusLine (rs : List WQReport) : String :=
+  if !wholeQueryComparisonAvailable then
+    "OPEN (no comparison surface: the case corpus is empty, so nothing was compared; NOT a pass)"
+  else
+    let bad := (wqMismatches rs).length
+    let compared := rs.length
+    if bad == 0 then
+      s!"COMPARED ({compared} cases, {wqStepsCompared rs} of them step-checked against the cost model; 0 answer mismatches)"
+    else
+      s!"MISMATCH ({bad} of {compared} cases disagree with refRMQ)"
+
+def renderWQ (r : WQReport) : String :=
+  s!"    {r.name} [{queryClassName r.cls}]" ++
+    (if r.threshold then " (threshold)" else "") ++
+    s!" expected={repr r.expected} machine={repr r.machine} " ++
+    s!"steps={r.executedSteps} model={repr r.modelSteps}"
+
 def mainImpl : IO UInt32 := do
   IO.println "== E1 amended-machine validator (M6) =="
   IO.println ""
@@ -2644,14 +3263,78 @@ def mainImpl : IO UInt32 := do
   IO.println s!"guardMutationWallClockMs={tgm1 - tgm0}"
   IO.println ""
 
-  -- STEP 5: the hole.
-  IO.println "-- phase 5: whole-query comparison --"
-  IO.println s!"wholeQueryComparisonAvailable={wholeQueryComparisonAvailable}"
-  match wholeQueryMismatches with
-  | none =>
-      IO.println "wholeQueryComparison=OPEN (whole-query PROGRAM not assembled, not blocked: interior leg and close leg are BUILT -- five-branch composition and hInterior ARE written -- but no definition composes them into one runnable query program, so nothing is compared here; NOT a pass)"
-  | some ms =>
-      IO.println s!"wholeQueryMismatches={ms.length}"
+  -- STEP 3l: the store-value dependency witness (REQ-E1-03).
+  IO.println "-- phase 3l: STORE-VALUE DEPENDENCY (perturb a word the machine READ) --"
+  let td0 <- IO.monoMsNow
+  let depRs := depReports salt
+  let depArmMis := depArmMismatches depRs
+  let depOcc := depOccupiedFixtures depRs
+  let depFall := depFallbackFixtures depRs
+  let depLeaks := depControlLeaks depRs
+  let depUnsound := depControlUnsound depRs
+  let depVac := depVacuous depRs
+  IO.println s!"depCases={depRs.length}"
+  IO.println s!"depDistinctReadCellsProbed={depTotalCells depRs}   (cells taken from the RECEIPT, not guessed)"
+  IO.println s!"depCellsWhoseCorruptionMovedTheAnswer={depTotalMovedCells depRs}   (must be > 0: this IS the dependency)"
+  IO.println s!"depArmMismatches={depArmMis}   (must be 0: read-dependence occurs EXACTLY on the occupied epilogue arm)"
+  IO.println s!"depOccupiedFixtures={depOcc}   (must be > 0: else the biconditional holds trivially)"
+  IO.println s!"depSeedFallbackFixtures={depFall}   (must be > 0: else the read-INdependent direction is never exercised)"
+  IO.println s!"depControlLeaks={depLeaks}   (must be 0: corrupting an UNREAD cell must not move the answer)"
+  IO.println s!"depControlCellUnsound={depUnsound}   (must be 0: the control cell must really be off the receipt)"
+  IO.println s!"depVacuousFixtures={depVac}   (must be 0: perturbed word differs AND the run charged reads)"
+  let td1 <- IO.monoMsNow
+  IO.println s!"depWallClockMs={td1 - td0}   (this binary on this host; NOT evidence)"
+  IO.println ""
+
+  -- STEP 4l: the CATEGORY LOG as a discriminator (REQ-E1-06).
+  IO.println "-- phase 4l: deliberate mutation caught ONLY by the positional CATEGORY LOG --"
+  let tc0 <- IO.monoMsNow
+  let catCaught := catLogMismatches salt moveToMulConst
+  let catHonest := catLogMismatches salt goodArm
+  let catOnly := catMutantIsCategoryOnly salt
+  IO.println s!"catMutationIsReal={catMutationIsReal}   (differs; SAME length; DIFFERENT opcode categories -- the point of mutant L)"
+  IO.println s!"catLogMismatches_honest={catHonest}   (must be 0: the log is stable under the identity builder)"
+  IO.println s!"mutantL_catLogMismatches={catCaught}   (must be > 0: the positional category log catches it)"
+  IO.println s!"mutantL_isCategoryOnly={catOnly}   (value, position, FULL receipt, preservation, exit pc, modeled steps, catLog LENGTH and memoryRead charge ALL match)"
+  let tc1 <- IO.monoMsNow
+  IO.println s!"catWallClockMs={tc1 - tc0}   (this binary on this host; NOT evidence)"
+  IO.println ""
+
+  -- STEP 5: the whole-query comparison, its fixture classes, and the
+  -- step literal exercised.  No longer a hole.
+  IO.println "-- phase 5: WHOLE-QUERY comparison, fixture classes, and the 11886 step bound --"
+  let tw0 <- IO.monoMsNow
+  let wqRs := wholeQueryReports salt
+  let wqBad := wqMismatches wqRs
+  let wqSteps := wqStepDisagreements wqRs
+  let wqCompared := wqStepsCompared wqRs
+  let wqBound := wqBoundViolations wqRs
+  let wqHalt := wqNotHalted wqRs
+  let wqCov := wqClassesAllPopulated wqRs
+  IO.println s!"wholeQueryComparisonAvailable={wholeQueryComparisonAvailable}   (DERIVED from the corpus, not declared)"
+  IO.println s!"wholeQueryComparison={wholeQueryStatusLine wqRs}"
+  IO.println s!"wholeQueryCases={wqRs.length}"
+  IO.println s!"wholeQueryAnswerMismatches={wqBad.length}   (machine output packet vs refRMQ)"
+  IO.println s!"wholeQueryNotHalted={wqHalt}   (must be 0)"
+  IO.println s!"wholeQueryModeledSteps={wqTotalSteps wqRs}   (machine-modeled, reproducible)"
+  IO.println s!"wholeQueryModeledReads={wqTotalReads wqRs}   (machine-modeled receipt events)"
+  IO.println s!"wholeQueryMaxModeledSteps={wqMaxSteps wqRs}   (measured; the proved all-size bound is {wholeQueryStepBound})"
+  IO.println s!"wholeQueryStepModelDisagreements={wqSteps}   (must be 0: executed steps vs wholeQueryCats length)"
+  IO.println s!"wholeQueryStepComparisons={wqCompared}   (must be > 0, else the line above is vacuous)"
+  IO.println s!"wholeQueryBoundViolations={wqBound}   (must be 0: executed steps within {wholeQueryStepBound})"
+  IO.println "-- fixture classes, COMPUTED from the route's own closes --"
+  IO.println s!"class_same-block={wqClassPopulation wqRs .sameBlock}"
+  IO.println s!"class_cross-adjacent={wqClassPopulation wqRs .crossAdjacent}"
+  IO.println s!"class_cross-interior={wqClassPopulation wqRs .crossInterior}"
+  IO.println s!"class_select-miss={wqClassPopulation wqRs .selectMiss}"
+  IO.println s!"class_invalid={wqClassPopulation wqRs .invalid}"
+  IO.println s!"class_threshold-boundary={wqThresholdPopulation wqRs}   (a close on the first or last slot of its block)"
+  IO.println s!"class_empty={wqSizeClassPopulation wqRs 0}   class_singleton={wqSizeClassPopulation wqRs 1}   class_size-two={wqSizeClassPopulation wqRs 2}"
+  IO.println s!"wholeQueryClassesAllPopulated={wqCov}   (must be true: a named class with no members is not a fixture class)"
+  for m in wqBad.take 10 do
+    IO.println (renderWQ m)
+  let tw1 <- IO.monoMsNow
+  IO.println s!"wholeQueryWallClockMs={tw1 - tw0}   (this binary on this host; NOT evidence)"
   IO.println ""
 
   -- Verdict.  Grouped into named clauses: a single `&&` chain over all of
@@ -2744,18 +3427,39 @@ def mainImpl : IO UInt32 := do
   -- both the value and the receipt discriminators.
   let okFoldPresMutations :=
     foldPresMutationIsReal && mutKFails != 0 && mutKPresOnly
+  -- REQ-E1-03's store-value dependency: the answer MOVES when a word the
+  -- machine actually read is corrupted, does NOT move when an unread cell
+  -- is corrupted on the same terms, and no fixture is vacuous.
+  let okDependence :=
+    depArmMis == 0 && depLeaks == 0 && depUnsound == 0 && depVac == 0 &&
+      depTotalMovedCells depRs > 0 && depOcc > 0 && depFall > 0
+  -- REQ-E1-06's category-log discriminator: mutant L caught by the
+  -- positional log, invisible to value, receipt, preservation, steps and
+  -- the memoryRead charge count.
+  let okCategory :=
+    catMutationIsReal && catHonest == 0 && catCaught > 0 && catOnly
+  -- REQ-E1-08's whole-query comparison: answers agree with refRMQ, the
+  -- executed step count agrees with the cost model on a nonempty set of
+  -- cases, every run is within the proved bound, and every named fixture
+  -- class is populated.
+  let okWholeQuery :=
+    wholeQueryComparisonAvailable && wqBad.isEmpty && wqHalt == 0 &&
+      wqSteps == 0 && wqCompared > 0 && wqBound == 0
+  let okWholeQueryCoverage := wqCov
   let okCore := okReference && okLengths && okDispatch && okLeg
   let okComposite := okSelect && okCompose && okComposeCoverage && okMerge
   let okAdversarial := okMutations && okMutantSetup && okMergeMutations
   let okNew := okArm && okArmMutations && okRange && okRangeMutations
   let okPreservation := okPres && okPresMutations
   let okChunkPreservation := okChunkPres && okChunkPresMutations
+  let okNewDiscriminators :=
+    okDependence && okCategory && okWholeQuery && okWholeQueryCoverage
   let ok :=
     okCore && okComposite && okAdversarial && okNew && okPreservation &&
       okChunkPreservation && okGuard && okGuardMutations &&
-      okFoldPres && okFoldPresMutations
+      okFoldPres && okFoldPresMutations && okNewDiscriminators
   if ok then
-    IO.println "RESULT: PASS (with the whole-query comparison still OPEN)"
+    IO.println "RESULT: PASS (whole-query comparison EXECUTED; see phase 5)"
     return 0
   else
     IO.println "RESULT: FAIL"
