@@ -2973,6 +2973,397 @@ def renderWQ (r : WQReport) : String :=
     s!"reads={r.reads} routeTrace={repr r.routeTraceLen} " ++
     s!"receiptMatches={repr r.receiptMatchesRoute}"
 
+/-! ## Phase 5b: WHOLE-QUERY STORE-VALUE DEPENDENCY — REQ-E1-03's
+`INV-VALUE-DEPENDENCY` AT THE SCOPE THE ROW IS ABOUT
+
+Phase 3l (`:2194`) establishes read-dependence **of the fringe arm**: it
+perturbs `E1FringeArmProgram.armWitnessStore` and watches
+`E1FringeArmBlock.fRV`/`fRP`.  REQ-E1-03 is a WHOLE-QUERY row, and its
+invariant is about `E1Query.regOut` of `E1Query.wholeQueryProgram` at the
+canonical store `concreteBPNativeSuccinctRMQGlobalReadStore` — an object
+phase 3l never runs.  Value dependency was therefore demonstrated OF AN ARM,
+not of the query answer.
+
+Nothing else in this file closed that, because **every other mutation here
+perturbs the PROGRAM** — mutant M (`:2856`) included.  Spell out the machine
+that exploits the gap: one that performs every read the receipt records,
+DISCARDS every word it reads, and recomputes the answer from the query
+endpoints by an independent in-register method.  It passes phase 3l (never
+run on it), the receipt checks (its receipt is positionally correct), the
+category checks (its categories are correct), and phase 5's value comparison
+(its answers are correct); and mutant M still changes its instructions, so
+phase 4m rejects it too.  This phase is the only check in the file with any
+power over that machine.
+
+**What is established.**  For each witness case: run the whole query honestly
+against `legStore shape`, take the `(segment, address)` pairs THE RECEIPT
+says the machine read, and re-run the WHOLE QUERY once per probed cell with
+THAT CELL ALONE answering a bitwise-negated word.  The claim is a DEPENDENCY,
+not a value: the decoded output packet MOVES when a word the machine read is
+corrupted.  The full packet is compared, not a projection dropping the index
+component, because `E1Query.decodePacket` returns the packet itself.
+
+**Bitwise negation rather than a fresh word**, for the reason phase 3l gives
+at `:2248`: it preserves the word's LENGTH, so a moved answer cannot be
+attributed to a length change reaching `decodeRead`'s magnitude.
+`perturbedStoreAt_length_preserved` PROVES that rather than asserting it, and
+`perturbedStoreAt_agrees_off_cell` proves the perturbation is confined to the
+one cell — without which "that cell alone" would be a claim about how the
+code looks rather than about what it does.
+
+**The movement must survive a HALT.**  A corruption that merely drives the
+machine off its fuel also moves `regOut`, but that is a crash, not a
+computation reading a different word.  The verdict uses `movedHalted`: the
+perturbed run still HALTS and still answers differently.  The weaker count is
+reported beside it so the difference stays visible.
+
+**The honest answer is checked against `refRMQ` here too**, rather than
+inherited from phase 5.  Movement away from a WRONG answer would demonstrate
+dependence on a computation that is not the query, so this phase declines to
+assume the very thing phase 5 establishes and re-establishes it on its own
+corpus.
+
+### THE CONTROL, AND A VACUITY TRAP PHASE 3l DID NOT FACE
+
+A cell the machine did NOT read is corrupted on the same terms, and the
+answer must NOT move.  Without that control the phase could pass by
+corrupting the store so violently that every run breaks, which would say
+nothing about the receipt.
+
+Phase 3l's `perturbedArmStore` (`:2252`) answers `some w` at EVERY address,
+so its control cell was automatically a real, negatable word.  **The
+canonical store does not.**  `legStore shape` answers `none` off the payload,
+and the negation of `none` is `none` — so a control cell drawn from unmapped
+space is a perturbation that CHANGES NOTHING, and `controlMoved = false`
+would hold for a reason with no connection to the receipt.  That trap is
+live, not hypothetical: phase 3l's own control address (`base + 100000`,
+`:2292`) is unmapped in this store, so transplanting that phase's control
+here would produce a decorative check that always passes.
+
+`controlSound` rejects it.  The control must (a) be a cell the store really
+answers, (b) whose negation really differs from it, and (c) be absent from
+the receipt.  It is SEARCHED FOR rather than written down — an address
+literal would drift into unmapped space, or onto the receipt, under any
+layout change — and then all three properties are RE-CHECKED independently of
+the search that produced it.
+
+### WHY THE INVALID CASE IS EXEMPT FROM BOTH, AND HOW THAT IS POLICED
+
+An invalid query reads NOTHING, so it has no receipt cell to corrupt and no
+receipt to draw a control off: `findControlCell` searches the segments the
+receipt names, and for an empty receipt that search space is empty.  The
+exemption is therefore forced, not chosen.  What replaces it is
+`wqDepInvalidWithReads`, which requires the invalid case's receipt to be
+EMPTY — an invalid case that read something would be a REQ-E1-05 defect
+surfacing here.  The movement and control requirements below range over the
+VALID cases only, and `wqDepValidCount` must be positive so that restriction
+cannot empty them. -/
+
+/-- `base` with ONE cell answering a bitwise-negated word.  Cells the store
+does not answer stay unanswered, and the negated word has the same LENGTH as
+the honest one — both proved directly below rather than asserted. -/
+def perturbedStoreAt (base : ReadStore) (seg addr : Nat) : ReadStore :=
+  ⟨fun s a =>
+    if s == seg && a == addr then
+      (base.readWord? s a).map (fun w => w.map (fun b => !b))
+    else base.readWord? s a⟩
+
+/-- LOCALITY, the property that makes this phase evidence about ONE cell:
+away from the perturbed address the store is UNCHANGED. -/
+theorem perturbedStoreAt_agrees_off_cell (base : ReadStore) (seg addr s a : Nat)
+    (h : ¬(s = seg ∧ a = addr)) :
+    (perturbedStoreAt base seg addr).readWord? s a = base.readWord? s a := by
+  simp only [perturbedStoreAt]
+  have hfalse : (s == seg && a == addr) = false := by
+    rcases Nat.decEq s seg with hs | hs
+    · simp [hs]
+    · rcases Nat.decEq a addr with ha | ha
+      · simp [ha]
+      · exact absurd ⟨hs, ha⟩ h
+  simp [hfalse]
+
+/-- LENGTH PRESERVATION: the corrupted word is exactly as long as the honest
+one, so a moved answer cannot be blamed on a width change. -/
+theorem perturbedStoreAt_length_preserved (base : ReadStore) (seg addr : Nat)
+    (w w' : List Bool)
+    (hh : base.readWord? seg addr = some w)
+    (hp : (perturbedStoreAt base seg addr).readWord? seg addr = some w') :
+    w'.length = w.length := by
+  simp only [perturbedStoreAt, hh] at hp
+  simp at hp
+  cases hp
+  simp
+
+/-- THE PERTURBATION IS REAL at a cell holding a negatable word: the store
+really answers something different there.  A perturbation that changed
+nothing would make every "did not move" reading meaningless. -/
+theorem perturbedStoreAt_differs (base : ReadStore) (seg addr : Nat)
+    (w : List Bool) (hh : base.readWord? seg addr = some w)
+    (hne : w.map (fun b => !b) ≠ w) :
+    (perturbedStoreAt base seg addr).readWord? seg addr ≠
+      base.readWord? seg addr := by
+  simp only [perturbedStoreAt, hh]
+  simp
+  exact hne
+
+/-- Cells whose bitwise negation really differs from the honest word.  A cell
+answering `none`, or holding the empty word, is not negatable and probing it
+would be vacuous. -/
+def negatableCells (store : ReadStore) (cells : List (Nat × Nat)) :
+    List (Nat × Nat) :=
+  cells.filter fun c =>
+    match store.readWord? c.1 c.2 with
+    | none => false
+    | some w => w.map (fun b => !b) != w
+
+/-- SEARCH for a control cell: mapped, negatable, and NOT on the receipt.
+Searched rather than asserted, for the reason in the phase docstring. -/
+def findControlCell (store : ReadStore) (readCells : List (Nat × Nat))
+    (segs : List Nat) (limit : Nat) : Option (Nat × Nat) :=
+  (segs.flatMap fun s => (List.range limit).map fun a => (s, a)).find? fun c =>
+    !readCells.contains c &&
+      (match store.readWord? c.1 c.2 with
+       | none => false
+       | some w => w.map (fun b => !b) != w)
+
+/-- What one whole-query dependency case reports. -/
+structure WQDepReport where
+  name : String
+  cls : QueryClass
+  /-- The honest decoded output packet: the thing whose movement is the claim. -/
+  honest : Option Nat
+  /-- The honest packet agrees with the INDEPENDENT reference. -/
+  honestAgrees : Bool
+  honestHalted : Bool
+  /-- Distinct `(segment, address)` cells on the honest receipt. -/
+  readCells : Nat
+  /-- Receipt cells that are negatable at all. -/
+  negatable : Nat
+  /-- How many negatable cells this case actually probed. -/
+  probed : Nat
+  /-- Probed cells whose corruption moved the decoded output packet. -/
+  moved : Nat
+  /-- Probed cells whose corruption moved it AND still halted — the strong
+  form, and the one the verdict uses. -/
+  movedHalted : Nat
+  /-- Probed cells whose perturbed run did not halt within fuel. -/
+  probesNotHalted : Nat
+  /-- The control is mapped, negatable and off the receipt — RE-CHECKED
+  independently of the search that produced it. -/
+  controlSound : Bool
+  /-- Corrupting the control moved the answer.  Must be false. -/
+  controlMoved : Bool
+  /-- The honest run charged at least one read. -/
+  readBearing : Bool
+deriving Repr
+
+/-- RUN ONE DEPENDENCY CASE: honest whole-query run, then one whole-query
+re-run per probed receipt cell with that cell alone corrupted, then one more
+on a mapped cell the machine never read.
+
+`mkProgram` is a parameter so that the SAME phase machinery can be pointed at
+the row's named failure mode (mutant N below) and shown to reject it. -/
+def runWQDep (mkProgram : Cartesian.CartesianShape -> Nat -> E1Machine.Program)
+    (salt cap ctlLimit : Nat) (name : String) (xs : List Int)
+    (l r : Nat) : WQDepReport :=
+  -- EXPECTATION FIRST, from the independent reference alone, as `:2712` does.
+  let expected := refRMQ xs l r
+  let shape := Cartesian.stackCartesianShape xs
+  let store := legStore shape
+  let program := mkProgram shape xs.length
+  let fuel := wholeQueryStepBound + salt
+  let honestRun := E1Machine.run store program fuel (E1Query.initialState l r)
+  let honestOut := E1Query.decodePacket (honestRun.final.regs E1Query.regOut)
+  let cells := dedupList (honestRun.readLog.filterMap eventAddr)
+  let negatable := negatableCells store cells
+  let probes := negatable.take cap
+  -- One whole-query re-run per probe: (answer moved?, still halted?).
+  let outcomes := probes.map fun c =>
+    let rr :=
+      E1Machine.run (perturbedStoreAt store c.1 c.2) program fuel
+        (E1Query.initialState l r)
+    (E1Query.decodePacket (rr.final.regs E1Query.regOut) != honestOut,
+      rr.final.halted)
+  let segs := dedupList (cells.map Prod.fst)
+  let ctl := findControlCell store cells segs ctlLimit
+  { name := name
+    cls := (classifyQuery xs l r).1
+    honest := honestOut
+    honestAgrees := expected == honestOut
+    honestHalted := honestRun.final.halted
+    readCells := cells.length
+    negatable := negatable.length
+    probed := probes.length
+    moved := (outcomes.filter (fun o => o.1)).length
+    movedHalted := (outcomes.filter (fun o => o.1 && o.2)).length
+    probesNotHalted := (outcomes.filter (fun o => !o.2)).length
+    controlSound :=
+      match ctl with
+      | none => false
+      | some c =>
+        !cells.contains c &&
+          (match store.readWord? c.1 c.2 with
+           | none => false
+           | some w => w.map (fun b => !b) != w)
+    controlMoved :=
+      match ctl with
+      | none => false
+      | some c =>
+        let rr :=
+          E1Machine.run (perturbedStoreAt store c.1 c.2) program fuel
+            (E1Query.initialState l r)
+        E1Query.decodePacket (rr.final.regs E1Query.regOut) != honestOut
+    readBearing := !honestRun.readLog.isEmpty }
+
+/-- The dependency corpus.  Deliberately small: each case costs one WHOLE
+QUERY run PER PROBED CELL, and a whole-query run is thousands of modeled
+steps against a store that rebuilds its select and rank directories on every
+read (`Segments.lean:174`).  Both close arms appear, the cross-interior class
+the interior leg serves appears, and one INVALID case is included so the
+exemption above is exercised rather than merely described. -/
+def wqDepCases : List (String × List Int × Nat × Nat) :=
+  [ ("dep-same-block", [3, 1, 4, 1, 5], 0, 2)
+  , ("dep-cross-adjacent", [3, 1, 4, 1, 5], 0, 4)
+  , ("dep-full-span-five", [3, 1, 4, 1, 5], 0, 5)
+  , ("dep-cross-interior-wide", wqWide, 0, 12)
+  , ("dep-invalid-reversed", [3, 1, 4, 1, 5], 3, 1) ]
+
+/-- Probe cap per case.  Not binding on this corpus — every case probes all
+its negatable cells, which `wqDepCapBinding` reports — but retained so that
+enlarging a fixture cannot silently turn this phase into an hour of runs. -/
+def wqDepProbeCap : Nat := 64
+
+/-- Address limit for the control-cell search, per receipt segment. -/
+def wqDepControlLimit : Nat := 64
+
+/-- The honest subject: the whole-query program itself. -/
+def honestWholeQueryProgram :
+    Cartesian.CartesianShape -> Nat -> E1Machine.Program :=
+  fun shape n => E1Query.wholeQueryProgram shape n
+
+/-- **MUTANT N: THE ROW'S NAMED FAILURE MODE, AS AN ACTUAL RUNNING PROGRAM.**
+
+REQ-E1-03's anti-vacuity column says the value "must be computed from machine
+registers fed by the machine's own reads, NOT copied from the spec trace".
+The machine that violates it answers without consulting the store at all.
+`guardStubValidPath` (`:1825`) is exactly that in its purest form —
+`const regOut 1; halt`, two instructions, no `readMem` anywhere — so the
+skeleton around it HALTS, writes a well-formed packet, and reads NOTHING.
+
+Pointing phase 5b at it costs almost nothing (a read-free program has no
+receipt cells to probe) and demonstrates by EXECUTION that this phase has
+power over the machine the row is worried about, rather than only asserting
+that it would. -/
+def readIgnoringProgram :
+    Cartesian.CartesianShape -> Nat -> E1Machine.Program :=
+  fun _ n => E1Query.programSkeleton n guardStubValidPath
+
+def wqDepReports (salt : Nat) : List WQDepReport :=
+  wqDepCases.map fun (name, xs, l, r) =>
+    runWQDep honestWholeQueryProgram salt wqDepProbeCap wqDepControlLimit
+      name xs l r
+
+def wqDepMutantNReports (salt : Nat) : List WQDepReport :=
+  wqDepCases.map fun (name, xs, l, r) =>
+    runWQDep readIgnoringProgram salt wqDepProbeCap wqDepControlLimit
+      name xs l r
+
+/-- The VALID cases: the movement and control requirements range over these,
+for the reason the phase docstring gives. -/
+def wqDepValidReports (rs : List WQDepReport) : List WQDepReport :=
+  rs.filter (fun r => r.cls != .invalid)
+
+/-- Valid cases where NO probed corruption moved the answer under a halt.
+Must be `0`: this is the dependency itself, and it is what phase 3l
+established only of an arm. -/
+def wqDepIndependentCases (rs : List WQDepReport) : Nat :=
+  ((wqDepValidReports rs).filter (fun r => r.movedHalted == 0)).length
+
+/-- Valid cases where corrupting the UNREAD control cell moved the answer.
+Must be `0`, else the dependency is not pinned to the receipt. -/
+def wqDepControlLeaks (rs : List WQDepReport) : Nat :=
+  ((wqDepValidReports rs).filter (fun r => r.controlMoved)).length
+
+/-- Valid cases whose control cell was missing, or was not a mapped negatable
+unread cell.  Must be `0`, else the control is decorative. -/
+def wqDepControlUnsound (rs : List WQDepReport) : Nat :=
+  ((wqDepValidReports rs).filter (fun r => !r.controlSound)).length
+
+/-- Valid cases that charged no read, probed nothing, did not halt honestly,
+or answered something other than the reference — each makes the case
+vacuous or its movement meaningless.  Must be `0`. -/
+def wqDepVacuousCases (rs : List WQDepReport) : Nat :=
+  ((wqDepValidReports rs).filter
+    (fun r =>
+      !r.readBearing || r.probed == 0 || !r.honestHalted || !r.honestAgrees)).length
+
+/-- INVALID cases must have an EMPTY receipt.  That is WHY they are exempt
+from the movement requirement, and it is checked rather than assumed. -/
+def wqDepInvalidWithReads (rs : List WQDepReport) : Nat :=
+  ((rs.filter (fun r => r.cls == .invalid)).filter
+    (fun r => r.readCells != 0)).length
+
+/-- Must be positive, else restricting the requirements to valid cases would
+empty them and the phase would pass by having nothing to check. -/
+def wqDepValidCount (rs : List WQDepReport) : Nat :=
+  (wqDepValidReports rs).length
+
+/-- Must be positive, else the invalid exemption is never exercised. -/
+def wqDepInvalidCount (rs : List WQDepReport) : Nat :=
+  (rs.filter (fun r => r.cls == .invalid)).length
+
+def wqDepTotalProbed (rs : List WQDepReport) : Nat :=
+  rs.foldl (fun a r => a + r.probed) 0
+
+def wqDepTotalMovedHalted (rs : List WQDepReport) : Nat :=
+  rs.foldl (fun a r => a + r.movedHalted) 0
+
+def wqDepTotalMoved (rs : List WQDepReport) : Nat :=
+  rs.foldl (fun a r => a + r.moved) 0
+
+def wqDepTotalNotHalted (rs : List WQDepReport) : Nat :=
+  rs.foldl (fun a r => a + r.probesNotHalted) 0
+
+/-- Receipt cells that were not negatable, across the sweep.  Reported rather
+than gated: a cell answering the empty word is a fact about the store, not a
+defect — but a sweep where most cells were unnegatable would mean the probe
+set is thinner than `probed` suggests. -/
+def wqDepUnnegatable (rs : List WQDepReport) : Nat :=
+  rs.foldl (fun a r => a + (r.readCells - r.negatable)) 0
+
+/-- Whether the cap actually bit on any case.  Reported so that a future
+fixture enlargement cannot quietly shrink the probe set without saying so. -/
+def wqDepCapBinding (rs : List WQDepReport) : Bool :=
+  rs.any (fun r => r.probed < r.negatable)
+
+/-- MUTANT N IS REJECTED, and by the dependency clause specifically: on the
+valid cases it exhibits NO read dependence, which is what
+`wqDepIndependentCases` counts.  Must be `true`. -/
+def wqDepMutantNRejected (rs : List WQDepReport) : Bool :=
+  wqDepIndependentCases rs > 0
+
+/-- Mutant N still HALTS on every valid case, so the rejection above is the
+dependency check doing work and not credit for a crash. -/
+def wqDepMutantNStillHalts (rs : List WQDepReport) : Bool :=
+  (wqDepValidReports rs).all (fun r => r.honestHalted)
+
+/-- Mutant N reads NOTHING, which is what makes it the row's named failure
+mode rather than merely a wrong program.  Checked rather than assumed. -/
+def wqDepMutantNReadsNothing (rs : List WQDepReport) : Bool :=
+  (wqDepValidReports rs).all (fun r => r.readCells == 0)
+
+/-- Mutant N writes a well-formed NON-`none` packet on the valid cases, so it
+is not rejected merely for failing to produce an answer. -/
+def wqDepMutantNAnswers (rs : List WQDepReport) : Bool :=
+  (wqDepValidReports rs).all (fun r => r.honest.isSome)
+
+def renderWQDep (r : WQDepReport) : String :=
+  s!"    {r.name} [{queryClassName r.cls}] honest={repr r.honest} " ++
+    s!"agrees={r.honestAgrees} readCells={r.readCells} negatable={r.negatable} " ++
+    s!"probed={r.probed} movedHalted={r.movedHalted} moved={r.moved} " ++
+    s!"probesNotHalted={r.probesNotHalted} " ++
+    s!"controlSound={r.controlSound} controlMoved={r.controlMoved}"
+
 def mainImpl : IO UInt32 := do
   IO.println "== E1 amended-machine validator (M6) =="
   IO.println ""
@@ -3506,6 +3897,52 @@ def mainImpl : IO UInt32 := do
   IO.println s!"wholeQueryMutationWallClockMs={twm1 - twm0}   (this binary on this host; NOT evidence)"
   IO.println ""
 
+  -- STEP 5b: whole-query store-value dependency (REQ-E1-03).
+  IO.println "-- phase 5b: WHOLE-QUERY STORE-VALUE DEPENDENCY (perturb a canonical-store word the WHOLE QUERY read) --"
+  let twd0 <- IO.monoMsNow
+  let wqdRs := wqDepReports salt
+  let wqdIndep := wqDepIndependentCases wqdRs
+  let wqdLeaks := wqDepControlLeaks wqdRs
+  let wqdUnsound := wqDepControlUnsound wqdRs
+  let wqdVac := wqDepVacuousCases wqdRs
+  let wqdInvReads := wqDepInvalidWithReads wqdRs
+  let wqdValid := wqDepValidCount wqdRs
+  let wqdInvalid := wqDepInvalidCount wqdRs
+  IO.println s!"wqDepCases={wqdRs.length}   (valid={wqdValid}, invalid={wqdInvalid})"
+  IO.println s!"wqDepDistinctReadCellsProbed={wqDepTotalProbed wqdRs}   (cells taken from the RECEIPT of the WHOLE QUERY, not guessed)"
+  IO.println s!"wqDepCellsWhoseCorruptionMovedTheAnswer={wqDepTotalMovedHalted wqdRs}   (must be > 0: this IS the whole-query dependency, and the run still HALTED)"
+  IO.println s!"wqDepCellsMovedIncludingCrashes={wqDepTotalMoved wqdRs}   (reported beside the above so a crash cannot masquerade as a dependency)"
+  IO.println s!"wqDepProbesThatDidNotHalt={wqDepTotalNotHalted wqdRs}   (perturbed runs that ran off fuel)"
+  IO.println s!"wqDepReadIndependentValidCases={wqdIndep}   (must be 0: every valid case must have SOME load-bearing read cell)"
+  IO.println s!"wqDepControlLeaks={wqdLeaks}   (must be 0: corrupting an UNREAD mapped cell must not move the answer)"
+  IO.println s!"wqDepControlUnsound={wqdUnsound}   (must be 0: the control must be MAPPED, NEGATABLE and off the receipt -- unmapped space would be a decorative control)"
+  IO.println s!"wqDepVacuousValidCases={wqdVac}   (must be 0: read-bearing, probed, halted, and the honest answer agrees with refRMQ)"
+  IO.println s!"wqDepInvalidCasesWithReads={wqdInvReads}   (must be 0: the invalid case is exempt precisely because it reads NOTHING)"
+  IO.println s!"wqDepUnnegatableReceiptCells={wqDepUnnegatable wqdRs}   (receipt cells holding an unnegatable word; reported, not gated)"
+  IO.println s!"wqDepProbeCapBinding={wqDepCapBinding wqdRs}   (false = every negatable receipt cell was probed)"
+  for d in wqdRs do
+    IO.println (renderWQDep d)
+  let twd1 <- IO.monoMsNow
+  IO.println s!"wqDepWallClockMs={twd1 - twd0}   (this binary on this host; NOT evidence)"
+  IO.println ""
+
+  -- STEP 5c: mutant N -- the read-ignoring machine REQ-E1-03 names, rejected.
+  IO.println "-- phase 5c: deliberate READ-IGNORING machine (the failure mode REQ-E1-03 names) --"
+  let twn0 <- IO.monoMsNow
+  let wqdMutRs := wqDepMutantNReports salt
+  let wqdMutRejected := wqDepMutantNRejected wqdMutRs
+  let wqdMutHalts := wqDepMutantNStillHalts wqdMutRs
+  let wqdMutReadsNothing := wqDepMutantNReadsNothing wqdMutRs
+  let wqdMutAnswers := wqDepMutantNAnswers wqdMutRs
+  IO.println s!"mutantN_readsNothing={wqdMutReadsNothing}   (must be true: it consults the store on NO cell -- this is what makes it the row's failure mode)"
+  IO.println s!"mutantN_stillHalts={wqdMutHalts}   (must be true: rejection is by the dependency clause, not by a crash)"
+  IO.println s!"mutantN_answersWithAPacket={wqdMutAnswers}   (must be true: it is not rejected merely for producing nothing)"
+  IO.println s!"mutantN_readIndependentValidCases={wqDepIndependentCases wqdMutRs}   (must be > 0: phase 5b CATCHES it)"
+  IO.println s!"mutantN_rejected={wqdMutRejected}   (must be true)"
+  let twn1 <- IO.monoMsNow
+  IO.println s!"wqDepMutantWallClockMs={twn1 - twn0}   (this binary on this host; NOT evidence)"
+  IO.println ""
+
   -- Verdict.  Grouped into named clauses: a single `&&` chain over all of
   -- these exceeds the elaborator's recursion depth on `BEq Nat`.
   let okReference := refFailures == 0
@@ -3626,6 +4063,21 @@ def mainImpl : IO UInt32 := do
   -- what makes phase 5 a comparison rather than a printed pass.
   let okWholeQueryMutation :=
     wholeQueryMutationIsReal && wqMutCaught > 0 && wqMutHalts
+  -- REQ-E1-03's INV-VALUE-DEPENDENCY AT WHOLE-QUERY SCOPE: on every valid
+  -- case some canonical-store word the WHOLE QUERY read is load-bearing for
+  -- `regOut` under a halt; a mapped cell it did NOT read is inert on the same
+  -- terms; the control is a real negatable unread cell rather than unmapped
+  -- space; no valid case is vacuous and each answers the reference; and the
+  -- invalid case's exemption is earned by an EMPTY receipt.
+  let okWholeQueryDependence :=
+    wqdIndep == 0 && wqdLeaks == 0 && wqdUnsound == 0 && wqdVac == 0 &&
+      wqdInvReads == 0 && wqDepTotalMovedHalted wqdRs > 0 &&
+        wqdValid > 0 && wqdInvalid > 0
+  -- Mutant N rejected BY THE DEPENDENCY CLAUSE while still halting and still
+  -- answering: this is what makes phase 5b a discriminator rather than a
+  -- printed pass, and it is the row's own named failure mode.
+  let okWholeQueryDependenceMutation :=
+    wqdMutRejected && wqdMutHalts && wqdMutReadsNothing && wqdMutAnswers
   let okCore := okReference && okLengths && okDispatch && okLeg
   let okComposite := okSelect && okCompose && okComposeCoverage && okMerge
   let okAdversarial := okMutations && okMutantSetup && okMergeMutations
@@ -3634,7 +4086,8 @@ def mainImpl : IO UInt32 := do
   let okChunkPreservation := okChunkPres && okChunkPresMutations
   let okNewDiscriminators :=
     okDependence && okCategory && okWholeQuery && okWholeQueryCoverage &&
-      okWholeQueryMutation
+      okWholeQueryMutation && okWholeQueryDependence &&
+      okWholeQueryDependenceMutation
   let ok :=
     okCore && okComposite && okAdversarial && okNew && okPreservation &&
       okChunkPreservation && okGuard && okGuardMutations &&
