@@ -79,8 +79,9 @@ has the checked charged-trace algebra
 `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`, exclude
 the synthetic fallback, and have direct weight
 sum equal to both trace length and the `Costed` cost of the same execution.
-This does not close the later E1 fully charged small-step machine, M1 serialized
-payload query, preprocessing, or conventional word-RAM obligations.
+This does not close the later E1 fully charged small-step machine, deferred S1
+bit-addressed serialized-payload query, preprocessing, or conventional
+word-RAM obligations.
 
 Dependency order: A -> B -> (C, D). C can progress in parallel with A/B when it
 is pure extraction/generalization. D-LCA depends on the A/B cost/refinement

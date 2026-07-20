@@ -135,6 +135,7 @@ simulation of this same execution. The current theorem exposes only the actual e
 `WordRAM.TraceEvent` stream and its direct weights; controller dispatch,
 arithmetic, branching, decoding, local scanning, and merging remain
 documentary uncharged omissions rather than a checked substitute machine.
-Serialized-payload querying, complete preprocessing, and conventional
-word-RAM claims remain separate M1/E1/construction obligations. Rank/select
-and BP-navigation retain their own separate hardening frontiers.
+Bit-addressed serialized-payload querying is deferred to S1. Complete
+preprocessing and conventional word-RAM claims remain separate downstream
+construction/machine obligations. Rank/select and BP-navigation retain their
+own separate hardening frontiers.

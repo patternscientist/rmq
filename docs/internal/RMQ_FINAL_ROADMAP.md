@@ -269,12 +269,18 @@ richer machine and prove a simulation.
 
 ### M1. Make Machine Adequacy Reviewer-Native
 
-Status (updated 2026-07-19): **near-complete but unmerged. Do not re-build.**
-Four of the five named invariant families are certified on `main`; all four
-clauses are proved on `codex/m1-reviewer-native-machine-adequacy-r4`, which
-needs a `76` -> `210` rebase before it can compile. The residual is a rebase, an
-audit, and a small amount of composition — see the ordered list at the end of
-this section.
+Status (updated 2026-07-19): **near-complete but unmerged. Forward-port; do not
+re-build.** `main`'s broad final-trace adequacy certificate already certifies
+all five named invariant families, including word width. The unmerged
+`codex/m1-reviewer-native-machine-adequacy-r4` branch adds a narrower named
+24-field reviewer-native certificate, an independent typed required-facts
+consumer, a guarded list-facing adequacy packet, and literal public consumption
+of that packet. All four clauses are implemented there, but its public cost
+field still records the frozen historical `76` bound.
+
+That field must be re-derived against the current `210` theorem before the
+branch can compile. The residual is a forward-port, registry refresh, audit,
+and integration — see the ordered list at the end of this section.
 
 (The previous status line read "partially present; strengthen after `U3`". It
 was written before the r4 branch existed and reads as an invitation to build
@@ -317,44 +323,52 @@ is `canonicalInterpretedQueryCosted`
 `refines_canonical_interpreted`. A worker grepping the roadmap's phrase will
 find nothing.
 
-M1's residual is smaller than the status line implies: four of the five named
-invariant families are already certified on `main` by
+M1's residual is smaller than the old status line implied.
 `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy`
-(`RMQ/Core/SuccinctFinalModelAdequacy.lean`), the missing one being
-**word-width**; and all four clauses are proved on the unmerged branch
-`codex/m1-reviewer-native-machine-adequacy-r4`, which cannot compile against
-`main` because it proves a field via `nonSyntheticWeight_sum_le_76` and `76` is
-now a frozen historical constant superseded by `210`.
+(`RMQ/Core/SuccinctFinalModelAdequacy.lean`) on `main` already certifies all five
+named invariant families, including the logarithmic reviewer word size,
+physical address fit, operand fit, stored-word fit, and returned-word fit. The
+unmerged `codex/m1-reviewer-native-machine-adequacy-r4` branch is still valuable
+because it packages those and the store/trace refinements into the narrower
+reviewer-native certificate described above and makes that certificate an
+actual public consumer dependency. It cannot compile against `main` because it
+proves its cost field via `nonSyntheticWeight_sum_le_76`, while `76` is now a
+frozen historical constant superseded by `210`.
 
-RESIDUAL, in dependency order. Items 1-2 are the critical path; 3-5 are
-composition from material that already exists; 6 is the gate.
+RESIDUAL, in dependency order. Items 1-2 are the critical path; 3-5 are R4
+implementations that must be preserved and forward-ported rather than designed
+again; 6 is the gate.
 
-1. **Rebase `codex/m1-...-r4` onto `main` and resolve `76` -> `210`.** Its
-   24-field certificate covers all five invariant families including
-   **word-width**, the one `main` lacks. Both certificate theorems are fully
-   proved and unconditional and the certificate is genuinely consumed by
+1. **Forward-port `codex/m1-...-r4` onto current `main` and replace its frozen
+   historical cost field with the theorem-derived current `210` field.** Its
+   narrower 24-field certificate collects all five invariant
+   families, including word width, and adds a typed required-facts consumer.
+   Both certificate theorems are fully proved and unconditional and the
+   guarded certificate is genuinely consumed by
    `listIntSuccinctRMQPaperMainTheorem`. The `76` field touches a **public
    paper-theorem conjunct**, so re-derive against `210` rather than transcribing
-   a numeral. Merge-base `5f59455`; the branch is 12 commits ahead of it while
-   `main` is 189 ahead. **Judgement-bearing** — do not merge as-is, and do not
-   supersede: nothing on `main` or in `E1` replaces it.
+   a numeral. At exact main `dcc660fad67a28fa88c2111f190da8cf7bacf223`,
+   merge-base `5f59455e62fc26e881fbd722834c33b615d2c914` has 193 main-side
+   commits and the R4 candidate has 12 branch-side commits. **Judgement-bearing**
+   — do not merge R4 as-is, and do not declare it superseded: main's broader
+   bundle and E1 do not replace R4's narrower public dependency.
 2. **Refresh the M1 mutation registry** (41 semantic cases) against B2's
    `segment < 23` drift. Previously recorded as REQUIRED. Mechanical but
    operand-exact.
-3. **Canonical-pinned exact supplied-store theorem.** Compose
-   `..._globalReadStore` (`RMQ/Core/SuccinctFinalStoreParam.lean`) with
+3. **Forward-port R4's canonical-pinned exact supplied-store theorem.** R4
+   composes `..._globalReadStore` (`RMQ/Core/SuccinctFinalStoreParam.lean`) with
    `queryTraceResultWithStore_eq_of_orderedReadFootprint`
-   (`RMQ/Core/SuccinctRMQClassic.lean`). Mechanical.
-4. **Safe-agreement-as-corollary**, so clause 2 holds in the direction the rung
-   asks for. Fully available today: `every_emitted_read_has_listed_region` plus
-   `canonical_segments_complete` give every emitted read `segment < 23`, and the
-   dead trace segment is `29`, so safe agreement implies exact agreement
-   directly. Mechanical.
-5. **A chain-shaped public statement.** All four links exist; none is a chain.
-   The `queryCosted = canonicalInterpretedQueryCosted` link exists **only as a
-   conjunct inside a bundle** — there is no standalone theorem. The public
-   surface is a flat ~14-conjunct tuple rather than an equation chain.
-   **Judgement-bearing** — it is a public-surface shape decision.
+   (`RMQ/Core/SuccinctRMQClassic.lean`). Preserve its exact object arguments and
+   checked consumer; do not replace it with the generic theorem already on
+   `main`.
+4. **Forward-port R4's safe-agreement corollary**, so clause 2 remains in the
+   direction the rung asks for. Recheck its source-region argument against the
+   current `segment < 23` topology and preserve the exact-to-safe dependency.
+5. **Preserve R4's chain-shaped guarded list packet and public consumption.**
+   R4 already packages the four links and makes the paper theorem consume the
+   result. Reconstruct that checked dependency on current main; do not reopen
+   the public shape unless the `210` migration formally requires a proposition
+   change, in which case stop for coordinator review.
 6. **Fresh blind external audit at the accepted M1 commit.** The r4 branch
    self-reports `WORKING`, not ACCEPTED, and the coordinator log records the
    gate as passed with "Coordinator acceptance + fresh-blind audit remain open".

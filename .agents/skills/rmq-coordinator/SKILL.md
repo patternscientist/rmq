@@ -227,8 +227,10 @@ turn the normal coordinator cycle into an audited worker chain:
    concurrent heavy workers would make the launch unsafe or wasteful.
 
 Before task creation, list current tasks and automations and match the exact
-handle/base/branch tuple. Use a 30-minute heartbeat cadence by default, changing
-it only when measured task duration justifies another interval. Task creation
+handle/base/branch tuple. Use a 10-minute heartbeat cadence by default. A
+15-minute cadence is acceptable for predictably long, low-interaction workers;
+use longer intervals only when measured task duration and service cost justify
+them explicitly. Task creation
 and monitor attachment are not atomic: if creation succeeds but monitor setup
 fails, preserve and report the created task ID, retry only monitor attachment,
 and never create a replacement worker. On coordinator restart, reconstruct the

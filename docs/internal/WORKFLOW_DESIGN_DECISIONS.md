@@ -4435,3 +4435,154 @@ Publication-facing significance:
 Live cost prose now follows document line boundaries, while evidence placement
 cannot silently change the review obligations of executable or current-facing
 material.
+
+## WDD-20260719-014: repair M1 scope governance before forward-port delegation
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: M1 roadmap truth, S1 separation, and the governed base for the M1-R5
+forward-port.
+
+Decision:
+
+1. M1 remains exactly the four clauses recorded in
+   `docs/internal/RMQ_FINAL_ROADMAP.md`: dynamic-read-set supplied-store
+   agreement, safe-footprint corollary, a named machine-well-formedness
+   certificate, and a public four-step chain. Bit-addressed serialized-payload
+   querying is S1 and is not an M1 acceptance row.
+2. Current `main` already certifies all five broad invariant families,
+   including word width, through
+   `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy`. The value of the
+   unmerged R4 work is its narrower 24-field reviewer-native certificate,
+   independent required-facts consumer, guarded list-facing packet, and literal
+   public consumption. Delegation must preserve and forward-port those exact
+   dependencies rather than claim that word-width adequacy is absent on main.
+3. R4's supplied-store theorem, safe-agreement corollary, and guarded public
+   chain are implemented content to forward-port, not new residual designs.
+   The judgment-bearing migration is the retired public `76` cost conjunct to
+   the current theorem-derived `210` proposition. A required proposition-shape
+   change is a stop condition, not permission to force a numeral.
+4. Current public prose must not assign serialized payload to M1. The two live
+   contradictory surfaces, `docs/ROADMAP.md` and `artifact/CLAIMS.md`, are
+   corrected before any implementation worker is launched. The other sixteen
+   policy-registered current surfaces were inspected and did not require a
+   scope-attribution change.
+
+Trigger and evidence:
+
+The first scope-governance candidate, commit
+`6a5f5b937c034497ca9b395f6ff005def17a2c87`, correctly recorded the owner's
+four-clause M1 ruling and S1 deferral but misstated the source frontier. It said
+main certified only four invariant families and lacked word width, described
+three already-implemented R4 clauses as future composition, retained a stale
+189-commit divergence count, and left two live documents assigning serialized
+payload to M1. Exact source reconstruction at
+`dcc660fad67a28fa88c2111f190da8cf7bacf223` showed the broad word-width fields
+already on main, a 193/12 divergence from merge-base
+`5f59455e62fc26e881fbd722834c33b615d2c914`, and the narrower public R4
+dependency that remains worth forwarding. Strict design certification also
+failed because the roadmap change had no workflow-decision record.
+
+Rejected alternatives:
+
+- Launch from the first scope-governance candidate and let the worker discover
+  the false word-width premise.
+- Treat the green current-claim scan as proof that every M1/S1 attribution was
+  semantically correct.
+- Add serialized-payload work to M1 based on the ambiguous DD-20260714-007
+  disclaimer.
+- Cherry-pick or mechanically rebase the twelve old R4 commits across the
+  193-commit main delta.
+- Reimplement R4's already-proved supplied-store and public-chain work from a
+  blank design rather than forward-porting its exact propositions and consumers.
+
+Consequences:
+
+- The M1-R5 worker starts from an exact governed documentation base whose
+  source claims and public scope agree.
+- The worker must reconstruct current main plus the useful R4 semantic delta,
+  derive the cost field from the named current `210` theorem, and refresh the
+  exact 41-case mutation registry for `segment < 23`.
+- E1, A1, S1, preprocessing, conventional word-RAM complexity, and roadmap
+  integration remain outside the worker's authority.
+- This governance repair changes no Lean proposition, payload bit, proof field,
+  modeled tick, trace, store, executable behavior, or measured performance.
+
+Verification:
+
+- Project-skill preflight must pass with current `rmq-coordinator` and
+  `rmq-proof-sprint` runtime skills.
+- The exact 18-path current-surface inventory is reconstructed before prompt
+  launch; only the two named M1/S1 contradictions are changed.
+- Strict claim scanning, strict design-decision checking against exact main,
+  both diff checks, and a clean committed tree are required.
+
+Publication-facing significance:
+
+Reviewers see M1 as a machine-adequacy packaging and supplied-store theorem
+rung, while the genuinely bit-addressed serialized-payload query remains a
+separate S1 claim instead of being silently imported through an ambiguous
+historical disclaimer.
+
+## WDD-20260719-015: shorten governed worker completion-monitor cadence
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: default cadence for coordinator-owned audited worker completion
+monitors.
+
+Decision:
+
+1. Governed worker completion monitors use a 10-minute heartbeat cadence by
+   default instead of 30 minutes.
+2. A 15-minute cadence is acceptable for predictably long, low-interaction
+   workers. Longer intervals require an explicit measured-duration or service-
+   cost justification in the coordinator record.
+3. The cadence change does not alter monitor semantics: one bounded exact-ID
+   read-only status probe per record, no opening or steering active workers, no
+   inference from silence, exact successor replacement, and deletion when the
+   logical watch set is empty.
+
+Trigger and evidence:
+
+The owner observed that the existing 30-minute default delayed completed-worker
+audits and repair handoffs unnecessarily. Ten to fifteen minutes provides a
+meaningfully quicker completion response without turning the heartbeat into a
+tight polling loop. The M1-R5 launch is the first governed worker to use the new
+10-minute default.
+
+Rejected alternatives:
+
+- Retain the 30-minute default and shorten monitors ad hoc only after users
+  notice delayed audits.
+- Poll continuously or add retry loops inside a heartbeat.
+- Create a second cron-style monitor instead of updating the existing logical
+  worker record.
+
+Consequences:
+
+- Completed workers normally enter coordinator audit within roughly ten
+  minutes of terminal status.
+- Transient task-service failures remain cheap: the next heartbeat performs one
+  new bounded probe rather than a long retry loop.
+- Existing identity, lifecycle, no-duplicate, and heavy-verification
+  concurrency rules are unchanged.
+
+Verification:
+
+- `.agents/skills/rmq-coordinator/SKILL.md` and
+  `docs/internal/WORKER_LIFECYCLE.md` carry the same 10-minute default and
+  15-minute allowance.
+- The M1-R5 automation is created at the 10-minute cadence and re-read after
+  attachment to confirm its exact task tuple occurs once.
+
+Publication-facing significance:
+
+None. This changes coordination latency, not any theorem, evidence tier, trust
+boundary, payload accounting, modeled cost, trace, or runtime claim.
+
+Supersedes:
+
+- Only the default-cadence clause (item 7) of WDD-20260717-003. Its task
+  identity, idempotent launch recovery, and multiplexed lifecycle rules remain
+  accepted and unchanged.
