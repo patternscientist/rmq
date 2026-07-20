@@ -269,7 +269,17 @@ richer machine and prove a simulation.
 
 ### M1. Make Machine Adequacy Reviewer-Native
 
-Status: partially present; strengthen after `U3`.
+Status (updated 2026-07-19): **near-complete but unmerged. Do not re-build.**
+Four of the five named invariant families are certified on `main`; all four
+clauses are proved on `codex/m1-reviewer-native-machine-adequacy-r4`, which
+needs a `76` -> `210` rebase before it can compile. The residual is a rebase, an
+audit, and a small amount of composition — see the ordered list at the end of
+this section.
+
+(The previous status line read "partially present; strengthen after `U3`". It
+was written before the r4 branch existed and reads as an invitation to build
+work that is already done; superseded rather than deleted so the change is
+visible.)
 
 Make exact agreement on the dynamic read set the primary supplied-store
 theorem. Keep safe-footprint agreement as a convenient corollary. Bundle the
@@ -315,6 +325,50 @@ invariant families are already certified on `main` by
 `codex/m1-reviewer-native-machine-adequacy-r4`, which cannot compile against
 `main` because it proves a field via `nonSyntheticWeight_sum_le_76` and `76` is
 now a frozen historical constant superseded by `210`.
+
+RESIDUAL, in dependency order. Items 1-2 are the critical path; 3-5 are
+composition from material that already exists; 6 is the gate.
+
+1. **Rebase `codex/m1-...-r4` onto `main` and resolve `76` -> `210`.** Its
+   24-field certificate covers all five invariant families including
+   **word-width**, the one `main` lacks. Both certificate theorems are fully
+   proved and unconditional and the certificate is genuinely consumed by
+   `listIntSuccinctRMQPaperMainTheorem`. The `76` field touches a **public
+   paper-theorem conjunct**, so re-derive against `210` rather than transcribing
+   a numeral. Merge-base `5f59455`; the branch is 12 commits ahead of it while
+   `main` is 189 ahead. **Judgement-bearing** — do not merge as-is, and do not
+   supersede: nothing on `main` or in `E1` replaces it.
+2. **Refresh the M1 mutation registry** (41 semantic cases) against B2's
+   `segment < 23` drift. Previously recorded as REQUIRED. Mechanical but
+   operand-exact.
+3. **Canonical-pinned exact supplied-store theorem.** Compose
+   `..._globalReadStore` (`RMQ/Core/SuccinctFinalStoreParam.lean`) with
+   `queryTraceResultWithStore_eq_of_orderedReadFootprint`
+   (`RMQ/Core/SuccinctRMQClassic.lean`). Mechanical.
+4. **Safe-agreement-as-corollary**, so clause 2 holds in the direction the rung
+   asks for. Fully available today: `every_emitted_read_has_listed_region` plus
+   `canonical_segments_complete` give every emitted read `segment < 23`, and the
+   dead trace segment is `29`, so safe agreement implies exact agreement
+   directly. Mechanical.
+5. **A chain-shaped public statement.** All four links exist; none is a chain.
+   The `queryCosted = canonicalInterpretedQueryCosted` link exists **only as a
+   conjunct inside a bundle** — there is no standalone theorem. The public
+   surface is a flat ~14-conjunct tuple rather than an equation chain.
+   **Judgement-bearing** — it is a public-surface shape decision.
+6. **Fresh blind external audit at the accepted M1 commit.** The r4 branch
+   self-reports `WORKING`, not ACCEPTED, and the coordinator log records the
+   gate as passed with "Coordinator acceptance + fresh-blind audit remain open".
+   No audit has named a defect in the Lean content; the blockers are the
+   registry drift and this audit.
+
+**What M1 does NOT owe:** anything from `E1`. The two are siblings under `U3`
+and share no vocabulary — `storesAgreeOnOrderedReadFootprint` and
+`orderedReadFootprintWithStore` occur **zero times in any E1 file**. `E1`'s
+receipt equality is a **single-store** fact instantiated at the canonical store;
+`M1`'s clause 1 is a **supplied-store** theorem quantified over stores agreeing
+on the read set. Along one axis `E1` is stronger (it fixes order and read
+values, not just an address set); along `M1`'s axis it is silent. Do not treat
+`E1`'s completion as discharging any part of this rung.
 
 ### S1. Bit-Addressed Serialized-Payload Querying (deferred)
 
