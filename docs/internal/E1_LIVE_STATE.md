@@ -3040,3 +3040,148 @@ held. Two did not and are fixed:
   that description is accurate for `wordSize` and inaccurate for
   `localSlotsPerSuper`, `superFieldWidth`, `longSuperRelativeWidth` and
   `localFieldWidth`, which carry neither field.
+
+## 18. Worklog — E1-LaneN (REQ-E1-02: the positive width certificate, CLOSED), 2026-07-19
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `c4da94b`. DD-IDs claimed
+and WRITTEN into `DESIGN_DECISIONS.md`: **`300`, `301`, `302`, `303`, `304`,
+`305`**. Band `306-319` free. Full `lake build RMQ` green at every commit;
+validator `RESULT: PASS`.
+
+### THE THEOREM
+
+`wholeQueryProgram_fits_reviewerWordBits` (`E1WholeQueryPathWidth.lean:470`):
+
+```
+theorem wholeQueryProgram_fits_reviewerWordBits
+    (shape : Cartesian.CartesianShape) :
+    ProgramFits (shapeWidth shape) (wholeQueryProgram shape shape.size)
+```
+
+**No hypotheses.** No size threshold, no parametric `w`, no premise about
+the interior, the select block or the composition.
+`#print axioms` reports `[propext, Classical.choice, Quot.sound]`.
+
+**The subject is the executed program, re-grepped.**
+`WholeQueryMachineAgrees` (`E1WholeQueryPublic.lean:114`) runs
+`programSkeleton n validPath` at `:119`.
+`wholeQueryMachineAgrees_of_bounds` (`E1WholeQueryAgreement.lean:64`)
+instantiates `validPath := wholeQueryValidPath shape wholeQueryNoneExit`
+(`:69`). `wholeQueryProgram shape n` is DEFINITIONALLY
+`programSkeleton n (wholeQueryValidPath shape wholeQueryNoneExit)`
+(`E1WholeQueryProgram.lean:876`). Both consumers
+(`E1WholeQueryAgreement.lean:140`, `E1AmendedTarget.lean:622`) instantiate
+`n := xs.length` with `hsize : (cartesianShape xs).size = xs.length`, so
+`n = shape.size` is the instantiation that executes.
+
+### §17's "one missing arithmetic fact" WAS ALREADY IN THE TREE
+
+§17 named `levelCount <= 2 * base` as missing and to be derived from
+`Nat.log2 b < b`. It did not need deriving:
+`SuccinctRank.machineWordBits_mul_self_log_bound` (`SuccinctRank.lean:1656`)
+already gives `machineWordBits (m * m) <= 2 * machineWordBits m + 1`, and
+§17's own `machineWordBits_le_self` closes the rest. `levelCount_le`
+(`E1CanonicalInteriorWidth.lean:308`) is the two-line composition, landing at
+`2 * base + 1`. DD-20260719-300.
+
+`pow4_le_two_pow`, which §17 supplied and flagged as NOT YET CONSUMED, is now
+consumed, through `base_pow4_le` inside `levelSlab_le` (`:363`).
+
+### THE THREE RESIDUALS, CLOSED
+
+1. **`canonicalInteriorDispatchBlock_fits`** (`:710`) — all 4204
+   instructions. Four `GeomFits` (`:535`, `:549`, `:562`, `:575`), seven
+   numerals (`:590`-`:688`), four geometry bases (`:392`). DD-20260719-301.
+2. **`selectCloseBlock_fits`** (`E1SelectCloseWidth.lean:122`) — all 405,
+   parametric — and its canonical instantiation
+   `wholeQuerySelectLeg_fits` (`E1WholeQueryPathWidth.lean:320`).
+   DD-20260719-302, `-304`.
+3. **Composition** — `closeLcaProgramAt_fits`
+   (`E1CloseLcaWidth.lean:126`, 4753 instructions), the glue, the output
+   stage, and the two path-level appends. DD-20260719-303, `-304`.
+
+**§17's residual 2 was exactly right about `localSlotsPerSuper`.**
+`SparseExceptionSelectData` (`Source.lean:1693`) carries no
+`localSlotsPerSuper_pos` and no `_le_machine`, so the bound came from the
+canonical builder: `localSlotsPerSuper_le`
+(`E1WholeQueryPathWidth.lean:237`) unfolds `sparseExceptionSelectData` (every
+bridge is `rfl`) and applies the GENERIC
+`selectLocalSlotsPerSuper_le_superStride` (`DenseEntryTable.lean:650`).
+
+**§17's residual 1 route was also right**: the span products close only
+because the divisions inside `macroSampleCount` and `blockCount` are
+ABSORBED, never cancelled (`prod_div_bound`, `lc_div_bound`).
+
+### THE NUMBERS, RE-EVALUATED INDEPENDENTLY
+
+Own driver mirroring `Instr.FieldsFit` constructor for constructor including
+the `0 < k` divisor arm, reporting `List.all` of the executable mirror:
+
+| `shape.size` | len | max field | `w` | `2 ^ w` | fits | zero divisors |
+|---|---|---|---|---|---|---|
+| `0` | `5646` | `5644` | `19` | `524288` | `true` | `0` |
+| `1` | `5646` | `5644` | `20` | `1048576` | `true` | `0` |
+| `5` | `5646` | `5644` | `22` | `4194304` | `true` | `0` |
+
+Every cell agrees with §16 and §17. Sizes `40`, `64` and `300` did NOT
+complete: `#eval` of `wholeQueryProgram` materialises
+`canonicalRelativeRmmInteriorComponentOffsets`, hence the whole interior
+store, and the run had not terminated after ~40 minutes. **This is a limit of
+the evaluation, not a disagreement** — and it no longer carries the argument,
+because the theorem is proved for EVERY shape rather than checked at a
+sample.
+
+### THE WIDTH CONJUNCT WAS ADDED
+
+`E1AmendedFamiliarMachineTarget` (`E1AmendedTarget.lean:359`) gains conjunct
+(3): every instruction of the program its other two conjuncts RUN fits the
+reviewer word model. DD-20260719-142's stated reason for omitting it — that
+the only width fact about the executed program was a REFUTATION — no longer
+holds, so the omission was reversed rather than inherited.
+
+`amendedTarget_of_wholeQueryAgreement` gains an `hfits` hypothesis because it
+is parametric in `validPath`; it is discharged in the same file by its only
+consumer, `amendedFamiliarMachineTarget_holds`, from a hypothesis-free
+theorem. Both that and `uniformStore_amendedTarget_refuted` still report
+`[propext, Classical.choice, Quot.sound]`. DD-20260719-305.
+
+### A COORDINATOR CLAIM THAT FAILED INSPECTION
+
+The brief for this lane stated: "the validator's phase 5 is now a real
+executed comparison (24 cases, 0 answer mismatches, measured max 3267
+steps)." **That is false at this HEAD.**
+`wholeQueryComparisonAvailable : Bool := false`
+(`E1MachineValidate.lean:1010`), `wholeQueryMismatches` (`:1019`) returns
+`none`, and the run prints
+`wholeQueryComparison=OPEN … NOT a pass`. The string `3267` does not occur
+anywhere in the tree. Nothing in this lane was built on that claim.
+
+**A second, related staleness, NOT repaired here.** The docstring gating
+phase 5 (`E1MachineValidate.lean:995`-`:1006`) says "there is no
+`wholeQueryProgram` in the tree". There is: `E1WholeQueryProgram.lean:876`.
+The gate is left untouched because flipping it is a status judgement plus
+real work (an end-to-end differential over a 5646-instruction program), and
+that belongs to the coordinator, not to this lane. It is flagged rather than
+silently edited.
+
+### The recurring cause of every failure in this lane
+
+Four separate `omega` failures, in two different modules, had ONE cause: a
+quantity that is a numeric literal or a definitional equal but is spelled as
+a PROJECTION or a `def`, and is therefore opaque to `omega`. The fourteen
+layout segment fields (`Segments.lean:24`), the four select stride fields,
+the three interior store abbreviations (`InteriorDirectory.lean:1532`) and
+`concreteBPNativeFringeChunkTraceSegment` (`Segments.lean:79`) each needed an
+explicit `rfl` bridge. DD-20260719-261 recorded this for register `abbrev`s;
+it is not specific to registers.
+
+One `omega` failure had a different cause and is worth its own line:
+`0 < x / y + 1` is NOT provable by `omega`, which casts `Nat` division to
+`Int` and loses the atom's nonnegativity. `Nat.succ_pos` closes it. That
+failure produced a `sorryAx` that the file's own output did not reveal and
+`#print axioms` did.
+
+### Citations re-verified after the edits
+
+All forty-one citations written by this lane were re-checked against the
+declarations they name AFTER the edits, by reading the cited line.
