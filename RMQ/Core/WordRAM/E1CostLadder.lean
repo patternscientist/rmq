@@ -539,9 +539,15 @@ theorem globalLegCats_length_le (shape : Cartesian.CartesianShape)
 
 `5479 = 6 + (1810 + 1810 + 1810 + 43)` is the WIDEST arm -- the final
 `else`, which spans three macro blocks and merges three leg values through
-`crossLegCats`.  The other four are `4`, `1814`, `3650` and `3651`, so the
-bound is attained and the looseness on a narrower arm is large and real: an
-empty range charges `4`.
+`crossLegCats`.  The per-arm bounds this maximises over are `4`, `1814`,
+`3650`, `3651` and `5479`.
+
+Those four smaller figures are BOUNDS on their arms, not measurements of
+them; only the first is exact, because the `count = 0` arm is a literal.
+Evaluated at the fixture shape `[3,1,4,1,5]`: the empty arm charges `4`,
+and a one-block range charges `602` against its own bound of `1814`.  So the
+looseness here is large and real, and it is worth naming rather than leaving
+a reader to infer that a bound of `5479` describes a typical query.
 -/
 theorem dispatchArmCats_length_le (shape : Cartesian.CartesianShape)
     (startBlock count : Nat) :
@@ -809,6 +815,41 @@ theorem wholeQueryCats_length_le_of (S : E1Query.WholeQueryStageCats)
       p + sel + sel + lca + rank + out :=
   wholeQueryBranchCats_length_le_of S left right _ p sel lca rank out hp hsel
     hlcaRun hlcaSkip hrankRun hrankSkip houtSome houtNone
+
+/-! ## 12. ANTI-VACUITY: what these logs actually measure
+
+A bound is worthless if the thing bounded is empty, and every theorem above
+would still be true if every category log in this development were `[]`.  So
+the logs were EVALUATED at the validator's own fixture shape
+(`Cartesian.stackCartesianShape [3, 1, 4, 1, 5]`, `E1MachineValidate.lean:334`)
+in a scratchpad driver.  The figures, against the bounds proved above:
+
+| log | measured | bound |
+|---|---|---|
+| `rankSeedLegCats` (`lc = 0`) | `63` | `238` |
+| `sameBlockArmCats` (`lc = 0`, `rc = 4`) | `388` | `2074` |
+| `sameBlockArmCats` (`lc = 1`, `rc = 3`) | `323` | `2074` |
+| `sameBlockDispatchCats` (`lc = 0`, `rc = 4`) | `467` | `2328` |
+| `dispatchArmCats` (`count = 0`) | `4` | `5479` |
+| `dispatchArmCats` (`count = 1`) | `602` | `5479` |
+| `dispatchCats` (`count = 1`) | `621` | `5498` |
+| `crossBlockArmCats` with canonical interior | `1031`--`1631` | `10167` |
+
+Two things follow, and the second is the less comfortable one.
+
+**The logs are substantial.**  Nothing here is `[]` or a handful of ticks; the
+close leg genuinely charges four figures of machine steps at a five-element
+input.  The bounds bound something.
+
+**The bounds are LOOSE at small sizes, by roughly a factor of six.**  That is
+what an all-size worst-case bound with no size hypothesis costs: `10167`
+assumes the widest dispatch arm, a full `33`-pass fringe fold on both sides,
+and eight chunk iterations everywhere, and no single query takes all of those
+at once.  REQ-E1-06 conjunct (c) asks for a derived literal with no size
+hypothesis, not a tight one, and this is the honest price of that.  Anyone
+wanting tightness wants a different theorem, and would have to give up the
+"all-size, no hypothesis" property to get it.
+-/
 
 end E1CostLadder
 end WordRAM

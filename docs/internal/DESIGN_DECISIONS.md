@@ -7005,3 +7005,215 @@ seventeen composite logs §12 enumerates. The other sixteen remain unbounded,
 and the closed leaves they rest on remain unbounded too. `ascLog_length_le`
 is the reusable half -- any composite whose body is index-dependent can go
 through it -- but each composite still owes its own per-pass maximum.
+
+## DD-20260719-220: the sixteen remaining composite logs are closed by a bottom-up ladder in a NEW module, not by extending `E1CostAlgebra` (E1-LaneA7)
+
+`E1CostAlgebra.lean` is imported by `E1AmendedTarget.lean` and by the
+validator. Closing the ladder needs three more imports
+(`E1InteriorDispatchCompose`, `E1InteriorCombine`, `E1InteriorMinCandidate`),
+and adding them to `E1CostAlgebra` would push the whole interior dispatch
+into every consumer of the amended target. `E1CostLadder.lean` is a new
+module downstream of both, so the ladder is available where it is wanted and
+absent where it is not.
+
+The separation is also editorial. `E1CostAlgebra` carries the
+`catCount`/`filter` bridge and the fringe fold's cap -- two arguments with
+real content. The ladder above them is arithmetic composition, and mixing the
+two would bury the former.
+
+## DD-20260719-221: every leaf log's length is EVALUATED before it is stated, and stated as `rfl`
+
+Seventeen closed leaf logs had no `.length` bound at all. Each is a `List`
+literal or a `.map` of one, so each length is `rfl` -- which means a wrong
+figure is a BUILD FAILURE, not a silently loose bound. That is the cheapest
+possible defence and it was taken.
+
+The figures were nevertheless obtained by `#eval` in a scratchpad driver
+first, rather than by counting constructors by eye, per rule 3. Counting by
+eye across a twenty-five element list is exactly the operation that produces
+an off-by-one, and the `rfl` would then have failed at build time with no
+indication of what the right figure was.
+
+ONE PRE-EXISTING CLAIM CHECKED. `dispatchPrologueCats`
+(`E1InteriorDispatchCompose.lean:251`) carried a doc-comment asserting `19`
+with no proof. It is now proved and it HOLDS. Recorded because the
+alternative outcome was live: an unproved doc-comment figure is exactly the
+kind of thing that has failed inspection repeatedly in this campaign.
+
+## DD-20260719-222: the interior chain is bounded by `chunkIters_le_eight`, and it is NOT recursive
+
+`geomCats` -> `legCats` -> `spanCats` -> `twoSpanCats` -> the two dispatch
+legs looks like it might close a cycle, since `spanCats` calls `legCats` and
+`twoSpanCats` calls `spanCats` twice. It does not: no definition in the chain
+calls back down to one above it. That is what lets the bounds compose by
+plain substitution instead of needing a measure.
+
+The chain's only unbounded-looking quantity is the summary chunk fold's
+iteration count, and `chunkIters_le_eight` caps it with NO size hypothesis
+and no positivity side condition, because both arms of `chunkIters` are
+bounded by `8` on the nose.
+
+The numerals, each derived from the one below it: `summaryStageCats` and
+`geomCats` `<= 158 = 1 + 156 + 1`; `legCats` `<= 653 = 4 * 158 + 21`;
+`spanCats` `<= 815 = 1 + 158 + 3 + 653`; `twoSpanCats`
+`<= 1810 = 1 + 158 + 11 + 815 + 3 + 815 + 7`.
+
+## DD-20260719-223: `twoLegCats` and `crossLegCats` are bounded in their PARAMETERS' lengths, not in a numeral
+
+Both take their sub-logs as arguments (`E1InteriorCombine.lean:294`, `:971`).
+A numeral bound would have required choosing which legs they are applied to,
+which is a fact about the dispatch and not about the combinator. Stating
+`<= catsA.length + catsB.length + 24` keeps the theorem true of every
+instantiation and lets all five dispatch arms cite the same lemma at
+different legs.
+
+This follows `crossBlockArmCats`'s own precedent, which takes `interiorCats`
+as a parameter for the same reason, and `wholeQueryCats`'s
+(`E1WholeQueryCats.lean:98`), which takes all five stage logs as parameters
+because they belong to other lanes.
+
+The `_of` forms (`twoLegCats_length_le_of`, `crossLegCats_length_le_of`) take
+numeric bounds in and give a numeric bound out. That is what makes them
+citable with every argument inferred; see DD-20260719-227.
+
+## DD-20260719-224: the dispatch arm's bound is the WIDEST of five branches, and the looseness is declared
+
+`dispatchArmCats` (`E1InteriorDispatchCompose.lean:264`) is a five-way `if`
+in the route's own conditions. The five per-arm bounds are `4`, `1814`,
+`3650`, `3651` and `5479`; the arm bound is the maximum, `5479`, from the
+final `else`, which spans three macro blocks and merges three leg values
+through `crossLegCats`.
+
+A CORRECTION THIS LANE MADE TO ITSELF. The docstring first said the five arms
+"measure" those figures. They do not: four of the five are BOUNDS on their
+arms, and only the `count = 0` arm's `4` is exact, that arm being a literal.
+The error was caught by evaluating the arms at the fixture shape
+`[3,1,4,1,5]`, where the empty arm charges `4` as claimed but a one-block
+range charges `602` against its own bound of `1814`. Recorded because the
+sentence typechecked as English and would have shipped as an overclaim about
+tightness; rule 3 caught it, as it caught mutant J's rejection count in
+DD-20260719-140's round.
+
+So the looseness is large and real, and it is named in the theorem's own
+docstring rather than left for a reader to discover. A derived `<=` that is
+loose is honest as long as the looseness is visible; the failure mode being
+guarded against is a bound that reads as tight because nobody wrote down what
+the other arms cost.
+
+## DD-20260719-225: the two `33`s and the two `8`s are kept apart, and this module's caps are the `8`s
+
+The campaign shorthand "caps 33/8/8" conflates four literals into three
+slots. `E1CostLadder.lean`'s header separates them, continuing
+`E1CostAlgebra.lean`'s discipline:
+
+* the FRINGE-WINDOW chunk-read cap inside `endpointFringe = 4 + 33 = 37`
+  (`ChargedFringeChunks.lean:1624-1687`) -- the `33` of `cap_count_le`, which
+  `sbCount` (`E1SameBlockArm.lean:134`) and the two cross arms
+  (`E1CrossBlockArm.lean:1049`, `:1062`) each write out literally;
+* the WHOLE-INTERIOR-DIRECTORY read cap,
+  `canonicalRelativeRmmPrincipledInteriorChargedTraceCost := 33`
+  (`InteriorDirectory.lean:1934`), which this module proves nothing about;
+* the table adapter's per-read chunk cap, `chunkIters_le_eight`, which bounds
+  the summary chunk fold;
+* the per-word chunk cap, `bpWordChunkCount_le_eight`
+  (`ChargedWordChunks.lean:153`), which bounds the rank close-hit loop.
+
+The last two are the `8`s this ladder actually uses, and they are distinct
+literals that share a value -- the sharpening the acceptance matrix already
+recorded for REQ-E1-07, now with both sides load-bearing in one module.
+
+## DD-20260719-226: `bpWordChunkCount_le_eight` is USED, not restated
+
+The rank close-hit loop's cap already existed
+(`ChargedWordChunks.lean:153`). Restating it inside the ladder would have
+produced a second lemma with the same content and no consumer for the first.
+It is cited directly. Recorded because the opposite choice -- a local
+restatement -- is how a tree accumulates two spellings of one fact that later
+drift, and this campaign has already paid for that once with the
+`catCount`/`filter` split.
+
+## DD-20260719-227: `length_append_le`, so that route-side index expressions are never TRANSCRIBED into a proof
+
+`dispatchArmCats` and `crossBlockArmCats` apply their sub-logs at index
+expressions running to five and six lines each -- `macroSize` arithmetic on
+the start block, the capped fringe trip count, the decomposed close
+positions. A proof that names them has to reproduce them exactly, and a
+proof that reproduces them ALMOST exactly still typechecks: it just proves a
+bound about a different instantiation than the goal, and `omega` reports two
+atoms where the reader sees one term.
+
+That is precisely the RIGHT-SHAPE-WRONG-CONTENT defect class
+`E1_LIVE_STATE.md` section 6 records three instances of.
+
+`length_append_le` removes the temptation. Every bound below it is cited with
+underscores and every index is inferred by unification against the goal, so a
+mismatched instantiation is a UNIFICATION FAILURE at elaboration time rather
+than a silently weaker theorem. `crossBlockArmCats_length_le`'s proof cites
+thirteen sub-bounds and transcribes not one index.
+
+This was not a stylistic preference. The first attempt at `spanCats` and
+`twoSpanCats` stated the branch bound as a separate `have` about the match
+expression, and `omega` rejected it with the two sides printing IDENTICALLY
+-- the elaborated motives differed. The proofs were restructured to `split`
+the goal directly. The failure was visible only because `omega` prints its
+atoms.
+
+## DD-20260719-228: `cats.length` IS `totalSteps`, by definition, and the module says so rather than leaving it to be unfolded
+
+REQ-E1-06 conjunct (c) is phrased about `totalSteps`. Everything this lane
+bounds is a category log's `.length`. The connection is not a lemma that
+might be missing or might be about a different run: `RunsTo store program s
+s' reads cats` is DEFINED as
+`run store program cats.length s = <s', reads, cats, cats.length>`
+(`E1MachineCalculus.lean:96`), and the last component is the `steps` field.
+
+`RunsTo.steps_le` states this explicitly. It depends on NO axioms at all --
+`#print axioms` reports none, which is the sharpest possible evidence that
+nothing is being smuggled in at the point where the requirement's vocabulary
+meets this module's. `run_steps_eq_catLog_length` (`E1Machine.lean:340`) is
+its run-level twin and was already present.
+
+## DD-20260719-229: the summation is performed where it is DERIVABLE and stated parametrically where it is not
+
+Two summations are delivered and they are different in kind, deliberately.
+
+CONCRETE, because the tree composes it.
+`crossBlockArm_withCanonicalInterior_runsTo`
+(`E1InteriorDispatchCompose.lean:1302`) passes `dispatchCats shape startBlock
+count` as `crossBlockArmCats`'s `interiorCats`. So
+`crossBlockArmCats_withCanonicalInterior_length_le : ... <= 10167` bounds an
+EXECUTED run's charge log, not a hypothetical instantiation.
+`10167 = 5498 + 4669` is what the two halves produce composed; it was not
+chosen and checked after. With `closeLcaLegCats_length_le` the same literal
+covers the same-block branch too, which measures `2328`.
+
+PARAMETRIC, because the tree does not compose it. `wholeQueryCats`'s
+per-stage logs are parameters, since the select, close/LCA and rank machine
+legs belong to other lanes and their category functions are not final
+(`E1WholeQueryCats.lean:41`). The honest summation is therefore over the
+CONTROL STRUCTURE: given a bound per stage, the whole-query log is bounded by
+`prologue + 2 * select + lca + rank + output` on every one of the four route
+branches. The `2 *` is not an assumption -- all four branches charge
+`S.select left` and `S.select (right - 1)`, and the proof is a case split
+that would fail if any branch charged a third.
+
+What this lane supplies for the `lca` slot is `10167`. No numeral is invented
+for the other three slots, and the whole-query literal is NOT claimed. A
+lane that filled those slots with plausible figures would produce a
+whole-query numeral that reads as derived and is not, which is the exact
+failure the standing rule against asserted constants exists to prevent.
+
+## DD-20260719-230: `closeLcaLegCats_length_le` is a DISJUNCTION on the log, not an `if` this lane invented
+
+The route takes the same-block close leg when both closes fall in one block
+and the cross-block leg otherwise. Bounding "the close leg" under one literal
+therefore wants a dispatcher -- and NO definition in the tree dispatches
+between `sameBlockDispatchCats` and `crossBlockArmCats`. Grepped, not
+assumed.
+
+Writing one here to state the theorem would be a witness constructed FOR the
+premise rather than found at the target, which rule 5 forbids. The theorem is
+stated instead as a hypothesis that the log IS one of the two, discharged by
+`rcases` into the two existing bounds. When whole-query assembly lands a real
+dispatcher the hypothesis will be discharged at the call site, and until then
+the statement does not pretend a structure exists that does not.
