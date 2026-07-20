@@ -7362,3 +7362,91 @@ carries. Nothing is assumed that the public surface does not already assume.
 
 **Axioms.** All six declarations: `[propext, Classical.choice, Quot.sound]`.
 No `sorryAx`.
+
+---
+
+## DD-20260719-208 — the stage record gains explicit CONNECTIVE stages, and the two select-miss branches are separated
+
+**Executes the coordinator ruling on DD-20260719-206, and adds a second
+finding of the same class that DD-20260719-206 did not reach.**
+
+**THE RULING, AND WHY IT IS THE RIGHT CALL.** `WholeQueryStageCats` gains
+`selectJoin`, an explicit stage between the two select legs. The connective is
+NOT folded into `select`. The reasoning is the one the coordinator gave and it
+survives inspection: the category function was deliberately written from the
+route BEFORE the machine existed, so that it could not be fitted to the
+machine; what it found is that **the route's leg decomposition omits an
+inter-leg computation the machine must perform.** The four legs are adjacent
+in the TRACE because the join performs no reads; they are NOT adjacent in the
+CHARGE, because the join executes instructions. Folding the connective into
+`select` would make one function mean two different things at its two
+occurrences in order to avoid admitting a stage exists. Naming the stage says
+what is true: there is work between the selects, it is charged, and it reads
+nothing.
+
+**A SECOND CONNECTIVE, ON THE SAME ARGUMENT.** `rankJoin` is the register
+write and arithmetic the machine performs between the close/LCA leg and the
+rank leg (`E1WholeQueryProgram.lean:1034`, the `[registerWrite, arithmetic]`
+between `sameBlockLegCats` and `rankCloseHitCats`). It is named rather than
+folded for exactly the reason `selectJoin` is: `lcaRun` occurs on BOTH the
+`lcaNone` and the `full` branch, so making it carry a suffix would give it two
+meanings at its two occurrences. It is placed on the `full` branch only,
+because that is the branch on which the machine demonstrably charges it — the
+`lcaNone` branch has never been executed, and asserting its post-LCA
+connective would be an unverified claim.
+
+**THE SECOND FINDING: THE TWO SELECT-MISS BRANCHES WERE FORCED TO AGREE, AND
+THE MACHINE DISAGREES.** DD-20260719-206 analysed the pre-select connectives
+and stopped there. Comparing all three executed branches shows a further clash
+it did not reach. The old record had ONE `lcaSkipped` field and
+`wholeQueryBranchCats` applied it on BOTH select-miss branches, so those two
+cases were **literally the same term** — definitionally equal, separable by no
+instantiation of `S` whatsoever.
+
+The machine separates them. It tests the two select results in order, so
+`wholeQueryProgram_runsTo_leftSelectNone` (`E1WholeQueryProgram.lean:1169`)
+charges `[comparison, branch]` at the skip arm while
+`wholeQueryProgram_runsTo_rightSelectNone` (`E1WholeQueryProgram.lean:1252`)
+charges `[comparison, branch, comparison, branch]`; the right-miss branch pays
+for the first test too. That module's own docstring already named the
+difference as "the only thing separating the two branches" — the fact was
+recorded on the machine side and never reconciled with the record.
+
+So the field is split into `lcaSkippedLeftMiss` and `lcaSkippedRightMiss`.
+`selectNone_branches_separable` (`E1WholeQueryCats.lean:376`) states the
+separation; under the pre-208 record that proposition was not merely
+unprovable but **false by `rfl`**.
+
+**NOTHING IS WEAKENED, AND THE NEW STAGES ARE NOT NUMERALS.** Every new field
+is a `List Category` PARAMETER, exactly like the eight that preceded it, and
+`wholeQueryBranchCats` remains a function of the route's own branch
+classification. The receipt obligations are unchanged.
+`fullCats_mentions_both_joins` (`E1WholeQueryCats.lean:382`) pins both
+connectives as load-bearing, so a later edit that quietly dropped one — putting
+the machine's between-stage work back out of account — fails at that
+declaration rather than silently.
+
+**WHAT `prologue` NOW ABSORBS, AND WHY THAT IS NOT THE SAME MOVE.** `prologue`
+is documented as everything charged before the first select leg, which
+includes the valid path's opening `registerWrite`. That is legitimate where
+folding into `select` is not, and the distinction is precise: **`prologue`
+occurs ONCE per branch, `select` occurs TWICE.** Absorbing a fixed prefix into
+a single-occurrence parameter creates no ambiguity; absorbing one into a
+two-occurrence function forces it to mean two different things. The module's
+own scope note already says the per-stage logs are parameters and that what it
+asserts is the CONTROL STRUCTURE, not their content.
+
+**THE FIXTURE'S GUARANTEE IS RESTATED RATHER THAN QUIETLY BROKEN.** The record
+now has ELEVEN stages and `Category` has SIX constructors
+(`E1Machine.lean:106`), so the fixture's old promise of "one distinct tick per
+stage" is no longer literally attainable. It is withdrawn and replaced by the
+property the discriminators actually need: on each branch the stage under test
+charges a tick different from the stage it displaces. All four non-entailments
+survive unchanged, and `lcaNone_impostor_differ_at_rank_slot` moves from
+position 4 to position 5 because `selectJoin` shifts it by one.
+
+**Public surface.** `WholeQueryStageCats` gains fields, so
+`WholeQueryMachineAgrees` and the `S` that
+`programSkeleton_valid_matches_public` (`E1WholeQueryPublic.lean:140`) consumes
+change with it. No statement in either declaration was edited; the change is
+carried entirely by the record. `lake build RMQ` green.

@@ -66,14 +66,52 @@ executed instructions, so both charge.  A machine that charged nothing there
 would be as wrong as one that ran the leg.
 -/
 structure WholeQueryStageCats where
-  /-- The validity guard's accepting fall-through to the valid-path block. -/
+  /-- Everything charged BEFORE the first select leg: the validity guard's
+  accepting fall-through, together with the valid path's opening register
+  write.  This field occurs once per branch and always with the same content,
+  so absorbing the opening write here creates no ambiguity — unlike `select`,
+  which occurs twice and therefore cannot absorb anything. -/
   prologue : List Category
   /-- One select-close leg, indexed by the position it selects. -/
   select : Nat → List Category
+  /-- **THE CONNECTIVE BETWEEN THE TWO SELECT LEGS.**
+
+  The machine does not run the two selects back to back: between them it
+  computes the second select's argument `right - 1`, which is charged and
+  reads nothing.  The route's leg decomposition omitted that computation
+  because the four legs are adjacent in the TRACE — the join performs no
+  reads — but they are NOT adjacent in the CHARGE.
+
+  It is a field rather than part of `select` deliberately.  `select` is ONE
+  function applied at TWO positions, so folding the connective in as a
+  prefix, a suffix or a split would make it mean two different things at its
+  two occurrences; the case analysis showing all three splits clash is
+  DD-20260719-206.  Naming the stage says what is true: there is work between
+  the selects, it is charged, and it reads nothing. -/
+  selectJoin : List Category
   /-- The close/LCA leg when it RUNS, indexed by the closes it joins. -/
   lcaRun : Nat → Nat → List Category
-  /-- The `lcaClose` instruction when it writes `none` without its leaf. -/
-  lcaSkipped : List Category
+  /-- The `lcaClose` instruction when the LEFT select missed and it writes
+  `none` without running its leaf.
+
+  Split from the right-miss arm because the machine distinguishes them: it
+  tests the two select results in order, so a left miss short-circuits after
+  ONE comparison/branch pair while a right miss costs TWO.  A single
+  `lcaSkipped` field forced the two select-miss branches to charge
+  identically, which this machine does not do — DD-20260719-208. -/
+  lcaSkippedLeftMiss : List Category
+  /-- The `lcaClose` instruction when the left select HIT and the right one
+  missed: the second comparison/branch pair is charged too. -/
+  lcaSkippedRightMiss : List Category
+  /-- **THE CONNECTIVE BETWEEN THE CLOSE/LCA LEG AND THE RANK LEG.**
+
+  The machine loads the rank leg's argument `answerClose + 1` between the two
+  legs; charged, and reads nothing.  Named for the same reason `selectJoin`
+  is: `lcaRun` occurs on BOTH the `lcaNone` and the `full` branch, so folding
+  this in as its suffix would make it mean two different things at its two
+  occurrences.  It is placed on the `full` branch only, because that is the
+  branch on which the machine demonstrably charges it. -/
+  rankJoin : List Category
   /-- The rank-close leg when it RUNS, indexed by the position it ranks. -/
   rankRun : Nat → List Category
   /-- The `rankCloseIfSome` instruction when it skips its leaf. -/
@@ -98,18 +136,18 @@ literal.
 def wholeQueryBranchCats (S : WholeQueryStageCats) (left right : Nat) :
     WholeQueryBranch → List Category
   | .leftSelectNone =>
-      S.prologue ++ S.select left ++ S.select (right - 1) ++
-        S.lcaSkipped ++ S.rankSkipped ++ S.outputNone
+      S.prologue ++ S.select left ++ S.selectJoin ++ S.select (right - 1) ++
+        S.lcaSkippedLeftMiss ++ S.rankSkipped ++ S.outputNone
   | .rightSelectNone _ =>
-      S.prologue ++ S.select left ++ S.select (right - 1) ++
-        S.lcaSkipped ++ S.rankSkipped ++ S.outputNone
+      S.prologue ++ S.select left ++ S.selectJoin ++ S.select (right - 1) ++
+        S.lcaSkippedRightMiss ++ S.rankSkipped ++ S.outputNone
   | .lcaNone leftClose rightClose =>
-      S.prologue ++ S.select left ++ S.select (right - 1) ++
+      S.prologue ++ S.select left ++ S.selectJoin ++ S.select (right - 1) ++
         S.lcaRun leftClose rightClose ++ S.rankSkipped ++ S.outputNone
   | .full leftClose rightClose answerClose =>
-      S.prologue ++ S.select left ++ S.select (right - 1) ++
-        S.lcaRun leftClose rightClose ++ S.rankRun (answerClose + 1) ++
-        S.outputSome
+      S.prologue ++ S.select left ++ S.selectJoin ++ S.select (right - 1) ++
+        S.lcaRun leftClose rightClose ++ S.rankJoin ++
+        S.rankRun (answerClose + 1) ++ S.outputSome
 
 /-- The whole-query machine category log at the branch the route takes. -/
 def wholeQueryCats (S : WholeQueryStageCats)
@@ -187,15 +225,25 @@ remaining discriminator" means.  It does not claim the real legs charge these
 particular ticks.
 -/
 
-/-- Fixture stage charges: one distinct tick per stage, so any positional
-confusion between stages is visible.  The spurious rank leg is READ-FREE
+/-- Fixture stage charges.  The spurious rank leg is READ-FREE
 (`.arithmetic`) and charges exactly as many ticks as the skip arm it
-displaces, which is what defeats the read-count and length checks. -/
+displaces, which is what defeats the read-count and length checks.
+
+The record now has ELEVEN stages and `Category` has SIX constructors
+(`E1Machine.lean:106`), so "one distinct tick per stage" is no longer
+literally attainable and is not claimed.  What the fixture still guarantees
+is the property the discriminators below actually need: on each branch, the
+stage under test charges a tick DIFFERENT from the stage it displaces, so a
+positional comparison separates them.  The two skip arms are given different
+lengths, matching the machine's own asymmetry. -/
 def fixtureStageCats : WholeQueryStageCats where
   prologue := [.registerWrite]
   select := fun _ => [.memoryRead]
+  selectJoin := [.arithmetic]
   lcaRun := fun _ _ => [.comparison]
-  lcaSkipped := [.branch]
+  lcaSkippedLeftMiss := [.branch]
+  lcaSkippedRightMiss := [.comparison, .branch]
+  rankJoin := [.registerWrite]
   rankRun := fun _ => [.arithmetic]
   rankSkipped := [.branch]
   outputSome := [.control]
@@ -209,6 +257,7 @@ def lcaNoneHonestCats : List Category :=
 route skips it. -/
 def lcaNoneImpostorCats : List Category :=
   fixtureStageCats.prologue ++ fixtureStageCats.select 4 ++
+    fixtureStageCats.selectJoin ++
     fixtureStageCats.select 8 ++ fixtureStageCats.lcaRun 3 5 ++
     fixtureStageCats.rankRun 6 ++ fixtureStageCats.outputNone
 
@@ -218,13 +267,13 @@ and so made every discriminator below vacuous - fails here first. -/
 
 theorem lcaNoneHonestCats_eq :
     lcaNoneHonestCats =
-      [.registerWrite, .memoryRead, .memoryRead, .comparison, .branch,
-        .control] := rfl
+      [.registerWrite, .memoryRead, .arithmetic, .memoryRead, .comparison,
+        .branch, .control] := rfl
 
 theorem lcaNoneImpostorCats_eq :
     lcaNoneImpostorCats =
-      [.registerWrite, .memoryRead, .memoryRead, .comparison, .arithmetic,
-        .control] := rfl
+      [.registerWrite, .memoryRead, .arithmetic, .memoryRead, .comparison,
+        .arithmetic, .control] := rfl
 
 /-- THE DISCRIMINATOR: the two logs differ, positionally. -/
 theorem lcaNone_impostor_catLogs_differ :
@@ -295,12 +344,13 @@ theorem lcaNone_trace_has_no_rank_leg
 
 /-- The honest and impostor logs differ at exactly ONE position, and it is
 the position of the skipped leg - so the defect is the leg, not a global
-shift.  (Position 4, zero-indexed.) -/
+shift.  (Position 5, zero-indexed: the explicit `selectJoin` stage shifted it
+by one from the pre-DD-20260719-208 record.) -/
 theorem lcaNone_impostor_differ_at_rank_slot :
-    lcaNoneImpostorCats[4]? = some .arithmetic ∧
-      lcaNoneHonestCats[4]? = some .branch ∧
-      lcaNoneImpostorCats.take 4 = lcaNoneHonestCats.take 4 ∧
-      lcaNoneImpostorCats.drop 5 = lcaNoneHonestCats.drop 5 := by
+    lcaNoneImpostorCats[5]? = some .arithmetic ∧
+      lcaNoneHonestCats[5]? = some .branch ∧
+      lcaNoneImpostorCats.take 5 = lcaNoneHonestCats.take 5 ∧
+      lcaNoneImpostorCats.drop 6 = lcaNoneHonestCats.drop 6 := by
   refine ⟨by decide, by decide, by decide, by decide⟩
 
 /-! ## The same statement for the `selectNone` branches
@@ -316,6 +366,7 @@ def leftSelectNoneHonestCats : List Category :=
 /-- An impostor that ran BOTH skipped legs. -/
 def leftSelectNoneImpostorCats : List Category :=
   fixtureStageCats.prologue ++ fixtureStageCats.select 4 ++
+    fixtureStageCats.selectJoin ++
     fixtureStageCats.select 8 ++ fixtureStageCats.lcaRun 3 5 ++
     fixtureStageCats.rankRun 6 ++ fixtureStageCats.outputNone
 
@@ -343,6 +394,49 @@ theorem selectNone_values_are_none
     wholeQueryBranchValue shape .leftSelectNone = none ∧
       wholeQueryBranchValue shape (.rightSelectNone leftClose) = none :=
   ⟨rfl, rfl⟩
+
+/-! ## The two select-miss branches are no longer forced to agree
+
+Before DD-20260719-208 the record carried a single `lcaSkipped` field and
+`wholeQueryBranchCats` used it on BOTH select-miss branches, so the two logs
+were DEFINITIONALLY EQUAL — the two cases were literally the same term and no
+instantiation of `S` could separate them.
+
+The machine separates them.  It tests the two select results in order, so
+`wholeQueryProgram_runsTo_leftSelectNone` (`E1WholeQueryProgram.lean:1169`)
+charges `[comparison, branch]` at the skip arm while
+`wholeQueryProgram_runsTo_rightSelectNone` (`E1WholeQueryProgram.lean:1252`)
+charges `[comparison, branch, comparison, branch]` — the right-miss branch
+pays for the first test as well.  That module's own docstring names the
+difference as "the only thing separating the two branches".
+
+So the pre-208 record could not describe this machine on two of its four
+branches.  That is a finding about the RECORD, produced by the machine rather
+than fitted to it, and it is the second such finding after DD-20260719-206.
+-/
+
+/-- The honest log on the route's `rightSelectNone` branch. -/
+def rightSelectNoneHonestCats : List Category :=
+  wholeQueryBranchCats fixtureStageCats 4 9 (.rightSelectNone 3)
+
+/-- THE TWO SELECT-MISS BRANCHES ARE SEPARABLE.  Under the pre-208 record
+this proposition was not merely unprovable but false by `rfl`. -/
+theorem selectNone_branches_separable :
+    rightSelectNoneHonestCats ≠ leftSelectNoneHonestCats := by
+  decide
+
+/-- Both connectives are LOAD-BEARING on the full branch: dropping either one
+changes the log.  Stated so that a later edit which quietly removed a
+connective from `wholeQueryBranchCats` - putting the machine's between-stage
+work back out of account - fails here rather than silently. -/
+theorem fullCats_mentions_both_joins :
+    wholeQueryBranchCats { fixtureStageCats with selectJoin := [] } 4 9
+        (.full 3 5 6) ≠
+      wholeQueryBranchCats fixtureStageCats 4 9 (.full 3 5 6) ∧
+    wholeQueryBranchCats { fixtureStageCats with rankJoin := [] } 4 9
+        (.full 3 5 6) ≠
+      wholeQueryBranchCats fixtureStageCats 4 9 (.full 3 5 6) := by
+  refine ⟨by decide, by decide⟩
 
 end E1Query
 end WordRAM
