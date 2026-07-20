@@ -2791,7 +2791,7 @@ because ITEM 2 did not reach a width fact for the executed program; see below.
 ### ITEM 2 — REQ-E1-02: the gap is CONFIRMED, the interior chain is supplied, the end certificate is NOT
 
 **The audit's claim is exactly right, re-grepped here.**
-`programSkeleton_fits_reviewerWordBits` (`E1ReviewerWidth.lean:349`) certifies
+`programSkeleton_fits_reviewerWordBits` (`E1ReviewerWidth.lean:427`) certifies
 `programSkeleton shape.size (assembledValidPath shape)`. `assembledValidPath`
 has **12 line-hits, all inside `E1ReviewerWidth.lean`** — zero elsewhere. The
 agreement executes `programSkeleton n (wholeQueryValidPath shape wholeQueryNoneExit)`,
@@ -3118,7 +3118,7 @@ consumed, through `base_pow4_le` inside `levelSlab_le` (`:363`).
    numerals (`:590`-`:688`), four geometry bases (`:392`). DD-20260719-301.
 2. **`selectCloseBlock_fits`** (`E1SelectCloseWidth.lean:122`) — all 405,
    parametric — and its canonical instantiation
-   `wholeQuerySelectLeg_fits` (`E1WholeQueryPathWidth.lean:320`).
+   `wholeQuerySelectLeg_fits` (`E1WholeQueryPathWidth.lean:354`).
    DD-20260719-302, `-304`.
 3. **Composition** — `closeLcaProgramAt_fits`
    (`E1CloseLcaWidth.lean:126`, 4753 instructions), the glue, the output
@@ -3128,7 +3128,7 @@ consumed, through `base_pow4_le` inside `levelSlab_le` (`:363`).
 `SparseExceptionSelectData` (`Source.lean:1693`) carries no
 `localSlotsPerSuper_pos` and no `_le_machine`, so the bound came from the
 canonical builder: `localSlotsPerSuper_le`
-(`E1WholeQueryPathWidth.lean:237`) unfolds `sparseExceptionSelectData` (every
+(`E1WholeQueryPathWidth.lean:270`) unfolds `sparseExceptionSelectData` (every
 bridge is `rfl`) and applies the GENERIC
 `selectLocalSlotsPerSuper_le_superStride` (`DenseEntryTable.lean:650`).
 

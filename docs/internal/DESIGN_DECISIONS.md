@@ -8363,7 +8363,8 @@ registers at `8`, while the construction allocates to `152`), and
 fits some width. Neither spelling is honest, so width accounting stays where
 it lives, as REQ-E1-02's row. The certificate that holds with NO size
 hypothesis is `programSkeleton_fits_reviewerWordBits`
-(`E1ReviewerWidth.lean:349`), which takes exactly one argument, `shape`.
+(`E1ReviewerWidth.lean:349` at writing; `:427` since `557fe33`), which takes
+exactly one argument, `shape`.
 **But see DD-20260719-248: that certificate is about a different program than
 the one the whole-query agreement executes**, so the scoping decision's
 REASON survives checking while its reassurance does not.
@@ -8480,18 +8481,21 @@ recorded here.
 **Status.** Finding, recorded not repaired. Bears on REQ-E1-02 and on
 REQ-E1-07's width scoping decision.
 
-`programSkeleton_fits_reviewerWordBits` (`E1ReviewerWidth.lean:349`) is the
+`programSkeleton_fits_reviewerWordBits` (`E1ReviewerWidth.lean:349` at writing;
+`:427` since `557fe33`) is the
 certificate the amended target's width discussion points to, and it is as
 strong as advertised in one respect: it takes exactly one argument, `shape`,
 with **no size hypothesis and no parametric width**, at the reviewer width
-`shapeWidth` (`E1ReviewerWidth.lean:233`, aliasing
+`shapeWidth` (`E1ReviewerWidth.lean:233` at writing; `:311` since `557fe33`,
+aliasing
 `concreteBPNativeSuccinctRMQReviewerWordBits`, `ReviewerPhysical.lean:1474`).
 
 **But it certifies `programSkeleton shape.size (assembledValidPath shape)`,
 and the whole-query agreement runs `programSkeleton n (wholeQueryValidPath
 shape wholeQueryNoneExit)`. These are different programs.**
 
-* `assembledValidPath` (`E1ReviewerWidth.lean:249`) is the same-block
+* `assembledValidPath` (`E1ReviewerWidth.lean:249` at writing; `:327` since
+  `557fe33`) is the same-block
   dispatch composed with the cross-block arm at base `0` with an EMPTY
   interior; its length is `547` (`:254`).
 * `wholeQueryValidPath` (`E1WholeQueryProgram.lean:518`) has length `5636`
@@ -9308,7 +9312,8 @@ real 4204-instruction interior, via `canonicalInteriorDispatchBlock_fits`
 
 ### What could be reused, and what could not
 
-`crossArm_fits_reviewerWidth` (`E1ReviewerWidth.lean:261`) already discharges
+`crossArm_fits_reviewerWidth` (`E1ReviewerWidth.lean:261` at writing; `:339`
+since `557fe33`) already discharges
 the same seventeen premises — but for `crossBlockArmProgramAt shape
 shapeFringeSegment (shapeBlockSize shape) 0 []`: the ASSEMBLED path's cross
 arm, at segment `5`, base `0`, and with `interior = []`, whose `hinterior` is
