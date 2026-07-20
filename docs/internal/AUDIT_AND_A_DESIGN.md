@@ -7074,3 +7074,131 @@ framing.
 
 Plausibly publishable at **ITP or CPP** as a mechanized succinct-data-structure
 result — **not** as a classically competitive RMQ construction.
+
+---
+
+## C05 round 100 — PRIOR ART EXISTS. "First mechanized succinct data structure"
+## was claimed in 2016, in almost our words. The novelty that survives is
+## narrower, sharper, and better.
+
+The literature search that had never been run has now been run, and it kills the
+headline as worded.
+
+### THE DECISIVE FIND
+
+**Tanaka, Affeldt, Garrigue, ICFEM 2016, LNCS 10009 pp.243-260** — Coq +
+SSReflect, Jacobson rank, two-level directories, extracted to OCaml, benchmarked.
+Abstract, **VERBATIM**:
+
+> "We can then use Coq to formalize correctness, including important claims about
+> storage requirements, and still obtain efficient native code. To the best of
+> our knowledge, this is the first application of formal verification to succinct
+> data structures."
+
+**They claimed our headline first, in nearly our sentence.** Any framing of the
+form "first mechanized succinct data structure" or "first machine-checked space
+bound for a succinct structure" is dead.
+
+**And our `2n` is not novel either.** `louds.v:86` (downloaded from the repo),
+**VERBATIM**:
+
+> `Lemma size_LOUDS t : size (LOUDS t) = (number_of_nodes t).*2.-1.`
+
+A machine-checked exact `2n-1` bit-size theorem for a succinct tree encoding —
+structurally the same statement as our "BP core is exactly `2n` bits".
+
+### THE NOVELTY THAT SURVIVES, AND IT IS A REAL ONE
+
+**Their space results are EXACT CLOSED-FORM SIZE EQUALITIES. The asymptotic step
+to `o(n)` is taken IN PROSE, NOT IN COQ.** ICFEM 2016 section 5.3, immediately
+after the Coq lemma `rank_spaceD1`, **VERBATIM**:
+
+> "When n is large, we observe that m ~ p, thus the whole expression is
+> asymptotically equal to n/log2 n, as desired."
+
+Confirmed against the artifact, not just the paper: a grep across all eight `.v`
+files in `github.com/affeldt-aist/succinct` for `littleo|asymptot|epsilon|bigO`
+returns **nothing**. And the ITP 2019 authors say it themselves — conclusion
+p.5:17, **VERBATIM**: "For dynamic bit vectors, we will first need to properly
+define a framework for space and time complexity."
+
+**So a machine-checked ASYMPTOTIC `o(n)` redundancy bound under an eps-N
+definition appears genuinely unclaimed, in any proof assistant.** That — not the
+`2n`, not "succinct" generally — is where our weight belongs.
+
+Second differentiator, from the artifact: their development carries **12 `Axiom`
+declarations**, including `Axiom nat2ulst : nat -> seq bool` and all the log
+lemmas. We are axiom-clean. That is a real and checkable contrast.
+
+Third: **neither prior work machine-checks a cost model at all.** ICFEM
+BENCHMARKS constant time; ITP 2019 argues it informally from "a constant number
+of rank and select operations". Our charged-trace `210` and the word-RAM
+reference machine have no counterpart — but only if stated in their own terms.
+
+### NO MECHANIZED RMQ FOUND AT ALL
+
+Nor Cartesian trees, LCA, sparse tables, segment trees, Fenwick trees. Searched
+the complete AFP index — **1011 entries, downloaded and grepped**, completeness
+verified by confirming known entries appear. Every hit was a false positive
+(*Rank Aggregation*, *Compactness Theorem*, *Maximum Segment Sum*).
+
+**Stated as a search result, not a fact about the world**: the grep was
+TITLE-LEVEL, not abstract-level.
+
+### THE OBSERVATION THAT WOULD HAVE COST US IN REVIEW
+
+**"End-to-end" is our WEAKEST word, not our strongest.** We have no
+construction-time and no construction-working-space theorem, while ICFEM 2016
+extracted running code and benchmarked it. **On an "end-to-end to executable
+artifact" axis they beat us.** Claiming "end-to-end" invites a reviewer to pick
+precisely the axis where we lose.
+
+Name the actual axis instead: machine-checked asymptotics and a machine-checked
+cost model.
+
+### THE SENTENCE TO DEFEND
+
+> "To our knowledge this is the first mechanized range-minimum-query structure of
+> any kind, and the first machine-checked ASYMPTOTIC `o(n)` redundancy bound for
+> a succinct data structure — prior Coq mechanizations of succinct structures
+> (Tanaka et al., ICFEM 2016; Affeldt et al., ITP 2019) establish exact
+> closed-form size equalities and take the asymptotic step in prose."
+
+**This is rhetorically STRONGER than the original because it cites the prior
+art.** A reviewer who knows Affeldt's line will trust the rest of the paper more,
+not less.
+
+### A SEPARATE DECISION THIS REOPENS
+
+The C/Rust generation decision was declined partly on "precedent says not
+shipping executable code is unremarkable". **If the closest prior work extracts C
+and benchmarks it, that reason is weaker than I recorded.** Sent back for
+verbatim confirmation of whether the C pipeline is in ICFEM 2016 itself or only
+in the later JIP 2018 paper, whether benchmarking was against a real competitor,
+and whether either carries an artifact badge.
+
+### GAPS STILL OPEN — named honestly by the lane, and sent back to close
+
+- **The Coq/Rocq opam index (`coq-released`) was never enumerated**, though it
+  was explicitly in the brief. Highest residual risk: a package that never became
+  a paper is exactly what defeats a "first" and exactly where nobody looks.
+- **No citation-graph forward search** from ICFEM 2016 / ITP 2019. If the group
+  or a student extended this to an asymptotic bound after 2019, our remaining
+  novelty is gone. Single most decision-relevant open fact.
+- Xuanrui Qi's publication list 403'd — a thesis there could carry exactly the
+  framework ITP 2019 deferred.
+- AFP abstract-level search not done.
+- Non-English venues (JSSST/IPSJ) not read; this group publishes there.
+- **The ICFEM 2016 companion development URL now 404s**, so that specific 2016
+  artifact could not be inspected. Residual risk on the `o(n)` first. The lane
+  suggests one email to Affeldt before committing — **owner's call, external
+  contact.**
+
+### METHOD NOTE WORTH KEEPING
+
+**Two search summaries produced WRONG bibliographic data mid-run** — one gave the
+ITP 2019 author list as "Quentin Quintard, Takafumi Saikawa" (true list:
+Affeldt, Garrigue, Qi, Tanaka, from the LIPIcs cover page), and one asserted an
+AFP entry that does not exist. The lane caught both because every citation was
+required to name a retrieved artifact. **The "search fabricates citations"
+warning is not theoretical and the discipline paid for itself in a single run.**
