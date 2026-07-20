@@ -113,3 +113,36 @@ assessment should be done first and by whoever holds E1's context.
   (`f218b98`). Its real gate is **one fresh blind external audit of the exact
   release commit**, with the same auditor only for its correction loop and a
   DIFFERENT fresh auditor for final acceptance if material changes land.
+
+---
+
+## Priority update (owner, 2026-07-19)
+
+**A1 is the next highest-priority target after E1** — refactoring, renaming, and
+making the project approachable and readable, in the owner's words "of utmost
+importance". This reorders the plan above, which had listed M1 first on the
+grounds that it was closest to E1's output.
+
+**Why the reorder is right, beyond the owner's preference.** A1 is the rung that
+most directly serves the governing goal. Every other rung makes the artifact more
+CORRECT; A1 makes it more LEGIBLE, and legibility is precisely what
+"reviewers pattern-match rather than audit" measures. The `F0` scout found
+**fifty-four import-only modules** that are A1 candidates, and a reviewer
+navigating an artifact with that much dead-looking surface forms an impression
+before reading a single theorem.
+
+**Note the ordering constraint that survives.** M1 does not block A1 and A1 does
+not block M1 — they are independent. But A1's own text carries two hard rules:
+**remove dead aliases only after reverse-dependency proof**, and **mechanical
+movement and semantic strengthening must be separate commits**. The second is
+what makes A1 safely delegable at all; without it a rename and a proof change
+land in one diff and neither can be audited.
+
+**And its alias pruning touches public surface**, which is on the coordinator's
+escalate list — so the pruning decisions come to the owner even though the
+movement itself is mechanical.
+
+**M1's status is unchanged and it is cheap**: near-complete on an unmerged branch
+needing a `76 -> 210` rebase, a registry refresh, three mechanical compositions,
+and the blind audit. It can proceed in parallel with A1 under Codex without
+either waiting.
