@@ -295,6 +295,11 @@ Before closing a classifier/linter row:
   normalization, and allowance logic, rather than a copied regex or helper;
 - cover parser shapes that can change classification, including focused
   single-file and absolute-path input when the production tool accepts them.
+- for opt-out or default-sensitive path classifiers, prove that a neutral
+  directory cannot shadow a code-bearing extension and that a broad evidence
+  directory cannot admit a new current-looking public surface merely by
+  placement. Include production-verdict mutations for both boundaries; an
+  allowlisted directory name is not evidence of file role.
 
 Known examples are minimum fixtures. Completion requires evidence that the
 declared category and its allowance boundaries, not merely those sentences,
