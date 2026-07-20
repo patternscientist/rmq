@@ -4586,3 +4586,69 @@ Supersedes:
 - Only the default-cadence clause (item 7) of WDD-20260717-003. Its task
   identity, idempotent launch recovery, and multiplexed lifecycle rules remain
   accepted and unchanged.
+
+## WDD-20260719-016: make the M1 replay an exact bounded aggregate-gate dependency
+
+Status: Candidate decision; coordinator acceptance pending.
+Date: 2026-07-19.
+Scope: M1-R5 registry, selector, subprocess, topology, and aggregate-gate evidence.
+
+Decision:
+
+1. Preserve the frozen ordered semantic registry exactly as F01-F24, Q01-Q11,
+   P01-P05, C01, with 40 expected rejects and one expected accept. Pin F14 to
+   `certificate_weight_le_210`; do not add or reorder cases for frontier drift.
+2. Add a source-shape preflight that fails before semantic execution unless the
+   tree still has 22 physical sources, logical segments `0..22`, fresh rejected
+   segment `23`, the typed `segment < 23` proposition, and the named 210 chain.
+3. Resolve `-OnlyCase` through the exact registry. Cheap controls cover a valid
+   middle ID, omitted and duplicated middle ID, unknown ID, zero, and
+   whitespace; full-suite omission remains the only empty-selector meaning.
+4. Run every external Lean or Git state stage through a positive bounded
+   subprocess with redirected-output limits, timeout classification, owned
+   process-tree termination, and `finally` integrity/restoration checks. Keep a
+   sleeper that proves child-tree termination.
+5. Use a 300-second semantic stage deadline. The clean startup smoke measured
+   11.331 seconds for final model, 10.668 for classic, 5.678 for headline, and
+   51.173 for the expected-type checker; focused F14 stages measured 3.206 to
+   53.908 seconds. The deadline therefore has cold/contention margin without
+   hiding proof-only import computation.
+6. Restore the bounded 16-case paper-topology regression, including A01 removal
+   of the independent expected-type block and A02 removal of the aggregate-gate
+   invocation. Preserve current 210/readWord-only/352 topology anchors. Resolve
+   documentary symbols with the exact locally installed pinned Lean binary and
+   explicit project/toolchain `LEAN_PATH`, avoiding an unregistered `elan` shim
+   download while retaining the same bounded owned-process wrapper.
+7. Invoke `m1_certificate_mutation_regression.ps1` exactly once in
+   `scripts/gate.ps1`, immediately after the broad build, and propagate its exit
+   code. The runner itself performs all 41 cases; the gate must not enumerate or
+   repeat them.
+
+Rejected alternatives:
+
+- Treat a nonempty case list or final totals alone as an exact registry.
+- Raise the old 900-second deadline without current measurements.
+- Invoke unbounded `lake`/`lean` children or leave descendants after timeout.
+- Accept a deletion mutation that prevents the mutated public theorem itself
+  from compiling; public dependency requires a compiling weakened control.
+- Wire the runner only in prose, a local transcript, or an optional developer command.
+- Revert the current topology linter to R4's 76/old-source assumptions.
+
+Consequences and evidence:
+
+- Registry, selector, deadline, startup, C01, and F14 controls are independently
+  runnable before the full campaign.
+- The runner shadows source/oleans in a temporary owned tree and verifies live
+  tracked/index state plus hashes after every case and all exits.
+- The topology lint makes removal of the public type pin or the single gate
+  invocation a checked rejection, while two accepted controls remain.
+- Changing `scripts/gate.ps1`, even only its M1 comment/anchor, is governed by
+  this complete workflow decision as required by the write-scope contract.
+- The aggregate gate remains final certification on an unchanged tree; late
+  failures are diagnosed narrowly before any new full run.
+
+Publication-facing significance:
+
+None by itself. The decision makes the proposition-level M1 dependency and its
+anti-bypass evidence replayable; it does not change the machine, payload, cost
+model, theorem domain, or acceptance authority.

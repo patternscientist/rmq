@@ -269,8 +269,20 @@ richer machine and prove a simulation.
 
 ### M1. Make Machine Adequacy Reviewer-Native
 
-Status (updated 2026-07-19): **near-complete but unmerged. Forward-port; do not
-re-build.** `main`'s broad final-trace adequacy certificate already certifies
+Status (updated 2026-07-19): **M1-R5 local candidate reconstructed on current
+governance; coordinator acceptance, fresh-blind exact-commit audit, integration,
+and roadmap-node closure remain open.** The candidate branch carries the
+24-field reviewer certificate, independent required-facts consumer, guarded
+list packet, exact dynamic supplied-store theorem, safe corollaries, literal
+paper consumption, and exact 41-case replay. Its cost field is the current
+same-execution `nonSyntheticWeight` sum `<= 210`, derived through the named
+principled charged-trace theorem chain. It preserves 22 physical sources over
+logical segments `0..22` and rejects fresh segment `23`.
+
+This is a worker candidate status only, not `ACCEPTED`, merged, integrated, or
+full M1 roadmap-node closure. Historical forward-port diagnosis follows.
+
+`main`'s broad final-trace adequacy certificate already certifies
 all five named invariant families, including word width. The unmerged
 `codex/m1-reviewer-native-machine-adequacy-r4` branch adds a narrower named
 24-field reviewer-native certificate, an independent typed required-facts
@@ -278,8 +290,9 @@ consumer, a guarded list-facing adequacy packet, and literal public consumption
 of that packet. All four clauses are implemented there, but its public cost
 field still records the frozen historical `76` bound.
 
-That field must be re-derived against the current `210` theorem before the
-branch can compile. The residual is a forward-port, registry refresh, audit,
+That R4 field had to be re-derived against the current `210` theorem before a
+current candidate could compile. R5 completed the local forward-port and
+registry refresh; audit and integration remain coordinator-owned. The old residual was a forward-port, registry refresh, audit,
 and integration — see the ordered list at the end of this section.
 
 (The previous status line read "partially present; strengthen after `U3`". It
@@ -323,7 +336,7 @@ is `canonicalInterpretedQueryCosted`
 `refines_canonical_interpreted`. A worker grepping the roadmap's phrase will
 find nothing.
 
-M1's residual is smaller than the old status line implied.
+Historical R4 diagnosis: M1's residual was smaller than the old status line implied.
 `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy`
 (`RMQ/Core/SuccinctFinalModelAdequacy.lean`) on `main` already certifies all five
 named invariant families, including the logarithmic reviewer word size,
@@ -335,7 +348,8 @@ actual public consumer dependency. It cannot compile against `main` because it
 proves its cost field via `nonSyntheticWeight_sum_le_76`, while `76` is now a
 frozen historical constant superseded by `210`.
 
-RESIDUAL, in dependency order. Items 1-2 are the critical path; 3-5 are R4
+HISTORICAL R4 FORWARD-PORT CHECKLIST (items 1-5 are implemented in the R5
+local candidate; item 6 remains coordinator-owned). Items 1-2 were the critical path; 3-5 are R4
 implementations that must be preserved and forward-ported rather than designed
 again; 6 is the gate.
 

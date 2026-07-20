@@ -956,6 +956,199 @@ theorem flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics
       hbad
 
 /--
+Guarded list-facing reviewer-machine adequacy.
+
+The raw shape-level certificate is available only on `ValidRange`.  Every
+unconditional execution field uses the guarded list surface, so empty,
+reversed, and out-of-bounds queries remain the common `none`/empty-trace/zero-
+cost execution for every supplied physical store.  Exact agreement is on the
+first physical execution's ordered dynamic read footprint and concludes
+equality of the complete trace result.
+-/
+structure ReviewerNativeMachineAdequacy
+    (xs : List Int) (left right : Nat) : Prop where
+  canonical_payload_is_list_payload :
+    SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload
+        (cartesianShape xs) =
+      buildPayload xs
+  physical_words_erase_list_payload :
+    SuccinctSpace.flattenPayloadWords (reviewerPhysicalWords xs) =
+      buildPayload xs
+  machine_well_formed_of_valid :
+    ValidRange xs left right ->
+      SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed
+        (cartesianShape xs) left right
+  machine_required_facts_of_valid :
+    ValidRange xs left right ->
+      SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerMachineRequiredFacts
+        (cartesianShape xs) left right
+  guarded_query_is_canonical_costed_query_of_valid :
+    ValidRange xs left right ->
+      queryCosted xs left right =
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+          (cartesianShape xs) left right
+  canonical_costed_query_is_first_order_controller_of_valid :
+    ValidRange xs left right ->
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+          (cartesianShape xs) left right =
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
+          (cartesianShape xs) left right
+  guarded_physical_execution_is_list_execution :
+    (reviewerPhysicalTraceResult xs left right).value =
+        (queryTraceResult xs left right).value /\
+      (reviewerPhysicalTraceResult xs left right).trace =
+        (queryTraceResult xs left right).trace.map
+          (SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalizeEvent
+            (cartesianShape xs)) /\
+      (reviewerPhysicalTraceResult xs left right).toCosted =
+        queryCosted xs left right
+  exact_dynamic_physical_store_agreement :
+    forall storeA storeB : WordRAM.ReadStore,
+      physicalStoresAgreeOnOrderedReadFootprint
+          xs storeA storeB left right ->
+        reviewerPhysicalTraceResultWithStore xs storeA left right =
+          reviewerPhysicalTraceResultWithStore xs storeB left right
+  checked_reviewer_chain_of_valid :
+    ValidRange xs left right ->
+      queryCosted xs left right =
+          SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+            (cartesianShape xs) left right /\
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+          (cartesianShape xs) left right =
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
+          (cartesianShape xs) left right /\
+      forall store : WordRAM.ReadStore,
+        physicalStoresAgreeOnOrderedReadFootprint xs
+            (reviewerPhysicalReadStore xs) store left right ->
+          SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
+              (cartesianShape xs) left right =
+            (reviewerPhysicalTraceResultWithStore
+              xs store left right).toCosted
+  exact_dynamic_logical_store_agreement :
+    forall storeA storeB : WordRAM.ReadStore,
+      storesAgreeOnOrderedReadFootprint xs storeA storeB left right ->
+        queryTraceResultWithStore xs storeA left right =
+          queryTraceResultWithStore xs storeB left right
+  physical_value_projection_of_valid :
+    forall store : WordRAM.ReadStore,
+      ValidRange xs left right ->
+        (reviewerPhysicalTraceResultWithStore xs store left right).value =
+          (SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+            (cartesianShape xs)
+            (SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+              (cartesianShape xs) store)
+            left right).value
+  physical_value_dependency_of_valid :
+    forall storeA storeB : WordRAM.ReadStore,
+      ValidRange xs left right ->
+      (SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        (cartesianShape xs)
+        (SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+          (cartesianShape xs) storeA)
+        left right).value ≠
+      (SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        (cartesianShape xs)
+        (SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+          (cartesianShape xs) storeB)
+        left right).value ->
+        (reviewerPhysicalTraceResultWithStore xs storeA left right).value ≠
+          (reviewerPhysicalTraceResultWithStore xs storeB left right).value
+  invalid_semantics :
+    ¬ ValidRange xs left right ->
+      queryTraceResult xs left right = WordRAM.TraceResult.pure none /\
+      reviewerPhysicalTraceResult xs left right =
+        WordRAM.TraceResult.pure none /\
+      queryCosted xs left right = Costed.pure none /\
+      reviewerPhysicalFootprint xs left right = [] /\
+      forall store : WordRAM.ReadStore,
+        reviewerPhysicalTraceResultWithStore xs store left right =
+          WordRAM.TraceResult.pure none
+
+/-- The ordinary-list construction satisfies the guarded reviewer packet. -/
+theorem listIntSuccinctRMQReviewerNativeMachineAdequacy
+    (xs : List Int) (left right : Nat) :
+    ReviewerNativeMachineAdequacy xs left right := by
+  exact
+    { canonical_payload_is_list_payload := rfl
+      physical_words_erase_list_payload := by
+        simpa [reviewerPhysicalWords, buildPayload] using
+          SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases
+            (cartesianShape xs)
+      machine_well_formed_of_valid := fun _ =>
+        SuccinctFinal.concreteBPNativeSuccinctRMQReviewerMachineWellFormed
+          (cartesianShape xs) left right
+      machine_required_facts_of_valid := fun _ =>
+        (SuccinctFinal.concreteBPNativeSuccinctRMQReviewerMachineWellFormed
+          (cartesianShape xs) left right).requiredFacts
+      guarded_query_is_canonical_costed_query_of_valid := by
+        intro hvalid
+        rw [queryCosted, queryTraceResult_valid xs left right hvalid]
+        rfl
+      canonical_costed_query_is_first_order_controller_of_valid := fun _ =>
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_canonicalInterpretedCosted
+          (cartesianShape xs) left right
+      guarded_physical_execution_is_list_execution :=
+        reviewerPhysicalTraceResult_refines_queryTraceResult xs left right
+      exact_dynamic_physical_store_agreement := fun storeA storeB =>
+        reviewerPhysicalTraceResultWithStore_eq_of_orderedReadFootprint
+          xs storeA storeB left right
+      checked_reviewer_chain_of_valid := by
+        intro hvalid
+        refine ⟨?_, ?_, ?_⟩
+        · rw [queryCosted, queryTraceResult_valid xs left right hvalid]
+          rfl
+        · exact
+            SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_canonicalInterpretedCosted
+              (cartesianShape xs) left right
+        · intro store hagree
+          calc
+            SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
+                (cartesianShape xs) left right =
+                SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+                  (cartesianShape xs) left right :=
+              (SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_canonicalInterpretedCosted
+                (cartesianShape xs) left right).symm
+            _ = queryCosted xs left right := by
+              rw [queryCosted, queryTraceResult_valid xs left right hvalid]
+              rfl
+            _ = (reviewerPhysicalTraceResult xs left right).toCosted :=
+              (reviewerPhysicalTraceResult_refines_queryTraceResult
+                xs left right).2.2.symm
+            _ = (reviewerPhysicalTraceResultWithStore
+                xs store left right).toCosted :=
+              congrArg WordRAM.TraceResult.toCosted
+                (reviewerPhysicalTraceResultWithStore_eq_of_orderedReadFootprint
+                  xs (reviewerPhysicalReadStore xs) store left right hagree)
+      exact_dynamic_logical_store_agreement := by
+        intro storeA storeB hagree
+        by_cases hvalid : ValidRange xs left right
+        · have hraw :
+              SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint
+                (cartesianShape xs) storeA storeB left right := by
+            intro segment index hmem
+            apply hagree segment index
+            simpa [orderedReadFootprintWithStore,
+              queryTraceResultWithStore_valid xs storeA left right hvalid,
+              SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryOrderedReadFootprintWithStore]
+              using hmem
+          rw [queryTraceResultWithStore_valid xs storeA left right hvalid,
+            queryTraceResultWithStore_valid xs storeB left right hvalid]
+          exact
+            SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint
+              (cartesianShape xs) storeA storeB left right hraw
+        · simp [queryTraceResultWithStore, withValidRange, hvalid]
+      physical_value_projection_of_valid := fun store =>
+        reviewerPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator_of_valid
+          xs store left right
+      physical_value_dependency_of_valid := fun storeA storeB =>
+        reviewerPhysicalTraceResultWithStore_value_ne_of_suppliedStoreEvaluator_value_ne_of_valid
+          xs storeA storeB left right
+      invalid_semantics :=
+        flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics
+          xs left right }
+
+
+/--
 Shape-only local queries over `Cartesian.shape xs` return the same leftmost
 RMQ answer as scanning the original list.
 -/
@@ -1085,30 +1278,6 @@ theorem queryCosted_cost_le
   · simp [queryCosted, queryTraceResult, withValidRange, hvalid,
       queryCost]
 
-/--
-If a supplied store agrees with the canonical global store on the final
-footprint, the supplied-store query is exactly the canonical list-facing query.
--/
-theorem queryCostedWithStore_eq_queryCosted_of_footprint
-    (xs : List Int) {store : WordRAM.ReadStore}
-    (hfoot : storesAgreeOnFootprint xs store (globalReadStore xs))
-    (left right : Nat) :
-    queryCostedWithStore xs store left right =
-      queryCosted xs left right := by
-  by_cases hvalid : ValidRange xs left right
-  · rw [queryCostedWithStore, queryCosted,
-      queryTraceResultWithStore_valid xs store left right hvalid,
-      queryTraceResult_valid xs left right hvalid]
-    simpa [
-      storesAgreeOnFootprint, globalReadStore,
-      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore,
-      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted]
-      using
-        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_eq_global_of_footprint
-          (cartesianShape xs) store hfoot left right
-  · simp [queryCostedWithStore, queryCosted,
-      queryTraceResultWithStore, queryTraceResult, withValidRange, hvalid]
-
 /-- Agreement on the actual ordered footprint determines the complete
 supplied-store execution: decoded result, cost, ordered trace, repeated reads,
 and failed reads are identical. -/
@@ -1148,6 +1317,73 @@ theorem queryCostedWithStore_eq_of_orderedReadFootprint
   exact congrArg WordRAM.TraceResult.toCosted
     (queryTraceResultWithStore_eq_of_orderedReadFootprint
       xs storeA storeB left right hagree)
+
+/-- The canonical logical store produces the guarded canonical trace. -/
+theorem queryTraceResultWithStore_globalReadStore
+    (xs : List Int) (left right : Nat) :
+    queryTraceResultWithStore xs (globalReadStore xs) left right =
+      queryTraceResult xs left right := by
+  by_cases hvalid : ValidRange xs left right
+  · rw [queryTraceResultWithStore_valid xs (globalReadStore xs)
+        left right hvalid,
+      queryTraceResult_valid xs left right hvalid]
+    exact
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore
+        (cartesianShape xs) left right
+  · simp [queryTraceResultWithStore, queryTraceResult,
+      withValidRange, hvalid]
+
+/-- Safe final-layout agreement implies agreement on the first execution's
+exact ordered dynamic read footprint. -/
+theorem storesAgreeOnOrderedReadFootprint_of_footprint
+    (xs : List Int) {store : WordRAM.ReadStore}
+    (hfoot : storesAgreeOnFootprint xs store (globalReadStore xs))
+    (left right : Nat) :
+    storesAgreeOnOrderedReadFootprint
+      xs store (globalReadStore xs) left right := by
+  by_cases hvalid : ValidRange xs left right
+  · have hraw :
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint
+          (cartesianShape xs) store (globalReadStore xs) left right := by
+      rw [SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint_iff]
+      intro segment index word? hmem
+      apply hfoot segment index
+      exact
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint
+          (cartesianShape xs) store left right hmem
+    intro segment index hmem
+    apply hraw segment index
+    simpa [orderedReadFootprintWithStore,
+      queryTraceResultWithStore_valid xs store left right hvalid,
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryOrderedReadFootprintWithStore]
+      using hmem
+  · intro segment index hmem
+    simp [orderedReadFootprintWithStore,
+      queryTraceResultWithStore_invalid xs store left right hvalid]
+      at hmem
+
+/--
+Safe final-layout agreement is a corollary of exact dynamic-read agreement:
+the complete supplied-store trace is first determined on the ordered footprint
+and only then projected to `Costed`.
+-/
+theorem queryCostedWithStore_eq_queryCosted_of_footprint
+    (xs : List Int) {store : WordRAM.ReadStore}
+    (hfoot : storesAgreeOnFootprint xs store (globalReadStore xs))
+    (left right : Nat) :
+    queryCostedWithStore xs store left right =
+      queryCosted xs left right := by
+  calc
+    queryCostedWithStore xs store left right =
+        queryCostedWithStore xs (globalReadStore xs) left right :=
+      queryCostedWithStore_eq_of_orderedReadFootprint
+        xs store (globalReadStore xs) left right
+          (storesAgreeOnOrderedReadFootprint_of_footprint
+            xs hfoot left right)
+    _ = queryCosted xs left right :=
+      congrArg WordRAM.TraceResult.toCosted
+        (queryTraceResultWithStore_globalReadStore xs left right)
+
 
 /--
 Under footprint agreement with the canonical global store, the supplied-store

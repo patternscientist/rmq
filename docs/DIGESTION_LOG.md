@@ -1193,3 +1193,42 @@ The paper-topology gate now rejects those two exact classes on the bounded
 current reader surface. This keeps development chronology available in the
 decision and audit records while ensuring that the public source and family map
 read as durable mathematical exposition.
+
+## 2026-07-19 M1-R5 Current-Frontier Reviewer-Native Adequacy Candidate
+
+M1-R5 reconstructs the useful R4 machine-adequacy layer on the repaired current
+base without importing its stale theorem bodies. The central object is a
+24-field certificate over the current canonical payload, 22 physical sources,
+logical segments `0..22`, exact supplied-store execution, ordered footprint,
+first-order controller, and reviewer width. A separate 24-field type consumes
+each fact by literal projection, and a guarded ordinary-list packet connects
+the public query, canonical costed execution, interpreted controller, and exact
+supplied physical result.
+
+The conceptual change is dependency, not a new algorithm. The paper theorem
+now asks for those guarded objects and directly asks that the same canonical
+trace's `nonSyntheticWeight` sum be at most `210`. That field comes from the
+current theorem chain ending in the checked principled cost equality, not from
+an asserted numeral. Safe layout agreement is still convenient, but its result,
+backing, cost, and exactness statements first pass through exact agreement on
+the dynamic ordered reads and equality of the complete `TraceResult`.
+
+Plain English: a reviewer can follow one typed packet from the `List Int`
+validity guard to the real supplied-store execution and its exact current cost
+certificate. Deleting any certificate field, substituting a sibling object, or
+weakening the public proposition is meant to break a named consumer rather than
+leave an unused wrapper.
+
+The live assumptions remain explicit: payload bits, proof-only certificate
+fields, modeled ticks, emitted events, physical allocation, Lean runtime, and
+measured performance are distinct categories. The route is word-addressed over
+a supplied store. S1 raw `List Bool` decoding/querying, E1 small-step controller
+charging, A1 refactoring, V1 artifact freeze, preprocessing, and conventional
+word-RAM complexity are outside this rung.
+
+The strongest skeptical graduate-student question is whether the public 210
+field is genuinely object-identical and anti-vacuous. The replay answers by
+compiling a weakened 211 certificate and paper theorem, then requiring the
+independent 210 expected type to reject it; the other 40 reject/one accept cases
+probe every field and public link. Coordinator exact-commit reconstruction and
+a fresh-blind audit remain mandatory before acceptance.

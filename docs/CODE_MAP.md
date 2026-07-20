@@ -91,6 +91,9 @@ spine and a model-adequacy spine.
   `succinctRMQListIntTwoNPlusOConstantQuery`,
   `listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`,
   `listIntSuccinctRMQPaperMainTheorem`,
+  `succinctRMQReviewerMachineWellFormed`,
+  `succinctRMQReviewerMachineRequiredFacts`,
+  `listIntSuccinctRMQReviewerNativeMachineAdequacy`,
   `succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`,
   `succinctRMQFlatPayloadStoreNoSyntheticExecutionStory`, and
   `succinctRMQFinalFullModelSoundness`. `RMQ/Headlines/RMQCompatibility.lean`
@@ -105,6 +108,10 @@ The model-adequacy theorem spine to look for is:
 - `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_noSynthetic_execution_story`
 - `concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story`
 - `concreteBPNativeSuccinctRMQFinalTraceModelAdequacy`
+- `concreteBPNativeSuccinctRMQReviewerMachineWellFormed`
+- `ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed.requiredFacts`
+- `concreteBPNativeSuccinctRMQReviewerMachineRequiredFacts`
+- `SuccinctClassic.listIntSuccinctRMQReviewerNativeMachineAdequacy`
 - `concreteBPNativeSuccinctRMQFinalSuppliedStoreAdequacy`
 - `concreteBPNativeSuccinctRMQFinalFullModelSoundness`
 

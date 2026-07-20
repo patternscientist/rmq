@@ -63,8 +63,8 @@ for checked historical profiles under `Legacy`/`Compatibility` names.
 | --- | --- |
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Reader-facing theorem over ordinary `xs : List Int`: `buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`; valid half-open queries return the exact leftmost RMQ answer, invalid or empty ranges return `none`, and modeled query cost is constant. |
 | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Reader-facing no-synthetic execution story over ordinary `xs : List Int`, including the same public space inequality and range contract. Exact physical-word erasure is also conjoined directly in the paper main theorem; the construction is not padded to manufacture a size equality. |
-| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing theorem consuming one global reviewer-manifest semantic packet, then combining the list theorem's amended at-most payload bound, `overhead = o(n)`, exact valid answers, current-query raw adequacy and occurrence provenance, the all-invalid none/empty/zero packet, translated supplied-store `.value` provenance, constant modeled query cost, and the final no-synthetic flat-payload trace story. |
-| `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint` | List-facing supplied-store equality: under final footprint agreement with `SuccinctClassic.globalReadStore xs`, `SuccinctClassic.queryCostedWithStore xs store left right` is the same costed query as canonical `SuccinctClassic.queryCosted xs left right`. |
+| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing theorem consuming the manifest packet, guarded reviewer-native certificate and independent 24-field required-facts projection, guarded list packet, literal same-execution `nonSyntheticWeight <= 210`, and complete supplied-store `TraceResult` equality under exact ordered dynamic-read agreement, together with the existing payload, answer, invalid-range, provenance, and no-synthetic clauses. |
+| `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint` | List-facing safe-footprint supplied-store equality, derived through agreement on the first execution's ordered dynamic read footprint and complete `TraceResult` equality before projection to `Costed`. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store all-size cost transfer: under the same footprint agreement, the supplied-store query has modeled cost at most `SuccinctClassic.queryCost`. |
 | `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile` | Canonical construction-facing profile: doubled-Catalan space envelopes, the at-most `2*n + o(n)` canonical reviewer payload, exact physical-word erasure, direct positional physical backing for every successful read, exact queries through the same global trace, non-synthetic certificate weight equal to both trace length and its `Costed.cost`, and the uniform bound `210`. |
@@ -80,6 +80,9 @@ for checked historical profiles under `Legacy`/`Compatibility` names.
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe210` | The non-synthetic-weighted actual emitted trace is bounded by `210`. |
 | `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality` | Counterfactual check: a synthetic event anywhere in a trace makes its `nonSyntheticWeight` sum differ from its length. |
 | `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Component cap `2*select35 + (2*rank11 + 2*fringe37 + interior33) + rank11 = 210`; the actual-event bridge above connects it to execution. |
+| `RMQ.Headlines.succinctRMQReviewerMachineWellFormed` | Shape-level 24-field certificate tying the current canonical payload, 22 physical sources, store adapter, exact execution/footprint, backing, first-order controller, same-trace `<= 210` certificate, and width bounds to the same objects. |
+| `RMQ.Headlines.succinctRMQReviewerMachineRequiredFacts` | Independent typed 24-fact consumer populated only by literal projections from the certificate. |
+| `RMQ.Headlines.listIntSuccinctRMQReviewerNativeMachineAdequacy` | Guarded `List Int` packet connecting the public query, canonical costed trace, interpreted controller, and exact-agreement supplied physical execution while preserving coherent invalid semantics. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | Uniform structural execution story with direct same-block decoding and canonical component-store cross-block replay. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | No-synthetic all-size execution story: the same bounded global trace contains no dedicated synthetic cost-only marker events. |
 | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Canonical reviewer-payload no-synthetic execution story: successful reads are counted in one exhaustive typed 22-source universe over logical segments `0..22`, including canonical close; BP roles `0` and `19` share one physical source, live segment `21` is present, segment `23` has no producer, and cross-block replay is uniform for all sizes. |
@@ -359,9 +362,9 @@ package, calibrate, and reuse the infrastructure:
    true inverse-Ackermann amortized theorem over strict residual events; and
 3. have E1 define a richer instruction semantics and prove that it simulates
    the same canonical execution while charging controller work; the current theorem deliberately
-   provides no parallel controller-operation vocabulary, and M1's
-   serialized-payload query and complete preprocessing obligations remain
-   separate; and
+   provides no parallel controller-operation vocabulary; the M1 reviewer-native
+   adequacy candidate remains word-addressed over the supplied store, while S1
+   serialized-payload querying and complete preprocessing remain separate; and
 4. promote shared cost, refinement, lower-bound, and amortized-analysis pieces
    into a more neutral library surface only when concrete reuse demands it.
 

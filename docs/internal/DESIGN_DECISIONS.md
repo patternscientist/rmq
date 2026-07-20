@@ -4399,3 +4399,61 @@ Consequences and evidence:
   not a new mathematical or machine-model decision.
 - Exact production verdicts and final-tree timings are recorded in
   `docs/internal/P1_POLICY_HARDENING_WORKLOG.md`.
+
+## DD-20260719-008: reviewer-native adequacy uses a direct same-execution 210 field
+
+Status: Candidate decision; coordinator acceptance pending.
+
+Date: 2026-07-19
+
+Context:
+
+The useful R4 semantic delta packaged 24 reviewer-machine facts, an independent
+typed consumer, exact supplied-store determinism, and a guarded list chain, but
+its cost field named and stated the then-live bound `76`. Current governance
+instead has 22 physical sources over logical segments `0..22`, fresh rejected
+segment `23`, and the checked principled charged-trace identity `210`.
+
+Decision:
+
+Keep the R4 certificate, required-facts, and guarded-list proposition shapes,
+renaming their cost fields to `certificate_weight_le_210` and
+`requires_certificate_weight_le_210`. Their proposition is the direct
+`nonSyntheticWeight` sum `<= 210` over the exact canonical execution carried by
+the surrounding certificate. Populate the canonical certificate only from
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_210`,
+whose source proof factors through the principled charged-trace inequality and
+`concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`. Make the
+paper theorem consume the guarded required-facts projection and the direct
+`<= 210` proposition literally. Keep complete `TraceResult` equality under the
+first execution's ordered dynamic reads primary; safe-layout agreement remains
+a corollary through that exact theorem.
+
+Rejected alternatives:
+
+- Retain the historical 76 field or bridge it through a frozen compatibility theorem.
+- Fill a copied `<= 210` assertion by `rfl`, `decide`, `omega`, or a sibling aggregate.
+- Weaken complete-result determinism to value or cost equality.
+- Rebuild the certificate from current broad facts while discarding R4's
+  independent projection and public dependency.
+- Describe the word-addressed supplied-store route as serialized-payload querying.
+
+Consequences and evidence:
+
+- The 24 certificate fields and 24 independently named consumer fields refer to
+  the same payload, shape, query, stores, trace, cost, and word-width objects.
+- The guarded list packet preserves the half-open leftmost `List Int` contract,
+  exact four-link execution chain, value dependency, and coherent invalid route.
+- `scripts/headline_axiom_check.lean` pins the entire public proposition with a
+  proof term consisting solely of `listIntSuccinctRMQPaperMainTheorem`.
+- M1 mutation F14 first deletes the field, then compiles a weakened 211
+  certificate and paper theorem before the independent 210 consumer rejects it.
+- No payload bit, source manifest, trace event, charged tick, B7 behavior, E1
+  declaration, or frozen compatibility identity is changed.
+
+Publication-facing significance:
+
+Reviewers can cite one proposition-level certificate and guarded list packet
+without inferring that a nearby cost theorem applies to the same execution.
+S1 raw serialized-payload querying and E1 charged-controller simulation remain
+separate theorem obligations.

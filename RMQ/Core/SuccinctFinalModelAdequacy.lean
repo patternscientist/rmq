@@ -401,6 +401,451 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
         concreteBPNativeSuccinctRMQReviewerSuccessfulRead_word_length_le_wordBits
           shape }
 
+/--
+Reviewer-native well-formedness certificate for the accepted physical machine.
+
+Unlike the broader trace-adequacy inventory above, this record selects the
+facts needed to identify one reviewer execution end to end: the canonical
+payload and physical words, the translated physical store, the executed trace
+and its exact ordered footprint, successful-read backing, the first-order
+controller result, the current charged-trace cost, and the all-size word/address
+bounds.  It introduces no new evaluator or execution path.
+-/
+structure ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed
+    (shape : Cartesian.CartesianShape) (left right : Nat) : Prop where
+  physical_words_erase_canonical_payload :
+    SuccinctSpace.flattenPayloadWords
+        (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape) =
+      concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape
+  physical_execution_is_canonical_trace :
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+        shape left right).value =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).value /\
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+        shape left right).trace =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map
+          (concreteBPNativeSuccinctRMQReviewerPhysicalizeEvent shape) /\
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+        shape left right).toCosted =
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+        shape left right
+  canonical_trace_is_first_order_controller :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+        shape left right =
+      concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
+        shape left right
+  canonical_physical_store_adapts_to_global_store :
+    concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape) =
+      concreteBPNativeSuccinctRMQGlobalReadStore shape
+  physical_events_match_canonical_store :
+    forall event,
+      event ∈
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right).trace ->
+        event.matchesReadStore
+          (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
+  successful_physical_reads_backed_by_canonical_words :
+    forall {address : Nat} {word : List Bool},
+      WordRAM.TraceEvent.readWord 0 address (some word) ∈
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right).trace ->
+        address <
+            (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape).length /\
+          (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape)[address]? =
+            some word
+  ordered_physical_footprint_recorded :
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint
+        shape left right =
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+          shape left right).trace.filterMap fun event =>
+        match event with
+        | WordRAM.TraceEvent.readWord 0 address _ => some address
+        | WordRAM.TraceEvent.readWord _ _ _ => none
+        | _ => none
+  supplied_execution_eq_of_exact_read_agreement :
+    forall storeB : WordRAM.ReadStore,
+      concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalStoresAgreeOnOrderedFootprint
+          shape (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
+          storeB left right ->
+        concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right =
+          concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+            shape storeB left right
+  physical_value_is_translated_supplied_store_value :
+    forall physicalStore : WordRAM.ReadStore,
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape physicalStore left right).value =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+          shape physicalStore)
+        left right).value
+  physical_value_dependency :
+    forall storeA storeB : WordRAM.ReadStore,
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape storeA)
+        left right).value ≠
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape storeB)
+        left right).value ->
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape storeA left right).value ≠
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape storeB left right).value
+  no_synthetic_physical_event :
+    forall event,
+      event ∈
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive
+  certificate_weight_eq_trace_length :
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.length
+  certificate_weight_eq_cost :
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+        shape left right).cost
+  certificate_weight_le_210 :
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum <=
+      210
+  reviewer_capacity_linear :
+    concreteBPNativeSuccinctRMQReviewerCapacity shape.size =
+      400000 * (shape.size + 1)
+  physical_words_fit_capacity :
+    (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape).length <=
+      concreteBPNativeSuccinctRMQReviewerCapacity shape.size
+  reviewer_word_bits_logarithmic :
+    concreteBPNativeSuccinctRMQReviewerWordBits shape.size <=
+      20 * (Nat.log2 (shape.size + 2) + 1)
+  input_operands_fit_reviewer_word :
+    forall operand, operand <= shape.size ->
+      operand < 2 ^ concreteBPNativeSuccinctRMQReviewerWordBits shape.size
+  segment_encodings_fit_reviewer_word :
+    forall segment, segment <= concreteBPNativeDeadTraceSegment ->
+      segment < 2 ^ concreteBPNativeSuccinctRMQReviewerWordBits shape.size
+  every_physical_address_fits_reviewer_word :
+    forall segment index,
+      concreteBPNativeSuccinctRMQReviewerPhysicalAddress
+          shape segment index <
+        2 ^ concreteBPNativeSuccinctRMQReviewerWordBits shape.size
+  every_recorded_footprint_address_fits_reviewer_word :
+    forall address,
+      address ∈
+          concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint
+            shape left right ->
+        address <
+          2 ^ concreteBPNativeSuccinctRMQReviewerWordBits shape.size
+  physical_primitive_operands_fit_reviewer_word :
+    forall event,
+      event ∈
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right).trace ->
+        concreteBPNativeTraceEventPrimitiveOperandsFitInBits
+          (concreteBPNativeSuccinctRMQReviewerWordBits shape.size) event
+  every_stored_physical_word_fits_reviewer_word :
+    forall {word : List Bool},
+      word ∈ concreteBPNativeSuccinctRMQReviewerPhysicalWords shape ->
+        word.length <=
+          concreteBPNativeSuccinctRMQReviewerWordBits shape.size
+  every_successful_returned_word_fits_reviewer_word :
+    forall {segment index : Nat} {word : List Bool},
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          segment index = some word ->
+        word.length <=
+          concreteBPNativeSuccinctRMQReviewerWordBits shape.size
+
+/--
+Independent typed consumer contract for every mandatory fact in the
+reviewer-native machine certificate.
+
+The field names are deliberately distinct from the certificate fields.  The
+conversion theorem below must project every certificate field literally; it
+may not rebuild these facts from sibling theorems.  This keeps the public
+acceptance contract sensitive to field deletion, proposition weakening, and
+object substitution while introducing no new evaluator or machine object.
+-/
+structure ConcreteBPNativeSuccinctRMQReviewerMachineRequiredFacts
+    (shape : Cartesian.CartesianShape) (left right : Nat) : Prop where
+  requires_physical_words_erase_canonical_payload :
+    SuccinctSpace.flattenPayloadWords
+        (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape) =
+      concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape
+  requires_physical_execution_is_canonical_trace :
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+        shape left right).value =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).value /\
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+        shape left right).trace =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map
+          (concreteBPNativeSuccinctRMQReviewerPhysicalizeEvent shape) /\
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+        shape left right).toCosted =
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+        shape left right
+  requires_canonical_trace_is_first_order_controller :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+        shape left right =
+      concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
+        shape left right
+  requires_canonical_physical_store_adapts_to_global_store :
+    concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape) =
+      concreteBPNativeSuccinctRMQGlobalReadStore shape
+  requires_physical_events_match_canonical_store :
+    forall event,
+      event ∈
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right).trace ->
+        event.matchesReadStore
+          (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
+  requires_successful_physical_reads_backed_by_canonical_words :
+    forall {address : Nat} {word : List Bool},
+      WordRAM.TraceEvent.readWord 0 address (some word) ∈
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right).trace ->
+        address <
+            (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape).length /\
+          (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape)[address]? =
+            some word
+  requires_ordered_physical_footprint_recorded :
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint
+        shape left right =
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+          shape left right).trace.filterMap fun event =>
+        match event with
+        | WordRAM.TraceEvent.readWord 0 address _ => some address
+        | WordRAM.TraceEvent.readWord _ _ _ => none
+        | _ => none
+  requires_supplied_execution_eq_of_exact_read_agreement :
+    forall storeB : WordRAM.ReadStore,
+      concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalStoresAgreeOnOrderedFootprint
+          shape (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
+          storeB left right ->
+        concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right =
+          concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+            shape storeB left right
+  requires_physical_value_is_translated_supplied_store_value :
+    forall physicalStore : WordRAM.ReadStore,
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape physicalStore left right).value =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+          shape physicalStore)
+        left right).value
+  requires_physical_value_dependency :
+    forall storeA storeB : WordRAM.ReadStore,
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape storeA)
+        left right).value ≠
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape storeB)
+        left right).value ->
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape storeA left right).value ≠
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape storeB left right).value
+  requires_no_synthetic_physical_event :
+    forall event,
+      event ∈
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive
+  requires_certificate_weight_eq_trace_length :
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.length
+  requires_certificate_weight_eq_cost :
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+        shape left right).cost
+  requires_certificate_weight_le_210 :
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum <=
+      210
+  requires_reviewer_capacity_linear :
+    concreteBPNativeSuccinctRMQReviewerCapacity shape.size =
+      400000 * (shape.size + 1)
+  requires_physical_words_fit_capacity :
+    (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape).length <=
+      concreteBPNativeSuccinctRMQReviewerCapacity shape.size
+  requires_reviewer_word_bits_logarithmic :
+    concreteBPNativeSuccinctRMQReviewerWordBits shape.size <=
+      20 * (Nat.log2 (shape.size + 2) + 1)
+  requires_input_operands_fit_reviewer_word :
+    forall operand, operand <= shape.size ->
+      operand < 2 ^ concreteBPNativeSuccinctRMQReviewerWordBits shape.size
+  requires_segment_encodings_fit_reviewer_word :
+    forall segment, segment <= concreteBPNativeDeadTraceSegment ->
+      segment < 2 ^ concreteBPNativeSuccinctRMQReviewerWordBits shape.size
+  requires_every_physical_address_fits_reviewer_word :
+    forall segment index,
+      concreteBPNativeSuccinctRMQReviewerPhysicalAddress
+          shape segment index <
+        2 ^ concreteBPNativeSuccinctRMQReviewerWordBits shape.size
+  requires_every_recorded_footprint_address_fits_reviewer_word :
+    forall address,
+      address ∈
+          concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint
+            shape left right ->
+        address <
+          2 ^ concreteBPNativeSuccinctRMQReviewerWordBits shape.size
+  requires_physical_primitive_operands_fit_reviewer_word :
+    forall event,
+      event ∈
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right).trace ->
+        concreteBPNativeTraceEventPrimitiveOperandsFitInBits
+          (concreteBPNativeSuccinctRMQReviewerWordBits shape.size) event
+  requires_every_stored_physical_word_fits_reviewer_word :
+    forall {word : List Bool},
+      word ∈ concreteBPNativeSuccinctRMQReviewerPhysicalWords shape ->
+        word.length <=
+          concreteBPNativeSuccinctRMQReviewerWordBits shape.size
+  requires_every_successful_returned_word_fits_reviewer_word :
+    forall {segment index : Nat} {word : List Bool},
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          segment index = some word ->
+        word.length <=
+          concreteBPNativeSuccinctRMQReviewerWordBits shape.size
+
+/--
+Project every mandatory certificate field into the independent required-facts
+contract.  Every right-hand side is intentionally a literal projection from
+`h`; sibling theorems and the canonical constructor are not used here.
+-/
+theorem ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed.requiredFacts
+    {shape : Cartesian.CartesianShape} {left right : Nat}
+    (h : ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed
+      shape left right) :
+    ConcreteBPNativeSuccinctRMQReviewerMachineRequiredFacts
+      shape left right :=
+  { requires_physical_words_erase_canonical_payload :=
+      h.physical_words_erase_canonical_payload
+    requires_physical_execution_is_canonical_trace :=
+      h.physical_execution_is_canonical_trace
+    requires_canonical_trace_is_first_order_controller :=
+      h.canonical_trace_is_first_order_controller
+    requires_canonical_physical_store_adapts_to_global_store :=
+      h.canonical_physical_store_adapts_to_global_store
+    requires_physical_events_match_canonical_store :=
+      h.physical_events_match_canonical_store
+    requires_successful_physical_reads_backed_by_canonical_words :=
+      h.successful_physical_reads_backed_by_canonical_words
+    requires_ordered_physical_footprint_recorded :=
+      h.ordered_physical_footprint_recorded
+    requires_supplied_execution_eq_of_exact_read_agreement :=
+      h.supplied_execution_eq_of_exact_read_agreement
+    requires_physical_value_is_translated_supplied_store_value :=
+      h.physical_value_is_translated_supplied_store_value
+    requires_physical_value_dependency :=
+      h.physical_value_dependency
+    requires_no_synthetic_physical_event :=
+      h.no_synthetic_physical_event
+    requires_certificate_weight_eq_trace_length :=
+      h.certificate_weight_eq_trace_length
+    requires_certificate_weight_eq_cost :=
+      h.certificate_weight_eq_cost
+    requires_certificate_weight_le_210 :=
+      h.certificate_weight_le_210
+    requires_reviewer_capacity_linear :=
+      h.reviewer_capacity_linear
+    requires_physical_words_fit_capacity :=
+      h.physical_words_fit_capacity
+    requires_reviewer_word_bits_logarithmic :=
+      h.reviewer_word_bits_logarithmic
+    requires_input_operands_fit_reviewer_word :=
+      h.input_operands_fit_reviewer_word
+    requires_segment_encodings_fit_reviewer_word :=
+      h.segment_encodings_fit_reviewer_word
+    requires_every_physical_address_fits_reviewer_word :=
+      h.every_physical_address_fits_reviewer_word
+    requires_every_recorded_footprint_address_fits_reviewer_word :=
+      h.every_recorded_footprint_address_fits_reviewer_word
+    requires_physical_primitive_operands_fit_reviewer_word :=
+      h.physical_primitive_operands_fit_reviewer_word
+    requires_every_stored_physical_word_fits_reviewer_word :=
+      h.every_stored_physical_word_fits_reviewer_word
+    requires_every_successful_returned_word_fits_reviewer_word :=
+      h.every_successful_returned_word_fits_reviewer_word }
+
+/-- The accepted canonical objects satisfy the reviewer-native certificate. -/
+theorem concreteBPNativeSuccinctRMQReviewerMachineWellFormed
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed
+      shape left right := by
+  let h := concreteBPNativeSuccinctRMQFinalTraceModelAdequacy shape left right
+  exact
+    { physical_words_erase_canonical_payload :=
+        h.physical_words_erase_public_payload
+      physical_execution_is_canonical_trace :=
+        ⟨h.physical_execution_refines_logical.1,
+          h.physical_execution_refines_logical.2.1,
+          by simpa [concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted]
+            using h.physical_execution_refines_logical.2.2.1⟩
+      canonical_trace_is_first_order_controller :=
+        h.refines_canonical_interpreted
+      canonical_physical_store_adapts_to_global_store :=
+        concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter_canonical shape
+      physical_events_match_canonical_store :=
+        h.physical_events_match_store
+      successful_physical_reads_backed_by_canonical_words :=
+        h.successful_physical_reads_backed
+      ordered_physical_footprint_recorded :=
+        h.physical_footprint_recorded
+      supplied_execution_eq_of_exact_read_agreement :=
+        h.physical_execution_determined_by_consumed_footprint
+      physical_value_is_translated_supplied_store_value :=
+        h.physical_value_is_supplied_store_evaluator_value
+      physical_value_dependency := h.physical_value_dependency
+      no_synthetic_physical_event :=
+        concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult_no_syntheticCostOnlyPrimitive
+          shape left right
+      certificate_weight_eq_trace_length :=
+        h.nonSyntheticWeight_sum_eq_trace_length
+      certificate_weight_eq_cost := h.nonSyntheticWeight_sum_eq_cost
+      certificate_weight_le_210 := h.nonSyntheticWeight_sum_le_210
+      reviewer_capacity_linear := h.reviewer_capacity_linear
+      physical_words_fit_capacity := h.physical_words_fit_capacity
+      reviewer_word_bits_logarithmic := h.reviewer_word_bits_logarithmic
+      input_operands_fit_reviewer_word := h.input_operands_fit_reviewer_word
+      segment_encodings_fit_reviewer_word :=
+        h.segment_encodings_fit_reviewer_word
+      every_physical_address_fits_reviewer_word :=
+        h.every_physical_address_fits_reviewer_word
+      every_recorded_footprint_address_fits_reviewer_word :=
+        h.every_recorded_physical_footprint_address_fits
+      physical_primitive_operands_fit_reviewer_word :=
+        h.physical_primitive_operands_fit_reviewer_word
+      every_stored_physical_word_fits_reviewer_word :=
+        h.every_stored_physical_word_fits_reviewer_word
+      every_successful_returned_word_fits_reviewer_word :=
+        h.every_successful_returned_word_fits_reviewer_word }
+
+/-- The canonical certificate supplies every independently pinned fact. -/
+theorem concreteBPNativeSuccinctRMQReviewerMachineRequiredFacts
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    ConcreteBPNativeSuccinctRMQReviewerMachineRequiredFacts
+      shape left right :=
+  (concreteBPNativeSuccinctRMQReviewerMachineWellFormed
+    shape left right).requiredFacts
+
 /-- Paper-facing exactness alias paired with the model-adequacy bundle. -/
 theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy_exact
     {n : Nat} {shape : Cartesian.CartesianShape}
@@ -412,6 +857,147 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy_exact
   exact
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact
       hshape hlen hbound
+
+/-- Agreement on the safe final-layout footprint implies agreement on the
+first supplied execution's exact ordered dynamic read footprint. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint_of_footprint
+    (shape : Cartesian.CartesianShape)
+    {storeA storeB : WordRAM.ReadStore}
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape storeA storeB)
+    (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint
+      shape storeA storeB left right := by
+  rw [concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint_iff]
+  intro segment index word? hmem
+  apply hfoot segment index
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint
+      shape storeA left right hmem
+
+/--
+Safe final-layout agreement determines the complete supplied-store execution
+through the exact ordered dynamic-read theorem.  This wrapper has the legacy
+safe-footprint proposition but makes the M1 proof route explicit.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint_via_orderedReadFootprint
+    (shape : Cartesian.CartesianShape)
+    {storeA storeB : WordRAM.ReadStore}
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape storeA storeB)
+    (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape storeA left right =
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape storeB left right := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint
+      shape storeA storeB left right
+        (concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint_of_footprint
+          shape hfoot left right)
+
+/--
+Safe-footprint equality with the canonical global trace, routed first through
+exact ordered dynamic-read agreement and complete `TraceResult` equality.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint_via_orderedReadFootprint
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape store left right =
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right := by
+  calc
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape store left right =
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        left right :=
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint_via_orderedReadFootprint
+        shape hfoot left right
+    _ = concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right :=
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore
+        shape left right
+
+/--
+Successful-read backing under safe-footprint agreement, after exact dynamic
+agreement has identified the complete supplied and canonical traces.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_successful_reads_backed_by_counted_flat_payload_of_footprint_global_via_orderedReadFootprint
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    (left right : Nat) :
+    forall {segment index : Nat} {word : List Bool},
+      WordRAM.TraceEvent.readWord segment index (some word) ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+            shape store left right).trace ->
+        concreteBPNativeSuccinctRMQCanonicalReviewerReadBacked
+          shape segment index word := by
+  intro segment index word hmem
+  have hmemGlobal :
+      WordRAM.TraceEvent.readWord segment index (some word) ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace := by
+    rw [
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint_via_orderedReadFootprint
+        shape store hfoot left right] at hmem
+    exact hmem
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload
+      shape left right hmemGlobal
+
+/--
+The principled supplied-store cost bound under safe-footprint agreement,
+obtained only after exact dynamic agreement fixes the complete trace result.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_principledAllSizeChargedTrace_via_orderedReadFootprint
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    (left right : Nat) :
+  (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left right).cost <=
+        concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost := by
+  unfold concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint_via_orderedReadFootprint
+      shape store hfoot left right]
+  simpa [concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted] using
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
+      shape left right
+
+/--
+Exact RMQ answers under safe-footprint agreement, after complete-result
+equality has been obtained from exact ordered dynamic-read agreement.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_exact_of_footprint_global_via_orderedReadFootprint
+    {n : Nat} {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    {store : WordRAM.ReadStore}
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left (left + len)).erase =
+        some (scanWindow shape.representative left len) := by
+  unfold concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint_via_orderedReadFootprint
+      shape store hfoot left (left + len)]
+  simpa [concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted] using
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact
+      hshape hlen hbound
+
 
 /--
 Small supplied-store adequacy packet for the final whole-query replay.  This is
@@ -491,8 +1077,10 @@ theorem concreteBPNativeSuccinctRMQFinalSuppliedStoreAdequacy
       store_parametric_from_footprint := by
         intro storeB hfoot
         exact
-          concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint
-            shape hfoot left right
+          concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint
+            shape store storeB left right
+              (concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint_of_footprint
+                shape hfoot left right)
       ordered_read_footprint_recorded :=
         concreteBPNativeSuccinctRMQWholeQueryOrderedReadFootprintWithStore_recorded
           shape store left right
@@ -567,14 +1155,39 @@ theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness
           shape left right
       supplied_eq_global_of_footprint := by
         intro hfoot
-        exact
-          concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint
-            shape store hfoot left right
+        calc
+          concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+              shape store left right =
+              concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+                shape (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+                left right :=
+            concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint
+              shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              left right
+                (concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint_of_footprint
+                  shape hfoot left right)
+          _ = concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+                shape left right :=
+            concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore
+              shape left right
       supplied_costed_eq_global_of_footprint := by
         intro hfoot
-        exact
-          concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_eq_global_of_footprint
-            shape store hfoot left right }
+        exact congrArg WordRAM.TraceResult.toCosted
+          (calc
+            concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+                shape store left right =
+                concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+                  shape (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+                  left right :=
+              concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint
+                shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+                left right
+                  (concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint_of_footprint
+                    shape hfoot left right)
+            _ = concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+                  shape left right :=
+              concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore
+                shape left right) }
 
 /--
 Exactness for any supplied store that agrees with the canonical global store on
@@ -591,9 +1204,11 @@ theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_exact_of_footprint_gl
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
       shape store left (left + len)).erase =
         some (scanWindow shape.representative left len) := by
+  rw [(concreteBPNativeSuccinctRMQFinalFullModelSoundness
+    shape store left (left + len)).supplied_costed_eq_global_of_footprint hfoot]
   exact
-    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_exact_of_footprint_global
-      hshape hfoot hlen hbound
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact
+      hshape hlen hbound
 
 theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_canonicalTransitional
     {shape : Cartesian.CartesianShape} {store : WordRAM.ReadStore}
@@ -604,9 +1219,11 @@ theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
       shape store left right).cost <=
         concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost := by
+  rw [(concreteBPNativeSuccinctRMQFinalFullModelSoundness
+    shape store left right).supplied_costed_eq_global_of_footprint hfoot]
   exact
-    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_canonicalTransitional
-      shape store hfoot left right
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
+      shape left right
 
 theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_liveCompatibility
     {shape : Cartesian.CartesianShape} {store : WordRAM.ReadStore}
@@ -617,9 +1234,11 @@ theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
       shape store left right).cost <=
         concreteBPNativeSuccinctRMQLiveCompatibilityQueryCost := by
+  rw [(concreteBPNativeSuccinctRMQFinalFullModelSoundness
+    shape store left right).supplied_costed_eq_global_of_footprint hfoot]
   exact
-    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_liveCompatibility
-      shape store hfoot left right
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_liveCompatibility
+      shape left right
 
 theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_principledAllSizeChargedTrace
     {shape : Cartesian.CartesianShape} {store : WordRAM.ReadStore}
@@ -630,9 +1249,11 @@ theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
       shape store left right).cost <=
         concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost := by
+  rw [(concreteBPNativeSuccinctRMQFinalFullModelSoundness
+    shape store left right).supplied_costed_eq_global_of_footprint hfoot]
   exact
-    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_principledAllSizeChargedTrace
-      shape store hfoot left right
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
+      shape left right
 
 end SuccinctFinal
 

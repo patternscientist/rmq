@@ -24,6 +24,15 @@ consumed-address disagreement witness proves the store is observed. One
 query-independent logarithmic word width bounds its storage, addresses, and
 primitive operands/results.
 
+For every valid list query, the main theorem now literally includes the
+24-field `ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed` certificate,
+its independently named `ConcreteBPNativeSuccinctRMQReviewerMachineRequiredFacts`
+projection, the guarded `ReviewerNativeMachineAdequacy` packet, and the direct
+same-canonical-execution proposition
+`sum (map WordRAM.TraceEvent.nonSyntheticWeight trace) <= 210`. The paper proof
+obtains that bound by projecting `requires_certificate_weight_le_210`; it does
+not restate a numeral beside the packet.
+
 ## Machine-Level Theorem Map
 
 - `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`:
@@ -39,7 +48,13 @@ primitive operands/results.
   `buildPayload`, invalid-range rejection, exact valid RMQ answers, leftmost
   ties, the checked equality `SuccinctClassic.queryCost = 210`, and the
   no-synthetic execution story. The payload is not padded to manufacture
-  equality.
+  equality. Its M1 conjuncts are pinned independently by an expected-type
+  consumer whose complete proof term is this theorem itself.
+- `RMQ.Headlines.succinctRMQReviewerMachineWellFormed`,
+  `RMQ.Headlines.succinctRMQReviewerMachineRequiredFacts`, and
+  `RMQ.Headlines.listIntSuccinctRMQReviewerNativeMachineAdequacy`: the
+  certificate, literal 24-field consumer, and guarded four-link list packet on
+  the same shape/query/store/trace objects.
 - `RMQ.Headlines.succinctRMQFinalFullModelSoundness`: final trace/read-store/
   counted-payload model-soundness packet.
 - `RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal`:

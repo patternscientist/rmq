@@ -26,6 +26,16 @@ list theorem is `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`; it retains
 the repository's half-open query contract, rejects invalid or empty ranges,
 and returns the leftmost minimum index for every valid range.
 
+The theorem now literally consumes the guarded 24-field reviewer-native
+certificate, its independent required-facts projection, and the guarded list
+packet. It also states, on that packet's canonical execution, the direct
+`nonSyntheticWeight` sum bound `<= 210` and complete supplied-store
+`TraceResult` equality under agreement on the first execution's ordered
+dynamic reads. A committed 41-case replay deletes every field and mutates the
+public composition, with 40 expected rejects and one expected-accept control.
+This M1 candidate remains a word-addressed supplied-store theorem; raw
+serialized-payload decoding/querying is the separate S1 rung.
+
 The construction-facing capstone and the separate strong event theorem state
 six facts about one object and one execution:
 
@@ -76,6 +86,11 @@ trace, and every successful supplied-store read remains backed by the canonical
 reviewer payload. The physical evaluator translates component reads into the
 single pre-execution reviewer word list; flattening those words yields exactly
 the public payload.
+
+The safe checked footprint is an overapproximation. Its equality theorem first
+derives agreement on the canonical execution's ordered dynamic read footprint,
+then applies exact complete-result determinism; value and cost equalities are
+projections of that same `TraceResult` equality rather than sibling proofs.
 
 Occurrence-level provenance retains the global trace position, program
 instruction occurrence, prefix-folded pre-state, component-local position,

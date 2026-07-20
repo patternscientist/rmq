@@ -75,6 +75,26 @@ Successful-read backing and returned-word bounds are
 lifted to the canonical reviewer payload and physical store. Empty, singleton,
 size-two, and symbolic threshold-boundary cases are kernel checked.
 
+These facts are now collected in the 24-field
+`ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed` certificate. Its cost
+field is the direct proposition over the same canonical global execution's
+trace, bounded by `210`, and the canonical constructor fills it from
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_210`.
+That source theorem factors through the principled charged-trace inequality and
+`concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq : ... = 210`.
+The independent `ConcreteBPNativeSuccinctRMQReviewerMachineRequiredFacts`
+record consumes every certificate field by literal projection. The guarded
+`SuccinctClassic.ReviewerNativeMachineAdequacy` packet lifts these exact objects
+to `List Int` only under `ValidRange` and preserves the four-link public query,
+canonical trace, interpreted controller, and supplied physical execution chain.
+
+The safe final-layout footprint remains useful to callers, but it is not the
+primary equality premise. Safe agreement first implies agreement on the first
+execution's ordered dynamic reads; exact complete-result equality is applied
+there, and value, backing, cost, and exactness are projections. This rung does
+not decode or query raw `List Bool` serialized payload bits; that is S1, while
+charged controller simulation is E1.
+
 This remains a mathematical Word-RAM/cost model. It is not a compiled Lean
 runtime or hardware timing claim.
 

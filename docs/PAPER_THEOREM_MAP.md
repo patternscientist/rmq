@@ -23,6 +23,9 @@ RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence
 RMQ.Headlines.succinctRMQReviewerSuccessfulOccurrenceImpliesOperationalProducer
 RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer
 RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy
+RMQ.Headlines.succinctRMQReviewerMachineWellFormed
+RMQ.Headlines.succinctRMQReviewerMachineRequiredFacts
+RMQ.Headlines.listIntSuccinctRMQReviewerNativeMachineAdequacy
 RMQ.Headlines.listIntSuccinctRMQRawAdequacyOfValid
 RMQ.Headlines.succinctRMQReviewerPhysicalWordsFitLinearCapacity
 RMQ.Headlines.succinctRMQReviewerWordBitsLogarithmic
@@ -56,6 +59,11 @@ checked translation adapter. Canonical physical execution refines logical
 execution with failures, repetitions, and order preserved. Agreement on the
 first execution's consumed ordered physical footprint determines the complete
 physical trace, and a checked consumed-address disagreement changes it.
+The reviewer-native certificate and its independent 24-field projection pin
+all these facts to the same objects. The guarded list packet supplies the
+four-link public composition, and the paper theorem consumes its direct
+same-trace `nonSyntheticWeight <= 210` fact literally. The exact 41-case replay
+expects 40 semantic rejections and one packet-only expected accept.
 The capacity is linear and the query-independent reviewer width has an explicit
 all-size logarithmic bound while covering stored/returned words, addresses, and
 primitive operands/results. The principled charged-trace cost is exactly `210`;

@@ -43,7 +43,11 @@ RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem
 
 It uses the repository's half-open range contract and leftmost tie policy,
 returns `none` on invalid or empty ranges, and transfers the construction to
-`List Int` semantics.
+`List Int` semantics. Its literal type also consumes the valid-query
+`ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed` certificate, the
+independent 24-field `ConcreteBPNativeSuccinctRMQReviewerMachineRequiredFacts`,
+the guarded `ReviewerNativeMachineAdequacy` packet, and the direct same-trace
+weighted-event sum bound `<= 210`.
 
 ## Evidence Chain
 
@@ -62,6 +66,18 @@ successful and failed reads, repetitions, and the execution-derived footprint.
 Agreement on the first execution's consumed ordered footprint determines the
 complete physical execution. Separate corruption theorems show that changing a
 consumed decisive word can change the returned value.
+
+The certificate is exported as
+`RMQ.Headlines.succinctRMQReviewerMachineWellFormed`; its typed consumer as
+`RMQ.Headlines.succinctRMQReviewerMachineRequiredFacts`; and the guarded list
+packet as `RMQ.Headlines.listIntSuccinctRMQReviewerNativeMachineAdequacy`. The
+consumer is not a copied conjunction: every one of its 24 differently named
+fields is a literal projection. Safe-footprint corollaries first establish
+exact ordered dynamic-read agreement and complete `TraceResult` equality. The
+committed 41-case replay checks 24 field deletions, 11 object/proposition
+substitutions, five public-composition mutations, and one expected-accept
+control; the 210 case additionally compiles a weakened 211 theorem before the
+independent 210 expected type rejects it.
 
 ### Read provenance
 

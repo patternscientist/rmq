@@ -107,6 +107,20 @@ identifies the physical value with the translated supplied-store evaluator
 value, and the singleton corruption guards change that value from `some 0` to
 `none` while rejecting a trace-preserving value-ignore mutant.
 
+`ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed` packages 24 exact facts
+about those current objects: the public payload and 22 physical sources, store
+adapter identity, genuine physical/global execution, ordered footprint,
+successful-read backing, first-order controller, same-execution weighted trace
+bound `<= 210`, and all-size width/capacity bounds. The separate
+`ConcreteBPNativeSuccinctRMQReviewerMachineRequiredFacts` repeats the 24
+propositions under independent field names and is populated only by literal
+certificate projections. `SuccinctClassic.ReviewerNativeMachineAdequacy`
+guards both at the ordinary-list `ValidRange` boundary and records the
+four-link list query, canonical costed query, interpreted controller, and exact
+supplied physical execution chain. The paper theorem consumes the guarded
+packet and direct bound literally. This is the M1 word-addressed supplied-store
+rung; S1 serialized-payload querying and E1 controller charging remain separate.
+
 The public list boundary rejects invalid or empty ranges coherently through
 `queryCosted_invalid`, `queryTraceResult_invalid`,
 `queryTraceResultWithStore_invalid`, and their physical/store wrappers. The
@@ -429,12 +443,13 @@ final-layout agreement record from
 layout footprint covering final segments `0..28` plus the dead sentinel `29`;
 this is an overapproximation of the dynamic read set, not a claim that every
 footprint segment is read or that the footprint is minimal. Agreement with the
-canonical global store on that footprint yields equality with the canonical
-global trace and exact RMQ results through
+canonical global store on that footprint is first converted to agreement on
+the first execution's ordered dynamic reads. Exact complete-`TraceResult`
+determinism then yields the canonical global trace; value, cost, backing, and
+exactness follow as projections through
 `SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness`.
 `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint`
-evaluates against a
-supplied `WordRAM.ReadStore`, and
+exposes this dynamic-first route against a supplied `WordRAM.ReadStore`, and
 `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` proves equal
 produced value/trace for stores that agree on BP-code segment reads.  The
 compact close/LCA replay also now has store-parametric two-level interior and
@@ -2825,6 +2840,9 @@ The names below are grouped by source module. Repeated base names in
   `Headlines.succinctRMQListIntTwoNPlusOConstantQuery`,
   `Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`,
   `Headlines.listIntSuccinctRMQPaperMainTheorem`,
+  `Headlines.succinctRMQReviewerMachineWellFormed`,
+  `Headlines.succinctRMQReviewerMachineRequiredFacts`,
+  `Headlines.listIntSuccinctRMQReviewerNativeMachineAdequacy`,
   `Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint`,
   `Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal`,
   `Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal`,

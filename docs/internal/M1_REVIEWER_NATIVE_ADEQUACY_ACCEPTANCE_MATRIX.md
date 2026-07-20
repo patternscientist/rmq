@@ -1,0 +1,573 @@
+# M1 Reviewer-Native Machine Adequacy Acceptance Matrix
+
+Worker: `M1-R5`
+
+Branch: `codex/m1-reviewer-native-machine-adequacy-r5`
+
+Base: `9e3676056f0b660f3707b90b21845990ab790f98`
+
+Status: `CANDIDATE_EVIDENCE_CLOSED`, conditional on the finalization rule below.
+R5 reconstructs only the useful R4 semantic delta on the current-governance
+base. Old R4 Closed/Working evidence was treated as untrusted and every row was
+re-evidenced on the exact R5 tree. This file must not appear in a candidate
+commit unless the finalized tree passes the recorded checks, one aggregate
+gate, and the post-commit range/clean-state audit. The candidate commit's
+existence therefore certifies that condition; exact final observations belong
+in the candidate handoff so the tree is not changed after its one aggregate
+gate. Coordinator reconstruction and a fresh-blind audit of the exact candidate
+commit remain required before roadmap acceptance.
+
+## Frozen Acceptance Contract
+
+The requirement text in this table is frozen before Lean implementation edits.
+Only evidence, actual results, and status may change during implementation.
+
+| ID | Exact frozen requirement | Scope | Required proposition/check | Named consumer and identity/composition chain | Anti-vacuity challenge attempted and outcome | Actual result | Status / residual gap |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| M1-01 | Bundle address, operand, word-width, store identity, physical erasure, trace execution, successful-read backing, footprint, and cost invariants into the named certificate over the accepted canonical objects. | Local/public | A typed required-facts consumer projects every mandatory certificate field at its exact type and object arguments. | canonical constructor -> named certificate -> typed required-facts consumer -> literal public-paper consumer | Delete every field, weaken propositions, or substitute sibling objects; each mutation must fail the typed consumer or production proposition check. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1-02 | Exact agreement on the first execution's ordered dynamic physical read footprint is the primary supplied-store theorem and concludes equality of the complete trace result. Any safe/static-footprint result is derived as a corollary, not used as the primary justification. | Local/public/global wording | `physicalStoresAgreeOnOrderedReadFootprint` on the first execution implies complete `TraceResult` equality; every current safe alias factors through a safe-to-dynamic bridge and that exact theorem. | exact theorem -> safe corollary -> list packet -> headline/paper theorem -> current claim surfaces | Replace exact ordered dynamic agreement with safe/static agreement, or complete result equality with value/cost equality; production checks must reject the mutation. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1-03 | Expose the reviewer-legible checked chain: list-facing guarded query = canonical costed query = canonical first-order controller result = supplied physical-store execution under exact dynamic agreement. | Public | One checked proposition contains all four equalities over the same valid query. | list packet -> required-facts/public consumer -> `listIntSuccinctRMQPaperMainTheorem` | Remove any link or substitute a sibling query/execution; typed composition must fail. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1-04 | Every equality in that chain concerns the same payload, physical words, translated store, validity domain, result, trace, and modeled cost. | Public composition | Exact object arguments are literal or connected by checked erasure/adapter/refinement equalities. | `buildPayload xs` -> `reviewerPhysicalWords xs` -> physical adapter/store -> controller execution -> trace -> `Costed` | Swap payload, physical words, store, shape, query, width, or footprint for a sibling. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1-05 | The paper main theorem consumes the named certificate and exact agreement directly. Nearby lemmas, aliases, or prose do not satisfy this row. | Paper join | Its literal proposition/proof consumes the typed required-facts projection and exact dynamic complete-result equality. | certificate constructor -> required-facts projection -> list packet -> paper theorem | Remove either public dependency; documentary neighbors and opaque record passage must not elaborate as substitutes. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1-06 | Invalid, reversed, and out-of-bounds queries remain coherently guarded across every combined field; no unconditional raw adequacy packet is conjoined with guarded execution. | Validity domain | Under `Â¬ValidRange`, result is `none`, trace/footprint empty, cost zero, and every supplied store is rejected independently of execution. Raw shape certificate appears only under `ValidRange`. | guarded list packet -> paper theorem | Remove `ValidRange`, test empty/reversed/out-of-bounds, or conjoin unguarded raw adequacy. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1-07 | Retain a value-projection dependency theorem. Aggregate trace inequality caused only by log differences is insufficient. | Semantic dependency | Same-query translated supplied-store `.value` disagreement implies physical execution `.value` disagreement under the exact guards. | physical value-dependency theorem -> required-facts projection -> list packet/public consumer | Replace value-projection conclusion with aggregate trace inequality. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1-08 | Add headline/axiom checks and synchronize only affected current claim surfaces. | Packaging/verification | Curated axiom checks include repaired declarations; every directly affected current claim surface accurately distinguishes exact dynamic agreement, safe corollary, proof fields, payload bits, ticks, traces, and Lean runtime. | repaired declarations -> axiom/topology/claim checks -> current documents | Delete axiom entry or reintroduce overbroad field-load-bearing/safe-primary wording. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1-INV | Preserve `INV-STORE-IDENTITY`, `INV-VALUE-DEPENDENCY`, `INV-SEMANTIC-NONVACUITY`, `INV-TRACE-EXECUTION`, `INV-STORE-AGREEMENT`, `INV-READ-BACKING`, `INV-WORD-WIDTH`, `INV-ADDRESS-WIDTH`, `INV-ALL-SIZE`, `INV-PROOF-SEPARATION`, `INV-NO-SYNTHETIC`, `INV-CATEGORY-SEPARATION`, `INV-PUBLIC-COMPOSITION`, `INV-GLOBAL-PHYSICAL-MACHINE`, and `INV-WIDTH-SCALING`. | Inherited aggregate | Every expanded invariant row below closes on the same exact commit. | all canonical objects -> typed required-facts consumer -> public paper theorem | Any expanded invariant mutation remaining viable keeps this row open. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-STORE-IDENTITY | the exact payload/store executed is the payload/store counted by the public space theorem; a theorem about a sibling payload is insufficient | Inherited | Checked erasure/adapter chain identifies counted `buildPayload xs`, canonical physical words, physical store, and global store. | space theorem payload -> physical words -> adapter -> execution -> paper theorem | Swap payload/store/physical words for a sibling. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-VALUE-DEPENDENCY | returned values and routing decisions depend on actual charged reads, not a semantic answer computed before the reads. When the requirement concerns the returned answer or route, evidence must constrain that value, state, or route; inequality of an enclosing trace record can be satisfied by its log alone and is insufficient | Inherited | Value-projection implication at the exact query/store objects. | supplied store evaluator value -> physical execution value -> guarded list value | Replace with aggregate inequality. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-SEMANTIC-NONVACUITY | semantic coverage, liveness, ownership, and refinement predicates are derived from the operational construction they describe. A predicate defined to be `True`, an enumeration restated as membership, or a separately hand-written consumer label does not establish operational liveness by itself | Inherited | Each projected predicate is proved from execution/store/trace definitions rather than labels. | operational evaluator -> trace/store facts -> required-facts consumer | Replace a load-bearing predicate by `True` or a detached label. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-TRACE-EXECUTION | traces and footprints are derived from the execution they describe | Inherited | Canonical trace and ordered footprint are equal to projections of the same physical execution. | physical execution -> trace -> ordered footprint -> exact agreement | Substitute a sibling trace/footprint. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-STORE-AGREEMENT | supplied-store agreement determines result, cost, and the relevant trace | Inherited | Exact ordered dynamic agreement yields complete `TraceResult` equality. | first execution footprint -> agreement -> supplied execution -> public theorem | Weaken conclusion to value/cost or premise to safe agreement. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-READ-BACKING | every successful read is backed positionally by the counted store | Inherited | Every successful physical read is indexed by the same canonical physical word list whose erasure is the counted payload. | counted payload -> physical words -> execution events -> returned words | Swap physical words or weaken positional backing to membership. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-WORD-WIDTH | stored and returned words fit one declared modeled machine word | Inherited | Every stored physical word and every successful returned word fits the same query-independent `reviewerWordBits`. | width declaration -> stored/returned words -> certificate -> public theorem | Swap width or omit returned/stored branch. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-ADDRESS-WIDTH | every executed address, dead/sentinel address, and encoded instruction operand fits the modeled machine word, not merely the host array bounds. Constructor-exhaustive evidence must include register identifiers, branch/jump targets, dormant code, and arithmetic operands | Inherited | Physical addresses, recorded-footprint addresses, and physical primitive operands fit the same reviewer width; no host-bound substitute. | execution footprint/operands -> width fields -> required-facts consumer | Substitute host bounds or omit an address/operand class. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-ALL-SIZE | exactness covers all assigned sizes and edge cases without hidden readiness or compatibility dispatch | Inherited | No size threshold in the certificate/list packet; empty invalid, singleton, size-two, boundary and interior checks follow the same route. | all-size public query -> guarded packet -> paper theorem | Add readiness/compatibility guard or size threshold. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-PROOF-SEPARATION | proof-only fields never carry answers or uncharged routing information | Inherited | Repaired packaging changes only propositions/proofs; evaluator result/routing remains derived from canonical execution. | payload/store execution -> result; certificate fields only prove properties | Use a proof field to supply answer/routing or change evaluator. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-NO-SYNTHETIC | synthetic events, decorative rereads, and post-hoc replay do not support the execution claim | Inherited | No-synthetic event plus exact execution/trace/weight equalities are jointly projected. | canonical execution -> actual events -> trace length/cost -> public theorem | Replace an event with synthetic/decorative replay. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-CATEGORY-SEPARATION | payload bits, proof fields, model ticks, machine state, Lean runtime, and measured performance remain distinct | Inherited | Theorem/doc surfaces classify each category exactly. | implementation/proofs -> current public wording and gates | Claim proof fields as payload or modeled ticks as Lean runtime. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-PUBLIC-COMPOSITION | a theorem combining space, exactness, cost, provenance, or machine claims proves them about the same construction and execution and over the same validity domain. Conjoining true theorems about different payloads or guarded and unguarded executions is not closure. | Inherited/public | Paper theorem literally consumes the exact same-object required facts and guarded list packet. | builder/payload -> store/execution -> result/cost/trace -> paper theorem | Sibling-object substitution or guarded/unguarded conjunction. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-GLOBAL-PHYSICAL-MACHINE | a physical-machine claim supplies one pre-execution store/word array and a checked address translation for every executed segment, including failed/dead accesses. A theorem for one suffix or component is not a whole-machine embedding. | Inherited | One canonical physical word array/store/adapter covers the whole recorded execution footprint. | global physical words/store -> every segment/event -> paper theorem | Replace with component/suffix-local theorem. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-WIDTH-SCALING | one query-independent word-width declaration bounds all stored words, addresses, sentinels, operands, and primitive results, and its capacity/width is related to input size in the form required by the public word-RAM claim. A standalone asymptotic fact about an unconstrained width function is insufficient. | Inherited | Capacity, logarithmic width, address/operand/stored/returned bounds all use the same reviewer width. | input size -> reviewer capacity/width -> all machine objects -> paper theorem | Substitute sibling width or detached asymptotic theorem. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-CERTIFICATE-ANTI-BYPASS | every mandatory field advertised by a public certificate is projected by a checked typed consumer at the exact proposition and object arguments required by the acceptance contract. Deleting or weakening a field, or replacing it with a sibling fact, must break that consumer rather than leave only constructor initializers and prose unchanged. | Inherited/public | Independent typed required-facts consumer projects every mandatory field and is literally consumed by the paper theorem or a theorem it consumes. | certificate -> independent required-facts type -> public theorem | Delete every field; weaken complete equality/value dependency; substitute sibling payload/store/words/shape/query/width/footprint; remove `ValidRange`; substitute safe agreement. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| INV-MUTATION-REPRODUCIBILITY | when acceptance relies on an exhaustive, production, or public-dependency mutation campaign, the candidate contains a versioned runner or fixtures that replay every claimed case, check the exact expected failure/acceptance surface, restore tracked state, and leave the tree clean. Report prose, copied terminal output, and dangling Git objects are not replayable evidence. A public theorem additionally has a checked exact-type consumer that fails when the advertised dependency is removed; `#print axioms` over the theorem's current type is not such a consumer. | Inherited/public/process | A committed shadow-copy runner replays every frozen mutation and a frozen expected-type checker consumes the public theorem value. | live source -> disposable shadow copy -> focused Lean compilation -> exact expected-type consumer -> literal aggregate-gate anchor | Delete a public conjunct while repairing its tuple proof; delete the checker or gate anchor; run one packet-only deletion that must still compile. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R2-FIELD-CONSUMER | add a checked typed required-facts consumer independent of the certificate's field list. It must project every mandatory field of ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed at the exact shape/left/right, payload, physical words, store adapter, execution, ordered footprint, cost, capacity, width, address, operand, stored-word, and returned-word objects promised by M1-01. The public paper theorem or a literal theorem it consumes must use this projection; passing the certificate opaquely, constructing it, listing field names, or merely returning the record does not close the row. | Local/public | Checked consumer type enumerates every exact projection and its public composition. | certificate projections -> independent required-facts consumer -> list packet/paper theorem | Full field deletion and sibling/weakening mutation matrix. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R2-SAFE-PRIMARY | trace every current reader-facing safe/static-footprint theorem and headline alias affected by M1. Exact agreement on the first execution's ordered dynamic physical read footprint and equality of the complete TraceResult must be the primary proof route; safe footprint is only a checked corollary through a safe-to-dynamic bridge. Reroute any remaining current public safe-footprint equality alias that bypasses the exact theorem. If a legacy shape-level compatibility theorem cannot be rerouted without changing its frozen identity, classify it explicitly and narrow every universal current claim; do not leave M1-02 globally overstated. | Public topology | Complete inventory and checked proof chain for every current safe alias. | exact dynamic theorem -> safe-to-dynamic bridge -> current safe alias -> headline/docs | Replace primary exact route with safe/static premise or identify an unrouted current alias. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R2-MATRIX-SCHEMA | Before implementation edits, migrate the matrix to the current acceptance template without deleting or paraphrasing the frozen M1 wording. Split collapsed evidence into requirement, proposition/check, named consumer/composition chain, anti-vacuity challenge, actual result, and status. Mark M1-01, M1-02 global wording, M1-08, and anti-bypass Open until new evidence exists. | Process evidence | This table preserves all frozen M1 wording and contains the required columns/statuses before Lean edits. | frozen contract -> live evidence ledger -> final report | Compare old/new M1 text and inspect initial git diff ordering. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R2-PUBLIC-WORDING | make theorem docstrings, matrix, current claim documents, theorem maps, digestion, and artifact claims say exactly what the checked chain proves. Remove any statement that all certificate fields are load-bearing unless the typed consumer proves it; distinguish exact dynamic agreement from safe overapproximation and proof-only certificate fields from payload bits, modeled ticks, machine traces, and Lean runtime. | Public wording | Current docs and docstrings match checked proposition topology and category boundaries. | theorem types -> current documents -> claim/topology gates | Reintroduce all-fields-load-bearing before consumer proof or safe-primary/category-confused wording. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R2-COMMITTED-HYGIENE | Keep the matrix live through implementation. After the final content edit, rerun all affected checks, commit, run the exact committed-range check, and update only evidence actually rerun. | Finalization | Clean intended staged set, final commit, full rerun ledger, and `git diff --check 9ccbae7547152f4af3429eb012b5d39482c777eb..HEAD`. | completed source/docs/checks -> exact commit -> final matrix/report | Post-gate edit or unstaged/unintended file invalidates affected evidence. | Exact R5 finalization is commit-conditional: one unchanged finalized tree must pass the recorded narrow checks, 41-case replay, policy/topology checks, and one aggregate gate before the candidate commit is created; the handoff supplies the observed gate, range, ancestry, and clean-state evidence. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R3-PUBLIC-TYPE-PIN | Pin the exact expected type of `listIntSuccinctRMQPaperMainTheorem` independently of that theorem's mutable current type. The check must use the paper theorem value itself at a frozen expected type and thereby require the guarded WellFormed proposition, guarded RequiredFacts proposition, and physical ordered-dynamic complete TraceResult proposition. It must not reconstruct those facts directly from the packet constructor, certificate fields, requiredFacts, or nearby lemmas. `#print axioms` alone is insufficient because it adapts to the theorem's current type. | Public dependency | A committed Lean example has the frozen full public proposition as its expected type and the paper theorem value as its entire proof term. | `listIntSuccinctRMQPaperMainTheorem` value -> independent frozen expected type -> headline check -> aggregate gate | Delete either guarded conjunct, weaken the complete result to value/cost, or replace the dynamic premise while repairing the theorem proof so the mutated module itself still compiles. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R3-REPLAYABLE-MUTATIONS | Commit a versioned mutation runner in the repository and invoke it from `scripts/gate.ps1` through a literal, lint-visible anchor. It must run in a disposable shadow/copy/worktree, never mutate the live tracked tree, restore or discard every mutation, verify the original tracked hashes/clean state after every case, print bounded per-case PASS/FAIL evidence, and return a nonzero status for unexpected outcomes. Replay every frozen field deletion F01-F24 and every frozen proposition/object mutation Q01-Q11 from the acceptance matrix. The runner must encode the mutation itself, the expected rejection surface, and the observed exit result; prose, terminal transcripts, dangling Git objects, and unreferenced snapshots are not evidence. | Tooling/evidence | One committed PowerShell runner applies actual source transformations only to per-case shadow copies, invokes focused Lean with shared safe artifacts, checks exact failure/acceptance patterns, and compares live hashes plus tracked-state snapshots after every case. | frozen registry -> shadow source mutation -> focused compiler result -> state/hash invariant -> gate | Any missing case, unexpected exit, wrong diagnostic, live-tree drift, or unbounded diagnostic output fails the runner. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R3-EXPECTED-ACCEPT-CONTROL | Include one explicit expected-ACCEPT control for removing or changing a genuinely non-load-bearing packet-only restatement. This control must remain separate from the public theorem and must demonstrate that the campaign distinguishes load-bearing dependencies from nearby duplication. | Boundary control | C01 removes the packet-only `exact_dynamic_logical_store_agreement` field and its constructor initializer while leaving the paper theorem unchanged; mutated Classic, headline, and frozen expected-type checker all compile. | packet-only restatement -/-> independent public theorem conjunct; public theorem value -> frozen expected type | If the control fails, the campaign may be rejecting any nearby edit rather than distinguishing public load-bearing topology. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R3-GATE-TOPOLOGY | Add a committed M1 mutation-regression runner, an independent exact-expected-type consumer for the public theorem, and literal gate/topology anchors for both. Deleting required axiom/topology/gate anchors must be rejected by the relevant committed check. | Gate/topology | The topology lint requires the runner file, expected-type marker/consumer, and exact gate invocation; its regression virtually removes each anchor and expects rejection without tracked-state change. | checker/runner -> topology lint -> topology regression -> literal `gate.ps1` invocation | A01 removes the checker anchor; A02 removes the gate anchor. Both must be rejected by the production lint. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R3-COMMITTED-HYGIENE | Keep the matrix live through implementation; after the final content edit run every final-required check on one exact tree, commit only the intended repair paths once, then run exactly `git diff --check eca84b0c7fe07f77b82d8b4b95701ac58b81f1a7..HEAD` and verify the clean worktree, exact parentage, changed paths, and absence of surviving lake/lean/git processes. Do not push or merge. | Finalization | Completed ledger with exit codes/timings, narrow staged/committed path set, one candidate commit, exact committed-range check, and clean end-state inventory. | completed source/checks/docs -> exact commit -> exact range/integrity audit -> candidate report | Any post-gate content edit, unintended path, dirty end state, wrong parent, or surviving owned process keeps the row open. | Exact R5 finalization is commit-conditional: one unchanged finalized tree must pass the recorded narrow checks, 41-case replay, policy/topology checks, and one aggregate gate before the candidate commit is created; the handoff supplies the observed gate, range, ancestry, and clean-state evidence. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R4-EXACT-REGISTRY | declare the exact ordered registry F01-F24, Q01-Q11, P01-P05, C01; assert uniqueness, exact set/order, exact 24-field mapping, and exact reject/accept totals before semantic execution. Add cheap omitted-middle and duplicated-middle controls. | Tooling/evidence | `REPLAY-EXACT-REGISTRY` must validate the literal ordered registry, exact field mapping, uniqueness, and 40 REJECT / 1 ACCEPT totals before any shadow mutation runs. | frozen matrix registry -> runner registry preflight -> all semantic cases -> aggregate gate | Remove a middle ID and duplicate a middle ID; each malformed registry must fail before semantic execution. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R4-SELECTOR-NONVACUITY | register topology cases under frozen IDs A01 and A02. A focused selector must execute exactly one requested case, report one matching verdict, and reject an unknown ID. Full suites must assert exact executed/reject/accept counts rather than merely failures == 0. | Tooling/evidence | `REPLAY-SELECTOR-NONVACUITY` requires focused A01/A02 counts of one, unknown-ID failure, and exact full-suite totals. | frozen A registry -> selector validation -> production topology lint regression -> aggregate gate | Request A01, A02, and an unknown ID; zero-case success or a mismatched verdict fails. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R4-MUTATION-FIDELITY | A01/A02 must perform the frozen virtual block deletions, not merely delete marker comments. Prove production lint rejects the missing expected-type block/consumer and missing gate invocation block for the intended reasons while tracked/index state is unchanged. | Gate/topology | A01 removes the complete expected-type block and theorem-value consumer; A02 removes the complete gate invocation block; production lint emits the case-specific missing-surface diagnostic. | virtual block deletion -> production lint final verdict -> topology regression -> aggregate gate | A marker-only deletion must no longer count as the frozen mutation. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R4-SUBPROCESS-DEADLINE | give every external Lean/tool stage a positive configurable deadline justified by observed timings; redirect bounded output; classify timeout as failure; terminate the owned process tree; and perform shadow cleanup plus live hash/status/index integrity in finally. Add a cheap sleeper self-test and prove no child survives it. | Tooling/process | `REPLAY-SUBPROCESS-DEADLINE` requires a positive deadline on every external stage, bounded redirected output, timeout failure, owned-tree termination, finally cleanup/integrity, and a sleeper timeout/kill/no-survivor control. | runner stage wrapper -> owned process tree -> bounded logs -> cleanup/integrity -> semantic replay -> aggregate gate | Run the sleeper past its deadline and verify the parent plus spawned child are gone and live tracked/index/hash state is unchanged. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R4-DESIGN-LOG | update WORKFLOW_DESIGN_DECISIONS.md for the replay-harness architecture and correct every matrix claim contradicted by exact-range strict design checking. | Process/documentation | One workflow decision records trigger, alternatives, rationale, consequences, evidence, and publication-facing significance; strict exact-range design checking passes from the exact R4 base. | harness architecture -> workflow decision -> strict design checker -> matrix/result claims | Remove the exact-range workflow decision or retain a contradicted strict-check claim. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R4-GATE-TOPOLOGY | repair the mutation/topology runners, gate wiring, matrix, and workflow-decision evidence. | Gate/topology | Literal gate invocations expose the exact registry, selector, mutation-fidelity, deadline self-test, production lint, and topology regression surfaces to the aggregate gate. | committed runners/lint -> literal `scripts/gate.ps1` topology -> one final aggregate invocation | Delete a required invocation block; A02 and production lint must reject the resulting topology. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| M1R4-COMMITTED-HYGIENE | Run git diff --check and, after committing, git diff --check aafa68a51b605abefef8bba3b2dcebb9863e1ebf..HEAD. Run powershell -ExecutionPolicy Bypass -File scripts/design_decision_check.ps1 -Strict -Base aafa68a51b605abefef8bba3b2dcebb9863e1ebf. Record exact commands, exits, durations, timeout choices, unique risks, and skipped redundant checks. | Finalization | One unchanged final tree passes the focused controls and one aggregate gate; the exact intended paths are committed once; committed-range, status, index, hashes, parentage, and owned-process inventory are clean. | final content -> aggregate gate -> exact commit -> exact-range/integrity audit -> candidate report | Any post-gate content edit, unintended path, dirty state, wrong parent, or surviving owned process keeps the row open. | Exact R5 finalization is commit-conditional: one unchanged finalized tree must pass the recorded narrow checks, 41-case replay, policy/topology checks, and one aggregate gate before the candidate commit is created; the handoff supplies the observed gate, range, ancestry, and clean-state evidence. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+
+## R5 Frozen Forward-Port Requirements
+
+The following R5 requirements are frozen before implementation. Their exact
+wording is copied from the coordinator contract; evidence and status alone may
+change.
+
+| ID | Exact frozen requirement | Scope | Required proposition/check | Named consumer and identity/composition chain | Anti-vacuity challenge attempted and outcome | Actual result | Status / residual gap |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| REQ-M1R5-CURRENT-BASE-FORWARD-PORT | preserve every current-main semantic/public change not owned by R4. Compare old R4 to its merge base, then port only the useful delta. A clean compile obtained by reverting current B7/E1/public facts fails this row. | Source/current frontier | Exact merge-base and left/right divergence inventory plus source-directed final diff; current B7/E1 declarations and public identities remain present. | merge base `5f59455e62fc26e881fbd722834c33b615d2c914` -> old R4 semantic delta -> exact base `9e3676056f0b660f3707b90b21845990ab790f98` -> final candidate -> public theorem | Compare old/current source and mutate/revert a current B7/E1/public fact; build/search evidence must reject or expose the regression. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| REQ-M1R5-COST-210-DERIVATION | the reviewer-native certificate and independent required-facts proposition must expose the current bound as `sum (map WordRAM.TraceEvent.nonSyntheticWeight trace) <= 210` on the same canonical execution. Rename the old R4 `certificate_weight_le_76` field and its required-facts twin to accurate `..._le_210` identities. Fill them from the current checked `...nonSyntheticWeight_sum_le_210` chain, whose source is derived through `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq : ... = 210`; do not close the field with `omega`, `decide`, `rfl`, a copied numeric assertion, a frozen historical theorem, or an unrelated aggregate object. If the public field must change to a proposition shape other than the direct same-execution `<= 210` replacement, stop with `Status: OBSTRUCTED` and a checked type-level dossier rather than forcing it. | Lean certificate/public cost | Direct same-execution non-synthetic-weight proposition at `<= 210`, projected independently and filled from the current checked 210 chain. | principled all-size charged trace cost equality -> current non-synthetic weight theorem -> WellFormed field -> RequiredFacts field -> guarded list packet -> paper theorem -> expected-type consumer | Replace source with `omega`, `rfl`, copied numeral, historical 76 theorem, sibling trace, or unrelated aggregate; exact consumer/mutation must fail. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| REQ-M1R5-SEGMENT23-REGISTRY | preserve the exact ordered 41 semantic cases from R4: F01-F24, Q01-Q11, P01-P05, C01; exact verdicts are 40 reject and 1 accept. Refresh operand-exact transforms for current `segment < 23`, theorem bodies, and public shapes. Do not add, remove, reorder, or relabel cases merely to get green. Pin ID-to-field/object mappings, including the renamed 210 field. Missing/duplicate IDs and verdict flips must fail before semantic execution. | Replay registry | Exact ordered registry, exact 24-field mapping with the renamed 210 field, exact segment-23 operands, uniqueness, and 40/1 verdict totals. | frozen registry -> runner preflight -> exact per-case mutation -> focused Lean/public check -> aggregate gate | Omit/duplicate a middle ID, flip a verdict, retain `segment < 22`, retain 76 field, or change order; registry/preflight must fail before semantic execution. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| REQ-M1R5-SCOPE-S1-SEPARATION | Do not claim serialized-payload querying. The current route is word-addressed supplied-store execution; raw `List Bool` payload querying is S1. | Scope/public wording | Lean and current public surfaces explicitly retain the supplied word-store route and leave raw serialized-bit querying deferred. | reviewer physical words/store -> supplied-store execution -> public machine-adequacy theorem; S1 remains a separate roadmap node | Introduce bit-addressed/raw-`List Bool` query wording or merge S1 into M1; claim drift/topology/source review must reject or expose it. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| REQ-M1R5-CURRENT-FRONTIER-PRESERVATION | Preserve current exact 210 cost algebra, strong readWord-only route, 22 physical reviewer sources over logical segments 0..22 with shared BP roles 0 and 19, live segment 21 and rejected fresh 23, trace positions 0 and 15 from instruction positions 0 and 1, current B7 charged segment-20 behavior, current E1 declarations, half-open leftmost `List Int` semantics, invalid guards, one public payload, width/capacity/2n+o(n) claims, and all frozen historical identities. | Current semantic frontier | Exact source/dependency inventory proves each listed current fact remains present on the candidate. | current base declarations -> forward-ported certificate/list/public theorem -> direct consumers/current fact surfaces | Revert or replace any listed current fact with stale R4 content; narrow builds, exact searches, expected type, and surface scans must expose it. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| REQ-M1R5-PUBLIC-EXPECTED-TYPE-CONSUMER | commit an independent expected-type consumer whose entire proof term is `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`. It must fail if either guarded public conjunct, the exact dynamic complete-result theorem, the current `<= 210` field, or their object identity is weakened while the mutated theorem itself still compiles. Printing the mutable current type is not a pin. | Public dependency | Independently written full proposition with theorem value as the entire proof term. | literal paper theorem value -> frozen expected type in `scripts/headline_axiom_check.lean` -> topology lint -> aggregate gate | Delete either guarded conjunct; weaken complete result; weaken/change 210 field; change an object while repairing theorem; mutated theorem compiles but expected-type checker fails. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| REPLAY-EXACT-REGISTRY | Preserve and execute the exact ordered 41-case registry with exact ID/field/object mapping, uniqueness, and verdict totals before semantic execution. | Replay evidence | Registry self-test accepts only F01-F24, Q01-Q11, P01-P05, C01 in order with 40 REJECT and 1 ACCEPT. | frozen matrix registry -> committed runner -> gate | Omitted middle ID, duplicated middle ID, unknown ID, wrong field mapping, reorder, or verdict flip fails preflight. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| REPLAY-SELECTOR-NONVACUITY | `-OnlyCase` must execute exactly one requested frozen ID, reject unknown and empty/zero selection, and have cheap tests for a valid middle ID, an omitted middle ID, a duplicated middle ID, and an unknown ID. | Replay process | Exact one-case execution/count plus pre-semantic malformed-registry/selector failures. | selector -> registry preflight -> one exact case -> reported totals -> gate/topology | Select valid middle, omitted middle, duplicated middle, unknown, and zero; only the exact valid selection may execute one case. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| REPLAY-SUBPROCESS-DEADLINE | every external Lean/Lake stage must have a positive evidence-based deadline, classify timeout as failure, terminate its owned process tree, restore all mutated files in `finally`, and verify clean tracked/untracked state. Preserve a cheap sleeper self-test. Do not raise deadlines to hide import-time computation over proof-only closed witnesses. | Replay process | Positive per-stage deadlines, owned-tree kill on timeout, bounded output, `finally` restoration, clean tracked/untracked/index/hash checks, and sleeper no-survivor proof. | stage wrapper -> owned process tree -> cleanup/integrity -> exact replay -> gate | Sleeper exceeds deadline; timeout must fail, parent/child must be absent, shadow removed, and live tree unchanged. | Reconstructed on exact R5 base: the checked source/object chain and frozen anti-vacuity surface are present; the development campaign passed all 41 ordered cases (40 REJECT / 1 ACCEPT) with per-case live hashes and tracked state unchanged. Exact final commands are recorded below and in the candidate handoff. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+| COMPLETE-M1R5-COMMITTED-EVIDENCE | Durable disposition for material work: committed Lean, replay tooling, acceptance matrix, decision evidence, current public-surface synchronization, and exact command ledger on the worker branch. | Finalization | One unchanged final tree passes staged checks, exact replay, policy/topology, exactly one aggregate gate, then one intended commit and exact committed-range/clean-state audit. | final source/docs/tools -> unchanged-tree evidence -> candidate commit -> exact range/status/ancestry report -> coordinator audit request | Any post-gate content change, open row, unintended path, dirty tracked/untracked/index state, wrong parent, or missing command timing keeps this row open. | Exact R5 finalization is commit-conditional: one unchanged finalized tree must pass the recorded narrow checks, 41-case replay, policy/topology checks, and one aggregate gate before the candidate commit is created; the handoff supplies the observed gate, range, ancestry, and clean-state evidence. | Candidate evidence closed; coordinator reconstruction and fresh-blind exact-commit audit remain pending. |
+
+## R3 Frozen Mutation Registry
+
+The runner must execute these IDs exactly. Each reject case records the source
+transformation, the expected compiler/checker surface, the observed exit code,
+and post-case live-tree integrity. F and Q IDs preserve the R2 campaign order;
+P, C, and A make the public pin, boundary control, and gate anchors explicit.
+
+| ID | Expected verdict | Frozen mutation | Exact rejecting/accepting surface |
+| --- | --- | --- | --- |
+| F01 | REJECT | Delete `physical_words_erase_canonical_payload` from `ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed`. | `requiredFacts` literal projection reports invalid field `physical_words_erase_canonical_payload`. |
+| F02 | REJECT | Delete `physical_execution_is_canonical_trace`. | Invalid literal projection of the same field. |
+| F03 | REJECT | Delete `canonical_trace_is_first_order_controller`. | Invalid literal projection of the same field. |
+| F04 | REJECT | Delete `canonical_physical_store_adapts_to_global_store`. | Invalid literal projection of the same field. |
+| F05 | REJECT | Delete `physical_events_match_canonical_store`. | Invalid literal projection of the same field. |
+| F06 | REJECT | Delete `successful_physical_reads_backed_by_canonical_words`. | Invalid literal projection of the same field. |
+| F07 | REJECT | Delete `ordered_physical_footprint_recorded`. | Invalid literal projection of the same field. |
+| F08 | REJECT | Delete `supplied_execution_eq_of_exact_read_agreement`. | Invalid literal projection of the same field. |
+| F09 | REJECT | Delete `physical_value_is_translated_supplied_store_value`. | Invalid literal projection of the same field. |
+| F10 | REJECT | Delete `physical_value_dependency`. | Invalid literal projection of the same field. |
+| F11 | REJECT | Delete `no_synthetic_physical_event`. | Invalid literal projection of the same field. |
+| F12 | REJECT | Delete `certificate_weight_eq_trace_length`. | Invalid literal projection of the same field. |
+| F13 | REJECT | Delete `certificate_weight_eq_cost`. | Invalid literal projection of the same field. |
+| F14 | REJECT | Delete `certificate_weight_le_210`, then independently weaken both certificate record propositions and the literal paper conjunct to `<= 211` while repairing their constructors/proof. | Deletion fails the literal projection; the weakened certificate, guarded packet, and paper theorem compile, then the independent `M1ReviewerNativeExpectedPaperType` at `<= 210` rejects. |
+| F15 | REJECT | Delete `reviewer_capacity_linear`. | Invalid literal projection of the same field. |
+| F16 | REJECT | Delete `physical_words_fit_capacity`. | Invalid literal projection of the same field. |
+| F17 | REJECT | Delete `reviewer_word_bits_logarithmic`. | Invalid literal projection of the same field. |
+| F18 | REJECT | Delete `input_operands_fit_reviewer_word`. | Invalid literal projection of the same field. |
+| F19 | REJECT | Delete `segment_encodings_fit_reviewer_word`. | Invalid literal projection of the same field. |
+| F20 | REJECT | Delete `every_physical_address_fits_reviewer_word`. | Invalid literal projection of the same field. |
+| F21 | REJECT | Delete `every_recorded_footprint_address_fits_reviewer_word`. | Invalid literal projection of the same field. |
+| F22 | REJECT | Delete `physical_primitive_operands_fit_reviewer_word`. | Invalid literal projection of the same field. |
+| F23 | REJECT | Delete `every_stored_physical_word_fits_reviewer_word`. | Invalid literal projection of the same field. |
+| F24 | REJECT | Delete `every_successful_returned_word_fits_reviewer_word`. | Invalid literal projection of the same field. |
+| Q01 | REJECT | Weaken the certificate's exact supplied execution equality to `.value` equality. | `requiredFacts` exact complete-result projection type mismatch. |
+| Q02 | REJECT | Substitute `[]` for the canonical payload in the certificate erasure proposition. | Exact canonical-payload projection type mismatch. |
+| Q03 | REJECT | Substitute `[]` for the canonical physical words in the erasure proposition. | Exact canonical-words projection type mismatch. |
+| Q04 | REJECT | Substitute the sibling physical read store for the global adapter target. | Exact adapter-target projection type mismatch. |
+| Q05 | REJECT | Substitute `Cartesian.shape []` for the controller proposition's canonical shape. | Exact shape projection type mismatch. |
+| Q06 | REJECT | Reverse `left/right` in the controller proposition. | Exact query projection type mismatch. |
+| Q07 | REJECT | Substitute reviewer width `+ 1` in the logarithmic-width proposition. | Exact width projection type mismatch. |
+| Q08 | REJECT | Reverse `left/right` in the ordered-footprint proposition. | Exact footprint projection type mismatch. |
+| Q09 | REJECT | Weaken value-projection dependency to inequality of complete trace records. | Exact `.value` dependency projection type mismatch. |
+| Q10 | REJECT | Remove both `ValidRange` guards from the packet certificate/required-facts fields and repair their constructor entries. | Unchanged headline consumer fails when applying the now-unguarded fields to `hvalid`. |
+| Q11 | REJECT | Substitute safe/static `storesAgreeOnFootprint` for the paper theorem's primary physical ordered-dynamic premise. | Paper proof cannot pass the safe/static hypothesis to the physical ordered-footprint equality theorem. |
+| P01 | REJECT | Delete the guarded WellFormed paper conjunct and matching tuple proof, leaving the mutated headline module compilable. | Frozen expected-type consumer rejects the paper theorem value. |
+| P02 | REJECT | Delete the guarded RequiredFacts paper conjunct and matching tuple proof, leaving the mutated headline module compilable. | Frozen expected-type consumer rejects the paper theorem value. |
+| P03 | REJECT | Weaken the paper complete physical `TraceResult` equality to `.value` equality and adapt its proof by projection. | Frozen expected-type consumer rejects the paper theorem value. |
+| P04 | REJECT | Weaken the paper complete physical `TraceResult` equality to cost equality and adapt its proof by projection. | Frozen expected-type consumer rejects the paper theorem value. |
+| P05 | REJECT | Replace the public ordered-dynamic premise by static all-address physical-store agreement and adapt the proof through the stronger premise. | Frozen expected-type consumer rejects the paper theorem value. |
+| C01 | ACCEPT | Remove packet-only `exact_dynamic_logical_store_agreement` and its constructor initializer; do not change the paper theorem. | Mutated Classic, headline, and frozen expected-type checker all compile. |
+| A01 | REJECT | Delete the `M1R3-PUBLIC-TYPE-PIN-ANCHOR` expected-type block from the headline checker virtually. | Production paper-topology lint rejects the missing checker anchor/consumer. |
+| A02 | REJECT | Delete the `M1R3-MUTATION-RUNNER-GATE-ANCHOR` invocation block from `scripts/gate.ps1` virtually. | Production paper-topology lint rejects the missing literal gate anchor/invocation. |
+
+## R4 Goal Reflection And Verification Ledger
+
+- Named target: preserve the exact M1 theorem, certificate, expected type, and
+  41 mutation meanings while making their committed replay exact,
+  nonvacuous, bounded, and design-logged.
+- Downstream consumer: the unchanged value
+  `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` at the independently
+  written `M1ReviewerNativeExpectedPaperType`.
+- Hard obligation: the exact 41-case semantic registry and 16-case topology
+  registry drive dispatch and exact totals; A01/A02 delete functional blocks;
+  every external compiler/tool stage, including Git integrity probes, is
+  deadline/output/job bounded; cleanup and
+  integrity run in `finally`; the literal aggregate gate owns the one final
+  full replay.
+- Forbidden shortcuts: zero-case PASS, count-only completeness, boundary-only
+  ID lint, marker-only deletion, timeout as expected REJECT, current-type-only
+  pin, live-tree mutation, or a matrix/report substitute for replay.
+- Stop condition: every preserved and R4 row closes on one exact commit, or a
+  precise external blocker/formal obstruction forces coordinator review.
+- Parallelization: three read-only inventories independently reconstructed the
+  public object/consumer chain, harness failure mechanics, and workflow/design
+  contract. The lead owns all shared runner, lint, matrix, and WDD edits.
+
+The final gate timeout is 5400 seconds: it exceeds the recent successful
+2587.7-second aggregate run by more than 2x for cold-cache and concurrent-worker
+scheduling margin. Each focused Lean stage uses 120 seconds versus the prior
+15.0-second Q11 observation; topology lint uses 300 seconds versus the prior
+91.4-second production observation. The 20-second sleeper threshold reflects
+the observed nested Windows PowerShell startup and remains cheap beside the
+semantic campaign. The final aggregate wrapper acquires
+`Global\RMQHeavyVerification` before launch and releases it in `finally`.
+
+| Command | Role | Changed paths / acceptance rows | Unique risk covered | Expected or observed runtime / timeout | Final-tree disposition |
+| --- | --- | --- | --- | --- | --- |
+| Exact PowerShell parser command recorded below for the three replay/lint scripts and `gate.ps1` | Development-loop | scripts; M1R4 exact registry, deadline, topology | Syntax failure before semantic execution. | observed 8.8s / 30s | Passed during development; rerun on final content tree. |
+| `powershell -ExecutionPolicy Bypass -File scripts/m1_certificate_mutation_regression.ps1 -RegistrySelfTestOnly` | Development-loop | semantic runner; M1R4-EXACT-REGISTRY | Omitted/duplicated middle acceptance or wrong field/totals. | observed 17.3s / 120s | Passed: omitted F21 => 40, duplicated F21 => 42, exact registry => 41/24/40/1. |
+| Exact M1 and topology unknown-selector commands recorded below | Development-loop | both runners; M1R4-SELECTOR-NONVACUITY | Misspelled selector accepted as empty suite. | observed 24.2s and 22.6s / 120s | Both exit 1 before semantic execution. |
+| `powershell -ExecutionPolicy Bypass -File scripts/m1_certificate_mutation_regression.ps1 -DeadlineSelfTestOnly -SelfTestDeadlineSeconds 20` | Development-loop | semantic runner; M1R4-SUBPROCESS-DEADLINE | Timeout misclassified, immediate descendant survives, logs/root or live state leak. | wall 56.934s; bounded child 20.127s / current 300s external-stage ceiling | Passed: root 17824 terminated, recorded child 13696 absent, cleanup/integrity passed. |
+| Exact focused A01 and A02 commands recorded below | Development-loop | lint/regression/gate/checker; selector, fidelity, topology | Zero-case selection, marker-only mutation, wrong rejection surface, tracked/index/hash drift. | A01 wall 55.869s (child 11.164s), A02 wall 56.931s (child 9.772s) / 300s | Each passed with exactly 1 executed/1 REJECT/0 ACCEPT and both intended diagnostics. |
+| `powershell -ExecutionPolicy Bypass -File scripts/m1_certificate_mutation_regression.ps1 -OnlyCase F13 -StageDeadlineSeconds 120 -SelfTestDeadlineSeconds 20` | Development-loop | semantic runner; exact registry/deadline/field consumer | Real bounded Lean rejection, not only static registry/self-test behavior. | wall 117.684s; Lean 61.589s / 120s | Passed at exact missing `certificate_weight_eq_cost` field; live hashes/status/index unchanged. |
+| `powershell -ExecutionPolicy Bypass -File scripts/paper_topology_lint.ps1 -StageDeadlineSeconds 300` | Development-loop; final consumed by gate | production lint; topology/registry anchors | Positive production path and bounded documentary Lean resolution. | sandbox wall 160.389s; final escalated wall 158.502s / 300s per child | Sandbox run exited 1 only on dependency download; final-content cache/network run exited 0 with 85 broad and 51 paper identifiers resolved. |
+| First mutex-held aggregate attempt on the pre-repair tree | Conditional aggregate | semantic runner; Q01/Q05/Q06/Q08/Q10/Q11/P01-P05 | Full wiring exposed false multiline no-op mutations that focused single-line F13 could not reveal. | mutex wait 100.849s; gate 744.942s / host 5400s | Exit 1 after 30 passes/11 `replacement source not found` failures. Build, F01-F24, Q02-Q04/Q07/Q09 and C01 passed. No second unchanged-tree run was attempted. |
+| Focused Q01 and P01 after LF normalization; P01 repeated only after observed deadline recalibration | Conditional smallest cases | multiline mutation application and frozen expected-type surface | Distinguish exact-source repair from broad semantic redesign; distinguish timeout from expected REJECT. | Q01 wall 71.999s; first P01 wall 192.811s timeout; repaired 300s P01 wall 152.444s with checker 90.043s | Q01 rejected at the exact RequiredFacts projection. P01 compiled the weakened theorem, then the frozen theorem-value consumer rejected; live integrity remained unchanged. |
+| Full `scripts/m1_certificate_mutation_regression.ps1` under `Global\RMQHeavyVerification` | Conditional smallest failing component | exact semantic registry, P01-P05, C01, deadline/integrity | Prove the complete failed component, not only boundary controls, before the permitted aggregate retry. | mutex wait 0.013s; component 1199.364s / host 3600s; children 300s | Exit 0: 41 executed, 40 expected rejects, one expected accept, exact order/totals, no live hash/status/index drift. |
+| `powershell -ExecutionPolicy Bypass -File scripts/design_decision_check.ps1 -Strict -Base aafa68a51b605abefef8bba3b2dcebb9863e1ebf` plus exact trust/native scans and `git diff --check` below | Final-required pre-gate | all five intended paths; design log/category/hygiene | Missing exact-range WDD, forbidden trust token, native shortcut, or malformed diff. | under 2m / 10m | Required on final content tree; result reported externally. |
+| One `scripts/gate.ps1` under `Global\RMQHeavyVerification` | Final-required aggregate | all rows | Literal full wiring: build, 41 semantic cases including expected type/C01, production lint, exact 16-case topology regression, axioms and policy. | recent success 2587.7s / 5400s | Run once on unchanged final content tree; exact exit/duration reported externally. No separate full suite repeats. |
+| One narrow commit; both `git diff --check eca84b0c7fe07f77b82d8b4b95701ac58b81f1a7..HEAD` and `git diff --check aafa68a51b605abefef8bba3b2dcebb9863e1ebf..HEAD`; status/index/parent/process inventory | Final-required post-commit | M1R3/R4 committed hygiene | Exact candidate identity, inherited and assigned ranges, intended path set, clean state, no owned process. | under 2m / 10m | Exact results reported externally. |
+
+Exact R4 development/final command ledger (the final entries remain external
+until they execute on the frozen tree):
+
+```powershell
+$files=@('scripts/m1_certificate_mutation_regression.ps1','scripts/paper_topology_lint.ps1','scripts/paper_topology_lint_regression.ps1','scripts/gate.ps1'); foreach($file in $files){$tokens=$null;$errors=$null;[void][Management.Automation.Language.Parser]::ParseFile((Resolve-Path $file),[ref]$tokens,[ref]$errors);if($errors.Count){$errors|ForEach-Object ToString;exit 1}}
+powershell -ExecutionPolicy Bypass -File scripts/m1_certificate_mutation_regression.ps1 -RegistrySelfTestOnly
+powershell -ExecutionPolicy Bypass -File scripts/m1_certificate_mutation_regression.ps1 -OnlyCase UNKNOWN
+powershell -ExecutionPolicy Bypass -File scripts/paper_topology_lint_regression.ps1 -OnlyCase UNKNOWN
+powershell -ExecutionPolicy Bypass -File scripts/m1_certificate_mutation_regression.ps1 -DeadlineSelfTestOnly -SelfTestDeadlineSeconds 20
+powershell -ExecutionPolicy Bypass -File scripts/paper_topology_lint_regression.ps1 -OnlyCase A01 -StageDeadlineSeconds 300
+powershell -ExecutionPolicy Bypass -File scripts/paper_topology_lint_regression.ps1 -OnlyCase A02 -StageDeadlineSeconds 300
+powershell -ExecutionPolicy Bypass -File scripts/m1_certificate_mutation_regression.ps1 -OnlyCase F13 -StageDeadlineSeconds 120 -SelfTestDeadlineSeconds 20
+powershell -ExecutionPolicy Bypass -File scripts/m1_certificate_mutation_regression.ps1 -OnlyCase Q01 -StageDeadlineSeconds 120 -SelfTestDeadlineSeconds 20
+powershell -ExecutionPolicy Bypass -File scripts/m1_certificate_mutation_regression.ps1 -OnlyCase P01 -StageDeadlineSeconds 300 -SelfTestDeadlineSeconds 20
+$mutex=[Threading.Mutex]::new($false,'Global\RMQHeavyVerification');$acquired=$false;try{try{$acquired=$mutex.WaitOne()}catch [Threading.AbandonedMutexException]{$acquired=$true};if(-not $acquired){throw 'failed to acquire Global\RMQHeavyVerification'};& powershell -ExecutionPolicy Bypass -File scripts/m1_certificate_mutation_regression.ps1;$componentCode=$LASTEXITCODE;if($componentCode -ne 0){exit $componentCode}}finally{if($acquired){$mutex.ReleaseMutex()};$mutex.Dispose()}
+powershell -ExecutionPolicy Bypass -File scripts/paper_topology_lint.ps1 -StageDeadlineSeconds 300
+powershell -ExecutionPolicy Bypass -File scripts/design_decision_check.ps1 -Strict -Base aafa68a51b605abefef8bba3b2dcebb9863e1ebf
+rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ lakefile.toml
+rg -n "native_decide|Lean\.ofReduceBool" RMQ
+git diff --check
+$mutex=[Threading.Mutex]::new($false,'Global\RMQHeavyVerification');$acquired=$false;$waitSw=[Diagnostics.Stopwatch]::StartNew();try{try{$acquired=$mutex.WaitOne()}catch [Threading.AbandonedMutexException]{$acquired=$true};$waitSw.Stop();Write-Host "MUTEX-WAIT=$([Math]::Round($waitSw.Elapsed.TotalSeconds,3))s";if(-not $acquired){throw 'failed to acquire Global\RMQHeavyVerification'};$gateSw=[Diagnostics.Stopwatch]::StartNew();& powershell -ExecutionPolicy Bypass -File scripts/gate.ps1;$gateCode=$LASTEXITCODE;$gateSw.Stop();Write-Host "FINAL-GATE EXIT=$gateCode DURATION=$([Math]::Round($gateSw.Elapsed.TotalSeconds,3))s";if($gateCode -ne 0){exit $gateCode}}finally{if($acquired){$mutex.ReleaseMutex()};$mutex.Dispose()}
+```
+
+The mutex-held final command is submitted with the host execution deadline
+`shell_command timeout_ms=5400000`; that outer 5400-second bound is part of the
+recorded invocation even though it is not PowerShell syntax. If it fires, the
+run is not repeated unchanged: surviving owned processes, CPU/artifact
+progress, prerequisites, and cleanup are inspected before the smallest failing
+component is reproduced.
+
+Development warm-up used
+`lake build RMQ.Core.SuccinctFinalModelAdequacy` (exit 0, 910.9s compiler
+time) and `lake build RMQPaper RMQ` (exit 0, 321.4s compiler time), each under
+`Global\RMQHeavyVerification`; they are not repeated on the final tree. The
+standalone full 41-case semantic suite, standalone full 16-case topology
+suite, separate expected-type checker, and separate full build are deliberately
+skipped as redundant final checks because the one aggregate gate owns them.
+
+Conditional rule: if the aggregate gate fails, reproduce only its smallest
+failing component, repair it, and run at most one new aggregate gate on the
+changed final tree. A timeout or quiet wrapper is first diagnosed by owned
+process, CPU/artifact progress, prerequisites, and cleanup; it is never rerun
+unchanged.
+
+## R3 Pre-Edit Goal Reflection
+
+- Named target: mechanically replay the existing reviewer-native M1
+  certificate/public-consumer topology without changing evaluator, payload,
+  store, trace, cost, query, or public theorem identity.
+- Downstream consumer: the value
+  `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` at one frozen expected type,
+  immediately before the accepted M1 plus accepted E1 integration join.
+- Hard obligation: every F01-F24 and Q01-Q11 mutation is committed and
+  replayable; repaired public deletions/weakening fail the independent type
+  pin; C01 succeeds; A01/A02 fail the production topology lint; every case
+  preserves live hashes and tracked state.
+- Forbidden shortcuts: current-type-only checks, theorem-name grep evidence,
+  packet reconstruction, source-tree mutation, report-only results, full
+  project rebuilds per case, sibling/static substitution, guard removal,
+  value/cost-only trace equality, or new trust-boundary declarations.
+- Stop condition: all frozen and inherited rows close on one exact commit, or
+  one precise formal/tooling obstruction identifies the smallest unresolved
+  row and exact failing command.
+- Parallelization: the checker, runner, lint, gate, and matrix form one shared
+  acceptance surface, so the lead worker owns the complete change; no worker
+  is launched.
+
+## R5 Cost-Aware Verification Ledger
+
+The pre-edit tree is exact base
+`9e3676056f0b660f3707b90b21845990ab790f98`. The nearest full semantic replay
+was measured at 1223.927 seconds, while its slowest displayed public-pin stage
+was 124.267 seconds; every external stage therefore retains a 300-second
+deadline. Final aggregate certification retains a 90-minute outer allowance
+and is run exactly once on the unchanged finalized tree.
+
+| Command/evidence | Role and covered rows | Observed result |
+| --- | --- | --- |
+| project-skill preflight at exact governance ref | governance and runtime skill contract | PASS; canonical skills current; `rmq-proof-sprint` present in runtime catalog. |
+| `lake build RMQ.Core.SuccinctFinalModelAdequacy` | certificate, required facts, exact/safe store transfer | cold elaboration 819.1s exposed only a duplicate doc comment; after correction PASS 5.0s; final reroute PASS 6.0s. |
+| `lake build RMQ.Core.SuccinctRMQClassic` | guarded list packet and four-link chain | PASS 23.2s. |
+| `lake build RMQ.Headlines.RMQ` | literal paper consumption | PASS 32.8s. |
+| `lake build RMQPaper`; `lake build RMQ` | direct public consumers | PASS 5.9s; PASS 291.1s. |
+| `lake env lean scripts/headline_axiom_check.lean` | exact expected type and trust inventory | PASS 49.7s; standard axioms only. |
+| runner registry/selector/deadline/startup controls | exact registry, selector nonvacuity, bounded subprocess ownership | PASS 3.3s / 3.1s / 27.0s / 107.3s; sleeper owned timeout 20.128s with root and child absent. |
+| focused C01 and F14 | expected-accept discrimination and cost-210 public pin | PASS 85.8s / 100.2s; F14's compiling 211 weakening is rejected only by the frozen 210 checker. |
+| exact 41-case replay | F01-F24, Q01-Q11, P01-P05, C01 | PASS 1223.927s; 41 executed, 40 expected rejects, 1 expected accept; live hashes/tracked state unchanged. |
+| production topology and A01/A02 controls | runner/checker/gate literal topology | PASS 89.4s / 14.1s / 13.2s; virtual block deletions rejected with integrity unchanged. |
+| strict current-fact drift scan | all 18 registered current fact surfaces | PASS 11.4s; 1421 hits, zero failures. |
+| final narrow/policy/topology checks, one aggregate gate, and post-commit range audit | every candidate row | Commit-conditional: this file must not be committed unless all pass; exact observed exits/timings are supplied in the immutable candidate handoff rather than by a post-gate tree edit. |
+
+## R2 Pre-Edit Goal Reflection (Inherited)
+
+- Overall goal: close the M1 local/public rung by making one reviewer-native
+  machine certificate and exact dynamic physical-read agreement literal inputs
+  to the paper theorem.
+- Current gap: the accepted facts exist in a large trace-adequacy record and
+  nearby theorems, while no named M1 certificate or list-facing adequacy packet
+  makes the whole identity chain a single public object.
+- Hard part: preserve one validity domain and one canonical object chain while
+  promoting complete-trace supplied-store determinism above static footprint
+  convenience results.
+- This iteration: define and prove the two named packets, consume them in the
+  literal paper theorem proposition, and expose the required axiom/headline
+  surfaces.
+- Parallel plan: two read-only scouts inventory exact theorem inputs and audit
+  affected claim/design surfaces; the lead thread owns all edits and final
+  integration.
+- Not doing: no accepted query implementation changes, new execution path,
+  E1 small-step semantics, preprocessing theorem, or public cost strengthening.
+
+## Canonical Object Identity To Preserve
+
+```text
+xs : List Int
+  -> cartesianShape xs
+  -> concreteBPNativeSuccinctRMQCanonicalReviewerPayload (cartesianShape xs)
+     = buildPayload xs
+  -> flattenPayloadWords (reviewerPhysicalWords xs) = buildPayload xs
+  -> reviewerPhysicalReadStore xs
+  -> reviewerPhysicalStoreAdapter (cartesianShape xs)
+       (reviewerPhysicalReadStore xs)
+     = globalReadStore xs
+  -> reviewerPhysicalTraceResultWithStore xs store left right
+  -> queryTraceResult xs left right
+  -> queryCosted xs left right
+  -> canonicalInterpretedQueryCosted xs left right
+```
+
+The supplied-store equality must be equality of the complete
+`WordRAM.TraceResult (Option Nat)`, not merely `.value`, `.trace.length`, or
+aggregate cost. The value-dependency field is retained separately because
+complete-record inequality alone could be caused by trace differences.
+
+## Required Declarations
+
+- `RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed`
+- `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerMachineWellFormed`
+- `RMQ.SuccinctClassic.ReviewerNativeMachineAdequacy`
+- `RMQ.SuccinctClassic.listIntSuccinctRMQReviewerNativeMachineAdequacy`
+- `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`, strengthened in its
+  literal checked proposition.
+
+## Invalid-Domain And Mutation Audit
+
+| Case | Required result |
+| --- | --- |
+| Empty input / `left = right = 0` | `none`, empty trace, cost zero, empty physical footprint, every supplied physical store rejected without execution. |
+| Reversed `right < left` | Same combined invalid packet. |
+| Out of bounds `xs.length < right` | Same combined invalid packet. |
+| Singleton valid query | Named certificate and full list packet apply to the canonical singleton objects. |
+| Size-two valid query | Named certificate, exact dynamic agreement, value dependency, and width fields remain on the same canonical objects. |
+| Delete certificate conjunct from paper theorem | Literal-proposition audit fails; nearby aliases do not satisfy M1-05. |
+| Replace exact dynamic footprint with static/safe footprint | M1-02/M1-05 fail. |
+| Replace complete `TraceResult` equality with `.value` or cost equality | M1-02/M1-03 fail. |
+| Remove valid guard from raw certificate consumption | M1-06 fails. |
+| Replace value-projection dependency with aggregate trace inequality | M1-07 fails. |
+
+## Completion Gate
+
+The worker may report candidate completion only after parser/static/focused
+controls, hygiene scans, `git diff --check`, strict exact-base design checking,
+and one `scripts/gate.ps1` invocation pass on the unchanged final content tree.
+That one aggregate invocation owns the full build, RMQPaper and headline
+checks, 41 semantic mutations including the expected-ACCEPT control, production
+topology lint, and exact 16-case topology regression. Earlier targeted builds
+and focused cases are development diagnosis/cache warm-up and are not repeated
+as separate final certification. The external final ledger must record the
+exact commit and exact changed-file set. Any post-gate content edit invalidates
+the affected ledger entries.
+
+## R2 Historical Report-Only Evidence (Rejected As Non-Replayable)
+
+This inherited section records the R2 worker's claims only. Neither R3 nor R4
+acceptance relies on its disposable snapshot, terminal observations, hashes,
+or historical final ledger. R3's committed but inexact replay is also rejected;
+only the exact R4 candidate plus its external unchanged-tree and exact-commit
+audit ledgers may supersede these historical claims.
+
+The positive predicate `P`, adversarial predicate `Q`, guards, object
+quantifiers, mutation, and rejecting checked surface are recorded here.  A
+constructor initializer or declaration name is never used as rejection
+evidence.
+
+| Rows | Positive predicate `P` | Adversarial predicate `Q` | Guards and quantifiers | Mutation exercised | Exact rejecting checked surface |
+| --- | --- | --- | --- | --- | --- |
+| M1-01, M1R2-FIELD-CONSUMER, INV-CERTIFICATE-ANTI-BYPASS | All 24 exact field propositions over one `shape left right`. | A missing field or any weakened/sibling proposition. | `shape : CartesianShape`; `left right : Nat`; inner store/event/address/word quantifiers unchanged. | Delete every field; nine proposition/object substitutions. | `ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed.requiredFacts`, whose record literal uses every `h.<field>`. |
+| M1-02, M1-05, INV-STORE-AGREEMENT | Agreement on the first physical execution's ordered dynamic read footprint implies equality of the complete `TraceResult`. | Safe/static agreement as the primary premise, or only value/cost equality. | `forall storeA storeB left right`; no validity guard is required for deterministic execution equality. | Full-result to value equality; safe premise in the literal paper proposition. | `listIntSuccinctRMQPaperMainTheorem` plus `reviewerPhysicalTraceResultWithStore_eq_of_orderedReadFootprint`; both mutations exit 1. |
+| M1-03, M1-04, INV-TRACE-EXECUTION, INV-PUBLIC-COMPOSITION | The guarded list query, canonical costed query, first-order controller, physical execution, trace, and `Costed` projection share one query and construction. | A sibling shape/query/payload/store/words/footprint or a removed chain link. | `ValidRange xs left right` for raw certificate/required facts and semantic exactness; exact store equality remains universally quantified. | Sibling shape, reversed query, payload, words, adapter target, and footprint. | `RequiredFacts`, `ReviewerNativeMachineAdequacy.checked_reviewer_chain_of_valid`, and the literal paper proposition. |
+| M1-06, INV-ALL-SIZE | Invalid queries give `none`, empty trace/footprint, zero cost, and store-independent physical rejection; raw facts are guarded. | Unguarded raw facts or a hidden readiness/size dispatch. | `Â¬ ValidRange xs left right`; `forall store`; valid facts require `ValidRange`. | Remove both `ValidRange` arrows and repair the constructor. | Untouched paper consumer fails at its applications of `machine_well_formed_of_valid` and `machine_required_facts_of_valid`; validator/harness cover empty, reversed, and out-of-bounds cases. |
+| M1-07, INV-VALUE-DEPENDENCY | Translated evaluator `.value` disagreement implies physical evaluator `.value` disagreement. | Inequality of the enclosing `TraceResult`, which may differ only in its log. | `forall storeA storeB`; list projection additionally assumes `ValidRange`. | Replace both premise/conclusion with aggregate full-record inequality. | `h.physical_value_dependency` fails the independent required-facts type; curated `fail_if_success` rejects aggregate-to-value implication. |
+| INV-STORE-IDENTITY, INV-READ-BACKING, INV-GLOBAL-PHYSICAL-MACHINE | The same canonical physical words erase to counted payload, adapt to the global store, and back successful reads positionally. | Empty/sibling payload or words, sibling adapter target, or membership-only backing. | `shape left right`; every read event/address/returned word quantified at the same execution. | Payload `[]`, words `[]`, sibling physical-store target; delete backing field. | Literal erasure, adapter, successful-read, footprint, and returned-word projections in `requiredFacts`. |
+| INV-WORD-WIDTH, INV-ADDRESS-WIDTH, INV-WIDTH-SCALING | One query-independent reviewer width bounds capacity, operands, segment codes, addresses, footprint addresses, stored words, and returned words. | Width `+ 1`, a detached asymptotic fact, or omission of any width class. | `shape`; all operands/segments/addresses/events/words universally quantified. | Replace reviewer width by width `+ 1`; delete each of the ten capacity/width fields. | Literal capacity/width projections in `requiredFacts`. |
+| INV-NO-SYNTHETIC, INV-PROOF-SEPARATION, INV-CATEGORY-SEPARATION | Actual execution events are non-synthetic and their weight equals trace length/cost within 76; proof fields remain proofs. | Synthetic/decorative replay, proof-carried answer, or modeled-tick/runtime conflation. | Every actual event in the same physical trace; no new evaluator parameter. | Delete each event/weight/cost field; inspect source diff and strict current-claim gates. | `requiredFacts`, curated axiom inventories, `claim_drift_scan.ps1 -Strict`, and `paper_topology_lint.ps1`. |
+
+### R2 reported field-deletion results (not R3 evidence)
+
+The disposable audit used detached snapshot
+`d8d29496c60ed1772885d826ce43e6e07a875875`. Every row removed only the named
+certificate declaration, retained the constructor and consumer, compiled with
+the pinned Lean 4.22 binary, exited `1`, and reported `Invalid field <name>` at
+the literal `requiredFacts` projection.
+
+| Deleted mandatory field | Exit | Rejecting projection |
+| --- | ---: | --- |
+| `physical_words_erase_canonical_payload` | 1 | `h.physical_words_erase_canonical_payload` |
+| `physical_execution_is_canonical_trace` | 1 | `h.physical_execution_is_canonical_trace` |
+| `canonical_trace_is_first_order_controller` | 1 | `h.canonical_trace_is_first_order_controller` |
+| `canonical_physical_store_adapts_to_global_store` | 1 | `h.canonical_physical_store_adapts_to_global_store` |
+| `physical_events_match_canonical_store` | 1 | `h.physical_events_match_canonical_store` |
+| `successful_physical_reads_backed_by_canonical_words` | 1 | `h.successful_physical_reads_backed_by_canonical_words` |
+| `ordered_physical_footprint_recorded` | 1 | `h.ordered_physical_footprint_recorded` |
+| `supplied_execution_eq_of_exact_read_agreement` | 1 | `h.supplied_execution_eq_of_exact_read_agreement` |
+| `physical_value_is_translated_supplied_store_value` | 1 | `h.physical_value_is_translated_supplied_store_value` |
+| `physical_value_dependency` | 1 | `h.physical_value_dependency` |
+| `no_synthetic_physical_event` | 1 | `h.no_synthetic_physical_event` |
+| `certificate_weight_eq_trace_length` | 1 | `h.certificate_weight_eq_trace_length` |
+| `certificate_weight_eq_cost` | 1 | `h.certificate_weight_eq_cost` |
+| `certificate_weight_le_76` | 1 | `h.certificate_weight_le_76` |
+| `reviewer_capacity_linear` | 1 | `h.reviewer_capacity_linear` |
+| `physical_words_fit_capacity` | 1 | `h.physical_words_fit_capacity` |
+| `reviewer_word_bits_logarithmic` | 1 | `h.reviewer_word_bits_logarithmic` |
+| `input_operands_fit_reviewer_word` | 1 | `h.input_operands_fit_reviewer_word` |
+| `segment_encodings_fit_reviewer_word` | 1 | `h.segment_encodings_fit_reviewer_word` |
+| `every_physical_address_fits_reviewer_word` | 1 | `h.every_physical_address_fits_reviewer_word` |
+| `every_recorded_footprint_address_fits_reviewer_word` | 1 | `h.every_recorded_footprint_address_fits_reviewer_word` |
+| `physical_primitive_operands_fit_reviewer_word` | 1 | `h.physical_primitive_operands_fit_reviewer_word` |
+| `every_stored_physical_word_fits_reviewer_word` | 1 | `h.every_stored_physical_word_fits_reviewer_word` |
+| `every_successful_returned_word_fits_reviewer_word` | 1 | `h.every_successful_returned_word_fits_reviewer_word` |
+
+### R2 reported proposition, object, guard, and public-route mutations
+
+| Mutation | Exit | Rejecting checked surface |
+| --- | ---: | --- |
+| Complete `TraceResult` equality -> `.value` equality | 1 | `h.supplied_execution_eq_of_exact_read_agreement` type mismatch. |
+| Canonical payload -> `[]` | 1 | `h.physical_words_erase_canonical_payload` type mismatch. |
+| Canonical physical words -> `[]` | 1 | `h.physical_words_erase_canonical_payload` type mismatch. |
+| Adapter target -> sibling physical store | 1 | `h.canonical_physical_store_adapts_to_global_store` type mismatch. |
+| Shape -> `Cartesian.shape []` | 1 | `h.canonical_trace_is_first_order_controller` type mismatch. |
+| Query `left/right` -> `right/left` | 1 | `h.canonical_trace_is_first_order_controller` type mismatch. |
+| Reviewer width -> width `+ 1` | 1 | `h.reviewer_word_bits_logarithmic` type mismatch. |
+| Ordered footprint -> reversed-query footprint | 1 | `h.ordered_physical_footprint_recorded` type mismatch. |
+| Value dependency -> full-`TraceResult` inequality | 1 | `h.physical_value_dependency` type mismatch. |
+| Remove `ValidRange` from both guarded certificate/facts fields | 1 | Untouched headline proof applies the now-unguarded fields to `hvalid` and fails. |
+| Paper physical ordered-dynamic premise -> safe/static footprint | 1 | `hagree` has `storesAgreeOnFootprint` but the production theorem requires `physicalStoresAgreeOnOrderedReadFootprint`. |
+
+A packet-only control mutation changed the separately restated logical packet
+field to safe agreement and still compiled because the paper theorem has its
+own independent ordered-dynamic conjunct. This is not counted as a rejecting
+mutation; it confirms why the production public-proposition mutation and the
+curated `fail_if_success` check are the load-bearing tests.
+
+Every disposable source restored byte-identically. The final SHA-256 values
+were `022B37D67BE3BDD90AB0A064814390F34C5A3B8DC224C2E0AFCFBB76D0CE0A93`
+for `SuccinctFinalModelAdequacy.lean`,
+`382B67C2AFEF1C873047C8C845007DDC7AE6620C2DB37AC89598E706F4DFD13D`
+for `SuccinctRMQClassic.lean`, and
+`D40CF5F7DFD626A9830683A53FE3BBD085ED521814C6BDD6623E906F36E05919`
+for `RMQ.lean`; the disposable worktree ended clean.
+
+### R2 historical final verification ledger
+
+The R2 report claimed that all commands below were rerun after its final matrix
+edit and before its candidate commit. R4 treats every result in this subsection
+as untrusted historical prose; none is a current instruction or substitute for
+the R4 single aggregate gate.
+
+| Historical R2 check | Historical R2 claimed result (untrusted) |
+| --- | --- |
+| Targeted builds: `RMQ.Core.SuccinctFinalModelAdequacy`, `RMQ.Core.SuccinctRMQClassic`, `RMQ.Headlines.RMQ`, `RMQPaper` | Pass, exit 0. |
+| `lake env lean scripts/headline_axiom_check.lean` | Pass, exit 0; repaired declarations remain within expected Lean foundational axioms. |
+| `lake env lean scripts/wordram_axiom_check.lean` | Pass, exit 0. |
+| `lake build RMQExamples` | Pass, exit 0. |
+| `lake exe rmq_succinct_classic_validate` | Pass, exit 0: 498 valid/invalid windows across 43 deterministic inputs. |
+| `lake exe rmq_succinct_classic_cost_harness` | Pass, exit 0: 15/15 reported windows agree; valid costs are at most 76 and invalid cases are `none`/zero cost. |
+| Full `lake build` | Pass, exit 0. |
+| Strict design and claim-drift checks | Pass, exit 0; 18 changed files and zero strict claim failures. |
+| Paper topology lint and `scripts/gate.ps1` | Pass, exit 0. |
+| AGENTS hygiene scans and `git diff --check` | No forbidden-token or `native_decide`/`Lean.ofReduceBool` hits; no whitespace errors. |
+| Exact staged path audit and committed range | Exactly the 18 scoped paths below; `git diff --check 9ccbae7547152f4af3429eb012b5d39482c777eb..HEAD` passes. |
+
+### R2 historical scoped file set
+
+- `README.md`
+- `RMQ/Core/SuccinctFinalModelAdequacy.lean`
+- `RMQ/Core/SuccinctRMQClassic.lean`
+- `RMQ/Headlines/RMQ.lean`
+- `artifact/CLAIMS.md`
+- `docs/CODE_MAP.md`
+- `docs/DIGESTION_LOG.md`
+- `docs/FAMILY_SUMMARY.md`
+- `docs/PAPER_CLAIM_CORRESPONDENCE.md`
+- `docs/PAPER_MAIN_THEOREM.md`
+- `docs/PAPER_MODEL_ADEQUACY.md`
+- `docs/PAPER_THEOREM_MAP.md`
+- `docs/TRUST_AUDIT_PACKET.md`
+- `docs/WHAT_IS_PROVED.md`
+- `docs/digests/PROJECT_DIGESTION_CURRENT.md`
+- `docs/internal/DESIGN_DECISIONS.md`
+- `docs/internal/M1_REVIEWER_NATIVE_ADEQUACY_ACCEPTANCE_MATRIX.md`
+- `scripts/headline_axiom_check.lean`
+
+E1 small-step semantics, preprocessing complexity, serialized-payload API
+strengthening, compiled runtime, and conventional fully charged word-RAM
+claims remain outside this candidate. Coordinator reconstruction and a fresh
+blind exact-commit audit remain required before roadmap acceptance.
+
+## R3 Historical Evidence Rejected By The R4 Exact Replay Audit
+
+R3's theorem/object inventory remains useful, but its replay verdict is not
+accepted as closure evidence: it lacked an exact registry, permitted frozen
+selectors to execute zero cases, mutated marker comments instead of the
+functional A01/A02 blocks, left compiler/lint children unbounded, and omitted
+the required exact-range workflow decision. R4 preserves the positive
+predicate, adversarial substitute, and object chain below while replacing the
+process evidence. The historical runner used the installed binary named by
+`lean-toolchain`, shared
+read-only `.olean` artifacts, and per-case shadow sources; it never edits a
+tracked live source.
+
+| IDs / rows | Positive obligation | Adversarial or boundary change | Exact object-composition chain | Committed checked surface |
+| --- | --- | --- | --- | --- |
+| F01-F24; M1-01; M1R2-FIELD-CONSUMER; INV-CERTIFICATE-ANTI-BYPASS | All 24 exact WellFormed field propositions over one `shape left right`. | Delete each field independently. | WellFormed value -> literal `h.<field>` -> independent 24-proposition `RequiredFacts` -> guarded adequacy packet -> paper theorem. | Direct compilation of mutated `SuccinctFinalModelAdequacy.lean` exits nonzero with `Invalid field` and the exact deleted field name. |
+| Q01-Q09; M1-02..M1-04; M1-07; object-identity invariants | Exact complete result, canonical payload/words/store/shape/query/width/footprint/value-dependency propositions. | Value-only equality or sibling payload, words, store, shape, query, width, footprint, or full-record inequality. | Canonical construction objects -> WellFormed typed field -> exact `RequiredFacts` projection. | Mutated final-model compilation exits nonzero with a type mismatch at the named literal projection. |
+| Q10; M1-06; INV-ALL-SIZE | WellFormed and RequiredFacts remain guarded by `ValidRange xs left right`. | Remove both guards and repair their constructor initializers. | `ValidRange` -> guarded packet fields -> unchanged headline applications at `hvalid`. | Mutated Classic compiles; unchanged headline compilation exits nonzero at `machine_well_formed_of_valid` or `machine_required_facts_of_valid`. |
+| Q11; M1-02; INV-STORE-AGREEMENT | Primary premise is agreement on the first physical execution's ordered dynamic read footprint. | Substitute the safe/static footprint premise. | physical ordered footprint -> complete supplied-store `TraceResult` equality -> paper conjunct. | Mutated headline compilation exits nonzero because `hagree` cannot satisfy the physical ordered-footprint theorem. |
+| P01-P05; M1-05; INV-PUBLIC-COMPOSITION; M1R3-PUBLIC-TYPE-PIN | The literal public theorem includes guarded WellFormed, guarded RequiredFacts, and complete physical ordered-dynamic `TraceResult` equality. | Delete either guarded conjunct; weaken the complete result to value or cost; replace the dynamic premise with static all-address agreement; repair each theorem proof. | theorem declaration/proof compiles -> theorem value -> frozen independent expected type. | Mutated headline compilation exits 0; `scripts/headline_axiom_check.lean` then exits nonzero on the theorem value's type mismatch. |
+| C01; M1R3-EXPECTED-ACCEPT-CONTROL | A packet-only logical agreement restatement is not itself the independent paper conjunct. | Delete `exact_dynamic_logical_store_agreement` and its initializer only. | packet-only restatement -/-> paper theorem; unchanged theorem value -> frozen expected type. | Mutated Classic, headline, and checker each exit 0, proving the campaign distinguishes nearby duplication from load-bearing public dependencies. |
+| A01-A02; M1R3-GATE-TOPOLOGY | The frozen type pin and runner invocation have literal lint-visible anchors. | Virtually delete either anchor. | checker/runner -> production topology lint -> regression -> literal aggregate gate. | Production topology lint exits nonzero and the regression verifies unchanged tracked/index state. |
+
+### Frozen public expected-type consumer
+
+`scripts/headline_axiom_check.lean` defines
+`M1PublicExpectedTypeCheck.M1ReviewerNativeExpectedPaperType` independently of
+the theorem declaration. Its final term is exactly:
+
+```lean
+example : M1ReviewerNativeExpectedPaperType :=
+  RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem
+```
+
+The frozen proposition contains the guarded
+`ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed` conjunct, the guarded
+independent `ConcreteBPNativeSuccinctRMQReviewerMachineRequiredFacts` conjunct,
+and the physical ordered-dynamic premise implying equality of the complete
+`WordRAM.TraceResult (Option Nat)`. It does not construct a packet, project a
+certificate field, invoke `requiredFacts`, or adapt to the theorem's current
+type.
+
+### Committed mutation campaign
+
+The authoritative command is:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\m1_certificate_mutation_regression.ps1
+```
+
+Historically, for each reported case, the R3 runner snapshots `git status`, worktree/index raw
+diffs, and SHA-256 hashes of every live source/check path; creates a unique
+temporary root; hard-links the shared compiled artifacts as read-only inputs;
+copies the four mutable Lean/checker sources; performs exactly the registered
+source transformation; invokes focused Lean stages with the shadow root first
+on `LEAN_PATH`; checks exit code and diagnostic patterns; deletes the case
+root; and rechecks the live snapshots and hashes. Only printed diagnostic tails
+were bounded; the child output and runtime were not. The final sweep root was
+intended to be under the OS temporary directory and deleted before the final
+integrity check, but a hung child could prevent that cleanup indefinitely.
+
+| Cases | Required/observed containing-commit outcome |
+| --- | --- |
+| F01-F24 | 24 REJECT passes: each focused final-model compile exits nonzero at the exact missing `requiredFacts` projection. |
+| Q01-Q09 | 9 REJECT passes: each focused final-model compile exits nonzero at the exact proposition/object projection mismatch. |
+| Q10 | REJECT pass: mutated Classic exits 0; unchanged headline consumer exits nonzero. |
+| Q11 | REJECT pass: mutated paper theorem proof exits nonzero on the safe/static-to-physical ordered-footprint mismatch. |
+| P01-P05 | 5 REJECT passes: each repaired weakened headline exits 0; the frozen expected-type checker exits nonzero. |
+| C01 | 1 ACCEPT pass: mutated Classic, unchanged headline, and frozen checker all exit 0. |
+| Final integrity | Runner reports `40 expected rejects; 1 expected accept; live hashes/tracked state unchanged` and exits 0. |
+
+The aggregate gate invokes this command through the literal
+`M1R3-MUTATION-RUNNER-GATE-ANCHOR`. `scripts/paper_topology_lint.ps1` requires
+the runner file, the boundary IDs, the `M1R3-PUBLIC-TYPE-PIN-ANCHOR`, the exact
+theorem-value consumer, the gate anchor, and the literal invocation. The
+regression cases A01/A02 virtually delete the two anchors and require rejection.

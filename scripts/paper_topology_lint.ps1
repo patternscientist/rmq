@@ -3,11 +3,80 @@
 param(
   [string]$MutationPath = '',
   [string]$MutationText = '',
-  [string]$MutationRemoveText = ''
+  [string]$MutationRemoveText = '',
+  [string]$MutationTextBase64 = '',
+  [string]$MutationRemoveTextBase64 = '',
+  [ValidateSet('', 'A01', 'A02')]
+  [string]$MutationCase = '',
+  [ValidateRange(1, 3600)]
+  [int]$StageDeadlineSeconds = 300,
+  [ValidateRange(4096, 16777216)]
+  [int]$StageOutputLimitBytes = 4194304,
+  [string]$LaunchReleasePath = ''
 )
 
 $ErrorActionPreference = 'Stop'
 $failures = 0
+
+if ($LaunchReleasePath -ne '') {
+  while (-not (Test-Path -LiteralPath $LaunchReleasePath -PathType Leaf)) {
+    Start-Sleep -Milliseconds 10
+  }
+}
+
+$pathKeys = @(
+  [Environment]::GetEnvironmentVariables().Keys |
+    Where-Object { [string]$_ -ieq 'path' })
+if ($pathKeys.Count -gt 1 -and $pathKeys -ccontains 'PATH') {
+  Remove-Item Env:PATH -ErrorAction Stop
+}
+
+if (-not ('RMQReplayJob' -as [type])) {
+  Add-Type -TypeDefinition @'
+using System;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
+public static class RMQReplayJob {
+  private const int Extended = 9;
+  private const uint KillOnClose = 0x00002000;
+  [StructLayout(LayoutKind.Sequential)] private struct IO {
+    public ulong a,b,c,d,e,f;
+  }
+  [StructLayout(LayoutKind.Sequential)] private struct Basic {
+    public long a,b; public uint flags;
+    public UIntPtr c,d; public uint e; public UIntPtr f; public uint g,h;
+  }
+  [StructLayout(LayoutKind.Sequential)] private struct ExtendedInfo {
+    public Basic basic; public IO io;
+    public UIntPtr a,b,c,d;
+  }
+  [DllImport("kernel32.dll", SetLastError=true)]
+  private static extern IntPtr CreateJobObject(IntPtr a, string n);
+  [DllImport("kernel32.dll", SetLastError=true)]
+  private static extern bool SetInformationJobObject(
+    IntPtr j, int c, ref ExtendedInfo i, uint n);
+  [DllImport("kernel32.dll", SetLastError=true)]
+  private static extern bool AssignProcessToJobObject(IntPtr j, IntPtr p);
+  [DllImport("kernel32.dll", SetLastError=true)]
+  private static extern bool CloseHandle(IntPtr h);
+  public static IntPtr CreateKillOnClose() {
+    IntPtr j=CreateJobObject(IntPtr.Zero,null);
+    if(j==IntPtr.Zero) throw new Win32Exception(Marshal.GetLastWin32Error());
+    var i=new ExtendedInfo(); i.basic.flags=KillOnClose;
+    if(!SetInformationJobObject(j,Extended,ref i,(uint)Marshal.SizeOf(typeof(ExtendedInfo)))) {
+      int e=Marshal.GetLastWin32Error(); CloseHandle(j); throw new Win32Exception(e);
+    }
+    return j;
+  }
+  public static void Assign(IntPtr j, IntPtr p) {
+    if(!AssignProcessToJobObject(j,p)) throw new Win32Exception(Marshal.GetLastWin32Error());
+  }
+  public static void Close(IntPtr j) {
+    if(j!=IntPtr.Zero && !CloseHandle(j)) throw new Win32Exception(Marshal.GetLastWin32Error());
+  }
+}
+'@
+}
 
 function Normalize-RepoPath([string]$Path) {
   $normalized = $Path -replace '\\', '/'
@@ -18,6 +87,25 @@ function Normalize-RepoPath([string]$Path) {
 }
 
 $MutationPath = Normalize-RepoPath $MutationPath
+if ($MutationTextBase64 -ne '') {
+  if ($MutationText -ne '') {
+    throw 'specify MutationText or MutationTextBase64, not both'
+  }
+  $MutationText = [Text.Encoding]::UTF8.GetString(
+    [Convert]::FromBase64String($MutationTextBase64))
+}
+if ($MutationRemoveTextBase64 -ne '') {
+  if ($MutationRemoveText -ne '') {
+    throw 'specify MutationRemoveText or MutationRemoveTextBase64, not both'
+  }
+  $MutationRemoveText = [Text.Encoding]::UTF8.GetString(
+    [Convert]::FromBase64String($MutationRemoveTextBase64))
+}
+if ($MutationCase -ceq 'A01') {
+  $MutationPath = 'scripts/headline_axiom_check.lean'
+} elseif ($MutationCase -ceq 'A02') {
+  $MutationPath = 'scripts/gate.ps1'
+}
 
 $frozenSnapshotMarker = '<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT -->'
 $frozenSnapshotLines = [ordered]@{
@@ -32,6 +120,164 @@ function Fail([string]$Message) {
   $script:failures += 1
 }
 
+function Invoke-BoundedLintTool(
+    [string]$FilePath,
+    [string[]]$Arguments,
+    [string]$Stage,
+    [hashtable]$Environment = @{}) {
+  if ($StageDeadlineSeconds -le 0) {
+    throw "$Stage deadline must be positive"
+  }
+  $logStem = [IO.Path]::Combine(
+    [IO.Path]::GetTempPath(),
+    'rmq-paper-topology-r4-' + [Guid]::NewGuid().ToString('N'))
+  $stdoutPath = $logStem + '.stdout.log'
+  $stderrPath = $logStem + '.stderr.log'
+  $specPath = $logStem + '.launch.json'
+  $releasePath = $logStem + '.release'
+  $bootstrapPath = $logStem + '.bootstrap.ps1'
+  $process = $null
+  $jobHandle = [IntPtr]::Zero
+  $timedOut = $false
+  $outputLimitExceeded = $false
+  $terminatedIds = @()
+  $exitCode = -1
+  $output = @()
+  $stopwatch = [Diagnostics.Stopwatch]::StartNew()
+  try {
+    $utf8 = [Text.UTF8Encoding]::new($false)
+    $launchSpec = [ordered]@{
+      FilePath = $FilePath
+      Arguments = @($Arguments)
+      Environment = $Environment
+    }
+    [IO.File]::WriteAllText(
+      $specPath, ($launchSpec | ConvertTo-Json -Depth 5), $utf8)
+    [IO.File]::WriteAllText($bootstrapPath, @'
+param([string]$SpecPath, [string]$ReleasePath)
+$ErrorActionPreference = 'Stop'
+while (-not (Test-Path -LiteralPath $ReleasePath -PathType Leaf)) {
+  Start-Sleep -Milliseconds 10
+}
+$spec = Get-Content -LiteralPath $SpecPath -Raw | ConvertFrom-Json
+foreach ($property in $spec.Environment.PSObject.Properties) {
+  [Environment]::SetEnvironmentVariable(
+    $property.Name, [string]$property.Value, 'Process')
+}
+& ([string]$spec.FilePath) @([string[]]$spec.Arguments)
+if ($null -eq $LASTEXITCODE) { exit 0 }
+exit ([int]$LASTEXITCODE)
+'@, $utf8)
+    if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
+      $jobHandle = [RMQReplayJob]::CreateKillOnClose()
+    }
+    $shellPath = (Get-Process -Id $PID).Path
+    $process = Start-Process -FilePath $shellPath -ArgumentList @(
+      '-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass',
+      '-File', $bootstrapPath, '-SpecPath', $specPath,
+      '-ReleasePath', $releasePath) `
+      -WorkingDirectory (Get-Location).Path -PassThru -NoNewWindow `
+      -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
+    if ($jobHandle -ne [IntPtr]::Zero) {
+      [RMQReplayJob]::Assign($jobHandle, $process.Handle)
+    }
+    # The requested tool cannot spawn before the bootstrap root is job-owned.
+    [IO.File]::WriteAllText($releasePath, 'assigned', $utf8)
+    while (-not $process.WaitForExit(100)) {
+      $bytes = 0L
+      foreach ($path in @($stdoutPath, $stderrPath)) {
+        if (Test-Path -LiteralPath $path -PathType Leaf) {
+          $bytes += (Get-Item -LiteralPath $path).Length
+        }
+      }
+      if ($bytes -gt $StageOutputLimitBytes) {
+        $outputLimitExceeded = $true
+        break
+      }
+      if ($stopwatch.Elapsed.TotalSeconds -ge $StageDeadlineSeconds) {
+        $timedOut = $true
+        break
+      }
+    }
+    if ($timedOut -or $outputLimitExceeded) {
+      $terminatedIds = @($process.Id)
+      if ($jobHandle -ne [IntPtr]::Zero) {
+        [RMQReplayJob]::Close($jobHandle)
+        $jobHandle = [IntPtr]::Zero
+      } else {
+        Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+      }
+      [void]$process.WaitForExit(10000)
+    } else {
+      $process.WaitForExit()
+      $exitCode = [int]$process.ExitCode
+      if ($jobHandle -ne [IntPtr]::Zero) {
+        [RMQReplayJob]::Close($jobHandle)
+        $jobHandle = [IntPtr]::Zero
+      }
+    }
+    $finalBytes = 0L
+    foreach ($path in @($stdoutPath, $stderrPath)) {
+      if (Test-Path -LiteralPath $path -PathType Leaf) {
+        $finalBytes += (Get-Item -LiteralPath $path).Length
+      }
+    }
+    if ($finalBytes -gt $StageOutputLimitBytes) {
+      $outputLimitExceeded = $true
+    }
+    if ($outputLimitExceeded) {
+      $output = @("redirected output exceeded $StageOutputLimitBytes bytes")
+    } else {
+      foreach ($path in @($stdoutPath, $stderrPath)) {
+        if (Test-Path -LiteralPath $path -PathType Leaf) {
+          $text = $null
+          for ($attempt = 0; $attempt -lt 100; $attempt += 1) {
+            try {
+              $text = [IO.File]::ReadAllText($path)
+              break
+            } catch [IO.IOException] {
+              Start-Sleep -Milliseconds 100
+            }
+          }
+          if ($null -eq $text) {
+            throw "redirected output remained locked after owned process exit: $path"
+          }
+          $output += @([regex]::Split($text, '\r?\n') |
+            Where-Object { $_ -ne '' })
+        }
+      }
+    }
+  } finally {
+    $stopwatch.Stop()
+    if ($jobHandle -ne [IntPtr]::Zero) {
+      [RMQReplayJob]::Close($jobHandle)
+      $jobHandle = [IntPtr]::Zero
+    }
+    if ($null -ne $process -and -not $process.HasExited) {
+      $terminatedIds = @($process.Id)
+      Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+      [void]$process.WaitForExit(10000)
+    }
+    if ($null -ne $process -and
+        $null -ne (Get-Process -Id $process.Id -ErrorAction SilentlyContinue)) {
+      throw "$Stage owned root process $($process.Id) survived cleanup"
+    }
+    Remove-Item -LiteralPath $stdoutPath -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $stderrPath -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $specPath -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $releasePath -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $bootstrapPath -Force -ErrorAction SilentlyContinue
+  }
+  return [pscustomobject]@{
+    ExitCode = $exitCode
+    Output = @($output)
+    TimedOut = $timedOut
+    OutputLimitExceeded = $outputLimitExceeded
+    TerminatedIds = $terminatedIds
+    DurationSeconds = [Math]::Round($stopwatch.Elapsed.TotalSeconds, 3)
+  }
+}
+
 function Require-File([string]$Path) {
   if (-not (Test-Path -LiteralPath $Path)) {
     Fail "missing required file $Path"
@@ -40,10 +286,54 @@ function Require-File([string]$Path) {
   return $true
 }
 
+function Remove-ExactVirtualBlock(
+    [string]$Text,
+    [string]$StartMarker,
+    [string]$EndMarker,
+    [string]$CaseId) {
+  $start = $Text.IndexOf($StartMarker, [StringComparison]::Ordinal)
+  if ($start -lt 0) {
+    throw "$CaseId virtual block start not found"
+  }
+  if ($Text.IndexOf(
+      $StartMarker, $start + $StartMarker.Length,
+      [StringComparison]::Ordinal) -ge 0) {
+    throw "$CaseId virtual block start is not unique"
+  }
+  $end = $Text.IndexOf($EndMarker, $start, [StringComparison]::Ordinal)
+  if ($end -lt 0) {
+    throw "$CaseId virtual block end not found"
+  }
+  if ($Text.IndexOf(
+      $EndMarker, $end + $EndMarker.Length,
+      [StringComparison]::Ordinal) -ge 0) {
+    throw "$CaseId virtual block end is not unique"
+  }
+  $end += $EndMarker.Length
+  while ($end -lt $Text.Length -and
+      ($Text[$end] -eq [char]13 -or $Text[$end] -eq [char]10)) {
+    $end += 1
+  }
+  return $Text.Remove($start, $end - $start)
+}
+
 function Read-Text([string]$Path) {
   $normalized = Normalize-RepoPath $Path
   $text = Get-Content -Raw -LiteralPath $normalized
   if ($MutationPath -ne '' -and $normalized -eq $MutationPath) {
+    if ($MutationCase -ceq 'A01') {
+      $text = Remove-ExactVirtualBlock `
+        $text `
+        '-- M1R3-PUBLIC-TYPE-PIN-ANCHOR' `
+        'end M1PublicExpectedTypeCheck' `
+        'A01'
+    } elseif ($MutationCase -ceq 'A02') {
+      $text = Remove-ExactVirtualBlock `
+        $text `
+        '# M1R3-MUTATION-RUNNER-GATE-ANCHOR' `
+        'if ($LASTEXITCODE -ne 0) { Fail "m1_certificate_mutation_regression.ps1 found issues" }' `
+        'A02'
+    }
     if ($MutationRemoveText -ne '') {
       if (-not $text.Contains($MutationRemoveText)) {
         throw "mutation removal text not found in $normalized"
@@ -84,11 +374,38 @@ function Run-LeanResolution(
       $tempPath,
       ($lines -join [Environment]::NewLine) + [Environment]::NewLine,
       $encoding)
-    $output = @(& lake env lean $tempPath 2>&1)
-    $leanExit = $LASTEXITCODE
-    if ($leanExit -ne 0) {
+    $repoRoot = [IO.Path]::GetFullPath((Get-Location).Path)
+    $toolchainSpec = (
+      [IO.File]::ReadAllText((Join-Path $repoRoot 'lean-toolchain'))).Trim()
+    $toolchainDirectoryName =
+      $toolchainSpec.Replace('/', '--').Replace(':', '---')
+    $toolchainRoot = Join-Path (
+      Join-Path $env:USERPROFILE '.elan\toolchains') $toolchainDirectoryName
+    $leanExe = Join-Path (Join-Path $toolchainRoot 'bin') 'lean.exe'
+    $projectLeanPath = Join-Path $repoRoot '.lake/build/lib/lean'
+    $toolchainLeanPath = Join-Path $toolchainRoot 'lib/lean'
+    if (-not (Test-Path -LiteralPath $leanExe -PathType Leaf)) {
+      throw "installed pinned Lean binary missing: $leanExe"
+    }
+    $result = Invoke-BoundedLintTool `
+      -FilePath $leanExe `
+      -Arguments @("--root=$repoRoot", $tempPath) `
+      -Stage "$Role-resolution" `
+      -Environment @{
+        LEAN_PATH = $projectLeanPath + [IO.Path]::PathSeparator +
+          $toolchainLeanPath
+      }
+    if ($result.TimedOut) {
+      Fail (
+        "[$Role-resolution] timed out after $StageDeadlineSeconds seconds; " +
+        "terminated=$($result.TerminatedIds -join ',')")
+    } elseif ($result.OutputLimitExceeded) {
+      Fail (
+        "[$Role-resolution] exceeded redirected output limit " +
+        "$StageOutputLimitBytes bytes; terminated=$($result.TerminatedIds -join ',')")
+    } elseif ($result.ExitCode -ne 0) {
       Fail "[$Role-resolution] documentary headline identifiers do not resolve under import $Import"
-      foreach ($line in @($output | Where-Object { $_ -match 'error:' })) {
+      foreach ($line in @($result.Output | Where-Object { $_ -match 'error:' })) {
         Write-Host "PAPER-TOPOLOGY: LEAN $line"
       }
     }
@@ -104,6 +421,8 @@ $compatibilityModule = 'RMQ/Headlines/RMQCompatibility.lean'
 $paperRoot = 'RMQPaper.lean'
 $aggregateModule = 'RMQ/Headlines.lean'
 $headlineInventory = 'scripts/headline_axiom_check.lean'
+$gateScript = 'scripts/gate.ps1'
+$m1MutationRunner = 'scripts/m1_certificate_mutation_regression.ps1'
 $currentPublicationDigest =
   'docs/digests/PROJECT_DIGESTION_CURRENT.md'
 
@@ -133,13 +452,60 @@ $requiredFiles = @(
   $compatibilityModule,
   $paperRoot,
   $aggregateModule,
-  $headlineInventory
+  $headlineInventory,
+  $gateScript,
+  $m1MutationRunner
 ) + $publicClaimSurfaces
 
 $requiredFiles += @($frozenSnapshotLines.Keys)
 
 foreach ($path in $requiredFiles) {
   [void](Require-File $path)
+}
+
+if ($failures -gt 0) {
+  exit 1
+}
+
+# M1 R3 public-dependency enforcement is itself part of the paper topology.
+# Require both the frozen expected-type consumer and the literal aggregate-gate
+# runner invocation; declaration-name or current-type-only checks are
+# insufficient.
+$headlineInventoryText = Read-Text $headlineInventory
+$gateScriptText = Read-Text $gateScript
+$m1MutationRunnerText = Read-Text $m1MutationRunner
+$m1PublicTypePinAnchor = '-- M1R3-PUBLIC-TYPE-PIN-ANCHOR'
+$m1GateAnchor = '# M1R3-MUTATION-RUNNER-GATE-ANCHOR'
+
+if (-not $headlineInventoryText.Contains($m1PublicTypePinAnchor)) {
+  Fail '[m1-public-type-pin] headline inventory is missing the literal M1 R3 expected-type anchor'
+}
+if ($headlineInventoryText -notmatch
+    '(?s)example\s*:\s*M1ReviewerNativeExpectedPaperType\s*:=\s*RMQ\.Headlines\.listIntSuccinctRMQPaperMainTheorem') {
+  Fail '[m1-public-type-pin] headline inventory does not consume the paper theorem value at the frozen expected type'
+}
+if (-not $gateScriptText.Contains($m1GateAnchor)) {
+  Fail '[m1-mutation-gate] aggregate gate is missing the literal M1 R3 runner anchor'
+}
+if ($gateScriptText -notmatch
+    '(?m)^& "\$PSScriptRoot\\m1_certificate_mutation_regression\.ps1"\s*$') {
+  Fail '[m1-mutation-gate] aggregate gate does not invoke the committed M1 mutation runner'
+}
+foreach ($anchor in @(
+    'REPLAY-EXACT-REGISTRY',
+    'REPLAY-SELECTOR-NONVACUITY',
+    'REPLAY-SUBPROCESS-DEADLINE')) {
+  if (-not $m1MutationRunnerText.Contains($anchor)) {
+    Fail "[m1-mutation-runner] committed runner is missing $anchor"
+  }
+}
+if ($m1MutationRunnerText -notmatch
+    '(?s)Assert-ExactRegistry\s+\$caseRegistry.*omitted-middle-F21.*duplicated-middle-F21') {
+  Fail '[m1-mutation-runner] exact registry and middle-drift controls are not wired'
+}
+if ($m1MutationRunnerText -notmatch
+    '(?s)executed registry mismatch.*verdict totals mismatch') {
+  Fail '[m1-mutation-runner] exact executed-order and verdict-total checks are not wired'
 }
 
 if ($failures -gt 0) {
@@ -200,10 +566,22 @@ $enforcementPaths = @(
   'scripts/paper_topology_lint_regression.ps1'
 )
 
-$trackedFiles = @(& git ls-files | ForEach-Object { Normalize-RepoPath $_ })
-if ($LASTEXITCODE -ne 0) {
+$gitPath = (Get-Command git -ErrorAction Stop).Source
+$gitFiles = Invoke-BoundedLintTool `
+  -FilePath $gitPath `
+  -Arguments @('ls-files') `
+  -Stage 'repository-git-ls-files'
+if ($gitFiles.TimedOut) {
+  Fail "[repository-search] git ls-files timed out after $StageDeadlineSeconds seconds"
+  $trackedFiles = @()
+} elseif ($gitFiles.OutputLimitExceeded) {
+  Fail "[repository-search] git ls-files exceeded $StageOutputLimitBytes bytes"
+  $trackedFiles = @()
+} elseif ($gitFiles.ExitCode -ne 0) {
   Fail '[repository-search] git ls-files failed'
   $trackedFiles = @()
+} else {
+  $trackedFiles = @($gitFiles.Output | ForEach-Object { Normalize-RepoPath $_ })
 }
 $trackedFiles = @(
   $trackedFiles + $requiredFiles + @($MutationPath) |

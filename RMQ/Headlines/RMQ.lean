@@ -63,7 +63,13 @@ advertised `buildPayload` has length at most `2*n + overhead n` with
 within the modeled constant query budget, and the final trace is the
 no-synthetic flat-payload execution story. The reviewer-manifest semantic
 packet is one query-independent conjunct; raw trace adequacy and indexed
-occurrence provenance remain under each current query's validity premise.
+occurrence provenance remain under each current query's validity premise. The
+reviewer-native machine certificate, its independently projected required
+facts, and the guarded list packet are literal inputs. The current same-trace
+non-synthetic-weight bound is a literal guarded conjunct derived from those
+required facts. Exact agreement on the first physical execution's ordered
+dynamic footprint directly determines the complete supplied-store trace
+result.
 -/
 theorem listIntSuccinctRMQPaperMainTheorem :
     RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy /\
@@ -75,6 +81,22 @@ theorem listIntSuccinctRMQPaperMainTheorem :
         RMQ.SuccinctSpace.flattenPayloadWords
             (RMQ.SuccinctClassic.reviewerPhysicalWords xs) =
           RMQ.SuccinctClassic.buildPayload xs /\
+        (forall left right,
+          RMQ.SuccinctClassic.ReviewerNativeMachineAdequacy
+            xs left right) /\
+        (forall left right,
+          RMQ.ValidRange xs left right ->
+            RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed
+              (RMQ.SuccinctClassic.cartesianShape xs) left right) /\
+        (forall left right,
+          RMQ.ValidRange xs left right ->
+            RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerMachineRequiredFacts
+              (RMQ.SuccinctClassic.cartesianShape xs) left right) /\
+        (forall left right,
+          RMQ.ValidRange xs left right ->
+            ((RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+                (RMQ.SuccinctClassic.cartesianShape xs) left right).trace.map
+              RMQ.WordRAM.TraceEvent.nonSyntheticWeight).sum <= 210) /\
         (forall left right,
           (RMQ.SuccinctClassic.queryCosted xs left right).cost <=
             RMQ.SuccinctClassic.queryCost) /\
@@ -164,6 +186,19 @@ theorem listIntSuccinctRMQPaperMainTheorem :
     ⟨hpayload,
       RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases
         (RMQ.SuccinctClassic.cartesianShape xs),
+      fun left right =>
+        RMQ.SuccinctClassic.listIntSuccinctRMQReviewerNativeMachineAdequacy
+          xs left right,
+      fun left right hvalid =>
+        (RMQ.SuccinctClassic.listIntSuccinctRMQReviewerNativeMachineAdequacy
+          xs left right).machine_well_formed_of_valid hvalid,
+      fun left right hvalid =>
+        (RMQ.SuccinctClassic.listIntSuccinctRMQReviewerNativeMachineAdequacy
+          xs left right).machine_required_facts_of_valid hvalid,
+      fun left right hvalid =>
+        ((RMQ.SuccinctClassic.listIntSuccinctRMQReviewerNativeMachineAdequacy
+          xs left right).machine_required_facts_of_valid
+            hvalid).requires_certificate_weight_le_210,
       hcost, hinvalid, hexact, hleftmost, hstory,
       fun left right hvalid =>
         RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid
@@ -184,6 +219,20 @@ theorem listIntSuccinctRMQPaperMainTheorem :
       fun storeA storeB left right hagree =>
         RMQ.SuccinctClassic.queryTraceResultWithStore_eq_of_orderedReadFootprint
           xs storeA storeB left right hagree⟩
+
+/-- Shape-level reviewer-native machine certificate over the canonical
+payload, physical store, execution, footprint, cost, and width objects. -/
+abbrev succinctRMQReviewerMachineWellFormed :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerMachineWellFormed
+
+/-- Every mandatory reviewer-machine certificate field, independently typed
+and projected at the same canonical objects. -/
+abbrev succinctRMQReviewerMachineRequiredFacts :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerMachineRequiredFacts
+
+/-- Guarded ordinary-list reviewer-native machine adequacy packet. -/
+abbrev listIntSuccinctRMQReviewerNativeMachineAdequacy :=
+  RMQ.SuccinctClassic.listIntSuccinctRMQReviewerNativeMachineAdequacy
 
 /-- Exact dynamic-footprint supplied-store determinism. Equality is of the
 complete trace result, hence preserves decoded result, cost, ordered trace,
@@ -445,18 +494,21 @@ abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreEval :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore
 
 /--
-Whole-query store-parametricity over the explicit final segment layout.
+Legacy shape-level static-layout agreement theorem retained here for its
+frozen public identity. It predates the M1 exact-dynamic primary route and is
+not the supplied-store equality used by the paper theorem or current safe-
+footprint corollaries.
 -/
 abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreStoreParametric :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric
 
 /--
-Whole-query store-parametricity from agreement on the final layout footprint.
-The footprint is a safe layout overapproximation covering live final segments
-and the dead sentinel used by finite segment maps.
+Whole-query store-parametricity from agreement on the safe final-layout
+footprint. The proof first derives agreement on the first execution's ordered
+dynamic read footprint and then applies complete-`TraceResult` determinism.
 -/
 abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreStoreParametricOfFootprint :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint_via_orderedReadFootprint
 
 /--
 Every supplied-store whole-query payload-read event is inside the safe final
@@ -475,15 +527,17 @@ abbrev succinctRMQWholeQueryGlobalWordTraceResultReadsSubsetFootprint :=
 
 /--
 A supplied-store whole-query replay equals the canonical global trace when the
-supplied store agrees with the concrete global store on the safe final layout
-footprint.
+supplied store agrees with the concrete global store on the safe final-layout
+footprint. This is a checked corollary of exact ordered dynamic-read agreement
+and complete-`TraceResult` equality.
 -/
 abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint_via_orderedReadFootprint
 
-/-- Supplied-store successful reads are backed by the canonical reviewer payload. -/
+/-- Supplied-store successful reads are backed by the canonical reviewer
+payload after exact dynamic agreement identifies the complete trace. -/
 abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCanonicalReviewerPayloadOfFootprintGlobal :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_successful_reads_backed_by_counted_flat_payload_of_footprint_global
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_successful_reads_backed_by_counted_flat_payload_of_footprint_global_via_orderedReadFootprint
 
 /-- The canonical final global trace has the principled uniform charged-trace bound. -/
 abbrev succinctRMQWholeQueryGlobalWordTraceCostedCostLe :=
@@ -539,7 +593,7 @@ footprint, the canonical modeled cost bound transfers to the supplied-store
 whole-query replay.
 -/
 abbrev succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_principledAllSizeChargedTrace
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_principledAllSizeChargedTrace_via_orderedReadFootprint
 
 /-- Uniform canonical modeled query-cost constant for the final reviewer path. -/
 abbrev succinctRMQQueryCost := RMQ.SuccinctClassic.queryCost
@@ -565,7 +619,7 @@ theorem succinctRMQWholeQueryGlobalWordTraceCostedWithStoreExactOfFootprintGloba
     (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
       shape store left (left + len)).erase =
         some (RMQ.scanWindow shape.representative left len) :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_exact_of_footprint_global
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_exact_of_footprint_global_via_orderedReadFootprint
     hshape hfoot hlen hbound
 
 /--
