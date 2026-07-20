@@ -5931,3 +5931,72 @@ counting it as a result.
 the executed program. §17 carries the corrected residual, including the single
 missing arithmetic fact (`levelCount ≤ 2 * base`) that unlocks the level
 quantities.
+
+---
+
+## C05 round 89 — THE LAST E1 PROOF-SIDE GAP IS CLOSED
+
+Lane N returned CANDIDATE_COMPLETE at `5e011ef`.
+
+```lean
+theorem wholeQueryProgram_fits_reviewerWordBits
+    (shape : Cartesian.CartesianShape) :
+    ProgramFits (shapeWidth shape) (wholeQueryProgram shape shape.size)
+```
+
+**No hypotheses, no size threshold, no parametric `w`, no premise about
+interior, select or composition.** REQ-E1-02's positive certificate, about the
+program that actually executes — proved by grep chain from
+`WholeQueryMachineAgrees` through `wholeQueryMachineAgrees_of_bounds` to
+`wholeQueryProgram`'s definitional body, with both consumers passing
+`n := xs.length` at `hsize`.
+
+**§17's "one missing arithmetic fact" WAS ALREADY IN THE TREE.**
+`machineWordBits_mul_self_log_bound` (`SuccinctRank.lean:1656`) plus §17's own
+`machineWordBits_le_self` gives it in two lines. **Eleventh instance this
+campaign of budgeted work that already existed** — and the first where a WORKER,
+not I, was the one who had called it missing.
+
+**It consumed the infrastructure its predecessor flagged as unconsumed**
+(`pow4_le_two_pow`), and **it did not touch the two dead routes** — the circular
+`deadAddress` bound and the refuted linear envelope. A worker inheriting two
+explicit "do not go here" markers and honouring both.
+
+**The technical heart, stated precisely:** the span products stay linear only
+because the divisions in `macroSampleCount` and `blockCount` are **absorbed,
+never cancelled** — cancelling leaves `n log² n` against a linear envelope.
+
+**The width conjunct is now IN the amended target**, and the reasoning is the
+right shape: DD-142 omitted it because the only width fact was a *refutation*;
+that reason no longer holds, "**so I reversed rather than inherited it.**"
+`amendedTarget_of_wholeQueryAgreement` gains `hfits`, discharged in the same
+file from a hypothesis-free theorem, and `amendedFamiliarMachineTarget_holds`
+still proves.
+
+### MY THIRTY-SEVENTH FAILED CLAIM — a BRANCH confusion, and the worker caught it
+
+I told Lane N that phase 5 "is now a real executed comparison (24 cases, 0
+answer mismatches, measured max 3267 steps)." **False at the HEAD it was working
+on**: `wholeQueryComparisonAvailable : Bool := false`, and `3267` occurred
+**nowhere in the tree** — because **Lane L's work was on
+`claude/e1-validator-gaps` and I had never merged it.** I read a report and
+attributed its content to a branch that did not contain it.
+
+Same class as the scout that confused a repo's checkout with `main`. The worker
+noted "nothing in this lane was built on it", which is the only reason it cost
+nothing.
+
+**Merged now** (`92c6cb0`). The one conflict was `DESIGN_DECISIONS.md`, resolved
+**by ID order per the file's own convention** — `260-264`, then `280-286` from
+the merged branch, then `300-305` — both sides' bytes preserved, nothing
+renumbered, verified strictly ascending with no duplicate IDs.
+
+Lane N also flagged, and deliberately did not fix, that phase 5's docstring
+still says "there is no `wholeQueryProgram` in the tree." There is. That is a
+status judgement plus real work, so it left it to me rather than editing
+silently — the correct call, and the fifth distinct staleness that string has
+carried.
+
+**E1's proof side and validator side are both complete.** What remains is the
+combined battery, now running, and the eleven-row adjudication, which is
+judgement rather than construction.
