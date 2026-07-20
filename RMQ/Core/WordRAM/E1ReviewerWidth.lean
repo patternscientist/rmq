@@ -198,6 +198,26 @@ theorem capacity_le_two_pow_reviewerWordBits (n : Nat) :
     (SuccinctRank.self_lt_two_pow_machineWordBits
       (concreteBPNativeSuccinctRMQReviewerCapacity n))
 
+/-- **The model assumption is a real constraint, not a formality.**
+
+`capacity_le_two_pow_reviewerWordBits` above shows the assumption is
+SATISFIABLE; this shows it is not TRIVIAL.  It fails at every width up to
+`18`, at every input size, because the address space is at least `400000`
+(`capacity_ge`) while `2 ^ 18 = 262144`.
+
+The pair matters for reading the parametric width certificates below: a
+theorem quantified over `w` under a hypothesis that every `w` satisfied
+would say nothing.  This one rules out a genuine range of widths, and
+`wholeQueryProgram_not_fits_machineWordBits` (`E1WholeQueryWidth.lean:84`)
+exhibits a width at which the CONCLUSION genuinely fails. -/
+theorem not_wordAddressesStructure_of_width_le_18 {w : Nat} (hw : w ≤ 18)
+    (n : Nat) : ¬ WordAddressesStructure w n := by
+  have hge := capacity_ge n
+  have hpow : (2 : Nat) ^ w ≤ 2 ^ 18 := Nat.pow_le_pow_right (by omega) hw
+  have hlit : (2 : Nat) ^ 18 = 262144 := by rfl
+  intro hcap
+  omega
+
 /-! ## The shape-dependent quantities, bounded linearly in the size
 
 Each of these is a side condition of `sameBlockDispatchProgram_fits` or
