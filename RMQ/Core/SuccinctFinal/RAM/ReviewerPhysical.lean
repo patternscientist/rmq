@@ -2254,5 +2254,47 @@ theorem concreteBPNativeSuccinctRMQReviewerSuccessfulRead_word_length_le_wordBit
   apply concreteBPNativeSuccinctRMQReviewerPhysicalWord_length_le_wordBits shape
   exact List.mem_iff_getElem?.2 ⟨_, hphysical.2⟩
 
+/--
+**THE INTERIOR COMPONENT STORE'S WORD COUNT, BOUNDED LINEARLY IN THE SIZE.**
+
+Every step of this chain already existed, but the conclusion did not: the
+`527 * (n + 1)` bound was assembled only as a LOCAL `have` inside
+`concreteBPNativeSuccinctRMQReviewerPhysicalWords_length_le_capacity`, where
+nothing outside that proof could reach it.  Naming it here restates none of
+its steps.
+
+The consumer is the E1 width story.  `LayoutFits` requires
+`L.deadAddress < 2 ^ w` of the canonical summary layout, and that
+`deadAddress` is DEFINITIONALLY this word count
+(`InteriorDirectory.lean:1646`); the other component offsets are partial sums
+of the same eight machine stores.  Before this the only bound on `deadAddress`
+was `canonicalRelativeRmmInteriorDeadAddress_fits_reviewerWordBits`
+(`InteriorDirectory.lean:2771`), which is stated against
+`canonicalRelativeRmmInteriorReviewerCapacity` -- a `Nat.max` that CONTAINS
+`deadAddress` itself, so it is true of any store whatsoever and cannot be
+compared with the pre-execution reviewer envelope.  This one can.
+
+The slope `527` is not tight and is not meant to be; the envelope it is
+compared against is `400000 * (n + 1)`.
+-/
+theorem canonicalRelativeRmmInteriorComponentStore_words_size_le_linear
+    (shape : Cartesian.CartesianShape) :
+    (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+        shape).store.words.size <= 527 * (shape.size + 1) := by
+  have hclose := concreteBPNativeSuccinctRMQReviewerCloseWords_length_le shape
+  have hraw :=
+    SuccinctClose.canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
+      shape
+  have hlin :=
+    SuccinctClose.canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear
+      shape.size
+  have hlen :
+      (concreteBPNativeSuccinctRMQReviewerCloseWords shape).length =
+        (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+          shape).store.words.size := by
+    simp [concreteBPNativeSuccinctRMQReviewerCloseWords,
+      concreteBPNativeSuccinctRMQReviewerSourceWords]
+  omega
+
 end SuccinctFinal
 end RMQ

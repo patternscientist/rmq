@@ -8707,3 +8707,55 @@ chain above was rebuilt from scratch and re-verified, and
 that the declarations exist rather than relying on the absence of errors.
 Anyone iterating Lean in a scratchpad should treat "no output" as
 inconclusive until the file's byte count is checked.
+
+## DD-20260719-262: the interior component store's word count, named at last — the bound REQ-E1-02's interior width certificate was blocked on (E1-LaneM)
+
+`canonicalInteriorDispatchBlock_fits` — residual 1 of E1-LaneK's §16 list —
+needs `LayoutFits w (canonicalSummaryLayout shape)`, and `LayoutFits` requires
+`L.deadAddress < 2 ^ w`. That `deadAddress` is DEFINITIONALLY
+`(canonicalRelativeRmmInteriorComponentStore shape).store.words.size`
+(`InteriorDirectory.lean:1646`), and the other three component offsets this
+lane needs — `minRel`, `maxRel`, `argOffset` — are partial sums of the same
+eight machine stores (`InteriorDirectory.lean:1614`).
+
+**The only bound that existed could not be used, and the reason is
+structural rather than a matter of strength.**
+`canonicalRelativeRmmInteriorDeadAddress_fits_reviewerWordBits`
+(`InteriorDirectory.lean:2771`) bounds `deadAddress` against
+`canonicalRelativeRmmInteriorReviewerCapacity` (`:2724`) — but that capacity
+is a `Nat.max` whose third argument IS the store's own word count. The
+statement is therefore true of any store whatsoever and says nothing that
+could be compared against the pre-execution envelope
+`concreteBPNativeSuccinctRMQReviewerCapacity n = 400000 * (n + 1)`
+(`ReviewerPhysical.lean:1470`). Chasing it is circular, and this is recorded
+so that nobody re-derives the circle.
+
+**What was actually missing was a NAME, not a proof.** Every step of a linear
+bound already existed:
+`concreteBPNativeSuccinctRMQReviewerSourceWords shape .canonicalClose` is
+definitionally the store's `words.toList` (`ReviewerPhysical.lean:571`);
+`concreteBPNativeSuccinctRMQReviewerCloseWords_length_le`
+(`ReviewerPhysical.lean:1782`) does the eight-way decomposition;
+`canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw`
+(`InteriorDirectory.lean:6172`) and
+`canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear`
+(`InteriorDirectory.lean:5984`) finish it at `527 * (n + 1)`. But the
+conclusion was assembled only as a LOCAL `have` inside
+`concreteBPNativeSuccinctRMQReviewerPhysicalWords_length_le_capacity`
+(`ReviewerPhysical.lean:1893`), where nothing outside that proof could reach
+it, and the decomposition lemma is `private`.
+
+`canonicalRelativeRmmInteriorComponentStore_words_size_le_linear`
+(`ReviewerPhysical.lean:2258`) states it. It is placed in
+`ReviewerPhysical.lean` precisely because the decomposition it consumes is
+private to that file; nothing was de-privated, renamed, or restated.
+
+The slope `527` is not tight and is not meant to be — it is compared against
+an envelope of slope `400000`. This is why the consuming capacity step must
+NOT be `lt_capacity_of_le_linear` (`E1ReviewerWidth.lean:135`), whose slope is
+`8`: `527 * (n + 1) <= 8 * n + 399999` FAILS from `n = 770` upward. A
+consumer needs the generous form.
+
+**Evaluated, not argued.** `deadAddress` at sizes `0/1/5/40/64` is
+`21/31/69/334/456`, against a `527 * (n + 1)` allowance of
+`527/1054/3162/21607/34255`.
