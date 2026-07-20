@@ -9448,3 +9448,97 @@ proved before this conjunct was contemplated, and found at the target.
 `[propext, Classical.choice, Quot.sound]`. The refutation is untouched: it is
 about `E1AmendedFamiliarMachineTargetUniformStore`, a separate Prop, which
 gains no conjunct.
+
+## DD-20260719-320: the E1 matrix's evidence and status cells refreshed to the tree, and the "whole-query scope" disclaimer withdrawn (E1-LaneP)
+
+Date: 2026-07-19. Scope: `docs/internal/E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md`
+evidence/status cells only, plus the `E1_LIVE_STATE.md` section 18 staleness.
+Decided by: coordinator adjudication, transcribed by worker E1-LaneP. NO
+frozen requirement text was edited, NO `.lean` file was touched, and NO rung
+acceptance is recorded here.
+
+**Authority.** The matrix header permits "evidence, status, and
+coordinator-approved amendments" to change after the freeze. Rewriting the
+`Evidence obtained` and `Status / residual gap` cells is therefore the
+intended mechanism, NOT an amendment, and it is deliberately distinguished
+from AMENDMENT A1 and A2, both of which altered frozen requirement text and
+both of which required owner escalation.
+
+**The debt this pays down.** The evidence and status cells were last written
+around milestone M3d-17, roughly twenty lanes ago. Every one of
+REQ-E1-01/02/04/06/08 ended with the disclaimer "Does NOT discharge the row
+(whole-query scope)". **That disclaimer rested on a framing that was false.**
+Rows are not whole-query scoped: the matrix's own `Scope` column reads
+`Local`, `Local+roadmap`, `Public surface` or `Process`, and it classifies
+WHERE THE WORK LANDS, not how large the claim is. Carried forward unexamined,
+the disclaimer meant an external auditor reading the matrix would conclude
+that nothing had closed, in a tree where seven rows are satisfied. Every
+occurrence is deleted.
+
+**The calls transcribed.** SATISFIED: REQ-E1-01, -02, -04, -05, -06, -07,
+-10. PARTIAL: REQ-E1-03, -08, -11. NOT SATISFIED: REQ-E1-09.
+
+**Two findings recorded in cells because a reader would otherwise re-derive
+them, or worse, hunt for something that is absent by design.**
+
+1. REQ-E1-01's anti-vacuity asks for a "per-instruction read-event count
+   lemma (each step emits <= 1 memory-read event)". No such named proposition
+   exists, and none can: `execInstr` (`E1Machine.lean:160-161`) returns
+   `State x Category x Option TraceEvent`, so a step emitting two events is
+   UNTYPEABLE rather than unproved. The discharge is structural and strictly
+   stronger than the lemma requested.
+2. REQ-E1-07's "one-step-per-instruction charging" appears as no syntactic
+   conjunct of the target, which is correct rather than missing: it is
+   definitional in `RunsTo` (`E1MachineCalculus.lean:96`). Likewise
+   REQ-E1-04's positional receipt equality is the RECEIPT ARGUMENT of
+   `RunsTo`, not a lemma that a later edit could weaken to membership.
+
+**REQ-E1-06's recorded residual gap is STRUCK, and the ground for striking it
+is a theorem shape rather than a narrative.** The gap held that the interior
+leg computes `Nat.log2 count` / `bpSparseLogSpan count` in a loop with no
+literal all-size cap, contradicting conjunct (c). B7 replaced that mechanism
+with a count-indexed charged table (`bpSparseLevelCell_div`/`_mod`,
+`SparseLevelTable.lean:78`/`:90`). The decisive evidence is that
+`wholeQueryCats_machineS_length_le` (`E1WholeQueryCostLiteral.lean:538`)
+carries NO size hypothesis, **which could not be true if the uncapped loop
+were still live.** The M3d-11 note offered this for adjudication; it is now
+adjudicated and applied.
+
+**Flagged, not edited.** REQ-E1-06's FROZEN `Evidence needed` cell still
+reads "hence <= 207". AMENDMENT A1 amended only the three occurrences it
+enumerates and did not reach this fourth. The live bound is `210`. Editing
+frozen requirement text is outside a worker lane's authority, so it is
+flagged in the status cell for a coordinator.
+
+**Anchor corrections made against the supplied adjudication.** Six anchors in
+the brief did not resolve and the corrected values were used instead, per the
+standing instruction to report rather than transcribe a wrong number:
+`E1Machine.lean:562-631` -> `:561-607` (the eleven per-constructor rejection
+witnesses); `fieldsFit_rejects_zero_divisor` `:590` -> `:589`;
+`DESIGN_DECISIONS.md:3180` -> `:3178` (DD-20260718-006); "five prose-only
+hygiene hits" -> NINE under CHK-E1-02's pattern (three under the narrower
+REQ-E1-11 pattern), zero declarations either way; `Instr.FieldsFit` `:503` ->
+`:535`; and two anchors the brief left unfiled were resolved to
+`E1WholeQueryCostLiteral.lean:538` and `E1MachineValidate.lean:2591`. Two
+further anchors written in the first pass were themselves wrong and were
+caught by re-grep before commit: `ProgramFits` `:553` -> `:552` and
+`guardBlock_length` `:121` -> `:120`. All 48 anchors in the rewritten cells
+were re-grepped against the tree after the edits; the sole non-resolving one
+is the commit-`7fe5b8b` citation of `SuccinctFinalSmallStep.lean:37016`,
+which is explicitly commit-qualified and absent from HEAD by design.
+
+**`E1_LIVE_STATE.md` section 18.** That section recorded a coordinator claim
+that failed inspection — that validator phase 5 was live — and it was
+accurate when E1-LaneN wrote it. It is retained UNEDITED as the historical
+record, with a dated superseding subsection appended: `a932244`, merged at
+`92c6cb0`, made `wholeQueryComparisonAvailable` DERIVED
+(`E1MachineValidate.lean:2821`) and made phase 5 gate the exit code
+(`:3507` -> `:3521` -> `:3524` -> `:3529`). Leaving it stale would have
+invited the OPPOSITE error to the one it was written to prevent. The note
+also records what phase 5 still does not do — whole-query receipts are
+compared by COUNT only (`WQReport.reads : Nat`) — so the correction does not
+overcorrect.
+
+**Not recorded, deliberately.** No row is marked accepted, the rung is not
+marked complete, and no rung-level status was touched. The rung still owes a
+fresh blind external audit, which this lane is not and cannot perform.

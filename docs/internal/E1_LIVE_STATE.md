@@ -3173,6 +3173,43 @@ real work (an end-to-end differential over a 5646-instruction program), and
 that belongs to the coordinator, not to this lane. It is flagged rather than
 silently edited.
 
+#### SUPERSEDED 2026-07-19 (E1-LaneP) — BOTH STALENESSES ABOVE ARE NOW REPAIRED IN THE TREE
+
+**The two subsections immediately above were accurate when E1-LaneN wrote
+them, and are retained unedited as the historical record of a claim that
+failed inspection. They are no longer true of HEAD.** Commit `a932244`
+("Close four validator-side evidence gaps: store dependency, category log,
+fixture classes, phase 5"), merged at `92c6cb0`, repaired both. Recorded
+here because leaving the section as-is now invites the OPPOSITE error to the
+one it was written to prevent: a future reader taking phase 5 for OPEN when
+it is live and load-bearing.
+
+- **`wholeQueryComparisonAvailable` is no longer a declared `false`.** It is
+  DERIVED (`E1MachineValidate.lean:2821`) from the corpus itself —
+  `wholeQueryCases.length > 0` together with the report count matching — so
+  it cannot go stale silently the way the four hand-written REASON strings
+  before it did. The harness prints it labelled "DERIVED from the corpus,
+  not declared".
+- **Phase 5 is executed and GATES THE EXIT CODE.** It runs 24 whole-query
+  cases (`wholeQueryCases`, `:2664-2688`) against the independent `refRMQ`
+  (`:78`), and `okWholeQuery` (`:3507`) feeds `okNewDiscriminators` (`:3521`)
+  feeds `ok` (`:3524`), which selects the process return at `:3529`. It is
+  no longer a printed status line.
+- **The `wholeQueryProgram` gate is repaired.** The docstring that said
+  "there is no `wholeQueryProgram` in the tree" now quotes that sentence in
+  order to record that `E1WholeQueryProgram.lean:876` falsifies it outright
+  (`E1MachineValidate.lean:980-989`).
+- **The stale line anchors `:1001`, `:1010`, `:1019` cited above no longer
+  address the cited content**, the module having grown; they are left as
+  written because they are part of the historical record, not live citations.
+
+What phase 5 still does NOT do, so this note does not overcorrect: it
+compares whole-query receipts only by COUNT (`WQReport.reads : Nat`,
+`:2691-2704`), never event-by-event against the route's `.trace`. That is
+recorded as gap (a) of REQ-E1-08 in
+`E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md`, and it is a harness gap rather
+than a proof gap — the positional theorem exists (REQ-E1-04).
+
 ### The recurring cause of every failure in this lane
 
 Four separate `omega` failures, in two different modules, had ONE cause: a
