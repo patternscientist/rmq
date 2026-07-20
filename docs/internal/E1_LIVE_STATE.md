@@ -3067,9 +3067,9 @@ the interior, the select block or the composition.
 `programSkeleton n validPath` at `:119`.
 `wholeQueryMachineAgrees_of_bounds` (`E1WholeQueryAgreement.lean:64`)
 instantiates `validPath := wholeQueryValidPath shape wholeQueryNoneExit`
-(`:69`). `wholeQueryProgram shape n` is DEFINITIONALLY
+(`:68`; `:69` is the following line, `wholeQueryMachineS shape`). `wholeQueryProgram shape n` is DEFINITIONALLY
 `programSkeleton n (wholeQueryValidPath shape wholeQueryNoneExit)`
-(`E1WholeQueryProgram.lean:876`). Both consumers
+(`E1WholeQueryProgram.lean:876` is the `def` line; the body is `:878`). Both consumers
 (`E1WholeQueryAgreement.lean:140`, `E1AmendedTarget.lean:622`) instantiate
 `n := xs.length` with `hsize : (cartesianShape xs).size = xs.length`, so
 `n = shape.size` is the instantiation that executes.
@@ -3157,8 +3157,8 @@ steps)." **That is false at this HEAD.**
 anywhere in the tree. Nothing in this lane was built on that claim.
 
 **A second, related staleness, NOT repaired here.** The docstring gating
-phase 5 (`E1MachineValidate.lean:995`-`:1006`) says "there is no
-`wholeQueryProgram` in the tree". There is: `E1WholeQueryProgram.lean:876`.
+phase 5 says "there is no `wholeQueryProgram` in the tree", at
+**`E1MachineValidate.lean:1001`**. There is: `E1WholeQueryProgram.lean:876`.
 The gate is left untouched because flipping it is a status judgement plus
 real work (an end-to-end differential over a 5646-instruction program), and
 that belongs to the coordinator, not to this lane. It is flagged rather than
