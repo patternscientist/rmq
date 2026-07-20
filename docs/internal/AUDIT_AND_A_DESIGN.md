@@ -6000,3 +6000,105 @@ carried.
 **E1's proof side and validator side are both complete.** What remains is the
 combined battery, now running, and the eleven-row adjudication, which is
 judgement rather than construction.
+
+---
+
+## C05 round 90 — THE ADJUDICATION. Seven satisfied, three partial, one not.
+
+Full battery green over the merged tree at `92c6cb0`: library+paper+examples 0
+errors, validator `RESULT: PASS (whole-query comparison EXECUTED)`, headline
+axiom check 0, design check a real pass over 12 files, claim-drift 0 strict
+failures, paper-topology PASS, both `diff --check` clean, hygiene 0.
+
+### MY CALLS, against each row's own evidence column
+
+**SATISFIED — 01, 02, 04, 05, 06, 07, 10.**
+**PARTIAL — 03, 08, 11.**
+**NOT SATISFIED — 09.**
+
+- **01** SATISFIED, with AMENDMENT A2 (below). Its anti-vacuity "per-instruction
+  read-event count lemma" has no named proposition — `execInstr` returns
+  `Option TraceEvent`, so two events per step are **untypeable**. Structural
+  beats stated; I accept it as met.
+- **02** SATISFIED. Hypothesis-free certificate on the executed 5646-instruction
+  program, plus **eleven** per-constructor rejection witnesses each aimed at a
+  different field position — the "replace one arm with `True`" attack finds a
+  witness already pointed at every arm.
+- **04** SATISFIED, and the strongest row in the matrix: positional equality is
+  not a lemma that could be weakened to membership, it is the **receipt argument
+  of `RunsTo`**, so the anti-vacuity challenge is met by the statement's shape.
+- **06** SATISFIED, **and I strike its recorded residual.** The `Nat.log2` /
+  `bpSparseLogSpan` uncapped-loop gap it records **no longer exists** — B7
+  replaced that mechanism with a count-indexed charged table, and
+  `wholeQueryCats_machineS_length_le` carries no size hypothesis, which could
+  not be true if the gap were live.
+- **07** SATISFIED. "One-step-per-instruction charging" is not a syntactic
+  conjunct — it is definitional in `RunsTo`, whose last component is
+  `cats.length`. A machine charging otherwise cannot satisfy the Prop.
+
+**03 PARTIAL** — the theorem clauses are fully met, universally, to the accepted
+object and through to the public surface. The gap is the anti-vacuity column's
+INV-VALUE-DEPENDENCY **at whole-query scope**: phase 3l is arm-scoped, observing
+`fRV`/`fRP` under `armWitnessStore`, not `regOut` of `wholeQueryProgram`.
+
+**08 PARTIAL** — two named gaps: no **whole-query receipt diff** (the validator
+counts reads at that scope and never compares them; the theorem exists, so this
+is a harness gap not a proof gap), and the independence clause fails its
+**literal** wording because `refRMQ` shares a module with the machine imports,
+though the function is genuinely independent.
+
+**11 PARTIAL** — every mechanically checkable clause passes. The gap is the
+cross-matrix "no closed B2/B3/B4 row weakened" audit against B7's `30 -> 33` and
+`207 -> 210`, which is a coordinator audit not evidenced in this tree.
+
+**09 NOT SATISFIED** — and it is the one an auditor hits first.
+`PAPER_MODEL_ADEQUACY.md:263-268` and `:386-387` still say in the **future
+tense** that E1 "will define" and "must define" the machine. **A public document
+asserting the opposite of the tree's headline result.**
+
+### AMENDMENT A2, and why it is not the weakening it looks like
+
+REQ-E1-01's frozen text demanded operands "over `machineWordBits`-width", and
+`wholeQueryProgram_not_fits_machineWordBits` **proves the executed program does
+not fit that width** for every shape of size `<= 2821`. Structural, not a
+defect: at `n = 4` the envelope is `2^3 = 8` while the construction uses
+register `152` and branch target `5644`.
+
+The owner approved amending to `concreteBPNativeSuccinctRMQReviewerWordBits`,
+paired with the fact that makes it defensible — and **that fact already existed
+and is already a public headline**:
+`concreteBPNativeSuccinctRMQReviewerWordBits_le_log` proves the reviewer width
+is `<= 20 * (Nat.log2 (n+2) + 1)`, aliased as
+`succinctRMQReviewerWordBitsLogarithmic`, consumed by the adequacy certificate,
+covered by the repo's own axiom check.
+
+**So both widths are `Theta(log n)` and the repo proves it.** The refutation
+window `<= 2821` is the tell: the failure is at SMALL shapes only, because the
+program is **constant-size** — 5646 instructions whose largest field is a branch
+target independent of `n`. Asymptotically `machineWordBits` would suffice. The
+row demands "for every size" and this campaign forbids size thresholds on the
+public route, so **the amendment purchases uniformity, not a wider machine.**
+
+### TWO MORE FAILED CLAIMS OF MINE, both branch/state confusions
+
+**Thirty-eighth:** I gave the survey `f721806` as the HEAD. That is a coordinator
+**log** commit on a different branch entirely; the tree is at `92c6cb0`. Second
+branch confusion in three rounds.
+
+**Thirty-ninth:** I told it phase 5's docstring was stale. It is not — that
+docstring **quotes** the old sentence and records it as falsified, then explains
+why the fix was to derive the status rather than write a fifth hand-written
+reason. A corrected historical record, which I read as staleness.
+
+### THE WORST DOCUMENTATION DEBT IS MINE
+
+**The matrix's own evidence cells are ~20 lanes stale, and every one of
+REQ-E1-01/02/04/06/08 ends with "Does NOT discharge the row (whole-query
+scope)" — the disclaimer generated by MY invented framing.** An external auditor
+reading the matrix today would conclude nothing closed, in a tree where seven
+rows are satisfied. The invention cost weeks of workers' framing; the residue
+would have cost the audit.
+
+**Not recording ACCEPTED.** The rung still owes a fresh blind external audit,
+and this runtime bars recording acceptance regardless. Rows get accurate
+evidence and status; the rung's acceptance is the owner's and the auditor's.
