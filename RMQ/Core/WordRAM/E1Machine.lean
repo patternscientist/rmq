@@ -552,6 +552,36 @@ def Instr.FieldsFit (w : Nat) : Instr → Prop
 def ProgramFits (w : Nat) (program : Program) : Prop :=
   ∀ instr ∈ program, instr.FieldsFit w
 
+/-! ### Width monotonicity
+
+Fitting a word width is an upward-closed property.  Every arm of
+`Instr.FieldsFit` is a `field < 2 ^ w` bound (plus, for `divConst`, a
+positivity side condition that does not mention `w`), and `2 ^ w` is
+monotone in `w`, so a certificate at one width transports to every wider
+one.
+
+This is what lets a reader instantiate a width certificate at THEIR
+preferred word size rather than the one the construction happens to name:
+given a fit at `w`, the standard word-RAM assumption `w ≤ w'` for any
+larger machine word delivers a fit at `w'` with no re-verification. -/
+
+/-- Field-level width monotonicity: a fitting instruction still fits any
+wider word. -/
+theorem Instr.FieldsFit.mono {w w' : Nat} {instr : Instr}
+    (hfit : instr.FieldsFit w) (hw : w ≤ w') : instr.FieldsFit w' := by
+  have hpow : (2 : Nat) ^ w ≤ 2 ^ w' := Nat.pow_le_pow_right (by omega) hw
+  cases instr <;>
+    simp only [Instr.FieldsFit] at hfit ⊢ <;>
+    first
+      | trivial
+      | omega
+
+/-- **Program-level width monotonicity.** A program that fits width `w`
+fits every width `w' ≥ w`. -/
+theorem ProgramFits.mono {w w' : Nat} {program : Program}
+    (hfits : ProgramFits w program) (hw : w ≤ w') : ProgramFits w' program :=
+  fun instr hmem => (hfits instr hmem).mono hw
+
 /-! Oversizing rejection witnesses: for every operand-carrying
 constructor, an instruction with one field at `2 ^ w` fails the
 certificate at width `w`.  (`halt` carries no encoded field; its arm is

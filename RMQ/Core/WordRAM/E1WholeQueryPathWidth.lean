@@ -16,8 +16,25 @@ chunk width and its power, the code length, the rank directory's word size
 and blocks-per-superblock.  `E1ReviewerWidth.lean` already proves each as a
 LINEAR bound (`wordSize_le` `:203`, `blocksPerSuper_le` `:220`,
 `blockSizeRaw_le` `:157`, `mix_le` `:174`, `bpCode_length_eq` `:151`), so
-each is discharged here by the same `lt_reviewerWordBits_of_lt_capacity`
-route rather than re-derived.
+each is discharged here by the same capacity route rather than re-derived.
+
+## The width is a PARAMETER
+
+Every lemma in this module is stated at a parametric word width `w` under
+the single hypothesis `WordAddressesStructure w shape.size` -- the word-RAM
+model assumption that one machine word can address the structure.  Nothing
+here needs `w` to be any particular width: the capacity bounds
+(`lt_capacity_of_le_linear`, `lt_capacity_of_le_mul`) conclude
+`< capacity shape.size` without mentioning a width at all, and
+`lt_two_pow_of_lt_capacity` is the single step that crosses from the
+capacity to the word.
+
+`wholeQueryProgram_fits_reviewerWordBits` at the end of the module
+instantiates this at the concrete reviewer width, which is the witness that
+the assumption is satisfiable; `wholeQueryProgram_fits_logarithmicWidth`
+records that the witnessing width is logarithmic in the input size.
+
+DD-20260719-331, DD-20260719-332, DD-20260719-333.
 
 `chunkPow_lt` is the one that is not a direct restatement:
 `rankCloseBlock_fits` and the three select legs want `2 ^ c < 2 ^ w` for the
@@ -44,70 +61,80 @@ open E1SelectCloseWidth
 
 /-! ## The shared width facts at the reviewer width -/
 
-theorem code_lt (shape : Cartesian.CartesianShape) :
-    shape.bpCode.length < 2 ^ shapeWidth shape :=
-  lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear (by
+theorem code_lt (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
+    shape.bpCode.length < 2 ^ w :=
+  lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear (by
     have := bpCode_length_eq shape; omega))
 
-theorem machineWordBits_lt (shape : Cartesian.CartesianShape) :
-    SuccinctRank.machineWordBits shape.bpCode.length < 2 ^ shapeWidth shape :=
-  lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear (by
+theorem machineWordBits_lt (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
+    SuccinctRank.machineWordBits shape.bpCode.length < 2 ^ w :=
+  lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear (by
     have := machineWordBits_le shape.bpCode.length
     have := bpCode_length_eq shape; omega))
 
-theorem machineWordBitsPow_lt (shape : Cartesian.CartesianShape) :
+theorem machineWordBitsPow_lt (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
     2 ^ SuccinctRank.machineWordBits shape.bpCode.length <
-      2 ^ shapeWidth shape :=
-  lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear (by
+      2 ^ w :=
+  lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear (by
     have := two_pow_machineWordBits_le shape.bpCode.length
     have := bpCode_length_eq shape; omega))
 
 /-- `2 ^ c < 2 ^ w` for the CHUNK width, by monotonicity through
 `bpFringeChunkBits_le_machineWordBits`. -/
-theorem chunkPow_lt (shape : Cartesian.CartesianShape) :
-    2 ^ bpFringeChunkBits shape.bpCode.length < 2 ^ shapeWidth shape := by
+theorem chunkPow_lt (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
+    2 ^ bpFringeChunkBits shape.bpCode.length < 2 ^ w := by
   have hle : (2 : Nat) ^ bpFringeChunkBits shape.bpCode.length <=
       2 ^ SuccinctRank.machineWordBits shape.bpCode.length :=
     Nat.pow_le_pow_right (by omega)
       (bpFringeChunkBits_le_machineWordBits shape.bpCode.length)
-  have := machineWordBitsPow_lt shape
+  have := machineWordBitsPow_lt shape hcap
   omega
 
-theorem chunkLin_lt (shape : Cartesian.CartesianShape) :
-    2 * bpFringeChunkBits shape.bpCode.length + 2 < 2 ^ shapeWidth shape :=
-  lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear (by
+theorem chunkLin_lt (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
+    2 * bpFringeChunkBits shape.bpCode.length + 2 < 2 ^ w :=
+  lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear (by
     have := bpFringeChunkBits_le_machineWordBits shape.bpCode.length
     have := machineWordBits_le shape.bpCode.length
     have := bpCode_length_eq shape; omega))
 
-theorem rankG_lt (shape : Cartesian.CartesianShape) :
-    concreteBPNativeRankCloseTraceSegmentBase + 4 < 2 ^ shapeWidth shape :=
-  lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear (by
+theorem rankG_lt (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
+    concreteBPNativeRankCloseTraceSegmentBase + 4 < 2 ^ w :=
+  lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear (by
     simp [concreteBPNativeRankCloseTraceSegmentBase]))
 
-theorem rankWS_lt (shape : Cartesian.CartesianShape) :
-    (builtRelativeSplitBPCloseRankData shape).wordSize < 2 ^ shapeWidth shape :=
-  lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear (by
+theorem rankWS_lt (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
+    (builtRelativeSplitBPCloseRankData shape).wordSize < 2 ^ w :=
+  lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear (by
     have := wordSize_le shape; omega))
 
-theorem rankBPS_lt (shape : Cartesian.CartesianShape) :
+theorem rankBPS_lt (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
     (builtRelativeSplitBPCloseRankData shape).blocksPerSuper <
-      2 ^ shapeWidth shape :=
-  lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear (by
+      2 ^ w :=
+  lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear (by
     have := blocksPerSuper_le shape; omega))
 
 /-- The register ceiling of the whole-query glue.  `71` is `fRight`
 (`E1SameBlockArm.lean:499`), the global maximum of the query register map. -/
-theorem reg_lt (shape : Cartesian.CartesianShape) :
-    (72 : Nat) < 2 ^ shapeWidth shape :=
-  lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear (by omega))
+theorem reg_lt (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
+    (72 : Nat) < 2 ^ w :=
+  lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear (by omega))
 
 /-! ## The output stage -/
 
-theorem wholeQueryRankSetup_fits (shape : Cartesian.CartesianShape) :
+theorem wholeQueryRankSetup_fits (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
     ∀ instr ∈ wholeQueryRankSetup,
-      Instr.FieldsFit (shapeWidth shape) instr := by
-  have hreg := reg_lt shape
+      Instr.FieldsFit w instr := by
+  have hreg := reg_lt shape hcap
   intro instr hmem
   simp only [wholeQueryRankSetup, List.mem_cons, List.not_mem_nil,
     or_false] at hmem
@@ -116,10 +143,11 @@ theorem wholeQueryRankSetup_fits (shape : Cartesian.CartesianShape) :
   · exact ⟨by simp only [rPos]; omega, by simp only [fRes]; omega,
       by simp only [rPos]; omega⟩
 
-theorem wholeQueryPacketWrite_fits (shape : Cartesian.CartesianShape) :
+theorem wholeQueryPacketWrite_fits (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
     ∀ instr ∈ wholeQueryPacketWrite,
-      Instr.FieldsFit (shapeWidth shape) instr := by
-  have hreg := reg_lt shape
+      Instr.FieldsFit w instr := by
+  have hreg := reg_lt shape hcap
   intro instr hmem
   simp only [wholeQueryPacketWrite, List.mem_cons, List.not_mem_nil,
     or_false] at hmem
@@ -127,34 +155,37 @@ theorem wholeQueryPacketWrite_fits (shape : Cartesian.CartesianShape) :
   · exact ⟨by simp only [regOut]; omega, by simp only [rVal]; omega⟩
   · trivial
 
-theorem wholeQueryRankLeg_fits (shape : Cartesian.CartesianShape) {B : Nat}
-    (hB : B + 60 < 2 ^ shapeWidth shape) :
+theorem wholeQueryRankLeg_fits (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) {B : Nat}
+    (hB : B + 60 < 2 ^ w) :
     ∀ instr ∈ wholeQueryRankLeg shape B,
-      Instr.FieldsFit (shapeWidth shape) instr := by
-  have hreg := reg_lt shape
-  exact rankCloseBlock_fits (by omega) (rankG_lt shape) (code_lt shape)
+      Instr.FieldsFit w instr := by
+  have hreg := reg_lt shape hcap
+  exact rankCloseBlock_fits (by omega) (rankG_lt shape hcap) (code_lt shape hcap)
     (bpFringeChunkBits_pos _)
-    ((builtRelativeSplitBPCloseRankData shape).wordSize_pos) (rankWS_lt shape)
+    ((builtRelativeSplitBPCloseRankData shape).wordSize_pos) (rankWS_lt shape hcap)
     ((builtRelativeSplitBPCloseRankData shape).blocksPerSuper_pos)
-    (rankBPS_lt shape) (chunkPow_lt shape) (chunkLin_lt shape) hB
+    (rankBPS_lt shape hcap) (chunkPow_lt shape hcap) (chunkLin_lt shape hcap) hB
 
-theorem wholeQueryOutputStage_fits (shape : Cartesian.CartesianShape)
-    {B : Nat} (hB : B + 64 < 2 ^ shapeWidth shape) :
+theorem wholeQueryOutputStage_fits (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size)
+    {B : Nat} (hB : B + 64 < 2 ^ w) :
     ∀ instr ∈ wholeQueryOutputStage shape B,
-      Instr.FieldsFit (shapeWidth shape) instr := by
+      Instr.FieldsFit w instr := by
   intro instr hmem
   simp only [wholeQueryOutputStage, List.mem_append] at hmem
   rcases hmem with h | h | h
-  · exact wholeQueryRankSetup_fits shape instr h
-  · exact wholeQueryRankLeg_fits shape (by omega) instr h
-  · exact wholeQueryPacketWrite_fits shape instr h
+  · exact wholeQueryRankSetup_fits shape hcap instr h
+  · exact wholeQueryRankLeg_fits shape hcap (by omega) instr h
+  · exact wholeQueryPacketWrite_fits shape hcap instr h
 
 /-! ## The select glue -/
 
-theorem selectLeftSetup_fits (shape : Cartesian.CartesianShape) :
+theorem selectLeftSetup_fits (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
     ∀ instr ∈ selectLeftSetup,
-      Instr.FieldsFit (shapeWidth shape) instr := by
-  have hreg := reg_lt shape
+      Instr.FieldsFit w instr := by
+  have hreg := reg_lt shape hcap
   intro instr hmem
   simp only [selectLeftSetup, List.mem_cons, List.not_mem_nil,
     or_false] at hmem
@@ -162,10 +193,11 @@ theorem selectLeftSetup_fits (shape : Cartesian.CartesianShape) :
   exact ⟨by simp only [E1SelectBridge.xIdx]; omega,
     by simp only [regLeft]; omega⟩
 
-theorem selectMidGlue_fits (shape : Cartesian.CartesianShape) :
+theorem selectMidGlue_fits (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
     ∀ instr ∈ selectMidGlue,
-      Instr.FieldsFit (shapeWidth shape) instr := by
-  have hreg := reg_lt shape
+      Instr.FieldsFit w instr := by
+  have hreg := reg_lt shape hcap
   intro instr hmem
   simp only [selectMidGlue, List.mem_cons, List.not_mem_nil,
     or_false] at hmem
@@ -174,11 +206,12 @@ theorem selectMidGlue_fits (shape : Cartesian.CartesianShape) :
   · exact ⟨by simp only [E1SelectBridge.xIdx]; omega,
       by simp only [regRight]; omega, by simp only [regT2]; omega⟩
 
-theorem selectJoin_fits (shape : Cartesian.CartesianShape) {noneExit : Nat}
-    (hne : noneExit < 2 ^ shapeWidth shape) :
+theorem selectJoin_fits (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) {noneExit : Nat}
+    (hne : noneExit < 2 ^ w) :
     ∀ instr ∈ selectJoin noneExit,
-      Instr.FieldsFit (shapeWidth shape) instr := by
-  have hreg := reg_lt shape
+      Instr.FieldsFit w instr := by
+  have hreg := reg_lt shape hcap
   intro instr hmem
   simp only [selectJoin, List.mem_cons, List.not_mem_nil, or_false] at hmem
   rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl
@@ -311,18 +344,20 @@ Every branch target in the executed program is at most `5644`
 (`wholeQueryNoneExit`, `E1WholeQueryProgram.lean:532`), which is the
 skeleton's own invalid-exit base.  One bound covers all of them. -/
 
-theorem addr_lt (shape : Cartesian.CartesianShape) :
-    (5644 : Nat) < 2 ^ shapeWidth shape :=
-  lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear (by omega))
+theorem addr_lt (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
+    (5644 : Nat) < 2 ^ w :=
+  lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear (by omega))
 
 /-! ## The select leg, and the prefix -/
 
-theorem wholeQuerySelectLeg_fits (shape : Cartesian.CartesianShape) {A : Nat}
-    (hA : A + 405 < 2 ^ shapeWidth shape) :
+theorem wholeQuerySelectLeg_fits (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) {A : Nat}
+    (hA : A + 405 < 2 ^ w) :
     ∀ instr ∈ wholeQuerySelectLeg shape A,
-      Instr.FieldsFit (shapeWidth shape) instr := by
-  have hreg := reg_lt shape
-  have hbig : (5644 : Nat) < 2 ^ shapeWidth shape := addr_lt shape
+      Instr.FieldsFit w instr := by
+  have hreg := reg_lt shape hcap
+  have hbig : (5644 : Nat) < 2 ^ w := addr_lt shape hcap
   -- The layout's fourteen segment fields are numeric literals
   -- (`Segments.lean:24`), but they are PROJECTIONS and therefore opaque to
   -- `omega` until named.
@@ -365,30 +400,30 @@ theorem wholeQuerySelectLeg_fits (shape : Cartesian.CartesianShape) {A : Nat}
       GenericSelect.localStride shape.bpCode.length := rfl
   refine selectCloseBlock_fits (by omega) hA
     (bpFringeChunkBits_pos _)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (chunkPow_lt shape) (chunkLin_lt shape)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (chunkPow_lt shape hcap) (chunkLin_lt shape hcap)
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     (by omega) (by omega) (by omega) (by omega)
     (by omega) (by omega) (by omega) (by omega)
     (by omega) (by omega) (by omega) (by omega)
-    (rankG_lt shape) (by omega) (by omega)
+    (rankG_lt shape hcap) (by omega) (by omega)
     (GenericSelect.superStride_pos _)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     (GenericSelect.localStride_pos _)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     ((wholeQuerySelData shape).wordSize_pos)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (code_lt shape)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (code_lt shape hcap)
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     ((wholeQuerySelData shape).longFlagRankData.wordSize_pos)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     ((wholeQuerySelData shape).longFlagRankData.blocksPerSuper_pos)
     (by rw [longBPS_eq]; omega)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     ((wholeQuerySelData shape).sparseDirectory.rankData.wordSize_pos)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     ((wholeQuerySelData shape).sparseDirectory.rankData.blocksPerSuper_pos)
     (by rw [sparseBPS_eq]; omega)
   · have := bpFringeChunkBits_le_machineWordBits shape.bpCode.length
@@ -405,47 +440,89 @@ theorem wholeQuerySelectLeg_fits (shape : Cartesian.CartesianShape) {A : Nat}
   · have := sparseLen_le shape; omega                -- hSLen
   · have := sparseWS_le shape; omega                 -- hSWS
 
-theorem wholeQuerySelectPrefix_fits (shape : Cartesian.CartesianShape) :
+theorem wholeQuerySelectPrefix_fits (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
     ∀ instr ∈ wholeQuerySelectPrefix shape,
-      Instr.FieldsFit (shapeWidth shape) instr := by
-  have hbig : (5644 : Nat) < 2 ^ shapeWidth shape := addr_lt shape
+      Instr.FieldsFit w instr := by
+  have hbig : (5644 : Nat) < 2 ^ w := addr_lt shape hcap
   intro instr hmem
   simp only [wholeQuerySelectPrefix, List.mem_append] at hmem
   rcases hmem with h | h | h | h
-  · exact selectLeftSetup_fits shape instr h
-  · exact wholeQuerySelectLeg_fits shape (by omega) instr h
-  · exact selectMidGlue_fits shape instr h
-  · exact wholeQuerySelectLeg_fits shape (by omega) instr h
+  · exact selectLeftSetup_fits shape hcap instr h
+  · exact wholeQuerySelectLeg_fits shape hcap (by omega) instr h
+  · exact selectMidGlue_fits shape hcap instr h
+  · exact wholeQuerySelectLeg_fits shape hcap (by omega) instr h
 
 /-! ## THE EXECUTED VALID PATH, AND THE PROGRAM -/
 
-theorem wholeQueryValidPathThroughLca_fits (shape : Cartesian.CartesianShape) :
+theorem wholeQueryValidPathThroughLca_fits (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
     ∀ instr ∈ wholeQueryValidPathThroughLca shape wholeQueryNoneExit,
-      Instr.FieldsFit (shapeWidth shape) instr := by
-  have hbig : (5644 : Nat) < 2 ^ shapeWidth shape := addr_lt shape
+      Instr.FieldsFit w instr := by
+  have hbig : (5644 : Nat) < 2 ^ w := addr_lt shape hcap
   intro instr hmem
   simp only [wholeQueryValidPathThroughLca, List.mem_append] at hmem
   rcases hmem with h | h | h
-  · exact wholeQuerySelectPrefix_fits shape instr h
-  · exact selectJoin_fits shape (by simp only [wholeQueryNoneExit]; omega)
+  · exact wholeQuerySelectPrefix_fits shape hcap instr h
+  · exact selectJoin_fits shape hcap (by simp only [wholeQueryNoneExit]; omega)
       instr h
-  · exact closeLcaProgramAt_fits shape (by omega) instr h
+  · exact closeLcaProgramAt_fits shape hcap (by omega) instr h
 
 /-- **EVERY INSTRUCTION OF THE EXECUTED VALID PATH FITS.** -/
-theorem wholeQueryValidPath_fits (shape : Cartesian.CartesianShape) :
+theorem wholeQueryValidPath_fits (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
     ∀ instr ∈ wholeQueryValidPath shape wholeQueryNoneExit,
-      Instr.FieldsFit (shapeWidth shape) instr := by
-  have hbig : (5644 : Nat) < 2 ^ shapeWidth shape := addr_lt shape
+      Instr.FieldsFit w instr := by
+  have hbig : (5644 : Nat) < 2 ^ w := addr_lt shape hcap
   intro instr hmem
   simp only [wholeQueryValidPath, List.mem_append] at hmem
   rcases hmem with h | h
-  · exact wholeQueryValidPathThroughLca_fits shape instr h
-  · exact wholeQueryOutputStage_fits shape
+  · exact wholeQueryValidPathThroughLca_fits shape hcap instr h
+  · exact wholeQueryOutputStage_fits shape hcap
       (by simp only [E1WholeQueryCloseLca.closeLcaExit]; omega) instr h
 
 /--
+**THE WIDTH CERTIFICATE, AT EVERY WORD THAT CAN ADDRESS THE STRUCTURE.**
+
+The word-RAM statement: under the standard model assumption that a single
+machine word can address the structure being queried, every instruction of
+the executed whole-query program fits that word.  The width is a
+PARAMETER; no particular width is named.
+
+The hypothesis `WordAddressesStructure w shape.size` is
+`concreteBPNativeSuccinctRMQReviewerCapacity shape.size ≤ 2 ^ w`, and the
+capacity is linear in the input size
+(`concreteBPNativeSuccinctRMQReviewerCapacity_linear`).  It is exactly the
+two things any word-RAM word must accommodate, and nothing more:
+
+* the largest **payload address** the machine reads -- the directories'
+  strides, word sizes and table offsets, each proved linear in
+  `shape.size` by a width-free lemma; and
+* the largest **program address** it branches to -- `5644`, which is the
+  program's own largest encoded field.  That one is a CONSTANT,
+  independent of `n`: the program has a fixed `5646` instructions at every
+  input size, so its address space does not grow.
+
+Because the assumption is the only thing the development knows about `w`,
+a reader may discharge it at whatever word size their model fixes.
+`wholeQueryProgram_fits_reviewerWordBits` below discharges it at the
+concrete reviewer width, and `wholeQueryProgram_fits_logarithmicWidth`
+records that this width is logarithmic in the input size.
+-/
+theorem wholeQueryProgram_fits_of_wordAddressesStructure
+    (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
+    ProgramFits w (wholeQueryProgram shape shape.size) := by
+  have hbig : (5644 : Nat) < 2 ^ w := addr_lt shape hcap
+  refine programSkeleton_fits
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear (by omega)))
+    ?_ (by omega) (wholeQueryValidPath_fits shape hcap)
+  · simpa using hbig
+
+/--
 **THE WIDTH CERTIFICATE REQ-E1-02 ASKS FOR, ABOUT THE PROGRAM THAT ACTUALLY
-EXECUTES.**
+EXECUTES** -- and the witness that the model assumption above is
+SATISFIABLE, at a width this development exhibits rather than assumes.
 
 Every instruction of `wholeQueryProgram shape shape.size` -- guard prologue,
 the 5636-instruction valid path, invalid exit -- satisfies `Instr.FieldsFit`
@@ -469,12 +546,46 @@ default.
 -/
 theorem wholeQueryProgram_fits_reviewerWordBits
     (shape : Cartesian.CartesianShape) :
-    ProgramFits (shapeWidth shape) (wholeQueryProgram shape shape.size) := by
-  have hbig : (5644 : Nat) < 2 ^ shapeWidth shape := addr_lt shape
-  refine programSkeleton_fits
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear (by omega)))
-    ?_ (by omega) (wholeQueryValidPath_fits shape)
-  · simpa using hbig
+    ProgramFits (shapeWidth shape) (wholeQueryProgram shape shape.size) :=
+  wholeQueryProgram_fits_of_wordAddressesStructure shape
+    (capacity_le_two_pow_reviewerWordBits shape.size)
+
+/-- **The certificate at any word at least as wide**, by monotonicity
+(`ProgramFits.mono`, `E1Machine.lean`).  A reader who prefers to fix a
+word size -- 64 bits, say -- and check it dominates the reviewer width
+gets the certificate at their own width with no re-verification. -/
+theorem wholeQueryProgram_fits_of_reviewerWordBits_le
+    (shape : Cartesian.CartesianShape) {w : Nat}
+    (hw : shapeWidth shape ≤ w) :
+    ProgramFits w (wholeQueryProgram shape shape.size) :=
+  (wholeQueryProgram_fits_reviewerWordBits shape).mono hw
+
+/--
+**THE MODEL ASSUMPTION IS SATISFIED AT A WIDTH LOGARITHMIC IN THE INPUT
+SIZE.**
+
+This is the single statement the succinct-data-structure literature's
+`w = Θ(log n)` phrasing is asking for, and it is the one sentence a reader
+would otherwise have to assemble from two places: there EXISTS a word
+width `w`, bounded by `20 * (log2 (n + 2) + 1)`, at which the executed
+whole-query program's every instruction fits.
+
+The witness is the reviewer width itself; the logarithmic bound is
+`concreteBPNativeSuccinctRMQReviewerWordBits_le_log`
+(`ReviewerPhysical.lean`, published as `succinctRMQReviewerWordBitsLogarithmic`).
+
+The existential is not a weakening: `wholeQueryProgram_fits_reviewerWordBits`
+above names the witness explicitly.  The `∃` is here only so that the
+width bound and the fitting claim appear in ONE proposition.
+-/
+theorem wholeQueryProgram_fits_logarithmicWidth
+    (shape : Cartesian.CartesianShape) :
+    ∃ w : Nat,
+      w ≤ 20 * (Nat.log2 (shape.size + 2) + 1) ∧
+        ProgramFits w (wholeQueryProgram shape shape.size) :=
+  ⟨shapeWidth shape,
+    concreteBPNativeSuccinctRMQReviewerWordBits_le_log shape.size,
+    wholeQueryProgram_fits_reviewerWordBits shape⟩
 
 end E1WholeQueryPathWidth
 end WordRAM

@@ -9542,3 +9542,182 @@ overcorrect.
 **Not recorded, deliberately.** No row is marked accepted, the rung is not
 marked complete, and no rung-level status was touched. The rung still owes a
 fresh blind external audit, which this lane is not and cannot perform.
+## DD-20260719-330: `ProgramFits` is upward closed in the width (E1-LaneW)
+
+`Instr.FieldsFit.mono` and `ProgramFits.mono` (`E1Machine.lean`, placed
+beside `ProgramFits` itself):
+
+```
+theorem ProgramFits.mono {w w' : Nat} {program : Program}
+    (hfits : ProgramFits w program) (hw : w ≤ w') : ProgramFits w' program
+```
+
+Placed next to the PREDICATE rather than next to any construction, because
+it is a fact about `ProgramFits` and not about our program. Every arm of
+`Instr.FieldsFit` is a `field < 2 ^ w` bound -- the `divConst` arm's extra
+`0 < k` does not mention `w`, and `halt` carries no field -- so the proof is
+`Nat.pow_le_pow_right` and a constructor sweep.
+
+Why it is worth having: it is what lets a reader instantiate a width
+certificate at THEIR word size instead of ours. Consumed by
+`wholeQueryProgram_fits_of_reviewerWordBits_le` (DD-20260719-332).
+
+Note this does NOT subsume the parametric theorem, and cannot: monotonicity
+only ever WIDENS, while the parametric theorem holds at widths strictly
+NARROWER than `shapeWidth shape`.
+
+**NOTE (coordinator C05, added at merge, 2026-07-20) — THE PARAGRAPH ABOVE IS
+WITHDRAWN. It is false, and the lane that wrote it refuted it itself.**
+
+The premise `WordAddressesStructure w n` is
+`concreteBPNativeSuccinctRMQReviewerCapacity n <= 2 ^ w`, so the admissible
+family is exactly `{w : shapeWidth shape <= w}` and there are **no** admissible
+widths strictly narrower than `shapeWidth shape`. The reason is that
+`shapeWidth = machineWordBits (capacity) = Nat.log2 capacity + 1`, while the
+minimal `w` with `capacity <= 2 ^ w` is `ceil (log2 capacity)`; these coincide
+unless the capacity is a power of two, and
+`capacity n = 400000 * (n + 1) = 2^7 * 5^5 * (n + 1)` never is, because `5^5` is
+odd and greater than one.
+
+**Consequence, which must not be softened anywhere downstream:** the parametric
+theorem is **extensionally equivalent** to the concrete theorem plus
+`ProgramFits.mono`. It is the same mathematics restated in model vocabulary --
+which is exactly what was asked for, the problem having been posed as
+presentational -- but it is **NOT a stronger theorem**, and no document may
+claim new generality for it. AMENDMENT A2 is written to this constraint.
+
+This equivalence argument is analytical and is **not** machine-checked; it is
+recorded as reasoning, not as a proved proposition. What IS machine-checked is
+every theorem cited in DD-20260719-332/333/334, verified at `27f1284`:
+whole-tree `lake build RMQ` passing at that exact commit with freshness
+established independently of the build cache, all eleven declarations
+axiom-clean with zero `sorryAx`, and the validator running to `RESULT: PASS`.
+
+## DD-20260719-331: the width development touches the width in exactly one place (E1-LaneW)
+
+The enabling structural fact, established by inspection of the whole
+`closeLcaProgramAt_fits` dependency tree: **no lemma anywhere in the width
+development derives a bound that is true only because the width is the
+concrete reviewer width.** Every pinned bound factors as
+
+1. a width-free lemma `Q shape ≤ f shape.size` (linear, or `c * (size+1)`),
+2. `lt_capacity_of_le_linear` / `lt_capacity_of_le_mul` to reach
+   `Q < concreteBPNativeSuccinctRMQReviewerCapacity shape.size` -- both of
+   which conclude `< capacity` and never mention a width, and
+3. `lt_reviewerWordBits_of_lt_capacity` to reach `Q < 2 ^ shapeWidth shape`.
+
+Step 3 is the ONLY place the concreteness is used, and it is used purely as
+a supply of one inequality, never as a source of information about `w`.
+`omega` already treats `2 ^ shapeWidth shape` as an opaque atom everywhere
+else.
+
+So the generalisation is a single substitution. Added to `E1ReviewerWidth`:
+
+```
+abbrev WordAddressesStructure (w n : Nat) : Prop :=
+  concreteBPNativeSuccinctRMQReviewerCapacity n ≤ 2 ^ w
+
+theorem lt_two_pow_of_lt_capacity {n x w : Nat}
+    (hcap : WordAddressesStructure w n)
+    (h : x < concreteBPNativeSuccinctRMQReviewerCapacity n) : x < 2 ^ w
+
+theorem capacity_le_two_pow_reviewerWordBits (n : Nat) :
+    concreteBPNativeSuccinctRMQReviewerCapacity n
+      ≤ 2 ^ concreteBPNativeSuccinctRMQReviewerWordBits n
+```
+
+35 declarations across `E1CanonicalInteriorWidth.lean`,
+`E1CloseLcaWidth.lean` and `E1WholeQueryPathWidth.lean` were then
+generalised by replacing `shapeWidth shape` with `w`, adding
+`(hcap : WordAddressesStructure w shape.size)`, and rewriting
+`lt_reviewerWordBits_of_lt_capacity` to `lt_two_pow_of_lt_capacity hcap`.
+Every inner tactic script -- every `by omega`, every `simp only [regG];
+omega`, every `_le` invocation -- survived VERBATIM. No lemma statement was
+lost; the previously-pinned ones are recovered by instantiation.
+
+**Why the hypothesis is the capacity and not a tighter linear envelope.**
+An `8 * n + 399999` envelope was tried first and is WRONG: `deadAddress_lt`
+(`E1CanonicalInteriorWidth.lean`) has slope `527` and goes through
+`lt_capacity_of_le_mul`, not `lt_capacity_of_le_linear`, so it escapes any
+slope-8 envelope. Stating the hypothesis against the full capacity is both
+correct and the better reviewer-facing form: `capacity n ≤ 2 ^ w` is the
+textbook word-RAM assumption that one word addresses the structure, and the
+capacity is already proved linear in `n`
+(`concreteBPNativeSuccinctRMQReviewerCapacity_linear`).
+
+## DD-20260719-332: the width certificate is stated for a FAMILY of widths, with the concrete one retained as its witness (E1-LaneW)
+
+The parametric theorem (`E1WholeQueryPathWidth.lean`):
+
+```
+theorem wholeQueryProgram_fits_of_wordAddressesStructure
+    (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
+    ProgramFits w (wholeQueryProgram shape shape.size)
+```
+
+`wholeQueryProgram_fits_reviewerWordBits` KEEPS ITS EXACT PRIOR STATEMENT
+(DD-20260719-304) and is now proved by instantiating the above at the
+concrete width:
+
+```
+theorem wholeQueryProgram_fits_reviewerWordBits
+    (shape : Cartesian.CartesianShape) :
+    ProgramFits (shapeWidth shape) (wholeQueryProgram shape shape.size) :=
+  wholeQueryProgram_fits_of_wordAddressesStructure shape
+    (capacity_le_two_pow_reviewerWordBits shape.size)
+```
+
+This is rule 1 discharged in its proper shape: the parametric theorem OWES a
+witness that its premise is satisfiable at the intended instantiation, and
+the concrete theorem IS that witness. It is not a witness constructed for
+the premise (rule 5): it is REQ-E1-02's own deliverable, proved before the
+premise was contemplated, and found at the target.
+
+`amendedFamiliarMachineTarget_holds` (REQ-E1-07's named consumer) is
+UNCHANGED and still consumes the concrete theorem as conjunct (3).
+
+Also added, consuming DD-20260719-330:
+
+```
+theorem wholeQueryProgram_fits_of_reviewerWordBits_le
+    (shape : Cartesian.CartesianShape) {w : Nat}
+    (hw : shapeWidth shape ≤ w) :
+    ProgramFits w (wholeQueryProgram shape shape.size)
+```
+
+## DD-20260719-333: one theorem saying the assumption holds at a logarithmic width (E1-LaneW)
+
+```
+theorem wholeQueryProgram_fits_logarithmicWidth
+    (shape : Cartesian.CartesianShape) :
+    ∃ w : Nat,
+      w ≤ 20 * (Nat.log2 (shape.size + 2) + 1) ∧
+        ProgramFits w (wholeQueryProgram shape shape.size)
+```
+
+The sentence a reviewer wants and previously had to assemble from two
+places: the width bound (`concreteBPNativeSuccinctRMQReviewerWordBits_le_log`,
+published as `succinctRMQReviewerWordBitsLogarithmic`) and the fitting claim
+now appear in ONE proposition.
+
+The existential is not a weakening -- `wholeQueryProgram_fits_reviewerWordBits`
+names the witness explicitly and remains public. The `∃` exists only to put
+the two facts in one statement.
+
+## DD-20260719-334: the refutation is retained, and is what makes the family non-vacuous (E1-LaneW)
+
+`wholeQueryProgram_not_fits_machineWordBits` (`E1WholeQueryWidth.lean`) is
+UNTOUCHED and still proves. It is now doing better work than before.
+
+Under the parametric statement the refutation reads as the anti-vacuity
+witness for the FAMILY: it exhibits a width -- `machineWordBits shape.size`,
+for shapes of size ≤ 2821 -- at which `ProgramFits` genuinely FAILS. So the
+model assumption is not one that holds of any width whatsoever, and the
+certificate is not vacuous. That the failure is confined to small shapes is
+the expected consequence of the program being CONSTANT-SIZE: 5646
+instructions whose largest encoded field, `5644`, does not grow with `n`.
+
+Monotonicity (DD-20260719-330) plus these two theorems jointly imply
+`machineWordBits shape.size < shapeWidth shape` for shapes of size ≤ 2821,
+which is a consistency check the tree now supports directly.

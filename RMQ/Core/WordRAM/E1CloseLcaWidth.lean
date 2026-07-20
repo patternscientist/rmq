@@ -48,31 +48,32 @@ open E1WholeQueryCloseLca
 /-- **THE EXECUTED CROSS ARM FITS** -- all 4574 instructions, interior
 included.  This is the first consumer of `canonicalInteriorDispatchBlock_fits`
 and the reason `hinterior` stopped being an owed premise. -/
-theorem closeLcaCrossArm_fits (shape : Cartesian.CartesianShape) {A : Nat}
-    (hA : A + 4578 < 2 ^ shapeWidth shape) :
+theorem closeLcaCrossArm_fits (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) {A : Nat}
+    (hA : A + 4578 < 2 ^ w) :
     ∀ instr ∈ closeLcaCrossArm shape A,
-      Instr.FieldsFit (shapeWidth shape) instr := by
+      Instr.FieldsFit w instr := by
   have hseg : concreteBPNativeFringeChunkTraceSegment = 21 := rfl
   refine E1CrossBlockArm.crossBlockArmProgramAt_fits shape
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     (canonicalBPRelativeSummaryBlockSizeRaw_pos shape)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     (bpFringeChunkBits_pos _)
     (bpFringeChunkBits_le_machineWordBits _)
     (SuccinctRank.machineWordBits_pos _)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     ((builtRelativeSplitBPCloseRankData shape).wordSize_pos)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     ((builtRelativeSplitBPCloseRankData shape).blocksPerSuper_pos)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (canonicalInteriorDispatchBlock_fits shape (by
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (canonicalInteriorDispatchBlock_fits shape hcap (by
       simpa [canonicalInteriorDispatchBlock_length] using
-        (by omega : A + 4 + 176 + 4204 < 2 ^ shapeWidth shape)))
+        (by omega : A + 4 + 176 + 4204 < 2 ^ w)))
     (by simpa [canonicalInteriorDispatchBlock_length] using hA)
   · omega                                             -- hreg  : 84
   · omega                                             -- hseg  : 21
@@ -88,25 +89,26 @@ theorem closeLcaCrossArm_fits (shape : Cartesian.CartesianShape) {A : Nat}
   · have := blocksPerSuper_le shape; omega            -- hBPS
 
 /-- **THE EXECUTED SAME-BLOCK ARM FITS** -- all 173 instructions. -/
-theorem closeLcaSameArm_fits (shape : Cartesian.CartesianShape) {A : Nat}
-    (hA : A + 4751 < 2 ^ shapeWidth shape) :
+theorem closeLcaSameArm_fits (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) {A : Nat}
+    (hA : A + 4751 < 2 ^ w) :
     ∀ instr ∈ closeLcaSameArm shape A,
-      Instr.FieldsFit (shapeWidth shape) instr := by
+      Instr.FieldsFit w instr := by
   have hseg : concreteBPNativeFringeChunkTraceSegment = 21 := rfl
   refine sameBlockLegProgramAt_fits shape
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     (canonicalBPRelativeSummaryBlockSizeRaw_pos shape)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     ((builtRelativeSplitBPCloseRankData shape).wordSize_pos)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     ((builtRelativeSplitBPCloseRankData shape).blocksPerSuper_pos)
-    (lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear ?_))
+    (lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear ?_))
     (by omega)
   · omega                                             -- hreg  : 74
   · omega                                             -- hseg  : 21
@@ -123,26 +125,27 @@ theorem closeLcaSameArm_fits (shape : Cartesian.CartesianShape) {A : Nat}
 
 /-- **THE WHOLE CLOSE/LCA LEG FITS** -- all 4753 instructions: dispatch,
 terminated cross arm (interior included), and same-block arm. -/
-theorem closeLcaProgramAt_fits (shape : Cartesian.CartesianShape) {A : Nat}
-    (hA : A + 4753 < 2 ^ shapeWidth shape) :
+theorem closeLcaProgramAt_fits (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) {A : Nat}
+    (hA : A + 4753 < 2 ^ w) :
     ∀ instr ∈ closeLcaProgramAt shape A,
-      Instr.FieldsFit (shapeWidth shape) instr := by
+      Instr.FieldsFit w instr := by
   intro instr hmem
   have hbs : canonicalBPRelativeSummaryBlockSizeRaw shape <
-      2 ^ shapeWidth shape :=
-    lt_reviewerWordBits_of_lt_capacity (lt_capacity_of_le_linear (by
+      2 ^ w :=
+    lt_two_pow_of_lt_capacity hcap (lt_capacity_of_le_linear (by
       have := blockSizeRaw_le shape; omega))
-  have hw74 : (74 : Nat) < 2 ^ shapeWidth shape := by omega
+  have hw74 : (74 : Nat) < 2 ^ w := by omega
   simp only [closeLcaProgramAt, crossArmTerminated, jumpTo,
     List.mem_append, List.mem_cons, List.not_mem_nil, or_false] at hmem
   rcases hmem with h | (h | (rfl | rfl)) | h
   · exact closeDispatch_fits _ _ _
       (canonicalBPRelativeSummaryBlockSizeRaw_pos shape) hbs (by omega) hw74
       instr h
-  · exact closeLcaCrossArm_fits shape (by omega) instr h
+  · exact closeLcaCrossArm_fits shape hcap (by omega) instr h
   · exact ⟨by simp only [dSame]; omega, by omega⟩
   · exact ⟨by simp only [dSame]; omega, by simp only [closeLcaExit]; omega⟩
-  · exact closeLcaSameArm_fits shape (by omega) instr h
+  · exact closeLcaSameArm_fits shape hcap (by omega) instr h
 
 end E1CloseLcaWidth
 end WordRAM

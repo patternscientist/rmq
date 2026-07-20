@@ -140,6 +140,84 @@ theorem lt_capacity_of_le_linear {n x : Nat} (h : x ≤ 8 * n + 399999) :
   have hslope : 8 * n ≤ 400000 * n := Nat.mul_le_mul_right n (by omega)
   omega
 
+/-! ### The model assumption, as a hypothesis on a parametric width
+
+`concreteBPNativeSuccinctRMQReviewerCapacity n` is the query machine's
+ADDRESS SPACE at input size `n`: every address the machine forms -- every
+payload address it reads and every program address it branches to -- is
+proved to lie strictly inside it.  It is linear in the input size
+(`concreteBPNativeSuccinctRMQReviewerCapacity_linear`,
+`ReviewerPhysical.lean:1497`).
+
+The word-RAM model assumption the construction actually needs is therefore
+the textbook one -- A SINGLE WORD CAN ADDRESS THE STRUCTURE:
+
+  `concreteBPNativeSuccinctRMQReviewerCapacity n ≤ 2 ^ w`
+
+and nothing else.  No lemma in the width development ever needs `w` to be
+any PARTICULAR width; the concrete reviewer width is used only as a supply
+of this one inequality, never as a source of information about `w`.  The
+two lemmas below are what make that visible: `lt_two_pow_of_lt_capacity`
+replaces `lt_reviewerWordBits_of_lt_capacity` when the width is a
+parameter, and `capacity_le_two_pow_reviewerWordBits` is the witness that
+the assumption is satisfiable.
+
+Note the capacity lemmas above (`lt_capacity_of_le_linear`, and
+`lt_capacity_of_le_mul` in `E1CanonicalInteriorWidth`) conclude `< capacity
+n` and never mention a width, so they are reused verbatim under a
+parametric `w`. -/
+
+/-- **The word-RAM model assumption**, named: a `w`-bit word can address
+the whole query structure built over an input of size `n`.
+
+This is the hypothesis every parametric width certificate below carries.
+It is an `abbrev` so that it unfolds definitionally wherever the
+arithmetic needs it, while still reading as a model assumption in the
+statements that assume it. -/
+abbrev WordAddressesStructure (w n : Nat) : Prop :=
+  concreteBPNativeSuccinctRMQReviewerCapacity n ≤ 2 ^ w
+
+/-- The parametric-width counterpart of `lt_reviewerWordBits_of_lt_capacity`:
+a quantity inside the address space fits ANY word that can address the
+structure, not merely the concrete reviewer width.
+
+This is the single point at which the width development touches the width,
+which is why generalising it generalises the whole development. -/
+theorem lt_two_pow_of_lt_capacity {n x w : Nat}
+    (hcap : concreteBPNativeSuccinctRMQReviewerCapacity n ≤ 2 ^ w)
+    (h : x < concreteBPNativeSuccinctRMQReviewerCapacity n) : x < 2 ^ w :=
+  Nat.lt_of_lt_of_le h hcap
+
+/-- **The concrete reviewer width satisfies the model assumption.** This is
+the witness that the assumption is not vacuous, and it is the
+instantiation every concrete corollary below uses. -/
+theorem capacity_le_two_pow_reviewerWordBits (n : Nat) :
+    concreteBPNativeSuccinctRMQReviewerCapacity n
+      ≤ 2 ^ concreteBPNativeSuccinctRMQReviewerWordBits n :=
+  Nat.le_of_lt
+    (SuccinctRank.self_lt_two_pow_machineWordBits
+      (concreteBPNativeSuccinctRMQReviewerCapacity n))
+
+/-- **The model assumption is a real constraint, not a formality.**
+
+`capacity_le_two_pow_reviewerWordBits` above shows the assumption is
+SATISFIABLE; this shows it is not TRIVIAL.  It fails at every width up to
+`18`, at every input size, because the address space is at least `400000`
+(`capacity_ge`) while `2 ^ 18 = 262144`.
+
+The pair matters for reading the parametric width certificates below: a
+theorem quantified over `w` under a hypothesis that every `w` satisfied
+would say nothing.  This one rules out a genuine range of widths, and
+`wholeQueryProgram_not_fits_machineWordBits` (`E1WholeQueryWidth.lean:84`)
+exhibits a width at which the CONCLUSION genuinely fails. -/
+theorem not_wordAddressesStructure_of_width_le_18 {w : Nat} (hw : w ≤ 18)
+    (n : Nat) : ¬ WordAddressesStructure w n := by
+  have hge := capacity_ge n
+  have hpow : (2 : Nat) ^ w ≤ 2 ^ 18 := Nat.pow_le_pow_right (by omega) hw
+  have hlit : (2 : Nat) ^ 18 = 262144 := by rfl
+  intro hcap
+  omega
+
 /-! ## The shape-dependent quantities, bounded linearly in the size
 
 Each of these is a side condition of `sameBlockDispatchProgram_fits` or
