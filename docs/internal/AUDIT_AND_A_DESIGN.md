@@ -7324,3 +7324,116 @@ unpublished asymptotic lemma in that specific development is not fully excluded.
 
 **One email to Affeldt would close the last of it** — owner's call, external
 contact.
+
+---
+
+## C05 round 102 — the zero-range theorem is PROVED, not transcribed. And it
+## upgrades the finding: the table is not merely small, it is DEAD on every
+## realizable input.
+
+Branch `claude/zero-range-sparse-exception`, HEAD `70d5a2a`, base `8e7e3ee`.
+**Deliberately NOT merged — see the sequencing note at the end.**
+
+### WHAT IS NOW MACHINE-CHECKED
+
+`RMQ/Core/GenericSelect/SparseExceptionThreshold.lean`, 250 lines, 13 theorems,
+wired into `RMQ.lean:80`. All three steps of the chain:
+
+1. `localStride_eq_one_of_lt_two_pow_97` (`:135`) —
+   `n < 2 ^ 97 -> localStride n = 1`
+2. `sparseExceptionRelativeTable_payload_eq_nil_of_localStride_eq_one` (`:209`) —
+   `localStride bits.length = 1 -> (sparseExceptionRelativeTable bits target).payload = []`
+3. `sparseExceptionRelativeTable_bpCode_payload_eq_nil_of_size_lt` (`:243`) —
+   `shape.size < 2 ^ 96 -> (sparseExceptionRelativeTable shape.bpCode target).payload = []`
+
+`lake build RMQ` exit 0, 291/291. `#print axioms` on all 13: only `propext`,
+`Classical.choice`, `Quot.sound`. Committed blob byte-verified at 10771 bytes —
+the truncation rule applied rather than recited.
+
+**The `Nat.log2` kernel boundary was handled by workaround 2** — the threshold is
+consumed as an INEQUALITY (`wordBits n <= 97`), so the kernel never sees
+`Nat.log2` at a large literal. Residual arithmetic is a 7-way split over small
+numerals. No `decide` on `2^97`, no heartbeat change.
+
+### THE NON-VACUITY WORK IS THE BEST THIS CAMPAIGN HAS SEEN
+
+Four delete-hypothesis tests, all failing as required. But two go further:
+
+**It kernel-checked MY OWN ERROR.** Step 3 restated with `2^97` on the input size
+instead of `2^96` **fails to compile.** The two thresholds are provably not
+interchangeable — the exact confusion I propagated into round 94 and a memory
+file is now a compile-time impossibility rather than a warning in prose.
+
+**Tightness is kernel-checked, not asserted.** `div_succ_sq_at_97_eq_one` and
+`div_succ_sq_at_98_eq_two` (`:90`, `:95`) show `97/49 = 1` but `98/49 = 2`, and
+`not_div_succ_sq_le_one_without_le_97` (`:105`) REFUTES the hypothesis-free
+statement at `w = 98, L = 6`. Compiler evaluation independently confirms the
+smallest `k` with `localStride (2^k) != 1` is exactly 97. **This is the
+equality/refutation witness the audit-prompt standard demands for a tightness
+claim — the standard I quoted and then failed to apply two rounds ago.**
+
+**And the "true for the wrong reason" check, with a LIVENESS CONTROL.** On a
+concrete 60-bit BP code: `localSlotCount = 36`, `sparseExceptionFlagBits` has
+length 36, so the flatMap ranges over a genuinely non-empty slot set with all
+flags computed and all false; `shortSuperLocalSpan = 1` against `wordBits = 6`,
+so the comparison is actually DECIDED. Then the control: the sibling
+`localEntries` over the SAME bits has length 36. **So emptiness is specific to
+the sparse-exception path and not an artifact of everything being empty.**
+Repeated on a 200-bit sparse vector. That control is exactly what distinguishes a
+real result from a vacuous one, and nobody asked for it.
+
+### THE FINDING THAT UPGRADES ROUND 94
+
+Since `localStride = 1` for EVERY `n < 2^97`, `localIsSparseException` is false
+on **every input that can physically be constructed or run.** The
+sparse-exception relative table is **provably empty on all realizable inputs — it
+is DEAD WEIGHT at every reachable size, not merely small.**
+
+**And the lane raised the consequence I would have missed:** any route that reads
+this table is exercising a permanently-empty structure. **That should be checked
+against the dead-source and two-payload/liveness obligations elsewhere in the
+matrix.** This project's invariants include "no dead sources", and a structure
+that is provably empty on all reachable inputs is at least adjacent to that.
+
+It cuts both ways and both should be said. It **strengthens** the practical-range
+story enormously — the worst-looking term in the overhead contributes literally
+nothing at any size anyone can instantiate, and that is now a theorem. But it
+**invites** the reviewer question "then why is it there?", whose honest answer is
+that the all-size `o(n)` statement quantifies over sizes no one will reach.
+
+### REQ-B7-06: NO CONFLICT, AND CORRECTLY NOT CLAIMED
+
+The lane checked what I asked and returned the right answer for two reasons, only
+one of which I had anticipated:
+
+- **Different object.** REQ-B7-06 governs the B7 sparse LEVEL table on the
+  `RMQ.SuccinctSelect` routing side. This work is about
+  `RMQ.GenericSelect.sparseExceptionRelativeTable`. The namespace twin trap again,
+  and the lane stayed on the right side of it.
+- **Thresholded results cannot discharge a no-threshold clause** in any case.
+
+The existing threshold-free statements (`..._littleO` at `RelativeTables.lean:1195`,
+`..._payload_le_overhead_of_spanSum_le_length` at `:1200`) are **untouched and
+remain the statements of record at every `n` including tiny shapes.** Recorded in
+the module docstring so a later reader cannot mistake the thresholded theorem for
+a replacement.
+
+### ANCHORS: my brief was accurate this time
+
+All four verified by the lane against the tree. Worth recording given how many
+rounds have opened with the opposite.
+
+The lane also corrected ITSELF rather than the brief: `wordBits_le_of_lt_two_pow`
+genuinely needs `0 < k`, since at `n = 0, k = 0` the hypothesis holds while
+`wordBits 0 = 1 <= 0` fails. Lean caught it; documented at `:121`.
+
+### SEQUENCING — WHY THIS IS NOT MERGED
+
+The fresh-blind E1 audit prompt pins campaign HEAD **`8e7e3ee`** as the target.
+This work is **`GenericSelect`, not E1**, and merging it would move the head under
+an auditor mid-flight — either changing what is audited or creating ambiguity
+about which commit the verdict covers. It is purely additive (251 insertions, 2
+files) and will keep.
+
+**Merge after the E1 audit reports**, or route it to `main` separately. Recorded
+so nobody merges it "because it is green".
