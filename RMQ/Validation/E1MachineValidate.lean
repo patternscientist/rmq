@@ -7,6 +7,7 @@ import RMQ.Core.WordRAM.E1FringeFoldProgram
 import RMQ.Core.WordRAM.E1InteriorChunkFold
 import RMQ.Core.WordRAM.E1CostAlgebra
 import RMQ.Core.WordRAM.E1WholeQueryCostLiteral
+import RMQ.Validation.E1RefRMQ
 
 /-!
 # M6: executable validation of the E1 amended machine
@@ -60,34 +61,28 @@ open RMQ.WordRAM.E1CloseDispatch
 open RMQ.WordRAM.E1FringeArmBlock
 open RMQ.WordRAM.E1SameBlockArm
 
-/-! ## 1. The independent reference implementation
+/-! ## 1. The independent reference implementation -- MOVED OUT OF THIS FILE
 
-Written from the specification of half-open leftmost RMQ.  Nothing in this
-section mentions the machine, the route, or any repository construction. -/
+`refRMQ` used to be defined here.  It is now defined in
+`RMQ/Validation/E1RefRMQ.lean`, which this module imports, and it kept its
+fully-qualified name `RMQ.Validation.E1MachineValidate.refRMQ` across the
+move, so every use below and every citation of it elsewhere reads exactly as
+it did before.
 
-/-- Half-open leftmost range minimum over `xs` on `[lo, hi)`.
+**The move is what discharges REQ-E1-08's independence clause, and it is not
+cosmetic.**  The clause requires the reference to share "only `List Int` and
+basic prelude" with the machine.  Defined here, the reference was
+FUNCTIONALLY independent -- it called neither the machine nor the route --
+but it sat in a module importing nine machine modules, so on the clause's
+literal wording it failed, and the matrix carried that as gap (b).  In a
+module with no imports the independence is structural: a machine constant
+used from there does not elaborate, because it is not in scope.  Reviewer
+attention is no longer what holds the property up.
 
-Specification, restated: the result is `some i` where `lo ≤ i < hi`,
-`xs[i]` is minimal over the window, and no `j < i` in the window attains
-that minimum; the result is `none` exactly when the window is empty
-(`hi ≤ lo`) or reaches past the end of `xs` (`xs.length < hi`).
-
-The fold replaces the incumbent only on a STRICTLY smaller value, which is
-what makes the answer the LEFTMOST minimiser rather than an arbitrary
-one. -/
-def refRMQ (xs : List Int) (lo hi : Nat) : Option Nat :=
-  if hi ≤ lo then none
-  else if xs.length < hi then none
-  else
-    ((List.range (hi - lo)).map (fun k => lo + k)).foldl
-      (fun best i =>
-        match best with
-        | none => some i
-        | some b =>
-            match xs[i]?, xs[b]? with
-            | some v, some bv => if v < bv then some i else some b
-            | _, _ => best)
-      none
+The two specification clauses that quantify over all inputs
+(`refRMQ_eq_none_of_hi_le_lo`, `refRMQ_eq_none_of_length_lt`) are proved
+there too.  Its positive content is still checked by EXECUTION here, by
+`expectationSelfConsistent` below. -/
 
 /-! ## 2. Fixtures
 

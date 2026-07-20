@@ -9727,3 +9727,84 @@ instructions whose largest encoded field, `5644`, does not grow with `n`.
 Monotonicity (DD-20260719-330) plus these two theorems jointly imply
 `machineWordBits shape.size < shapeWidth shape` for shapes of size ≤ 2821,
 which is a consistency check the tree now supports directly.
+
+## DD-20260720-010: the independent reference moves to a module with no imports, and KEEPS its namespace (E1-Req08)
+
+REQ-E1-08's anti-vacuity column requires the reference implementation to
+"not import the machine or succinct modules' answers (independence audit: it
+may share only `List Int` and basic prelude)". `refRMQ` met that
+FUNCTIONALLY from the start -- it calls neither the machine nor the route --
+but it was defined inside `RMQ/Validation/E1MachineValidate.lean`, which
+imports nine machine modules. On the clause's literal wording that failed,
+and the matrix carried it as gap (b) of REQ-E1-08.
+
+`refRMQ` now lives in `RMQ/Validation/E1RefRMQ.lean`, which has **no `import`
+lines at all**, so its whole ambient context is Lean's own `Init` -- exactly
+the "basic prelude" the clause allows.
+
+**The point of the move is that independence stops being a claim and becomes
+a structural property.** Before, nothing prevented a later edit from reaching
+for a route constant to "simplify" an expectation; only reviewer attention
+stood in the way, and this campaign has repeatedly found that reviewer
+attention is the weakest link available. From a module with no imports such
+an edit does not elaborate, because the constant is not in scope. The
+independence audit the row asks for is now performed by the module system on
+every build.
+
+### The namespace deliberately does NOT follow the file
+
+The declarations stay in `namespace RMQ.Validation.E1MachineValidate`, so the
+reference's fully-qualified name is still
+`RMQ.Validation.E1MachineValidate.refRMQ`. Lean permits a namespace to span
+modules, and using that here is what keeps the move from being a rename.
+
+This matters because the campaign's standing rule forbids renaming a frozen
+public identity without owner approval, and `refRMQ` is cited by name in the
+acceptance matrix. Had the module been given its own namespace, the move
+would have silently become a rename requiring escalation -- a large cost for
+a purely cosmetic gain. As landed, **no identity, no call site, and no
+citation moves**; only the file does. The one anchor that does go stale is
+the matrix's line reference `refRMQ` (`:78`), which is recorded in this
+lane's matrix note rather than edited into the frozen cell.
+
+### The two all-input clauses are proved there as well
+
+`refRMQ_eq_none_of_hi_le_lo` and `refRMQ_eq_none_of_length_lt` state the
+specification's two `none` clauses. They are proved in the prelude-only
+module rather than in the harness for a reason beyond tidiness: a theorem
+that elaborates with no imports is itself evidence that the reference needs
+nothing beyond the prelude to be characterised. A reference whose properties
+could only be established with the machine in scope would not be independent
+of it in any sense the row cares about.
+
+The harness continues to check the reference's POSITIVE content by execution
+(`expectationSelfConsistent`), which brute-forces leftmost-minimality against
+every other window index. Proof and execution are covering different clauses
+here, not duplicating one.
+
+### A recorded near-miss in the proof of the second clause
+
+`refRMQ_eq_none_of_length_lt` was first written as `unfold; split; simp [h]`.
+That compiles, but Lean's linter reports `h` as an unused simp argument, and
+the two remaining goals both print `none = none` -- which reads exactly like
+a theorem that does not depend on its hypothesis, i.e. like a reference that
+returns `none` unconditionally.
+
+It was checked rather than assumed, and the appearance is misleading in a
+specific way worth recording. `split` splits BOTH `if`s and uses `h` itself
+to discharge the branch where `¬(xs.length < hi)`; the hypothesis is consumed
+by the split, not by the simp. Deleting `h` from the statement makes the
+proof fail on exactly that branch with the `foldl` still in the goal, and
+`refRMQ` evaluates to `some 1` / `some 0` on concrete fixtures, so the
+degenerate reading is false twice over.
+
+The proof was nevertheless rewritten as explicit `if_pos`/`if_neg` under a
+`by_cases`, because the diagnosis should not have to be re-derived by the
+next reader. **The general point: a linter reporting an unused hypothesis on
+a specification lemma deserves a check that the lemma is not vacuous, and the
+cheapest conclusive check is to delete the hypothesis and confirm the proof
+breaks.**
+
+Evidence: `lake env lean` on the module is clean; `#print axioms` reports
+"does not depend on any axioms" for `refRMQ`,
+`refRMQ_eq_none_of_hi_le_lo` and `refRMQ_eq_none_of_length_lt`.
