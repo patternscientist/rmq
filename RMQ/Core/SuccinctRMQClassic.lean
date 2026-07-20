@@ -1029,6 +1029,11 @@ structure ReviewerNativeMachineAdequacy
       storesAgreeOnOrderedReadFootprint xs storeA storeB left right ->
         queryTraceResultWithStore xs storeA left right =
           queryTraceResultWithStore xs storeB left right
+  safe_logical_store_agreement :
+    forall storeA storeB : WordRAM.ReadStore,
+      storesAgreeOnFootprint xs storeA storeB ->
+        queryTraceResultWithStore xs storeA left right =
+          queryTraceResultWithStore xs storeB left right
   physical_value_projection_of_valid :
     forall store : WordRAM.ReadStore,
       ValidRange xs left right ->
@@ -1136,6 +1141,15 @@ theorem listIntSuccinctRMQReviewerNativeMachineAdequacy
           exact
             SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint
               (cartesianShape xs) storeA storeB left right hraw
+        · simp [queryTraceResultWithStore, withValidRange, hvalid]
+      safe_logical_store_agreement := by
+        intro storeA storeB hfoot
+        by_cases hvalid : ValidRange xs left right
+        · rw [queryTraceResultWithStore_valid xs storeA left right hvalid,
+            queryTraceResultWithStore_valid xs storeB left right hvalid]
+          exact
+            SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint_via_orderedReadFootprint
+              (cartesianShape xs) hfoot left right
         · simp [queryTraceResultWithStore, withValidRange, hvalid]
       physical_value_projection_of_valid := fun store =>
         reviewerPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator_of_valid

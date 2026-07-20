@@ -69,7 +69,9 @@ facts, and the guarded list packet are literal inputs. The current same-trace
 non-synthetic-weight bound is a literal guarded conjunct derived from those
 required facts. Exact agreement on the first physical execution's ordered
 dynamic footprint directly determines the complete supplied-store trace
-result.
+result. Safe logical footprint agreement is exposed separately as a corollary
+whose proof passes through direct source containment and that ordered-dynamic
+theorem.
 -/
 theorem listIntSuccinctRMQPaperMainTheorem :
     RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy /\
@@ -172,6 +174,12 @@ theorem listIntSuccinctRMQPaperMainTheorem :
             RMQ.SuccinctClassic.queryTraceResultWithStore
                 xs storeA left right =
               RMQ.SuccinctClassic.queryTraceResultWithStore
+                xs storeB left right) /\
+        (forall (storeA storeB : RMQ.WordRAM.ReadStore) left right,
+          RMQ.SuccinctClassic.storesAgreeOnFootprint xs storeA storeB ->
+            RMQ.SuccinctClassic.queryTraceResultWithStore
+                xs storeA left right =
+              RMQ.SuccinctClassic.queryTraceResultWithStore
                 xs storeB left right) := by
   rcases
     RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story with
@@ -218,7 +226,10 @@ theorem listIntSuccinctRMQPaperMainTheorem :
           xs storeA storeB left right hagree,
       fun storeA storeB left right hagree =>
         RMQ.SuccinctClassic.queryTraceResultWithStore_eq_of_orderedReadFootprint
-          xs storeA storeB left right hagree⟩
+          xs storeA storeB left right hagree,
+      fun storeA storeB left right hfoot =>
+        (RMQ.SuccinctClassic.listIntSuccinctRMQReviewerNativeMachineAdequacy
+          xs left right).safe_logical_store_agreement storeA storeB hfoot⟩
 
 /-- Shape-level reviewer-native machine certificate over the canonical
 payload, physical store, execution, footprint, cost, and width objects. -/
@@ -517,6 +528,11 @@ dynamic read set.
 -/
 abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadsSubsetFootprint :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint
+
+/-- Direct execution-structural source containment for the supplied-store
+whole-query trace. Every emitted logical read uses a segment below `23`. -/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadSegmentLt :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read_segment_lt
 
 /--
 Every canonical whole-query payload-read event is inside the safe final layout

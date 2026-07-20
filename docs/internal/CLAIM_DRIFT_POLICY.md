@@ -157,6 +157,13 @@ and the headline axiom inventory.
   are charged and `wordRank`/`wordSelect` remain compatibility-only
   constructors that are never emitted by this route. Controller operations
   remain explicitly uncharged.
+- The unqualified current assertion "There is no event-silent computation
+  left" is forbidden: bounded event-silent controller work remains. The
+  accurate boundary is that no input-size-dependent or unbounded event-silent
+  loop remains; instruction dispatch, register moves, fixed-width decoding,
+  bounded arithmetic/comparison, option tests, branching, candidate merging,
+  trace assembly, and validity guards are still uncharged. Historical or
+  explicitly bounded statements remain permitted.
 - The canonical current-surface registry includes the reviewer-grade claim
   correspondence, family summary, and model-adequacy packet as well as the
   artifact, theorem-map, roadmap, trust, and current-digest surfaces. An

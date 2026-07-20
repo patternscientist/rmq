@@ -6,7 +6,7 @@ param(
   [string]$MutationRemoveText = '',
   [string]$MutationTextBase64 = '',
   [string]$MutationRemoveTextBase64 = '',
-  [ValidateSet('', 'A01', 'A02')]
+  [ValidateSet('', 'A01', 'A02', 'R1LEGACY')]
   [string]$MutationCase = '',
   [ValidateRange(1, 3600)]
   [int]$StageDeadlineSeconds = 300,
@@ -18,64 +18,26 @@ param(
 $ErrorActionPreference = 'Stop'
 $failures = 0
 
+# A release-gated launch must block before dot-sourcing the shared helper,
+# because Add-Type may itself initialize platform machinery.  This keeps the
+# root quiescent until the parent has assigned Windows Job / POSIX group
+# ownership.
 if ($LaunchReleasePath -ne '') {
   while (-not (Test-Path -LiteralPath $LaunchReleasePath -PathType Leaf)) {
     Start-Sleep -Milliseconds 10
   }
 }
 
+. (Join-Path $PSScriptRoot 'owned_process_tree.ps1')
+
+$repoRoot = [IO.Path]::GetFullPath((Get-Location).Path)
+$ownedTempRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
+
 $pathKeys = @(
   [Environment]::GetEnvironmentVariables().Keys |
     Where-Object { [string]$_ -ieq 'path' })
 if ($pathKeys.Count -gt 1 -and $pathKeys -ccontains 'PATH') {
   Remove-Item Env:PATH -ErrorAction Stop
-}
-
-if (-not ('RMQReplayJob' -as [type])) {
-  Add-Type -TypeDefinition @'
-using System;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
-public static class RMQReplayJob {
-  private const int Extended = 9;
-  private const uint KillOnClose = 0x00002000;
-  [StructLayout(LayoutKind.Sequential)] private struct IO {
-    public ulong a,b,c,d,e,f;
-  }
-  [StructLayout(LayoutKind.Sequential)] private struct Basic {
-    public long a,b; public uint flags;
-    public UIntPtr c,d; public uint e; public UIntPtr f; public uint g,h;
-  }
-  [StructLayout(LayoutKind.Sequential)] private struct ExtendedInfo {
-    public Basic basic; public IO io;
-    public UIntPtr a,b,c,d;
-  }
-  [DllImport("kernel32.dll", SetLastError=true)]
-  private static extern IntPtr CreateJobObject(IntPtr a, string n);
-  [DllImport("kernel32.dll", SetLastError=true)]
-  private static extern bool SetInformationJobObject(
-    IntPtr j, int c, ref ExtendedInfo i, uint n);
-  [DllImport("kernel32.dll", SetLastError=true)]
-  private static extern bool AssignProcessToJobObject(IntPtr j, IntPtr p);
-  [DllImport("kernel32.dll", SetLastError=true)]
-  private static extern bool CloseHandle(IntPtr h);
-  public static IntPtr CreateKillOnClose() {
-    IntPtr j=CreateJobObject(IntPtr.Zero,null);
-    if(j==IntPtr.Zero) throw new Win32Exception(Marshal.GetLastWin32Error());
-    var i=new ExtendedInfo(); i.basic.flags=KillOnClose;
-    if(!SetInformationJobObject(j,Extended,ref i,(uint)Marshal.SizeOf(typeof(ExtendedInfo)))) {
-      int e=Marshal.GetLastWin32Error(); CloseHandle(j); throw new Win32Exception(e);
-    }
-    return j;
-  }
-  public static void Assign(IntPtr j, IntPtr p) {
-    if(!AssignProcessToJobObject(j,p)) throw new Win32Exception(Marshal.GetLastWin32Error());
-  }
-  public static void Close(IntPtr j) {
-    if(j!=IntPtr.Zero && !CloseHandle(j)) throw new Win32Exception(Marshal.GetLastWin32Error());
-  }
-}
-'@
 }
 
 function Normalize-RepoPath([string]$Path) {
@@ -105,6 +67,8 @@ if ($MutationCase -ceq 'A01') {
   $MutationPath = 'scripts/headline_axiom_check.lean'
 } elseif ($MutationCase -ceq 'A02') {
   $MutationPath = 'scripts/gate.ps1'
+} elseif ($MutationCase -ceq 'R1LEGACY') {
+  $MutationPath = 'RMQ/Core/SuccinctFinalModelAdequacy.lean'
 }
 
 $frozenSnapshotMarker = '<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT -->'
@@ -125,158 +89,29 @@ function Invoke-BoundedLintTool(
     [string[]]$Arguments,
     [string]$Stage,
     [hashtable]$Environment = @{}) {
-  if ($StageDeadlineSeconds -le 0) {
-    throw "$Stage deadline must be positive"
-  }
-  $logStem = [IO.Path]::Combine(
-    [IO.Path]::GetTempPath(),
-    'rmq-paper-topology-r4-' + [Guid]::NewGuid().ToString('N'))
-  $stdoutPath = $logStem + '.stdout.log'
-  $stderrPath = $logStem + '.stderr.log'
-  $specPath = $logStem + '.launch.json'
-  $releasePath = $logStem + '.release'
-  $bootstrapPath = $logStem + '.bootstrap.ps1'
-  $process = $null
-  $jobHandle = [IntPtr]::Zero
-  $timedOut = $false
-  $outputLimitExceeded = $false
-  $terminatedIds = @()
-  $exitCode = -1
-  $output = @()
-  $stopwatch = [Diagnostics.Stopwatch]::StartNew()
-  try {
-    $utf8 = [Text.UTF8Encoding]::new($false)
-    $launchSpec = [ordered]@{
-      FilePath = $FilePath
-      Arguments = @($Arguments)
-      Environment = $Environment
-    }
-    [IO.File]::WriteAllText(
-      $specPath, ($launchSpec | ConvertTo-Json -Depth 5), $utf8)
-    [IO.File]::WriteAllText($bootstrapPath, @'
-param([string]$SpecPath, [string]$ReleasePath)
-$ErrorActionPreference = 'Stop'
-while (-not (Test-Path -LiteralPath $ReleasePath -PathType Leaf)) {
-  Start-Sleep -Milliseconds 10
+  return Invoke-RMQOwnedBoundedProcess `
+    -FilePath $FilePath `
+    -Arguments $Arguments `
+    -WorkingDirectory $repoRoot `
+    -Stage $Stage `
+    -DeadlineSeconds $StageDeadlineSeconds `
+    -OutputLimitBytes $StageOutputLimitBytes `
+    -TempRoot $ownedTempRoot `
+    -Environment $Environment
 }
-$spec = Get-Content -LiteralPath $SpecPath -Raw | ConvertFrom-Json
-foreach ($property in $spec.Environment.PSObject.Properties) {
-  [Environment]::SetEnvironmentVariable(
-    $property.Name, [string]$property.Value, 'Process')
-}
-& ([string]$spec.FilePath) @([string[]]$spec.Arguments)
-if ($null -eq $LASTEXITCODE) { exit 0 }
-exit ([int]$LASTEXITCODE)
-'@, $utf8)
-    if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
-      $jobHandle = [RMQReplayJob]::CreateKillOnClose()
-    }
-    $shellPath = (Get-Process -Id $PID).Path
-    $process = Start-Process -FilePath $shellPath -ArgumentList @(
-      '-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass',
-      '-File', $bootstrapPath, '-SpecPath', $specPath,
-      '-ReleasePath', $releasePath) `
-      -WorkingDirectory (Get-Location).Path -PassThru -NoNewWindow `
-      -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
-    if ($jobHandle -ne [IntPtr]::Zero) {
-      [RMQReplayJob]::Assign($jobHandle, $process.Handle)
-    }
-    # The requested tool cannot spawn before the bootstrap root is job-owned.
-    [IO.File]::WriteAllText($releasePath, 'assigned', $utf8)
-    while (-not $process.WaitForExit(100)) {
-      $bytes = 0L
-      foreach ($path in @($stdoutPath, $stderrPath)) {
-        if (Test-Path -LiteralPath $path -PathType Leaf) {
-          $bytes += (Get-Item -LiteralPath $path).Length
-        }
-      }
-      if ($bytes -gt $StageOutputLimitBytes) {
-        $outputLimitExceeded = $true
-        break
-      }
-      if ($stopwatch.Elapsed.TotalSeconds -ge $StageDeadlineSeconds) {
-        $timedOut = $true
-        break
-      }
-    }
-    if ($timedOut -or $outputLimitExceeded) {
-      $terminatedIds = @($process.Id)
-      if ($jobHandle -ne [IntPtr]::Zero) {
-        [RMQReplayJob]::Close($jobHandle)
-        $jobHandle = [IntPtr]::Zero
-      } else {
-        Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-      }
-      [void]$process.WaitForExit(10000)
-    } else {
-      $process.WaitForExit()
-      $exitCode = [int]$process.ExitCode
-      if ($jobHandle -ne [IntPtr]::Zero) {
-        [RMQReplayJob]::Close($jobHandle)
-        $jobHandle = [IntPtr]::Zero
-      }
-    }
-    $finalBytes = 0L
-    foreach ($path in @($stdoutPath, $stderrPath)) {
-      if (Test-Path -LiteralPath $path -PathType Leaf) {
-        $finalBytes += (Get-Item -LiteralPath $path).Length
-      }
-    }
-    if ($finalBytes -gt $StageOutputLimitBytes) {
-      $outputLimitExceeded = $true
-    }
-    if ($outputLimitExceeded) {
-      $output = @("redirected output exceeded $StageOutputLimitBytes bytes")
-    } else {
-      foreach ($path in @($stdoutPath, $stderrPath)) {
-        if (Test-Path -LiteralPath $path -PathType Leaf) {
-          $text = $null
-          for ($attempt = 0; $attempt -lt 100; $attempt += 1) {
-            try {
-              $text = [IO.File]::ReadAllText($path)
-              break
-            } catch [IO.IOException] {
-              Start-Sleep -Milliseconds 100
-            }
-          }
-          if ($null -eq $text) {
-            throw "redirected output remained locked after owned process exit: $path"
-          }
-          $output += @([regex]::Split($text, '\r?\n') |
-            Where-Object { $_ -ne '' })
-        }
-      }
-    }
-  } finally {
-    $stopwatch.Stop()
-    if ($jobHandle -ne [IntPtr]::Zero) {
-      [RMQReplayJob]::Close($jobHandle)
-      $jobHandle = [IntPtr]::Zero
-    }
-    if ($null -ne $process -and -not $process.HasExited) {
-      $terminatedIds = @($process.Id)
-      Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-      [void]$process.WaitForExit(10000)
-    }
-    if ($null -ne $process -and
-        $null -ne (Get-Process -Id $process.Id -ErrorAction SilentlyContinue)) {
-      throw "$Stage owned root process $($process.Id) survived cleanup"
-    }
-    Remove-Item -LiteralPath $stdoutPath -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $stderrPath -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $specPath -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $releasePath -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $bootstrapPath -Force -ErrorAction SilentlyContinue
-  }
-  return [pscustomobject]@{
-    ExitCode = $exitCode
-    Output = @($output)
-    TimedOut = $timedOut
-    OutputLimitExceeded = $outputLimitExceeded
-    TerminatedIds = $terminatedIds
-    DurationSeconds = [Math]::Round($stopwatch.Elapsed.TotalSeconds, 3)
-  }
-}
+
+# M1R5R1-CLEAN-BASELINE
+# Virtual topology mutations are permitted only from an actually clean live
+# repository.  A dirty initial state is never accepted as a restoration target.
+$topologyInitialState = Get-RMQRepositoryStateBounded `
+  -RepositoryRoot $repoRoot `
+  -GitPath ((Get-Command git -CommandType Application -ErrorAction Stop).Source) `
+  -DeadlineSeconds $StageDeadlineSeconds `
+  -OutputLimitBytes $StageOutputLimitBytes `
+  -TempRoot $ownedTempRoot `
+  -StagePrefix 'paper-topology-live-state'
+Assert-RMQCleanRepositoryStateText `
+  $topologyInitialState 'production topology lint live baseline'
 
 function Require-File([string]$Path) {
   if (-not (Test-Path -LiteralPath $Path)) {
@@ -333,6 +168,24 @@ function Read-Text([string]$Path) {
         '# M1R3-MUTATION-RUNNER-GATE-ANCHOR' `
         'if ($LASTEXITCODE -ne 0) { Fail "m1_certificate_mutation_regression.ps1 found issues" }' `
         'A02'
+    } elseif ($MutationCase -ceq 'R1LEGACY') {
+      $modelLineBreak = if ($text.Contains("`r`n")) { "`r`n" } else { "`n" }
+      $needle =
+        '  exact' + $modelLineBreak +
+        '    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint'
+      if (-not $text.Contains($needle)) {
+        throw 'R1LEGACY current-safe mutation anchor is missing'
+      }
+      $legacyCall =
+        '  exact' + $modelLineBreak +
+        '    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint' +
+        $modelLineBreak + '      shape hfoot left right' +
+        $modelLineBreak + $needle
+      $mutated = $text.Replace($needle, $legacyCall)
+      if ($mutated -ceq $text) {
+        throw 'R1LEGACY did not mutate the current safe theorem body'
+      }
+      $text = $mutated
     }
     if ($MutationRemoveText -ne '') {
       if (-not $text.Contains($MutationRemoveText)) {
@@ -347,6 +200,122 @@ function Read-Text([string]$Path) {
 
 function Read-Lines([string]$Path) {
   return [regex]::Split((Read-Text $Path), '\r?\n')
+}
+
+function Get-ExactDeclarationBlock(
+    [string]$Text,
+    [string]$StartNeedle,
+    [string]$EndNeedle,
+    [string]$Label) {
+  $start = $Text.IndexOf($StartNeedle, [StringComparison]::Ordinal)
+  if ($start -lt 0) { throw "$Label start is missing" }
+  if ($Text.IndexOf(
+      $StartNeedle, $start + $StartNeedle.Length,
+      [StringComparison]::Ordinal) -ge 0) {
+    throw "$Label start is not unique"
+  }
+  $end = $Text.IndexOf(
+    $EndNeedle, $start + $StartNeedle.Length,
+    [StringComparison]::Ordinal)
+  if ($end -lt 0) { throw "$Label end is missing" }
+  return $Text.Substring($start, $end - $start)
+}
+
+function Assert-CurrentSafeDependencyRoute(
+    [string]$StoreParamText,
+    [string]$ModelText,
+    [string]$ClassicText,
+    [string]$HeadlineText,
+    [string]$CheckerText) {
+  $legacy =
+    'concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint'
+  $legacyPattern = '(?<![A-Za-z0-9_])' + [regex]::Escape($legacy) +
+    '(?![A-Za-z0-9_])'
+  if ([regex]::Matches($StoreParamText, $legacyPattern).Count -lt 1) {
+    throw 'legacy compatibility theorem is no longer available'
+  }
+  $structural = Get-ExactDeclarationBlock $StoreParamText `
+    'private def concreteBPNativeSuccinctRMQWithStoreReadSegmentLive' `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint' `
+    'structural containment helpers and direct theorem'
+  $direct = Get-ExactDeclarationBlock $StoreParamText `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read_segment_lt' `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint' `
+    'direct segment containment'
+  $subset = Get-ExactDeclarationBlock $StoreParamText `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint' `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_reads_subset_footprint' `
+    'safe footprint containment'
+  $bridge = Get-ExactDeclarationBlock $ModelText `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint_of_footprint' `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint_via_orderedReadFootprint' `
+    'safe-to-dynamic bridge'
+  $currentSafe = Get-ExactDeclarationBlock $ModelText `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint_via_orderedReadFootprint' `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint_via_orderedReadFootprint' `
+    'current safe equality'
+  $packet = Get-ExactDeclarationBlock $ClassicText `
+    'structure ReviewerNativeMachineAdequacy' `
+    'theorem listIntSuccinctRMQReviewerNativeMachineAdequacy' `
+    'guarded reviewer packet'
+  $constructor = Get-ExactDeclarationBlock $ClassicText `
+    'theorem listIntSuccinctRMQReviewerNativeMachineAdequacy' `
+    'theorem shape_queryOffset?_eq_scanWindow' `
+    'guarded reviewer packet constructor'
+  $paper = Get-ExactDeclarationBlock $HeadlineText `
+    'theorem listIntSuccinctRMQPaperMainTheorem' `
+    'abbrev succinctRMQReviewerMachineWellFormed' `
+    'literal paper theorem'
+  $expected = Get-ExactDeclarationBlock $CheckerText `
+    'def M1ReviewerNativeExpectedPaperType' `
+    'example : M1ReviewerNativeExpectedPaperType' `
+    'independent expected type'
+  foreach ($surface in @(
+      [pscustomobject]@{ Label = 'structural-containment'; Text = $structural },
+      [pscustomobject]@{ Label = 'direct'; Text = $direct },
+      [pscustomobject]@{ Label = 'subset'; Text = $subset },
+      [pscustomobject]@{ Label = 'bridge'; Text = $bridge },
+      [pscustomobject]@{ Label = 'current-safe'; Text = $currentSafe },
+      [pscustomobject]@{ Label = 'packet'; Text = $packet },
+      [pscustomobject]@{ Label = 'packet-constructor'; Text = $constructor },
+      [pscustomobject]@{ Label = 'paper'; Text = $paper })) {
+    if ([regex]::IsMatch($surface.Text, $legacyPattern)) {
+      throw "legacy safe equality entered $($surface.Label) dependency surface"
+    }
+  }
+  foreach ($pin in @(
+      [pscustomobject]@{ Label = 'structural select'; Text = $structural;
+        Token = 'concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_withStoreReadSegmentLive' },
+      [pscustomobject]@{ Label = 'structural rank'; Text = $structural;
+        Token = 'concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_withStoreReadSegmentLive' },
+      [pscustomobject]@{ Label = 'structural LCA'; Text = $structural;
+        Token = 'concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_withStoreReadSegmentLive' },
+      [pscustomobject]@{ Label = 'structural interior'; Text = $structural;
+        Token = 'concreteBPNativeInteriorWithStore_withStoreReadSegmentLive' },
+      [pscustomobject]@{ Label = 'structural instruction'; Text = $structural;
+        Token = 'WholeQueryInstr.evalGlobalWordTraceWithStore_withStoreReadSegmentLive' },
+      [pscustomobject]@{ Label = 'direct program'; Text = $direct;
+        Token = 'WholeQueryProgram.evalGlobalWordTraceWithStore_withStoreReadSegmentLive' },
+      [pscustomobject]@{ Label = 'subset direct theorem'; Text = $subset;
+        Token = 'concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read_segment_lt' },
+      [pscustomobject]@{ Label = 'bridge direct theorem'; Text = $bridge;
+        Token = 'concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read_segment_lt' },
+      [pscustomobject]@{ Label = 'safe dynamic theorem'; Text = $currentSafe;
+        Token = 'store_parametric_of_ordered_read_footprint' },
+      [pscustomobject]@{ Label = 'safe bridge'; Text = $currentSafe;
+        Token = 'StoresAgreeOnOrderedReadFootprint_of_footprint' },
+      [pscustomobject]@{ Label = 'packet safe field'; Text = $packet;
+        Token = 'safe_logical_store_agreement' },
+      [pscustomobject]@{ Label = 'packet constructor'; Text = $constructor;
+        Token = 'store_parametric_of_footprint_via_orderedReadFootprint' },
+      [pscustomobject]@{ Label = 'paper projection'; Text = $paper;
+        Token = '.safe_logical_store_agreement' },
+      [pscustomobject]@{ Label = 'expected proposition'; Text = $expected;
+        Token = 'storesAgreeOnFootprint' })) {
+    if (-not $pin.Text.Contains($pin.Token)) {
+      throw "$($pin.Label) token is missing: $($pin.Token)"
+    }
+  }
 }
 
 function Is-PreciselyFrozenSnapshotLine([string]$Path, [string]$Line) {
@@ -379,9 +348,17 @@ function Run-LeanResolution(
       [IO.File]::ReadAllText((Join-Path $repoRoot 'lean-toolchain'))).Trim()
     $toolchainDirectoryName =
       $toolchainSpec.Replace('/', '--').Replace(':', '---')
+    $userProfilePath = $env:USERPROFILE
+    if ([string]::IsNullOrWhiteSpace($userProfilePath)) {
+      $userProfilePath =
+        [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)
+    }
     $toolchainRoot = Join-Path (
-      Join-Path $env:USERPROFILE '.elan\toolchains') $toolchainDirectoryName
-    $leanExe = Join-Path (Join-Path $toolchainRoot 'bin') 'lean.exe'
+      Join-Path (Join-Path $userProfilePath '.elan') 'toolchains') `
+      $toolchainDirectoryName
+    $leanBinaryName = if ([Environment]::OSVersion.Platform -eq
+        [PlatformID]::Win32NT) { 'lean.exe' } else { 'lean' }
+    $leanExe = Join-Path (Join-Path $toolchainRoot 'bin') $leanBinaryName
     $projectLeanPath = Join-Path $repoRoot '.lake/build/lib/lean'
     $toolchainLeanPath = Join-Path $toolchainRoot 'lib/lean'
     if (-not (Test-Path -LiteralPath $leanExe -PathType Leaf)) {
@@ -417,12 +394,17 @@ function Run-LeanResolution(
 }
 
 $canonicalModule = 'RMQ/Headlines/RMQ.lean'
+$storeParamModule = 'RMQ/Core/SuccinctFinalStoreParam.lean'
+$finalModelModule = 'RMQ/Core/SuccinctFinalModelAdequacy.lean'
+$classicModule = 'RMQ/Core/SuccinctRMQClassic.lean'
 $compatibilityModule = 'RMQ/Headlines/RMQCompatibility.lean'
 $paperRoot = 'RMQPaper.lean'
 $aggregateModule = 'RMQ/Headlines.lean'
 $headlineInventory = 'scripts/headline_axiom_check.lean'
 $gateScript = 'scripts/gate.ps1'
 $m1MutationRunner = 'scripts/m1_certificate_mutation_regression.ps1'
+$ownedProcessHelper = 'scripts/owned_process_tree.ps1'
+$topologyRegression = 'scripts/paper_topology_lint_regression.ps1'
 $currentPublicationDigest =
   'docs/digests/PROJECT_DIGESTION_CURRENT.md'
 
@@ -448,13 +430,18 @@ $paperDocumentSurfaces = @(
 $currentLifecycleSurfaces = @($canonicalModule) + $publicClaimSurfaces
 
 $requiredFiles = @(
+  $storeParamModule,
+  $finalModelModule,
+  $classicModule,
   $canonicalModule,
   $compatibilityModule,
   $paperRoot,
   $aggregateModule,
   $headlineInventory,
   $gateScript,
-  $m1MutationRunner
+  $m1MutationRunner,
+  $ownedProcessHelper,
+  $topologyRegression
 ) + $publicClaimSurfaces
 
 $requiredFiles += @($frozenSnapshotLines.Keys)
@@ -467,13 +454,34 @@ if ($failures -gt 0) {
   exit 1
 }
 
+# The direct segment<23 theorem is checked by Lean; this topology control pins
+# the current dependency route and rejects any virtual reinsertion of the
+# legacy safe-equality theorem into its load-bearing chain.
+try {
+  Assert-CurrentSafeDependencyRoute `
+    (Read-Text $storeParamModule) `
+    (Read-Text $finalModelModule) `
+    (Read-Text $classicModule) `
+    (Read-Text $canonicalModule) `
+    (Read-Text $headlineInventory)
+  Write-Host (
+    'PAPER-TOPOLOGY: PASS [m1-safe-dependency] ' +
+    'direct segment<23 -> safe-to-dynamic -> ordered equality -> packet -> paper')
+} catch {
+  Fail "[m1-safe-dependency] $($_.Exception.Message)"
+}
+
 # M1 R3 public-dependency enforcement is itself part of the paper topology.
 # Require both the frozen expected-type consumer and the literal aggregate-gate
 # runner invocation; declaration-name or current-type-only checks are
-# insufficient.
+# insufficient.  Accumulate these directly related diagnostics even when the
+# safe-dependency check already failed, so topology case A01 continues to pin
+# its original public expected-type rejection surface.
 $headlineInventoryText = Read-Text $headlineInventory
 $gateScriptText = Read-Text $gateScript
 $m1MutationRunnerText = Read-Text $m1MutationRunner
+$ownedProcessHelperText = Read-Text $ownedProcessHelper
+$topologyRegressionText = Read-Text $topologyRegression
 $m1PublicTypePinAnchor = '-- M1R3-PUBLIC-TYPE-PIN-ANCHOR'
 $m1GateAnchor = '# M1R3-MUTATION-RUNNER-GATE-ANCHOR'
 
@@ -494,7 +502,10 @@ if ($gateScriptText -notmatch
 foreach ($anchor in @(
     'REPLAY-EXACT-REGISTRY',
     'REPLAY-SELECTOR-NONVACUITY',
-    'REPLAY-SUBPROCESS-DEADLINE')) {
+    'REPLAY-SUBPROCESS-DEADLINE',
+    'SAFE-DEPENDENCY-ROUTE',
+    'Assert-RMQCleanRepositoryStateText',
+    'Invoke-RMQOwnedBoundedProcess')) {
   if (-not $m1MutationRunnerText.Contains($anchor)) {
     Fail "[m1-mutation-runner] committed runner is missing $anchor"
   }
@@ -506,6 +517,26 @@ if ($m1MutationRunnerText -notmatch
 if ($m1MutationRunnerText -notmatch
     '(?s)executed registry mismatch.*verdict totals mismatch') {
   Fail '[m1-mutation-runner] exact executed-order and verdict-total checks are not wired'
+}
+foreach ($pin in @(
+    'RMQOwnedWindowsJob',
+    'Get-RMQOwnedLaunchPlan',
+    'setsid-process-group',
+    'Stop-RMQPosixOwnedProcessGroup',
+    'Invoke-RMQCleanBaselineFixtureTests')) {
+  if (-not $ownedProcessHelperText.Contains($pin)) {
+    Fail "[owned-process-helper] production helper is missing $pin"
+  }
+}
+foreach ($pin in @(
+    "ContainsKey('OnlyCase')",
+    'Invoke-TopologySafeDependencyAntiBypassSelfTest',
+    'Invoke-TopologyDeadlineSelfTest',
+    'Assert-RMQCleanRepositoryStateText',
+    'Invoke-RMQOwnedBoundedProcess')) {
+  if (-not $topologyRegressionText.Contains($pin)) {
+    Fail "[topology-regression-portability] production regression is missing $pin"
+  }
 }
 
 if ($failures -gt 0) {

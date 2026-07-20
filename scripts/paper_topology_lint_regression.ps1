@@ -6,71 +6,39 @@ param(
   [ValidateRange(30, 3600)]
   [int]$StageDeadlineSeconds = 300,
   [ValidateRange(4096, 16777216)]
-  [int]$StageOutputLimitBytes = 4194304
+  [int]$StageOutputLimitBytes = 4194304,
+  [ValidateRange(1, 30)]
+  [int]$SelfTestDeadlineSeconds = 5,
+  [switch]$SelectorBoundaryProbeOnly,
+  [switch]$SelectorSelfTestOnly,
+  [switch]$DeadlineSelfTestOnly,
+  [switch]$PortabilitySelfTestOnly
 )
 
 $ErrorActionPreference = 'Stop'
+$onlyCaseWasBound = $PSBoundParameters.ContainsKey('OnlyCase')
+. (Join-Path $PSScriptRoot 'owned_process_tree.ps1')
+
 $pathKeys = @(
   [Environment]::GetEnvironmentVariables().Keys |
     Where-Object { [string]$_ -ieq 'path' })
 if ($pathKeys.Count -gt 1 -and $pathKeys -ccontains 'PATH') {
   Remove-Item Env:PATH -ErrorAction Stop
 }
-if (-not ('RMQReplayJob' -as [type])) {
-  Add-Type -TypeDefinition @'
-using System;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
-public static class RMQReplayJob {
-  private const int Extended = 9;
-  private const uint KillOnClose = 0x00002000;
-  [StructLayout(LayoutKind.Sequential)] private struct IO { public ulong a,b,c,d,e,f; }
-  [StructLayout(LayoutKind.Sequential)] private struct Basic {
-    public long a,b; public uint flags; public UIntPtr c,d;
-    public uint e; public UIntPtr f; public uint g,h;
-  }
-  [StructLayout(LayoutKind.Sequential)] private struct ExtendedInfo {
-    public Basic basic; public IO io; public UIntPtr a,b,c,d;
-  }
-  [DllImport("kernel32.dll", SetLastError=true)]
-  private static extern IntPtr CreateJobObject(IntPtr a, string n);
-  [DllImport("kernel32.dll", SetLastError=true)]
-  private static extern bool SetInformationJobObject(IntPtr j,int c,ref ExtendedInfo i,uint n);
-  [DllImport("kernel32.dll", SetLastError=true)]
-  private static extern bool AssignProcessToJobObject(IntPtr j,IntPtr p);
-  [DllImport("kernel32.dll", SetLastError=true)]
-  private static extern bool CloseHandle(IntPtr h);
-  public static IntPtr CreateKillOnClose() {
-    IntPtr j=CreateJobObject(IntPtr.Zero,null);
-    if(j==IntPtr.Zero) throw new Win32Exception(Marshal.GetLastWin32Error());
-    var i=new ExtendedInfo(); i.basic.flags=KillOnClose;
-    if(!SetInformationJobObject(j,Extended,ref i,(uint)Marshal.SizeOf(typeof(ExtendedInfo)))) {
-      int e=Marshal.GetLastWin32Error(); CloseHandle(j); throw new Win32Exception(e);
-    }
-    return j;
-  }
-  public static void Assign(IntPtr j,IntPtr p) {
-    if(!AssignProcessToJobObject(j,p)) throw new Win32Exception(Marshal.GetLastWin32Error());
-  }
-  public static void Close(IntPtr j) {
-    if(j!=IntPtr.Zero && !CloseHandle(j)) throw new Win32Exception(Marshal.GetLastWin32Error());
-  }
-}
-'@
-}
-$repoRoot = [IO.Path]::GetFullPath((Get-Location).Path)
-$lintPath = [IO.Path]::GetFullPath('scripts/paper_topology_lint.ps1')
+$repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+$lintPath = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'paper_topology_lint.ps1'))
 $shellPath = (Get-Process -Id $PID).Path
+$ownedTempRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
 $failures = 0
 $executedCount = 0
 $rejectCount = 0
 $acceptCount = 0
 $executedIds = [Collections.Generic.List[string]]::new()
-$ownedRootIds = [Collections.Generic.HashSet[int]]::new()
 $integrityPaths = @(
   'scripts/headline_axiom_check.lean',
   'scripts/gate.ps1',
   'scripts/m1_certificate_mutation_regression.ps1',
+  'scripts/owned_process_tree.ps1',
   'scripts/paper_topology_lint.ps1',
   'scripts/paper_topology_lint_regression.ps1',
   'docs/internal/M1_REVIEWER_NATIVE_ADEQUACY_ACCEPTANCE_MATRIX.md'
@@ -185,60 +153,41 @@ try {
   exit 1
 }
 
-$selectedCases = @(
-  if ($OnlyCase -eq '') {
-    $caseRegistry
-  } else {
-    $caseRegistry | Where-Object { $_.Id -ceq $OnlyCase }
-  }
-)
-if ($selectedCases.Count -ne $(if ($OnlyCase -eq '') { 16 } else { 1 })) {
+$selectedCases = @()
+if (-not $onlyCaseWasBound) {
+  $selectedCases = @($caseRegistry)
+} elseif ([string]::IsNullOrWhiteSpace($OnlyCase) -or $OnlyCase -ceq '0') {
+  Write-Host (
+    'PAPER-TOPOLOGY-REGRESSION: FAIL [SELECTOR] ' +
+    'bound empty/whitespace/zero selector is invalid')
+  exit 1
+} else {
+  $selectedCases = @(
+    $caseRegistry | Where-Object { $_.Id -ceq $OnlyCase })
+}
+if ($selectedCases.Count -ne $(if ($onlyCaseWasBound) { 1 } else { 16 })) {
   Write-Host (
     "PAPER-TOPOLOGY-REGRESSION: FAIL [SELECTOR] unknown case $OnlyCase; " +
     "available=$(@($caseRegistry | ForEach-Object { $_.Id }) -join ',')")
   exit 1
 }
 
-function Get-TrackedState {
-  $stateScript = Join-Path ([IO.Path]::GetTempPath()) (
-    'rmq-topology-state-' + [Guid]::NewGuid().ToString('N') + '.ps1')
-  try {
-    [IO.File]::WriteAllText($stateScript, @'
-param([string]$LaunchReleasePath)
-$ErrorActionPreference = 'Stop'
-while (-not (Test-Path -LiteralPath $LaunchReleasePath -PathType Leaf)) {
-  Start-Sleep -Milliseconds 10
+if ($SelectorBoundaryProbeOnly) {
+  Write-Host (
+    'PAPER-TOPOLOGY-REGRESSION BOUNDARY PROBE PASS ' +
+    "(bound=$onlyCaseWasBound; selected=$($selectedCases.Count); " +
+    "ids=$((@($selectedCases | ForEach-Object { $_.Id })) -join ','))")
+  exit 0
 }
-& git -c core.excludesfile= -c core.autocrlf=false status --short --untracked-files=all
-if ($LASTEXITCODE -ne 0) { throw "git status exited $LASTEXITCODE" }
-Write-Output '---WORKTREE---'
-& git -c core.excludesfile= -c core.autocrlf=false diff --raw --no-ext-diff --
-if ($LASTEXITCODE -ne 0) { throw "git diff exited $LASTEXITCODE" }
-Write-Output '---INDEX---'
-& git -c core.excludesfile= -c core.autocrlf=false diff --cached --raw --no-ext-diff --
-if ($LASTEXITCODE -ne 0) { throw "git diff --cached exited $LASTEXITCODE" }
-'@, [Text.UTF8Encoding]::new($false))
-    $result = Invoke-BoundedTool `
-      -FilePath $shellPath `
-      -Arguments @(
-        '-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass',
-        '-File', $stateScript) `
-      -Stage 'git-live-state' `
-      -DeadlineSeconds $StageDeadlineSeconds `
-      -ReleaseGatedScript
-    if ($result.TimedOut) {
-      throw "git live-state timed out after $StageDeadlineSeconds seconds"
-    }
-    if ($result.OutputLimitExceeded) {
-      throw "git live-state exceeded $StageOutputLimitBytes bytes"
-    }
-    if ($result.ExitCode -ne 0) {
-      throw "git live-state exited $($result.ExitCode): $($result.Output -join ' | ')"
-    }
-    return $result.Output -join [Environment]::NewLine
-  } finally {
-    Remove-Item -LiteralPath $stateScript -Force -ErrorAction SilentlyContinue
-  }
+
+function Get-TrackedState {
+  return Get-RMQRepositoryStateBounded `
+    -RepositoryRoot $repoRoot `
+    -GitPath ((Get-Command git -CommandType Application -ErrorAction Stop).Source) `
+    -DeadlineSeconds $StageDeadlineSeconds `
+    -OutputLimitBytes $StageOutputLimitBytes `
+    -TempRoot $ownedTempRoot `
+    -StagePrefix 'paper-topology-regression-live-state'
 }
 
 function Get-LiveHashes {
@@ -272,161 +221,15 @@ function Invoke-BoundedTool(
     [string]$Stage,
     [int]$DeadlineSeconds,
     [switch]$ReleaseGatedScript) {
-  if ($DeadlineSeconds -le 0) {
-    throw "$Stage deadline must be positive"
-  }
-  $logStem = Join-Path ([IO.Path]::GetTempPath()) (
-    'rmq-paper-topology-regression-r4-' + [Guid]::NewGuid().ToString('N'))
-  $stdoutPath = $logStem + '.stdout.log'
-  $stderrPath = $logStem + '.stderr.log'
-  $specPath = $logStem + '.launch.json'
-  $releasePath = $logStem + '.release'
-  $bootstrapPath = $logStem + '.bootstrap.ps1'
-  $process = $null
-  $jobHandle = [IntPtr]::Zero
-  $timedOut = $false
-  $outputLimitExceeded = $false
-  $terminatedIds = @()
-  $exitCode = -1
-  $output = @()
-  $stopwatch = [Diagnostics.Stopwatch]::StartNew()
-  try {
-    $utf8 = [Text.UTF8Encoding]::new($false)
-    if (-not $ReleaseGatedScript) {
-      $launchSpec = [ordered]@{
-        FilePath = $FilePath
-        Arguments = @($Arguments)
-        Environment = @{}
-      }
-      [IO.File]::WriteAllText(
-        $specPath, ($launchSpec | ConvertTo-Json -Depth 5), $utf8)
-      [IO.File]::WriteAllText($bootstrapPath, @'
-param([string]$SpecPath, [string]$ReleasePath)
-$ErrorActionPreference = 'Stop'
-while (-not (Test-Path -LiteralPath $ReleasePath -PathType Leaf)) {
-  Start-Sleep -Milliseconds 10
-}
-$spec = Get-Content -LiteralPath $SpecPath -Raw | ConvertFrom-Json
-& ([string]$spec.FilePath) @([string[]]$spec.Arguments)
-if ($null -eq $LASTEXITCODE) { exit 0 }
-exit ([int]$LASTEXITCODE)
-'@, $utf8)
-    }
-    if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
-      $jobHandle = [RMQReplayJob]::CreateKillOnClose()
-    }
-    $startFilePath = if ($ReleaseGatedScript) { $FilePath } else { $shellPath }
-    $startArguments = if ($ReleaseGatedScript) {
-      @($Arguments) + @('-LaunchReleasePath', $releasePath)
-    } else {
-      @('-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass',
-        '-File', $bootstrapPath, '-SpecPath', $specPath,
-        '-ReleasePath', $releasePath)
-    }
-    $process = Start-Process -FilePath $startFilePath -ArgumentList $startArguments `
-      -WorkingDirectory $repoRoot -PassThru -NoNewWindow `
-      -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
-    if ($jobHandle -ne [IntPtr]::Zero) {
-      [RMQReplayJob]::Assign($jobHandle, $process.Handle)
-    }
-    [void]$ownedRootIds.Add($process.Id)
-    # Release only after the bootstrap root belongs to the private job.
-    [IO.File]::WriteAllText($releasePath, 'assigned', $utf8)
-    while (-not $process.WaitForExit(100)) {
-      $bytes = 0L
-      foreach ($path in @($stdoutPath, $stderrPath)) {
-        if (Test-Path -LiteralPath $path -PathType Leaf) {
-          $bytes += (Get-Item -LiteralPath $path).Length
-        }
-      }
-      if ($bytes -gt $StageOutputLimitBytes) {
-        $outputLimitExceeded = $true
-        break
-      }
-      if ($stopwatch.Elapsed.TotalSeconds -ge $DeadlineSeconds) {
-        $timedOut = $true
-        break
-      }
-    }
-    if ($timedOut -or $outputLimitExceeded) {
-      $terminatedIds = @($process.Id)
-      if ($jobHandle -ne [IntPtr]::Zero) {
-        [RMQReplayJob]::Close($jobHandle)
-        $jobHandle = [IntPtr]::Zero
-      } else {
-        Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-      }
-      [void]$process.WaitForExit(10000)
-    } else {
-      $process.WaitForExit()
-      $exitCode = [int]$process.ExitCode
-      if ($jobHandle -ne [IntPtr]::Zero) {
-        [RMQReplayJob]::Close($jobHandle)
-        $jobHandle = [IntPtr]::Zero
-      }
-    }
-    $finalBytes = 0L
-    foreach ($path in @($stdoutPath, $stderrPath)) {
-      if (Test-Path -LiteralPath $path -PathType Leaf) {
-        $finalBytes += (Get-Item -LiteralPath $path).Length
-      }
-    }
-    if ($finalBytes -gt $StageOutputLimitBytes) {
-      $outputLimitExceeded = $true
-    }
-    if ($outputLimitExceeded) {
-      $output = @("redirected output exceeded $StageOutputLimitBytes bytes")
-    } else {
-      foreach ($path in @($stdoutPath, $stderrPath)) {
-        if (Test-Path -LiteralPath $path -PathType Leaf) {
-          $text = $null
-          for ($attempt = 0; $attempt -lt 100; $attempt += 1) {
-            try {
-              $text = [IO.File]::ReadAllText($path)
-              break
-            } catch [IO.IOException] {
-              Start-Sleep -Milliseconds 100
-            }
-          }
-          if ($null -eq $text) {
-            throw "redirected output remained locked after owned process exit: $path"
-          }
-          $output += @([regex]::Split($text, '\r?\n') |
-            Where-Object { $_ -ne '' })
-        }
-      }
-    }
-  } finally {
-    $stopwatch.Stop()
-    if ($jobHandle -ne [IntPtr]::Zero) {
-      [RMQReplayJob]::Close($jobHandle)
-      $jobHandle = [IntPtr]::Zero
-    }
-    if ($null -ne $process -and -not $process.HasExited) {
-      $terminatedIds = @($process.Id)
-      Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-      [void]$process.WaitForExit(10000)
-    }
-    if ($null -ne $process) {
-      if ($null -ne (Get-Process -Id $process.Id -ErrorAction SilentlyContinue)) {
-        throw "lint root process $($process.Id) survived"
-      }
-      [void]$ownedRootIds.Remove($process.Id)
-    }
-    Remove-Item -LiteralPath $stdoutPath -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $stderrPath -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $specPath -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $releasePath -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $bootstrapPath -Force -ErrorAction SilentlyContinue
-  }
-  return [pscustomobject]@{
-    ExitCode = $exitCode
-    Output = @($output)
-    TimedOut = $timedOut
-    OutputLimitExceeded = $outputLimitExceeded
-    TerminatedIds = $terminatedIds
-    DurationSeconds = [Math]::Round($stopwatch.Elapsed.TotalSeconds, 3)
-  }
+  return Invoke-RMQOwnedBoundedProcess `
+    -FilePath $FilePath `
+    -Arguments $Arguments `
+    -WorkingDirectory $repoRoot `
+    -Stage $Stage `
+    -DeadlineSeconds $DeadlineSeconds `
+    -OutputLimitBytes $StageOutputLimitBytes `
+    -TempRoot $ownedTempRoot `
+    -ReleaseGatedScript:$ReleaseGatedScript
 }
 
 function Invoke-BoundedLint([object]$Case) {
@@ -457,8 +260,165 @@ function Invoke-BoundedLint([object]$Case) {
     -ReleaseGatedScript
 }
 
-$baselineTrackedState = Get-TrackedState
+function Invoke-TopologySelectorBoundarySelfTest {
+  $wrapperPath = Join-Path $ownedTempRoot (
+    'rmq-topology-selector-' + [Guid]::NewGuid().ToString('N') + '.ps1')
+  $encoding = [Text.UTF8Encoding]::new($false)
+  $wrapper = @'
+param([string]$Target, [string]$Mode)
+$ErrorActionPreference = 'Continue'
+switch ($Mode) {
+  'omitted' { & $Target -SelectorBoundaryProbeOnly }
+  'empty' { & $Target -SelectorBoundaryProbeOnly -OnlyCase '' }
+  'whitespace' { & $Target -SelectorBoundaryProbeOnly -OnlyCase ' ' }
+  'zero' { & $Target -SelectorBoundaryProbeOnly -OnlyCase '0' }
+  'unknown' { & $Target -SelectorBoundaryProbeOnly -OnlyCase 'UNKNOWN' }
+  'valid-a01' { & $Target -SelectorBoundaryProbeOnly -OnlyCase 'A01' }
+  default { throw "unknown topology boundary wrapper mode $Mode" }
+}
+exit ([int]$LASTEXITCODE)
+'@
+  $cases = @(
+    [pscustomobject]@{ Mode = 'omitted'; Exit = 0; Token = 'selected=16' },
+    [pscustomobject]@{ Mode = 'valid-a01'; Exit = 0; Token = 'selected=1; ids=A01' },
+    [pscustomobject]@{ Mode = 'empty'; Exit = 1; Token = 'bound empty/whitespace/zero' },
+    [pscustomobject]@{ Mode = 'whitespace'; Exit = 1; Token = 'bound empty/whitespace/zero' },
+    [pscustomobject]@{ Mode = 'zero'; Exit = 1; Token = 'bound empty/whitespace/zero' },
+    [pscustomobject]@{ Mode = 'unknown'; Exit = 1; Token = 'unknown case' }
+  )
+  try {
+    [IO.File]::WriteAllText($wrapperPath, $wrapper, $encoding)
+    foreach ($case in $cases) {
+      $result = Invoke-BoundedTool `
+        -FilePath $shellPath `
+        -Arguments @('-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass',
+          '-File', $wrapperPath, '-Target', $PSCommandPath,
+          '-Mode', $case.Mode) `
+        -Stage "topology-selector-$($case.Mode)" `
+        -DeadlineSeconds $StageDeadlineSeconds
+      $joined = $result.Output -join [Environment]::NewLine
+      if ($result.TimedOut -or $result.OutputLimitExceeded -or
+          $result.ExitCode -ne $case.Exit -or
+          -not $joined.Contains($case.Token)) {
+        throw (
+          "boundary $($case.Mode) expected exit=$($case.Exit) " +
+          "token=$($case.Token); observed exit=$($result.ExitCode) " +
+          "timeout=$($result.TimedOut) outputLimit=$($result.OutputLimitExceeded) " +
+          "output=$joined")
+      }
+      if ($case.Exit -ne 0 -and
+          $joined.Contains('PAPER-TOPOLOGY-REGRESSION: PASS [')) {
+        throw "boundary $($case.Mode) reached topology case execution"
+      }
+      Write-Host (
+        "PAPER-TOPOLOGY-REGRESSION BOUNDARY CONTROL PASS [$($case.Mode)] " +
+        "exit=$($result.ExitCode)")
+    }
+  } finally {
+    Remove-Item -LiteralPath $wrapperPath -Force -ErrorAction SilentlyContinue
+  }
+}
+
+function Invoke-TopologyDeadlineSelfTest {
+  $stem = Join-Path $ownedTempRoot (
+    'rmq-topology-sleeper-' + [Guid]::NewGuid().ToString('N'))
+  $scriptPath = $stem + '.ps1'
+  $childPidPath = $stem + '.child.pid'
+  $encoding = [Text.UTF8Encoding]::new($false)
+  $quotedShellPath = $shellPath.Replace("'", "''")
+  $quotedPidPath = $childPidPath.Replace("'", "''")
+  $scriptText = @"
+`$child = Start-Process -FilePath '$quotedShellPath' -ArgumentList @(
+  '-NoLogo', '-NoProfile', '-Command', 'Start-Sleep -Seconds 60') -PassThru
+[IO.File]::WriteAllText('$quotedPidPath', [string]`$child.Id)
+Start-Sleep -Seconds 60
+"@
+  try {
+    [IO.File]::WriteAllText($scriptPath, $scriptText, $encoding)
+    $result = Invoke-BoundedTool `
+      -FilePath $shellPath `
+      -Arguments @('-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass',
+        '-File', $scriptPath) `
+      -Stage 'topology-deadline-sleeper' `
+      -DeadlineSeconds $SelfTestDeadlineSeconds
+    if (-not $result.TimedOut -or $result.OutputLimitExceeded) {
+      throw (
+        "sleeper expected deadline timeout; timeout=$($result.TimedOut) " +
+        "outputLimit=$($result.OutputLimitExceeded)")
+    }
+    if (-not (Test-Path -LiteralPath $childPidPath -PathType Leaf)) {
+      throw 'sleeper child PID receipt was not written'
+    }
+    $childId = [int]([IO.File]::ReadAllText($childPidPath).Trim())
+    if ($null -ne (Get-Process -Id $childId -ErrorAction SilentlyContinue)) {
+      throw "sleeper child $childId survived owned-tree termination"
+    }
+    Write-Host (
+      'PAPER-TOPOLOGY-REGRESSION DEADLINE CONTROL PASS ' +
+      "(ownership=$($result.Ownership); child=$childId absent; " +
+      "duration=$($result.DurationSeconds)s)")
+  } finally {
+    Remove-Item -LiteralPath $scriptPath -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $childPidPath -Force -ErrorAction SilentlyContinue
+  }
+}
+
+function Invoke-TopologySafeDependencyAntiBypassSelfTest {
+  $arguments = @(
+    '-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass',
+    '-File', $lintPath,
+    '-MutationCase', 'R1LEGACY',
+    '-StageDeadlineSeconds', [string]([Math]::Max(1, $StageDeadlineSeconds - 15)),
+    '-StageOutputLimitBytes', [string]$StageOutputLimitBytes)
+  $result = Invoke-BoundedTool `
+    -FilePath $shellPath `
+    -Arguments $arguments `
+    -Stage 'topology-safe-dependency-antibypass' `
+    -DeadlineSeconds $StageDeadlineSeconds `
+    -ReleaseGatedScript
+  $joined = $result.Output -join [Environment]::NewLine
+  if ($result.TimedOut -or $result.OutputLimitExceeded -or
+      $result.ExitCode -eq 0 -or
+      -not $joined.Contains(
+        'legacy safe equality entered current-safe dependency surface')) {
+    throw (
+      "safe-dependency mutation expected precise rejection; " +
+      "exit=$($result.ExitCode) timeout=$($result.TimedOut) " +
+      "outputLimit=$($result.OutputLimitExceeded) output=$joined")
+  }
+  Write-Host (
+    'PAPER-TOPOLOGY-REGRESSION SAFE-DEPENDENCY CONTROL PASS ' +
+    '(legacy current-safe reinsertion rejected outside the 16-case registry)')
+}
+
+$initialTrackedState = Get-TrackedState
+Assert-RMQCleanRepositoryStateText `
+  $initialTrackedState 'topology regression live baseline'
+$baselineTrackedState = $initialTrackedState
 $baselineHashes = Get-LiveHashes
+
+Invoke-RMQOwnedProcessDeterministicTests
+Invoke-RMQCleanBaselineFixtureTests `
+  -GitPath ((Get-Command git -CommandType Application -ErrorAction Stop).Source) `
+  -DeadlineSeconds $StageDeadlineSeconds `
+  -OutputLimitBytes $StageOutputLimitBytes `
+  -TempRoot $ownedTempRoot
+Assert-LiveIntegrity 'portable-process-and-clean-baseline-self-tests'
+
+Invoke-TopologySelectorBoundarySelfTest
+Assert-LiveIntegrity 'selector-boundary-self-test'
+if ($SelectorSelfTestOnly) {
+  exit 0
+}
+
+Invoke-TopologySafeDependencyAntiBypassSelfTest
+Assert-LiveIntegrity 'safe-dependency-antibypass-self-test'
+
+Invoke-TopologyDeadlineSelfTest
+Assert-LiveIntegrity 'deadline-sleeper-self-test'
+if ($DeadlineSelfTestOnly -or $PortabilitySelfTestOnly) {
+  exit 0
+}
 
 function Test-Mutation([object]$Case) {
   $problem = $null
@@ -527,9 +487,6 @@ try {
 } finally {
   try {
     Assert-LiveIntegrity 'FINAL'
-    if ($ownedRootIds.Count -ne 0) {
-      throw "owned root registry is not empty: $($ownedRootIds -join ',')"
-    }
   } catch {
     Write-Host "PAPER-TOPOLOGY-REGRESSION: FAIL [FINAL] $($_.Exception.Message)"
     $failures += 1

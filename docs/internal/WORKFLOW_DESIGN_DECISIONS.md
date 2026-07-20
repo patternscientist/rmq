@@ -4723,3 +4723,95 @@ Publication-facing significance:
 None directly. The proof-dependency rule prevents a reviewer-facing machine
 adequacy claim from presenting a reordered wrapper as a genuinely primary
 dynamic-store argument.
+
+## WDD-20260720-002: make replay restoration start clean and own descendants portably
+
+Status: Candidate decision; coordinator acceptance pending.
+
+Date: 2026-07-20
+
+Scope: M1 semantic replay, production paper-topology lint, topology regression,
+and exact-tree certification economics.
+
+Decision:
+
+1. All three production harnesses use one bounded-process implementation.
+   Windows launches are release-gated inside a kill-on-close Job Object.
+   POSIX launches run beneath `setsid` and terminate the owned negative process
+   group with TERM followed by KILL if needed. Both paths bound redirected
+   output, classify a deadline as failure, and perform cleanup in `finally`.
+2. The production-code self-test checks both ownership plans deterministically;
+   a real child-spawning sleeper exercises the local platform. A local Windows
+   receipt is reported as Windows evidence only. Native POSIX evidence belongs
+   to the Ubuntu gate run, not to inference from the deterministic test.
+3. Before any restoration snapshot, the M1 runner, topology lint, and topology
+   regression require a clean tracked worktree, clean untracked state, and
+   clean index. Temporary repositories prove that dirty tracked, dirty
+   untracked, and staged/index baselines fail. Returning to an initially dirty
+   state is not success.
+4. Parameter presence, not an empty default value, distinguishes omitted
+   `-OnlyCase` from an explicitly bound empty value. The real script boundary
+   rejects empty, whitespace, zero, unknown, omitted-registry, and
+   duplicate-registry selections before semantic execution; omission alone is
+   full-suite mode.
+5. Focused controls run before content freeze. The final aggregate gate owns
+   the full 41-case semantic replay and full topology regression exactly once;
+   a standalone repetition on the same frozen tree is not independent
+   evidence.
+6. The production topology lint accumulates the directly related safe-route
+   and public expected-type diagnostics before its first failure exit. Thus an
+   A01 deletion may be rejected by both checks, while the frozen A01
+   `[m1-public-type-pin]` surface remains observable and cannot be hidden by a
+   newly earlier dependency check.
+
+Rejected alternatives:
+
+- Kill only the root process on POSIX and infer descendant cleanup.
+- Present a deterministic POSIX branch test or a Windows receipt as a native
+  Ubuntu execution.
+- Snapshot an arbitrary dirty tree and require only equality with that dirty
+  baseline afterward.
+- Let PowerShell's default empty string mean both omission and explicit empty
+  binding.
+- Run both full suites standalone and then repeat them inside the aggregate
+  gate for confidence.
+- Exit immediately after the new safe-route check and thereby make the older
+  A01 public-type mutation fail for an unpinned incidental diagnostic.
+
+Consequences:
+
+- `scripts/owned_process_tree.ps1` is a shared production dependency of the M1
+  runner and both topology tools. Its toolchain paths select `lean.exe` on
+  Windows and `lean` under the same pinned elan toolchain on POSIX.
+- The semantic registry remains exactly F01-F24, Q01-Q11, P01-P05, C01 with
+  40 reject and one accept; the topology registry remains its existing 16
+  cases including A01/A02. Portability and dependency controls sit outside
+  those totals.
+- The claim-policy regression invokes the production strict scanner for its
+  named unqualified rejection and explicitly bounded acceptance; it does not
+  copy the classifier.
+- No theorem, payload bit, source manifest, trace event, modeled tick, or
+  algorithm changes because of this workflow decision.
+
+Verification:
+
+- PowerShell parser checks cover every changed production script.
+- Temporary Git fixtures cover clean, dirty tracked, dirty untracked, and
+  staged/index states.
+- Selector wrappers exercise the actual parameter binder, and the sleepers
+  record a child PID whose absence is checked after timeout.
+- Focused production topology mutation `R1LEGACY` rejects the legacy theorem's
+  reinsertion without changing A01/A02 or semantic totals.
+- A late aggregate A01 failure exposed the diagnostic-order interaction after
+  every earlier aggregate component passed. The smallest repair removes only
+  that premature exit; focused A01 must pass before the one permitted
+  post-change aggregate rerun. This is a distinct acceptance purpose, not a
+  confidence rerun of an unchanged tree.
+- One final aggregate gate, exact committed-range diff checks, clean status,
+  exact parentage, and no owned survivor certify the candidate tree.
+
+Publication-facing significance:
+
+None mathematically. The decision makes the evidence for the reviewer-facing
+machine theorem portable and falsifiable instead of platform- or baseline-
+dependent.

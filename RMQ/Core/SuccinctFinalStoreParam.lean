@@ -2677,6 +2677,429 @@ theorem concreteBPNativeSuccinctRMQDropLogicalAddressStore_agree_elsewhere
   rcases hne with hne | hne <;>
     simp [concreteBPNativeSuccinctRMQDropLogicalAddressStore, hne]
 
+/-- Structural live-source predicate for the supplied-store execution.  Unlike
+store agreement, this predicate depends only on the evaluator's fixed segment
+maps and component topology. -/
+private def concreteBPNativeSuccinctRMQWithStoreReadSegmentLive :
+    WordRAM.TraceEvent -> Prop
+  | WordRAM.TraceEvent.readWord segment _ _ => segment < 23
+  | _ => True
+
+private theorem ofProgramWithStore_natTableRead_withStoreReadSegmentLive
+    {entries : List Nat} {width : Nat}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (base dead : Nat) (store : WordRAM.ReadStore) (i : Nat)
+    (hbase : base < 23) :
+    forall event,
+      List.Mem event
+          (WordRAM.TraceResult.ofProgramWithStore
+            (WordRAM.singletonSegmentMap base dead) store
+            (table.readProgram i)).trace ->
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive event := by
+  intro event hmem
+  simp only [WordRAM.TraceResult.ofProgramWithStore,
+    WordRAM.TraceResult.relabelReadSegmentsWith_trace,
+    WordRAM.TraceResult.ofResult_trace] at hmem
+  rcases List.mem_map.mp hmem with ⟨inner, hinner, rfl⟩
+  simp only [SuccinctSpace.FixedWidthNatTable.readProgram,
+    SuccinctSpace.PayloadWordStore.readProgram,
+    WordRAM.Program.evalR, List.mem_singleton] at hinner
+  subst inner
+  simpa [WordRAM.TraceEvent.relabelReadSegmentWith,
+    WordRAM.singletonSegmentMap,
+    concreteBPNativeSuccinctRMQWithStoreReadSegmentLive] using hbase
+
+private theorem selectEntryTableWithStore_withStoreReadSegmentLive
+    {entries : List GenericSelect.SparseDenseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table :
+      GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable
+        entries fieldWidth)
+    (layout : GenericSelect.SparseDenseEntryTableTraceSegmentBases)
+    (store : WordRAM.ReadStore) (i : Nat)
+    (hbaseOccurrence : layout.baseOccurrence < 23)
+    (hbaseWordIndex : layout.baseWordIndex < 23)
+    (hrankBefore : layout.rankBefore < 23)
+    (hfirstOffset : layout.firstOffset < 23) :
+    forall event,
+      List.Mem event
+          (table.readTraceResultRelabeledWithStore layout store i).trace ->
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive event := by
+  unfold
+    GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readTraceResultRelabeledWithStore
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      ofProgramWithStore_natTableRead_withStoreReadSegmentLive
+        table.baseOccurrenceTable _ _ store i hbaseOccurrence
+  · intro baseOccurrence?
+    apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        ofProgramWithStore_natTableRead_withStoreReadSegmentLive
+          table.baseWordIndexTable _ _ store i hbaseWordIndex
+    · intro baseWordIndex?
+      apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          ofProgramWithStore_natTableRead_withStoreReadSegmentLive
+            table.rankBeforeTable _ _ store i hrankBefore
+      · intro rankBefore?
+        apply WordRAM.TraceResult.map_trace_forall
+        exact
+          ofProgramWithStore_natTableRead_withStoreReadSegmentLive
+            table.firstOffsetTable _ _ store i hfirstOffset
+
+private theorem concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_withStoreReadSegmentLive
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (idx : Nat) :
+    forall event,
+      event ∈
+          (concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
+            shape store idx).trace ->
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive event := by
+  apply
+    (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).bpChunkedSelectTraceResultWithStore_trace_forall
+  · intro slot
+    exact
+      selectEntryTableWithStore_withStoreReadSegmentLive
+        (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).superTable
+        concreteBPNativeSelectCloseTraceSegmentLayout.superTable
+        store slot
+        (by simp [concreteBPNativeSelectCloseTraceSegmentLayout])
+        (by simp [concreteBPNativeSelectCloseTraceSegmentLayout])
+        (by simp [concreteBPNativeSelectCloseTraceSegmentLayout])
+        (by simp [concreteBPNativeSelectCloseTraceSegmentLayout])
+  · intro slot
+    apply
+      (GenericSelect.sparseExceptionSelectData
+          shape.bpCode
+            false).longFlagRankData.bpChunkedRankTraceResultWithStore_trace_forall
+    · intro address
+      simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+    · intro address
+      simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+    · intro address
+      simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+    · intro address _hlt
+      simp [concreteBPNativeFringeChunkTraceSegment,
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+  · intro base slot
+    apply GenericSelect.bpRelativeOffsetReadTraceResultWithStore_trace_forall
+    intro address
+    simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+      concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+  · intro slot
+    exact
+      selectEntryTableWithStore_withStoreReadSegmentLive
+        (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).localTable
+        concreteBPNativeSelectCloseTraceSegmentLayout.localTable
+        store slot
+        (by simp [concreteBPNativeSelectCloseTraceSegmentLayout])
+        (by simp [concreteBPNativeSelectCloseTraceSegmentLayout])
+        (by simp [concreteBPNativeSelectCloseTraceSegmentLayout])
+        (by simp [concreteBPNativeSelectCloseTraceSegmentLayout])
+  · intro base localSlot localOccurrence
+    apply
+      (GenericSelect.sparseExceptionSelectData
+          shape.bpCode
+            false).sparseDirectory.bpChunkedReadTraceResultWithStore_trace_forall
+    · apply
+        (GenericSelect.sparseExceptionSelectData
+            shape.bpCode
+              false).sparseDirectory.rankData.bpChunkedRankTraceResultWithStore_trace_forall
+      · intro address
+        simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+          concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+      · intro address
+        simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+          concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+      · intro address
+        simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+          concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+      · intro address _hlt
+        simp [concreteBPNativeFringeChunkTraceSegment,
+          concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+    · intro slot
+      apply
+        GenericSelect.bpRelativeOffsetReadTraceResultWithStore_trace_forall
+      intro address
+      simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+  · intro basePosition baseOccurrence q
+    apply
+      GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore_trace_forall
+    · intro address
+      simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+    · intro address _hlt
+      simp [concreteBPNativeFringeChunkTraceSegment,
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+    · intro address
+      simp [concreteBPNativeSelectChunkTraceSegment,
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+
+private theorem concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_withStoreReadSegmentLive
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (pos : Nat) :
+    forall event,
+      event ∈
+          (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+            shape store concreteBPNativeRankCloseTraceSegmentBase pos).trace ->
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive event := by
+  apply
+    (builtRelativeSplitBPCloseRankData
+        shape).bpChunkedRankTraceResultWithStore_trace_forall
+  · intro address
+    simp [concreteBPNativeRankCloseTraceSegmentBase,
+      concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+  · intro address
+    simp [concreteBPNativeRankCloseTraceSegmentBase,
+      concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+  · intro address
+    simp [concreteBPNativeRankCloseTraceSegmentBase,
+      concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+  · intro address _hlt
+    simp [concreteBPNativeRankCloseTraceSegmentBase,
+      concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+
+private theorem bpCodeWordReadTraceResultWithStore_withStoreReadSegmentLive
+    (store : WordRAM.ReadStore) (index : Nat) :
+    forall event,
+      event ∈
+          (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeWordReadTraceResultWithStore
+            store index).trace ->
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive event := by
+  intro event hmem
+  simp [SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeWordReadTraceResultWithStore]
+    at hmem
+  subst event
+  simp [concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+
+private theorem localBPWindowBitsTraceResultWithStore_withStoreReadSegmentLive
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (blockSize close : Nat) :
+    forall event,
+      event ∈
+          (SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResultWithStore
+            shape store blockSize close).trace ->
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive event := by
+  unfold
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResultWithStore
+  apply WordRAM.TraceResult.map_trace_forall
+  unfold
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact bpCodeWordReadTraceResultWithStore_withStoreReadSegmentLive store _
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact bpCodeWordReadTraceResultWithStore_withStoreReadSegmentLive store _
+    · apply WordRAM.TraceResult.bind_trace_forall
+      · exact bpCodeWordReadTraceResultWithStore_withStoreReadSegmentLive store _
+      · apply WordRAM.TraceResult.map_trace_forall
+        exact bpCodeWordReadTraceResultWithStore_withStoreReadSegmentLive store _
+
+private theorem concreteBPNativeInteriorWithStore_withStoreReadSegmentLive
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (startBlock count : Nat) :
+    forall event,
+      event ∈
+          (SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+            shape concreteBPNativeInteriorTraceSegments store
+            startBlock count).trace ->
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive event := by
+  intro event hmem
+  unfold
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+    SuccinctClose.flatStoreExecutionTraceResultAtSegment at hmem
+  simp only [List.mem_map] at hmem
+  rcases hmem with ⟨read, _hread, rfl⟩
+  simp [concreteBPNativeSuccinctRMQWithStoreReadSegmentLive,
+    concreteBPNativeInteriorTraceSegments]
+
+private theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_withStoreReadSegmentLive
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (leftClose rightClose : Nat) :
+    forall event,
+      event ∈
+          (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+            shape store leftClose rightClose).trace ->
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive event := by
+  unfold concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+  unfold
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+  let blockSize :=
+    SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+  by_cases hsame :
+      SuccinctClose.blockOfClose blockSize leftClose =
+        SuccinctClose.blockOfClose blockSize rightClose
+  · dsimp only [blockSize] at hsame
+    simp only [hsame, if_pos]
+    unfold
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+    apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSeedFromRankCloseTraceResult_trace_forall
+          shape
+          (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+            shape store concreteBPNativeRankCloseTraceSegmentBase)
+          blockSize leftClose
+          concreteBPNativeSuccinctRMQWithStoreReadSegmentLive
+          (fun pos =>
+            concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_withStoreReadSegmentLive
+              shape store pos)
+    · intro seed
+      unfold
+        SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore
+      apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          localBPWindowBitsTraceResultWithStore_withStoreReadSegmentLive
+            shape store blockSize leftClose
+      · apply WordRAM.TraceResult.map_trace_forall
+        apply
+          SuccinctClose.bpFringeChunkFoldTraceResultAtSegmentWithStore_trace_forall
+        intro address _hlt
+        simp [concreteBPNativeFringeChunkTraceSegment,
+          concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]
+  · dsimp only [blockSize] at hsame
+    simp only [hsame]
+    exact
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_trace_forall
+        shape
+        (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+          shape store concreteBPNativeRankCloseTraceSegmentBase)
+        concreteBPNativeInteriorTraceSegments
+        concreteBPNativeFringeChunkTraceSegment store leftClose rightClose
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive
+        (fun pos =>
+          concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_withStoreReadSegmentLive
+            shape store pos)
+        (fun blockSize close seed =>
+          SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore_trace_forall
+            shape store concreteBPNativeFringeChunkTraceSegment
+            blockSize close seed
+            concreteBPNativeSuccinctRMQWithStoreReadSegmentLive
+            (localBPWindowBitsTraceResultWithStore_withStoreReadSegmentLive
+              shape store blockSize close)
+            (fun address _hlt => by
+              simp [concreteBPNativeFringeChunkTraceSegment,
+                concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]))
+        (fun blockSize close seed =>
+          SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore_trace_forall
+            shape store concreteBPNativeFringeChunkTraceSegment
+            blockSize close seed
+            concreteBPNativeSuccinctRMQWithStoreReadSegmentLive
+            (localBPWindowBitsTraceResultWithStore_withStoreReadSegmentLive
+              shape store blockSize close)
+            (fun address _hlt => by
+              simp [concreteBPNativeFringeChunkTraceSegment,
+                concreteBPNativeSuccinctRMQWithStoreReadSegmentLive]))
+        (fun startBlock count =>
+          concreteBPNativeInteriorWithStore_withStoreReadSegmentLive
+            shape store startBlock count)
+
+private theorem WholeQueryInstr.evalGlobalWordTraceWithStore_withStoreReadSegmentLive
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (left right : Nat) (instr : WholeQueryInstr)
+    (state : WholeQueryState) :
+    forall event,
+      event ∈
+          (instr.evalGlobalWordTraceWithStore
+            shape store left right state).trace ->
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive event := by
+  cases instr with
+  | selectClose dst idx =>
+      simp [WholeQueryInstr.evalGlobalWordTraceWithStore]
+      exact
+        concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_withStoreReadSegmentLive
+          shape store (idx.eval left right state)
+  | lcaClose dst leftReg rightReg =>
+      cases hleft : state.opt leftReg with
+      | none =>
+          cases hright : state.opt rightReg <;>
+            simp [WholeQueryInstr.evalGlobalWordTraceWithStore,
+              hleft, hright] <;>
+            intro event hmem <;> cases hmem
+      | some leftClose =>
+          cases hright : state.opt rightReg with
+          | none =>
+              simp [WholeQueryInstr.evalGlobalWordTraceWithStore,
+                hleft, hright]
+          | some rightClose =>
+              simp [WholeQueryInstr.evalGlobalWordTraceWithStore,
+                hleft, hright]
+              exact
+                concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_withStoreReadSegmentLive
+                  shape store leftClose rightClose
+  | rankCloseIfSome dst guard pos =>
+      cases hguard : state.opt guard with
+      | none =>
+          simp [WholeQueryInstr.evalGlobalWordTraceWithStore, hguard]
+      | some _ =>
+          simp [WholeQueryInstr.evalGlobalWordTraceWithStore, hguard]
+          exact
+            concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_withStoreReadSegmentLive
+              shape store (pos.eval left right state)
+  | outputPredIfSome dst guard src =>
+      cases hguard : state.opt guard <;>
+        simp [WholeQueryInstr.evalGlobalWordTraceWithStore, hguard] <;>
+        intro event hmem <;> cases hmem
+
+private theorem WholeQueryProgram.evalGlobalWordTraceWithStore_withStoreReadSegmentLive
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (left right : Nat)
+    (program : WholeQueryProgram) (state : WholeQueryState) :
+    forall event,
+      event ∈
+          (WholeQueryProgram.evalGlobalWordTraceWithStore
+            shape store left right program state).trace ->
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive event := by
+  induction program generalizing state with
+  | nil =>
+      simp [WholeQueryProgram.evalGlobalWordTraceWithStore]
+  | cons instr rest ih =>
+      unfold WholeQueryProgram.evalGlobalWordTraceWithStore
+      apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          WholeQueryInstr.evalGlobalWordTraceWithStore_withStoreReadSegmentLive
+            shape store left right instr state
+      · exact ih
+          (instr.evalGlobalWordTraceWithStore
+            shape store left right state).value
+
+/-- Every logical read emitted by the supplied-store evaluator, including a
+failed read, comes from one of the actual live logical sources `0 .. 22`.
+The proof follows the evaluator's component and program structure and does not
+use any supplied-store complete-result equality theorem. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read_segment_lt
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (left right : Nat) :
+    forall {segment index : Nat} {word? : Option WordRAM.Word},
+      WordRAM.TraceEvent.readWord segment index word? ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+            shape store left right).trace ->
+        segment < 23 := by
+  intro segment index word? hmem
+  have hlive :
+      concreteBPNativeSuccinctRMQWithStoreReadSegmentLive
+        (WordRAM.TraceEvent.readWord segment index word?) := by
+    unfold concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+      at hmem
+    exact
+      WordRAM.TraceResult.map_trace_forall
+        concreteBPNativeSuccinctRMQWithStoreReadSegmentLive
+        WholeQueryState.output?
+        (WholeQueryProgram.evalGlobalWordTraceWithStore
+          shape store left right concreteBPNativeSuccinctRMQWholeQueryProgram
+          WholeQueryState.empty)
+        (WholeQueryProgram.evalGlobalWordTraceWithStore_withStoreReadSegmentLive
+          shape store left right concreteBPNativeSuccinctRMQWholeQueryProgram
+          WholeQueryState.empty)
+        (WordRAM.TraceEvent.readWord segment index word?) hmem
+  exact hlive
+
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint
     (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
     (left right : Nat) :
@@ -2686,45 +3109,12 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read
             shape store left right).trace ->
         concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape segment := by
   intro segment index word? hmem
-  by_cases hsegment :
-      concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape segment
-  · exact hsegment
-  let flippedWord? : Option WordRAM.Word :=
-    match word? with
-    | none => some []
-    | some _ => none
-  have hflip_ne : flippedWord? ≠ word? := by
-    cases word? <;> simp [flippedWord?]
-  let flippedStore : WordRAM.ReadStore :=
-    { readWord? := fun segment' index' =>
-        if segment' = segment ∧ index' = index then
-          flippedWord?
-        else
-          store.readWord? segment' index' }
-  have hfoot :
-      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
-        shape store flippedStore := by
-    intro segment' index' hsegment'
-    by_cases hsame : segment' = segment ∧ index' = index
-    · rcases hsame with ⟨rfl, _⟩
-      exact False.elim (hsegment hsegment')
-    · simp [flippedStore, hsame]
-  have htrace :=
-    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint
-      shape hfoot left right
-  have hmemFlipped :
-      WordRAM.TraceEvent.readWord segment index word? ∈
-          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
-            shape flippedStore left right).trace := by
-    rw [htrace] at hmem
-    exact hmem
-  have hmatch :=
-    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_matchesReadStore
-      shape flippedStore left right
-      (WordRAM.TraceEvent.readWord segment index word?) hmemFlipped
-  have hflipped_eq : flippedWord? = word? := by
-    simpa [WordRAM.TraceEvent.matchesReadStore, flippedStore] using hmatch
-  exact False.elim (hflip_ne hflipped_eq)
+  have hlt : segment < 23 :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read_segment_lt
+      shape store left right hmem
+  unfold concreteBPNativeSuccinctRMQWholeQueryReadFootprint
+  unfold concreteBPNativeDeadTraceSegment
+  omega
 
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_reads_subset_footprint
     (shape : Cartesian.CartesianShape) (left right : Nat) :

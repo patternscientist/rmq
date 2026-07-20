@@ -11,12 +11,20 @@ param(
   [int]$SelfTestDeadlineSeconds = 20,
   [switch]$RegistrySelfTestOnly,
   [switch]$SelectorSelfTestOnly,
+  [switch]$SelectorBoundaryProbeOnly,
+  [ValidateSet('', 'OmitF21', 'DuplicateF21')]
+  [string]$SelectorRegistryFixture = '',
   [switch]$DeadlineSelfTestOnly,
+  [switch]$PortabilitySelfTestOnly,
   [switch]$StartupSmokeOnly
 )
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+
+. (Join-Path $PSScriptRoot 'owned_process_tree.ps1')
+
+$onlyCaseWasBound = $PSBoundParameters.ContainsKey('OnlyCase')
 
 # Some managed Windows launch environments contain both `Path` and `PATH`.
 # Windows PowerShell's Start-Process rejects that duplicate case-insensitive
@@ -26,82 +34,6 @@ $pathKeys = @(
     Where-Object { [string]$_ -ieq 'path' })
 if ($pathKeys.Count -gt 1 -and $pathKeys -ccontains 'PATH') {
   Remove-Item Env:PATH -ErrorAction Stop
-}
-
-if (-not ('RMQReplayJob' -as [type])) {
-  Add-Type -TypeDefinition @'
-using System;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
-
-public static class RMQReplayJob {
-  private const int JobObjectExtendedLimitInformation = 9;
-  private const uint JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000;
-
-  [StructLayout(LayoutKind.Sequential)]
-  private struct IO_COUNTERS {
-    public ulong ReadOperationCount, WriteOperationCount, OtherOperationCount;
-    public ulong ReadTransferCount, WriteTransferCount, OtherTransferCount;
-  }
-
-  [StructLayout(LayoutKind.Sequential)]
-  private struct JOBOBJECT_BASIC_LIMIT_INFORMATION {
-    public long PerProcessUserTimeLimit, PerJobUserTimeLimit;
-    public uint LimitFlags;
-    public UIntPtr MinimumWorkingSetSize, MaximumWorkingSetSize;
-    public uint ActiveProcessLimit;
-    public UIntPtr Affinity;
-    public uint PriorityClass, SchedulingClass;
-  }
-
-  [StructLayout(LayoutKind.Sequential)]
-  private struct JOBOBJECT_EXTENDED_LIMIT_INFORMATION {
-    public JOBOBJECT_BASIC_LIMIT_INFORMATION BasicLimitInformation;
-    public IO_COUNTERS IoInfo;
-    public UIntPtr ProcessMemoryLimit, JobMemoryLimit, PeakProcessMemoryUsed;
-    public UIntPtr PeakJobMemoryUsed;
-  }
-
-  [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-  private static extern IntPtr CreateJobObject(IntPtr attributes, string name);
-
-  [DllImport("kernel32.dll", SetLastError = true)]
-  private static extern bool SetInformationJobObject(
-    IntPtr job, int infoClass,
-    ref JOBOBJECT_EXTENDED_LIMIT_INFORMATION info, uint length);
-
-  [DllImport("kernel32.dll", SetLastError = true)]
-  private static extern bool AssignProcessToJobObject(IntPtr job, IntPtr process);
-
-  [DllImport("kernel32.dll", SetLastError = true)]
-  private static extern bool CloseHandle(IntPtr handle);
-
-  public static IntPtr CreateKillOnClose() {
-    IntPtr job = CreateJobObject(IntPtr.Zero, null);
-    if (job == IntPtr.Zero) throw new Win32Exception(Marshal.GetLastWin32Error());
-    var info = new JOBOBJECT_EXTENDED_LIMIT_INFORMATION();
-    info.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-    if (!SetInformationJobObject(
-        job, JobObjectExtendedLimitInformation, ref info,
-        (uint)Marshal.SizeOf(typeof(JOBOBJECT_EXTENDED_LIMIT_INFORMATION)))) {
-      int error = Marshal.GetLastWin32Error();
-      CloseHandle(job);
-      throw new Win32Exception(error);
-    }
-    return job;
-  }
-
-  public static void Assign(IntPtr job, IntPtr process) {
-    if (!AssignProcessToJobObject(job, process))
-      throw new Win32Exception(Marshal.GetLastWin32Error());
-  }
-
-  public static void Close(IntPtr job) {
-    if (job != IntPtr.Zero && !CloseHandle(job))
-      throw new Win32Exception(Marshal.GetLastWin32Error());
-  }
-}
-'@
 }
 
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -116,6 +48,7 @@ $executedIds = [Collections.Generic.List[string]]::new()
 $rejectPasses = 0
 $acceptPasses = 0
 
+$storeParamPath = 'RMQ/Core/SuccinctFinalStoreParam.lean'
 $finalModelPath = 'RMQ/Core/SuccinctFinalModelAdequacy.lean'
 $classicPath = 'RMQ/Core/SuccinctRMQClassic.lean'
 $headlinePath = 'RMQ/Headlines/RMQ.lean'
@@ -124,12 +57,14 @@ $reviewerPhysicalPath = 'RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean'
 $semanticProvenancePath = 'RMQ/Core/SuccinctFinalSemanticProvenanceAdequacy.lean'
 $ramPath = 'RMQ/Core/SuccinctFinalRAM.lean'
 $shadowSources = @(
+  $storeParamPath,
   $finalModelPath,
   $classicPath,
   $headlinePath,
   $checkerPath
 )
 $integrityPaths = @(
+  $storeParamPath,
   $finalModelPath,
   $classicPath,
   $headlinePath,
@@ -138,6 +73,7 @@ $integrityPaths = @(
   $semanticProvenancePath,
   $ramPath,
   'scripts/m1_certificate_mutation_regression.ps1',
+  'scripts/owned_process_tree.ps1',
   'scripts/gate.ps1',
   'scripts/paper_topology_lint.ps1',
   'scripts/paper_topology_lint_regression.ps1',
@@ -236,6 +172,18 @@ $caseRegistry = @(
   (New-ReplayCase 'P05' 'REJECT'),
   (New-ReplayCase 'C01' 'ACCEPT')
 )
+
+if ($SelectorRegistryFixture -ne '' -and -not $SelectorBoundaryProbeOnly) {
+  throw 'SelectorRegistryFixture is valid only with SelectorBoundaryProbeOnly'
+}
+if ($SelectorRegistryFixture -ceq 'OmitF21') {
+  $caseRegistry = @(
+    $caseRegistry[0..19] + $caseRegistry[21..($caseRegistry.Count - 1)])
+} elseif ($SelectorRegistryFixture -ceq 'DuplicateF21') {
+  $caseRegistry = @(
+    $caseRegistry[0..20] + $caseRegistry[20] +
+      $caseRegistry[21..($caseRegistry.Count - 1)])
+}
 
 function Assert-ExactRegistry($Registry) {
   $entries = @($Registry)
@@ -340,10 +288,14 @@ function Assert-CurrentFrontierPins {
     'fresh 23; cost 210)')
 }
 
-function Resolve-SelectedRegistry($Registry, [string]$Requested) {
-  if ($Requested -eq '') { return @($Registry) }
+function Resolve-SelectedRegistry(
+    $Registry,
+    [string]$Requested,
+    [bool]$WasBound) {
+  Assert-ExactRegistry $Registry
+  if (-not $WasBound) { return @($Registry) }
   if ([string]::IsNullOrWhiteSpace($Requested) -or $Requested -ceq '0') {
-    throw "empty/zero selector is invalid"
+    throw 'bound empty/whitespace/zero selector is invalid'
   }
   $selected = @($Registry | Where-Object { $_.Id -ceq $Requested })
   if ($selected.Count -ne 1) {
@@ -354,7 +306,7 @@ function Resolve-SelectedRegistry($Registry, [string]$Requested) {
 
 function Assert-SelectorRejected([string]$Label, $Registry, [string]$Requested) {
   $message = $null
-  try { [void](Resolve-SelectedRegistry $Registry $Requested) } catch {
+  try { [void](Resolve-SelectedRegistry $Registry $Requested $true) } catch {
     $message = $_.Exception.Message
   }
   if ($null -eq $message) {
@@ -389,8 +341,9 @@ if ($RegistrySelfTestOnly) {
 
 # REPLAY-SELECTOR-NONVACUITY
 try {
-  $selected = @(Resolve-SelectedRegistry $caseRegistry $OnlyCase)
-  $middle = @(Resolve-SelectedRegistry $caseRegistry 'F21')
+  $selected = @(
+    Resolve-SelectedRegistry $caseRegistry $OnlyCase $onlyCaseWasBound)
+  $middle = @(Resolve-SelectedRegistry $caseRegistry 'F21' $true)
   if ($middle.Count -ne 1 -or $middle[0].Id -cne 'F21') {
     throw 'valid middle selector F21 did not resolve exactly once'
   }
@@ -412,9 +365,180 @@ try {
   exit 1
 }
 
-if ($SelectorSelfTestOnly) {
+if ($SelectorBoundaryProbeOnly) {
+  Write-Host (
+    'M1-MUTATION BOUNDARY PROBE PASS ' +
+    "(bound=$onlyCaseWasBound; selected=$($selected.Count); " +
+    "ids=$((@($selected | ForEach-Object { $_.Id })) -join ','))")
   Pop-Location
   exit 0
+}
+
+function Get-ExactDeclarationBlock(
+    [string]$Text,
+    [string]$StartNeedle,
+    [string]$EndNeedle,
+    [string]$Label) {
+  $start = $Text.IndexOf($StartNeedle, [StringComparison]::Ordinal)
+  if ($start -lt 0 -or
+      $Text.IndexOf($StartNeedle, $start + $StartNeedle.Length,
+        [StringComparison]::Ordinal) -ge 0) {
+    throw "$Label start is missing or non-unique"
+  }
+  $end = $Text.IndexOf($EndNeedle, $start + $StartNeedle.Length,
+    [StringComparison]::Ordinal)
+  if ($end -lt 0) {
+    throw "$Label end is missing"
+  }
+  return $Text.Substring($start, $end - $start)
+}
+
+function Assert-SafeDependencyRoute(
+    [string]$StoreParamText,
+    [string]$ModelText,
+    [string]$ClassicText,
+    [string]$HeadlineText,
+    [string]$CheckerText) {
+  $legacy =
+    'concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint'
+  $legacyPattern = '(?<![A-Za-z0-9_])' + [regex]::Escape($legacy) +
+    '(?![A-Za-z0-9_])'
+  if ([regex]::Matches($StoreParamText, $legacyPattern).Count -lt 1) {
+    throw 'legacy compatibility theorem is no longer available'
+  }
+  $structural = Get-ExactDeclarationBlock $StoreParamText `
+    'private def concreteBPNativeSuccinctRMQWithStoreReadSegmentLive' `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint' `
+    'structural containment helpers and direct theorem'
+  $direct = Get-ExactDeclarationBlock $StoreParamText `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read_segment_lt' `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint' `
+    'direct segment containment'
+  $subset = Get-ExactDeclarationBlock $StoreParamText `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint' `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_reads_subset_footprint' `
+    'safe footprint containment'
+  $bridge = Get-ExactDeclarationBlock $ModelText `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint_of_footprint' `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint_via_orderedReadFootprint' `
+    'safe-to-dynamic bridge'
+  $currentSafe = Get-ExactDeclarationBlock $ModelText `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint_via_orderedReadFootprint' `
+    'theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint_via_orderedReadFootprint' `
+    'current safe equality'
+  $classicPacket = Get-ExactDeclarationBlock $ClassicText `
+    'structure ReviewerNativeMachineAdequacy' `
+    'theorem listIntSuccinctRMQReviewerNativeMachineAdequacy' `
+    'guarded reviewer packet'
+  $classicConstructor = Get-ExactDeclarationBlock $ClassicText `
+    'theorem listIntSuccinctRMQReviewerNativeMachineAdequacy' `
+    'theorem shape_queryOffset?_eq_scanWindow' `
+    'guarded reviewer packet constructor'
+  $paper = Get-ExactDeclarationBlock $HeadlineText `
+    'theorem listIntSuccinctRMQPaperMainTheorem' `
+    'abbrev succinctRMQReviewerMachineWellFormed' `
+    'literal paper theorem'
+  $expected = Get-ExactDeclarationBlock $CheckerText `
+    'def M1ReviewerNativeExpectedPaperType' `
+    'example : M1ReviewerNativeExpectedPaperType' `
+    'independent expected type'
+  foreach ($surface in @(
+      [pscustomobject]@{ Label = 'structural-containment'; Text = $structural },
+      [pscustomobject]@{ Label = 'direct'; Text = $direct },
+      [pscustomobject]@{ Label = 'subset'; Text = $subset },
+      [pscustomobject]@{ Label = 'bridge'; Text = $bridge },
+      [pscustomobject]@{ Label = 'current-safe'; Text = $currentSafe },
+      [pscustomobject]@{ Label = 'packet'; Text = $classicPacket },
+      [pscustomobject]@{ Label = 'packet-constructor'; Text = $classicConstructor },
+      [pscustomobject]@{ Label = 'paper'; Text = $paper })) {
+    if ([regex]::IsMatch($surface.Text, $legacyPattern)) {
+      throw "legacy safe equality entered $($surface.Label) dependency surface"
+    }
+  }
+  $required = @(
+    [pscustomobject]@{ Label = 'structural select'; Text = $structural;
+      Token = 'concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_withStoreReadSegmentLive' },
+    [pscustomobject]@{ Label = 'structural rank'; Text = $structural;
+      Token = 'concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_withStoreReadSegmentLive' },
+    [pscustomobject]@{ Label = 'structural LCA'; Text = $structural;
+      Token = 'concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_withStoreReadSegmentLive' },
+    [pscustomobject]@{ Label = 'structural interior'; Text = $structural;
+      Token = 'concreteBPNativeInteriorWithStore_withStoreReadSegmentLive' },
+    [pscustomobject]@{ Label = 'structural instruction'; Text = $structural;
+      Token = 'WholeQueryInstr.evalGlobalWordTraceWithStore_withStoreReadSegmentLive' },
+    [pscustomobject]@{ Label = 'direct structural program'; Text = $direct;
+      Token = 'WholeQueryProgram.evalGlobalWordTraceWithStore_withStoreReadSegmentLive' },
+    [pscustomobject]@{ Label = 'subset direct theorem'; Text = $subset;
+      Token = 'concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read_segment_lt' },
+    [pscustomobject]@{ Label = 'bridge direct theorem'; Text = $bridge;
+      Token = 'concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read_segment_lt' },
+    [pscustomobject]@{ Label = 'current safe dynamic theorem'; Text = $currentSafe;
+      Token = 'store_parametric_of_ordered_read_footprint' },
+    [pscustomobject]@{ Label = 'current safe bridge'; Text = $currentSafe;
+      Token = 'StoresAgreeOnOrderedReadFootprint_of_footprint' },
+    [pscustomobject]@{ Label = 'packet safe field'; Text = $classicPacket;
+      Token = 'safe_logical_store_agreement' },
+    [pscustomobject]@{ Label = 'packet current safe constructor'; Text = $classicConstructor;
+      Token = 'store_parametric_of_footprint_via_orderedReadFootprint' },
+    [pscustomobject]@{ Label = 'paper packet projection'; Text = $paper;
+      Token = '.safe_logical_store_agreement' },
+    [pscustomobject]@{ Label = 'expected safe proposition'; Text = $expected;
+      Token = 'storesAgreeOnFootprint' })
+  foreach ($pin in $required) {
+    if (-not $pin.Text.Contains($pin.Token)) {
+      throw "$($pin.Label) token is missing: $($pin.Token)"
+    }
+  }
+}
+
+function Assert-SafeDependencyRouteControls {
+  $storeParam = [IO.File]::ReadAllText((Join-Path $repoRoot $storeParamPath))
+  $model = [IO.File]::ReadAllText((Join-Path $repoRoot $finalModelPath))
+  $classic = [IO.File]::ReadAllText((Join-Path $repoRoot $classicPath))
+  $headline = [IO.File]::ReadAllText((Join-Path $repoRoot $headlinePath))
+  $checker = [IO.File]::ReadAllText((Join-Path $repoRoot $checkerPath))
+  Assert-SafeDependencyRoute $storeParam $model $classic $headline $checker
+  $modelLineBreak = if ($model.Contains("`r`n")) { "`r`n" } else { "`n" }
+  $needle =
+    '  exact' + $modelLineBreak +
+    '    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint'
+  if (-not $model.Contains($needle)) {
+    throw 'current safe theorem mutation anchor is missing'
+  }
+  $legacyCall =
+    '  exact' + $modelLineBreak +
+    '    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint' +
+    $modelLineBreak + '      shape hfoot left right' +
+    $modelLineBreak +
+    '  exact' + $modelLineBreak +
+    '    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint'
+  $mutated = $model.Replace($needle, $legacyCall)
+  if ($mutated -ceq $model) {
+    throw 'legacy anti-bypass mutation did not change the current theorem body'
+  }
+  $message = $null
+  try {
+    Assert-SafeDependencyRoute $storeParam $mutated $classic $headline $checker
+  } catch {
+    $message = $_.Exception.Message
+  }
+  if ($null -eq $message -or
+      -not $message.Contains('legacy safe equality entered current-safe')) {
+    throw "legacy anti-bypass mutation was not rejected precisely: $message"
+  }
+  Write-Host (
+    'M1-MUTATION SAFE-DEPENDENCY PASS ' +
+    '(direct segment<23 -> safe-to-dynamic -> ordered equality -> packet -> paper; ' +
+    'legacy reinsertion rejected)')
+}
+
+try {
+  Assert-SafeDependencyRouteControls
+} catch {
+  Write-Host (
+    "M1-MUTATION FAIL [SAFE-DEPENDENCY-ROUTE] $($_.Exception.Message)")
+  Pop-Location
+  exit 1
 }
 
 function Normalize-Lf([string]$Text) {
@@ -422,47 +546,14 @@ function Normalize-Lf([string]$Text) {
 }
 
 function Get-TrackedState {
-  $stateScript = Join-Path $sweepRoot (
-    'tracked-state-' + [Guid]::NewGuid().ToString('N') + '.ps1')
-  $shellPath = (Get-Process -Id $PID).Path
-  try {
-    [IO.File]::WriteAllText($stateScript, @'
-param([string]$LaunchReleasePath)
-$ErrorActionPreference = 'Stop'
-while (-not (Test-Path -LiteralPath $LaunchReleasePath -PathType Leaf)) {
-  Start-Sleep -Milliseconds 10
-}
-& git -c core.excludesfile= -c core.autocrlf=false status --short --untracked-files=all
-if ($LASTEXITCODE -ne 0) { throw "git status exited $LASTEXITCODE" }
-Write-Output '---WORKTREE---'
-& git -c core.excludesfile= -c core.autocrlf=false diff --raw --no-ext-diff --
-if ($LASTEXITCODE -ne 0) { throw "git diff exited $LASTEXITCODE" }
-Write-Output '---INDEX---'
-& git -c core.excludesfile= -c core.autocrlf=false diff --cached --raw --no-ext-diff --
-if ($LASTEXITCODE -ne 0) { throw "git diff --cached exited $LASTEXITCODE" }
-'@, $encoding)
-    $result = Invoke-BoundedProcess `
-      -FilePath $shellPath `
-      -Arguments @(
-        '-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass',
-        '-File', $stateScript) `
-      -WorkingDirectory $repoRoot `
-      -Stage 'git-live-state' `
-      -DeadlineSeconds $StageDeadlineSeconds `
-      -ReleaseGatedScript
-    if ($result.TimedOut) {
-      throw "git live-state timed out after $StageDeadlineSeconds seconds"
-    }
-    if ($result.OutputLimitExceeded) {
-      throw "git live-state exceeded $StageOutputLimitBytes bytes"
-    }
-    if ($result.ExitCode -ne 0) {
-      throw "git live-state exited $($result.ExitCode): $($result.Output -join ' | ')"
-    }
-    return $result.Output -join [Environment]::NewLine
-  } finally {
-    Remove-Item -LiteralPath $stateScript -Force -ErrorAction SilentlyContinue
-  }
+  $gitPath = (Get-Command git -CommandType Application -ErrorAction Stop).Source
+  return Get-RMQRepositoryStateBounded `
+    -RepositoryRoot $repoRoot `
+    -GitPath $gitPath `
+    -DeadlineSeconds $StageDeadlineSeconds `
+    -OutputLimitBytes $StageOutputLimitBytes `
+    -TempRoot $sweepRoot `
+    -StagePrefix 'm1-live-state'
 }
 
 function Get-LiveHashes {
@@ -517,6 +608,23 @@ $sweepRoot = Join-Path ([IO.Path]::GetTempPath()) (
   'rmq-m1-r4-mutations-' + [Guid]::NewGuid().ToString('N'))
 $sweepRoot = [IO.Path]::GetFullPath($sweepRoot)
 [void](New-Item -ItemType Directory -Path $sweepRoot)
+
+function Remove-SweepRoot {
+  if (-not (Test-Path -LiteralPath $sweepRoot)) {
+    return
+  }
+  $fullSweepRoot = [IO.Path]::GetFullPath($sweepRoot)
+  $tempRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
+  $allowedPrefix = $tempRoot.TrimEnd(
+    [IO.Path]::DirectorySeparatorChar,
+    [IO.Path]::AltDirectorySeparatorChar) +
+      [IO.Path]::DirectorySeparatorChar
+  if (-not $fullSweepRoot.StartsWith(
+      $allowedPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+    throw "refusing to remove sweep root outside temp: $fullSweepRoot"
+  }
+  Remove-Item -LiteralPath $fullSweepRoot -Recurse -Force
+}
 
 function New-CaseRoot([string]$Id) {
   $caseRoot = Join-Path $sweepRoot $Id
@@ -579,33 +687,6 @@ function Reset-ShadowSources([string]$CaseRoot) {
 }
 
 # REPLAY-SUBPROCESS-DEADLINE
-function Read-BoundedProcessOutput([string]$StdoutPath, [string]$StderrPath) {
-  $lines = [Collections.Generic.List[string]]::new()
-  foreach ($path in @($StdoutPath, $StderrPath)) {
-    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
-      continue
-    }
-    $text = $null
-    for ($attempt = 0; $attempt -lt 100; $attempt += 1) {
-      try {
-        $text = [IO.File]::ReadAllText($path)
-        break
-      } catch [IO.IOException] {
-        Start-Sleep -Milliseconds 100
-      }
-    }
-    if ($null -eq $text) {
-      throw "redirected output remained locked after owned process exit: $path"
-    }
-    foreach ($line in [regex]::Split($text, '\r?\n')) {
-      if ($line -ne '') {
-        $lines.Add($line)
-      }
-    }
-  }
-  return @($lines)
-}
-
 function Invoke-BoundedProcess(
     [string]$FilePath,
     [string[]]$Arguments,
@@ -614,158 +695,118 @@ function Invoke-BoundedProcess(
     [int]$DeadlineSeconds,
     [hashtable]$Environment = @{},
     [switch]$ReleaseGatedScript) {
-  if ($DeadlineSeconds -le 0) {
-    throw "$Stage deadline must be positive"
-  }
-  $safeStage = [regex]::Replace($Stage, '[^A-Za-z0-9_-]', '-')
-  $logStem = Join-Path $sweepRoot (
-    $safeStage + '-' + [Guid]::NewGuid().ToString('N'))
-  $stdoutPath = $logStem + '.stdout.log'
-  $stderrPath = $logStem + '.stderr.log'
-  $specPath = $logStem + '.launch.json'
-  $releasePath = $logStem + '.release'
-  $bootstrapPath = $logStem + '.bootstrap.ps1'
-  $process = $null
-  $jobHandle = [IntPtr]::Zero
-  $timedOut = $false
-  $outputLimitExceeded = $false
-  $terminatedIds = @()
-  $output = @()
-  $exitCode = -1
-  $stopwatch = [Diagnostics.Stopwatch]::StartNew()
-  try {
-    if (-not $ReleaseGatedScript) {
-      $launchSpec = [ordered]@{
-        FilePath = $FilePath
-        Arguments = @($Arguments)
-        Environment = $Environment
-      }
-      [IO.File]::WriteAllText(
-        $specPath, ($launchSpec | ConvertTo-Json -Depth 5), $encoding)
-      [IO.File]::WriteAllText($bootstrapPath, @'
-param([string]$SpecPath, [string]$ReleasePath)
-$ErrorActionPreference = 'Stop'
-while (-not (Test-Path -LiteralPath $ReleasePath -PathType Leaf)) {
-  Start-Sleep -Milliseconds 10
+  return Invoke-RMQOwnedBoundedProcess `
+    -FilePath $FilePath `
+    -Arguments $Arguments `
+    -WorkingDirectory $WorkingDirectory `
+    -Stage $Stage `
+    -DeadlineSeconds $DeadlineSeconds `
+    -OutputLimitBytes $StageOutputLimitBytes `
+    -TempRoot $sweepRoot `
+    -Environment $Environment `
+    -ReleaseGatedScript:$ReleaseGatedScript
 }
-$spec = Get-Content -LiteralPath $SpecPath -Raw | ConvertFrom-Json
-foreach ($property in $spec.Environment.PSObject.Properties) {
-  [Environment]::SetEnvironmentVariable(
-    $property.Name, [string]$property.Value, 'Process')
-}
-& ([string]$spec.FilePath) @([string[]]$spec.Arguments)
-if ($null -eq $LASTEXITCODE) { exit 0 }
-exit ([int]$LASTEXITCODE)
-'@, $encoding)
-    } elseif ($Environment.Count -ne 0) {
-      throw "$Stage release-gated scripts cannot receive an environment override"
-    }
-    if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
-      $jobHandle = [RMQReplayJob]::CreateKillOnClose()
-    }
-    $startFilePath = if ($ReleaseGatedScript) { $FilePath } else {
-      (Get-Process -Id $PID).Path
-    }
-    $startArguments = if ($ReleaseGatedScript) {
-      @($Arguments) + @('-LaunchReleasePath', $releasePath)
-    } else {
-      @('-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass',
-        '-File', $bootstrapPath, '-SpecPath', $specPath,
-        '-ReleasePath', $releasePath)
-    }
-    $process = Start-Process -FilePath $startFilePath -ArgumentList $startArguments `
-      -WorkingDirectory $WorkingDirectory -PassThru -NoNewWindow `
-      -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
-    if ($jobHandle -ne [IntPtr]::Zero) {
-      [RMQReplayJob]::Assign($jobHandle, $process.Handle)
-    }
-    # The bootstrap cannot launch the requested tool until its root is owned.
-    [IO.File]::WriteAllText($releasePath, 'assigned', $encoding)
 
-    while (-not $process.WaitForExit(100)) {
-      $bytes = 0L
-      foreach ($path in @($stdoutPath, $stderrPath)) {
-        if (Test-Path -LiteralPath $path -PathType Leaf) {
-          $bytes += (Get-Item -LiteralPath $path).Length
-        }
+try {
+  $initialTrackedState = Get-TrackedState
+  $null = Assert-RMQCleanRepositoryStateText `
+    $initialTrackedState 'M1 replay live baseline'
+  $baselineTrackedState = $initialTrackedState
+  $baselineHashes = Get-LiveHashes
+
+  Invoke-RMQOwnedProcessDeterministicTests
+  Invoke-RMQCleanBaselineFixtureTests `
+    -GitPath ((Get-Command git -CommandType Application -ErrorAction Stop).Source) `
+    -DeadlineSeconds $StageDeadlineSeconds `
+    -OutputLimitBytes $StageOutputLimitBytes `
+    -TempRoot $sweepRoot
+  Assert-LiveIntegrity 'portable-process-and-clean-baseline-self-tests'
+} catch {
+  Write-Host (
+    "M1-MUTATION FAIL [CLEAN-BASELINE/PORTABILITY] $($_.Exception.Message)")
+  try { Remove-SweepRoot } catch {
+    Write-Host "M1-MUTATION FAIL [BASELINE-CLEANUP] $($_.Exception.Message)"
+  }
+  Pop-Location
+  exit 1
+}
+
+function Invoke-SelectorBoundarySelfTest {
+  $wrapperPath = Join-Path $sweepRoot 'selector-boundary-wrapper.ps1'
+  $shellPath = (Get-Process -Id $PID).Path
+  $wrapper = @'
+param([string]$Target, [string]$Mode)
+$ErrorActionPreference = 'Continue'
+switch ($Mode) {
+  'omitted' { & $Target -SelectorBoundaryProbeOnly }
+  'empty' { & $Target -SelectorBoundaryProbeOnly -OnlyCase '' }
+  'whitespace' { & $Target -SelectorBoundaryProbeOnly -OnlyCase ' ' }
+  'zero' { & $Target -SelectorBoundaryProbeOnly -OnlyCase '0' }
+  'unknown' { & $Target -SelectorBoundaryProbeOnly -OnlyCase 'UNKNOWN' }
+  'valid-f21' { & $Target -SelectorBoundaryProbeOnly -OnlyCase 'F21' }
+  'omitted-f21' {
+    & $Target -SelectorBoundaryProbeOnly -OnlyCase 'F21' `
+      -SelectorRegistryFixture OmitF21
+  }
+  'duplicate-f21' {
+    & $Target -SelectorBoundaryProbeOnly -OnlyCase 'F21' `
+      -SelectorRegistryFixture DuplicateF21
+  }
+  default { throw "unknown boundary wrapper mode $Mode" }
+}
+exit ([int]$LASTEXITCODE)
+'@
+  [IO.File]::WriteAllText($wrapperPath, $wrapper, $encoding)
+  $cases = @(
+    [pscustomobject]@{ Mode = 'omitted'; Exit = 0; Token = 'selected=41' },
+    [pscustomobject]@{ Mode = 'valid-f21'; Exit = 0; Token = 'selected=1; ids=F21' },
+    [pscustomobject]@{ Mode = 'empty'; Exit = 1; Token = 'bound empty/whitespace/zero' },
+    [pscustomobject]@{ Mode = 'whitespace'; Exit = 1; Token = 'bound empty/whitespace/zero' },
+    [pscustomobject]@{ Mode = 'zero'; Exit = 1; Token = 'bound empty/whitespace/zero' },
+    [pscustomobject]@{ Mode = 'unknown'; Exit = 1; Token = 'unknown or non-unique' },
+    [pscustomobject]@{ Mode = 'omitted-f21'; Exit = 1; Token = 'registry count mismatch' },
+    [pscustomobject]@{ Mode = 'duplicate-f21'; Exit = 1; Token = 'registry count mismatch' }
+  )
+  try {
+    foreach ($case in $cases) {
+      $result = Invoke-BoundedProcess `
+        -FilePath $shellPath `
+        -Arguments @('-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass',
+          '-File', $wrapperPath, '-Target', $PSCommandPath,
+          '-Mode', $case.Mode) `
+        -WorkingDirectory $repoRoot `
+        -Stage "selector-boundary-$($case.Mode)" `
+        -DeadlineSeconds $StageDeadlineSeconds
+      $joined = $result.Output -join [Environment]::NewLine
+      if ($result.TimedOut -or $result.OutputLimitExceeded -or
+          $result.ExitCode -ne $case.Exit -or
+          -not $joined.Contains($case.Token)) {
+        throw (
+          "boundary $($case.Mode) expected exit=$($case.Exit) " +
+          "token=$($case.Token); observed exit=$($result.ExitCode) " +
+          "timeout=$($result.TimedOut) outputLimit=$($result.OutputLimitExceeded) " +
+          "output=$joined")
       }
-      if ($bytes -gt $StageOutputLimitBytes) {
-        $outputLimitExceeded = $true
-        break
+      if ($case.Exit -ne 0 -and $joined.Contains('M1-MUTATION CASE ')) {
+        throw "boundary $($case.Mode) reached semantic case execution"
       }
-      if ($stopwatch.Elapsed.TotalSeconds -ge $DeadlineSeconds) {
-        $timedOut = $true
-        break
-      }
-    }
-    if ($timedOut -or $outputLimitExceeded) {
-      $terminatedIds = @($process.Id)
-      if ($jobHandle -ne [IntPtr]::Zero) {
-        [RMQReplayJob]::Close($jobHandle)
-        $jobHandle = [IntPtr]::Zero
-      } else {
-        Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-      }
-      [void]$process.WaitForExit(10000)
-    } else {
-      $process.WaitForExit()
-      $exitCode = [int]$process.ExitCode
-      if ($jobHandle -ne [IntPtr]::Zero) {
-        # The root is complete; close ownership now so no residual descendant
-        # can keep writing between the final byte count and bounded read.
-        [RMQReplayJob]::Close($jobHandle)
-        $jobHandle = [IntPtr]::Zero
-      }
-    }
-    $finalBytes = 0L
-    foreach ($path in @($stdoutPath, $stderrPath)) {
-      if (Test-Path -LiteralPath $path -PathType Leaf) {
-        $finalBytes += (Get-Item -LiteralPath $path).Length
-      }
-    }
-    if ($finalBytes -gt $StageOutputLimitBytes) {
-      $outputLimitExceeded = $true
-    }
-    $output = if ($outputLimitExceeded) {
-      @("redirected output exceeded $StageOutputLimitBytes bytes")
-    } else {
-      @(Read-BoundedProcessOutput $stdoutPath $stderrPath)
+      Write-Host (
+        "M1-MUTATION BOUNDARY CONTROL PASS [$($case.Mode)] " +
+        "exit=$($result.ExitCode)")
     }
   } finally {
-    $stopwatch.Stop()
-    if ($jobHandle -ne [IntPtr]::Zero) {
-      [RMQReplayJob]::Close($jobHandle)
-      $jobHandle = [IntPtr]::Zero
-    }
-    if ($null -ne $process -and -not $process.HasExited) {
-      $terminatedIds = @($process.Id)
-      Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-      [void]$process.WaitForExit(10000)
-    }
-    if ($null -ne $process -and
-        $null -ne (Get-Process -Id $process.Id -ErrorAction SilentlyContinue)) {
-      throw "$Stage owned root process $($process.Id) survived cleanup"
-    }
-    Remove-Item -LiteralPath $stdoutPath -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $stderrPath -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $specPath -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $releasePath -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $bootstrapPath -Force -ErrorAction SilentlyContinue
-  }
-  return [pscustomobject]@{
-    Stage = $Stage
-    ExitCode = $exitCode
-    Output = $output
-    TimedOut = $timedOut
-    OutputLimitExceeded = $outputLimitExceeded
-    TerminatedIds = $terminatedIds
-    DurationSeconds = [Math]::Round($stopwatch.Elapsed.TotalSeconds, 3)
-    DeadlineSeconds = $DeadlineSeconds
+    Remove-Item -LiteralPath $wrapperPath -Force -ErrorAction SilentlyContinue
   }
 }
 
-$baselineTrackedState = Get-TrackedState
-$baselineHashes = Get-LiveHashes
+Invoke-SelectorBoundarySelfTest
+Assert-LiveIntegrity 'selector-boundary-self-test'
+
+if ($SelectorSelfTestOnly) {
+  Remove-SweepRoot
+  Pop-Location
+  exit 0
+}
 
 function Invoke-ShadowLean(
     [string]$CaseRoot,
@@ -786,19 +827,6 @@ function Invoke-ShadowLean(
     -Environment @{
       LEAN_PATH = $CaseRoot + $pathSeparator + $baseLeanPath
     }
-}
-
-function Remove-SweepRoot {
-  if (-not (Test-Path -LiteralPath $sweepRoot)) {
-    return
-  }
-  $fullSweepRoot = [IO.Path]::GetFullPath($sweepRoot)
-  $tempRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
-  if (-not $fullSweepRoot.StartsWith(
-      $tempRoot, [StringComparison]::OrdinalIgnoreCase)) {
-    throw "refusing to remove sweep root outside temp: $fullSweepRoot"
-  }
-  Remove-Item -LiteralPath $fullSweepRoot -Recurse -Force
 }
 
 function Invoke-DeadlineSelfTest {
@@ -863,7 +891,7 @@ try {
   exit 1
 }
 
-if ($DeadlineSelfTestOnly) {
+if ($DeadlineSelfTestOnly -or $PortabilitySelfTestOnly) {
   try {
     Assert-LiveIntegrity 'deadline-self-test-only-final'
     Remove-SweepRoot
@@ -984,7 +1012,7 @@ function Run-Case(
     [string]$Id,
     [string]$Verdict,
     [scriptblock]$Body) {
-  if ($OnlyCase -ne '' -and $Id -cne $OnlyCase) {
+  if ($onlyCaseWasBound -and $Id -cne $OnlyCase) {
     return
   }
   $registryEntry = @($caseRegistry | Where-Object { $_.Id -ceq $Id })
@@ -1220,7 +1248,7 @@ $fields = @(
     Where-Object { $_.Id -cmatch '^F[0-9][0-9]$' }
 )
 
-$runLabel = if ($OnlyCase -eq '') {
+$runLabel = if (-not $onlyCaseWasBound) {
   '41 cases (F01-F24, Q01-Q11, P01-P05, C01)'
 } else {
   "focused case $OnlyCase"
@@ -1646,7 +1674,7 @@ Run-Case 'C01' 'ACCEPT' {
   $initializerStart =
     '      exact_dynamic_logical_store_agreement := by' + $lf
   $initializerEnd =
-    '      physical_value_projection_of_valid :='
+    '      safe_logical_store_agreement := by'
   $start = $text.IndexOf(
     $initializerStart, [StringComparison]::Ordinal)
   if ($start -lt 0) {
@@ -1686,7 +1714,7 @@ if ($failures -ne 0) {
   exit 1
 }
 $expectedEntries = @(
-  if ($OnlyCase -eq '') {
+  if (-not $onlyCaseWasBound) {
     $caseRegistry
   } else {
     $caseRegistry | Where-Object { $_.Id -ceq $OnlyCase }
@@ -1716,7 +1744,7 @@ if ($rejectPasses -ne $expectedRejects -or $acceptPasses -ne $expectedAccepts) {
     "reject=$rejectPasses accept=$acceptPasses)")
   exit 1
 }
-if ($OnlyCase -eq '') {
+if (-not $onlyCaseWasBound) {
   Write-Host (
     'M1-MUTATION PASS (41 executed; 40 expected rejects; 1 expected accept; ' +
     'live hashes/tracked state unchanged)')

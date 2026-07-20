@@ -872,9 +872,12 @@ theorem concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint_o
   rw [concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint_iff]
   intro segment index word? hmem
   apply hfoot segment index
-  exact
-    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint
+  have hlt : segment < 23 :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read_segment_lt
       shape storeA left right hmem
+  unfold concreteBPNativeSuccinctRMQWholeQueryReadFootprint
+  unfold concreteBPNativeDeadTraceSegment
+  omega
 
 /--
 Safe final-layout agreement determines the complete supplied-store execution

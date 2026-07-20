@@ -4457,3 +4457,79 @@ Reviewers can cite one proposition-level certificate and guarded list packet
 without inferring that a nearby cost theorem applies to the same execution.
 S1 raw serialized-payload querying and E1 charged-controller simulation remain
 separate theorem obligations.
+
+## DD-20260720-001: derive safe-store equality from execution-structural source containment
+
+Status: Candidate decision; coordinator acceptance pending.
+
+Date: 2026-07-20
+
+Context:
+
+The rejected M1-R5 candidate ended at a true safe-store equality, but its
+purportedly primary route was circular. Its supplied-store read-containment
+proof first used the legacy safe complete-result equality, then recovered the
+read set of the changed execution, and only afterward invoked the ordered
+dynamic-read theorem. Reordering wrappers downstream did not remove that
+load-bearing dependency. The public packet also carried only the dynamic
+logical agreement, so a reader could not inspect the intended safe corollary
+at the literal paper-theorem boundary.
+
+Decision:
+
+Prove
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read_segment_lt`
+directly by following the actual supplied-store evaluator: fixed-width select
+tables, rank callbacks, BP-window reads, charged fringe and select chunks, the
+segment-20 interior evaluator, LCA branching, individual whole-query
+instructions, and the folded `WholeQueryProgram`. Every successful or failed
+`readWord segment index word?` event in the resulting trace therefore has
+`segment < 23`, independently of store contents or any complete-result
+equality. Derive safe-footprint containment and the safe-to-dynamic agreement
+bridge from that theorem. Then derive the current safe complete-result alias
+through the existing ordered-dynamic complete-`TraceResult` equality.
+
+Expose the safe logical equality as a guarded field of
+`ReviewerNativeMachineAdequacy`, consume that field literally in
+`listIntSuccinctRMQPaperMainTheorem`, and pin the stronger proposition in the
+independently written expected type. Retain the old
+`...store_parametric_of_footprint` declaration only for compatibility. A
+production topology mutation and the M1 replay's body-aware anti-bypass check
+both reject reinserting it into the current chain.
+
+Rejected alternatives:
+
+- Keep the circular containment proof because its final proposition happens
+  to be true.
+- Treat declaration-name inventory or source grep as the mathematical proof
+  of segment containment.
+- Delete or rename the legacy theorem, breaking compatibility instead of
+  isolating it.
+- Prove only value or cost equality under safe agreement rather than equality
+  of the complete trace result.
+- Add a sibling evaluator, new cost literal, raw serialized-payload query, or
+  E1 controller semantics to avoid proving the actual execution theorem.
+
+Consequences and evidence:
+
+- The repaired dependency chain is execution/program/source topology -> typed
+  `segment < 23` containment -> safe agreement implies ordered dynamic
+  agreement -> ordered-dynamic complete-result equality -> current safe alias
+  -> guarded list packet -> literal paper theorem -> independent expected-type
+  checker.
+- The 24-field reviewer certificate, its 24-field independent required-facts
+  proposition, the same-execution `<= 210` derivation, physical source map,
+  event trace, payload, and half-open leftmost semantics are unchanged.
+- Safe logical equality is an additional guarded public conjunct over the same
+  query object; dynamic supplied-store agreement remains the primary theorem.
+- Focused StoreParam, Classic, and Headline builds check the formal chain. The
+  committed replay and topology controls check the dependency architecture;
+  neither substitutes for Lean elaboration.
+
+Publication-facing significance:
+
+A reviewer can now verify why every read touched by the supplied execution is
+inside the declared safe layout without assuming the very store-equality
+corollary being justified. S1 bit-addressed payload querying, E1 fully charged
+control, preprocessing, and conventional word-RAM complexity remain separate
+obligations.

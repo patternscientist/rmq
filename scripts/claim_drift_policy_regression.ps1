@@ -4,6 +4,7 @@
 param(
   [string]$PolicyPath = "docs/internal/CLAIM_DRIFT_POLICY.json",
   [string]$ScannerPath = "scripts/claim_drift_scan.ps1",
+  [string]$OnlyCase = "",
   [switch]$AbsoluteWindowsOnly
 )
 
@@ -69,6 +70,18 @@ if ($currentEventVocabularyTerm.Count -ne 1 -or
     -not [bool]$currentEventVocabularyTerm[0].strict -or
     [string]$currentEventVocabularyTerm[0].scope -ne 'current-fact-surface') {
   Write-Host "CLAIM-POLICY-REGRESSION: FAIL [r1r2-48147cb-current-event-vocabulary-config]"
+  exit 1
+}
+$eventSilentTerm = @(
+  $policyObject.terms |
+    Where-Object id -eq 'forbidden-unqualified-no-event-silent-computation'
+)
+if ($eventSilentTerm.Count -ne 1 -or
+    -not [bool]$eventSilentTerm[0].strict -or
+    [string]$eventSilentTerm[0].scope -ne 'current-fact-surface' -or
+    [string]$eventSilentTerm[0].pattern -notmatch 'event\[- \]silent' -or
+    [string]$eventSilentTerm[0].allowedLineRegex -notmatch 'historical') {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [m1r5-event-silent-category-config]"
   exit 1
 }
 $readWordAttribution = @(
@@ -227,6 +240,8 @@ $fixtures = @(
   @{ id = "r1r3-bad14d0-artifact-readme-missing-strong-alias"; relativePath = "artifact/README.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "Every accepted emitted event is a payload read." },
   @{ id = "r1r3-current-readword-strong-attribution-control"; relativePath = "docs/PAPER_MAIN_THEOREM.md"; reject = $false; termId = "required-current-readword-only-theorem-attribution"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly proves every actual emitted event is readWord." },
   @{ id = "r1r3-accurate-weaker-attribution-control"; relativePath = "docs/WHAT_IS_PROVED.md"; reject = $false; termId = "required-current-readword-only-theorem-attribution"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly is the strong readWord-only theorem. RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect is a weaker compatibility alias." },
+  @{ id = "m1r5-unqualified-no-event-silent-computation-rejected"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $true; termId = "forbidden-unqualified-no-event-silent-computation"; text = "There is no event-silent computation left on the accepted route." },
+  @{ id = "m1r5-bounded-event-silent-distinction-accepted"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $false; termId = "forbidden-unqualified-no-event-silent-computation"; text = "No input-size-dependent or unbounded event-silent loop remains; bounded event-silent dispatch, decoding, arithmetic, branching, merging, trace assembly, and guards remain." },
 
   @{ id = "negated-canonical"; reject = $false; allowedMatch = $true; text = "No canonical execution theorem uses 2^128 as an activation premise." },
   @{ id = "negated-current-canonical"; reject = $false; allowedMatch = $true; text = "No current canonical reviewer route has 2 ^ 128 as an activation premise." },
@@ -332,6 +347,8 @@ r1r3-bad14d0-what-is-proved-missing-strong-alias
 r1r3-bad14d0-artifact-readme-missing-strong-alias
 r1r3-current-readword-strong-attribution-control
 r1r3-accurate-weaker-attribution-control
+m1r5-unqualified-no-event-silent-computation-rejected
+m1r5-bounded-event-silent-distinction-accepted
 negated-canonical
 negated-current-canonical
 negative-inside-clause
@@ -351,8 +368,8 @@ canonical-paper-alias
 legacy-paper-alias
 '@ -split "\r?\n" | Where-Object { $_ }
 
-$expectedRejectCount = 68
-$expectedAcceptCount = 33
+$expectedRejectCount = 69
+$expectedAcceptCount = 34
 $expectedContextCount = 15
 $expectedContextFixtureIds = @(
   "policy-path-allowance",
@@ -441,6 +458,26 @@ if (Test-FixtureRegistry -Registry $verdictDriftRegistry -ExpectedIds $expectedF
 }
 Write-Host "CLAIM-POLICY-REGRESSION: PASS [verdict-count-drift-control] REJECT"
 Write-Host "CLAIM-POLICY-REGRESSION: PASS [exact-fixture-registry] $($fixtures.Count) ordered fixtures"
+
+if ($AbsoluteWindowsOnly -and $OnlyCase -ne '') {
+  Write-Host 'CLAIM-POLICY-REGRESSION: FAIL OnlyCase and AbsoluteWindowsOnly are mutually exclusive'
+  exit 1
+}
+$selectedFixtures = @(
+  if ($OnlyCase -eq '') {
+    $fixtures
+  } else {
+    $fixtures | Where-Object { ([string]($_['id'])) -ceq $OnlyCase }
+  }
+)
+if ($selectedFixtures.Count -ne $(if ($OnlyCase -eq '') { $fixtures.Count } else { 1 })) {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL unknown or non-unique OnlyCase $OnlyCase"
+  exit 1
+}
+$selectedRejectCount = @(
+  $selectedFixtures | Where-Object { [bool]$_.reject }).Count
+$selectedAcceptCount = @(
+  $selectedFixtures | Where-Object { -not [bool]$_.reject }).Count
 
 $shellPath = (Get-Process -Id $PID).Path
 $absoluteFixtureRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("claim-drift-policy-regression-" + [Guid]::NewGuid().ToString("N"))
@@ -750,7 +787,7 @@ try {
   if ($AbsoluteWindowsOnly) {
     Test-AbsoluteWindowsScannerPath
   } else {
-    foreach ($fixture in $fixtures) {
+    foreach ($fixture in $selectedFixtures) {
       $fixturePath = if ($fixture.ContainsKey("relativePath")) {
         [string]$fixture.relativePath
       } else {
@@ -774,12 +811,13 @@ try {
       }
     }
 
-    Test-FinalVerdict -Id "policy-path-allowance" -Path "docs/internal/CLAIM_DRIFT_POLICY.md" -Reject $false -RequireAllowed $true -ContextCase $true
+    if ($OnlyCase -eq '') {
+      Test-FinalVerdict -Id "policy-path-allowance" -Path "docs/internal/CLAIM_DRIFT_POLICY.md" -Reject $false -RequireAllowed $true -ContextCase $true
 
-    $markedShadow = New-ShadowMatrixRoot -Content '| `POLICY-R3` | The canonical execution requires 2^128. |'
-    Test-FinalVerdict -Id "matrix-marked-row-allowance" -Path $markedShadow.RelativeMatrixPath -WorkingDirectory $markedShadow.Root -Reject $false -RequireAllowed $true -CheckTrackedState $true -ContextCase $true
+      $markedShadow = New-ShadowMatrixRoot -Content '| `POLICY-R3` | The canonical execution requires 2^128. |'
+      Test-FinalVerdict -Id "matrix-marked-row-allowance" -Path $markedShadow.RelativeMatrixPath -WorkingDirectory $markedShadow.Root -Reject $false -RequireAllowed $true -CheckTrackedState $true -ContextCase $true
 
-    Test-AbsoluteWindowsScannerPath
+      Test-AbsoluteWindowsScannerPath
 
     $unmarkedShadow = New-ShadowMatrixRoot -Content 'The canonical execution requires 2^128.'
     Test-FinalVerdict -Id "matrix-filename-does-not-bypass" -Path $unmarkedShadow.RelativeMatrixPath -WorkingDirectory $unmarkedShadow.Root -Reject $true -CheckTrackedState $true -ContextCase $true
@@ -826,7 +864,7 @@ The historical canonical manifest was a typed 20-source universe.
 Fresh unused segment 21 was rejected in that frozen candidate.
 The historical global positions 0 and 12 were distinct.
 '@
-    foreach ($historicalTerm in @(
+      foreach ($historicalTerm in @(
         'forbidden-retired-current-cost-bound',
         'forbidden-retired-current-source-count',
         'forbidden-retired-fresh-segment-21',
@@ -837,6 +875,7 @@ The historical global positions 0 and 12 were distinct.
         -WorkingDirectory $historicalR1Shadow.Root `
         -Reject $false -RequireAllowed $true -TermId $historicalTerm `
         -CheckTrackedState $true -ContextCase $true
+      }
     }
   }
 } finally {
@@ -849,7 +888,7 @@ The historical global positions 0 and 12 were distinct.
 }
 
 $contextCount = $observedContextIds.Count
-if (-not $AbsoluteWindowsOnly) {
+if (-not $AbsoluteWindowsOnly -and $OnlyCase -eq '') {
   $contextRegistryValid =
     $observedContextIds.Count -eq $expectedContextFixtureIds.Count -and
     @($observedContextIds | Group-Object | Where-Object Count -ne 1).Count -eq 0
@@ -870,11 +909,11 @@ if (-not $AbsoluteWindowsOnly) {
 }
 
 if (-not $AbsoluteWindowsOnly -and (
-    $rejectCount -ne $expectedRejectCount -or
-    $acceptCount -ne $expectedAcceptCount -or
-    $contextCount -ne $expectedContextCount
+    $rejectCount -ne $selectedRejectCount -or
+    $acceptCount -ne $selectedAcceptCount -or
+    $contextCount -ne $(if ($OnlyCase -eq '') { $expectedContextCount } else { 0 })
   )) {
-  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [final-verdict-counts] expected $expectedRejectCount reject, $expectedAcceptCount accept, $expectedContextCount context; got $rejectCount reject, $acceptCount accept, $contextCount context"
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [final-verdict-counts] expected $selectedRejectCount reject, $selectedAcceptCount accept, $(if ($OnlyCase -eq '') { $expectedContextCount } else { 0 }) context; got $rejectCount reject, $acceptCount accept, $contextCount context"
   $failures += 1
 }
 

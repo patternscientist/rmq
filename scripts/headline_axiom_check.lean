@@ -53,6 +53,7 @@ profiles are checked by broader inventories, not promoted here.
 #print axioms RMQ.Headlines.succinctRMQReviewerMachineRequiredFacts
 #print axioms RMQ.Headlines.listIntSuccinctRMQReviewerNativeMachineAdequacy
 #print axioms RMQ.Headlines.listIntSuccinctRMQQueryTraceResultWithStoreEqOfOrderedReadFootprint
+#print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadSegmentLt
 #print axioms RMQ.Headlines.succinctRMQReviewerPhysicalWordsErasePublicPayload
 #print axioms RMQ.Headlines.succinctRMQReviewerPhysicalFootprintRecorded
 #print axioms RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical
@@ -309,6 +310,12 @@ def M1ReviewerNativeExpectedPaperType : Prop :=
       (forall (storeA storeB : RMQ.WordRAM.ReadStore) left right,
         RMQ.SuccinctClassic.storesAgreeOnOrderedReadFootprint
             xs storeA storeB left right ->
+          RMQ.SuccinctClassic.queryTraceResultWithStore
+              xs storeA left right =
+            RMQ.SuccinctClassic.queryTraceResultWithStore
+              xs storeB left right) /\
+      (forall (storeA storeB : RMQ.WordRAM.ReadStore) left right,
+        RMQ.SuccinctClassic.storesAgreeOnFootprint xs storeA storeB ->
           RMQ.SuccinctClassic.queryTraceResultWithStore
               xs storeA left right =
             RMQ.SuccinctClassic.queryTraceResultWithStore

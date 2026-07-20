@@ -1232,3 +1232,46 @@ compiling a weakened 211 certificate and paper theorem, then requiring the
 independent 210 expected type to reject it; the other 40 reject/one accept cases
 probe every field and public link. Coordinator exact-commit reconstruction and
 a fresh-blind audit remain mandatory before acceptance.
+
+## 2026-07-20 M1-R5-R1 Safe-Store and Portable-Replay Repair
+
+The rejected M1-R5 result had the right safe-store equality but the wrong
+reason for it: read containment depended on the older safe complete-result
+theorem, so the later dynamic-store wrapper did not make dynamic agreement
+genuinely primary. M1-R5-R1 follows the actual supplied-store program instead.
+It proves that every emitted `readWord` event uses a logical segment below
+`23`, carries that fact through the safe footprint, converts safe agreement to
+agreement on the first execution's ordered reads, and only then applies the
+ordered-dynamic complete-result theorem. The guarded list packet and literal
+paper theorem now expose the safe corollary, and the independent expected type
+pins it.
+
+Plain English: changing memory outside the addresses the query can actually
+read cannot change its value, trace, or modeled cost. We now know which
+addresses it can read by inspecting the evaluator's select, rank, LCA, fringe,
+interior, instruction, and program structure—not by first assuming the two
+executions are already equal.
+
+The evidence machinery was repaired at the same boundary. Omitted selection
+is distinct from explicitly empty selection; every mutation harness starts
+from a genuinely clean repository; Windows owns descendants with a Job Object;
+POSIX owns them with a `setsid` process group; output and deadlines are
+bounded; and child-spawning sleepers test cleanup. The exact 41 semantic cases
+and 16 topology cases are unchanged. The final aggregate gate, rather than a
+redundant standalone rerun, owns each full suite once.
+
+Live assumptions remain. The route queries a supplied word-addressed store,
+not raw serialized `List Bool` payload bits. Only payload reads are charged in
+the current model; bounded instruction dispatch, decoding, arithmetic,
+branching, candidate merging, trace assembly, and guards remain uncharged.
+The accurate claim is that no input-size-dependent or unbounded event-silent
+loop remains. E1 must still charge controller steps explicitly, and S1 must
+still connect serialized payload bits to querying.
+
+A skeptical graduate student should ask whether the structural source proof
+really covers every callback and both LCA branches, and whether the legacy
+safe theorem can slip back into the public chain unnoticed. The focused Lean
+builds answer the first question; the load-bearing body checks plus the
+`R1LEGACY` mutation answer the second. Native Ubuntu process-group execution,
+fresh-blind exact-commit audit, coordinator acceptance, and integration remain
+downstream steps.

@@ -291,8 +291,11 @@ What remains uncharged on the accepted route after B6 is exactly the register
 list above, and it is bounded per step at every leg: each charged read is
 followed by a constant-shape mixed-radix unpack of one table entry and a
 constant number of comparisons/merges, with no remaining loop whose trip count
-depends on input size. There is no event-silent computation left on the
-accepted route. The E1 machine (the amended
+depends on input size. No input-size-dependent or unbounded event-silent loop
+remains on the accepted route. Bounded event-silent computation does remain:
+instruction dispatch, register moves, fixed-width decoding, bounded
+arithmetic/comparison, option tests, branching, candidate merging, trace
+assembly, and validity guards. The E1 machine (the amended
 E1 target of `OPTION_B_CHARGED_FRINGE_DESIGN.md`) will define the richer
 instruction semantics that individually charges every controller, decode,
 arithmetic, comparison, branch, and register step, and prove a separate
@@ -357,18 +360,22 @@ RMQ.Headlines.succinctRMQFinalFullModelSoundness
 
 It packages the facts that reads match the caller-provided `WordRAM.ReadStore`,
 the concrete global read store instance recovers the canonical final trace and
-interpreter refinement, no synthetic cost-only events appear, and agreement on
-the final layout footprint gives store-parametricity and equality with the
-canonical global trace.
+interpreter refinement, and no synthetic cost-only events appear. The primary
+store-parametric theorem is exact agreement on the first execution's ordered
+dynamic reads, which gives equality of the complete `TraceResult`.
 
 The logical supplied-store packet also retains a safe final-layout
-overapproximation; that auxiliary footprint is not claimed minimal. In
-contrast, the reviewer flat-physical footprint is execution-derived and is
-exactly the read projection consumed by that execution. The current
-full-model packet includes the theorem that every emitted supplied-store and
-canonical payload-read event lies inside that safe footprint; exactness then
-transfers to any supplied store agreeing with the canonical global store on the
-footprint.
+overapproximation; that auxiliary footprint is not claimed minimal.
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadSegmentLt`
+proves directly from the select/rank/LCA/fringe/interior instruction and
+program topology that every supplied-store read has logical `segment < 23`.
+Thus safe agreement implies agreement on the exact ordered dynamic reads, and
+the dynamic complete-result theorem yields the current safe corollary. The
+older shape-level `...StoreParametric` identity remains available only as a
+legacy compatibility theorem and is not in this current dependency chain. In
+contrast to the safe overapproximation, the reviewer flat-physical footprint
+is execution-derived and is exactly the read projection consumed by that
+execution.
 
 ## Compatibility Boundary
 
