@@ -3,7 +3,9 @@ import RMQ.Core.WordRAM.E1SelectCanonical
 import RMQ.Core.WordRAM.E1CandMerge3
 import RMQ.Core.WordRAM.E1CrossBlockArm
 import RMQ.Core.WordRAM.E1FringeArmProgram
+import RMQ.Core.WordRAM.E1FringeFoldProgram
 import RMQ.Core.WordRAM.E1InteriorChunkFold
+import RMQ.Core.WordRAM.E1CostAlgebra
 
 /-!
 # M6: executable validation of the E1 amended machine
@@ -1533,14 +1535,21 @@ eight-capped chunk fold states the same kind of clause --
 headline `interiorChunkFold_runsTo` (`E1InteriorChunkFold.lean:1835`) --
 and until this phase NOTHING executed it.
 
-A CORRECTION THIS PHASE FORCES.  It is natural to describe this as
-porting a check the fringe side already runs on its fold.  The fringe
-side does not run one.  Phase 3h runs `FringeArmUntouched`
-(`E1FringeArmBlock.lean:951`), the ARM's write set; the fringe FOLD's own
-clause, `FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`), is
-unexecuted too, and the string `FringeFoldUntouched` does not occur in
-this file.  So this is the FIRST executed fold-level preservation check
-in the tree, on either side, not a port of an existing one.
+A CORRECTION THIS PHASE FORCES, AND ITS OWN LATER SUPERSESSION.  It is
+natural to describe this phase as porting a check the fringe side already
+runs on its fold.  When this phase landed, the fringe side did not run
+one: phase 3h runs `FringeArmUntouched` (`E1FringeArmBlock.lean:951`),
+the ARM's write set, and the fringe FOLD's own clause,
+`FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`), was unexecuted.  So
+this WAS the first executed fold-level preservation check in the tree, on
+either side, and not a port of an existing one.
+
+That is now history rather than current fact, and the sentence this note
+originally carried -- "the string `FringeFoldUntouched` does not occur in
+this file" -- became FALSE when phases 3k/4j landed below (`:2010`
+onward), which execute exactly that clause.  Corrected here rather than
+left standing: a note that asserts its own file's contents is checkable by
+`grep`, and one that has stopped being true is worse than no note.
 
 WHY THE SENTINELS MATTER, restated for the interior's bank rather than
 borrowed.  The fold's own hosting witness seeds `fun _ => 0` and writes
@@ -1824,6 +1833,399 @@ Detection therefore does not depend on the mutant writing a value that
 happens to differ from the seed. -/
 theorem chunkPres_target_seed_outside_written_range :
     presSentinel chunkClobberTarget = 717 := rfl
+
+/-! ## REQ-E1-05: the guard skeleton, EXECUTED on invalid fixtures
+
+REQ-E1-05's Evidence-needed column asks for the invalid guard to be
+"exercised on empty, reversed, and out-of-bounds fixtures in Lean examples
+and in the validator".  The Lean examples exist
+(`programSkeleton_invalid_matches_public_guard`, `E1QueryBridge.lean:55`,
+universally quantified over `validPath`).  The validator half did not: nothing
+outside `E1QueryProgram.lean`, `E1QueryBridge.lean` and
+`E1WholeQueryPublic.lean` mentioned `programSkeleton`, and this harness never
+ran it.  These fixtures RUN it.
+
+**WHY THERE ARE VALID CONTROLS, and why the phase would be worthless without
+them.**  A sweep containing only invalid ranges cannot distinguish the real
+guard from a machine that rejects EVERYTHING -- `const regOut 0; halt` at
+`pc = 0` passes every invalid check below.  So the sweep carries valid
+controls whose required outcome is the OPPOSITE: they must reach the stub
+valid path and leave a non-`none` packet.  `guardAcceptedCount` is the
+anti-vacuity metric, and it is asserted `> 0` in the verdict rather than
+merely printed.
+-/
+
+/-- Stub valid path for the guard fixtures: write a non-`none` packet and
+halt.  Its only job is to be DISTINGUISHABLE from the invalid exit, so that a
+valid control which reaches it is visibly not a rejection. -/
+def guardStubValidPath : List Instr :=
+  [ .const E1Query.regOut 1, .halt ]
+
+/-- Any store: the guard performs no read.  This one answers every address
+with a non-empty word, so a stray read would both register in the receipt AND
+perturb a value -- a store answering `none` would hide the second effect. -/
+def guardStore : ReadStore := ⟨fun _ _ => some [true]⟩
+
+structure GuardReport where
+  family : String
+  expectedValid : Bool
+  n : Nat
+  left : Nat
+  right : Nat
+  halted : Bool
+  modeledSteps : Nat
+  readCount : Nat
+  memoryReadCharges : Nat
+  packetIsNone : Bool
+  ok : Bool
+deriving Repr
+
+/-- RUN the guard skeleton on one fixture and check the whole REQ-E1-05
+clause list: halts, `none` packet, EMPTY receipt, zero memory-read charge,
+and at most ten charged steps.  Valid controls are checked for the opposite
+outcome. -/
+def runGuard (salt : Nat) (build : E1Machine.Program -> E1Machine.Program)
+    (family : String) (expectedValid : Bool)
+    (n left right : Nat) : GuardReport :=
+  let program := build (E1Query.programSkeleton n guardStubValidPath)
+  let result :=
+    E1Machine.run guardStore program (64 + salt)
+      (E1Query.initialState left right)
+  let isNone :=
+    E1Query.decodePacket (result.final.regs E1Query.regOut) == none
+  { family := family
+    expectedValid := expectedValid
+    n := n, left := left, right := right
+    halted := result.final.halted
+    modeledSteps := result.steps
+    readCount := result.readLog.length
+    memoryReadCharges := catCount result.catLog Category.memoryRead
+    packetIsNone := isNone
+    ok :=
+      if expectedValid then
+        result.final.halted && !isNone
+      else
+        result.final.halted && isNone && result.readLog.isEmpty &&
+          catCount result.catLog Category.memoryRead == 0 &&
+          result.steps <= 10 }
+
+/-- The three invalid families REQ-E1-05 names, plus valid controls.
+`n` is the modelled input length; `left`/`right` the query operands. -/
+def guardCases : List (String × Bool × Nat × Nat × Nat) :=
+  [ ("empty",        false, 0, 0, 0)
+  , ("empty",        false, 0, 0, 1)
+  , ("emptyRange",   false, 8, 3, 3)
+  , ("emptyRange",   false, 8, 0, 0)
+  , ("reversed",     false, 8, 5, 2)
+  , ("reversed",     false, 8, 7, 1)
+  , ("outOfBounds",  false, 8, 0, 9)
+  , ("outOfBounds",  false, 8, 3, 100)
+  , ("valid",        true,  8, 0, 8)
+  , ("valid",        true,  8, 2, 5)
+  , ("valid",        true,  1, 0, 1) ]
+
+def goodGuard : E1Machine.Program -> E1Machine.Program := id
+
+/--
+MUTANT J: disable the OUT-OF-BOUNDS half of the guard, leaving the
+empty/reversed half intact.
+
+Instruction `7` of the skeleton is `brNZ regG invalidBase`, the branch taken
+when `right <= n` FAILS.  The mutant repoints its CONDITION register from
+`regG` (the live negation flag) to `regZero`, which the prologue pins to `0`,
+so the branch is never taken and an out-of-bounds query falls through into
+the valid path.
+
+It is the "right shape, wrong content" defect class at the guard: the program
+has the SAME length and the SAME per-instruction category log -- a `brNZ` is
+still a `brNZ` -- so neither a length check nor a category-shape check can see
+it.  What sees it is that two of the eight invalid fixtures stop being
+rejected.
+-/
+def mutatedGuardBounds (p : E1Machine.Program) : E1Machine.Program :=
+  p.set 7 (.brNZ E1Query.regZero (8 + guardStubValidPath.length))
+
+def guardMutationIsReal : Bool :=
+  let honest := E1Query.programSkeleton 8 guardStubValidPath
+  let mutant := mutatedGuardBounds honest
+  honest != mutant && honest.length == mutant.length &&
+    honest.map Instr.category == mutant.map Instr.category
+
+def guardReports (salt : Nat)
+    (build : E1Machine.Program -> E1Machine.Program) : List GuardReport :=
+  guardCases.map fun (family, expectedValid, n, left, right) =>
+    runGuard salt build family expectedValid n left right
+
+def guardFailures (rs : List GuardReport) : Nat :=
+  (rs.filter (fun r => !r.ok)).length
+
+/-- Invalid fixtures that actually reached the guarded `none` packet. -/
+def guardRejectedCount (rs : List GuardReport) : Nat :=
+  (rs.filter (fun r => !r.expectedValid && r.packetIsNone)).length
+
+/-- ANTI-VACUITY METRIC: valid controls the guard did NOT reject.  A machine
+that rejects everything scores `0` here and passes every other check in this
+phase. -/
+def guardAcceptedCount (rs : List GuardReport) : Nat :=
+  (rs.filter (fun r => r.expectedValid && !r.packetIsNone)).length
+
+/-- Worst charged step count over the invalid fixtures, against the frozen
+`<= 10` of `guardRejectCats_length_le`. -/
+def guardMaxInvalidSteps (rs : List GuardReport) : Nat :=
+  (rs.filter (fun r => !r.expectedValid)).foldl
+    (fun acc r => Nat.max acc r.modeledSteps) 0
+
+/-- Every fixture, invalid and valid alike, meets its own clause list. -/
+theorem guard_all_cases_ok : guardFailures (guardReports 0 goodGuard) = 0 :=
+  rfl
+
+/-- All eight invalid fixtures reach the guarded `none` packet. -/
+theorem guard_invalid_all_rejected :
+    guardRejectedCount (guardReports 0 goodGuard) = 8 := rfl
+
+/-- ANTI-VACUITY, kernel-checked: all three valid controls are ACCEPTED, so
+the phase is not passing merely because the machine rejects everything. -/
+theorem guard_valid_controls_accepted :
+    guardAcceptedCount (guardReports 0 goodGuard) = 3 := rfl
+
+/-- The invalid path's charged step count never exceeds the frozen `10`. -/
+theorem guard_invalid_steps_within_ten :
+    guardMaxInvalidSteps (guardReports 0 goodGuard) = 10 := rfl
+
+/-- The mutation is REAL and SHAPE-PRESERVING: a different program, of the
+same length, with the identical per-instruction category log. -/
+theorem guard_mutation_is_real : guardMutationIsReal = true := rfl
+
+/-- MUTANT J IS CAUGHT: the THREE fixtures whose rejection depends on the
+`right <= n` test stop being rejected -- the two labelled `outOfBounds` plus
+`("empty", n = 0, 0, 1)`, which is an out-of-bounds query at an empty list --
+so the rejected count falls from `8` to `5`. -/
+theorem guard_mutantJ_caught :
+    guardRejectedCount (guardReports 0 mutatedGuardBounds) = 5 := rfl
+
+/-- ...and it is caught by REJECTION, not by the phase falling over: the
+mutant still ACCEPTS all three valid controls, exactly as the honest guard
+does.  So the discriminator is the invalid half specifically, and a harness
+checking only that valid queries survive would MISS this defect entirely. -/
+theorem guard_mutantJ_still_accepts_valid_controls :
+    guardAcceptedCount (guardReports 0 mutatedGuardBounds) = 3 := rfl
+
+/-! ## Phase 3k/4j: the FRINGE fold's OWN preservation clause, executed
+
+Phase 3h runs the fringe ARM and checks `FringeArmUntouched`.  Phase 3i
+runs the INTERIOR fold and checks `ChunkFoldUntouched`.  The fringe FOLD's
+own clause, `FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`), was
+executed by neither, and the note at the head of phase 3i says so.
+
+WHY IT CANNOT BE FOLDED INTO PHASE 3H.  `FringeFoldUntouched`
+(`r < 40 ∨ 63 ≤ r`) is STRICTLY STRONGER than `FringeArmUntouched`
+(`r < 40 ∨ (63 ≤ r ∧ r ≠ 67 ∧ r ≠ 68)`).  Running the whole arm and
+checking the fold's predicate would FAIL at `67` and `68` -- and fail
+CORRECTLY, because the arm's prologue writes them while the fold does not.
+The observation would say nothing about the fold.  So the fold is run
+STANDALONE at its own loop base, on
+`E1FringeFoldProgram.foldWitnessProgram` (base `2`, exit `69`), whose four
+hosting facts are discharged against `fringeFoldLoop_runsTo_accepted`'s
+hypotheses in `foldWitnessProgram_hosts`.
+
+The checked bank is `40..62` exactly, which is the fold's OWN write set
+(`fOne = 40` through `fX = 62`), so this is the block's own clause and not
+a neighbour's borrowed one.
+-/
+
+/-- Register file for a fringe-fold fixture: every register carries its
+distinct sentinel, then the fold's twelve declared inputs are written over.
+Seeded from `fun _ => 0` this phase would be VACUOUS -- a block that zeroes
+a register it does not own still "preserves" it -- so `presSentinel` is
+reused here for the same reason phase 3h gives. -/
+def foldPresRegs (c relLo relHi seed count w0 w1 w2 w3 : Nat) : RegFile :=
+  RegFile.write (RegFile.write (RegFile.write (RegFile.write
+    (RegFile.write (RegFile.write (RegFile.write (RegFile.write
+      (RegFile.write (RegFile.write (RegFile.write (RegFile.write
+        presSentinel E1FringeFoldBlock.fOne 1) E1FringeFoldBlock.fC c)
+        E1FringeFoldBlock.fLo relLo) E1FringeFoldBlock.fHi relHi)
+        E1FringeFoldBlock.fJC 0) E1FringeFoldBlock.fCnt count)
+        E1FringeFoldBlock.fAcc seed) E1FringeFoldBlock.fBV 0)
+        E1FringeFoldBlock.fW0 w0) E1FringeFoldBlock.fW1 w1)
+        E1FringeFoldBlock.fW2 w2) E1FringeFoldBlock.fW3 w3
+
+/-- The registers `FringeFoldUntouched` claims survive the fold, as a
+concrete list over the bank the machine actually uses.  Mirrors the
+predicate `r < 40 ∨ 63 ≤ r` literally. -/
+def foldUntouchedRegs : List Nat :=
+  (List.range 110).filter fun r => r < 40 || 63 <= r
+
+/-- Fixtures: window word, segment, chunk width, word width, then the
+fold's range, seed, trip count and four window registers.  The trip counts
+are all `> 0`, so every fixture runs at least one full pass. -/
+def foldPresCases :
+    List (List Bool × Nat × Nat × Nat × Nat × Nat × Nat ×
+      Nat × Nat × Nat × Nat × Nat) :=
+  [[true, false, true, false], [false, false, false, false],
+    [true, true, true, true]].flatMap fun w =>
+    [(2, 5), (1, 3), (2, 1)].flatMap fun (c, relHi) =>
+      [(1 : Nat), 2, 3].map fun count =>
+        (w, 7, c, 4, 0, relHi, 0, count, 11, 5, 9, 3)
+
+/-- What one fringe-fold preservation fixture reports. -/
+structure FoldPresReport where
+  clobbered : List Nat
+  checkedRegs : Nat
+  reachedExit : Bool
+  modeledSteps : Nat
+  acc : Nat
+  bestValue : Nat
+  bestPos : Nat
+  reads : List TraceEvent
+  zeroSeedAcc : Nat
+  zeroSeedReads : List TraceEvent
+  preserved : Bool
+  agreesWithZeroSeed : Bool
+deriving Repr
+
+/-- RUN THE FRINGE FOLD STANDALONE on a sentinel-seeded register file and
+check its own preservation clause register by register.
+
+Also re-runs the SAME fixture zero-seeded, on the fold's own
+`foldWitnessRegs`, and compares both the accumulator AND the read log event
+by event -- so this doubles as evidence that the fold reads no register it
+does not initialise. -/
+def runFoldPres (salt : Nat) (build : List Instr -> List Instr)
+    (w : List Bool) (S c L relLo relHi seed count w0 w1 w2 w3 : Nat) :
+    FoldPresReport :=
+  let program := build (E1FringeFoldProgram.foldWitnessProgram S c L)
+  let regs0 := foldPresRegs c relLo relHi seed count w0 w1 w2 w3
+  let store := E1FringeFoldProgram.foldWitnessStore w
+  let result := E1Machine.run store program (4000 + salt) ⟨regs0, 2, false⟩
+  let zeroResult :=
+    E1Machine.run store program (4000 + salt)
+      ⟨E1FringeFoldProgram.foldWitnessRegs c relLo relHi seed count
+        w0 w1 w2 w3, 2, false⟩
+  let clobbered :=
+    foldUntouchedRegs.filter fun r => result.final.regs r != regs0 r
+  { clobbered := clobbered
+    checkedRegs := foldUntouchedRegs.length
+    reachedExit := result.final.pc == 69
+    modeledSteps := result.steps
+    acc := result.final.regs E1FringeFoldBlock.fAcc
+    bestValue := result.final.regs E1FringeFoldBlock.fBV
+    bestPos := result.final.regs E1FringeFoldBlock.fBP
+    reads := result.readLog
+    zeroSeedAcc := zeroResult.final.regs E1FringeFoldBlock.fAcc
+    zeroSeedReads := zeroResult.readLog
+    preserved := clobbered.isEmpty
+    agreesWithZeroSeed :=
+      result.final.regs E1FringeFoldBlock.fAcc ==
+          zeroResult.final.regs E1FringeFoldBlock.fAcc &&
+        result.readLog == zeroResult.readLog }
+
+def foldPresReports (salt : Nat) (build : List Instr -> List Instr) :
+    List FoldPresReport :=
+  foldPresCases.map fun (w, S, c, L, relLo, relHi, seed, count, a, b, d, e) =>
+    runFoldPres salt build w S c L relLo relHi seed count a b d e
+
+def foldPresFailures (rs : List FoldPresReport) : Nat :=
+  (rs.filter (fun r => !r.preserved)).length
+
+def foldPresExitFailures (rs : List FoldPresReport) : Nat :=
+  (rs.filter (fun r => !r.reachedExit)).length
+
+def foldPresSeedDisagreements (rs : List FoldPresReport) : Nat :=
+  (rs.filter (fun r => !r.agreesWithZeroSeed)).length
+
+def foldPresClobberedRegs (rs : List FoldPresReport) : List Nat :=
+  (rs.flatMap (fun r => r.clobbered)).eraseDups
+
+/-- Fixtures whose read log is nonempty -- the fold is READ-BEARING, one
+charged read per pass, so a sweep with an empty log would be observing
+nothing. -/
+def foldPresReadBearingCases (rs : List FoldPresReport) : Nat :=
+  (rs.filter (fun r => !r.reads.isEmpty)).length
+
+def goodFoldPres : List Instr -> List Instr := id
+
+/-- The register mutant K scribbles on: `105`, outside the fold's bank and
+so inside `FringeFoldUntouched`. -/
+def foldClobberTarget : Nat := 105
+
+/-- MUTANT K: rename the fold's private scratch `fX` (62, inside the bank
+`40..62`) to `105`, consistently across every occurrence in the loop body.
+
+WHY IT IS INVISIBLE TO THE VALUE.  `fX` is WRITE-FIRST wherever it appears.
+In `fringePrefix` (`E1FringeFoldBlock.lean:146`) its first mention is
+`sub fX fT fU`, a write, before the read in `sub fB fT fX`.  In
+`fringeShift` (`E1FringeFoldBlock.lean:223`) each of the three window
+groups opens with `mulConst fX fU (2 ^ c)`, again a write, before the two
+reads that consume it, and nothing reads it after `add fW2 fT fX`.  So its
+incoming value cannot matter and its outgoing value is consumed by nobody
+-- a consistent rename performs the identical arithmetic.
+
+WHY IT IS INVISIBLE TO THE RECEIPT.  This one needs care rather than the
+usual read-free argument, because the fold is NOT read-free.  `fX` does
+reach the read: it feeds `fB`, which feeds `fSlot`, which is the address of
+the single `readMem fE S fSlot`.  But the rename is CONSISTENT, so `fSlot`
+receives the identical value and the read address is unchanged.  The trip
+count is driven by `fCnt`, not `fX`, so the control path and step count are
+identical too.
+
+WHY `105` IS DETECTED ROBUSTLY.  It is not a fold input, so it carries
+`presSentinel 105 = 738`, and it is above the bank, so
+`FringeFoldUntouched 105` holds and the clause genuinely claims it. -/
+def mutatedFoldScratch (program : List Instr) : List Instr :=
+  program.map (substReg E1FringeFoldBlock.fX foldClobberTarget)
+
+def foldPresMutationIsReal : Bool :=
+  let honest := E1FringeFoldProgram.foldWitnessProgram 7 2 4
+  let mutant := mutatedFoldScratch honest
+  honest != mutant && honest.length == mutant.length &&
+    honest.map Instr.category == mutant.map Instr.category
+
+/-- Mutant K is PRESERVATION-ONLY: case for case its exit pc, modeled step
+count, accumulator, best pair AND read log all match the honest sweep, so
+neither the value discriminator nor the receipt discriminator can see it. -/
+def foldMutantKIsPreservationOnly (salt : Nat) : Bool :=
+  let honest := foldPresReports salt goodFoldPres
+  let mutant := foldPresReports salt mutatedFoldScratch
+  honest.length == mutant.length &&
+    (List.zip honest mutant).all fun (h, m) =>
+      h.reachedExit == m.reachedExit && h.modeledSteps == m.modeledSteps &&
+        h.acc == m.acc && h.bestValue == m.bestValue &&
+        h.bestPos == m.bestPos && h.reads == m.reads
+
+/-! ### The same facts, KERNEL-CHECKED rather than printed
+
+`mainImpl` prints these counts, which makes them reproducible but not
+proved.  The quantities are closed and computable, so they are also stated
+as theorems and discharged by `rfl`.  Every literal here was EVALUATED
+first and then written down, per the standing rule on computable
+quantities; none was predicted. -/
+
+/-- The honest fold disturbs NOTHING outside its bank, on all 27 fixtures.
+This is `FringeFoldUntouched`'s content at the fold's own witness, and it is
+the first time that predicate has been executed anywhere. -/
+theorem foldPres_honest_clobbers_nothing :
+    foldPresClobberedRegs (foldPresReports 0 goodFoldPres) = [] := rfl
+
+/-- The sweep is READ-BEARING on every fixture, so preservation is being
+checked against a fold that actually ran and charged. -/
+theorem foldPres_all_cases_read_bearing :
+    foldPresReadBearingCases (foldPresReports 0 goodFoldPres) = 27 := rfl
+
+/-- Mutant K disturbs EXACTLY register `105` and nothing else -- the phase
+names the register rather than merely reporting a failure. -/
+theorem foldPres_mutantK_clobbers_target :
+    foldPresClobberedRegs (foldPresReports 0 mutatedFoldScratch) = [105] :=
+  rfl
+
+/-- ...and it is caught on EVERY fixture, not just one. -/
+theorem foldPres_mutantK_caught :
+    foldPresFailures (foldPresReports 0 mutatedFoldScratch) = 27 := rfl
+
+/-- ...while the exit-pc discriminator sees NOTHING.  This is the
+non-entailment that justifies the phase existing: a harness checking only
+that the block reaches its exit would miss this defect completely. -/
+theorem foldPres_mutantK_invisible_to_exit :
+    foldPresExitFailures (foldPresReports 0 mutatedFoldScratch) = 0 := rfl
 
 def mainImpl : IO UInt32 := do
   IO.println "== E1 amended-machine validator (M6) =="
@@ -2168,6 +2570,80 @@ def mainImpl : IO UInt32 := do
   IO.println s!"chunkPresMutationWallClockMs={tcm1 - tcm0}"
   IO.println ""
 
+  -- STEP 3k: the FRINGE fold's OWN preservation clause -- stated at
+  -- `E1FringeFoldBlock.lean:962`, executed NOWHERE until now, and NOT
+  -- reachable through phase 3h because the fold's predicate is strictly
+  -- stronger than the arm's.
+  IO.println "-- phase 3k: FRINGE FOLD register preservation, run STANDALONE (FringeFoldUntouched, first execution) --"
+  let tf0 <- IO.monoMsNow
+  let fPresRs := foldPresReports salt goodFoldPres
+  let fPresFails := foldPresFailures fPresRs
+  let fPresExitFails := foldPresExitFailures fPresRs
+  let fPresSeedDis := foldPresSeedDisagreements fPresRs
+  let fPresReadBearing := foldPresReadBearingCases fPresRs
+  IO.println s!"foldPresCases={fPresRs.length}"
+  IO.println s!"foldPresCheckedRegs={foldUntouchedRegs.length}   (registers FringeFoldUntouched claims survive)"
+  IO.println s!"foldPresSentinelNonZero={presSentinel 0 != 0}   (a zero-seeded file makes this phase vacuous)"
+  IO.println s!"foldPresTargetSeed={presSentinel foldClobberTarget}   (seed at 105, outside the fold bank 40..62)"
+  IO.println s!"foldPresReadBearingCases={fPresReadBearing}   (must equal the case count: the fold charges one read per pass)"
+  IO.println s!"foldPresExitFailures={fPresExitFails}"
+  IO.println s!"foldPresFailures={fPresFails}   (must be 0: the FRINGE fold's own preservation clause, executed)"
+  IO.println s!"foldPresClobberedRegs={foldPresClobberedRegs fPresRs}   (must be empty)"
+  IO.println s!"foldPresSeedDisagreements={fPresSeedDis}   (must be 0: accumulator AND read log agree under both seedings)"
+  let tf1 <- IO.monoMsNow
+  IO.println s!"foldPresWallClockMs={tf1 - tf0}"
+  IO.println ""
+
+  -- STEP 4j: a mutation of the fringe fold's private scratch, visible to
+  -- preservation and to nothing else this harness checks.
+  IO.println "-- phase 4j: deliberate rename of the FRINGE FOLD's scratch register fX (preservation-only visible) --"
+  let tfm0 <- IO.monoMsNow
+  let mutKReports := foldPresReports salt mutatedFoldScratch
+  let mutKFails := foldPresFailures mutKReports
+  let mutKExit := foldPresExitFailures mutKReports
+  let mutKPresOnly := foldMutantKIsPreservationOnly salt
+  IO.println s!"foldPresMutationIsReal={foldPresMutationIsReal}   (differs; same length AND same opcode categories)"
+  IO.println s!"mutantK_fold_exitFailures={mutKExit}   (0 expected: exit pc alone MISSES this)"
+  IO.println s!"mutantK_fold_preservationFailures={mutKFails}   (must be > 0: preservation catches it)"
+  IO.println s!"mutantK_clobberedRegs={foldPresClobberedRegs mutKReports}   (expect [105])"
+  IO.println s!"mutantK_isPreservationOnly={mutKPresOnly}   (exit pc, steps, accumulator, best pair AND read log ALL match)"
+  let tfm1 <- IO.monoMsNow
+  IO.println s!"foldPresMutationWallClockMs={tfm1 - tfm0}"
+  IO.println ""
+
+  -- STEP 3j: REQ-E1-05's five-word residual, "and in the validator".
+  IO.println "-- phase 3j: INVALID GUARD skeleton on empty/reversed/out-of-bounds fixtures (REQ-E1-05) --"
+  let tg0 <- IO.monoMsNow
+  let gRs := guardReports salt goodGuard
+  let gFails := guardFailures gRs
+  let gRejected := guardRejectedCount gRs
+  let gAccepted := guardAcceptedCount gRs
+  IO.println s!"guardCases={gRs.length}"
+  IO.println s!"guardFamilies=empty,emptyRange,reversed,outOfBounds + valid controls"
+  IO.println s!"guardFailures={gFails}   (must be 0: every fixture meets its own clause list)"
+  IO.println s!"guardRejected={gRejected}   (invalid fixtures reaching the guarded none-packet)"
+  IO.println s!"guardValidControlsAccepted={gAccepted}   (must be > 0: a reject-everything machine scores 0 here and passes every other check in this phase)"
+  IO.println s!"guardMaxInvalidSteps={guardMaxInvalidSteps gRs}   (frozen bound is 10, guardRejectCats_length_le)"
+  IO.println s!"guardReadsTotal={(gRs.filter (fun r => r.readCount != 0)).length}   (must be 0: the guard reads nothing)"
+  IO.println s!"guardMemoryReadCharges={(gRs.filter (fun r => r.memoryReadCharges != 0)).length}   (must be 0: zero memory-read category charge)"
+  let tg1 <- IO.monoMsNow
+  IO.println s!"guardWallClockMs={tg1 - tg0}"
+  IO.println ""
+
+  -- STEP 4i: a guard mutation with the same length and the same category log.
+  IO.println "-- phase 4i: deliberate mutation of the OUT-OF-BOUNDS guard branch (rejection-only visible) --"
+  let tgm0 <- IO.monoMsNow
+  let mutJRs := guardReports salt mutatedGuardBounds
+  let mutJRejected := guardRejectedCount mutJRs
+  let mutJAccepted := guardAcceptedCount mutJRs
+  IO.println s!"guardMutationIsReal={guardMutationIsReal}   (differs; same length AND same instruction categories)"
+  IO.println s!"mutantJ_rejected={mutJRejected}   (5 expected: the three fixtures needing the right<=n test escape)"
+  IO.println s!"mutantJ_validControlsAccepted={mutJAccepted}   (3 expected: valid queries are UNAFFECTED, so a valid-only harness MISSES this)"
+  IO.println s!"mutantJ_caught={mutJRejected != 8}   (must be true)"
+  let tgm1 <- IO.monoMsNow
+  IO.println s!"guardMutationWallClockMs={tgm1 - tgm0}"
+  IO.println ""
+
   -- STEP 5: the hole.
   IO.println "-- phase 5: whole-query comparison --"
   IO.println s!"wholeQueryComparisonAvailable={wholeQueryComparisonAvailable}"
@@ -2247,6 +2723,27 @@ def mainImpl : IO UInt32 := do
   -- discriminators on the interior side.
   let okChunkPresMutations :=
     chunkPresMutationIsReal && mutHFails != 0 && mutHPresOnly
+  -- REQ-E1-05: every fixture meets its own clause list, all eight invalid
+  -- ones reach the guarded none-packet, AND the valid controls are accepted
+  -- -- the last conjunct is what stops a reject-everything machine passing.
+  let okGuard :=
+    gFails == 0 && gRejected == 8 && gAccepted > 0 &&
+      guardMaxInvalidSteps gRs <= 10
+  -- Mutant J rejected, and confirmed shape-preserving and invisible to a
+  -- valid-query-only harness.
+  let okGuardMutations :=
+    guardMutationIsReal && mutJRejected != 8 && mutJAccepted == 3
+  -- The FRINGE fold's own preservation clause, executed standalone:
+  -- nothing outside the bank 40..62 moves, sentinel seeding changes
+  -- neither the accumulator nor the read log, and every fixture is
+  -- genuinely read-bearing rather than a run that charged nothing.
+  let okFoldPres :=
+    fPresFails == 0 && fPresExitFails == 0 && fPresSeedDis == 0 &&
+      fPresReadBearing == fPresRs.length && presSentinel 0 != 0
+  -- Mutant K rejected, and confirmed shape-preserving and invisible to
+  -- both the value and the receipt discriminators.
+  let okFoldPresMutations :=
+    foldPresMutationIsReal && mutKFails != 0 && mutKPresOnly
   let okCore := okReference && okLengths && okDispatch && okLeg
   let okComposite := okSelect && okCompose && okComposeCoverage && okMerge
   let okAdversarial := okMutations && okMutantSetup && okMergeMutations
@@ -2255,7 +2752,8 @@ def mainImpl : IO UInt32 := do
   let okChunkPreservation := okChunkPres && okChunkPresMutations
   let ok :=
     okCore && okComposite && okAdversarial && okNew && okPreservation &&
-      okChunkPreservation
+      okChunkPreservation && okGuard && okGuardMutations &&
+      okFoldPres && okFoldPresMutations
   if ok then
     IO.println "RESULT: PASS (with the whole-query comparison still OPEN)"
     return 0

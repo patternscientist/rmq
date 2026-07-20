@@ -303,6 +303,38 @@ theorem catCount_partition (log : List Category) :
   | cons c rest ih =>
     cases c <;> simp [catCount_cons] <;> omega
 
+/--
+THE VOCABULARY BRIDGE.
+
+Machine-level accounting (`run_steps_eq_category_sum`,
+`run_readLog_length_eq_memoryRead_count`) is written with `catCount`.
+Every BLOCK-level cap in this development is written with
+`(log.filter (· == c)).length` — e.g.
+`interiorChunkFoldCats_memoryRead_count` and
+`fringeArmPrologueCats_memoryRead_count`.  Until this lemma the two
+vocabularies had no connecting fact anywhere in the tree, so no block cap
+could be composed into a machine-level step or receipt claim.
+
+`Category` derives `DecidableEq` and no `BEq`, so `a == c` is
+`instBEqOfDecidableEq`, i.e. `decide (a = c)`; the two sides therefore
+agree constructor-by-constructor and the induction is immediate. -/
+theorem catCount_eq_filter_length (log : List Category) (c : Category) :
+    catCount log c = (log.filter (· == c)).length := by
+  induction log with
+  | nil => rfl
+  | cons a rest ih =>
+    by_cases h : a = c
+    · simp [catCount_cons, h, ih]
+      omega
+    · simp [catCount_cons, h, ih]
+
+/-- The bridge in the direction block caps are stated in: a `filter`-form
+cap transfers to a `catCount` bound with no arithmetic in between. -/
+theorem catCount_le_of_filter_length_le {log : List Category}
+    {c : Category} {n : Nat}
+    (h : (log.filter (· == c)).length ≤ n) : catCount log c ≤ n := by
+  rw [catCount_eq_filter_length]; exact h
+
 /-- Every executed instruction charges exactly one step: the charged step
 count is the length of the per-instruction category log. -/
 theorem run_steps_eq_catLog_length (store : ReadStore) (program : Program) :

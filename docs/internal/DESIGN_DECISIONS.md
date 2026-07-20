@@ -6794,6 +6794,372 @@ the cross-block arm's interior object is not reconciled with the route's
 
 ---
 
+## DD-20260719-140: the `catCount`/`filter` vocabulary bridge lives in `E1Machine.lean` and is EXERCISED, not merely stated (E1-LaneA2)
+
+Claimed by the cost-algebra lane on `claude/e1-cost-algebra`.
+
+THE GAP, grep-verified before acting. Machine-level accounting is written
+with `catCount` (`catCount_partition`, `run_steps_eq_category_sum`,
+`run_readLog_length_eq_memoryRead_count`, all `E1Machine.lean`). Every
+BLOCK-level cap is written with `(log.filter (· == c)).length` --
+`interiorChunkFoldCats_memoryRead_count`, `fringeArmPrologueCats_memoryRead_count`,
+`interiorReadNatCats_memoryRead_count` and the rest. A grep for any lemma
+mentioning both vocabularies returned ZERO hits across `*.lean`. The two
+halves of REQ-E1-06 could not be composed because nothing said the two
+numbers were the same number.
+
+WHERE IT LANDED AND WHY. `catCount_eq_filter_length` is in `E1Machine.lean`,
+beside `catCount`'s own definition and its partition lemma, rather than in the
+new cost-algebra module -- it is a fact about `catCount`, not about the cost
+algebra, and a consumer in any other module would otherwise have to import the
+algebra to get it. `catCount_le_of_filter_length_le` is the transport in the
+direction block caps are actually stated in, so a call site needs no
+rewriting step of its own.
+
+WHY IT TYPECHECKS AT ALL, recorded because it is not obvious. `Category`
+derives `DecidableEq` and NOT `BEq`, so `a == c` elaborates through
+`instBEqOfDecidableEq` to `decide (a = c)`. Had `Category` derived a
+hand-written `BEq`, the two sides would not have agreed definitionally and the
+induction would have needed a lawfulness argument.
+
+STATED AND UNUSED WOULD HAVE BEEN WORTH NOTHING, which is the campaign's own
+recorded lesson (`E1_LIVE_STATE.md` §5: "a clause that is proved but never
+executed passes every check in the battery"). So the bridge is carried across
+the one gap it was written for: `interiorChunkFold_readLog_le_eight`
+(`E1CostAlgebra.lean`) turns `interiorChunkFoldCats_memoryRead_le_eight` -- a
+`filter` cap -- into a bound on the MACHINE'S OWN RECEIPT LENGTH, via
+`RunsTo.readLog_length_eq_memoryRead_count`, which produces a `catCount`. The
+first and last links of that chain existed already and could not be put next
+to each other.
+
+## DD-20260719-141: per-block charge bounds are stated as INEQUALITIES, and the two `33`s and two `8`s are kept apart in the module text (E1-LaneA2)
+
+Claimed by the cost-algebra lane on `claude/e1-cost-algebra`.
+
+INEQUALITIES, NOT EQUATIONS. REQ-E1-06 conjunct (c) demands
+`totalSteps <= <literal>`. Three sessions were shaped by treating
+`Nat.log2`'s kernel-irreducibility as an obstruction to the derived literal;
+it is not, and the reason is a property of the STATEMENT'S SHAPE. The
+boundary bites on EQUATIONS whose value passes through `machineWordBits`.
+None of the bounds in `E1CostAlgebra.lean` passes through `machineWordBits` at
+all -- they count instructions, not bits -- but they are stated as `<=`
+regardless, because that is the shape the requirement asks for and the shape
+that composes under `omega`. `interiorChunkFoldCats_length` is left as an
+EQUATION deliberately, because it is the algebra the `<=` is derived FROM and
+every quantity in it is an instruction count.
+
+THE TWO `33`s ARE NOT THE SAME NUMERAL. The campaign shorthand "caps 33/8/8"
+conflates them, and unlike the two `8`s -- flagged distinct in an M3d-11 note
+-- the two `33`s had never been separated anywhere. They are:
+
+* the FRINGE-WINDOW chunk-read cap, which sits INSIDE
+  `endpointFringe = 4 + 33 = 37` (`ChargedFringeChunks.lean:1624-1687`);
+* the WHOLE-INTERIOR-DIRECTORY read cap,
+  `canonicalRelativeRmmPrincipledInteriorChargedTraceCost := 33`
+  (`InteriorDirectory.lean:1934`);
+* `3 * rankClose = 33`, a third and purely coincidental occurrence.
+
+The dangerous pair is the first two, because one sits INSIDE the other's
+sibling term in the same algebra
+(`2*select35 + (2*rank11 + 2*endpointFringe37 + interior33) + rank11 = 210`).
+`E1CostAlgebra.lean` therefore proves NOTHING against `33`, and says so in its
+header. The `8` it does prove is the interior table adapter's per-read chunk
+cap, which is a different `8` from the fringe's per-word chunk cap
+(`machineWordBits_le_8_mul_bpFringeChunkBits`, `ChargedWordChunks.lean:39`).
+
+THE OPERATIVE TOTAL IS `210`, NOT `207`. `207` at HEAD names a RETIRED route
+(AMENDMENT A1, owner-approved). Nothing in this lane is proved against `207`.
+
+## DD-20260719-142: `E1AmendedFamiliarMachineTarget` carries NO width conjunct, and that omission is a finding rather than an oversight (E1-LaneA2)
+
+Claimed by the cost-algebra lane on `claude/e1-cost-algebra`.
+
+THE PROBLEM. REQ-E1-07's evidence column asks the amended target Prop to
+bundle "width accounting" alongside result agreement, receipt projection, the
+invalid guard, category accounting and the derived literal. Both natural
+spellings of that conjunct are unusable, and the reason is arithmetic, not
+taste:
+
+* `ProgramFits (SuccinctRank.machineWordBits n) (programSkeleton n validPath)`
+  is FALSE at small `n`. `machineWordBits n = Nat.log2 n + 1`
+  (`SuccinctRank.lean:38`), so at `n = 4` the modeled width is `3` and the
+  fitting bound is `2 ^ 3 = 8`, while this construction's register file
+  reaches `152` (`E1_LIVE_STATE.md` §3: "Next free block opens at `152`"). A
+  target asserting it would be unsatisfiable for a reason having nothing to do
+  with whether the machine is correct.
+* `∀ n, ∃ w, ProgramFits w (programSkeleton n validPath)` is VACUOUS. Every
+  finite instruction list fits SOME width, so the conjunct excludes nothing.
+  Under the campaign's own rule -- a VACUOUS premise owes a witness of vacuity
+  on the same terms -- this one's witness of vacuity is immediate, which is
+  exactly why it must not be shipped as evidence.
+
+HOW THE TREE ALREADY RESOLVES IT, and why that cannot be folded in. The
+existing width certificates take `w` as a PARAMETER with explicit side
+conditions: `sameBlockLegProgramAt_fits` (`E1ProgramWidth.lean:57`) carries
+eleven, including `74 < 2 ^ w`, `hcode`, `hpowL` and two positivity arms.
+Those conditions are properties of the SHAPE and the allocation, not of the
+query, and collapsing them into a Prop quantified over `xs left right` forces
+one of the two bad spellings above.
+
+DECISION. Width accounting stays where it lives, as REQ-E1-02's row against
+`E1ProgramWidth`'s parametric certificates, and `E1AmendedFamiliarMachineTarget`
+does not restate it. The omission is documented in the Prop's own docstring
+rather than left for a reader to notice, because a target Prop that silently
+drops a conjunct its row names is indistinguishable from one that forgot.
+Carrying it as a decorative hypothesis was considered and REJECTED under the
+standing rule against decorative hypotheses.
+
+## DD-20260719-143: REQ-E1-05's validator phase carries VALID CONTROLS, because an invalid-only sweep cannot distinguish the guard from a reject-everything machine (E1-LaneA2)
+
+Claimed by the cost-algebra lane on `claude/e1-cost-algebra`.
+
+WHAT WAS MISSING, grep-verified. REQ-E1-05's Evidence-needed column asks for
+the invalid guard "exercised on empty, reversed, and out-of-bounds fixtures in
+Lean examples AND IN THE VALIDATOR". The Lean examples existed
+(`programSkeleton_invalid_matches_public_guard`, `E1QueryBridge.lean:55`,
+universally quantified over `validPath`). The validator half did not: this
+harness never ran `programSkeleton`.
+
+CORRECTION TO THE DELEGATION'S PREMISE, recorded because it was acted on.
+The brief stated `programSkeleton` "has no consumer outside its own two
+files". It has THREE: `E1QueryProgram.lean`, `E1QueryBridge.lean` AND
+`E1WholeQueryPublic.lean`, the last of which carries a real consumer,
+`programSkeleton_valid_matches_public` (`:140`). The residual the row names
+-- the VALIDATOR -- was genuinely absent, so the conclusion held; the count
+did not.
+
+THE DESIGN POINT. A sweep containing only invalid ranges is worth nothing on
+its own: `const regOut 0; halt` at `pc = 0` -- a machine that rejects
+EVERYTHING -- passes every invalid clause the row lists (halts, `none`
+packet, empty receipt, zero memory-read charge, at most ten steps). Phase 3j
+therefore carries three VALID controls whose required outcome is the
+opposite, and `guardAcceptedCount` is asserted `> 0` in the verdict rather
+than merely printed. This is the campaign's own vacuity rule applied before
+the fact instead of after: the anti-vacuity witness is on the same terms as
+the claim.
+
+THE MUTATION, and what it says about instrument power. Phase 4i's mutant J
+repoints instruction `7`'s branch CONDITION from `regG` (the live negation
+flag) to `regZero` (pinned `0` by the prologue), disabling the `right <= n`
+half of the guard. It is shape-preserving: same program length, same
+per-instruction category log, `guardMutationIsReal = true`. Rejections fall
+from `8` to `5` -- and the count is `5`, not the `6` this lane first
+predicted, because the fixture labelled `("empty", n = 0, 0, 1)` is
+genuinely an OUT-OF-BOUNDS query at an empty list and escapes with the two
+labelled ones. The figure was EVALUATED rather than reasoned to, per the
+standing rule on computable quantities; the first guess was wrong and the
+kernel caught it.
+
+The sharpest thing the mutant shows is a NON-ENTAILMENT:
+`mutantJ_validControlsAccepted = 3`, identical to the honest guard. Every
+valid query behaves exactly as before. A harness that checked only that
+valid queries still work -- which is the natural thing to check -- would miss
+this defect completely.
+
+## DD-20260719-144: the width question is settled by EVALUATION, and it settles at the REVIEWER width, not the size-indexed one (E1-LaneA4)
+
+REQ-E1-02's evidence column asks for a checked theorem that every
+instruction of the concrete program fits the modeled width AT EVERY SIZE.
+Two predecessor claims made this look unsatisfiable. Both were wrong, and
+the correction came from numbers rather than from argument, per the standing
+rule that a computable quantity is evaluated and not reasoned about.
+
+WHAT WAS EVALUATED. A scratchpad driver assembled the concrete program at
+canonical parameters -- `blockSize = canonicalBPRelativeSummaryBlockSizeRaw
+shape`, `fringeSegment = 5`, the same instantiation `E1MachineValidate.lean`
+uses at `:361` and `:383` -- and computed the maximum `ProgramFits`-
+constrained FIELD, constructor by constructor, at sizes `1` through `1024`.
+
+THREE CORRECTIONS TO THE RECORD.
+
+1. The register file reaches `84`, NOT `152`. `152` appears nowhere as a
+   register index; `crossBlockArmProgramAt_fits` (`E1CrossBlockArm.lean:915`)
+   independently carries `84 < 2 ^ w` and no certificate anywhere carries a
+   larger register hypothesis. The largest `hreg` in the tree is `117`.
+
+2. THE BINDING FIELD IS NOT A REGISTER. `ProgramFits` constrains every
+   field, including `const` VALUES and `brNZ` TARGETS, not merely register
+   indices. Up to size `256` the maximum field is `555`, the guard's
+   invalid-exit branch target `8 + validPath.length`. From size `512` upward
+   it is instead `2 ^ machineWordBits shape.bpCode.length`, the fold's
+   stride constant, which grows linearly.
+
+3. `ProgramFits (machineWordBits n) ...` IS FALSE AT EVERY SIZE, not "at
+   small `n`". Because the program carries the field
+   `2 ^ machineWordBits shape.bpCode.length` and
+   `shape.bpCode.length = 2 * shape.size`, the field the program needs
+   always exceeds the bound the model supplies. There is NO crossover size.
+   This matters for governance: had it failed only below a threshold, a size
+   dispatch would have looked tempting, and size dispatch on the public
+   route is forbidden in this campaign. It fails everywhere, so the spelling
+   is simply wrong and nothing is to be repaired by thresholding.
+
+THE DECISION. Width accounting is stated at
+`concreteBPNativeSuccinctRMQReviewerWordBits` (`ReviewerPhysical.lean:1474`),
+the one pre-execution reviewer word width, which is already a frozen public
+quantity and is NOT invented for this purpose. It holds at every evaluated
+shape with three orders of magnitude of headroom.
+
+WHY THE OTHER DIRECTION OF THE ARGUMENT WAS BACKWARDS. It was put to this
+lane that register `152` needs `2 ^ w > 152`, hence `w >= 8`, hence
+"capacity `>= 128`", as though the capacity might fail to be large enough.
+The capacity envelope is `400000 * (n + 1)`, so it is at least `400000` at
+`n = 0` and grows from there. It is never near `128`. `capacity_ge`
+(`E1ReviewerWidth.lean`) records this because the inference is easy to run
+in the wrong direction.
+
+WHY THE KERNEL BOUNDARY DOES NOT BITE. Everything reduces through one step,
+`lt_reviewerWordBits_of_lt_capacity`: a quantity fits the reviewer width as
+soon as it is below the capacity envelope. Past that reduction no goal
+mentions `Nat.log2`, so its irreducibility is never reached. Only two
+monotone facts about it survive, and they are isolated at the top of the
+module (`two_pow_machineWordBits_le`, `machineWordBits_le`).
+
+THE ONE PLACE THE LOGARITHM HAD TO BE USED HONESTLY. The `hmix` side
+condition is `(c + 1) * (2 * c + 2)`, QUADRATIC in the chunk width, while
+the envelope is only LINEAR in the size. It cannot be closed by bounding the
+chunk width crudely. It closes because
+`bpFringeChunkBits m = Nat.log2 m / 8 + 1` is genuinely logarithmic: below
+`Nat.log2 L = 41` the product is under the absolute constant `98`, and above
+it the quadratic is dominated via `m * m <= 2 ^ m`, proved here by
+Mathlib-free induction (`sq_le_two_pow`) because the step inequality needs
+`4 * k <= k * k` and `omega` cannot supply a nonlinear step on its own.
+
+A FINDING ABOUT THE EXISTING CERTIFICATES, which is the reason this module
+is worth more than its statement. `sameBlockLegProgramAt_fits`,
+`sameBlockDispatchProgram_fits` and `crossBlockArmProgramAt_fits` take `w`
+parametrically with eleven to seventeen side conditions each. Grepping for
+their names finds only their own statements and ONE internal use
+(`E1ProgramWidth.lean:164`). NOTHING IN THE TREE HAD EVER DISCHARGED THOSE
+SIDE CONDITIONS AT ANY INSTANTIATION. They were OWED premises with no
+satisfiability witness, so a reader could not tell whether the width story
+closes or is vacuous. This module supplies the missing witness on the same
+terms as the premises.
+
+## DD-20260719-145: `FringeFoldUntouched` is executed by running the fold STANDALONE, because the arm's host cannot reach it (E1-LaneA4)
+
+`FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`) is the fringe fold's
+own register-preservation clause. It was stated and executed NOWHERE. The
+validator's own note at the head of phase 3i already recorded this, and that
+note was accurate.
+
+WHY THE OBVIOUS ROUTE IS NOT MERELY INCONVENIENT BUT WRONG. Phase 3h already
+runs the fringe ARM and checks `FringeArmUntouched`
+(`r < 40 ∨ (63 ≤ r ∧ r ≠ 67 ∧ r ≠ 68)`). Reusing that harness and swapping
+in the fold's predicate `FringeFoldUntouched` (`r < 40 ∨ 63 ≤ r`) would
+FAIL, and would fail CORRECTLY: the fold's predicate is STRICTLY STRONGER,
+and the arm's prologue writes exactly the two registers `67` and `68` that
+the stronger predicate claims. A failure there would be a true statement
+about the ARM and would say nothing whatever about the FOLD. So the fold
+needs its own host.
+
+WHAT WAS BUILT. `E1FringeFoldProgram.lean`: a standalone host
+`foldWitnessProgram` -- two instructions of padding, the 66-instruction loop
+body at base `2`, the back edge, `halt` -- and `foldWitnessProgram_hosts`,
+which discharges all FOUR hosting hypotheses of
+`fringeFoldLoop_runsTo_accepted` (`E1FringeFoldBlock.lean:1301`) against it
+at once. The offsets are forced through `hostedAt_step`, so an off-by-one
+anywhere fails to typecheck rather than passing quietly.
+
+The base is `2` rather than `0` on purpose, matching `armWitnessProgram`'s
+discipline (`E1FringeArmProgram.lean:240`): a nonzero loop base is what
+makes an address computed absolutely instead of base-relative show up as a
+wrong target instead of typechecking by accident.
+
+`foldWitnessProgram_fold_eq` is proved by `rfl` and records that the
+right-associated layout the hosting proof needs IS `fringeLoopBody S c L 2`,
+so the module hosts THE fold rather than a look-alike with the same shape.
+
+THE CHECKED BANK IS THE BLOCK'S OWN WRITE SET. The fold's registers are
+`fOne = 40` through `fX = 62` (`E1FringeFoldBlock.lean:62-106`), so
+`FringeFoldUntouched` is exactly "outside `40..62`". This campaign has
+shipped both a too-weak and an unsound preservation predicate before, so the
+predicate was checked against the write set rather than against a
+neighbouring block's.
+
+ANTI-VACUITY, on the same terms as the claim. Seeded from `fun _ => 0`
+preservation is worthless -- a block that zeroes a register it does not own
+still "preserves" it -- so the fixtures use `presSentinel`, injective and
+nowhere zero, as phase 3h does. Beyond that, `foldPresReadBearingCases`
+asserts that every fixture's read log is NONEMPTY: the fold charges one read
+per pass, so a sweep that charged nothing would be observing nothing, and
+that count is a verdict conjunct rather than a printed figure.
+
+MUTANT K, and why its receipt argument is NOT the usual one. The mutation
+renames the fold's private scratch `fX` (62) to `105`, consistently across
+the whole loop body. It is value-invisible because `fX` is WRITE-FIRST
+everywhere it appears -- `sub fX fT fU` in `fringePrefix`, and
+`mulConst fX fU (2 ^ c)` opening each of the three window groups in
+`fringeShift` -- so its incoming value cannot matter and nothing consumes
+its outgoing value.
+
+The receipt argument needed care and is worth recording, because the
+interior's mutant H could lean on its block being READ-FREE and this one
+cannot. The fringe fold IS read-bearing, and `fX` actually reaches the read:
+it feeds `fB`, which feeds `fSlot`, which is the ADDRESS of the single
+`readMem fE S fSlot`. The mutation is invisible only because the rename is
+CONSISTENT, so `fSlot` receives the identical value and the address is
+unchanged. Had the rename been partial it would have moved a read, and the
+receipt discriminator would have caught it -- correctly.
+
+THE NUMBERS, EVALUATED BEFORE THEY WERE WRITTEN DOWN. 27 fixtures, 87
+registers checked. Honest: `foldPresFailures = 0`,
+`foldPresClobberedRegs = []`, `foldPresSeedDisagreements = 0`,
+`foldPresReadBearingCases = 27`. Mutant K:
+`mutantK_fold_preservationFailures = 27`, `mutantK_clobberedRegs = [105]`,
+`mutantK_fold_exitFailures = 0`, `mutantK_isPreservationOnly = true`. Five
+of these are also kernel-checked by `rfl` rather than merely printed.
+
+The sharpest of them is `mutantK_fold_exitFailures = 0` together with
+`mutantK_isPreservationOnly = true`: exit pc, modeled steps, accumulator,
+best pair and read log ALL match the honest sweep. A harness checking any of
+those -- which is what every other phase on this block checks -- would miss
+this defect completely. That non-entailment is the reason the phase earns
+its place rather than duplicating coverage.
+
+## DD-20260719-146: the fringe fold's cap is derived from a per-pass MAXIMUM, because its body is index-dependent (E1-LaneA4)
+
+§12 named this "the one genuine missing CAP LEMMA". It had two halves and
+both are now closed.
+
+HALF ONE, the cap itself. The fringe fold's trip count is `<= 33` only
+because every caller writes `Nat.min (relHi / c + 1) 33`
+(`E1FringeArmBlock.lean:594-596`, `:1020-1022`). There was no lemma saying
+so -- only positivity, `cap_count_pos` (`E1FringeArmBlock.lean:245`), which
+is the other side of the same `min`. `cap_count_le` states it. It is trivial
+once written, and it had never been written; the interior's twin is free
+from `chunkIters`'s own definition and this one is not.
+
+HALF TWO, and the reason this is not a copy of the interior's proof.
+`interiorChunkFoldCats_length_le` goes through `iterLog_const_length`, whose
+content is that a CONSTANT body of length `k` repeated `n` times has length
+`n * k` -- an EQUATION. The fringe fold's body is not constant:
+`fringeMergeArmCats` (`E1FringeFoldBlock.lean:281`) has four arms and the
+arm taken depends on the pass index through `bpFringeChunkStartOff` and on
+the running best candidate. So the identity is unavailable and the bound
+needs a per-pass MAXIMUM instead. `ascLog_length_le` is that lemma: a
+per-index bound `M` lifts to `n * M` over `ascLog`. The identity becomes an
+inequality, which is all REQ-E1-06 conjunct (c) asks for.
+
+THE NUMERALS, AND THAT THEY ARE TIGHT RATHER THAN MERELY TRUE. A derived
+bound can still be worthless if it is slack, so the arms were evaluated:
+`fringeMergeArmCats` has lengths `[6, 8, 7, 3]`, so `8` is ATTAINED, by the
+"best is `some`, candidate strictly better" arm. `fringePrefixCats` is `32`
+and `fringeTailCats` is `21`, both evaluated. So `62 = 32 + 8 + 21 + 1` is
+the true per-pass maximum and not an overestimate, and
+`2046 = 33 * 62` is the fold's cap at the capped trip count.
+
+Both factors are derived: `33` from `cap_count_le`, `62` from
+`fringePassCats_length_le`. Neither is asserted and then checked after.
+
+WHAT THIS DOES NOT DO. This closes `fringeFoldCats`, which is ONE of the
+seventeen composite logs §12 enumerates. The other sixteen remain unbounded,
+and the closed leaves they rest on remain unbounded too. `ascLog_length_le`
+is the reusable half -- any composite whose body is index-dependent can go
+through it -- but each composite still owes its own per-pass maximum.
+
+---
+
 ## DD-20260719-160 — `hInterior` gains a fifth conjunct; the cross arm exports `CloseLegUntouched`
 
 **Status.** Landed, E1-LaneA3, branch `claude/b1-b2-charged-fringe-tables`.
@@ -7534,3 +7900,217 @@ carry.
 **Axioms.** Every new declaration: `[propext, Classical.choice, Quot.sound]`,
 except `selectNone_branches_separable` and `fullCats_mentions_both_joins`,
 which depend on NO axioms. No `sorryAx`. `lake build RMQ` green.
+
+---
+
+## DD-20260719-220: the sixteen remaining composite logs are closed by a bottom-up ladder in a NEW module, not by extending `E1CostAlgebra` (E1-LaneA7)
+
+`E1CostAlgebra.lean` is imported by `E1AmendedTarget.lean` and by the
+validator. Closing the ladder needs three more imports
+(`E1InteriorDispatchCompose`, `E1InteriorCombine`, `E1InteriorMinCandidate`),
+and adding them to `E1CostAlgebra` would push the whole interior dispatch
+into every consumer of the amended target. `E1CostLadder.lean` is a new
+module downstream of both, so the ladder is available where it is wanted and
+absent where it is not.
+
+The separation is also editorial. `E1CostAlgebra` carries the
+`catCount`/`filter` bridge and the fringe fold's cap -- two arguments with
+real content. The ladder above them is arithmetic composition, and mixing the
+two would bury the former.
+
+## DD-20260719-221: every leaf log's length is EVALUATED before it is stated, and stated as `rfl`
+
+Seventeen closed leaf logs had no `.length` bound at all. Each is a `List`
+literal or a `.map` of one, so each length is `rfl` -- which means a wrong
+figure is a BUILD FAILURE, not a silently loose bound. That is the cheapest
+possible defence and it was taken.
+
+The figures were nevertheless obtained by `#eval` in a scratchpad driver
+first, rather than by counting constructors by eye, per rule 3. Counting by
+eye across a twenty-five element list is exactly the operation that produces
+an off-by-one, and the `rfl` would then have failed at build time with no
+indication of what the right figure was.
+
+ONE PRE-EXISTING CLAIM CHECKED. `dispatchPrologueCats`
+(`E1InteriorDispatchCompose.lean:251`) carried a doc-comment asserting `19`
+with no proof. It is now proved and it HOLDS. Recorded because the
+alternative outcome was live: an unproved doc-comment figure is exactly the
+kind of thing that has failed inspection repeatedly in this campaign.
+
+## DD-20260719-222: the interior chain is bounded by `chunkIters_le_eight`, and it is NOT recursive
+
+`geomCats` -> `legCats` -> `spanCats` -> `twoSpanCats` -> the two dispatch
+legs looks like it might close a cycle, since `spanCats` calls `legCats` and
+`twoSpanCats` calls `spanCats` twice. It does not: no definition in the chain
+calls back down to one above it. That is what lets the bounds compose by
+plain substitution instead of needing a measure.
+
+The chain's only unbounded-looking quantity is the summary chunk fold's
+iteration count, and `chunkIters_le_eight` caps it with NO size hypothesis
+and no positivity side condition, because both arms of `chunkIters` are
+bounded by `8` on the nose.
+
+The numerals, each derived from the one below it: `summaryStageCats` and
+`geomCats` `<= 158 = 1 + 156 + 1`; `legCats` `<= 653 = 4 * 158 + 21`;
+`spanCats` `<= 815 = 1 + 158 + 3 + 653`; `twoSpanCats`
+`<= 1810 = 1 + 158 + 11 + 815 + 3 + 815 + 7`.
+
+## DD-20260719-223: `twoLegCats` and `crossLegCats` are bounded in their PARAMETERS' lengths, not in a numeral
+
+Both take their sub-logs as arguments (`E1InteriorCombine.lean:294`, `:971`).
+A numeral bound would have required choosing which legs they are applied to,
+which is a fact about the dispatch and not about the combinator. Stating
+`<= catsA.length + catsB.length + 24` keeps the theorem true of every
+instantiation and lets all five dispatch arms cite the same lemma at
+different legs.
+
+This follows `crossBlockArmCats`'s own precedent, which takes `interiorCats`
+as a parameter for the same reason, and `wholeQueryCats`'s
+(`E1WholeQueryCats.lean:98`), which takes all five stage logs as parameters
+because they belong to other lanes.
+
+The `_of` forms (`twoLegCats_length_le_of`, `crossLegCats_length_le_of`) take
+numeric bounds in and give a numeric bound out. That is what makes them
+citable with every argument inferred; see DD-20260719-227.
+
+## DD-20260719-224: the dispatch arm's bound is the WIDEST of five branches, and the looseness is declared
+
+`dispatchArmCats` (`E1InteriorDispatchCompose.lean:264`) is a five-way `if`
+in the route's own conditions. The five per-arm bounds are `4`, `1814`,
+`3650`, `3651` and `5479`; the arm bound is the maximum, `5479`, from the
+final `else`, which spans three macro blocks and merges three leg values
+through `crossLegCats`.
+
+A CORRECTION THIS LANE MADE TO ITSELF. The docstring first said the five arms
+"measure" those figures. They do not: four of the five are BOUNDS on their
+arms, and only the `count = 0` arm's `4` is exact, that arm being a literal.
+The error was caught by evaluating the arms at the fixture shape
+`[3,1,4,1,5]`, where the empty arm charges `4` as claimed but a one-block
+range charges `602` against its own bound of `1814`. Recorded because the
+sentence typechecked as English and would have shipped as an overclaim about
+tightness; rule 3 caught it, as it caught mutant J's rejection count in
+DD-20260719-140's round.
+
+So the looseness is large and real, and it is named in the theorem's own
+docstring rather than left for a reader to discover. A derived `<=` that is
+loose is honest as long as the looseness is visible; the failure mode being
+guarded against is a bound that reads as tight because nobody wrote down what
+the other arms cost.
+
+## DD-20260719-225: the two `33`s and the two `8`s are kept apart, and this module's caps are the `8`s
+
+The campaign shorthand "caps 33/8/8" conflates four literals into three
+slots. `E1CostLadder.lean`'s header separates them, continuing
+`E1CostAlgebra.lean`'s discipline:
+
+* the FRINGE-WINDOW chunk-read cap inside `endpointFringe = 4 + 33 = 37`
+  (`ChargedFringeChunks.lean:1624-1687`) -- the `33` of `cap_count_le`, which
+  `sbCount` (`E1SameBlockArm.lean:134`) and the two cross arms
+  (`E1CrossBlockArm.lean:1049`, `:1062`) each write out literally;
+* the WHOLE-INTERIOR-DIRECTORY read cap,
+  `canonicalRelativeRmmPrincipledInteriorChargedTraceCost := 33`
+  (`InteriorDirectory.lean:1934`), which this module proves nothing about;
+* the table adapter's per-read chunk cap, `chunkIters_le_eight`, which bounds
+  the summary chunk fold;
+* the per-word chunk cap, `bpWordChunkCount_le_eight`
+  (`ChargedWordChunks.lean:153`), which bounds the rank close-hit loop.
+
+The last two are the `8`s this ladder actually uses, and they are distinct
+literals that share a value -- the sharpening the acceptance matrix already
+recorded for REQ-E1-07, now with both sides load-bearing in one module.
+
+## DD-20260719-226: `bpWordChunkCount_le_eight` is USED, not restated
+
+The rank close-hit loop's cap already existed
+(`ChargedWordChunks.lean:153`). Restating it inside the ladder would have
+produced a second lemma with the same content and no consumer for the first.
+It is cited directly. Recorded because the opposite choice -- a local
+restatement -- is how a tree accumulates two spellings of one fact that later
+drift, and this campaign has already paid for that once with the
+`catCount`/`filter` split.
+
+## DD-20260719-227: `length_append_le`, so that route-side index expressions are never TRANSCRIBED into a proof
+
+`dispatchArmCats` and `crossBlockArmCats` apply their sub-logs at index
+expressions running to five and six lines each -- `macroSize` arithmetic on
+the start block, the capped fringe trip count, the decomposed close
+positions. A proof that names them has to reproduce them exactly, and a
+proof that reproduces them ALMOST exactly still typechecks: it just proves a
+bound about a different instantiation than the goal, and `omega` reports two
+atoms where the reader sees one term.
+
+That is precisely the RIGHT-SHAPE-WRONG-CONTENT defect class
+`E1_LIVE_STATE.md` section 6 records three instances of.
+
+`length_append_le` removes the temptation. Every bound below it is cited with
+underscores and every index is inferred by unification against the goal, so a
+mismatched instantiation is a UNIFICATION FAILURE at elaboration time rather
+than a silently weaker theorem. `crossBlockArmCats_length_le`'s proof cites
+thirteen sub-bounds and transcribes not one index.
+
+This was not a stylistic preference. The first attempt at `spanCats` and
+`twoSpanCats` stated the branch bound as a separate `have` about the match
+expression, and `omega` rejected it with the two sides printing IDENTICALLY
+-- the elaborated motives differed. The proofs were restructured to `split`
+the goal directly. The failure was visible only because `omega` prints its
+atoms.
+
+## DD-20260719-228: `cats.length` IS `totalSteps`, by definition, and the module says so rather than leaving it to be unfolded
+
+REQ-E1-06 conjunct (c) is phrased about `totalSteps`. Everything this lane
+bounds is a category log's `.length`. The connection is not a lemma that
+might be missing or might be about a different run: `RunsTo store program s
+s' reads cats` is DEFINED as
+`run store program cats.length s = <s', reads, cats, cats.length>`
+(`E1MachineCalculus.lean:96`), and the last component is the `steps` field.
+
+`RunsTo.steps_le` states this explicitly. It depends on NO axioms at all --
+`#print axioms` reports none, which is the sharpest possible evidence that
+nothing is being smuggled in at the point where the requirement's vocabulary
+meets this module's. `run_steps_eq_catLog_length` (`E1Machine.lean:340`) is
+its run-level twin and was already present.
+
+## DD-20260719-229: the summation is performed where it is DERIVABLE and stated parametrically where it is not
+
+Two summations are delivered and they are different in kind, deliberately.
+
+CONCRETE, because the tree composes it.
+`crossBlockArm_withCanonicalInterior_runsTo`
+(`E1InteriorDispatchCompose.lean:1302`) passes `dispatchCats shape startBlock
+count` as `crossBlockArmCats`'s `interiorCats`. So
+`crossBlockArmCats_withCanonicalInterior_length_le : ... <= 10167` bounds an
+EXECUTED run's charge log, not a hypothetical instantiation.
+`10167 = 5498 + 4669` is what the two halves produce composed; it was not
+chosen and checked after. With `closeLcaLegCats_length_le` the same literal
+covers the same-block branch too, which measures `2328`.
+
+PARAMETRIC, because the tree does not compose it. `wholeQueryCats`'s
+per-stage logs are parameters, since the select, close/LCA and rank machine
+legs belong to other lanes and their category functions are not final
+(`E1WholeQueryCats.lean:41`). The honest summation is therefore over the
+CONTROL STRUCTURE: given a bound per stage, the whole-query log is bounded by
+`prologue + 2 * select + lca + rank + output` on every one of the four route
+branches. The `2 *` is not an assumption -- all four branches charge
+`S.select left` and `S.select (right - 1)`, and the proof is a case split
+that would fail if any branch charged a third.
+
+What this lane supplies for the `lca` slot is `10167`. No numeral is invented
+for the other three slots, and the whole-query literal is NOT claimed. A
+lane that filled those slots with plausible figures would produce a
+whole-query numeral that reads as derived and is not, which is the exact
+failure the standing rule against asserted constants exists to prevent.
+
+## DD-20260719-230: `closeLcaLegCats_length_le` is a DISJUNCTION on the log, not an `if` this lane invented
+
+The route takes the same-block close leg when both closes fall in one block
+and the cross-block leg otherwise. Bounding "the close leg" under one literal
+therefore wants a dispatcher -- and NO definition in the tree dispatches
+between `sameBlockDispatchCats` and `crossBlockArmCats`. Grepped, not
+assumed.
+
+Writing one here to state the theorem would be a witness constructed FOR the
+premise rather than found at the target, which rule 5 forbids. The theorem is
+stated instead as a hypothesis that the log IS one of the two, discharged by
+`rcases` into the two existing bounds. When whole-query assembly lands a real
+dispatcher the hypothesis will be discharged at the call site, and until then
+the statement does not pretend a structure exists that does not.
