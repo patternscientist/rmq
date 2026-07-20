@@ -7474,7 +7474,7 @@ route's cross object guards it: `if leftBlock + 1 < rightBlock then … else
 pure none` (`ChargedFringeTrace.lean:940`). The two agree only because the
 guard COLLAPSES — `¬(bl + 1 < br)` forces `br - bl - 1 = 0` in `Nat`, and the
 dispatch's `count = 0` arm is `pure none` with an EMPTY read log.
-`dispatchTraceResult_of_not_lt` (`E1WholeQueryCrossRoute.lean:176`) proves it.
+`dispatchTraceResult_of_not_lt` (`E1WholeQueryCrossRoute.lean:175`) proves it.
 Had that arm read anything — had it fallen through into `twoSpanBlock`'s
 unconditional head-level read — the receipts would differ and the equation
 would have failed there. It is exactly the class of address coincidence this
@@ -7489,7 +7489,7 @@ shape` by projection on a structure literal (`RelativeSummary.lean:1278`).
 Grepped before being relied on, because a mismatch would have been invisible
 until the composed term was elaborated.
 
-**`crossArmObject_eq_routeLcaLeg` (`E1WholeQueryCrossRoute.lean:206`) IS THE
+**`crossArmObject_eq_routeLcaLeg` (`E1WholeQueryCrossRoute.lean:208`) IS THE
 IDENTIFICATION §10f NAMED AS UNWRITTEN.** The machine's cross-arm object and
 the route's `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`
 are ONE TERM on the cross arm — value AND receipt, not just the value. Every
@@ -7499,7 +7499,7 @@ hop existed (`lcaLeg_of_crossBlock`, `lcaLeg_sameBlock_rankSeed_eq`,
 composition and the guard collapse.
 
 **THE CATEGORY ACCOUNTING RUNS THE RIGHT WAY ROUND.**
-`wholeQueryMachineStageCats` (`E1WholeQueryMachineCats.lean:72`) is an `S`, and
+`wholeQueryMachineStageCats` (`E1WholeQueryMachineCats.lean:66`) is an `S`, and
 an `S` CANNOT make a false control structure true —
 `wholeQueryBranchCats` fixes which fields appear, in which order, on which
 branch, and it is not edited by this work. Where the two disagreed, the RECORD
@@ -7509,7 +7509,7 @@ over by an `S`. `lcaRunCats` is a PARAMETER there, following
 
 **THE SELECT-MISS BRANCHES ARE UNREACHABLE ON A VALID RANGE, WHICH IS WHY THE
 AGREEMENT NEEDS ONLY `.full`.** `wholeQueryBranch_ne_selectNone_of_bounds`
-(`E1WholeQueryRankPositive.lean:311`): the selects cannot miss below the
+(`E1WholeQueryRankPositive.lean:307`): the selects cannot miss below the
 shape's size, because `bpCloseOfInorder?` is total there (`BPShape.lean:57`).
 So on the public surface's own hypothesis the route ALWAYS takes `.full`, and
 the whole-query obligation is that branch's two arms — both executed. The
@@ -7519,7 +7519,7 @@ which is worth knowing and was not previously stated.
 **THE STAGE RECORD DISPATCHES ON THE ROUTE'S OWN ARM SELECTOR.**
 `WholeQueryMachineAgrees` fixes ONE `S`, but the close/LCA leg charges
 differently on the two arms, so `wholeQueryLcaRunCats`
-(`E1WholeQueryAgreement.lean:40`) branches on
+(`E1WholeQueryAgreement.lean:39`) branches on
 `blockOfClose … leftClose = blockOfClose … rightClose` — the SAME condition
 `lcaCloseTraceResultWithRankSeedAllSizeStructural`
 (`ChargedFringeWiring.lean:50`) dispatches on. A function of the route's branch

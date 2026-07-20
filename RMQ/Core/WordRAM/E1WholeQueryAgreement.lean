@@ -8,7 +8,7 @@ Every piece the whole-query agreement needed is now in place, and this module
 composes them.
 
 **THE SELECT-MISS BRANCHES ARE NOT PROVED HERE BECAUSE THEY CANNOT HAPPEN.**
-`wholeQueryBranch_ne_selectNone_of_bounds` (`E1WholeQueryRankPositive.lean:311`)
+`wholeQueryBranch_ne_selectNone_of_bounds` (`E1WholeQueryRankPositive.lean:307`)
 shows that on `left < right` and `right ≤ shape.size` — the public surface's
 own hypothesis — the route ALWAYS takes `.full`.  The selects cannot miss on a
 valid range because `bpCloseOfInorder?` is total below the shape's size

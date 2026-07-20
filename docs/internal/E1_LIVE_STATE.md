@@ -1823,6 +1823,136 @@ three added `import` lines in `RMQ.lean`.
 
 ---
 
+## 10g. Worklog - E1-LaneA8, 2026-07-19 (both obstructions discharged; the whole-query program is complete)
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `b8766c9`. DD-IDs claimed and
+WRITTEN into `DESIGN_DECISIONS.md`: **`207`, `208`, `209`**. Band `210-219`
+free. Full `lake build RMQ` green at every commit.
+
+**BOTH OBSTRUCTIONS 10f REPORTED ARE DISCHARGED, AND ALL FOUR ROUTE BRANCHES
+NOW RUN FROM `initialState` TO HALTED WITH RECEIPT, CHARGE AND VALUE STATED
+AGAINST THE ROUTE'S OWN OBJECTS.** `WholeQueryMachineAgrees` is proved and the
+public `List Int` corollary lands.
+
+**THE VALUE DISAGREEMENT IS VACUOUS, BY PROOF, NEITHER SIDE WEAKENED**
+(DD-20260719-207). New module `E1WholeQueryRankPositive.lean`. 10f's analysis
+was confirmed exactly, not retracted: the two sides disagree exactly at
+`rank.value = 0`. What is new is that the point is UNREACHABLE.
+`decodePacket` keeps its guard, `wholeQueryBranchValue` keeps its
+unconditional `- 1`, and **no hypothesis `rank.value != 0` is carried
+anywhere.**
+
+* `rankCloseTrace_value_eq_rankPrefix` (`:72`) -- the rank leg's TRACE value IS
+  the `rankPrefix`, unconditionally, at every segment base. **This closes the
+  read-failure fallback** (`ChargedRankSelectLeafTrace.lean:181`) that 10f
+  correctly flagged as a second route to `0`: `refines_interpretedCosted`
+  (`SuccinctFinalRAM.lean:1516`) is unconditional and base-generic because the
+  store is definitionally the seed store, so the reads cannot miss.
+* **That composition existed only inside proof bodies**
+  (`BPNavigationRAM.lean:1969`, `SuccinctFinalRAM.lean:9186`); a grep for
+  `.value = Succinct.rankPrefix` returned ZERO matches tree-wide. Sixth time a
+  brief budgeted work a definition already did.
+* `wholeQueryBranch_eq_full_of_bounds` (`:152`) supplies the semantic link
+  CONSTRUCTIVELY -- there is no inversion lemma, only the four introduction
+  lemmas at `E1RouteDecomposition.lean:241-288`, so rather than invert, it
+  PROVES the branch is `.full` with `bpCloseOfInorder?` closes from
+  `left < right` and `right <= shape.size` alone. **Strictly stronger than
+  inversion: it is also the satisfiability witness that `.full` is reached,
+  which this layer did not have.** Witness FOUND at the target, not built for
+  the premise.
+* `bpCloseOfInorder?_rankFalse_succ` (`BPShape.lean:156`) then makes the value
+  a SUCCESSOR. `decodePacket_rankClose_eq_wholeQueryRouteValue_of_bounds`
+  (`:209`) is the vacuity witness.
+
+**THE BOUNDS ARE NOT A WEAKENING.** `left < right` and `right <= shape.size`
+are exactly `ValidRange` (`Spec.lean:14`) through the shape -- the hypothesis
+the public corollary already carries.
+
+**THE STAGE RECORD GAINED EXPLICIT CONNECTIVES, PER THE COORDINATOR RULING**
+(DD-20260719-208). `selectJoin` and `rankJoin` are named stages, NOT folded
+into `select` or `lcaRun`, because each of those occurs TWICE and folding
+would give one function two meanings. `prologue` absorbs the opening
+`registerWrite` because it occurs ONCE -- that distinction is the whole
+argument.
+
+**A SECOND CLASH, NOT REACHED BY DD-20260719-206.** The old record used ONE
+`lcaSkipped` on BOTH select-miss branches, making those two cases **the same
+term** -- separable by no `S` whatsoever. The machine separates them: it tests
+the select results in order, so left-miss charges `[comparison, branch]`
+(`E1WholeQueryProgram.lean:1169`) and right-miss charges it twice (`:1252`).
+Field split; `selectNone_branches_separable` (`E1WholeQueryCats.lean:424`)
+states a proposition that was previously **false by `rfl`**.
+
+**THE FOURTH BRANCH WAS A COMPOSITION, NOT A LANE** (DD-20260719-209). New
+module `E1WholeQueryCrossRoute.lean`. `closeLcaProgramAt_runsTo_cross`
+(`E1WholeQueryCloseLca.lean:258`) already existed as the exact twin of its
+same-block sibling, and the same-block whole-query proof consumes its twin in
+ONE `obtain`, so `wholeQueryProgram_runsTo_crossBlock` (`:99`) is that proof
+with one lemma swapped. **Two briefs budgeted this as a lane.**
+
+**THE ONE PLACE IT COULD HAVE HIDDEN A DEFECT WAS EXECUTED, NOT REASONED
+ABOUT.** The machine's cross arm carries its interior UNGUARDED; the route
+guards it, `if leftBlock + 1 < rightBlock then ... else pure none`
+(`ChargedFringeTrace.lean:940`). They agree only because the guard COLLAPSES:
+`count = 0` and that arm is `pure none` with an EMPTY read log.
+`dispatchTraceResult_of_not_lt` (`:175`) proves it. **Had that arm read
+anything the receipts would differ and the equation would have failed there.**
+The block-index spellings were likewise grepped, not assumed:
+`blockOfClose bs c` is `c / bs` (`BlockLocal.lean:864`) and
+`(canonicalLayout shape).blockSize` is
+`canonicalBPRelativeSummaryBlockSizeRaw shape` (`RelativeSummary.lean:1278`).
+
+**`crossArmObject_eq_routeLcaLeg` (`:208`) IS THE IDENTIFICATION 10f NAMED AS
+UNWRITTEN** -- the two objects are ONE TERM on the cross arm, value AND
+receipt.
+
+**CATEGORY ACCOUNTING RUNS THE RIGHT WAY ROUND.** New module
+`E1WholeQueryMachineCats.lean`. `wholeQueryBranchCats` is NOT edited by this
+work; an `S` cannot make a false control structure true. Where the two
+disagreed the RECORD changed under a ruling, never an `S`. `lcaRunCats` is a
+PARAMETER there, following `crossBlockArmCats`' precedent.
+
+**THE SELECT-MISS BRANCHES ARE UNREACHABLE ON A VALID RANGE.**
+`wholeQueryBranch_ne_selectNone_of_bounds`
+(`E1WholeQueryRankPositive.lean:307`): `bpCloseOfInorder?` is total below the
+shape's size (`BPShape.lean:57`), so the selects cannot miss and the route
+ALWAYS takes `.full`. Their run theorems therefore describe behaviour OUTSIDE
+`ValidRange` -- worth knowing, not previously stated.
+
+**THE AGREEMENT.** New module `E1WholeQueryAgreement.lean`.
+`wholeQueryLcaRunCats` (`:39`) dispatches on the route's OWN arm selector --
+the same condition `lcaCloseTraceResultWithRankSeedAllSizeStructural`
+(`ChargedFringeWiring.lean:50`) dispatches on -- because
+`WholeQueryMachineAgrees` fixes one `S` while the two arms charge differently.
+`wholeQueryMachineAgrees_of_bounds` (`:64`) and
+`programSkeleton_valid_matches_public_at_machineS` (`:111`).
+
+**Validator.** `lake build rmq_e1_machine_validate` green; `lake exe
+rmq_e1_machine_validate` **PASS at 8.081 s wall clock**, phase 5
+`wholeQueryComparisonAvailable=false`, verdict `OPEN`. Modeled steps
+(reproducible, UNCHANGED from 10e/10f): dispatch 2430, leg 30343, select 8273,
+compose 9222, composeMax 585, legMutant 30060, merge 431, arm 6276. Wall-clock
+is host-specific and is NOT evidence. **Its phase-5 TEXT is now MORE stale than
+10c-10f recorded**: it says no definition composes the legs into one runnable
+query program, which `wholeQueryProgram` (`E1WholeQueryProgram.lean:876`) and
+this session's four executed branches falsify. The file is the sibling
+cost-algebra lane's and was NOT edited here.
+
+**`#print axioms`**, scratchpad driver importing the five new/changed modules
+directly, 20 declarations: `propext, Classical.choice, Quot.sound` on all
+except `selectNone_branches_separable` and `fullCats_mentions_both_joins`,
+which depend on NO axioms. **No `sorryAx` anywhere.** No
+`sorry`/`admit`/`axiom`/`native_decide`/`partial`/`unsafe`/`implemented_by`/
+Mathlib/`maxHeartbeats`/`by_contra`/`norm_num` in any new file.
+
+**Citations.** Every citation this section makes was verified against the
+declaration it names AFTER the edits; five in DD-20260719-209 and three in
+DD-20260719-207/208 were off by 2-9 lines and were corrected. Four new files;
+the only edits to existing tree files are `E1WholeQueryCats.lean` (the record)
+and four added `import` lines in `RMQ.lean`.
+
+---
+
 ## 11. Findings from the four read-only surveys (2026-07-19)
 
 Only items that change what a worker should DO are here. Cosmetic doc drift was
