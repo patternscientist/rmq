@@ -9140,3 +9140,51 @@ recorded for register `abbrev`s; it is not specific to registers.
 `machineWordBits shape.size` for `shape.size <= 2821`, witnessed by the
 guard's own `brNZ regG 5644`. The positive and negative results are now about
 THE SAME PROGRAM, which was not previously true of either column.
+
+## DD-20260719-305: the width conjunct enters `E1AmendedFamiliarMachineTarget` (E1-LaneN)
+
+DD-20260719-142 omitted a width conjunct from
+`E1AmendedFamiliarMachineTarget`, and E1-LaneK and E1-LaneM each re-affirmed
+the omission, all three for ONE stated reason: the only width fact about the
+executed program was a REFUTATION, and a conjunct spelled from a refutation
+would assert that the program does NOT fit a width, which is not what the
+target should say.
+
+**That reason is now gone**, so the omission is reversed rather than
+inherited. `wholeQueryProgram_fits_reviewerWordBits` (DD-20260719-304) is
+unconditional, so conjunct (3) reads:
+
+```
+    (∀ xs : List Int,
+      ProgramFits
+        (concreteBPNativeSuccinctRMQReviewerWordBits xs.length)
+        (programSkeleton xs.length
+          (validPath (SuccinctClassic.cartesianShape xs))))
+```
+
+This is a STRENGTHENING: the Prop now asserts that the program its other two
+conjuncts RUN is one the modeled word RAM can actually encode. Nothing was
+weakened, renamed or deleted.
+
+### The new premise on the reduction lemma is witnessed, not owed
+
+`amendedTarget_of_wholeQueryAgreement` is parametric in `validPath`, so the
+conjunct cannot be proved there and enters as a hypothesis `hfits`. That is
+exactly the shape this campaign has been paying down, so it is worth being
+explicit about why it is acceptable here: `hfits` is DISCHARGED at the
+intended instantiation, in the same file, by
+`amendedFamiliarMachineTarget_holds`, from a theorem that carries no
+hypotheses of its own. It is not a premise with no witness; it is a premise
+whose witness is exhibited by the lemma's only consumer.
+
+Rule 5 is also satisfied: the witness was not constructed FOR this conjunct.
+`wholeQueryProgram_fits_reviewerWordBits` is REQ-E1-02's own deliverable,
+proved before this conjunct was contemplated, and found at the target.
+
+### Both theorems still prove
+
+`amendedFamiliarMachineTarget_holds` and
+`uniformStore_amendedTarget_refuted` both report
+`[propext, Classical.choice, Quot.sound]`. The refutation is untouched: it is
+about `E1AmendedFamiliarMachineTargetUniformStore`, a separate Prop, which
+gains no conjunct.

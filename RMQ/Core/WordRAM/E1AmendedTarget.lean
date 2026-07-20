@@ -163,6 +163,7 @@ adjacency is exactly how the two `33`s came to be conflated.
 -/
 import RMQ.Core.WordRAM.E1CostAlgebra
 import RMQ.Core.WordRAM.E1WholeQueryCostLiteral
+import RMQ.Core.WordRAM.E1WholeQueryPathWidth
 
 namespace RMQ
 namespace WordRAM
@@ -421,7 +422,18 @@ def E1AmendedFamiliarMachineTarget : Prop :=
             -- the DERIVED all-size literal total, an INEQUALITY
             (wholeQueryCats (S (SuccinctClassic.cartesianShape xs))
                 (SuccinctClassic.cartesianShape xs) left right).length ≤
-              literalTotal)
+              literalTotal) ∧
+    -- (3) THE MODELED WIDTH.  Every instruction of the program the two
+    -- clauses above RUN fits the reviewer word model, at every input.
+    -- Omitted until 2026-07-19 because the only width fact about the executed
+    -- program was a REFUTATION (DD-20260719-142, DD-20260719-264); added now
+    -- that `wholeQueryProgram_fits_reviewerWordBits` (DD-20260719-304)
+    -- supplies the positive direction unconditionally.
+    (∀ xs : List Int,
+      ProgramFits
+        (concreteBPNativeSuccinctRMQReviewerWordBits xs.length)
+        (programSkeleton xs.length
+          (validPath (SuccinctClassic.cartesianShape xs))))
 
 /--
 **THE SUPERSEDED SPELLING**, kept so the refutation below has a subject.
@@ -566,11 +578,16 @@ theorem amendedTarget_of_wholeQueryAgreement
       ValidRange xs left right →
         (wholeQueryCats (S (SuccinctClassic.cartesianShape xs))
           (SuccinctClassic.cartesianShape xs) left right).length ≤
-            literalTotal) :
+            literalTotal)
+    (hfits : ∀ xs : List Int,
+      ProgramFits
+        (concreteBPNativeSuccinctRMQReviewerWordBits xs.length)
+        (programSkeleton xs.length
+          (validPath (SuccinctClassic.cartesianShape xs)))) :
     E1AmendedFamiliarMachineTarget := by
   refine ⟨validPath, S, literalTotal,
     fun store xs => amendedTarget_invalidGuard
-      (validPath (SuccinctClassic.cartesianShape xs)) store xs, ?_⟩
+      (validPath (SuccinctClassic.cartesianShape xs)) store xs, ?_, hfits⟩
   intro xs left right hvalid
   obtain ⟨final, hrun, hhalted, hout, hcost⟩ :=
     programSkeleton_valid_matches_public
@@ -607,6 +624,12 @@ theorem amendedFamiliarMachineTarget_holds :
     wholeQueryMachineS 11886 (fun xs left right hvalid => ?_)
     (fun xs left right _ =>
       E1WholeQueryCostLiteral.wholeQueryCats_machineS_length_le _ _ _)
+    (fun xs => by
+      have hsize : (SuccinctClassic.cartesianShape xs).size = xs.length :=
+        Cartesian.shape_size xs
+      have h := E1WholeQueryPathWidth.wholeQueryProgram_fits_reviewerWordBits
+        (SuccinctClassic.cartesianShape xs)
+      simpa [E1ReviewerWidth.shapeWidth, wholeQueryProgram, hsize] using h)
   have hsize : (SuccinctClassic.cartesianShape xs).size = xs.length :=
     Cartesian.shape_size xs
   exact wholeQueryMachineAgrees_of_bounds (SuccinctClassic.cartesianShape xs)
