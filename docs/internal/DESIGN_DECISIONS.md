@@ -7450,3 +7450,87 @@ position 4 to position 5 because `selectJoin` shifts it by one.
 `programSkeleton_valid_matches_public` (`E1WholeQueryPublic.lean:140`) consumes
 change with it. No statement in either declaration was edited; the change is
 carried entirely by the record. `lake build RMQ` green.
+
+---
+
+## DD-20260719-209 — the fourth branch, the category accounting, and `WholeQueryMachineAgrees`
+
+**The whole-query program is complete: all four route branches run from
+`initialState` to a halted state with receipt, charge and value all stated
+against the route's own objects, and the public `List Int` corollary lands.**
+
+**THE CROSS ARM WAS A COMPOSITION, NOT A LANE, AND THAT IS A FINDING.**
+`closeLcaProgramAt_runsTo_cross` (`E1WholeQueryCloseLca.lean:258`) already
+existed as the exact twin of `closeLcaProgramAt_runsTo_same`, and the
+same-block whole-query proof consumes its twin in a single `obtain`. So
+`wholeQueryProgram_runsTo_crossBlock` (`E1WholeQueryCrossRoute.lean:99`) is
+that proof with one lemma swapped. Two briefs budgeted the cross arm as a lane
+of work; the arm-level machinery was in place and only the composition was
+missing. **Sixth time a brief has budgeted work a definition already did.**
+
+**THE ONE PLACE THE COMPOSITION COULD HAVE HIDDEN A DEFECT, AND IT WAS
+CHECKED.** The machine's cross arm carries its interior UNGUARDED, while the
+route's cross object guards it: `if leftBlock + 1 < rightBlock then … else
+pure none` (`ChargedFringeTrace.lean:940`). The two agree only because the
+guard COLLAPSES — `¬(bl + 1 < br)` forces `br - bl - 1 = 0` in `Nat`, and the
+dispatch's `count = 0` arm is `pure none` with an EMPTY read log.
+`dispatchTraceResult_of_not_lt` (`E1WholeQueryCrossRoute.lean:176`) proves it.
+Had that arm read anything — had it fallen through into `twoSpanBlock`'s
+unconditional head-level read — the receipts would differ and the equation
+would have failed there. It is exactly the class of address coincidence this
+campaign has hit three times, and it was executed rather than reasoned about.
+
+**THE BLOCK-INDEX SPELLINGS WERE CHECKED, NOT ASSUMED.** The route says
+`blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape) x`, the machine
+says `x / (RelativeRmm.canonicalLayout shape).blockSize`. They are the same
+term: `blockOfClose bs c` is `c / bs` (`BlockLocal.lean:864`) and
+`(canonicalLayout shape).blockSize` is `canonicalBPRelativeSummaryBlockSizeRaw
+shape` by projection on a structure literal (`RelativeSummary.lean:1278`).
+Grepped before being relied on, because a mismatch would have been invisible
+until the composed term was elaborated.
+
+**`crossArmObject_eq_routeLcaLeg` (`E1WholeQueryCrossRoute.lean:206`) IS THE
+IDENTIFICATION §10f NAMED AS UNWRITTEN.** The machine's cross-arm object and
+the route's `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`
+are ONE TERM on the cross arm — value AND receipt, not just the value. Every
+hop existed (`lcaLeg_of_crossBlock`, `lcaLeg_sameBlock_rankSeed_eq`,
+`crossBlockArmSpec_eq`, rung 7's
+`canonicalInterior_traceResult_eq_dispatch`); what was missing was the
+composition and the guard collapse.
+
+**THE CATEGORY ACCOUNTING RUNS THE RIGHT WAY ROUND.**
+`wholeQueryMachineStageCats` (`E1WholeQueryMachineCats.lean:72`) is an `S`, and
+an `S` CANNOT make a false control structure true —
+`wholeQueryBranchCats` fixes which fields appear, in which order, on which
+branch, and it is not edited by this work. Where the two disagreed, the RECORD
+was changed under a ruling (DD-20260719-206, DD-20260719-208), never papered
+over by an `S`. `lcaRunCats` is a PARAMETER there, following
+`crossBlockArmCats`' precedent of taking `interiorCats` as one.
+
+**THE SELECT-MISS BRANCHES ARE UNREACHABLE ON A VALID RANGE, WHICH IS WHY THE
+AGREEMENT NEEDS ONLY `.full`.** `wholeQueryBranch_ne_selectNone_of_bounds`
+(`E1WholeQueryRankPositive.lean:311`): the selects cannot miss below the
+shape's size, because `bpCloseOfInorder?` is total there (`BPShape.lean:57`).
+So on the public surface's own hypothesis the route ALWAYS takes `.full`, and
+the whole-query obligation is that branch's two arms — both executed. The
+select-miss run theorems therefore describe behaviour OUTSIDE `ValidRange`,
+which is worth knowing and was not previously stated.
+
+**THE STAGE RECORD DISPATCHES ON THE ROUTE'S OWN ARM SELECTOR.**
+`WholeQueryMachineAgrees` fixes ONE `S`, but the close/LCA leg charges
+differently on the two arms, so `wholeQueryLcaRunCats`
+(`E1WholeQueryAgreement.lean:40`) branches on
+`blockOfClose … leftClose = blockOfClose … rightClose` — the SAME condition
+`lcaCloseTraceResultWithRankSeedAllSizeStructural`
+(`ChargedFringeWiring.lean:50`) dispatches on. A function of the route's branch
+conditions, not a numeral.
+
+**NOTHING WAS WEAKENED TO CLOSE THIS.** The value clause is the real one,
+`decodePacket … = wholeQueryRouteValue …`, which was the obstruction
+DD-20260719-205 reported and DD-20260719-207 discharged. No `sorry`, no
+asserted constant, no hypothesis that the public surface does not already
+carry.
+
+**Axioms.** Every new declaration: `[propext, Classical.choice, Quot.sound]`,
+except `selectNone_branches_separable` and `fullCats_mentions_both_joins`,
+which depend on NO axioms. No `sorryAx`. `lake build RMQ` green.
