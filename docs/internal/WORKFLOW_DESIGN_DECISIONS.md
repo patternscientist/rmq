@@ -20,9 +20,10 @@ WDD-20260710-002, WDD-20260711-001 through WDD-20260711-002, and
 WDD-20260716-001 govern the current audit-context, obstruction, skill-context,
 lifecycle, scout, durable read-only-report, model-routing, proof-completion,
 and worker-prompt-readiness policies. WDD-20260719-011 governs current-cost
-claim enforcement and default-sensitive design classification. Earlier entries
-retain stable IDs and historical insertion order; read their Status rather
-than inferring current priority from file order.
+claim enforcement and default-sensitive design classification;
+WDD-20260719-012 governs neutral-path shadowing in those classifiers. Earlier
+entries retain stable IDs and historical insertion order; read their Status
+rather than inferring current priority from file order.
 
 ## WDD-20260708-001: Log ADD Improvements As Workflow Design Decisions
 
@@ -4291,3 +4292,75 @@ Submission-facing consistency no longer depends on remembering the last cost
 numeral or the next sensitive filename. Reviewers can distinguish live 210
 from frozen cost history, and future branches must carry durable design
 rationale before their new paths can pass strict certification.
+
+## WDD-20260719-012: neutral evidence paths cannot shadow code or current claims
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: classifier completion evidence, default-sensitive design coverage, and
+the P1 repair chain.
+
+Decision:
+
+1. A path classifier that defaults repository changes to design-sensitive may
+   opt out only files whose role is constrained, not every file placed under a
+   nominally neutral directory.
+2. Code-bearing extensions remain code-sensitive under audit-report,
+   worklog, history, and digest roots. A neutral-path test must run before
+   acceptance and must not take precedence over code identity.
+3. Broad evidence/digest roots must not automatically exempt a newly named
+   current-looking public surface. Neutral history needs a constrained naming
+   or registry rule, and the production regression must exercise a current-like
+   counterexample.
+4. Claim-policy mutation campaigns must reproduce an actual stale registered
+   surface, including line-boundary variants, rather than relying only on
+   single-line paraphrases.
+
+Trigger and evidence:
+
+P1 candidate `18d7661898c262ab79c5b87bc24d07bb90498969` declared that Lean
+remained code-sensitive under every root and that new public paths defaulted
+sensitive. Its production checker nevertheless accepted both
+`docs/internal/audit_reports/P1NeutralBypass.lean` and
+`docs/digests/PROJECT_DIGESTION_CURRENT_V2.md` as neutral because directory
+opt-outs ran first. Its strict claim scan also returned zero failures while
+the registered `docs/PUBLICATION_STRATEGY.md` split “current theorem” and `207`
+across adjacent lines. The worker's green fixture sets omitted all three exact
+counterexamples.
+
+Rejected alternatives:
+
+- Treat directory placement as sufficient evidence of role.
+- Repair only the two example paths without changing completion discipline.
+- Accept the green enumerated regressions as category completeness.
+- Run the expensive unchanged fixture suite again after the production
+  counterexamples had already falsified the candidate.
+
+Consequences and regression evidence:
+
+- Named regression `p1-neutral-evidence-path-cannot-shadow-code-or-current-surface`
+  requires production rejection of the audit-report Lean injection and the
+  current-looking digest injection while preserving legitimate Markdown audit
+  reports and explicitly historical digests.
+- Named regression `p1-registered-current-cost-cross-line-207-rejected`
+  reproduces the exact `PUBLICATION_STRATEGY.md` line-boundary defect through
+  the production claim scanner.
+- The proof-sprint completion gate now requires both neutral-path boundary
+  mutations for opt-out/default-sensitive classifiers.
+- No Lean proposition, payload bit, proof field, modeled tick, trace, store,
+  runtime behavior, or public mathematical claim changes.
+
+Verification:
+
+- The two production design-check probes exited zero on the rejected P1
+  candidate, reproducing the failure and restoring the exact audit tree.
+- The strict production claim scan exited zero on the candidate while the
+  registered stale two-line claim remained present.
+- Governance skill preflight and exact diff checks must pass before this
+  decision is used to launch the repair.
+
+Publication-facing significance:
+
+Current cost statements and design-sensitive proof/tooling changes cannot
+escape review merely by wrapping across lines or by being stored under an
+evidence-labelled directory.

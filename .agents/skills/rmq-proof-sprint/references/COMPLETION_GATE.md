@@ -299,6 +299,11 @@ Before closing a classifier/linter row:
   -Strict -Base and the task's exact 40-character base commit. A strict run
   without a base must fail closed; a no-Base invocation is evidence only for
   an explicitly non-strict local-worktree mode.
+- for opt-out or default-sensitive path classifiers, prove that a neutral
+  directory cannot shadow a code-bearing extension and that a broad evidence
+  directory cannot admit a new current-looking public surface merely by
+  placement. Include production-verdict mutations for both boundaries; an
+  allowlisted directory name is not evidence of file role.
 
 Known examples are minimum fixtures. Completion requires evidence that the
 declared category and its allowance boundaries, not merely those sentences,
