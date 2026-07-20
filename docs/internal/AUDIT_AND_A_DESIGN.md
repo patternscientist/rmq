@@ -6487,3 +6487,137 @@ against any case-split proposal.
    computes.**
 
 (B)'s retune to `w^4` is cheap and tidies the shape; it changes no headline.
+
+---
+
+## C05 round 95 — Q4 returns and REFINES the "forced" verdict. The ceiling is
+## not architectural; it is the consequence of tabulating on RAW BITS. And the
+## missing piece already exists in the repo, already proven o(n).
+
+### THE MECHANISM, stated exactly
+
+**Classical never resolves a multi-word block by reading more of the bit vector.
+It reads ONE WORD OF A COMPRESSED SUMMARY and tabulates on the summary.** The
+compression ratio IS the reach multiplier.
+
+Golynski, UWaterloo TR CS-2006-03, p.4 (VERBATIM, retrieved PDF):
+
+> "Recall that the length of MB is at most (lg n)^2/4 lg lg n, so that the part P
+> of the count index that covers block MB ... is of the size at most (lg n)/2.
+> Hence, we can read P in one word and perform a lookup to a table T to compute
+> the number of the chunk where i-th 1-bit of MB is located."
+
+The block spans `lg n / (4 lg lg n)` WORDS of the vector, but its count-index
+image is `(lg n)/2` bits — one word. The count index stores each chunk's
+cardinality in a `lg lg n`-bit field over chunks of `lg n - 3 lg lg n` bits: a
+compression of `lg n : lg lg n`. **That ratio is exactly the reach multiplier.**
+
+Navarro-Sadakane reach the same end differently — a `k`-ary constant-depth range
+min-max tree, `k = Theta(w/(c log w))`, depth `O(c)`, one universal-table lookup
+per level (arXiv:0905.0768v5 pp.11-13, VERBATIM). Different route, same
+principle: compress until the summary fits one word, then tabulate on it.
+
+### WHY OUR CEILING EXISTS — an information-theoretic reason, not an engineering one
+
+**A table indexed by `c` RAW bits has `2^c` rows, so sublinearity forces
+`c <= ~(1/2) lg n` — permanently under one machine word.** Therefore **no
+raw-bit-indexed table can ever reach past one word and stay `o(n)`.**
+
+This independently explains the `bpChunkedSelectCosted` result from Q1 (cost
+13 -> 35, space unmoved) and upgrades Q1's NOT-portable verdict from an
+observation to a **reason**: the fringe ladder is not a badly-parameterised right
+table, it is **the wrong KIND of table**. `ChargedFringeChunks.lean:489` indexes
+on `bitsToNatLE ((window.drop (j*c)).take c)` — raw bits.
+
+### SO THE sqrt(log) CEILING IS REAL AGAINST RETUNING, AND FALSE AGAINST THE
+### ARCHITECTURE
+
+Q1's `sqrt(log)` arithmetic is sound **given a fixed reach cap** — optimising a
+product under a hard cap balances at a square root. But the cap is not a law:
+
+| | dense reach | why |
+|---|---|---|
+| Repo today | `w` | raw-bit table |
+| Golynski | `w * (lg n / lg lg n)` | count index compresses `lg n -> lg lg n` |
+| Navarro-Sadakane | `w^c` | constant-depth tree, polynomial fan-out |
+
+**AND WE ALREADY OWN THE SUMMARY.** `logLogSampledDirectoryOverhead`
+(`Asymptotics.lean:239`) is exactly `n lg lg n / lg n`, is **already proven
+`LittleOLinear`** (`:243`), and is **already the rank directory's budget**
+(`SuccinctRank.lean:723-725`) and the two-level select budget
+(`SuccinctSelect/TwoLevel/SelectSamples.lean:34-36`). The count index exists.
+**The dense SELECT leaf simply does not route through it.**
+
+### THE PRECISE DIAGNOSIS OF THE `n / lg lg n`
+
+Classical's charging invariant has a different SHAPE from ours. Classical bounds
+**each block's cost against that block's own span**: `explicitBits(b) <=
+span(b)/lg n`, summed over disjoint blocks (Golynski p.3, VERBATIM: sparse upper
+blocks "use at most n/lg n"). Ours — `sparseExceptionCount_wordBits_le_spanSum`
+(`Slots.lean:893`) — bounds the **COUNT** and lets per-block cost float, then
+multiplies count by a per-block cost of `Theta(lg n / lg lg n)`.
+
+Ratio per covered bit: ours `1/lg lg n`, classical `1/lg n`. **That single ratio
+is the entire `n / lg lg n`.**
+
+### THE FLOOR FOR THIS ARCHITECTURE, AND WHY
+
+**Recommended target: `Theta(n (lg lg n)^3 / lg n)`** — and the reason it is the
+right STOPPING point is as valuable as the target:
+
+- Fixing both sites to `O(n/lg n)` leaves the composite pinned at
+  `n (lg lg n)^3 / lg n` by the **already-existing** `logLogCubed` terms in
+  `sparseDenseSelectOverhead` (`GenericSelect/Arithmetic.lean:187-188`) and
+  `canonicalSparseExceptionDirectoryOverhead` (`RelativeTables.lean:1246-1249`).
+  **Past that point the two repaired sites stop being binding and further work on
+  them pays nothing.**
+- Golynski's own third-level cardinality reduction lands on the same exponent —
+  corroboration that `(lg lg n)^3` is a natural resting point, not an artifact.
+- Reaching the true optimum `n lg lg n / lg n` needs two more `lg lg n` factors
+  squeezed out of the local directory: a separate workstream buying only
+  `(lg lg n)^2`.
+- **Below that is BARRED.** Golynski Theorem 1, p.8 (VERBATIM): "Then
+  r = Omega(n lg lg n/lg n)", with p.5 confirming the setting "covers O(1) RAM
+  algorithms". We store the BP code verbatim and add directories, so we are an
+  **indexing** structure and the bound binds. F&H p.2 supplies the bridge
+  (VERBATIM): "systematic and non-systematic (also called indexing and encoding
+  data structures, respectively)." Escaping needs an ENCODING rank/select —
+  F&H Cor 5.9 gets `2n + O(n/lg^y n)` only by swapping in Patrascu's Succincter;
+  N&S Thm 1 only via the range min-max tree. **Both are re-architectures.**
+
+### THE DECISIVE COST CONSIDERATION — this is what settles the recommendation
+
+Routing the dense leaf through the count index means **different reads**: one
+count-index word, a summary-table lookup, one chunk read, a chunk-table lookup —
+where today there are two word reads. `selectCosted_cost_le_thirteen`
+(`Source.lean:2010`) sums per-branch literals including
+`denseTwoWordSelectCosted_cost_le_five` (5). Change the leaf and 13 moves; then
+`selectClose = 35` moves; then **`210` moves, and `11886` with it.**
+
+Precedent is exact: `bpChunkedSelectCosted` rebuilt these leaves and moved cost
+13 -> 35. **So the asymptotic fix reopens the frozen cost constant and E1's whole
+cost ladder — at the moment E1 is landing.**
+
+### RECOMMENDATION — unchanged in direction, now much better justified
+
+1. **Do NOT do the asymptotic fix now.** Not because it is impossible — Q4 shows
+   it is a ROUTING change onto machinery we already own and already proved `o(n)`
+   — but because it **reopens `210` and `11886`** just as E1 closes. That is the
+   wrong trade this month.
+2. **DO the constants and the practical-range theorem** (round 94 items 2 and 3).
+   Neither touches `210`. They move the number a reviewer actually computes.
+3. **DO write the gap up as a KNOWN, DIAGNOSED, SCOPED future item.** This is now
+   a strength rather than an omission. A passage that says: our overhead is
+   `Theta(n / lg lg n)`; the gap to classical is attributable to the dense select
+   leaf tabulating on RAW BITS, which caps its reach at one machine word by a
+   counting argument (`2^c` rows forces `c <= ~(1/2) lg n`); routing it through
+   the count directory we already maintain would yield `Theta(n (lg lg n)^3/lg n)`,
+   within `(lg lg n)^2` of Golynski's proven optimum for indexing structures —
+   **that passage demonstrates mastery of the design space.** It reads far
+   better than either silence or a rushed fix.
+
+**Q4 also confirms scope hygiene**: it treated
+`RMQ.GenericSelect.sparseExceptionRelativeTableOverhead`
+(`RelativeTables.lean:1192`) throughout and verified it distinct from the
+`RMQ.SuccinctSelect` twin (`SpanBudgets.lean:540`). The shadowed-twin trap was
+live and was avoided.
