@@ -167,6 +167,16 @@ Note the capacity lemmas above (`lt_capacity_of_le_linear`, and
 n` and never mention a width, so they are reused verbatim under a
 parametric `w`. -/
 
+/-- **The word-RAM model assumption**, named: a `w`-bit word can address
+the whole query structure built over an input of size `n`.
+
+This is the hypothesis every parametric width certificate below carries.
+It is an `abbrev` so that it unfolds definitionally wherever the
+arithmetic needs it, while still reading as a model assumption in the
+statements that assume it. -/
+abbrev WordAddressesStructure (w n : Nat) : Prop :=
+  concreteBPNativeSuccinctRMQReviewerCapacity n ≤ 2 ^ w
+
 /-- The parametric-width counterpart of `lt_reviewerWordBits_of_lt_capacity`:
 a quantity inside the address space fits ANY word that can address the
 structure, not merely the concrete reviewer width.
