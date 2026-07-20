@@ -3227,12 +3227,28 @@ it is live and load-bearing.
   address the cited content**, the module having grown; they are left as
   written because they are part of the historical record, not live citations.
 
-What phase 5 still does NOT do, so this note does not overcorrect: it
+~~What phase 5 still does NOT do, so this note does not overcorrect: it
 compares whole-query receipts only by COUNT (`WQReport.reads : Nat`,
 `:2691-2704`), never event-by-event against the route's `.trace`. That is
 recorded as gap (a) of REQ-E1-08 in
 `E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md`, and it is a harness gap rather
-than a proof gap — the positional theorem exists (REQ-E1-04).
+than a proof gap — the positional theorem exists (REQ-E1-04).~~
+
+**SUPERSEDED 2026-07-20 — the paragraph above is no longer true of HEAD.**
+REQ-E1-08's gap (a) is closed: phase 5 now compares whole-query receipts
+**event-by-event against the route's `.trace`**, not by count. Measured
+`wholeQueryReceiptMismatches = 0` over `wholeQueryReceiptComparisons = 20`
+comparable cases, route side `1415` events equal to machine side `1415`, and
+`wholeQueryInvalidReceiptViolations = 0` (a rejected query must read
+*nothing*). The `.invalid` cases (4 of 24) are excluded from the positional
+diff by design and covered by that stronger violation check instead.
+
+**One observation, recorded rather than left to be re-derived:** no fixture in
+`wholeQueryCases` reaches a select-miss branch, so `class_select-miss = 0`.
+This is NOT a residual of REQ-E1-08 — the row's fixture list is "empty,
+singleton, size-two, same-block, threshold-boundary, cross-interior, invalid,
+plus generated", and select-miss appears nowhere in it. It is a gap in
+coverage, not a gap in the row.
 
 ### The recurring cause of every failure in this lane
 
