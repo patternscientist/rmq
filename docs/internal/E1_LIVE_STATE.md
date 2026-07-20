@@ -1255,44 +1255,44 @@ clock**. Phase 3j: `guardCases=11`, `guardFailures=0`, `guardRejected=8`,
 verdict clauses (`okGuard`, `okGuardMutations`); the phase is not
 decorative. **Phase 5 is untouched and still OPEN.**
 
-**NOT BUILT, and the honest resume inventory.** The per-block bound ladder is
-ONE BLOCK DEEP. `interiorChunkFoldCats` is bounded; nothing above it is.
-Still owed, with citations:
+**NOT BUILT, and the honest resume inventory.** *(As written by E1-LaneA2.
+EVERY ITEM BELOW IS NOW CLOSED -- by E1-LaneA4 for the cap lemma and
+`FringeFoldUntouched`, by E1-LaneA7 for the leaves and all sixteen
+composites. The list is kept with its closures marked rather than deleted,
+because the citations are still the fastest index into these blocks. See
+section 14 for what remains after it.)*
 
-- closed leaves with no `.length` bound: `closeDispatchCats`
-  `E1CloseDispatch.lean:96` (4), `dispatchPrologueCats`
-  `E1InteriorDispatchCompose.lean:251` (19, doc-comment claims it, unproved),
-  `windowAddrCats` `E1SameBlockArm.lean:187` (4), `windowRangeCats` `:518`
-  (8), `sameBlockCloseCats` `:296` (2), `legSetupCats`
-  `E1InteriorCombine.lean:152` (4), `candMerge3CloseCats`
-  `E1CandMerge3.lean:244` (2), `fringePrefixCats`/`fringeTailCats`
-  `E1FringeFoldBlock.lean:269`/`:273`, `crossStashCats`
-  `E1CrossBlockArm.lean:376`, `crossPinOneCats` `:441`, `crossRepointCats`
-  `:464`, `rankSeedPosCats` `E1SameBlockLeg.lean:163`, `rankSeedFinishCats`
-  `:208`, `minCandidatePrefixCats`/`minCandidateValueCats`
-  `E1InteriorMinCandidate.lean:262`/`:270`;
-- **every composite log is unbounded**: `fringeFoldCats`
-  `E1FringeFoldBlock.lean:952`, `fringeLegCats`/`fringeArmCats`
-  `E1FringeArmBlock.lean:559`/`:947`, `sameBlockArmCats`
-  `E1SameBlockArm.lean:398`, `sameBlockLegCats` `E1SameBlockLeg.lean:422`,
-  `sameBlockDispatchCats` `E1CloseCompose.lean:78`, `candMerge3Cats`
-  `E1CandMerge3.lean:247`, `geomCats` `E1InteriorSummaryGroup.lean:247`,
-  `legCats`/`spanCats` `E1InteriorSpanBlock.lean:112`/`:197`, `mergeCats`
-  `E1InteriorMerge.lean:125`, `twoSpanCats` `E1InteriorTwoSpan.lean:224`,
-  `twoLegCats`/`crossLegCats` `E1InteriorCombine.lean:294`/`:971`,
-  `dispatchArmCats`/`dispatchCats`
-  `E1InteriorDispatchCompose.lean:264`/`:374`, `crossBlockArmCats`
-  `E1CrossBlockArm.lean:1088`;
-- **the one genuine missing CAP LEMMA**: the fringe fold's `count` is `<= 33`
-  only because every caller writes `Nat.min (relHi / c + 1) 33`
+- **CLOSED by E1-LaneA7** (`E1CostLadder.lean` section 1). Every leaf log
+  listed here now has a `.length` equation proved by `rfl`, so a wrong figure
+  is a build failure. `dispatchPrologueCats`'s unproved doc-comment claim of
+  `19` was checked and HOLDS;
+- **ALL SIXTEEN CLOSED by E1-LaneA7** (`E1CostLadder.lean`), with the
+  numerals derived rather than asserted: `fringeLegCats` `<= 2067`,
+  `fringeArmCats` `<= 2072`, `sameBlockArmCats` `<= 2074`,
+  `sameBlockLegCats` `<= 2324`, `sameBlockDispatchCats` `<= 2328`,
+  `candMerge3Cats` `<= 13`, `geomCats` `<= 158`, `legCats` `<= 653`,
+  `spanCats` `<= 815`, `mergeCats` `<= 7`, `twoSpanCats` `<= 1810`,
+  `twoLegCats` `<= |A| + |B| + 24`, `crossLegCats`
+  `<= |A| + |B| + |C| + 43`, `dispatchArmCats` `<= 5479`, `dispatchCats`
+  `<= 5498`, `crossBlockArmCats` `<= |interior| + 4669`. The two combinators
+  are stated in their parameters' lengths because that is the shape their
+  definitions have, following `crossBlockArmCats`'s own precedent;
+- **the one genuine missing CAP LEMMA** -- **CLOSED by E1-LaneA4**
+  (`cap_count_le` and `ascLog_length_le`, `E1CostAlgebra.lean`); the
+  `cap_count_pos` citation below is `:245`, not `:246`, corrected by
+  E1-LaneA4 after grepping. Original text: the fringe fold's `count` is
+  `<= 33` only because every caller writes `Nat.min (relHi / c + 1) 33`
   (`E1FringeArmBlock.lean:594-596`, `:1020-1022`). There is no `<= 33`
-  lemma, only positivity `cap_count_pos` (`:246`). The interior's twin is
+  lemma, only positivity `cap_count_pos` (`:245`). The interior's twin is
   free from `chunkIters`'s own definition; the fringe's is not, and
   `fringeFoldCats`'s body is index-dependent (`fringeMergeArmCats` has four
   distinct arm lengths), so a bound needs a per-pass maximum rather than the
   constant-body identity `iterLog_const_length` supplies.
-- **`FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`) is STILL EXECUTED
-  NOWHERE.** Not attempted. It needs the fold run STANDALONE at its own base,
+- **`FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`)** -- **CLOSED by
+  E1-LaneA4** (`E1FringeFoldProgram.lean`, validator phases 3k/4j); the
+  validator note at `E1MachineValidate.lean:1540` cited at the end of this
+  item is consequently NO LONGER accurate. Original text: STILL EXECUTED
+  NOWHERE. Not attempted. It needs the fold run STANDALONE at its own base,
   not inside `armWitnessProgram`: `FringeFoldUntouched` (`r < 40 ∨ 63 ≤ r`)
   is STRICTLY STRONGER than `FringeArmUntouched`
   (`r < 40 ∨ (63 ≤ r ∧ r ≠ 67 ∧ r ≠ 68)`), so running the whole arm and
@@ -1446,3 +1446,132 @@ is `E1FringeArmBlock.lean:245` (section 12 said `246`), and
 `238`).
 
 **No acceptance row is marked closed by this lane.**
+
+## 14. Worklog — E1-LaneA7 (the charge-length ladder + the summation), 2026-07-19
+
+Branch `claude/e1-cost-algebra`, base `422660a`. Commits `d08826b`,
+`fc27b17`, `4aaf225`, `f39161a` and this one. DD-IDs claimed and WRITTEN into
+`DESIGN_DECISIONS.md`: **`220`-`230`**. Band `231-239` free.
+
+### ITEM 3 IS DONE. Seventeen of seventeen.
+
+Section 12's two lists are both closed, and section 13's "ONE of seventeen"
+is now seventeen. New module `RMQ/Core/WordRAM/E1CostLadder.lean`, wired into
+`RMQ.lean`. The numerals are above in section 12; each is derived by
+`unfold` + `omega` from its own algebra, none asserted.
+
+The three imports the ladder needs (`E1InteriorDispatchCompose`,
+`E1InteriorCombine`, `E1InteriorMinCandidate`) are why this is a new module
+rather than more of `E1CostAlgebra`: adding them there would push the whole
+interior dispatch into `E1AmendedTarget` and the validator. DD-20260719-220.
+
+### THE SUMMATION, in two parts because the tree supports two different things
+
+**CONCRETE.** `crossBlockArmCats_withCanonicalInterior_length_le : ... <=
+10167`, at the instantiation the tree ACTUALLY composes --
+`crossBlockArm_withCanonicalInterior_runsTo`
+(`E1InteriorDispatchCompose.lean:1302`) passes `dispatchCats` as
+`interiorCats`. `10167 = 5498 + 4669`, both halves derived.
+`closeLcaLegCats_length_le` puts the same literal over the same-block branch
+too (`2328`).
+
+**PARAMETRIC.** `wholeQueryBranchCats_length_le_of` sums the CONTROL
+STRUCTURE over all four route branches:
+`prologue + 2 * select + lca + rank + output`. The per-stage logs are
+parameters (`E1WholeQueryCats.lean:98`) because select, close/LCA and rank
+belong to other lanes. This lane fills the `lca` slot with `10167` and
+invents no numeral for the other three. **The whole-query literal is NOT
+claimed** -- filling those slots with plausible figures would produce a
+number that reads as derived and is not.
+
+### `cats.length` IS `totalSteps`, and it is not a lemma that could be missing
+
+`RunsTo store program s s' reads cats` is DEFINED as
+`run store program cats.length s = <s', reads, cats, cats.length>`
+(`E1MachineCalculus.lean:96`), whose last component is `steps`. So every
+bound here is already a `totalSteps <=` bound. `RunsTo.steps_le` says so;
+`#print axioms` reports it depends on NO axioms at all. DD-20260719-228.
+
+### COORDINATOR CLAIMS CHECKED
+
+1. "`ascLog_length_le` is the reusable half for any index-dependent body."
+   **HELD but NOT NEEDED AGAIN.** Of the sixteen composites, none has an
+   index-dependent iterated body: `rankCloseHitCats` is a CONSTANT-body
+   `iterLog` (`iterLog_const_length` applies), and the rest are finite
+   compositions and branches. `ascLog_length_le` was the right tool for
+   `fringeFoldCats` and is used by it; the ladder above needed plain
+   composition. The suggested cheapest-order was otherwise accurate.
+2. "The leaf logs are `List` literals or `.map`s of literals, so `rfl`/decide
+   should do." **HELD**, all seventeen by `rfl`.
+3. "`fringeLegCats`/`fringeArmCats` sit directly above the now-bounded fold
+   and compose immediately." **HELD.**
+4. "The kernel boundary does not block this." **HELD, and never approached** --
+   no bound here passes through `machineWordBits`.
+5. "The operative constant is `210`, never `207`." Not exercised by this
+   lane: `210` is the READ-count bound and this lane counts STEPS. Recorded
+   so no reader infers a connection that was not made.
+
+### A CLAIM OF THIS LANE'S OWN THAT FAILED, and how
+
+`dispatchArmCats_length_le`'s first docstring said the five arms "measure"
+`4`, `1814`, `3650`, `3651`, `5479`. Four of those are BOUNDS, not
+measurements. Evaluating at the fixture shape showed a one-block range
+charges `602` against its bound of `1814`. Corrected; DD-20260719-224. Rule
+3 earning its place again.
+
+### ANTI-VACUITY, evaluated not argued
+
+At `Cartesian.stackCartesianShape [3, 1, 4, 1, 5]`:
+`rankSeedLegCats = 63/238`, `sameBlockArmCats = 388/2074`,
+`sameBlockDispatchCats = 467/2328`, `dispatchArmCats = 4/5479` (empty) and
+`602/5479` (one block), `dispatchCats = 621/5498`,
+`crossBlockArmCats` with canonical interior `= 1031`-`1631` `/10167`.
+
+The logs are substantial and the bounds are LOOSE at small size by roughly a
+factor of six. Both are recorded in the module's section 12. That looseness
+is the price of "all-size, no size hypothesis", which is what REQ-E1-06
+conjunct (c) asks for; a tight bound would be a different theorem.
+
+### Validator and build
+
+`lake build RMQ` green at every commit. `lake exe rmq_e1_machine_validate`
+**PASS** at **7.6 s**. This lane added no validator phase: the ladder is
+symbolic arithmetic over category lists with no executed machine surface of
+its own, and a phase that re-evaluated `#eval`-able lengths would duplicate
+the `rfl`s. **Phase 5 untouched and still OPEN.**
+
+All twenty-two ladder theorems clean under `#print axioms` (`propext`,
+`Classical.choice`, `Quot.sound` only; `RunsTo.steps_le` none).
+
+### Still owed after this lane
+
+- The three whole-query stage slots (`prologue`, `select`, `rank`, `output`)
+  and hence the whole-query literal. Owned by whole-query assembly, not here.
+- Phase 5 of the validator, still OPEN for the same reason it has been: no
+  definition composes the legs into one runnable query program.
+- A dispatcher between the same-block and cross-block close legs. None
+  exists; `closeLcaLegCats_length_le` takes the disjunction as a hypothesis
+  rather than inventing one. DD-20260719-230.
+
+### Citations re-verified after the edits
+
+All file:line references in this section and in section 12's rewritten
+entries were re-grepped post-edit. Two corrections were made to text this
+lane did not write: section 12's `cap_count_pos` citation said `:246` and is
+`:245` (E1-LaneA4 had already corrected this in section 13 but section 12 was
+left stale), and section 12's closing pointer to the validator note at
+`E1MachineValidate.lean:1540` describing `FringeFoldUntouched` as unexecuted
+is no longer accurate, E1-LaneA4 having executed it. Both are marked in place.
+
+A THIRD, in the validator's own source and not in a doc. The note heading
+phase 3i/4h asserted "the string `FringeFoldUntouched` does not occur in this
+file". It occurs TEN times: E1-LaneA4's phases 3k/4j (`:2010` onward) execute
+exactly that clause and did not update the earlier note. A sentence asserting
+its own file's contents is `grep`-checkable and this one had become false, so
+it is corrected in place rather than left standing. The note's original point
+-- that phase 3i/4h was the first executed fold-level preservation check in
+the tree -- is preserved and marked as history.
+
+**No acceptance row is marked closed by this lane.** What is supplied against
+REQ-E1-06's evidence column is in the report; the judgement is the
+coordinator's.

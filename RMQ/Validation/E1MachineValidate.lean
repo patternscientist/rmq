@@ -1535,14 +1535,21 @@ eight-capped chunk fold states the same kind of clause --
 headline `interiorChunkFold_runsTo` (`E1InteriorChunkFold.lean:1835`) --
 and until this phase NOTHING executed it.
 
-A CORRECTION THIS PHASE FORCES.  It is natural to describe this as
-porting a check the fringe side already runs on its fold.  The fringe
-side does not run one.  Phase 3h runs `FringeArmUntouched`
-(`E1FringeArmBlock.lean:951`), the ARM's write set; the fringe FOLD's own
-clause, `FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`), is
-unexecuted too, and the string `FringeFoldUntouched` does not occur in
-this file.  So this is the FIRST executed fold-level preservation check
-in the tree, on either side, not a port of an existing one.
+A CORRECTION THIS PHASE FORCES, AND ITS OWN LATER SUPERSESSION.  It is
+natural to describe this phase as porting a check the fringe side already
+runs on its fold.  When this phase landed, the fringe side did not run
+one: phase 3h runs `FringeArmUntouched` (`E1FringeArmBlock.lean:951`),
+the ARM's write set, and the fringe FOLD's own clause,
+`FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`), was unexecuted.  So
+this WAS the first executed fold-level preservation check in the tree, on
+either side, and not a port of an existing one.
+
+That is now history rather than current fact, and the sentence this note
+originally carried -- "the string `FringeFoldUntouched` does not occur in
+this file" -- became FALSE when phases 3k/4j landed below (`:2010`
+onward), which execute exactly that clause.  Corrected here rather than
+left standing: a note that asserts its own file's contents is checkable by
+`grep`, and one that has stopped being true is worse than no note.
 
 WHY THE SENTINELS MATTER, restated for the interior's bank rather than
 borrowed.  The fold's own hosting witness seeds `fun _ => 0` and writes
