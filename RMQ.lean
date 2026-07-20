@@ -56,6 +56,7 @@ import RMQ.Core.WordRAM.E1InteriorCombine
 import RMQ.Core.WordRAM.E1InteriorDispatch
 import RMQ.Core.WordRAM.E1InteriorDispatchCompose
 import RMQ.Core.WordRAM.E1CostAlgebra
+import RMQ.Core.WordRAM.E1CostLadder
 import RMQ.Core.WordRAM.E1AmendedTarget
 import RMQ.Core.WordRAM.E1ReviewerWidth
 import RMQ.Core.WordRAM.E1FringeFoldProgram
