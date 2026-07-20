@@ -2847,6 +2847,8 @@ encodes and comparing it against the reviewer envelope:
 | `5` | `5644` | `22` | `4194304` | yes | `0` |
 | `8` | `5644` | `22` | `4194304` | yes | `0` |
 | `40` | `5644` | `24` | `16777216` | yes | `0` |
+| `64` | `5644` | `25` | `33554432` | yes | `0` |
+| `300` | `5644` | `27` | `134217728` | yes | `0` |
 
 **The max field is CONSTANT at `5644` across every size measured**, because
 the binding field is `wholeQueryNoneExit` — a BRANCH TARGET fixed by the
