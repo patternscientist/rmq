@@ -5494,3 +5494,95 @@ clean at the same commit — because Lane K had not yet landed its repair. The
 scout independently confirmed the defect's shape, including that the
 anti-vacuity witness does not transfer either, since its branch numeral
 `555 = 8 + 547` is derived from the short path.
+
+---
+
+## C05 round 84 — C/Rust generation: DECLINE, and the scout's own corrections
+## needed checking
+
+The scout recommends **Option 4 — do nothing**, and I endorse it. Recording the
+reasoning, and separately recording that two of its factual corrections to my
+prompt are false, because both things matter.
+
+### FIRST, THE CORRECTIONS THAT WERE NOT
+
+The memo opened by correcting two of my premises. **Both are wrong, verified
+directly:**
+
+- It said `main` HEAD is `3f6f1e3`. **`main` is `0b8490c`.** `3f6f1e3` is the
+  head of `codex/project-digestion-2026-07-current`, which is merely what the
+  repo's working checkout happens to sit on. It conflated the CHECKOUT with the
+  BRANCH.
+- It said `listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story`
+  "resolves only on `audit/A02-...`". **It is on `main`** —
+  `SuccinctRMQClassic.lean`, `Headlines/RMQ.lean` (3 hits), `axiom_check.lean`.
+
+It also attributed to my prompt an author attribution I never made.
+
+**This is the discipline running in the direction I had not been applying it.**
+For eighty rounds I have told workers to check my claims, and thirty-three times
+they were right to. Here a scout checked mine, was wrong twice, and I verified
+rather than accepting — which is the same rule, pointed the other way. **A
+correction is a claim.** Worth stating plainly because the memo's substance is
+excellent and it would have been easy to swallow the framing along with it.
+
+**None of it touches the recommendation**, which rests on independent grounds.
+
+### THE DECISION: DECLINE EXTERNAL C/RUST GENERATION AT THE E1 RUNG
+
+Four reasons, in the order I weight them.
+
+**1. The project has already committed, in FOUR places, that it makes no
+compiler, extraction, cache or benchmarking claim** —
+`PAPER_MODEL_ADEQUACY.md`'s Non-Claims list, `RELATED_WORK_AND_LIMITATIONS.md`,
+`artifact/CLAIMS.md`, and DD-20260708-003. **Generated C would be the first
+artifact component contradicting all four.** Under the governing goal that is not
+a neutral cost: it manufactures exactly the audit burden the goal exists to
+minimise.
+
+**2. Option 1 is already done, which reframes the whole question.**
+`lake exe rmq_e1_machine_validate` **IS** Lean 4 compiling to C and linking a
+native binary. There is no capability to add — only a directory of `.c` files to
+commit, and with them the question "what does this add to the TCB?", whose honest
+answer is "everything the kernel currently excludes." The project's own hygiene
+gate already scans for `native_decide`/`extern`/`implemented_by`/`unsafe`, and
+Mathlib bans `native_decide` outright. Shipping the C would invite scrutiny of a
+boundary the project has been careful to keep clean.
+
+**3. The wall-clock risk is sharper than I framed it: C is SDSL's own
+language.** SDSL is forty publications of constant-factor engineering. Shipping
+generated C without an explicit scoping statement reads as a bid to compete, and
+the project would lose a comparison it never entered. The field's convention is
+the opposite — ICFEM 2016 shipped extracted OCaml and still refused the
+comparison, benchmarking only to confirm constant-time behaviour; ITP 2019
+disclaimed the frame entirely.
+
+**4. Precedent says not shipping code is unremarkable.** The closest comparable
+— ITP 2019, *Proving tree algorithms for succinct data structures* — ships proof
+scripts only, with extraction as stated future work. **CPP has no artifact
+evaluation track at all**, and its CFP names proof scripts as the exemplar. A
+no-`sorry`, pinned-toolchain, DOI'd proof artifact clears the highest available
+bar.
+
+**And a blocking precondition regardless:** the roadmap gates external generation
+on *"after the reference-machine theorem exists"*, and the capstone Prop is
+stated but **not proved**. Options 1-3 are out of order until that closes.
+
+### THE DISPOSITION IS BETTER THAN A SILENT DECLINE
+
+Record a DD **declining external generation at the E1 rung**, superseding the
+"optional" status in the roadmap and re-scoring
+`docs/RMQ_EXTRACTION_FRONTIER.md`, which is stale — it still describes the
+reference machine as future work. Cite ITP 2019 and CPP's CFP as the
+pattern-match, and Mathlib's `native_decide` ban as the trust-side reason.
+
+**Declining explicitly converts an open roadmap item a reviewer might ask about
+into a recorded, precedent-cited decision.** That is the governing goal operating
+as intended rather than merely obeyed. Queued for the merge window.
+
+**What would flip it**, in order: a named venue with an AE track that rewards a
+runnable non-Lean artifact (none is named anywhere); a performance claim entering
+scope, which is a thesis change and not a rung; or E1 closing and a reviewer then
+saying they cannot tell the machine is realizable — and even then the remedy is a
+better-documented Lean executable, not C. **What would NOT flip it: a reviewer
+asking for benchmarks.** That is answered with the Non-Claims list.
