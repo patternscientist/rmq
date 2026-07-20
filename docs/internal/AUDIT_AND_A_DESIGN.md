@@ -5675,3 +5675,85 @@ lane launched into an occupied worktree, the battery that lost the mutex, and th
 chained battery that never ran. **Every one failed OPEN.** The lesson generalises
 past Lean: a null input is indistinguishable from a clean result unless something
 confirms the input was non-null.
+
+---
+
+## C05 round 86 — M1's scope: the precedence question resolves, the INTENT
+## question does not, and one option is correct under both readings
+
+**MY THIRTY-FOURTH FAILED CLAIM, and it inverted the whole question.** I framed
+the roadmap as the more recent document. **It is the older by five days** —
+M1's four clauses were authored `25395d43` (2026-07-09) and are unchanged since;
+the design-ledger sentence assigning serialized payload to M1 is `c2694b71`
+(2026-07-14). I had the recency backwards, which is the one fact that decides
+which document is the "stale" one.
+
+Also: **`main` is now `dcc660f`**, not `0b8490c` — Codex has merged further while
+this session ran.
+
+**THE PRECEDENCE QUESTION IS RESOLVABLE, and by the ledger's own preamble.**
+`DESIGN_DECISIONS.md:3-4,27-30` says of itself: *"It is process documentation,
+not a proof artifact"* and *"do not infer current priority from file order. **Use
+each entry's Status and the live roadmap.**"* The roadmap says *"This is the
+**live** internal roadmap."* **So the roadmap governs current scope and the
+ledger records why** — settled by the documents themselves rather than by my
+preference.
+
+Two further ledger facts cut the same way. **DD-20260714-008 — the very next
+record, same day, same file — restates the obligation with the M1 attribution
+DROPPED**: "serialized-payload querying, preprocessing, and conventional
+word-RAM complexity remain **downstream obligations**." And the current
+`FAMILY_SUMMARY.md` says "M1 and construction obligations remain **separate**".
+Within one day the owner restated it without the attribution.
+
+**THE INTENT QUESTION IS NOT RESOLVABLE, and the worker refused to pretend it
+was.** Commit `c2694b71` did all of it in one sitting: wrote the DD sentence,
+wrote its twin in `docs/ROADMAP.md`, **and edited `RMQ_FINAL_ROADMAP.md`** —
+adding a U3 scope-boundary paragraph that ends immediately before `### M1`, with
+M1's section appearing as unchanged context in the diff — while leaving M1's four
+clauses untouched. Either he considered M1 and deliberately left it alone (the
+sentence is a *disclaimer*), or he simply did not sync the roadmap (it is his
+newer *intent*). **Both readings fit the evidence exactly.**
+
+**THE ARGUMENT THAT DECIDES IT, and it is the best piece of reasoning any lane
+has produced this campaign.** Option A (roadmap scope only) is correct **only if**
+the sentence was a disclaimer. Option B (union) is correct **only if** it was a
+Tier-2 requirement. **Option C is correct under EITHER reading** — as a
+disclaimer it records the obligation as a deferral, which is accurate; as intent
+it honours it as a named rung, which is also accurate. In the worker's words: it
+"is the only option that does not require me to win an argument I cannot win."
+Choosing the option robust to an unresolvable premise, rather than choosing a
+premise and defending it.
+
+**AND THE GAP IS FAR NARROWER THAN THE SENTENCE IMPLIES.** It splits into two
+tiers the DD sentence never distinguishes — *which ambiguity is the real source
+of the disagreement*:
+- **Tier 1, word-addressed**: pure composition of conjuncts **already in**
+  `listIntSuccinctRMQPaperMainTheorem`. No new definitions. Days.
+- **Tier 2, bit-addressed**: needs a uniform-width theorem or an explicit
+  chunking decoder plus re-proof, because `flattenPayloadWords` is **not proven
+  invertible**. A rung of its own.
+
+Hence the refinement: fold **Tier 1 into M1** as a fifth chain step — it is
+nearly free, since the certificate already carries the erasure field — and make
+**Tier 2** the named deferred rung.
+
+**AND THE PROJECT ALREADY HAS A SERIALIZED-PAYLOAD QUERY THEOREM.**
+`BPCloseRMQNavigationDirectory.queryEncodedCosted (payload : List Bool) …` with
+`queryEncodedCosted_exact` and a `2n+o(n)` encoded profile, at the family layer —
+not a paper capstone. **"Any framing of this as unexplored territory is wrong";
+the open question is only lifting it to the canonical charged route.** Eleventh
+instance of work already existing.
+
+**One overclaim trap recorded**: doing Tier 1 and *calling* it "serialized-payload
+querying" would overclaim against four reviewer-facing surfaces that currently
+disclaim it.
+
+**And the M1 sentence lives inside a STALE BLOCK.** DD-20260714-007's
+Consequences still say "The public constant is `76`", superseded by
+`DD-20260717-C05-001` which froze 76 as historical — **with no superseded marker
+on the record.** The sentence sits inside a record demonstrably stale on another
+point.
+
+Escalating to the owner: this amends owner-authored governance text and **adds a
+rung to a DAG that currently terminates at V1**.
