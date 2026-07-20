@@ -6836,3 +6836,107 @@ strongest:
 Also asked directly whether recommendation item 3 is **self-serving** — "document
 it as future work" being what a team says when it does not want to do the work —
 and told the reviewer to answer as a program-committee reviewer would.
+
+---
+
+## C05 round 98 — E1's PROOF SUBSTANCE IS DONE. Ten of eleven rows SATISFIED;
+## the only one open is documentation, and it is delegated.
+
+REQ-E1-03 and REQ-E1-08 merged. Verified on the MERGED combination, not on the
+lanes' own heads: `lake build RMQ` exit 0, `lake build rmq_e1_machine_validate`
+410/410 exit 0, `lake exe rmq_e1_machine_validate` **`RESULT: PASS`** exit 0.
+Both lanes had touched the same validator file, so the combination genuinely
+needed re-running rather than inheriting.
+
+### ROW TALLY AT `8e7e3ee`
+
+**SATISFIED (10):** REQ-E1-01, -02, -03, -04, -05, -06, -07, -08, -10, -11.
+**NOT SATISFIED (1):** REQ-E1-09 — charge-policy documentation and the `207`
+numeral migration, already in Codex's handoff.
+
+E1 has no remaining proof work. What is left is prose.
+
+### REQ-E1-08 — both gaps, because the lane caught MY self-contradiction
+
+**Failure #43.** My brief's PROSE described gap (b) (the independence clause)
+while the BRANCH NAME I supplied described gap (a) (the receipt diff). The row
+names two gaps; I gave half of each and never noticed. The lane reconciled them
+against the row and did both. **The instruction I gave it — "the row wins over
+the coordinator's recollection" — is what made that recoverable.**
+
+`refRMQ` moved to a zero-import module with its **fully qualified name
+preserved** (namespace deliberately spans the module), so no frozen public
+identity was renamed and no escalation arose. Measured: receipt mismatches `0`
+over `20` comparable cases, route side `1415` events equal to machine side
+`1415`, invalid-receipt violations `0`.
+
+### REQ-E1-03 — the row's failure mode as a RUNNING PROGRAM
+
+Phase 5b probes **119 receipt cells** over 5 cases; **70 move the answer and all
+70 still halt**, so no crash is ever miscounted as a dependency. The locality
+theorem `perturbedStoreAt_agrees_off_cell` is the load-bearing one — without it
+"that cell alone" is a claim about how the code LOOKS.
+
+Phase 5c is the row's named failure mode compiled and executed: `mutantN` reads
+**nothing at all**, still halts, still returns a well-formed packet — so receipt,
+category, exit-pc, halted-flag and step-count checks **all pass it** — and phase
+5b rejects it on all four valid cases. Gate lines confirm each conjunct
+separately (`mutantN_readsNothing`, `_stillHalts`, `_answersWithAPacket`,
+`_readIndependentValidCases=4`, `_rejected`).
+
+**A vacuity trap was avoided rather than stumbled into.** Phase 3l's control
+address shape is UNMAPPED under the canonical store — `(0,100000)`, `(5,100000)`,
+`(0,100002)` all answer `none`, and negating `none` is `none`. Transplanting that
+control would have produced a check that **always passes**. Phase 5b instead
+searches for a mapped, negatable, off-receipt control and re-checks all three
+properties independently of the search.
+
+### FOUR RECORDS WERE WRONG. Both lanes REPORTED rather than rewrote them.
+
+That instinct is why these were caught, and it should keep being briefed.
+
+1. **Mutant M is NOT "value-only".** Value catches it on **12 of 24**; the
+   positional receipt on **20 of 20** comparable cases — eight the value cannot
+   see, because relaxing `<` to `<=` re-routes control through read-bearing code
+   even where the answer coincides. The receipt **outranks** the value there. The
+   taxonomy UNDERSTATED our own evidence — the safe direction, but an auditor
+   reconstructing the complementarity argument would have built it on a false
+   premise.
+2. **`E1_LIVE_STATE` section 1 was reading as CURRENT** while asserting
+   `WholeQueryMachineAgrees` "is still NOT discharged", phase 5 "still correctly
+   OPEN", obligation 2 "STANDS", and the valid path falling into the `none`
+   writer. All four superseded. **The adjacent paragraph was marked "PARTLY
+   SUPERSEDED" and this one was not** — which is exactly why it read as live.
+   Bannered across the whole subsection, since the defect was that a reader could
+   not tell where superseded analysis ended. The address-coincidence passage is
+   kept and relabelled a worked example.
+3. **REQ-E1-03's cell credited a WEAKER theorem than the tree contains.** It
+   cited `programSkeleton_valid_matches_public` (`E1WholeQueryPublic.lean:140`)
+   as "the composed corollary", but that carries
+   `hagree : WholeQueryMachineAgrees` as a **hypothesis**. The unconditional
+   instantiation is `programSkeleton_valid_matches_public_at_machineS`
+   (`E1WholeQueryAgreement.lean:111`). Signature read before repointing.
+4. The phase-5 "count only, never event-by-event" description, now superseded
+   with the measured numbers.
+
+### THE NEAR-MISS WORTH PRESERVING
+
+`refRMQ_eq_none_of_length_lt` first compiled as `unfold; split; simp [h]` with
+the linter reporting `h` **unused** and both goals printing `none = none` —
+reading exactly like a vacuous theorem about a degenerate reference
+implementation. **It is not vacuous**: `split` consumes `h` to kill the
+contradictory branch. The lane confirmed two independent ways — deleting the
+hypothesis (proof fails, `foldl` still in goal) and evaluating `refRMQ` on
+concrete inputs — then **rewrote it with explicit `if_pos`/`if_neg` so nobody
+re-derives the doubt.** DD-20260720-010.
+
+That is the campaign's own discipline applied without being asked, and it is the
+single best sign the briefing pattern is working.
+
+### WHAT REMAINS ON E1
+
+REQ-E1-09 only: the charge-policy passages and the `207` -> `210` numeral
+migration, in Codex's existing handoff. **Plus the rung's real gate, which no
+amount of internal work substitutes for: a fresh blind external audit.** Ten
+SATISFIED rows adjudicated by the coordinator who commissioned the work is not
+the same thing, and should never be presented as if it were.
