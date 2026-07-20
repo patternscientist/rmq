@@ -2642,6 +2642,29 @@ caught it — the claim about what a file contains was checked against the file
 before it was allowed to stand — and the note now records the check instead of
 the false finding.
 
+### A CITATION THAT DRIFTED, found by the post-edit re-verification
+
+All sixteen citations this lane wrote were re-checked against the declarations
+they name after the edits; all sixteen hold. The sweep also turned up one that
+does NOT, in inherited text.
+
+**`E1WholeQueryCats.lean:98` is stale in six places.** It cites
+`wholeQueryBranchCats`, which E1-LaneA8's record change (`+118` lines, the
+connective stages and the select-miss split) moved to **`:136`**; the structure
+`WholeQueryStageCats` is at **`:68`**. Line `98` now lands in the middle of a
+field docstring.
+
+Fixed in ONE place — `E1CostLadder.lean:747`, a docstring in a source file this
+lane edited, retargeted to `:68` since its claim is about the structure's
+fields. The other five are in historical worklog and design-decision entries
+(§10c, §10f, §14, and DD-20260719-206/-229) that were accurate when written;
+they are RECORDED here rather than silently rewritten, per the same convention
+§12 uses. Anyone acting on one of them should read `:68`/`:136`.
+
+Also checked and CORRECT, so nobody re-checks them:
+`E1WholeQueryCats.lean:424` (`selectNone_branches_separable`) and `:432`
+(`fullCats_mentions_both_joins`).
+
 ### `11886` AND `210` ARE NOT COMPARABLE
 
 `11886` bounds STEPS. `210` bounds READS. §11 A and §14 both record the

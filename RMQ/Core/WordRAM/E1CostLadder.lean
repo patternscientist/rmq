@@ -744,7 +744,7 @@ theorem closeLcaLegCats_length_le (cats : List Category)
 /--
 THE WHOLE-QUERY SUMMATION, OVER ALL FOUR ROUTE BRANCHES.
 
-`wholeQueryCats`'s per-stage logs are PARAMETERS (`E1WholeQueryCats.lean:98`)
+`wholeQueryCats`'s per-stage logs are PARAMETERS (`E1WholeQueryCats.lean:68`)
 because the select, close/LCA and rank machine legs belong to other lanes and
 their category functions are not final.  So the summation this lane can
 honestly perform is the one over the CONTROL STRUCTURE: given a bound on each
