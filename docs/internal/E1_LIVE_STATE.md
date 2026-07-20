@@ -1624,6 +1624,205 @@ against the declaration it names after the edits.
 
 ---
 
+## 10f. Worklog - E1-LaneA6, 2026-07-19 (blocker 2 cleared; `.lcaNone` settled; two obstructions reported)
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `a15ef15`. DD-IDs claimed
+and WRITTEN into `DESIGN_DECISIONS.md`: **`200` through `206`**. Band
+`207-219` free. Full `lake build RMQ` green at every commit.
+
+**BLOCKER 2 IS CLEARED. THE TRACE LADDER EXISTS AND THE INTERIOR IS NO
+LONGER A HOLE.**
+
+New module `E1InteriorTraceLadder.lean`, eight rungs, no edit to any of the
+four interior modules:
+
+    rung 0  geomEvents_eq_readComputation_reads         (:85)   generic
+    rung 1  legEvents_eq_routeReads                     (:111)  the precedent
+    rung 2  spanEvents_localSpan_eq_routeReads          (:137)
+            spanEvents_globalSpan_eq_routeReads         (:185)
+    rung 3  twoSpanEvents_local_eq_routeReads           (:238)
+            twoSpanEvents_global_eq_routeReads          (:285)
+    rung 4  localLegEvents_eq_routeReads                (:336)
+            globalLegEvents_eq_routeReads               (:348)
+    rung 5  adjacentArm_reads_eq                        (:367)
+            leftMiddleArm_reads_eq                      (:390)
+            crossArm_reads_eq                           (:413)
+    rung 6  dispatchEvents_eq_routeReads                (:465)
+    rung 7  canonicalInterior_traceResult_eq_dispatch   (:549)
+
+E1-LaneA3's scoping was RE-GREPPED before any budgeting and stood:
+`twoSpanEvents` (`E1InteriorTwoSpan.lean:212`) was never once equated to a
+computation's `.reads`. Every equation is positional -- both sides are lists
+-- and hypothesis-free except rung 0's three alignment premises, each `rfl`
+at every instantiation. DD-20260719-200.
+
+**THE LADDER MIRRORS THE VALUE LADDER AND REUSES ITS OWN CELL LEMMAS.** The
+trace rungs dispatch on `cellOpt_spanCell_localSpan`
+(`E1InteriorSpanBlock.lean:702`) and `cellOpt_levelCell_localLevel`
+(`E1InteriorTwoSpan.lean:981`) -- the SAME lemmas the value rungs dispatch
+on -- so the two sides cannot drift.
+
+**RUNG 6 NEEDED NO TRACE ARGUMENT, AND THAT IS WHY ALL THE WORK WAS BELOW
+IT.** `dispatchEvents` and `canonicalRelativeRmmInteriorRangeMinComputation`
+(`InteriorDirectory.lean:2444`) are the same five-way `if` on the same
+conditions, and `interiorRangeMin_of_count_zero`
+(`E1InteriorDispatch.lean:456`) through `_of_cross` (`:516`) are FULL
+COMPUTATION equalities, so `.reads` follows by congruence.
+
+**THE `count = 0` ARM IS THE ONE WITH TEETH.** The route is
+`FlatStoreComputation.pure none` with an EMPTY read log and the machine's arm
+emits nothing, so the receipt DOES separate the correct layout from an
+unterminated one falling through into `twoSpanBlock`'s unconditional head
+level read. `dispatchEvents`' docstring asserted this; it is now an equation.
+
+**THE SEGMENT/STORE RECONCILIATION THE LAST TWO BRIEFS BUDGETED DOES NOT
+EXIST, AND THAT IS A FINDING RATHER THAN A SAVING** (DD-20260719-202).
+`(canonicalSummaryLayout shape).segment` is
+`E1InteriorStoreConcrete.interiorSegment` (`E1InteriorSummaryGroup.lean:469`),
+and `interiorSegment` is an `abbrev` for
+`concreteBPNativeInteriorTraceSegments.canonicalComponent`
+(`E1InteriorStoreConcrete.lean:67`). The two spellings are the SAME TERM; the
+machine side was written against the segment record from the start. Recorded
+because a lane that assumed the crossing was owed might have built a bridge
+and "used" it, hiding that nothing was crossed.
+
+**OBLIGATION 2 OF `E1WholeQueryProgram.lean`'s SCOPE NOTE IS CLOSED**
+(DD-20260719-203), and the scope note's own prediction was exactly right: the
+gap was on the TRACE side only. `…AllSizeStructuralWithStore`
+(`ConcreteDirectoryRAMStoreParam.lean:3639`) is DEFINED as
+`flatStoreExecutionTraceResultAtSegment _ (computation.run _)`, so its
+`.value` is `dispatchRouteValue`'s own definition
+(`E1InteriorDispatchCompose.lean:381`) by `rfl`. Only `.trace` needed proof.
+
+**`.lcaNone` IS SETTLED ON THE SAME-BLOCK ARM, BY PROOF, WITH A WITNESS**
+(DD-20260719-204). New module `E1WholeQueryLcaNone.lean`:
+`sameBlockLcaLeg_value_eq_some` (`:86`),
+`wholeQueryBranch_eq_full_of_sameBlock` (`:117`),
+`wholeQueryBranch_ne_lcaNone_of_sameBlock` (`:145`),
+`lcaNone_is_a_real_branch` (`:177`).
+
+**THE PREVIOUS LANE'S PRESUPPOSITION WORRY WAS THE RIGHT WORRY AND IT DOES
+NOT APPLY.** It observed that an arm theorem stated as
+`some (regsF fRes) = arm.value` presupposes someness. Every hypothesis on the
+producing chain was therefore inspected --
+`closeLcaProgramAt_runsTo_same` (`E1WholeQueryCloseLca.lean:191`),
+`sameBlockLegProgramAt_runsTo_canonical` (`E1SameBlockLeg.lean:805`),
+`sameBlockLeg_runsTo_canonical` (`:453`). **NOT ONE IS `Option`-SHAPED.** No
+`arm.value = some x`, no `isSome`. The someness is DERIVED by execution.
+
+**THE WITNESS IS FOUND AT THE TARGET, NOT CONSTRUCTED FOR THE PREMISE.** No
+hosting or register file is manufactured; the proof consumes
+`wholeQueryProgram_runsTo_sameBlock` (`E1WholeQueryProgram.lean:1034`),
+already proven at the real program from `initialState`. `n := right` makes
+`hbound` `Nat.le_refl`, so neither `n` nor `hbound` appears in the statements.
+
+**SCOPE: THE SAME-BLOCK ARM ONLY.** Cross-arm `.lcaNone` needs the route's
+`bpChunkedCrossBlockClose…` identified with `crossBlockArmSpec`'s value;
+DD-20260719-203 supplies the INTERIOR half of that crossing but not the ARM
+half. **It must not be assumed either way.**
+
+**THE SAME-BLOCK RECEIPT BRIDGE IS WRITTEN.** New module
+`E1WholeQuerySameBlockRoute.lean`:
+`wholeQueryBranchTrace_full_sameBlock_machineObjects` (`:61`) and
+`wholeQueryProgram_runsTo_sameBlock_routeReceipt` (`:103`) -- the branch
+executed from `initialState` to a halted state with its receipt stated as
+`wholeQueryBranchTrace shape left right (.full cl cr answerClose)`, the
+route's own object. The branch is DERIVED, not assumed: the first conjunct
+rests on the `.lcaNone` unreachability proof.
+
+**TWO OBSTRUCTIONS ARE REPORTED RATHER THAN FORCED. NEITHER SIDE OF ANY
+THEOREM WAS WEAKENED TO MAKE A COMPOSITION CLOSE.**
+
+**1. `WholeQueryMachineAgrees` IS NOT DISCHARGEABLE TODAY** (DD-20260719-205).
+`decodePacket` (`E1QueryProgram.lean:93`) is
+`if v = 0 then none else some (v - 1)`; the route's `.full` value
+(`E1RouteDecomposition.lean:330`) is `some (rank.value - 1)`
+UNCONDITIONALLY; and `0 - 1 = 0` in `Nat`. **The two disagree exactly when
+the rank leg's value is `0`** -- machine `none`, route `some 0`. That is
+`WholeQueryMachineAgrees`' third clause (`E1WholeQueryPublic.lean:124`), so
+the `.full` branch cannot reach it. The two select-miss branches are
+UNAFFECTED: they write `regOut := 0` against route `none`, and
+`decodePacket 0 = none` agrees.
+
+This was ALREADY NAMED in the tree and is confirmed, not discovered:
+`wholeQueryOutput_agrees_with_noneWriter_iff` (`E1WholeQueryProgram.lean:972`)
+states the condition and says "This lane does not prove that never happens."
+The output stage's docstring (`:458`) claims "the two shifts cancel … not a
+coincidence to be checked at runtime"; **that is valid only on
+`rank.value ≥ 1`** and is the overreach DD-20260719-205 corrects.
+
+So `wholeQueryProgram_runsTo_sameBlock_routeReceipt`'s value clause is stated
+in the MACHINE's form, `regsF regOut = rank.value`. The side condition was NOT
+carried as a hypothesis: a premise `rank.value ≠ 0` would owe a witness of
+satisfiability at the intended instantiation (rule 1) and this lane cannot
+supply one.
+
+**THE DISCHARGE EXISTS ONE LAYER DOWN AND IS NAMED FOR THE NEXT LANE.**
+`bpCloseOfInorder?_rankFalse_succ` (`BPShape.lean:156`) gives
+`rankPrefix false shape.bpCode (pos + 1) = idx + 1`; a worked chain from it up
+to a trace result's `.value` is at `BPNavigationRAM.lean:1969`; and
+`concreteBPNativeRankCloseWordTraceResultAtSegment_canonical_eq`
+(`SuccinctFinalRAM.lean:1550`) transfers across bases. **The real work is
+obtaining `bpCloseOfInorder? shape idx = some answerClose` at the machine
+site** -- `wholeQueryProgram_runsTo_sameBlock` produces `answerClose` only
+through `some answerClose = (sameBlockArm …).value`, with no link to
+`bpCloseOfInorder?`. The read-failure fallback
+(`ChargedRankSelectLeafTrace.lean:181`) returns `pure 0`, so a SECOND route to
+`0` exists and must be ruled out rather than assumed away.
+
+**2. CATEGORY ACCOUNTING CANNOT BE DISCHARGED WITH THE CURRENT STAGE RECORD**
+(DD-20260719-206). `wholeQueryBranchCats` (`E1WholeQueryCats.lean:98`) puts
+the two select legs ADJACENT -- `S.prologue ++ S.select left ++
+S.select (right - 1) ++ …` -- while the machine charges
+`guardAcceptCats ++ [registerWrite] ++ selectCloseCats … left ++
+[registerWrite, arithmetic] ++ selectCloseCats … (right - 1) ++ …`.
+**The two pre-select connectives are ASYMMETRIC** and `S.select` is ONE
+function applied at two positions, so it must carry the between-selects
+connective as a prefix, a suffix, or a split. `Category`'s constructors are
+pairwise distinct (`E1Machine.lean:107`) and `guardAcceptCats`
+(`E1QueryProgram.lean:584`) ends in `.branch`, so all three splits clash --
+the case analysis is in DD-20260719-206.
+
+The record needs a field for the connective. **That changes
+`WholeQueryStageCats`, hence `WholeQueryMachineAgrees` and the signature
+`programSkeleton_valid_matches_public` (`E1WholeQueryPublic.lean:140`)
+consumes -- a public-facing surface, so it belongs to the coordinator.**
+Fabricating an `S` that "worked" by folding the connective into an opaque
+`select` would be a category function fitted to the machine, which §11 F
+forbids. The older finding stands unchanged: `catLog` appears ZERO times in
+the validator.
+
+**WHAT REMAINS FOR `WholeQueryMachineAgrees`, NAMED.**
+
+* the `.full` branch on the CROSS arm -- the interior is now reconciled
+  (rung 7), but the ARM-level identification of `crossBlockArmSpec`'s value
+  with the route's `bpChunkedCrossBlockClose…` is not written;
+* the `decodePacket` obligation above;
+* the stage-record change above.
+
+**Validator.** `lake build rmq_e1_machine_validate` green;
+`lake exe rmq_e1_machine_validate` **PASS at 14.194 s wall clock**, phase 5
+`wholeQueryComparisonAvailable=false`, verdict `OPEN`. Modeled steps
+(reproducible, and unchanged from 10e): dispatch 2430, leg 30343, select 8273,
+compose 9222, composeMax 585, legMutant 30060, merge 431, arm 6276.
+Wall-clock figures are host-specific and are NOT evidence. **It does not
+exercise one line of this session's work** -- the evidence is the in-tree
+proofs. Its phase-5 TEXT is stale in the SAME direction 10c, 10d and 10e
+recorded. The file is the sibling cost-algebra lane's and was NOT edited here.
+
+**`#print axioms`**, scratchpad driver importing the three new modules
+directly, 19 declarations: `propext, Classical.choice, Quot.sound` on all
+nineteen. **No `sorryAx` anywhere.** No
+`sorry`/`admit`/`axiom`/`native_decide`/`partial`/`unsafe`/`implemented_by`/
+Mathlib/`maxHeartbeats`/`by_contra`/`norm_num` in any of the three files.
+
+**Citations.** Every citation this section makes was verified against the
+declaration it names AFTER the edits. No existing line number moved: all
+three modules are NEW files and the only edit to an existing tree file is
+three added `import` lines in `RMQ.lean`.
+
+---
+
 ## 11. Findings from the four read-only surveys (2026-07-19)
 
 Only items that change what a worker should DO are here. Cosmetic doc drift was

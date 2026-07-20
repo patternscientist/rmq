@@ -7054,3 +7054,228 @@ defect is exactly whether the skipped code reads.
 
 **STILL OWED.** Category accounting has no discriminator anywhere in the
 validator, and this lane did not change that.
+
+## DD-20260719-200 — the trace ladder built as the value ladder's exact twin
+
+**Status.** BUILT and green, E1-LaneA6. Blocker 2's ladder is closed.
+
+`dispatchEvents` (`E1InteriorDispatchCompose.lean:194`) was built from
+`twoSpanEvents` (`E1InteriorTwoSpan.lean:212`) from `spanEvents`
+(`E1InteriorSpanBlock.lean:187`), and the whole tower was FREESTANDING —
+re-grepped at the start of this lane, and E1-LaneA3's scoping stood: every
+theorem mentioning any of the three supplied it as a `RunsTo` receipt
+argument, and none equated it to a computation's `.reads`.
+
+**THE DESIGN DECISION IS THAT THE LADDER MIRRORS THE VALUE LADDER RUNG FOR
+RUNG AND REUSES ITS CELL-CORRESPONDENCE LEMMAS RATHER THAN RESTATING THEM.**
+`spanEvents_localSpan_eq_routeReads` dispatches on
+`cellOpt_spanCell_localSpan` (`E1InteriorSpanBlock.lean:702`) — the SAME
+lemma `spanValue_localSpan_eq_routeValue` (`:773`) dispatches on; likewise
+`cellOpt_levelCell_localLevel` (`E1InteriorTwoSpan.lean:981`) at the two-span
+rung. The alternative — a private cell bridge for the trace side — would have
+let the two sides drift: a defect that moved the decoded cell on one side
+only could then be absorbed by restating the other. Sharing the scrutinee
+makes that impossible.
+
+**THE PRECEDENT WAS CONSUMED, NOT COPIED.**
+`minCandidateMachineTrace_eq_routeReads` (`E1InteriorMinCandidate.lean:1296`)
+is rung 1 unchanged: `legEvents` (`E1InteriorSpanBlock.lean:96`) is BY
+DEFINITION the four `geomEvents` that theorem's left side names, in the same
+order, so `legEvents_eq_routeReads` is that theorem under its own name.
+
+**THE TOP RUNG NEEDED NO TRACE ARGUMENT.** `dispatchEvents` and
+`canonicalRelativeRmmInteriorRangeMinComputation`
+(`InteriorDirectory.lean:2444`) are the same five-way `if` on the same
+conditions, and `interiorRangeMin_of_count_zero`
+(`E1InteriorDispatch.lean:456`) through `_of_cross` (`:516`) are FULL
+COMPUTATION equalities, so `.reads` follows by congruence. All the work was
+below rung 6.
+
+## DD-20260719-201 — the ladder kept out of the four interior modules
+
+**Status.** Structural, E1-LaneA6.
+
+Every dependency the ladder needs was already public, so
+`E1InteriorTraceLadder.lean` edits none of `E1InteriorSummaryGroup.lean`,
+`E1InteriorSpanBlock.lean`, `E1InteriorTwoSpan.lean` or
+`E1InteriorDispatchCompose.lean`.
+
+The first attempt DID insert the generic bottom rung into
+`E1InteriorSummaryGroup.lean` and was reverted before building. The immediate
+reason is iteration cost: that module sits under the whole whole-query
+development, so every edit to it recompiles the world, and a ladder is built
+by iterating. The durable reason is better: the ladder reads as ONE object
+rather than as four insertions into four files, and its scope note can state
+what the whole tower does and does not establish in one place.
+
+## DD-20260719-202 — the segment/store reconciliation was already paid
+
+**Status.** FINDING, E1-LaneA6. Budgeted work that turned out not to exist.
+
+Two successive briefs budgeted a segment/store reconciliation for the ladder,
+on the ground that the machine side is fixed at
+`(canonicalSummaryLayout shape).segment` with
+`concreteBPNativeSuccinctRMQGlobalReadStore shape` while the route object is
+parametric in `segments.canonicalComponent` and `store`.
+
+**GREPPED: THE TWO SPELLINGS ARE DEFINITIONALLY THE SAME TERM.**
+`(canonicalSummaryLayout shape).segment` is
+`E1InteriorStoreConcrete.interiorSegment` (`E1InteriorSummaryGroup.lean:469`),
+and `interiorSegment` is an `abbrev` for
+`concreteBPNativeInteriorTraceSegments.canonicalComponent`
+(`E1InteriorStoreConcrete.lean:67`). The machine side was written against the
+segment record from the start. `canonicalInterior_traceResult_eq_dispatch`
+closes by `rfl` after the trace rewrite, which is the evidence.
+
+Recorded because a budgeted item that does not exist is worth naming: a lane
+that assumed the reconciliation was owed might have built a bridge lemma and
+then "used" it, hiding the fact that nothing was crossed.
+
+## DD-20260719-203 — the cross-block arm's interior is no longer a hole
+
+**Status.** CLOSED, E1-LaneA6. Obligation 2 of `E1WholeQueryProgram.lean`'s
+scope note.
+
+`crossBlockArmSpec_eq` (`E1CrossBlockArm.lean:181`) hands the arm its interior
+as
+`concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore`,
+while `crossBlockArm_withCanonicalInterior_runsTo`
+(`E1InteriorDispatchCompose.lean:1291`) produces
+`⟨dispatchRouteValue …, dispatchEvents …⟩`. No theorem identified them.
+
+**THE SCOPE NOTE'S PREDICTION WAS EXACTLY RIGHT: THE GAP WAS ON THE TRACE
+SIDE ONLY.** The `…WithStore` object is DEFINED
+(`ConcreteDirectoryRAMStoreParam.lean:3639`) as
+`flatStoreExecutionTraceResultAtSegment _ (computation.run _)`, so its
+`.value` is the run's `.value`, which is `dispatchRouteValue`'s own definition
+(`E1InteriorDispatchCompose.lean:381`) — `rfl`. Only `.trace` required proof,
+and that is `dispatchEvents_eq_routeReads`.
+
+## DD-20260719-204 — `.lcaNone` on the same-block arm: unreachable, with a witness
+
+**Status.** SETTLED BY PROOF, E1-LaneA6. Rule 2 discharged.
+
+Two lanes left `.lcaNone`'s status open, correctly refusing to guess.
+`wholeQueryBranch_ne_lcaNone_of_sameBlock` (`E1WholeQueryLcaNone.lean`)
+settles it for the same-block arm: the branch is `.full`, so the missing
+machine stage is owed to nothing there.
+
+**THE PRESUPPOSITION WORRY WAS THE RIGHT WORRY AND IT DOES NOT APPLY.** The
+previous lane observed that an arm theorem stated as
+`some (regsF fRes) = arm.value` PRESUPPOSES the arm's value is `some`, so the
+someness might be an artefact of the statement rather than a fact about the
+machine. Every hypothesis on the producing chain was therefore inspected:
+`closeLcaProgramAt_runsTo_same` (`E1WholeQueryCloseLca.lean:191`) carries
+`hHost`, `regs`, `hClose`, `hRight`, `hsame`;
+`sameBlockLegProgramAt_runsTo_canonical` (`E1SameBlockLeg.lean:805`) and
+`sameBlockLeg_runsTo_canonical` (`:453`) carry hosting and register facts.
+**NOT ONE IS `Option`-SHAPED** — no `arm.value = some x`, no `isSome`. The
+someness is derived by execution.
+
+**THE WITNESS IS FOUND AT THE TARGET, NOT CONSTRUCTED FOR THE PREMISE
+(rule 5).** No hosting or register file is manufactured here to instantiate
+the arm theorem. The proof consumes `wholeQueryProgram_runsTo_sameBlock`
+(`E1WholeQueryProgram.lean:1034`), already proven at the real
+`wholeQueryProgram shape n` running from `initialState`. `n := right` makes
+`hbound` `Nat.le_refl`, so neither `n` nor `hbound` appears in the statements.
+
+**SCOPE: THE SAME-BLOCK ARM ONLY.** The cross arm's someness would need the
+route's `bpChunkedCrossBlockClose…` identified with `crossBlockArmSpec`'s
+value; DD-20260719-203 supplies the INTERIOR half of that crossing but not the
+ARM half, so cross-arm `.lcaNone` is NOT settled and must not be assumed
+either way.
+
+## DD-20260719-205 — the `.full` value clause does not close, and why it is reported rather than forced
+
+**Status.** OBSTRUCTION, E1-LaneA6. `WholeQueryMachineAgrees` is NOT
+dischargeable today, and this is the reason.
+
+`decodePacket` (`E1QueryProgram.lean:93`) is
+`if v = 0 then none else some (v - 1)`. The route's `.full` value
+(`E1RouteDecomposition.lean:330`) is `some (rank.value - 1)` UNCONDITIONALLY.
+In `Nat`, `0 - 1 = 0`. **So the machine's decoded output and the route's value
+disagree exactly when the rank leg's value is `0`** — the machine says `none`,
+the route says `some 0`.
+
+`WholeQueryMachineAgrees`'s third clause (`E1WholeQueryPublic.lean:124`) is
+the decoded form, so this blocks it on the `.full` branch. The two select-miss
+branches are unaffected: they write `regOut := 0` and the route says `none`,
+and `decodePacket 0 = none` agrees.
+
+**THIS WAS ALREADY NAMED IN THE TREE AND IS CONFIRMED, NOT DISCOVERED.**
+`wholeQueryOutput_agrees_with_noneWriter_iff` (`E1WholeQueryProgram.lean:972`)
+states the condition exactly, and its docstring says "This lane does not prove
+that never happens." The output stage's own docstring (`:458`) claims "the two
+shifts cancel … not a coincidence to be checked at runtime"; that claim is
+**valid only on `rank.value ≥ 1`**, and this entry corrects the overreach.
+
+**WHAT WAS NOT DONE.** The value clause of
+`wholeQueryProgram_runsTo_sameBlock_routeReceipt` is stated in the MACHINE's
+form, `regsF regOut = rank.value`. Neither the route's value nor the machine's
+was weakened to make the composition close, and the side condition was NOT
+carried as a hypothesis — a premise `rank.value ≠ 0` would owe a witness of
+satisfiability at the intended instantiation (rule 1), and this lane cannot
+supply one.
+
+**THE DISCHARGE EXISTS ONE LAYER DOWN AND IS NAMED FOR THE NEXT LANE.**
+`bpCloseOfInorder?_rankFalse_succ` (`BPShape.lean:156`) gives
+`rankPrefix false shape.bpCode (pos + 1) = idx + 1` from
+`bpCloseOfInorder? shape idx = some pos` — exactly the nonzeroness. A worked
+chain from it up to a trace result's `.value` already exists at
+`BPNavigationRAM.lean:1969`, and
+`concreteBPNativeRankCloseWordTraceResultAtSegment_canonical_eq`
+(`SuccinctFinalRAM.lean:1550`) transfers across bases. **The real work is
+obtaining `bpCloseOfInorder? shape idx = some answerClose` at the machine
+site**: `wholeQueryProgram_runsTo_sameBlock` currently produces `answerClose`
+only through `some answerClose = (sameBlockArm …).value`, with no link to
+`bpCloseOfInorder?`. Note also that the read-failure fallback
+(`ChargedRankSelectLeafTrace.lean:181`) returns `pure 0`, so a SECOND route to
+`0` exists and must be ruled out rather than assumed away.
+
+## DD-20260719-206 — category accounting cannot be discharged with the current stage record
+
+**Status.** OBSTRUCTION, E1-LaneA6. Reported rather than forced.
+
+`wholeQueryBranchCats` (`E1WholeQueryCats.lean:98`) lays a branch's log out as
+`S.prologue ++ S.select left ++ S.select (right - 1) ++ …`: the two select
+legs are ADJACENT, with nothing between them.
+
+**THE MACHINE PUTS A CONNECTIVE BETWEEN THEM, AND ITS TWO PRE-SELECT
+CONNECTIVES ARE ASYMMETRIC.** The executed branches
+(`wholeQueryProgram_runsTo_leftSelectNone`, `E1WholeQueryProgram.lean:1169`,
+and its siblings) charge
+
+    guardAcceptCats ++ [registerWrite] ++ selectCloseCats … left
+      ++ [registerWrite, arithmetic] ++ selectCloseCats … (right - 1) ++ …
+
+— `[registerWrite]` before the first select, `[registerWrite, arithmetic]`
+before the second.
+
+**NO INSTANTIATION OF `S` MAKES THESE EQUAL.** Since `S.select` is ONE
+function applied at two positions, it must carry the between-selects
+connective as a prefix `A`, a suffix `B`, or a split of both, with
+`B ++ A = [registerWrite, arithmetic]`. `Category` has decidable equality and
+pairwise distinct constructors (`E1Machine.lean:107`), and `guardAcceptCats`
+(`E1QueryProgram.lean:584`) ends in `.branch`, so all three splits fail:
+
+* `B = []`, `A = [rw, arith]`: needs
+  `P ++ [rw, arith] = guardAcceptCats ++ [rw]` — last elements `arithmetic`
+  vs `registerWrite`.
+* `B = [rw]`, `A = [arith]`: needs `P ++ [arith] = guardAcceptCats ++ [rw]` —
+  the same clash.
+* `B = [rw, arith]`, `A = []`: the prefix fits, but then
+  `[rw, arith] ++ … = [comparison, branch, registerWrite, control]` —
+  `registerWrite` vs `comparison`.
+
+**WHAT IS OWED, AND WHY THIS LANE DID NOT DO IT.** The record needs a field
+for the connective (a `selectJoin : List Category`, or a `select` indexed by
+WHICH select it is). That changes `WholeQueryStageCats`, hence
+`WholeQueryMachineAgrees` and the signature the public corollary
+`programSkeleton_valid_matches_public` (`E1WholeQueryPublic.lean:140`)
+consumes. **That is a change to a public-facing surface and belongs to the
+coordinator, not to a worker** — and fabricating an `S` that "worked" by
+folding the connective into an opaque `select` would be a category function
+fitted to the machine, which is exactly what §11 F forbids.
+
+The separate, older finding stands unchanged: `catLog` appears ZERO times in
+the validator, so category accounting still has no discriminator anywhere.
