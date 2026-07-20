@@ -72,6 +72,7 @@ import RMQ.Core.WordRAM.E1AmendedTarget
 import RMQ.Core.WordRAM.E1CanonicalInteriorWidth
 import RMQ.Core.WordRAM.E1SelectCloseWidth
 import RMQ.Core.WordRAM.E1CloseLcaWidth
+import RMQ.Core.WordRAM.E1WholeQueryPathWidth
 import RMQ.Core.WordRAM.E1ReviewerWidth
 import RMQ.Core.WordRAM.E1WholeQueryWidth
 import RMQ.Core.WordRAM.E1FringeFoldProgram

@@ -9067,3 +9067,76 @@ trap E1-LaneK and E1-LaneM both flagged about `assembledValidPath` versus
 The segment constant needed an explicit `rfl` bridge
 (`concreteBPNativeFringeChunkTraceSegment = 21`) in both arms: it is a `def`,
 hence opaque to `omega`, exactly as register `abbrev`s are.
+
+## DD-20260719-304: the positive width certificate for the program that ACTUALLY EXECUTES (E1-LaneN)
+
+`wholeQueryProgram_fits_reviewerWordBits` (`E1WholeQueryPathWidth.lean`):
+
+```
+theorem wholeQueryProgram_fits_reviewerWordBits
+    (shape : Cartesian.CartesianShape) :
+    ProgramFits (shapeWidth shape) (wholeQueryProgram shape shape.size)
+```
+
+No hypotheses. No size threshold. No parametric `w`. No premise about the
+interior, the select block or the composition. `#print axioms` reports
+`[propext, Classical.choice, Quot.sound]` only.
+
+This closes REQ-E1-02's positive column, which E1-LaneK and E1-LaneM both
+left open and which E1-LaneM deliberately declined to state conditionally.
+That refusal was right and this discharges it rather than working around it:
+every premise that was OWED now has a witness at the real instantiation.
+
+### The chain, bottom to top
+
+1. `canonicalInteriorDispatchBlock_fits` (DD-20260719-301) -- 4204 instr.
+2. `selectCloseBlock_fits` (DD-20260719-302) -- 405 instr, parametric.
+3. `closeLcaProgramAt_fits` (DD-20260719-303) -- 4753 instr, and the first
+   witness for `hinterior`.
+4. This module: the select data's own bounds, the select leg, the prefix,
+   the join, the output stage, the two path-level appends, and
+   `programSkeleton_fits` (`E1QueryProgram.lean:195`).
+
+### E1-LaneM's residual 2 was right about the structure and the fix
+
+`SparseExceptionSelectData` (`Source.lean:1693`) really does carry no
+`localSlotsPerSuper_pos` and no `_le_machine`, so the bound had to come from
+the canonical builder. It does: `localSlotsPerSuper_le` unfolds
+`sparseExceptionSelectData` (every bridge is `rfl`, the builder being a
+`where` instance) and then applies the GENERIC
+`selectLocalSlotsPerSuper_le_superStride` (`DenseEntryTable.lean:650`), whose
+two positivity premises the builder supplies. `superStride_le` finishes it.
+
+`superStride_le` needs a case split the other bounds do not.
+`machineWordBits_sq_le_four_mul_self_of_pos` (`Arithmetic.lean:160`) has a
+real `0 < n` hypothesis and `shape.bpCode.length = 2 * shape.size` is ZERO at
+the empty shape, where `superStride 0 = 1`. Hence the unconditional bound
+carries a `+ 1`, and its slope is `8` -- exactly `lt_capacity_of_le_linear`'s
+cap, which it therefore just fits.
+
+### Two facts that were `rfl` and had no name anywhere
+
+`longBPS_eq` and `sparseBPS_eq`: both flag-rank directories carry
+`blocksPerSuper = 1` (`Source.lean:351`, `FlagRank.lean:211`). Neither had a
+named equation in the tree; both are `rfl`. They are named here because
+`selectCloseBlock_fits` needs `LBPS < 2 ^ w` and `SBPS < 2 ^ w`, and `omega`
+cannot see through a projection.
+
+### The recurring shape of every failure in this lane
+
+Four separate `omega` failures in this module and the interior one had the
+SAME cause: a quantity that is a numeric literal or a definitional equal, but
+spelled as a PROJECTION or a `def`, and therefore opaque to `omega`. The
+fourteen layout segment fields (`Segments.lean:24`), the four stride fields,
+the three interior store abbreviations (`InteriorDirectory.lean:1532`) and
+`concreteBPNativeFringeChunkTraceSegment` all needed explicit `rfl` bridges
+before `omega` would use them. This is the same phenomenon DD-20260719-261
+recorded for register `abbrev`s; it is not specific to registers.
+
+### Anti-vacuity is already satisfied, for this same program
+
+`wholeQueryProgram_not_fits_machineWordBits` (DD-20260719-264,
+`E1WholeQueryWidth.lean`) refutes the certificate at
+`machineWordBits shape.size` for `shape.size <= 2821`, witnessed by the
+guard's own `brNZ regG 5644`. The positive and negative results are now about
+THE SAME PROGRAM, which was not previously true of either column.
