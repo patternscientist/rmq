@@ -4947,3 +4947,76 @@ is always `some`. Whether `.lcaNone` is UNREACHABLE at these arms, or a dispatch
 stage is owed, is genuinely open. **This is rule 2 territory: if the branch is
 unreachable, that owes a witness of vacuity, not an assumption.** Handed to the
 next lane as an explicit question to settle by proof.
+
+---
+
+## C05 round 77 — the width question is (a), and settling it by evaluation
+## disproved three of my premises at once
+
+Lane A4 returned INCOMPLETE at `422660a`; items 1, 2 and 4 closed, item 3 is 1
+of 17.
+
+**THE WIDTH ANSWER IS (a).** `ProgramFits` holds at
+`concreteBPNativeSuccinctRMQReviewerWordBits` at **every** shape tested, with
+**no size hypothesis and no parametric `w`** —
+`programSkeleton_fits_reviewerWordBits`. So **REQ-E1-02 is satisfiable as
+worded**, no amendment, no threshold, nothing weakened. The refutation at the
+other width serves as its anti-vacuity witness.
+
+**Three of my premises failed inspection in one table**, and the table is why
+this got settled rather than argued:
+
+| n | mwb(n) | 2^mwb(n) | rwb(n) | maxReg | maxField | fits@mwb | fits@rwb |
+|---|---|---|---|---|---|---|---|
+| 1 | 1 | 2 | 20 | 84 | 555 | false | true |
+| 64 | 7 | 128 | 25 | 84 | 555 | false | true |
+| 1024 | 11 | 2048 | 29 | 84 | 2048 | false | true |
+
+1. **The register file reaches 84, not 152.** `152` is not a register index
+   anywhere in the tree; the largest `hreg` is `117`. I had been quoting 152 for
+   several rounds, including in two briefs.
+2. **The binding field is not a register at all.** `ProgramFits` also constrains
+   `const` values and `brNZ` targets, and the binding one is `brNZ 7 555` — the
+   guard's invalid-exit target. My whole framing ("the register file needs
+   `2^w > 152`") was about the wrong quantity.
+3. **The size-indexed width fails at EVERY `n`, not "at small `n`".** So option
+   (b) is ruled out **structurally**, and no size threshold could ever have
+   repaired it. That is the governance-relevant half: had we tried the
+   threshold route it would have failed everywhere and taken a session to learn.
+
+And my capacity inference "ran backwards" — the reviewer capacity is
+`400000 * (n + 1)`, which is ≥ 400000 at `n = 0` and never anywhere near 128. I
+reasoned from a remembered shape of the function rather than reading it.
+
+**No escalation to the owner is needed.** I flagged this as possibly requiring
+them; it does not. Nothing is weakened and no frozen text changes. The only
+judgement is which of the two widths the row's "the modeled width" denotes — and
+**the matrix's own word-model block names BOTH**, `machineWordBits` and the
+reviewer width. Choosing the reviewer width is reading the row against the model
+line it ships with, not amending it. It is also the right one on the merits: the
+reviewer width is the word of the RAM that must address the payload, which is
+what the program's fields index; the size-indexed one addresses the input array
+and is simply a different quantity.
+
+**`FringeFoldUntouched` is EXECUTED for the first time ever**, via a standalone
+fold host — the approach two earlier lanes established was necessary, because
+running the arm and checking the fold's predicate would fail correctly at the
+two registers the arm writes and the fold does not. Validator phase 3k: 27
+fixtures, 87 registers checked, zero failures, and all 27 read-bearing so the
+check is not vacuous. Mutant K: caught 27/27, clobbering exactly `[105]`, with
+**exit pc, steps, accumulator, best pair AND read log all matching the honest
+sweep** — every other discriminator on that block misses it. That is a textbook
+preservation-only mutant.
+
+**One proof note worth keeping.** The only place `Nat.log2` is genuinely used is
+a mixing bound that is **quadratic in the chunk width while the capacity
+envelope is linear in the size**, so it cannot be closed by bounding the chunk
+width crudely; it needed a Mathlib-free `sq_le_two_pow` induction, because
+`omega` cannot supply a nonlinear step. Past `lt_reviewerWordBits_of_lt_capacity`
+no goal mentions `Nat.log2` at all. `set`, `ring`, `nlinarith` and
+`interval_cases` were each reached for and removed as Mathlib.
+
+Sixteen composite category logs remain unbounded. `ascLog_length_le` is the
+reusable half for any index-dependent body; the cheapest next targets are the
+leaf logs, then `fringeLegCats`/`fringeArmCats`, which sit directly above the
+now-bounded fold.
