@@ -4327,3 +4327,44 @@ Consequences and evidence:
   lineage and preserves the later B7 cost `210`, source, freshness, and
   occurrence facts. Exact current-tree claim, topology, design, trust, and
   build checks certify the combined frontier.
+
+## DD-20260719-007: synchronize the live publication strategy with the checked 210 cap
+
+Status: Candidate decision; coordinator acceptance pending.
+
+Date: 2026-07-19
+
+Context:
+
+`docs/PUBLICATION_STRATEGY.md` is one of the exact 18 registered current-fact
+surfaces. Its historical-status paragraph still said, across two adjacent
+lines, that the current theorem's checked charged-trace cap was `207`. The
+checked current theorem and the other current surfaces say `210`; `207`
+belongs to the explicit compatibility chronology.
+
+Decision:
+
+Change that one live numeral to `210`. Keep the paragraph current and keep the
+path in the registered current-surface contract. Historical `76`, `142`,
+`207`, and `328` evidence remains in explicitly historical roles, and the
+distinct live compatibility expression remains `352`.
+
+Rejected alternatives:
+
+- Reclassify the live paragraph as history merely to preserve the stale
+  numeral.
+- Remove `docs/PUBLICATION_STRATEGY.md` from the current-surface registry.
+- Change a Lean declaration, theorem identity, cost algebra, trace, payload,
+  or model field to agree with the stale prose.
+- Repair only the sentence without adding an adjacent-line production
+  mutation that would have caught it.
+
+Consequences and evidence:
+
+- The publication strategy now agrees with the checked `210` theorem and the
+  exact 18-path registry is unchanged.
+- The production claim classifier and replay harness own the line-boundary
+  enforcement; this entry records the factual public-surface synchronization,
+  not a new mathematical or machine-model decision.
+- Exact production verdicts and final-tree timings are recorded in
+  `docs/internal/P1_POLICY_HARDENING_WORKLOG.md`.

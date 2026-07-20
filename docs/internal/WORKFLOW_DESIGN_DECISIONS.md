@@ -4364,3 +4364,74 @@ Publication-facing significance:
 Current cost statements and design-sensitive proof/tooling changes cannot
 escape review merely by wrapping across lines or by being stored under an
 evidence-labelled directory.
+
+## WDD-20260719-013: classify bounded live-cost context and neutral-file roles before allowance
+
+Status: Candidate decision; coordinator acceptance pending.
+Date: 2026-07-19.
+Scope: P1-R1 claim-drift grammar, neutral-path disposition, and replayable
+production regression evidence.
+
+Decision:
+
+1. The retired-current-cost term may consume either one physical line or one
+   adjacent continuation line, with at most 160 non-newline characters on
+   either side of the single boundary. It does not cross a blank paragraph or
+   a second line boundary.
+2. History and supersession are clause-local grammars. A history marker cannot
+   license a current subject elsewhere in the same line. Arrow text is first
+   classified as a retired-current-cost hit; only a retired/historical subject
+   moving from `207` to current `210`, plus the existing explicit B7
+   charge-policy movement sentence, receives an allowance. Current-subject
+   `207 -> 210` and `207 => 210` remain failures.
+3. File identity precedes neutral placement. Lean under a nominally neutral
+   root is code-sensitive, and script/program extensions are workflow-sensitive
+   even outside ordinary workflow roots. Audit evidence is neutral only as a
+   direct Markdown report. Digest evidence is neutral only when its Markdown
+   filename is date-frozen without a `CURRENT` role, or carries an explicit
+   `HISTORY`/`LOG` role. The exact registered current digest and unregistered
+   current-looking variants remain sensitive.
+4. Both regressions pin their ordered case registries and verdicts. The claim
+   runner includes the exact adjacent-line registered mutation, clause
+   laundering, arrow, and blank-paragraph controls. The design runner includes
+   the exact neutral-shadow umbrella case, audit `.ps1`, digest code, current
+   digest, Markdown audit, and frozen-history controls. Missing, duplicate, or
+   verdict-flipped registry mutations fail before semantic execution.
+5. Production strict design certification remains compatible with any
+   resolvable `Base`. Governed worker commands remain responsible for emitting
+   the task's exact 40-character base. No focused user-facing selector is added.
+
+Trigger:
+
+The rejected P1 candidate passed a registered two-line current `207` statement,
+code-bearing files under audit/digest roots, and an unregistered current-looking
+digest. Its arrow exclusion also accepted a current subject merely because
+`207` was followed by `-> 210`.
+
+Rejected alternatives:
+
+- Join arbitrary document windows or whole paragraphs around a retired token.
+- Treat the history marker as a line-wide capability.
+- Exclude every `207 -> 210` spelling before semantic classification.
+- Add literal exceptions for the reproduced paths.
+- Keep all Markdown under `docs/digests/` neutral by directory placement.
+- Infer category closure from aggregate pass counts without exact registry and
+  expected-accept controls.
+
+Consequences:
+
+- The production claim verdict catches the real adjacent-line defect without
+  joining unrelated distant prose.
+- Neutral evidence remains writable without recursive decision demands, while
+  code and current-looking surfaces cannot inherit that neutrality.
+- The exact 18-surface registry, strict-Base behavior, gate wiring, inherited
+  P1 fixtures, and Lean/public theorem identities remain unchanged.
+- Exact focused and final production results, durations, restoration evidence,
+  and candidate identity are recorded in
+  `docs/internal/P1_POLICY_HARDENING_WORKLOG.md`.
+
+Publication-facing significance:
+
+Live cost prose now follows document line boundaries, while evidence placement
+cannot silently change the review obligations of executable or current-facing
+material.

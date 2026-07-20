@@ -1,5 +1,5 @@
 {
-  "version": 20,
+  "version": 21,
   "updated": "2026-07-19",
   "currentFactSurfacePathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\\.md|RMQ_FINAL_ROADMAP\\.md))$",
   "terms": [
@@ -129,12 +129,13 @@
     },
     {
       "id": "forbidden-retired-current-cost-bound",
-      "pattern": "(?i)(?:\\b(?:current|canonical|principled|uniform|modeled|query|charged[- ]trace|trace[- ]length|Costed\\.cost)\\b.{0,120}\\b(?:76|142|207(?!\\s*(?:-|=)>\\s*210))\\b|\\b(?:76|142|207(?!\\s*(?:-|=)>\\s*210))\\b.{0,120}\\b(?:current|canonical|principled|uniform|modeled|query|charged[- ]trace|trace[- ]length|Costed\\.cost)\\b)",
+      "pattern": "(?i)(?:\\b(?:current|canonical|principled|uniform|modeled|query|charged[- ]trace|trace[- ]length|Costed\\.cost)\\b(?:[^\\r\\n]{0,160}|[^\\r\\n]{0,160}\\r?\\n[^\\r\\n]{0,160})\\b(?:76|142|207)\\b|\\b(?:76|142|207)\\b(?:[^\\r\\n]{0,160}|[^\\r\\n]{0,160}\\r?\\n[^\\r\\n]{0,160})\\b(?:current|canonical|principled|uniform|modeled|query|charged[- ]trace|trace[- ]length|Costed\\.cost)\\b)",
       "status": "forbidden-retired-76-142-or-207-current-cost-formulation-outside-explicit-historical-role",
       "strict": true,
       "scope": "current-fact-surface",
+      "multiline": true,
       "allowedPathRegex": "",
-      "allowedLineRegex": "(?i)^(?:\\s*(?:[-*]\\s*)?(?:Historical(?:\\s+(?:comparison|note|record))?|Retired|Superseded|Pre-A07|Frozen\\s+audit(?:\\s+record)?)\\b[^.;\\r\\n]*\\b(?:76|142|207)\\b[^.;\\r\\n]*\\.?\\s*(?:<!--\\s*)?CLAIM-HISTORY-A07-COST(?:\\s*-->)?\\s*|\\s*(?:the\\s+)?current\\b[^.;\\r\\n]{0,160}\\b210\\b`?[.;]\\s*(?:Historical\\s+comparison|Retired\\s+comparison)\\b[^.;\\r\\n]*\\b(?:76|142|207)\\b[^.;\\r\\n]*\\.?\\s*(?:<!--\\s*)?CLAIM-HISTORY-A07-COST(?:\\s*-->)?\\s*|\\s*`?352`?\\.[^.;\\r\\n]*\\bretired\\b[^.;\\r\\n]*\\b(?:76|142|207)\\b[^.;\\r\\n]*\\.?\\s*(?:<!--\\s*)?CLAIM-HISTORY-A07-COST(?:\\s*-->)?\\s*)$"
+      "allowedLineRegex": "(?is)^(?:\\s*(?:[-*]\\s*)?(?:Historical(?:\\s+(?:comparison|note|record))?|Retired|Superseded|Pre-A07|Frozen\\s+audit(?:\\s+record)?)\\b(?![^.;\\r\\n]*\\bcurrent\\b)[^.;\\r\\n]*\\b(?:76|142|207)\\b[^.;\\r\\n]*\\.?\\s*(?:<!--\\s*)?CLAIM-HISTORY-A07-COST(?:\\s*-->)?\\s*|\\s*(?:the\\s+)?current\\b[^.;\\r\\n]{0,160}\\b210\\b`?[.;]\\s*(?:Historical\\s+comparison|Retired\\s+comparison)\\b(?![^.;\\r\\n]*\\bcurrent\\b)[^.;\\r\\n]*\\b(?:76|142|207)\\b[^.;\\r\\n]*\\.?\\s*(?:<!--\\s*)?CLAIM-HISTORY-A07-COST(?:\\s*-->)?\\s*|\\s*`?352`?\\.[^.;\\r\\n]*\\bretired\\b(?![^.;\\r\\n]*\\bcurrent\\b)[^.;\\r\\n]*\\b(?:76|142|207)\\b[^.;\\r\\n]*\\.?\\s*(?:<!--\\s*)?CLAIM-HISTORY-A07-COST(?:\\s*-->)?\\s*|\\s*(?:the\\s+)?(?:retired|historical)\\b[^.;\\r\\n]{0,120}\\b(?:cost|bound|cap|literal)\\b[^.;\\r\\n]{0,80}\\b(?:moved|changed|was\\s+superseded)\\b[^.;\\r\\n]{0,40}\\bfrom\\s+`?207`?\\s+(?:to|(?:-|=)>)\\s+(?:the\\s+)?current\\b[^.;\\r\\n]{0,80}\\b`?210`?\\b\\.?\\s*|\\s*(?:the\\s+)?whole[- ]query\\s+literal\\s+`?207`?\\s*(?:-|=)>\\s*`?210`?\\.\\s*That\\s+movement\\b[^.;\\r\\n]{0,120}\\bcharge\\s+policy\\b[^.;\\r\\n]*\\.?\\s*)$"
     },
     {
       "id": "canonical-physical-payload-identity",

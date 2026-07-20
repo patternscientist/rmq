@@ -25,6 +25,11 @@ if (-not (Test-Path -LiteralPath $resolvedScannerPath)) {
 
 $policyObject = Get-Content -Raw -LiteralPath $resolvedPolicyPath | ConvertFrom-Json
 $currentSurfaceRegex = [string]$policyObject.currentFactSurfacePathRegex
+$expectedCurrentSurfaceRegex = '^(?:README\.md|artifact/(?:CLAIMS|README)\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\.md|docs/digests/PROJECT_DIGESTION_CURRENT\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\.md|RMQ_FINAL_ROADMAP\.md))$'
+if ($currentSurfaceRegex -cne $expectedCurrentSurfaceRegex) {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [p1r1-exact-current-surface-registry] regex drift"
+  exit 1
+}
 $requiredCurrentSurfaces = @(
   'artifact/CLAIMS.md',
   'artifact/README.md',
@@ -51,6 +56,11 @@ foreach ($requiredCurrentSurface in $requiredCurrentSurfaces) {
     exit 1
   }
 }
+if ($requiredCurrentSurfaces.Count -ne 18 -or
+    @($requiredCurrentSurfaces | Group-Object | Where-Object Count -ne 1).Count -ne 0) {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [p1r1-exact-current-surface-registry] path registry drift"
+  exit 1
+}
 $currentEventVocabularyTerm = @(
   $policyObject.terms |
     Where-Object id -eq 'forbidden-retired-current-event-vocabulary'
@@ -72,6 +82,7 @@ if ($readWordAttribution.Count -ne 1 -or
   exit 1
 }
 Write-Host "CLAIM-POLICY-REGRESSION: PASS [r1r2-48147cb-current-surface-registry]"
+Write-Host "CLAIM-POLICY-REGRESSION: PASS [p1r1-exact-current-surface-registry] 18 exact paths"
 
 $sourceManifestTerm = @($policyObject.terms | Where-Object id -eq 'typed-reviewer-source-manifest')
 if ($sourceManifestTerm.Count -ne 1 -or
@@ -98,8 +109,11 @@ $strictRetiredCostTerm = @($policyObject.terms | Where-Object id -eq 'forbidden-
 if ($strictRetiredCostTerm.Count -ne 1 -or
     -not [bool]$strictRetiredCostTerm[0].strict -or
     [string]$strictRetiredCostTerm[0].scope -ne 'current-fact-surface' -or
+    -not [bool]$strictRetiredCostTerm[0].multiline -or
     [string]$strictRetiredCostTerm[0].pattern -notmatch '\(\?:76\|142\|207' -or
-    [string]$strictRetiredCostTerm[0].pattern -match '\(\?:76\|142\|207\|210') {
+    [string]$strictRetiredCostTerm[0].pattern -match '\(\?:76\|142\|207\|210' -or
+    [string]$strictRetiredCostTerm[0].pattern -match '207\(\?!' -or
+    [string]$strictRetiredCostTerm[0].allowedLineRegex -notmatch 'retired\|historical') {
   Write-Host "CLAIM-POLICY-REGRESSION: FAIL [p1-current-cost-category-config]"
   exit 1
 }
@@ -169,15 +183,22 @@ $fixtures = @(
   @{ id = "p1-uniform-modeled-trace-length-207-heldout"; relativePath = "artifact/CLAIMS.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "The uniform modeled trace-length ceiling is 207." },
   @{ id = "p1-costed-cost-207-heldout"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "The execution's Costed.cost is at most 207." },
   @{ id = "p1-number-first-current-charged-trace-207"; relativePath = "README.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "207 is the current charged-trace cap." },
+  @{ id = "p1-registered-current-cost-cross-line-207-rejected"; relativePath = "docs/PUBLICATION_STRATEGY.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "The current theorem gives the checked charged-trace cap`n207." },
+  @{ id = "p1-cross-line-number-first-current-cost-207-heldout"; relativePath = "artifact/CLAIMS.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "207`nis the current charged-trace cap." },
+  @{ id = "p1-cross-line-blank-paragraph-boundary-control"; relativePath = "docs/PUBLICATION_STRATEGY.md"; reject = $false; termId = "forbidden-retired-current-cost-bound"; text = "The current theorem is described here.`n`n207 appears in an unrelated historical inventory." },
   @{ id = "p1-current-cost-210-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; termId = "forbidden-retired-current-cost-bound"; text = "The current principled charged-trace bound is 210." },
   @{ id = "p1-historical-207-marker-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; allowedMatch = $true; termId = "forbidden-retired-current-cost-bound"; text = "Historical record: the charged-trace cap at the audited checkpoint was 207 <!-- CLAIM-HISTORY-A07-COST -->" },
   @{ id = "p1-historical-76-marker-control"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $false; allowedMatch = $true; termId = "forbidden-retired-current-cost-bound"; text = "Historical note: the principled bound at the pre-A07 checkpoint was 76 <!-- CLAIM-HISTORY-A07-COST -->" },
   @{ id = "p1-historical-142-marker-control"; relativePath = "artifact/README.md"; reject = $false; allowedMatch = $true; termId = "forbidden-retired-current-cost-bound"; text = "Historical comparison: the modeled cap at the retired checkpoint was 142 <!-- CLAIM-HISTORY-A07-COST -->" },
+  @{ id = "p1-history-conjunction-current-207-rejected"; relativePath = "README.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "Historical note: 76 was retired and the current query bound is 207 <!-- CLAIM-HISTORY-A07-COST -->" },
+  @{ id = "p1-compound-comparison-current-207-rejected"; relativePath = "docs/FAMILY_SUMMARY.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "The current bound is 210. Historical comparison: the current query bound is 207 <!-- CLAIM-HISTORY-A07-COST -->" },
   @{ id = "p1-history-marker-unrelated-clause-bypass"; relativePath = "README.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "Historical note: 76 was retired; the current charged-trace cap is 207. <!-- CLAIM-HISTORY-A07-COST -->" },
   @{ id = "p1-history-word-unrelated-clause-bypass"; relativePath = "docs/FAMILY_SUMMARY.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "Historical context is useful; the canonical query bound is 207. <!-- CLAIM-HISTORY-A07-COST -->" },
   @{ id = "p1-historical-328-control"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $false; termId = "historical-canonical-transitional-328"; text = "Historical transitional comparison: the retired literal was 328." },
   @{ id = "p1-live-compatibility-352-control"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $false; termId = "live-compatibility-352"; text = "The distinctly named live compatibility expression is 352, not the paper-facing bound." },
-  @{ id = "p1-supersession-arrow-207-to-210-control"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $false; termId = "forbidden-retired-current-cost-bound"; text = "The whole-query literal moved 207 -> 210 when the charge policy changed." },
+  @{ id = "p1-supersession-arrow-207-to-210-control"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $false; allowedMatch = $true; termId = "forbidden-retired-current-cost-bound"; text = "The retired query bound moved from 207 to the current bound 210." },
+  @{ id = "p1-current-subject-arrow-207-to-210-rejected"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "The current query bound is 207 -> 210." },
+  @{ id = "p1-current-subject-fat-arrow-207-to-210-rejected"; relativePath = "docs/PAPER_MAIN_THEOREM.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "The current query cap is 207 => 210." },
   @{ id = "p1-supersession-arrow-unrelated-current-bypass"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "The historical literal moved 207 -> 210; the current query bound is 207." },
   @{ id = "r1r1-current-source-count-22-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; termId = "forbidden-retired-current-source-count"; text = "The canonical reviewer manifest is one typed 22-source universe." },
   @{ id = "r1r1-fresh-segment-23-control"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $false; termId = "forbidden-retired-fresh-segment-21"; text = "Fresh unused segment 23 is rejected by the common predicate." },
@@ -273,15 +294,22 @@ p1-canonical-query-cost-207-heldout
 p1-uniform-modeled-trace-length-207-heldout
 p1-costed-cost-207-heldout
 p1-number-first-current-charged-trace-207
+p1-registered-current-cost-cross-line-207-rejected
+p1-cross-line-number-first-current-cost-207-heldout
+p1-cross-line-blank-paragraph-boundary-control
 p1-current-cost-210-control
 p1-historical-207-marker-control
 p1-historical-76-marker-control
 p1-historical-142-marker-control
+p1-history-conjunction-current-207-rejected
+p1-compound-comparison-current-207-rejected
 p1-history-marker-unrelated-clause-bypass
 p1-history-word-unrelated-clause-bypass
 p1-historical-328-control
 p1-live-compatibility-352-control
 p1-supersession-arrow-207-to-210-control
+p1-current-subject-arrow-207-to-210-rejected
+p1-current-subject-fat-arrow-207-to-210-rejected
 p1-supersession-arrow-unrelated-current-bypass
 r1r1-current-source-count-22-control
 r1r1-fresh-segment-23-control
@@ -323,8 +351,8 @@ canonical-paper-alias
 legacy-paper-alias
 '@ -split "\r?\n" | Where-Object { $_ }
 
-$expectedRejectCount = 62
-$expectedAcceptCount = 32
+$expectedRejectCount = 68
+$expectedAcceptCount = 33
 $expectedContextCount = 15
 $expectedContextFixtureIds = @(
   "policy-path-allowance",

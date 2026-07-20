@@ -131,7 +131,13 @@ function Get-MatchLineNumber {
 
 foreach ($term in $policy.terms) {
   $pattern = [string]$term.pattern
-  $matches = @(& rg --json --pcre2 -- $pattern @roots 2>$null)
+  $rgArguments = @("--json", "--pcre2")
+  if ($term.multiline -eq $true) {
+    $rgArguments += "--multiline"
+  }
+  $rgArguments += @("--", $pattern)
+  $rgArguments += @($roots)
+  $matches = @(& rg @rgArguments 2>$null)
   $code = $LASTEXITCODE
   if ($code -gt 1) {
     Write-Host "CLAIM-DRIFT: rg failed for $($term.id)"

@@ -217,12 +217,19 @@ $cases = @(
   @{ Id = "unknown-repository-path-default-sensitive"; Files = @{ "new-format/data.policy" = "policy" }; Reject = $true; Output = "code/public/repository-sensitive" },
   @{ Id = "missing-code-decision"; Files = @{ "lakefile.toml" = "name = 'probe'" }; Reject = $true; Output = "update docs/internal/DESIGN_DECISIONS.md" },
   @{ Id = "missing-workflow-decision"; Files = @{ ".agents/new_policy/README.md" = "workflow" }; Reject = $true; Output = "update docs/internal/WORKFLOW_DESIGN_DECISIONS.md" },
+  @{ Id = "p1-neutral-evidence-path-cannot-shadow-code-or-current-surface"; Files = @{ "docs/internal/audit_reports/P1NeutralBypass.lean" = "def p1NeutralBypass := true"; "docs/digests/PROJECT_DIGESTION_CURRENT_V2.md" = "# Unregistered current surface" }; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "p1-neutral-audit-report-ps1-rejected"; Files = @{ "docs/internal/audit_reports/P1NeutralBypass.ps1" = "Write-Host bypass" }; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "p1-neutral-digest-code-rejected"; Files = @{ "docs/digests/P1NeutralBypass.ps1" = "Write-Host bypass" }; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "p1-current-looking-digest-heldout-rejected"; Files = @{ "docs/digests/RMQ_CURRENT_STATUS.md" = "# Unregistered current status" }; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "p1-registered-current-digest-remains-sensitive"; Files = @{ "docs/digests/PROJECT_DIGESTION_CURRENT.md" = "# Registered current surface" }; Reject = $true; Output = "code/public/repository-sensitive" },
   @{ Id = "present-code-decision"; Files = @{ "RMQ/New/WithDecision.lean" = "def withDecision := true" }; CodeDecision = $true; Reject = $false; Output = "checked" },
   @{ Id = "present-workflow-decision"; Files = @{ "scripts/with_decision.ps1" = "Write-Host governed" }; WorkflowDecision = $true; Reject = $false; Output = "checked" },
   @{ Id = "present-correct-decisions"; Files = @{ "RMQ/New/BothDecisions.lean" = "def bothDecisions := true"; "scripts/both_decisions.ps1" = "Write-Host governed" }; CodeDecision = $true; WorkflowDecision = $true; Reject = $false; Output = "checked" },
   @{ Id = "neutral-worklog"; Files = @{ "docs/internal/NEW_POLICY_WORKLOG.md" = "# Evidence" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
   @{ Id = "neutral-audit-report"; Files = @{ "docs/internal/audit_reports/2026-07-19_probe.md" = "# Audit evidence" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
   @{ Id = "neutral-historical-digest"; Files = @{ "docs/digests/PROJECT_STATE_2026_07_19.md" = "# Frozen history" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "p1-neutral-audit-markdown-control"; Files = @{ "docs/internal/audit_reports/P1NeutralEvidence.md" = "# Audit evidence" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "p1-frozen-historical-digest-control"; Files = @{ "docs/digests/DEEP_PROJECT_DIGESTION_2026_07_19.md" = "# Frozen history" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
   @{ Id = "decision-logs-nonrecursive"; Files = @{}; CodeDecision = $true; WorkflowDecision = $true; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
   @{ Id = "nonstrict-local-worktree-mode"; Files = @{ "RMQ/New/LocalAdvisory.lean" = "def localAdvisory := true" }; NonStrict = $true; OmitBase = $true; Reject = $false; Output = "code/public/repository-sensitive" },
   @{ Id = "absolute-windows-repository-root"; Files = @{ "another-new-root/path.data" = "data" }; Reject = $true; Output = "code/public/repository-sensitive"; RequireDriveRoot = $true },
@@ -238,30 +245,110 @@ $expectedCaseIds = @(
   "unknown-repository-path-default-sensitive",
   "missing-code-decision",
   "missing-workflow-decision",
+  "p1-neutral-evidence-path-cannot-shadow-code-or-current-surface",
+  "p1-neutral-audit-report-ps1-rejected",
+  "p1-neutral-digest-code-rejected",
+  "p1-current-looking-digest-heldout-rejected",
+  "p1-registered-current-digest-remains-sensitive",
   "present-code-decision",
   "present-workflow-decision",
   "present-correct-decisions",
   "neutral-worklog",
   "neutral-audit-report",
   "neutral-historical-digest",
+  "p1-neutral-audit-markdown-control",
+  "p1-frozen-historical-digest-control",
   "decision-logs-nonrecursive",
   "nonstrict-local-worktree-mode",
   "absolute-windows-repository-root",
   "strict-unresolvable-base"
 )
 
-$actualCaseIds = @($cases | ForEach-Object { [string]$_.Id })
-if ($actualCaseIds.Count -ne $expectedCaseIds.Count -or
-    @($actualCaseIds | Group-Object | Where-Object Count -ne 1).Count -ne 0) {
+$expectedRejectCaseIds = @(
+  "strict-missing-base",
+  "unenumerated-rmq-lean-path",
+  "new-validation-path",
+  "new-workflow-script",
+  "ordinary-public-doc",
+  "unknown-repository-path-default-sensitive",
+  "missing-code-decision",
+  "missing-workflow-decision",
+  "p1-neutral-evidence-path-cannot-shadow-code-or-current-surface",
+  "p1-neutral-audit-report-ps1-rejected",
+  "p1-neutral-digest-code-rejected",
+  "p1-current-looking-digest-heldout-rejected",
+  "p1-registered-current-digest-remains-sensitive",
+  "absolute-windows-repository-root",
+  "strict-unresolvable-base"
+)
+
+function Test-CaseRegistry {
+  param([object[]]$Registry)
+
+  $ids = @($Registry | ForEach-Object { [string]$_.Id })
+  if ($ids.Count -ne $expectedCaseIds.Count -or
+      @($ids | Group-Object | Where-Object Count -ne 1).Count -ne 0) {
+    return $false
+  }
+  for ($i = 0; $i -lt $expectedCaseIds.Count; $i += 1) {
+    if ($ids[$i] -ne $expectedCaseIds[$i]) {
+      return $false
+    }
+  }
+  $rejectIds = @($Registry | Where-Object { [bool]$_.Reject } |
+      ForEach-Object { [string]$_.Id })
+  if ($rejectIds.Count -ne $expectedRejectCaseIds.Count) {
+    return $false
+  }
+  for ($i = 0; $i -lt $expectedRejectCaseIds.Count; $i += 1) {
+    if ($rejectIds[$i] -ne $expectedRejectCaseIds[$i]) {
+      return $false
+    }
+  }
+  return $true
+}
+
+function Copy-CaseRegistry {
+  param([object[]]$Registry)
+
+  return @(
+    foreach ($case in $Registry) {
+      $copy = @{}
+      foreach ($key in $case.Keys) {
+        $copy[$key] = $case[$key]
+      }
+      $copy
+    }
+  )
+}
+
+if (-not (Test-CaseRegistry -Registry $cases)) {
   Write-Host "DESIGN-CHECK-REGRESSION: FAIL [exact-case-registry]"
   exit 1
 }
-for ($i = 0; $i -lt $expectedCaseIds.Count; $i += 1) {
-  if ($actualCaseIds[$i] -ne $expectedCaseIds[$i]) {
-    Write-Host "DESIGN-CHECK-REGRESSION: FAIL [exact-case-registry] index $i"
-    exit 1
-  }
+
+$duplicateCases = @(Copy-CaseRegistry -Registry $cases) + @((Copy-CaseRegistry -Registry @($cases[0]))[0])
+if (Test-CaseRegistry -Registry $duplicateCases) {
+  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [duplicate-case-id-control]"
+  exit 1
 }
+Write-Host "DESIGN-CHECK-REGRESSION: PASS [duplicate-case-id-control] REJECT"
+
+$missingCases = @($cases | Where-Object { [string]$_.Id -ne $expectedCaseIds[10] })
+if (Test-CaseRegistry -Registry $missingCases) {
+  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [missing-required-case-control]"
+  exit 1
+}
+Write-Host "DESIGN-CHECK-REGRESSION: PASS [missing-required-case-control] REJECT"
+
+$verdictDriftCases = Copy-CaseRegistry -Registry $cases
+$verdictDriftCases[0].Reject = -not [bool]$verdictDriftCases[0].Reject
+if (Test-CaseRegistry -Registry $verdictDriftCases) {
+  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [case-verdict-drift-control]"
+  exit 1
+}
+Write-Host "DESIGN-CHECK-REGRESSION: PASS [case-verdict-drift-control] REJECT"
+Write-Host "DESIGN-CHECK-REGRESSION: PASS [exact-case-registry] $($cases.Count) ordered cases"
 
 $gateText = Get-Content -Raw -LiteralPath $gatePath
 $designInvocationPattern = '(?m)^\s*& "\$PSScriptRoot\\design_decision_check_regression\.ps1"\s*$'
@@ -375,8 +462,8 @@ try {
   }
 }
 
-if ($rejectCount -ne 10 -or $acceptCount -ne 8) {
-  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [final-verdict-counts] expected 10 reject and 8 accept; got $rejectCount reject and $acceptCount accept"
+if ($rejectCount -ne 15 -or $acceptCount -ne 10) {
+  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [final-verdict-counts] expected 15 reject and 10 accept; got $rejectCount reject and $acceptCount accept"
   $failures += 1
 }
 
@@ -385,5 +472,5 @@ if ($failures -gt 0) {
   exit 1
 }
 
-Write-Host "DESIGN-CHECK-REGRESSION: PASS [final-verdict-counts] (10 reject, 8 accept, production classifier, isolated Git fixtures)"
+Write-Host "DESIGN-CHECK-REGRESSION: PASS [final-verdict-counts] (15 reject, 10 accept, production classifier, isolated Git fixtures)"
 exit 0

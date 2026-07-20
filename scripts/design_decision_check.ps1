@@ -133,9 +133,10 @@ function Test-AnyPattern {
 # about prior work rather than new proof/code or workflow design.
 $neutralEvidencePatterns = @(
   "^docs/internal/(?:DESIGN_DECISIONS|WORKFLOW_DESIGN_DECISIONS)\.md$",
-  "^docs/internal/audit_reports/",
+  "^docs/internal/audit_reports/[^/]+\.md$",
   "^docs/internal/[^/]*(?:_WORKLOG|_ACCEPTANCE_MATRIX|_AUDIT_REPORT)\.md$",
-  "^docs/digests/(?!PROJECT_DIGESTION_CURRENT\.md$)",
+  "^docs/digests/(?![A-Z0-9_-]*CURRENT)[A-Z0-9][A-Z0-9_-]*_\d{4}_\d{2}_\d{2}\.md$",
+  "^docs/digests/[A-Z0-9][A-Z0-9_-]*(?:HISTORY|LOG)\.md$",
   "^docs/DIGESTION_LOG\.md$"
 )
 
@@ -151,8 +152,27 @@ $workflowRootPatterns = @(
   "^docs/internal/"
 )
 
+$proofCodePattern = "(?i)\.lean$"
+$workflowCodePattern = "(?i)\.(?:ps1|psm1|psd1|py|sh|bash|js|mjs|cjs|ts|tsx|jsx)$"
+
 function Get-PathDisposition {
   param([string]$Path)
+
+  # File identity is authoritative at a neutral boundary. A code-bearing file
+  # cannot become evidence merely by moving under an audit, worklog, or digest
+  # directory. Lean requires the code decision; script/program extensions
+  # require the workflow decision even outside the ordinary workflow roots.
+  $isProofCode = $Path -match $proofCodePattern
+  $isWorkflowCode = $Path -match $workflowCodePattern
+  if ($isProofCode -or $isWorkflowCode) {
+    return [PSCustomObject]@{
+      Path = $Path
+      Neutral = $false
+      NeedsCode = $isProofCode
+      NeedsWorkflow = $isWorkflowCode -or
+        (Test-AnyPattern -Path $Path -Patterns $workflowRootPatterns)
+    }
+  }
 
   if (Test-AnyPattern -Path $Path -Patterns $neutralEvidencePatterns) {
     return [PSCustomObject]@{
@@ -164,8 +184,7 @@ function Get-PathDisposition {
   }
 
   $needsWorkflow = Test-AnyPattern -Path $Path -Patterns $workflowRootPatterns
-  $isLeanCode = $Path -match "(?i)\.lean$"
-  $needsCode = $isLeanCode -or -not $needsWorkflow
+  $needsCode = -not $needsWorkflow
   return [PSCustomObject]@{
     Path = $Path
     Neutral = $false
