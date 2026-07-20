@@ -5586,3 +5586,92 @@ scope, which is a thesis change and not a rung; or E1 closing and a reviewer the
 saying they cannot tell the machine is realizable — and even then the remedy is a
 better-documented Lean executable, not C. **What would NOT flip it: a reviewer
 asking for benchmarks.** That is answered with the Non-Claims list.
+
+---
+
+## C05 round 85 — REQ-E1-07's Prop is PROVED; and a Lean file truncated to zero
+## bytes compiled silently six times
+
+Lane K returned INCOMPLETE at `097e21f`: item 1 delivered in full, item 2's
+certificate not delivered but its largest obstacle removed and its numbers
+produced.
+
+**`amendedFamiliarMachineTarget_holds` (`E1AmendedTarget.lean:603`) PROVES the
+amended target by exhibiting the construction.** That was REQ-E1-07's one clause
+with nothing against it. The row moves from NOT SATISFIED to satisfied on
+everything except the width-accounting item its evidence column also lists.
+
+**The `∀ store` clause was in the TARGET PROP itself, not merely the reduction's
+premise — and the worker refuted it outright rather than quietly dropping it.**
+`uniformStore_amendedTarget_refuted` (`:483`). The mechanism: `execInstr` writes
+the **supplied store's own answer** into every trace event, so each receipt event
+is `readWord segment index (store.readWord? segment index)` — while the conjunct
+pinned the receipt to a list fixed by `xs` alone. Refuting a false conjunct is
+worth more than deleting it, because the refutation is what stops someone
+restoring it later.
+
+**Nonemptiness, which the refutation needs, was NOT available by evaluation** —
+`decide` stuck at `hasDecEq` on both the whole trace and the select leg alone,
+because these traces do not reduce in the kernel. Derived from the machine's
+symbolic charge instead. Rule 3's boundary, hit again and worked around
+correctly.
+
+**The repair's load-bearing choice, and it refused the easier form.** The binders
+became **functions of the shape** rather than moving the existential inside
+`∀ xs`. In the worker's words, pushing it inside "asserts only that each input
+has SOME program, which is not one machine, and would have been markedly easier
+to prove." A worker declining a formulation that would have made its own job
+easier and its result weaker.
+
+Also: the invalid conjunct **keeps** `∀ store`, because the guard reads nothing
+and its receipt is `[]`, so the universal form is true and strictly stronger
+there — and the asymmetry is documented rather than left to look like an
+oversight. And **no width conjunct was added**, because item 2 did not reach a
+width fact and "adding one would have required either a false or a vacuous
+spelling."
+
+**Item 2: my claim held exactly.** `assembledValidPath` has **12 line-hits, every
+one inside `E1ReviewerWidth.lean`**; the agreement executes a sibling under the
+same `programSkeleton`, 547 versus 5636 instructions, related by **no lemma**,
+and structurally different — `assembledValidPath` passes `interior = []`.
+
+**It removed the largest obstacle and produced the numbers.**
+`crossBlockArmProgramAt_fits` had taken the interior as a hypothesis stated
+before any interior existed — an **OWED premise with no witness at any
+instantiation**, rule 1 violated and sitting unnoticed. Seventeen new theorems
+now certify all 4204 instructions of the real interior. And the evaluation:
+
+| `shape.size` | max field | reviewer `w` | `2^w` | fits |
+|---|---|---|---|---|
+| 0 | 5644 | 19 | 524288 | yes |
+| 64 | 5644 | 25 | 33554432 | yes |
+| 300 | 5644 | 27 | 134217728 | yes |
+
+**The max field is CONSTANT at 5644 at every size** — it is `wholeQueryNoneExit`,
+a branch target fixed by the program's own length, dominating every
+shape-dependent field — while `2^w` grows. Tightest at `n = 0` with ~93x
+headroom. So **the executed program does fit and the certificate is
+constructible**; it simply was not finished. The worker labelled that precisely:
+"an unproved residual, NOT a finding of non-fitting, and must not be read as
+one."
+
+### A NEW FAILURE MODE, self-reported, and it is the campaign's oldest disease
+### in a new host
+
+A scratchpad edit through Python's default Windows encoding hit
+`UnicodeEncodeError` on a `∧` **after opening the draft for writing**,
+truncating the file to **zero bytes**. **An empty Lean file compiles silently.**
+Six consecutive runs returned no output and were read as successes. Caught by
+checking the byte count, then rebuilt from scratch, and afterwards the worker
+used `#print axioms` as a POSITIVE check that declarations exist rather than
+trusting the absence of errors.
+
+> **"No output" from a Lean run is inconclusive until the input's byte count is
+> checked.**
+
+That is the fifth distinct instance this campaign of a check that examined
+nothing and reported success — after the vacuous `design_decision_check`, the
+lane launched into an occupied worktree, the battery that lost the mutex, and the
+chained battery that never ran. **Every one failed OPEN.** The lesson generalises
+past Lean: a null input is indistinguishable from a clean result unless something
+confirms the input was non-null.
