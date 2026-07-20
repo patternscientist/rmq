@@ -7413,7 +7413,7 @@ difference as "the only thing separating the two branches" — the fact was
 recorded on the machine side and never reconciled with the record.
 
 So the field is split into `lcaSkippedLeftMiss` and `lcaSkippedRightMiss`.
-`selectNone_branches_separable` (`E1WholeQueryCats.lean:376`) states the
+`selectNone_branches_separable` (`E1WholeQueryCats.lean:424`) states the
 separation; under the pre-208 record that proposition was not merely
 unprovable but **false by `rfl`**.
 
@@ -7421,7 +7421,7 @@ unprovable but **false by `rfl`**.
 is a `List Category` PARAMETER, exactly like the eight that preceded it, and
 `wholeQueryBranchCats` remains a function of the route's own branch
 classification. The receipt obligations are unchanged.
-`fullCats_mentions_both_joins` (`E1WholeQueryCats.lean:382`) pins both
+`fullCats_mentions_both_joins` (`E1WholeQueryCats.lean:432`) pins both
 connectives as load-bearing, so a later edit that quietly dropped one — putting
 the machine's between-stage work back out of account — fails at that
 declaration rather than silently.
@@ -7438,7 +7438,7 @@ asserts is the CONTROL STRUCTURE, not their content.
 
 **THE FIXTURE'S GUARANTEE IS RESTATED RATHER THAN QUIETLY BROKEN.** The record
 now has ELEVEN stages and `Category` has SIX constructors
-(`E1Machine.lean:106`), so the fixture's old promise of "one distinct tick per
+(`E1Machine.lean:107`), so the fixture's old promise of "one distinct tick per
 stage" is no longer literally attainable. It is withdrawn and replaced by the
 property the discriminators actually need: on each branch the stage under test
 charges a tick different from the stage it displaces. All four non-entailments

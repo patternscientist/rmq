@@ -241,5 +241,81 @@ theorem decodePacket_rankClose_eq_wholeQueryRouteValue_of_bounds
   · rw [wholeQueryRouteValue, hbranch, wholeQueryBranchValue, hrank]
     simp [WordRAM.E1Query.decodePacket]
 
+/--
+THE VACUITY WITNESS, RE-AIMED AT A BRANCH THE MACHINE ALREADY PRODUCED.
+
+The run theorems hand back their own `answerClose`, existentially bound, with
+`wholeQueryBranch shape left right = .full cl cr answerClose`.  This says the
+`answerClose` they produced is necessarily the one identified above — by
+injectivity of the `.full` constructor, since the branch is a function of the
+shape and endpoints alone — so the positivity transfers to it and the value
+clause can be stated in the ROUTE's form rather than the machine's.
+
+That is what lets `wholeQueryProgram_runsTo_sameBlock_routeReceipt`'s value
+clause (`E1WholeQuerySameBlockRoute.lean:103`), deliberately left as
+`regsF regOut = rank.value`, be upgraded to `decodePacket … = wholeQueryBranchValue …`
+without weakening either side.
+-/
+theorem decodePacket_eq_wholeQueryBranchValue_of_branch
+    {shape : Cartesian.CartesianShape} {left right cl cr answerClose : Nat}
+    (hlt : left < right)
+    (hbound : right <= shape.size)
+    (hbranch :
+      wholeQueryBranch shape left right =
+        WholeQueryBranch.full cl cr answerClose) :
+    WordRAM.E1Query.decodePacket
+        ((concreteBPNativeRankCloseWordTraceResultAtSegment shape
+          concreteBPNativeRankCloseTraceSegmentBase (answerClose + 1)).value) =
+      wholeQueryBranchValue shape (WholeQueryBranch.full cl cr answerClose) := by
+  obtain ⟨cl', cr', ac', hbranch', _hpos, hdec⟩ :=
+    decodePacket_rankClose_eq_wholeQueryRouteValue_of_bounds hlt hbound
+  rw [hbranch] at hbranch'
+  cases hbranch'
+  rw [hdec, wholeQueryRouteValue, hbranch]
+
+/--
+The rank leg's value is positive at the `answerClose` a run theorem produced.
+Stated separately because it is the proposition `E1_LIVE_STATE.md` §10f named
+as undischarged, and because it is what makes the disagreement point
+UNREACHABLE rather than merely unreached.
+-/
+theorem rankClose_value_pos_of_branch
+    {shape : Cartesian.CartesianShape} {left right cl cr answerClose : Nat}
+    (hlt : left < right)
+    (hbound : right <= shape.size)
+    (hbranch :
+      wholeQueryBranch shape left right =
+        WholeQueryBranch.full cl cr answerClose) :
+    1 <=
+      (concreteBPNativeRankCloseWordTraceResultAtSegment shape
+        concreteBPNativeRankCloseTraceSegmentBase (answerClose + 1)).value := by
+  obtain ⟨cl', cr', ac', hbranch', hpos, _hdec⟩ :=
+    decodePacket_rankClose_eq_wholeQueryRouteValue_of_bounds hlt hbound
+  rw [hbranch] at hbranch'
+  cases hbranch'
+  exact hpos
+
+/--
+THE TWO SELECT-MISS BRANCHES ARE UNREACHABLE ON A VALID RANGE.
+
+A direct corollary of `wholeQueryBranch_eq_full_of_bounds`, recorded because
+it is not obvious and it bears on what the whole-query agreement still owes:
+on the public surface's own hypothesis the route ALWAYS takes `.full`, so the
+select-miss run theorems describe behaviour outside `ValidRange` and the
+remaining whole-query obligation is the `.full` branch's two arms alone.
+-/
+theorem wholeQueryBranch_ne_selectNone_of_bounds
+    {shape : Cartesian.CartesianShape} {left right : Nat}
+    (hlt : left < right)
+    (hbound : right <= shape.size) :
+    wholeQueryBranch shape left right ≠ WholeQueryBranch.leftSelectNone /\
+      forall cl, wholeQueryBranch shape left right ≠
+        WholeQueryBranch.rightSelectNone cl := by
+  obtain ⟨cl', cr', ac', hbranch', _, _⟩ :=
+    decodePacket_rankClose_eq_wholeQueryRouteValue_of_bounds hlt hbound
+  refine ⟨?_, ?_⟩
+  · rw [hbranch']; intro h; cases h
+  · intro cl; rw [hbranch']; intro h; cases h
+
 end SuccinctFinal
 end RMQ

@@ -230,7 +230,7 @@ particular ticks.
 displaces, which is what defeats the read-count and length checks.
 
 The record now has ELEVEN stages and `Category` has SIX constructors
-(`E1Machine.lean:106`), so "one distinct tick per stage" is no longer
+(`E1Machine.lean:107`), so "one distinct tick per stage" is no longer
 literally attainable and is not claimed.  What the fixture still guarantees
 is the property the discriminators below actually need: on each branch, the
 stage under test charges a tick DIFFERENT from the stage it displaces, so a
