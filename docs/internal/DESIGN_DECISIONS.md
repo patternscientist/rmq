@@ -8817,7 +8817,8 @@ linear bound.
 `E1WholeQueryWidth.lean`. REQ-E1-02's anti-vacuity column asks for a width at
 which the certificate FAILS, so that the width it succeeds at is known to
 discriminate. `programSkeleton_not_fits_machineWordBits`
-(`E1ReviewerWidth.lean:399`) supplies one — but for
+(`E1ReviewerWidth.lean:399` when this entry was written; `:477` since the Lane W
+parametrisation merged at `557fe33`) supplies one — but for
 `assembledValidPath`, which is not the executed program, and its constant
 (`555`) and window (`<= 255`) are that program's, not this one's.
 

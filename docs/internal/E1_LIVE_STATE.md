@@ -3050,7 +3050,7 @@ validator `RESULT: PASS`.
 
 ### THE THEOREM
 
-`wholeQueryProgram_fits_reviewerWordBits` (`E1WholeQueryPathWidth.lean:470`):
+`wholeQueryProgram_fits_reviewerWordBits` (`E1WholeQueryPathWidth.lean:547`):
 
 ```
 theorem wholeQueryProgram_fits_reviewerWordBits
@@ -3058,9 +3058,33 @@ theorem wholeQueryProgram_fits_reviewerWordBits
     ProgramFits (shapeWidth shape) (wholeQueryProgram shape shape.size)
 ```
 
-**No hypotheses.** No size threshold, no parametric `w`, no premise about
-the interior, the select block or the composition.
+**No hypotheses.** No size threshold, no premise about the interior, the
+select block or the composition.
 `#print axioms` reports `[propext, Classical.choice, Quot.sound]`.
+
+**UPDATED 2026-07-20 (Lane W merged at `557fe33`).** The statement above is
+unchanged, but it is no longer the primary form. It is now proved by
+instantiating a parametric theorem at the amended width:
+
+```
+theorem wholeQueryProgram_fits_of_wordAddressesStructure     -- :512
+    (shape : Cartesian.CartesianShape) {w : Nat}
+    (hcap : WordAddressesStructure w shape.size) :
+    ProgramFits w (wholeQueryProgram shape shape.size)
+```
+
+so the concrete theorem doubles as the witness that `WordAddressesStructure`
+(`E1ReviewerWidth.lean:177`) is satisfiable. The premise is proved non-vacuous
+by `not_wordAddressesStructure_of_width_le_18` (`:213`). Also added:
+`wholeQueryProgram_fits_of_reviewerWordBits_le` (`:557`, via
+`ProgramFits.mono` at `E1Machine.lean:581`) and
+`wholeQueryProgram_fits_logarithmicWidth` (`:581`).
+
+**Do not describe the parametric form as more general.** The admissible family
+is exactly `{w : shapeWidth shape <= w}`, so it is extensionally equivalent to
+the concrete theorem plus monotonicity — the same mathematics in model
+vocabulary. See AMENDMENT A2 in the acceptance matrix, which records the
+argument and flags it as analytical rather than machine-checked.
 
 **The subject is the executed program, re-grepped.**
 `WholeQueryMachineAgrees` (`E1WholeQueryPublic.lean:114`) runs
