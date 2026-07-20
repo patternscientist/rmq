@@ -8538,3 +8538,117 @@ D's sentence survives from before it landed.
 Recorded rather than edited into §11, per the convention §12 and §15 both
 use for inherited text that was accurate when written. Anyone acting on §11
 D should read `E1Machine.lean:321` first — the work it budgets is done.
+
+---
+
+## DD-20260719-260: `E1AmendedFamiliarMachineTarget`'s universal-store clause was FALSE; it is repaired, the old form is refuted, and the target is proved (E1-LaneK)
+
+**Status.** Statement repair with a machine-checked refutation of the
+superseded form. REQ-E1-07.
+
+### What the old form claimed
+
+Before this round `E1AmendedFamiliarMachineTarget` bound
+`(validPath : List Instr)` and `(S : WholeQueryStageCats)` OUTSIDE the
+quantification over `xs`, and its VALID-PATH conjunct read
+
+```
+    (∀ (store : ReadStore) (xs : List Int) (left right : Nat),
+      ValidRange xs left right →
+        ∃ final : State,
+          RunsTo store (programSkeleton xs.length validPath)
+              (initialState left right) final
+              (SuccinctClassic.queryTraceResult xs left right).trace
+              (wholeQueryCats S (SuccinctClassic.cartesianShape xs)
+                left right) ∧ …)
+```
+
+i.e. it asserted that for EVERY read store the skeleton produces the receipt
+`(queryTraceResult xs left right).trace`.
+
+### Why it was unprovable
+
+Because it is false, not because the proof was missing.
+
+`execInstr` (`E1Machine.lean:160`) writes into each read's trace event the
+answer THE SUPPLIED STORE gives:
+`readWord segment address (store.readWord? segment address)`. So every event
+of a `RunsTo` receipt is a `readWord` against that store
+(`run_readLog_readWord_shape`, `E1Machine.lean:430`). But the receipt the
+conjunct demands is `(queryTraceResult xs left right).trace`, a list fixed by
+`xs` alone. A receipt fixed independently of the store therefore cannot be
+produced under two stores that answer differently — as soon as it is
+NONEMPTY.
+
+That argument is now the checked theorem `no_uniform_store_run`
+(`E1AmendedTarget.lean`), with witnesses `⟨fun _ _ => none⟩` and
+`⟨fun _ _ => some []⟩`.
+
+Nonemptiness is discharged rather than assumed, and NOT by evaluation: these
+traces do not reduce in the kernel, because the branch classifier unfolds
+into `machineWordBits`/`Nat.log2` (a fact `E1WholeQueryCats.lean:145` already
+records about its own fixtures, and which two `decide` probes in this round
+confirmed for `queryTraceResult` and for the select leg alone). It is derived
+instead from the machine's own CHARGE, which is symbolic:
+`wholeQueryCats_machineS_memoryRead_pos` shows the whole-query category log
+carries at least one `memoryRead` on every valid range — every one of the
+four route branches runs the left select leg, and the leg's in-range arm
+reaches `entryReadCats` (`E1SelectBridge.lean:258`), whose first four entries
+are `memoryRead`. `left` is in range because
+`occurrenceCount shape.bpCode false = shape.size`
+(`falseSelectOccurrenceCount_eq_size`). `RunsTo.readLog_length_eq_memoryRead_count`
+then transports that to the receipt's length.
+
+The refutation is `uniformStore_amendedTarget_refuted :
+¬ E1AmendedFamiliarMachineTargetUniformStore`, quantified over ALL
+`validPath`, `S` and `literalTotal` — no instantiation satisfies it. The old
+spelling is retained as `E1AmendedFamiliarMachineTargetUniformStore` so the
+refutation has a subject, for the same reason the tree retains
+`E1R3FamiliarMachineTarget`'s obstruction rather than deleting the claim.
+
+### What the repaired form says
+
+Three changes, no others:
+
+1. **The valid-path conjunct names the CANONICAL store**,
+   `concreteBPNativeSuccinctRMQGlobalReadStore (cartesianShape xs)` — the
+   store the agreement is actually about
+   (`wholeQueryMachineAgrees_of_bounds`, `E1WholeQueryAgreement.lean:64`).
+   The `∀ store` is dropped, not moved to an existential: naming the real
+   store is stronger than asserting some store exists.
+2. **`validPath` becomes `Cartesian.CartesianShape → List Instr`** and
+   **`S` becomes `Cartesian.CartesianShape → WholeQueryStageCats`**, matching
+   the shape-indexed `wholeQueryValidPath shape wholeQueryNoneExit` and
+   `wholeQueryMachineS shape` that are what the tree discharges.
+3. **The INVALID conjunct keeps `∀ store`.** The guard rejects before
+   reaching any `readMem`, so its receipt is `[]` and the universal form is
+   true and strictly stronger there. Keeping it where it holds and dropping
+   it only where it fails is what makes this a correction rather than a
+   weakening; the asymmetry is now stated in the module header instead of
+   being an unexplained inconsistency.
+
+**The binders became FUNCTIONS OF THE SHAPE rather than moving inside the
+`xs` quantification, and that choice is load-bearing.** Pushing the
+existential inside `∀ xs` would assert only that each input has SOME program
+— which is not one machine, and would have been markedly easier to prove.
+Keeping the binders outside as functions asserts ONE uniform construction
+against which every input is run. The weaker spelling would not have been the
+claim REQ-E1-07 makes.
+
+### That it is now PROVED
+
+`amendedFamiliarMachineTarget_holds` discharges the repaired Prop by
+exhibiting the construction: `wholeQueryValidPath`
+(`E1WholeQueryProgram.lean:518`, 5636 instructions at `:523`),
+`wholeQueryMachineS` (`E1WholeQueryAgreement.lean:49`), and the derived
+all-size step literal `11886` (`E1WholeQueryCostLiteral.lean:538`). It is
+also the consumer that `amendedTarget_of_wholeQueryAgreement` was found to
+lack; that reduction is restated at the repaired binders and is what the
+discharge goes through.
+
+### Scope
+
+This changes a Prop that REQ-E1-07 names. The row's own text asks for
+`E1AmendedFamiliarMachineTarget` **"or similar"**, and the coordinator ruling
+for this round was to repair the statement and then prove it rather than
+prove it as written. No acceptance row is marked closed here.
