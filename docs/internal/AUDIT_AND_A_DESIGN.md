@@ -6621,3 +6621,111 @@ cost ladder — at the moment E1 is landing.**
 (`RelativeTables.lean:1192`) throughout and verified it distinct from the
 `RMQ.SuccinctSelect` twin (`SpanBudgets.lean:540`). The shadowed-twin trap was
 live and was avoided.
+
+---
+
+## C05 round 96 — Lane W verified and merged; AMENDMENT A2 rewritten; a
+## doc-anchor sweep that found more rot than the merge introduced.
+
+### VERIFICATION FIRST, and it was done properly
+
+`27f1284` verified in a quiet window. What makes this verification trustworthy
+rather than ceremonial: **the build returned in ONE SECOND with every module
+replayed from cache**, which is precisely the shape of a false pass. The verifier
+refused it on exit code and proved freshness three independent ways:
+
+1. A replayed linter warning fired at `E1ReviewerWidth.lean:267` — line 267 in
+   current source, line 247 at the prior commit. Cache keyed to `27f1284`.
+2. `#print axioms` **resolved `not_wordAddressesStructure_of_width_le_18`, a
+   declaration that DOES NOT EXIST at the prior commit.** It could only resolve
+   against an olean built from `27f1284`.
+3. Forced re-elaboration from source bypassing cache entirely: exit 0.
+
+Results: `lake build RMQ` PASSED at `27f1284`; all eleven declarations
+axiom-clean (three report FEWER than the standard three axioms — strictly
+stronger); validator built and ran to `RESULT: PASS`, 26 `must be 0` lines all
+zero, 24 `must be > 0` lines all holding.
+
+The verifier also **declined to repair three stale docstring cross-references**
+after tracing their provenance: they were correct at base `febd9d5` and drifted
+mid-branch, so they failed both conditions of its repair authorisation. Correct
+call — and it surfaced the problem this round then fixed properly.
+
+### THE MERGE
+
+`claude/e1-width-parametric` merged into the campaign at `557fe33`. The conflict
+was append/append in `DESIGN_DECISIONS.md` — Lane P's DD-320 against Lane W's
+DD-330..334. Both retained in order, nothing dropped.
+
+**Merged tree's `.lean` is byte-identical to the verified `27f1284`**, so the
+verification carries over without a rebuild. Confirmed by diff, not assumed.
+
+### A CONTRADICTION INSIDE LANE W'S OWN OUTPUT, caught at merge
+
+DD-20260719-330 closes: "this does NOT subsume the parametric theorem, and
+cannot: monotonicity only ever WIDENS, while the parametric theorem holds at
+widths strictly NARROWER than `shapeWidth shape`."
+
+**That is false, and Lane W refuted it itself** in its final report — the DD was
+written during implementation, the refutation came from later analysis. The
+premise is `capacity n <= 2 ^ w`, so the admissible family is exactly
+`{w : shapeWidth shape <= w}`; there are NO admissible widths below
+`shapeWidth shape`. `shapeWidth = Nat.log2 capacity + 1` and the minimal `w` is
+`ceil (log2 capacity)`; these coincide unless capacity is a power of two, and
+`capacity n = 400000 * (n+1) = 2^7 * 5^5 * (n+1)` never is.
+
+**Consequence: the parametric theorem is EXTENSIONALLY EQUIVALENT to the concrete
+one plus `ProgramFits.mono`.** Same mathematics in model vocabulary. It buys
+legibility, not generality — which is exactly what was asked for, the problem
+having been posed as presentational, but it must not be sold as more. The
+paragraph is withdrawn by an appended note rather than deleted.
+
+**This is the kind of overclaim that survives internally and dies in review.** I
+would have written the stronger version.
+
+### AMENDMENT A2 REWRITTEN (`6063a38`)
+
+The old text advertised "no parametric `w`" as a virtue; once the row named a
+specific width that read as a deficiency. Now states what the tree proves: a
+FAMILY under one named model assumption, `WordAddressesStructure`
+(`E1ReviewerWidth.lean:177`), with the amended width as the exhibited member and
+the concrete theorem as its satisfiability witness.
+
+Three things recorded that a reader would otherwise reconstruct or get wrong:
+- **Non-vacuity is proved, not argued** —
+  `not_wordAddressesStructure_of_width_le_18` (`:213`) shows the premise FAILS
+  for every `w <= 18` at every size. An auditor should check exactly this before
+  accepting any hypothesis-carrying theorem as content.
+- **The equivalence, stated plainly**, so no reader infers new generality.
+- **That the equivalence argument is ANALYTICAL and NOT machine-checked**, while
+  every theorem cited was verified at `27f1284`. The distinction is the whole
+  point of stating it.
+
+REQ-E1-02's evidence cell corrected to match (`:470` -> `:547`, "no parametric
+`w`" removed).
+
+### THE ANCHOR SWEEP — the merge exposed rot older than itself
+
+Lane W inserted ~78 lines above `E1ReviewerWidth.lean:174`, silently moving every
+doc pointer past it. A full sweep of both shifted files found **nine drifted
+anchors**, several predating this merge.
+
+Live documents corrected outright: `programSkeleton_fits_reviewerWordBits`
+`:349 -> :427`, `wholeQuerySelectLeg_fits` `:320 -> :354`,
+`localSlotsPerSuper_le` `:237 -> :270`, the opaque-to-`omega` hygiene citation
+`:327 -> :362`, `wholeQueryProgram_fits_reviewerWordBits` `:470 -> :547`.
+
+**Historical `DESIGN_DECISIONS` entries were ANNOTATED, not rewritten** — the
+original number kept beside the current one. A design-decision log records what
+was true when the decision was made; editing it in place destroys the evidence it
+exists to hold. Five entries annotated.
+
+Verified by re-sweep: every docs anchor into both files now lands on its intended
+declaration.
+
+**Structural observation worth carrying into A1.** Line numbers rot on every
+insertion; the IDENTIFIERS beside them are stable and greppable. Six of my ~42
+recorded failures this campaign have been anchor failures, and this sweep found
+nine more that no lane introduced deliberately. **A1 will move modules wholesale
+and will invalidate anchors at a scale nothing here approaches.** Anchor
+convention is worth settling BEFORE A1 starts, not after.
