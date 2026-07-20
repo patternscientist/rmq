@@ -7279,3 +7279,86 @@ fitted to the machine, which is exactly what §11 F forbids.
 
 The separate, older finding stands unchanged: `catLog` appears ZERO times in
 the validator, so category accounting still has no discriminator anywhere.
+
+---
+
+## DD-20260719-207 — the `.full` value disagreement is VACUOUS, by proof, with neither side weakened
+
+**Supersedes the OBSTRUCTION half of DD-20260719-205.** That entry's analysis
+of the disagreement is confirmed exactly and is not retracted: `decodePacket`
+(`E1QueryProgram.lean:93`) is `if v = 0 then none else some (v - 1)`, the
+route's `.full` value (`E1RouteDecomposition.lean:330`) is
+`some (rank.value - 1)` unconditionally, `0 - 1 = 0` in `Nat`, and the two
+disagree exactly at `rank.value = 0`. What DD-20260719-205 could not do — and
+correctly declined to assume — is show that point is never reached. It now is
+shown.
+
+**THE RULING THE BRIEF GAVE WAS THE RIGHT READING.** This is a latent
+truncation in the ROUTE, not a defect in the machine. The answer index is
+`rank(answerClose + 1) - 1`; for that to denote anything the rank must be at
+least `1`. Where the route is meaningful the two sides agree; where they
+differ the route is the side emitting garbage. So the discharge is a
+positivity proof, not a repair of either side.
+
+New module `E1WholeQueryRankPositive.lean`. **No hypothesis `rank.value ≠ 0`
+is carried anywhere**, `decodePacket` keeps its guard, and
+`wholeQueryBranchValue` keeps its unconditional `- 1`.
+
+**THE READ-FAILURE FALLBACK IS RULED OUT RATHER THAN ASSUMED AWAY.**
+DD-20260719-205 named a SECOND route to `0`: `bpChunkedRankTraceResultWithStore`
+(`ChargedRankSelectLeafTrace.lean:181`) falls through to
+`WordRAM.TraceResult.pure 0` when any of its three sample reads misses. It is
+closed by `rankCloseTrace_value_eq_rankPrefix` (`:72`), which composes
+`…_refines_interpretedCosted` (`SuccinctFinalRAM.lean:1516`) with
+`concreteBPNativeRankCloseInterpretedCosted_exact`
+(`SuccinctFinalRAM.lean:8701`). **Both hops are UNCONDITIONAL and the first is
+base-generic**: the store is definitionally
+`concreteBPNativeChunkedRankCloseSeedReadStore shape rankSegmentBase`, so the
+four agreement side conditions are discharged by construction and the reads
+cannot miss. The value is a `rankPrefix` on the nose, so the fallback is not
+it.
+
+**THAT COMPOSITION EXISTED ONLY INSIDE PROOF BODIES AND IS NOW A LEMMA.** It
+was assembled ad hoc at `BPNavigationRAM.lean:1969` and
+`SuccinctFinalRAM.lean:9186` and never stated reusably; an exhaustive grep for
+`.value = Succinct.rankPrefix` returned ZERO matches tree-wide before this
+module. Recorded because the previous lane's brief budgeted this as unbuilt
+machinery when in fact the pieces were present and only the naming was
+missing — the fifth time a brief has budgeted work a definition already did.
+
+**THE SEMANTIC LINK WAS SUPPLIED CONSTRUCTIVELY, NOT BY INVERSION.**
+`wholeQueryBranch`'s `answerClose` is a pattern binder on a trace result
+(`E1RouteDecomposition.lean:236`), and the whole `RMQ/Core/WordRAM/` layer
+mentions `bpCloseOfInorder?` ZERO times. Rather than invert the branch —
+there is no inversion lemma, only the four introduction lemmas at
+`E1RouteDecomposition.lean:241-288` — `wholeQueryBranch_eq_full_of_bounds`
+(`:152`) PROVES the branch is `.full` with closes that are `bpCloseOfInorder?`
+values by construction, from `left < right` and `right ≤ shape.size` alone.
+
+**THAT IS STRICTLY STRONGER THAN INVERSION AND DISCHARGES RULE 1 AT THE SAME
+TIME.** It is simultaneously the semantic identification of `answerClose` and
+the SATISFIABILITY WITNESS that the `.full` branch is reached at all — which
+nothing at this layer previously had, and which an inversion lemma would not
+have given. The witness is FOUND at the target, not constructed for the
+premise (rule 5): the closes come from `bpCloseOfInorder?_some_of_lt`
+(`BPShape.lean:57`) applied to the shape's own size bounds, and no store or
+register file is manufactured.
+
+**THE POSITIVITY ITSELF IS ONE EXISTING LEMMA.**
+`bpCloseOfInorder?_rankFalse_succ` (`BPShape.lean:156`) gives
+`rankPrefix false shape.bpCode (pos + 1) = idx + 1`: a close position's rank
+at `pos + 1` counts itself, so it is a SUCCESSOR and cannot be `0`.
+`rankCloseTrace_answer_value_eq_succ` (`:184`) is that composed with the
+rank-value lemma, and `decodePacket_rankClose_eq_wholeQueryRouteValue_of_bounds`
+(`:209`) is the vacuity witness: on every nonempty in-range query the branch is
+`.full`, the rank value is `scanWindow … + 1`, and `decodePacket` agrees with
+the route on the nose.
+
+**THE BOUNDS ARE NOT DECORATIVE AND ARE NOT A WEAKENING.** `left < right` and
+`right ≤ shape.size` are exactly `ValidRange` (`Spec.lean:14`) transported
+through the shape, i.e. the hypothesis the public corollary
+`programSkeleton_valid_matches_public` (`E1WholeQueryPublic.lean:140`) already
+carries. Nothing is assumed that the public surface does not already assume.
+
+**Axioms.** All six declarations: `[propext, Classical.choice, Quot.sound]`.
+No `sorryAx`.

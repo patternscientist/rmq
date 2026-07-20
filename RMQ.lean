@@ -61,6 +61,7 @@ import RMQ.Core.WordRAM.E1WholeQueryCloseLca
 import RMQ.Core.WordRAM.E1WholeQueryProgram
 import RMQ.Core.WordRAM.E1WholeQueryLcaNone
 import RMQ.Core.WordRAM.E1WholeQuerySameBlockRoute
+import RMQ.Core.WordRAM.E1WholeQueryRankPositive
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks
