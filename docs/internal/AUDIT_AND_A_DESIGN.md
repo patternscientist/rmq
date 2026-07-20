@@ -6239,3 +6239,79 @@ It also outranks A1 in my judgement, because it determines what the paper can
 claim, and A1 determines how pleasantly a reviewer reads a claim already made.
 That is the owner's call, not mine, and it is now theirs to make with numbers in
 hand.
+
+---
+
+## C05 round 93 — scoping the o(n) fix. Four questions, and the decision
+## structure they resolve.
+
+Owner directed a thorough scope of the round-92 finding. **No work on the fix
+itself has started and none should until these return.**
+
+### THE CRUX, stated before the evidence
+
+`idDivLogLogOverhead slots n = slots * (n / (loglog n + 1))` is a **sampling
+density**: `slots` bits per group of `loglog n` positions. Reaching the classical
+`n / log n` means sampling **SPARSER**. Sparser sampling normally means **MORE
+READS PER QUERY** — and the query cost is a frozen literal `210` with the entire
+E1 word-RAM campaign built on it.
+
+**So the whole scope reduces to one question: is the density load-bearing for the
+cost proof?** If yes, this is not a two-call-site fix; it is a redesign that
+reopens `210` and E1 with it. If no, it is local.
+
+**One datum cuts hopeful.** The repo already contains `bpFringeTableOverhead`
+(`ChargedFringeTableFacts.lean:98`) at `2^c (c+1)^2 width`, `c = log2(2n)/8 + 1`
+— approximately **`n^(1/8)`**, a genuine sublinear lookup table. That is the
+four-Russians shape classical structures use to get constant query time WITHOUT
+dense sampling. The technique may already be owned, merely unapplied at these two
+sites. The conservative `1/8` exponent (classical uses ~`1/2`) suggests the
+authors understood the technique and picked a safe parameter.
+
+### THE FOUR QUESTIONS
+
+1. **Is the `loglog n` density forced by the cost proof, or incidental?** Answered
+   by reading the QUERY path, not the space accounting. If the query SCANS a
+   group, density is forced by design. Also: does the sparse-exception path have a
+   DENSE/SPARSE case split at all? Classical select does; if ours does not, that
+   is likely the entire story.
+2. **Blast radius.** Reverse-dependency closure to the headline, with every
+   consumer classified **Transparent** (survives a value change) vs
+   **Value-dependent** (unfolds to arithmetic; breaks) vs **Frozen public
+   surface** (needs owner approval, not just repair). That split is the number
+   that separates a mechanical repair from a proof campaign. Plus: does the
+   `LittleOLinear` proof's threshold witness bake in the current shape?
+3. **Is the bound TIGHT or merely LOOSE?** The dominant term enters via `<=`
+   (`SuccinctFinal.lean:1755`). The interior/fringe/chunk components are proved as
+   EQUALITIES and so cannot improve — but if the sparse-exception table charges
+   for ALL positions while the construction emits entries only for EXCEPTIONAL
+   ones, the envelope is loose and the fix is a **better proof, not a redesign**.
+   The name `sparseExceptionRelativeTableOverhead` is suggestive and the
+   hypothesis is being chased directly. **This is the cheapest possible outcome
+   and would change the cost of the next phase entirely.**
+4. **The classical mechanism, and its portability.** Where does classical's
+   `lglg n` NUMERATOR come from — almost certainly `lglg n`-bit offsets stored one
+   per `lg n` positions, which is a different structure from our per-`loglog n`
+   sampling. Confirm or refute. Then: is the `n^(1/8)` fringe machinery general or
+   fringe-specific?
+
+### THE TARGET THAT MAY MATTER MOST
+
+Golynski's `Omega(n lglg n / lg n)` says classical is **AT the optimum for
+indexing structures** — we cannot beat it, only reach it. But every OTHER
+component of our overhead already achieves `Theta(slots * n (loglog n)^3 / log n)`
+via `logLogCubedSampledDirectoryOverhead` (`Asymptotics.lean:601`). **So the
+practical target is not the classical optimum — it is making these two sites match
+the shape the rest of our own structure already has.** That closes the log-factor
+gap and is a strictly smaller task. If reachable it is very likely the right
+answer.
+
+### DECISION STRUCTURE
+
+- Q3 LOOSE -> cheapest path; better proof, no redesign, cost bound untouched.
+- Q1 INCIDENTAL + Q4 PORTABLE -> local fix to the polyloglog target.
+- Q1 FORCED -> redesign reopening `210` and E1. Then the honest choice is
+  probably REFRAME, not fix, and round 92's abstract sentence stands.
+
+Q2 prices whichever path is taken and is needed under **all** outcomes — the
+paper-facing prose has to be rewritten whether we fix or reframe.
