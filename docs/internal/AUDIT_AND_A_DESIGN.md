@@ -5757,3 +5757,92 @@ point.
 
 Escalating to the owner: this amends owner-authored governance text and **adds a
 rung to a DAG that currently terminates at V1**.
+
+---
+
+## C05 round 87 — C/Rust: same verdict, opposite reasons. The SDSL argument is
+## FALSE, and I had endorsed it.
+
+The verification lane refuted six of the first memo's claims, including its
+load-bearing one. **Same recommendation — decline — on substantially different
+and partly opposite reasoning.**
+
+### THE SDSL ARGUMENT IS REFUTED, NOT MERELY WEAKENED
+
+I told the owner the wall-clock risk was "sharper than I framed it: C is SDSL's
+own language", and that we would "lose a comparison we never entered." **Two
+primary sources refute it:**
+
+- **ICFEM 2016 shipped extracted OCaml, entered the SDSL comparison, and DREW.**
+  SDSL's rank at 0.1-1.8 µs against theirs at **0.83 µs** — Coq-extracted OCaml
+  landed *inside SDSL's own parameter-dependent range*. Accepted, with thanks to
+  the reviewers.
+- **JIP 2018 shipped generated C for the SAME rank algorithm and never entered
+  the comparison at all.** Its evaluation section is titled *"Evaluation of the
+  Trusted Base of Our C Code Generation Scheme"* — it measures added TCB, not
+  speed, and discharges complexity **formally** instead.
+
+So the premise was empirically false for this exact data-structure family.
+
+**And the first memo missed the single most decision-relevant paper** — Tanaka,
+Affeldt & Garrigue, JIP 26:54-72 (2018), generated C for the rank algorithm from
+succinct data structures — **which is cited by name in the very paper that memo
+did read.**
+
+### TWO MORE INVERSIONS
+
+**The ICFEM "trusted base" quote was truncated so that it argues the opposite of
+its authors' intent.** Whole: *"This approach augments the trusted base **but in
+the form of a localized, reusable library of OCaml code whose formal verification
+can anyway be carried out at a later stage**"* — followed by *"We think that this
+is a reasonable price to pay."* Quoted whole, it is a **defence** of shipping
+extracted code. I relayed the clipped version.
+
+**"CPP has no AE track" is true but the inference runs backwards.** CPP requires
+supplementary material **at submission**, as an archive, reviewed by the PC
+itself; ITP 2026 says *"All submissions are **expected** to be accompanied by
+anonymised supplementary material containing verifiable evidence of a suitable
+implementation."* That is **tighter** than POPL's opt-in post-acceptance AE, not
+looser. Absence of an AE track is not evidence of artifact laxity.
+
+### THE ARGUMENT THAT ACTUALLY SURVIVES, and neither I nor the first memo made it
+
+> **We already hold the artifact that this precedent line treats as the
+> substitute for executable benchmarking.** JIP 2018 discharged performance
+> **formally** — bits examined, proved — and spent its evaluation budget on
+> trusted-base surface. **Our derived all-size step bound is that same move.**
+> Generated C would ADD TCB surface, which JIP 2018 devotes a whole section to
+> costing, while adding nothing to the load-bearing claim.
+
+That is precedent-matching in exactly the register the governing goal wants: not
+"we decline to compete", but "the closest comparable work discharged this
+formally and so do we."
+
+### THREE AMENDMENTS TO THE DECISION RECORD
+
+1. **Strike the SDSL rationale.** It is false, and — the lane's phrasing, which
+   is right — *"a false reason in a decision log is a liability when the decision
+   is re-examined."*
+2. **Adopt ITP 2019's move**: name code generation as **future work in the
+   paper's own voice.** Cheap, exactly what the closest comparable paper did, and
+   it converts a silent gap into a **disclosed scope boundary** — which is what
+   review actually rewards.
+3. **Record the option as OPEN, not foreclosed.** If executability ever becomes
+   desirable the precedent supports it, and the SDSL threat is not real.
+
+Caveat carried forward: CAV's artifact criteria were **not** verified, and the
+venue-variation claim for CAV is inference. If CAV is ever a target, close that
+gap first.
+
+### THE META-LESSON, and it is the campaign's own rule turned on my own process
+
+I commissioned this verification **because the first scout made two false
+corrections to my premises.** That single observation — a correction is a claim —
+bought the refutation of six further errors, one of them load-bearing, in a memo
+I had already endorsed and relayed to the owner as a package. **The first memo's
+failure mode was exactly the one this campaign has documented thirty-four times
+in my own work: individually checkable facts stated confidently, with the
+checking not done.**
+
+I passed its reasoning on before verifying it. The owner pushed back on the
+weakest of the four reasons, which is what prompted the verification at all.
