@@ -349,8 +349,9 @@ first application of formal verification to succinct data structures."* A follow
 (ITP 2019) formalized succinct trees and proves an encoding occupies exactly
 `2n − 1` bits.
 
-So two claims are unavailable: not the first mechanized succinct structure, and an
-exact `2n` encoding theorem already exists.
+So two claims are unavailable, and this project does **not claim** either of
+them: priority over the earlier Coq mechanizations of succinct structures, and
+originality for the exact `2n` encoding theorem, which already exists.
 
 **What has not been done is the asymptotic step.** Across three papers and both
 resource axes, that line mechanizes *exact closed-form quantities* — directory
