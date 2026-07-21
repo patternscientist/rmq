@@ -35,7 +35,8 @@ function Invoke-Case(
     "-RequiredSkills", $RequiredSkills
   )
   if ($RuntimeSkills) { $arguments += @("-RuntimeProjectSkills", $RuntimeSkills) }
-  $output = @(& powershell @arguments 2>&1)
+  $pwshExe = if (Get-Command pwsh -ErrorAction SilentlyContinue) { 'pwsh' } else { 'powershell' }
+  $output = @(& $pwshExe @arguments 2>&1)
   $exitCode = $LASTEXITCODE
   if ($exitCode -ne $ExpectedExit) {
     Fail "$Name expected exit $ExpectedExit, got $exitCode`n$($output -join [Environment]::NewLine)"

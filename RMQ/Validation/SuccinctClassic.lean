@@ -242,13 +242,27 @@ successful read value while remaining distinct provenance obligations. -/
 def singletonLogicalTrace :=
   (RMQ.SuccinctClassic.queryTraceResult ([7] : List Int) 0 1).trace
 
+/-- Two DISTINCT positions of the singleton trace hold EQUAL successful-read
+events.  This is the anti-vacuity witness for positional receipt reasoning: it
+is exactly the situation in which `List.Mem` would be too weak, because
+membership cannot distinguish one occurrence from two.
+
+**DERIVED, not hardcoded (repaired 2026-07-21).**  This previously asserted the
+specific pair `(0, 12)`.  The pair was correct when written, but the B7 recharge
+lengthened the trace and moved position `0`'s repeat to `15`, so the check went
+false and broke the build while the property it exists to witness remained
+true (the trace has 45 events and many repeated pairs).  Searching for a pair
+instead of naming one keeps the check honest under any future recharge: it stays
+true while some repeated successful read exists, and goes false only if that
+genuinely stops being the case. -/
 def singletonRepeatedEqualReadPositionsOK : Bool :=
-  (singletonLogicalTrace[0]?).isSome &&
-    singletonLogicalTrace[0]? == singletonLogicalTrace[12]? &&
-    (0 : Nat) != 12 &&
-    match singletonLogicalTrace[0]? with
-    | some (RMQ.WordRAM.TraceEvent.readWord _ _ (some _)) => true
-    | _ => false
+  (List.range singletonLogicalTrace.length).any fun i =>
+    (List.range singletonLogicalTrace.length).any fun j =>
+      i < j &&
+        singletonLogicalTrace[i]? == singletonLogicalTrace[j]? &&
+        (match singletonLogicalTrace[i]? with
+         | some (RMQ.WordRAM.TraceEvent.readWord _ _ (some _)) => true
+         | _ => false)
 
 #guard singletonRepeatedEqualReadPositionsOK
 
