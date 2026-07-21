@@ -4658,3 +4658,98 @@ Publication-facing significance:
 None directly. The proof-dependency rule prevents a reviewer-facing machine
 adequacy claim from presenting a reordered wrapper as a genuinely primary
 dynamic-store argument.
+
+## WDD-20260721-001: CI repair, and the gate becomes fail-slow
+
+Status: adopted 2026-07-21 under owner authorization to fix the CI failures.
+Scope: `scripts/gate.ps1`, `scripts/project_skill_preflight_regression.ps1`,
+`scripts/paper_topology_lint.ps1`, and `scripts/axiom_check.lean`. No proof
+content, no claim surface.
+
+Context. CI had been red since `4a60853` (2026-07-17) because
+`project_skill_preflight_regression.ps1` invoked `powershell`, the Windows-only
+executable, on Linux runners. Both workflows were down on `main` and on every
+branch inheriting the file, so **four days of commits went unchecked**. When the
+break was repaired the accumulated defects surfaced one per push, because the
+gate exited on the first problem: seven push-wait-fix cycles for one root cause.
+
+Decision:
+
+1. **Invoke nested PowerShell through the exact current host executable.** The
+   published repair selected `pwsh` when available and fell back to
+   `powershell`. The governed frontier already carried the stronger
+   `(Get-Process -Id $PID).Path` form, so the forward port preserves it. This
+   remains portable across Windows, Linux, and macOS, avoids PATH/alias drift,
+   and guarantees that the regression uses the same engine as its parent.
+
+2. **The fast gate builds the validation executables, and the list is DERIVED
+   from `lakefile.toml`.** They are `lean_exe` roots, so bare `lake build`
+   (defaultTargets = `RMQ`) never touched them and only the 8-14 minute
+   artifact-reproduction workflow did. A `#guard` in
+   `RMQ/Validation/SuccinctClassic.lean` was therefore FALSE for days while every
+   fast build stayed green. `#guard`s fire at BUILD time, so building the exes
+   catches that whole class in the fast loop without running the harnesses.
+
+   Deriving the list rather than naming targets is deliberate: a hardcoded list
+   was written against the campaign branch's lakefile and broke on `main`, which
+   has two executables rather than three. The parser fails loudly if it finds
+   none, so it cannot silently degrade into checking nothing.
+
+   **REJECTED: moving the `Validation` modules into the `RMQ` library root.**
+   They are executables with `main`; importing them would invert the dependency
+   (the library depending on its own harness), and it would couple the
+   mathematical artifact to fixtures — a stale hardcoded index would then turn
+   `lake build RMQ` red for everyone and block all proof work, which is a worse
+   failure than the one it prevents. The defect was coverage placement, not root
+   membership.
+
+3. **`paper_topology_lint.ps1` tolerates empty files.** `Get-Content -Raw`
+   returns `$null`, not `''`, for a zero-byte file, so `[regex]::Split` threw
+   `ParentContainsErrorRecordException` naming only "Parameter 'input'" — no
+   path, no clue. A tracked zero-byte Lean file triggered exactly this. Empty
+   input is now normalised so the lint reports on the file instead of dying.
+
+4. **The gate is FAIL-SLOW after its dependencies.** Builds keep hard `Fail`,
+   because everything after a failed build is meaningless. The design-decision
+   regression also remains fail-fast: its governed aggregate-wiring fixture
+   requires immediate propagation when the gate's own workflow classification
+   rules are invalid. The other nineteen independent checks — the project-skill
+   and worker-prompt regressions; hygiene; `native_decide`; the eight axiom
+   checks; both claim-drift regressions; both topology lints; cost lint; shim
+   lint; and `git diff --check` — record and continue, and the run ends by listing
+   every failure it found. The worker-prompt regression added after the PR's old
+   base is explicitly included in the fail-slow policy. No detection condition
+   changed; only the consequence for checks that are safe to continue past.
+
+5. **Axiom-check errors are printed before the output tail.** `RunAxiomCheck`
+   showed only the last 80 lines, and on 2026-07-20 an `unknown constant` error
+   sat above that window, so the tail showed healthy axiom listings while the
+   gate said only "did not run cleanly".
+
+6. **The governed frontier's remaining live axiom anchor moves from `207` to
+   `210`.** The first integrated gate used the new diagnostic and exposed
+   `scripts/axiom_check.lean` still naming the retired
+   `...nonSyntheticWeight_sum_le_207` declaration. The sibling Word-RAM
+   inventory already names `...sum_le_210`; the general inventory now matches
+   that same live theorem. This changes inventory reach only, not the theorem or
+   its trust base.
+
+Verification: `42f277f` green on both workflows (CI 11m52s, Artifact
+Reproducibility 13m30s); the second exercises the gate because
+`reproduce_artifact.sh` calls it. The fail-slow accumulator was tested directly:
+three soft failures collected, execution reached the end without exiting, exit 1.
+
+On the governed forward port, exact project-skill preflight and the project-
+skill, worker-prompt, and design-decision regressions passed; strict design
+classification is required to accept the closed five-path scope. The first cold aggregate
+gate ran all builds and later checks, then reported only the stale general axiom
+anchor. After the `207 -> 210` repair, the focused general axiom inventory passed.
+One final aggregate gate on the unchanged repaired tree remains the merge gate;
+its exact result belongs in the coordinator integration record rather than being
+predicted here.
+
+Note on this entry's existence: the strict design-decision scan required it. On
+`push` that scan runs with `-Base HEAD~1` and saw only the final commit; on
+`pull_request` it runs with `-Base origin/main`, saw all three
+process-sensitive scripts, and correctly refused a change to the acceptance gate
+that carried no design record. The gate caught its own author.
