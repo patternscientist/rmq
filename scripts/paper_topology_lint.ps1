@@ -43,6 +43,9 @@ function Require-File([string]$Path) {
 function Read-Text([string]$Path) {
   $normalized = Normalize-RepoPath $Path
   $text = Get-Content -Raw -LiteralPath $normalized
+  # Get-Content -Raw yields $null (not '') for an empty file, which makes every
+  # downstream string operation throw with no mention of the offending path.
+  if ($null -eq $text) { $text = '' }
   if ($MutationPath -ne '' -and $normalized -eq $MutationPath) {
     if ($MutationRemoveText -ne '') {
       if (-not $text.Contains($MutationRemoveText)) {

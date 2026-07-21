@@ -66,6 +66,19 @@ if ($LASTEXITCODE -ne 0) { Fail "lake build RMQExamples failed" }
 lake build RMQ.Core.GenericSelectBPCompat
 if ($LASTEXITCODE -ne 0) { Fail "lake build RMQ.Core.GenericSelectBPCompat failed" }
 
+# 1b. Validation executables.  These carry `#guard`s that fire at BUILD time, so
+# building them here catches a stale fixture in the fast gate instead of only in
+# the slow artifact-reproduction workflow.  A stale `#guard` went undetected for
+# days because the only workflow covering these was itself broken.
+lake build rmq_succinct_classic_validate
+if ($LASTEXITCODE -ne 0) { Fail "lake build rmq_succinct_classic_validate failed" }
+
+lake build rmq_succinct_classic_cost_harness
+if ($LASTEXITCODE -ne 0) { Fail "lake build rmq_succinct_classic_cost_harness failed" }
+
+lake build rmq_e1_machine_validate
+if ($LASTEXITCODE -ne 0) { Fail "lake build rmq_e1_machine_validate failed" }
+
 # 2. Proof-hygiene scan: any hit fails the gate.
 $hygiene = rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQExamples RMQPaper.lean RMQHub.lean RMQRankSelect.lean RMQBPNavigation.lean RMQUnionFind.lean VerifiedDS.lean RMQArchive.lean RMQExamples.lean lakefile.toml
 if ($hygiene) { Fail "hygiene scan hit:`n$hygiene" }
