@@ -10,22 +10,40 @@
 
 $ErrorActionPreference = 'Continue'
 
+# Builds are DEPENDENCIES: if one fails, everything after it is meaningless, so
+# `Fail` still exits immediately.  The independent checks below use `SoftFail`,
+# which records the problem and keeps going, so ONE run reports EVERY issue.
+# Before this, a gate with N accumulated defects cost N push-wait-fix cycles;
+# the night of 2026-07-20 spent seven of them on one root cause.
+$script:issues = @()
 function Fail($msg) { Write-Host "GATE FAIL: $msg"; exit 1 }
+function SoftFail($msg) { Write-Host "GATE ISSUE: $msg"; $script:issues += $msg }
 
 function RunAxiomCheck($script, $label) {
   $tmp = New-TemporaryFile
   & lake env lean $script *> $tmp
   $code = $LASTEXITCODE
   if ($code -ne 0) {
+    # Print the ERROR lines first.  A tail alone hides the cause: on 2026-07-20
+    # an `unknown constant` error sat above the last 80 lines, so the tail showed
+    # only healthy-looking axiom output and the real failure was invisible.
+    $errs = Select-String -Path $tmp -Pattern "error|unknown constant" |
+      ForEach-Object { $_.Line }
+    if ($errs) {
+      Write-Host "AXIOM CHECK ERRORS [${label}]:"
+      $errs | ForEach-Object { Write-Host "  $_" }
+    }
     Write-Host "AXIOM CHECK OUTPUT (tail) [${label}]:"
     Get-Content $tmp -Tail 80
     Remove-Item $tmp -ErrorAction SilentlyContinue
-    Fail "$label did not run cleanly"
+    SoftFail "$label did not run cleanly"
+    return
   }
   if (Select-String -Path $tmp -Pattern "sorryAx|ofReduceBool") {
     $bad = Get-Content $tmp
     Remove-Item $tmp -ErrorAction SilentlyContinue
-    Fail "non-standard axiom in ${label}:`n$bad"
+    SoftFail "non-standard axiom in ${label}:`n$bad"
+    return
   }
   Remove-Item $tmp -ErrorAction SilentlyContinue
   Write-Host "AXIOM CHECK PASS: $label"
@@ -33,7 +51,7 @@ function RunAxiomCheck($script, $label) {
 
 # 0. Project-skill startup policy must reject stale checkout/runtime catalogs.
 & "$PSScriptRoot\project_skill_preflight_regression.ps1"
-if ($LASTEXITCODE -ne 0) { Fail "project_skill_preflight_regression.ps1 found issues" }
+if ($LASTEXITCODE -ne 0) { SoftFail "project_skill_preflight_regression.ps1 found issues" }
 
 # 1. Build must be green.
 lake build
@@ -88,10 +106,10 @@ Write-Host "VALIDATION EXES BUILT: $($exeNames -join ', ')"
 
 # 2. Proof-hygiene scan: any hit fails the gate.
 $hygiene = rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQExamples RMQPaper.lean RMQHub.lean RMQRankSelect.lean RMQBPNavigation.lean RMQUnionFind.lean VerifiedDS.lean RMQArchive.lean RMQExamples.lean lakefile.toml
-if ($hygiene) { Fail "hygiene scan hit:`n$hygiene" }
+if ($hygiene) { SoftFail "hygiene scan hit:`n$hygiene" }
 
 $nd = rg -n "native_decide|Lean\.ofReduceBool" RMQ RMQExamples RMQPaper.lean RMQHub.lean RMQRankSelect.lean RMQBPNavigation.lean RMQUnionFind.lean VerifiedDS.lean RMQArchive.lean RMQExamples.lean
-if ($nd) { Fail "native_decide / ofReduceBool present in source:`n$nd" }
+if ($nd) { SoftFail "native_decide / ofReduceBool present in source:`n$nd" }
 
 # 3. Curated trust-base check: load-bearing theorems use only standard axioms.
 RunAxiomCheck "scripts/hub_axiom_check.lean" "hub_axiom_check.lean"
@@ -105,32 +123,46 @@ RunAxiomCheck "scripts/union_find_axiom_check.lean" "union_find_axiom_check.lean
 
 # 4. Succinct frontier cost/space lints.
 & "$PSScriptRoot\succinct_cost_lint.ps1"
-if ($LASTEXITCODE -ne 0) { Fail "succinct_cost_lint.ps1 found issues" }
+if ($LASTEXITCODE -ne 0) { SoftFail "succinct_cost_lint.ps1 found issues" }
 
 # 5. Compatibility-shim import boundary.
 & "$PSScriptRoot\shim_lint.ps1"
-if ($LASTEXITCODE -ne 0) { Fail "shim_lint.ps1 found issues" }
+if ($LASTEXITCODE -ne 0) { SoftFail "shim_lint.ps1 found issues" }
 
 # 6. Claim-drift policy mutations must enforce the full canonical-role/exponent
 # category, contextual allowances, parser shapes, and allowance bypasses.
 & "$PSScriptRoot\claim_drift_policy_regression.ps1"
-if ($LASTEXITCODE -ne 0) { Fail "claim_drift_policy_regression.ps1 found issues" }
+if ($LASTEXITCODE -ne 0) { SoftFail "claim_drift_policy_regression.ps1 found issues" }
 
 # 7. Strict claim-policy violations block the aggregate gate.
 & "$PSScriptRoot\claim_drift_scan.ps1" -Strict
-if ($LASTEXITCODE -ne 0) { Fail "claim_drift_scan.ps1 found strict violations" }
+if ($LASTEXITCODE -ne 0) { SoftFail "claim_drift_scan.ps1 found strict violations" }
 
 # 8. The paper root must expose only the canonical physical-payload/76 query
 # topology; historical profiles remain in the explicit compatibility module.
 & "$PSScriptRoot\paper_topology_lint.ps1"
-if ($LASTEXITCODE -ne 0) { Fail "paper_topology_lint.ps1 found issues" }
+if ($LASTEXITCODE -ne 0) { SoftFail "paper_topology_lint.ps1 found issues" }
 
 & "$PSScriptRoot\paper_topology_lint_regression.ps1"
-if ($LASTEXITCODE -ne 0) { Fail "paper_topology_lint_regression.ps1 found issues" }
+if ($LASTEXITCODE -ne 0) { SoftFail "paper_topology_lint_regression.ps1 found issues" }
 
 # 9. Whitespace / leftover merge markers.
 git diff --check
-if ($LASTEXITCODE -ne 0) { Fail "git diff --check found issues" }
+if ($LASTEXITCODE -ne 0) { SoftFail "git diff --check found issues" }
+
+if ($script:issues.Count -gt 0) {
+  Write-Host ""
+  Write-Host "GATE FAIL: $($script:issues.Count) check(s) failed. ALL of them:"
+  $n = 1
+  foreach ($issue in $script:issues) {
+    $first = ($issue -split "`n")[0]
+    Write-Host "  [$n] $first"
+    $n++
+  }
+  Write-Host ""
+  Write-Host "Fix all of the above before re-running; they were collected in one pass."
+  exit 1
+}
 
 Write-Host "GATE PASS"
 exit 0
