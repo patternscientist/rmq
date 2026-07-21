@@ -178,7 +178,7 @@ THE EIGHT-CHUNK CAP, DERIVED FROM THE ROUTE'S WITHIN-MACRO WIDTH BOUND.
 `width <= 7 * wordSize` is the bound the route actually has inside a macro
 (`canonicalRelativeRmmMachineReadNatCosted_cost_le_eight`,
 `InteriorDirectory.lean:4511`); it yields at most `7` full chunks plus the
-partial-chunk indicator, hence `8`.
+incomplete-chunk indicator, hence `8`.
 
 `0 < wordSize` is deliberately NOT a hypothesis: it is not needed.  At
 `wordSize = 0` the route's own definition gives `width / 0 = 0` and

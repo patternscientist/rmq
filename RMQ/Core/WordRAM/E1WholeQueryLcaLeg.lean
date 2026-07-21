@@ -28,7 +28,7 @@ closest precedent is `finalLcaCloseWithStore_storeTraceLocal`
 
 So this module states the two halves.  They are what lets a machine-side
 close/LCA dispatch - which branches on exactly this test - be matched to the
-route leg arm by arm instead of as an opaque object.
+route leg arm by arm instead of as a single unanalysed object.
 
 ## Why the machine's dispatch scrutinises the SAME test
 

@@ -359,7 +359,7 @@ theorem wholeQuerySelectLeg_fits (shape : Cartesian.CartesianShape) {w : Nat}
   have hreg := reg_lt shape hcap
   have hbig : (5644 : Nat) < 2 ^ w := addr_lt shape hcap
   -- The layout's fourteen segment fields are numeric literals
-  -- (`Segments.lean:24`), but they are PROJECTIONS and therefore opaque to
+  -- (`Segments.lean:24`), but they are PROJECTIONS and therefore not reducible by
   -- `omega` until named.
   have eS1 : concreteBPNativeSelectCloseTraceSegmentLayout.superTable.baseOccurrence
       = 1 := rfl

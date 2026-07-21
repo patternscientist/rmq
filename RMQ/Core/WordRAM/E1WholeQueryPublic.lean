@@ -22,7 +22,7 @@ Two halves, deliberately separated:
   glue lands.
 
 Nothing here asserts the machine half.  `WholeQueryMachineAgrees` is a
-`def … : Prop`, not an axiom and not an assumption in scope: every theorem
+`def … : Prop`, not an assumed principle and not a hypothesis in scope: every theorem
 below that uses it takes it as an explicit premise.
 -/
 

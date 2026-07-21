@@ -370,7 +370,7 @@ register this block writes.
 
 Numerals, not the register abbrevs, for the reason
 `twoSpanUntouched_of_ge` records: `omega` collects an `abbrev` as an
-opaque atom. -/
+unreduced atom. -/
 theorem twoLegUntouched_of_ge {r : Nat} (h : 144 ≤ r) : TwoLegUntouched r :=
   ⟨E1InteriorTwoSpan.twoSpanUntouched_of_ge (by omega),
     ⟨show r ≠ 77 by omega, show r ≠ 78 by omega, show r ≠ 125 by omega,
@@ -645,7 +645,7 @@ theorem twoLegBlock_runsTo
   -- the first version of this helper: the prologue's `const uZero 0` is the
   -- very first instruction, so the claim is FALSE at `141`.  The four
   -- disequalities against the setup's destinations are spelled as NUMERALS
-  -- because `omega` collects a register `abbrev` as an opaque atom -- the
+  -- because `omega` collects a register `abbrev` as an unreduced atom -- the
   -- same trap `twoSpanUntouched_of_ge` records.
   have hBank : ∀ r : Nat, 136 ≤ r → r ≠ uT → r ≠ uZero → r ≠ uSV → r ≠ uSP →
       r8 r = regs r := by

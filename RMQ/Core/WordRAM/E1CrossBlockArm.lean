@@ -472,7 +472,7 @@ theorem crossRepoint_fits (w : Nat) (hw : 71 < 2 ^ w) :
   simp only [crossRepoint, List.mem_cons, List.not_mem_nil,
     or_false] at hinstr
   rcases hinstr with rfl
-  -- `fClose`/`fRight` are abbrevs and opaque to `omega` (M3d-4 gotcha)
+  -- `fClose`/`fRight` are abbrevs and not reducible by `omega` (M3d-4 gotcha)
   simp only [Instr.FieldsFit, fClose, fRight]
   omega
 

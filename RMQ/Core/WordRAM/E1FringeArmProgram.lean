@@ -208,7 +208,7 @@ theorem fringeArmProgramAt_fits {w S c L A : Nat}
   · exact hbody instr
       (List.mem_append.mpr (Or.inr (List.mem_append.mpr (Or.inr
         (List.mem_append.mpr (Or.inr h))))))
-  · -- the fold back edge; `fCnt` is an abbrev and opaque to `omega`
+  · -- the fold back edge; `fCnt` is an abbrev and not reducible by `omega`
     subst h
     refine ⟨?_, by omega⟩
     show (52 : Nat) < 2 ^ w

@@ -2266,7 +2266,7 @@ its steps.
 The consumer is the E1 width story.  `LayoutFits` requires
 `L.deadAddress < 2 ^ w` of the canonical summary layout, and that
 `deadAddress` is DEFINITIONALLY this word count
-(`InteriorDirectory.lean:1646`); the other component offsets are partial sums
+(`InteriorDirectory.lean:1646`); the other component offsets are running sums
 of the same eight machine stores.  Before this the only bound on `deadAddress`
 was `canonicalRelativeRmmInteriorDeadAddress_fits_reviewerWordBits`
 (`InteriorDirectory.lean:2771`), which is stated against
