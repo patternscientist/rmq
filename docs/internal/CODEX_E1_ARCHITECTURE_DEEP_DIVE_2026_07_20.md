@@ -33,11 +33,11 @@ are a guide to where to look, not a substitute for looking.
 ```
 git clone https://github.com/patternscientist/rmq.git
 cd rmq
-git checkout e9de160   # the E1 candidate
+git checkout 648e512   # the E1 candidate
 ```
 
 - **E1 candidate (the architecture under judgement):** branch
-  `claude/b1-b2-charged-fringe-tables`, commit **`e9de160`**.
+  `claude/b1-b2-charged-fringe-tables`, commit **`648e512`**.
 - **Coordinator analysis** (round logs, the project digest, this prompt): branch
   `claude/rmq-formalization-coordinator-bd7045`.
 
@@ -466,7 +466,7 @@ it may be wrong, and several things in it have already been corrected once.
 **Finally: you can read the source, so read it.** If your judgement rests on how
 the architecture is actually shaped — how the program is assembled, how the width
 development is structured, how much of the tree a change would touch, whether the
-ISA is the right one — those are answerable by reading `e9de160`, and an answer
+ISA is the right one — those are answerable by reading `648e512`, and an answer
 grounded in the real development is worth far more than one grounded in this
 summary. Two specific things worth forming your own view on, because the
 coordinator's account of them is the least verified part of this document:

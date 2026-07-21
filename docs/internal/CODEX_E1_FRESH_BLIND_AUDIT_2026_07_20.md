@@ -48,13 +48,13 @@ requirement-to-evidence mapping yourself from the frozen requirement text.
 
 ## Commits and sequencing
 
-- **Campaign branch:** `claude/b1-b2-charged-fringe-tables`, HEAD **`e9de160`**
+- **Campaign branch:** `claude/b1-b2-charged-fringe-tables`, HEAD **`648e512`**
 - **`main`:** **`dcc660f`**
 - **Divergence base:** **`d5a9355`** — 195 commits on the campaign side, 66 on
   `main` since.
 
 **BEFORE AUDITING, MERGE `main` INTO THE CAMPAIGN BRANCH AND REBUILD.** The
-campaign carries a pre-audit B7 from before the divergence. Auditing `e9de160`
+campaign carries a pre-audit B7 from before the divergence. Auditing `648e512`
 as-is audits a stale base, and any finding about B7-era constants would be
 against superseded code. If the merge is not clean or does not build, **that is
 itself a P0 finding and you should stop and report it** rather than working
