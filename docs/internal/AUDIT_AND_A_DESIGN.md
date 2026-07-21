@@ -7602,3 +7602,94 @@ believed the interior did not execute. The difference between "high confidence o
 the wrong object" and "high confidence on the right object with the residual
 named" is the entire value of verifying against source. Both gating answers are
 now safe to freeze a contract on.
+
+---
+
+## C05 round 105 — SIX CI failures in one night, all one root cause compounded.
+## The lesson is not any individual bug; it is the shape of the loop.
+
+### WHAT ACTUALLY HAPPENED
+
+`main` CI went red on **2026-07-17** (`4a60853`) because
+`scripts/project_skill_preflight_regression.ps1:38` invoked `powershell`, which
+does not exist on a Linux runner. **Nothing was checked for four days.** Every
+commit in that window added unchecked debt. Pushing the E1 branches lit it all
+up at once, and because the gate is FAIL-FAST it surfaced **one layer per
+push**, each ~8 minutes:
+
+| # | Failure | Whose | Hidden behind |
+|---|---|---|---|
+| 1 | `powershell` not on Linux | pre-existing, 07-17 | — |
+| 2 | claim-drift: unqualified novelty claim in my digest | **mine** | #1 |
+| 3 | `#guard singletonRepeatedEqualReadPositionsOK` FALSE | campaign | #1 |
+| 4 | 9 prose hygiene hits (`partial`/`axiom`/`opaque`) | campaign | #1, #3 |
+| 5 | zero-byte tracked `E1RankTrueBlock.lean` crashing the topology lint | coordinator | #1 |
+| 6 | `_sum_le_76` in two axiom-check scripts (live name is `_sum_le_210`) | campaign | #1, #4 |
+| 7 | `unknown target rmq_e1_machine_validate` | **mine** | — |
+
+### THE COMMON SHAPE — and it is the project's own signature
+
+**Every single one is a hardcoded reference that went stale, plus a gate that
+could not run.** A trace index (`12`, real answer `15`). A theorem name (`_76`,
+real `_210`) in two scripts. An exe list correct on one branch and wrong on
+another. Prose words. A file truncated to zero bytes and committed.
+
+The B7 recharge (`76 -> 142 -> 207 -> 210`) migrated the theorems and the docs
+and **did not migrate `scripts/`**. Nothing greps `scripts/` for retired
+constant names, so two axiom checks referenced a constant that no longer
+existed — and the gate that would have caught it was the very thing that was
+down.
+
+**Failure #5 is the project's OWN DOCUMENTED failure mode, sitting committed:**
+DD-20260719-261 records a `UnicodeEncodeError` truncating a Lean file to zero
+bytes, noting "an empty Lean file compiles silently with no output". Exactly
+that file was in the tree, at 0 bytes, through every green local build, because
+an empty Lean module is valid. Only a PowerShell string operation ever objected.
+
+### FIVE CHANGES, ranked by leverage
+
+1. **NEVER LET CI STAY RED.** Four days of red is what created a seven-deep
+   stack. Any single one of these was minutes to fix in isolation. **This is the
+   whole finding** — the individual bugs are trivia.
+2. **RUN THE GATE LOCALLY BEFORE PUSHING.** I used CI as the discovery
+   mechanism, at ~8 minutes per layer. When I finally ran `gate.ps1` locally it
+   found the axiom-check failure with no push at all. It takes >10 min locally,
+   which is still far cheaper than the push-wait-fix loop. **Standing rule
+   adopted.**
+3. **MAKE THE GATE FAIL-SLOW.** It exits on the first problem, so N accumulated
+   defects cost N cycles. Builds must stay fail-fast (later checks depend on
+   them), but the ~15 independent checks — hygiene, `native_decide`, eight axiom
+   checks, claim-drift, shim lint, topology lint — should collect and report
+   together. **RECOMMENDED, not yet implemented.**
+4. **DERIVE, DON'T HARDCODE — applied twice tonight.** The trace guard now
+   SEARCHES for a repeated read instead of naming `(0, 12)`. The gate now parses
+   `[[lean_exe]]` out of `lakefile.toml` instead of naming three targets, so it
+   cannot reference a target the branch does not have. Both per
+   DD-20260719-283.
+5. **SWEEP `scripts/` ON EVERY CONSTANT MIGRATION.** The claim-drift policy
+   covers docs; nothing covers code referencing retired constant names. A
+   migration checklist item, or a policy term over `scripts/`.
+
+### MY OWN ERRORS THIS ROUND
+
+- **#2**: wrote "not THE first mechanized succinct structure" in a paper-facing
+  digest. A disclaimer in meaning, but the gate's escape hatch is `not claim`,
+  not `not the`, so it correctly counted as an unqualified novelty claim.
+  **The gate caught me one day after I wrote in round 94 that "zero gates would
+  fire."** That finding was about the SPACE claim and stands; the novelty gate
+  has teeth.
+- **#7**: read `lakefile.toml` in the campaign worktree, applied the result to a
+  branch off `main`. Branch confusion, the same class as failures #37/#38
+  earlier in this campaign.
+- Hit the **pipe-exit-status trap again** — backgrounded `gate.ps1 | tail` and
+  the harness reported "exit code 0", which was `tail`'s. The project has a
+  documented rule for exactly this and I still walked into it.
+
+### STATE
+
+- campaign `648e512` — guard derived, hygiene clean, axiom scripts repaired;
+  all eight axiom checks PASS locally.
+- coordinator — stray zero-byte file removed.
+- `claude/fix-ci-pwsh-linux` `f1c0fff` — pwsh fix + lakefile-derived exe builds
+  + empty-file guard in the topology lint. **Awaiting owner merge to `main`;
+  until it lands, every branch re-inherits the Linux break.**
