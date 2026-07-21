@@ -1,16 +1,18 @@
 # E1 architecture: deep dive and final judgement
 
-**FOR A CODEX INSTANCE WITHOUT REPOSITORY ACCESS.** Everything below the
-`## PASTE BELOW` marker is the prompt and is self-contained — every source fact
-is quoted inline with its anchor. Text above the marker is launch metadata.
+**FOR A CODEX INSTANCE ON A DIFFERENT MACHINE, WITH NO LOCAL FILESYSTEM ACCESS
+BUT FULL ACCESS TO THE PUBLIC REPOSITORY ON GITHUB.** Everything below the
+`## PASTE BELOW` marker is the prompt. Text above the marker is launch metadata.
 
 ## Launch metadata (do not paste)
 
-- Recipient has **no access to the RMQ repository or local filesystem.** All
-  source evidence is quoted in the prompt. They have web access for literature
-  research.
-- They cannot verify any claim against source. The prompt says so explicitly and
-  marks provenance on every fact.
+- Recipient has **no local filesystem access**, but the repository is **public**
+  and both relevant branches are now pushed. They can and should **clone and read
+  the actual architecture** — this is an architecture judgement and cannot be made
+  from quotations alone.
+- Source facts remain quoted inline as a *guide to where to look*, with
+  provenance marked, so they can spot-check the coordinator's reading rather than
+  inherit it.
 - A big redesign is explicitly authorised as an outcome by the project owner.
 
 ---
@@ -22,11 +24,44 @@ is quoted inline with its anchor. Text above the marker is launch metadata.
 You are being asked for a **final architecture judgement** on a component of a
 Lean 4 formalization, plus whatever literature research you need to ground it.
 
-**You have no access to the repository.** Every source fact you need is quoted
-below with its file and line. You cannot verify these yourself — so treat this
-document as *evidence submitted by a party with a known error rate*, not as
-ground truth. Where a decision hinges on something you cannot check, say so and
-name exactly what you would need.
+## READ THE ACTUAL ARCHITECTURE — this is not a summary exercise
+
+The repository is **public**. Clone it and read the real development. **A
+judgement of this kind cannot be made from quotations**, and the quotations below
+are a guide to where to look, not a substitute for looking.
+
+```
+git clone https://github.com/patternscientist/rmq.git
+cd rmq
+git checkout 8e7e3ee5bf44413fca0baace9aa565a4bb644109   # the E1 candidate
+```
+
+- **E1 candidate (the architecture under judgement):** branch
+  `claude/b1-b2-charged-fringe-tables`, commit **`8e7e3ee`**.
+- **Coordinator analysis** (round logs, the project digest, this prompt): branch
+  `claude/rmq-formalization-coordinator-bd7045`.
+
+**What to read, in rough order of importance:**
+
+| What | Where |
+|---|---|
+| The machine: ISA, `RegFile`, `execInstr`, `FieldsFit`, `ProgramFits` | `RMQ/Core/WordRAM/E1Machine.lean` |
+| The executed program and its assembly | `RMQ/Core/WordRAM/E1WholeQueryProgram.lean`, `E1WholeQueryCloseLca.lean` |
+| The agreement theorem (what E1 actually proves) | `RMQ/Core/WordRAM/E1WholeQueryAgreement.lean` |
+| The width development (the defective bridge) | `RMQ/Core/WordRAM/E1ReviewerWidth.lean`, `E1WholeQueryPathWidth.lean`, `E1CanonicalInteriorWidth.lean` |
+| The interior dispatch — 4204 executed instructions | `RMQ/Core/WordRAM/E1InteriorDispatchCompose.lean` and `E1Interior*.lean` |
+| The rejected alternative machinery | `RMQ/Core/WordRAM/Register.lean` |
+| The frozen acceptance contract | `docs/internal/E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md` |
+| The abstract cost model E1 must agree with | `RMQ/Core/WordRAM.lean`, `RMQ/Core/Cost.lean` |
+| Public claims | `RMQ/Headlines/RMQ.lean`, `RMQ/Core/SuccinctRMQClassic.lean` |
+
+The whole `RMQ/` tree is ~216 files / ~170k lines; the `E1*` files are the
+relevant subset. Build if useful: `lake build RMQ` (Lean 4, no Mathlib).
+
+**Treat this document as evidence from a party with a known error rate, not as
+ground truth.** Provenance is marked below so you can spot-check rather than
+inherit. Where the coordinator's reading and the source disagree, **the source
+wins and we want to know.**
 
 **Provenance is marked throughout:**
 - **[READ]** — quoted directly from source by the coordinator writing this.
@@ -427,3 +462,18 @@ can be stated in an existing named model, the machine's job shrinks.
 
 Where you rely on a fact from this document that you could not verify, say so —
 it may be wrong, and several things in it have already been corrected once.
+
+**Finally: you can read the source, so read it.** If your judgement rests on how
+the architecture is actually shaped — how the program is assembled, how the width
+development is structured, how much of the tree a change would touch, whether the
+ISA is the right one — those are answerable by reading `8e7e3ee`, and an answer
+grounded in the real development is worth far more than one grounded in this
+summary. Two specific things worth forming your own view on, because the
+coordinator's account of them is the least verified part of this document:
+
+1. **How much would each option actually cost?** Nobody has priced the second
+   machine, or a redesign. You can see the tree; estimate it.
+2. **Is the ISA right?** Twelve constructors, `Nat` registers, one non-recursive
+   `match`, `Option TraceEvent` so two events per step is untypeable. If a
+   different machine shape would be both more recognisable and cheaper to prove
+   about, that is exactly the redesign we are asking you to consider.
