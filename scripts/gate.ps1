@@ -66,18 +66,25 @@ if ($LASTEXITCODE -ne 0) { Fail "lake build RMQExamples failed" }
 lake build RMQ.Core.GenericSelectBPCompat
 if ($LASTEXITCODE -ne 0) { Fail "lake build RMQ.Core.GenericSelectBPCompat failed" }
 
-# 1b. Validation executables.  These carry `#guard`s that fire at BUILD time, so
-# building them here catches a stale fixture in the fast gate instead of only in
-# the slow artifact-reproduction workflow.  A stale `#guard` went undetected for
-# days because the only workflow covering these was itself broken.
-lake build rmq_succinct_classic_validate
-if ($LASTEXITCODE -ne 0) { Fail "lake build rmq_succinct_classic_validate failed" }
-
-lake build rmq_succinct_classic_cost_harness
-if ($LASTEXITCODE -ne 0) { Fail "lake build rmq_succinct_classic_cost_harness failed" }
-
-lake build rmq_e1_machine_validate
-if ($LASTEXITCODE -ne 0) { Fail "lake build rmq_e1_machine_validate failed" }
+# 1b. Validation executables, DERIVED from lakefile.toml rather than hardcoded.
+# These carry `#guard`s that fire at BUILD time, so building them here catches a
+# stale fixture in the fast gate instead of only in the slow artifact-repro
+# workflow -- a stale `#guard` went undetected for days because the only
+# workflow covering these was itself broken.  The list is read from the lakefile
+# so that a branch which adds or removes an executable does not need this script
+# edited, and so that this gate cannot name a target that does not exist.
+$exeNames = @()
+foreach ($line in (Get-Content lakefile.toml)) {
+  if ($line -match '^\s*\[\[lean_exe\]\]\s*$') { $inExe = $true; continue }
+  if ($line -match '^\s*\[\[') { $inExe = $false }
+  if ($inExe -and $line -match '^\s*name\s*=\s*"([^"]+)"') { $exeNames += $Matches[1] }
+}
+if ($exeNames.Count -eq 0) { Fail "no lean_exe targets found in lakefile.toml (parser broken?)" }
+foreach ($exe in $exeNames) {
+  lake build $exe
+  if ($LASTEXITCODE -ne 0) { Fail "lake build $exe failed" }
+}
+Write-Host "VALIDATION EXES BUILT: $($exeNames -join ', ')"
 
 # 2. Proof-hygiene scan: any hit fails the gate.
 $hygiene = rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQExamples RMQPaper.lean RMQHub.lean RMQRankSelect.lean RMQBPNavigation.lean RMQUnionFind.lean VerifiedDS.lean RMQArchive.lean RMQExamples.lean lakefile.toml
