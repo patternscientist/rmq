@@ -22,6 +22,18 @@ the prompt. A worker may add an omitted invariant but may not remove or narrow
 one. After editing starts, only evidence, status, and an explicitly approved
 contract amendment may change.
 
+`FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY`: when a prompt says inherited matrix
+rows are frozen, verbatim, or byte-for-byte preserved, validate that claim
+before any expensive verification. Decode the exact base blob and candidate
+file as strict UTF-8, extract the complete frozen row for every inherited
+stable ID, reject missing or duplicate IDs, and require exact UTF-8 byte
+equality for each row. A row count, normalized text comparison, visual review,
+or a read/write round trip through a locale-sensitive shell is insufficient.
+Also reject recognizable mojibake such as `Â¬` or `â€œ...â€`, but treat that scan
+only as a negative control: absence of those spellings does not replace exact
+row equality. Record the base ref, candidate ref, inherited-ID count, and exact
+changed IDs in the evidence ledger.
+
 For each row, record all of:
 
 - the exact requirement;

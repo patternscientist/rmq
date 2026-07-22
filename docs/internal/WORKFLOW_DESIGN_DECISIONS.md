@@ -5231,3 +5231,72 @@ Publication-facing significance:
 
 Indirect. The rule prevents avoidable process deadlocks while preserving the
 strict provenance discipline around Lean and workflow changes.
+
+## WDD-20260722-007: frozen acceptance rows require strict UTF-8 byte integrity
+
+Status: Accepted.
+Date: 2026-07-22.
+Scope: proof-sprint completion, completed-worker audit, and worker-prompt
+engineering for matrices with inherited frozen rows.
+
+Decision:
+
+`FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY` requires the worker and coordinator to
+decode the exact base blob and final candidate as strict UTF-8, map complete
+frozen rows by stable acceptance ID, reject missing or duplicate IDs, and
+compare the UTF-8 bytes of every inherited row before expensive verification.
+Counts, case-insensitive or normalized string comparisons, rendered Markdown,
+visual inspection, and locale-sensitive shell read/write round trips do not
+prove byte preservation. A mojibake scan is a required negative control but is
+not a substitute for exact equality.
+
+Trigger and named regression:
+
+M1-R5-R6 candidate `deb38ee441d30701aa008101a6ec3f38066215a4` claimed that
+all 71 inherited acceptance rows remained byte-for-byte frozen. Exact row
+comparison against base `d8dccacd6ce4c5a45a9abff71db33d600c2ecaf1` found
+two changed inherited rows: `M1-06` changed `¬ValidRange` to
+`Â¬ValidRange`, and `REQ-M1R5R1-CATEGORY-WORDING` changed the original smart
+quotes to `â€œ...â€`. The candidate's ID/count checks and strict claim scan
+passed, so neither detected the encoding corruption. This exact base/candidate
+pair is the named negative regression; the base compared with itself is the
+positive control.
+
+Rejected alternatives:
+
+- Treat the two rows as harmless rendering changes. They contradict the exact
+  frozen-row claim and can alter load-bearing requirement text.
+- Search only for known mojibake spellings. Other Unicode corruption or
+  normalization changes would escape a finite sentinel list.
+- Compare normalized PowerShell strings. The defect arose through a
+  locale-sensitive text round trip, so normalization can conceal the failure.
+- Rerun the expensive Windows and Ubuntu campaigns before disposition. The
+  cheap frozen-contract failure already rejects the candidate and those runs
+  cannot repair documentary identity.
+
+Consequences:
+
+- Frozen-row integrity becomes a cheap prerequisite to heavy proof or platform
+  verification.
+- Evidence must name the exact base/candidate refs, inherited count, and any
+  changed IDs.
+- A narrow successor may restore the two exact base rows while preserving the
+  already-checked functional tree; it must rerun final document-sensitive and
+  integrity checks on its own immutable commit.
+- The rule changes no theorem, payload, cost, trust, machine model, or public
+  claim.
+
+Verification:
+
+- Strict UTF-8 stable-ID comparison rejects the named R6 candidate with exactly
+  the two IDs above and accepts the base self-comparison.
+- The completion gate, coordinator checklist, and worker prompt template all
+  carry the same named rule.
+- Project-skill preflight, strict workflow-design checking, and
+  `git diff --check` certify the governance change before successor launch.
+
+Publication-facing significance:
+
+Indirect but material. Frozen acceptance language is part of the audit trail;
+byte-level preservation prevents tooling from silently changing the contract
+that later evidence and paper-facing claims are judged against.

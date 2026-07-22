@@ -322,6 +322,12 @@ For each completed worker branch:
    requirements, named consumer, and inherited invariants. Inspect checked
    theorem types and expand load-bearing definitions; declaration names and
    documentation summaries are not evidence.
+   Apply `FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY` whenever inherited matrix rows
+   are claimed frozen, verbatim, or byte-for-byte preserved: decode the exact
+   base and candidate as strict UTF-8, map complete rows by stable ID, reject
+   missing/duplicate IDs, and compare the UTF-8 bytes of every inherited row
+   before heavy checks. Counts, normalized strings, rendered Markdown, and
+   worker-reported hashes do not establish preservation.
 5. For semantic liveness, coverage, ownership, refinement, or equivalence
    claims, perform a counterfactual mutation audit: add a dead source, remove a
    used source, replace the predicate by a tautology, or assign a consumer label

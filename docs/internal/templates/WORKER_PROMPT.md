@@ -160,6 +160,14 @@ Acceptance contract:
   frozen case registry, reject missing or duplicate IDs, verify any ID-to-field
   or ID-to-object mapping, and check exact verdict counts; a total pass count
   alone is insufficient.
+- `FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY`: if inherited matrix rows are frozen,
+  verbatim, or byte-for-byte preserved, decode the exact base blob and final
+  candidate as strict UTF-8 and compare the complete UTF-8 row bytes for every
+  inherited stable ID. Reject missing/duplicate IDs and report the exact
+  changed IDs. Row counts, normalized text, visual inspection, and
+  locale-sensitive shell round trips are not preservation evidence. Include a
+  mojibake negative control, but do not use its absence as a substitute for
+  exact equality.
 - `REPLAY-SELECTOR-NONVACUITY`: focused selection must execute exactly one
   requested frozen ID and must reject unknown IDs. Add cheap named controls for
   an omitted middle ID, duplicated middle ID, valid frozen ID, and unknown ID.
