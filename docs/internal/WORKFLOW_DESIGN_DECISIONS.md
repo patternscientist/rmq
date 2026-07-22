@@ -4753,3 +4753,72 @@ Note on this entry's existence: the strict design-decision scan required it. On
 `pull_request` it runs with `-Base origin/main`, saw all three
 process-sensitive scripts, and correctly refused a change to the acceptance gate
 that carried no design record. The gate caught its own author.
+
+## WDD-20260721-002: completion monitors extract compact status metadata
+
+Status: Accepted.
+Date: 2026-07-21.
+Scope: Codex completion-monitor status reads in opt-in audited worker chains.
+
+Decision:
+
+1. Each heartbeat makes one read-only exact-ID task request per watched worker,
+   but parses that response inside the tool call and returns only the task ID,
+   task status, latest-turn status/error/completion time, and a short tail of
+   the latest agent message.
+2. The monitor must not emit or stringify the raw task response. Worker prompts
+   and tool transcripts can be tens of thousands of tokens, so a raw
+   multiplexed response can be truncated before the task-state fields reach the
+   coordinator.
+3. A truncated or unparsable compact result is status unavailable. It cannot
+   establish activity or completion and is retried only on the next scheduled
+   heartbeat, unless the user explicitly asks for an immediate reconstruction.
+4. The logical watch tuple remains live until the ordinary exact-commit audit
+   and successor disposition complete. Compact status extraction changes only
+   monitoring transport; it does not weaken audit, acceptance, or lifecycle
+   rules.
+
+Trigger and named regression:
+
+The multiplexed E1-ARCH1-R1/M1-R5-R3 heartbeat performed the required bounded
+exact-ID reads, but serialized both complete `read_thread` results. The E1 task
+embedded its full architecture prompt in the returned turn, producing a result
+too large for the coordinator context. The status fields were therefore
+unavailable even though E1 had completed, and repeated heartbeats could not
+advance its audit. `AUTO-CHAIN-COMPACT-STATUS-READ` is the named regression:
+the same two task results are parsed in-tool and reduce to small status records,
+correctly classifying E1 as terminal and M1 as active without opening or
+steering either task.
+
+Rejected alternatives:
+
+- Increase response or context limits and continue returning raw task records.
+- Infer completion from a final-looking message, filesystem activity, elapsed
+  time, or terminal quiet.
+- Perform repeated reads in one heartbeat after a raw response truncates.
+- Split one logical watch set into duplicate cron automations.
+
+Consequences:
+
+- Monitor reliability no longer depends on prompt or transcript size.
+- Exact-ID and one-read-per-heartbeat bounds are preserved.
+- A malformed tool response fails closed and delays action by one cadence
+  rather than risking a duplicate worker, missed audit, or false completion.
+- Mathematical evidence and acceptance remain unchanged.
+
+Verification:
+
+- The updated live heartbeat contains the compact extraction protocol and
+  retains exactly one E1-ARCH1-R1 and one M1-R5-R3 logical watch record.
+- A compact parser over the same exact task responses returned E1
+  `idle/completed` and M1 `active/inProgress` without serializing either raw
+  thread.
+- `scripts/project_skill_preflight.ps1` passes at the governing frontier with
+  the actual runtime RMQ catalog.
+- Strict workflow-design checking and `git diff --check` cover this governance
+  change before integration.
+
+Publication-facing significance:
+
+None directly. This changes orchestration transport only, not any Lean theorem,
+trust claim, payload, machine model, or cost result.

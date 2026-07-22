@@ -189,6 +189,17 @@ turn the normal coordinator cycle into an audited worker chain:
    records in that heartbeat instead of creating a cron workaround. While a
    worker is active, read status without opening or steering it and report only
    a terse update. Never infer completion from inactivity or a quiet terminal.
+   `AUTO-CHAIN-COMPACT-STATUS-READ`: status monitoring must be bounded in both
+   task count and returned content. Make exactly one read-only exact-ID request
+   per watched record, parse the response inside the tool call, and return only
+   the task ID, task status, latest-turn status/error/completion time, and a
+   short tail of the latest agent message. Never emit or stringify the raw
+   thread response: an embedded worker prompt or long tool transcript can
+   truncate the combined result before the status fields reach the
+   coordinator. A truncated or unparsable compact result is unavailable, not
+   evidence that the worker is active or terminal. Retry only on the next
+   scheduled heartbeat unless an explicit user turn requests an immediate
+   status reconstruction.
 3. On completion, treat the response as untrusted, run the full completed-
    worker audit at its exact commit, complete the failure-mode feedback loop,
    and only then engineer successor prompts from the current roadmap.
