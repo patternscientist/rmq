@@ -245,6 +245,7 @@ $fixtures = @(
   @{ id = "r1r3-accurate-weaker-attribution-control"; relativePath = "docs/WHAT_IS_PROVED.md"; reject = $false; termId = "required-current-readword-only-theorem-attribution"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly is the strong readWord-only theorem. RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect is a weaker compatibility alias." },
   @{ id = "m1r5-unqualified-no-event-silent-computation-rejected"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $true; termId = "forbidden-unqualified-no-event-silent-computation"; text = "There is no event-silent computation left on the accepted route." },
   @{ id = "m1r5-bounded-event-silent-distinction-accepted"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $false; termId = "forbidden-unqualified-no-event-silent-computation"; text = "No input-size-dependent or unbounded event-silent loop remains on the accepted route. Bounded event-silent computation does remain: instruction dispatch, register moves, fixed-width decoding, bounded arithmetic/comparison, option tests, branching, candidate merging, trace assembly, and validity guards." },
+  @{ id = "m1r5r9-exact-frozen-bounded-event-silent-distinction-accepted"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $false; termId = "forbidden-unqualified-no-event-silent-computation"; text = "No input-size-dependent or unbounded event-silent loop remains; bounded event-silent dispatch, decoding, arithmetic, branching, merging, trace assembly, and guards remain." },
   @{ id = "m1r5r4-former-allowance-historical-rejected"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $true; termId = "forbidden-unqualified-no-event-silent-computation"; text = "Historical: There is no event-silent computation left on the accepted route." },
   @{ id = "m1r5r4-former-allowance-retired-rejected"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $true; termId = "forbidden-unqualified-no-event-silent-computation"; text = "Retired: There is no event-silent computation left on the accepted route." },
   @{ id = "m1r5r4-former-allowance-rejected-rejected"; relativePath = "docs/PAPER_MODEL_ADEQUACY.md"; reject = $true; termId = "forbidden-unqualified-no-event-silent-computation"; text = "Rejected: There is no event-silent computation left on the accepted route." },
@@ -368,6 +369,7 @@ r1r3-current-readword-strong-attribution-control
 r1r3-accurate-weaker-attribution-control
 m1r5-unqualified-no-event-silent-computation-rejected
 m1r5-bounded-event-silent-distinction-accepted
+m1r5r9-exact-frozen-bounded-event-silent-distinction-accepted
 m1r5r4-former-allowance-historical-rejected
 m1r5r4-former-allowance-retired-rejected
 m1r5r4-former-allowance-rejected-rejected
@@ -404,7 +406,7 @@ legacy-paper-alias
 '@ -split "\r?\n" | Where-Object { $_ }
 
 $expectedRejectCount = 82
-$expectedAcceptCount = 37
+$expectedAcceptCount = 38
 $expectedContextCount = 16
 $expectedContextFixtureIds = @(
   "policy-path-allowance",

@@ -5871,3 +5871,102 @@ Publication-facing significance:
 Indirect but material. Independent audit is part of the acceptance chain; an
 unexecutable role contract would prevent evidence from being produced while
 tempting workers to misdeclare their authority.
+
+## WDD-20260722-010: exact frozen positive controls must be committed distinctly
+
+Status: Candidate decision; coordinator acceptance pending.
+Date: 2026-07-22.
+Scope: the M1 event-silent claim-policy fixture registry and its exact frozen
+expected-accept replay boundary.
+
+Decision:
+
+The exact accepted sentence frozen by
+`REQ-M1R5R4-CLAIM-POLICY-ALLOWANCE-BYPASS` must exist as its own committed
+production-classifier fixture:
+
+`No input-size-dependent or unbounded event-silent loop remains; bounded event-silent dispatch, decoding, arithmetic, branching, merging, trace assembly, and guards remain.`
+
+The fixture is named
+`m1r5r9-exact-frozen-bounded-event-silent-distinction-accepted`, targets
+`docs/PAPER_MODEL_ADEQUACY.md`, expects acceptance, and uses production term
+`forbidden-unqualified-no-event-silent-computation`. It follows the existing,
+materially broader `m1r5-bounded-event-silent-distinction-accepted` object in
+both the fixture array and exact expected-ID registry. The existing object is
+preserved rather than replaced because it exercises a different accurate
+boundary. The registry therefore has 120 ordered unique fixtures, with 82
+expected rejects and 38 expected accepts; its 16 context cases are unchanged.
+
+This records one workflow-sensitive fixture mutation. It creates no broader
+allowance, classifier rule, process rule, theorem, public claim, or new model
+boundary. WDD-20260722-004 remains the governing production classification
+decision.
+
+Trigger and exact negative fixture:
+
+Strict UTF-8 extraction from immutable candidate
+`d6796285a3b9d79ebc78422695d196f26449e771` reconstructs the exact sentence in
+the frozen R4 requirement. The same candidate's production regression blob
+`468dadfb69d7d66011da85d0825230afa1252815` has 119 ordered unique fixtures but
+no object with that sentence; it contains only the materially different
+broader positive immediately after the named unqualified reject. Fixed-string
+search found the required sentence nowhere outside matrix/audit evidence.
+
+Fresh-blind report commit
+`648eebc9e8d66c9e4c509c5875f42a5ccdd747ff` named this omission, but its prose,
+timings, statuses, and verdicts were not accepted as repair evidence. R9
+independently applied the same strict decoder and same-object registry/final-
+verdict predicate to reproduce the missing committed control. This exact R8
+candidate is the negative fixture; the new committed R9 object is the positive
+control.
+
+Rejected alternatives:
+
+- Replace the broader existing positive fixture. That would erase a distinct
+  accurate boundary and would not preserve all 119 inherited fixture objects.
+- Weaken the production term, add a path or line allowance, or broaden a
+  keyword exemption. The required sentence already accepts under the intended
+  zero-allowance category; weakening policy would reopen the false unqualified
+  claim bypass fixed by WDD-20260722-004.
+- Rely on a disposable temporary file or a report-only scanner transcript.
+  Neither is a replayable committed fixture under
+  `INV-MUTATION-REPRODUCIBILITY`.
+- Rerun the unchanged full 120-case or cross-platform campaign. The isolated
+  mutation changes only one expected-accept object and its registry/count data;
+  the exact new positive and named unqualified negative are the focused
+  production boundary.
+
+Consequences:
+
+- The frozen expected-accept sentence is durable and selected uniquely through
+  the same `-OnlyCase` production command boundary as every other fixture.
+- Duplicate, missing-ID, verdict-drift, exact-order, restoration, and positive
+  subprocess-deadline controls continue to execute before either focused case.
+- The broader positive and unqualified negative remain byte-identical, keeping
+  both sides of the declared category boundary independently replayable.
+- Policy JSON/Markdown, scanner implementation, current public wording, Lean,
+  topology, selector, process ownership, payload, cost, and theorem surfaces
+  remain unchanged.
+
+Verification:
+
+- Strict UTF-8 stable-ID comparison preserves all 87 inherited matrix rows.
+- Exact object/ID comparison preserves all 119 inherited fixtures and inserts
+  the new object/ID at the same immediate position; only expected accepts move
+  from 37 to 38.
+- Focused production runs accept
+  `m1r5r9-exact-frozen-bounded-event-silent-distinction-accepted` and reject
+  `m1r5-unqualified-no-event-silent-computation-rejected`; both report exact
+  120-fixture registry controls, deadline cleanup, and final tracked-state
+  restoration.
+- Strict claim scanning, exact-base strict design certification, matrix/schema
+  checks, exact four-path scope, `git diff --check`, and immutable post-commit
+  parent/range/clean-state checks complete the local repair.
+
+Publication-facing significance:
+
+Material to auditability, not to the mathematical claim. A reviewer can now
+replay the exact sentence the frozen contract calls accurate, while the
+production policy still rejects the stronger false claim that no event-silent
+computation remains. Coordinator reconstruction and a new fresh-blind exact-
+commit audit remain downstream.

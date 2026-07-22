@@ -188,6 +188,102 @@ rows, the matrix has exactly 87 acceptance IDs.
 | REQ-M1R5R8-ONE-COMMIT-PARENT | Final `HEAD^` is exactly `3bf7b6c8c5c3518760a2000f37d706937c280cca`; the range count is one; exactly `docs/internal/M1_REVIEWER_NATIVE_ADEQUACY_ACCEPTANCE_MATRIX.md` and `docs/DIGESTION_LOG.md` change; final tracked, untracked, and index state is clean; no owned process survives. | Git identity and final hygiene | One final commit directly over the exact base changes exactly the two owned paths; committed-range diff, status/index/untracked, parent/count, ancestry, and owned-process audits pass. | exact base -> frozen 87-row matrix and truthful digestion -> one commit -> immutable range/clean/no-survivor handoff | Wrong parent, intermediate or amended commit, third path, dirty channel, untracked artifact, or surviving owned process prevents closure. | The fresh worker branch remains directly at exact base `3bf7b6c8...`; the unstaged content diff contains exactly the two owned paths, the index and untracked channels are empty, every short-lived subprocess has exited, and no heavy Lean/Lake process was launched. After final content checks, these paths are staged and committed exactly once; the immutable handoff records exact parent, one-commit range, clean channels, and no-survivor evidence without amending the commit. | Candidate construction closed; final immutable Git and process receipts are handoff evidence, not a self-referential matrix edit. |
 | COMPLETE-M1R5R8-COMMITTED-EVIDENCE | One exact-parent commit contains the precise delimiter escape, complete 87-ID/eight-cell matrix, truthful R8 digestion, strict row-byte receipts, exact range/blob checks, and no open local residual. Coordinator acceptance and fresh-blind audit remain downstream. | R8 local completion | Every inherited and R8 row is locally closed on one immutable commit with the one-byte target transformation, exact preservation of all other inherited rows and every non-owned blob, strict document checks, clean state, and no survivor. | rejected 83-row artifact plus current governance -> exact two-document repair -> 87-row matrix -> one exact commit -> coordinator and fresh-blind auditor input | Any malformed or duplicate row, inherited-byte drift, non-owned blob change, open local status, inaccurate digestion, wrong parent/path/count, dirty state, survivor, or downstream audit used as a substitute prevents candidate completion. | The final documentary content contains the exact one-backslash inherited-row repair, four closed R8 rows, 87 unique eight-cell IDs, and an append-only truthful digestion. Whole-matrix reversal of the backslash plus removal of the R8 section reconstructs the exact rejected/base matrix blob; removing the digestion append reconstructs its exact base blob. Strict UTF-8/schema/byte, exact-scope, current-surface, strict design, strict claim, hygiene, and diff checks are the complete proportionate verification set. Unchanged Lean, policy replay, registry execution, topology, platform, and aggregate suites are deliberately not duplicated. | Candidate evidence closed for the local M1-R5-R8 documentary leaf; coordinator reconstruction and a new fresh-blind exact-commit audit remain mandatory downstream. |
 
+## R9 Exact Frozen Positive Fixture Repair Requirements
+
+These four rows are frozen before any production fixture or ledger edit. They
+extend the 87 inherited R8 rows to exactly 91 acceptance IDs. Requirement cells
+remain immutable; only evidence, actual results, and status may change while
+the repair is implemented and verified.
+
+| ID | Exact frozen requirement | Scope | Required proposition/check | Named consumer and identity/composition chain | Anti-vacuity challenge attempted and outcome | Actual result | Status / residual gap |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| REQ-M1R5R9-EXACT-POSITIVE-REPLAY-FIXTURE | reconstruct the frozen requirement from the exact R8 matrix and establish that the exact sentence is absent outside the matrix/audit evidence while the materially different `m1r5-bounded-event-silent-distinction-accepted` fixture remains. Preserve that existing fixture byte-for-byte. Add exactly one new distinct fixture ID, `m1r5r9-exact-frozen-bounded-event-silent-distinction-accepted`, immediately after it. The new object uses `docs/PAPER_MODEL_ADEQUACY.md`, `reject = $false`, term ID `forbidden-unqualified-no-event-silent-computation`, and the exact sentence above. Insert the same ID at the corresponding position in `$expectedFixtureIds`, update only `$expectedAcceptCount` from 37 to 38, and retain 82 rejects plus 16 context cases. The registry must contain exactly 120 ordered unique fixtures; duplicate, missing, and verdict-drift controls must remain effective. The new exact fixture and the existing named unqualified reject control must both execute through the production final verdict with their expected outcomes, restoration, and clean state. | Production policy fixture durability | Strict UTF-8 immutable-row and fixture reconstruction; one aligned object/ID insertion; accept count `37 -> 38`; exact 120-ID order/uniqueness and 82-reject/38-accept counts; two focused production final verdicts with restoration. | exact R8 requirement -> committed production fixture object -> exact expected-ID registry -> `Test-FixtureRegistry` controls -> `claim_drift_scan.ps1 -Strict` final verdict -> durable R9 matrix and handoff | Omit, replace, broaden, duplicate, reorder, or alter either positive fixture; drift the expected verdict; or bypass the production final verdict. The exact positive and named unqualified negative must distinguish the boundary and leave tracked state unchanged. | Strict reconstruction preserved all 87 inherited rows and all 119 inherited fixture objects/IDs byte-for-byte. The new object and ID are the sole aligned insertion immediately after the broader positive; the registry is 120 unique ordered fixtures with 82 rejects, 38 accepts, and 16 unchanged context cases. Duplicate, missing, and verdict-drift controls rejected their mutations. The exact positive accepted through the production final verdict in 5.173s; the named unqualified control rejected in 7.296s. Both runs classified and cleaned the deadline sleeper, selected exactly one fixture, restored tracked state, and left the exact sentence once in the production registry with no occurrence outside owned evidence paths. | Candidate content evidence closed; both focused verdicts and every registry/row integrity check pass. Exact-commit reruns and coordinator/fresh-blind acceptance remain downstream handoff gates. |
+| REQ-M1R5R9-CURRENT-GOVERNANCE-PRESERVATION | preserve exact ancestry to both private-base parents and current governance, including WDD-20260722-003/004/005/006/007/008/009, DD-20260722-001, `ARCH-CONTRACT-NO-ASSUMED-CAPSTONE`, `STRICT-DESIGN-CHECK-WRITE-SCOPE-CLOSURE`, `FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY`, and `NAMED-REGRESSION-REALITY`. Add WDD-20260722-010 documenting why the exact positive fixture is required, why replacing the broader existing fixture or weakening the production policy was rejected, the exact R8 negative fixture/audit evidence, consequences, focused verification, and publication-facing significance. This ledger entry records the workflow-sensitive fixture mutation; it creates no broader allowance or new process rule. Every non-owned path must have the exact base blob. | Governance, workflow decision, and exact blob identity | Exact ancestry and base-parent checks; WDD-20260722-010 with the required rationale and evidence; strict design certification against exact base; recursive path comparison allowing only the four owned paths. | governed private base -> exact fixture mutation -> WDD-20260722-010 -> strict design classifier -> immutable four-path candidate | Change a non-owned blob, weaken policy/scanner semantics, overwrite an inherited decision, or treat audit prose as current evidence. Any non-owned difference is an obstruction. | Preflight passed with the exact three-skill runtime catalog against governance `b07fcc5470349f7cdc261f82ee6d8c320c65923e`. Base tree `0d9d94d5a4f7955f468a8352d627f97c4637ea6a` retains ordered parents `d6796285a3b9d79ebc78422695d196f26449e771` and `b07fcc5470349f7cdc261f82ee6d8c320c65923e`. WDD-20260722-010 is appended after byte-preserved WDD-003 through WDD-009; DD-20260722-001 and every non-owned blob remain exact base objects. Exact-base strict design checking passed over four changed paths with zero code, one workflow, and three neutral paths. Strict claim scanning passed with 1439 hits and zero failures; the working diff contains exactly the four owned paths. | Candidate governance and blob evidence closed; immutable ancestry, four-path range, and non-owned identity are repeated after the single commit. Coordinator acceptance remains separate. |
+| REQ-M1R5R9-ONE-COMMIT-PARENT | final `HEAD^` is exactly `c9375cf83a55c122b27c56a73c6027f36faea643`; the range count is one; exactly the four owned paths change; final tracked, untracked, and index state is clean; no owned process survives. | Git identity and final hygiene | One final commit directly over the exact base changes exactly the four owned paths; committed-range diff, status/index/untracked, parent/count, ancestry, restoration, and owned-process audits pass. | exact base -> frozen four-path content tree -> one commit -> immutable range/clean/no-survivor handoff | Wrong parent, intermediate or amended commit, missing or fifth path, dirty channel, untracked artifact, or surviving owned process prevents closure. | Fresh branch `codex/m1-reviewer-native-machine-adequacy-r5-r9` remains directly at exact base `c9375cf83a55c122b27c56a73c6027f36faea643`. The content-frozen worktree changes exactly the four owned paths; index and untracked channels are empty, both focused runs restored their baseline, every short-lived child exited, and no heavy Lean/Lake process was launched. The four paths are staged and committed exactly once only after this ledger is final; exact parent/count/range/clean/no-survivor results are reported from the immutable commit without amending it. | Candidate construction closed; final immutable Git and process receipts are handoff evidence rather than a self-referential matrix edit. |
+| COMPLETE-M1R5R9-COMMITTED-EVIDENCE | one exact-parent commit contains the exact 120-fixture registry and focused production verdicts, complete 91-ID/eight-cell matrix, truthful R9 digestion/WDD entry, strict inherited-row receipts, exact range/blob checks, and no open local residual. Coordinator acceptance and fresh-blind audit remain downstream. | R9 local completion | Every inherited and R9 row is locally closed on one immutable commit with the exact positive fixture, preserved inherited objects/rows, focused final verdicts, strict documents, clean state, and no survivor. | exact frozen requirement and R8 negative fixture -> committed exact production control -> truthful matrix/digestion/WDD -> one exact commit -> coordinator and fresh-blind auditor input | Any open inherited/local row, absent or disposable fixture, altered inherited object/row, inaccurate evidence, wrong path/parent/count, dirty state, survivor, or downstream audit used as a substitute prevents candidate completion. | The content-frozen repair contains the exact distinct positive fixture, 120 ordered unique objects and IDs, two passing focused production verdicts, 91 unique eight-cell rows with all 87 inherited rows byte-identical, truthful R9 digestion, and WDD-20260722-010. Strict fixture/occurrence/scope checks, PowerShell parsing, 18-path production registry checks, strict claim scan, strict design certification, hygiene, restoration, and `git diff --check` pass. The one exact-parent commit and its immutable reruns are the remaining non-mutating handoff actions, not a reason to amend this matrix. | Candidate content evidence closed for M1-R5-R9; the exact-parent commit handoff completes the local rung. Coordinator reconstruction and a new fresh-blind exact-commit audit remain mandatory downstream. |
+
+## R9 Pre-Edit Freeze And Verification Plan
+
+- Development-loop: strict UTF-8 raw-blob reconstruction of all 87 inherited
+  rows; exact 119-object/ID fixture freeze; fixed-string absence outside
+  matrix/audit evidence; exact script diff; registry order/uniqueness/count
+  controls; and focused exact-positive and unqualified-negative `-OnlyCase`
+  runs. This covers frozen-row drift, replacement of the broader positive,
+  misaligned ID insertion, verdict drift, and copied-regex evidence. Initial
+  result: 87 unique inherited eight-cell rows, 119 unique objects with matching
+  ordered IDs, and no exact-sentence occurrence outside matrix/audit evidence.
+- Final-required before commit: 91-ID/eight-cell schema; 87 inherited complete
+  rows byte-identical to `d6796285a3b9d79ebc78422695d196f26449e771`;
+  119 inherited fixture objects/IDs byte-identical with only one aligned
+  positive insertion and `37 -> 38`; exact occurrence boundaries; strict
+  claim scan; `design_decision_check.ps1 -Strict -Base
+  c9375cf83a55c122b27c56a73c6027f36faea643`; and `git diff --check`.
+  These cover malformed schema, inherited/non-owned drift, untruthful policy
+  evidence, a missing workflow decision, and whitespace damage. Expected
+  focused runtime is under one minute per selected case from the audit's
+  6.479-second direct scan plus cold PowerShell/Git margin; timeout is 120
+  seconds per case.
+- Final-required after commit: rerun both focused production verdicts on exact
+  `HEAD`; repeat strict row/fixture checks; run committed-range
+  `git diff --check`; and verify exact parent, one-commit count, four-path
+  scope, ancestry, non-owned blobs, clean channels, restoration, and no owned
+  survivor. This distinguishes a dirty draft from the immutable candidate.
+- Conditional: stop as `OBSTRUCTED` if any non-owned path or inherited
+  acceptance row/fixture object differs from the exact base/candidate freeze.
+  No conditional trigger was observed before implementation.
+
+## R9 Measured Evidence Ledger
+
+- Governance and base identity: project-skill preflight passed against exact
+  governance `b07fcc5470349f7cdc261f82ee6d8c320c65923e` with required
+  `rmq-proof-sprint` and the actual three-skill runtime catalog. Fresh branch
+  `codex/m1-reviewer-native-machine-adequacy-r5-r9` started clean at
+  `c9375cf83a55c122b27c56a73c6027f36faea643`, tree
+  `0d9d94d5a4f7955f468a8352d627f97c4637ea6a`, with ordered parents
+  `d6796285a3b9d79ebc78422695d196f26449e771` and
+  `b07fcc5470349f7cdc261f82ee6d8c320c65923e`.
+- Immutable negative reconstruction: one strict UTF-8 raw-blob decoder found
+  87 unique eight-cell inherited rows and the exact accepted sentence in the
+  R4 requirement. Exact candidate script blob
+  `468dadfb69d7d66011da85d0825230afa1252815` had 119 unique ordered fixture
+  objects/IDs and lacked that sentence; fixed-string search found no occurrence
+  outside matrix/audit evidence. The materially broader positive remained a
+  separate object.
+- Exact draft transformation: strict comparison reports 91 unique eight-cell
+  rows, zero changed inherited rows, 120 unique ordered fixture objects/IDs,
+  zero changed inherited objects or IDs, one immediate aligned insertion,
+  82 rejects, 38 accepts, and 16 unchanged context cases. The exact sentence
+  occurs once in the production script and nowhere outside owned evidence
+  paths. The working diff has exactly the four owned paths.
+- Focused positive production verdict: `claim_drift_policy_regression.ps1
+  -OnlyCase m1r5r9-exact-frozen-bounded-event-silent-distinction-accepted`
+  passed in 5.173s. It first passed exact 120-fixture order/count, duplicate,
+  missing, verdict-drift, 18-path surface, policy-config, deadline cleanup,
+  unique selector, final count, and tracked-state restoration controls.
+- Focused negative production verdict: the same command with `-OnlyCase
+  m1r5-unqualified-no-event-silent-computation-rejected` passed its expected
+  reject in 7.296s with the same production registry, deadline, selector,
+  count, and restoration controls.
+- Document and policy checks: PowerShell parsing passed. Production strict
+  claim scan passed in 5.799s with 1439 hits and zero failures. Exact-base
+  strict design certification passed in 0.938s over four changed paths: zero
+  code, one workflow, and three neutral. The RMQ/Mathlib hygiene scan found no
+  forbidden matches. `git diff --check` passed. WDD-20260722-010 and the R9
+  digestion are append-only; WDD-003 through WDD-009, DD-20260722-001, and
+  every non-owned path remain base-identical.
+- Verification economics: the full 120-case policy campaign, 41-case M1
+  mutation replay, selector/deadline/portability/topology suites, aggregate
+  gate, broad Lean build, and native-platform reinstall/replay were deliberately
+  skipped. Their implementations and inherited fixtures are exact base blobs;
+  this repair changes one expected-accept fixture object plus its aligned ID
+  and count. The two changed semantic boundaries ran through the production
+  final verdict. The fresh-blind audit owns independent platform reproduction.
+- Immutable handoff plan: after the one commit, rerun both focused production
+  verdicts, strict 91-row/120-fixture checks, committed-range diff hygiene,
+  exact parent/count/four-path/non-owned ancestry checks, clean tracked/index/
+  untracked status, restoration, and no-owned-survivor audit. No evidence cell
+  is amended merely to embed the resulting commit hash.
+
 ## R6 Measured Final Evidence Ledger
 
 The content-frozen functional identity is independent of later evidence-only

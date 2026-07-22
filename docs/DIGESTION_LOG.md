@@ -1473,3 +1473,67 @@ commit obtains the same 87-ID/eight-cell result, the same one-byte target-row
 transformation, and exact base blobs for every non-owned path. Coordinator
 reconstruction, a new fresh-blind exact-commit audit, integration, publication,
 push, and retirement remain mandatory downstream and are not local R8 evidence.
+
+## 2026-07-22 M1-R5-R9 Exact Frozen Positive Policy Fixture
+
+M1-R5-R9 starts from clean unpublished governed base
+`c9375cf83a55c122b27c56a73c6027f36faea643`, whose ordered parents are
+immutable rejected R8 candidate `d6796285a3b9d79ebc78422695d196f26449e771`
+and current governance `b07fcc5470349f7cdc261f82ee6d8c320c65923e`.
+The audit report at `648eebc9e8d66c9e4c509c5875f42a5ccdd747ff`
+was read as an untrusted lead. Its prose, timings, status, and verdict did not
+substitute for reconstruction from the exact candidate and production script.
+
+Strict UTF-8 parsing found 87 unique inherited eight-cell acceptance rows.
+The frozen R4 requirement contains the exact accepted sentence, but fixed-
+string search found that sentence nowhere outside matrix/audit evidence. The
+production registry instead had 119 ordered unique fixture objects and the
+materially different, broader
+`m1r5-bounded-event-silent-distinction-accepted` control. All 119 objects and
+matching expected IDs were frozen before editing.
+
+The repair preserves every inherited object and adds one distinct committed
+fixture immediately after that broader positive:
+`m1r5r9-exact-frozen-bounded-event-silent-distinction-accepted`. Its path is
+`docs/PAPER_MODEL_ADEQUACY.md`, its expected verdict is acceptance, its term is
+`forbidden-unqualified-no-event-silent-computation`, and its text is byte-for-
+byte the sentence frozen by the requirement. The aligned expected-ID entry is
+inserted at the same position, and only the expected accept count changes from
+37 to 38. The resulting registry has 120 unique ordered fixtures, 82 rejects,
+38 accepts, and the unchanged 16 context cases.
+
+Both focused controls executed through the production strict scanner rather
+than a copied predicate. The exact new positive passed in 5.173 seconds, and
+the inherited named unqualified negative
+`m1r5-unqualified-no-event-silent-computation-rejected` passed its expected
+rejection in 7.296 seconds. Each run first validated the exact 120-object
+registry, duplicate/missing/verdict-drift controls, positive subprocess
+deadline cleanup, unique `-OnlyCase` selection, and final tracked-state
+restoration.
+
+Conceptually, the classifier did not need a new language rule. The missing
+piece was durable evidence for the exact positive boundary already frozen by
+the contract. WDD-20260722-010 records why the exact control is additive, why
+the broader positive must remain, and why weakening the production policy or
+using a disposable report-only fixture would be unsound.
+
+Plain English: the repository already accepted the right sentence, but it did
+not keep that exact sentence in the replay suite. It now does. The stronger
+false sentence saying no event-silent computation remains still rejects, and
+the more detailed accurate positive remains as a separate test.
+
+All semantic and machine assumptions remain inherited. The direct
+`segment < 23` to safe-to-dynamic agreement to ordered-dynamic complete
+`TraceResult` equality to current safe alias to guarded packet to literal paper
+theorem to independent expected-type chain is preserved by exact non-owned
+blob identity, not claimed as newly executed R9 evidence. The same applies to
+the 24-field certificate, F01-F24/Q01-Q11/P01-P05/C01 registry, A01/A02,
+selector/deadline/platform ownership code, payload, cost, topology, policy
+JSON/Markdown, production scanner, public prose, and Lean declarations.
+
+A skeptical graduate student should next ask whether a fresh-blind auditor of
+the immutable R9 commit independently obtains the exact 120-fixture ordering,
+both focused verdicts, all 91 eight-cell rows, 87 byte-identical inherited
+rows, and exact base blobs for every non-owned path. That reconstruction and
+audit, followed by coordinator acceptance and integration, remain downstream;
+this local repair does not claim merge, publication, push, or roadmap closure.
