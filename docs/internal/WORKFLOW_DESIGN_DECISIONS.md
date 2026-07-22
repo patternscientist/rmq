@@ -5796,3 +5796,78 @@ Publication-facing significance:
 Indirect but material. It prevents audit infrastructure from fabricating a
 documentary defect and then using that false premise to block or redirect a
 paper-facing milestone.
+
+## WDD-20260722-009: no-role audit workers require an explicit preflight mode
+
+Status: Accepted.
+Date: 2026-07-22.
+Scope: project-skill preflight, its production regression, audit-prompt
+engineering, and external-auditor startup policy.
+
+Decision:
+
+`NO-ROLE-AUDIT-PREFLIGHT-EXECUTABILITY` distinguishes a deliberate task with
+no applicable repo-local role skill from an accidental missing
+`-RequiredSkills` argument. `project_skill_preflight.ps1` now accepts the
+explicit switch `-AllowNoRequiredSkills` only when the parsed required-skill
+set is empty. Omitting both a required skill and that switch remains a hard
+failure, and combining the switch with a non-empty required set is rejected.
+The no-role mode still requires a non-empty actual runtime RMQ catalog and
+performs the same governance-ancestry, complete canonical inventory,
+frontmatter, checkout-freshness, and working-tree-freshness checks.
+
+Audit prompts for workers that follow only their frozen prompt and
+`AUDIT_PROTOCOL.md` must use the explicit no-role mode and must not falsely
+name `rmq-audit-prompt`, `rmq-coordinator`, or `rmq-proof-sprint` as an
+applicable auditor skill.
+
+Trigger and named regression:
+
+Fresh-blind task `M1-R5-R8-AUD1` stopped before candidate inspection and
+committed obstruction report
+`b61d40843acd3114b51d035475f213f5edc31b10`. Its frozen contract correctly
+specified no audit-worker role skill, but the production preflight required a
+mandatory non-empty `RequiredSkills` value. Passing an empty value through
+`powershell -File` failed parameter binding; passing whitespace reached the
+script and failed its unconditional non-empty guard. The named negative
+regression is that exact no-role contract under the old preflight. The positive
+control uses `-AllowNoRequiredSkills` with the actual non-empty runtime catalog
+and must pass without weakening any other inventory check.
+
+Rejected alternatives:
+
+- Require the auditor to claim `rmq-audit-prompt`. That skill authors audit
+  packets for coordinators and is not an audit-worker execution role.
+- Require `rmq-coordinator` or `rmq-proof-sprint` merely to make the command
+  green. Either declaration would be false and would blur role separation.
+- Treat an omitted required-skill argument as implicit no-role authorization.
+  That would conceal prompt mistakes and silently weaken startup governance.
+- Skip project-skill preflight for audit workers. Auditors still need checked
+  governance ancestry, a complete current canonical checkout, and an actual
+  non-empty runtime catalog.
+
+Consequences:
+
+- Fresh external auditors can start honestly without a fabricated role skill.
+- Prompt authors must make no-role intent explicit and preserve the actual
+  runtime catalog in the frozen packet.
+- Existing proof, coordinator, and audit-prompt authoring invocations retain
+  their required-role behavior.
+- No Lean proposition, payload bit, proof field, model tick, trace, machine
+  state, public claim, or candidate source changes.
+
+Verification:
+
+- `project_skill_preflight_regression.ps1` covers accidental omission,
+  explicit no-role success, empty-runtime failure in no-role mode, and
+  conflicting switch-plus-role rejection, while preserving the existing role
+  and stale-checkout cases.
+- Exact-frontier coordinator preflight, strict workflow-design checking,
+  PowerShell parser checks, claim drift, and `git diff --check` certify the
+  governance change before a fresh auditor is launched.
+
+Publication-facing significance:
+
+Indirect but material. Independent audit is part of the acceptance chain; an
+unexecutable role contract would prevent evidence from being produced while
+tempting workers to misdeclare their authority.

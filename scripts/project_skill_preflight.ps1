@@ -5,8 +5,10 @@ param(
   [Parameter(Mandatory = $true)]
   [string]$GovernanceRef,
 
-  [Parameter(Mandatory = $true)]
-  [string]$RequiredSkills,
+  [AllowEmptyString()]
+  [string]$RequiredSkills = "",
+
+  [switch]$AllowNoRequiredSkills,
 
   [AllowEmptyString()]
   [string]$RuntimeProjectSkills = "",
@@ -90,8 +92,11 @@ try {
   if ($expectedSkills.Count -eq 0) {
     Stop-Preflight "governance ref $governanceSha defines no repo-local skills"
   }
-  if ($required.Count -eq 0) {
-    Stop-Preflight "at least one applicable skill must be required explicitly"
+  if ($required.Count -eq 0 -and -not $AllowNoRequiredSkills) {
+    Stop-Preflight "at least one applicable skill must be required explicitly, or pass -AllowNoRequiredSkills for a governed no-role task"
+  }
+  if ($required.Count -ne 0 -and $AllowNoRequiredSkills) {
+    Stop-Preflight "-AllowNoRequiredSkills cannot be combined with a non-empty required-skill set"
   }
 
   & git -C $RepositoryRoot merge-base --is-ancestor $governanceSha $checkoutSha 2>$null
@@ -152,7 +157,10 @@ try {
   Write-Host "SKILL-PREFLIGHT: checkout_skills=$($checkoutSkills -join ',')"
   Write-Host "SKILL-PREFLIGHT: working_skills=$($workingSkills -join ',')"
   Write-Host "SKILL-PREFLIGHT: runtime_skills=$($runtimeSkills -join ',')"
-  Write-Host "SKILL-PREFLIGHT: required=$($required -join ',')"
+  $requiredDisplay = if ($required.Count) { $required -join ',' } else { "<none>" }
+  $requiredMode = if ($AllowNoRequiredSkills) { "explicit-no-role" } else { "role-skills" }
+  Write-Host "SKILL-PREFLIGHT: required=$requiredDisplay"
+  Write-Host "SKILL-PREFLIGHT: required_mode=$requiredMode"
 
   $failures = @()
   if (-not $governanceInCheckout) { $failures += "governance_not_in_checkout_ancestry" }

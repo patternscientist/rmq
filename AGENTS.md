@@ -28,14 +28,23 @@
     -RuntimeProjectSkills "rmq-coordinator"
   ```
 
+  An audit worker that intentionally has no applicable project role skill must
+  omit `-RequiredSkills` and pass `-AllowNoRequiredSkills` explicitly. This
+  no-role mode still requires the actual non-empty runtime RMQ catalog and the
+  complete, current canonical checkout; it is not a general skill-preflight
+  bypass. Omitting both a required skill and the explicit no-role switch is an
+  error.
+
   Replace the runtime list with the RMQ skills actually exposed to the task; do
   not copy the expected list merely to make the check pass.
 - If the script is absent, a canonical skill is missing or stale in the
   checkout, the runtime catalog omits an explicitly required role skill, or the
   governance ref is not in the checkout's ancestry, **stop before substantive
-  work**. Report the working directory, checkout HEAD, governance ref, expected
-  project skills, runtime project skills, and missing/stale names. Do not
-  substitute another skill or continue best-effort.
+  work**. A task with no applicable role skill must also stop unless its frozen
+  contract authorizes the explicit no-role mode. Report the working directory,
+  checkout HEAD, governance ref, expected project skills, runtime project
+  skills, and missing/stale names. Do not substitute another skill or continue
+  best-effort.
 - Resume only in a new or restarted task rooted at a checkout containing the
   governing workflow commit and exposing every explicitly required role skill,
   unless the user explicitly authorizes a fallback after the mismatch is

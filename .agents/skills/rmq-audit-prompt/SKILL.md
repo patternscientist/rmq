@@ -11,6 +11,15 @@ auditor does not need this prompt-authoring skill. The coordinator still audits
 the report, integrates branches, updates the roadmap, and engineers worker
 prompts.
 
+Freeze project-skill preflight explicitly in every audit prompt. When the
+auditor has no applicable repo-local role skill, require
+`project_skill_preflight.ps1 -AllowNoRequiredSkills` with the actual non-empty
+runtime RMQ catalog and omit `-RequiredSkills`. Never name
+`rmq-audit-prompt`, `rmq-coordinator`, or `rmq-proof-sprint` merely to satisfy
+the preflight: those are different roles. The explicit no-role mode validates
+the canonical checkout, governance ancestry, and runtime-catalog presence; it
+does not bypass them.
+
 ## 1. Choose Independence Mode
 
 Read `docs/internal/AUDIT_PROTOCOL.md` and choose:
