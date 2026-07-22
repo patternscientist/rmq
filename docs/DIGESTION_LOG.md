@@ -1368,3 +1368,57 @@ only the final commit, can reproduce the direct-parent/one-commit/script-blob
 identity and independently obtain the same platform-sensitive verdicts. That
 is now the right next question: no local status cell asks for execution already
 claimed complete, and the remaining uncertainty belongs to independent audit.
+
+## 2026-07-22 M1-R5-R6 Strict-Design-Closed Wording and Policy Repair
+
+M1-R5-R6 starts again from the clean unpublished construction/governance merge
+`d8dccacd6ce4c5a45a9abff71db33d600c2ecaf1`. The terminal R5 worktree is only a
+design hint: none of its files, logs, timings, statuses, or native receipts is
+candidate evidence. The source facts and the pre-repair production bypass are
+reconstructed on this branch.
+
+Two Lean comments now say exactly what the checked declarations already said.
+The paper root names the uniform `<= 210` certificate. The reviewer-physical
+comment names logical sources `0..22`; this remains compatible with 22 physical
+source descriptions because logical sources 0 and 19 share one description.
+Declaration-neutral comparison preserves theorem names, types, bodies, proof
+terms, imports, executable definitions, and the direct `segment < 23` to safe
+store to ordered-dynamic complete-`TraceResult` chain.
+
+The production event-silent policy now classifies a documented zero-remaining
+syntax category over both `computation` and `work`, with no path-wide,
+same-line-keyword, or pair allowance. The seven former allowance words cannot
+change the final strict verdict. Replayable fixtures exercise the actual
+production scanner across held-outs, near misses, policy paths, focused
+single-file input, drive-qualified absolute input, deadline control, and clean
+restoration. The accepted statement remains deliberately narrower: no
+input-size-dependent or unbounded event-silent loop remains, while bounded
+dispatch, register movement, fixed-width decoding, arithmetic/comparison,
+option tests, branching, merging, trace assembly, and guards do remain.
+
+The strict-design obstruction is closed by owning and updating both companion
+ledgers. DD-20260722-001 records that the Lean changes are comment alignment,
+not a theorem or cost improvement. WDD-20260722-004 records the production
+claim-policy boundary without deleting or renumbering WDD-20260722-005 or
+WDD-20260722-006. The inherited architecture and lifecycle decisions,
+including `ARCH-CONTRACT-NO-ASSUMED-CAPSTONE` and
+`STRICT-DESIGN-CHECK-WRITE-SCOPE-CLOSURE`, remain in force.
+
+Plain English: the formal machine story was already stronger than two stale
+comments, and the claim scanner had a loophole that a single word could open.
+This repair synchronizes the comments and removes that loophole while leaving
+the machine construction, cost, payload, trace, and public propositions alone.
+
+Live assumptions are unchanged. The current route queries a supplied
+word-addressed store rather than raw serialized payload bits; only payload
+reads are charged; bounded controller work remains uncharged; preprocessing
+and conventional word-RAM complexity are separate. S1, E1, and A1 therefore
+remain distinct obligations.
+
+A skeptical graduate student should ask whether the two Lean files are truly
+comment-only, whether every former allowance word fails through the production
+final verdict on relative and absolute inputs, and whether real Ubuntu uses a
+scalar executable plus `setsid` process-group ownership without survivors.
+The R6 matrix records those exact focused checks. Coordinator reconstruction
+and a new fresh-blind exact-commit audit remain mandatory downstream; they are
+not replaced by this local candidate.

@@ -1,6 +1,6 @@
 {
-  "version": 22,
-  "updated": "2026-07-20",
+  "version": 23,
+  "updated": "2026-07-22",
   "currentFactSurfacePathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\\.md|RMQ_FINAL_ROADMAP\\.md))$",
   "terms": [
     {
@@ -263,12 +263,12 @@
     },
     {
       "id": "forbidden-unqualified-no-event-silent-computation",
-      "pattern": "(?i)\\b(?:there\\s+is\\s+)?no\\s+event[- ]silent\\s+computation(?:\\s+(?:is\\s+)?left|\\s+remains?)?\\b",
+      "pattern": "(?i)\\b(?:there\\s+is\\s+)?no\\s+event[- ]silent\\s+(?:computation|work)(?:\\s+(?:is\\s+)?left|\\s+remains?|\\s+remaining)?\\b",
       "status": "forbidden-unqualified-current-claim-bounded-event-silent-work-remains",
       "strict": true,
       "scope": "current-fact-surface",
-      "allowedPathRegex": "^docs/internal/CLAIM_DRIFT_POLICY\\.(?:md|json)$|^scripts/claim_drift_policy_regression\\.ps1$",
-      "allowedLineRegex": "(?i)\\b(?:historical|retired|rejected|quoted|unqualified|policy|scan)\\b"
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
     }
   ],
   "requiredAttributions": [

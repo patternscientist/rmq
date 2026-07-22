@@ -996,7 +996,7 @@ def concreteBPNativeSuccinctRMQReviewerPhysicalAddress
       else concreteBPNativeSuccinctRMQReviewerPhysicalDeadAddress shape
   | none => concreteBPNativeSuccinctRMQReviewerPhysicalDeadAddress shape
 
-/-- Every segment outside the live `0..20` universe translates to the unique
+/-- Every segment outside the live logical `0..22` universe translates to the unique
 one-past-end physical dead address. -/
 theorem concreteBPNativeSuccinctRMQReviewerPhysicalAddress_deadSegment
     (shape : Cartesian.CartesianShape) (segment index : Nat)

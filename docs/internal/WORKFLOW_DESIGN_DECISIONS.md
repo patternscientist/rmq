@@ -5433,6 +5433,92 @@ Material. The distinction separates a checked executable refinement proof from
 a certificate that merely assumes the paper-facing output theorem it is meant
 to justify.
 
+## WDD-20260722-004: exact event-silent categories replace same-line keyword allowances
+
+Status: Candidate decision; coordinator acceptance pending.
+Date: 2026-07-22.
+Scope: production claim-drift classification of current event-silent machine
+wording and its replayable regression boundary.
+
+Decision:
+
+The strict current-surface event-silent category is the line-local
+zero-remaining form: optional `there is`, followed by `no`, then
+`event-silent` or `event silent`, then `computation` or `work`, optionally
+followed by `left`, `is left`, `remain`, `remains`, or `remaining`. The term
+has no path-wide allowance, no same-line keyword allowance, and no
+path-and-line pair allowance.
+
+The former words `historical`, `retired`, `rejected`, `quoted`, `unqualified`,
+`policy`, and `scan` therefore never change this term's production final
+verdict. The regression invokes `claim_drift_scan.ps1 -Strict` for every case,
+including held-out `work` forms, the policy-document path, a drive-qualified
+absolute current-surface path, bounded near misses, exact registry counts,
+deadline control, and tracked-state restoration. The accurate accepted
+sentence says that no input-size-dependent or unbounded event-silent loop
+remains while enumerating the bounded event-silent computation that does
+remain.
+
+The scanner's generic allowance composition is retained because other terms
+use deliberately independent path or line exceptions. This repair removes the
+bypass from this production term's structured registry entry and pins that
+absence in the production regression rather than adding a copied classifier.
+The 18-path current-fact-surface registry is unchanged.
+
+Trigger and named regression:
+
+On exact clean base `d8dccacd6ce4c5a45a9abff71db33d600c2ecaf1`, the target
+pattern matched the false zero-remaining sentence, but appending any one of the
+seven former allowance words made the production scanner report `[allowed]`.
+The policy Markdown path independently bypassed the same verdict through its
+broad path allowance. This is the exact R5 same-line allowance obstruction;
+the dirty R5 worktree and its receipts are not evidence for this decision.
+
+Rejected alternatives:
+
+- Keep broad path allowances for the policy registry, policy prose, or
+  regression script. A current-surface false claim would then depend on where
+  it was written rather than what category it occupied.
+- Keep `historical` or another role word as a same-line exemption. Any prose
+  could append that token and bypass the final verdict.
+- Add a small list of fixture strings to a copied test-only detector. That
+  would not exercise the production parser, scope normalization, allowance
+  composition, or strict exit code.
+- Change the scanner's global allowance semantics. That would redesign
+  unrelated terms instead of repairing the one under-scoped policy entry.
+- Claim semantic natural-language completeness. The controlled boundary is a
+  documented syntax category with held-outs and near misses, not unrestricted
+  prose understanding.
+
+Consequences:
+
+- Arbitrary same-line occurrences of every former allowance word reject
+  through the production final verdict.
+- Relative, focused single-file, policy-path, and absolute-path fixtures use
+  the same scanner and policy as repository strict scans.
+- Explicitly bounded wording remains accepted, while unqualified
+  zero-remaining `computation` and `work` forms reject.
+- Payload, theorem, cost, source, topology, process-ownership, selector,
+  replay, and aggregate-gate designs are unchanged.
+
+Verification:
+
+- `claim_drift_policy_regression.ps1` pins one strict current-surface term,
+  its exact category tokens, empty broad allowances, no pair allowance, the
+  ordered fixture registry, expected reject/accept counts, and absolute-path
+  context registry.
+- Focused `-OnlyCase` runs cover the baseline false statement, every former
+  allowance token, held-out category members, policy-path attempts, and the
+  bounded/unbounded accepted control before the full focused regression.
+- `claim_drift_scan.ps1 -Strict`, PowerShell parser checks, clean restoration,
+  and strict design certification cover the final tree.
+
+Publication-facing significance:
+
+The production policy can no longer bless a false current machine-adequacy
+sentence merely because a role word occurs on the same line. The accurate
+model boundary remains unchanged: controller work is bounded but not absent.
+
 ## WDD-20260722-005: evidence-producing architecture lifecycles must be acyclic
 
 Status: Accepted.

@@ -4571,3 +4571,64 @@ Consequences and evidence:
 - The first integrated aggregate gate exposed the stale anchor after every build
   succeeded; the focused repaired inventory then exited successfully on the
   warmed exact tree.
+
+## DD-20260722-001: align paper-root and physical-layout comments with live checked facts
+
+Status: Candidate decision; coordinator acceptance pending.
+
+Date: 2026-07-22
+
+Context:
+
+The current Lean declarations already check a uniform whole-query charged-trace
+certificate of `<= 210` and a logical reviewer-source universe `0..22`. Two
+nearby comments still described the retired `207` cost and `0..20` source
+universe. The mismatch was explanatory prose, not a missing theorem or a
+different machine construction.
+
+Decision:
+
+Change exactly two comment phrases. `RMQPaper.lean` now calls the live
+construction-facing certificate the uniform `<= 210` certificate.
+`RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean` now calls the live universe
+the logical `0..22` universe. The latter wording deliberately distinguishes
+the 23 logical source identifiers from their 22 physical source descriptions,
+where logical sources 0 and 19 share one physical description.
+
+The checked theorem names, theorem types, theorem bodies, proof terms, imports,
+executable definitions, source registry, payload, trace, cost model, and query
+behavior remain unchanged. These corrections do not create a theorem, improve
+a cost result, or alter a representation claim.
+
+Rejected alternatives:
+
+- Change a declaration, source bound, or cost literal to make the stale prose
+  true. That would reverse the formal source of truth.
+- Describe `0..21` from the number of physical descriptions. That would erase
+  the live logical source 22 and conflate logical identity with physical
+  storage sharing.
+- Leave the comments stale because the declarations elaborate. The paper root
+  and declaration-adjacent prose are part of the reviewer-facing source
+  surface under `CURRENT-LEAN-SOURCE-COMMENT-COVERAGE`.
+- Run a broad Lean build as the primary proof of comment neutrality. Exact
+  base-blob reversal and declaration-neutral diff inspection give the sharper
+  check; a Lean build is conditional on those checks finding a code change.
+
+Consequences and evidence:
+
+- The paper-root wording now agrees literally with
+  `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq` and the
+  live `...nonSyntheticWeight_sum_le_210` certificate.
+- The physical-layout wording now agrees with the checked `segment < 23`
+  source boundary and the explicit source mapping over logical identifiers
+  `0..22`.
+- Reversing only the two corrected phrases recovers the exact base blobs of
+  both Lean files; the other two inspected inventory files remain byte-identical
+  to the exact base.
+
+Publication-facing significance:
+
+Reviewers now see the same current cost and logical-source facts in Lean prose
+that the kernel checks. This is wording alignment only; S1 serialized-payload
+querying, E1 controller charging, A1 preprocessing, and conventional word-RAM
+claims remain separate obligations.
