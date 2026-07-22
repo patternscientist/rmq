@@ -269,9 +269,11 @@ richer machine and prove a simulation.
 
 ### M1. Make Machine Adequacy Reviewer-Native
 
-Status (updated 2026-07-19): **M1-R5 local candidate reconstructed on current
-governance; coordinator acceptance, fresh-blind exact-commit audit, integration,
-and roadmap-node closure remain open.** The candidate branch carries the
+Status (updated 2026-07-22): **M1 is accepted and integrated.** Candidate
+`977a4df8b5d9e908fe66d012dd242006790ebaf3` passed the fresh-blind audit recorded
+by report commit `e7c936d8a070a1db26e87b60c656044ee8a37b56`, and the coordinator independently
+reconstructed the frozen matrix, fixture boundary, platform evidence, and clean
+fast-forward compatibility before integration. The integrated theorem surface carries the
 24-field reviewer certificate, independent required-facts consumer, guarded
 list packet, exact dynamic supplied-store theorem, safe corollaries, literal
 paper consumption, and exact 41-case replay. Its cost field is the current
@@ -279,8 +281,9 @@ same-execution `nonSyntheticWeight` sum `<= 210`, derived through the named
 principled charged-trace theorem chain. It preserves 22 physical sources over
 logical segments `0..22` and rejects fresh segment `23`.
 
-This is a worker candidate status only, not `ACCEPTED`, merged, integrated, or
-full M1 roadmap-node closure. Historical forward-port diagnosis follows.
+This closes the M1 roadmap node under its owner-approved supplied-store scope.
+Serialized-payload querying remains the separate deferred S1 rung, while E1
+remains an independent sibling under U3. Historical forward-port diagnosis follows.
 
 `main`'s broad final-trace adequacy certificate already certifies
 all five named invariant families, including word width. The unmerged
@@ -292,8 +295,11 @@ field still records the frozen historical `76` bound.
 
 That R4 field had to be re-derived against the current `210` theorem before a
 current candidate could compile. R5 completed the local forward-port and
-registry refresh; audit and integration remain coordinator-owned. The old residual was a forward-port, registry refresh, audit,
-and integration — see the ordered list at the end of this section.
+registry refresh; the later R6/R8/R9 repairs closed evidence, matrix, and
+exact-policy-fixture defects, and the R9 fresh-blind audit plus coordinator
+integration closed the remaining gate. The old residual was a forward-port,
+registry refresh, audit, and integration — see the ordered list at the end of
+this section.
 
 (The previous status line read "partially present; strengthen after `U3`". It
 was written before the r4 branch existed and reads as an invitation to build
@@ -348,8 +354,8 @@ actual public consumer dependency. It cannot compile against `main` because it
 proves its cost field via `nonSyntheticWeight_sum_le_76`, while `76` is now a
 frozen historical constant superseded by `210`.
 
-HISTORICAL R4 FORWARD-PORT CHECKLIST (items 1-5 are implemented in the R5
-local candidate; item 6 remains coordinator-owned). Items 1-2 were the critical path; 3-5 are R4
+HISTORICAL R4 FORWARD-PORT CHECKLIST (items 1-6 are now implemented and
+integrated). Items 1-2 were the critical path; 3-5 are R4
 implementations that must be preserved and forward-ported rather than designed
 again; 6 is the gate.
 
@@ -383,11 +389,13 @@ again; 6 is the gate.
    result. Reconstruct that checked dependency on current main; do not reopen
    the public shape unless the `210` migration formally requires a proposition
    change, in which case stop for coordinator review.
-6. **Fresh blind external audit at the accepted M1 commit.** The r4 branch
-   self-reports `WORKING`, not ACCEPTED, and the coordinator log records the
-   gate as passed with "Coordinator acceptance + fresh-blind audit remain open".
-   No audit has named a defect in the Lean content; the blockers are the
-   registry drift and this audit.
+6. **Fresh blind external audit at the accepted M1 commit.** Completed by
+   M1-R5-R9-AUD1. Report commit
+   `e7c936d8a070a1db26e87b60c656044ee8a37b56` accepted exact candidate
+   `977a4df8b5d9e908fe66d012dd242006790ebaf3` after independent Windows and
+   native Ubuntu controls, raw-byte matrix/fixture reconstruction, and
+   integration compatibility checks. The coordinator independently audited the
+   report and integrated the accepted chain on 2026-07-22.
 
 **What M1 does NOT owe:** anything from `E1`. The two are siblings under `U3`
 and share no vocabulary — `storesAgreeOnOrderedReadFootprint` and

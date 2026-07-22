@@ -33,7 +33,7 @@ packet. It also states, on that packet's canonical execution, the direct
 `TraceResult` equality under agreement on the first execution's ordered
 dynamic reads. A committed 41-case replay deletes every field and mutates the
 public composition, with 40 expected rejects and one expected-accept control.
-This M1 candidate remains a word-addressed supplied-store theorem; raw
+This integrated M1 theorem remains a word-addressed supplied-store theorem; raw
 serialized-payload decoding/querying is the separate S1 rung.
 
 The construction-facing capstone and the separate strong event theorem state

@@ -5874,7 +5874,8 @@ tempting workers to misdeclare their authority.
 
 ## WDD-20260722-010: exact frozen positive controls must be committed distinctly
 
-Status: Candidate decision; coordinator acceptance pending.
+Status: Accepted and integrated on 2026-07-22 after fresh-blind audit and
+independent coordinator reconstruction.
 Date: 2026-07-22.
 Scope: the M1 event-silent claim-policy fixture registry and its exact frozen
 expected-accept replay boundary.
@@ -5968,5 +5969,74 @@ Publication-facing significance:
 Material to auditability, not to the mathematical claim. A reviewer can now
 replay the exact sentence the frozen contract calls accurate, while the
 production policy still rejects the stronger false claim that no event-silent
-computation remains. Coordinator reconstruction and a new fresh-blind exact-
-commit audit remain downstream.
+computation remains. Coordinator reconstruction and the fresh-blind exact-
+commit audit accepted this decision before integration on 2026-07-22.
+
+## WDD-20260722-011: accept and retire the M1 audited-completion chain
+
+Status: Accepted and integrated.
+Date: 2026-07-22.
+Scope: final M1 audit disposition, integration, roadmap truth, and automated
+monitor lifecycle.
+
+Trigger:
+
+Fresh-blind task `M1-R5-R9-AUD1` submitted sole-path report commit
+`e7c936d8a070a1db26e87b60c656044ee8a37b56` over exact report base
+`373026670bc12faa1ec764475f8233c79caf8330`, recommending acceptance of exact
+candidate `977a4df8b5d9e908fe66d012dd242006790ebaf3`. The automated chain required
+an independent coordinator audit, truthful node/lifecycle updates, and removal
+of the completed logical watch in the same terminal turn.
+
+Decision:
+
+Accept the report and candidate only after independently reproducing their
+identity, raw-byte matrix/report predicates, exact production fixture delta,
+strict report-tree checks, retained platform-tree identity and survivor
+absence, and clean fast-forward ancestry from current governance. Fast-forward
+main to the report chain, record M1 as closed in the roadmap and current
+digestion, then retire the now-empty M1 automation. Retain worker/auditor
+branches and worktrees because destructive cleanup was not authorized.
+
+Rejected alternatives:
+
+- Accept from the auditor's prose or terminal status. Both remain untrusted
+  until exact Git objects and predicates are reconstructed.
+- Rerun the unchanged aggregate gate, full semantic/policy/topology campaigns,
+  or broad Lean build. Exact implementation blobs and focused independent
+  checks expose no unique contradiction that would justify the cost.
+- Delete branches or worktrees as part of monitor retirement. Automation
+  lifecycle authority does not authorize destructive repository cleanup.
+- Launch an automatic M1 successor. The frozen node is closed; S1 is deferred
+  and E1 is a separate sibling, so either would be a new roadmap decision rather
+  than an M1 repair.
+
+Evidence:
+
+- Coordinator project-skill preflight passed at exact governance
+  `b07fcc5470349f7cdc261f82ee6d8c320c65923e` with the actual runtime RMQ catalog.
+- The report has exact parent, one-commit/one-path scope, blob
+  `bc5144abff8d4974799ae285782b67b0669bbb90`, SHA-256
+  `F22BA4712BB264F9E2AD1D90CD25727136D9557F0A3258D97574CE4C823F7599`,
+  42,133 bytes, and a clean final tree.
+- Strict raw decoding found 91 ordered unique eight-cell candidate rows, exact
+  87-row inheritance, the four R9 additions, and 91 same-order PASS report rows.
+- Report-tree strict claim drift, strict design, and range diff checks passed;
+  retained Windows/Ubuntu evidence trees matched the exact candidate and all
+  recorded timeout PIDs/sleeper patterns were absent.
+- Exact main/governance was an ancestor of the accepted report chain, so the
+  integration was conflict-free and preserved newer governance.
+
+Consequences:
+
+M1 is Accepted, Integrated, and archived by its committed report. The logical
+watch set becomes empty and has no successor. Branch/worktree retirement remains
+pending explicit cleanup authority. This entry adds no broader audit or evidence
+rule; it records application of the existing audited-completion, strict-byte,
+named-regression, and workflow-scope rules.
+
+Publication-facing significance:
+
+The repository can now distinguish a genuinely integrated reviewer-native M1
+theorem node from its candidate and audit checkpoints while preserving the
+supplied-store/charged-event scope that reviewers must see.

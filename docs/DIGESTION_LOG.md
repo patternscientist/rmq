@@ -1537,3 +1537,67 @@ both focused verdicts, all 91 eight-cell rows, 87 byte-identical inherited
 rows, and exact base blobs for every non-owned path. That reconstruction and
 audit, followed by coordinator acceptance and integration, remain downstream;
 this local repair does not claim merge, publication, push, or roadmap closure.
+
+## 2026-07-22 M1 Coordinator Acceptance and Integration
+
+The coordinator accepted exact M1 candidate
+`977a4df8b5d9e908fe66d012dd242006790ebaf3` after independently auditing the
+fresh-blind report committed as
+`e7c936d8a070a1db26e87b60c656044ee8a37b56`. The report is the sole-path commit
+over exact report base `373026670bc12faa1ec764475f8233c79caf8330`;
+its blob is `bc5144abff8d4974799ae285782b67b0669bbb90`, SHA-256
+`F22BA4712BB264F9E2AD1D90CD25727136D9557F0A3258D97574CE4C823F7599`,
+and length 42,133 bytes.
+
+Coordinator reconstruction used one strict UTF-8 decoder over raw Git blobs.
+It found 91 ordered unique eight-cell candidate rows, all first 87 complete
+rows byte-identical to R8, the exact four R9 additions, and 91 report
+dispositions in the same order with no non-PASS entry. The production-script
+delta is exactly one fixture object, one aligned expected ID, and accept count
+`37 -> 38`; the inherited broader positive, named negative, classifier, policy,
+and every non-owned candidate blob are preserved. The committed report tree
+then passed strict claim drift with 1,444 hits and zero failures, strict design
+classification against its exact report base, and committed-range
+`git diff --check`.
+
+The report's retained Windows and native Ubuntu evidence clones were checked
+again at exact candidate tree `c2d42585428743f6fb8730bf1c716ae3b669cf51`
+with clean tracked, index, and untracked state. All recorded Windows and Ubuntu
+timeout PIDs were absent, as were the native deadline/topology sleeper
+patterns. The unchanged aggregate gate, full 41-case semantic replay, full
+120-case policy campaign, full topology suite, and broad Lean build were not
+repeated: candidate-local and auditor-local focused checks already cover the
+only changed fixture/documentary risk, while exact blob identity preserves the
+previously certified Lean and process-control implementation.
+
+Exact pre-integration main/governance
+`b07fcc5470349f7cdc261f82ee6d8c320c65923e` was a clean ancestor of the report
+chain, so integration was a conflict-free fast-forward that preserved the
+current governance bytes and included the accepted audit report. No push or
+publication occurred. No new failure mode or workflow rule was discovered;
+WDD-20260722-010 already records the isolated exact-fixture omission and its
+durable production regression.
+
+Conceptually, M1 now closes the supplied-store machine-adequacy rung: the
+24-field reviewer-native certificate, direct dynamic-read agreement,
+ordered-read complete `TraceResult` equality, safe corollary, guarded packet,
+literal paper theorem, and independent expected-type consumer are integrated
+on one theorem/object chain. Plainly: the public RMQ result now carries the
+reviewer-facing machine certificate and its exact replayable evidence on main,
+rather than only on an audited candidate branch.
+
+Lifecycle disposition: M1-R5-R9 is Accepted, Integrated, and archived through
+the committed report; its worker and auditor branches/worktrees are retained
+pending separately authorized cleanup. The automated M1 watch has no
+successor and is retired after this integration record. Local-rung status and
+M1 roadmap-node status are both closed. S1 remains the explicitly deferred
+serialized-payload rung, and E1 remains an independent sibling; neither should
+be misreported as part of this M1 closure.
+
+The live assumptions remain the stated supplied-store model, the charged-event
+cost model rather than conventional word-RAM or Lean runtime time, the
+Mathlib-free Lean/Std plus `omega` trust boundary, and the half-open leftmost
+RMQ semantics. A skeptical graduate student should next ask whether S1 can
+connect this accepted supplied-store theorem to a raw serialized payload
+without weakening the same-object and returned-value dependencies; that is a
+separate deferred architecture task, not residual M1 work.

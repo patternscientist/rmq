@@ -4574,7 +4574,8 @@ Consequences and evidence:
 
 ## DD-20260722-001: align paper-root and physical-layout comments with live checked facts
 
-Status: Candidate decision; coordinator acceptance pending.
+Status: Accepted and integrated on 2026-07-22 after fresh-blind audit and
+independent coordinator reconstruction.
 
 Date: 2026-07-22
 
@@ -4632,3 +4633,58 @@ Reviewers now see the same current cost and logical-source facts in Lean prose
 that the kernel checks. This is wording alignment only; S1 serialized-payload
 querying, E1 controller charging, A1 preprocessing, and conventional word-RAM
 claims remain separate obligations.
+
+## DD-20260722-002: close M1 at the supplied-store reviewer-native theorem boundary
+
+Status: Accepted and integrated.
+
+Date: 2026-07-22
+
+Context:
+
+The M1 chain now contains the 24-field reviewer-native certificate, independent
+required-facts projection, direct dynamic supplied-store agreement theorem,
+ordered-read complete `TraceResult` equality, safe corollary, guarded list
+packet, literal paper-theorem consumption, and independent expected-type
+consumer. Its exact candidate and fresh-blind report have both been audited.
+The remaining coordinator choice was whether this evidence closes M1 under the
+owner-approved scope or should be held open for serialized-payload or fully
+charged controller work.
+
+Decision:
+
+Close and integrate M1 at its stated word-addressed supplied-store boundary.
+The integrated theorem preserves the same payload, store, execution, trace,
+cost `<= 210`, 22-physical-source/logical-`0..22`, width, guard, provenance,
+returned-value, and half-open leftmost-RMQ objects throughout the public chain.
+Raw serialized-payload querying remains S1, and fully charged controller/runtime
+modeling remains E1; neither is silently imported into M1.
+
+Rejected alternatives:
+
+- Keep M1 open until S1. That would contradict the owner-approved roadmap scope
+  and conflate supplied-store transfer with serialized decoding.
+- Treat E1 as either a prerequisite or a substitute. E1 is a sibling under U3
+  and does not prove M1's quantified supplied-store agreement theorem.
+- Close from the worker or auditor verdict alone. Coordinator reconstruction of
+  the frozen rows, exact production fixture, theorem/object chain, platform
+  evidence, and integration ancestry remained mandatory.
+
+Consequences and evidence:
+
+- Exact candidate `977a4df8b5d9e908fe66d012dd242006790ebaf3` and report
+  `e7c936d8a070a1db26e87b60c656044ee8a37b56` are integrated on main.
+- The coordinator reproduced 91 unique eight-cell rows, 87 byte-identical
+  inherited rows, the exact 120-fixture boundary, report-tree strict checks,
+  clean retained platform trees, absent recorded PIDs, and conflict-free
+  fast-forward ancestry from governance `b07fcc5470349f7cdc261f82ee6d8c320c65923e`.
+- No theorem, proof, payload, cost, or runtime implementation was changed by the
+  closure commit; it updates the roadmap and current digestion to the audited
+  integrated truth.
+
+Publication-facing significance:
+
+The reviewer-native supplied-store adequacy story is now a closed integrated
+theorem node with durable audit evidence. Publication prose must continue to
+state the charged-event and supplied-store boundaries and must not imply S1,
+E1, preprocessing, or conventional word-RAM closure.
