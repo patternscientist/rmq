@@ -1422,3 +1422,54 @@ scalar executable plus `setsid` process-group ownership without survivors.
 The R6 matrix records those exact focused checks. Coordinator reconstruction
 and a new fresh-blind exact-commit audit remain mandatory downstream; they are
 not replaced by this local candidate.
+
+## 2026-07-22 M1-R5-R8 Frozen Matrix Category-Delimiter Repair
+
+M1-R5-R8 starts from exact unpublished governed base
+`3bf7b6c8c5c3518760a2000f37d706937c280cca`, whose ordered parents are rejected
+source candidate `deb38ee441d30701aa008101a6ec3f38066215a4` and current
+governance `f44a09b12dbe7dd14ed395cb69cff142edfc019f`. The source candidate and
+its fresh-blind audit remain immutable evidence objects rather than trusted
+verdict prose.
+
+A single strict UTF-8 decoder and stable-ID parser reconstructed the exact
+matrix blob `008dda141fe1f2c9e5a14eab5debb917b44686cf`. Under the required rule
+that every unescaped pipe is a Markdown delimiter even inside a code span, the
+negative fixture has 83 unique inherited IDs, 82 eight-cell rows, and one
+nine-cell row at `REQ-M1R5R4-CLAIM-POLICY-ALLOWANCE-BYPASS`. Replacing only
+that delimiter in memory by inserting one ASCII backslash produces 83 unique
+inherited rows and no non-eight-cell row.
+
+The durable repair performs exactly that one-byte insertion. Complete-row
+comparison by stable ID leaves 82 inherited rows byte-identical to the rejected
+blob and makes the target row equal to its rejected form plus that one
+backslash, without changing its requirement, consumer, challenge, evidence
+meaning, or status. Four frozen R8 bookkeeping rows bring the matrix to 87
+unique eight-cell rows and record the strict-byte, governance, exact-parent,
+and immutable-evidence obligations.
+
+Conceptually, nothing about the RMQ machine changes. The inherited R6 content
+already meant that the production policy recognized the intended event-silent
+category; the broken delimiter only made one evidence row parse into the wrong
+number of Markdown cells. Plainly: this repair makes the table say the same
+thing in a structurally valid way.
+
+All semantic assumptions and boundaries remain inherited. The direct
+`segment < 23` containment to safe-to-dynamic agreement to ordered-dynamic
+complete `TraceResult` equality to current safe alias to guarded packet to
+literal paper theorem to independent expected-type consumer chain is preserved
+by exact non-owned blob identity, not claimed as newly executed evidence. The
+same is true of the 24-field certificate, F01-F24/Q01-Q11/P01-P05/C01 registry,
+A01/A02 topology, 40-reject/1-accept verdicts, claim-policy fixtures, platform
+ownership controls, payload, cost, and public surfaces. Broad Lean, replay,
+topology, platform, and aggregate checks are therefore deliberately not
+duplicated for this two-document leaf.
+
+No design or workflow decision changes: `M1R2-MATRIX-SCHEMA` already detected
+the isolated Markdown escaping defect, while `FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY`
+and `NAMED-REGRESSION-REALITY` prescribe its exact reconstruction. A skeptical
+graduate student should next ask whether an independent auditor of the final
+commit obtains the same 87-ID/eight-cell result, the same one-byte target-row
+transformation, and exact base blobs for every non-owned path. Coordinator
+reconstruction, a new fresh-blind exact-commit audit, integration, publication,
+push, and retirement remain mandatory downstream and are not local R8 evidence.
