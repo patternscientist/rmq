@@ -31,7 +31,8 @@ function Invoke-Case(
   [string]$GovernanceRef,
   [string]$RequiredSkills,
   [string]$RuntimeSkills,
-  [string[]]$RequiredOutput = @()
+  [string[]]$RequiredOutput = @(),
+  [bool]$AllowNoRequiredSkills = $false
 ) {
   $arguments = @(
     "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $preflight,
@@ -39,6 +40,35 @@ function Invoke-Case(
     "-GovernanceRef", $GovernanceRef,
     "-RequiredSkills", $RequiredSkills
   )
+  if ($AllowNoRequiredSkills) { $arguments += "-AllowNoRequiredSkills" }
+  if ($RuntimeSkills) { $arguments += @("-RuntimeProjectSkills", $RuntimeSkills) }
+  $output = @(& $script:powerShellExecutable @arguments 2>&1)
+  $exitCode = $LASTEXITCODE
+  if ($exitCode -ne $ExpectedExit) {
+    Fail "$Name expected exit $ExpectedExit, got $exitCode`n$($output -join [Environment]::NewLine)"
+  }
+  foreach ($pattern in $RequiredOutput) {
+    if (-not ($output -match $pattern)) {
+      Fail "$Name did not emit '$pattern'`n$($output -join [Environment]::NewLine)"
+    }
+  }
+  Write-Host "SKILL-PREFLIGHT-REGRESSION: PASS $Name"
+}
+
+function Invoke-NoRoleCase(
+  [string]$Name,
+  [int]$ExpectedExit,
+  [string]$GovernanceRef,
+  [string]$RuntimeSkills,
+  [bool]$AllowNoRequiredSkills,
+  [string[]]$RequiredOutput = @()
+) {
+  $arguments = @(
+    "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $preflight,
+    "-RepositoryRoot", $tempRoot,
+    "-GovernanceRef", $GovernanceRef
+  )
+  if ($AllowNoRequiredSkills) { $arguments += "-AllowNoRequiredSkills" }
   if ($RuntimeSkills) { $arguments += @("-RuntimeProjectSkills", $RuntimeSkills) }
   $output = @(& $script:powerShellExecutable @arguments 2>&1)
   $exitCode = $LASTEXITCODE
@@ -114,6 +144,21 @@ try {
 
   Invoke-Case "extra-nonproject-skills-ignored" 0 $currentRef "rmq-coordinator" `
     "openai-docs,rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint" @("SKILL-PREFLIGHT: PASS")
+
+  Invoke-NoRoleCase "omitted-required-skill-without-opt-in" 2 $currentRef `
+    "rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint" $false `
+    @("at least one applicable skill must be required explicitly")
+
+  Invoke-NoRoleCase "explicit-no-role-auditor-pass" 0 $currentRef `
+    "rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint" $true `
+    @("required=<none>", "required_mode=explicit-no-role", "SKILL-PREFLIGHT: PASS")
+
+  Invoke-NoRoleCase "explicit-no-role-runtime-catalog-omitted" 2 $currentRef "" $true `
+    @("runtime_catalog_omitted", "ACTION STOP")
+
+  Invoke-Case "no-role-opt-in-conflicts-with-required-role" 2 $currentRef "rmq-coordinator" `
+    "rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint" `
+    @("cannot be combined with a non-empty required-skill set") $true
 
   Invoke-Case "omitted-runtime-catalog" 2 $currentRef "rmq-coordinator" "" `
     @("runtime_catalog_omitted", "ACTION STOP")
