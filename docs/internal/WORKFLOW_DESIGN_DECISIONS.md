@@ -4912,7 +4912,7 @@ None. This is evidence portability and repository-observation policy; it does
 not change a Lean theorem, payload, store, event, cost, query semantics, or
 reader-facing claim.
 
-## WDD-20260721-001: collapse application aliases before bounded launch
+## WDD-20260721-004: collapse application aliases before bounded launch
 
 Status: Candidate decision; coordinator acceptance pending.
 
@@ -5000,3 +5000,368 @@ Publication-facing significance:
 None. This repairs executable discovery for the evidence machinery. It does
 not change the theorem chain, registry, topology, payload, store, trace, cost,
 or public claim surface.
+## WDD-20260721-001: CI repair, and the gate becomes fail-slow
+
+Status: adopted 2026-07-21 under owner authorization to fix the CI failures.
+Scope: `scripts/gate.ps1`, `scripts/project_skill_preflight_regression.ps1`,
+`scripts/paper_topology_lint.ps1`, and `scripts/axiom_check.lean`. No proof
+content, no claim surface.
+
+Context. CI had been red since `4a60853` (2026-07-17) because
+`project_skill_preflight_regression.ps1` invoked `powershell`, the Windows-only
+executable, on Linux runners. Both workflows were down on `main` and on every
+branch inheriting the file, so **four days of commits went unchecked**. When the
+break was repaired the accumulated defects surfaced one per push, because the
+gate exited on the first problem: seven push-wait-fix cycles for one root cause.
+
+Decision:
+
+1. **Invoke nested PowerShell through the exact current host executable.** The
+   published repair selected `pwsh` when available and fell back to
+   `powershell`. The governed frontier already carried the stronger
+   `(Get-Process -Id $PID).Path` form, so the forward port preserves it. This
+   remains portable across Windows, Linux, and macOS, avoids PATH/alias drift,
+   and guarantees that the regression uses the same engine as its parent.
+
+2. **The fast gate builds the validation executables, and the list is DERIVED
+   from `lakefile.toml`.** They are `lean_exe` roots, so bare `lake build`
+   (defaultTargets = `RMQ`) never touched them and only the 8-14 minute
+   artifact-reproduction workflow did. A `#guard` in
+   `RMQ/Validation/SuccinctClassic.lean` was therefore FALSE for days while every
+   fast build stayed green. `#guard`s fire at BUILD time, so building the exes
+   catches that whole class in the fast loop without running the harnesses.
+
+   Deriving the list rather than naming targets is deliberate: a hardcoded list
+   was written against the campaign branch's lakefile and broke on `main`, which
+   has two executables rather than three. The parser fails loudly if it finds
+   none, so it cannot silently degrade into checking nothing.
+
+   **REJECTED: moving the `Validation` modules into the `RMQ` library root.**
+   They are executables with `main`; importing them would invert the dependency
+   (the library depending on its own harness), and it would couple the
+   mathematical artifact to fixtures — a stale hardcoded index would then turn
+   `lake build RMQ` red for everyone and block all proof work, which is a worse
+   failure than the one it prevents. The defect was coverage placement, not root
+   membership.
+
+3. **`paper_topology_lint.ps1` tolerates empty files.** `Get-Content -Raw`
+   returns `$null`, not `''`, for a zero-byte file, so `[regex]::Split` threw
+   `ParentContainsErrorRecordException` naming only "Parameter 'input'" — no
+   path, no clue. A tracked zero-byte Lean file triggered exactly this. Empty
+   input is now normalised so the lint reports on the file instead of dying.
+
+4. **The gate is FAIL-SLOW after its dependencies.** Builds keep hard `Fail`,
+   because everything after a failed build is meaningless. The design-decision
+   regression also remains fail-fast: its governed aggregate-wiring fixture
+   requires immediate propagation when the gate's own workflow classification
+   rules are invalid. The other nineteen independent checks — the project-skill
+   and worker-prompt regressions; hygiene; `native_decide`; the eight axiom
+   checks; both claim-drift regressions; both topology lints; cost lint; shim
+   lint; and `git diff --check` — record and continue, and the run ends by listing
+   every failure it found. The worker-prompt regression added after the PR's old
+   base is explicitly included in the fail-slow policy. No detection condition
+   changed; only the consequence for checks that are safe to continue past.
+
+5. **Axiom-check errors are printed before the output tail.** `RunAxiomCheck`
+   showed only the last 80 lines, and on 2026-07-20 an `unknown constant` error
+   sat above that window, so the tail showed healthy axiom listings while the
+   gate said only "did not run cleanly".
+
+6. **The governed frontier's remaining live axiom anchor moves from `207` to
+   `210`.** The first integrated gate used the new diagnostic and exposed
+   `scripts/axiom_check.lean` still naming the retired
+   `...nonSyntheticWeight_sum_le_207` declaration. The sibling Word-RAM
+   inventory already names `...sum_le_210`; the general inventory now matches
+   that same live theorem. This changes inventory reach only, not the theorem or
+   its trust base.
+
+Verification: `42f277f` green on both workflows (CI 11m52s, Artifact
+Reproducibility 13m30s); the second exercises the gate because
+`reproduce_artifact.sh` calls it. The fail-slow accumulator was tested directly:
+three soft failures collected, execution reached the end without exiting, exit 1.
+
+On the governed forward port, exact project-skill preflight and the project-
+skill, worker-prompt, and design-decision regressions passed; strict design
+classification is required to accept the closed five-path scope. The first cold aggregate
+gate ran all builds and later checks, then reported only the stale general axiom
+anchor. After the `207 -> 210` repair, the focused general axiom inventory passed.
+One final aggregate gate on the unchanged repaired tree remains the merge gate;
+its exact result belongs in the coordinator integration record rather than being
+predicted here.
+
+Note on this entry's existence: the strict design-decision scan required it. On
+`push` that scan runs with `-Base HEAD~1` and saw only the final commit; on
+`pull_request` it runs with `-Base origin/main`, saw all three
+process-sensitive scripts, and correctly refused a change to the acceptance gate
+that carried no design record. The gate caught its own author.
+
+## WDD-20260721-002: completion monitors extract compact status metadata
+
+Status: Accepted.
+Date: 2026-07-21.
+Scope: Codex completion-monitor status reads in opt-in audited worker chains.
+
+Decision:
+
+1. Each heartbeat makes one read-only exact-ID task request per watched worker,
+   but parses that response inside the tool call and returns only the task ID,
+   task status, latest-turn status/error/completion time, and a short tail of
+   the latest agent message.
+2. The monitor must not emit or stringify the raw task response. Worker prompts
+   and tool transcripts can be tens of thousands of tokens, so a raw
+   multiplexed response can be truncated before the task-state fields reach the
+   coordinator.
+3. A truncated or unparsable compact result is status unavailable. It cannot
+   establish activity or completion and is retried only on the next scheduled
+   heartbeat, unless the user explicitly asks for an immediate reconstruction.
+4. The logical watch tuple remains live until the ordinary exact-commit audit
+   and successor disposition complete. Compact status extraction changes only
+   monitoring transport; it does not weaken audit, acceptance, or lifecycle
+   rules.
+
+Trigger and named regression:
+
+The multiplexed E1-ARCH1-R1/M1-R5-R3 heartbeat performed the required bounded
+exact-ID reads, but serialized both complete `read_thread` results. The E1 task
+embedded its full architecture prompt in the returned turn, producing a result
+too large for the coordinator context. The status fields were therefore
+unavailable even though E1 had completed, and repeated heartbeats could not
+advance its audit. `AUTO-CHAIN-COMPACT-STATUS-READ` is the named regression:
+the same two task results are parsed in-tool and reduce to small status records,
+correctly classifying E1 as terminal and M1 as active without opening or
+steering either task.
+
+Rejected alternatives:
+
+- Increase response or context limits and continue returning raw task records.
+- Infer completion from a final-looking message, filesystem activity, elapsed
+  time, or terminal quiet.
+- Perform repeated reads in one heartbeat after a raw response truncates.
+- Split one logical watch set into duplicate cron automations.
+
+Consequences:
+
+- Monitor reliability no longer depends on prompt or transcript size.
+- Exact-ID and one-read-per-heartbeat bounds are preserved.
+- A malformed tool response fails closed and delays action by one cadence
+  rather than risking a duplicate worker, missed audit, or false completion.
+- Mathematical evidence and acceptance remain unchanged.
+
+Verification:
+
+- The updated live heartbeat contains the compact extraction protocol and
+  retains exactly one E1-ARCH1-R1 and one M1-R5-R3 logical watch record.
+- A compact parser over the same exact task responses returned E1
+  `idle/completed` and M1 `active/inProgress` without serializing either raw
+  thread.
+- `scripts/project_skill_preflight.ps1` passes at the governing frontier with
+  the actual runtime RMQ catalog.
+- Strict workflow-design checking and `git diff --check` cover this governance
+  change before integration.
+
+Publication-facing significance:
+
+None directly. This changes orchestration transport only, not any Lean theorem,
+trust claim, payload, machine model, or cost result.
+
+## WDD-20260721-003: architecture certificates must be uniform checked families
+
+Status: Accepted.
+Date: 2026-07-21.
+Scope: coordinator audit of proposed architecture theorem signatures and
+asymptotic machine certificates.
+
+Decision:
+
+1. A response may call a proposition or certificate checked only when its exact
+   declaration type already exists or a complete isolated signature probe
+   compiles. Ellipses, undefined load-bearing predicates, and prose-only object
+   composition remain architecture sketches.
+2. Every stored/code/descriptor object charged by a combined theorem must be
+   connected to the same execution and capacity model. Counting code cells in
+   space while executing an external unmodeled program does not close this
+   requirement; the contract must choose and state its ROM/RAM convention.
+3. An asymptotic claim must quantify one size-indexed family and fix the
+   little-o witness, width constants, descriptor bounds, and cost literals
+   outside individual instances. The contract must state the equality between
+   the public size and each shape's size.
+4. Per-instance existential choices of `lowerOrder`, width constants, or cost
+   literals cannot establish uniform `2n + o(n)`, `O(log n)` width, or constant
+   cost: a one-point witness can satisfy an unrelated global asymptotic
+   predicate vacuously.
+5. Architecture-selection spikes require deterministic, common pass objects
+   and tie-break rules. Terms such as "materially earlier," "compact," or
+   "removes a major theorem family" are planning judgments until translated
+   into frozen observable thresholds.
+
+Trigger and named regression:
+
+E1-ARCH1-R1 proposed `E1PackedImageCertificate n shape` with `lowerOrder` and a
+width constant chosen inside each instance, without `n = shape.size`. It called
+the pair checked while using undefined predicates and ellipses; counted
+`codeCells` in storage but omitted them from `flatCells` while `run` consumed an
+external program; and used subjective multi-spike switch conditions. The
+response correctly labeled the implementation future work, but the signature
+itself could not carry the claimed uniform theorem. The named regression
+`ARCH-CONTRACT-NONVACUOUS-FAMILY` rejects that exact evidence pattern while
+allowing an honestly labeled schematic study.
+
+Rejected alternatives:
+
+- Treat a syntactically detailed Lean-like block as checked architecture even
+  when it cannot elaborate.
+- Let each certificate choose an arbitrary global asymptotic witness after the
+  concrete instance is fixed.
+- Repair only prose around the certificate while leaving object composition or
+  quantifier order implicit.
+- Freeze an architecture using subjective spike comparisons without a common
+  test object and deterministic tie-break.
+
+Consequences:
+
+- Architecture studies may still use sketches, but must label them as sketches
+  and cannot close a checked-contract acceptance row with them.
+- Successor prompts state a compileable family-level signature before broad
+  implementation, reducing the chance that later proof work discovers a
+  vacuous asymptotic or mismatched execution object.
+- The rule adds no new mathematical assumption; it makes the intended theorem
+  quantifiers and object identity explicit earlier.
+
+Verification:
+
+- The E1-ARCH1-R1 exact response is the negative regression fixture.
+- Its successor must compile the complete signature probe, with no ellipses or
+  undefined predicates, and independently expand the quantifier order and
+  same-object chain.
+- Strict workflow-design checking, project-skill regression, and
+  `git diff --check` cover this governance change before integration.
+
+Publication-facing significance:
+
+This is process governance, but it protects publication-facing asymptotic and
+machine claims from being stated with vacuous quantifiers or mismatched stored
+and executed objects.
+
+## WDD-20260722-001: automated read-only tasks preserve complete terminal artifacts
+
+Status: Accepted.
+Date: 2026-07-22.
+Scope: automated completion monitoring for material read-only architecture,
+audit, and roadmap tasks.
+
+Decision:
+
+`AUTO-CHAIN-DURABLE-TERMINAL-ARTIFACT` requires every automated material
+read-only worker to write its complete final response to one exact
+worker-owned artifact path. The launch prompt must declare
+`Durable completion artifact: mode=WORKER_REPORT; path=<exact file>`, and
+`worker_prompt_preflight.ps1 -AutomatedCompletionLoop` rejects a read-only
+READY_TO_SEND prompt without it. A compact monitor tail remains status metadata
+only. A completed task missing the artifact receives at most a verbatim
+persistence follow-up before substantive audit.
+
+Trigger and named regression:
+
+E1-ARCH1-R2 correctly wrote its Lean signature probe but returned the complete
+38,664-byte architecture contract only in chat. The governed compact monitor
+retained 500 characters by design, so the coordinator could classify the task
+as terminal but could not audit the producer and decision tables without a
+second persistence turn. The exact R2 launch prompt is the named negative
+fixture: it says to return the contract "in this task" and names only a probe
+directory, so the new automated read-only preflight rejects it.
+
+Rejected alternatives:
+
+- Emit the raw terminal thread response and reintroduce oversized-status
+  truncation.
+- Treat the compact 500-character tail as the architecture deliverable.
+- Rely on a future coordinator synthesis after the only full response has
+  become unavailable.
+- Require every read-only task to create a Git branch solely for its report.
+
+Consequences:
+
+- Automated terminal audits can reconstruct the entire untrusted worker claim
+  without reopening or serializing a large task transcript.
+- The rule preserves report-only visualization output and does not require a
+  source branch or public artifact.
+- Non-automated read-only scouts retain the accepted report-or-immediate-
+  synthesis policy of WDD-20260710-001.
+- No mathematical, trust, payload, machine, or cost claim changes.
+
+Verification:
+
+- `worker_prompt_preflight_regression.ps1` rejects an automated read-only
+  prompt with no durable artifact and one offering coordinator synthesis only,
+  while accepting an exact worker-report path.
+- The exact E1-ARCH1-R2 launch wording is rejected by the new marker rule.
+- Strict workflow-design checking and `git diff --check` cover this governance
+  change before it becomes the accepted frontier.
+
+Publication-facing significance:
+
+None directly. The rule preserves complete evidence for later independent
+review of publication-facing architecture choices.
+
+## WDD-20260722-002: current source-wording closure includes Lean comments
+
+Status: Accepted.
+Date: 2026-07-22.
+Scope: coordinator prompts and audits that close current paper/source wording,
+theorem-docstring, cost, topology, or live-universe acceptance rows.
+
+Decision:
+
+`CURRENT-LEAN-SOURCE-COMMENT-COVERAGE` requires an exact-base inventory of
+tracked Lean comments and docstrings whenever a prompt inherits or claims
+closure of `M1-08`, `M1R2-PUBLIC-WORDING`,
+`REQ-M1R5-CURRENT-FRONTIER-PRESERVATION`, or equivalent current source-wording
+requirements. The prompt records searched terms, inspected Lean paths, and
+owned expected repair paths. The policy-registry Markdown inventory and strict
+claim scan remain required where applicable, but are lower bounds rather than
+proof that Lean source wording is current.
+
+Trigger and named regression:
+
+Candidate `8211d85bcef1bff79022dc501599a8c6a20e958c` closed its current-wording
+rows after scanning the registered Markdown surfaces, while
+`RMQPaper.lean` still stated a uniform cost certificate of `207` instead of
+the checked `210` theorem and `ReviewerPhysical.lean` still described live
+logical sources as `0..20` instead of `0..22`. The external fresh-blind audit
+correctly rejected the candidate. The exact prior M1 repair prompt, which
+inherits those rows but lacks a Lean source-comment inventory, is the named
+negative regression.
+
+Rejected alternatives:
+
+- Expand only the Markdown path registry and continue treating Lean comments
+  as outside current public/source wording.
+- Accept a green strict scan as exhaustive evidence despite its configured
+  path boundary.
+- Ask the worker to discover relevant Lean comments after launch without
+  closing read and write scope in the prompt.
+- Patch the two observed comments without adding a reusable prompt-level
+  regression.
+
+Consequences:
+
+- Current source-wording claims now cover both registered documentation and
+  the relevant import-root/declaration-adjacent Lean prose.
+- Prompt preflight fails closed when the inventory is absent, names a non-Lean
+  or untracked inspected path, or assigns a repair outside write scope.
+- The rule adds no theorem, payload, machine-model, or cost assumption; it
+  prevents stale explanatory prose from surviving a formally correct change.
+
+Verification:
+
+- `worker_prompt_preflight_regression.ps1` rejects inherited current-wording
+  rows without the new inventory and accepts an exact tracked Lean fixture
+  whose repair path is owned.
+- The prior exact M1 repair prompt is rejected by the production preflight.
+- Parser checks, strict workflow-design checking, project-skill preflight, and
+  `git diff --check` cover the governance change before successor launch.
+
+Publication-facing significance:
+
+Indirect but material. The formal theorem was already correct; this rule keeps
+reviewer-facing Lean source commentary synchronized with it.

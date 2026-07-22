@@ -43,6 +43,8 @@ param(
   [ValidateSet("WRITE", "READ_ONLY")]
   [string]$TaskMode = "WRITE",
 
+  [switch]$AutomatedCompletionLoop,
+
   [string]$WorkerBranch = "",
 
   [string]$RepositoryRoot
@@ -189,6 +191,21 @@ try {
     }
   }
 
+  if ($AutomatedCompletionLoop -and $TaskMode -eq "READ_ONLY") {
+    $durableArtifact = [regex]::Match(
+      $promptText,
+      '(?m)^- Durable completion artifact:\s*mode=WORKER_REPORT;\s*path=(\S.+?)\s*$'
+    )
+    if (-not $durableArtifact.Success) {
+      Stop-Preflight "AUTO-CHAIN-DURABLE-TERMINAL-ARTIFACT requires a read-only WORKER_REPORT at one exact path"
+    }
+    $durablePath = $durableArtifact.Groups[1].Value.Trim()
+    if ($durablePath -match '(?i)\b(this|the)\s+(task|chat|thread)\b' -or
+        $durablePath -notmatch '(?i)\.(md|txt|json|csv|lean)$') {
+      Stop-Preflight "AUTO-CHAIN-DURABLE-TERMINAL-ARTIFACT requires an exact file path with a durable extension"
+    }
+  }
+
   $writeScopeLine = [regex]::Match(
     $promptText,
     '(?m)^- Write scope:\s*(.+?)\s*$'
@@ -271,6 +288,66 @@ try {
       }
       if (-not $writeScopeLine.Contains($repairPath)) {
         Stop-Preflight "exhaustive-current-surface-sync-repair-outside-write-scope: $repairPath"
+      }
+    }
+  }
+
+  $isCurrentLeanSourceCommentClosure =
+    $promptText -match '(?i)(?:CURRENT-LEAN-SOURCE-COMMENT-COVERAGE|\bM1-08\b|\bM1R2-PUBLIC-WORDING\b|\bREQ-M1R5-CURRENT-FRONTIER-PRESERVATION\b|theorem\s+docstrings?|Lean\s+source\s+comments?|current\s+(?:paper/)?source\s+wording)'
+  if ($isCurrentLeanSourceCommentClosure) {
+    $sourceCommentMatch = [regex]::Match(
+      $promptText,
+      '(?m)^- Current-source-comment inventory:\s*(.+?)\s*$'
+    )
+    if (-not $sourceCommentMatch.Success) {
+      Stop-Preflight "current-lean-source-comment-coverage-requires-attested-inventory: searched_terms, inspected_paths, and expected_repair_paths are required"
+    }
+
+    $sourceCommentValue = $sourceCommentMatch.Groups[1].Value
+    $sourceTermsMatch = [regex]::Match($sourceCommentValue, '(?:^|;)\s*searched_terms=([^;]+)')
+    $sourceInspectedMatch = [regex]::Match($sourceCommentValue, '(?:^|;)\s*inspected_paths=([^;]+)')
+    $sourceRepairMatch = [regex]::Match($sourceCommentValue, '(?:^|;)\s*expected_repair_paths=([^;]+)')
+    if (-not $sourceTermsMatch.Success -or
+        -not $sourceInspectedMatch.Success -or
+        -not $sourceRepairMatch.Success -or
+        [string]::IsNullOrWhiteSpace($sourceTermsMatch.Groups[1].Value) -or
+        [string]::IsNullOrWhiteSpace($sourceInspectedMatch.Groups[1].Value)) {
+      Stop-Preflight "current-lean-source-comment-coverage-requires-attested-inventory: searched_terms, inspected_paths, and expected_repair_paths are required"
+    }
+
+    $trackedWorkerPaths = @(
+      Invoke-Git @("ls-tree", "-r", "--name-only", $workerBaseSha) |
+        ForEach-Object { $_.Trim().Replace('\', '/') } |
+        Where-Object { $_ } |
+        Sort-Object -Unique
+    )
+    $sourceInspectedPaths = @(
+      $sourceInspectedMatch.Groups[1].Value -split ',' |
+        ForEach-Object { $_.Trim().Replace('\', '/') } |
+        Where-Object { $_ } |
+        Sort-Object -Unique
+    )
+    foreach ($sourcePath in $sourceInspectedPaths) {
+      if ($sourcePath -notmatch '(?i)\.lean$' -or $sourcePath -notin $trackedWorkerPaths) {
+        Stop-Preflight "current-lean-source-comment-coverage-path-not-tracked-lean: $sourcePath"
+      }
+    }
+
+    $sourceRepairPaths = @()
+    if ($sourceRepairMatch.Groups[1].Value.Trim() -ne 'NONE') {
+      $sourceRepairPaths = @(
+        $sourceRepairMatch.Groups[1].Value -split ',' |
+          ForEach-Object { $_.Trim().Replace('\', '/') } |
+          Where-Object { $_ } |
+          Sort-Object -Unique
+      )
+    }
+    foreach ($sourceRepairPath in $sourceRepairPaths) {
+      if ($sourceRepairPath -notin $sourceInspectedPaths) {
+        Stop-Preflight "current-lean-source-comment-coverage-repair-not-inspected: $sourceRepairPath"
+      }
+      if (-not $writeScopeLine.Contains($sourceRepairPath)) {
+        Stop-Preflight "current-lean-source-comment-coverage-repair-outside-write-scope: $sourceRepairPath"
       }
     }
   }
@@ -396,6 +473,7 @@ try {
   Write-Host "WORKER-PROMPT-PREFLIGHT: semantic_review=$SemanticContractReviewStatus"
   Write-Host "WORKER-PROMPT-PREFLIGHT: destination_task=$DestinationTaskKind"
   Write-Host "WORKER-PROMPT-PREFLIGHT: destination_runtime=$DestinationRuntimeEvidence"
+  Write-Host "WORKER-PROMPT-PREFLIGHT: automated_completion=$($AutomatedCompletionLoop.IsPresent)"
   Write-Host "WORKER-PROMPT-PREFLIGHT: PASS"
   exit 0
 } catch {

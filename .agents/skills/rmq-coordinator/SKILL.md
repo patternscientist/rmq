@@ -122,6 +122,19 @@ the registry count/path set and verify every declared repair path is owned. A
 green strict scan is a lower bound, not evidence that the registry or term
 vocabulary is exhaustive.
 
+`CURRENT-LEAN-SOURCE-COMMENT-COVERAGE`: when a prompt inherits or claims
+closure of current paper/source wording, theorem docstrings, `M1-08`,
+`M1R2-PUBLIC-WORDING`, or `REQ-M1R5-CURRENT-FRONTIER-PRESERVATION`, inspect the
+relevant tracked Lean comments and docstrings from the exact worker base in
+addition to the Markdown policy registry. Put `- Current-source-comment
+inventory:` in the prompt with exact `searched_terms`, comma-separated tracked
+Lean `inspected_paths`, and `expected_repair_paths`. Search the import-root and
+the declaration-adjacent source comments that state the governed theorem,
+cost, topology, and live-universe facts. Every repair path must be both
+inspected and already owned by write scope. A passing strict claim scan or
+closed Markdown inventory is only a lower bound and cannot close a current
+source-wording row by itself.
+
 Put `Make the title of this chat exactly: ...` as the first line of the pasted
 worker prompt. A title shown only as identity metadata is not an instruction to
 rename the chat.
@@ -189,6 +202,30 @@ turn the normal coordinator cycle into an audited worker chain:
    records in that heartbeat instead of creating a cron workaround. While a
    worker is active, read status without opening or steering it and report only
    a terse update. Never infer completion from inactivity or a quiet terminal.
+   `AUTO-CHAIN-COMPACT-STATUS-READ`: status monitoring must be bounded in both
+   task count and returned content. Make exactly one read-only exact-ID request
+   per watched record, parse the response inside the tool call, and return only
+   the task ID, task status, latest-turn status/error/completion time, and a
+   short tail of the latest agent message. Never emit or stringify the raw
+   thread response: an embedded worker prompt or long tool transcript can
+   truncate the combined result before the status fields reach the
+   coordinator. A truncated or unparsable compact result is unavailable, not
+   evidence that the worker is active or terminal. Retry only on the next
+   scheduled heartbeat unless an explicit user turn requests an immediate
+   status reconstruction.
+   `AUTO-CHAIN-DURABLE-TERMINAL-ARTIFACT`: every automated read-only task whose
+   result is material to an audit, architecture choice, or roadmap disposition
+   must write its complete final response to one exact predeclared artifact
+   path before it may report completion. The compact monitor tail is status
+   metadata, not the deliverable, and "return it in this task" or a future
+   coordinator synthesis is not durable enough for an automated terminal
+   audit. Pass `-AutomatedCompletionLoop` to `worker_prompt_preflight.ps1`;
+   for `READ_ONLY` prompts it requires
+   `Durable completion artifact: mode=WORKER_REPORT; path=<exact file>`.
+   Verify the artifact's byte length and digest before auditing it. If task
+   completion is reported without that artifact, request only a verbatim
+   persistence turn and do not infer or reconstruct substantive content from
+   the compact tail.
 3. On completion, treat the response as untrusted, run the full completed-
    worker audit at its exact commit, complete the failure-mode feedback loop,
    and only then engineer successor prompts from the current roadmap.
@@ -306,6 +343,17 @@ For each completed worker branch:
    inventory every read segment, physical offset, and the input-size relation
    for the one query-independent word width. Check that validity guards apply
    to every combined field or are connected by a theorem on the same domain.
+   For a proposed "checked proposition" or architecture certificate, reject
+   schematic ellipses, undefined load-bearing predicates, and object fields
+   that are counted but omitted from the execution object. Require either a
+   compiling isolated signature probe or exact existing declaration types.
+   `ARCH-CONTRACT-NONVACUOUS-FAMILY`: an asymptotic certificate must quantify a
+   size-indexed family and fix its little-o witness, constants, descriptor
+   bounds, and cost literals outside the per-instance certificate. Tie every
+   shape to that size explicitly. A certificate that chooses its own
+   `lowerOrder`, width constant, or cost literal after seeing one instance does
+   not establish a uniform `2n + o(n)`, logarithmic-width, or constant-cost
+   theorem.
 10. Trace returned values to charged reads and check the relevant value/state/
    route projection, not merely inequality of an aggregate record. Check actual
    evidence quantification and validity domain against the public claim; one

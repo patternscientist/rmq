@@ -14,6 +14,9 @@ Coordinator launch metadata (do not paste into the worker prompt):
 - Destination runtime evidence: [VERIFIED_CURRENT / GOVERNED_START / UNKNOWN /
   STALE]. A returning task requires an explicit current runtime inventory;
   repository skill files or a later branch switch are not runtime evidence.
+- Automated completion loop: [YES / NO]. When YES for a read-only task, pass
+  `-AutomatedCompletionLoop` to prompt preflight and require the worker-owned
+  durable completion artifact below.
 - Worker handle, fresh/returning chat, exact model variant/reasoning/service
   mode, exact governance SHA, exact worker-base SHA, and branch.
 - Run `scripts/worker_prompt_preflight.ps1` for every emitted prompt artifact
@@ -47,6 +50,10 @@ Checkout contract:
 - Exact base/target commit: [BASE_BRANCH_OR_COMMIT].
 - Durable disposition for material read-only work: [REPORT PATH / COORDINATOR
   SYNTHESIS TARGET].
+- Durable completion artifact: mode=[WORKER_REPORT / COORDINATOR_SYNTHESIS];
+  path=[EXACT FILE PATH]. Automated read-only tasks must use `WORKER_REPORT`
+  and an exact file path; chat/task history and a future synthesis are not the
+  terminal deliverable.
 - For a write task, create branch exactly [WORKER_BRANCH] in a fresh worktree
   and report its path.
 - For a read-only task, inspect the exact commit without creating a branch;
@@ -73,6 +80,15 @@ Roadmap contract:
   expected_repair_paths=comma-separated owned paths` FROM THE EXACT BASE.
   REQUIRE EVERY MATCHED PATH TO BE INSPECTED AND EVERY EXPECTED REPAIR PATH TO
   APPEAR IN WRITE SCOPE; OTHERWISE NOT_APPLICABLE].
+- Current-source-comment inventory: [FOR CURRENT PAPER/SOURCE WORDING,
+  THEOREM-DOCSTRING, M1-08, M1R2-PUBLIC-WORDING, OR
+  REQ-M1R5-CURRENT-FRONTIER-PRESERVATION CLOSURE, USE
+  `searched_terms=comma-separated exact facts/terms;
+  inspected_paths=comma-separated exact tracked Lean paths;
+  expected_repair_paths=comma-separated owned paths` FROM THE EXACT BASE.
+  INSPECT IMPORT-ROOT AND DECLARATION-ADJACENT COMMENTS FOR THE GOVERNED
+  THEOREM, COST, TOPOLOGY, AND LIVE-UNIVERSE FACTS. EVERY REPAIR PATH MUST BE
+  INSPECTED AND IN WRITE SCOPE; OTHERWISE NOT_APPLICABLE].
 - Dependency-surface inventory: [FOR A PUBLIC THEOREM/HISTORICAL-IDENTITY
   RESTORE, RENAME, SPLIT, OR MIGRATION, USE
   `searched_symbols=comma-separated exact declarations;

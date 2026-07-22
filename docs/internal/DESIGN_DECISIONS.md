@@ -4533,3 +4533,41 @@ inside the declared safe layout without assuming the very store-equality
 corollary being justified. S1 bit-addressed payload querying, E1 fully charged
 control, preprocessing, and conventional word-RAM complexity remain separate
 obligations.
+## DD-20260721-001: keep the general axiom inventory on the live 210 theorem
+
+Status: Accepted under owner authorization for the CI forward port.
+
+Date: 2026-07-21
+
+Context:
+
+The governed frontier's general axiom inventory still printed
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_207`.
+That declaration was retired when the live charged-trace cap moved to `210`, so
+the aggregate gate's first integrated run failed with an unknown-constant error.
+The sibling Word-RAM inventory already named the live `...sum_le_210` theorem.
+
+Decision:
+
+Change only the general inventory anchor from `...sum_le_207` to
+`...sum_le_210`. Keep the live theorem, its statement, proof, namespace, and
+trust base unchanged. The inventory continues to ask Lean's kernel for the
+axioms of the current public cost theorem rather than a compatibility alias.
+
+Rejected alternatives:
+
+- Keep the retired `207` name and tolerate a permanently red trust inventory.
+- Delete the line, which would make the gate green by reducing trust coverage.
+- Point the inventory at a historical compatibility theorem, which would check
+  the wrong public claim.
+- Change or reintroduce a Lean theorem merely to satisfy the stale script.
+
+Consequences and evidence:
+
+- `scripts/axiom_check.lean` and `scripts/wordram_axiom_check.lean` now name the
+  same live `210` theorem.
+- No theorem proposition, proof term, payload, trace, cost, runtime behavior, or
+  public claim changes.
+- The first integrated aggregate gate exposed the stale anchor after every build
+  succeeded; the focused repaired inventory then exited successfully on the
+  warmed exact tree.
