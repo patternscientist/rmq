@@ -84,7 +84,9 @@ function Invoke-Case(
   [string[]]$RequiredOutput = @(),
   [string]$SemanticReview = "COMPLETE",
   [string]$DestinationTaskKind = "RETURNING_TASK",
-  [string]$DestinationRuntimeEvidence = "VERIFIED_CURRENT"
+  [string]$DestinationRuntimeEvidence = "VERIFIED_CURRENT",
+  [string]$TaskMode = "WRITE",
+  [bool]$AutomatedCompletionLoop = $false
 ) {
   $arguments = @(
     "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $preflight,
@@ -100,9 +102,14 @@ function Invoke-Case(
     "-SemanticContractReviewStatus", $SemanticReview,
     "-DestinationTaskKind", $DestinationTaskKind,
     "-DestinationRuntimeEvidence", $DestinationRuntimeEvidence,
-    "-TaskMode", "WRITE",
-    "-WorkerBranch", "codex/e1-repair"
+    "-TaskMode", $TaskMode
   )
+  if ($TaskMode -eq "WRITE") {
+    $arguments += @("-WorkerBranch", "codex/e1-repair")
+  }
+  if ($AutomatedCompletionLoop) {
+    $arguments += "-AutomatedCompletionLoop"
+  }
   $output = @(& $script:powerShellExecutable @arguments 2>&1)
   $exitCode = $LASTEXITCODE
   if ($exitCode -ne $ExpectedExit) {
@@ -202,6 +209,42 @@ try {
     $governanceRef $workerBase "codex/e1-repair"
   Invoke-Case "ready-governed" 0 $validPrompt $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
+
+  $autoReadOnlyMissingArtifact = Join-Path $tempRoot "auto-read-only-missing-artifact.txt"
+  @(Get-Content -LiteralPath $validPrompt) | ForEach-Object {
+    $_ -replace '^- Fresh or returning worker: RETURNING', '- Fresh or returning worker: FRESH' `
+       -replace '^- Task mode: WRITE\.', '- Task mode: READ_ONLY.'
+  } | Set-Content -LiteralPath $autoReadOnlyMissingArtifact -Encoding utf8
+  Invoke-Case "auto-read-only-missing-durable-artifact-rejected" 2 `
+    $autoReadOnlyMissingArtifact $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("AUTO-CHAIN-DURABLE-TERMINAL-ARTIFACT") `
+    -DestinationTaskKind "FRESH_GOVERNED_WORKTREE" `
+    -DestinationRuntimeEvidence "GOVERNED_START" -TaskMode "READ_ONLY" `
+    -AutomatedCompletionLoop $true
+
+  $autoReadOnlySynthesisOnly = Join-Path $tempRoot "auto-read-only-synthesis-only.txt"
+  @(
+    Get-Content -LiteralPath $autoReadOnlyMissingArtifact
+  ) + '- Durable completion artifact: mode=COORDINATOR_SYNTHESIS; path=docs/internal/E1_R2_SYNTHESIS.md' |
+    Set-Content -LiteralPath $autoReadOnlySynthesisOnly -Encoding utf8
+  Invoke-Case "auto-read-only-synthesis-only-rejected" 2 `
+    $autoReadOnlySynthesisOnly $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("AUTO-CHAIN-DURABLE-TERMINAL-ARTIFACT") `
+    -DestinationTaskKind "FRESH_GOVERNED_WORKTREE" `
+    -DestinationRuntimeEvidence "GOVERNED_START" -TaskMode "READ_ONLY" `
+    -AutomatedCompletionLoop $true
+
+  $autoReadOnlyDurable = Join-Path $tempRoot "auto-read-only-durable.txt"
+  @(
+    Get-Content -LiteralPath $autoReadOnlyMissingArtifact
+  ) + '- Durable completion artifact: mode=WORKER_REPORT; path=docs/internal/E1_R2_REPORT.md' |
+    Set-Content -LiteralPath $autoReadOnlyDurable -Encoding utf8
+  Invoke-Case "auto-read-only-worker-report-accepted" 0 `
+    $autoReadOnlyDurable $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("automated_completion=True", "PASS") `
+    -DestinationTaskKind "FRESH_GOVERNED_WORKTREE" `
+    -DestinationRuntimeEvidence "GOVERNED_START" -TaskMode "READ_ONLY" `
+    -AutomatedCompletionLoop $true
 
   $gateWithoutDecisionScope = Join-Path $tempRoot "gate-without-workflow-decision-scope.txt"
   $gateWithoutDecisionScopeLines = @(Get-Content -LiteralPath $validPrompt) | ForEach-Object {

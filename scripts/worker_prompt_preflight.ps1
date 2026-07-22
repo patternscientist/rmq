@@ -43,6 +43,8 @@ param(
   [ValidateSet("WRITE", "READ_ONLY")]
   [string]$TaskMode = "WRITE",
 
+  [switch]$AutomatedCompletionLoop,
+
   [string]$WorkerBranch = "",
 
   [string]$RepositoryRoot
@@ -186,6 +188,21 @@ try {
     $value = $match.Groups[1].Value.Trim()
     if ($value.Length -lt $field.MinLength -or $value -match '^[xX. _-]+$') {
       Stop-Preflight "prompt field '$($field.Label)' is not substantively populated"
+    }
+  }
+
+  if ($AutomatedCompletionLoop -and $TaskMode -eq "READ_ONLY") {
+    $durableArtifact = [regex]::Match(
+      $promptText,
+      '(?m)^- Durable completion artifact:\s*mode=WORKER_REPORT;\s*path=(\S.+?)\s*$'
+    )
+    if (-not $durableArtifact.Success) {
+      Stop-Preflight "AUTO-CHAIN-DURABLE-TERMINAL-ARTIFACT requires a read-only WORKER_REPORT at one exact path"
+    }
+    $durablePath = $durableArtifact.Groups[1].Value.Trim()
+    if ($durablePath -match '(?i)\b(this|the)\s+(task|chat|thread)\b' -or
+        $durablePath -notmatch '(?i)\.(md|txt|json|csv|lean)$') {
+      Stop-Preflight "AUTO-CHAIN-DURABLE-TERMINAL-ARTIFACT requires an exact file path with a durable extension"
     }
   }
 
@@ -396,6 +413,7 @@ try {
   Write-Host "WORKER-PROMPT-PREFLIGHT: semantic_review=$SemanticContractReviewStatus"
   Write-Host "WORKER-PROMPT-PREFLIGHT: destination_task=$DestinationTaskKind"
   Write-Host "WORKER-PROMPT-PREFLIGHT: destination_runtime=$DestinationRuntimeEvidence"
+  Write-Host "WORKER-PROMPT-PREFLIGHT: automated_completion=$($AutomatedCompletionLoop.IsPresent)"
   Write-Host "WORKER-PROMPT-PREFLIGHT: PASS"
   exit 0
 } catch {

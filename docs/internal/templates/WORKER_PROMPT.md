@@ -14,6 +14,9 @@ Coordinator launch metadata (do not paste into the worker prompt):
 - Destination runtime evidence: [VERIFIED_CURRENT / GOVERNED_START / UNKNOWN /
   STALE]. A returning task requires an explicit current runtime inventory;
   repository skill files or a later branch switch are not runtime evidence.
+- Automated completion loop: [YES / NO]. When YES for a read-only task, pass
+  `-AutomatedCompletionLoop` to prompt preflight and require the worker-owned
+  durable completion artifact below.
 - Worker handle, fresh/returning chat, exact model variant/reasoning/service
   mode, exact governance SHA, exact worker-base SHA, and branch.
 - Run `scripts/worker_prompt_preflight.ps1` for every emitted prompt artifact
@@ -47,6 +50,10 @@ Checkout contract:
 - Exact base/target commit: [BASE_BRANCH_OR_COMMIT].
 - Durable disposition for material read-only work: [REPORT PATH / COORDINATOR
   SYNTHESIS TARGET].
+- Durable completion artifact: mode=[WORKER_REPORT / COORDINATOR_SYNTHESIS];
+  path=[EXACT FILE PATH]. Automated read-only tasks must use `WORKER_REPORT`
+  and an exact file path; chat/task history and a future synthesis are not the
+  terminal deliverable.
 - For a write task, create branch exactly [WORKER_BRANCH] in a fresh worktree
   and report its path.
 - For a read-only task, inspect the exact commit without creating a branch;

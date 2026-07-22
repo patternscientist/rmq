@@ -200,6 +200,19 @@ turn the normal coordinator cycle into an audited worker chain:
    evidence that the worker is active or terminal. Retry only on the next
    scheduled heartbeat unless an explicit user turn requests an immediate
    status reconstruction.
+   `AUTO-CHAIN-DURABLE-TERMINAL-ARTIFACT`: every automated read-only task whose
+   result is material to an audit, architecture choice, or roadmap disposition
+   must write its complete final response to one exact predeclared artifact
+   path before it may report completion. The compact monitor tail is status
+   metadata, not the deliverable, and "return it in this task" or a future
+   coordinator synthesis is not durable enough for an automated terminal
+   audit. Pass `-AutomatedCompletionLoop` to `worker_prompt_preflight.ps1`;
+   for `READ_ONLY` prompts it requires
+   `Durable completion artifact: mode=WORKER_REPORT; path=<exact file>`.
+   Verify the artifact's byte length and digest before auditing it. If task
+   completion is reported without that artifact, request only a verbatim
+   persistence turn and do not infer or reconstruct substantive content from
+   the compact tail.
 3. On completion, treat the response as untrusted, run the full completed-
    worker audit at its exact commit, complete the failure-mode feedback loop,
    and only then engineer successor prompts from the current roadmap.

@@ -4900,3 +4900,64 @@ Publication-facing significance:
 This is process governance, but it protects publication-facing asymptotic and
 machine claims from being stated with vacuous quantifiers or mismatched stored
 and executed objects.
+
+## WDD-20260722-001: automated read-only tasks preserve complete terminal artifacts
+
+Status: Accepted.
+Date: 2026-07-22.
+Scope: automated completion monitoring for material read-only architecture,
+audit, and roadmap tasks.
+
+Decision:
+
+`AUTO-CHAIN-DURABLE-TERMINAL-ARTIFACT` requires every automated material
+read-only worker to write its complete final response to one exact
+worker-owned artifact path. The launch prompt must declare
+`Durable completion artifact: mode=WORKER_REPORT; path=<exact file>`, and
+`worker_prompt_preflight.ps1 -AutomatedCompletionLoop` rejects a read-only
+READY_TO_SEND prompt without it. A compact monitor tail remains status metadata
+only. A completed task missing the artifact receives at most a verbatim
+persistence follow-up before substantive audit.
+
+Trigger and named regression:
+
+E1-ARCH1-R2 correctly wrote its Lean signature probe but returned the complete
+38,664-byte architecture contract only in chat. The governed compact monitor
+retained 500 characters by design, so the coordinator could classify the task
+as terminal but could not audit the producer and decision tables without a
+second persistence turn. The exact R2 launch prompt is the named negative
+fixture: it says to return the contract "in this task" and names only a probe
+directory, so the new automated read-only preflight rejects it.
+
+Rejected alternatives:
+
+- Emit the raw terminal thread response and reintroduce oversized-status
+  truncation.
+- Treat the compact 500-character tail as the architecture deliverable.
+- Rely on a future coordinator synthesis after the only full response has
+  become unavailable.
+- Require every read-only task to create a Git branch solely for its report.
+
+Consequences:
+
+- Automated terminal audits can reconstruct the entire untrusted worker claim
+  without reopening or serializing a large task transcript.
+- The rule preserves report-only visualization output and does not require a
+  source branch or public artifact.
+- Non-automated read-only scouts retain the accepted report-or-immediate-
+  synthesis policy of WDD-20260710-001.
+- No mathematical, trust, payload, machine, or cost claim changes.
+
+Verification:
+
+- `worker_prompt_preflight_regression.ps1` rejects an automated read-only
+  prompt with no durable artifact and one offering coordinator synthesis only,
+  while accepting an exact worker-report path.
+- The exact E1-ARCH1-R2 launch wording is rejected by the new marker rule.
+- Strict workflow-design checking and `git diff --check` cover this governance
+  change before it becomes the accepted frontier.
+
+Publication-facing significance:
+
+None directly. The rule preserves complete evidence for later independent
+review of publication-facing architecture choices.
