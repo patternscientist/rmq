@@ -5658,3 +5658,141 @@ Publication-facing significance:
 
 Indirect. The rule prevents avoidable process deadlocks while preserving the
 strict provenance discipline around Lean and workflow changes.
+
+## WDD-20260722-007: frozen acceptance rows require strict UTF-8 byte integrity
+
+Status: Accepted; trigger correction recorded by WDD-20260722-008.
+Date: 2026-07-22.
+Scope: proof-sprint completion, completed-worker audit, and worker-prompt
+engineering for matrices with inherited frozen rows.
+
+Decision:
+
+`FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY` requires the worker and coordinator to
+decode the exact base blob and final candidate as strict UTF-8, map complete
+frozen rows by stable acceptance ID, reject missing or duplicate IDs, and
+compare the UTF-8 bytes of every inherited row before expensive verification.
+Counts, case-insensitive or normalized string comparisons, rendered Markdown,
+visual inspection, and locale-sensitive shell read/write round trips do not
+prove byte preservation. A mojibake scan is a required negative control but is
+not a substitute for exact equality.
+
+Trigger and corrected regression:
+
+The initial coordinator audit compared `git show` text decoded through the
+native-command path with the candidate worktree read by legacy-default
+`Get-Content -Raw`. That mixed-decoder comparison falsely displayed mojibake in
+`M1-06` and `REQ-M1R5R1-CATEGORY-WORDING`. A raw-byte read of both immutable Git
+objects followed by strict UTF-8 decoding found zero changed shared ID-table
+rows; both target rows contain the intended U+00AC and U+201C/U+201D code
+points in both objects. Therefore base
+`d8dccacd6ce4c5a45a9abff71db33d600c2ecaf1` versus candidate
+`deb38ee441d30701aa008101a6ec3f38066215a4` is the positive equality control,
+not a negative candidate regression. The named negative regression is the
+mixed-decoder evidence procedure itself: the rule must reject that procedure
+as incapable of establishing a byte difference.
+
+Rejected alternatives:
+
+- Treat mixed-decoder output as a candidate defect because the rendered strings
+  differ. The decoder mismatch, not the Git objects, caused the difference.
+- Search only for known mojibake spellings. Other Unicode corruption or
+  normalization changes would escape a finite sentinel list.
+- Compare normalized PowerShell strings. The defect arose through a
+  locale-sensitive text round trip, so normalization can conceal the failure.
+- Launch a repair worker before reproducing the alleged immutable-object
+  difference with one strict decoder.
+
+Consequences:
+
+- Frozen-row integrity becomes a cheap prerequisite to heavy proof or platform
+  verification.
+- Evidence must name the exact base/candidate refs, inherited count, and any
+  changed IDs.
+- A coordinator must validate an alleged byte difference from raw immutable
+  objects before rejecting a candidate or freezing a repair prompt.
+- The rule changes no theorem, payload, cost, trust, machine model, or public
+  claim.
+
+Verification:
+
+- Strict UTF-8 stable-ID comparison accepts the R6 base/candidate pair with zero
+  changed shared ID-table rows and accepts the base self-comparison.
+- The completion gate, coordinator checklist, and worker prompt template all
+  carry the same named rule.
+- Project-skill preflight, strict workflow-design checking, and
+  `git diff --check` certify the governance change before successor launch.
+
+Publication-facing significance:
+
+Indirect but material. Frozen acceptance language is part of the audit trail;
+byte-level preservation prevents tooling from silently changing the contract
+that later evidence and paper-facing claims are judged against.
+
+## WDD-20260722-008: named immutable regressions must be independently real
+
+Status: Accepted.
+Date: 2026-07-22.
+Scope: completed-worker audit, reusable failure-mode feedback, and worker/audit
+prompt engineering.
+
+Decision:
+
+`NAMED-REGRESSION-REALITY` requires the coordinator to reproduce every proposed
+immutable negative fixture from the exact objects before freezing or launching
+a successor prompt. The reproduction must use the same decoder, predicate,
+guards, quantifiers, and object mapping required by the successor. Worker prose,
+rendered shell output, mixed-decoder comparisons, and unverified coordinator
+inferences are not sufficient. If the named fixture does not exhibit the
+required failure, the prompt is `DRAFT_DO_NOT_SEND` and the prior disposition
+must be corrected.
+
+Trigger and named regression:
+
+The coordinator rejected M1-R5-R6 and launched M1-R5-R7 based on a PowerShell
+comparison that decoded the Git base and worktree candidate through different
+text paths. R7 correctly stopped because its mandatory negative regression was
+false. Strict raw-byte UTF-8 comparison of base
+`d8dccacd6ce4c5a45a9abff71db33d600c2ecaf1` and candidate
+`deb38ee441d30701aa008101a6ec3f38066215a4` found zero differences across all
+shared ID-table rows and exact equality for `M1-06` and
+`REQ-M1R5R1-CATEGORY-WORDING`. The mixed-decoder command is the named negative
+process regression; the strict raw-byte comparison is the positive control.
+
+Rejected alternatives:
+
+- Treat prompt preflight as proof that a named regression exists. Structural
+  preflight cannot validate semantic fixture truth.
+- Ask the repair worker to discover whether the coordinator's fixture is real.
+  That can waste a full task and freeze an impossible completion condition.
+- Keep the false candidate rejection while merely weakening R7. The correct
+  response is to retract the false finding and resume the original audit.
+- Remove strict byte-integrity checking. WDD-007's comparison rule is sound;
+  only its initial trigger and fixture interpretation were wrong.
+
+Consequences:
+
+- Semantic prompt review must include observed exact-fixture results, not just
+  fixture names and SHAs.
+- A formal worker obstruction that disproves a mandatory fixture is audited as
+  a potential coordinator-contract defect before any repair successor.
+- M1-R5-R7 produces no candidate; the M1-R5-R6 candidate returns to coordinator
+  audit under corrected governance.
+- No theorem, payload, cost, trust, machine, or public claim changes.
+
+Verification:
+
+- Python `subprocess.check_output` reads both Git blobs as bytes and strict
+  UTF-8 decoding reports zero changed shared ID-table rows, with the intended
+  Unicode code points present in both target rows.
+- The mixed PowerShell decoder path can display the false mojibake difference
+  and is rejected as byte-integrity evidence.
+- Coordinator failure-mode guidance and the worker prompt template carry the
+  same rule; strict workflow-design checking, project-skill preflight, and
+  `git diff --check` cover this governance correction.
+
+Publication-facing significance:
+
+Indirect but material. It prevents audit infrastructure from fabricating a
+documentary defect and then using that false premise to block or redirect a
+paper-facing milestone.

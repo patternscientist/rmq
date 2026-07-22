@@ -322,6 +322,12 @@ For each completed worker branch:
    requirements, named consumer, and inherited invariants. Inspect checked
    theorem types and expand load-bearing definitions; declaration names and
    documentation summaries are not evidence.
+   Apply `FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY` whenever inherited matrix rows
+   are claimed frozen, verbatim, or byte-for-byte preserved: decode the exact
+   base and candidate as strict UTF-8, map complete rows by stable ID, reject
+   missing/duplicate IDs, and compare the UTF-8 bytes of every inherited row
+   before heavy checks. Counts, normalized strings, rendered Markdown, and
+   worker-reported hashes do not establish preservation.
 5. For semantic liveness, coverage, ownership, refinement, or equivalence
    claims, perform a counterfactual mutation audit: add a dead source, remove a
    used source, replace the predicate by a tautology, or assign a consumer label
@@ -477,7 +483,13 @@ delegates the repair:
    representation abstraction.
 5. Use the failed candidate as a named regression fixture and verify the new
    rule would reject its exact evidence pattern without rejecting legitimate
-   weaker claims that are labeled accurately.
+   weaker claims that are labeled accurately. Reproduce that named regression
+   independently from the exact immutable objects, using the same checked
+   decoder, predicate, guards, and quantifiers the successor will require.
+   Never freeze or launch a prompt whose required negative fixture is supported
+   only by a mixed-decoder shell transcript, worker prose, or an unverified
+   coordinator inference; an unreal negative regression makes the repair
+   contract impossible.
 6. Only then engineer the next ambitious prompt set from the updated roadmap
    frontier.
 
