@@ -483,7 +483,13 @@ delegates the repair:
    representation abstraction.
 5. Use the failed candidate as a named regression fixture and verify the new
    rule would reject its exact evidence pattern without rejecting legitimate
-   weaker claims that are labeled accurately.
+   weaker claims that are labeled accurately. Reproduce that named regression
+   independently from the exact immutable objects, using the same checked
+   decoder, predicate, guards, and quantifiers the successor will require.
+   Never freeze or launch a prompt whose required negative fixture is supported
+   only by a mixed-decoder shell transcript, worker prose, or an unverified
+   coordinator inference; an unreal negative regression makes the repair
+   contract impossible.
 6. Only then engineer the next ambitious prompt set from the updated roadmap
    frontier.
 

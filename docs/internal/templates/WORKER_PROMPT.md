@@ -168,6 +168,12 @@ Acceptance contract:
   locale-sensitive shell round trips are not preservation evidence. Include a
   mojibake negative control, but do not use its absence as a substitute for
   exact equality.
+- `NAMED-REGRESSION-REALITY`: before a prompt requires an immutable negative
+  fixture to fail, the coordinator must independently reproduce that failure
+  from the exact objects with the same decoder, predicate, guards, and
+  quantifiers required in the prompt. Record the observed result. A mixed-
+  decoder transcript, worker narrative, or unverified inference cannot become
+  a mandatory negative control.
 - `REPLAY-SELECTOR-NONVACUITY`: focused selection must execute exactly one
   requested frozen ID and must reject unknown IDs. Add cheap named controls for
   an omitted middle ID, duplicated middle ID, valid frozen ID, and unknown ID.
