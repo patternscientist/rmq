@@ -149,6 +149,10 @@ foreach ($policyCase in @(
     @{
       Name = "public-identity-consumer-inventory-required"
       Literal = "Dependency-surface inventory"
+    },
+    @{
+      Name = "current-lean-source-comment-inventory-required"
+      Literal = "CURRENT-LEAN-SOURCE-COMMENT-COVERAGE"
     }
   )) {
   if (-not $coordinatorPolicy.Contains($policyCase.Literal)) {
@@ -195,7 +199,9 @@ try {
     Set-Content -LiteralPath (Join-Path $tempRoot "docs\internal\CLAIM_DRIFT_POLICY.json") -Encoding utf8
   "current reader" | Set-Content -LiteralPath (Join-Path $tempRoot "README.md") -Encoding utf8
   "current artifact" | Set-Content -LiteralPath (Join-Path $tempRoot "artifact\CLAIMS.md") -Encoding utf8
-  & git -C $tempRoot add policy.txt README.md artifact/CLAIMS.md docs/internal/CLAIM_DRIFT_POLICY.json
+  "/-- Current theorem and cost wording fixture. -/" |
+    Set-Content -LiteralPath (Join-Path $tempRoot "RMQPaper.lean") -Encoding utf8
+  & git -C $tempRoot add policy.txt README.md artifact/CLAIMS.md docs/internal/CLAIM_DRIFT_POLICY.json RMQPaper.lean
   & git -C $tempRoot -c commit.gpgSign=false commit --quiet -m "governance"
   $governanceRef = (& git -C $tempRoot rev-parse HEAD).Trim()
 
@@ -331,6 +337,33 @@ try {
   $currentSurfaceWithRegistryLines | Set-Content -LiteralPath $currentSurfaceWithRegistry -Encoding utf8
   Invoke-Case "current-surface-sync-with-attested-policy-registry-accepted" 0 `
     $currentSurfaceWithRegistry $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
+
+  $currentLeanCommentsWithoutInventory = Join-Path $tempRoot "current-lean-comments-without-inventory.txt"
+  $currentLeanCommentsWithoutInventoryLines = @(Get-Content -LiteralPath $validPrompt) | ForEach-Object {
+    if ($_ -match '^- Frozen acceptance IDs:') {
+      '- Frozen acceptance IDs: M1-08, M1R2-PUBLIC-WORDING, REQ-M1R5-CURRENT-FRONTIER-PRESERVATION.'
+    } else {
+      $_
+    }
+  }
+  $currentLeanCommentsWithoutInventoryLines | Set-Content -LiteralPath $currentLeanCommentsWithoutInventory -Encoding utf8
+  Invoke-Case "current-lean-source-comment-closure-without-inventory-rejected" 2 `
+    $currentLeanCommentsWithoutInventory $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("current-lean-source-comment-coverage-requires-attested-inventory")
+
+  $currentLeanCommentsWithInventory = Join-Path $tempRoot "current-lean-comments-with-inventory.txt"
+  $currentLeanCommentsWithInventoryLines = @($currentLeanCommentsWithoutInventoryLines) | ForEach-Object {
+    if ($_ -match '^- Write scope:') {
+      '- Write scope: RMQPaper.lean, its matrix, and directly required checks.'
+    } else {
+      $_
+    }
+  }
+  $currentLeanCommentsWithInventoryLines += '- Current-source-comment inventory: searched_terms=current theorem,current cost; inspected_paths=RMQPaper.lean; expected_repair_paths=RMQPaper.lean'
+  $currentLeanCommentsWithInventoryLines | Set-Content -LiteralPath $currentLeanCommentsWithInventory -Encoding utf8
+  Invoke-Case "current-lean-source-comment-closure-with-inventory-accepted" 0 `
+    $currentLeanCommentsWithInventory $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
 
   $identityWithoutConsumers = Join-Path $tempRoot "identity-without-consumers.txt"

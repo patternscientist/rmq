@@ -292,6 +292,66 @@ try {
     }
   }
 
+  $isCurrentLeanSourceCommentClosure =
+    $promptText -match '(?i)(?:CURRENT-LEAN-SOURCE-COMMENT-COVERAGE|\bM1-08\b|\bM1R2-PUBLIC-WORDING\b|\bREQ-M1R5-CURRENT-FRONTIER-PRESERVATION\b|theorem\s+docstrings?|Lean\s+source\s+comments?|current\s+(?:paper/)?source\s+wording)'
+  if ($isCurrentLeanSourceCommentClosure) {
+    $sourceCommentMatch = [regex]::Match(
+      $promptText,
+      '(?m)^- Current-source-comment inventory:\s*(.+?)\s*$'
+    )
+    if (-not $sourceCommentMatch.Success) {
+      Stop-Preflight "current-lean-source-comment-coverage-requires-attested-inventory: searched_terms, inspected_paths, and expected_repair_paths are required"
+    }
+
+    $sourceCommentValue = $sourceCommentMatch.Groups[1].Value
+    $sourceTermsMatch = [regex]::Match($sourceCommentValue, '(?:^|;)\s*searched_terms=([^;]+)')
+    $sourceInspectedMatch = [regex]::Match($sourceCommentValue, '(?:^|;)\s*inspected_paths=([^;]+)')
+    $sourceRepairMatch = [regex]::Match($sourceCommentValue, '(?:^|;)\s*expected_repair_paths=([^;]+)')
+    if (-not $sourceTermsMatch.Success -or
+        -not $sourceInspectedMatch.Success -or
+        -not $sourceRepairMatch.Success -or
+        [string]::IsNullOrWhiteSpace($sourceTermsMatch.Groups[1].Value) -or
+        [string]::IsNullOrWhiteSpace($sourceInspectedMatch.Groups[1].Value)) {
+      Stop-Preflight "current-lean-source-comment-coverage-requires-attested-inventory: searched_terms, inspected_paths, and expected_repair_paths are required"
+    }
+
+    $trackedWorkerPaths = @(
+      Invoke-Git @("ls-tree", "-r", "--name-only", $workerBaseSha) |
+        ForEach-Object { $_.Trim().Replace('\', '/') } |
+        Where-Object { $_ } |
+        Sort-Object -Unique
+    )
+    $sourceInspectedPaths = @(
+      $sourceInspectedMatch.Groups[1].Value -split ',' |
+        ForEach-Object { $_.Trim().Replace('\', '/') } |
+        Where-Object { $_ } |
+        Sort-Object -Unique
+    )
+    foreach ($sourcePath in $sourceInspectedPaths) {
+      if ($sourcePath -notmatch '(?i)\.lean$' -or $sourcePath -notin $trackedWorkerPaths) {
+        Stop-Preflight "current-lean-source-comment-coverage-path-not-tracked-lean: $sourcePath"
+      }
+    }
+
+    $sourceRepairPaths = @()
+    if ($sourceRepairMatch.Groups[1].Value.Trim() -ne 'NONE') {
+      $sourceRepairPaths = @(
+        $sourceRepairMatch.Groups[1].Value -split ',' |
+          ForEach-Object { $_.Trim().Replace('\', '/') } |
+          Where-Object { $_ } |
+          Sort-Object -Unique
+      )
+    }
+    foreach ($sourceRepairPath in $sourceRepairPaths) {
+      if ($sourceRepairPath -notin $sourceInspectedPaths) {
+        Stop-Preflight "current-lean-source-comment-coverage-repair-not-inspected: $sourceRepairPath"
+      }
+      if (-not $writeScopeLine.Contains($sourceRepairPath)) {
+        Stop-Preflight "current-lean-source-comment-coverage-repair-outside-write-scope: $sourceRepairPath"
+      }
+    }
+  }
+
   $isPublicIdentityMigration =
     $promptText -match '(?i)(?:HISTORICAL-[A-Z0-9-]+-IDENTITY|restore(?:\s+and)?\s+pin\s+(?:the\s+)?public\s+(?:historical\s+)?identity|(?:restore|rename|split|migrate|migration).{0,100}(?:public\s+theorem|historical\s+identity))'
   if ($isPublicIdentityMigration) {

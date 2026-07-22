@@ -122,6 +122,19 @@ the registry count/path set and verify every declared repair path is owned. A
 green strict scan is a lower bound, not evidence that the registry or term
 vocabulary is exhaustive.
 
+`CURRENT-LEAN-SOURCE-COMMENT-COVERAGE`: when a prompt inherits or claims
+closure of current paper/source wording, theorem docstrings, `M1-08`,
+`M1R2-PUBLIC-WORDING`, or `REQ-M1R5-CURRENT-FRONTIER-PRESERVATION`, inspect the
+relevant tracked Lean comments and docstrings from the exact worker base in
+addition to the Markdown policy registry. Put `- Current-source-comment
+inventory:` in the prompt with exact `searched_terms`, comma-separated tracked
+Lean `inspected_paths`, and `expected_repair_paths`. Search the import-root and
+the declaration-adjacent source comments that state the governed theorem,
+cost, topology, and live-universe facts. Every repair path must be both
+inspected and already owned by write scope. A passing strict claim scan or
+closed Markdown inventory is only a lower bound and cannot close a current
+source-wording row by itself.
+
 Put `Make the title of this chat exactly: ...` as the first line of the pasted
 worker prompt. A title shown only as identity metadata is not an instruction to
 rename the chat.

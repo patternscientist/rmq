@@ -4961,3 +4961,66 @@ Publication-facing significance:
 
 None directly. The rule preserves complete evidence for later independent
 review of publication-facing architecture choices.
+
+## WDD-20260722-002: current source-wording closure includes Lean comments
+
+Status: Accepted.
+Date: 2026-07-22.
+Scope: coordinator prompts and audits that close current paper/source wording,
+theorem-docstring, cost, topology, or live-universe acceptance rows.
+
+Decision:
+
+`CURRENT-LEAN-SOURCE-COMMENT-COVERAGE` requires an exact-base inventory of
+tracked Lean comments and docstrings whenever a prompt inherits or claims
+closure of `M1-08`, `M1R2-PUBLIC-WORDING`,
+`REQ-M1R5-CURRENT-FRONTIER-PRESERVATION`, or equivalent current source-wording
+requirements. The prompt records searched terms, inspected Lean paths, and
+owned expected repair paths. The policy-registry Markdown inventory and strict
+claim scan remain required where applicable, but are lower bounds rather than
+proof that Lean source wording is current.
+
+Trigger and named regression:
+
+Candidate `8211d85bcef1bff79022dc501599a8c6a20e958c` closed its current-wording
+rows after scanning the registered Markdown surfaces, while
+`RMQPaper.lean` still stated a uniform cost certificate of `207` instead of
+the checked `210` theorem and `ReviewerPhysical.lean` still described live
+logical sources as `0..20` instead of `0..22`. The external fresh-blind audit
+correctly rejected the candidate. The exact prior M1 repair prompt, which
+inherits those rows but lacks a Lean source-comment inventory, is the named
+negative regression.
+
+Rejected alternatives:
+
+- Expand only the Markdown path registry and continue treating Lean comments
+  as outside current public/source wording.
+- Accept a green strict scan as exhaustive evidence despite its configured
+  path boundary.
+- Ask the worker to discover relevant Lean comments after launch without
+  closing read and write scope in the prompt.
+- Patch the two observed comments without adding a reusable prompt-level
+  regression.
+
+Consequences:
+
+- Current source-wording claims now cover both registered documentation and
+  the relevant import-root/declaration-adjacent Lean prose.
+- Prompt preflight fails closed when the inventory is absent, names a non-Lean
+  or untracked inspected path, or assigns a repair outside write scope.
+- The rule adds no theorem, payload, machine-model, or cost assumption; it
+  prevents stale explanatory prose from surviving a formally correct change.
+
+Verification:
+
+- `worker_prompt_preflight_regression.ps1` rejects inherited current-wording
+  rows without the new inventory and accepts an exact tracked Lean fixture
+  whose repair path is owned.
+- The prior exact M1 repair prompt is rejected by the production preflight.
+- Parser checks, strict workflow-design checking, project-skill preflight, and
+  `git diff --check` cover the governance change before successor launch.
+
+Publication-facing significance:
+
+Indirect but material. The formal theorem was already correct; this rule keeps
+reviewer-facing Lean source commentary synchronized with it.

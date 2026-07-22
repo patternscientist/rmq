@@ -80,6 +80,15 @@ Roadmap contract:
   expected_repair_paths=comma-separated owned paths` FROM THE EXACT BASE.
   REQUIRE EVERY MATCHED PATH TO BE INSPECTED AND EVERY EXPECTED REPAIR PATH TO
   APPEAR IN WRITE SCOPE; OTHERWISE NOT_APPLICABLE].
+- Current-source-comment inventory: [FOR CURRENT PAPER/SOURCE WORDING,
+  THEOREM-DOCSTRING, M1-08, M1R2-PUBLIC-WORDING, OR
+  REQ-M1R5-CURRENT-FRONTIER-PRESERVATION CLOSURE, USE
+  `searched_terms=comma-separated exact facts/terms;
+  inspected_paths=comma-separated exact tracked Lean paths;
+  expected_repair_paths=comma-separated owned paths` FROM THE EXACT BASE.
+  INSPECT IMPORT-ROOT AND DECLARATION-ADJACENT COMMENTS FOR THE GOVERNED
+  THEOREM, COST, TOPOLOGY, AND LIVE-UNIVERSE FACTS. EVERY REPAIR PATH MUST BE
+  INSPECTED AND IN WRITE SCOPE; OTHERWISE NOT_APPLICABLE].
 - Dependency-surface inventory: [FOR A PUBLIC THEOREM/HISTORICAL-IDENTITY
   RESTORE, RENAME, SPLIT, OR MIGRATION, USE
   `searched_symbols=comma-separated exact declarations;
