@@ -144,6 +144,7 @@ try {
     @{ Pattern = "(?m)^- Goal:\s*\S.+$"; Name = "exact goal" },
     @{ Pattern = "(?m)^- Required theorem/file/tool:\s*\S.+$"; Name = "required target" },
     @{ Pattern = "(?m)^- Write scope:\s*\S.+$"; Name = "write scope" },
+    @{ Pattern = "(?m)^- Lifecycle dependency order:\s*\S.+$"; Name = "lifecycle dependency order" },
     @{ Pattern = "(?m)^- Non-goals:\s*\S.+$"; Name = "non-goals" },
     @{ Pattern = "(?m)^- Frozen acceptance IDs:\s*\S.+$"; Name = "frozen acceptance IDs" }
   )
@@ -174,6 +175,7 @@ try {
     @{ Label = "- Goal:"; MinLength = 24 },
     @{ Label = "- Required theorem/file/tool:"; MinLength = 24 },
     @{ Label = "- Write scope:"; MinLength = 24 },
+    @{ Label = "- Lifecycle dependency order:"; MinLength = 48 },
     @{ Label = "- Non-goals:"; MinLength = 16 },
     @{ Label = "- Frozen acceptance IDs:"; MinLength = 12 }
   )
@@ -214,6 +216,24 @@ try {
       $writeScopeLine -match 'scripts[\\/]gate\.ps1' -and
       $writeScopeLine -notmatch 'docs[\\/]internal[\\/]WORKFLOW_DESIGN_DECISIONS\.md') {
     Stop-Preflight "workflow-sensitive-write-scope-requires-wdd: scripts/gate.ps1 requires docs/internal/WORKFLOW_DESIGN_DECISIONS.md in the same write scope"
+  }
+
+  $requiresStrictDesignCheck =
+    $promptText -match '(?i)scripts[\\/]design_decision_check\.ps1\s+-Strict\b' -or
+    ($promptText -match '(?i)scripts[\\/]design_decision_check\.ps1' -and
+     $promptText -match '(?i)(?:^|\s)-Strict(?:\s|$)')
+  if ($TaskMode -eq "WRITE" -and $requiresStrictDesignCheck) {
+    if ($writeScopeLine -match '(?i)\.lean\b' -and
+        $writeScopeLine -notmatch 'docs[\\/]internal[\\/]DESIGN_DECISIONS\.md') {
+      Stop-Preflight "strict-design-check-code-scope-requires-dd: owned .lean paths require docs/internal/DESIGN_DECISIONS.md in the same write scope"
+    }
+
+    $ownsWorkflowSensitivePath =
+      $writeScopeLine -match '(?i)(?:scripts[\\/][^,`]*\.(?:ps1|psm1|psd1|py|sh|bash|js|mjs|cjs|ts|tsx|jsx)|\.agents[\\/]skills[\\/]|docs[\\/]internal[\\/]templates[\\/])'
+    if ($ownsWorkflowSensitivePath -and
+        $writeScopeLine -notmatch 'docs[\\/]internal[\\/]WORKFLOW_DESIGN_DECISIONS\.md') {
+      Stop-Preflight "strict-design-check-workflow-scope-requires-wdd: owned workflow-sensitive paths require docs/internal/WORKFLOW_DESIGN_DECISIONS.md in the same write scope"
+    }
   }
 
   $isCurrentSurfaceSync =
