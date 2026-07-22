@@ -5365,3 +5365,70 @@ Publication-facing significance:
 
 Indirect but material. The formal theorem was already correct; this rule keeps
 reviewer-facing Lean source commentary synchronized with it.
+
+## WDD-20260722-003: architecture capstones must be derived, not assumed
+
+Status: Accepted.
+Date: 2026-07-22.
+Scope: coordinator audit of machine/refinement architecture certificates and
+their same-object value-dependency claims.
+
+Decision:
+
+`ARCH-CONTRACT-NO-ASSUMED-CAPSTONE` rejects a certificate that stores the
+advertised final output/reference equality as a structure field or inductive
+terminal-constructor argument and then calls projection of that field a
+loaded-value derivation. A same-object machine certificate must instead carry
+a checked source-evaluator or state-simulation invariant: the base case derives
+the public result from the source evaluator, and every step transports the
+invariant through the exact executed transition and its actual loaded values.
+An oracle-mutation theorem closes value dependency only when it attacks that
+derived chain; contradiction with an already assumed capstone equality is not
+enough.
+
+Trigger and named regression:
+
+The E1-ARCH1-R3 signature probe compiled, fixed the source family, counted
+image, invalid packet, fixed planner, region discipline, and exact step
+semantics, but `DecodedExecutionToReference.done` still took
+`outputExact : decodeOutputPacket ... = currentReference ...` as an input.
+`finalOutputExact` projected that input, and
+`executedRefinement_rejects_arbitrary_reference` contradicted it. No invariant
+related decoded register contents to a source-evaluator intermediate. The
+negative fixture is `E1UniformFamilySignatureProbeR3.lean`, SHA-256
+`3AC29003AFBD5AF190294D305EAAF17BDB3C500BEADD9E194FD7B555785312AB`.
+
+Rejected alternatives:
+
+- Treat compileability plus an exact final-equality field as a derivation.
+- Accept an oracle-rejection lemma whose only premise is the same assumed
+  capstone equality.
+- Require only exact machine transitions; without a source-state invariant,
+  they do not establish that the output depends on the decoded loads.
+- Broaden the architecture or select a route before repairing this local
+  proposition-shape defect.
+
+Consequences:
+
+- Architecture workers must expose the actual simulation relation rather than
+  package the desired theorem as certificate data.
+- Coordinators can distinguish an honest future proof obligation from a
+  circular same-object capstone before serializer or machine implementation.
+- The rule changes no theorem, payload, cost, trust, or machine claim; it
+  strengthens evidence required to accept an architecture contract.
+
+Verification:
+
+- The exact R3 probe is the named negative regression and is rejected by the
+  new coordinator rule despite compiling without `sorryAx` or custom axioms.
+- The accepted pattern is a relation whose terminal case derives, rather than
+  receives, source/reference equality and whose step case transports a stated
+  source-state invariant through `StepCorrect` and loaded-value closure.
+- Project-skill preflight regression, strict workflow-design checking, and
+  `git diff --check` cover this governance change before successor launch.
+
+Publication-facing significance:
+
+Material. The distinction separates a checked executable refinement proof from
+a certificate that merely assumes the paper-facing output theorem it is meant
+to justify.
