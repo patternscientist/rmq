@@ -5091,3 +5091,70 @@ Publication-facing significance:
 Material. The distinction separates a checked executable refinement proof from
 a certificate that merely assumes the paper-facing output theorem it is meant
 to justify.
+
+## WDD-20260722-005: evidence-producing architecture lifecycles must be acyclic
+
+Status: Accepted.
+Date: 2026-07-22.
+Scope: coordinator prompt engineering, completed-worker audit, and automated
+architecture-worker chaining. WDD-20260722-004 remains reserved for the active
+M1 claim-policy repair.
+
+Decision:
+
+`ARCH-LIFECYCLE-ACYCLIC-EVIDENCE-ORDER` requires every worker prompt to state
+the dependency order among owner choices, evidence-producing tasks,
+evidence-dependent decisions, audits, and integration or publication. A
+decision whose justification depends on a task's output cannot be a
+prerequisite for launching that task. Coordinators must review the order as an
+acyclic producer-consumer graph before marking a prompt `READY_TO_SEND`.
+
+For architecture spikes, the normal order is two-phase: the owner approves the
+scope, machine model, acceptance gates, and allowed fallbacks before evidence
+collection; the route and successor acceptance matrix are selected only after
+the governed spike results exist. This process rule does not select a route.
+
+Trigger and named regression:
+
+The exact E1-ARCH1-R4 report, SHA-256
+`44EA3E5D07A525F8FE1FD97A8DD051A176AFD9D3BBCA358D1203C47159CD1922`,
+preserved a lifecycle that required all five owner decisions before E1-SER1,
+while its fifth decision explicitly depended on the real serializer and route
+spike results. The ordered sequence then placed those spikes after the gate.
+The report therefore made the evidence producer depend on its own consumer and
+could never lawfully launch E1-SER1.
+
+Rejected alternatives:
+
+- Treat the cycle as harmless wording because the Lean architecture probe is
+  valid. The lifecycle controls whether the next evidence can ever be produced.
+- Launch the serializer spike informally and repair the contract afterward.
+  That bypasses the frozen owner gate rather than resolving it.
+- Require all route choices before every spike. Output-dependent route choice
+  is precisely what the spike is intended to inform.
+- Add a route-specific exception. The defect is general to any evidence task
+  whose result is required by a pre-launch decision.
+
+Consequences:
+
+- `WORKER_PROMPT.md` and `worker_prompt_preflight.ps1` require a substantively
+  populated lifecycle dependency order.
+- `rmq-coordinator` must semantically review that order; structural preflight is
+  still only a lower bound.
+- The exact R4 prompt/report pattern is rejected because it lacks the new
+  attested order, while a two-phase producer-before-consumer fixture passes.
+- The R4 Lean probe remains usable evidence. Only its completion disposition
+  and lifecycle report require repair.
+
+Verification:
+
+- `worker_prompt_preflight_regression.ps1` rejects the named R4-shaped missing
+  lifecycle field and accepts a populated acyclic order.
+- PowerShell parser checks, strict workflow-design checking, project-skill
+  preflight, and `git diff --check` cover the governance change before the R5
+  successor launches.
+
+Publication-facing significance:
+
+Indirect but material. The rule prevents process contracts from deadlocking
+the experiments needed to choose and later justify the paper's architecture.

@@ -69,6 +69,10 @@ Roadmap contract:
 - Goal: [ONE SENTENCE EXACT TARGET]
 - Required theorem/file/tool: [EXACT TARGET]
 - Write scope: [PATHS]
+- Lifecycle dependency order: [ORDER THE PRE-LAUNCH OWNER CHOICES,
+  EVIDENCE-PRODUCING TASKS, EVIDENCE-DEPENDENT DECISIONS, AUDITS, AND
+  INTEGRATION/PUBLICATION. ASSERT THAT EVERY PRODUCER PRECEDES ITS CONSUMERS AND
+  THAT NO DECISION DEPENDING ON A TASK'S OUTPUT GATES LAUNCH OF THAT TASK].
 - Write-scope closure: if the task may edit `scripts/gate.ps1`, include
   `docs/internal/WORKFLOW_DESIGN_DECISIONS.md` in the same scope because the
   strict workflow-decision checker requires a durable process entry even for a

@@ -95,6 +95,17 @@ Every worker prompt should name:
 - completion report requirements, including branch name, worktree path, base
   branch, and commit hash for write tasks.
 
+`ARCH-LIFECYCLE-ACYCLIC-EVIDENCE-ORDER`: before launch, write the task's
+evidence and decision order explicitly. Separate owner choices that genuinely
+gate evidence collection from choices whose justification depends on that
+evidence. An output-dependent decision cannot be a prerequisite for launching
+the task that produces its evidence. Review the order as a dependency DAG:
+every producer must precede its consumers, and any cycle makes the prompt
+`DRAFT_DO_NOT_SEND` until the lifecycle is repaired. Preserve legitimate
+two-phase architecture governance: approve scope, model, and acceptance gates
+before a spike; choose the route or successor matrix only after the spike
+results exist.
+
 Close transitive write scope before launch. In particular, any prompt that may
 edit `scripts/gate.ps1` must also include
 `docs/internal/WORKFLOW_DESIGN_DECISIONS.md`; the strict workflow-decision check
@@ -155,9 +166,10 @@ specification. `READY_TO_SEND` always requires a populated template artifact
 and a passing preflight; title/SHA/skill/branch literals alone are insufficient.
 The preflight is a structural lower bound, not a semantic judge. Before
 `READY_TO_SEND`, reread the roadmap target, local-versus-node closure, frozen
-acceptance IDs, scope, forbidden shortcuts, verification, and report contract
-against source evidence; record semantic-contract review `COMPLETE` and pass it
-to the preflight. Trivial filler or merely long text is not a completed review.
+acceptance IDs, scope, lifecycle dependency order, forbidden shortcuts,
+verification, and report contract against source evidence; record
+semantic-contract review `COMPLETE` and pass it to the preflight. Trivial filler
+or merely long text is not a completed review.
 
 Before launch, verify that the worker's exact base contains the current
 workflow skill and prompt policy. If proof and workflow branches are siblings,

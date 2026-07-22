@@ -144,6 +144,7 @@ try {
     @{ Pattern = "(?m)^- Goal:\s*\S.+$"; Name = "exact goal" },
     @{ Pattern = "(?m)^- Required theorem/file/tool:\s*\S.+$"; Name = "required target" },
     @{ Pattern = "(?m)^- Write scope:\s*\S.+$"; Name = "write scope" },
+    @{ Pattern = "(?m)^- Lifecycle dependency order:\s*\S.+$"; Name = "lifecycle dependency order" },
     @{ Pattern = "(?m)^- Non-goals:\s*\S.+$"; Name = "non-goals" },
     @{ Pattern = "(?m)^- Frozen acceptance IDs:\s*\S.+$"; Name = "frozen acceptance IDs" }
   )
@@ -174,6 +175,7 @@ try {
     @{ Label = "- Goal:"; MinLength = 24 },
     @{ Label = "- Required theorem/file/tool:"; MinLength = 24 },
     @{ Label = "- Write scope:"; MinLength = 24 },
+    @{ Label = "- Lifecycle dependency order:"; MinLength = 48 },
     @{ Label = "- Non-goals:"; MinLength = 16 },
     @{ Label = "- Frozen acceptance IDs:"; MinLength = 12 }
   )

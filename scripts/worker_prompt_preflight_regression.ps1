@@ -44,6 +44,7 @@ function Write-Prompt(
     "- Goal: close the frozen E1 repair contract."
     "- Required theorem/file/tool: the checked E1 small-step capstone and validator."
     "- Write scope: E1 source, its matrix, and directly required checks."
+    "- Lifecycle dependency order: approve scope and model, run the evidence-producing repair, audit its exact output, then choose any output-dependent successor; no output-dependent decision gates its producer."
     "- Non-goals: no A1 refactor or public merge."
     ""
     "Acceptance contract:"
@@ -153,6 +154,10 @@ foreach ($policyCase in @(
     @{
       Name = "current-lean-source-comment-inventory-required"
       Literal = "CURRENT-LEAN-SOURCE-COMMENT-COVERAGE"
+    },
+    @{
+      Name = "architecture-lifecycle-must-be-acyclic"
+      Literal = "ARCH-LIFECYCLE-ACYCLIC-EVIDENCE-ORDER"
     }
   )) {
   if (-not $coordinatorPolicy.Contains($policyCase.Literal)) {
@@ -425,9 +430,17 @@ try {
   Invoke-Case "skeletal-prompt" 2 $skeletalPrompt $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("missing required populated section")
 
+  $e1R4CyclicLifecycle = Join-Path $tempRoot "e1-r4-cyclic-lifecycle.txt"
+  @(Get-Content -LiteralPath $validPrompt) | Where-Object {
+    $_ -notmatch '^- Lifecycle dependency order:'
+  } | Set-Content -LiteralPath $e1R4CyclicLifecycle -Encoding utf8
+  Invoke-Case "e1-r4-cyclic-lifecycle-field-missing" 2 `
+    $e1R4CyclicLifecycle $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("missing populated lifecycle dependency order")
+
   $trivialPrompt = Join-Path $tempRoot "trivial-fields.txt"
   $trivialLines = @(Get-Content -LiteralPath $validPrompt) | ForEach-Object {
-    if ($_ -match '^- (Node/join|Local owned rung|Roadmap-node closure condition|Goal|Required theorem/file/tool|Write scope|Non-goals|Frozen acceptance IDs):') {
+    if ($_ -match '^- (Node/join|Local owned rung|Roadmap-node closure condition|Goal|Required theorem/file/tool|Write scope|Lifecycle dependency order|Non-goals|Frozen acceptance IDs):') {
       ($_ -replace ':.*$', ': x.')
     } else {
       $_
