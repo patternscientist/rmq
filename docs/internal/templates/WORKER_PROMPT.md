@@ -77,6 +77,13 @@ Roadmap contract:
   `docs/internal/WORKFLOW_DESIGN_DECISIONS.md` in the same scope because the
   strict workflow-decision checker requires a durable process entry even for a
   comment-only gate edit.
+- Strict-design-check closure: if final verification mandates
+  `scripts/design_decision_check.ps1 -Strict`, include
+  `docs/internal/DESIGN_DECISIONS.md` whenever write scope contains a `.lean`
+  path, even for comments or docstrings, and include
+  `docs/internal/WORKFLOW_DESIGN_DECISIONS.md` whenever write scope contains a
+  workflow-sensitive script, skill, template, or gate path. The production
+  checker classifies paths, not semantic diff hunks.
 - Current-surface inventory: [FOR EXHAUSTIVE LIVE/CURRENT PUBLIC-SURFACE TASKS,
   USE `registry=docs/internal/CLAIM_DRIFT_POLICY.json;
   field=currentFactSurfacePathRegex; matched_count=N;

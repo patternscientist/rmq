@@ -5158,3 +5158,76 @@ Publication-facing significance:
 
 Indirect but material. The rule prevents process contracts from deadlocking
 the experiments needed to choose and later justify the paper's architecture.
+
+## WDD-20260722-006: strict design certification closes ledger write scope
+
+Status: Accepted.
+Date: 2026-07-22.
+Scope: coordinator worker-prompt engineering and preflight for strict branch
+design certification. WDD-20260722-004 remains reserved for the M1 claim-policy
+decision; WDD-20260722-005 governs acyclic evidence lifecycles.
+
+Decision:
+
+`STRICT-DESIGN-CHECK-WRITE-SCOPE-CLOSURE` requires a write prompt that mandates
+`scripts/design_decision_check.ps1 -Strict` to own every ledger path the
+production classifier can require from its declared write scope. An owned
+`.lean` path requires `docs/internal/DESIGN_DECISIONS.md`, even when only a
+comment or docstring changes. An owned workflow-sensitive script, skill,
+template, or gate path requires
+`docs/internal/WORKFLOW_DESIGN_DECISIONS.md`. A frozen prompt may not require
+strict certification while forbidding a required ledger companion.
+
+This is a prompt-closure rule, not a claim that every comment edit changes a
+theorem. The decision entry may state that theorem names, types, bodies,
+imports, payload, cost, trust, and executable behavior are byte-identical. The
+path must nevertheless be owned because the production checker intentionally
+classifies changed paths rather than attempting to interpret Lean diff hunks.
+
+Trigger and named regression:
+
+The exact M1-R5-R5 prompt owned `RMQPaper.lean` and
+`RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean`, required strict design
+checking after commit, and excluded `docs/internal/DESIGN_DECISIONS.md` from
+its exact write scope. The worker produced the two required comment repairs and
+six other in-scope changes on dirty base
+`cc52eecc149124e464eeb629ee14877df8b54e66`, but the production checker
+correctly exited 1 and required the forbidden ledger path. No commit could
+satisfy both prompt scope and final verification.
+
+Rejected alternatives:
+
+- Tell the worker to violate exact write scope after discovering the failure.
+- Skip or weaken the prompt's mandatory strict certification.
+- Special-case two filenames or this one M1 task.
+- Make the design checker parse Lean comments and theorem bodies merely to
+  rescue an under-scoped prompt; that would broaden the trust surface and make
+  path classification dependent on an incomplete semantic diff parser.
+- Discard the useful dirty work and silently relaunch the same contradictory
+  prompt.
+
+Consequences:
+
+- Worker prompt preflight rejects `.lean` plus strict-check contracts without
+  the code decision ledger and workflow-sensitive scopes without the workflow
+  decision ledger.
+- The named R5-R5-shaped regression fails before launch; a companion-ledger
+  scope passes.
+- A fresh M1 salvage task may inspect the dirty R5-R5 tree as untrusted
+  reference material but must rebuild and commit its own evidence from a clean,
+  current-governance private base.
+- The rule changes no theorem, payload, cost, machine model, claim, or public
+  surface.
+
+Verification:
+
+- `worker_prompt_preflight_regression.ps1` covers both missing-ledger rejection
+  and closed-scope acceptance.
+- PowerShell parser checks, strict workflow-design checking, project-skill
+  preflight, and `git diff --check` certify this governance change before the
+  successor prompt launches.
+
+Publication-facing significance:
+
+Indirect. The rule prevents avoidable process deadlocks while preserving the
+strict provenance discipline around Lean and workflow changes.

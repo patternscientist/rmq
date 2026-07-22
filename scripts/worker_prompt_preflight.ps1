@@ -218,6 +218,24 @@ try {
     Stop-Preflight "workflow-sensitive-write-scope-requires-wdd: scripts/gate.ps1 requires docs/internal/WORKFLOW_DESIGN_DECISIONS.md in the same write scope"
   }
 
+  $requiresStrictDesignCheck =
+    $promptText -match '(?i)scripts[\\/]design_decision_check\.ps1\s+-Strict\b' -or
+    ($promptText -match '(?i)scripts[\\/]design_decision_check\.ps1' -and
+     $promptText -match '(?i)(?:^|\s)-Strict(?:\s|$)')
+  if ($TaskMode -eq "WRITE" -and $requiresStrictDesignCheck) {
+    if ($writeScopeLine -match '(?i)\.lean\b' -and
+        $writeScopeLine -notmatch 'docs[\\/]internal[\\/]DESIGN_DECISIONS\.md') {
+      Stop-Preflight "strict-design-check-code-scope-requires-dd: owned .lean paths require docs/internal/DESIGN_DECISIONS.md in the same write scope"
+    }
+
+    $ownsWorkflowSensitivePath =
+      $writeScopeLine -match '(?i)(?:scripts[\\/][^,`]*\.(?:ps1|psm1|psd1|py|sh|bash|js|mjs|cjs|ts|tsx|jsx)|\.agents[\\/]skills[\\/]|docs[\\/]internal[\\/]templates[\\/])'
+    if ($ownsWorkflowSensitivePath -and
+        $writeScopeLine -notmatch 'docs[\\/]internal[\\/]WORKFLOW_DESIGN_DECISIONS\.md') {
+      Stop-Preflight "strict-design-check-workflow-scope-requires-wdd: owned workflow-sensitive paths require docs/internal/WORKFLOW_DESIGN_DECISIONS.md in the same write scope"
+    }
+  }
+
   $isCurrentSurfaceSync =
     $promptText -match '(?i)(?:CURRENT-SURFACE-SYNC|CURRENT-PUBLIC-SURFACES|currentFactSurfacePathRegex|every\s+(?:(?:registered|governed|live|current|public|documentation)\s+){0,5}surface|every\s+surface\s+registered)'
   if ($isCurrentSurfaceSync) {

@@ -158,6 +158,10 @@ foreach ($policyCase in @(
     @{
       Name = "architecture-lifecycle-must-be-acyclic"
       Literal = "ARCH-LIFECYCLE-ACYCLIC-EVIDENCE-ORDER"
+    },
+    @{
+      Name = "strict-design-check-write-scope-closed"
+      Literal = "STRICT-DESIGN-CHECK-WRITE-SCOPE-CLOSURE"
     }
   )) {
   if (-not $coordinatorPolicy.Contains($policyCase.Literal)) {
@@ -284,6 +288,33 @@ try {
   $gateWithDecisionScopeLines | Set-Content -LiteralPath $gateWithDecisionScope -Encoding utf8
   Invoke-Case "gate-strict-wdd-in-write-scope-accepted" 0 `
     $gateWithDecisionScope $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
+
+  $leanStrictWithoutDecisionScope = Join-Path $tempRoot "m1-r5-r5-lean-strict-without-design-scope.txt"
+  $leanStrictWithoutDecisionScopeLines = @(Get-Content -LiteralPath $validPrompt) | ForEach-Object {
+    if ($_ -match '^- Write scope:') {
+      '- Write scope: RMQPaper.lean, RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean, docs/internal/WORKFLOW_DESIGN_DECISIONS.md, and the matrix.'
+    } else {
+      $_
+    }
+  }
+  $leanStrictWithoutDecisionScopeLines += '- powershell -ExecutionPolicy Bypass -File scripts/design_decision_check.ps1 -Strict -Base 0000000000000000000000000000000000000000'
+  $leanStrictWithoutDecisionScopeLines | Set-Content -LiteralPath $leanStrictWithoutDecisionScope -Encoding utf8
+  Invoke-Case "m1-r5-r5-strict-dd-outside-write-scope-rejected" 2 `
+    $leanStrictWithoutDecisionScope $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("strict-design-check-code-scope-requires-dd")
+
+  $leanStrictWithDecisionScope = Join-Path $tempRoot "lean-strict-with-design-scope.txt"
+  $leanStrictWithDecisionScopeLines = @(Get-Content -LiteralPath $leanStrictWithoutDecisionScope) | ForEach-Object {
+    if ($_ -match '^- Write scope:') {
+      '- Write scope: RMQPaper.lean, RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean, docs/internal/DESIGN_DECISIONS.md, docs/internal/WORKFLOW_DESIGN_DECISIONS.md, and the matrix.'
+    } else {
+      $_
+    }
+  }
+  $leanStrictWithDecisionScopeLines | Set-Content -LiteralPath $leanStrictWithDecisionScope -Encoding utf8
+  Invoke-Case "lean-strict-with-design-scope-accepted" 0 `
+    $leanStrictWithDecisionScope $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
 
   $currentSurfaceWithoutRegistry = Join-Path $tempRoot "current-surface-without-registry.txt"

@@ -111,6 +111,18 @@ edit `scripts/gate.ps1` must also include
 `docs/internal/WORKFLOW_DESIGN_DECISIONS.md`; the strict workflow-decision check
 requires that companion even when the gate edit changes comments only.
 
+`STRICT-DESIGN-CHECK-WRITE-SCOPE-CLOSURE`: when a write prompt mandates
+`scripts/design_decision_check.ps1 -Strict`, derive its ledger obligations from
+every owned path before launch. Any owned `.lean` path requires
+`docs/internal/DESIGN_DECISIONS.md` in the same write scope, including
+comment-only or docstring-only Lean edits, because the production classifier is
+path-sensitive rather than semantic-diff-sensitive. Any owned workflow-sensitive
+script, skill, template, or gate path requires
+`docs/internal/WORKFLOW_DESIGN_DECISIONS.md`. Do not issue a prompt whose frozen
+scope forbids a ledger path that its mandatory strict certification requires.
+The ledger entry may explain that theorem bodies and types are unchanged, but
+the path must be owned so the worker can produce a certifiable final tree.
+
 For a prompt that restores, renames, splits, or migrates a public theorem or
 historical identity, close the Lean consumer surface before launch too. Record
 `- Dependency-surface inventory:` with the exact searched declaration symbols,
