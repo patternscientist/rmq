@@ -1231,7 +1231,7 @@ field is genuinely object-identical and anti-vacuous. The replay answers by
 compiling a weakened 211 certificate and paper theorem, then requiring the
 independent 210 expected type to reject it; the other 40 reject/one accept cases
 probe every field and public link. Coordinator exact-commit reconstruction and
-a fresh-blind audit remain mandatory before acceptance.
+a fresh-blind audit are downstream prerequisites for acceptance.
 
 ## 2026-07-20 M1-R5-R1 Safe-Store and Portable-Replay Repair
 
@@ -1275,3 +1275,96 @@ builds answer the first question; the load-bearing body checks plus the
 `R1LEGACY` mutation answer the second. Native Ubuntu process-group execution,
 fresh-blind exact-commit audit, coordinator acceptance, and integration remain
 downstream steps.
+
+## 2026-07-20 M1-R5-R2 Normalization-Safe Clean-Baseline Repair
+
+The R1 replay machinery correctly required a clean tracked worktree, clean
+untracked state, and clean index, but its shared Git wrapper changed the rules
+while observing them: every command forced `core.autocrlf=false`. In a fresh
+Windows worktree checked out under the host's `core.autocrlf=true`, ordinary
+Git and blob hashing agreed that the tree was clean, while that counterfactual
+observer reported broad modifications and stopped the replay before its
+selector tests.
+
+R2 changes the observer, not the clean-tree contract. Bounded state queries now
+retain the checkout's actual normalization configuration while still disabling
+the user-global excludes file so untracked files remain visible. A named
+temporary-repository regression commits a newline-bearing LF blob, explicitly
+checks it out with `core.autocrlf=true` as CRLF, and runs the production shared
+observer. It also reruns the same observer core with the rejected forced-false
+prefix to reproduce the false positive, then proves that real tracked,
+untracked, and staged/index changes still dirty their respective channels.
+
+The first native Ubuntu replay exposed a second portability assumption in the
+same shared boundary. PowerShell discovered both `/usr/bin/git` and `/bin/git`,
+and both `/usr/bin/setsid` and `/bin/setsid`; collecting `.Source` therefore
+produced an array where the process launcher requires one executable. The
+shared helper now collapses application aliases to the first scalar command-
+resolution path before either Git observation or POSIX launch. A named
+duplicate-alias regression exercises that production resolver, and the native
+child-spawning deadline control still uses `setsid` process-group ownership.
+
+Plain English: the gate now asks whether the checkout changed according to the
+checkout's own Git rules. It no longer invents a different line-ending policy
+for the inspection. That makes a clean Windows checkout portable without
+turning the clean-baseline check into a status-only or ignore-differences test.
+
+The live assumptions are unchanged. The replay still requires an initially
+clean repository, preserves process-tree ownership and deadlines, and leaves
+the 41 semantic cases, A01/A02 topology, 24-field certificate, segment-23
+boundary, cost-210 derivation, guarded list packet, and safe-store proof chain
+untouched. The fixture's local Git configuration exists only inside its
+validated temporary directory.
+
+A skeptical graduate student should next ask whether the exact committed tree
+reaches the selector, sleeper, startup, F21, policy, and topology verdicts on
+both Windows and native Ubuntu, rather than merely passing a synthetic config
+test. The final R3 ledger now answers that question with independently labeled
+Windows reconstruction, actual native `setsid` ownership, focused controls,
+and the reused byte-identical exact-source aggregate. Coordinator acceptance
+and fresh-blind audit are separate.
+
+## 2026-07-21 M1-R5-R3 Durable Portability Evidence
+
+R3 changes no implementation or theorem. It transfers the tested R2 scripts
+byte-for-byte from `aa6733c9b958b2b0048d95cb23286f76436d9cff` directly onto
+parent `334d22d0c6a3421cd73a95b42a5fa51e73edeff3`, then repairs the committed
+matrix and decision evidence that had still described the work as unfinished.
+The source proof chain remains actual execution/program/source topology to
+direct `segment < 23` containment, safe-to-ordered-dynamic agreement, complete
+`TraceResult` equality, current safe alias, guarded list packet, literal paper
+theorem, and independent expected-type checker. The compatibility-only legacy
+theorem does not return to that chain.
+
+The evidence is now provenance-aware. M1-R5-R3 independently ran the Windows
+parser, exact registry, CRLF/selector, focused claim, and A01 controls. It also
+ran real Ubuntu 24.04.4 LTS selector, deadline, portability, and topology
+portability controls under WSL2. The native route resolved `/usr/bin`/`/bin`
+aliases to scalar tools, used `setsid` process-group ownership, classified
+positive deadlines, and proved every recorded root and child absent. A first
+selector wrapper timeout and a five-second topology PID-receipt failure are
+kept as diagnosed scheduling evidence; successful materially revised retries,
+not those failures, support closure.
+
+Plain English: the code had already been repaired, but the repository still
+told two incompatible stories about whether the repair had been demonstrated.
+This commit makes the durable story match the executions without copying chat
+claims wholesale or pretending that deterministic POSIX planning is native
+execution. The one 3101.473-second aggregate from the byte-identical R2 source
+is labeled reused source/semantic coverage; R3 does not rerun the full 41-case
+replay, 16-case topology suite, broad Lean build, startup, F21, or expected-type
+build merely because evidence prose changed.
+
+Live assumptions are unchanged: the theorem uses the current supplied
+word-addressed store and cost model; payload bits, proof-only facts, modeled
+ticks, traces, and compiled execution behavior remain distinct;
+B7/E1/width/space facts and S1/E1/A1 separation are untouched.
+Coordinator reconstruction and the fresh-blind exact-commit audit are
+downstream certification, not substitutes
+for local evidence.
+
+A skeptical graduate student should next ask whether a fresh auditor, given
+only the final commit, can reproduce the direct-parent/one-commit/script-blob
+identity and independently obtain the same platform-sensitive verdicts. That
+is now the right next question: no local status cell asks for execution already
+claimed complete, and the remaining uncertainty belongs to independent audit.

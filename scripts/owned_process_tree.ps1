@@ -114,6 +114,35 @@ function Get-RMQPosixProcessGroupTarget([int]$RootProcessId) {
   return -1 * $RootProcessId
 }
 
+function Resolve-RMQScalarApplicationPath(
+    [object]$Application,
+    [string]$Label = 'application') {
+  foreach ($candidate in @($Application)) {
+    if ($null -eq $candidate) { continue }
+    $path = ''
+    if ($candidate -is [string]) {
+      $path = [string]$candidate
+    } else {
+      $pathProperty = $candidate.PSObject.Properties['Path']
+      if ($null -ne $pathProperty) {
+        $path = [string]$pathProperty.Value
+      } else {
+        $sourceProperty = $candidate.PSObject.Properties['Source']
+        if ($null -ne $sourceProperty) {
+          $path = [string]$sourceProperty.Value
+        }
+      }
+    }
+    if (-not [string]::IsNullOrWhiteSpace($path)) {
+      # Get-Command may report the same application through both /usr/bin and
+      # /bin on POSIX. Select the first command-resolution candidate, but never
+      # allow the collection itself to reach a scalar process-launch field.
+      return [string]$path
+    }
+  }
+  throw "$Label did not resolve to an executable path"
+}
+
 function Get-RMQOwnedLaunchPlan(
     [string]$FilePath,
     [string[]]$Arguments,
@@ -139,8 +168,9 @@ function Get-RMQOwnedLaunchPlan(
   }
   $setsidPath = $SetsidPathOverride
   if ([string]::IsNullOrWhiteSpace($setsidPath)) {
-    $setsid = Get-Command setsid -CommandType Application -ErrorAction Stop
-    $setsidPath = $setsid.Source
+    $setsidPath = Resolve-RMQScalarApplicationPath `
+      @(Get-Command setsid -CommandType Application -ErrorAction Stop) `
+      'setsid'
   }
   return [pscustomobject]@{
     Platform = 'Posix'
@@ -397,6 +427,19 @@ exit ([int]$LASTEXITCODE)
 }
 
 function Invoke-RMQOwnedProcessDeterministicTests {
+  $duplicateApplications = @(
+    [pscustomobject]@{ Path = '/first/tool'; Source = '/first/tool' },
+    [pscustomobject]@{ Path = '/second/tool'; Source = '/second/tool' })
+  $scalarApplication = Resolve-RMQScalarApplicationPath `
+    $duplicateApplications 'duplicate application fixture'
+  if ($scalarApplication -is [array] -or
+      $scalarApplication -cne '/first/tool') {
+    throw 'duplicate application aliases did not resolve to one scalar path'
+  }
+  Write-Host (
+    'OWNED-PROCESS application-path regression PASS ' +
+    '[M1R5R2-SCALAR-APPLICATION-PATH] duplicate aliases selected one path')
+
   $posix = Get-RMQOwnedLaunchPlan '/tmp/tool' @('one', 'two') `
     -Platform Posix -SetsidPathOverride '/usr/bin/setsid'
   if ($posix.Launcher -cne '/usr/bin/setsid' -or
@@ -419,37 +462,61 @@ function Invoke-RMQOwnedProcessDeterministicTests {
     '(Windows kill-on-close job; POSIX setsid/negative-pgid termination)')
 }
 
-function Assert-RMQCleanRepositoryStateText(
-    [string]$State,
-    [string]$Label = 'repository baseline') {
+function Split-RMQRepositoryStateText([string]$State) {
   $lines = @([regex]::Split($State, '\r?\n') |
     Where-Object { $_ -ne '' })
   $worktreeMarker = [Array]::IndexOf($lines, '---WORKTREE---')
   $indexMarker = [Array]::IndexOf($lines, '---INDEX---')
   if ($worktreeMarker -lt 0 -or $indexMarker -lt 0 -or
       $worktreeMarker -ge $indexMarker) {
-    throw "$Label state markers are missing or out of order"
+    throw 'repository state markers are missing or out of order'
   }
-  $dirty = @($lines | Where-Object {
-    $_ -cne '---WORKTREE---' -and $_ -cne '---INDEX---' })
+  $statusCount = $worktreeMarker
+  $worktreeCount = $indexMarker - $worktreeMarker - 1
+  $indexCount = $lines.Count - $indexMarker - 1
+  return [pscustomobject]@{
+    Status = @(if ($statusCount -gt 0) {
+      $lines | Select-Object -First $statusCount
+    })
+    Worktree = @(if ($worktreeCount -gt 0) {
+      $lines | Select-Object -Skip ($worktreeMarker + 1) `
+        -First $worktreeCount
+    })
+    Index = @(if ($indexCount -gt 0) {
+      $lines | Select-Object -Skip ($indexMarker + 1) -First $indexCount
+    })
+  }
+}
+
+function Assert-RMQCleanRepositoryStateText(
+    [string]$State,
+    [string]$Label = 'repository baseline') {
+  try {
+    $channels = Split-RMQRepositoryStateText $State
+  } catch {
+    throw "$Label $($_.Exception.Message)"
+  }
+  $dirty = @($channels.Status) + @($channels.Worktree) + @($channels.Index)
   if ($dirty.Count -ne 0) {
     throw "$Label is not clean: $($dirty -join ' | ')"
   }
 }
 
 function Invoke-RMQCheckedGit(
-    [string]$GitPath,
+    [object]$GitPath,
     [string]$RepositoryRoot,
     [string[]]$Arguments,
     [string]$Stage,
     [int]$DeadlineSeconds,
     [int]$OutputLimitBytes,
     [string]$TempRoot) {
+  # Disable only the user-global ignore file so untracked-state enforcement is
+  # deterministic. Repository/worktree normalization (including core.autocrlf
+  # and attributes) must remain exactly as checked out.
+  $resolvedGitPath = Resolve-RMQScalarApplicationPath $GitPath 'git'
   $result = Invoke-RMQOwnedBoundedProcess `
-    -FilePath $GitPath `
-    -Arguments (@(
-      '-c', 'core.excludesfile=', '-c', 'core.autocrlf=false') +
-      @($Arguments)) `
+    -FilePath $resolvedGitPath `
+    -Arguments (@('-c', 'core.excludesfile=') + @($Arguments)) `
     -WorkingDirectory $RepositoryRoot `
     -Stage $Stage `
     -DeadlineSeconds $DeadlineSeconds `
@@ -467,29 +534,52 @@ function Invoke-RMQCheckedGit(
   return @($result.Output)
 }
 
-function Get-RMQRepositoryStateBounded(
+function Get-RMQRepositoryStateBoundedCore(
     [string]$RepositoryRoot,
-    [string]$GitPath,
+    [object]$GitPath,
     [int]$DeadlineSeconds,
     [int]$OutputLimitBytes,
     [string]$TempRoot,
-    [string]$StagePrefix = 'git-state') {
+    [string]$StagePrefix,
+    [string[]]$StateQueryPrefix = @()) {
   $status = @(Invoke-RMQCheckedGit $GitPath $RepositoryRoot `
-    @('status', '--short', '--untracked-files=all') "$StagePrefix-status" `
+    (@($StateQueryPrefix) + @('status', '--short', '--untracked-files=all')) `
+    "$StagePrefix-status" `
     $DeadlineSeconds $OutputLimitBytes $TempRoot)
   $worktree = @(Invoke-RMQCheckedGit $GitPath $RepositoryRoot `
-    @('diff', '--raw', '--no-ext-diff', '--') "$StagePrefix-worktree" `
+    (@($StateQueryPrefix) + @('diff', '--raw', '--no-ext-diff', '--')) `
+    "$StagePrefix-worktree" `
     $DeadlineSeconds $OutputLimitBytes $TempRoot)
   $index = @(Invoke-RMQCheckedGit $GitPath $RepositoryRoot `
-    @('diff', '--cached', '--raw', '--no-ext-diff', '--') `
+    (@($StateQueryPrefix) +
+      @('diff', '--cached', '--raw', '--no-ext-diff', '--')) `
     "$StagePrefix-index" $DeadlineSeconds $OutputLimitBytes $TempRoot)
   return (@($status) + @('---WORKTREE---') + @($worktree) +
     @('---INDEX---') + @($index)) -join [Environment]::NewLine
 }
 
+function Get-RMQRepositoryStateBounded(
+    [string]$RepositoryRoot,
+    [object]$GitPath,
+    [int]$DeadlineSeconds,
+    [int]$OutputLimitBytes,
+    [string]$TempRoot,
+    [string]$StagePrefix = 'git-state') {
+  # Live observers deliberately provide no state-query config override.
+  return Get-RMQRepositoryStateBoundedCore `
+    -RepositoryRoot $RepositoryRoot `
+    -GitPath $GitPath `
+    -DeadlineSeconds $DeadlineSeconds `
+    -OutputLimitBytes $OutputLimitBytes `
+    -TempRoot $TempRoot `
+    -StagePrefix $StagePrefix
+}
+
 function Assert-RMQExpectedDirtyState(
     [string]$State,
-    [string]$Label) {
+    [string]$Label,
+    [ValidateSet('Any', 'Status', 'Worktree', 'Index')]
+    [string]$RequiredChannel = 'Any') {
   $message = $null
   try {
     Assert-RMQCleanRepositoryStateText $State $Label
@@ -499,11 +589,17 @@ function Assert-RMQExpectedDirtyState(
   if ($null -eq $message) {
     throw "$Label dirty fixture unexpectedly passed"
   }
-  Write-Host "CLEAN-BASELINE fixture PASS [$Label] $message"
+  $channels = Split-RMQRepositoryStateText $State
+  if ($RequiredChannel -cne 'Any' -and
+      @($channels.$RequiredChannel).Count -eq 0) {
+    throw "$Label did not dirty required $RequiredChannel channel"
+  }
+  Write-Host (
+    "CLEAN-BASELINE fixture PASS [$Label] channel=$RequiredChannel $message")
 }
 
-function Invoke-RMQCleanBaselineFixtureTests(
-    [string]$GitPath,
+function Invoke-RMQNormalizationSafeCleanBaselineFixtureTests(
+    [object]$GitPath,
     [int]$DeadlineSeconds,
     [int]$OutputLimitBytes,
     [string]$TempRoot) {
@@ -531,36 +627,92 @@ function Invoke-RMQCleanBaselineFixtureTests(
     [void](Invoke-RMQCheckedGit $GitPath $fixtureRoot `
       @('config', 'user.name', 'RMQ Fixture') `
       'fixture-git-name' $DeadlineSeconds $OutputLimitBytes $fullTempRoot)
-    [IO.File]::WriteAllText($trackedPath, 'base', $utf8)
+    [void](Invoke-RMQCheckedGit $GitPath $fixtureRoot `
+      @('config', 'core.autocrlf', 'true') `
+      'fixture-git-autocrlf-true' $DeadlineSeconds $OutputLimitBytes `
+      $fullTempRoot)
+
+    # Commit a newline-bearing LF blob, then force a real checkout under the
+    # repository's explicit core.autocrlf=true setting. The resulting CRLF
+    # worktree is semantically clean only when state queries honor that setting.
+    [IO.File]::WriteAllText($trackedPath, "base`nsecond line`n", $utf8)
     [void](Invoke-RMQCheckedGit $GitPath $fixtureRoot @('add', 'tracked.txt') `
       'fixture-git-add-initial' $DeadlineSeconds $OutputLimitBytes $fullTempRoot)
     [void](Invoke-RMQCheckedGit $GitPath $fixtureRoot `
       @('commit', '--quiet', '-m', 'baseline') 'fixture-git-commit' `
       $DeadlineSeconds $OutputLimitBytes $fullTempRoot)
+    Remove-Item -LiteralPath $trackedPath -Force
+    [void](Invoke-RMQCheckedGit $GitPath $fixtureRoot `
+      @('checkout', '--', 'tracked.txt') 'fixture-git-crlf-checkout' `
+      $DeadlineSeconds $OutputLimitBytes $fullTempRoot)
+    $checkedOutText = $utf8.GetString([IO.File]::ReadAllBytes($trackedPath))
+    if (-not $checkedOutText.Contains("`r`n")) {
+      throw 'M1R5R2 CRLF fixture checkout did not contain CRLF newlines'
+    }
 
-    $clean = Get-RMQRepositoryStateBounded $fixtureRoot $GitPath `
-      $DeadlineSeconds $OutputLimitBytes $fullTempRoot 'fixture-clean'
-    Assert-RMQCleanRepositoryStateText $clean 'clean fixture'
-    Write-Host 'CLEAN-BASELINE fixture PASS [clean]'
+    # Re-run the same bounded production observer core with the rejected
+    # configuration prefix. It must produce the historical false positive on
+    # this exact clean checkout, proving that the positive result is causal.
+    # Change only mtime first so Git cannot reuse the checkout stat cache; the
+    # file bytes and index remain untouched.
+    [IO.File]::SetLastWriteTimeUtc(
+      $trackedPath, [DateTime]::UtcNow.AddSeconds(2))
+    $rejectedObserverState = Get-RMQRepositoryStateBoundedCore `
+      -RepositoryRoot $fixtureRoot `
+      -GitPath $GitPath `
+      -DeadlineSeconds $DeadlineSeconds `
+      -OutputLimitBytes $OutputLimitBytes `
+      -TempRoot $fullTempRoot `
+      -StagePrefix 'fixture-rejected-forced-autocrlf-false' `
+      -StateQueryPrefix @('-c', 'core.autocrlf=false')
+    Assert-RMQExpectedDirtyState $rejectedObserverState `
+      'M1R5R2 rejected forced-autocrlf=false observer' -RequiredChannel Worktree
 
-    [IO.File]::WriteAllText($trackedPath, 'dirty tracked', $utf8)
+    $clean = Get-RMQRepositoryStateBounded `
+      $fixtureRoot $GitPath $DeadlineSeconds $OutputLimitBytes $fullTempRoot `
+      'fixture-clean'
+    Assert-RMQCleanRepositoryStateText $clean `
+      'M1R5R2 autocrlf=true CRLF clean fixture'
+    Write-Host (
+      'CLEAN-BASELINE fixture PASS ' +
+      '[M1R5R2-CRLF-AUTOCRLF-CLEAN-BASELINE] ' +
+      'newline-bearing core.autocrlf=true checkout accepted; ' +
+      'forced-false counterfactual rejected')
+
+    [IO.File]::WriteAllText($trackedPath, "dirty tracked`nsecond line`n", $utf8)
     $dirtyTracked = Get-RMQRepositoryStateBounded $fixtureRoot $GitPath `
       $DeadlineSeconds $OutputLimitBytes $fullTempRoot 'fixture-dirty-tracked'
-    Assert-RMQExpectedDirtyState $dirtyTracked 'dirty tracked'
-    [IO.File]::WriteAllText($trackedPath, 'base', $utf8)
+    Assert-RMQExpectedDirtyState $dirtyTracked 'dirty tracked' `
+      -RequiredChannel Worktree
+    Remove-Item -LiteralPath $trackedPath -Force
+    [void](Invoke-RMQCheckedGit $GitPath $fixtureRoot `
+      @('checkout', '--', 'tracked.txt') 'fixture-git-restore-tracked' `
+      $DeadlineSeconds $OutputLimitBytes $fullTempRoot)
+    $cleanAfterTracked = Get-RMQRepositoryStateBounded $fixtureRoot $GitPath `
+      $DeadlineSeconds $OutputLimitBytes $fullTempRoot `
+      'fixture-clean-after-tracked'
+    Assert-RMQCleanRepositoryStateText $cleanAfterTracked `
+      'clean fixture after tracked mutation'
 
-    [IO.File]::WriteAllText($untrackedPath, 'dirty untracked', $utf8)
+    [IO.File]::WriteAllText($untrackedPath, "dirty untracked`n", $utf8)
     $dirtyUntracked = Get-RMQRepositoryStateBounded $fixtureRoot $GitPath `
       $DeadlineSeconds $OutputLimitBytes $fullTempRoot 'fixture-dirty-untracked'
-    Assert-RMQExpectedDirtyState $dirtyUntracked 'dirty untracked'
+    Assert-RMQExpectedDirtyState $dirtyUntracked 'dirty untracked' `
+      -RequiredChannel Status
     Remove-Item -LiteralPath $untrackedPath -Force
+    $cleanAfterUntracked = Get-RMQRepositoryStateBounded $fixtureRoot $GitPath `
+      $DeadlineSeconds $OutputLimitBytes $fullTempRoot `
+      'fixture-clean-after-untracked'
+    Assert-RMQCleanRepositoryStateText $cleanAfterUntracked `
+      'clean fixture after untracked mutation'
 
-    [IO.File]::WriteAllText($trackedPath, 'dirty staged', $utf8)
+    [IO.File]::WriteAllText($trackedPath, "dirty staged`nsecond line`n", $utf8)
     [void](Invoke-RMQCheckedGit $GitPath $fixtureRoot @('add', 'tracked.txt') `
       'fixture-git-add-staged' $DeadlineSeconds $OutputLimitBytes $fullTempRoot)
     $dirtyIndex = Get-RMQRepositoryStateBounded $fixtureRoot $GitPath `
       $DeadlineSeconds $OutputLimitBytes $fullTempRoot 'fixture-dirty-index'
-    Assert-RMQExpectedDirtyState $dirtyIndex 'dirty staged/index'
+    Assert-RMQExpectedDirtyState $dirtyIndex 'dirty staged/index' `
+      -RequiredChannel Index
   } finally {
     if (Test-Path -LiteralPath $fixtureRoot) {
       $resolved = [IO.Path]::GetFullPath($fixtureRoot)
@@ -571,4 +723,16 @@ function Invoke-RMQCleanBaselineFixtureTests(
       Remove-Item -LiteralPath $resolved -Recurse -Force
     }
   }
+}
+
+function Invoke-RMQCleanBaselineFixtureTests(
+    [object]$GitPath,
+    [int]$DeadlineSeconds,
+    [int]$OutputLimitBytes,
+    [string]$TempRoot) {
+  Invoke-RMQNormalizationSafeCleanBaselineFixtureTests `
+    -GitPath $GitPath `
+    -DeadlineSeconds $DeadlineSeconds `
+    -OutputLimitBytes $OutputLimitBytes `
+    -TempRoot $TempRoot
 }

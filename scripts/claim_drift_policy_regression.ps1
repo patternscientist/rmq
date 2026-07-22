@@ -619,18 +619,21 @@ function Test-SubprocessDeadlineControl {
 
 function Get-TrackedGitStatus {
   return (@(Invoke-BoundedGit -Arguments @(
-      "-c", "core.excludesfile=", "-c", "core.autocrlf=false",
+      "-c", "core.excludesfile=",
       "status", "--short", "--untracked-files=all"
     )) -join [Environment]::NewLine)
 }
 
 function Get-TrackedFileHashSnapshot {
+  # Observe the worktree/index under the repository's actual normalization
+  # configuration. Forcing core.autocrlf=false makes a clean CRLF checkout look
+  # dirty and prevents focused policy cases from reaching the scanner.
   $worktreeRaw = @(Invoke-BoundedGit -Arguments @(
-      "-c", "core.excludesfile=", "-c", "core.autocrlf=false",
+      "-c", "core.excludesfile=",
       "diff", "--raw", "--no-ext-diff", "--"
     ))
   $indexRaw = @(Invoke-BoundedGit -Arguments @(
-      "-c", "core.excludesfile=", "-c", "core.autocrlf=false",
+      "-c", "core.excludesfile=",
       "diff", "--cached", "--raw", "--no-ext-diff", "--"
     ))
   $matrixHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $repoRoot $matrixPath)).Hash.ToLowerInvariant()

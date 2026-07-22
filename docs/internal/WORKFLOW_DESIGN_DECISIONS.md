@@ -4815,3 +4815,188 @@ Publication-facing significance:
 None mathematically. The decision makes the evidence for the reviewer-facing
 machine theorem portable and falsifiable instead of platform- or baseline-
 dependent.
+
+## WDD-20260720-003: observe Git cleanliness under the checkout's normalization
+
+Status: Candidate decision; coordinator acceptance pending.
+
+Date: 2026-07-20
+
+Scope: M1 shared clean-baseline observation and its replay, topology, and claim-
+policy consumers.
+
+Decision:
+
+1. Bounded live Git-state queries may neutralize the user-global excludes file
+   so untracked files cannot disappear from the clean-baseline check, but they
+   must not override `core.autocrlf` or another repository/worktree
+   normalization setting. Status, tracked worktree diff, and cached/index diff
+   remain three independent fail-closed observations.
+2. The committed normalization regression creates an isolated repository,
+   explicitly sets `core.autocrlf=true`, commits a newline-bearing LF blob, and
+   checks the file out again so its worktree bytes contain CRLF. The production
+   shared observer must accept that state. The same observer core with the
+   rejected forced-`false` prefix must misclassify it, making the regression
+   causal rather than merely a clean-state example.
+3. The fixture then mutates one channel at a time: tracked worktree content,
+   untracked content, and staged/index content. Each mutation must dirty its
+   named channel, and restoration between cases must return to a genuinely
+   clean state.
+4. The claim-policy replay's parallel status/worktree/index snapshot follows
+   the same normalization rule so focused policy cases can execute in a fresh
+   CRLF checkout. This changes observation only; it does not relax its before/
+   after equality checks.
+
+Trigger and named regression:
+
+Fresh audit worktree at rejected candidate
+`334d22d0c6a3421cd73a95b42a5fa51e73edeff3` was clean under ordinary Git and
+had worktree/index blob identity for
+`RMQ/Core/UnionFind/Sequence.lean`, but the shared helper injected
+`-c core.autocrlf=false`. That counterfactual configuration reported broad
+modifications and stopped the M1 selector self-test at its live baseline before
+selector-boundary execution.
+
+- `M1R5R2-CRLF-AUTOCRLF-CLEAN-BASELINE`
+
+Rejected alternatives:
+
+- Rewrite global or local Git configuration before observing state.
+- Renormalize tracked files, refresh the index, or accept equality with a dirty
+  baseline.
+- Drop the tracked worktree diff and rely on `git status` alone.
+- Use a newline-free fixture, inherit the host's accidental setting, or copy a
+  second detector into the regression.
+- Treat a clean CRLF acceptance as sufficient without proving that real
+  tracked, untracked, and staged/index mutations still fail.
+
+Consequences:
+
+- A fresh worktree is judged by the normalization rules under which it was
+  actually checked out, so a representation-only CRLF/LF conversion is not a
+  false mutation.
+- Real repository dirt remains visible independently through status, worktree
+  diff, and index diff. The regression's local `core.autocrlf=true` setting is
+  confined to its validated temporary repository and is deleted with it.
+- Selector semantics, process-tree ownership, deadlines, mutation registries,
+  topology meanings, and the load-bearing safe-store proof chain are unchanged.
+
+Verification:
+
+- Coordinator independent Windows reconstruction at exact source
+  `aa6733c9b958b2b0048d95cb23286f76436d9cff` passed changed-script parsers in
+  2.7 seconds, the exact registry in 4.2 seconds, selector/CRLF/dirty channels
+  in 79.1 seconds, deadline in 98.3 seconds, portability in 97.7 seconds,
+  focused claim rejection/acceptance in 7.9/7.5 seconds, and A01 in 112.7
+  seconds. Roots 29192/20400 and children 10824/25064/20012 were absent as
+  applicable.
+- M1-R5-R3 independently passed Windows parsers in 1.9 seconds, the registry
+  in 2.6 seconds, selector/CRLF/dirty channels in 67.4 seconds, focused claims
+  in 7.6/7.4 seconds, and A01 in 92.3 seconds with child 19776 absent.
+- On Ubuntu 24.04.4 LTS / WSL2, exact-source selector, deadline, portability,
+  and topology portability passed in 335.2, 380.4, 352.4, and 351.3 seconds.
+  The real `setsid` stages left roots 1906/1905 and children 1951/2031 absent.
+  The topology control used the supported 20-second positive deadline after a
+  diagnosed 5-second child-PID receipt race; neither attempt left a survivor.
+- The M1-R5-R2 worker's one exact-source aggregate exited 0 in 3101.473
+  seconds with 41 semantic cases, strict policy, production lint, 16 topology
+  cases (14 reject/2 accept), build/examples, axiom checks, and `GATE PASS`.
+  M1-R5-R3 changes only documentary evidence and therefore did not duplicate
+  that full replay, topology suite, aggregate, startup, F21, expected-type
+  build, or broad Lean coverage. This reused result is source evidence, not
+  M1-R5-R3 independent certification.
+
+Publication-facing significance:
+
+None. This is evidence portability and repository-observation policy; it does
+not change a Lean theorem, payload, store, event, cost, query semantics, or
+reader-facing claim.
+
+## WDD-20260721-001: collapse application aliases before bounded launch
+
+Status: Candidate decision; coordinator acceptance pending.
+
+Date: 2026-07-21
+
+Scope: M1 shared bounded-process launcher and its Git-state consumers on POSIX.
+
+Decision:
+
+1. Every application value crossing into the shared bounded launcher must be
+   reduced to one nonblank scalar executable path. When PowerShell command
+   discovery returns aliases for the same application, the helper uses the
+   first command-resolution candidate and never passes the collection itself
+   to `Start-Process` or a scalar helper parameter.
+2. POSIX `setsid` discovery and bounded Git-state observation use the same
+   scalar resolver. Public Git-state entry points accept the unmodified result
+   of `Get-Command` so existing replay and topology consumers, including the
+   production lint, cannot stringify an application array before the shared
+   helper sees it.
+3. This resolution rule changes neither `PATH` nor Git configuration. It does
+   not bypass `setsid`, alter the release gate, weaken time/output bounds, or
+   replace process-group termination with root-only termination.
+
+Trigger and named regression:
+
+The historical trigger was the first native Ubuntu 24.04.4 LTS / PowerShell
+7.6.4 run at candidate `48ddc170530eeb9ebf496eba3aa329a972da5b69`.
+It reached the repaired M1 baseline and then failed before selector execution
+because both applications had two discoverable aliases:
+
+- `git`: `/usr/bin/git`, `/bin/git`
+- `setsid`: `/usr/bin/setsid`, `/bin/setsid`
+
+Their `.Source` collection reached scalar process parameter `FilePath` as
+`System.Object[]`. The committed production-helper regression is:
+
+- `M1R5R2-SCALAR-APPLICATION-PATH`
+
+Rejected alternatives:
+
+- Mutate `PATH`, delete `/bin` aliases, or configure the native environment to
+  hide the duplicate discovery result.
+- Convert an application array implicitly to the literal string
+  `System.Object[]` and rely on a later launch failure.
+- Patch each replay consumer with a copied `Select-Object -First 1` rule while
+  leaving the production topology lint or `setsid` discovery exposed.
+- Invoke the child directly without `setsid`, terminate only the root process,
+  or weaken the native deadline/descendant evidence requirement.
+
+Consequences:
+
+- Windows' single Git application result remains unchanged, while POSIX
+  aliases deterministically select one executable path.
+- Existing shared-helper consumers can pass a string, `ApplicationInfo`, or
+  application-result collection without changing clean-baseline semantics.
+- The release-gated Windows Job and POSIX session/process-group ownership,
+  redirected-output cap, timeout classification, and `finally` cleanup remain
+  the process policy.
+
+Verification:
+
+- The transferred source keeps the two-candidate production regression and
+  normalization fixture unchanged. M1-R5-R3 Windows reconstruction passed
+  parsers in 1.9 seconds, exact registry in 2.6 seconds, and the scalar alias /
+  selector / CRLF / dirty-channel path in 67.4 seconds; coordinator independent
+  reconstruction passed the corresponding selector control in 79.1 seconds.
+- Fresh exact-source Ubuntu 24.04.4 LTS execution passed M1 selector in 335.2
+  seconds, deadline in 380.4 seconds (root 1906 and child 1951 absent), and
+  portability in 352.4 seconds (root 1905 and child 1951 absent). It resolved
+  the real `/usr/bin` and `/bin` aliases to one scalar application and used
+  `setsid` process-group ownership.
+- The separate native topology portability consumer passed in 351.3 seconds
+  with `ownership=setsid-process-group`, child 2031 absent, and 20.132-second
+  cleanup. Its initial 5-second attempt had already passed scalar, CRLF,
+  selector, production-lint, and safe-dependency controls but lost the PID
+  receipt before timeout; no process survived, so the supported 20-second
+  retry is the positive ownership receipt.
+- Exact-source focused Windows claims and A01 passed independently, and the
+  one reused 3101.473-second aggregate covered the unchanged full semantic,
+  Lean, policy, and topology suites. Final documentary checks and the scoped
+  no-stale-row audit are recorded in the R3 matrix and immutable handoff.
+
+Publication-facing significance:
+
+None. This repairs executable discovery for the evidence machinery. It does
+not change the theorem chain, registry, topology, payload, store, trace, cost,
+or public claim surface.
