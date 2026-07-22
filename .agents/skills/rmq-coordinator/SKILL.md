@@ -354,6 +354,18 @@ For each completed worker branch:
    `lowerOrder`, width constant, or cost literal after seeing one instance does
    not establish a uniform `2n + o(n)`, logarithmic-width, or constant-cost
    theorem.
+   `ARCH-CONTRACT-NO-ASSUMED-CAPSTONE`: when a certificate claims that output
+   is derived from loaded values, a source evaluator, or a refinement chain,
+   reject any structure field or inductive terminal constructor that accepts
+   the final advertised output/reference equality as an input. A theorem that
+   merely projects that equality, or rejects an arbitrary oracle only by
+   contradicting the same assumed equality, proves consistency rather than
+   value dependency. Require a checked simulation/state invariant whose base
+   case derives the public result from the source evaluator and whose step
+   case transports that invariant through the exact loaded-value transition.
+   Use `E1UniformFamilySignatureProbeR3.lean` SHA-256
+   `3AC29003AFBD5AF190294D305EAAF17BDB3C500BEADD9E194FD7B555785312AB`
+   as the named negative regression.
 10. Trace returned values to charged reads and check the relevant value/state/
    route projection, not merely inequality of an aggregate record. Check actual
    evidence quantification and validity domain against the public claim; one
