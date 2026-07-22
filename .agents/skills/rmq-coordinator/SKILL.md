@@ -317,6 +317,17 @@ For each completed worker branch:
    inventory every read segment, physical offset, and the input-size relation
    for the one query-independent word width. Check that validity guards apply
    to every combined field or are connected by a theorem on the same domain.
+   For a proposed "checked proposition" or architecture certificate, reject
+   schematic ellipses, undefined load-bearing predicates, and object fields
+   that are counted but omitted from the execution object. Require either a
+   compiling isolated signature probe or exact existing declaration types.
+   `ARCH-CONTRACT-NONVACUOUS-FAMILY`: an asymptotic certificate must quantify a
+   size-indexed family and fix its little-o witness, constants, descriptor
+   bounds, and cost literals outside the per-instance certificate. Tie every
+   shape to that size explicitly. A certificate that chooses its own
+   `lowerOrder`, width constant, or cost literal after seeing one instance does
+   not establish a uniform `2n + o(n)`, logarithmic-width, or constant-cost
+   theorem.
 10. Trace returned values to charged reads and check the relevant value/state/
    route projection, not merely inequality of an aggregate record. Check actual
    evidence quantification and validity domain against the public claim; one

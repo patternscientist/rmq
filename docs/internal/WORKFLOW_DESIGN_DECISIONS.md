@@ -4822,3 +4822,81 @@ Publication-facing significance:
 
 None directly. This changes orchestration transport only, not any Lean theorem,
 trust claim, payload, machine model, or cost result.
+
+## WDD-20260721-003: architecture certificates must be uniform checked families
+
+Status: Accepted.
+Date: 2026-07-21.
+Scope: coordinator audit of proposed architecture theorem signatures and
+asymptotic machine certificates.
+
+Decision:
+
+1. A response may call a proposition or certificate checked only when its exact
+   declaration type already exists or a complete isolated signature probe
+   compiles. Ellipses, undefined load-bearing predicates, and prose-only object
+   composition remain architecture sketches.
+2. Every stored/code/descriptor object charged by a combined theorem must be
+   connected to the same execution and capacity model. Counting code cells in
+   space while executing an external unmodeled program does not close this
+   requirement; the contract must choose and state its ROM/RAM convention.
+3. An asymptotic claim must quantify one size-indexed family and fix the
+   little-o witness, width constants, descriptor bounds, and cost literals
+   outside individual instances. The contract must state the equality between
+   the public size and each shape's size.
+4. Per-instance existential choices of `lowerOrder`, width constants, or cost
+   literals cannot establish uniform `2n + o(n)`, `O(log n)` width, or constant
+   cost: a one-point witness can satisfy an unrelated global asymptotic
+   predicate vacuously.
+5. Architecture-selection spikes require deterministic, common pass objects
+   and tie-break rules. Terms such as "materially earlier," "compact," or
+   "removes a major theorem family" are planning judgments until translated
+   into frozen observable thresholds.
+
+Trigger and named regression:
+
+E1-ARCH1-R1 proposed `E1PackedImageCertificate n shape` with `lowerOrder` and a
+width constant chosen inside each instance, without `n = shape.size`. It called
+the pair checked while using undefined predicates and ellipses; counted
+`codeCells` in storage but omitted them from `flatCells` while `run` consumed an
+external program; and used subjective multi-spike switch conditions. The
+response correctly labeled the implementation future work, but the signature
+itself could not carry the claimed uniform theorem. The named regression
+`ARCH-CONTRACT-NONVACUOUS-FAMILY` rejects that exact evidence pattern while
+allowing an honestly labeled schematic study.
+
+Rejected alternatives:
+
+- Treat a syntactically detailed Lean-like block as checked architecture even
+  when it cannot elaborate.
+- Let each certificate choose an arbitrary global asymptotic witness after the
+  concrete instance is fixed.
+- Repair only prose around the certificate while leaving object composition or
+  quantifier order implicit.
+- Freeze an architecture using subjective spike comparisons without a common
+  test object and deterministic tie-break.
+
+Consequences:
+
+- Architecture studies may still use sketches, but must label them as sketches
+  and cannot close a checked-contract acceptance row with them.
+- Successor prompts state a compileable family-level signature before broad
+  implementation, reducing the chance that later proof work discovers a
+  vacuous asymptotic or mismatched execution object.
+- The rule adds no new mathematical assumption; it makes the intended theorem
+  quantifiers and object identity explicit earlier.
+
+Verification:
+
+- The E1-ARCH1-R1 exact response is the negative regression fixture.
+- Its successor must compile the complete signature probe, with no ellipses or
+  undefined predicates, and independently expand the quantifier order and
+  same-object chain.
+- Strict workflow-design checking, project-skill regression, and
+  `git diff --check` cover this governance change before integration.
+
+Publication-facing significance:
+
+This is process governance, but it protects publication-facing asymptotic and
+machine claims from being stated with vacuous quantifiers or mismatched stored
+and executed objects.
