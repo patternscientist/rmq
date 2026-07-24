@@ -1,0 +1,5 @@
+# Preserve archived E1 architecture prompt artifacts byte-for-byte.
+# Their SHA-256 identities are cited in the handoff dossier, so git must not
+# normalize their line endings on checkout or the identity claims break.
+docs/internal/e1_arch_prompts/** -text
+docs/internal/E1_ARCHITECTURE_COORDINATOR_HANDOFF.md -text
