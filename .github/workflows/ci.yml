@@ -11,6 +11,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # The strict design-decision scan diffs against HEAD~1 on push
+          # events; the default depth-1 checkout cannot resolve that base.
+          fetch-depth: 2
 
       - name: Install tools
         run: |

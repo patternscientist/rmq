@@ -6040,3 +6040,55 @@ Publication-facing significance:
 The repository can now distinguish a genuinely integrated reviewer-native M1
 theorem node from its candidate and audit checkpoints while preserving the
 supplied-store/charged-event scope that reviewers must see.
+
+## WDD-20260724-002: repair the three cold-runner CI defects exposed by the first a154983-based push
+
+Status: Recorded 2026-07-24. ID -002 is used because WDD-20260724-001 is
+recorded on `claude/e1-arch2-contract-repair-prep`; the two entries merge
+without collision.
+Date: 2026-07-24.
+Scope: `scripts/gate.ps1` stage ordering, `.github/workflows/ci.yml`
+checkout depth, `.github/workflows/artifact-repro.yml` log placement.
+
+Trigger:
+
+The push of `claude/e1-arch-handoff-durable` (first branch based on
+governance `a154983`, the M1 integration, to reach GitHub) failed both
+workflows, and `main`'s CI had been red since the `3e17b0a` push on
+2026-07-22. Three independent defects, all invisible on warm local
+checkouts:
+
+1. `scripts/gate.ps1` ran `m1_certificate_mutation_regression.ps1` before
+   `lake build RMQPaper`. The replay's `headline_axiom_check.lean` imports
+   `RMQPaper`, which is not in the default `RMQ` target, so on a cold
+   builder every case died with `unknown module prefix 'RMQPaper'` —
+   expected-REJECT cases failed for the wrong reason and the expected-ACCEPT
+   control failed outright. Same failure class as
+   `REPLAY-PROBE-TOOLCHAIN-ENV` (WDD-20260724-001, prep branch): evidence
+   stages must not assume modules the harness has not built.
+2. `artifact-repro.yml` teed the reproduction log into the repository
+   working tree; the M1 replay's `CLEAN-BASELINE/PORTABILITY` check
+   correctly rejected the untracked file. The log now goes to
+   `$RUNNER_TEMP`.
+3. `ci.yml` used the default depth-1 checkout while the strict
+   design-decision scan diffs against `HEAD~1` on push events
+   (`could not resolve base 'HEAD~1'`, the exact `main` failure). The
+   checkout now fetches depth 2, matching `artifact-repro.yml`.
+
+Decisions:
+
+- Build every library a replay's generated probes import before invoking
+  the replay in the aggregate gate; the M1 runner block itself (anchor
+  `M1R3-MUTATION-RUNNER-GATE-ANCHOR`) is unchanged and remains contiguous
+  for the `A02` topology mutation.
+- Workflow-level logs and packets live outside the working tree whenever a
+  downstream stage asserts baseline cleanliness.
+- Any CI step that diffs against a parent commit declares the checkout
+  depth it needs.
+
+Consequences:
+
+- The three fixes are one commit on `claude/fix-ci-m1-gate-order` (based on
+  `a154983`), verified by its own push runs before any merge to `main`.
+- No Lean source, theorem, matrix, or replay semantics changed; the M1
+  registry and its 41/1 verdict split are untouched.

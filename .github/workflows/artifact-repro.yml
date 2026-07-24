@@ -26,16 +26,18 @@ jobs:
 
       - name: Run artifact reproduction script
         shell: bash
+        # The log is written outside the working tree: the gate's M1 replay
+        # requires a clean baseline, and an untracked log file fails it.
         run: |
           set -o pipefail
-          scripts/reproduce_artifact.sh 2>&1 | tee artifact-reproduction.log
+          scripts/reproduce_artifact.sh 2>&1 | tee "$RUNNER_TEMP/artifact-reproduction.log"
 
       - name: Upload reproduction log
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: artifact-reproduction-log
-          path: artifact-reproduction.log
+          path: ${{ runner.temp }}/artifact-reproduction.log
 
       - name: Create audit packet
         if: always()

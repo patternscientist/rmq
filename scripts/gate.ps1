@@ -65,14 +65,17 @@ if ($LASTEXITCODE -ne 0) { Fail "design_decision_check_regression.ps1 found issu
 lake build
 if ($LASTEXITCODE -ne 0) { Fail "lake build failed" }
 
+# The M1 replay's headline check imports RMQPaper, which is not part of the
+# default RMQ target, so RMQPaper must be built before the replay runs on a
+# cold builder.
+lake build RMQPaper
+if ($LASTEXITCODE -ne 0) { Fail "lake build RMQPaper failed" }
+
 # M1R3-MUTATION-RUNNER-GATE-ANCHOR
 # The exact 41-case M1 certificate/public-dependency replay runs once in the
 # aggregate gate. Its exit code is propagated before later certification.
 & "$PSScriptRoot\m1_certificate_mutation_regression.ps1"
 if ($LASTEXITCODE -ne 0) { Fail "m1_certificate_mutation_regression.ps1 found issues" }
-
-lake build RMQPaper
-if ($LASTEXITCODE -ne 0) { Fail "lake build RMQPaper failed" }
 
 lake build RMQHub
 if ($LASTEXITCODE -ne 0) { Fail "lake build RMQHub failed" }
