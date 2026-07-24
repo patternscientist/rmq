@@ -6040,3 +6040,43 @@ Publication-facing significance:
 The repository can now distinguish a genuinely integrated reviewer-native M1
 theorem node from its candidate and audit checkpoints while preserving the
 supplied-store/charged-event scope that reviewers must see.
+
+## WDD-20260723-001: the coordinator handoff package lives in the repository
+
+Date: 2026-07-23. Scope: `docs/internal/` documentation only. Decided by: C05.
+No Lean, no claim surface, no acceptance, no launch authority conferred.
+
+**Context.** The E1 architecture dossier instructs its successor to
+"reconstruct the frontier from Git rather than from this prose." A survey of all
+refs found that the dossier itself, the frozen B3 route contract, and the B2 R4
+draft were **not in the repository** — they lived in a Downloads folder and a
+per-session `.codex` visualization directory. The practical consequence was
+concrete: a coordinator could not audit the B3 candidate against its frozen
+contract from a clone, because the document defining what that candidate owes
+was not in the clone. Per-session visualization directories are not durable.
+
+**Decision.** Commit the package under `docs/internal/`: an index naming the
+read order and trust level of each document; the dossier; the coordinator
+addendum; the B3 worker's terminal report; and the two frozen prompts under
+`e1_arch_prompts/`.
+
+Two conventions were applied deliberately.
+
+1. **The dossier is archived verbatim, not edited**, even though three defects
+   in it are known. Its own provenance sentence — that every named commit and
+   blob was resolved with Git while preparing it — would become false about an
+   edited copy, and this project's standing convention is to supersede in place
+   rather than overwrite. The corrections live in the addendum and are restated
+   at the top of the index, so the dossier can be read without acting on them.
+2. **The worker's terminal report is archived as the subject of an audit, not as
+   evidence for one**, and is labelled untrusted worker prose per
+   `AUDIT_PROTOCOL.md`. It is committed only because it existed solely in a chat
+   session and would otherwise be unrecoverable.
+
+**Rejected alternative.** Continuing to hand the package over out-of-band. That
+leaves the handoff exactly as durable as a Downloads folder, and it contradicts
+the reconstruct-from-git instruction the dossier itself issues.
+
+**Generalizable.** A handoff that tells its successor to trust only the
+repository must itself be in the repository. If an instruction cannot be
+followed literally from a clean clone, the packaging is part of the defect.

@@ -4688,3 +4688,37 @@ The reviewer-native supplied-store adequacy story is now a closed integrated
 theorem node with durable audit evidence. Publication prose must continue to
 state the charged-event and supplied-store boundaries and must not imply S1,
 E1, preprocessing, or conventional word-RAM closure.
+
+## DD-20260723-001: archived prompt contracts are pinned to exact bytes
+
+Date: 2026-07-23. Scope: `.gitattributes` only. Decided by: C05 while committing
+the E1 architecture handoff package. No Lean, no claim surface, no acceptance.
+
+**Context.** The E1 architecture dossier cites SHA-256 identities and byte sizes
+for two frozen prompt contracts, and states that those hashes were recomputed
+from disk. Committing the prompts into the repository put those identities at
+risk: the repository has `core.autocrlf=true` and, before this change, no
+`.gitattributes`. Both files are entirely CRLF. Git would therefore have stored
+them normalized to LF and checked them out as LF on Linux and macOS, so the
+recorded hashes would not reproduce anywhere except Windows.
+
+**Decision.** Mark `docs/internal/e1_arch_prompts/**` and the archived dossier
+`-text`, so git stores and restores their bytes exactly. The rule was committed
+*before* the artifacts themselves, because a `.gitattributes` added afterwards
+would not retroactively undo normalization applied at `git add` time.
+
+**Verification.** After commit, both blobs were re-hashed **from the git object
+store rather than the working tree** and reproduce the dossier's recorded values
+exactly: `EF0112772907E0005BF5B6A978EF7903957CFA0DEF948CF1FABB3F064165D320`
+(22,058 bytes) and
+`A3EC3C3077FEE9A34D34FBD745D393ED2DF9BAB92DA081CFDB79F5F6091A47CF`
+(18,623 bytes).
+
+**Rejected alternative.** Committing the prompts without the attribute and
+adjusting the recorded hashes to whatever git produced. That would have made the
+identities platform-dependent and silently invalidated every existing citation
+of them.
+
+**Generalizable.** Any artifact whose identity is cited by hash must be pinned
+`-text` before it is added, or its hash becomes a property of the checkout
+platform rather than of the artifact.
