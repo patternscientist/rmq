@@ -31,7 +31,23 @@ was `active` with a dirty worktree, and instructs the successor not to steer or
 duplicate it. **That task has since terminated.** Runbook step 3's "if active"
 branch no longer applies; the successor proceeds directly to terminal audit.
 
-Everything else I checked in the dossier held.
+**Defect 3 — deferred item 8 points at a file that is not on the mainline.**
+The dossier instructs the successor to correct P2-1 in
+`docs/internal/E1_FINAL_ARCHITECTURE_ADJUDICATION.md`. That file **does not
+exist at governance `a154983` or on `main`.** It exists only on the three
+*rejected* B2 branches (`codex/e1-arch2-b2-descriptor-closure-r1/r2/r3`, via
+commit `19b6d64` "Record incomplete E1 architecture adjudication"), alongside
+`RMQ/Validation/E1FinalArchitectureAdjudication.lean`. A successor following
+item 8 literally against a mainline checkout will not find the file. Either
+retarget the item or state the branch.
+
+Everything else I checked in the dossier held. Confirmed present and correct:
+governance `a154983` **is** local `main` and is an ancestor of it; all five
+accepted input commits (`1727de1`, `d3a2354`, `5173171`, `50c5f8c`, `c190616`)
+resolve; `scripts/project_skill_preflight.ps1` and
+`docs/internal/AUDIT_PROTOCOL.md` are both present at governance; and the B3
+candidate branch `codex/e1-arch2-b3-historical-route-r1` is reachable from the
+main clone.
 
 ---
 
@@ -217,7 +233,72 @@ and **reconstruct both from git before acting on either.**
 
 ---
 
-## 7. What this addendum does not establish
+## 7. The startup gate: verified passable, with one real trap
+
+I read `scripts/project_skill_preflight.ps1` at governance rather than assuming
+its behaviour, because a gate failure here stops C06 before any work and this
+campaign has already lost three workers to exactly that.
+
+**The gate is role-scoped, and it passes for a Claude coordinator.** The runtime
+check is `$missingRequiredRuntime = @($required | Where-Object { $_ -notin
+$runtimeSkills })` — it compares the runtime catalog **only against the skills
+declared required**, not against the full expected set. So invoking it with
+`-RequiredSkills rmq-coordinator` succeeds even though the Claude runtime
+exposes `rmq-audit` where governance defines `rmq-audit-prompt`. **That naming
+discrepancy does not fail the gate.**
+
+**But two adjacent conditions do fail it, and both are live:**
+
+1. `missingCheckout` / `missingWorking` iterate over **all three** expected
+   skills, so C06 must work from a checkout that contains `.agents/skills/`
+   with all three present and byte-identical to governance. Any descendant of
+   `a154983` satisfies this; a detached or partial checkout may not.
+2. `if ($runtimeSkills.Count -eq 0) { $failures += "runtime_catalog_omitted" }`.
+   **`.claude/skills/` exists only on `claude/rmq-formalization-coordinator-bd7045`,
+   not on `main`.** A Claude session started in a checkout of `main` may
+   therefore expose no project skills at all and hard-stop on an empty runtime
+   catalog. A session started on the coordinator branch gets three wrappers —
+   but the audit wrapper is named `rmq-audit` and defers to `.agents/skills/rmq-audit`,
+   **a path that no longer exists at governance.** That is a genuine but
+   *non-blocking* defect: it degrades audit-prompt engineering, not the
+   coordinator gate.
+
+**Recommendation:** C06 should run the gate with its *actual* catalog string and
+`-RequiredSkills rmq-coordinator`, and should not silently substitute. If it
+hard-stops on `runtime_catalog_omitted`, that is a workflow-repair condition
+(port the `.claude/skills` wrappers to `main` and repoint the audit wrapper at
+`rmq-audit-prompt`), not grounds for a disclosed fallback.
+
+## 8. The packaging problem — the largest handoff defect
+
+The dossier instructs its successor to "reconstruct the frontier from Git rather
+than from this prose." **The dossier itself, and every prompt artifact it
+depends on, are outside Git.**
+
+Verified by searching all refs:
+
+| Artifact | Location | In git? |
+|---|---|---|
+| `E1_ARCHITECTURE_COORDINATOR_HANDOFF.md` | `C:\Users\poin\Downloads\` | **No** |
+| `E1_ARCH2_B3ROUTE_R1_PROMPT.md` (frozen B3 contract) | `.codex\visualizations\…` | **No** |
+| `E1_ARCH2_B2DESC_R4_PROMPT.md` (draft) | `.codex\visualizations\…` | **No** |
+| B1/PRE*/B3-matrix/source-port evidence | repo commits | Yes |
+| B3 candidate branch | `codex/e1-arch2-b3-historical-route-r1` | Yes |
+| This addendum | `claude/rmq-formalization-coordinator-bd7045` | Yes |
+
+The consequence is concrete: **C06 cannot audit the B3 candidate against its
+frozen contract from a git clone alone**, because the frozen prompt — the
+document defining what the candidate owes — exists only in a per-session
+visualization directory. The same applies to any future coordinator, and those
+directories are not durable.
+
+**Recommendation:** commit the dossier and the frozen prompt artifacts into
+`docs/internal/` (the prompts as immutable evidence, clearly marked historical),
+so that the instruction to reconstruct from git becomes satisfiable. Until then
+they must be handed over out-of-band, and the handoff is only as durable as a
+Downloads folder.
+
+## 9. What this addendum does not establish
 
 - It does not audit B3 to acceptance. §2 verifies identity, cleanliness, path
   scope, and the obstruction's derivation — not the frozen-byte checks, the
