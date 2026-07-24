@@ -6040,3 +6040,44 @@ Publication-facing significance:
 The repository can now distinguish a genuinely integrated reviewer-native M1
 theorem node from its candidate and audit checkpoints while preserving the
 supplied-store/charged-event scope that reviewers must see.
+
+## WDD-20260724-001: contract-repair regressions from the B3 subtraction obstruction
+
+Status: Recorded 2026-07-24; adoption owed by the next replay/prompt designs.
+Date: 2026-07-24.
+Scope: frozen-contract authoring, mutation-registry inheritance, and replay
+toolchain environment.
+
+Trigger:
+
+The B3 R1 campaign lost a worker to a frozen clause ("ordered subtraction")
+that contradicted the accepted source definition it constrained, inherited a
+mutation row (`MUT-HIST-06G`) presuming the refuted branch, and committed a
+replay whose probe stage invokes bare `lean` without the project toolchain
+environment and therefore cannot go green (`unknown module prefix 'RMQ'`,
+discovered by C06 on 2026-07-24 when the upstream stages and build passed).
+
+Decisions:
+
+1. `FROZEN-CLAUSE-CONTRADICTS-ACCEPTED-DEFINITION` (C05 proposal, adopted):
+   a frozen contract clause about operation semantics must cite the accepted
+   source definition it constrains and preserve the full form of any
+   disjunction it inherits. Freeze-time check: read the constrained
+   definition's docstring before freezing the clause.
+2. `INHERITED-MUTATION-ROW-PRESUMES-REFUTED-BRANCH`: verbatim inheritance
+   ("without removal or weakening") is not satisfiable when an inherited
+   registry row presumes a branch the accepted execution refutes. The prompt
+   must name the governed deviation and cite the decision authorizing it,
+   instead of mandating verbatim inheritance.
+3. `REPLAY-PROBE-TOOLCHAIN-ENV`: any replay stage invoking `lean`/`lake` on
+   generated files must run under the project toolchain environment
+   (`lake env` or explicit `LEAN_PATH`) and must self-test module resolution
+   with a cheap probe before evidence-bearing stages run.
+
+Consequences:
+
+- The B3 R2 and B2 R4-successor prompts must wire all three as named
+  regressions their replays reject.
+- The R1 obstruction replay's probe defect is recorded as the concrete
+  instance; repairing it belongs to whichever branch next needs that replay
+  green, not to the immutable R1 candidate.
