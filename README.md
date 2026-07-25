@@ -220,10 +220,15 @@ At a high level, the repository currently includes:
 
 ## Model Scope
 
-The cost statements are model-relative. They use a small `Costed` layer and a
-traced RAM substrate with unit-cost indexed reads, word operations, branches,
-comparisons, and table accesses where explicitly modeled. They are not claims
-about Lean's executable `List` runtime.
+The cost statements are model-relative. They use a small `Costed` layer over a
+traced RAM substrate. On the canonical route every emitted event is an indexed
+payload-word read -- `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`
+-- so modeled cost is exactly the number of charged reads; the substrate's
+other event constructors are compatibility vocabulary the canonical route does
+not emit. Bounded controller work -- dispatch, arithmetic, branching,
+comparisons, decoding, local scanning, merging, trace assembly, and the
+validity guard -- is uncharged, and `artifact/CLAIMS.md` enumerates it. These
+are not claims about Lean's executable `List` runtime.
 
 The space statements count payload bits separately from proof-only fields and
 certificates. The succinct RMQ theorem counts the balanced-parentheses shape

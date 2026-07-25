@@ -41,10 +41,15 @@ distinct obligations. Earlier event-value and
 component may-read facts remain compatibility facts only.
 The unchanged canonical execution now has the checked principled charged-trace
 cap `210 = 2*35 + (2*11 + 2*37 + 33) + 11`, and modeled cost is exactly emitted
-trace length. Payload-word reads and word-rank/select primitives are charged;
-controller dispatch, input/register access, arithmetic, branching, decoding,
-local scanning, candidate merging, trace assembly, and the validity guard are
-currently uncharged. Earlier cost and dispatch theorems are documented only in
+trace length. Every event the canonical route emits is a payload-word read --
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` -- so
+modeled cost counts charged reads only. The `wordRank` and `wordSelect`
+constructors remain in the `WordRAM.TraceEvent` vocabulary as compatibility
+cases that the canonical route does not emit; they are not charged primitives
+of the current cost model. Controller dispatch, input/register access,
+arithmetic, branching, comparisons, decoding, local scanning, candidate
+merging, trace assembly, and the validity guard are bounded and currently
+uncharged. Earlier cost and dispatch theorems are documented only in
 the explicit
 [`compatibility history`](../docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
 This file is a compact public-facing map from headline claims to the exact

@@ -5077,3 +5077,64 @@ Consequences and evidence:
 - A4 is not run this runway. Nothing in this entry asserts any route fails.
 - Reversible: recording B2/B4 UNRESOLVED preserves every future option.
 - No Lean, matrix, or public claim changes by this entry.
+
+## DD-20260725-006: state the canonical charged-event boundary by its theorem, not by substrate vocabulary
+
+Status: Accepted 2026-07-25. Recorded by C06 under the ratified endgame plan
+(gap G5). Public claim-surface wording change; no theorem, payload, cost, or
+runtime implementation is affected.
+
+Date: 2026-07-25
+
+Context:
+
+Two registered current-fact surfaces contradicted each other and the kernel.
+`artifact/CLAIMS.md` said "Payload-word reads and word-rank/select primitives
+are charged", and `README.md` described the substrate as having unit-cost
+"indexed reads, word operations, branches, comparisons, and table accesses",
+while the same `CLAIMS.md` paragraph listed branching and comparisons among
+the *uncharged* controller operations.
+
+Both descriptions are inherited from before the 2026-07-17 cost-model fork
+(`DD-20260717-C05-001`), which adopted Option B and collapsed the charged
+events of the canonical route to memory reads. The `WordRAM.TraceEvent`
+inductive (`RMQ/Core/WordRAM.lean:103`) does still carry `wordRank` and
+`wordSelect` constructors, which is why the stale wording looked defensible on
+inspection — but they are substrate vocabulary, and a kernel theorem states
+that the canonical route never emits them:
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`
+(`RMQ/Headlines/RMQ.lean:595`) — every emitted event is `readWord`.
+
+Decision:
+
+Both surfaces now state the boundary by naming that theorem: every event the
+canonical route emits is a payload-word read, so modeled cost counts charged
+reads only; `wordRank`/`wordSelect` are identified as compatibility
+constructors the canonical route does not emit; and the bounded uncharged
+controller work is enumerated identically on both surfaces, with `README.md`
+pointing at `artifact/CLAIMS.md` as the enumeration of record.
+
+This *strengthens* the public statement rather than hedging it: a vague
+"primitives are charged" is replaced by a named kernel theorem, which is the
+direction the endgame plan's prime directive requires.
+
+Rejected alternatives:
+
+- Delete the offending clauses without attribution. That would remove the
+  contradiction while leaving the charged-event boundary described only in
+  prose, and the claim-drift policy already carries a rule
+  (`required-current-readword-only-theorem-attribution`) demanding that a
+  strong readword-only claim name its theorem.
+- Weaken to "some events are charged". Accurate but strictly less informative
+  than the theorem, and it would invite the reader to wonder which.
+- Defer to the G8 manuscript pass. The surfaces are reviewer-facing today and
+  the contradiction is between two of them; leaving it costs nothing to fix.
+
+Consequences and evidence:
+
+- Current-surface inventory derived from
+  `CLAIM_DRIFT_POLICY.json` `currentFactSurfacePathRegex`: 18 matched tracked
+  paths; exactly two changed (`README.md`, `artifact/CLAIMS.md`), both because
+  they carried the same stale boundary.
+- `claim_drift_scan.ps1 -Strict`: 1,472 classified hits, 0 strict failures.
+- No Lean source, theorem statement, constant, or trust boundary changed.
