@@ -6232,3 +6232,49 @@ Consequences:
   skills; their catalogs were established at launch.
 - `.agents/skills/` remains authoritative; wrappers must never duplicate its
   content.
+
+## WDD-20260725-002: a worker base must contain the runtime surface its own startup gate requires
+
+Status: Recorded 2026-07-25 by C06.
+Date: 2026-07-25.
+Scope: B3 R2 worker base and prompt pinning; general rule for governed base
+construction.
+
+Trigger:
+
+The first B3 R2 governed base, `348d351053f9acd5c759975053e5e6c30ccc8501`,
+joined the accepted source port with governance `d16adfc`. It satisfied the
+preflight's ancestry condition and the prompt preflight passed against it. It
+was nevertheless unusable for a Claude-runtime worker: it predates the
+`.claude/skills` port (`DD-20260725-001`), so a worker checked out there
+exposes no RMQ project skills and `project_skill_preflight.ps1` hard-stops on
+`runtime_catalog_omitted` — the exact failure the prompt instructs the worker
+not to work around.
+
+The near-miss is the point: every structural check passed while the base was
+still incapable of running the task. Governance-ancestry containment and
+runtime-surface containment are different properties, and only the first was
+being checked.
+
+Decisions:
+
+1. When constructing a governed worker base, verify that the base contains the
+   runtime surface the worker's own required role skill needs, not only that
+   governance is an ancestor. For Claude-runtime workers that means
+   `.claude/skills/<required-role>/` must exist at the base.
+2. Rebase-forward rather than launch: base `5ad7e487…` (parents `c190616` +
+   governance `f0c7232`) supersedes `348d351…`, and the prompt records the
+   superseded SHA with the reason so a successor cannot pick up the stale base
+   from an older artifact.
+3. Re-pin the prompt's governance ref, base SHA, and every base-parameterized
+   verification command together, then re-run `worker_prompt_preflight.ps1`.
+   Re-pinning one and not the others produces a prompt that passes preflight
+   while instructing the worker to certify against the wrong base.
+
+Consequences:
+
+- `project_skill_preflight.ps1` now returns `PASS` at governance `f0c7232`
+  against the v2 base with all four inventories equal, for both
+  `rmq-coordinator` and `rmq-proof-sprint`. The prior disclosed-fallback
+  posture recorded for this runtime no longer applies to the gate itself.
+- No Lean source, theorem, matrix, replay, or accepted blob changed.

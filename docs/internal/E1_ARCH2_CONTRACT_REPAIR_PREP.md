@@ -316,11 +316,24 @@ Recorded as `WDD-20260724-001` in
 
 ## 8. B3 R2 launch package — prepared, not launched
 
-**Governed base:** `348d351053f9acd5c759975053e5e6c30ccc8501` on branch
-`codex/e1-arch2-b3-historical-route-r2-governed-base`. Ordered parents are the
-accepted source port `c19061629ce8cf1e78992a99346170edd84b4971` and current
-governance `d16adfcfade361bfe0667aa628a447fb2cec5c30` (main after the M1
-integration and the cold-runner CI repair).
+**Governed base:** `5ad7e4876fed1d78bd76012e28d327d2d78b838c` on branch
+`codex/e1-arch2-b3-historical-route-r2-governed-base-v2`. Ordered parents are
+the accepted source port `c19061629ce8cf1e78992a99346170edd84b4971` and current
+governance `f0c7232a8a52b8d61ead5e96d72a8a849bc094b5`.
+
+This **supersedes** the first base `348d351…` (parents `c190616` +
+`d16adfc…`). That base was correct when built but became unusable once the
+gating blocker was diagnosed: it predates the `.claude/skills` port, so a
+Claude-runtime worker checked out there would still expose no RMQ project
+skills and would hard-stop on `runtime_catalog_omitted`. A worker base must
+contain the runtime surface its own startup gate requires.
+
+Both bases were built the same way and share the same append-union resolution
+discipline. The v2 union additionally leaves two distinct entries sharing
+`DD-20260723-001` and two sharing `WDD-20260723-001`, because the source-port
+and handoff lineages allocated the same date-sequence IDs independently;
+`WDD-20260719-001` was already duplicated on both sides. These IDs must be
+resolved by lineage and line number.
 
 The base was required because `c190616` predates the CI repair, so an R2
 checkout rooted at the source port alone would fail the project-skill
@@ -359,8 +372,12 @@ It applies deltas 1-6 of §4 and adds three things the R1 contract lacked:
 `destination_task=FRESH_GOVERNED_WORKTREE`,
 `destination_runtime=GOVERNED_START`, `TaskMode=WRITE`.
 
-**Not launched.** Preflight is a validation gate, not launch authority. The
-launch is an owner action, and the worker must be a runtime that exposes
-`rmq-proof-sprint` from `.agents/skills/` — present at the governed base. A
-Claude-runtime worker would additionally need `.claude/skills`, which is still
-absent from `main`.
+**Startup gate now passes honestly.** With the wrappers ported
+(`DD-20260725-001`, `WDD-20260725-001`), `project_skill_preflight.ps1` at
+governance `f0c7232` against the v2 base returns `PASS` with expected,
+checkout, working, and runtime inventories all equal to
+`rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint` — for both
+`-RequiredSkills rmq-coordinator` and `-RequiredSkills rmq-proof-sprint`. This
+is the first point in the E1 architecture campaign at which a Claude-runtime
+coordinator or worker satisfies the gate directly rather than as a disclosed
+fallback.
