@@ -6621,3 +6621,51 @@ Consequences:
   are ancestors of main. Recorded for owner decision A6.
 - Research is reserved for launch-gating questions per WDD-20260725-008; these
   verdicts become the prompts' frozen inputs rather than being rediscovered.
+
+## WDD-20260725-010: commission an independent Codex audit of the endgame delta before executing it
+
+Status: Recorded 2026-07-25 by C06. Prompt artifact only; the audit is not
+launched by this entry and no finding is anticipated.
+Date: 2026-07-25.
+Scope: docs/internal/e1_arch_prompts/A09_ENDGAME_PLAN_AUDIT_PROMPT.md.
+
+Trigger:
+
+The owner declined to make the three pending decisions (the 210 acceptance
+chain, the B3 cost model, the B1 dead cell) until the endgame plan and the
+work supporting it have been independently audited. The entire delta -
+strategy memo, plan, ratification, roadmap amendments, the public claim-surface
+change, and the week-1 gate results - was authored by one Claude-runtime
+coordinator, and much of its factual content came from multi-agent research
+rather than from a human reading primary sources.
+
+Decisions:
+
+1. Mode is FRESH BLIND DELTA over base bc5851ad..target 0e71b828, report-only,
+   with the durable report at
+   docs/internal/audit_reports/2026-07-25_A09_endgame_plan_audit.md.
+2. The auditor is the Codex lane, satisfying the standing preference that a
+   blind audit use a different model family than the candidate's author
+   (WDD-20260725-008). No repo-local audit-worker role skill applies, so the
+   preflight runs with -AllowNoRequiredSkills and the auditor's actual runtime
+   catalog; naming a coordinator, proof, or prompt-authoring skill to satisfy
+   the gate is forbidden.
+3. One necessary departure from ordinary fresh-blind practice is stated in the
+   prompt: the target documents ARE the audit subject, so the auditor must
+   read them, but must treat every factual assertion in them as unverified.
+   Ordinary fresh-blind withholding would make the audit impossible.
+4. Four surfaces are named as load-bearing and ordered by risk: the public
+   claim change in README.md and artifact/CLAIMS.md (the only substantive
+   claim change in the delta); the two governance supersessions; the roadmap
+   amendments; and the assertion that the 210 headline literal has never been
+   accepted by a fresh blind audit.
+5. The prompt includes one deliberately open-ended section asking what a
+   hostile reviewer would attack that appears in neither the plan's twelve-row
+   checklist nor its gap register - the only place the auditor is asked to look
+   beyond the delta.
+
+Consequences:
+
+- Execution of the four scoped week-1 lanes waits on the audit disposition.
+- This runtime cannot create Codex tasks; the prompt is handed over and the
+  round is not considered launched until the owner starts it.
