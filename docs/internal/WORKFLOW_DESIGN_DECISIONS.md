@@ -6575,3 +6575,49 @@ Consequences:
   launched until the owner starts it.
 - The evidence-debt landing plan (G9) is coordinator work on this lane and
   does not wait on any worker round.
+
+## WDD-20260725-009: week-1 gate results and the four scoped launch decisions
+
+Status: Recorded 2026-07-25 by C06. Research disposition; the three owner
+decisions it names are NOT made by this entry.
+Date: 2026-07-25.
+Scope: docs/internal/E1_ENDGAME_WEEK1_GATE_RESULTS.md; launch scoping only.
+
+Trigger:
+
+The owner ratified the endgame plan and asked that the hardest gaps be
+attacked with multi-agent research where it helps. A 10-agent campaign
+answered the four questions gating week-1 launches, with adversarial checkers
+on the two launch-gating verdicts.
+
+Decisions:
+
+1. G2 (descriptor sufficiency) launches FIRST if capacity binds, as a FRESH
+   round under a new id off 1e111e5 - never as "B2DESC R4". Rationale: the
+   frozen B2DESC contract is the hard version whose G24 obligation stopped
+   three consecutive rounds, and G24 discharges by rfl under sufficiency
+   framing. Inheriting the old contract re-imports a wall that is not there.
+2. G1 (S1) launches as a sized-obstruction round, not a closure round. Its
+   roadmap blocker sentence is wrong in both directions - the decoder exists,
+   the uniform-width theorem is false - while the operative conclusion (new
+   construction, not composition) survives. The real blocker is n-determined
+   payload component geometry, whose closure edits buildPayload.
+3. G4 launches only path-independent primitives (log2 first, then pow2,
+   ceil-div consumer, store-size lemma) with a named stop condition, because
+   probe (a) cleared onto a job about ten times its stated size: the geometry
+   values are instruction immediates at ~69 sites.
+4. G4 probe (b) is CLOSED-PASS with no size floor at any n; its scheduled
+   half-day is released.
+5. G3's <=3-session dry-run gate is re-read as covering the merge AFTER an
+   id-reconciliation pass; seven live decision-id collisions sit outside it.
+6. G9 launches unscoped and docs-only, under a hard ordering constraint (A1
+   before A2; exact path-line pair, never a directory allowance).
+
+Consequences:
+
+- The campaign's most consequential finding is not a launch decision: the 210
+  headline literal has never been accepted by a fresh blind audit, the last
+  accepting verdict was A04 at 328, and both a rejected and a blocked target
+  are ancestors of main. Recorded for owner decision A6.
+- Research is reserved for launch-gating questions per WDD-20260725-008; these
+  verdicts become the prompts' frozen inputs rather than being rediscovered.
