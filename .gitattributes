@@ -3,3 +3,12 @@
 # normalize their line endings on checkout or the identity claims break.
 docs/internal/e1_arch_prompts/** -text
 docs/internal/E1_ARCHITECTURE_COORDINATOR_HANDOFF.md -text
+
+# The dossier is archived verbatim rather than edited (handoff index; the
+# document's own provenance statement would become false about an edited copy).
+# Its Markdown hard line breaks are trailing whitespace by design, and it ends
+# with a blank line, so `git diff --check` must not police it. Without this the
+# artifact-reproducibility whitespace stage fails on any commit that introduces
+# or re-touches those lines. Reformatting the dossier is not the fix; it is
+# evidence, not maintained prose.
+docs/internal/E1_ARCHITECTURE_COORDINATOR_HANDOFF.md -whitespace

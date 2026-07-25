@@ -4830,3 +4830,55 @@ Consequences and evidence:
   wrapper is named `rmq-audit-prompt`.
 - No mathematical claim, theorem, payload, cost, or runtime implementation is
   affected.
+
+## DD-20260725-002: exempt the archived handoff dossier from whitespace policing
+
+Status: Recorded 2026-07-25 by C06 (Claude runtime, disclosed fallback).
+
+Date: 2026-07-25
+
+Context:
+
+`scripts/reproduce_artifact.sh` runs `git diff --check HEAD^..HEAD` as its
+whitespace committed-patch stage. When the E1 architecture handoff package was
+merged to the mainline, that stage failed on
+`docs/internal/E1_ARCHITECTURE_COORDINATOR_HANDOFF.md`: three header lines end
+with the two-space Markdown hard line break, and the file ends with a blank
+line. The defect had been latent — on the original handoff branch the run died
+earlier at the M1 clean-baseline check (WDD-20260724-002), and on a descendant
+tip it is invisible because the stage inspects only `HEAD^..HEAD`. It surfaces
+exactly when the merge that introduces the dossier is the tip commit.
+
+Decision:
+
+Add `docs/internal/E1_ARCHITECTURE_COORDINATOR_HANDOFF.md -whitespace` to
+`.gitattributes`, alongside the existing `-text` rule. `git diff --check`
+honours the `whitespace` attribute, so the archived document is excluded from
+whitespace policing while its bytes are preserved exactly. Verified: with the
+attribute present, both `git diff --check b98ab1e^..b98ab1e` and
+`git diff --check d16adfc..5d80c20` report clean; without it, the former
+reports four issues.
+
+Rejected alternatives:
+
+- Strip the trailing whitespace and final blank line. This is the obvious fix
+  and it is wrong here. The dossier is archived verbatim precisely so that its
+  own provenance sentence — "every named commit and blob was resolved with Git
+  while preparing this dossier" — stays true of the committed copy, and the
+  handoff index records that it is superseded in place rather than edited.
+  Reformatting evidence to satisfy a lint inverts the relationship.
+- Broaden the exemption to `docs/internal/e1_arch_prompts/**`. Those files
+  currently pass the check, so the exemption would be speculative, and that
+  directory now also holds live prompts (the B3 R2 contract) which should stay
+  policed.
+- Relax the whitespace stage itself. It is a real guard for maintained source;
+  the narrow path-scoped attribute is the smaller change.
+
+Consequences and evidence:
+
+- The mainline can carry archived verbatim evidence without a permanently
+  red whitespace stage, and the rule is self-documenting at the exact path.
+- Any future archived-verbatim document needs the same explicit exemption; the
+  general principle is that evidence files are exempted by attribute, never
+  normalized in place.
+- No Lean source, theorem, matrix, replay, or claim surface is affected.
