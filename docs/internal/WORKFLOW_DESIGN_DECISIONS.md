@@ -6429,3 +6429,47 @@ Consequences:
   no route round, merge, probe, or publication action is taken by this entry.
 - The memo is coordinator analysis, not acceptance; nothing in it upgrades
   any candidate's status.
+
+## WDD-20260725-006: draft the endgame plan as successor to the unimpeachable-cost plan
+
+Status: Recorded 2026-07-25 by C06. The plan is a DRAFT for owner
+ratification; the supersessions it describes take effect only through the
+governance packet DD it specifies, not through this entry.
+Date: 2026-07-25.
+Scope: docs/internal/RMQ_ENDGAME_PLAN.md (new); no code, contract, or claim
+surface changes.
+
+Trigger:
+
+The owner reviewed the S5 recommendation from the 2026-07-25 research
+campaign and challenged it on exactly the axis the campaign's own calibration
+was meant to guard: whether the 648e512 companion's disclosed-advice caveat
+is an acceptable terminal state, and whether the recovered
+RMQ_UNIMPEACHABLE_COST_PLAN.md (2026-07-07, pre-fork) should be superseded.
+Follow-up research confirmed both concerns: the descriptor-sufficiency and
+space-object/query-object gaps are the substantive remainder of the theorem
+(B2 R3's triple geometry refutation proves the gap class hides real errors;
+roadmap S1 documents the non-invertible flattening and four disclaiming
+surfaces), and the original plan's A3 ISA sketch is refuted by the owner's
+own DD-20260717-C05-001 Option B decision.
+
+Decisions:
+
+1. The endgame plan biases toward kernel-theorem gap closures and away from
+   incomplete-but-hedged work (prime directive: disclosure is a stopgap while
+   closure is in flight, never the deliverable).
+2. It organizes the runway around the one-object principle, with a ranked gap
+   register (G1 space/query object identity via the now-unblocked S1 lift;
+   G2 descriptor sufficiency via B2DESC; G3 the 648e512 companion behind a
+   dry-run merge gate; G4 the counted-image route with probes first; G5
+   envelope/constants honesty including the absent construction-cost theorem;
+   G6 harness scale; G7 novelty search and precedent-anchored prose).
+3. Supersession is by successor document with the original archived verbatim
+   at commit 2562684, per the project's supersede-in-place convention.
+
+Consequences:
+
+- Four owner decision points from the strategy memo are consolidated into the
+  plan's governance packet (section 4) for a single ratification pass.
+- No worker launch, merge, probe, or claim-surface edit occurs until the
+  owner ratifies; the plan text itself is the only artifact of this entry.
