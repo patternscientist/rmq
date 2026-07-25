@@ -237,7 +237,7 @@ where generic and specialized formulas also disagree
 Consequence for the re-freeze: for every geometry cell, cite the declaration
 **reachable from the accepted route's own data constructor**, and record that
 reachability. A same-named-family declaration is not evidence.
-| G14 | universal `L[19] = ceil(m/w) = L[0]` | Must not universally equate segment-19 and segment-0 word lengths: R3 showed the empty shared-store case has a sentinel-bearing physical rank-store distinction. Derive the exact corrected clause at re-freeze from R3's closure blob `58323facefc44cc49038f092c30ac86c2d3f21c4`. |
+| G14 | universal `L[19] = ceil(m/w) = L[0]` | Split the row. The **physical offset alias `O[19] = O[0]` stays universal** — R3 records it as "a distinct true statement." The **word-length equality must not be universal**: at the empty shape the BP payload has length zero while the shared rank store is one sentinel-bearing word, so `L[19] ≠ L[0]` there. Re-freeze the length clause either with an explicit non-empty guard or with the empty-shape value stated separately, and keep the alias clause unguarded. Exact source: R3 final matrix blob `12eafa12e6e8905d322f3ece7b8a1f5fe2251829` lines 886-888 (also at `codex/e1-arch2-b2-descriptor-closure-r3:docs/internal/E1_ARCH2_B2_DESCRIPTOR_CLOSURE_MATRIX.md:886`). **Not** the closure blob `58323fac…`, which contains no G14 reasoning — correcting the pointer this document previously carried. |
 
 **Central subtraction/truncation clause (all route contracts, B2/B3/B4):**
 
@@ -301,8 +301,16 @@ Recorded as `WDD-20260724-001` in
   than leaving it assumed.
 - ~~The exact sparse (G12) declaration citation is owed at re-freeze.~~
   Closed 2026-07-24 in §5.1, together with the mechanism that produced the
-  defect. Still owed: the corrected G14 clause, which must be derived from R3's
-  closure blob `58323facefc44cc49038f092c30ac86c2d3f21c4` at re-freeze.
+  defect.
+- ~~The corrected G14 clause is owed.~~ Closed 2026-07-24 from R3's final matrix
+  blob: split the alias (universal) from the word-length equality (not
+  universal at the empty shape). All four B2 geometry clauses (G06, G10, G12,
+  G14) now have exact corrected text and exact citations. **What remains owed
+  for B2 is the executable descriptor-closure work itself** — operand-bearing
+  instructions, machine state, evaluator, run relation, charged B1
+  initialization, G24/G25 semantic correspondence, trace/count facts, and typed
+  consumers — plus the three named R1/R2/R3 regressions wired into the new
+  replay. The re-freeze is now a transcription task; the implementation is not.
 - This runtime cannot record `ACCEPTED`; the R2/R4 launches and any registry
   deviation remain owner/coordinator actions at their own gates.
 
