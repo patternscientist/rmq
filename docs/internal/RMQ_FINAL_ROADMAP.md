@@ -406,9 +406,18 @@ on the read set. Along one axis `E1` is stronger (it fixes order and read
 values, not just an address set); along `M1`'s axis it is silent. Do not treat
 `E1`'s completion as discharging any part of this rung.
 
-### S1. Bit-Addressed Serialized-Payload Querying (deferred)
+### S1. Bit-Addressed Serialized-Payload Querying
 
-Status: deferred, named so it is not homeless. **Does not gate `V1`.**
+Status: **ACTIVE as of 2026-07-25** (`DD-20260725-004`). Its only stated
+prerequisite was `M1`, which is closed and integrated, so the deferral lapsed
+on M1's acceptance and went unnoticed. It is now gap **G1** of
+`RMQ_ENDGAME_PLAN.md` — the space-object/query-object identity gap — and is
+the highest-ranked closure target of the remaining runway.
+
+It still **does not gate `V1`**: if the lift does not close, the four existing
+disclaimers stay and a committed obstruction note records exactly which
+decoder theorem failed. What changed is that leaving it unattempted is no
+longer acceptable.
 
 State the canonical charged query against the raw `List Bool` payload —
 `buildPayload` (`RMQ/Core/SuccinctRMQClassic.lean`), the object the
@@ -448,9 +457,22 @@ Mechanical movement and semantic strengthening should be separate commits.
 
 ### E1. Add A Small-Step Reference Word-RAM Machine
 
-Status: first-order controller and U3 actual-event accounting exist; E1 must
-define a richer instruction semantics and prove a fully charged small-step
-simulation.
+Status: **amended 2026-07-25** (`DD-20260725-004`, `DD-20260725-005`). A
+kernel-complete fully charged machine exists — `amendedFamiliarMachineTarget_holds`
+at `648e51247f6c07663008ba2955a98e03b4a1ba4f` — over a shape-derived *logical*
+store with geometry supplied as model input; it is unmerged and has never had
+its fresh blind audit. Endgame gap **G3** merges and audits it as a
+non-load-bearing companion, wording bounded by accepted PREHIST ("not yet a
+true machine route under the same counted image"). Gap **G4** is the stronger
+form — the same machine over the counted physical image — continued only
+behind two probes and never gating `V1`.
+
+The wording below is retained as the rung's original statement. Note it
+predates the 2026-07-17 cost-model fork (`DD-20260717-C05-001`), so read
+"fully charged" against Option B's charged-table model, not the unit-cost
+word-primitive model that fork rejected. The `E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md`
+snapshot on `main` is stale relative to `648e512` and pins 207-era objects
+against a kernel that now says 210; endgame gap **G9** reconciles it.
 
 Define the smallest familiar instruction semantics needed by the existing
 first-order query controller. Prove result agreement and a step/trace-cost

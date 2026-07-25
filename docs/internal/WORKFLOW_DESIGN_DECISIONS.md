@@ -6525,3 +6525,53 @@ Consequences:
 
 - The plan now fails visibly if any row of the checklist is unmet at freeze.
 - No code, contract, or claim surface changed; the amendment is plan text.
+
+## WDD-20260725-008: endgame execution model — lane assignment, worker routing, and audit independence
+
+Status: **Accepted 2026-07-25** alongside the owner's ratification
+(`DD-20260725-004`, `DD-20260725-005`). Recorded by C06.
+Date: 2026-07-25.
+Scope: how the ratified endgame plan is executed; no contract or claim change.
+
+Trigger:
+
+The owner ratified the endgame plan and asked that the hardest gaps be
+attacked with multi-agent research where that helps, with prerequisite work
+done first. Separately, the Codex lane became available again after a reset.
+
+Decisions:
+
+1. **Worker routing.** Proof and implementation rounds (the S1 lift, B2
+   descriptor sufficiency, any B3 continuation) are routed to the Codex lane
+   under `$rmq-proof-sprint`, on `codex/*` branches from governed bases. That
+   is the lane these contracts, prompts, and preflights were designed for, and
+   it restores the two-lane structure the superseded plan assumed. Claude
+   background agents remain appropriate for research, audit reconstruction,
+   and coordinator work.
+2. **Audit independence.** With both lanes live, every fresh blind audit
+   should be run by a different model family than the one that authored the
+   candidate, as `rmq-audit-prompt` prefers. This applies to the three audits
+   the endgame owes: the 648e512 companion (G3), U3's outstanding audit (G9),
+   and V1's release-commit audit. Independence here is a real property, not a
+   formality: the campaign's two most consequential findings to date - the
+   dropped PREHIST disjunction and the disconnected block correspondence -
+   were both caught by a reader who had not authored the artifact.
+3. **Research routing.** Multi-agent campaigns are used for questions whose
+   answers gate a launch decision, not for work a single worker will redo.
+   The week-1 gating set (S1 route selection, the two B3 probes, B2DESC
+   sizing, evidence-debt inventory) is one such campaign; the resulting
+   verdicts, with their adversarial corrections, become the prompts' frozen
+   inputs rather than being rediscovered by each worker.
+4. **Prerequisite ordering.** Governance lands before worker launches:
+   ratification, the A4 supersession, and the roadmap amendments must be on
+   `main` so that a worker's base contains the contract it is judged against.
+   The S1 round in particular cannot lawfully launch while the roadmap still
+   marks S1 deferred.
+
+Consequences:
+
+- Prompts for Codex rounds are prepared preflighted and handed over; this
+  runtime cannot create Codex tasks itself, and no round is considered
+  launched until the owner starts it.
+- The evidence-debt landing plan (G9) is coordinator work on this lane and
+  does not wait on any worker round.

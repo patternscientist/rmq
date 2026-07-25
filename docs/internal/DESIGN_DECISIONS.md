@@ -4960,3 +4960,120 @@ Consequences and evidence:
   resolve it. That candidate remains `INCOMPLETE` and unaccepted; this entry
   ratifies the typing choice, not the candidate.
 - No accepted blob, theorem, matrix, or public claim changes.
+
+## DD-20260725-004: ratify the endgame plan and supersede the unimpeachable-cost plan
+
+Status: **Owner decision, ratified 2026-07-25.** Recorded by C06.
+
+Date: 2026-07-25
+
+Context:
+
+With roughly four weeks to submission freeze, the owner commissioned a research
+campaign over the complete E1 architecture corpus, then challenged its
+recommendation on whether an honestly-hedged machine result is an acceptable
+terminal state, and asked whether the 2026-07-07 founding plan should be
+superseded. The resulting `docs/internal/RMQ_ENDGAME_PLAN.md` reorganizes the
+runway around closing gaps with kernel theorems rather than disclosing them.
+
+Decision:
+
+The endgame plan is **ratified**. Its prime directive governs: every remaining
+week buys a named gap closed by a kernel theorem, or the recorded proof that
+closing it was not reachable; disclosure is a stopgap while closure is in
+flight, never the deliverable.
+
+`docs/RMQ_UNIMPEACHABLE_COST_PLAN.md` (sole commit
+`25626847233db16c7dbae638f299f3807f648031`, branch
+`docs/unimpeachable-rmq-plan`) is **superseded** by the endgame plan and
+archived verbatim at that commit; it must not be edited. What carries forward
+unchanged: its operational definition of "unimpeachable" (referees
+pattern-match rather than audit), the executable-evidence centerpiece, the
+machine-as-strengthening-layer structure with bridges on both ends, and the
+model/wall-clock firewall. What forces supersession: its flagship A3 sketch
+specifies "word rank/select primitives" as unit-cost instruction kinds, which
+is the Option A cost model this project rejected in `DD-20260717-C05-001` as
+"exactly the precedent-free justification the project goal minimizes"; and its
+seven-week two-lane schedule predates that fork, M1, and the whole ARCH2
+campaign.
+
+Rejected alternatives:
+
+- Amend the 2026-07-07 plan in place. Its provenance as the founding document
+  is worth more intact than current; this project supersedes rather than
+  overwrites.
+- Ship the current headline and frame ARCH2 as future work without attempting
+  the object-identity and descriptor-sufficiency gaps. The owner identified
+  this as premature stopping: a hedge is a debt note, not a payment.
+- Continue the strict select-before-implement A4 procedure to completion. See
+  `DD-20260725-005`; its intended output is unreachable by its own rules.
+
+Consequences and evidence:
+
+- The gap register (G1 space/query-object identity, G2 descriptor sufficiency,
+  G3 the finished machine companion, G4 the counted-image route, G5
+  envelope/constants honesty, G6 measured executable evidence, G7 novelty and
+  precedent, G8 the manuscript, G9 evidence consolidation) is the unit of
+  planning for the remaining runway, and section 6's twelve-row checklist is
+  the completion test.
+- No Lean, contract, matrix, or public claim changes by this entry.
+
+## DD-20260725-005: supersede the A4 selection-before-publication ordering
+
+Status: **Owner decision, ratified 2026-07-25.** Recorded by C06.
+
+Date: 2026-07-25
+
+Context:
+
+The E1-ARCH2 campaign operated under a strict procedure: no architecture is
+selected until every route carries a checked PASS or a quantifier-matched
+universal FAIL, with public-claim synchronization sequenced after selection.
+Verified during the 2026-07-25 research campaign: no recorded decision requires
+the paper to contain a route selection; the roadmap's paper-facing E1 rung asks
+only for a small familiar machine with result agreement and step/trace-cost
+correspondence; and the verdict-algebra decision the procedure rests on
+(`DD-20260722-003`) exists only on campaign branches, is absent from main's
+ledger, and still reads "coordinator decision is required".
+
+Decisively: under both selector texts, selecting the historical route requires
+a checked **universal** B2 impossibility proof quantified over every permitted
+base receipt. No document costs it, nobody has sketched it, and accepted PRECUR
+renders it implausible by affirmatively charting B2's lowering. The procedure's
+intended output for the route with all the invested work is therefore
+unreachable by the procedure's own rules.
+
+Decision:
+
+1. The selection-before-publication ordering is **superseded**. Publication of
+   an accepted route result does not require running A4.
+2. **B2-full and B4 are recorded `UNRESOLVED`-and-unpursued** for this runway,
+   in the verdict algebra's own vocabulary: deliberate, honest, reversible, and
+   explicitly not a claim that either route fails.
+3. **B2 descriptor closure is carved out and remains live**, because it serves
+   gap G2 (descriptor sufficiency) rather than the selector. Work on it is
+   scoped by G2's certificate obligation, not by the frozen full-B2 contract.
+4. `DD-20260722-003` is **adopted as accepted** in substance for its verdict
+   algebra and anti-proxy discipline (PASS / exact universal FAIL / UNRESOLVED;
+   a timeout, awkward encoding, or failed local implementation is never a
+   universal FAIL), with its selection-ordering clause superseded by this
+   entry. Its long-limbo "coordinator decision is required" status is resolved.
+5. The handoff dossier's three-arm selector, which reprints a
+   `TOTAL_NAT_CERTIFICATE` arm that accepted PRELOGIC deleted, **yields to
+   PRELOGIC**. B4 is an adapter derived from the selected base receipt, not a
+   route.
+
+On the general rule: this is at least the fourth defect of the family in which
+frozen or handoff text contradicts an accepted input (monus ordering; the B2
+geometry clauses; the semantic-ROM typing; now the selector). The owner
+previously deferred generalizing at the third instance. **The standing rule is
+now recorded: a frozen or derived text yields to the accepted input it was
+derived from, and the contradiction is repaired as a contract repair rather
+than treated as a requirement amendment — with the repair recorded, the
+superseded text left in place, and the accepted input never edited.**
+
+Consequences and evidence:
+
+- A4 is not run this runway. Nothing in this entry asserts any route fails.
+- Reversible: recording B2/B4 UNRESOLVED preserves every future option.
+- No Lean, matrix, or public claim changes by this entry.
