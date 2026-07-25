@@ -6384,3 +6384,48 @@ Consequences:
   inventories equal.
 - The R2 candidate branch and worktree are preserved unmodified as evidence.
 - No accepted blob, theorem, matrix, or public claim changes.
+
+## WDD-20260725-005: research the E1 architecture endgame before further route rounds
+
+Status: Recorded 2026-07-25 by C06. Recommendation input; the strategy choice
+itself is the owner's and is NOT made by this entry.
+Date: 2026-07-25.
+Scope: coordinator research process and the strategy memo artifact.
+
+Trigger:
+
+With ~4 weeks of runway, the owner asked whether the strict select-before-
+implement A4 procedure is genuinely the best path to the strongest honest
+version of the RMQ spoke, or whether a more straightforward ~equally strong
+path exists, and authorized a full multi-agent research campaign over the
+complete Codex-produced corpus.
+
+Decisions:
+
+1. The campaign was run as 11 parallel deep readers (accepted reports PREHIST/
+   PRECUR/PRELOGIC, both unmerged code lanes, paper surface, governance
+   ledgers, outside verified-complexity precedent via web research), a
+   synthesis into at most 8 load-bearing claims, adversarial verification of
+   every claim by two independent lenses (source-fidelity; artifact-state),
+   and a 3-judge panel run twice - once before and once after the owner's
+   calibration clarification (precedent-fit is a cost, not a veto; the guarded
+   failure mode is premature stopping).
+2. Findings and the S5-hybrid recommendation are recorded in
+   docs/internal/E1_ARCH_STRATEGY_MEMO_2026-07-25.md, with every claim carrying
+   its verification correction. Key verified facts: no record requires the
+   paper to contain an A4 selection; the A4 historical arm requires a checked
+   universal B2 impossibility proof and is realistically unreachable; the
+   north-star plan exists on unmerged branch docs/unimpeachable-rmq-plan and
+   structures the machine as a strengthening layer over an executable-evidence
+   centerpiece; the 648e512 lane is kernel-complete for its own contract with
+   its honesty bound fixed by accepted PREHIST wording.
+3. Owner-memory staleness found by the verifiers (cost-model fork recorded as
+   pending when Option B was adopted 2026-07-17) was corrected in the memory
+   index only; ledgers were not rewritten.
+
+Consequences:
+
+- Four explicit decision points are queued for the owner (memo section 5);
+  no route round, merge, probe, or publication action is taken by this entry.
+- The memo is coordinator analysis, not acceptance; nothing in it upgrades
+  any candidate's status.
