@@ -4781,3 +4781,52 @@ of them.
 **Generalizable.** Any artifact whose identity is cited by hash must be pinned
 `-text` before it is added, or its hash becomes a property of the checkout
 platform rather than of the artifact.
+
+## DD-20260725-001: `.claude/skills` wrappers are runtime surfaces, not a second source of truth
+
+Status: Recorded 2026-07-25 by C06 (Claude runtime, disclosed fallback).
+
+Date: 2026-07-25
+
+Context:
+
+Porting the three Claude-runtime skill wrappers to `main` adds files under
+`.claude/skills/`. `scripts/design_decision_check.ps1` classifies that path as
+code/repository-sensitive rather than workflow-sensitive, because its workflow
+roots are `.github/` and `scripts/` and its workflow-code pattern covers
+script extensions rather than Markdown. The substantive process rationale,
+the empirical evidence for the blocker, and the audit-wrapper rename are
+recorded in `WDD-20260725-001`; this entry exists so the repository-sensitive
+classification has its required design record.
+
+Decision:
+
+A file under `.claude/skills/` may contain only a runtime pointer: frontmatter
+whose `name` equals its directory name, plus prose directing the reader to the
+canonical `.agents/skills/<name>/` skill and any runtime-specific adaptation
+notes. It may never restate a canonical skill's instructions, acceptance
+criteria, or completion gate. `.agents/skills/` remains the single source of
+truth, and a wrapper whose referenced canonical path does not exist is a
+defect, not a variant.
+
+Rejected alternatives:
+
+- Duplicate the canonical skill text into the wrapper. That creates two
+  divergent sources for a governed contract, which is the failure mode the
+  wrapper design exists to prevent.
+- Add `.claude/` to the checker's workflow roots so this change needs only a
+  workflow entry. That edits a governed classifier and its regression
+  expectations to make one commit cheaper; it is a reasonable future cleanup
+  but must not ride along inside an unrelated repair.
+- Leave the wrappers on the coordinator branch. That is what blocked the B3 R2
+  launch in the first place.
+
+Consequences and evidence:
+
+- Three wrappers on `main`; each verified to have matching directory and
+  frontmatter names and an existing canonical target.
+- `scripts/project_skill_preflight_regression.ps1` passes all fourteen cases,
+  including `legacy-rmq-audit-name-rejected`, which is why the ported audit
+  wrapper is named `rmq-audit-prompt`.
+- No mathematical claim, theorem, payload, cost, or runtime implementation is
+  affected.

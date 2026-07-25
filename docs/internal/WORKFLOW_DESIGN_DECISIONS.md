@@ -6173,3 +6173,62 @@ the reconstruct-from-git instruction the dossier itself issues.
 **Generalizable.** A handoff that tells its successor to trust only the
 repository must itself be in the repository. If an instruction cannot be
 followed literally from a clean clone, the packaging is part of the defect.
+
+## WDD-20260725-001: port the Claude-runtime skill wrappers to main and correct the audit wrapper name
+
+Status: Recorded 2026-07-25 by C06 (Claude runtime, disclosed fallback).
+Date: 2026-07-25.
+Scope: `.claude/skills/` on the mainline; no change to `.agents/skills/`,
+which remains the single source of truth.
+
+Trigger:
+
+The B3 R2 launch package was preflight-clean, but no Claude-runtime worker
+could satisfy the frozen contract's startup gate. `.claude/skills/` existed
+only on `claude/rmq-formalization-coordinator-bd7045`, so a session started
+from any descendant of `main` exposes no RMQ project skills at all and
+`scripts/project_skill_preflight.ps1` hard-stops on
+`runtime_catalog_omitted`. C05 flagged this on 2026-07-23 as a
+workflow-repair condition rather than grounds for a disclosed fallback.
+
+Verified empirically on 2026-07-25 rather than assumed: a probe worker
+context launched in a `main`-descendant checkout reported a skill catalog
+containing no name matching `rmq`, and no `.claude/skills` directory present.
+
+Decisions:
+
+1. Port the three Claude-runtime wrappers to `main` unchanged in substance:
+   `rmq-proof-sprint` and `rmq-coordinator` byte-for-byte from the
+   coordinator branch.
+2. Rename the third wrapper from `rmq-audit` to `rmq-audit-prompt` and
+   repoint its body at `.agents/skills/rmq-audit-prompt/SKILL.md`. The old
+   name was a genuine defect: governance defines `rmq-audit-prompt`, the
+   path `.agents/skills/rmq-audit/` does not exist, and
+   `project_skill_preflight_regression.ps1` case
+   `legacy-rmq-audit-name-rejected` asserts that requiring `rmq-audit` must
+   fail with `required_not_defined=rmq-audit`. A wrapper carrying the legacy
+   name would advertise a role the governed preflight refuses.
+3. Keep every wrapper a thin pointer. Each wrapper's frontmatter `name` must
+   equal its directory name, and its referenced
+   `.agents/skills/<name>/SKILL.md` must exist. Both properties were checked
+   for all three.
+
+Why this is preflight-neutral:
+
+`project_skill_preflight.ps1` derives its expected, checkout, and working
+inventories exclusively from `.agents/skills` (`Get-RefSkillInventory` and
+`Get-WorkingSkillInventory`). `.claude/skills` is never read by the script;
+it only determines what a Claude session can honestly report through
+`-RuntimeProjectSkills`. So this change adds a runtime surface without
+altering any inventory the gate computes, and the skill-preflight regression
+suite is unaffected.
+
+Consequences:
+
+- A Claude-runtime worker or coordinator started from a `main` descendant can
+  now report a real three-skill catalog instead of hard-stopping, and the
+  `rmq-audit-prompt` role resolves to an existing canonical skill.
+- Sessions already running when this landed do not retroactively gain the
+  skills; their catalogs were established at launch.
+- `.agents/skills/` remains authoritative; wrappers must never duplicate its
+  content.
