@@ -6328,3 +6328,59 @@ Consequences:
   to the pre-squash tree, and which left the running worker's contract blob
   `e74a01f7…` resolving to the same object.
 - No Lean source, theorem, matrix, replay, or claim surface is affected.
+
+## WDD-20260725-004: base B3 R3 on the unaccepted R2 candidate, with an explicit non-acceptance clause
+
+Status: Recorded 2026-07-25 by C06. Governs the R3 launch.
+Date: 2026-07-25.
+Scope: successor-base selection after an `INCOMPLETE` candidate, and the R3
+acceptance contract.
+
+Trigger:
+
+`E1-ARCH2-B3ROUTE-R2` reported `INCOMPLETE` at `5973d5d5…`. The audit
+(`docs/internal/audit_reports/2026-07-25_C06_e1_arch2_b3route_r2.md`) found no
+correctness defect in what it built: three modules re-elaborate cleanly, the
+arithmetic recursions are genuine inductive proofs, and the replay's R1
+regression is fixed. Restarting R3 from the source port would discard that and
+repeat roughly a session of work; PREHIST's envelope for the whole task is 8-16
+focused engineer-days.
+
+Decisions:
+
+1. R3's base is a governed join of the R2 candidate with current governance
+   (`105a47bc3aeae10926dfd6866560eaf4f2be5d38`), following the
+   `AUTO-CHAIN-PRIVATE-REPAIR-BASE` pattern. R1's obstruction candidate was
+   *not* reused as R2's base because it produced nothing reusable; R2 did, so
+   the cases differ.
+2. Basing on a candidate confers no acceptance, and the prompt says so
+   explicitly: every inherited `PENDING` row stays `PENDING`, no inherited
+   theorem may be cited as accepted evidence, and no inherited row may be
+   treated as satisfied because a predecessor built adjacent machinery. Without
+   that clause, "it's in the base" silently becomes "it's established" — the
+   inverse of the frozen-contract drift hazard.
+3. The audited overstatement is converted into a new mandatory row rather than
+   left as prose. `B3-HIST-17-ARITHMETIC-BLOCK-OPERATIONAL-CORRESPONDENCE`
+   requires a theorem that *executing* the multiplication and division blocks
+   computes the product and quotient, quantified over operands, with the blocks'
+   register invariants discharged. The prompt states that a theorem about
+   `mulFuel` alone does not satisfy it, and forbids syntactic block properties
+   as progress on it. This is the named regression for audit finding P2-1 and is
+   the same class as the rejected B2 R2 opcode-tag-list candidate.
+4. R2's dropped matrix delimiters become an explicit R3 obligation: re-freeze
+   with `EVIDENCE-EDITABLE` / `STATUS-EDITABLE` regions and a freeze-to-final
+   byte comparison outside them, so no local frozen requirement can be softened
+   undetected (audit finding P2-2).
+5. The prompt carries an explicit priority order — operational correspondence
+   first, cheap contract hygiene second, then ROM/reads, width, simulation, and
+   the campaign — because the full target exceeds one session and an
+   unprioritised contract invites spreading thin. R2 concentrated well by its
+   own judgment; R3 should not have to guess.
+
+Consequences:
+
+- `worker_prompt_preflight.ps1` returns `PASS` at governance `f0c7232` against
+  base `105a47b`, and `project_skill_preflight.ps1` returns `PASS` with all four
+  inventories equal.
+- The R2 candidate branch and worktree are preserved unmodified as evidence.
+- No accepted blob, theorem, matrix, or public claim changes.
