@@ -4882,3 +4882,81 @@ Consequences and evidence:
   general principle is that evidence files are exempted by attribute, never
   normalized in place.
 - No Lean source, theorem, matrix, replay, or claim surface is affected.
+
+## DD-20260725-003: type the B3 semantic ROM in B3-owned target vocabulary
+
+Status: Owner decision recorded 2026-07-25. Governed contract repair; binds the
+B3 R3 freeze. Recorded by C06 (Claude runtime); this entry records the owner's
+decision and confers no acceptance.
+
+Date: 2026-07-25
+
+Context:
+
+The accepted PREHIST report freezes the ambient route domain with
+`semanticROM : E1Machine.Program`. The `E1-ARCH2-B3ROUTE-R2` worker raised, and
+correctly declined to decide, that this type cannot carry the read semantics the
+same accepted input demands elsewhere. Verified independently at the accepted
+source port `c19061629ce8cf1e78992a99346170edd84b4971`:
+
+- `abbrev Program := List Instr` (`B3SourcePort/E1Machine.lean:160`);
+- `| readMem (dst segment addrReg : Nat)` — the constructor carries a
+  **segment** (line 87);
+- `execInstr (store : ReadStore) …` evaluates `.readMem` as
+  `store.readWord? segment address` and writes `decodeRead word?` (lines
+  168-175), i.e. a segmented logical read with option shifting.
+
+`B3-HIST-03-EXPLICIT-PHYSICAL-READ-LOWERING`, inherited from the same PREHIST
+report, requires each source logical read to expand into explicit descriptor
+count/offset/span, word-length, payload, sentinel, and dead reads of the one
+flat B1 image. The frozen construction choices are sharper still: the B3 target
+`readMem` "does not reuse historical shifted `decodeRead` for raw cells: the
+all-ones dead cell would decode to `2^width`."
+
+So a ROM typed as `E1Machine.Program` forces exactly the evaluator the contract
+forbids, and cannot express the flat physical read it requires. The two
+inherited requirements are jointly unsatisfiable.
+
+Decision:
+
+**The semantic ROM is typed in the B3-owned target instruction vocabulary, not
+`E1Machine.Program`.** The source `E1Machine.Program` remains the
+specification-side object that the target must stutter-simulate; it is not the
+target's own program type. `B3-HIST-02`'s "one parameter-free semantic ROM"
+obligation is unchanged in substance: one width-independent program, decoded
+identically at every supported width, with no shape, query, or image-content
+parameter.
+
+This is the **third** instance of one pattern: a frozen clause inherited from an
+accepted input contradicting another requirement inherited from the same input.
+The first was the ordered-subtraction clause versus the accepted monus ISA
+(`DD-20260724-001`); the second was the B2 descriptor geometry citing a
+route-dead generic declaration
+(`FROZEN-CLAUSE-CITES-UNCONSUMED-GENERIC-DECLARATION`). The owner considered
+generalizing this into a standing rule and **deliberately deferred**: a rule
+will be recorded if a fourth instance appears, rather than generalizing from
+three. Until then each instance is adjudicated on its own evidence.
+
+Rejected alternatives:
+
+- Keep `E1Machine.Program` and weaken `B3-HIST-03` to permit segmented logical
+  reads through a `ReadStore`. This abandons the whole point of B3: showing the
+  old program runs on the *counted physical object*. A segmented store read is
+  the uncharged projection the architecture contract exists to forbid.
+- Keep both and add a translation layer inside the ROM's evaluator. That hides
+  the physical read behind a semantic helper, which
+  `INV-INSTRUCTION-ATOMICITY` and the frozen forbidden-shortcut list reject as
+  a macro-step.
+- Change the accepted source ISA so `readMem` is flat. This alters the
+  historical program's semantics, which defeats the historical route exactly as
+  worker option 3 would have.
+
+Consequences and evidence:
+
+- The R3 freeze must state this typing explicitly and cite this entry, and must
+  not claim `semanticROM : E1Machine.Program` as verbatim inherited.
+- The R2 candidate `5973d5d549fc37575820aa6fb4cc648a0a33452e` already typed its
+  ROM this way and flagged the conflict instead of asserting authority to
+  resolve it. That candidate remains `INCOMPLETE` and unaccepted; this entry
+  ratifies the typing choice, not the candidate.
+- No accepted blob, theorem, matrix, or public claim changes.
