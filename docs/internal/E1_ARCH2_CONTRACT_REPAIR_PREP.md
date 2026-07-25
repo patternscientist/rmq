@@ -205,8 +205,38 @@ the exact accepted current definitions at governance `a154983`.
 | Clause | Old frozen text (R3 freeze blob `a15b723f…`) | Corrected clause and exact current citation |
 |---|---|---|
 | G06 | `blockCount := N/blockSize` | `blockCount := N / b` (division by **base**, not block size). Current: `canonicalBPRelativeSummaryBlockCountRaw shape = shape.size / canonicalBPRelativeSummaryBase shape` (`RMQ/Core/SuccinctClose/RelativeSummary.lean:1248-1250`). The old `blocksPerSuper := b` clause is consistent with current (`…BlocksPerSuperRaw = …Base`, lines 1244-1246) and stands. |
-| G10 | `longBlocksPerSuper := longRankWord` | `longBlocksPerSuper := 1`. Current: `def longFlagRankBlocksPerSuper (_bits) (_target) : Nat := 1` (`RMQ/Core/GenericSelect/Source.lean:351`). R3's size-50 witness (current value `1` vs. demanded rank word width `2`) is the accepted refutation. |
-| G12 | "set blocks-per-super to rank word" | Re-freeze against the exact accepted sparse declaration. R3 identified the sparse route as sharing the long route's constant-1 structure; the re-freeze worker must locate and cite the exact declaration the way G10 does above. **Do not copy G10's citation for G12.** |
+| G10 | `longBlocksPerSuper := longRankWord` | `longBlocksPerSuper := 1`. Current: `def longFlagRankBlocksPerSuper (_bits) (_target) : Nat := 1` (`RMQ/Core/GenericSelect/Source.lean:351`), consumed by `longFlagRankData` (same file, line 411). R3's size-50 witness (current value `1` vs. demanded rank word width `2`) is the accepted refutation. Block width is `longFlagRankBlockWidth := longFlagRankWordSize` (line 353), **not** the generic `machineWordBits (blocksPerSuper * wordSize)`. |
+| G12 | "set blocks-per-super to rank word" | `sparseBlocksPerSuper := 1`. Current: `def sparseExceptionEffectiveFlagRankBlocksPerSuper (_bits) (_target) : Nat := 1` (`RMQ/Core/GenericSelect/FlagRank.lean:213`), with `…_pos` at line 234. Block width is `sparseExceptionEffectiveFlagRankBlockWidth := sparseExceptionEffectiveFlagRankWordSize` (line 216). Structurally identical to G10 but a **different declaration in a different file** — cite this one, not G10's. |
+
+### 5.1 The mechanism behind the G10/G12 defect — cite the live declaration, not the generic one
+
+Resolved on 2026-07-24 (this closes the citation gap §5 previously left open, and
+supersedes the earlier characterization of the defect as simply "copied the wrong
+geometry").
+
+`RMQ/Core/GenericSelect/FlagRank.lean:24-25` defines a **generic**
+
+```lean
+def flagRankBlocksPerSuper (flagBits : List Bool) : Nat :=
+  flagRankWordSize flagBits
+```
+
+— blocks-per-super **is** the rank word size, exactly what old G10/G12 demanded.
+So those clauses were not invented; they were copied from a real declaration.
+But that generic layer's consumer, `flagRankData`, **is referenced nowhere
+outside `FlagRank.lean`** (verified by grep over `RMQ/` at governance
+`d16adfc`). The live long and sparse routes use the specialized constant-`1`
+declarations cited in the table above.
+
+So the precise defect is: **the frozen contract cited a real but
+route-unconsumed generic declaration instead of the specialized declaration the
+accepted route actually uses.** The same trap applies to the block-width cells,
+where generic and specialized formulas also disagree
+(`machineWordBits (blocksPerSuper * wordSize)` vs. plain `wordSize`).
+
+Consequence for the re-freeze: for every geometry cell, cite the declaration
+**reachable from the accepted route's own data constructor**, and record that
+reachability. A same-named-family declaration is not evidence.
 | G14 | universal `L[19] = ceil(m/w) = L[0]` | Must not universally equate segment-19 and segment-0 word lengths: R3 showed the empty shared-store case has a sentinel-bearing physical rank-store distinction. Derive the exact corrected clause at re-freeze from R3's closure blob `58323facefc44cc49038f092c30ac86c2d3f21c4`. |
 
 **Central subtraction/truncation clause (all route contracts, B2/B3/B4):**
@@ -249,6 +279,15 @@ Recorded as `WDD-20260724-001` in
    environment and self-test module resolution before evidence-bearing
    stages. The R1 obstruction replay's probe stage is the concrete instance
    (§2 item 4).
+4. `FROZEN-CLAUSE-CITES-UNCONSUMED-GENERIC-DECLARATION` (new, §5.1): a frozen
+   geometry or semantics clause must cite the declaration reachable from the
+   accepted construction's own data constructor, and must record that
+   reachability. Where a generic and a specialized declaration share a name
+   family, the generic one may be real, compile, and still be route-dead —
+   citing it produces a contract that contradicts the accepted route while
+   looking well-sourced. This is the mechanism behind the B2 R3 refutation and
+   is a sibling of regression 1: both are failures to bind a clause to the
+   definition it actually constrains.
 
 ## 7. What this document does not establish
 
@@ -260,7 +299,10 @@ Recorded as `WDD-20260724-001` in
 - Whether PC 32's pinned subtraction is ordered is undetermined (delta 3). The
   R2 prompt delegates this to the R2 freeze as an explicit obligation rather
   than leaving it assumed.
-- The exact sparse (G12) declaration citation is owed at re-freeze.
+- ~~The exact sparse (G12) declaration citation is owed at re-freeze.~~
+  Closed 2026-07-24 in §5.1, together with the mechanism that produced the
+  defect. Still owed: the corrected G14 clause, which must be derived from R3's
+  closure blob `58323facefc44cc49038f092c30ac86c2d3f21c4` at re-freeze.
 - This runtime cannot record `ACCEPTED`; the R2/R4 launches and any registry
   deviation remain owner/coordinator actions at their own gates.
 
