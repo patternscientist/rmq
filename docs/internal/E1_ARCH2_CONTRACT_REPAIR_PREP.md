@@ -257,7 +257,60 @@ Recorded as `WDD-20260724-001` in
   contract-refuted pending re-freeze.
 - The R1 candidate's mutation campaign remains unexecuted, and its committed
   replay remains non-green (now for the known probe-stage reason).
-- Whether PC 32's pinned subtraction is ordered is undetermined (delta 3).
+- Whether PC 32's pinned subtraction is ordered is undetermined (delta 3). The
+  R2 prompt delegates this to the R2 freeze as an explicit obligation rather
+  than leaving it assumed.
 - The exact sparse (G12) declaration citation is owed at re-freeze.
 - This runtime cannot record `ACCEPTED`; the R2/R4 launches and any registry
   deviation remain owner/coordinator actions at their own gates.
+
+## 8. B3 R2 launch package — prepared, not launched
+
+**Governed base:** `348d351053f9acd5c759975053e5e6c30ccc8501` on branch
+`codex/e1-arch2-b3-historical-route-r2-governed-base`. Ordered parents are the
+accepted source port `c19061629ce8cf1e78992a99346170edd84b4971` and current
+governance `d16adfcfade361bfe0667aa628a447fb2cec5c30` (main after the M1
+integration and the cold-runner CI repair).
+
+The base was required because `c190616` predates the CI repair, so an R2
+checkout rooted at the source port alone would fail the project-skill
+preflight's governance-ancestry condition. The merge's only conflict was an
+append collision in `docs/internal/WORKFLOW_DESIGN_DECISIONS.md` (the source
+port and the CI fix each appended after governance `a154983`), resolved as the
+exact union in date order. Verified mechanically: the source-port file is a
+byte-exact prefix of the result, and the appended tail equals the CI-fix entry
+byte-for-byte. Every accepted Lean, matrix, replay, and fixture blob equals
+`c190616`.
+
+**Prompt:** `docs/internal/e1_arch_prompts/E1_ARCH2_B3ROUTE_R2_PROMPT.md`,
+handle `E1-ARCH2-B3ROUTE-R2`, worker branch
+`codex/e1-arch2-b3-historical-route-r2`, required skill `rmq-proof-sprint`.
+
+It applies deltas 1-6 of §4 and adds three things the R1 contract lacked:
+
+1. **`B3-HIST-16-TRUNCATED-SUBTRACTION-FIDELITY`**, a new frozen row. This is
+   what keeps the repair from reading as a weakening: the old ordered clause
+   was refuted by the accepted execution, so it was impossible rather than
+   strong, and the replacement is both definitionally satisfied for width
+   *and* carries an exercised-at-PC-73 obligation. A fidelity theorem that
+   holds only because underflow is assumed unreachable explicitly fails the
+   row.
+2. **`REPLAY-PROBE-TOOLCHAIN-ENV` and `REPLAY-CLEAN-BASELINE-OUTSIDE-TREE`**
+   as frozen replay controls, closing the two harness defects found on
+   2026-07-24 (R1's bare-`lean` probe stage, and the CI workflow that wrote
+   its log into the checked working tree).
+3. **The `pinnedTargetSubPhase` obligation** — determine PC 32's operand order
+   by execution at freeze time and record it either way, instead of
+   inheriting the accepted port's unexamined assumption.
+
+**Preflight:** `scripts/worker_prompt_preflight.ps1` returned
+`WORKER-PROMPT-PREFLIGHT: PASS` with `status=READY_TO_SEND`,
+`feedback=COMPLETE`, `semantic_review=COMPLETE`,
+`destination_task=FRESH_GOVERNED_WORKTREE`,
+`destination_runtime=GOVERNED_START`, `TaskMode=WRITE`.
+
+**Not launched.** Preflight is a validation gate, not launch authority. The
+launch is an owner action, and the worker must be a runtime that exposes
+`rmq-proof-sprint` from `.agents/skills/` — present at the governed base. A
+Claude-runtime worker would additionally need `.claude/skills`, which is still
+absent from `main`.
