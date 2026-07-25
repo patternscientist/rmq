@@ -6278,3 +6278,53 @@ Consequences:
   `rmq-coordinator` and `rmq-proof-sprint`. The prior disclosed-fallback
   posture recorded for this runtime no longer applies to the gate itself.
 - No Lean source, theorem, matrix, replay, or accepted blob changed.
+
+## WDD-20260725-003: validate exactly the range CI validates
+
+Status: Recorded 2026-07-25 by C06.
+Date: 2026-07-25.
+Scope: local pre-push verification of `git diff --check` and
+`design_decision_check.ps1`.
+
+Trigger:
+
+Two failures on 2026-07-25, same shape, within one session.
+
+1. The consolidation's Artifact Reproducibility stage failed on
+   `git diff --check HEAD^..HEAD` against the archived handoff dossier. Checked
+   over a cumulative range the tree was clean; the defect existed only when the
+   merge introducing the dossier was the tip commit
+   (`DD-20260725-002`).
+2. The B3 R2 prompt re-pin failed the strict design scan. Validated with
+   `-Base <branch base>` it passed, because the branch base bundled the
+   workflow-ledger entry from an earlier commit; CI validates
+   `-Base HEAD~1`, and the tip commit touched a workflow-classified path with
+   no ledger entry of its own.
+
+Both were self-inflicted and both were invisible to the check actually run
+locally. The common error is validating a *cumulative* range when CI validates
+the *tip commit*.
+
+Decisions:
+
+1. Before pushing, run the repository's own checks with the same base CI uses:
+   `git diff --check HEAD^..HEAD` and
+   `scripts/design_decision_check.ps1 -Base HEAD~1 -Strict`. A cumulative-range
+   pass is a weaker statement and must not be reported as verification.
+2. Every commit must independently satisfy the write-scope pairing rule
+   (`STRICT-DESIGN-CHECK-WRITE-SCOPE-CLOSURE`): a commit touching a
+   workflow-classified path carries its own `WORKFLOW_DESIGN_DECISIONS.md`
+   entry, and one touching a code-classified path carries its own
+   `DESIGN_DECISIONS.md` entry. Satisfying the rule somewhere in the branch is
+   not sufficient.
+3. When a commit is found to violate this, prefer squashing so no commit in
+   history violates the rule, over adding a follow-up commit that merely moves
+   the violation off the tip. Verify the squash by comparing tree hashes before
+   and after, so the repair cannot silently change content.
+
+Consequences:
+
+- The repair for case 2 was a squash whose tree hash was verified byte-identical
+  to the pre-squash tree, and which left the running worker's contract blob
+  `e74a01f7…` resolving to the same object.
+- No Lean source, theorem, matrix, replay, or claim surface is affected.
