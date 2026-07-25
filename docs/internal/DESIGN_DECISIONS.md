@@ -4688,3 +4688,62 @@ The reviewer-native supplied-store adequacy story is now a closed integrated
 theorem node with durable audit evidence. Publication prose must continue to
 state the charged-event and supplied-store boundaries and must not imply S1,
 E1, preprocessing, or conventional word-RAM closure.
+
+## DD-20260724-001: adopt truncated (monus) subtraction in the E1 bounded route contracts
+
+Status: Owner decision recorded 2026-07-24; contract repair pending the B3 R2
+and B2 R4-successor freezes. Recorded by C06 (Claude runtime, disclosed
+fallback — this entry records the owner's decision and confers no acceptance).
+
+Date: 2026-07-24
+
+Context:
+
+The B3 historical route worker terminated `OBSTRUCTED` at candidate
+`bc71cad140956477f4de7e513529ae15d381aa13`: the accepted pinned source
+execution reaches `.sub 19 22 23` at source PC 73 (tick 71) with operands
+`5`/`19`, requiring the truncated result `0`, while the frozen R1 contract
+demanded ordered/no-wrap subtraction. The accepted PREHIST report (blob
+`be80468e…`, lines 543-545) authorizes "every required subtraction ordering
+or an explicit checked-underflow behavior"; the frozen matrix's
+evidence-cell and prompt glosses dropped the second disjunct in
+transcription. The finding was derived by C05 (addendum §3.1) and
+independently re-derived by C06 (audit report 2026-07-24, re-derivation 1).
+PREHIST's own `B3-HIST-04` requirement row demands width closure only.
+
+Decision:
+
+The bounded target's `.sub` is truncated natural subtraction, matching the
+accepted source ISA definition (`E1Machine` docstring: "truncated natural
+subtraction"). The width clause is restated as: every arithmetic result is
+`< 2^w` (for `.sub`, definitionally via `left - right ≤ left`). The repair
+applies centrally to all E1 route contracts at their next freeze; no route
+contract may impose an ordered/no-wrap side condition absent from the
+accepted definition it constrains. Exact contract deltas, including the
+governed re-specification of `MUT-HIST-06G` and the recommended seventh
+pinned choice `pinnedUnderflowSubPhase = (73, 0)`, are specified in
+`docs/internal/E1_ARCH2_CONTRACT_REPAIR_PREP.md`.
+
+Rejected alternatives:
+
+- Explicit compare-and-branch lowering (worker option 2): monus implemented
+  expensively; reopens ROM layout, atomicity, and charge accounting for no
+  additional semantic content; kept in reserve as a presentational
+  refinement since it refines monus.
+- Changing the historical source (worker option 3): defeats the historical
+  route's purpose of running the unmodified old program on the shared
+  object.
+- Retaining the ordered clause: refuted by the kernel-checked
+  incompatibility theorems and the reproduced tick-71 observation at
+  `bc71cad`; would also eventually collide with the current route's
+  `decodePacket` truncation (DD-20260719-205).
+
+Consequences and evidence:
+
+- The B3 R1 obstruction disposition stands as a valid stop-condition result;
+  its candidate branch remains immutable negative/diagnostic evidence.
+- The tick-71 observation was reproduced by C06 on 2026-07-24 via
+  `lake env lean` at `bc71cad` (exact seven-field record), and the focused
+  obstruction build passed in 1.369s.
+- B3 requires a fresh R2 freeze under the repaired contract before any
+  route verdict; nothing is accepted by this entry.
