@@ -156,16 +156,51 @@ overhead envelope admits `Θ(n / log log n)`; Fischer–Heun is
 family is known to attain it; "exactly 2n" is true of the BP core only; **no
 construction-time or construction-workspace theorem exists at all**.
 
-- Instruments: (i) prose discipline — never "classical parity"; state the
-  envelope and its non-tightness; scope "exactly 2n"; disclose
-  construction-cost as explicit non-scope in all four claim surfaces;
-  (ii) the zero-range/piecewise theorem (public-input threshold `n < 2^96`)
-  if U-lane capacity exists; (iii) *optional strengthener, only after G1/G2*:
-  a construction read/write-count theorem — genuinely basic relative to
-  classical implementations and currently absent, but new territory and
-  therefore not runway-gating.
+Verified component shapes (`RMQ/Core/SuccinctSpace/Asymptotics.lean`), because
+the envelope's *shape* determines how much of this matters:
+
+- `idDivLogLogOverhead slots n = slots * (n / (log₂(log₂ n + 1) + 1))` —
+  Θ(n / log log n), instantiated at **512 slots** for the sparse-exception
+  relative table (`GenericSelect/RelativeTables.lean:1193`);
+- `logLogCubedSampledDirectoryOverhead slots n =
+  slots * (n / (log₂ n + 1)) * (log log n + 1)³` — Θ(n (log log n)³ / log n).
+
+Against Fischer–Heun's O(n log log n / log n): the second family is worse by
+(log log n)², the first by ~log n / (log log n)². The `littleO` theorem is
+real and machine-checked; the bound is genuinely sublinear.
+
+**The sharper issue is not tightness — it is the crossover.** At n = 2²⁰ the
+512-slot term alone contributes ≈ 512·n/5 ≈ 102n, and the logLogCubed terms
+add multiples of ≈ 5.95·slots·n. The proved envelope exceeds n by orders of
+magnitude at every instantiable size; it becomes sublinear only at
+astronomically large n (consistent with the recorded `n < 2^96` zero-range
+threshold). A reviewer who instantiates the bound will ask "in what sense is
+this succinct?", and "asymptotically, and that is what is machine-checked" is
+technically correct but is exactly the brainpower tax this project minimizes.
+
+Non-tightness, by contrast, deserves little worry and mildly helps: an upper
+bound is an upper bound, nobody proves their own space bound tight, and the
+slack (visible in the crude `≤ 19906·n + 561` proof step at
+`SuccinctFinal.lean:1240`) means nobody can assert the structure *is* that
+large — only that we have not proved it smaller.
+
+- Instruments: (i) prose discipline — never "classical parity"; state up front
+  that the dominant term is Θ(n / log log n), asymptotically weaker than
+  Fischer–Heun, and that the bound is asymptotic with no practical-size
+  crossover; scope "exactly 2n" to the BP core; disclose construction cost as
+  explicit non-scope in all four claim surfaces; (ii) **measured overhead**
+  via the harness — see G6, the highest-value cheap action here; (iii) the
+  zero-range/piecewise theorem (`n < 2^96`) if U-lane capacity exists;
+  (iv) *optional strengthener, only after G1/G2*: a construction
+  read/write-count theorem — genuinely basic relative to classical
+  implementations and currently absent, but new territory and not
+  runway-gating.
 - Acceptance form for (i): claim-drift rules updated so the forbidden
-  phrasings are policed, not just avoided.
+  phrasings are policed, not merely avoided.
+- **Explicitly not in scope:** proving the envelope tight, or redesigning to
+  shrink it. The corrected 2026-07-20 record gates redesign behind first
+  exhibiting a reachable Cartesian/BP family attaining Θ(n / log log n); no
+  such family is known, and that question is out of runway.
 
 ### G6 — Executable evidence at scale (the original centerpiece, unfinished)
 
@@ -178,6 +213,21 @@ C4 are absent.
   fixtures/generators to `2^15` (target `10^5–10^6`), assert the fast-regime
   and all-size caps differentially, print model-cost vs wall-clock in
   separate columns, record CI timings.
+- **Measured-overhead column (serves G5, added 2026-07-25).** Report actual
+  `(buildPayload xs).length` against `2 * n` across the fixture ladder, i.e.
+  the real auxiliary overhead as a fraction of the payload, beside the
+  model-cost and wall-clock columns under the same firewall discipline.
+  `buildPayload` is executable and the quantity is directly computable, so
+  this carries zero proof risk. Rationale: the proved envelope is loose and
+  vacuous at practical n (G5); the actual structure is very likely far
+  smaller, and *measuring* it converts the weakest-looking part of the space
+  claim into demonstrated evidence — "proved o(n); measured auxiliary
+  overhead at n = 2¹⁵ is X% of the payload" is a categorically different
+  reviewer experience from an unaccompanied asymptotic bound carrying
+  512-slot constants. This is what the superseded plan's Workstream B1 was
+  reaching for when it asked to make the uniform constant "presentable".
+  If the measurement comes back large, we learn it before the freeze rather
+  than after, and G5's prose absorbs it honestly.
 - Acceptance form: committed harness run in CI with stored logs; no new
   trust surface (no `native_decide`, no `implemented_by`).
 
@@ -200,35 +250,102 @@ C4 are absent.
   **strictly more** of the between-events boundedness step than the published
   ceiling" — not "fully mechanizes."
 
+### G8 — The manuscript does not exist
+
+Verified 2026-07-25: **there is no paper source anywhere on `main`** — no
+`.tex`, no `.bib`, no `paper/` or `manuscript/` directory. What exists is the
+claim-and-correspondence apparatus (`docs/PAPER_MAIN_THEOREM.md`,
+`PAPER_CLAIM_CORRESPONDENCE.md`, `PAPER_THEOREM_MAP.md`,
+`PAPER_MODEL_ADEQUACY.md`, `PAPER_RELATED_WORK.md`,
+`RELATED_WORK_AND_LIMITATIONS.md`, `WHAT_IS_PROVED.md`, `artifact/CLAIMS.md`)
+— excellent raw material, and deliberately maintained, but not a submission.
+The superseded plan carried this as Workstream C3 and it was never started.
+
+An "endgame" that ends with a perfect artifact and no paper is not an endgame.
+Flagged prominently because every other gap in this register is about
+*strengthening* a claim, while this one is about *making the claim at all*.
+
+- Instrument: assemble the manuscript from the existing correspondence
+  documents, which were written to be assembled — ITP/CPP submission shape:
+  the two-sided theorem plus the executable-cost story as co-headline, the
+  ADD process as a methods section, `artifact/CLAIMS.md` as the claim-map
+  appendix. This is a writing task, not a research task, and it is the one
+  workstream that can proceed in parallel with every proof round.
+- Acceptance form: a complete draft whose every claim resolves through
+  `PAPER_CLAIM_CORRESPONDENCE.md` to a named Lean theorem at the release
+  commit, with venue chosen and length conformed.
+- Dependency note: G5/G7 wording and G1/G2 outcomes land *into* the draft;
+  the draft should be written to absorb them, not started after them.
+
+### G9 — Evidence consolidation: the artifact must be self-contained on `main`
+
+The release commit is the artifact. Several acceptance records that the claim
+chain depends on are **not on `main`** and exist only on branches — verified:
+`docs/internal/audit_reports/` on `main` holds A01, A02, A03, A04, A08, the
+M1 fresh-blind, and the three C06 E1 reports, but **A05 (U3 blind
+acceptance), A06 (U3 docs clean reset), and A07 (Option B charged route) are
+absent**, while their branches exist. The roadmap itself records that the A05
+report commit "was read directly and was not merged."
+
+Relatedly, **U3 — the principled all-size cost bound giving the `210`
+decomposition, one of the paper's two headline numbers — is recorded as
+candidate-complete with its fresh blind exact-commit audit still owed and
+coordinator-owned.** Its Lean landed; its independent acceptance did not.
+
+- Instruments: (i) inventory every branch carrying accepted-but-unmerged
+  evidence, and land the audit reports and acceptance records on `main`;
+  (ii) settle U3's audit — either by a dedicated fresh blind audit or by
+  scoping it explicitly into V1's release-commit audit, recorded either way;
+  (iii) resolve the accumulated ledger hygiene the campaign generated
+  (duplicate `DD-20260723-001` / `WDD-20260723-001` across lineages, the
+  stale 207-era matrix header, the `_MATRIX.md` classifier deadlock).
+- Acceptance form: a reviewer at the release commit can reconstruct every
+  public claim's acceptance chain without visiting a branch.
+- Why this is a gap and not bookkeeping: the project's whole evidentiary
+  posture is "reconstruct from Git." Evidence reachable only from an unmerged
+  branch is, for the artifact, evidence that does not exist.
+
 ## 3. Sequencing (4 weeks, Friday gates)
+
+**The manuscript lane (G8) runs continuously from week 1 and is never
+displaced by a proof round.** It is the only workstream whose absence makes
+every other success unpublishable, and it absorbs outcomes rather than
+waiting on them.
 
 **Week 1 — every unknown gets touched.**
 S1-lift scoping round (G1-i) and B2DESC R4 (G2-i) launch as the two primary
 worker rounds; B3's two probes run as half-days (G4); the 648e512 dry-run
 merge runs in a scratch worktree (G3 gate); one coordinator day executes the
-governance packet (§4) and the G5 prose fixes. *Friday gate:* each of G1/G2
-has either a live candidate or a sized obstruction; probes have answers;
-dry-run has a session count.
+governance packet (§4), the G5 prose fixes, and the G9 evidence inventory;
+manuscript skeleton assembled from the correspondence docs (G8). *Friday
+gate:* each of G1/G2 has either a live candidate or a sized obstruction;
+probes have answers; dry-run has a session count; G9 inventory is complete
+with a landing plan.
 
 **Week 2 — first closures land.**
 S1 and B2DESC to acceptance/audit as they terminate; 648e512 real merge if the
-dry-run gate passed, blind audit launched behind it; G6 harness scale-up in
-parallel (engineering lane, no proof risk). *Friday gate:* at least one of
-G1/G2 closed or its obstruction committed; audit in flight.
+dry-run gate passed, blind audit launched behind it; G6 harness scale-up
+including the measured-overhead column (engineering lane, no proof risk); G9
+audit reports and acceptance records land on `main`; U3's audit disposition
+settled. *Friday gate:* at least one of G1/G2 closed or its obstruction
+committed; audit in flight; `main` self-contained for all pre-existing claims.
 
 **Week 3 — composition and the optional ascent.**
 Compose landed closures into the claim surfaces (the four disclaimers shrink
 or fall); B3 R4 launches iff both probes passed and G1 or G2 is closed;
-novelty search executes (G7). *Friday gate:* claim surfaces consistent with
-exactly what is proved; B3 either running with a scoped contract or closed
-with banked assets.
+novelty search executes (G7) and its log lands; manuscript to complete draft.
+*Friday gate:* claim surfaces consistent with exactly what is proved; every
+manuscript claim resolves to a named theorem; B3 either running with a scoped
+contract or closed with banked assets.
 
 **Week 4 — V1 freeze.**
 Per the roadmap V1 rung: pinned-version Linux CI with stored logs, advisory
-independent checker, axiom/hygiene gates, theorem-correspondence/claims/
-related-work/novelty-log freeze, DOI-ready artifact, and the fresh blind
-external audit of the exact release commit. Nothing new lands in week 4
-except audit-fix loops.
+independent checker (`nanoda`), axiom/hygiene gates across all nine
+axiom-check scripts, theorem-correspondence/claims/related-work/novelty-log
+freeze, DOI-ready (Zenodo) and if needed anonymized artifact bundle, and the
+fresh blind external audit of the exact release commit — scoped to cover U3's
+outstanding audit if G9 routed it there. Nothing new lands in week 4 except
+audit-fix loops and manuscript polish.
 
 Throughput realities baked in: ~25 min per protected-main CI cycle; one heavy
 Lean process at a time; few deep worker rounds beat many shallow ones; every
@@ -259,17 +376,35 @@ One owner DD covering, in the procedure's own vocabulary:
 Full B2 current-route implementation (exceeds runway at its verified lower
 bound); running A4; construction-cost theorems as V1 gates; external C/Rust
 generation; any redesign chasing envelope tightness without the reachable
-family the corrected record demands first; editing archived evidence
-documents in place.
+family the corrected record demands first; the **A1 refactor** (roadmap
+rung, "partially begun" — cosmetic module surgery is the worst possible use
+of a submission runway and risks destabilizing proven interfaces); editing
+archived evidence documents in place.
 
-## 6. What V1 ships under this plan
+## 6. Publication-readiness checklist
 
-Best case: the one-object story closed at cell-probe granularity (G1+G2
-kernel theorems), the fully charged machine companion merged and blind-
-audited (G3), B3 either landed on the counted image (G4) or honestly banked,
-scale evidence in CI (G6), precedent-anchored prose with the novelty log
-(G5+G7). Worst case that this plan still permits: today's headline with
-corrected wording, the machine companion, **plus committed obstruction
-records for G1/G2 that state exactly what failed** — because the one outcome
-this plan forbids is discovering at the freeze that the gaps were never
-seriously attempted.
+The plan is complete iff, at the release commit, a reviewer finds all of:
+
+| # | Item | Gap | State today |
+|---|---|---|---|
+| 1 | A manuscript whose every claim resolves to a named Lean theorem | G8 | **absent — no paper source exists** |
+| 2 | Space/query object identity, or a committed obstruction | G1 | disclaimed on four surfaces |
+| 3 | Descriptor sufficiency certificate, or a committed obstruction | G2 | not attempted |
+| 4 | Machine theorem published at its honest granularity | G3 | kernel-complete, unmerged, unaudited |
+| 5 | Counted-image route, or banked assets + probe results | G4 | 3 rounds banked, probes unrun |
+| 6 | Envelope/constants prose with no parity implication | G5 | wording live, crossover undisclosed |
+| 7 | Measured overhead and cost at `n ≥ 2^15` in CI | G6 | harness exists at 64–128 |
+| 8 | Novelty search log and real citations | G7 | **never performed** |
+| 9 | Every acceptance chain reconstructible from `main` | G9 | A05/A06/A07 off-main; U3 audit owed |
+| 10 | LICENSE, artifact guide, `CODE_MAP`, reproduction script | — | present ✓ |
+| 11 | Pinned Linux CI, axiom/hygiene gates, `nanoda`, DOI bundle | V1 | CI ✓; DOI/checker pending |
+| 12 | Fresh blind external audit of the exact release commit | V1 | pending |
+
+Best case: rows 1–12 all green — the one-object story closed at cell-probe
+granularity, the machine companion merged and audited, B3 landed or honestly
+banked, measured scale evidence, precedent-anchored prose, a submitted paper.
+Worst case this plan still permits: today's headline with corrected wording,
+the machine companion, a complete manuscript, and **committed obstruction
+records for G1/G2 stating exactly what failed** — because the one outcome
+forbidden here is reaching the freeze to discover the gaps were never
+seriously attempted, or that there was no paper.

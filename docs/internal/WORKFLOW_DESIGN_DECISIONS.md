@@ -6473,3 +6473,55 @@ Consequences:
   plan's governance packet (section 4) for a single ratification pass.
 - No worker launch, merge, probe, or claim-surface edit occurs until the
   owner ratifies; the plan text itself is the only artifact of this entry.
+
+## WDD-20260725-007: complete the endgame plan with the envelope-measurement amendment and three missing gaps
+
+Status: Recorded 2026-07-25 by C06. Amends the draft plan; ratification of the
+plan as a whole is still pending.
+Date: 2026-07-25.
+Scope: docs/internal/RMQ_ENDGAME_PLAN.md only.
+
+Trigger:
+
+The owner asked how much the non-classical-parity and non-tightness properties
+of the space envelope should matter, and then asked for a sweep for any
+remaining gaps so that finishing the plan would genuinely mean
+publication-ready.
+
+Decisions:
+
+1. Envelope worry is re-weighted by verified component shapes rather than by
+   recollection. `idDivLogLogOverhead` is Theta(n / log log n) at 512 slots
+   and `logLogCubedSampledDirectoryOverhead` is Theta(n (log log n)^3 / log n)
+   (RMQ/Core/SuccinctSpace/Asymptotics.lean:151, :601). Non-tightness is
+   downgraded to near-zero worry (an upper bound is an upper bound, and the
+   slack protects rather than exposes). The genuine issue is the CROSSOVER:
+   at n = 2^20 the 512-slot term alone is about 102n, so the proved envelope
+   exceeds n at every instantiable size.
+2. The response is measurement, not new asymptotics. G6 gains a
+   measured-overhead column reporting actual (buildPayload xs).length against
+   2n across the fixture ladder - zero proof risk, directly computable, and it
+   converts the weakest-looking part of the space claim into demonstrated
+   evidence. Proving the envelope tight or redesigning to shrink it are
+   recorded as explicitly out of scope, still gated behind the reachable-family
+   question per the corrected 2026-07-20 record.
+3. Three gaps found by the completeness sweep are added:
+   - G8, the manuscript: verified that NO paper source exists anywhere on main
+     (no .tex, .bib, paper/ or manuscript/); only the correspondence apparatus
+     exists. Given as its own lane running continuously from week 1, since its
+     absence would make every other success unpublishable.
+   - G9, evidence consolidation: audit reports A05 (U3 blind acceptance), A06,
+     and A07 are absent from main though their branches exist, and U3 - the
+     principled all-size cost bound behind the 210 decomposition - is recorded
+     candidate-complete with its fresh blind audit still owed. For an artifact
+     whose evidentiary posture is "reconstruct from Git", branch-only evidence
+     is evidence that does not exist.
+   - The A1 refactor rung is added to non-goals: module surgery during a
+     submission runway risks destabilizing proven interfaces.
+4. Section 6 is replaced by a twelve-row publication-readiness checklist with
+   today's state per row, so completion is checkable rather than narrative.
+
+Consequences:
+
+- The plan now fails visibly if any row of the checklist is unmet at freeze.
+- No code, contract, or claim surface changed; the amendment is plan text.
