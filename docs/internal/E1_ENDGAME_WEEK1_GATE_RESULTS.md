@@ -161,13 +161,22 @@ Docs-only: policy JSON, two regression fixtures, one PowerShell regex, four
 proof risk, 1-2 sessions.
 
 **Ordering is a hard constraint, not a preference.** A1 first: register one
-exact `allowedPathLinePairs` entry for the A05 blind report line 27 (retired
-alias `succinctRMQTwoNPlusOConstantQuery`) plus accept/reject fixtures in both
-regression scripts. A directory allowance is **forbidden** — that is exactly
-the blanket exemption U3-FH-01/FH-02 removed. Landing the A05 report verbatim
-fails main's own gates today on exactly one line, caught by two independent
-strict enforcers: a thirty-minute fix that is invisible until attempted, and
-the reason "just cherry-pick the four reports" is wrong.
+exact `allowedPathLinePairs` entry for the A05 blind report's line 27 — which
+quotes a retired public query alias that the `forbidden-retired-paper-query-alias`
+rule bars outside frozen history or enforcement data — plus accept/reject
+fixtures in both regression scripts. A directory allowance is **forbidden** —
+that is exactly the blanket exemption U3-FH-01/FH-02 removed. Landing the A05
+report verbatim fails main's own gates today on exactly one line, caught by
+two independent strict enforcers: a thirty-minute fix that is invisible until
+attempted, and the reason "just cherry-pick the four reports" is wrong.
+
+**This document demonstrated the hazard on itself.** An earlier revision
+spelled that retired alias out while *describing* the allowlist entry needed to
+land it, and the strict scan rejected this file for exactly the rule the
+sentence was about. Per `rmq-audit-prompt`'s standing guidance, the repair is
+to paraphrase the forbidden spelling, never to widen an allowlist to
+accommodate one's own prose. The G9 worker should expect the same trap when
+writing its disposition file.
 
 Accepted cost: the round puts four REJECT verdicts and one `blocked` onto the
 release commit. That is the correct and honest outcome.

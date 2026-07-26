@@ -6669,3 +6669,57 @@ Consequences:
 - Execution of the four scoped week-1 lanes waits on the audit disposition.
 - This runtime cannot create Codex tasks; the prompt is handed over and the
   round is not considered launched until the owner starts it.
+
+## WDD-20260725-011: watch pushes to green, and do not let a pipeline mask a gate's exit code
+
+Status: Accepted 2026-07-25 (owner-directed). Recorded by C06.
+Date: 2026-07-25.
+Scope: coordinator push/verification discipline. No contract or claim change.
+
+Trigger:
+
+Two consecutive pushes to `claude/e1-strategy-memo` failed CI and Artifact
+Reproducibility while the coordinator moved on to other work; the owner found
+the failures. Three distinct defects combined:
+
+1. The gate-results document tripped `forbidden-retired-paper-query-alias` at
+   its own line 165. While describing the allowlist entry the G9 round needs
+   in order to land the A05 report, the sentence reproduced the retired public
+   query alias verbatim - failing exactly the rule it was describing. Caught by
+   two independent strict enforcers.
+2. That commit was pushed after running `design_decision_check.ps1` but NOT
+   `claim_drift_scan.ps1`. The earlier clean claim-drift run predated the
+   document's existence and was reported as if it still applied.
+3. The follow-up repair commit was pushed while its own strict design check was
+   failing, because the command was written as
+   `powershell -Command "...design_decision_check..." 2>&1 | tail -2` inside an
+   `&&` chain: the pipeline's exit status is `tail`'s, so a failing gate
+   returned success and the chained `git push` ran.
+
+Decisions:
+
+1. **Watch pushes to green.** After any push, either wait for both workflows to
+   conclude, or attach a background watcher and report the outcome before the
+   task is considered done. Moving on from an unobserved push is not
+   acceptable, and "CI is running" is not a completion state.
+2. **Never let a pipeline mask a gate's exit code.** Run repository gates so
+   their status is the command's status - no trailing `| tail`, `| Select-Object`,
+   or `| head` on the invocation whose exit code gates a push. Capture output to
+   a file and inspect it separately if the volume is inconvenient.
+3. **Run every gate the changed paths imply, not the one most recently on
+   hand.** A document under `docs/internal/` implies the strict design check;
+   any prose at all implies strict claim drift. A prior green run does not
+   cover a file that did not exist when it ran. This is the same range-mismatch
+   family as `WDD-20260725-003`, in the axis of *which* gate rather than
+   *which* range.
+4. When a document must mention a forbidden spelling, paraphrase it. Widening
+   an allowlist to accommodate one's own prose is forbidden, per
+   `rmq-audit-prompt`'s standing guidance.
+
+Consequences:
+
+- The alias repair is by paraphrase; no allowlist entry was added.
+- The G9 worker is warned in the gate-results document itself that its
+  disposition file will hit the same trap.
+- Cost of the miss: two wasted ~25-minute CI cycles, and an owner having to
+  catch a failure the coordinator should have caught.
