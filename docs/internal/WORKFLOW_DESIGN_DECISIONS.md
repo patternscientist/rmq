@@ -6384,3 +6384,52 @@ Consequences:
   inventories equal.
 - The R2 candidate branch and worktree are preserved unmodified as evidence.
 - No accepted blob, theorem, matrix, or public claim changes.
+
+## WDD-20260726-001: adopt the packed cell-probe endgame roadmap as coordination policy
+
+Status: Recorded 2026-07-26 by C06. The roadmap governs only after its own
+independent audit and owner ratification; this entry records the corrected
+delta and its adjudication, not an architecture acceptance.
+Date: 2026-07-26.
+Scope: docs/internal/RMQ_ENDGAME_ROADMAP.md (new),
+docs/internal/audit_reports/2026-07-25_A09_endgame_plan_audit.md (evidence),
+docs/internal/audit_reports/2026-07-25_C06_endgame_adjudication.md (new).
+
+Trigger:
+
+The C06 endgame plan delta at 0e71b828 was rejected by fresh-blind audit A09.
+A five-round exchange followed: a Codex coordinator audit of A09, a Codex
+architecture judgment selecting a packed cell-probe target, a C06 audit of that
+judgment, and a Codex audit of the C06 response that sustained five defects in
+C06's own work. Codex then authored a replacement roadmap, which C06 audited
+against primary sources.
+
+Decisions:
+
+1. The replacement roadmap is accepted as coordination policy with two
+   corrections and three Day-0 amendments, all applied in this delta and
+   itemised in the adjudication record.
+2. The delta is built on a fresh branch from clean main, never on the rejected
+   strategy lineage, per the roadmap's own Git-hygiene rule 4. The rejected
+   candidate 0e71b828 and the A09 report 930a610 remain immutable evidence, and
+   neither is an ancestor of this replacement.
+3. The A09 report is carried into this delta as durable evidence at the release
+   commit, with its provenance disclosed: it is parented on 67fb79e rather than
+   on its own audit target.
+4. The packed cell-probe architecture is recorded as FEASIBILITY_CANDIDATE.
+   U3+M1 is the fallback and may not be called a certified floor until U3's
+   fresh-blind acceptance closes or is subsumed by a scoped release audit.
+5. Claim-prose repair is explicitly NOT in this delta; the roadmap routes it to
+   a separate docs branch, and the earlier C06 wording fix is superseded because
+   its "not charged primitives" sentence was proved false.
+
+Consequences:
+
+- Five defects in C06's own work are recorded in a durable artifact rather than
+  only in conversation, including promoting agent-session evidence to
+  kernel-tier and proposing a continuation audit where the protocol requires a
+  fresh one.
+- The attribution ledger is corrected: A09 found the allocation and
+  probe-totality gaps; the architecture judgment found the free-shape gap; the
+  rejected C06 plan found neither.
+- No theorem, matrix, contract, or public claim changes.
