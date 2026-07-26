@@ -1,0 +1,26 @@
+cost probe
+  n=63 len=126
+    occurrenceCount bits false (the ONLY consumed content channel) = 63  [0ms]
+    (longSuperFlagBits bits false).length = 2  [0ms]
+    (sparseExceptionEffectiveFlagBits bits false).length = 63  [0ms]
+    (superEntries bits false).length (content-bearing, NEVER consumed) = 2  [0ms]
+    sparseExceptionSelectData bits false |>.wordSize (forces the whole record) = 7  [0ms]
+  n=100 len=200
+    occurrenceCount bits false (the ONLY consumed content channel) = 100  [0ms]
+    (longSuperFlagBits bits false).length = 2  [0ms]
+    (sparseExceptionEffectiveFlagBits bits false).length = 100  [0ms]
+    (superEntries bits false).length (content-bearing, NEVER consumed) = 2  [0ms]
+    sparseExceptionSelectData bits false |>.wordSize (forces the whole record) = 8  [0ms]
+  huge idx
+    n=63 idx=63 distinctOutcomes=1 value=none|
+    n=63 idx=64 distinctOutcomes=1 value=none|
+    n=63 idx=126 distinctOutcomes=1 value=none|
+    n=63 idx=1000 distinctOutcomes=1 value=none|
+    n=63 idx=1000000 distinctOutcomes=1 value=none|
+    n=63 idx=1000000000 distinctOutcomes=1 value=none|
+    n=65 idx=65 distinctOutcomes=1 value=none|
+    n=65 idx=66 distinctOutcomes=1 value=none|
+    n=65 idx=130 distinctOutcomes=1 value=none|
+    n=65 idx=1000 distinctOutcomes=1 value=none|
+    n=65 idx=1000000 distinctOutcomes=1 value=none|
+    n=65 idx=1000000000 distinctOutcomes=1 value=none|

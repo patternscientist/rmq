@@ -1,0 +1,16 @@
+cost3
+  n=16 regime=LONG traceEvents=9 freshLeafTime=0ms
+  n=16 regime=SPARSE traceEvents=13 freshLeafTime=0ms
+  n=16 regime=DENSE traceEvents=19 freshLeafTime=0ms
+  n=32 regime=LONG traceEvents=9 freshLeafTime=0ms
+  n=32 regime=SPARSE traceEvents=13 freshLeafTime=0ms
+  n=32 regime=DENSE traceEvents=17 freshLeafTime=0ms
+  n=63 regime=LONG traceEvents=9 freshLeafTime=0ms
+  n=63 regime=SPARSE traceEvents=13 freshLeafTime=0ms
+  n=63 regime=DENSE traceEvents=17 freshLeafTime=0ms
+  n=100 regime=LONG traceEvents=9 freshLeafTime=0ms
+  n=100 regime=SPARSE traceEvents=13 freshLeafTime=0ms
+  n=100 regime=DENSE traceEvents=22 freshLeafTime=0ms
+  n=128 regime=LONG traceEvents=9 freshLeafTime=0ms
+  n=128 regime=SPARSE traceEvents=13 freshLeafTime=0ms
+  n=128 regime=DENSE traceEvents=16 freshLeafTime=0ms

@@ -1,0 +1,2 @@
+'DPXF2D.leaf_size_only' depends on axioms: [propext, Classical.choice, Quot.sound]
+'DPXF2D.leaf_factors_through_n' depends on axioms: [propext, Classical.choice, Quot.sound]

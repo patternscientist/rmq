@@ -1,0 +1,18 @@
+attack5 start
+== E3b: control -- same length, different falseCount, idx CROSSING the guard ==
+  DIFF f63 vs f62 at 12/40; first pos=2
+    A=some 49|R(1,1)->1111;R(2,1)->0010;R(3,1)->1001;R(4,1)->0111;R(9,0)->0010;R(10,0)->1001;R(11,0)->0111;R(21,3)->1001;R(12,684)->1110
+    B=none|
+=== control len=126 falseCount 63/62/61 idx=60..63 members=3 distinctBits=3 lengths=[126] falseCounts=[63, 62, 61] comparisons=80 MISMATCHES=33 regimes=[LONG, NONE, SPARSE, DENSE] [1853ms] OK-CONTROL-SEES-DIFFERENCE
+== E5: exhaustive enumeration of ALL shapes of a given size ==
+  [exhaustive n=6] shapeCount=132 sizes=[6] distinctBpCodes=132
+=== EXHAUSTIVE n=6 members=132 distinctBits=132 lengths=[12] falseCounts=[6] comparisons=9170 MISMATCHES=0 regimes=[LONG, NONE, SPARSE, DENSE] [7208ms] OK-NO-DIFFERENCE
+  [exhaustive n=7] shapeCount=429 sizes=[7] distinctBpCodes=429
+=== EXHAUSTIVE n=7 members=429 distinctBits=429 lengths=[14] falseCounts=[7] comparisons=25680 MISMATCHES=0 regimes=[LONG, NONE, SPARSE, DENSE] [19860ms] OK-NO-DIFFERENCE
+  [exhaustive n=8] shapeCount=1430 sizes=[8] distinctBpCodes=1430
+=== EXHAUSTIVE n=8 members=1430 distinctBits=1430 lengths=[16] falseCounts=[8] comparisons=85740 MISMATCHES=0 regimes=[LONG, NONE, SPARSE, DENSE] [70330ms] OK-NO-DIFFERENCE
+== E6: 60 pseudo-random stores (varying word widths, some `none`) at n=63 ==
+=== n=63 x 60 random stores members=9 distinctBits=8 lengths=[126] falseCounts=[63] comparisons=2880 MISMATCHES=0 regimes=[NONE, LONG, DENSE, SPARSE] [4777ms] OK-NO-DIFFERENCE
+== E7: wide (32-bit) word stores at n=65 and n=100 ==
+=== n=65 wide members=9 distinctBits=8 lengths=[130] falseCounts=[65] comparisons=144 MISMATCHES=0 regimes=[LONG] [4410ms] OK-NO-DIFFERENCE
+=== n=100 wide members=9 distinctBits=8 lengths=[200] falseCounts=[100] comparisons=144 MISMATCHES=0 regimes=[LONG] [8287ms] OK-NO-DIFFERENCE

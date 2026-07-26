@@ -1,0 +1,2 @@
+attack2 start
+n=63 store=small7 shapes=12 distinctBpCodes=11 sizes=[63] comparisons=180 KEY-MISMATCH=0 VALUE-MISMATCH=0 regimes=[LONG, NONE] [262883ms]

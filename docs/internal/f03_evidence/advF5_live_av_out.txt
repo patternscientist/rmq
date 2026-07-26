@@ -1,0 +1,5 @@
+n=10 shapes=11 distinctShapes=11 DISTINCT_ENTRY_VECTORS=10 DISTINCT_SEG20_WORDS=10 seg20WordCount=[133] distinctOffsetTuples=1 distinctEntryLenTuples=1 offsets=[0, 1, 5, 9, 13, 93, 94, 130, 133] entryLens=[1, 2, 2, 2, 80, 1]
+n=12 shapes=11 distinctShapes=11 DISTINCT_ENTRY_VECTORS=11 DISTINCT_SEG20_WORDS=11 seg20WordCount=[139] distinctOffsetTuples=1 distinctEntryLenTuples=1 offsets=[0, 1, 7, 13, 19, 99, 100, 136, 139] entryLens=[1, 3, 3, 3, 80, 1]
+n=14 shapes=11 distinctShapes=11 DISTINCT_ENTRY_VECTORS=11 DISTINCT_SEG20_WORDS=11 seg20WordCount=[139] distinctOffsetTuples=1 distinctEntryLenTuples=1 offsets=[0, 1, 7, 13, 19, 99, 100, 136, 139] entryLens=[1, 3, 3, 3, 80, 1]
+n=16 shapes=11 distinctShapes=11 DISTINCT_ENTRY_VECTORS=11 DISTINCT_SEG20_WORDS=11 seg20WordCount=[202] distinctOffsetTuples=1 distinctEntryLenTuples=1 offsets=[0, 1, 7, 13, 19, 144, 145, 199, 202] entryLens=[1, 3, 3, 3, 125, 1]
+n=20 shapes=11 distinctShapes=11 DISTINCT_ENTRY_VECTORS=11 DISTINCT_SEG20_WORDS=11 seg20WordCount=[208] distinctOffsetTuples=1 distinctEntryLenTuples=1 offsets=[0, 1, 9, 17, 25, 150, 151, 205, 208] entryLens=[1, 4, 4, 4, 125, 1]

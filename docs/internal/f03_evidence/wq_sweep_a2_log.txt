@@ -1,0 +1,18 @@
+=== CROSS-SHAPE WHOLE-QUERY SWEEP (14 families x 9 stores x 12 endpoint pairs) ===
+  GENBUG n=1 deep size=2 (excluded)
+  n=1 shapes=13 gridCells=108 DISTINCToutcomes=19 comparisons=1296 traceDiff=0 valDiff=0
+  n=2 shapes=14 gridCells=108 DISTINCToutcomes=23 comparisons=1404 traceDiff=0 valDiff=0
+  n=3 shapes=14 gridCells=108 DISTINCToutcomes=25 comparisons=1404 traceDiff=0 valDiff=0
+  n=4 shapes=14 gridCells=108 DISTINCToutcomes=27 comparisons=1404 traceDiff=0 valDiff=0
+  n=5 shapes=14 gridCells=108 DISTINCToutcomes=27 comparisons=1404 traceDiff=0 valDiff=0
+  n=6 shapes=14 gridCells=108 DISTINCToutcomes=27 comparisons=1404 traceDiff=0 valDiff=0
+  n=7 shapes=14 gridCells=108 DISTINCToutcomes=27 comparisons=1404 traceDiff=0 valDiff=0
+  n=8 shapes=14 gridCells=108 DISTINCToutcomes=27 comparisons=1404 traceDiff=0 valDiff=0
+  n=9 shapes=14 gridCells=108 DISTINCToutcomes=27 comparisons=1404 traceDiff=0 valDiff=0
+  n=10 shapes=14 gridCells=108 DISTINCToutcomes=27 comparisons=1404 traceDiff=0 valDiff=0
+  n=12 shapes=14 gridCells=108 DISTINCToutcomes=31 comparisons=1404 traceDiff=0 valDiff=0
+  n=14 shapes=14 gridCells=108 DISTINCToutcomes=31 comparisons=1404 traceDiff=0 valDiff=0
+  n=16 shapes=14 gridCells=108 DISTINCToutcomes=31 comparisons=1404 traceDiff=0 valDiff=0
+  n=20 shapes=14 gridCells=108 DISTINCToutcomes=33 comparisons=1404 traceDiff=0 valDiff=0
+  n=24 shapes=14 gridCells=108 DISTINCToutcomes=33 comparisons=1404 traceDiff=0 valDiff=0
+  n=31 shapes=14 gridCells=108 DISTINCToutcomes=33 comparisons=1404 traceDiff=0 valDiff=0

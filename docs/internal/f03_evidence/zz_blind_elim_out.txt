@@ -1,0 +1,191 @@
+ROOT RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+COMPUTATIONAL_CLOSURE_TOTAL 917
+
+== ALL CartesianShape.* CONSTANTS IN ENV (74) ==
+  IN_CORE induct RMQ.Cartesian.CartesianShape
+          def RMQ.Cartesian.CartesianShape._sizeOf_1
+          def RMQ.Cartesian.CartesianShape._sizeOf_inst
+  IN_CORE def RMQ.Cartesian.CartesianShape.below
+  IN_CORE def RMQ.Cartesian.CartesianShape.bpCode
+          def RMQ.Cartesian.CartesianShape.bpCode._sunfold
+          def RMQ.Cartesian.CartesianShape.bpCode._unsafe_rec
+          thm RMQ.Cartesian.CartesianShape.bpCode.eq_1
+          thm RMQ.Cartesian.CartesianShape.bpCode.eq_2
+          thm RMQ.Cartesian.CartesianShape.bpCode_length
+          thm RMQ.Cartesian.CartesianShape.bpCode_length._proof_1_6
+          thm RMQ.Cartesian.CartesianShape.bpCode_length_of_shapeOfSize
+  IN_CORE def RMQ.Cartesian.CartesianShape.brecOn
+  IN_CORE def RMQ.Cartesian.CartesianShape.casesOn
+          def RMQ.Cartesian.CartesianShape.decodeFullCode?
+          def RMQ.Cartesian.CartesianShape.decodeFullCode?.match_1
+          thm RMQ.Cartesian.CartesianShape.decodeFullCode?_fullCode
+          thm RMQ.Cartesian.CartesianShape.decodeFullCode?_fullCode._proof_1_1
+  IN_CORE ctor RMQ.Cartesian.CartesianShape.empty
+          thm RMQ.Cartesian.CartesianShape.empty.sizeOf_spec
+          def RMQ.Cartesian.CartesianShape.fullCode
+          def RMQ.Cartesian.CartesianShape.fullCode._sunfold
+          def RMQ.Cartesian.CartesianShape.fullCode._unsafe_rec
+          thm RMQ.Cartesian.CartesianShape.fullCode.eq_1
+          thm RMQ.Cartesian.CartesianShape.fullCode.eq_2
+          thm RMQ.Cartesian.CartesianShape.fullCode_injective
+          thm RMQ.Cartesian.CartesianShape.fullCode_injective._proof_1_1
+          thm RMQ.Cartesian.CartesianShape.fullCode_length
+          thm RMQ.Cartesian.CartesianShape.fullCode_length._proof_1_6
+          thm RMQ.Cartesian.CartesianShape.fullCode_tail_length_of_shapeOfSize
+          thm RMQ.Cartesian.CartesianShape.fullCode_tail_length_of_shapeOfSize._proof_1_6
+          thm RMQ.Cartesian.CartesianShape.fullCode_tail_length_of_shapeOfSize._proof_1_7
+          def RMQ.Cartesian.CartesianShape.noConfusion
+          def RMQ.Cartesian.CartesianShape.noConfusionType
+          def RMQ.Cartesian.CartesianShape.noConfusionType.withCtor
+          def RMQ.Cartesian.CartesianShape.noConfusionType.withCtorType
+  IN_CORE ctor RMQ.Cartesian.CartesianShape.node
+          thm RMQ.Cartesian.CartesianShape.node.inj
+          thm RMQ.Cartesian.CartesianShape.node.injEq
+          thm RMQ.Cartesian.CartesianShape.node.sizeOf_spec
+          def RMQ.Cartesian.CartesianShape.queryOffset?
+          def RMQ.Cartesian.CartesianShape.queryOffset?._sunfold
+          def RMQ.Cartesian.CartesianShape.queryOffset?._unsafe_rec
+          thm RMQ.Cartesian.CartesianShape.queryOffset?.eq_1
+          thm RMQ.Cartesian.CartesianShape.queryOffset?.eq_2
+          def RMQ.Cartesian.CartesianShape.queryOffset?.match_1
+  IN_CORE rec RMQ.Cartesian.CartesianShape.rec
+          def RMQ.Cartesian.CartesianShape.recOn
+          def RMQ.Cartesian.CartesianShape.representative
+          def RMQ.Cartesian.CartesianShape.representative._sunfold
+          def RMQ.Cartesian.CartesianShape.representative._unsafe_rec
+          thm RMQ.Cartesian.CartesianShape.representative.eq_1
+          thm RMQ.Cartesian.CartesianShape.representative.eq_2
+          thm RMQ.Cartesian.CartesianShape.representative_length
+          thm RMQ.Cartesian.CartesianShape.representative_length._proof_1_6
+          thm RMQ.Cartesian.CartesianShape.representative_nonnegative
+          thm RMQ.Cartesian.CartesianShape.representative_nonnegative._proof_1_7
+          thm RMQ.Cartesian.CartesianShape.representative_nonnegative._proof_1_8
+          thm RMQ.Cartesian.CartesianShape.representative_nonnegative._simp_1_5
+          thm RMQ.Cartesian.CartesianShape.representative_nonnegative._simp_1_6
+          thm RMQ.Cartesian.CartesianShape.representative_shift_positive
+          thm RMQ.Cartesian.CartesianShape.representative_shift_positive._proof_1_3
+          thm RMQ.Cartesian.CartesianShape.representative_shift_positive._simp_1_2
+          def RMQ.Cartesian.CartesianShape.rootOffset?
+          thm RMQ.Cartesian.CartesianShape.rootOffset?.eq_1
+          thm RMQ.Cartesian.CartesianShape.rootOffset?.eq_2
+          thm RMQ.Cartesian.CartesianShape.shape_representative
+          thm RMQ.Cartesian.CartesianShape.shape_representative._proof_1_7
+          thm RMQ.Cartesian.CartesianShape.shape_representative._proof_1_8
+  IN_CORE def RMQ.Cartesian.CartesianShape.size
+          def RMQ.Cartesian.CartesianShape.size._sunfold
+          def RMQ.Cartesian.CartesianShape.size._unsafe_rec
+          thm RMQ.Cartesian.CartesianShape.size.eq_1
+          thm RMQ.Cartesian.CartesianShape.size.eq_2
+
+== CORE CONSTANTS REFERENCING ANY CartesianShape.* CONSTANT ==
+  USES RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctFinalStoreParam
+  USES RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctFinalStoreParam
+  USES RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctFinalStoreParam
+  USES RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctFinalStoreParam
+  USES RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankData :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctFinal
+  USES RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlockWidth :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctFinal
+  USES RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankWordSize :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctFinal
+  USES RMQ.Cartesian.CartesianShape.bpCode :: [RMQ.Cartesian.CartesianShape.node,RMQ.Cartesian.CartesianShape.empty,RMQ.Cartesian.CartesianShape.below,RMQ.Cartesian.CartesianShape.brecOn,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.Shape
+  USES RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255 :: [RMQ.Cartesian.CartesianShape.casesOn,RMQ.Cartesian.CartesianShape.node,RMQ.Cartesian.CartesianShape.empty,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.Shape
+  USES RMQ.Cartesian.CartesianShape.casesOn :: [RMQ.Cartesian.CartesianShape.rec,RMQ.Cartesian.CartesianShape.node,RMQ.Cartesian.CartesianShape.empty,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.Shape
+  USES RMQ.Cartesian.CartesianShape.below :: [RMQ.Cartesian.CartesianShape.rec,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.Shape
+  USES RMQ.Cartesian.CartesianShape.brecOn :: [RMQ.Cartesian.CartesianShape.node,RMQ.Cartesian.CartesianShape.empty,RMQ.Cartesian.CartesianShape.rec,RMQ.Cartesian.CartesianShape.below,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.Shape
+  USES RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlocksPerSuper :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctFinal
+  USES RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlockOverhead :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctFinal
+  USES RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankSuperOverhead :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctFinal
+  USES RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctFinalStoreParam
+  USES RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeWiring
+  USES RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeTrace
+  USES RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeTrace
+  USES RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResultWithStore :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
+  USES RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
+  USES RMQ.SuccinctClose.localBPWindowBase :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.LocalBPDecoder
+  USES RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
+  USES RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmMachineCrossMacroCandidateComputation :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalSpanCandidateComputation :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmMachineMinCandidateComputation :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.argOffsetTable :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.bpBlockArgMinLocalOffset :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.bpBlockArgMinPrefixPos :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RangeSummary
+  USES RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RangeSummary
+  USES RMQ.SuccinctClose.bpExcessAt :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RangeSummary
+  USES RMQ.SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.maxRelTable :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.bpBlockRelativeMaxExcess :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.bpBlockMaxExcess :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RangeSummary
+  USES RMQ.SuccinctClose.bpBlockExcessSamples :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RangeSummary
+  USES RMQ.SuccinctClose.bpRelativeExcessEntry :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.minRelTable :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.bpBlockRelativeMinExcess :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.bpBlockMinExcess :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RangeSummary
+  USES RMQ.SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.baselineTable :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.bpSuperblockBaselineEntries :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmGlobalLevelMachineStore :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmInteriorGlobalLevelTable :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.RelativeRmm.canonicalLayout :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.canonicalBPRelativeSummaryRelativeWidthRaw :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.canonicalBPRelativeSummaryBase :: [RMQ.Cartesian.CartesianShape.size,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.Cartesian.CartesianShape.size :: [RMQ.Cartesian.CartesianShape.node,RMQ.Cartesian.CartesianShape.empty,RMQ.Cartesian.CartesianShape.below,RMQ.Cartesian.CartesianShape.brecOn,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.Shape
+  USES RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockCountRaw :: [RMQ.Cartesian.CartesianShape.size,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.canonicalBPRelativeSummaryBlocksPerSuperRaw :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmInteriorLocalLevelTable :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.PayloadLiveBPGlobalSparseBlockTable.table :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+  USES RMQ.SuccinctClose.bpGlobalSparseBlockEntries :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+  USES RMQ.SuccinctClose.bpGlobalSparseCellBlock :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+  USES RMQ.SuccinctClose.bpRangeArgMinBlock :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseArgMin
+  USES RMQ.SuccinctClose.bpRangeArgMinBlockFrom :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseArgMin
+  USES RMQ.SuccinctClose.bpBetterArgMinBlock :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseArgMin
+  USES RMQ.SuccinctClose.canonicalRelativeRmmInteriorGlobalTable :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.concreteBPGlobalSparseBlockTable :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+  USES RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.PayloadLiveBPLocalSparseOffsetTable.table :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.LocalSparseOffset
+  USES RMQ.SuccinctClose.bpLocalSparseOffsetEntries :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.LocalSparseOffset
+  USES RMQ.SuccinctClose.bpLocalSparseCellOffset :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.LocalSparseOffset
+  USES RMQ.SuccinctClose.canonicalRelativeRmmInteriorLocalTable :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.concreteBPLocalSparseOffsetTable :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+  USES RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.RelativeRmm.Layout.superWidth :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeSummary
+  USES RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.canonicalRelativeRmmMachineAdjacentMacroCandidateComputation :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  USES RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeTrace
+  USES RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSeedFromRankCloseTraceResult :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAM
+  USES RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore :: [RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedSameBlockTrace
+  USES RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedSameBlockTrace
+  USES RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore :: [RMQ.Cartesian.CartesianShape.bpCode,RMQ.Cartesian.CartesianShape] mod=RMQ.Core.SuccinctFinalStoreParam
+REFERENCING_CORE_CONSTANT_COUNT 89
+
+SHAPE_TAKING_PASSTHROUGH 0
+SHAPE_TAKING_OBSERVERS 89
+
+== TARGETED MEMBERSHIP PROBES ==
+  PROBE RMQ.SuccinctSpace.bpParensOfShape :: not-in-core kind=def
+  PROBE RMQ.Cartesian.CartesianShape.rootOffset? :: not-in-core kind=def
+  PROBE RMQ.Cartesian.CartesianShape.representative :: not-in-core kind=def
+  PROBE RMQ.Cartesian.CartesianShape.decEq :: not-in-core kind=MISSING
+  PROBE RMQ.Cartesian.instDecidableEqCartesianShape :: not-in-core kind=def
+  PROBE RMQ.Cartesian.CartesianShape.rec :: IN_CORE kind=rec
+  PROBE RMQ.Cartesian.CartesianShape.casesOn :: IN_CORE kind=def
+  PROBE RMQ.Cartesian.CartesianShape.brecOn :: IN_CORE kind=def
+  PROBE RMQ.Cartesian.CartesianShape.below :: IN_CORE kind=def
+  PROBE RMQ.Cartesian.CartesianShape.node :: IN_CORE kind=ctor
+  PROBE RMQ.Cartesian.CartesianShape.empty :: IN_CORE kind=ctor
+  PROBE RMQ.Cartesian.CartesianShape.bpCode :: IN_CORE kind=def
+  PROBE RMQ.Cartesian.CartesianShape.size :: IN_CORE kind=def
+  PROBE RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore :: IN_CORE kind=def
+  PROBE RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore :: IN_CORE kind=def
+  PROBE RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore :: IN_CORE kind=def

@@ -1,0 +1,23 @@
+n=3 shapes=5 pairs=6
+  REAL   outs=[(some 0), (some 0), (some 0), (some 1), (some 1), (some 2)] distinct=3 noneCount=0 seg20Runs=0
+  REAL2  outs=[(some 0), (some 1), (some 2), (some 1), (some 2), (some 2)] distinct=3
+  CONST  outs=[(some 169), (some 169), (some 169), (some 169), (some 169), (some 169)] distinct=1 seg20Runs=0
+  PRNG   outs=[(some 4679), (some 4679), (some 4679), (some 4679), (some 4679), (some 4679)] distinct=1 seg20Runs=0
+  segHistREAL[0]=[(0, 6), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (17, 2), (18, 2), (19, 2), (21, 18), (22, 2)] segHistCONST[0]=[(0, 4), (1, 2), (2, 2), (3, 2), (4, 2), (9, 2), (10, 2), (11, 2), (12, 2), (17, 2), (18, 2), (19, 2), (21, 8)] segHistPRNG[0]=[(0, 4), (1, 2), (2, 2), (3, 2), (4, 2), (9, 2), (10, 2), (11, 2), (12, 2), (17, 2), (18, 2), (19, 2), (21, 9)]
+  segHistREAL[last]=[(0, 6), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (17, 2), (18, 2), (19, 2), (21, 22), (22, 2)] segHistCONST[last]=[(0, 4), (1, 2), (2, 2), (3, 2), (4, 2), (9, 2), (10, 2), (11, 2), (12, 2), (17, 2), (18, 2), (19, 2), (21, 8)]
+
+n=5 shapes=42 pairs=15
+  REAL   outs=[(some 0), (some 0), (some 0), (some 0), (some 0), (some 1), (some 1), (some 1), (some 1), (some 2), (some 2), (some 2), (some 3), (some 3), (some 4)] distinct=5 noneCount=0 seg20Runs=0
+  REAL2  outs=[(some 0), (some 1), (some 2), (some 3), (some 4), (some 1), (some 2), (some 3), (some 4), (some 2), (some 3), (some 4), (some 3), (some 4), (some 4)] distinct=5
+  CONST  outs=[(some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169)] distinct=1 seg20Runs=0
+  PRNG   outs=[(some 4681), (some 4681), (some 4681), (some 4681), (some 4681), (some 4681), (some 4681), (some 4681), (some 4681), (some 4681), (some 4681), (some 4681), (some 4681), (some 4681), (some 4681)] distinct=1 seg20Runs=0
+  segHistREAL[0]=[(0, 6), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (17, 2), (18, 2), (19, 2), (21, 20), (22, 2)] segHistCONST[0]=[(0, 4), (1, 2), (2, 2), (3, 2), (4, 2), (9, 2), (10, 2), (11, 2), (12, 2), (17, 2), (18, 2), (19, 2), (21, 10)] segHistPRNG[0]=[(0, 4), (1, 2), (2, 2), (3, 2), (4, 2), (9, 2), (10, 2), (11, 2), (12, 2), (17, 2), (18, 2), (19, 2), (21, 11)]
+  segHistREAL[last]=[(0, 6), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (17, 2), (18, 2), (19, 2), (21, 20), (22, 2)] segHistCONST[last]=[(0, 4), (1, 2), (2, 2), (3, 2), (4, 2), (9, 2), (10, 2), (11, 2), (12, 2), (17, 2), (18, 2), (19, 2), (21, 10)]
+
+n=6 shapes=132 pairs=21
+  REAL   outs=[(some 0), (some 0), (some 0), (some 0), (some 0), (some 0), (some 1), (some 1), (some 1), (some 1), (some 1), (some 2), (some 2), (some 2), (some 2), (some 3), (some 3), (some 3), (some 4), (some 4), (some 5)] distinct=6 noneCount=0 seg20Runs=0
+  REAL2  outs=[(some 0), (some 1), (some 2), (some 3), (some 4), (some 5), (some 1), (some 2), (some 3), (some 4), (some 5), (some 2), (some 3), (some 4), (some 5), (some 3), (some 4), (some 5), (some 4), (some 5), (some 5)] distinct=6
+  CONST  outs=[(some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169), (some 169)] distinct=1 seg20Runs=0
+  PRNG   outs=[(some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924), (some 2924)] distinct=1 seg20Runs=0
+  segHistREAL[0]=[(0, 6), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (17, 2), (18, 2), (19, 2), (21, 20), (22, 2)] segHistCONST[0]=[(0, 4), (1, 2), (2, 2), (3, 2), (4, 2), (9, 2), (10, 2), (11, 2), (12, 2), (17, 2), (18, 2), (19, 2), (21, 8)] segHistPRNG[0]=[(0, 4), (1, 2), (2, 2), (3, 2), (4, 2), (9, 2), (10, 2), (11, 2), (12, 2), (17, 2), (18, 2), (19, 2), (21, 9)]
+  segHistREAL[last]=[(0, 6), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (17, 2), (18, 2), (19, 2), (21, 33), (22, 2)] segHistCONST[last]=[(0, 4), (1, 2), (2, 2), (3, 2), (4, 2), (9, 2), (10, 2), (11, 2), (12, 2), (17, 2), (18, 2), (19, 2), (21, 8)]

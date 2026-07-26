@@ -1,0 +1,173 @@
+IR_CORE 478
+
+===== IR TARGET RMQ.SuccinctClose.bpExcessAt =====
+  IR_DIRECT_CALLERS 5
+    IRCALLER RMQ.SuccinctClose.bpBetterArgMinBlock  mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseArgMin
+    IRCALLER RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom  mod=RMQ.Core.SuccinctClose.RangeSummary
+    IRCALLER List.mapTR.loop._at_.RMQ.SuccinctClose.bpBlockExcessSamples.spec_0  mod=RMQ.Core.SuccinctClose.RangeSummary
+    IRCALLER RMQ.SuccinctClose.bpRelativeExcessEntry  mod=RMQ.Core.SuccinctClose.RelativeSummary
+    IRCALLER List.mapTR.loop._at_.RMQ.SuccinctClose.bpSuperblockBaselineEntries.spec_0  mod=RMQ.Core.SuccinctClose.RelativeSummary
+  IR_SHORTEST_PATH_LEN 17
+    [0] RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+    [1] RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+    [2] RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+    [3] RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+    [4] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore._redArg
+    [5] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+    [6] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2._boxed
+    [7] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2
+    [8] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+    [9] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation
+    [10] RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+    [11] RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+    [12] RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable
+    [13] RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable._redArg
+    [14] RMQ.SuccinctClose.bpSuperblockBaselineEntries
+    [15] List.mapTR.loop._at_.RMQ.SuccinctClose.bpSuperblockBaselineEntries.spec_0
+    [16] RMQ.SuccinctClose.bpExcessAt
+
+===== IR TARGET RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable =====
+  IR_DIRECT_CALLERS 2
+    IRCALLER RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+    IRCALLER RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  IR_SHORTEST_PATH_LEN 13
+    [0] RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+    [1] RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+    [2] RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+    [3] RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+    [4] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore._redArg
+    [5] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+    [6] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2._boxed
+    [7] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2
+    [8] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+    [9] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation
+    [10] RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+    [11] RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+    [12] RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable
+
+===== IR TARGET RMQ.SuccinctClose.bpSuperblockBaselineEntries =====
+  IR_DIRECT_CALLERS 2
+    IRCALLER RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable._redArg  mod=RMQ.Core.SuccinctClose.RelativeSummary
+    IRCALLER RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  IR_SHORTEST_PATH_LEN 15
+    [0] RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+    [1] RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+    [2] RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+    [3] RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+    [4] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore._redArg
+    [5] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+    [6] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2._boxed
+    [7] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2
+    [8] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+    [9] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation
+    [10] RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+    [11] RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+    [12] RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable
+    [13] RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable._redArg
+    [14] RMQ.SuccinctClose.bpSuperblockBaselineEntries
+
+===== IR TARGET RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries =====
+  IR_DIRECT_CALLERS 2
+    IRCALLER RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable._redArg  mod=RMQ.Core.SuccinctClose.RelativeSummary
+    IRCALLER RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation._lam_3  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  IR_SHORTEST_PATH_LEN 15
+    [0] RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+    [1] RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+    [2] RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+    [3] RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+    [4] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore._redArg
+    [5] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+    [6] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2._boxed
+    [7] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2
+    [8] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+    [9] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation
+    [10] RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+    [11] RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+    [12] RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable
+    [13] RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable._redArg
+    [14] RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries
+
+===== IR TARGET RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries =====
+  IR_DIRECT_CALLERS 2
+    IRCALLER RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable._redArg  mod=RMQ.Core.SuccinctClose.RelativeSummary
+    IRCALLER RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation._lam_2  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  IR_SHORTEST_PATH_LEN 15
+    [0] RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+    [1] RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+    [2] RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+    [3] RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+    [4] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore._redArg
+    [5] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+    [6] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2._boxed
+    [7] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2
+    [8] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+    [9] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation
+    [10] RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+    [11] RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+    [12] RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable
+    [13] RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable._redArg
+    [14] RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries
+
+===== IR TARGET RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries =====
+  IR_DIRECT_CALLERS 2
+    IRCALLER RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable._redArg  mod=RMQ.Core.SuccinctClose.RelativeSummary
+    IRCALLER RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation._lam_1  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  IR_SHORTEST_PATH_LEN 15
+    [0] RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+    [1] RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+    [2] RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+    [3] RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+    [4] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore._redArg
+    [5] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+    [6] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2._boxed
+    [7] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2
+    [8] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+    [9] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation
+    [10] RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+    [11] RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+    [12] RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable
+    [13] RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable._redArg
+    [14] RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries
+
+===== IR TARGET RMQ.SuccinctClose.bpLocalSparseOffsetEntries =====
+  IR_DIRECT_CALLERS 2
+    IRCALLER RMQ.SuccinctClose.concreteBPLocalSparseOffsetTable._redArg  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+    IRCALLER RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  IR_SHORTEST_PATH_LEN 15
+    [0] RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+    [1] RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+    [2] RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+    [3] RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+    [4] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore._redArg
+    [5] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+    [6] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2._boxed
+    [7] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2
+    [8] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+    [9] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation
+    [10] RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+    [11] RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation._lam_2._boxed
+    [12] RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation._lam_2
+    [13] RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation
+    [14] RMQ.SuccinctClose.bpLocalSparseOffsetEntries
+
+===== IR TARGET RMQ.SuccinctClose.bpGlobalSparseBlockEntries =====
+  IR_DIRECT_CALLERS 2
+    IRCALLER RMQ.SuccinctClose.concreteBPGlobalSparseBlockTable._redArg  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+    IRCALLER RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalSpanCandidateComputation  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  IR_SHORTEST_PATH_LEN 16
+    [0] RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+    [1] RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+    [2] RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+    [3] RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+    [4] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore._redArg
+    [5] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+    [6] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2._boxed
+    [7] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore._lam_2
+    [8] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+    [9] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation
+    [10] RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+    [11] RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+    [12] RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore
+    [13] RMQ.SuccinctClose.canonicalRelativeRmmInteriorGlobalTable
+    [14] RMQ.SuccinctClose.concreteBPGlobalSparseBlockTable._redArg
+    [15] RMQ.SuccinctClose.bpGlobalSparseBlockEntries

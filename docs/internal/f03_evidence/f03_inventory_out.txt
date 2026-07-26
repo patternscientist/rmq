@@ -1,0 +1,150 @@
+ROOT RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+CLOSURE_TOTAL 3381
+CLOSURE_THEOREMS 1858
+SHAPED_TYPE_COUNT 101
+DESTRUCTURES_SHAPE_COUNT 6
+USES_BPCODE_COUNT 26
+USES_SIZE_COUNT 2
+
+== DESTRUCTURES_SHAPE (directly pattern-matches the Cartesian tree) ==
+  DESTRUCT RMQ.Cartesian.CartesianShape.bpCode :: List
+  DESTRUCT RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255 :: [anonymous]
+  DESTRUCT RMQ.Cartesian.CartesianShape.casesOn :: [anonymous]
+  DESTRUCT RMQ.Cartesian.CartesianShape.below :: [anonymous]
+  DESTRUCT RMQ.Cartesian.CartesianShape.brecOn :: [anonymous]
+  DESTRUCT RMQ.Cartesian.CartesianShape.size :: Nat
+
+== USES_BPCODE (directly references CartesianShape.bpCode) ==
+  BPCODE RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore :: RMQ.WordRAM.TraceResult
+  BPCODE RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankData :: RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+  BPCODE RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlockOverhead :: Nat
+  BPCODE RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankWordSize :: Nat
+  BPCODE RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankSuperOverhead :: Nat
+  BPCODE RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore :: RMQ.WordRAM.TraceResult
+  BPCODE RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore :: RMQ.WordRAM.TraceResult
+  BPCODE RMQ.SuccinctClose.localBPWindowBase :: Nat
+  BPCODE RMQ.SuccinctClose.bpBlockArgMinPrefixPos :: Nat
+  BPCODE RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom :: Nat
+  BPCODE RMQ.SuccinctClose.bpExcessAt :: Nat
+  BPCODE RMQ.SuccinctClose.bpBlockMinExcess :: Nat
+  BPCODE RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation :: RMQ.SuccinctSpace.FlatStoreComputation
+  BPCODE RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets :: RMQ.SuccinctClose.CanonicalRelativeRmmInteriorComponentOffsets
+  BPCODE RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore :: [anonymous]
+  BPCODE RMQ.SuccinctClose.RelativeRmm.Layout.superWidth :: Nat
+  BPCODE RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable :: RMQ.SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable
+  BPCODE RMQ.SuccinctSpace.bpParensOfShape :: RMQ.Succinct.BalancedParens
+  BPCODE RMQ.SuccinctClose.canonicalRelativeRmmGlobalLevelMachineStore :: [anonymous]
+  BPCODE RMQ.SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore :: [anonymous]
+  BPCODE RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore :: [anonymous]
+  BPCODE RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore :: [anonymous]
+  BPCODE RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore :: [anonymous]
+  BPCODE RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore :: RMQ.WordRAM.TraceResult
+  BPCODE RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore :: RMQ.WordRAM.TraceResult
+  BPCODE RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore :: RMQ.WordRAM.TraceResult
+
+== USES_SIZE (directly references CartesianShape.size) ==
+  SIZE RMQ.SuccinctClose.canonicalBPRelativeSummaryBase :: Nat
+  SIZE RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockCountRaw :: Nat
+
+== SHAPED_TYPE (type mentions CartesianShape), grouped by result head ==
+  SHAPED RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankData :: RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+  SHAPED RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlockOverhead :: Nat
+  SHAPED RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlockWidth :: Nat
+  SHAPED RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankWordSize :: Nat
+  SHAPED RMQ.Cartesian.CartesianShape.bpCode :: List
+  SHAPED RMQ.Cartesian.CartesianShape.node :: RMQ.Cartesian.CartesianShape
+  SHAPED RMQ.Cartesian.CartesianShape.empty :: RMQ.Cartesian.CartesianShape
+  SHAPED RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255 :: [anonymous]
+  SHAPED RMQ.Cartesian.CartesianShape.casesOn :: [anonymous]
+  SHAPED RMQ.Cartesian.CartesianShape.rec :: [anonymous]
+  SHAPED RMQ.Cartesian.CartesianShape.below :: [anonymous]
+  SHAPED RMQ.Cartesian.CartesianShape.brecOn :: [anonymous]
+  SHAPED RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlocksPerSuper :: Nat
+  SHAPED RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankSuperOverhead :: Nat
+  SHAPED RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResultWithStore :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctClose.localBPWindowBase :: Nat
+  SHAPED RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation :: RMQ.SuccinctSpace.FlatStoreComputation
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmMachineCrossMacroCandidateComputation :: RMQ.SuccinctSpace.FlatStoreComputation
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation :: RMQ.SuccinctSpace.FlatStoreComputation
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalSpanCandidateComputation :: RMQ.SuccinctSpace.FlatStoreComputation
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmMachineMinCandidateComputation :: RMQ.SuccinctSpace.FlatStoreComputation
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation :: RMQ.SuccinctSpace.FlatStoreComputation
+  SHAPED RMQ.SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.argOffsetTable :: RMQ.SuccinctSpace.FixedWidthNatTable
+  SHAPED RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries :: List
+  SHAPED RMQ.SuccinctClose.bpBlockArgMinLocalOffset :: Nat
+  SHAPED RMQ.SuccinctClose.bpBlockArgMinPrefixPos :: Nat
+  SHAPED RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom :: Nat
+  SHAPED RMQ.SuccinctClose.bpExcessAt :: Nat
+  SHAPED RMQ.SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable :: [anonymous]
+  SHAPED RMQ.SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.maxRelTable :: RMQ.SuccinctSpace.FixedWidthNatTable
+  SHAPED RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries :: List
+  SHAPED RMQ.SuccinctClose.bpBlockRelativeMaxExcess :: Nat
+  SHAPED RMQ.SuccinctClose.bpBlockMaxExcess :: Nat
+  SHAPED RMQ.SuccinctClose.bpBlockExcessSamples :: List
+  SHAPED RMQ.SuccinctClose.bpRelativeExcessEntry :: Nat
+  SHAPED RMQ.SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.minRelTable :: RMQ.SuccinctSpace.FixedWidthNatTable
+  SHAPED RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries :: List
+  SHAPED RMQ.SuccinctClose.bpBlockRelativeMinExcess :: Nat
+  SHAPED RMQ.SuccinctClose.bpBlockMinExcess :: Nat
+  SHAPED RMQ.SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.baselineTable :: RMQ.SuccinctSpace.FixedWidthNatTable
+  SHAPED RMQ.SuccinctClose.bpSuperblockBaselineEntries :: List
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation :: RMQ.SuccinctSpace.FlatStoreComputation
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets :: RMQ.SuccinctClose.CanonicalRelativeRmmInteriorComponentOffsets
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore :: [anonymous]
+  SHAPED RMQ.SuccinctClose.PayloadLiveBPGlobalSparseBlockTable.table :: RMQ.SuccinctSpace.FixedWidthNatTable
+  SHAPED RMQ.SuccinctClose.bpGlobalSparseBlockEntries :: List
+  SHAPED RMQ.SuccinctClose.bpGlobalSparseCellBlock :: Nat
+  SHAPED RMQ.SuccinctClose.bpRangeArgMinBlock :: Nat
+  SHAPED RMQ.SuccinctClose.bpRangeArgMinBlockFrom :: Nat
+  SHAPED RMQ.SuccinctClose.bpBetterArgMinBlock :: Nat
+  SHAPED RMQ.SuccinctClose.PayloadLiveBPGlobalSparseBlockTable :: [anonymous]
+  SHAPED RMQ.SuccinctClose.PayloadLiveBPLocalSparseOffsetTable.table :: RMQ.SuccinctSpace.FixedWidthNatTable
+  SHAPED RMQ.SuccinctClose.bpLocalSparseOffsetEntries :: List
+  SHAPED RMQ.SuccinctClose.bpLocalSparseCellOffset :: Nat
+  SHAPED RMQ.SuccinctClose.PayloadLiveBPLocalSparseOffsetTable :: [anonymous]
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmInteriorGlobalLevelTable :: RMQ.SuccinctClose.PayloadLiveBPSparseLevelTable
+  SHAPED RMQ.SuccinctClose.RelativeRmm.canonicalLayout :: RMQ.SuccinctClose.RelativeRmm.Layout
+  SHAPED RMQ.SuccinctClose.canonicalBPRelativeSummaryRelativeWidthRaw :: Nat
+  SHAPED RMQ.SuccinctClose.canonicalBPRelativeSummaryBase :: Nat
+  SHAPED RMQ.Cartesian.CartesianShape.size :: Nat
+  SHAPED RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockCountRaw :: Nat
+  SHAPED RMQ.SuccinctClose.canonicalBPRelativeSummaryBlocksPerSuperRaw :: Nat
+  SHAPED RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw :: Nat
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmInteriorLocalLevelTable :: RMQ.SuccinctClose.PayloadLiveBPSparseLevelTable
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmInteriorGlobalTable :: [anonymous]
+  SHAPED RMQ.SuccinctClose.RelativeRmm.Layout.Valid :: [anonymous]
+  SHAPED RMQ.SuccinctClose.concreteBPGlobalSparseBlockTable :: RMQ.SuccinctClose.PayloadLiveBPGlobalSparseBlockTable
+  SHAPED RMQ.SuccinctClose.PayloadLiveBPGlobalSparseBlockTable.mk :: RMQ.SuccinctClose.PayloadLiveBPGlobalSparseBlockTable
+  SHAPED RMQ.SuccinctClose.RelativeRmm.Layout.Valid.mk :: RMQ.SuccinctClose.RelativeRmm.Layout.Valid
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmInteriorLocalTable :: [anonymous]
+  SHAPED RMQ.SuccinctClose.concreteBPLocalSparseOffsetTable :: RMQ.SuccinctClose.PayloadLiveBPLocalSparseOffsetTable
+  SHAPED RMQ.SuccinctClose.PayloadLiveBPLocalSparseOffsetTable.mk :: RMQ.SuccinctClose.PayloadLiveBPLocalSparseOffsetTable
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable :: [anonymous]
+  SHAPED RMQ.SuccinctClose.RelativeRmm.Layout.superWidth :: Nat
+  SHAPED RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable :: RMQ.SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable
+  SHAPED RMQ.SuccinctSpace.bpParensOfShape :: RMQ.Succinct.BalancedParens
+  SHAPED RMQ.SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.mk :: RMQ.SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmGlobalLevelMachineStore :: [anonymous]
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore :: [anonymous]
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore :: [anonymous]
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore :: [anonymous]
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore :: [anonymous]
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation :: RMQ.SuccinctSpace.FlatStoreComputation
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation :: RMQ.SuccinctSpace.FlatStoreComputation
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation :: RMQ.SuccinctSpace.FlatStoreComputation
+  SHAPED RMQ.SuccinctClose.canonicalRelativeRmmMachineAdjacentMacroCandidateComputation :: RMQ.SuccinctSpace.FlatStoreComputation
+  SHAPED RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSeedFromRankCloseTraceResult :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore :: RMQ.WordRAM.TraceResult
+  SHAPED RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore :: RMQ.WordRAM.TraceResult

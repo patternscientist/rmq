@@ -1,0 +1,40 @@
+PUBLIC queryTraceResultWithStore: ROOT NOT FOUND (RMQ.SuccinctRMQClassic.queryTraceResultWithStore)
+PUBLIC queryTraceResult (NON-store-param): ROOT NOT FOUND (RMQ.SuccinctRMQClassic.queryTraceResult)
+CONTROLLER store-param root: closure=917 hasF2=true parentsOfF2=1 projUses=3
+      parent <- RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordOffset  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndex  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndex  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blocksPerSuper
+CONTROLLER non-store-param root: closure=973 hasF2=true parentsOfF2=3 projUses=15
+      parent <- RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegment
+      parent <- RMQ.SuccinctFinal.concreteBPNativeChunkedRankCloseSeedReadStore
+      parent <- RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore
+      proj   <- RMQ.SuccinctFinal.concreteBPNativeChunkedRankCloseSeedReadStore  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      proj   <- RMQ.SuccinctFinal.concreteBPNativeChunkedRankCloseSeedReadStore  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bitWords
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockSampleWords  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockWidth
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockSampleWords  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockTables
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockSampleWords  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockTrueEntries
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockSampleWords  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockFalseEntries
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superSampleWords  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superWidth
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superSampleWords  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superTables
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superSampleWords  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superTrueEntries
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superSampleWords  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superFalseEntries
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordOffset  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndex  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndex  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blocksPerSuper
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterWordRAMStore  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterWordRAMStore  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bitWords
+L1 selectClose: closure=622 hasF2=false parentsOfF2=0 projUses=3
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordOffset  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndex  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndex  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blocksPerSuper
+L2 lcaClose: closure=599 hasF2=true parentsOfF2=1 projUses=3
+      parent <- RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordOffset  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndex  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndex  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blocksPerSuper
+L3 rankClose: closure=360 hasF2=true parentsOfF2=1 projUses=3
+      parent <- RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordOffset  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndex  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      proj   <- RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndex  uses  RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blocksPerSuper

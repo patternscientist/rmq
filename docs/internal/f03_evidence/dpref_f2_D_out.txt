@@ -1,0 +1,50 @@
+PUBLIC SuccinctClassic.queryTraceResultWithStore: closure=1013 rawRankProjs=2 rawShapeProjs=0
+      rawproj field#0 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      rawproj field#3 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blocksPerSuper
+PUBLIC SuccinctClassic.queryTraceResult: closure=1069 rawRankProjs=11 rawShapeProjs=0
+      rawproj field#13 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bitWords
+      rawproj field#0 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      rawproj field#12 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockTables
+      rawproj field#10 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockFalseEntries
+      rawproj field#6 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockWidth
+      rawproj field#9 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockTrueEntries
+      rawproj field#11 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superTables
+      rawproj field#8 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superFalseEntries
+      rawproj field#5 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superWidth
+      rawproj field#7 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superTrueEntries
+      rawproj field#3 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blocksPerSuper
+CONTROLLER store-param root: closure=917 rawRankProjs=2 rawShapeProjs=0
+      rawproj field#0 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      rawproj field#3 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blocksPerSuper
+L3 rankClose: closure=360 rawRankProjs=2 rawShapeProjs=0
+      rawproj field#0 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordSize
+      rawproj field#3 in RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blocksPerSuper
+C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-recursing-cerf-300c92/09e21f10-b494-4393-9fb6-2f4ad4dedb1c/scratchpad/dpref_f2_D.lean:96:61: error: unexpected token 'run_cmd'; expected '#guard_msgs', 'abbrev', 'add_decl_doc', 'axiom', 'binder_predicate', 'builtin_dsimproc', 'builtin_dsimproc_decl', 'builtin_grind_propagator', 'builtin_initialize', 'builtin_simproc', 'builtin_simproc_decl', 'class', 'declare_command_config_elab', 'declare_config_elab', 'declare_simp_like_tactic', 'declare_syntax_cat', 'def', 'dsimproc', 'dsimproc_decl', 'elab', 'elab_rules', 'example', 'grind_propagator', 'inductive', 'infix', 'infixl', 'infixr', 'initialize', 'instance', 'macro', 'macro_rules', 'notation', 'opaque', 'postfix', 'prefix', 'recommended_spelling', 'register_builtin_option', 'register_error_explanation', 'register_label_attr', 'register_linter_set', 'register_option', 'register_simp_attr', 'register_tactic_tag', 'simproc', 'simproc_decl', 'structure', 'syntax', 'tactic_extension', 'theorem' or 'unif_hint'
+controller closure=917  bpCode-users=25  size-users=2
+      bpCode <- RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+      bpCode <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankData
+      bpCode <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankWordSize
+      bpCode <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlockOverhead
+      bpCode <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankSuperOverhead
+      bpCode <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+      bpCode <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore
+      bpCode <- RMQ.SuccinctClose.localBPWindowBase
+      bpCode <- RMQ.SuccinctClose.bpBlockArgMinPrefixPos
+      bpCode <- RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom
+      bpCode <- RMQ.SuccinctClose.bpExcessAt
+      bpCode <- RMQ.SuccinctClose.bpBlockMinExcess
+      bpCode <- RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+      bpCode <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+      bpCode <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+      bpCode <- RMQ.SuccinctClose.canonicalRelativeRmmGlobalLevelMachineStore
+      bpCode <- RMQ.SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore
+      bpCode <- RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore
+      bpCode <- RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore
+      bpCode <- RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore
+      bpCode <- RMQ.SuccinctClose.RelativeRmm.Layout.superWidth
+      bpCode <- RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable
+      bpCode <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+      bpCode <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore
+      bpCode <- RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
+      size   <- RMQ.SuccinctClose.canonicalBPRelativeSummaryBase
+      size   <- RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockCountRaw

@@ -1,0 +1,27 @@
+ROOT_HAS_IR true
+IR_CLOSURE_TOTAL 478
+NO_IR_DECL_COUNT 0
+
+== watched constants: present in the EXECUTED (IR) closure? ==
+  IN_IR   RMQ.SuccinctClose.bpExcessAt
+  IN_IR   RMQ.SuccinctClose.bpBlockMinExcess
+  IN_IR   RMQ.SuccinctClose.bpBlockMaxExcess
+  IN_IR   RMQ.SuccinctClose.bpBlockArgMinPrefixPos
+  IN_IR   RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom
+  IN_IR   RMQ.SuccinctClose.bpBlockExcessSamples
+  IN_IR   RMQ.SuccinctClose.bpSuperblockBaselineEntries
+  IN_IR   RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries
+  IN_IR   RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries
+  IN_IR   RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries
+  IN_IR   RMQ.SuccinctClose.bpLocalSparseOffsetEntries
+  IN_IR   RMQ.SuccinctClose.bpGlobalSparseBlockEntries
+  IN_IR   RMQ.SuccinctClose.bpBetterArgMinBlock
+  IN_IR   RMQ.SuccinctClose.bpRangeArgMinBlock
+  ABSENT  RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable
+  IN_IR   RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable
+  IN_IR   RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+  IN_IR   RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation
+  ABSENT  RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+  ABSENT  RMQ.SuccinctSpace.FixedWidthNatTable.machineReadComputationAt
+  IN_IR   RMQ.Cartesian.CartesianShape.bpCode
+  IN_IR   RMQ.Cartesian.CartesianShape.size

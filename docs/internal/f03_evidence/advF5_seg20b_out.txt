@@ -1,0 +1,9 @@
+n=6 bpLen=12 traceLen=77 seg20=0 seg23=0 seg24=0 seg25=0 segsUsed=[0, 1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 19, 21, 22] | blockSize=6 blockCount=2 macroSize=9
+n=8 bpLen=16 traceLen=78 seg20=0 seg23=0 seg24=0 seg25=0 segsUsed=[0, 1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 19, 21, 22] | blockSize=8 blockCount=2 macroSize=16
+n=10 bpLen=20 traceLen=99 seg20=18 seg23=0 seg24=0 seg25=0 segsUsed=[0, 1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 19, 20, 21, 22] | blockSize=8 blockCount=2 macroSize=16
+n=12 bpLen=24 traceLen=101 seg20=18 seg23=0 seg24=0 seg25=0 segsUsed=[0, 1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 19, 20, 21, 22] | blockSize=8 blockCount=3 macroSize=16
+n=14 bpLen=28 traceLen=99 seg20=18 seg23=0 seg24=0 seg25=0 segsUsed=[0, 1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 19, 20, 21, 22] | blockSize=8 blockCount=3 macroSize=16
+n=16 bpLen=32 traceLen=95 seg20=18 seg23=0 seg24=0 seg25=0 segsUsed=[0, 1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 19, 20, 21, 22] | blockSize=10 blockCount=3 macroSize=25
+n=20 bpLen=40 traceLen=107 seg20=18 seg23=0 seg24=0 seg25=0 segsUsed=[0, 1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 19, 20, 21, 22] | blockSize=10 blockCount=4 macroSize=25
+n=24 bpLen=48 traceLen=114 seg20=18 seg23=0 seg24=0 seg25=0 segsUsed=[0, 1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 19, 20, 21, 22] | blockSize=10 blockCount=4 macroSize=25
+n=32 bpLen=64 traceLen=104 seg20=18 seg23=0 seg24=0 seg25=0 segsUsed=[0, 1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 19, 20, 21, 22] | blockSize=12 blockCount=5 macroSize=36

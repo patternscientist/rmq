@@ -1,0 +1,24 @@
+(120, 0)
+(320, 0)
+(1000, 0)
+(3360, 0)
+(11760, 0)
+(42240, 0)
+[154]
+[4, 5, 6]
+[154, 185, 0, 0, 0]
+C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-recursing-cerf-300c92/09e21f10-b494-4393-9fb6-2f4ad4dedb1c/scratchpad/dpref_f2_A.lean:91:5: error: Function expected at
+  leafSig ((shapes 5).headD CartesianShape.empty) storeKeyed b 7
+but this term has type
+  Nat × List WordRAM.TraceEvent
+
+Note: Expected a function because this term is being applied to the argument
+  7
+[4, 4, 4, 6, 6, 6]
+[(3, 3, 3, 4, 1)]
+[(4, 4, 4, 5, 1)]
+[(4, 4, 4, 5, 1)]
+[(4, 4, 4, 5, 1)]
+6
+1
+42

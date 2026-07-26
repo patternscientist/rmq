@@ -1,0 +1,9 @@
+n=2 shapes=2 endpointGroups=6 CONST[fpDiff=0 valDiff=0 fpLens=[34, 9]] PRNG[fpDiff=0 valDiff=0 fpLens=[35, 9]] witnessConst=<> witnessPrng=<>
+
+n=3 shapes=5 endpointGroups=10 CONST[fpDiff=0 valDiff=0 fpLens=[34, 9]] PRNG[fpDiff=0 valDiff=0 fpLens=[35, 9]] witnessConst=<> witnessPrng=<>
+
+n=4 shapes=14 endpointGroups=15 CONST[fpDiff=0 valDiff=0 fpLens=[34, 9]] PRNG[fpDiff=0 valDiff=0 fpLens=[35, 9]] witnessConst=<> witnessPrng=<>
+
+n=5 shapes=42 endpointGroups=21 CONST[fpDiff=0 valDiff=0 fpLens=[36, 9]] PRNG[fpDiff=0 valDiff=0 fpLens=[37, 9]] witnessConst=<> witnessPrng=<>
+
+n=6 shapes=132 endpointGroups=28 CONST[fpDiff=0 valDiff=0 fpLens=[34, 9]] PRNG[fpDiff=0 valDiff=0 fpLens=[35, 9]] witnessConst=<> witnessPrng=<>

@@ -1,0 +1,166 @@
+PATH to RMQ.SuccinctClose.bpExcessAt (length 12):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore] 3
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore] 4
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore] 5
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore] 6
+    [RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation] 7
+    [RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation] 8
+    [RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets] 9
+    [RMQ.SuccinctClose.bpSuperblockBaselineEntries] 10
+    [RMQ.SuccinctClose.bpExcessAt] 11
+
+PATH to RMQ.SuccinctClose.bpBetterArgMinBlock (length 15):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore] 3
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore] 4
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore] 5
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore] 6
+    [RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation] 7
+    [RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation] 8
+    [RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation] 9
+    [RMQ.SuccinctClose.bpLocalSparseOffsetEntries] 10
+    [RMQ.SuccinctClose.bpLocalSparseCellOffset] 11
+    [RMQ.SuccinctClose.bpRangeArgMinBlock] 12
+    [RMQ.SuccinctClose.bpRangeArgMinBlockFrom] 13
+    [RMQ.SuccinctClose.bpBetterArgMinBlock] 14
+
+PATH to RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom (length 14):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore] 3
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore] 4
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore] 5
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore] 6
+    [RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation] 7
+    [RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation] 8
+    [RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets] 9
+    [RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries] 10
+    [RMQ.SuccinctClose.bpBlockArgMinLocalOffset] 11
+    [RMQ.SuccinctClose.bpBlockArgMinPrefixPos] 12
+    [RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom] 13
+
+PATH to RMQ.Succinct.rankPrefix (length 7):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore] 3
+    [RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlockOverhead] 4
+    [RMQ.SuccinctRank.canonicalBlockRankEntries] 5
+    [RMQ.Succinct.rankPrefix] 6
+
+PATH to RMQ.Succinct.selectFrom (length 10):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore] 3
+    [RMQ.GenericSelect.sparseExceptionSelectData] 4
+    [RMQ.GenericSelect.localEntries] 5
+    [RMQ.GenericSelect.localEntry] 6
+    [RMQ.GenericSelect.position] 7
+    [RMQ.Succinct.select] 8
+    [RMQ.Succinct.selectFrom] 9
+
+PATH to RMQ.RAM.boolRankPrefix (length 9):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore] 3
+    [RMQ.GenericSelect.SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore] 4
+    [RMQ.GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readTraceResultRelabeledWithStore] 5
+    [RMQ.WordRAM.TraceResult.ofProgramWithStore] 6
+    [RMQ.WordRAM.Program.evalR] 7
+    [RMQ.RAM.boolRankPrefix] 8
+
+PATH to RMQ.RAM.boolSelectFrom (length 10):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore] 3
+    [RMQ.GenericSelect.SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore] 4
+    [RMQ.GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readTraceResultRelabeledWithStore] 5
+    [RMQ.WordRAM.TraceResult.ofProgramWithStore] 6
+    [RMQ.WordRAM.Program.evalR] 7
+    [RMQ.RAM.boolSelectInWord] 8
+    [RMQ.RAM.boolSelectFrom] 9
+
+PATH to RMQ.GenericSelect.occurrenceCount (length 6):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore] 3
+    [RMQ.GenericSelect.SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore] 4
+    [RMQ.GenericSelect.occurrenceCount] 5
+
+PATH to RMQ.GenericSelect.superIsLong (length 7):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore] 3
+    [RMQ.GenericSelect.sparseExceptionSelectData] 4
+    [RMQ.GenericSelect.longSuperFlagBits] 5
+    [RMQ.GenericSelect.superIsLong] 6
+
+PATH to RMQ.GenericSelect.localIsSparseException (length 7):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore] 3
+    [RMQ.GenericSelect.sparseExceptionEffectiveFlagRankBlockOverhead] 4
+    [RMQ.GenericSelect.sparseExceptionEffectiveFlagBits] 5
+    [RMQ.GenericSelect.localIsSparseException] 6
+
+PATH to RMQ.SuccinctClose.bpSuperblockBaselineEntries (length 11):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore] 3
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore] 4
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore] 5
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore] 6
+    [RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation] 7
+    [RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation] 8
+    [RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets] 9
+    [RMQ.SuccinctClose.bpSuperblockBaselineEntries] 10
+
+PATH to RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable (length 12):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore] 3
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore] 4
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore] 5
+    [RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore] 6
+    [RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation] 7
+    [RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation] 8
+    [RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets] 9
+    [RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable] 10
+    [RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable] 11
+
+PATH to RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndex (length 6):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore] 3
+    [RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore] 4
+    [RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndex] 5
+
+PATH to RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndex (length 6):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore] 3
+    [RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore] 4
+    [RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndex] 5
+
+PATH to RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankData (length 5):
+    [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore] 0
+    [RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore] 1
+    [RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore] 2
+    [RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore] 3
+    [RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankData] 4

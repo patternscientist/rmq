@@ -1,0 +1,41 @@
+CLOSURE 917
+SEED (own value reads bpCode content) 6
+TAINTED_TOTAL (transitively content-dependent) 55
+COORDINATOR_LENGTHONLY_BUCKET 19
+
+== VERDICT on each member of the coordinator's LENGTHONLY bucket ==
+   (coordinator: 'these consume only 2n and are derivable from n')
+  genuinely-size-only    RMQ.SuccinctClose.localBPWindowBase
+  genuinely-size-only    RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore
+  genuinely-size-only    RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore
+  genuinely-size-only    RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+  MISCLASSIFIED-CONTENT RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+      taint witnesses: [RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable, RMQ.SuccinctClose.bpSuperblockBaselineEntries, RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries, RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries]
+  genuinely-size-only    RMQ.SuccinctClose.RelativeRmm.Layout.superWidth
+  MISCLASSIFIED-CONTENT RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable
+      taint witnesses: [RMQ.SuccinctClose.bpSuperblockBaselineEntries, RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries, RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries, RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries]
+  MISCLASSIFIED-CONTENT RMQ.SuccinctClose.bpBlockMinExcess
+      taint witnesses: [RMQ.SuccinctClose.bpBlockExcessSamples]
+  MISCLASSIFIED-CONTENT RMQ.SuccinctClose.bpBlockArgMinPrefixPos
+      taint witnesses: [RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom]
+  MISCLASSIFIED-CONTENT RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom
+      taint witnesses: [RMQ.SuccinctClose.bpExcessAt]
+  MISCLASSIFIED-CONTENT RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore
+      taint witnesses: [RMQ.SuccinctClose.canonicalRelativeRmmInteriorLocalTable, RMQ.SuccinctClose.bpLocalSparseOffsetEntries]
+  MISCLASSIFIED-CONTENT RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore
+      taint witnesses: [RMQ.SuccinctClose.canonicalRelativeRmmInteriorGlobalTable, RMQ.SuccinctClose.bpGlobalSparseBlockEntries]
+  genuinely-size-only    RMQ.SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore
+  MISCLASSIFIED-CONTENT RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+      taint witnesses: [RMQ.SuccinctClose.bpSuperblockBaselineEntries, RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable, RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries, RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries]
+  MISCLASSIFIED-CONTENT RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore
+      taint witnesses: [RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable, RMQ.SuccinctClose.bpSuperblockBaselineEntries, RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries, RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries]
+  genuinely-size-only    RMQ.SuccinctClose.canonicalRelativeRmmGlobalLevelMachineStore
+  MISCLASSIFIED-CONTENT RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+      taint witnesses: [RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets]
+  genuinely-size-only    RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+  genuinely-size-only    RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankWordSize
+
+MISCLASSIFIED_COUNT 10 of 19
+
+== ALSO: is the ROOT itself tainted? ==
+   root tainted = true

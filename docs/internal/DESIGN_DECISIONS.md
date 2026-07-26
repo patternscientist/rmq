@@ -4960,3 +4960,57 @@ Consequences and evidence:
   resolve it. That candidate remains `INCOMPLETE` and unaccepted; this entry
   ratifies the typing choice, not the candidate.
 - No accepted blob, theorem, matrix, or public claim changes.
+
+## DD-20260726-001: preserve F03 campaign evidence in-tree as explicitly unvetted artifacts
+
+Status: Coordinator decision recorded 2026-07-26 under the standing autonomous
+design-decision authority. Records a provenance choice only; confers no
+acceptance on any file it preserves.
+
+Date: 2026-07-26
+
+Context:
+
+The front-loaded `EG-CP-F03` geometry-closure campaign produced 306 working
+files -- Lean instruments, adversarial probes, and captured output -- in a
+session-scoped temporary directory. Roughly forty theorems compile there with
+`[propext, Classical.choice, Quot.sound]` and no `sorryAx`, and the campaign's
+entire residual theorem surface is expressed as "port these into the repo".
+
+Decision:
+
+Copy the campaign-window files into `docs/internal/f03_evidence/` and label them
+UNVETTED working artifacts in both that directory's `README.md` and the campaign
+report.
+
+Rationale:
+
+The failure mode this project has already paid for is a strong claim supported
+only by an agent session -- no branch, no commit, no replay. B2SUFF is the
+recorded instance, and the F03 campaign's own completeness critic identified the
+same shape one level up: forty theorems in a temp directory that vanish with the
+session. Preserving them costs 2 MB and makes the residual actionable by a
+porting worker; not preserving them would force a re-derivation that has already
+cost 4.4 million tokens.
+
+Alternatives rejected:
+
+- Commit nothing and cite the report only. The report's residual surface names
+  declarations that would then exist nowhere, which is the exact
+  non-durable-evidence pattern the project forbids.
+- Curate a vetted subset. The coordinator has not reviewed 306 files
+  declaration-by-declaration, and presenting a subset as reviewed would assert a
+  vetting that did not happen. Preserving everything under an explicit UNVETTED
+  label is the honest option.
+- Place them under `RMQ/`. They are not library code, are not built, and would
+  pollute the trust surface.
+
+Consequences and evidence:
+
+- Scope is the campaign window only; fifteen pre-campaign scratch files from
+  unrelated E1 work were deliberately excluded, so the directory's provenance is
+  exactly the campaign.
+- These files are not acceptance evidence and no project claim may cite them as
+  established. `docs/internal/f03_evidence/README.md` states this, as does
+  section 8 of the campaign report.
+- No theorem, matrix, contract, accepted blob, or public claim changes.

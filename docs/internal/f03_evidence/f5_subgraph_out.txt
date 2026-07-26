@@ -1,0 +1,210 @@
+CORE 917
+REACH_BPEXCESSAT_COUNT 50
+
+== subgraph: node -> deps that also reach bpExcessAt ==
+NODE RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+  mod=RMQ.Core.SuccinctFinalStoreParam
+  -> RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+NODE RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+  mod=RMQ.Core.SuccinctFinalStoreParam
+  -> RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+NODE RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+  mod=RMQ.Core.SuccinctFinalStoreParam
+  -> RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+NODE RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+  mod=RMQ.Core.SuccinctFinalStoreParam
+  -> RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+NODE RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+  mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeWiring
+  -> RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+NODE RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+  mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeTrace
+  -> RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+NODE RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+  mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation
+NODE RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineCrossMacroCandidateComputation
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineAdjacentMacroCandidateComputation
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+NODE RMQ.SuccinctClose.canonicalRelativeRmmMachineCrossMacroCandidateComputation
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+NODE RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+NODE RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineMinCandidateComputation
+  -> RMQ.SuccinctClose.bpGlobalSparseBlockEntries
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorGlobalTable
+NODE RMQ.SuccinctClose.canonicalRelativeRmmMachineMinCandidateComputation
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation
+NODE RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries
+  -> RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries
+  -> RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries
+  -> RMQ.SuccinctClose.bpSuperblockBaselineEntries
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+  -> RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable
+NODE RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries
+  mod=RMQ.Core.SuccinctClose.RelativeSummary
+  -> RMQ.SuccinctClose.bpBlockArgMinLocalOffset
+NODE RMQ.SuccinctClose.bpBlockArgMinLocalOffset
+  mod=RMQ.Core.SuccinctClose.RelativeSummary
+  -> RMQ.SuccinctClose.bpBlockArgMinPrefixPos
+NODE RMQ.SuccinctClose.bpBlockArgMinPrefixPos
+  mod=RMQ.Core.SuccinctClose.RangeSummary
+  -> RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom
+NODE RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom
+  mod=RMQ.Core.SuccinctClose.RangeSummary
+  -> RMQ.SuccinctClose.bpExcessAt
+NODE RMQ.SuccinctClose.bpExcessAt
+  mod=RMQ.Core.SuccinctClose.RangeSummary
+NODE RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries
+  mod=RMQ.Core.SuccinctClose.RelativeSummary
+  -> RMQ.SuccinctClose.bpBlockRelativeMaxExcess
+NODE RMQ.SuccinctClose.bpBlockRelativeMaxExcess
+  mod=RMQ.Core.SuccinctClose.RelativeSummary
+  -> RMQ.SuccinctClose.bpBlockMaxExcess
+  -> RMQ.SuccinctClose.bpRelativeExcessEntry
+NODE RMQ.SuccinctClose.bpBlockMaxExcess
+  mod=RMQ.Core.SuccinctClose.RangeSummary
+  -> RMQ.SuccinctClose.bpBlockExcessSamples
+NODE RMQ.SuccinctClose.bpBlockExcessSamples
+  mod=RMQ.Core.SuccinctClose.RangeSummary
+  -> RMQ.SuccinctClose.bpExcessAt
+NODE RMQ.SuccinctClose.bpRelativeExcessEntry
+  mod=RMQ.Core.SuccinctClose.RelativeSummary
+  -> RMQ.SuccinctClose.bpExcessAt
+NODE RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries
+  mod=RMQ.Core.SuccinctClose.RelativeSummary
+  -> RMQ.SuccinctClose.bpBlockRelativeMinExcess
+NODE RMQ.SuccinctClose.bpBlockRelativeMinExcess
+  mod=RMQ.Core.SuccinctClose.RelativeSummary
+  -> RMQ.SuccinctClose.bpBlockMinExcess
+  -> RMQ.SuccinctClose.bpRelativeExcessEntry
+NODE RMQ.SuccinctClose.bpBlockMinExcess
+  mod=RMQ.Core.SuccinctClose.RangeSummary
+  -> RMQ.SuccinctClose.bpBlockExcessSamples
+NODE RMQ.SuccinctClose.bpSuperblockBaselineEntries
+  mod=RMQ.Core.SuccinctClose.RelativeSummary
+  -> RMQ.SuccinctClose.bpExcessAt
+NODE RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+NODE RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+  -> RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorGlobalTable
+  -> RMQ.SuccinctClose.bpGlobalSparseBlockEntries
+  -> RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorLocalTable
+  -> RMQ.SuccinctClose.bpLocalSparseOffsetEntries
+  -> RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries
+  -> RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries
+  -> RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries
+  -> RMQ.SuccinctClose.bpSuperblockBaselineEntries
+  -> RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable
+NODE RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore
+  -> RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore
+  -> RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorGlobalTable
+  -> RMQ.SuccinctClose.bpGlobalSparseBlockEntries
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorLocalTable
+  -> RMQ.SuccinctClose.bpLocalSparseOffsetEntries
+  -> RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries
+  -> RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries
+  -> RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries
+  -> RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable
+  -> RMQ.SuccinctClose.bpSuperblockBaselineEntries
+NODE RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.bpGlobalSparseBlockEntries
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorGlobalTable
+NODE RMQ.SuccinctClose.bpGlobalSparseBlockEntries
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+  -> RMQ.SuccinctClose.bpGlobalSparseCellBlock
+NODE RMQ.SuccinctClose.bpGlobalSparseCellBlock
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+  -> RMQ.SuccinctClose.bpRangeArgMinBlock
+NODE RMQ.SuccinctClose.bpRangeArgMinBlock
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseArgMin
+  -> RMQ.SuccinctClose.bpRangeArgMinBlockFrom
+NODE RMQ.SuccinctClose.bpRangeArgMinBlockFrom
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseArgMin
+  -> RMQ.SuccinctClose.bpBetterArgMinBlock
+NODE RMQ.SuccinctClose.bpBetterArgMinBlock
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseArgMin
+  -> RMQ.SuccinctClose.bpBlockArgMinPrefixPos
+  -> RMQ.SuccinctClose.bpExcessAt
+NODE RMQ.SuccinctClose.canonicalRelativeRmmInteriorGlobalTable
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.concreteBPGlobalSparseBlockTable
+NODE RMQ.SuccinctClose.concreteBPGlobalSparseBlockTable
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+  -> RMQ.SuccinctClose.bpGlobalSparseBlockEntries
+NODE RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.bpLocalSparseOffsetEntries
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorLocalTable
+NODE RMQ.SuccinctClose.bpLocalSparseOffsetEntries
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.LocalSparseOffset
+  -> RMQ.SuccinctClose.bpLocalSparseCellOffset
+NODE RMQ.SuccinctClose.bpLocalSparseCellOffset
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.LocalSparseOffset
+  -> RMQ.SuccinctClose.bpRangeArgMinBlock
+NODE RMQ.SuccinctClose.canonicalRelativeRmmInteriorLocalTable
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.concreteBPLocalSparseOffsetTable
+NODE RMQ.SuccinctClose.concreteBPLocalSparseOffsetTable
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+  -> RMQ.SuccinctClose.bpLocalSparseOffsetEntries
+NODE RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries
+  -> RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries
+  -> RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries
+  -> RMQ.SuccinctClose.bpSuperblockBaselineEntries
+  -> RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable
+NODE RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable
+NODE RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable
+  mod=RMQ.Core.SuccinctClose.RelativeSummary
+  -> RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries
+  -> RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries
+  -> RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries
+  -> RMQ.SuccinctClose.bpSuperblockBaselineEntries
+NODE RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+NODE RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineMinCandidateComputation
+  -> RMQ.SuccinctClose.bpLocalSparseOffsetEntries
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+  -> RMQ.SuccinctClose.canonicalRelativeRmmInteriorLocalTable
+NODE RMQ.SuccinctClose.canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+NODE RMQ.SuccinctClose.canonicalRelativeRmmMachineAdjacentMacroCandidateComputation
+  mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  -> RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation

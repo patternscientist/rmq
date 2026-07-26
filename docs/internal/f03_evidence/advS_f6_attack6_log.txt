@@ -1,0 +1,14 @@
+attack6 start
+== E8: real global read store, cross-shape ==
+  [E8] n=8 anchorStore=concreteBPNativeSuccinctRMQGlobalReadStore(rightComb) idxs=[0, 1, 4, 7, 8]
+    anchor rightComb: some 1|R(1,0)->00000;R(2,0)->00000;R(3,0)->00000;R(4,0)->10000;R(5,0)->00000;R(6,0)->00000;R(7,0)->00000;R(8,0)->10000;R(0,0)->10101;R(21,7)->10101;R(21,7)->10101;R(21,3)->10000;R(21,7)->10101;R(21,3)->10000;R(21,7)->10101;R(21,7)->10101;R(21,3)->10000;R(22,0)->00
+  [E8] n=8 shapes=6 comparisons=25 MISMATCHES=0 [10316ms] OK-NO-DIFFERENCE
+  [E8] n=16 anchorStore=concreteBPNativeSuccinctRMQGlobalReadStore(rightComb) idxs=[0, 1, 8, 15, 16]
+    anchor rightComb: some 1|R(1,0)->000000;R(2,0)->000000;R(3,0)->000000;R(4,0)->100000;R(5,0)->000000;R(6,0)->000000;R(7,0)->000000;R(8,0)->100000;R(0,0)->101010;R(21,7)->10101;R(21,7)->10101;R(21,3)->10000;R(21,7)->10101;R(21,3)->10000;R(21,7)->10101;R(21,3)->10000;R(21,7)->10101;R(21,3)->10000;R(22,0)->00
+  [E8] n=16 shapes=6 comparisons=25 MISMATCHES=0 [23881ms] OK-NO-DIFFERENCE
+  [E8] n=63 anchorStore=concreteBPNativeSuccinctRMQGlobalReadStore(rightComb) idxs=[5]
+    anchor rightComb: some 11|R(1,0)->0000000;R(2,0)->0000000;R(3,0)->0000000;R(4,0)->1000000;R(5,5)->1010000;R(6,5)->1000000;R(7,5)->0000000;R(8,5)->0010000;R(0,1)->0101010;R(21,3)->10000;R(21,7)->10101;R(21,3)->10000;R(21,7)->10101;R(21,3)->10000;R(21,7)->10101;R(21,3)->10000;R(21,7)->10101;R(21,3)->10000;R(21,7)->10101;R(21,3)->10000;R(21,3)->10000;R(21,7)->10101;R(21,3)->10000;R(21,7)->10101;R(21,3)->10000;R(22,0)->00
+  [E8] n=63 shapes=6 comparisons=5 MISMATCHES=0 [55800ms] OK-NO-DIFFERENCE
+== E9: exhaustive bitvector superset sweep ==
+  [E9] length=12 bitvectors=4096 groups=13 maxDistinctOutcomesPerGroup=1 [82463ms] OK-NO-DIFFERENCE
+  [E9] length=14 bitvectors=16384 groups=15 maxDistinctOutcomesPerGroup=1 [357245ms] OK-NO-DIFFERENCE

@@ -1,0 +1,98 @@
+== DIRECT CORE REFERENCERS OF SHAPE ELIMINATORS/CTORS ==
+  RMQ.Cartesian.CartesianShape.rec
+      <- RMQ.Cartesian.CartesianShape.casesOn
+      <- RMQ.Cartesian.CartesianShape.below
+      <- RMQ.Cartesian.CartesianShape.brecOn
+  RMQ.Cartesian.CartesianShape.casesOn
+      <- RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255
+  RMQ.Cartesian.CartesianShape.brecOn
+      <- RMQ.Cartesian.CartesianShape.bpCode
+      <- RMQ.Cartesian.CartesianShape.size
+  RMQ.Cartesian.CartesianShape.below
+      <- RMQ.Cartesian.CartesianShape.bpCode
+      <- RMQ.Cartesian.CartesianShape.brecOn
+      <- RMQ.Cartesian.CartesianShape.size
+  RMQ.Cartesian.CartesianShape.node
+      <- RMQ.Cartesian.CartesianShape.bpCode
+      <- RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255
+      <- RMQ.Cartesian.CartesianShape.casesOn
+      <- RMQ.Cartesian.CartesianShape.brecOn
+      <- RMQ.Cartesian.CartesianShape.size
+  RMQ.Cartesian.CartesianShape.empty
+      <- RMQ.Cartesian.CartesianShape.bpCode
+      <- RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255
+      <- RMQ.Cartesian.CartesianShape.casesOn
+      <- RMQ.Cartesian.CartesianShape.brecOn
+      <- RMQ.Cartesian.CartesianShape.size
+  RMQ.Cartesian.CartesianShape.bpCode
+      <- RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+      <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankData
+      <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankWordSize
+      <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlockOverhead
+      <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankSuperOverhead
+      <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+      <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore
+      <- RMQ.SuccinctClose.localBPWindowBase
+      <- RMQ.SuccinctClose.bpBlockArgMinPrefixPos
+      <- RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom
+      <- RMQ.SuccinctClose.bpExcessAt
+      <- RMQ.SuccinctClose.bpBlockMinExcess
+      <- RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmGlobalLevelMachineStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore
+      <- RMQ.SuccinctClose.RelativeRmm.Layout.superWidth
+      <- RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable
+      <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+      <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore
+      <- RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
+  RMQ.Cartesian.CartesianShape.size
+      <- RMQ.SuccinctClose.canonicalBPRelativeSummaryBase
+      <- RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockCountRaw
+  RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255
+      <- RMQ.Cartesian.CartesianShape.bpCode
+      <- RMQ.Cartesian.CartesianShape.size
+
+== DO THE 19 LENGTH-ONLY CONSTANTS REACH A CONTENT CONSTANT? ==
+  RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankWordSize :: pure-size []
+  RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore :: pure-size []
+  RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore :: pure-size []
+  RMQ.SuccinctClose.localBPWindowBase :: pure-size []
+  RMQ.SuccinctClose.bpBlockArgMinPrefixPos :: REACHES CONTENT [RMQ.SuccinctClose.bpExcessAt]
+  RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom :: REACHES CONTENT [RMQ.SuccinctClose.bpExcessAt]
+  RMQ.SuccinctClose.bpBlockMinExcess :: REACHES CONTENT [RMQ.SuccinctClose.bpExcessAt]
+  RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation :: REACHES CONTENT [RMQ.SuccinctClose.bpExcessAt]
+  RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets :: REACHES CONTENT [RMQ.SuccinctClose.bpExcessAt]
+  RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore :: REACHES CONTENT [RMQ.SuccinctClose.bpExcessAt]
+  RMQ.SuccinctClose.canonicalRelativeRmmGlobalLevelMachineStore :: pure-size []
+  RMQ.SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore :: pure-size []
+  RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore :: REACHES CONTENT [RMQ.SuccinctClose.bpExcessAt]
+  RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore :: REACHES CONTENT [RMQ.SuccinctClose.bpExcessAt]
+  RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore :: REACHES CONTENT [RMQ.SuccinctClose.bpExcessAt]
+  RMQ.SuccinctClose.RelativeRmm.Layout.superWidth :: pure-size []
+  RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable :: REACHES CONTENT [RMQ.SuccinctClose.bpExcessAt]
+  RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore :: pure-size []
+  RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore :: pure-size []
+
+== CORE REFERENCERS OF EACH CONTENT CONSTANT ==
+  RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore  (inCore=true)
+      <- RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+      <- RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+  RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankData  (inCore=true)
+      <- RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+  RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlockOverhead  (inCore=true)
+      <- RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+  RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankSuperOverhead  (inCore=true)
+      <- RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+  RMQ.SuccinctClose.bpExcessAt  (inCore=true)
+      <- RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom
+      <- RMQ.SuccinctClose.bpBlockExcessSamples
+      <- RMQ.SuccinctClose.bpRelativeExcessEntry
+      <- RMQ.SuccinctClose.bpSuperblockBaselineEntries
+      <- RMQ.SuccinctClose.bpBetterArgMinBlock
+  RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore  (inCore=true)
+      <- RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore

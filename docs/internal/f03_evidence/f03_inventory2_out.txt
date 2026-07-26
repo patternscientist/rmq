@@ -1,0 +1,40 @@
+ROOT RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+COMPUTATIONAL_CLOSURE_TOTAL 917
+BPCODE_LENGTH_ONLY_COUNT 19
+BPCODE_CONTENT_COUNT 6
+SIZE_USER_COUNT 2
+
+== BPCODE CONTENT USERS (bpCode occurrence NOT under List.length) ==
+   these are the F03 candidates: they may read tree CONTENTS
+  CONTENT RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore :: ret=RMQ.WordRAM.TraceResult occ=2 underLen=1 mod=RMQ.Core.SuccinctFinalStoreParam
+  CONTENT RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankData :: ret=RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData occ=1 underLen=0 mod=RMQ.Core.SuccinctFinal
+  CONTENT RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlockOverhead :: ret=Nat occ=3 underLen=0 mod=RMQ.Core.SuccinctFinal
+  CONTENT RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankSuperOverhead :: ret=Nat occ=3 underLen=0 mod=RMQ.Core.SuccinctFinal
+  CONTENT RMQ.SuccinctClose.bpExcessAt :: ret=Nat occ=2 underLen=0 mod=RMQ.Core.SuccinctClose.RangeSummary
+  CONTENT RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore :: ret=RMQ.WordRAM.TraceResult occ=5 underLen=1 mod=RMQ.Core.SuccinctFinalStoreParam
+
+== BPCODE LENGTH-ONLY USERS (every occurrence under List.length) ==
+   these consume only 2n and are derivable from n
+  LENGTHONLY RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankWordSize :: ret=Nat occ=1 mod=RMQ.Core.SuccinctFinal
+  LENGTHONLY RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore :: ret=RMQ.WordRAM.TraceResult occ=1 mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeTrace
+  LENGTHONLY RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore :: ret=RMQ.WordRAM.TraceResult occ=1 mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
+  LENGTHONLY RMQ.SuccinctClose.localBPWindowBase :: ret=Nat occ=1 mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.LocalBPDecoder
+  LENGTHONLY RMQ.SuccinctClose.bpBlockArgMinPrefixPos :: ret=Nat occ=1 mod=RMQ.Core.SuccinctClose.RangeSummary
+  LENGTHONLY RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom :: ret=Nat occ=1 mod=RMQ.Core.SuccinctClose.RangeSummary
+  LENGTHONLY RMQ.SuccinctClose.bpBlockMinExcess :: ret=Nat occ=1 mod=RMQ.Core.SuccinctClose.RangeSummary
+  LENGTHONLY RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation :: ret=RMQ.SuccinctSpace.FlatStoreComputation occ=1 mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  LENGTHONLY RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets :: ret=RMQ.SuccinctClose.CanonicalRelativeRmmInteriorComponentOffsets occ=13 mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  LENGTHONLY RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore :: ret=[anonymous] occ=4 mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  LENGTHONLY RMQ.SuccinctClose.canonicalRelativeRmmGlobalLevelMachineStore :: ret=[anonymous] occ=2 mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  LENGTHONLY RMQ.SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore :: ret=[anonymous] occ=2 mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  LENGTHONLY RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore :: ret=[anonymous] occ=2 mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  LENGTHONLY RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore :: ret=[anonymous] occ=2 mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  LENGTHONLY RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore :: ret=[anonymous] occ=8 mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  LENGTHONLY RMQ.SuccinctClose.RelativeRmm.Layout.superWidth :: ret=Nat occ=1 mod=RMQ.Core.SuccinctClose.RelativeSummary
+  LENGTHONLY RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable :: ret=RMQ.SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable occ=2 mod=RMQ.Core.SuccinctClose.RelativeSummary
+  LENGTHONLY RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore :: ret=RMQ.WordRAM.TraceResult occ=1 mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeTrace
+  LENGTHONLY RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore :: ret=RMQ.WordRAM.TraceResult occ=1 mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedSameBlockTrace
+
+== CartesianShape.size USERS ==
+  SIZE RMQ.SuccinctClose.canonicalBPRelativeSummaryBase :: ret=Nat mod=RMQ.Core.SuccinctClose.RelativeSummary
+  SIZE RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockCountRaw :: ret=Nat mod=RMQ.Core.SuccinctClose.RelativeSummary

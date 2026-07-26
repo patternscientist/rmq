@@ -1,0 +1,15 @@
+n | superStride(2n) | achieved maxSuperSpan (deep) | span - n | superLongSpan(2n)
+n=64 superStride=64 achieved=126 achieved-n=62 superLongSpan=2048 fires=false
+n=128 superStride=81 achieved=207 achieved-n=79 superLongSpan=2916 fires=false
+n=192 superStride=81 achieved=271 achieved-n=79 superLongSpan=2916 fires=false
+n=256 superStride=100 achieved=354 achieved-n=98 superLongSpan=4000 fires=false
+n=384 superStride=100 achieved=482 achieved-n=98 superLongSpan=4000 fires=false
+n=512 superStride=121 achieved=631 achieved-n=119 superLongSpan=5324 fires=false
+n=768 superStride=121 achieved=887 achieved-n=119 superLongSpan=5324 fires=false
+n=1024 superStride=144 achieved=1166 achieved-n=142 superLongSpan=6912 fires=false
+n=1536 superStride=144 achieved=1678 achieved-n=142 superLongSpan=6912 fires=false
+n=2048 superStride=169 achieved=2215 achieved-n=167 superLongSpan=8788 fires=false
+n=3072 superStride=169 achieved=3239 achieved-n=167 superLongSpan=8788 fires=false
+-- frontier under the EMPIRICAL law  span = n + superStride(2n)  --
+EMPIRICAL-LAW frontier: first n with superLongSpan(2n) < n + superStride(2n) is n=13276 (superLongSpan=13500, n+superStride=13501)
+empirical-law frontier over n=1..40000 = (some 13276)

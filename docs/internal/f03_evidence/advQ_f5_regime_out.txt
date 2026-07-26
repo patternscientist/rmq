@@ -1,0 +1,32 @@
+== EVIDENCE-BASE SIZES: every n the F5 constancy tests ever executed ==
+n=2 base=2 blockSize=4 blockCount=1 macroSize=4 macroSampleCount=1 levelCount=3 globalLevelCount=1 maxBlock=0 maxRealizableArm=0 EXHAUSTIVE_REALIZABLE_ARMS=[]
+n=3 base=2 blockSize=4 blockCount=1 macroSize=4 macroSampleCount=1 levelCount=3 globalLevelCount=1 maxBlock=1 maxRealizableArm=0 EXHAUSTIVE_REALIZABLE_ARMS=[]
+n=4 base=3 blockSize=6 blockCount=1 macroSize=9 macroSampleCount=1 levelCount=4 globalLevelCount=1 maxBlock=1 maxRealizableArm=0 EXHAUSTIVE_REALIZABLE_ARMS=[]
+n=5 base=3 blockSize=6 blockCount=1 macroSize=9 macroSampleCount=1 levelCount=4 globalLevelCount=1 maxBlock=1 maxRealizableArm=0 EXHAUSTIVE_REALIZABLE_ARMS=[]
+n=6 base=3 blockSize=6 blockCount=2 macroSize=9 macroSampleCount=1 levelCount=4 globalLevelCount=1 maxBlock=1 maxRealizableArm=0 EXHAUSTIVE_REALIZABLE_ARMS=[]
+n=7 base=3 blockSize=6 blockCount=2 macroSize=9 macroSampleCount=1 levelCount=4 globalLevelCount=1 maxBlock=2 maxRealizableArm=1 EXHAUSTIVE_REALIZABLE_ARMS=[1]
+n=8 base=4 blockSize=8 blockCount=2 macroSize=16 macroSampleCount=1 levelCount=5 globalLevelCount=1 maxBlock=1 maxRealizableArm=0 EXHAUSTIVE_REALIZABLE_ARMS=[]
+n=12 base=4 blockSize=8 blockCount=3 macroSize=16 macroSampleCount=1 levelCount=5 globalLevelCount=1 maxBlock=2 maxRealizableArm=1 EXHAUSTIVE_REALIZABLE_ARMS=[1]
+n=16 base=5 blockSize=10 blockCount=3 macroSize=25 macroSampleCount=1 levelCount=5 globalLevelCount=1 maxBlock=3 maxRealizableArm=1 EXHAUSTIVE_REALIZABLE_ARMS=[1]
+n=24 base=5 blockSize=10 blockCount=4 macroSize=25 macroSampleCount=1 levelCount=5 globalLevelCount=1 maxBlock=4 maxRealizableArm=1 EXHAUSTIVE_REALIZABLE_ARMS=[1]
+n=32 base=6 blockSize=12 blockCount=5 macroSize=36 macroSampleCount=1 levelCount=6 globalLevelCount=1 maxBlock=5 maxRealizableArm=1 EXHAUSTIVE_REALIZABLE_ARMS=[1]
+n=48 base=6 blockSize=12 blockCount=8 macroSize=36 macroSampleCount=1 levelCount=6 globalLevelCount=1 maxBlock=7 maxRealizableArm=1 EXHAUSTIVE_REALIZABLE_ARMS=[1]
+== SIZES THE EVIDENCE NEVER REACHED ==
+n=64 base=7 blockSize=14 blockCount=9 macroSize=49 macroSampleCount=1 levelCount=6 globalLevelCount=1 maxBlock=9 maxRealizableArm=1
+n=100 base=7 blockSize=14 blockCount=14 macroSize=49 macroSampleCount=1 levelCount=6 globalLevelCount=1 maxBlock=14 maxRealizableArm=1
+n=128 base=8 blockSize=16 blockCount=16 macroSize=64 macroSampleCount=1 levelCount=7 globalLevelCount=1 maxBlock=15 maxRealizableArm=1
+n=256 base=9 blockSize=18 blockCount=28 macroSize=81 macroSampleCount=1 levelCount=7 globalLevelCount=1 maxBlock=28 maxRealizableArm=1
+n=512 base=10 blockSize=20 blockCount=51 macroSize=100 macroSampleCount=1 levelCount=7 globalLevelCount=1 maxBlock=51 maxRealizableArm=1
+n=1000 base=10 blockSize=20 blockCount=100 macroSize=100 macroSampleCount=2 levelCount=7 globalLevelCount=2 maxBlock=99 maxRealizableArm=1
+n=1024 base=11 blockSize=22 blockCount=93 macroSize=121 macroSampleCount=1 levelCount=7 globalLevelCount=1 maxBlock=93 maxRealizableArm=1
+n=1342 base=11 blockSize=22 blockCount=122 macroSize=121 macroSampleCount=2 levelCount=7 globalLevelCount=2 maxBlock=121 maxRealizableArm=1
+n=2048 base=12 blockSize=24 blockCount=170 macroSize=144 macroSampleCount=2 levelCount=8 globalLevelCount=2 maxBlock=170 maxRealizableArm=2
+n=3455 base=12 blockSize=24 blockCount=287 macroSize=144 macroSampleCount=2 levelCount=8 globalLevelCount=2 maxBlock=287 maxRealizableArm=2
+n=3456 base=12 blockSize=24 blockCount=288 macroSize=144 macroSampleCount=3 levelCount=8 globalLevelCount=2 maxBlock=287 maxRealizableArm=2
+n=4096 base=13 blockSize=26 blockCount=315 macroSize=169 macroSampleCount=2 levelCount=8 globalLevelCount=2 maxBlock=315 maxRealizableArm=2
+n=8192 base=14 blockSize=28 blockCount=585 macroSize=196 macroSampleCount=3 levelCount=8 globalLevelCount=2 maxBlock=585 maxRealizableArm=4
+== THRESHOLDS ==
+min n with macroSampleCount >= 2      : (some 1)
+min n with blockCount > macroSize     : (some 1010)
+min n with arm>=2 (AdjacentMacro)     : (some 1011)
+min n with arm>=3 (GLOBAL tables read): (some 3457)

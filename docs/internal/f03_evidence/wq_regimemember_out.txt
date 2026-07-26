@@ -1,0 +1,29 @@
+Q = closure(RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore)  size=917
+S = closure(RMQ.BPNavigation.concreteBPCloseNavigationGlobalReadStore)  size=710
+
+name | inQuery | inStore | verdict
+summaryTableActive | inQ=false | inS=true | BUILD-ONLY (B): in store closure, NOT in query closure
+summaryTableActive_dec | inQ=false | inS=true | BUILD-ONLY (B): in store closure, NOT in query closure
+summaryBlockSize(if) | inQ=false | inS=true | BUILD-ONLY (B): in store closure, NOT in query closure
+summaryBlockCount(if) | inQ=false | inS=true | BUILD-ONLY (B): in store closure, NOT in query closure
+summaryBlocksPerSuper(if) | inQ=false | inS=true | BUILD-ONLY (B): in store closure, NOT in query closure
+summaryRelativeWidth(if) | inQ=false | inS=true | BUILD-ONLY (B): in store closure, NOT in query closure
+summarySuperCount(if) | inQ=false | inS=true | BUILD-ONLY (B): in store closure, NOT in query closure
+summaryLargeRegime | inQ=false | inS=false | in neither closure
+rmmInteriorReadyThreshold | inQ=false | inS=false | in neither closure
+superIsLong | inQ=true | inS=false | LIVE ON QUERY PATH
+localIsSparse | inQ=false | inS=false | in neither closure
+localIsSparseException | inQ=true | inS=false | LIVE ON QUERY PATH
+compactLocalEntryIsLive | inQ=true | inS=false | LIVE ON QUERY PATH
+sparseExceptionSelectData | inQ=true | inS=false | LIVE ON QUERY PATH
+localSpan | inQ=false | inS=false | in neither closure
+superSpan | inQ=true | inS=false | LIVE ON QUERY PATH
+occurrenceCount | inQ=true | inS=false | LIVE ON QUERY PATH
+Succinct.select | inQ=true | inS=true | LIVE ON QUERY PATH
+Succinct.rankPrefix | inQ=true | inS=true | LIVE ON QUERY PATH
+bpExcessAt | inQ=true | inS=true | LIVE ON QUERY PATH
+bpCode | inQ=true | inS=true | LIVE ON QUERY PATH
+size | inQ=true | inS=true | LIVE ON QUERY PATH
+summaryTable_canonical | inQ=false | inS=true | BUILD-ONLY (B): in store closure, NOT in query closure
+rmmInteriorLocalTable | inQ=false | inS=true | BUILD-ONLY (B): in store closure, NOT in query closure
+rmmInteriorGlobalTable | inQ=false | inS=true | BUILD-ONLY (B): in store closure, NOT in query closure

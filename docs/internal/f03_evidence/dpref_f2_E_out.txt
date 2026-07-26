@@ -1,0 +1,37 @@
+L3 rankClose: closure=360  shape-eliminator users=15
+      RMQ.Cartesian.CartesianShape.bpCode   uses   RMQ.Cartesian.CartesianShape.below
+      RMQ.Cartesian.CartesianShape.bpCode   uses   RMQ.Cartesian.CartesianShape.brecOn
+      RMQ.Cartesian.CartesianShape.bpCode   uses   RMQ.Cartesian.CartesianShape.node
+      RMQ.Cartesian.CartesianShape.bpCode   uses   RMQ.Cartesian.CartesianShape.empty
+      RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255   uses   RMQ.Cartesian.CartesianShape.casesOn
+      RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255   uses   RMQ.Cartesian.CartesianShape.node
+      RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255   uses   RMQ.Cartesian.CartesianShape.empty
+      RMQ.Cartesian.CartesianShape.casesOn   uses   RMQ.Cartesian.CartesianShape.rec
+      RMQ.Cartesian.CartesianShape.casesOn   uses   RMQ.Cartesian.CartesianShape.node
+      RMQ.Cartesian.CartesianShape.casesOn   uses   RMQ.Cartesian.CartesianShape.empty
+      RMQ.Cartesian.CartesianShape.below   uses   RMQ.Cartesian.CartesianShape.rec
+      RMQ.Cartesian.CartesianShape.brecOn   uses   RMQ.Cartesian.CartesianShape.rec
+      RMQ.Cartesian.CartesianShape.brecOn   uses   RMQ.Cartesian.CartesianShape.below
+      RMQ.Cartesian.CartesianShape.brecOn   uses   RMQ.Cartesian.CartesianShape.node
+      RMQ.Cartesian.CartesianShape.brecOn   uses   RMQ.Cartesian.CartesianShape.empty
+CONTROLLER store-param root: closure=917  shape-eliminator users=19
+      RMQ.Cartesian.CartesianShape.bpCode   uses   RMQ.Cartesian.CartesianShape.below
+      RMQ.Cartesian.CartesianShape.bpCode   uses   RMQ.Cartesian.CartesianShape.brecOn
+      RMQ.Cartesian.CartesianShape.bpCode   uses   RMQ.Cartesian.CartesianShape.node
+      RMQ.Cartesian.CartesianShape.bpCode   uses   RMQ.Cartesian.CartesianShape.empty
+      RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255   uses   RMQ.Cartesian.CartesianShape.casesOn
+      RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255   uses   RMQ.Cartesian.CartesianShape.node
+      RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255   uses   RMQ.Cartesian.CartesianShape.empty
+      RMQ.Cartesian.CartesianShape.casesOn   uses   RMQ.Cartesian.CartesianShape.rec
+      RMQ.Cartesian.CartesianShape.casesOn   uses   RMQ.Cartesian.CartesianShape.node
+      RMQ.Cartesian.CartesianShape.casesOn   uses   RMQ.Cartesian.CartesianShape.empty
+      RMQ.Cartesian.CartesianShape.below   uses   RMQ.Cartesian.CartesianShape.rec
+      RMQ.Cartesian.CartesianShape.brecOn   uses   RMQ.Cartesian.CartesianShape.rec
+      RMQ.Cartesian.CartesianShape.brecOn   uses   RMQ.Cartesian.CartesianShape.below
+      RMQ.Cartesian.CartesianShape.brecOn   uses   RMQ.Cartesian.CartesianShape.node
+      RMQ.Cartesian.CartesianShape.brecOn   uses   RMQ.Cartesian.CartesianShape.empty
+      RMQ.Cartesian.CartesianShape.size   uses   RMQ.Cartesian.CartesianShape.below
+      RMQ.Cartesian.CartesianShape.size   uses   RMQ.Cartesian.CartesianShape.brecOn
+      RMQ.Cartesian.CartesianShape.size   uses   RMQ.Cartesian.CartesianShape.node
+      RMQ.Cartesian.CartesianShape.size   uses   RMQ.Cartesian.CartesianShape.empty
+'DPF2Thm.l3_size_only' depends on axioms: [propext, Classical.choice, Quot.sound]

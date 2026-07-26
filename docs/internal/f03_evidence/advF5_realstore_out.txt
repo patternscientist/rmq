@@ -1,0 +1,3 @@
+n=2 shapes=2 runs=12 FPDIFF=0 VALDIFF=0 anchorRunsTouchingSeg20=0 maxFootprintLen=52 sampleSegHist=[(0, 6), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (17, 2), (18, 2), (19, 2), (21, 18), (22, 2)] witness=<>
+
+n=3 shapes=5 runs=150 FPDIFF=0 VALDIFF=0 anchorRunsTouchingSeg20=0 maxFootprintLen=65 sampleSegHist=[(0, 6), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (17, 2), (18, 2), (19, 2), (21, 18), (22, 2)] witness=<>

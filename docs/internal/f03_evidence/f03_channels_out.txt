@@ -1,0 +1,19 @@
+COMPUTATIONAL_CLOSURE 917
+
+== constants in the closure that ARE shape eliminators/constructors ==
+  ELIM_PRESENT RMQ.Cartesian.CartesianShape.node
+  ELIM_PRESENT RMQ.Cartesian.CartesianShape.empty
+  MATCHER_PRESENT RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255
+  ELIM_PRESENT RMQ.Cartesian.CartesianShape.casesOn
+  ELIM_PRESENT RMQ.Cartesian.CartesianShape.rec
+  ELIM_PRESENT RMQ.Cartesian.CartesianShape.below
+  ELIM_PRESENT RMQ.Cartesian.CartesianShape.brecOn
+
+== constants whose VALUE references a shape eliminator/matcher/constructor ==
+   (excluding bpCode and size themselves)
+  USER RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255 -> [RMQ.Cartesian.CartesianShape.casesOn, RMQ.Cartesian.CartesianShape.node, RMQ.Cartesian.CartesianShape.empty]
+  USER RMQ.Cartesian.CartesianShape.casesOn -> [RMQ.Cartesian.CartesianShape.rec, RMQ.Cartesian.CartesianShape.node, RMQ.Cartesian.CartesianShape.empty]
+  USER RMQ.Cartesian.CartesianShape.below -> [RMQ.Cartesian.CartesianShape.rec]
+  USER RMQ.Cartesian.CartesianShape.brecOn -> [RMQ.Cartesian.CartesianShape.node, RMQ.Cartesian.CartesianShape.empty, RMQ.Cartesian.CartesianShape.rec, RMQ.Cartesian.CartesianShape.below]
+
+ELIMINATOR_USERS_OUTSIDE_BPCODE_AND_SIZE 4

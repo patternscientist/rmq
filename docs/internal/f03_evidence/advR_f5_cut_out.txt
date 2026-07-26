@@ -1,0 +1,78 @@
+VALUE_CORE 917 bpExcessAt_reachable=true
+VALUE_CORE_SIX_BLOCKED 884 bpExcessAt_reachable=false
+VALUE_BYPASS_PATH none
+IR_CLOSURE 478 bpExcessAt_reachable=true
+IR_CLOSURE_SIX_BLOCKED 446 bpExcessAt_reachable=false
+== direct/near callers still reachable with six blocked ==
+  value=false ir=false  RMQ.SuccinctClose.bpBetterArgMinBlock
+  value=false ir=false  RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom
+  value=false ir=false  RMQ.SuccinctClose.bpBlockExcessSamples
+  value=false ir=false  RMQ.SuccinctClose.bpRelativeExcessEntry
+  value=false ir=false  RMQ.SuccinctClose.bpBlockMinExcess
+  value=false ir=false  RMQ.SuccinctClose.bpBlockMaxExcess
+  value=false ir=false  RMQ.SuccinctClose.bpBlockArgMinPrefixPos
+  value=false ir=false  RMQ.SuccinctClose.bpRangeMinExcess
+  value=false ir=false  RMQ.SuccinctClose.bpRangeArgMinPrefixPos
+
+== VALUE-LEVEL parents of each of the six entries lists (within core) ==
+  RMQ.SuccinctClose.bpSuperblockBaselineEntries  parents=5
+      <- RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore
+      <- RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable
+  RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries  parents=5
+      <- RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore
+      <- RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable
+  RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries  parents=5
+      <- RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore
+      <- RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable
+  RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries  parents=5
+      <- RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore
+      <- RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable
+  RMQ.SuccinctClose.bpLocalSparseOffsetEntries  parents=5
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore
+      <- RMQ.SuccinctClose.concreteBPLocalSparseOffsetTable
+      <- RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation
+  RMQ.SuccinctClose.bpGlobalSparseBlockEntries  parents=5
+      <- RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore
+      <- RMQ.SuccinctClose.concreteBPGlobalSparseBlockTable
+
+== VALUE-LEVEL parents of offsets / table constructors ==
+  RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets  parents=6 inIR=true
+      <- RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+      <- RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+      <- RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation
+      <- RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+      <- RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+      <- RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation
+  RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable  parents=4 inIR=true
+      <- RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore
+  RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable  parents=1 inIR=false
+      <- RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable
+  RMQ.SuccinctSpace.FixedWidthNatTable.machineStore  parents=6 inIR=false
+      <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+      <- RMQ.SuccinctClose.canonicalRelativeRmmGlobalLevelMachineStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore
+      <- RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore
+  RMQ.SuccinctSpace.fixedWidthNatTableMachineWords  parents=1 inIR=false
+      <- RMQ.SuccinctSpace.FixedWidthNatTable.machineStore

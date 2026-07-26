@@ -1,0 +1,28 @@
+== ARBITRARY-DENSITY BITS (not bpCodes): L, distinct rawSup, distinct rawBlk, #distinct bitlists, popcounts ==
+0 [2] [2] 1 pops=[0]
+1 [4] [4] 2 pops=[1, 0]
+2 [4] [12] 4 pops=[2, 0, 1]
+3 [4] [12] 6 pops=[3, 0, 2, 1]
+4 [6] [16] 6 pops=[4, 0, 2, 1]
+7 [6] [24] 7 pops=[7, 0, 4, 3, 1, 2]
+8 [8] [30] 7 pops=[8, 0, 4, 2]
+15 [8] [40] 7 pops=[15, 0, 8, 7, 3, 4]
+16 [10] [40] 7 pops=[16, 0, 8, 3, 4]
+17 [10] [40] 7 pops=[17, 0, 9, 8, 3, 4]
+31 [20] [70] 7 pops=[31, 0, 16, 15, 5, 6]
+32 [12] [72] 7 pops=[32, 0, 16, 5, 6]
+33 [12] [72] 7 pops=[33, 0, 17, 16, 5, 6]
+63 [24] [132] 7 pops=[63, 0, 32, 31, 9, 10]
+64 [28] [120] 7 pops=[64, 0, 32, 10]
+100 [42] [180] 7 pops=[100, 0, 50, 15, 16]
+127 [42] [228] 7 pops=[127, 0, 64, 63, 19, 20]
+128 [48] [238] 7 pops=[128, 0, 64, 19, 20]
+200 [64] [364] 7 pops=[200, 0, 100, 29, 32]
+255 [64] [448] 7 pops=[255, 0, 128, 127, 37, 40]
+256 [72] [406] 7 pops=[256, 0, 128, 37, 40]
+400 [90] [630] 7 pops=[400, 0, 200, 58, 62]
+L=32 superEntries all-true=[0] alternating=[0] equal?=true
+L=32 blockEntries all-true=[0, 6, 12, 18, 24, 30] alternating=[0, 3, 6, 9, 12, 15] equal?=false
+lengths: 1 1 6 6
+rawSup: 12 12   rawBlk: 72 72
+'AdvF34b.adv_shapesOfSize_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]

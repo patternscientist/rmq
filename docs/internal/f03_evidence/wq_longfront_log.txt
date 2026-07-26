@@ -1,0 +1,83 @@
+=== PART 1: arithmetic frontier of the live select regimes ===
+n | m=2n | wordBits | ell | superStride | superLongSpan | structuralMaxSpan=2*superStride+n | CAN-FIRE?
+n=2^0=1 m=2 w=2 ell=2 superStride=4 superLongSpan=16 structMax=9 naiveCanFire=false structCanFire=false
+n=2^1=2 m=4 w=3 ell=2 superStride=9 superLongSpan=54 structMax=20 naiveCanFire=false structCanFire=false
+n=2^2=4 m=8 w=4 ell=3 superStride=16 superLongSpan=192 structMax=36 naiveCanFire=false structCanFire=false
+n=2^3=8 m=16 w=5 ell=3 superStride=25 superLongSpan=375 structMax=58 naiveCanFire=false structCanFire=false
+n=2^4=16 m=32 w=6 ell=3 superStride=36 superLongSpan=648 structMax=88 naiveCanFire=false structCanFire=false
+n=2^5=32 m=64 w=7 ell=3 superStride=49 superLongSpan=1029 structMax=130 naiveCanFire=false structCanFire=false
+n=2^6=64 m=128 w=8 ell=4 superStride=64 superLongSpan=2048 structMax=192 naiveCanFire=false structCanFire=false
+n=2^7=128 m=256 w=9 ell=4 superStride=81 superLongSpan=2916 structMax=290 naiveCanFire=false structCanFire=false
+n=2^8=256 m=512 w=10 ell=4 superStride=100 superLongSpan=4000 structMax=456 naiveCanFire=false structCanFire=false
+n=2^9=512 m=1024 w=11 ell=4 superStride=121 superLongSpan=5324 structMax=754 naiveCanFire=false structCanFire=false
+n=2^10=1024 m=2048 w=12 ell=4 superStride=144 superLongSpan=6912 structMax=1312 naiveCanFire=false structCanFire=false
+n=2^11=2048 m=4096 w=13 ell=4 superStride=169 superLongSpan=8788 structMax=2386 naiveCanFire=false structCanFire=false
+n=2^12=4096 m=8192 w=14 ell=4 superStride=196 superLongSpan=10976 structMax=4488 naiveCanFire=false structCanFire=false
+n=2^13=8192 m=16384 w=15 ell=4 superStride=225 superLongSpan=13500 structMax=8642 naiveCanFire=true structCanFire=false
+n=2^14=16384 m=32768 w=16 ell=5 superStride=256 superLongSpan=20480 structMax=16896 naiveCanFire=true structCanFire=false
+n=2^15=32768 m=65536 w=17 ell=5 superStride=289 superLongSpan=24565 structMax=33346 naiveCanFire=true structCanFire=true
+n=2^16=65536 m=131072 w=18 ell=5 superStride=324 superLongSpan=29160 structMax=66184 naiveCanFire=true structCanFire=true
+n=2^17=131072 m=262144 w=19 ell=5 superStride=361 superLongSpan=34295 structMax=131794 naiveCanFire=true structCanFire=true
+n=2^18=262144 m=524288 w=20 ell=5 superStride=400 superLongSpan=40000 structMax=262944 naiveCanFire=true structCanFire=true
+n=2^19=524288 m=1048576 w=21 ell=5 superStride=441 superLongSpan=46305 structMax=525170 naiveCanFire=true structCanFire=true
+n=2^20=1048576 m=2097152 w=22 ell=5 superStride=484 superLongSpan=53240 structMax=1049544 naiveCanFire=true structCanFire=true
+n=2^21=2097152 m=4194304 w=23 ell=5 superStride=529 superLongSpan=60835 structMax=2098210 naiveCanFire=true structCanFire=true
+n=2^22=4194304 m=8388608 w=24 ell=5 superStride=576 superLongSpan=69120 structMax=4195456 naiveCanFire=true structCanFire=true
+n=2^23=8388608 m=16777216 w=25 ell=5 superStride=625 superLongSpan=78125 structMax=8389858 naiveCanFire=true structCanFire=true
+n=2^24=16777216 m=33554432 w=26 ell=5 superStride=676 superLongSpan=87880 structMax=16778568 naiveCanFire=true structCanFire=true
+n=2^25=33554432 m=67108864 w=27 ell=5 superStride=729 superLongSpan=98415 structMax=33555890 naiveCanFire=true structCanFire=true
+first n (powers of 2) where the NAIVE bound (span<=m) stops excluding firing: (some 8192)
+first n (powers of 2) where the STRUCTURAL bound stops excluding firing: (some 32768)
+-- exact structural frontier by linear scan --
+EXACT smallest n with superLongSpan(2n) < 2*superStride(2n)+n : n=13051 (m=26102, superLongSpan=13500, bound=13501)
+structural frontier over n=1..40000 : (some 13051)
+  => for EVERY n strictly below that value, and EVERY shape of that size,
+     superIsLong is identically false and localIsSparseException is identically false.
+=== PART 2: localStride, which gates the sparse-local regime ===
+first exponent e with localStride(2^e) >= 2 : e=97 localStride=2 wordBits=98 ell=7
+localStride>=2 first at 2^(some 97) (none up to 2^129 means the sparse-local arm is unreachable)
+=== PART 3: EXECUTED max superSpan on span-maximising families ===
+n | family | maxSuperSpan(false) | superLongSpan(2n) | margin | anyLong | anyExc
+  n=64 leftSpine maxSuperSpan=64 superLongSpan=2048 margin=1984 anyLong=false anyExc=false liveLocals=64
+  n=64 rightSpine maxSuperSpan=127 superLongSpan=2048 margin=1921 anyLong=false anyExc=false liveLocals=64
+  n=64 balanced maxSuperSpan=122 superLongSpan=2048 margin=1926 anyLong=false anyExc=false liveLocals=64
+  n=64 deep(n/4,3n/4) maxSuperSpan=126 superLongSpan=2048 margin=1922 anyLong=false anyExc=false liveLocals=64
+  n=64 deep(1,n-2) maxSuperSpan=126 superLongSpan=2048 margin=1922 anyLong=false anyExc=false liveLocals=64
+  n=64 deepL(n/4,3n/4) maxSuperSpan=80 superLongSpan=2048 margin=1968 anyLong=false anyExc=false liveLocals=64
+  GENBUG n=64 midChain size=65
+  n=128 leftSpine maxSuperSpan=81 superLongSpan=2916 margin=2835 anyLong=false anyExc=false liveLocals=128
+  n=128 rightSpine maxSuperSpan=161 superLongSpan=2916 margin=2755 anyLong=false anyExc=false liveLocals=128
+  n=128 balanced maxSuperSpan=159 superLongSpan=2916 margin=2757 anyLong=false anyExc=false liveLocals=128
+  n=128 deep(n/4,3n/4) maxSuperSpan=207 superLongSpan=2916 margin=2709 anyLong=false anyExc=false liveLocals=128
+  n=128 deep(1,n-2) maxSuperSpan=207 superLongSpan=2916 margin=2709 anyLong=false anyExc=false liveLocals=128
+  n=128 deepL(n/4,3n/4) maxSuperSpan=81 superLongSpan=2916 margin=2835 anyLong=false anyExc=false liveLocals=128
+  GENBUG n=128 midChain size=129
+  n=256 leftSpine maxSuperSpan=100 superLongSpan=4000 margin=3900 anyLong=false anyExc=false liveLocals=256
+  n=256 rightSpine maxSuperSpan=199 superLongSpan=4000 margin=3801 anyLong=false anyExc=false liveLocals=256
+  n=256 balanced maxSuperSpan=197 superLongSpan=4000 margin=3803 anyLong=false anyExc=false liveLocals=256
+  n=256 deep(n/4,3n/4) maxSuperSpan=354 superLongSpan=4000 margin=3646 anyLong=false anyExc=false liveLocals=256
+  n=256 deep(1,n-2) maxSuperSpan=354 superLongSpan=4000 margin=3646 anyLong=false anyExc=false liveLocals=256
+  n=256 deepL(n/4,3n/4) maxSuperSpan=111 superLongSpan=4000 margin=3889 anyLong=false anyExc=false liveLocals=256
+  GENBUG n=256 midChain size=257
+  n=512 leftSpine maxSuperSpan=121 superLongSpan=5324 margin=5203 anyLong=false anyExc=false liveLocals=512
+  n=512 rightSpine maxSuperSpan=241 superLongSpan=5324 margin=5083 anyLong=false anyExc=false liveLocals=512
+  n=512 balanced maxSuperSpan=241 superLongSpan=5324 margin=5083 anyLong=false anyExc=false liveLocals=512
+  n=512 deep(n/4,3n/4) maxSuperSpan=510 superLongSpan=5324 margin=4814 anyLong=false anyExc=false liveLocals=512
+  n=512 deep(1,n-2) maxSuperSpan=631 superLongSpan=5324 margin=4693 anyLong=false anyExc=false liveLocals=512
+  n=512 deepL(n/4,3n/4) maxSuperSpan=221 superLongSpan=5324 margin=5103 anyLong=false anyExc=false liveLocals=512
+  GENBUG n=512 midChain size=513
+  n=1024 leftSpine maxSuperSpan=144 superLongSpan=6912 margin=6768 anyLong=false anyExc=false liveLocals=1024
+  n=1024 rightSpine maxSuperSpan=287 superLongSpan=6912 margin=6625 anyLong=false anyExc=false liveLocals=1024
+  n=1024 balanced maxSuperSpan=284 superLongSpan=6912 margin=6628 anyLong=false anyExc=false liveLocals=1024
+  n=1024 deep(n/4,3n/4) maxSuperSpan=1022 superLongSpan=6912 margin=5890 anyLong=false anyExc=false liveLocals=1024
+  n=1024 deep(1,n-2) maxSuperSpan=1166 superLongSpan=6912 margin=5746 anyLong=false anyExc=false liveLocals=1024
+  n=1024 deepL(n/4,3n/4) maxSuperSpan=287 superLongSpan=6912 margin=6625 anyLong=false anyExc=false liveLocals=1024
+  GENBUG n=1024 midChain size=1025
+  n=2048 leftSpine maxSuperSpan=169 superLongSpan=8788 margin=8619 anyLong=false anyExc=false liveLocals=2048
+  n=2048 rightSpine maxSuperSpan=337 superLongSpan=8788 margin=8451 anyLong=false anyExc=false liveLocals=2048
+  n=2048 balanced maxSuperSpan=340 superLongSpan=8788 margin=8448 anyLong=false anyExc=false liveLocals=2048
+  n=2048 deep(n/4,3n/4) maxSuperSpan=1708 superLongSpan=8788 margin=7080 anyLong=false anyExc=false liveLocals=2048
+  n=2048 deep(1,n-2) maxSuperSpan=2215 superLongSpan=8788 margin=6573 anyLong=false anyExc=false liveLocals=2048
+  n=2048 deepL(n/4,3n/4) maxSuperSpan=337 superLongSpan=8788 margin=8451 anyLong=false anyExc=false liveLocals=2048
+  GENBUG n=2048 midChain size=2049
+DONE

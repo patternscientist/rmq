@@ -1,0 +1,21 @@
+attack4 start
+== E1: boundary indices at nondegenerate sizes ==
+--- n=63 boundary: members=9 distinctBits=8 lengths=[126] falseCounts=[63] idxs=[47, 48, 49, 50, 51, 97, 98, 99]
+=== n=63 boundary MISMATCHES=0 regimes=[LONG, NONE, SPARSE, DENSE] [5521ms] OK-NO-DIFFERENCE
+--- n=65 boundary: members=9 distinctBits=8 lengths=[130] falseCounts=[65] idxs=[62, 63, 64, 65, 66, 127, 128, 129]
+=== n=65 boundary MISMATCHES=0 regimes=[LONG, NONE, SPARSE, DENSE] [5450ms] OK-NO-DIFFERENCE
+== E3: ANTI-VACUITY controls (a difference MUST be seen) ==
+--- control len=126 falseCount 63 vs 62 vs 61: members=3 distinctBits=3 lengths=[126] falseCounts=[63, 62, 61] idxs=[0, 1, 5, 40]
+=== control len=126 falseCount 63 vs 62 vs 61 MISMATCHES=0 regimes=[LONG, SPARSE, DENSE] [1167ms] *** INSTRUMENT BLIND (no difference where one was expected) ***
+--- control length 126 vs 128 vs 200, falseCount 63: members=3 distinctBits=3 lengths=[126, 128, 200] falseCounts=[63] idxs=[0, 1, 5, 40]
+=== control length 126 vs 128 vs 200, falseCount 63 MISMATCHES=76 regimes=[LONG, SPARSE, DENSE] [1144ms] OK-CONTROL-SEES-DIFFERENCE
+--- control shapes size 63 vs 64: members=2 distinctBits=2 lengths=[126, 128] falseCounts=[63, 64] idxs=[0, 1, 5, 40]
+=== control shapes size 63 vs 64 MISMATCHES=38 regimes=[LONG, SPARSE, DENSE] [779ms] OK-CONTROL-SEES-DIFFERENCE
+== E4: raw-bitvector SUPERSET, length 126, falseCount 63 ==
+--- len=126 falseCount=63 superset: members=9 distinctBits=7 lengths=[126] falseCounts=[63] idxs=[0, 1, 5, 31, 48, 49, 50, 62]
+=== len=126 falseCount=63 superset MISMATCHES=0 regimes=[LONG, NONE, SPARSE, DENSE] [4100ms] OK-NO-DIFFERENCE
+== E2: larger n ==
+--- n=100: members=9 distinctBits=8 lengths=[200] falseCounts=[100] idxs=[0, 1, 63, 64, 65, 99]
+=== n=100 MISMATCHES=0 regimes=[LONG, NONE, SPARSE, DENSE] [8262ms] OK-NO-DIFFERENCE
+--- n=128: members=9 distinctBits=8 lengths=[256] falseCounts=[128] idxs=[0, 1, 80, 81, 82, 127]
+=== n=128 MISMATCHES=0 regimes=[LONG, NONE, SPARSE, DENSE] [12141ms] OK-NO-DIFFERENCE

@@ -1,0 +1,2 @@
+n=10 anchorSeg20Reads=36 comparandShapes=10 distinct=10 runs=30 FPDIFF=0 VALDIFF=0 anchorVals=[(some 4), (some 4), (some 4)] witness=<>
+n=12 anchorSeg20Reads=36 comparandShapes=10 distinct=10 runs=30 FPDIFF=0 VALDIFF=0 anchorVals=[(some 5), (some 5), (some 5)] witness=<>

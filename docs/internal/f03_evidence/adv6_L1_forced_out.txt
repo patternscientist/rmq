@@ -1,0 +1,11 @@
+== B. forced regime x ALL bitvectors of length 8 ==
+  LONG   super!=0         len=8 MAXDISTINCT=1 (witness k=0 idx=0) regimes=[NONE, LONG]
+  SPARSE super=0 local!=0 len=8 MAXDISTINCT=1 (witness k=0 idx=0) regimes=[NONE, SPARSE]
+  DENSE  super=0 local=0  len=8 MAXDISTINCT=1 (witness k=0 idx=0) regimes=[NONE, DENSE]
+  NONE   super absent     len=8 MAXDISTINCT=1 (witness k=0 idx=0) regimes=[NONE]
+  noise(11)               len=8 MAXDISTINCT=1 (witness k=0 idx=0) regimes=[NONE, LONG]
+  noise(3)                len=8 MAXDISTINCT=1 (witness k=0 idx=0) regimes=[NONE, LONG]
+  noise(7)                len=8 MAXDISTINCT=1 (witness k=0 idx=0) regimes=[NONE, LONG]
+== B'. same, length 10, DENSE and SPARSE only (the deep branches) ==
+  SPARSE super=0 local!=0 len=10 MAXDISTINCT=1 (witness k=0 idx=0) regimes=[NONE, SPARSE]
+  DENSE  super=0 local=0  len=10 MAXDISTINCT=1 (witness k=0 idx=0) regimes=[NONE, DENSE]

@@ -1,0 +1,1 @@
+n=4 bpLen=8 traceLens=[72, 57, 57, 54] seg20=[0, 0, 0, 0] seg23=[0, 0, 0, 0] seg24=[0, 0, 0, 0] seg25=[0, 0, 0, 0] | layout blockSize=6 bps=3 blockCount=1 macroSize=9 macroSampleCount=1 summaryActive=false

@@ -1,0 +1,294 @@
+
+############ ROOT-A store-param whole query  root=RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore  closure=917 ############
+  shape-mentioning matchers found in closure: [RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255]
+
+=== TARGET RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255 ===
+    DIRECT_REFERRERS (2):
+       <- RMQ.Cartesian.CartesianShape.bpCode
+       <- RMQ.Cartesian.CartesianShape.size
+    SHORTEST_PATH_FROM_ROOT (6 hops):
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       . RMQ.Cartesian.CartesianShape.bpCode
+       . RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255
+
+=== TARGET RMQ.Cartesian.CartesianShape.casesOn ===
+    DIRECT_REFERRERS (1):
+       <- RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255
+    SHORTEST_PATH_FROM_ROOT (7 hops):
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       . RMQ.Cartesian.CartesianShape.bpCode
+       . RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255
+       . RMQ.Cartesian.CartesianShape.casesOn
+
+=== TARGET RMQ.Cartesian.CartesianShape.brecOn ===
+    DIRECT_REFERRERS (2):
+       <- RMQ.Cartesian.CartesianShape.bpCode
+       <- RMQ.Cartesian.CartesianShape.size
+    SHORTEST_PATH_FROM_ROOT (6 hops):
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       . RMQ.Cartesian.CartesianShape.bpCode
+       . RMQ.Cartesian.CartesianShape.brecOn
+
+=== TARGET RMQ.Cartesian.CartesianShape.below ===
+    DIRECT_REFERRERS (3):
+       <- RMQ.Cartesian.CartesianShape.bpCode
+       <- RMQ.Cartesian.CartesianShape.brecOn
+       <- RMQ.Cartesian.CartesianShape.size
+    SHORTEST_PATH_FROM_ROOT (6 hops):
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       . RMQ.Cartesian.CartesianShape.bpCode
+       . RMQ.Cartesian.CartesianShape.below
+
+=== TARGET RMQ.Cartesian.CartesianShape.rec ===
+    DIRECT_REFERRERS (3):
+       <- RMQ.Cartesian.CartesianShape.brecOn
+       <- RMQ.Cartesian.CartesianShape.below
+       <- RMQ.Cartesian.CartesianShape.casesOn
+    SHORTEST_PATH_FROM_ROOT (7 hops):
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       . RMQ.Cartesian.CartesianShape.bpCode
+       . RMQ.Cartesian.CartesianShape.below
+       . RMQ.Cartesian.CartesianShape.rec
+
+=== TARGET RMQ.Cartesian.CartesianShape.bpCode ===
+    DIRECT_REFERRERS (25):
+       <- RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
+       <- RMQ.SuccinctClose.localBPWindowBase
+       <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore
+       <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore
+       <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+       <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+       <- RMQ.SuccinctClose.RelativeRmm.Layout.superWidth
+       <- RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable
+       <- RMQ.SuccinctClose.bpExcessAt
+       <- RMQ.SuccinctClose.bpBlockMinExcess
+       <- RMQ.SuccinctClose.bpBlockArgMinPrefixPos
+       <- RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom
+       <- RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore
+       <- RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore
+       <- RMQ.SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore
+       <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+       <- RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore
+       <- RMQ.SuccinctClose.canonicalRelativeRmmGlobalLevelMachineStore
+       <- RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+       <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+       <- RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankSuperOverhead
+       <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankWordSize
+       <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlockOverhead
+       <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankData
+    SHORTEST_PATH_FROM_ROOT (5 hops):
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       . RMQ.Cartesian.CartesianShape.bpCode
+
+=== TARGET RMQ.Cartesian.CartesianShape.size ===
+    DIRECT_REFERRERS (2):
+       <- RMQ.SuccinctClose.canonicalBPRelativeSummaryBase
+       <- RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockCountRaw
+    SHORTEST_PATH_FROM_ROOT (8 hops):
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+       . RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+       . RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw
+       . RMQ.SuccinctClose.canonicalBPRelativeSummaryBase
+       . RMQ.Cartesian.CartesianShape.size
+
+=== TARGET WellFounded.fix ===
+    DIRECT_REFERRERS (1):
+       <- Nat.log2
+    SHORTEST_PATH_FROM_ROOT (7 hops):
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       . RMQ.SuccinctClose.bpFringeChunkBits
+       . Nat.log2
+       . WellFounded.fix
+
+=== TARGET Decidable.decide ===
+    DIRECT_REFERRERS (5):
+       <- instBEqOfDecidableEq
+       <- RMQ.GenericSelect.localIsSparseException
+       <- RMQ.GenericSelect.superIsLong
+       <- RMQ.SuccinctSpace.natToBitsLE
+       <- RMQ.GenericSelect.compactLocalEntryIsLive
+    SHORTEST_PATH_FROM_ROOT (8 hops):
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
+       . RMQ.GenericSelect.sparseExceptionSelectData
+       . RMQ.GenericSelect.longSuperFlagBits
+       . RMQ.GenericSelect.superIsLong
+       . Decidable.decide
+
+############ ROOT-B public queryTraceResultWithStore  root=RMQ.SuccinctClassic.queryTraceResultWithStore  closure=1013 ############
+  shape-mentioning matchers found in closure: [RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255]
+
+=== TARGET RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255 ===
+    DIRECT_REFERRERS (2):
+       <- RMQ.Cartesian.CartesianShape.bpCode
+       <- RMQ.Cartesian.CartesianShape.size
+    SHORTEST_PATH_FROM_ROOT (7 hops):
+       . RMQ.SuccinctClassic.queryTraceResultWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       . RMQ.Cartesian.CartesianShape.bpCode
+       . RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255
+
+=== TARGET RMQ.Cartesian.CartesianShape.casesOn ===
+    DIRECT_REFERRERS (1):
+       <- RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255
+    SHORTEST_PATH_FROM_ROOT (8 hops):
+       . RMQ.SuccinctClassic.queryTraceResultWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       . RMQ.Cartesian.CartesianShape.bpCode
+       . RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255
+       . RMQ.Cartesian.CartesianShape.casesOn
+
+=== TARGET RMQ.Cartesian.CartesianShape.brecOn ===
+    DIRECT_REFERRERS (2):
+       <- RMQ.Cartesian.CartesianShape.bpCode
+       <- RMQ.Cartesian.CartesianShape.size
+    SHORTEST_PATH_FROM_ROOT (7 hops):
+       . RMQ.SuccinctClassic.queryTraceResultWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       . RMQ.Cartesian.CartesianShape.bpCode
+       . RMQ.Cartesian.CartesianShape.brecOn
+
+=== TARGET RMQ.Cartesian.CartesianShape.below ===
+    DIRECT_REFERRERS (3):
+       <- RMQ.Cartesian.CartesianShape.bpCode
+       <- RMQ.Cartesian.CartesianShape.brecOn
+       <- RMQ.Cartesian.CartesianShape.size
+    SHORTEST_PATH_FROM_ROOT (7 hops):
+       . RMQ.SuccinctClassic.queryTraceResultWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       . RMQ.Cartesian.CartesianShape.bpCode
+       . RMQ.Cartesian.CartesianShape.below
+
+=== TARGET RMQ.Cartesian.CartesianShape.rec ===
+    DIRECT_REFERRERS (3):
+       <- RMQ.Cartesian.CartesianShape.brecOn
+       <- RMQ.Cartesian.CartesianShape.below
+       <- RMQ.Cartesian.CartesianShape.casesOn
+    SHORTEST_PATH_FROM_ROOT (8 hops):
+       . RMQ.SuccinctClassic.queryTraceResultWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       . RMQ.Cartesian.CartesianShape.bpCode
+       . RMQ.Cartesian.CartesianShape.below
+       . RMQ.Cartesian.CartesianShape.rec
+
+=== TARGET RMQ.Cartesian.CartesianShape.bpCode ===
+    DIRECT_REFERRERS (25):
+       <- RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
+       <- RMQ.SuccinctClose.localBPWindowBase
+       <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore
+       <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore
+       <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+       <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+       <- RMQ.SuccinctClose.RelativeRmm.Layout.superWidth
+       <- RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable
+       <- RMQ.SuccinctClose.bpExcessAt
+       <- RMQ.SuccinctClose.bpBlockMinExcess
+       <- RMQ.SuccinctClose.bpBlockArgMinPrefixPos
+       <- RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom
+       <- RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore
+       <- RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore
+       <- RMQ.SuccinctClose.canonicalRelativeRmmLocalLevelMachineStore
+       <- RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+       <- RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore
+       <- RMQ.SuccinctClose.canonicalRelativeRmmGlobalLevelMachineStore
+       <- RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+       <- RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+       <- RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankSuperOverhead
+       <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankWordSize
+       <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlockOverhead
+       <- RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankData
+    SHORTEST_PATH_FROM_ROOT (6 hops):
+       . RMQ.SuccinctClassic.queryTraceResultWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+       . RMQ.Cartesian.CartesianShape.bpCode
+
+=== TARGET RMQ.Cartesian.CartesianShape.size ===
+    DIRECT_REFERRERS (2):
+       <- RMQ.SuccinctClose.canonicalBPRelativeSummaryBase
+       <- RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockCountRaw
+    SHORTEST_PATH_FROM_ROOT (9 hops):
+       . RMQ.SuccinctClassic.queryTraceResultWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+       . RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+       . RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw
+       . RMQ.SuccinctClose.canonicalBPRelativeSummaryBase
+       . RMQ.Cartesian.CartesianShape.size
+
+=== TARGET WellFounded.fix ===
+    DIRECT_REFERRERS (2):
+       <- Nat.log2
+       <- RMQ.Cartesian.shapeRange._unary
+    SHORTEST_PATH_FROM_ROOT (6 hops):
+       . RMQ.SuccinctClassic.queryTraceResultWithStore
+       . RMQ.SuccinctClassic.cartesianShape
+       . RMQ.Cartesian.shape
+       . RMQ.Cartesian.shapeRange
+       . RMQ.Cartesian.shapeRange._unary
+       . WellFounded.fix
+
+=== TARGET Decidable.decide ===
+    DIRECT_REFERRERS (5):
+       <- instBEqOfDecidableEq
+       <- RMQ.GenericSelect.localIsSparseException
+       <- RMQ.GenericSelect.superIsLong
+       <- RMQ.SuccinctSpace.natToBitsLE
+       <- RMQ.GenericSelect.compactLocalEntryIsLive
+    SHORTEST_PATH_FROM_ROOT (9 hops):
+       . RMQ.SuccinctClassic.queryTraceResultWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+       . RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore
+       . RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
+       . RMQ.GenericSelect.sparseExceptionSelectData
+       . RMQ.GenericSelect.longSuperFlagBits
+       . RMQ.GenericSelect.superIsLong
+       . Decidable.decide

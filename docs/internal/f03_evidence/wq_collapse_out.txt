@@ -1,0 +1,23 @@
+=== collapse of the three content-dependent branches ===
+  n=1: 7 shapes, liveSlots=1, localSlotCount=4, superSlotCount=1
+  n=2: 8 shapes, liveSlots=2, localSlotCount=9, superSlotCount=1
+  n=3: 8 shapes, liveSlots=3, localSlotCount=9, superSlotCount=1
+  n=5: 8 shapes, liveSlots=5, localSlotCount=16, superSlotCount=1
+  n=8: 8 shapes, liveSlots=8, localSlotCount=25, superSlotCount=1
+  n=13: 8 shapes, liveSlots=13, localSlotCount=25, superSlotCount=1
+  n=16: 8 shapes, liveSlots=16, localSlotCount=36, superSlotCount=1
+  n=32: 8 shapes, liveSlots=32, localSlotCount=49, superSlotCount=1
+  n=64: 8 shapes, liveSlots=64, localSlotCount=64, superSlotCount=1
+  n=100: 8 shapes, liveSlots=100, localSlotCount=128, superSlotCount=2
+  n=128: 8 shapes, liveSlots=128, localSlotCount=162, superSlotCount=2
+  n=256: 8 shapes, liveSlots=256, localSlotCount=300, superSlotCount=3
+  n=384: 8 shapes, liveSlots=384, localSlotCount=400, superSlotCount=4
+  n=512: 8 shapes, liveSlots=512, localSlotCount=605, superSlotCount=5
+  n=777: 8 shapes, liveSlots=777, localSlotCount=847, superSlotCount=7
+  n=1024: 8 shapes, liveSlots=1024, localSlotCount=1152, superSlotCount=8
+TOTAL shapes tested=127
+  occurrenceCount(false) != size            : 0
+  compactLocalEntryIsLive slot set differs  : 0
+  shortSuperLocalSpan > wordBits            : 0
+  localIsSparseException fired              : 0
+  superIsLong fired                         : 0

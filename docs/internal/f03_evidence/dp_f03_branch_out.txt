@@ -1,0 +1,115 @@
+ROOT RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+COMPUTATIONAL_CLOSURE_TOTAL 917
+
+== closure membership of watched geometry constants ==
+  IN_CORE RMQ.SuccinctClose.canonicalBPRelativeSummaryBase
+  IN_CORE RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockCountRaw
+  IN_CORE RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw
+  IN_CORE RMQ.SuccinctClose.canonicalBPRelativeSummaryBlocksPerSuperRaw
+  NOT_IN_CORE RMQ.SuccinctClose.canonicalBPRelativeSummarySuperCountRaw
+  IN_CORE RMQ.SuccinctClose.canonicalBPRelativeSummaryRelativeWidthRaw
+  NOT_IN_CORE RMQ.SuccinctClose.canonicalBPRelativeSummarySuperWidth
+  NOT_IN_CORE RMQ.SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive
+  NOT_IN_CORE RMQ.SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive_decidable
+  NOT_IN_CORE RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockSize
+  NOT_IN_CORE RMQ.SuccinctClose.canonicalBPRelativeSummaryBlocksPerSuper
+  NOT_IN_CORE RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockCount
+  NOT_IN_CORE RMQ.SuccinctClose.canonicalBPRelativeSummarySuperCount
+  NOT_IN_CORE RMQ.SuccinctClose.canonicalBPRelativeSummaryRelativeWidth
+  IN_CORE RMQ.SuccinctClose.RelativeRmm.canonicalLayout
+  IN_CORE RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable
+  IN_CORE RMQ.SuccinctClose.bpExcessAt
+  IN_CORE RMQ.SuccinctClose.bpBlockMinExcess
+  IN_CORE RMQ.SuccinctClose.bpBlockArgMinPrefixPos
+  NOT_IN_CORE RMQ.SuccinctSpace.sampledDirectoryOverhead
+  NOT_IN_CORE RMQ.SuccinctSpace.logLogSampledDirectoryOverhead
+  IN_CORE RMQ.SuccinctRank.machineWordBits
+
+SHAPE_REACHABLE_IN_CORE 79 (of 917)
+CONTENT_REACHABLE_IN_CORE 55 (of 917)
+
+== content-reachable constants (callers* of the six) ==
+  CONTENTCONE RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore mod=RMQ.Core.SuccinctFinalStoreParam
+  CONTENTCONE RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore mod=RMQ.Core.SuccinctFinalStoreParam
+  CONTENTCONE RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore mod=RMQ.Core.SuccinctFinalStoreParam
+  CONTENTCONE RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore mod=RMQ.Core.SuccinctFinalStoreParam
+  CONTENTCONE RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankData mod=RMQ.Core.SuccinctFinal
+  CONTENTCONE RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlockOverhead mod=RMQ.Core.SuccinctFinal
+  CONTENTCONE RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankSuperOverhead mod=RMQ.Core.SuccinctFinal
+  CONTENTCONE RMQ.SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore mod=RMQ.Core.SuccinctFinalStoreParam
+  CONTENTCONE RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeWiring
+  CONTENTCONE RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeTrace
+  CONTENTCONE RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore mod=RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmMachineCrossMacroCandidateComputation mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalSpanCandidateComputation mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmMachineMinCandidateComputation mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries mod=RMQ.Core.SuccinctClose.RelativeSummary
+  CONTENTCONE RMQ.SuccinctClose.bpBlockArgMinLocalOffset mod=RMQ.Core.SuccinctClose.RelativeSummary
+  CONTENTCONE RMQ.SuccinctClose.bpBlockArgMinPrefixPos mod=RMQ.Core.SuccinctClose.RangeSummary
+  CONTENTCONE RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom mod=RMQ.Core.SuccinctClose.RangeSummary
+  CONTENTCONE RMQ.SuccinctClose.bpExcessAt mod=RMQ.Core.SuccinctClose.RangeSummary
+  CONTENTCONE RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries mod=RMQ.Core.SuccinctClose.RelativeSummary
+  CONTENTCONE RMQ.SuccinctClose.bpBlockRelativeMaxExcess mod=RMQ.Core.SuccinctClose.RelativeSummary
+  CONTENTCONE RMQ.SuccinctClose.bpBlockMaxExcess mod=RMQ.Core.SuccinctClose.RangeSummary
+  CONTENTCONE RMQ.SuccinctClose.bpBlockExcessSamples mod=RMQ.Core.SuccinctClose.RangeSummary
+  CONTENTCONE RMQ.SuccinctClose.bpRelativeExcessEntry mod=RMQ.Core.SuccinctClose.RelativeSummary
+  CONTENTCONE RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries mod=RMQ.Core.SuccinctClose.RelativeSummary
+  CONTENTCONE RMQ.SuccinctClose.bpBlockRelativeMinExcess mod=RMQ.Core.SuccinctClose.RelativeSummary
+  CONTENTCONE RMQ.SuccinctClose.bpBlockMinExcess mod=RMQ.Core.SuccinctClose.RangeSummary
+  CONTENTCONE RMQ.SuccinctClose.bpSuperblockBaselineEntries mod=RMQ.Core.SuccinctClose.RelativeSummary
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.bpGlobalSparseBlockEntries mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+  CONTENTCONE RMQ.SuccinctClose.bpGlobalSparseCellBlock mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+  CONTENTCONE RMQ.SuccinctClose.bpRangeArgMinBlock mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseArgMin
+  CONTENTCONE RMQ.SuccinctClose.bpRangeArgMinBlockFrom mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseArgMin
+  CONTENTCONE RMQ.SuccinctClose.bpBetterArgMinBlock mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseArgMin
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmInteriorGlobalTable mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.concreteBPGlobalSparseBlockTable mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.bpLocalSparseOffsetEntries mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.LocalSparseOffset
+  CONTENTCONE RMQ.SuccinctClose.bpLocalSparseCellOffset mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.LocalSparseOffset
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmInteriorLocalTable mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.concreteBPLocalSparseOffsetTable mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable mod=RMQ.Core.SuccinctClose.RelativeSummary
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctClose.canonicalRelativeRmmMachineAdjacentMacroCandidateComputation mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  CONTENTCONE RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore mod=RMQ.Core.SuccinctFinalStoreParam
+
+== GLOBAL SITE SWEEP over the computational core ==
+TOTAL_SITES 642
+SITES_WITH_SHAPE_DEPENDENT_DECIDER 19
+SITES_WITH_CONTENT_DEPENDENT_DECIDER 16
+  ite: total=38 shapeDeciding=2 contentDeciding=2
+  dite: total=8 shapeDeciding=0 contentDeciding=0
+  cond: total=1 shapeDeciding=0 contentDeciding=0
+  matcher: total=84 shapeDeciding=11 contentDeciding=11
+  recursor: total=430 shapeDeciding=3 contentDeciding=3
+  decide: total=5 shapeDeciding=0 contentDeciding=0
+  div: total=51 shapeDeciding=1 contentDeciding=0
+  mod: total=16 shapeDeciding=0 contentDeciding=0
+  log2: total=9 shapeDeciding=2 contentDeciding=0
+
+== constants that host a SHAPE-DEPENDENT deciding site ==
+  HOST RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore sites=6 shapeDeciding=2 contentDeciding=2 bpCodeOcc=0 underLen=0 mod=RMQ.Core.SuccinctFinalStoreParam
+  HOST RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore sites=4 shapeDeciding=3 contentDeciding=3 bpCodeOcc=0 underLen=0 mod=RMQ.Core.SuccinctFinalStoreParam
+  HOST RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation sites=3 shapeDeciding=1 contentDeciding=1 bpCodeOcc=0 underLen=0 mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  HOST RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalSpanCandidateComputation sites=1 shapeDeciding=1 contentDeciding=1 bpCodeOcc=0 underLen=0 mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  HOST RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom sites=7 shapeDeciding=3 contentDeciding=3 bpCodeOcc=1 underLen=1 mod=RMQ.Core.SuccinctClose.RangeSummary
+  HOST RMQ.SuccinctClose.canonicalBPRelativeSummaryRelativeWidthRaw sites=1 shapeDeciding=1 contentDeciding=0 bpCodeOcc=0 underLen=0 mod=RMQ.Core.SuccinctClose.RelativeSummary
+  HOST RMQ.SuccinctClose.canonicalBPRelativeSummaryBase sites=1 shapeDeciding=1 contentDeciding=0 bpCodeOcc=0 underLen=0 mod=RMQ.Core.SuccinctClose.RelativeSummary
+  HOST RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockCountRaw sites=1 shapeDeciding=1 contentDeciding=0 bpCodeOcc=0 underLen=0 mod=RMQ.Core.SuccinctClose.RelativeSummary
+  HOST RMQ.SuccinctClose.bpRangeArgMinBlock sites=1 shapeDeciding=1 contentDeciding=1 bpCodeOcc=0 underLen=0 mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseArgMin
+  HOST RMQ.SuccinctClose.bpRangeArgMinBlockFrom sites=6 shapeDeciding=2 contentDeciding=2 bpCodeOcc=0 underLen=0 mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseArgMin
+  HOST RMQ.SuccinctClose.bpBetterArgMinBlock sites=1 shapeDeciding=1 contentDeciding=1 bpCodeOcc=0 underLen=0 mod=RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseArgMin
+  HOST RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation sites=3 shapeDeciding=1 contentDeciding=1 bpCodeOcc=0 underLen=0 mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
+  HOST RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation sites=1 shapeDeciding=1 contentDeciding=1 bpCodeOcc=0 underLen=0 mod=RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory

@@ -1,0 +1,5 @@
+== (A) REGIONS TOUCHED BY ALL REALIZABLE QUERIES (exhaustive over block pairs) ==
+  n=8 realizablePairs=0 armsSeen=[] ALL_REALIZABLE_CONST=true regionsTouched=[]
+  n=12 realizablePairs=1 armsSeen=[1] ALL_REALIZABLE_CONST=true regionsTouched=[DEAD, localLevel]
+  n=16 realizablePairs=3 armsSeen=[1] ALL_REALIZABLE_CONST=true regionsTouched=[DEAD, localLevel]
+  n=24 realizablePairs=6 armsSeen=[1] ALL_REALIZABLE_CONST=true regionsTouched=[DEAD, localLevel]

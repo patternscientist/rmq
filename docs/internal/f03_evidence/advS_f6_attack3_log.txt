@@ -1,0 +1,24 @@
+attack3 start
+--- n=63 shapes=9 distinctBpCodes=8 sizes=[63] idxs=[0, 1, 5, 31, 62, 63] stores=10
+  shape=rightComb keys=60 buildAndRun=869ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=leftComb keys=60 buildAndRun=599ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=alt keys=60 buildAndRun=609ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=blocks keys=60 buildAndRun=582ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=halfhalf keys=60 buildAndRun=572ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=balanced keys=60 buildAndRun=534ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=rand1 keys=60 buildAndRun=570ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=rand2 keys=60 buildAndRun=551ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=rand3 keys=60 buildAndRun=552ms regimes=[LONG, NONE, SPARSE, DENSE]
+=== n=63 TOTAL-MISMATCHES=0 regimesSeen=[LONG, NONE, SPARSE, DENSE]
+--- n=65 shapes=9 distinctBpCodes=8 sizes=[65] idxs=[0, 1, 5, 33, 64, 65] stores=10
+  shape=rightComb keys=60 buildAndRun=606ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=leftComb keys=60 buildAndRun=637ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=alt keys=60 buildAndRun=619ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=blocks keys=60 buildAndRun=569ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=halfhalf keys=60 buildAndRun=607ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=balanced keys=60 buildAndRun=625ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=rand1 keys=60 buildAndRun=613ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=rand2 keys=60 buildAndRun=644ms regimes=[LONG, NONE, SPARSE, DENSE]
+  shape=rand3 keys=60 buildAndRun=606ms regimes=[LONG, NONE, SPARSE, DENSE]
+=== n=65 TOTAL-MISMATCHES=0 regimesSeen=[LONG, NONE, SPARSE, DENSE]
+attack3 done (part 1)

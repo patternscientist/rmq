@@ -1,0 +1,111 @@
+﻿=== PART A: does the lcaClose instruction actually fire? ===
+  [A] FLAT n=8 l=0 r=8 : lcaClose fired for 6/6 shapes
+        leftSpine: leftClose=(some 595) rightClose=(some 595) lcaCloseFIRES=true
+        rightSpine: leftClose=(some 595) rightClose=(some 595) lcaCloseFIRES=true
+        balanced: leftClose=(some 595) rightClose=(some 595) lcaCloseFIRES=true
+        zigzagL: leftClose=(some 595) rightClose=(some 595) lcaCloseFIRES=true
+        pseudo3: leftClose=(some 595) rightClose=(some 595) lcaCloseFIRES=true
+        pseudo11: leftClose=(some 595) rightClose=(some 595) lcaCloseFIRES=true
+  [A] ADDR n=8 l=0 r=8 : lcaClose fired for 6/6 shapes
+        leftSpine: leftClose=(some 215331) rightClose=(some 215331) lcaCloseFIRES=true
+        rightSpine: leftClose=(some 215331) rightClose=(some 215331) lcaCloseFIRES=true
+        balanced: leftClose=(some 215331) rightClose=(some 215331) lcaCloseFIRES=true
+        zigzagL: leftClose=(some 215331) rightClose=(some 215331) lcaCloseFIRES=true
+        pseudo3: leftClose=(some 215331) rightClose=(some 215331) lcaCloseFIRES=true
+        pseudo11: leftClose=(some 215331) rightClose=(some 215331) lcaCloseFIRES=true
+  [A] BPSELF n=8 l=0 r=8 : lcaClose fired for 6/6 shapes
+        leftSpine: leftClose=(some 1785) rightClose=(some 1785) lcaCloseFIRES=true
+        rightSpine: leftClose=(some 152915) rightClose=(some 152915) lcaCloseFIRES=true
+        balanced: leftClose=(some 149009) rightClose=(some 149009) lcaCloseFIRES=true
+        zigzagL: leftClose=(some 12285) rightClose=(some 12285) lcaCloseFIRES=true
+        pseudo3: leftClose=(some 148155) rightClose=(some 148155) lcaCloseFIRES=true
+        pseudo11: leftClose=(some 148155) rightClose=(some 148155) lcaCloseFIRES=true
+  [A] ALLTRUE n=8 l=0 r=8 : lcaClose fired for 6/6 shapes
+        leftSpine: leftClose=(some 458745) rightClose=(some 458745) lcaCloseFIRES=true
+        rightSpine: leftClose=(some 458745) rightClose=(some 458745) lcaCloseFIRES=true
+        balanced: leftClose=(some 458745) rightClose=(some 458745) lcaCloseFIRES=true
+        zigzagL: leftClose=(some 458745) rightClose=(some 458745) lcaCloseFIRES=true
+        pseudo3: leftClose=(some 458745) rightClose=(some 458745) lcaCloseFIRES=true
+        pseudo11: leftClose=(some 458745) rightClose=(some 458745) lcaCloseFIRES=true
+  [A] FLAT n=16 l=0 r=16 : lcaClose fired for 6/6 shapes
+        leftSpine: leftClose=(some 680) rightClose=(some 680) lcaCloseFIRES=true
+        rightSpine: leftClose=(some 680) rightClose=(some 680) lcaCloseFIRES=true
+        balanced: leftClose=(some 680) rightClose=(some 680) lcaCloseFIRES=true
+        zigzagL: leftClose=(some 680) rightClose=(some 680) lcaCloseFIRES=true
+        pseudo3: leftClose=(some 680) rightClose=(some 680) lcaCloseFIRES=true
+        pseudo11: leftClose=(some 680) rightClose=(some 680) lcaCloseFIRES=true
+  [A] ADDR n=16 l=0 r=16 : lcaClose fired for 6/6 shapes
+        leftSpine: leftClose=(some 252780) rightClose=(some 252780) lcaCloseFIRES=true
+        rightSpine: leftClose=(some 252780) rightClose=(some 252780) lcaCloseFIRES=true
+        balanced: leftClose=(some 252780) rightClose=(some 252780) lcaCloseFIRES=true
+        zigzagL: leftClose=(some 252780) rightClose=(some 252780) lcaCloseFIRES=true
+        pseudo3: leftClose=(some 252780) rightClose=(some 252780) lcaCloseFIRES=true
+        pseudo11: leftClose=(some 252780) rightClose=(some 252780) lcaCloseFIRES=true
+  [A] BPSELF n=16 l=0 r=16 : lcaClose fired for 6/6 shapes
+        leftSpine: leftClose=(some 524280) rightClose=(some 524280) lcaCloseFIRES=true
+        rightSpine: leftClose=(some 11453246120) rightClose=(some 11453246120) lcaCloseFIRES=true
+        balanced: leftClose=(some 11160597112) rightClose=(some 11160597112) lcaCloseFIRES=true
+        zigzagL: leftClose=(some 57521880) rightClose=(some 57521880) lcaCloseFIRES=true
+        pseudo3: leftClose=(some 11095397288) rightClose=(some 11095397288) lcaCloseFIRES=true
+        pseudo11: leftClose=(some 11096379832) rightClose=(some 11096379832) lcaCloseFIRES=true
+  [A] ALLTRUE n=16 l=0 r=16 : lcaClose fired for 6/6 shapes
+        leftSpine: leftClose=(some 524280) rightClose=(some 524280) lcaCloseFIRES=true
+        rightSpine: leftClose=(some 524280) rightClose=(some 524280) lcaCloseFIRES=true
+        balanced: leftClose=(some 524280) rightClose=(some 524280) lcaCloseFIRES=true
+        zigzagL: leftClose=(some 524280) rightClose=(some 524280) lcaCloseFIRES=true
+        pseudo3: leftClose=(some 524280) rightClose=(some 524280) lcaCloseFIRES=true
+        pseudo11: leftClose=(some 524280) rightClose=(some 524280) lcaCloseFIRES=true
+  [A] FLAT n=32 l=0 r=32 : lcaClose fired for 6/6 shapes
+        leftSpine: leftClose=(some 765) rightClose=(some 765) lcaCloseFIRES=true
+        rightSpine: leftClose=(some 765) rightClose=(some 765) lcaCloseFIRES=true
+        balanced: leftClose=(some 765) rightClose=(some 765) lcaCloseFIRES=true
+        zigzagL: leftClose=(some 765) rightClose=(some 765) lcaCloseFIRES=true
+        pseudo3: leftClose=(some 765) rightClose=(some 765) lcaCloseFIRES=true
+        pseudo11: leftClose=(some 765) rightClose=(some 765) lcaCloseFIRES=true
+  [A] ADDR n=32 l=0 r=32 : lcaClose fired for 6/6 shapes
+        leftSpine: leftClose=(some 290229) rightClose=(some 290229) lcaCloseFIRES=true
+        rightSpine: leftClose=(some 290229) rightClose=(some 290229) lcaCloseFIRES=true
+        balanced: leftClose=(some 290229) rightClose=(some 290229) lcaCloseFIRES=true
+        zigzagL: leftClose=(some 290229) rightClose=(some 290229) lcaCloseFIRES=true
+        pseudo3: leftClose=(some 290229) rightClose=(some 290229) lcaCloseFIRES=true
+        pseudo11: leftClose=(some 290229) rightClose=(some 290229) lcaCloseFIRES=true
+  [A] BPSELF n=32 l=0 r=32 : lcaClose fired for 6/6 shapes
+        leftSpine: leftClose=(some 38654705655) rightClose=(some 38654705655) lcaCloseFIRES=true
+        rightSpine: leftClose=(some 55340232221128654845) rightClose=(some 55340232221128654845) lcaCloseFIRES=true
+        balanced: leftClose=(some 53926199555640045975) rightClose=(some 53926199555640045975) lcaCloseFIRES=true
+        zigzagL: leftClose=(some 1085689195883955) rightClose=(some 1085689195883955) lcaCloseFIRES=true
+        pseudo3: leftClose=(some 55304330555240676693) rightClose=(some 55304330555240676693) lcaCloseFIRES=true
+        pseudo11: leftClose=(some 55312067621045795823) rightClose=(some 55312067621045795823) lcaCloseFIRES=true
+  [A] ALLTRUE n=32 l=0 r=32 : lcaClose fired for 6/6 shapes
+        leftSpine: leftClose=(some 589815) rightClose=(some 589815) lcaCloseFIRES=true
+        rightSpine: leftClose=(some 589815) rightClose=(some 589815) lcaCloseFIRES=true
+        balanced: leftClose=(some 589815) rightClose=(some 589815) lcaCloseFIRES=true
+        zigzagL: leftClose=(some 589815) rightClose=(some 589815) lcaCloseFIRES=true
+        pseudo3: leftClose=(some 589815) rightClose=(some 589815) lcaCloseFIRES=true
+        pseudo11: leftClose=(some 589815) rightClose=(some 589815) lcaCloseFIRES=true
+
+=== PART B: DIRECT leaf invocation, short-circuit bypassed ===
+  -- n=8 --
+  [B] L1 select (FLAT, idx=3) n=8 events=9 traceDiffers=0 valueDiffers=0
+  [B] L1 select (ADDR, idx=3) n=8 events=9 traceDiffers=0 valueDiffers=0
+  [B] L2 LCA    (FLAT, 2,7) n=8 events=17 traceDiffers=0 valueDiffers=0
+  [B] L2 LCA    (ADDR, 2,7) n=8 events=17 traceDiffers=0 valueDiffers=0
+  [B] L2 LCA    (ADDR, 1,n) n=8 events=30 traceDiffers=0 valueDiffers=0
+  [B] L2 LCA    (ALLTRUE,2,7) n=8 events=17 traceDiffers=0 valueDiffers=0
+  [B] L3 rank   (ADDR, base0,pos5) n=8 events=4 traceDiffers=0 valueDiffers=0
+  -- n=16 --
+  [B] L1 select (FLAT, idx=3) n=16 events=9 traceDiffers=0 valueDiffers=0
+  [B] L1 select (ADDR, idx=3) n=16 events=9 traceDiffers=0 valueDiffers=0
+  [B] L2 LCA    (FLAT, 2,7) n=16 events=17 traceDiffers=0 valueDiffers=0
+  [B] L2 LCA    (ADDR, 2,7) n=16 events=17 traceDiffers=0 valueDiffers=0
+  [B] L2 LCA    (ADDR, 1,n) n=16 events=39 traceDiffers=0 valueDiffers=0
+  [B] L2 LCA    (ALLTRUE,2,7) n=16 events=17 traceDiffers=0 valueDiffers=0
+  [B] L3 rank   (ADDR, base0,pos5) n=16 events=8 traceDiffers=0 valueDiffers=0
+  -- n=32 --
+  [B] L1 select (FLAT, idx=3) n=32 events=9 traceDiffers=0 valueDiffers=0
+  [B] L1 select (ADDR, idx=3) n=32 events=9 traceDiffers=0 valueDiffers=0
+  [B] L2 LCA    (FLAT, 2,7) n=32 events=17 traceDiffers=0 valueDiffers=0
+  [B] L2 LCA    (ADDR, 2,7) n=32 events=17 traceDiffers=0 valueDiffers=0
+  [B] L2 LCA    (ADDR, 1,n) n=32 events=54 traceDiffers=0 valueDiffers=0
+  [B] L2 LCA    (ALLTRUE,2,7) n=32 events=17 traceDiffers=0 valueDiffers=0
+  [B] L3 rank   (ADDR, base0,pos5) n=32 events=8 traceDiffers=0 valueDiffers=0

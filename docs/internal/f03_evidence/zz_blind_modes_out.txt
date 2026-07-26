@@ -1,0 +1,13 @@
+PATTERN | tot | under | INSTRUMENT VERDICT | GROUND TRUTH | AGREE?
+ZZModes.p1_letLength | 1 | 0 | CONTENT (frontier row) | SIZE-ONLY | false alarm (safe)
+ZZModes.p2_callee | 0 | 0 | INVISIBLE (not listed at all) | CONTENT-READ (no bpCode present) | *** FALSE CLEAN ***
+ZZModes.p2_caller | 1 | 0 | CONTENT (frontier row) | CONTENT-READ | ok
+ZZModes.p3_build | 1 | 0 | CONTENT (frontier row) | BUILDS content into a record | ok
+ZZModes.p3_consume | 0 | 0 | INVISIBLE (not listed at all) | CONTENT-READ (no bpCode present) | *** FALSE CLEAN ***
+ZZModes.p3_top | 0 | 0 | INVISIBLE (not listed at all) | CONTENT-READ | *** FALSE CLEAN ***
+ZZModes.p4_lengthOfDrop | 1 | 0 | CONTENT (frontier row) | SIZE-ONLY | false alarm (safe)
+ZZModes.p5_plainLength | 1 | 1 | LENGTH-ONLY (benign) | SIZE-ONLY | ok
+ZZModes.p6_etaFunction | 1 | 0 | CONTENT (frontier row) | CONTENT (identity on the channel) | ok
+ZZModes.p7_lengthTR | 1 | 0 | CONTENT (frontier row) | SIZE-ONLY | false alarm (safe)
+ZZModes.p8_mixed | 3 | 1 | CONTENT (frontier row) | CONTENT-READ | ok
+ZZModes.p9_indirect | 1 | 0 | CONTENT (frontier row) | CONTENT-READ | ok

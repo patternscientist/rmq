@@ -1,0 +1,2 @@
+=== TIER B: whole query across the summary-table threshold ===
+--- n=384 bpLen=768 summaryTableActive=false

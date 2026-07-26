@@ -1,0 +1,5 @@
+F1 = RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+bpCode occurrences in VALUE: 2
+  OCCURRENCE(applied) at path: lam(shape).body > lam(store).body > lam(rankSegmentBase).body > lam(pos).body > RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore#arg[0:bits:Lean.BinderInfo.implicit]
+  OCCURRENCE(applied) at path: lam(shape).body > lam(store).body > lam(rankSegmentBase).body > lam(pos).body > RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore#arg[10:c:Lean.BinderInfo.default] > RMQ.SuccinctClose.bpFringeChunkBits#arg[0:m:Lean.BinderInfo.default] > List.length#arg[1:a._@.Init.Prelude._hyg.6329:Lean.BinderInfo.default]
+bpCode occurrences in TYPE: 0

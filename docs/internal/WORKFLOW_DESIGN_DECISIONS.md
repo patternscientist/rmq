@@ -6433,3 +6433,47 @@ Consequences:
   probe-totality gaps; the architecture judgment found the free-shape gap; the
   rejected C06 plan found neither.
 - No theorem, matrix, contract, or public claim changes.
+
+## WDD-20260726-002: a front-loaded Stage F row reports its process gaps, not only its verdict
+
+Status: Coordinator decision recorded 2026-07-26. Binds how the F03 result is
+cited and how the remaining Stage F rows are run.
+
+Date: 2026-07-26
+
+Context:
+
+The `EG-CP-F03` campaign returned a strong substantive result -- no obstruction,
+one decisive residual theorem -- while its own completeness critic established
+that it did not meet the row's minimum-evidence clause: controller leaf L2 was
+never classified, the coordinator's source inventory was refuted mid-campaign
+and never rebuilt (6 of 55 content-dependent constants classified), "universal
+consumers" was never defined, and probe counting got no row.
+
+Decision:
+
+The campaign report records both, and the substantive verdict may not be cited
+without the process gaps. `EG-CP-F03` stays OPEN.
+
+Rationale:
+
+`EG-CP-F03`'s minimum evidence is explicitly "not representative rows". A
+campaign that finds no counterexample across roughly 900,000 comparisons but
+never classified one of the three controller leaves has produced encouraging
+evidence, not the row. Reporting the verdict alone would reproduce B2SUFF
+exactly: a real result promoted past what its quantifiers support.
+
+Consequences:
+
+- Five corrections to the coordinator's own instrument are recorded durably,
+  including that its `bpCode` table is a source list rather than an inventory,
+  and that its `superIsLong` arithmetic result is a crossover at n about 13,276
+  rather than a ceiling -- so the predicate is live in precisely the asymptotic
+  regime the packed target claims, and no evaluation in the campaign reached it.
+- Further cross-shape execution below that crossover is not to be commissioned;
+  the regime is provably vacuous on the only live content-dependent branch, so
+  the remaining work is proof.
+- The three measured regime walls -- interior reads at n = 10, interior macro
+  arms at n about 3457, `superIsLong` at n about 13,276 -- bound what any
+  executable harness can witness, and every future Stage F row states its wall.
+- No theorem, matrix, contract, or public claim changes.

@@ -1,0 +1,253 @@
+CORE 917
+INTERPROCEDURAL_CONTENT_TAINT_ROUNDS 5
+INTERPROCEDURAL_CONTENT_TAINT_IN_CORE 536 (of 917)
+INTERPROCEDURAL_SHAPE_TAINT_IN_CORE 536 (of 917)
+SITES_IN_CONTENT_TAINTED_HOSTS 624
+SITES_IN_SIZE_ONLY_TAINTED_HOSTS 0
+SITES_IN_SHAPE_FREE_HOSTS 16
+
+== EVERY div / mod / log2 SITE IN THE CORE ==
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpFringeChunkBits :: div(m.log2 , 8)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpFringeChunkBits :: log2(m)
+  [CONTENT-TAINTED-HOST] Nat.log2 :: div(#2 , 2)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctRank.machineWordBits :: log2(n)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctRank.canonicalRankWordBridgeOfChunksWithSentinel :: div(#2 , wordSize)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctRank.canonicalBlockRankEntries :: div(#0 , blocksPerSuper)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctRank.canonicalBlockRankEntries :: div(bits.length , wordSize)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctSpace.natToBitsLE :: mod(#1 , 2)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctSpace.natToBitsLE :: mod(#1 , 2)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctSpace.natToBitsLE :: div(#1 , 2)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctRank.canonicalSuperRankEntries :: div(bits.length / wordSize , blocksPerSuper)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctRank.canonicalSuperRankEntries :: div(bits.length , wordSize)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndex :: div(data.queryPos pos , data.wordSize)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpWordChunkCount :: div(e - 1 , c)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpChunkRankOfEntry :: div(entry / (c + 1) % (2 * c + 2) + t - c , 2)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpChunkRankOfEntry :: mod(entry / (c + 1) , 2 * c + 2)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpChunkRankOfEntry :: div(entry , c + 1)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpChunkRankOfEntry :: div(entry / (c + 1) % (2 * c + 2) + t - c , 2)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpChunkRankOfEntry :: mod(entry / (c + 1) , 2 * c + 2)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpChunkRankOfEntry :: div(entry , c + 1)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndex :: div(data.wordIndex pos , data.blocksPerSuper)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore :: div(#1 , #6)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpFringeChunkStepDecoded :: div(entry?.getD 0 , (c + 1) * (2 * c + 2))
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpFringeChunkStepDecoded :: mod(entry?.getD 0 / (c + 1) , 2 * c + 2)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpFringeChunkStepDecoded :: div(entry?.getD 0 , c + 1)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpFringeChunkStepDecoded :: mod(entry?.getD 0 , c + 1)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore :: div(RMQ.SuccinctClose.blockStartOf blockSize (RMQ.SuccinctClose.blockOfClose blockSize close) , #0)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.blockOfClose :: div(close , blockSize)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.localBPWindowBase :: div(RMQ.SuccinctClose.blockStartOf blockSize (RMQ.SuccinctClose.blockOfClose blockSize close) , #0)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation :: div(startBlock , RMQ.SuccinctClose.RelativeRmm.Layout.macroSize #0)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation :: mod(startBlock , RMQ.SuccinctClose.RelativeRmm.Layout.macroSize #1)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation :: div(#0 , RMQ.SuccinctClose.RelativeRmm.Layout.macroSize #4)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation :: mod(#1 , RMQ.SuccinctClose.RelativeRmm.Layout.macroSize #5)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation :: div(#0 , #3)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation :: mod(#1 , #4)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation :: div(block , failed to pretty print expression (use 'set_option pp.rawOnError true' for raw representation))
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpSuperblockStartBlock :: div(block , blocksPerSuper)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpSparseLevelWidth :: log2(domain * (domain.log2 + 1))
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpSparseLevelWidth :: log2(domain)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpSparseLevelCell :: log2(i)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpSparseLogSpan :: log2(blockCount)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalBPRelativeSummaryRelativeWidthRaw :: log2(RMQ.SuccinctClose.canonicalBPRelativeSummaryBase shape)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalBPRelativeSummaryBase :: log2(shape.size)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockCountRaw :: div(shape.size , RMQ.SuccinctClose.canonicalBPRelativeSummaryBase shape)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.RelativeRmm.Layout.macroSampleCount :: div(layout.blockCount , layout.macroSize)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpGlobalSparseBlockEntries :: div(#0 , macroCount)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpGlobalSparseBlockEntries :: mod(#1 , macroCount)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpLocalSparseOffsetEntries :: div(#1 , #0)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpLocalSparseOffsetEntries :: mod(#2 , #1)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpLocalSparseOffsetEntries :: div(#0 , macroSize)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpLocalSparseOffsetEntries :: mod(#1 , macroSize)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.RelativeRmm.Layout.superSampleCount :: div(layout.blockCount , layout.blocksPerSuper)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctSpace.fixedWidthNatTableMachineChunkCount :: div(width , wordSize)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctSpace.fixedWidthNatTableMachineChunkCount :: mod(width , wordSize)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctSpace.fixedWidthNatTableMachineChunkCount :: mod(width , wordSize)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation :: div(#0 , #3)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation :: mod(#1 , #4)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore :: div(#1 , #6)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore :: div(#1 , #6)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.ell :: log2(RMQ.GenericSelect.wordBits n)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.localStride :: div(RMQ.GenericSelect.wordBits n , RMQ.GenericSelect.ell n * RMQ.GenericSelect.ell n)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.selectLocalSlotsPerSuper :: div(superStride + localStride - 1 , localStride)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.selectCeilDiv :: div(n + stride - 1 , stride)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.localBaseOccurrence :: div(globalLocalSlot , RMQ.GenericSelect.localSlotsPerSuper n)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.localSlotInSuperOfGlobal :: div(globalLocalSlot , RMQ.GenericSelect.localSlotsPerSuper n)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.localSuperSlot :: div(globalLocalSlot , RMQ.GenericSelect.localSlotsPerSuper n)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.localEntry :: div(#1 , #0)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.localEntry :: div(#3 , #0)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.localEntry :: div(#1 , #0)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.superEntry :: div(#1 , #0)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.superEntry :: div(#1 , #0)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore :: div(basePosition , wordSize)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.relativeSplitSelectLocalSlotInSuper :: div(q - super.baseOccurrence , localStride)
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.selectSuperSlot :: div(q , superStride)
+DIV_MOD_LOG2_SITE_COUNT 74
+
+== EVERY ite / dite / cond / decide CONDITION IN THE CORE ==
+  [CONTENT-TAINTED-HOST] Nat.log2 :: dite: #1 ≥ 2
+  [CONTENT-TAINTED-HOST] Nat.div :: dite: 0 < y
+  [CONTENT-TAINTED-HOST] Nat.div.go :: dite: y ≤ #4
+  [CONTENT-TAINTED-HOST] Nat.decLe :: dite: n.ble m = true
+  [CONTENT-TAINTED-HOST] Array.getD :: dite: i < a.size
+  [CONTENT-TAINTED-HOST] decidableGetElem? :: dite: valid xs i
+  [CONTENT-TAINTED-HOST] RMQ.Succinct.rankPrefix :: ite: #3 = target
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctSpace.natToBitsLE :: decide: #1 % 2 = 1
+  [CONTENT-TAINTED-HOST] Nat.mod :: ite: #0 ≤ #3
+  [CONTENT-TAINTED-HOST] Nat.modCore :: dite: 0 < y
+  [CONTENT-TAINTED-HOST] Nat.modCore.go :: dite: y ≤ #4
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctSpace.bitToNat :: ite: bit = true
+  [CONTENT-TAINTED-HOST] minOfLe :: ite: #1 ≤ #0
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpChunkRankOfEntry :: cond: target
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore :: ite: RMQ.SuccinctClose.blockOfClose #0 leftClose = RMQ.SuccinctClose.blockOfClose #0 rightClose
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore :: ite: #3 + 1 < #2
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpFringeChunkStepDecoded :: ite: RMQ.SuccinctClose.bpFringeChunkStartOff c relLo j < RMQ.SuccinctClose.bpFringeChunkEndOff c relHi j
+  [CONTENT-TAINTED-HOST] maxOfLe :: ite: #1 ≤ #0
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpFringeMergeCand :: ite: failed to pretty print expression (use 'set_option pp.rawOnError true' for raw representation)
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpCandidateBetter :: ite: right.fst < left.fst
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation :: ite: count = 0
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation :: ite: count ≤ RMQ.SuccinctClose.RelativeRmm.Layout.macroSize #2 - #0
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation :: ite: #1 = 0
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation :: ite: #0 = 0
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom :: ite: RMQ.SuccinctClose.bpExcessAt shape #0 < RMQ.SuccinctClose.bpExcessAt shape #2
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpGlobalSparseCellBlock :: ite: macroStart + #2 ≤ macroCount ∧ #1 + #0 ≤ blockCount
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpBetterArgMinBlock :: ite: RMQ.SuccinctClose.bpExcessAt shape (RMQ.SuccinctClose.bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+  RMQ.SuccinctClose.bpExcessAt shape (RMQ.SuccinctClose.bpBlockArgMinPrefixPos shape blockSiz ...
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpLocalSparseCellOffset :: ite: localStart + #2 ≤ macroSize ∧ #0 + #2 ≤ blockCount
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctSpace.FixedWidthNatTable.machineReadComputationAt :: ite: i < entries.length
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctSpace.fixedWidthNatTableMachineChunkCount :: ite: width % wordSize = 0
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.sparseExceptionRelativeEntriesForSlot :: ite: RMQ.GenericSelect.localIsSparseException bits target globalLocalSlot = true
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.relativeOffsetsOrZero :: ite: baseOccurrence + #0 < endOccurrence
+  [CONTENT-TAINTED-HOST] RMQ.Succinct.selectFrom :: ite: #4 = target
+  [CONTENT-TAINTED-HOST] RMQ.Succinct.selectFrom :: ite: #1 = 0
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.localIsSparseException :: decide: RMQ.GenericSelect.wordBits bits.length < RMQ.GenericSelect.shortSuperLocalSpan bits target globalLocalSlot
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.superIsLong :: decide: RMQ.GenericSelect.superLongSpan bits.length < RMQ.GenericSelect.superSpan bits target superSlot
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.localEntry :: ite: RMQ.GenericSelect.compactLocalEntryIsLive bits target globalLocalSlot = true
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.localEntry :: ite: RMQ.GenericSelect.localIsSparseException bits target globalLocalSlot = true
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.compactLocalEntryIsLive :: decide: RMQ.GenericSelect.localBaseOccurrence bits.length globalLocalSlot < RMQ.GenericSelect.occurrenceCount bits target
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.longSuperRelativeEntriesForSlot :: ite: RMQ.GenericSelect.superIsLong bits target superSlot = true
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.superEntry :: ite: RMQ.GenericSelect.superIsLong bits target superSlot = true
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore :: ite: idx < RMQ.GenericSelect.occurrenceCount bits target
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore :: ite: RMQ.GenericSelect.relativeSplitSelectEntryIsMarked #0 = true
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore :: ite: RMQ.GenericSelect.relativeSplitSelectEntryIsMarked #0 = true
+  [CONTENT-TAINTED-HOST] RMQ.GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore :: ite: #5 < #0
+  [CONTENT-TAINTED-HOST] RMQ.SuccinctClose.bpChunkedWordSelectTraceFromWithStore :: ite: #2 <
+  RMQ.SuccinctClose.bpChunkRankOfEntry c target (RMQ.SuccinctClose.bpWordChunkSliceLen c word.length #4)
+    (Option.getD #0 0)
+  [CONTENT-TAINTED-HOST] instBEqOfDecidableEq :: decide: #1 = #0
+  [CONTENT-TAINTED-HOST] RMQ.RAM.boolSelectFrom :: ite: #4 = target
+  [CONTENT-TAINTED-HOST] RMQ.RAM.boolSelectFrom :: ite: #1 = 0
+  [CONTENT-TAINTED-HOST] RMQ.RAM.boolRankPrefix :: ite: #3 = target
+  [CONTENT-TAINTED-HOST] RMQ.WordRAM.bitsToOptionNatLE :: ite: #1 = true
+  [CONTENT-TAINTED-HOST] RMQ.WordRAM.bitToNat :: ite: bit = true
+ITE_DITE_COND_DECIDE_SITE_COUNT 52
+
+== matcher / recursor HEADS IN THE CORE (grouped) ==
+  91 x Nat.below   (in content-tainted hosts: 91)
+  75 x List.below   (in content-tainted hosts: 75)
+  31 x Option.casesOn   (in content-tainted hosts: 31)
+  28 x Nat.casesOn   (in content-tainted hosts: 28)
+  27 x RMQ.WordRAM.Program.below   (in content-tainted hosts: 27)
+  27 x RMQ.SuccinctFinal.WholeQueryNatExpr.below   (in content-tainted hosts: 27)
+  20 x Nat.brecOn   (in content-tainted hosts: 20)
+  18 x RMQ.Cartesian.CartesianShape.below   (in content-tainted hosts: 18)
+  18 x List.casesOn   (in content-tainted hosts: 18)
+  17 x List.brecOn   (in content-tainted hosts: 17)
+  9 x Bool.casesOn   (in content-tainted hosts: 9)
+  4 x RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateCosted.match_1   (in content-tainted hosts: 4)
+  4 x Decidable.casesOn   (in content-tainted hosts: 4)
+  3 x RMQ.Cartesian.CartesianShape.rec   (in content-tainted hosts: 3)
+  3 x Nat.rec   (in content-tainted hosts: 3)
+  3 x List.rec   (in content-tainted hosts: 3)
+  3 x RMQ.WordRAM.Program.rec   (in content-tainted hosts: 3)
+  3 x RMQ.SuccinctFinal.WholeQueryNatExpr.rec   (in content-tainted hosts: 3)
+  2 x Nat.pow.match_1   (in content-tainted hosts: 2)
+  2 x RMQ.SuccinctClose.bpRangeArgMinBlockFrom.match_1   (in content-tainted hosts: 2)
+  2 x Eq.ndrec   (in content-tainted hosts: 2)
+  2 x RMQ.SuccinctClose.bpChunkedWordRankTraceFromWithStore.match_1   (in content-tainted hosts: 2)
+  2 x Nat.beq.match_1   (in content-tainted hosts: 2)
+  2 x RMQ.GenericSelect.SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore.match_1   (in content-tainted hosts: 2)
+  2 x RMQ.GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore.match_1   (in content-tainted hosts: 2)
+  2 x RMQ.SuccinctFinal.reprWholeQueryNatReg.match_1._@.RMQ.Core.SuccinctFinalRAM._hyg.3589   (in content-tainted hosts: 0)
+  2 x Nat.noConfusion   (in content-tainted hosts: 2)
+  2 x RMQ.SuccinctFinal.reprWholeQueryOptReg.match_1._@.RMQ.Core.SuccinctFinalRAM._hyg.3338   (in content-tainted hosts: 1)
+  2 x RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255   (in content-tainted hosts: 2)
+  2 x Bool.noConfusion   (in content-tainted hosts: 2)
+  2 x instDecidableAnd.match_1   (in content-tainted hosts: 2)
+  2 x RMQ.Cartesian.CartesianShape.brecOn   (in content-tainted hosts: 2)
+  2 x Option.getD.match_1   (in content-tainted hosts: 2)
+  2 x RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore.match_3   (in content-tainted hosts: 2)
+  2 x Fin.casesOn   (in content-tainted hosts: 2)
+  2 x List.take.match_1   (in content-tainted hosts: 2)
+  2 x cond.match_1   (in content-tainted hosts: 2)
+  2 x RMQ.SuccinctClose.natListMinFrom.match_1   (in content-tainted hosts: 2)
+  2 x Nat.div.go.match_1   (in content-tainted hosts: 2)
+  2 x RMQ.WordRAM.bitsToNatLE.match_1   (in content-tainted hosts: 2)
+  2 x Nat.mul.match_1   (in content-tainted hosts: 2)
+  1 x RMQ.WordRAM.Program.evalR.match_3   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctFinal.WholeQueryInstr.casesOn   (in content-tainted hosts: 1)
+  1 x RMQ.WordRAM.Ty.rec   (in content-tainted hosts: 0)
+  1 x RMQ.SuccinctClose.bpCandidateMerge?.match_1   (in content-tainted hosts: 1)
+  1 x Option.bind.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctSpace.chunkPayloadWordsFuel.match_1   (in content-tainted hosts: 1)
+  1 x Bool.rec   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.Succinct.selectFrom.match_1   (in content-tainted hosts: 1)
+  1 x Fin.rec   (in content-tainted hosts: 1)
+  1 x RMQ.RAM.boolRankPrefix.match_1   (in content-tainted hosts: 1)
+  1 x List.length.match_1   (in content-tainted hosts: 1)
+  1 x Acc.rec   (in content-tainted hosts: 0)
+  1 x RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTraceWithStore.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctFinal.WholeQueryNatExpr.casesOn   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctFinal.reprWholeQueryNatExpr.match_1._@.RMQ.Core.SuccinctFinalRAM._hyg.4110   (in content-tainted hosts: 1)
+  1 x RMQ.WordRAM.Program.evalR.match_5   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctFinal.WholeQueryNatReg.casesOn   (in content-tainted hosts: 0)
+  1 x Decidable.rec   (in content-tainted hosts: 1)
+  1 x Bool.decEq.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore.match_5   (in content-tainted hosts: 1)
+  1 x Nat.le.casesOn   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctFinal.WholeQueryInstr.evalGlobalWordTraceWithStore.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctSpace.FlatStoreComputation.readMany.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctClose.bpFringeCandGlobal.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.Cartesian.CartesianShape.casesOn   (in content-tainted hosts: 1)
+  1 x False.rec   (in content-tainted hosts: 1)
+  1 x Nat.decEq.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctSpace.consecutiveWordIndices.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctSpace.collectPayloadWords.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctFinal.WholeQueryInstr.rec   (in content-tainted hosts: 0)
+  1 x RMQ.WordRAM.reprTy.match_1._@.RMQ.Core.WordRAM._hyg.16   (in content-tainted hosts: 0)
+  1 x List.reverseAux.match_1   (in content-tainted hosts: 1)
+  1 x Option.rec   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctFinal.WholeQueryOptReg.casesOn   (in content-tainted hosts: 0)
+  1 x RMQ.SuccinctClose.bpFringeChunkFoldComputationFrom.match_1   (in content-tainted hosts: 1)
+  1 x List.replicate.match_1   (in content-tainted hosts: 1)
+  1 x List.range.loop.match_1   (in content-tainted hosts: 1)
+  1 x Nat.mod.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.WordRAM.Program.brecOn   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryCosted.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.WordRAM.TraceEvent.casesOn   (in content-tainted hosts: 0)
+  1 x List.getLast?.match_1   (in content-tainted hosts: 1)
+  1 x Eq.rec   (in content-tainted hosts: 1)
+  1 x List.get.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctFinal.WholeQueryNatReg.rec   (in content-tainted hosts: 0)
+  1 x RMQ.WordRAM.Ty.casesOn   (in content-tainted hosts: 0)
+  1 x RMQ.SuccinctSpace.bitsToNatLE.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.entryOfFields.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.readStorePayloadWordValue.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.RAM.boolSelectFrom.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.WordRAM.Program.evalR.match_1   (in content-tainted hosts: 1)
+  1 x WellFounded.rec   (in content-tainted hosts: 0)
+  1 x RMQ.SuccinctFinal.WholeQueryNatExpr.brecOn   (in content-tainted hosts: 1)
+  1 x RMQ.Succinct.rankPrefix.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.GenericSelect.relativeOffsetsOrZero.match_1   (in content-tainted hosts: 1)
+  1 x List.flatten.match_1   (in content-tainted hosts: 1)
+  1 x Nat.le.rec   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctSpace.flattenPayloadWords.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.WordRAM.TraceEvent.singletonSegmentMap.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.WordRAM.TraceEvent.rec   (in content-tainted hosts: 0)
+  1 x RMQ.SuccinctSpace.natToBitsLE.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctClose.bpFringeMergeCand.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom.match_1   (in content-tainted hosts: 1)
+  1 x RMQ.SuccinctFinal.WholeQueryOptReg.rec   (in content-tainted hosts: 0)
+  1 x RMQ.WordRAM.reprTraceEvent.match_1._@.RMQ.Core.WordRAM._hyg.749   (in content-tainted hosts: 0)
+  1 x Bool.and.match_1   (in content-tainted hosts: 1)
+  1 x Nat.add.match_1   (in content-tainted hosts: 1)

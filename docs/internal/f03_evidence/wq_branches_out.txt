@@ -1,0 +1,72 @@
+Q closure size = 917
+constants in Q whose value-closure reaches select/rankPrefix = 103
+constants in Q returning Bool/Prop/Sort (candidate branch conditions) = 114
+  of which CONTENT-DEPENDENT (reach a bit reader) = 3
+  of which size-only = 111
+
+== EVERY CONTENT-DEPENDENT BRANCH CONDITION IN THE CONTROLLER CLOSURE ==
+  BRANCH RMQ.GenericSelect.localIsSparseException :: ret=Bool mod=RMQ.Core.GenericSelect.Slots
+  BRANCH RMQ.GenericSelect.superIsLong :: ret=Bool mod=RMQ.Core.GenericSelect.Slots
+  BRANCH RMQ.GenericSelect.compactLocalEntryIsLive :: ret=Bool mod=RMQ.Core.GenericSelect.Entries
+
+== size-only Bool/Prop constants in Q (first 60, for calibration) ==
+  sizeonly Nat :: ret=Sort
+  sizeonly OfNat :: ret=Sort
+  sizeonly RMQ.SuccinctFinal.WholeQueryInstr :: ret=Sort
+  sizeonly RMQ.SuccinctFinal.WholeQueryState :: ret=Sort
+  sizeonly Unit :: ret=Sort
+  sizeonly PUnit :: ret=Sort
+  sizeonly RMQ.SuccinctFinal.WholeQueryNatReg :: ret=Sort
+  sizeonly Nat.below :: ret=Sort
+  sizeonly PProd :: ret=Sort
+  sizeonly Sub :: ret=Sort
+  sizeonly HSub :: ret=Sort
+  sizeonly outParam :: ret=Sort
+  sizeonly Bool.false :: ret=Bool
+  sizeonly Bool :: ret=Sort
+  sizeonly Add :: ret=Sort
+  sizeonly HAdd :: ret=Sort
+  sizeonly List :: ret=Sort
+  sizeonly List.below :: ret=Sort
+  sizeonly Not :: ret=Sort
+  sizeonly False :: ret=Sort
+  sizeonly Bool.true :: ret=Bool
+  sizeonly Bool.noConfusionType :: ret=Sort
+  sizeonly Eq :: ret=Sort
+  sizeonly Decidable :: ret=Sort
+  sizeonly Nat.ble :: ret=Bool
+  sizeonly Nat.le :: ret=Sort
+  sizeonly LE.le :: ret=Sort
+  sizeonly LE :: ret=Sort
+  sizeonly Nat.lt :: ret=Sort
+  sizeonly LT.lt :: ret=Sort
+  sizeonly LT :: ret=Sort
+  sizeonly Div :: ret=Sort
+  sizeonly HDiv :: ret=Sort
+  sizeonly GE.ge :: ret=Sort
+  sizeonly SizeOf :: ret=Sort
+  sizeonly WellFoundedRelation.rel :: ret=Sort
+  sizeonly WellFoundedRelation :: ret=Sort
+  sizeonly InvImage :: ret=Sort
+  sizeonly Acc :: ret=Sort
+  sizeonly WellFounded :: ret=Sort
+  sizeonly Append :: ret=Sort
+  sizeonly HAppend :: ret=Sort
+  sizeonly RMQ.Cartesian.CartesianShape :: ret=Sort
+  sizeonly RMQ.Cartesian.CartesianShape.below :: ret=Sort
+  sizeonly Mul :: ret=Sort
+  sizeonly HMul :: ret=Sort
+  sizeonly RMQ.SuccinctSpace.BoundedPayloadWordStore :: ret=Sort
+  sizeonly RMQ.SuccinctSpace.PayloadWordStore :: ret=Sort
+  sizeonly Inhabited :: ret=Sort
+  sizeonly Array :: ret=Sort
+  sizeonly Nat.noConfusionType :: ret=Sort
+  sizeonly HEq :: ret=Sort
+  sizeonly Fin :: ret=Sort
+  sizeonly GetElem :: ret=Sort
+  sizeonly Option :: ret=Sort
+  sizeonly GetElem? :: ret=Sort
+  sizeonly RMQ.SuccinctRank.CanonicalRankWordBridge :: ret=Sort
+  sizeonly List.Mem :: ret=Sort
+  sizeonly Nat.beq :: ret=Bool
+  sizeonly Mod :: ret=Sort

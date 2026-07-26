@@ -1,0 +1,9 @@
+S1 n=2 shapes=2 pairs=3 FOOTPRINT_CONST=true VALUE_CONST=true BPCODES_ALL_EQUAL=false sampleFootprintLens=[32, 32, 32] firstDiffPair=
+S2 n=2 shapes=2 pairs=3 FOOTPRINT_CONST=true VALUE_CONST=true BPCODES_ALL_EQUAL=false sampleFootprintLens=[35, 35, 35] firstDiffPair=
+S1 n=3 shapes=5 pairs=6 FOOTPRINT_CONST=true VALUE_CONST=true BPCODES_ALL_EQUAL=false sampleFootprintLens=[32, 32, 32, 32, 32, 32] firstDiffPair=
+S2 n=3 shapes=5 pairs=6 FOOTPRINT_CONST=true VALUE_CONST=true BPCODES_ALL_EQUAL=false sampleFootprintLens=[35, 35, 35, 35, 35, 35] firstDiffPair=
+S1 n=4 shapes=14 pairs=10 FOOTPRINT_CONST=true VALUE_CONST=true BPCODES_ALL_EQUAL=false sampleFootprintLens=[34, 34, 34, 34, 34, 34] firstDiffPair=
+S2 n=4 shapes=14 pairs=10 FOOTPRINT_CONST=true VALUE_CONST=true BPCODES_ALL_EQUAL=false sampleFootprintLens=[39, 39, 39, 39, 39, 39] firstDiffPair=
+S1 n=5 shapes=42 pairs=15 FOOTPRINT_CONST=true VALUE_CONST=true BPCODES_ALL_EQUAL=false sampleFootprintLens=[36, 36, 36, 36, 36, 36] firstDiffPair=
+S2 n=5 shapes=42 pairs=15 FOOTPRINT_CONST=true VALUE_CONST=true BPCODES_ALL_EQUAL=false sampleFootprintLens=[41, 41, 41, 41, 41, 41] firstDiffPair=
+S1 n=6 shapes=132 pairs=21 FOOTPRINT_CONST=true VALUE_CONST=true BPCODES_ALL_EQUAL=false sampleFootprintLens=[34, 34, 34, 34, 34, 34] firstDiffPair=

@@ -1,0 +1,9 @@
+=== TIER C: mismatched REAL store ===
+-- (1) LIVENESS: wq A (real A) vs wq B (real B), same size, same endpoints
+  n=4 l/r x6 done: liveCmp=24 distinct=24
+  n=5 l/r x6 done: liveCmp=48 distinct=48
+  n=6 l/r x6 done: liveCmp=72 distinct=72
+  n=7 l/r x6 done: liveCmp=96 distinct=96
+  n=8 l/r x6 done: liveCmp=120 distinct=120
+  n=12 l/r x6 done: liveCmp=144 distinct=144
+  n=16 l/r x6 done: liveCmp=168 distinct=168

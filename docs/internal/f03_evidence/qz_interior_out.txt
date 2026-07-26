@@ -1,0 +1,4 @@
+-- branch reachable at tiny n (blockCount is the whole legal range) --
+n=3 macroSize=4 blockCount=1 branchesReachableInRange=[B2-localTwoSpan, B1-zero]
+n=5 macroSize=9 blockCount=1 branchesReachableInRange=[B2-localTwoSpan, B1-zero]
+n=7 macroSize=9 blockCount=2 branchesReachableInRange=[B2-localTwoSpan, B1-zero]

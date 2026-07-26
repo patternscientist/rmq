@@ -1,0 +1,130 @@
+IS_STRUCTURE_CartesianShape false
+HAS_decEq false
+HAS_instDecidableEq true
+HAS_repr false
+
+################ ROOT-A shape-taking store-param whole query (coordinator's root) ################
+roots = [RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore]
+CLOSURE_SIZE 917
+KINDS def=596 theorem=115 rec=19 ctor=108 induct=79 axiom=0 opaque=0 quot=0 missing=0
+-- AXIOMS reached (value absent; closure stops here) --
+-- OPAQUE reached (coordinator's `value?` would have returned none here) --
+-- QUOT reached --
+-- MISSING --
+-- @[implemented_by] / @[extern] on reached constants --
+   EXTERN Nat.add
+   EXTERN Nat.decLt
+   EXTERN Nat.decLe
+   EXTERN Nat.ble
+   EXTERN Nat.mul
+   EXTERN Nat.decEq
+   EXTERN Nat.beq
+   EXTERN Nat.sub
+   EXTERN Nat.pred
+   EXTERN Nat.div
+   EXTERN Nat.mod
+   EXTERN Nat.modCore
+   EXTERN Nat.log2
+   EXTERN Nat.pow
+   EXTERN Array.mk
+   EXTERN Array.size
+   EXTERN Array.toList
+   EXTERN Array.getInternal
+   EXTERN Array.get!Internal
+   COMPILER_OVERRIDE_COUNT 19
+-- constants whose VALUE directly references CartesianShape.rec / ctors --
+   PRIM RMQ.Cartesian.CartesianShape.bpCode :: #[RMQ.Cartesian.CartesianShape.empty, RMQ.Cartesian.CartesianShape.node] :: kind=def mod=RMQ.Core.Shape
+   PRIM RMQ.Cartesian.CartesianShape.brecOn :: #[RMQ.Cartesian.CartesianShape.rec, RMQ.Cartesian.CartesianShape.empty, RMQ.Cartesian.CartesianShape.empty, RMQ.Cartesian.CartesianShape.node, RMQ.Cartesian.CartesianShape.node] :: kind=def mod=RMQ.Core.Shape
+   PRIM RMQ.Cartesian.CartesianShape.below :: #[RMQ.Cartesian.CartesianShape.rec] :: kind=def mod=RMQ.Core.Shape
+   PRIM RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255 :: #[RMQ.Cartesian.CartesianShape.empty, RMQ.Cartesian.CartesianShape.node] :: kind=def mod=RMQ.Core.Shape
+   PRIM RMQ.Cartesian.CartesianShape.casesOn :: #[RMQ.Cartesian.CartesianShape.empty, RMQ.Cartesian.CartesianShape.node, RMQ.Cartesian.CartesianShape.rec] :: kind=def mod=RMQ.Core.Shape
+   PRIM RMQ.Cartesian.CartesianShape.size :: #[RMQ.Cartesian.CartesianShape.empty, RMQ.Cartesian.CartesianShape.node] :: kind=def mod=RMQ.Core.Shape
+   PRIMITIVE_SHAPE_OBSERVER_COUNT 6
+-- leakage suspects present in closure --
+   absent  RMQ.Cartesian.instDecidableEqCartesianShape
+   absent  RMQ.Cartesian.CartesianShape.decEq
+   absent  RMQ.Cartesian.reprCartesianShape
+   absent  RMQ.Cartesian.instReprCartesianShape
+   absent  Classical.choice
+   absent  Classical.propDecidable
+   absent  Classical.dec
+   absent  Classical.em
+   absent  sorryAx
+   absent  Quot.lift
+   absent  Quot.mk
+   absent  Quot.ind
+   absent  Quot.sound
+   PRESENT WellFounded.fix
+   PRESENT WellFounded.fixF
+   PRESENT Decidable.decide
+   absent  decide
+
+################ ROOT-B PUBLIC entry queryTraceResultWithStore ################
+roots = [RMQ.SuccinctClassic.queryTraceResultWithStore]
+CLOSURE_SIZE 1013
+KINDS def=659 theorem=123 rec=22 ctor=121 induct=88 axiom=0 opaque=0 quot=0 missing=0
+-- AXIOMS reached (value absent; closure stops here) --
+-- OPAQUE reached (coordinator's `value?` would have returned none here) --
+-- QUOT reached --
+-- MISSING --
+-- @[implemented_by] / @[extern] on reached constants --
+   EXTERN Nat.add
+   EXTERN Nat.decLt
+   EXTERN Nat.decLe
+   EXTERN Nat.ble
+   EXTERN Nat.mul
+   EXTERN Nat.decEq
+   EXTERN Nat.beq
+   EXTERN Nat.sub
+   EXTERN Nat.pred
+   EXTERN Nat.div
+   EXTERN Nat.mod
+   EXTERN Nat.modCore
+   EXTERN Nat.log2
+   EXTERN Nat.pow
+   EXTERN Array.mk
+   EXTERN Array.size
+   EXTERN Array.toList
+   EXTERN Array.getInternal
+   EXTERN Array.get!Internal
+   EXTERN panicCore
+   EXTERN String.append
+   EXTERN String.mk
+   IMPLEMENTED_BY Nat.repr -> Nat.reprFast
+   EXTERN Char.ofNatAux
+   EXTERN UInt32.ofBitVec
+   EXTERN Int.sub
+   EXTERN Int.add
+   EXTERN Int.ofNat
+   EXTERN Int.negSucc
+   EXTERN Int.neg
+   EXTERN Int.decLt
+   EXTERN Int.decNonneg
+   COMPILER_OVERRIDE_COUNT 32
+-- constants whose VALUE directly references CartesianShape.rec / ctors --
+   PRIM RMQ.Cartesian.CartesianShape.bpCode :: #[RMQ.Cartesian.CartesianShape.empty, RMQ.Cartesian.CartesianShape.node] :: kind=def mod=RMQ.Core.Shape
+   PRIM RMQ.Cartesian.CartesianShape.brecOn :: #[RMQ.Cartesian.CartesianShape.rec, RMQ.Cartesian.CartesianShape.empty, RMQ.Cartesian.CartesianShape.empty, RMQ.Cartesian.CartesianShape.node, RMQ.Cartesian.CartesianShape.node] :: kind=def mod=RMQ.Core.Shape
+   PRIM RMQ.Cartesian.CartesianShape.below :: #[RMQ.Cartesian.CartesianShape.rec] :: kind=def mod=RMQ.Core.Shape
+   PRIM RMQ.Cartesian.reprCartesianShape.match_1._@.RMQ.Core.Shape._hyg.255 :: #[RMQ.Cartesian.CartesianShape.empty, RMQ.Cartesian.CartesianShape.node] :: kind=def mod=RMQ.Core.Shape
+   PRIM RMQ.Cartesian.CartesianShape.casesOn :: #[RMQ.Cartesian.CartesianShape.empty, RMQ.Cartesian.CartesianShape.node, RMQ.Cartesian.CartesianShape.rec] :: kind=def mod=RMQ.Core.Shape
+   PRIM RMQ.Cartesian.CartesianShape.size :: #[RMQ.Cartesian.CartesianShape.empty, RMQ.Cartesian.CartesianShape.node] :: kind=def mod=RMQ.Core.Shape
+   PRIM RMQ.Cartesian.shapeRange._unary :: #[RMQ.Cartesian.CartesianShape.empty, RMQ.Cartesian.CartesianShape.node] :: kind=def mod=RMQ.Core.Shape
+   PRIMITIVE_SHAPE_OBSERVER_COUNT 7
+-- leakage suspects present in closure --
+   absent  RMQ.Cartesian.instDecidableEqCartesianShape
+   absent  RMQ.Cartesian.CartesianShape.decEq
+   absent  RMQ.Cartesian.reprCartesianShape
+   absent  RMQ.Cartesian.instReprCartesianShape
+   absent  Classical.choice
+   absent  Classical.propDecidable
+   absent  Classical.dec
+   absent  Classical.em
+   absent  sorryAx
+   absent  Quot.lift
+   absent  Quot.mk
+   absent  Quot.ind
+   absent  Quot.sound
+   PRESENT WellFounded.fix
+   PRESENT WellFounded.fixF
+   PRESENT Decidable.decide
+   absent  decide

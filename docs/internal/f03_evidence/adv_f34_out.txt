@@ -1,0 +1,71 @@
+== EXHAUSTIVE (my own enumerator): n, #shapes, #distinct bpCodes, distinct (sup,blk) pairs, allSizesOk, matchesNOnlyFormula ==
+(0, (1, (1, ([(2, 2)], (true, true)))))
+(1, (1, (1, ([(4, 12)], (true, true)))))
+(2, (2, (2, ([(6, 16)], (true, true)))))
+(3, (5, (5, ([(6, 24)], (true, true)))))
+(4, (14, (14, ([(8, 30)], (true, true)))))
+(5, (42, (42, ([(8, 30)], (true, true)))))
+(6, (132, (132, ([(8, 40)], (true, true)))))
+(7, (429, (429, ([(8, 40)], (true, true)))))
+(8, (1430, (1430, ([(10, 40)], (true, true)))))
+(9, (4862, (4862, ([(10, 40)], (true, true)))))
+(10, (16796, (16796, ([(10, 50)], (true, true)))))
+== ENUMERATOR CROSS-CHECK: n, myCount, repoCount, sameSet ==
+0 1 1 true
+1 1 1 true
+2 2 2 true
+3 5 5 true
+4 14 14 true
+5 42 42 true
+6 132 132 true
+7 429 429 true
+8 1430 1430 true
+== LARGE-n EXTREMES: n, allSameSize, distinct (sup,blk) pairs, #distinct bpCodes in family, matchesNOnlyFormula ==
+(0, (true, ([(2, 2)], (1, true))))
+(1, (true, ([(4, 12)], (1, true))))
+(2, (true, ([(6, 16)], (2, true))))
+(3, (true, ([(6, 24)], (4, true))))
+(5, (true, ([(8, 30)], (8, true))))
+(8, (true, ([(10, 40)], (8, true))))
+(13, (true, ([(20, 60)], (8, true))))
+(17, (true, ([(12, 72)], (8, true))))
+(31, (true, ([(24, 132)], (8, true))))
+(32, (true, ([(28, 120)], (8, true))))
+(33, (true, ([(28, 120)], (8, true))))
+(63, (true, ([(42, 228)], (8, true))))
+(64, (true, ([(48, 238)], (8, true))))
+(65, (true, ([(48, 238)], (8, true))))
+(100, (true, ([(64, 364)], (8, true))))
+(127, (true, ([(64, 448)], (8, true))))
+(128, (true, ([(72, 406)], (8, true))))
+(129, (true, ([(72, 406)], (8, true))))
+(150, (true, ([(72, 476)], (8, true))))
+(200, (true, ([(90, 630)], (8, true))))
+(255, (true, ([(126, 798)], (8, true))))
+(256, (true, ([(120, 728)], (8, true))))
+(257, (true, ([(120, 728)], (8, true))))
+(300, (true, ([(140, 854)], (8, true))))
+== PUBLIC ENTRY (Cartesian.shape xs): n, distinct pairs over 6 different xs of that length, #distinct bpCodes ==
+1 [(4, 12)] 1
+2 [(6, 16)] 2
+3 [(6, 24)] 3
+4 [(8, 30)] 4
+5 [(8, 30)] 4
+10 [(10, 50)] 5
+20 [(24, 84)] 5
+50 [(42, 180)] 5
+100 [(64, 364)] 5
+200 [(90, 630)] 5
+C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-recursing-cerf-300c92/09e21f10-b494-4393-9fb6-2f4ad4dedb1c/scratchpad/adv_f34_refute.lean:143:4: warning: This simp argument is unused:
+  builtRelativeSplitBPCloseRankBlocksPerSuper
+
+Hint: Omit it from the simp argument list.
+  simp [builtRelativeSplitBPCloseRankWordSize, b̵u̵i̵l̵t̵R̵e̵l̵a̵t̵i̵v̵e̵S̵p̵l̵i̵t̵B̵P̵C̵l̵o̵s̵e̵R̵a̵n̵k̵B̵l̵o̵c̵k̵s̵P̵e̵r̵S̵u̵p̵e̵r̵,̵builtRelativeSplitBPCloseRankBlockWidth,
+      Cartesian.CartesianShape.bpCode_length]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'AdvF34.adv_sup_closed' depends on axioms: [propext, Quot.sound]
+'AdvF34.adv_blk_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AdvF34.adv_same_size_same_value' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AdvF34.adv_public_entry_is_function_of_n' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AdvF34.adv_public_entry_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]
