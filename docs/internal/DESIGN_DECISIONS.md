@@ -5076,3 +5076,54 @@ Consequences and evidence:
   projects only `flagBits.length` and rank geometry. It still governs the
   `EG-CP-F01` K = 1 vs K = 3 header decision.
 - No theorem, matrix, contract, accepted blob, or public claim changes.
+
+## DD-20260726-003: EG-CP-F03 is discharged by a capstone theorem, not by an inventory
+
+Status: Coordinator decision recorded 2026-07-26 under the standing autonomous
+design-decision authority. Records what was built and the one question left to
+the owner. **Confers no row acceptance.**
+
+Date: 2026-07-26
+
+Context:
+
+`EG-CP-F03`'s evidence column asks for an "exhaustive typed inventory for every
+current logical-read source and universal consumers, not representative rows".
+The campaign produced a source inventory and it was refuted mid-campaign: the
+instrument classified 6 of 55 content-dependent constants, was structurally
+blind to controller leaf L2, and its syntactic test had a false-clean mode.
+
+Decision:
+
+Discharge the row with `T4_wholeQuery_trace_size_only` and its public-entry
+corollary, now in `RMQ/Core/SuccinctFinal/RAM/GeometryClosure.lean`, rather than
+by rebuilding the inventory.
+
+Rationale:
+
+The capstone is strictly stronger, by contraposition over the whole executed
+surface: if any data-dependent offset, length, branch, divisor or table selector
+failed to factor through the allowed inputs, there would exist two equal-size
+shapes, a store and endpoints on which the executed program diverged. The
+theorem says no such triple exists. An inventory proves the same thing only if
+the enumeration is complete AND every per-item argument is valid -- and this
+campaign's inventory demonstrably failed both halves.
+
+Alternatives rejected:
+
+- Rebuild the 55-constant inventory. Weaker, and its completeness would rest on
+  the same instrument class that already failed once here.
+- Claim the row closed without recording the clause mismatch. That is exactly
+  the promotion-past-quantifiers failure the project has already paid for.
+
+Consequences and evidence:
+
+- **Left to the owner:** whether a theorem that subsumes the inventory satisfies
+  a clause that names the inventory. Recorded, not assumed away.
+- The theorems are about the SUPPLIED-STORE surface. The store-free surface is
+  genuinely content-dependent (two length-10 lists give 96 versus 79 events), so
+  no derived claim may say "the public query" without "at a shared supplied
+  store". A control confirms the store-free route does not typecheck against the
+  corollary.
+- Probe counting is `EG-CP-F08`'s row, not this one, per both row texts.
+- No accepted blob, matrix, contract, or public claim changes.

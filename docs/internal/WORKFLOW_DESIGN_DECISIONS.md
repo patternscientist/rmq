@@ -6518,3 +6518,43 @@ Consequences:
   vacuity and for sibling collapse. Axioms alone do not establish that a theorem
   says the intended thing.
 - No theorem, matrix, contract, or public claim changes.
+
+## WDD-20260726-004: a new leaf module is the safe shape for landing proof work
+
+Status: Coordinator decision recorded 2026-07-26. Binds how future Stage F proof
+deltas enter `RMQ/`.
+
+Date: 2026-07-26
+
+Context:
+
+The F03 capstone needed to move from scratch files into the library. The obvious
+route -- adding theorems next to the definitions they are about, across half a
+dozen existing modules -- risks breaking dependents, and every failed attempt
+costs a full CI cycle on a protected branch.
+
+Decision:
+
+Land it as ONE new leaf module, `RMQ/Core/SuccinctFinal/RAM/GeometryClosure.lean`,
+plus exactly one import line in `RMQ.lean`. No existing source file otherwise
+touched.
+
+Rationale:
+
+Nothing imports a leaf, so it cannot break a dependent. The import line is what
+pulls it into the `lean_lib RMQ` glob, which makes the edit load-bearing and
+checkable in isolation: build the module alone, then build the library. Both were
+run green (261 targets) before the branch was pushed, by the coordinator and
+independently by two agents who each restored the build worktree afterwards.
+
+Consequences:
+
+- A proof delta of this shape can be reviewed as a single file with a
+  one-line diff elsewhere, which is what makes it auditable.
+- Verify with `lake env lean` on the module first (cheap, no rebuild), then a
+  full `lake build` before pushing. `lake env lean` alone does NOT establish that
+  the module builds as a target.
+- Note the import edit added `RMQ.Core.SuccinctRMQClassic` transitively to the
+  root library closure -- an existing in-tree module, but a new edge. Future
+  leaf modules should state any new edge they introduce.
+- No theorem, matrix, contract, or public claim changes.
