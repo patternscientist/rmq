@@ -6477,3 +6477,44 @@ Consequences:
   arms at n about 3457, `superIsLong` at n about 13,276 -- bound what any
   executable harness can witness, and every future Stage F row states its wall.
 - No theorem, matrix, contract, or public claim changes.
+
+## WDD-20260726-003: when a verification lane dies, the coordinator verifies before reporting
+
+Status: Coordinator decision recorded 2026-07-26. Binds how agent-produced
+proofs are reported.
+
+Date: 2026-07-26
+
+Context:
+
+The T1 workflow lost five of fourteen agents to upstream `529 Overloaded`
+errors, including **three of the verification lanes** and the lane assigned the
+entry-list length obligations. The surviving mapping lane returned a complete,
+typechecking proof of T1. Reporting that as verified would have rested a
+decisive endgame result on a single unreviewed agent.
+
+Decision:
+
+The coordinator verified directly before reporting, and the report names which
+lanes died. Specifically: re-ran the file, re-printed axioms on the final
+theorems rather than the components, exhibited two distinct bitvectors
+satisfying the hypotheses, instantiated the route corollary at two equal-size
+shapes with provably different `bpCode`, wrote an expected-type pin
+independently of the theorem's declaration and inhabited it with the theorem
+value alone, and checked an equal-size-not-equal-shape consumer.
+
+Rationale:
+
+The failure mode this project has already paid for is a claim resting on
+evidence nobody independently checked. A dead verification lane is
+indistinguishable, in the final report, from a lane that passed -- unless the
+coordinator either re-runs it or says it is missing. Both were done here.
+
+Consequences:
+
+- Agent infrastructure failures are reported as such, never silently absorbed.
+  The five losses are named in the commit message and the result document.
+- A claimed proof is not a proof until the statement has been checked for
+  vacuity and for sibling collapse. Axioms alone do not establish that a theorem
+  says the intended thing.
+- No theorem, matrix, contract, or public claim changes.

@@ -5014,3 +5014,65 @@ Consequences and evidence:
   established. `docs/internal/f03_evidence/README.md` states this, as does
   section 8 of the campaign report.
 - No theorem, matrix, contract, accepted blob, or public claim changes.
+
+## DD-20260726-002: T1 is proved as a congruence, not as a probe-provenance argument
+
+Status: Coordinator decision recorded 2026-07-26 under the standing autonomous
+design-decision authority. Records the proof strategy actually taken and its
+scope. **Confers no acceptance**; the proof is not in `RMQ/` and `EG-CP-F03`
+remains OPEN.
+
+Date: 2026-07-26
+
+Context:
+
+T1 -- that the select-close leaf consumes its bitvector only through
+`bits.length` and `occurrenceCount bits target` -- was the decisive residual of
+the F03 campaign. Two routes were available. The coordinator's scouted route was
+a *probe-provenance* argument: show that the long/sparse branch at
+`ChargedRankSelectLeafTrace.lean:1176` tests a decoded probe reply rather than
+`GenericSelect.superIsLong`, hence the frontier predicate never runs at query
+time. The alternative was a plain congruence over the whole body.
+
+Decision:
+
+Take the congruence route. `T1_L1_size_only` is proved by showing that once the
+four scalar geometry fields and the two flag-list lengths agree, the two
+evaluations coincide step for step.
+
+Rationale:
+
+The congruence is strictly stronger and strictly simpler. It holds **whatever
+the branches do**, so it needs no claim about which arm executes, no appeal to
+the store's long-flag segments, and -- decisively -- no reference to the
+`superIsLong` crossover at n about 13,276. That is what makes T1 threshold-free,
+which was the entire reason T1 and not the bounded-regime stopgap was named the
+decisive obligation. A probe-provenance proof would have re-imported a regime
+argument into a statement whose value is that it has none.
+
+Two structural facts make it cheap: `bits` occurs exactly once in the whole body
+of `bpChunkedSelectTraceResultWithStore` (the guard at
+`ChargedRankSelectLeafTrace.lean:1168`), and `PayloadWordStore.readProgram` binds
+its store as `_store`, unused (`RMQ/Core/SuccinctSpace/WordStoreRAM.lean:26-29`),
+so the entry-table reader congruence is `rfl` with no axioms at all.
+
+Alternatives rejected:
+
+- Probe-provenance. True, and independently worth recording, but it proves less
+  and drags a regime claim into a threshold-free result.
+- The bounded-regime stopgap (`superSpan` bound). Explicitly rejected by the
+  campaign report as not discharging the asymptotic claim.
+
+Consequences and evidence:
+
+- The proof is universal in `bits1`, `bits2`, `target`, `store`, `layout`, the
+  segment parameters and `idx`; no size threshold, no regime restriction.
+- Axioms `[propext, Classical.choice, Quot.sound]`; no `sorryAx`, no
+  `native_decide`. Verified non-vacuous by the coordinator: hypotheses are
+  satisfiable off the diagonal and the route corollary was instantiated at two
+  equal-size shapes with provably different `bpCode`.
+- The campaign's open question about `longSuperRelativeEntries` and
+  `sparseDirectory.relativeEntries` is **not on T1's path** -- the trace function
+  projects only `flagBits.length` and rank geometry. It still governs the
+  `EG-CP-F01` K = 1 vs K = 3 header decision.
+- No theorem, matrix, contract, accepted blob, or public claim changes.
