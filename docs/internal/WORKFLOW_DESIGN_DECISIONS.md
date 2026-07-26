@@ -6655,3 +6655,49 @@ Consequences:
 - Whoever launches A11 must check the auditor is not A10 and preferably a third
   model family, distinct from both the candidate's author and A10.
 - No theorem, matrix acceptance, contract, or public claim changes.
+
+## WDD-20260726-007: pinning an audit target by SHA forces a two-commit shape
+
+Status: Coordinator decision recorded 2026-07-26. Binds how audit prompts that
+pin an exact target commit are committed.
+
+Date: 2026-07-26
+
+Context:
+
+An audit prompt names its target commit by SHA. If the prompt lives in that same
+commit, the SHA cannot be known when the prompt is written -- amending to insert
+it changes the SHA again. The A11 prompt therefore sits in a second commit,
+after the target it pins.
+
+Decision:
+
+Audit prompts that pin an exact target SHA are committed in their own commit,
+immediately after the target. That commit must carry its own design-log entry,
+because `design_decision_check.ps1` classifies `docs/internal/e1_arch_prompts/`
+as workflow-sensitive and CI evaluates **`HEAD~1..HEAD`**, one commit at a time.
+
+Rationale:
+
+Two things went wrong here and both are worth recording. First, the structural
+one: the two-commit shape is forced by SHA pinning, not chosen, and it has the
+side benefit that the commissioning artifact is not inside the tree it
+commissions an audit of.
+
+Second, the process one: **this is a recurrence of `WDD-20260725-003` --
+validate exactly the range CI validates.** The coordinator ran
+`design_decision_check.ps1 -Base HEAD~2 -Strict`, which passed because the
+design-log entry sat in the first of the two commits, while CI's `-Base HEAD~1`
+sees only the second and failed. A cumulative range is not the range CI checks.
+Recording the repeat rather than re-learning it a third time.
+
+Consequences:
+
+- Every commit that touches a workflow-sensitive path carries its own entry.
+  Batching entries into a sibling commit does not satisfy the gate.
+- Local verification of a multi-commit branch runs the check at `-Base HEAD~1`
+  for each commit, not once over the whole range.
+- The A10 and A11 prompt files that appear in this branch are commissioning
+  artifacts, not evidence; an auditor may read them but may not cite them as
+  support for any claim they audit.
+- No theorem, matrix acceptance, contract, or public claim changes.
