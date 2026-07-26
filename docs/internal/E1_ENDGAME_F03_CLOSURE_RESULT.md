@@ -1,5 +1,28 @@
 # EG-CP-F03 geometry closure — result
 
+> **AMENDED 2026-07-26 after the A10 fresh-blind audit. The title's word
+> "closure" describes the theorem, not the row.**
+>
+> **`EG-CP-F03` is OPEN in both letter and spirit.** The A10 audit
+> (`audit_reports/2026-07-26_A10_f03_geometry_closure.md`) sustained all four of
+> its findings and the coordinator adopted them in full (DD-20260726-004). In
+> particular the contraposition argument in section 2 below is **withdrawn as
+> unsound**: a content-dependent value can be dead or can cancel before any
+> emitted event, so equal traces do not entail that every intermediate
+> calculation factors through permitted inputs. Section 2's claim that the
+> capstone is "strictly stronger" than the inventory is wrong; the two are
+> incomparable.
+>
+> What stands: the Lean results are sound, non-vacuous, on the real
+> five-instruction route, and cover all three leaves and both L2 arms. The audit
+> found no P0 and no trust failure. Since the audit, the shared-whole-store
+> hypothesis has been weakened to ordered-read-footprint agreement
+> (`queryTraceResultWithStore_length_and_footprint`), with an in-tree
+> anti-vacuity witness.
+>
+> Read sections 1, 3 and 4 as accurate. Read section 2 as retracted reasoning
+> and section 5 as superseded by DD-20260726-004.
+
 Coordinator: C06 (Claude runtime). Date: 2026-07-26.
 Governed base: `d988166` (`origin/main`).
 Row: `EG-CP-F03-GEOMETRY-CLOSURE`, `docs/internal/RMQ_ENDGAME_ROADMAP.md:374`.
@@ -146,12 +169,28 @@ Executed evidence that it reads, and that the shape argument is not a phantom:
 
 ## 5. What remains
 
-**Inside F03's scope: nothing mathematical.** Every obligation in the campaign's
-section 5.2 that F03 owns — T1, T3, T4 and the Tier-0 port — is discharged.
+**Superseded by DD-20260726-004.** The sentence originally here — "inside F03's
+scope: nothing mathematical" — was wrong, and the A10 audit says why. What is
+true is narrower: every obligation the *campaign* enumerated in its section 5.2
+(T1, T3, T4, the Tier-0 port) is discharged. The row asks for more than the
+campaign enumerated.
 
-**Recorded as remaining, and not claimed as closed:**
+**Remaining, and NOT claimed as closed:**
 
-1. **The inventory artifact** (section 2 above). Owner call.
+0. **The exhaustive typed inventory with universal consumers** — the row's own
+   minimum evidence. No such artifact exists. Closing the row requires either
+   building it, or an explicit owner amendment of the row followed by a fresh
+   audit against the amended quantifiers. That order is the auditor's
+   recommendation and the coordinator adopts it.
+0b. **Header words are neither typed nor separately accounted** (A10-F03-04).
+   `EG-CP-F01`/`F02` own the schema, but that does not discharge this row's own
+   input language.
+0c. **The store is an arbitrary total function, not `memory xs`** of the packed
+   model contract (`RMQ_ENDGAME_ROADMAP.md:327-338`). The footprint composition
+   added after the audit addresses the prior-probe half of A10-F03-03; binding
+   the store to a packed memory remains open and is coupled to `EG-CP-F01`/`F04`.
+
+1. **The inventory artifact** (section 2 above, whose rationale is withdrawn).
 2. **Probe counting is `EG-CP-F08`'s row, not this one.** The row texts are
    explicit: F03 covers offsets, lengths, branches, divisors and table selectors;
    the `n`-independent cap lives in `EG-CP-F08-PHYSICAL-CODEC-AND-CAP`

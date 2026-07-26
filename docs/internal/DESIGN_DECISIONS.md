@@ -5079,6 +5079,12 @@ Consequences and evidence:
 
 ## DD-20260726-003: EG-CP-F03 is discharged by a capstone theorem, not by an inventory
 
+> **SUPERSEDED IN PART by DD-20260726-004 (2026-07-26).** The "strictly
+> stronger" rationale below is **withdrawn**: it is unsound. The A10 fresh-blind
+> audit showed the contraposition fails for observationally masked values, and
+> the row is **not** discharged by the capstone. Read this entry only as the
+> record of what was built; read DD-20260726-004 for the corrected standing.
+
 Status: Coordinator decision recorded 2026-07-26 under the standing autonomous
 design-decision authority. Records what was built and the one question left to
 the owner. **Confers no row acceptance.**
@@ -5127,3 +5133,149 @@ Consequences and evidence:
   corollary.
 - Probe counting is `EG-CP-F08`'s row, not this one, per both row texts.
 - No accepted blob, matrix, contract, or public claim changes.
+
+## DD-20260726-004: withdraw the "strictly stronger" rationale; EG-CP-F03 stays open
+
+Status: Coordinator decision recorded 2026-07-26, disposing the A10 fresh-blind
+audit. Supersedes in part DD-20260726-003. Records a **retraction**: the
+coordinator's own argument was unsound.
+
+Date: 2026-07-26
+
+Context:
+
+DD-20260726-003 argued that `T4_wholeQuery_trace_size_only` discharges
+`EG-CP-F03` and is "strictly stronger by contraposition" than the exhaustive
+typed inventory the row's evidence column names. The A10 fresh-blind audit
+(`docs/internal/audit_reports/2026-07-26_A10_f03_geometry_closure.md`, finding
+A10-F03-01) refuted that argument.
+
+Decision:
+
+**The contraposition is withdrawn and `EG-CP-F03` is recorded as OPEN in both
+letter and spirit.**
+
+Rationale:
+
+The contraposition assumed that any value failing to factor through the allowed
+inputs would be observable in the trace. That is false. A content-dependent
+intermediate offset, length, branch, divisor or selector can be dead code, or
+can cancel before any emitted event, and remain invisible to every congruence in
+the module. So equal traces under all shared stores do **not** entail that each
+intermediate calculation factors through permitted inputs.
+
+The correct relation is that the two are incomparable: the capstone is stronger
+on observable behaviour, the inventory is stronger on syntactic enumeration.
+"Strictly stronger" was wrong in one direction and should not have been written.
+
+Findings sustained in full: A10-F03-01 (no inventory artifact exists),
+A10-F03-02 (shipped scope language exceeded the theorem), A10-F03-03 (a shared
+whole store is not the frozen prior-probe dependency model), A10-F03-04 (header
+words are neither typed nor separately accounted).
+
+One correction to the audit, which narrows but does not overturn A10-F03-03: the
+report states that the public theorems "neither export a sequential prior-reply
+invariant". True of the module's own theorems, but
+`RMQ.SuccinctClassic.queryTraceResultWithStore_eq_of_orderedReadFootprint`
+(`RMQ/Core/SuccinctRMQClassic.lean:1298`) predates the delta at `d09bed7` and is
+exported as the headline
+`RMQ.Headlines.listIntSuccinctRMQQueryTraceResultWithStoreEqOfOrderedReadFootprint`.
+The auditor found the private predicate at `SuccinctFinalStoreParam.lean:202-209`
+and not this one. The composition was genuinely absent from the delta; it is now
+`queryTraceResultWithStore_length_and_footprint`, with an in-tree anti-vacuity
+witness showing the footprint hypothesis admits stores that differ at every
+unprobed address.
+
+Consequences and evidence:
+
+- The module docstring no longer claims to discharge the row and no longer
+  describes its hypothesis as "prior probe replies"; it carries an explicit
+  "What this does not establish" section naming all four audit findings.
+- `EG-CP-F03` may not be cited as closed. Closing it requires either the
+  exhaustive typed inventory with universal consumers, or an explicit owner
+  amendment of the row followed by a fresh audit against the amended
+  quantifiers -- the auditor's own recommended order, which the coordinator
+  adopts.
+- No theorem was retracted. The Lean results are sound, non-vacuous, on the real
+  five-instruction route, and cover all three leaves and both L2 arms; the audit
+  found no P0 and no trust failure.
+- No accepted blob, matrix, contract, or public claim changes.
+
+## DD-20260726-005: amend EG-CP-F03's evidence clause; relocate enumeration to F06
+
+Status: **Owner decision** taken 2026-07-26, recorded by C06. Amends a frozen
+Stage F row. Confers no acceptance: the amended row must be audited fresh
+against the amended quantifiers before F03 may be recorded closed.
+
+Date: 2026-07-26
+
+Context:
+
+The A10 fresh-blind audit found `EG-CP-F03` not closed, principally because its
+minimum-evidence clause names an exhaustive typed inventory of every logical-read
+source with universal consumers, and no such artifact exists (A10-F03-01). The
+coordinator's contraposition argument for substituting a capstone theorem was
+refuted and withdrawn (DD-20260726-004). The auditor's recommendation was that if
+a theorem is to replace the artifact, the frozen row must be amended explicitly
+first and then audited against the new quantifiers. The owner directed that
+course.
+
+Decision:
+
+Two amendment rows are added to the Stage F matrix, preserving the original row
+text verbatim:
+
+1. **Evidence.** F03's minimum evidence becomes a universal checked congruence
+   over the whole executed controller -- equal `n`, all endpoints, any two
+   stores agreeing on the ordered read footprint, identical trace and value --
+   plus named anti-vacuity witnesses.
+2. **Header words.** F03 may be discharged with the store as an undifferentiated
+   read oracle, conditional on `EG-CP-F01`/`F02` later showing the frozen header
+   fields are exactly the non-probe metadata consumed, at which point F03 is
+   re-checked.
+
+Rationale:
+
+The inventory served two distinct purposes. (a) Model faithfulness: nothing
+observable depends on input content beyond `n`. (b) Syntactic eliminability: no
+content-dependent computation remains in the controller's text.
+
+The congruence establishes (a) directly, universally, and with no size threshold
+-- and is better evidence for (a) than an enumeration, because an enumeration's
+completeness must itself be argued and this project's attempt at one failed on
+exactly that point (39 invisible constants, a false-clean syntactic test).
+
+It does not establish (b), and the amendment does not pretend otherwise. But (b)
+is **already owned by `EG-CP-F06`**, whose requirement is "Remove semantic shape
+and every sibling/oracle input" and whose minimum evidence already reads
+"Closed signature, expected-type dependency consumer, and cross-shape transcript
+determinism for equal allowed inputs/probe replies". The inventory was doing
+F06's work inside F03. Relocation is therefore a correction of row boundaries,
+not a weakening of the gate: nothing is deleted, and F06 may not be closed by
+citing this amendment.
+
+Conflict of interest, stated plainly: this amendment is proposed by the party
+whose work an audit found short, and it makes that work sufficient for the
+amended row. That is precisely what the mandated fresh audit against the amended
+quantifiers exists to check. The amendment is not self-executing.
+
+Alternatives rejected:
+
+- Build the inventory. Defensible, and it remains available. Rejected as the
+  primary route because it would re-attempt, under time pressure, the exact
+  artifact class that already failed here, to establish a property the
+  congruence already establishes better.
+- Leave the row unamended and record F03 as permanently open. Rejected: it would
+  leave a gate row whose evidence clause asks for an artifact that is neither
+  necessary for the model nor sufficient without a completeness argument.
+- Amend the requirement text as well. Rejected. The requirement is correct as
+  written; only the evidence clause was mis-specified.
+
+Consequences and evidence:
+
+- `EG-CP-F03` remains OPEN until a fresh audit against the amended row.
+- `EG-CP-F04`/`F06` inherit the syntactic-elimination obligation explicitly and
+  may not cite this amendment as progress on it.
+- `EG-CP-F01`/`F02` inherit the typed-header obligation and the binding of the
+  supplied store to `memory xs`.
+- No theorem, matrix acceptance, accepted blob, or public claim changes.

@@ -6558,3 +6558,100 @@ Consequences:
   root library closure -- an existing in-tree module, but a new edge. Future
   leaf modules should state any new edge they introduce.
 - No theorem, matrix, contract, or public claim changes.
+
+## WDD-20260726-005: adopt an adverse audit in full before correcting it in part
+
+Status: Coordinator decision recorded 2026-07-26. Binds how adverse audit
+findings are dispositioned.
+
+Date: 2026-07-26
+
+Context:
+
+The A10 fresh-blind audit returned NOT CLOSED against a row the coordinator had
+just recorded as closed, and its central finding refuted the coordinator's own
+argument. The coordinator also found one place where the audit understated what
+the repository already contains.
+
+Decision:
+
+Sustain and adopt all four findings first, in a decision entry that states the
+coordinator's argument was unsound; only then record the one correction, framed
+as narrowing a sustained finding rather than as rebutting it.
+
+Rationale:
+
+An auditor who refutes the coordinator's reasoning is doing the job the audit
+exists for. Leading with the correction would invert the weight: it would read
+as a defence with concessions attached, and it would put the reader's attention
+on the auditor's single miss rather than on the coordinator's substantive error.
+The correction is real and belongs in the record -- the composition partner
+`queryTraceResultWithStore_eq_of_orderedReadFootprint` predates the delta and is
+a headline, which the auditor missed while finding the private predicate one
+layer down -- but it narrows A10-F03-03's remediation without touching its
+verdict.
+
+Consequences:
+
+- A retraction gets its own decision ID and a superseding banner on the entry it
+  retracts, rather than a silent edit. DD-20260726-003 now carries one.
+- Documents that shipped an overstatement are corrected at the point of the
+  overstatement, not only in a later record. The module docstring was the P1
+  finding because it ships in the library; it was rewritten rather than annotated.
+- Where an audit identifies a missing composition and the ingredients already
+  exist, build the composition in the same delta as the disposition. Leaving it
+  as future work would have let a sustained P2 stand unaddressed.
+- The auditor's recommended order for closing the row -- amend the frozen row
+  first, then audit against the amended quantifiers -- is adopted over the
+  coordinator's earlier framing of the same question as an open owner call.
+- No theorem, matrix, contract, or public claim changes.
+
+## WDD-20260726-006: amending a frozen row adds rows and commissions its own audit
+
+Status: Coordinator decision recorded 2026-07-26. Binds how frozen acceptance
+rows are amended.
+
+Date: 2026-07-26
+
+Context:
+
+`EG-CP-F03`'s evidence clause was amended after an adverse audit. Amending a
+frozen gate row is the governance act most vulnerable to self-service: the party
+who fell short rewrites the bar and then declares it met.
+
+Decision:
+
+Three procedural constraints, all applied here:
+
+1. **Add rows, never rewrite the original.** The original requirement and
+   evidence text stay verbatim; amendments are appended as separate rows marked
+   with their date and cause. This follows the existing Day-0 amendment
+   precedent in the same matrix.
+2. **Name where each displaced obligation goes.** An amendment that deletes an
+   obligation is a weakening; one that relocates it is a boundary correction. The
+   difference must be checkable, so the amendment names the receiving row and
+   forbids that row from citing the amendment as its own progress.
+3. **The amendment is not self-executing.** The row stays open until a fresh
+   audit against the amended quantifiers, by an auditor who is not the one whose
+   findings prompted the amendment.
+
+Rationale:
+
+An auditor recommending "amend then audit" is not authorising the amendment they
+have not seen. Reusing that auditor would let a recommendation launder into an
+approval. Splitting the A11 verdict into "is the amendment legitimate" and "is
+the amended row satisfied" is what makes rejection expressible: without the
+split, an auditor who thinks the bar moved has no way to say so while also
+agreeing the new bar is met.
+
+Consequences:
+
+- The commissioning prompt must be written so the auditor can reject the
+  amendment. A11's prompt states that a no/yes verdict is expected to be
+  possible and asks for an enumeration of obligations falling through the gaps
+  between the receiving rows.
+- Conflicts of interest are stated in the decision entry itself, not left for the
+  auditor to discover.
+- Whoever launches A11 must check the auditor is not A10 and preferably a third
+  model family, distinct from both the candidate's author and A10.
+- No theorem, matrix acceptance, contract, or public claim changes.

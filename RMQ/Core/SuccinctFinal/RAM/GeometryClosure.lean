@@ -6,15 +6,24 @@ import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedRankSelectLeafTrace
 /-!
 # Geometry closure for the packed cell-probe controller
 
-This module discharges the Stage F row `EG-CP-F03` ("geometry closure"): every
-data-dependent offset, length, branch, divisor and table selector that the
-executed whole-query controller consumes factors through the input *length*
-`n`, the query endpoints, and prior probe replies -- never through the input
-*content*.
+This module is evidence toward the Stage F row `EG-CP-F03` ("geometry
+closure").  It does **not** by itself close that row; see "What this does not
+establish" below.
 
-The statement is a congruence, quantified universally over two Cartesian shapes
-of equal `size` (equivalently, over two `List Int` of equal length at the public
-entry).  There is no size threshold and no regime restriction.
+What is proved: the executed whole-query controller cannot distinguish two
+inputs of the same size.  Precisely, for two Cartesian shapes of equal `size`
+(equivalently, two `List Int` of equal length at the public entry), **one shared
+supplied `RMQ.WordRAM.ReadStore`**, and any endpoints, the controller emits the
+identical `TraceResult` -- identical ordered event list and identical value.
+There is no size threshold and no regime restriction.
+
+Composed with the pre-existing footprint-locality theorem
+`RMQ.SuccinctClassic.queryTraceResultWithStore_eq_of_orderedReadFootprint`
+(`RMQ/Core/SuccinctRMQClassic.lean:1298`), the shared-store hypothesis weakens to
+agreement on the *ordered read footprint alone* -- the addresses the execution
+actually probes.  That composite, `queryTraceResultWithStore_length_and_footprint`
+below, is the form that speaks to the roadmap's dependency model of `n`,
+endpoints and replies to prior probes.
 
 The controller is the fixed five-instruction program
 `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProgram` over the closed
@@ -35,6 +44,27 @@ All results are stated on the store-parametric surface: the supplied
 `RMQ.WordRAM.ReadStore` is universally quantified and shared by the two sides.
 These are congruences about what the controller *reads and returns*; they say
 nothing about its correctness, and nothing here bounds its probe count.
+
+## What this does not establish
+
+Recorded so no reader mistakes the scope (audit A10, 2026-07-26):
+
+* **No inventory.**  `EG-CP-F03`'s minimum evidence is an exhaustive typed
+  inventory of every current logical-read source together with universal
+  consumers.  This module supplies no such artifact.  A trace congruence does
+  not entail one: a content-dependent intermediate can be dead, or can cancel
+  before any observable event, and remain invisible to every congruence here.
+* **Header words are not typed.**  The frozen row names header words as a
+  permitted input.  They are subsumed here into the undifferentiated supplied
+  store and are neither identified nor separately accounted.  `EG-CP-F01`/`F02`
+  own the schema, but that ownership does not discharge this row's input
+  language.
+* **The store is not tied to a packed memory.**  The `ReadStore` parameter is an
+  arbitrary total function, not `memory xs` of the packed model contract
+  (`docs/internal/RMQ_ENDGAME_ROADMAP.md:327-338`).
+* **The store-free surface is genuinely content-dependent**, lawfully so, since
+  a different input builds a different memory image.  Nothing here may be
+  restated over `RMQ.SuccinctClassic.queryTraceResult` or `queryCosted`.
 -/
 
 set_option autoImplicit false
@@ -1419,6 +1449,103 @@ theorem orderedReadFootprintWithStore_factors
   unfold publicFootprintOfLength
   refine orderedReadFootprintWithStore_size_only xs _ store l r ?_
   simp
+
+/-! ### 7.3 Weakening the shared store to the ordered read footprint.
+
+A shared *whole* store is a stronger hypothesis than the roadmap's dependency
+model, which permits only `n`, the endpoints, and the contents returned by
+**prior probes** (`docs/internal/RMQ_ENDGAME_ROADMAP.md:327-338`).  Sharing a
+total function does not by itself forbid dependence on addresses the execution
+never probes.
+
+The gap closes against a theorem that predates this module:
+`RMQ.SuccinctClassic.queryTraceResultWithStore_eq_of_orderedReadFootprint`
+(`RMQ/Core/SuccinctRMQClassic.lean:1298`, exported as the headline
+`RMQ.Headlines.listIntSuccinctRMQQueryTraceResultWithStoreEqOfOrderedReadFootprint`),
+which says agreement on the ordered read footprint alone already determines the
+decoded result, the cost, the ordered trace, repeated reads and failed reads.
+Chaining the two gives the composite below.
+-/
+
+/--
+**Length plus footprint determines the execution.**
+
+Two inputs of equal length, and two stores that agree *only* on the ordered read
+footprint of the first -- that is, only at the addresses the execution actually
+probes -- produce the identical `TraceResult`.
+
+Neither the input content beyond its length, nor any store value away from the
+probed addresses, can be observed by the executed controller.  Serves Stage F
+row `EG-CP-F03` (geometry closure): this is the form stated against the
+roadmap's dependency model rather than against a shared whole store.
+-/
+theorem queryTraceResultWithStore_length_and_footprint
+    (xs ys : List Int) (storeA storeB : WordRAM.ReadStore) (l r : Nat)
+    (hlen : xs.length = ys.length)
+    (hagree : SuccinctClassic.storesAgreeOnOrderedReadFootprint xs storeA storeB l r) :
+    SuccinctClassic.queryTraceResultWithStore xs storeA l r =
+      SuccinctClassic.queryTraceResultWithStore ys storeB l r := by
+  rw [SuccinctClassic.queryTraceResultWithStore_eq_of_orderedReadFootprint
+        xs storeA storeB l r hagree]
+  exact queryTraceResultWithStore_size_only xs ys storeB l r hlen
+
+/-- The ordered read footprint itself is determined by the length together with
+footprint agreement.  Serves Stage F row `EG-CP-F03` (geometry closure). -/
+theorem orderedReadFootprintWithStore_length_and_footprint
+    (xs ys : List Int) (storeA storeB : WordRAM.ReadStore) (l r : Nat)
+    (hlen : xs.length = ys.length)
+    (hagree : SuccinctClassic.storesAgreeOnOrderedReadFootprint xs storeA storeB l r) :
+    SuccinctClassic.orderedReadFootprintWithStore xs storeA l r =
+      SuccinctClassic.orderedReadFootprintWithStore ys storeB l r := by
+  unfold SuccinctClassic.orderedReadFootprintWithStore
+  rw [queryTraceResultWithStore_length_and_footprint xs ys storeA storeB l r hlen hagree]
+
+/-! ### 7.4 Anti-vacuity for the footprint hypothesis.
+
+`storesAgreeOnOrderedReadFootprint` would be worthless if it forced the two
+stores to be equal -- the composite above would then say no more than the
+shared-whole-store form it is meant to strengthen.  It does not: the predicate
+is satisfied by stores differing at *every* address the execution does not
+probe. -/
+
+/-- One address of a read store overwritten. -/
+def readStoreUpdate (store : WordRAM.ReadStore) (s i : Nat)
+    (w : Option WordRAM.Word) : WordRAM.ReadStore where
+  readWord? := fun seg idx => if seg = s ∧ idx = i then w else store.readWord? seg idx
+
+/-- Overwriting any address **outside** the ordered read footprint preserves
+footprint agreement.  Anti-vacuity witness for
+`queryTraceResultWithStore_length_and_footprint`: its store hypothesis is
+strictly weaker than store equality. -/
+theorem storesAgreeOnOrderedReadFootprint_readStoreUpdate_off_footprint
+    (xs : List Int) (store : WordRAM.ReadStore) (l r : Nat)
+    (s i : Nat) (w : Option WordRAM.Word)
+    (hnot : (s, i) ∉ SuccinctClassic.orderedReadFootprintWithStore xs store l r) :
+    SuccinctClassic.storesAgreeOnOrderedReadFootprint xs store
+      (readStoreUpdate store s i w) l r := by
+  intro seg idx hmem
+  by_cases h : seg = s ∧ idx = i
+  · exfalso
+    obtain ⟨h1, h2⟩ := h
+    subst h1
+    subst h2
+    exact hnot hmem
+  · simp [readStoreUpdate, h]
+
+/-- The composite applied off the diagonal in *both* arguments at once: the
+inputs differ beyond their common length, and the stores differ away from the
+probed addresses.  Serves Stage F row `EG-CP-F03` (geometry closure). -/
+theorem queryTraceResultWithStore_length_and_footprint_off_diagonal
+    (xs ys : List Int) (store : WordRAM.ReadStore) (l r : Nat)
+    (s i : Nat) (w : Option WordRAM.Word)
+    (hlen : xs.length = ys.length)
+    (hnot : (s, i) ∉ SuccinctClassic.orderedReadFootprintWithStore xs store l r) :
+    SuccinctClassic.queryTraceResultWithStore xs store l r =
+      SuccinctClassic.queryTraceResultWithStore ys (readStoreUpdate store s i w) l r :=
+  queryTraceResultWithStore_length_and_footprint xs ys store
+    (readStoreUpdate store s i w) l r hlen
+    (storesAgreeOnOrderedReadFootprint_readStoreUpdate_off_footprint
+      xs store l r s i w hnot)
 
 end GeometryClosure
 end SuccinctFinal
