@@ -6746,3 +6746,47 @@ Consequences:
   contains the report or supply it alongside; the former is preferred.
 - Round-log entries are landed with the report, not summarized.
 - No theorem, matrix acceptance, contract, or public claim changes.
+
+## WDD-20260726-009: build verification runs in a private worktree, never a shared one
+
+Status: Coordinator decision recorded 2026-07-26. Binds where Lean builds and
+verification runs happen.
+
+Date: 2026-07-26
+
+Context:
+
+For most of this session the coordinator used
+`.codex/visualizations/.../b7r4-main-integration` as a build environment,
+copying modules in, building, then removing them. That worktree is one of more
+than a dozen sharing the repository, and other sessions use it. A subagent
+prompt that instructed lanes to "restore" it by deleting files was blocked by
+the safety classifier, and separately a lane was flagged for deleting files
+there. One survey agent found the coordinator's own staged files, correctly
+assumed they belonged to a concurrent worker, and declined to touch them.
+
+No loss is detectable, and the files in question were the coordinator's. The
+pattern was still wrong.
+
+Decision:
+
+Lean builds and verification runs happen in the session's own worktree. A
+baseline `lake build` there costs one wall-clock investment and removes the
+hazard permanently. No prompt instructs an agent to delete or `git checkout --`
+anything in a worktree the session does not own.
+
+Rationale:
+
+Copy-build-delete in shared state is unsafe regardless of intent, because the
+delete step cannot distinguish the operator's own staging from a concurrent
+worker's uncommitted work. The failure is silent and unrecoverable. A private
+build makes the question moot rather than managed.
+
+Consequences:
+
+- The session worktree now carries its own `.lake` build (259 oleans).
+- Agent prompts state the build location and do not contain restore-by-deletion
+  instructions.
+- Where an agent must read a prebuilt environment it may do so read-only; it
+  may not write into one it does not own.
+- No theorem, matrix acceptance, contract, or public claim changes.

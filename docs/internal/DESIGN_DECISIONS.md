@@ -5279,3 +5279,70 @@ Consequences and evidence:
 - `EG-CP-F01`/`F02` inherit the typed-header obligation and the binding of the
   supplied store to `memory xs`.
 - No theorem, matrix acceptance, accepted blob, or public claim changes.
+
+## DD-20260726-006: land the source half of the F03 inventory; reject the geometry half
+
+Status: Coordinator decision recorded 2026-07-26. Records what the inventory
+campaign produced and what was refused. Confers no row acceptance.
+
+Date: 2026-07-26
+
+Context:
+
+The owner directed an attempt at the exhaustive typed inventory the original
+`EG-CP-F03` clause names, in preference to relying on the amendment. Four lanes
+produced deliverables; two were verified and two were found defective by
+independent verification lanes.
+
+Decision:
+
+Land `RMQ/Core/SuccinctFinal/RAM/SourceInventory.lean` -- the logical-read-source
+half -- with its limitations stated in the module. Reject the geometry census,
+the consumer-map selector table, and the F06 work-list.
+
+Rationale:
+
+The source half succeeds and the geometry half fails for a structural reason,
+not a competence one, and the distinction should govern future attempts:
+
+**Exhaustiveness is checkable when the universe is a closed inductive.**
+`ReviewerSource` has 22 nullary constructors; rows are joined by case analysis on
+it; adding a constructor without extending the table makes the module fail to
+elaborate. The elaborator enforces completeness.
+
+**Exhaustiveness is not checkable when the universe is "every Nat-valued
+expression in a 917-constant closure."** There is nothing to case on, so the
+census is a curated list, and its completeness must be argued separately. Three
+independent well-resourced attempts have now shipped a false exhaustiveness
+claim on that half: the original campaign's 6-row table (refuted by A10), this
+campaign's geometry census (refuted: "false in both directions, with
+machine-checked refutations"), and its consumer map (a docstring claiming an
+"exhaustive 23-row selector table" over a statement with 13 conjuncts).
+
+Rejected artifacts and why:
+
+- `GeometryCensus.lean` -- sound Lean, false central claim. Landing a module whose
+  docstring asserts exhaustiveness it does not have is the exact defect the A10
+  audit sustained against this coordinator.
+- consumer-map selector table -- 13 conjuncts labelled as 23 rows.
+- F06 work-list -- its two headline findings are refuted by content already
+  committed at the branch tip it was told to read; it declares a missing lemma
+  that exists in-tree as `offsets_congr`.
+
+Consequences and evidence:
+
+- Verified independently by the coordinator in a private build (259 oleans,
+  `lake build RMQ` exit 0): an expected type written from the row's clause rather
+  than from the module is inhabited by `storeParametricRead_hasListedSource`; the
+  source universe is confirmed closed at 22 constructors by
+  `cases source <;> decide`. Evidence:
+  `docs/internal/f03_evidence/c06_sourceinventory_check.lean`.
+- Coverage is universal over every shape, every supplied store and every endpoint
+  pair, with no validity side condition.
+- **Not established**: segment-to-WORDS payload identity, so the `{0, 19}` alias
+  is an equality of labels rather than of returned words. Stated in the module.
+- This bears on the amendment (DD-20260726-005) as evidence rather than argument:
+  the inventory-as-artifact keeps failing at completeness on exactly the half the
+  amendment relocates, while the congruence has no completeness step to fail.
+  A11 should weigh it.
+- No accepted blob, matrix acceptance, contract, or public claim changes.

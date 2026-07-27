@@ -50,6 +50,7 @@ import RMQ.Core.SuccinctFinalStoreParam
 import RMQ.Core.SuccinctFinal.RAM.ChargePolicyDependency
 import RMQ.Core.SuccinctFinal.RAM.AnswerValueDependency
 import RMQ.Core.SuccinctFinal.RAM.GeometryClosure
+import RMQ.Core.SuccinctFinal.RAM.SourceInventory
 import RMQ.Core.SuccinctFinalModelAdequacy
 import RMQ.Core.SuccinctRankSelect
 import RMQ.Core.BPCloseNavigation
