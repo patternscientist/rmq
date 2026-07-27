@@ -519,3 +519,26 @@ sizes, dead-ends pruned, and idiomatic path-aligned namespaces with "Proposal" g
 live API, all with a flawless integrity record. What's left (B-tier proof idioms, shim
 retirement, the dependency decision) is the narrow "navigable → maximally idiomatic" gap,
 none of it debt. The project now reads like a real Lean CS-library component.
+
+## 2026-07-26 (AUDIT) — A10 fresh-blind EG-CP-F03 geometry closure
+
+**Verdict: EG-CP-F03 remains NOT CLOSED in both the frozen letter and spirit.**
+The new `GeometryClosure` module nevertheless supplies genuine Tier-1 kernel
+evidence: the intended five-instruction supplied-store evaluator is congruent
+across equal-size Cartesian shapes, including L1, L2 (same- and cross-block),
+and L3, with independently reproduced non-vacuity controls.
+
+The P1 boundary is that the frozen row still requires a checked exhaustive typed
+logical-read-source inventory and universal-consumer map; its unvetted working
+inventory does not qualify, and the target's completion language conflicts with
+its own retained-open process record. The P2 boundary is that the theorem ranges
+over one arbitrary shared `ReadStore`, without yet tying it to `memory xs`, typed
+header words, and sequential prior probe replies under the frozen model.
+
+The full 261-target build, headline and general axiom inventories, and strict
+policy checks passed; the report-sensitive strict checks were rerun after the
+report was written. Durable report:
+`docs/internal/audit_reports/2026-07-26_A10_f03_geometry_closure.md`.
+Best next target: a checked exhaustive source/consumer inventory connected to a
+closed-controller invariant whose only dynamic inputs are `n`, endpoints, typed
+header words, and replies already present in the ordered trace of `memory xs`.

@@ -6701,3 +6701,48 @@ Consequences:
   artifacts, not evidence; an auditor may read them but may not cite them as
   support for any claim they audit.
 - No theorem, matrix acceptance, contract, or public claim changes.
+
+## WDD-20260726-008: filing an audit report is the coordinator's act, and must precede citing it
+
+Status: Coordinator decision recorded 2026-07-26. Records a blocking defect and
+the rule that prevents it.
+
+Date: 2026-07-26
+
+Context:
+
+The A10 fresh-blind audit ran in an isolated worktree and correctly committed
+nothing -- the auditor is report-only and the original checkout was left
+untouched. The coordinator then cited the report by repository path in
+DD-20260726-004 and named it REQUIRED READING in the A11 commissioning prompt,
+without ever landing it. `git log --all -- 'docs/internal/audit_reports/*A10*'`
+returned nothing. **A11 could not have run as written**, and DD-20260726-004
+pointed at a path that did not exist.
+
+Found by the inventory campaign's gap lane, which flagged it as blocking before
+attempting its own task, and confirmed directly.
+
+Decision:
+
+An audit report is landed in `docs/internal/audit_reports/` -- together with the
+auditor's `AUDIT_AND_A_DESIGN.md` round-log entry, verbatim -- **before** any
+decision entry, prompt, or claim cites it.
+
+Rationale:
+
+Report-only isolation is correct and should not change: an auditor that commits
+to the audited branch is not report-only. The consequence is that filing is the
+coordinator's step, and it is easy to skip because the report is readable in the
+auditor's worktree and feels present. It is not present to anyone else, and a
+commissioning prompt that names an absent file is inert.
+
+Consequences:
+
+- Citing an audit by repository path requires that path to resolve at the
+  citing commit. Check with `git log --all -- <path>`, not by opening the file
+  in whatever worktree happens to be at hand.
+- The A11 prompt's required reading now resolves. Its pinned target `89cc126`
+  predates this landing, so a launcher must either re-pin A11 to a commit that
+  contains the report or supply it alongside; the former is preferred.
+- Round-log entries are landed with the report, not summarized.
+- No theorem, matrix acceptance, contract, or public claim changes.
