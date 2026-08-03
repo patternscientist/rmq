@@ -171,6 +171,85 @@ theorem closeComponent_flatOffset
   simp only [ConcreteBPNativeSuccinctRMQFlatPayloadLayout.componentFlatOffset]
   omega
 
+/-! ### Size-only mirrors of the select slot geometry -/
+
+/--
+Size-only mirror of the select super-slot count.
+
+`GenericSelect.superSlotCount` divides the occurrence count by a stride computed
+from the bit length. Over a shape's BP code with target `false` both inputs are
+fixed by the size: the occurrence count is the number of closing parentheses,
+which is the shape's size, and the bit length is twice the size.
+-/
+def packedSuperSlots (n : Nat) : Nat :=
+  GenericSelect.selectCeilDiv n (GenericSelect.superStride (2 * n))
+
+theorem superSlotCount_eq_packed (shape : CartesianShape) :
+    GenericSelect.superSlotCount shape.bpCode false = packedSuperSlots shape.size := by
+  have hcount : GenericSelect.occurrenceCount shape.bpCode false = shape.size := by
+    unfold GenericSelect.occurrenceCount
+    exact SuccinctSpace.bpCode_rankFalse_full shape
+  have hlen : shape.bpCode.length = 2 * shape.size :=
+    CartesianShape.bpCode_length shape
+  unfold GenericSelect.superSlotCount packedSuperSlots
+  rw [hcount, hlen]
+
+/-- Size-only mirror of the select super field width. -/
+def packedSuperWidth (n : Nat) : Nat :=
+  GenericSelect.wordBits (2 * n)
+
+theorem superFieldWidth_eq_packed (shape : CartesianShape) :
+    GenericSelect.superFieldWidth shape.bpCode = packedSuperWidth shape.size := by
+  have hlen : shape.bpCode.length = 2 * shape.size :=
+    CartesianShape.bpCode_length shape
+  unfold GenericSelect.superFieldWidth packedSuperWidth
+  rw [hlen]
+
+/-- Size-only mirror of the long-super flag list's length. -/
+theorem longFlagBits_length_eq_packed (shape : CartesianShape) :
+    (GenericSelect.longSuperFlagBits shape.bpCode false).length =
+      packedSuperSlots shape.size := by
+  rw [GenericSelect.longSuperFlagBits_length, superSlotCount_eq_packed]
+
+/-! ### The long relative table is the only long-count-dependent length -/
+
+/--
+The long relative table's payload length is exactly the long count times two
+size-only factors.
+
+This is the whole justification for `K = 1`. Every other length reachable from a
+select offset is fixed by the input size; this one is not, and one number
+recovers it.
+-/
+theorem longSuperRelativeTable_length_eq (shape : CartesianShape) :
+    (GenericSelect.longSuperRelativeTable shape.bpCode false).payload.length =
+      longCount shape *
+        (GenericSelect.superStride (2 * shape.size) *
+          GenericSelect.wordBits (2 * shape.size)) := by
+  have hlen : shape.bpCode.length = 2 * shape.size :=
+    CartesianShape.bpCode_length shape
+  rw [GenericSelect.longSuperRelativeTable_payload_length]
+  unfold longCount GenericSelect.longSuperRelativeWidth GenericSelect.wordBits
+  rw [hlen, Nat.mul_assoc]
+
+/-! ### Super-table component offsets -/
+
+/--
+Each of the four super sub-tables occupies `packedSuperSlots * packedSuperWidth`
+bits.
+
+The dense entry table stores one field per entry per column, and every column has
+the same entry list, so all four sub-payloads share one length.
+-/
+theorem superTable_column_length (shape : CartesianShape) :
+    (GenericSelect.superTable shape.bpCode false).baseOccurrenceTable.payload.length =
+      packedSuperSlots shape.size * packedSuperWidth shape.size := by
+  rw [SuccinctSpace.FixedWidthNatTable.payload_length]
+  simp only [GenericSelect.SparseDenseSelectDenseLocalEntry.baseOccurrences,
+    List.length_map]
+  rw [GenericSelect.superEntries_length, superSlotCount_eq_packed,
+    superFieldWidth_eq_packed]
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ

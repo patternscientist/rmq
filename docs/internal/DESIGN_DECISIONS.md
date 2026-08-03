@@ -5420,3 +5420,22 @@ Consequences:
   `BPCloseAccessDirectory`, so the layout cannot be instantiated without it.
 - No theorem here concerns a controller, a cell, or a probe. Offsets are bit
   positions in the existing flat payload.
+
+Evidence added under `DD-20260802-001` (running list; no decision changes here):
+
+- `closeComponent_flatOffset` -- the close component base is
+  `2 * shape.size + packedAccessOverhead shape.size`, discharging `FG-03`'s
+  second clause.
+- `superSlotCount_eq_packed`, `superFieldWidth_eq_packed`,
+  `longFlagBits_length_eq_packed`, `superTable_column_length` -- the select
+  super geometry mirrors, resting on the BP code having `shape.size` closing
+  parentheses and length `2 * shape.size`.
+- `longSuperRelativeTable_length_eq` -- the long relative table's payload length
+  is `longCount shape` times two size-only factors. This is the exact statement
+  that makes `K = 1` the proposed header rather than `K = 0`: it is the only
+  length reachable from a select offset that the input size does not fix.
+
+Recorded separately because it bears on the predetermined `K = 0` flip: the
+interior/close side was already proved size-only by `offsets_congr`
+(`GeometryClosure.lean:718`) and needs no descriptor at all. The header exists
+solely for the select side's long relative table.
