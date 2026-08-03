@@ -5346,3 +5346,69 @@ Consequences and evidence:
   amendment relocates, while the congruence has no completeness step to fail.
   A11 should weigh it.
 - No accepted blob, matrix acceptance, contract, or public claim changes.
+
+## DD-20260726-007: freeze K = 1 with refined n-only region budgets
+
+Status: Coordinator decision recorded 2026-07-26 under the standing autonomous
+design-decision authority. Freezes the `EG-CP-F01` header schema. Confers no row
+acceptance -- F01 is recorded `SUBSTANTIALLY_ADVANCED`, not closed.
+
+Date: 2026-07-26
+
+Context:
+
+`EG-CP-F01` requires a frozen `K`, fields, encoding, word width and small-size
+behavior. The open question was whether the header carries one field (`n`) with
+the two content-dependent select regions padded to `n`-only budgets, or three
+fields carrying those regions' bases.
+
+Decision:
+
+**`K = 1`.** One field, `n`, width `w n = Nat.log2 (2n) + 1`, encoded with the
+repo's own `natToBitsLE`. Both content-dependent select regions are padded to
+**refined** budgets: zero below their thresholds rather than always charging the
+worst case.
+
+Rationale:
+
+- **Space is neutral against the proved bound.** The padded allocation sits
+  inside `genericSparseExceptionBPCloseAccessOverhead n`, which the existing
+  `2n + rho n` capstone already charges in full. `rho` is unchanged, so `K = 3`
+  cannot improve the proved bound at all; it could only recover the unproved gap
+  between actual and budget.
+- **`K = 3` costs probes.** Those fields are not `w(n)`-bounded -- at `n = 1024`
+  the sparse base ranges to `262656` against a 12-bit cell -- so each costs at
+  least two probes under the contract's cell-crossing rule and inflates the
+  derived cap `C`.
+- **`K = 1` keeps the header a function of `n`**, so the merged F03 congruence
+  survives the header re-check verbatim. `K = 3` makes the header a second
+  content channel and forces that congruence to be restated and reproved.
+- Fewer forgeable values for F10/F13; and below the crossover there is no padding
+  at all, so the contract's "prefer no dead or failed-read cells" is achieved
+  rather than excused throughout the reachable small regime.
+
+Honest accounting, both halves required in any write-up: the padding is genuinely
+`o(n)`, **and** it is genuinely about `n/3` at every reachable size. The divisor
+must exceed 200 for the pad to fall under `0.01n`.
+
+Alternatives rejected:
+
+- `K = 3`. Buys only an unproved delta, costs probes, costs the F03 congruence,
+  and makes F02 an 8-13 day row whose hardest obligation is unexplored.
+- Unrefined budgets. Rejected during the campaign: they charge the worst case at
+  every size, giving 85-128x padding at small `n`, and were superseded by the
+  refined form which is zero below the thresholds.
+
+Consequences and evidence:
+
+- One named gap: space neutrality needs `R + A + B <= T` where the proof gives
+  `A + B <= T`. The long half was closed during verification; the sparse half
+  needs a region-wise decomposition one level down, 1-2 proof-days. **No outcome
+  of that lemma favours `K = 3`.**
+- Corrects two coordinator briefing errors: the `superIsLong` crossover is
+  5488/5489, not ~8192 (the earlier figure came from a power-of-two-only scan),
+  so every prior "empty in every reachable regime" claim keyed to 8192 must be
+  re-keyed; and `canonicalBPRelativeMinMaxArgSummaryTableActive` IS
+  executable-path relevant, gating store content and a live branch.
+- Nothing is in `RMQ/`. No theorem, matrix acceptance, contract, or public claim
+  changes.

@@ -1,0 +1,39 @@
+'RMQ.SuccinctFinal.GeometryCensus.GeometryValue.eval_eq_mirror' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'RMQ.SuccinctFinal.GeometryCensus.GeometryValue.eval_congr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RMQ.SuccinctFinal.GeometryCensus.GeometryValue.eval_factors' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RMQ.SuccinctFinal.GeometryCensus.GeometryValue.eval_congr_of_length' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'RMQ.SuccinctFinal.GeometryCensus.offsets_mirror' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RMQ.SuccinctFinal.GeometryCensus.active_iff' depends on axioms: [propext, Quot.sound]
+'RMQ.SuccinctFinal.GeometryCensus.componentStoreWords_mirror' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RMQ.SuccinctFinal.GeometryCensus.rankSuperOverhead_mirror' depends on axioms: [propext, Quot.sound]
+'RMQ.SuccinctFinal.GeometryCensus.rankBlockOverhead_mirror' depends on axioms: [propext, Classical.choice, Quot.sound]
+'GczAudit.rowIndex_range' depends on axioms: [propext]
+'GczAudit.segIndex_range' depends on axioms: [propext]
+'GczAudit.selector_literals' does not depend on any axioms
+'RMQ.SuccinctFinal.GeometryCensus.GeometryBranch.eval_eq_mirror' depends on axioms: [propext, Quot.sound]
+'RMQ.SuccinctFinal.GeometryCensus.GeometryBranch.eval_congr' depends on axioms: [propext, Quot.sound]
+'RMQ.SuccinctFinal.GeometryCensus.superIsLong_provenance' depends on axioms: [propext]
+'RMQ.SuccinctFinal.GeometryCensus.localIsSparseException_provenance' depends on axioms: [propext]
+'RMQ.SuccinctFinal.GeometryCensus.compactLocalEntryIsLive_provenance' depends on axioms: [propext]
+'RMQ.SuccinctFinal.GeometryCensus.compactLocalEntryIsLive_secondConjunct_mirror' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'RMQ.SuccinctFinal.GeometryCensus.occurrenceCount_bpCode_false' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'RMQ.SuccinctFinal.GeometryCensus.occurrenceCount_bpCode_true' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'GczAudit.branchIndex_range' depends on axioms: [propext]
+'GczAudit.spine_sizes' does not depend on any axioms
+'GczAudit.spines_differ' does not depend on any axioms
+'GczAudit.mirror_values_log2_free' depends on axioms: [propext]
+'GczAudit.mirror_varies_with_n' depends on axioms: [propext]
+'GczAudit.census_rows_distinct' depends on axioms: [propext]
+'GczAudit.eval_values_log2_free' depends on axioms: [propext, Classical.choice, Quot.sound]
+'GczAudit.bundle_on_a_real_pair' depends on axioms: [propext, Classical.choice, Quot.sound]
+'GczAudit.branch_bundle_on_a_real_pair' depends on axioms: [propext, Quot.sound]

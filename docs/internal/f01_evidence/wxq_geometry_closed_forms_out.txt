@@ -1,0 +1,14 @@
+'RMQ.SuccinctFinal.HeaderGeometry.chunkPayloadWords_replicate_length' depends on axioms: [propext, Quot.sound]
+'RMQ.SuccinctFinal.HeaderGeometry.layout_closed' depends on axioms: [propext]
+'RMQ.SuccinctFinal.HeaderGeometry.rankWordSize_closed' depends on axioms: [propext, Quot.sound]
+'RMQ.SuccinctFinal.HeaderGeometry.rankBlockWidth_closed' depends on axioms: [propext, Quot.sound]
+'RMQ.SuccinctFinal.HeaderGeometry.fringeChunkBits_closed' depends on axioms: [propext, Quot.sound]
+'RMQ.SuccinctFinal.HeaderGeometry.offsets_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RMQ.SuccinctFinal.HeaderGeometry.componentStoreWords_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RMQ.SuccinctFinal.HeaderGeometry.lt_two_pow_wordSize' depends on axioms: [propext, Quot.sound]
+'RMQ.SuccinctFinal.HeaderGeometry.longSuperPayload_only_bounded' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'RMQ.SuccinctFinal.HeaderGeometry.sparseExceptionPayload_only_bounded' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

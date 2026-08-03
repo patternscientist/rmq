@@ -1,0 +1,17 @@
+C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-recursing-cerf-300c92/09e21f10-b494-4393-9fb6-2f4ad4dedb1c/scratchpad/ksm_f01_seg_scan2.lean:38:2: error: Invalid field `eliminateDuplicates`: The environment does not contain `List.eliminateDuplicates`
+  List.flatMap (fun p => List.map Prod.fst (footprint shape ?m.1145 ?m.1146)) (pairs shape.size)
+has type
+  List Nat
+C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-recursing-cerf-300c92/09e21f10-b494-4393-9fb6-2f4ad4dedb1c/scratchpad/ksm_f01_seg_scan2.lean:43:2: error: Invalid field `eliminateDuplicates`: The environment does not contain `List.eliminateDuplicates`
+  List.flatMap segsOf [leftSpine n, rightSpine n]
+has type
+  List Nat
+C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-recursing-cerf-300c92/09e21f10-b494-4393-9fb6-2f4ad4dedb1c/scratchpad/ksm_f01_seg_scan2.lean:45:0: error: aborting evaluation since the expression depends on the 'sorry' axiom, which can lead to runtime instability and crashes.
+
+To attempt to evaluate anyway despite the risks, use the '#eval!' command.
+"n=0 footprint (0,0): []"
+"n=0 trace length: 0"
+"n=0 value: none"
+"n=1 footprints: [((0, 0), [(1, 0), (2, 0), (3, 0), (4, 0), (9, 0), (10, 0), (11, 0), (21, 0), (12, 187244), (1, 0), (2, 0), (3, 0), (4, 0), (9, 0), (10, 0), (11, 0), (21, 0), (12, 187244), (17, 0), (18, 1), (19, 1), (21, 0), (0, 32767), (0, 32768), (0, 32769), (0, 32770), (21, 3), (21, 5), (17, 0), (18, 1), (19, 1), (21, 0)]), ((0, 1), [(1, 0), (2, 0), (3, 0), (4, 0), (9, 0), (10, 0), (11, 0), (21, 0), (12, 187244), (1, 0), (2, 0), (3, 0), (4, 0), (9, 0), (10, 0), (11, 0), (21, 0), (12, 187244), (17, 0), (18, 1), (19, 1), (21, 0), (0, 32767), (0, 32768), (0, 32769), (0, 32770), (21, 3), (21, 5), (17, 0), (18, 1), (19, 1), (21, 0)]), ((1, 1), [(1, 0), (2, 0), (3, 0), (4, 0), (9, 0), (10, 0), (11, 0), (21, 0), (12, 187244)])]"
+"n=1 values: [((0, 0), (some 28085)), ((0, 1), (some 28085)), ((1, 1), none)]"
+"max trace len per n: [(0, 0), (1, 32), (2, 37), (3, 37), (4, 38), (5, 40), (6, 38), (7, 40), (8, 38), (9, 42), (10, 38), (11, 40), (12, 44), (13, 38)]"

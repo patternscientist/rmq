@@ -1,0 +1,52 @@
+s1 = leftSpine 5, s2 = rightSpine 5
+bpCode s1 = List.cons.{0} Bool Bool.true (List.cons.{0} Bool Bool.true (List.cons.{0} Bool Bool.true (List.cons.{0} Bool Bool.true (List.cons.{0} Bool Bool.true (List.cons.{0} Bool Bool.false (List.cons.{0} Bool Bool.false (List.cons.{0} Bool Bool.false (List.cons.{0} Bool Bool.false (List.cons.{0} Bool Bool.false (List.nil.{0} Bool))))))))))
+bpCode s2 = List.cons.{0} Bool Bool.true (List.cons.{0} Bool Bool.false (List.cons.{0} Bool Bool.true (List.cons.{0} Bool Bool.false (List.cons.{0} Bool Bool.true (List.cons.{0} Bool Bool.false (List.cons.{0} Bool Bool.true (List.cons.{0} Bool Bool.false (List.cons.{0} Bool Bool.true (List.cons.{0} Bool Bool.false (List.nil.{0} Bool))))))))))
+
+NOTDEFEQ RMQ.SuccinctClose.bpExcessAt  witness args=[2]
+NOTDEFEQ RMQ.SuccinctClose.bpBlockExcessSamples  witness args=[2, 0]
+NOTDEFEQ RMQ.SuccinctClose.bpBlockMinExcess  witness args=[2, 1]
+NOTDEFEQ RMQ.SuccinctClose.bpBlockMaxExcess  witness args=[2, 0]
+NOTDEFEQ RMQ.SuccinctClose.bpBlockRelativeMinExcess  witness args=[2, 0, 1]
+NOTDEFEQ RMQ.SuccinctClose.bpBlockRelativeMaxExcess  witness args=[2, 0, 1]
+NOTDEFEQ RMQ.SuccinctClose.bpRelativeExcessEntry  witness args=[2, 1, 1, 2]
+NOTDEFEQ RMQ.SuccinctClose.bpBlockArgMinPrefixPos  witness args=[4, 1]
+DEFEQ    RMQ.SuccinctClose.bpBlockArgMinPrefixPosFrom arity=3 budgetMisses=0
+NOTDEFEQ RMQ.SuccinctClose.bpBlockArgMinLocalOffset  witness args=[4, 1]
+SKIP(high-arity) RMQ.SuccinctClose.bpLocalSparseCellOffset arity=6
+SKIP(high-arity) RMQ.SuccinctClose.bpGlobalSparseCellBlock arity=6
+DEFEQ    RMQ.SuccinctClose.bpBetterArgMinBlock arity=3 budgetMisses=0
+NOTDEFEQ RMQ.SuccinctClose.bpRangeArgMinBlockFrom  witness args=[2, 0, 1, 1]
+DEFEQ    RMQ.SuccinctClose.bpRangeArgMinBlock arity=3 budgetMisses=0
+NOTDEFEQ RMQ.SuccinctClose.bpSuperblockBaselineEntries  witness args=[2, 1, 2]
+NOTDEFEQ RMQ.SuccinctClose.bpBlockRelativeMinExcessEntries  witness args=[2, 0, 2]
+NOTDEFEQ RMQ.SuccinctClose.bpBlockRelativeMaxExcessEntries  witness args=[2, 0, 1]
+DEFEQ    RMQ.SuccinctClose.bpBlockArgMinLocalOffsetEntries arity=2 budgetMisses=6
+SKIP(high-arity) RMQ.SuccinctClose.bpLocalSparseOffsetEntries arity=5
+SKIP(high-arity) RMQ.SuccinctClose.bpGlobalSparseBlockEntries arity=5
+NOTDEFEQ RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankSuperOverhead  witness args=[]
+NOTDEFEQ RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankBlockOverhead  witness args=[]
+NOTDEFEQ RMQ.SuccinctFinal.builtRelativeSplitBPCloseRankData  witness args=[]
+SKIP(non-Nat-args) RMQ.SuccinctClose.concreteBPLocalSparseOffsetTable arity=7
+SKIP(non-Nat-args) RMQ.SuccinctClose.concreteBPGlobalSparseBlockTable arity=8
+SKIP(non-Nat-args) RMQ.SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable arity=11
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmSummaryTable  witness args=[]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmInteriorLocalTable  witness args=[]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmInteriorGlobalTable  witness args=[]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets  witness args=[]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmLocalMachineStore  witness args=[]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmGlobalMachineStore  witness args=[]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmSummaryMachineStore  witness args=[]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmInteriorComponentStore  witness args=[]
+SKIP(first-arg-not-shape) RMQ.SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation  witness args=[2, 1]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation  witness args=[2, 0, 1]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation  witness args=[2, 0, 1]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmMachineMinCandidateComputation  witness args=[0]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmMachineSummaryComputation  witness args=[0]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmMachineAdjacentMacroCandidateComputation  witness args=[2, 0, 1]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation  witness args=[2, 0, 1]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation  witness args=[2, 0]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmMachineGlobalSpanCandidateComputation  witness args=[2, 0]
+NOTDEFEQ RMQ.SuccinctClose.canonicalRelativeRmmMachineCrossMacroCandidateComputation  witness args=[2, 0, 1, 1]
+
+NOTDEFEQ=34 DEFEQ=4 BUDGET=0 SKIP=8

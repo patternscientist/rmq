@@ -1,0 +1,31 @@
+import RMQ.Core.SuccinctFinalStoreParam
+import RMQ.Core.BPNavigationRAM
+
+open RMQ
+
+#check @RMQ.SuccinctSelect.compactLongSuperRelativeTable_payload_le_overhead
+#check @RMQ.SuccinctSelect.builtRelativeSplitFalseSelectSparseExceptionRelativeTable_payload_le_overhead
+#check @RMQ.SuccinctSelect.compactLongSuperRelativeTableOverhead
+#check @RMQ.SuccinctSelect.sparseExceptionRelativeTableOverhead
+#check @RMQ.SuccinctSelect.longSuperExceptionCount_mul_superLongSpan_le_spanSum
+#check @RMQ.SuccinctSelect.builtRelativeSplitFalseSelectLongSuperSpanSum_le_bpCode_length
+#check @RMQ.SuccinctSelect.compactLongSuperRelativeTable_payload_length
+#check @RMQ.SuccinctSelect.builtRelativeSplitFalseSelectSparseExceptionRelativeTable_payload_length
+#check @RMQ.SuccinctSelect.builtRelativeSplitFalseSelectPosition_mono
+#check @RMQ.SuccinctSelect.builtRelativeSplitFalseSelectPosition_le_length
+#check @RMQ.SuccinctSelect.sparseDenseFalseSelectSuperLongSpan
+#check @RMQ.SuccinctSelect.builtRelativeSplitFalseSelectShortSuperLocalSpan
+#check @RMQ.SuccinctSelect.builtRelativeSplitFalseSelectLocalIsSparseException
+#check @RMQ.SuccinctSelect.builtRelativeSplitFalseSelectShortSuperLocalEndOccurrence
+#check @RMQ.SuccinctSelect.builtRelativeSplitFalseSelectSparseExceptionFlagBits
+#check @RMQ.SuccinctSelect.builtRectangularFalseSelectLocalSlotCount
+#check @RMQ.SuccinctFinal.genericSparseExceptionBPCloseAccessOverhead
+#check @RMQ.SuccinctFinal.genericSparseExceptionBPCloseAccessOverhead_littleO
+#check @RMQ.GenericSelect.canonicalSparseExceptionSelectOverhead
+#check @RMQ.SuccinctRank.machineWordBits
+#check @RMQ.SuccinctSpace.LittleOLinear
+#check @RMQ.SuccinctSpace.idDivLogLogOverhead
+#check @RMQ.SuccinctSpace.LittleOLinear.add
+#check @RMQ.SuccinctSpace.LittleOLinear.of_le
+#check @RMQ.SuccinctSelect.compactLongSuperRelativeTableOverhead_littleO
+#check @RMQ.SuccinctSelect.sparseExceptionRelativeTableOverhead_littleO

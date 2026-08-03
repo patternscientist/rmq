@@ -6839,3 +6839,52 @@ Consequences:
   the universe is a closed inductive, otherwise obtain coverage from a
   construction that must touch every case.
 - No theorem, matrix acceptance, contract, or public claim changes.
+
+## WDD-20260726-011: a campaign that raises owner amendments reports them, it does not apply them
+
+Status: Coordinator decision recorded 2026-07-26. Governs how the F01 campaign's
+gate-level findings are handled.
+
+Date: 2026-07-26
+
+Context:
+
+The F01 header-schema campaign produced three findings that change Stage F rows
+rather than satisfying them: the `FEASIBILITY_PASS` clause requiring "F11 exposes
+no small-size model split" is provably violated as written; `EG-CP-F02`'s
+requirement is unsatisfiable at `K = 1` as the row is phrased; and F02's minimum
+evidence is a predicate a host mirror already makes true in this repository.
+
+Decision:
+
+All three are **reported to the owner, not applied.** The campaign froze the
+schema and decided `K`, which are within the standing autonomous
+design-decision authority. Amending a `FEASIBILITY_PASS` clause or a row's
+requirement text is not.
+
+Rationale:
+
+The distinction is between deciding an implementation question the roadmap left
+open, and changing what the roadmap asks for. `K` is the former: the row says
+"freeze `K`", and freezing it on evidence is the assigned work. The `:399`
+clause and F02's text are the latter. The `EG-CP-F03` precedent is the reason to
+be strict here -- that amendment was owner-directed and still required a fresh
+audit, and the coordinator's own prior attempt to substitute evidence for a row's
+stated clause was refuted.
+
+A second reason is timing. These findings arrived from a campaign whose lanes had
+an interest in F01 closing. An amendment proposed in that context should be
+adjudicated with the interest visible, which reporting achieves and silent
+application does not.
+
+Consequences:
+
+- `EG-CP-F01` is recorded `SUBSTANTIALLY_ADVANCED`, not closed, with named
+  residuals R1-R5.
+- The F07 escalation (attempted probes returning nothing into segment 0 under the
+  canonical store at small sizes) is recorded now rather than at F07's slot,
+  because it is the class of finding that ruins a gate late.
+- Two coordinator briefing errors are recorded in the result document rather than
+  silently corrected: the `superIsLong` crossover is 5488/5489 and not ~8192, and
+  the summary-table activity predicate IS executable-path relevant.
+- No theorem, matrix acceptance, contract, or public claim changes.

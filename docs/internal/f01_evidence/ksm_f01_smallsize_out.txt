@@ -1,0 +1,46 @@
+'RMQ.PackedHeaderSmall.headerCells_eq_one' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.headerFieldValue_lt_two_pow' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.headerCells_no_small_split' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.sparse_budget_exceeds_one_cell_at_1024' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.not_active_of_size_lt_512' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.blockSize_eq_zero_of_size_lt_512' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.blockCount_eq_zero_of_size_lt_512' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.superCount_eq_zero_of_size_lt_512' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.blocksPerSuper_eq_one_of_size_lt_512' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.interiorPayloadLength_eq_zero_of_size_lt_512' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'RMQ.PackedHeaderSmall.not_ready_of_size_lt_512' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.active_at_512' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.model_split_at_512' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.spine_size' depends on axioms: [propext]
+'RMQ.PackedHeaderSmall.summaryBaselineWords_empty_of_size_lt_512' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'RMQ.PackedHeaderSmall.summaryMinRelWords_empty_of_size_lt_512' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'RMQ.PackedHeaderSmall.summaryMaxRelWords_empty_of_size_lt_512' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'RMQ.PackedHeaderSmall.summaryArgOffsetWords_empty_of_size_lt_512' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'RMQ.PackedHeaderSmall.size_zero_iff_empty' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RMQ.PackedHeaderSmall.size_one_iff_singleton' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RMQ.PackedHeaderSmall.log2_mono' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.frozenWordWidth_mono' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.not_ready_at_512' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.interiorPayloadLength_summary_only_at_512' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'RMQ.PackedHeaderSmall.ready_at_1000' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.not_ready_at_999' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.ready_not_monotone' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.not_ready_at_1330' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.superLongSpan_ge_at_10976' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.superLongSpan_lt_at_10977' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.superLongSpan_ge_self_of_le' depends on axioms: [propext, Quot.sound]
+'RMQ.PackedHeaderSmall.superIsLong_false_of_bitlength_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RMQ.PackedHeaderSmall.superIsLong_false_of_size_le_5488' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RMQ.PackedHeaderSmall.frozenWordWidth_small' depends on axioms: [propext, Quot.sound]

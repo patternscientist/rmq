@@ -1,0 +1,48 @@
+[(0, 1), (1, 2), (2, 3), (3, 3), (4, 4), (5, 4), (6, 4), (7, 4), (8, 5)]
+(11, 12, 15)
+[false]
+[true, false]
+[true, false, true, false]
+4
+5
+[(0, 1, 1, 10),
+ (1, 2, 2, 11),
+ (2, 3, 2, 11),
+ (3, 3, 3, 12),
+ (4, 4, 2, 11),
+ (5, 4, 3, 12),
+ (6, 4, 3, 12),
+ (7, 4, 3, 12),
+ (8, 5, 3, 12)]
+'ZqhF01.frozen_arity' depends on axioms: [propext]
+'ZqhF01.frozenSchema_arity_literal' depends on axioms: [propext]
+'ZqhF01.frozenFields_complete' depends on axioms: [propext]
+'ZqhF01.frozenFields_nodup' does not depend on any axioms
+'ZqhF01.frozen_field_width_eq' depends on axioms: [propext]
+'ZqhF01.frozen_field_width_le' depends on axioms: [propext, Quot.sound]
+'ZqhF01.frozen_field_fits' depends on axioms: [propext, Quot.sound]
+'ZqhF01.headerBits_length' depends on axioms: [propext]
+'ZqhF01.headerBits_length_closed' depends on axioms: [propext]
+'ZqhF01.headerBits_size_only' depends on axioms: [propext, Quot.sound]
+'ZqhF01.headerBits_decode' depends on axioms: [propext, Quot.sound]
+'ZqhF01.serializedBits_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ZqhF01.serializedBits_length' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ZqhF01.payloadBits_eq_canonicalReviewerPayload' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ZqhF01.headerBits_nil' depends on axioms: [propext]
+'ZqhF01.headerBits_singleton' depends on axioms: [propext, Quot.sound]
+'ZqhF01.headerBits_nil_ne_singleton' depends on axioms: [propext, Quot.sound]
+'ZqhF01.ext_arity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ZqhF01.extFields_complete' depends on axioms: [propext]
+'ZqhF01.ext_field_fits' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ZqhF01.ext_field_width_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ZqhF01.ext_field_width_le_multiple' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ZqhF01.extHeaderBits_length' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ZqhF01.longRelativeBits_eq_route' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ZqhF01.sparseRelativeBits_eq_route' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ZqhF01.gate2_fires' depends on axioms: [propext]
+'ZqhF01.gate3_fires' does not depend on any axioms
+'ZqhF01.w_eq_log2_add_two' depends on axioms: [propext, Quot.sound]
+'ZqhF01.size_field_slack' depends on axioms: [propext, Quot.sound]
+'ZqhF01.bpCode_length_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ZqhF01.longRelativeBits_le_budget' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ZqhF01.sparseRelativeBits_le_budget' depends on axioms: [propext, Classical.choice, Quot.sound]
