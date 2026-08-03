@@ -6888,3 +6888,45 @@ Consequences:
   silently corrected: the `superIsLong` crossover is 5488/5489 and not ~8192, and
   the summary-table activity predicate IS executable-path relevant.
 - No theorem, matrix acceptance, contract, or public claim changes.
+
+## WDD-20260726-012: the coordinator status document names where to attack it
+
+Status: Coordinator decision recorded 2026-07-26. Governs the form of status
+documents written for independent review.
+
+Date: 2026-07-26
+
+Context:
+
+`docs/internal/E1_ENDGAME_COORDINATOR_STATUS_2026_07_26.md` was written for the
+owner and for an independent coordinator to review. Its author holds positions in
+several of the questions it reports on -- most sharply the `EG-CP-F03` amendment,
+which the author proposed after an external audit found the author's own work
+short.
+
+Decision:
+
+Status documents written for independent review carry a closing section naming
+the places where the author is least confident or holds an interest, and the
+document is written to be readable with no conversation context.
+
+Rationale:
+
+A reviewer's time is the scarce resource, and the author knows better than anyone
+where the soft ground is. Withholding that is a way of spending the reviewer's
+attention on the parts most likely to survive. The interest disclosure is not
+decoration: the F03 amendment's load-bearing claim arrived from a campaign
+commissioned to defeat that amendment, which is exactly the coincidence a reviewer
+should check rather than trust.
+
+Assuming no conversation context is the other half. A status document that only
+makes sense to someone who watched it being produced cannot be audited, and this
+project has already paid for evidence that existed only inside a session.
+
+Consequences:
+
+- Section 8 of the status document lists six targets, including the author's own
+  hygiene record for the session.
+- A reviewer who disagrees with a recommendation should be able to locate the
+  supporting artifact by path from the document alone; every claim in it cites one.
+- No theorem, matrix acceptance, contract, or public claim changes.
