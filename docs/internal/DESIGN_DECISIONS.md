@@ -5346,3 +5346,77 @@ Consequences and evidence:
   amendment relocates, while the congruence has no completeness step to fail.
   A11 should weigh it.
 - No accepted blob, matrix acceptance, contract, or public claim changes.
+
+## DD-20260802-001: factor packed offsets through Nat-only mirrors, not a census
+
+Status: Worker decision recorded 2026-08-03 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Governs how `EG-CP` rows `FG-02` and
+`FG-03` are evidenced.
+
+Date: 2026-08-03
+
+Context:
+
+`FG-02` requires that every live physical source offset be "a checked function
+only of `n`, `longCount`, typed source/index arguments, and prior packed
+replies". The obvious reading is an inventory: enumerate the offsets, show each
+one's inputs. That reading has failed on this exact surface three times
+(`DD-20260726-006`), always the same way -- the enumeration is a curated list and
+its completeness becomes a separate argument that turns out to be false.
+
+Two shortcuts are available and both are forbidden. Synthesizing a canonical
+shape from `n` inside the offset function is registry mutation
+`M04-CANONICAL-SHAPE-BY-N`. Proving only a congruence -- equal size and equal
+long count imply equal offsets -- would establish that the offsets are
+*determined* by `(n, longCount)` without producing anything a controller could
+evaluate, and the controller has to compute addresses, not merely be promised
+they exist.
+
+Decision:
+
+For each shape-indexed quantity entering an offset, define a mirror whose type
+mentions only `Nat` and the closed source/component inductives, and prove the
+mirror equal to the real quantity. The factorization claim is then carried by
+the mirror's *signature*: a definition of type `Nat -> Nat -> Source -> Nat`
+cannot consult shape content, so the elaborator enforces what prose previously
+asserted.
+
+Coverage is obtained the same way. `ConcreteBPNativeSuccinctRMQFlatPayloadSource`
+and `ConcreteBPNativeSuccinctRMQFlatPayloadComponent` are closed inductives, so
+the equalities are proved by `cases` and a new constructor breaks elaboration.
+
+The header descriptor is `longCount shape`, the number of long super slots, and
+`K = 1` is proposed on the strength of
+`GenericSelect.longSuperRelativeTable_payload_length`, which already states that
+the long relative table's payload length is that count times two size-only
+factors.
+
+Rationale:
+
+`WDD-20260726-010` recorded that the mirror technique itself was sound and only
+the exhaustiveness claim layered on it was false. The difference here is that no
+such claim is layered on: the universe is a closed inductive rather than "every
+`Nat`-valued expression in a 917-constant closure", so completeness is a
+typechecking property rather than a curated list. This is the `SourceInventory`
+pattern, which is the one attempt on this surface that held up.
+
+Choosing the mirror over the congruence also keeps the evidence honest about
+what is still missing. A mirror that cannot be defined is a visible failure at
+the point of definition; a congruence that cannot be proved looks the same as a
+congruence nobody tried to prove.
+
+Consequences:
+
+- `RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceFactorization.lean` is
+  imported by `RMQ.lean`, so it is inside `lake build RMQ` and inside the prose
+  hygiene scan. The `EG-CP-F01` campaign's residual R1 recorded definitions left
+  outside the build as a defect; this avoids repeating it.
+- `closeComponent_flatOffset` proves the close component's base is
+  `2 * shape.size + packedAccessOverhead shape.size`. That discharges `FG-03`'s
+  second clause: every content-dependent length before the close component,
+  including both relative tables, is absorbed by the access padding.
+- The cancellation is not arithmetic luck. Truncated `Nat` subtraction makes
+  `a + (B - a) = B` false without `a <= B`, and that hypothesis is a field of
+  `BPCloseAccessDirectory`, so the layout cannot be instantiated without it.
+- No theorem here concerns a controller, a cell, or a probe. Offsets are bit
+  positions in the existing flat payload.
