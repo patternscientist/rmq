@@ -12,9 +12,12 @@ Coordinator launch metadata (NOT part of the pasted prompt):
   fresh-blind practice and is handled explicitly in the prompt.
 - Log to `docs/internal/AUDIT_AND_A_DESIGN.md`; report under
   `docs/internal/audit_reports/`.
-- The audit target is `89cc126`, the amendment commit. This prompt file is
-  committed one commit later, so it is deliberately **not** part of the audited
-  tree — a commissioning artifact should not be evidence in its own audit.
+- The audit target is now `2a65f8b` (= `origin/main`), **re-pinned** from the
+  original `89cc126`. The re-pin is required: `89cc126` predates `972e50b`, which
+  landed the A10 report this prompt names as required reading, so the original
+  pin referenced a file the audited tree did not contain (WDD-20260726-008).
+- The target therefore contains this prompt file and the A10 prompt. Both are
+  commissioning artifacts, not evidence; the prompt says so in Scope.
 
 ---
 
@@ -25,8 +28,8 @@ Auditor:
 - Mode: FRESH BLIND DELTA
 
 Audit target:
-- Base commit: 6be9e5532d90412db74506a658c3393175f6e6f7
-- Target commit: 89cc126 (full: 89cc126e176379fc7bf45f948211909b80cbf021)
+- Base commit: 6be9e5532d90412db74506a658c3393175f6e6f7  (A10's audited target)
+- Target commit: 2a65f8b (full: 2a65f8be4f7766487d8d1b72e2a6c722f0646e11)
 - Branch: claude/f03-a10-audit-repairs
 - Active roadmap node and intent: Stage F row `EG-CP-F03-GEOMETRY-CLOSURE` as
   AMENDED by the two amendment rows dated 2026-07-26 in
@@ -49,17 +52,31 @@ Independence:
   DD-20260726-005 (the amendment rationale).
 
 Project-skill preflight (run first, record output):
-- Governance ref: 89cc126e176379fc7bf45f948211909b80cbf021
+- Governance ref: 2a65f8be4f7766487d8d1b72e2a6c722f0646e11
 - Runtime RMQ catalog: rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint
 - Applicable audit-worker role skills: NONE; omit `-RequiredSkills`, pass
   `-AllowNoRequiredSkills`. Do not name a coordinator, proof or prompt-authoring
   skill to satisfy it.
 
 Scope:
-- Delta: two amendment rows in RMQ_ENDGAME_ROADMAP.md; DD-20260726-004 and -005;
-  WDD-20260726-005; a rewritten module docstring and four new theorems in
+- Delta (6be9e55..2a65f8b, four commits): two amendment rows in
+  RMQ_ENDGAME_ROADMAP.md; DD-20260726-004, -005, -006; WDD-20260726-005 through
+  -009; a rewritten module docstring and four new theorems in
   RMQ/Core/SuccinctFinal/RAM/GeometryClosure.lean; amended headers on
-  E1_ENDGAME_F03_CLOSURE_RESULT.md.
+  E1_ENDGAME_F03_CLOSURE_RESULT.md; the landed A10 report and its round-log
+  entry; and a new module RMQ/Core/SuccinctFinal/RAM/SourceInventory.lean with
+  one added import at RMQ.lean.
+- SourceInventory is the SOURCE half of the ORIGINAL clause, landed after an
+  owner-directed attempt to make the amendment unnecessary. DD-20260726-006
+  records that the same attempt's geometry census, consumer map and F06
+  work-list were REJECTED for shipping false exhaustiveness claims. Judge that
+  disposition too: was the right half kept, and is the rejection reasoning sound
+  or self-serving? Note in particular the claim that exhaustiveness is checkable
+  for a closed inductive and not checkable for the geometry universe -- that
+  claim is load-bearing for the amendment and you should test it rather than
+  accept it.
+- The A10 and A11 prompt files are in the target tree. They are commissioning
+  artifacts, not evidence; you may read them but may not cite them as support.
 - New load-bearing theorems (namespace RMQ.SuccinctFinal.GeometryClosure):
     queryTraceResultWithStore_length_and_footprint
     orderedReadFootprintWithStore_length_and_footprint
@@ -137,8 +154,8 @@ Adversarial requirements:
 Checks:
 - git status --short --branch
 - git log --oneline --decorate -20
-- git diff --stat 6be9e55..89cc126
-- git diff --check 6be9e55..89cc126
+- git diff --stat 6be9e55..2a65f8b
+- git diff --check 6be9e55..2a65f8b
 - lake build                       (record target count; note if it is a replay
   rather than a clean build, and say so explicitly in the report)
 - lake env lean scripts/headline_axiom_check.lean

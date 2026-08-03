@@ -6790,3 +6790,52 @@ Consequences:
 - Where an agent must read a prebuilt environment it may do so read-only; it
   may not write into one it does not own.
 - No theorem, matrix acceptance, contract, or public claim changes.
+
+## WDD-20260726-010: F06 discovers its enumeration by rewriting, not by enumerating first
+
+Status: Coordinator decision recorded 2026-07-26. Sequencing decision for
+`EG-CP-F06`; adds one amendment row to the Stage F matrix.
+
+Date: 2026-07-26
+
+Context:
+
+The `EG-CP-F03` evidence amendment relocated the syntactic-elimination
+obligation to `EG-CP-F06`'s "closed signature". An owner-directed attempt to
+build the geometry inventory anyway then failed: its census, consumer map and
+work-list all shipped false exhaustiveness claims (DD-20260726-006). That makes
+three independent failures on the same half.
+
+Decision:
+
+`EG-CP-F06` inherits the obligation explicitly, and discovers the enumeration
+**by performing the packed rewrite** rather than by enumerating in advance. F06
+may not cite the F03 amendment, or `T4_wholeQuery_trace_size_only`, as progress
+on it.
+
+Rationale:
+
+The three failures share one cause, and it is structural rather than a
+competence story. `SourceInventory.lean` succeeds because its universe is a
+closed inductive: rows are joined by case analysis, and adding a constructor
+without extending the table breaks elaboration, so the elaborator enforces
+coverage. The geometry universe -- every Nat-valued expression in a
+917-constant closure -- has nothing to case on, so any census is a curated list
+whose completeness is a separate argument that keeps being asserted and keeps
+being false.
+
+The rewrite does not have that failure mode, because it visits every site by
+construction. The enumeration falls out as a by-product and the type checker
+enforces coverage: a site not rewritten is a site that still mentions `shape`,
+and the parameter cannot be deleted while one remains.
+
+Consequences:
+
+- The reusable technique is `GeometryCensus`'s Nat-only mirror functions with
+  `_mirror` congruences. That design was sound; only the exhaustiveness claim
+  layered on top was false. Reuse the mirrors, drop the claim.
+- Do not commission another standalone geometry inventory in the census form.
+- The `SourceInventory` / geometry contrast is the general rule: enumerate when
+  the universe is a closed inductive, otherwise obtain coverage from a
+  construction that must touch every case.
+- No theorem, matrix acceptance, contract, or public claim changes.
