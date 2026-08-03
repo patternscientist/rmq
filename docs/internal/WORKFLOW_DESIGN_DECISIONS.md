@@ -6839,3 +6839,59 @@ Consequences:
   the universe is a closed inductive, otherwise obtain coverage from a
   construction that must touch every case.
 - No theorem, matrix acceptance, contract, or public claim changes.
+
+## WDD-20260802-001: freeze a falsification matrix before the work it governs
+
+Status: Worker decision recorded 2026-08-02 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Binds the ordering of the acceptance
+freeze relative to implementation edits on this branch.
+
+Date: 2026-08-02
+
+Context:
+
+The EG-CP final falsification gate commissions fifteen frozen requirements
+(`FG-01` through `FG-15`), nineteen inherited invariants, and a sixteen-entry
+ordered mutation registry. The commissioning prompt requires the matrix to be
+created before editing, and the Claude-runtime adaptation in
+`.claude/skills/rmq-proof-sprint/SKILL.md` requires the freeze to be its own
+commit so it is git-verifiable.
+
+That adaptation exists because of a specific past failure: a matrix written
+alongside the implementation cannot distinguish requirements that were frozen
+in advance from requirements that were adjusted to match what the work
+happened to achieve. The E1-01R3 audit found exactly that pattern.
+
+Decision:
+
+`docs/internal/EG_CP_FINAL_FALSIFICATION_MATRIX.md` lands in its own commit,
+before any Lean or script edit on this branch. Every row is created `Open` with
+`Pending` evidence. Requirements, objects, guards, quantifiers, the mutation
+registry, and expected verdicts are fixed by that commit; only the evidence and
+status columns may change afterwards, and only a coordinator-approved
+amendment recorded in the matrix's own section 6 may narrow a row.
+
+Rationale:
+
+The freeze is only worth something if a reader can check it cheaply. With the
+matrix in its own commit, `git show <freeze-commit>` is the whole audit: the
+frozen text is visible, its parent is the untouched base, and any later
+weakening appears as a diff against a commit that predates every theorem. A
+matrix committed together with the implementation offers no such handle, and
+its verbatim claim would have to be taken on the worker's word.
+
+This branch has a particular reason to care. The worker is permitted to stop on
+an obstruction, and an obstruction report is exactly the situation in which a
+weakened target would be hardest to detect and most consequential: a
+sufficiently narrowed row can turn "the architecture fails" into "the
+architecture succeeds", or the reverse.
+
+Consequences:
+
+- The freeze commit changes a workflow-sensitive path with no Lean change, so
+  this entry is required by `scripts/design_decision_check.ps1 -Strict` to make
+  the commit valid on its own at `HEAD~1`, which is how CI evaluates it
+  (`WDD-20260726-007`).
+- Later commits on this branch may append evidence to the matrix, but a diff
+  touching a requirement cell is a contract amendment and must say so.
+- No theorem, roadmap acceptance, public claim, or Stage F status changes here.

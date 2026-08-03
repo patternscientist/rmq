@@ -1,0 +1,154 @@
+# EG-CP final falsification gate - frozen acceptance matrix
+
+Worker branch: `codex/eg-cp-final-falsification-gate-r1`.
+Exact base: `1490c97b399d136bad4e18953441da433d130d4d` (tree `4114fe2544ad0a4af4dce3c002e617a8dd55e64b`).
+Workflow governance ref: `f0c7232a8a52b8d61ead5e96d72a8a849bc094b5` (verified ancestor of the base).
+Template: `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`.
+
+**This matrix is frozen by this commit, before any implementation edit.** Requirements,
+objects, guards, quantifiers, the mutation registry, and expected verdicts may not be
+weakened without a coordinator-approved contract amendment. Only the `Evidence obtained`
+and `Status / residual gap` columns may change afterwards.
+
+**This document accepts nothing.** It records what would have to be true. A worker may
+report at most `CANDIDATE_COMPLETE`; coordinator acceptance and a fresh-blind exact-commit
+audit remain separate and are not claimed here.
+
+Roadmap join: the final falsification rung for `docs/internal/RMQ_ENDGAME_ROADMAP.md`
+Stage F, feeding but not itself closing Stage A packed-architecture acceptance. This task
+does not record `FEASIBILITY_PASS`, accept Stage F or Stage A, synchronize public claims,
+or select a publication headline.
+
+---
+
+## 1. Frozen requirement rows `FG-01` .. `FG-15`
+
+Requirement text is copied verbatim from the commissioning prompt's numbered
+"Frozen requirements" list.
+
+| ID | Exact frozen requirement | Scope | Evidence needed (exact proposition/check) | Named consumer and identity/composition chain | Anti-vacuity challenge attempted and outcome | Evidence obtained | Status / residual gap |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `FG-01-RAW-PAYLOAD-IDENTITY` | `payloadBits xs` is definitionally equal or theorem-identical to the existing canonical `concreteBPNativeSuccinctRMQPayload` object consumed by the accepted RMQ semantics. There is no parallel payload, internal padding, hidden table, or sibling data store. | Local | A checked equality whose right-hand side is the existing canonical payload object at its existing definition site, not a re-derived copy; plus the absence of any second payload/table constructed by the packed modules. | The packed `memory` definition and the capstone space conjunct must both take their bits from this object. | Substitute a structurally equal but separately defined payload and check whether any committed theorem rejects it (registry `M11-SIBLING-PAYLOAD`). | Pending | Open |
+| `FG-02-K1-SOURCE-FACTORIZATION` | over the complete closed physical-source type, every live source offset and span used by the packed execution is a checked function only of `n`, `longCount`, typed source/index arguments, and prior packed replies. Cover aliases, empty sources, sentinels, dead slots, and cell crossings. | Local | A theorem universally quantified over the closed source inductive and over all shapes of a given size, concluding that the offset/span equals an application of one fixed function to `(n, longCount, source, index)`. | Consumed by the packed address computation inside the closed controller; the controller may not call the shape-taking offset function. | Add a source whose offset genuinely needs another descriptor and check the theorem fails to elaborate; registry `M10-SPARSE-COUNT-DEPENDENCY`. | Pending | Open |
+| `FG-03-SPARSE-COUNT-ELIMINATION` | prove that no executed offset requires sparse-count metadata. In particular prove the sparse-relative table is terminal within the select payload for addressing purposes and that access padding makes the subsequent close-component base input-size-only. A finite example list is not universal evidence. | Local | Two checked theorems: (a) terminality of the sparse-relative table inside the select payload concatenation; (b) the close-component flat base equals an `n`-only expression, including the truncated-subtraction side condition that the access directory payload fits its budget. | Feeds `FG-02`; consumed by the close-source address computation. | Attempt to exhibit a shape of some size `n` whose close base differs from another shape of the same size; the theorem must make that impossible for every size, not just sampled ones. | Pending | Open |
+| `FG-04-WIDTH-AND-HEADER` | freeze `K = 1`; define `P(n)` as the exact input-size-only canonical payload length; define and justify `w(n) = machineWordBits (P(n) + 2)` or prove a checked equivalence-required correction; encode exactly `longCount` in one `w(n)`-bit cell; prove all-size count fit, decoding, exact arity, and empty/small cases. | Local | `P(n)` all-size theorem; `w(n)` definition; `longCount xs < 2 ^ w n` for every `n` and shape; `decode (encode c) = c` at width `w n`; header bit length exactly `w n`; explicit `n = 0`, `n = 1`, `n = 2` instances. | `headerBits` and the header cell of `memory xs`; the controller's header decode. | Check that the encoding is not silently widened or truncated at small `n`; instantiate `n = 0` where the width is minimal. | Pending | Open |
+| `FG-05-PACKED-MEMORY` | define `headerBits`, `serializedBits = headerBits ++ payloadBits`, fixed-width chunking, exact slice/unpack behavior, boundary crossing, zero final padding, and `memory xs`. Prove round trips and that all execution reads target this one object. | Local | Chunking round-trip theorem (concatenating the cells recovers `serializedBits` up to the counted final padding); an exact bit-slice theorem for an arbitrary aligned and unaligned span, including a span crossing a cell boundary; and a theorem that the executed trace mentions only `memory xs`. | The capstone's execution and space conjuncts. | Mutate the crossing codec bit order and require exact decoded-word failure; registry `M09-WRONG-CELL-CROSSING`. | Pending | Open |
+| `FG-06-ALLOCATED-SPACE` | define allocated bits as `memory.length * w(n)`; include header, canonical payload, every allocated cell, final padding, sentinel/dead material; prove an all-size `2*n + rho(n)` upper bound and `LittleOLinear rho`. Do not count only meaningful bits. | Local | `(memory xs).length * w (xs.length) <= 2 * xs.length + rho (xs.length)` for every `xs`, plus `LittleOLinear rho` with the project's existing definition. | The capstone space conjunct, over the same `memory xs` the execution probes. | Confirm the bound is stated on allocated cells times width, not on `serializedBits.length`; check the two differ whenever padding is nonzero. | Pending | Open |
+| `FG-07-CLOSED-CONTROLLER` | the actual executed controller is one fixed definition whose dynamic inputs are exactly `n`, `left`, `right`, the header reply, and previous replies from `memory xs`. It has no `xs`, semantic `shape`, proof witness, source list, sibling store, precomputed offsets, expected answer, shape-specialized program, or input-dependent code/table outside memory. An exact-type consumer pins the concrete controller, not a mutable wrapper. | Local | The controller's declared signature contains no `List Int`, no `CartesianShape`, and no proof argument; and an independently frozen expected-type consumer elaborates only against that exact signature. | The capstone's `receipt` is produced by this definition. | Restore a `shape` parameter and require exact-signature failure; synthesize a canonical shape from `n` inside a wrapper and require structural failure. Registry `M03-SHAPE-PARAMETER`, `M04-CANONICAL-SHAPE-BY-N`, `M13-HIDDEN-UNCOUNTED-TABLE`. | Pending | Open |
+| `FG-08-PHYSICAL-LOWERING` | every logical read actually used by the query lowers to a fixed bounded sequence of physical cell probes against `memory xs`; prove exact decoded word equality and preserve attempted/successful distinction, order, multiplicity, producing site, and cell-crossing behavior. | Local | For each logical read, a theorem giving the exact probe list and the decoded word equal to the logical word; and a whole-run theorem relating the ordered logical trace to the ordered physical trace with multiplicity. | The capstone's trace conjunct. | Reorder or drop one probe and require the ordered-trace theorem to fail; registry `M07-DISCONNECTED-TRACE`. | Pending | Open |
+| `FG-09-TOTALITY-AND-CAP` | for every required query case, every attempted probe is successful and in range, every address is machine-representable at `w(n)`, and the complete physical trace length is at most one derived constant `C` independent of `n`, contents, and endpoints. Derive `C` from execution; do not freeze an aspirational number first. | Local | Universal theorems: attempted probes are in range and successful; each address `< 2 ^ w n`; `receipt.trace.length <= C` with `C` a literal derived after the lowering exists. | The capstone's totality and cap conjuncts. | Replace derived cap evidence by a stored number or theorem-only field and require consumer failure; registry `M08-FORGED-PROBE-CAP`. Note the recorded F07 concern that some attempted probes currently return `none` into segment 0 under canonical stores at small `n`. | Pending | Open |
+| `FG-10-SAME-RUN-CORRECTNESS` | the packed controller run itself returns the independent project `ReferencePacket`/public RMQ semantics for valid, reversed, empty, and out-of-range cases. Do not obtain a semantic result first and replay decorative reads afterward. | Local | `(runPackedController n l r (memory xs)).result = referencePacket xs l r` for every `xs`, `l`, `r`, with the reference side the project's existing independent semantics. | The capstone's correctness conjunct. | Check the controller body does not call the reference semantics; registry `M06-ANSWER-ORACLE`. | Pending | Open |
+| `FG-11-LIVENESS-AND-ANTI-BYPASS` | supply a pinned valid execution where changing only the counted long-count cell changes a later probe address or returned result; bridge the existing consumed-payload-cell witness to the packed run's returned answer; and supply a proved-unread-cell mutation that is an expected accept. Aggregate trace inequality alone is insufficient when the requirement concerns the value. | Local | A checked inequality whose two sides are a later probe ADDRESS or the RETURNED value, not the enclosing record; plus an equality for the proved-unread cell. | The capstone plus the committed replay. | Verify the inequality projection is address/result, not the trace log; registry `M01-WRONG-LONG-COUNT`, `M14-LONG-COUNT-IGNORED`, `A02-UNREAD-CELL-EXPECTED-ACCEPT`. | Pending | Open |
+| `FG-12-REPLAY-AND-CONSUMER` | commit one portable exact-registry replay with the ordered cases and expected verdicts below, named failing surfaces, one unchanged production accept, one unread-cell accept, restoration hashes, clean-tree checks, positive evidence-based subprocess deadlines, owned root-plus-descendant termination on Windows and Ubuntu, selector nonvacuity, and an independent expected-type consumer whose literal type pins the full capstone. | Local | `scripts/eg_cp_final_falsification_replay.ps1` exists, encodes the frozen registry literally, and passes in full mode on the committed clean candidate. | `RMQ/Validation/EGCPFinalFalsification.lean` pins the capstone proposition. | Omit, duplicate and reorder registry IDs; pass unknown, empty and whitespace selectors; all must fail. | Pending | Open |
+| `FG-13-TRUST-AND-SAME-OBJECT` | no reachable `sorry`, `admit`, axiom, unsafe/opaque/partial/extern implementation, native decision shortcut, Mathlib import, proof-value oracle, semantic callback, or mismatch of payload/store/run/width objects supports the capstone. Proof-only fields may certify but not choose answers, routes, or addresses. | Local | Hygiene scan clean; `lake env lean scripts/headline_axiom_check.lean` clean; and an explicit object-identity chain showing payload, memory, width, run and trace are the same objects in every conjunct. | The capstone. | Conjoin true theorems about different payloads and check the composition row rejects it; registry `M11-SIBLING-PAYLOAD`, `M05-SIBLING-STORE`. | Pending | Open |
+| `FG-14-BOUNDARIES` | check empty representation, singleton, size two, each relevant threshold minus one/at/plus one, empty range, reversed range, and out-of-range endpoints. Preserve the half-open contract and leftmost tie policy. The top-level architecture is uniform; total empty tables and guards are allowed, but an undocumented second representation is not. | Local | Kernel-checked instances at each listed case, with the thresholds named explicitly from the geometry (including the recorded `5488/5489` long crossover and the `[1024, 1330]` interior-readiness window). | The capstone instantiated at those cases. | Check no case is discharged by a readiness dispatch that silently selects a different representation. | Pending | Open |
+| `FG-15-DURABLE-DECISION` | commit the completed matrix, result report, design rationale, rejected K0/K2/padding/historical alternatives, exact theorem types and object-composition chain, skeptical-reviewer questions, verification ledger, and every remaining assumption. Do not call commissioning prompts or audit prose theorem evidence. | Local | This matrix completed, `docs/internal/EG_CP_FINAL_FALSIFICATION_RESULT.md`, and entries in `DESIGN_DECISIONS.md` / `WORKFLOW_DESIGN_DECISIONS.md`. | Coordinator reconstruction. | Confirm no row cites the A11 prompt, an A10/A11 verdict, worker prose, matrix status, CI, or a bare theorem name as its evidence. | Pending | Open |
+
+---
+
+## 2. Inherited invariant rows
+
+Requirement text is copied verbatim from
+`.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md` section 2.
+
+| ID | Exact frozen requirement | Scope | Evidence needed (exact proposition/check) | Named consumer and identity/composition chain | Anti-vacuity challenge attempted and outcome | Evidence obtained | Status / residual gap |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `INV-STORE-IDENTITY` | the exact payload/store executed is the payload/store counted by the public space theorem; a theorem about a sibling payload is insufficient | Inherited | The space conjunct and the execution conjunct name the same `memory xs` term. | Capstone. | `M05-SIBLING-STORE`, `M11-SIBLING-PAYLOAD`. | Pending | Open |
+| `INV-VALUE-DEPENDENCY` | returned values and routing decisions depend on actual charged reads, not a semantic answer computed before the reads. When the requirement concerns the returned answer or route, evidence must constrain that value, state, or route; inequality of an enclosing trace record can be satisfied by its log alone and is insufficient | Inherited | An inequality at the `.result` or next-address projection. | `FG-11`. | `M01`, `M06`, `M14`. | Pending | Open |
+| `INV-SEMANTIC-NONVACUITY` | semantic coverage, liveness, ownership, and refinement predicates are derived from the operational construction they describe. A predicate defined to be `True`, an enumeration restated as membership, or a separately hand-written consumer label does not establish operational liveness by itself | Inherited | Liveness derived from emitted probes of the actual run. | `FG-11`. | Replace the liveness predicate by `True` and require failure. | Pending | Open |
+| `INV-TRACE-EXECUTION` | traces and footprints are derived from the execution they describe | Inherited | The trace is a projection of the run, not a separately constructed list. | `FG-08`. | `M07-DISCONNECTED-TRACE`. | Pending | Open |
+| `INV-STORE-AGREEMENT` | supplied-store agreement determines result, cost, and the relevant trace | Inherited | Agreement on the probed cells determines the run. | `FG-11`, `A02`. | `A02-UNREAD-CELL-EXPECTED-ACCEPT`. | Pending | Open |
+| `INV-READ-BACKING` | every successful read is backed positionally by the counted store | Inherited | Each probe reply equals the corresponding cell of `memory xs`. | `FG-08`. | Corrupt a backing cell and require the reply to change. | Pending | Open |
+| `INV-WORD-WIDTH` | stored and returned words fit one declared modeled machine word | Inherited | Every cell value `< 2 ^ w n`. | `FG-04`, `FG-09`. | Instantiate at `n = 0` where `w 0` is minimal. | Pending | Open |
+| `INV-ADDRESS-WIDTH` | every executed address, dead/sentinel address, and encoded instruction operand fits the modeled machine word, not merely the host array bounds. Constructor-exhaustive evidence must include register identifiers, branch/jump targets, dormant code, and arithmetic operands | Inherited | Every probe address `< 2 ^ w n`, including addresses of dead or sentinel material. | `FG-09`. | Include the dead/sentinel sources named by the source inventory. | Pending | Open |
+| `INV-PROGRAM-ACCOUNTING` | input-dependent constants and metadata carried by executable code are counted machine data or are derived uniformly from counted/public inputs. Calling shape-specialized data "program code" does not remove it from the payload/state accounting obligation | Inherited | No content-dependent literal in the controller definition. | `FG-07`. | `M13-HIDDEN-UNCOUNTED-TABLE`. | Pending | Open |
+| `INV-ORACLE-INDEPENDENCE` | executable fixtures and edge-case expected values come from an independent specification or a theorem already connected to it, never from the implementation result being tested | Inherited | Expected values come from the `List Int` reference semantics. | `FG-10`, `FG-14`. | `M06-ANSWER-ORACLE`. | Pending | Open |
+| `INV-PROOF-SEPARATION` | proof-only fields never carry answers or uncharged routing information | Inherited | The controller state carries no proof field consulted for the answer or next address. | `FG-07`. | `M08-FORGED-PROBE-CAP`. | Pending | Open |
+| `INV-NO-SYNTHETIC` | synthetic events, decorative rereads, and post-hoc replay do not support the execution claim | Inherited | The result is computed from replies, not replayed after a semantic call. | `FG-10`. | `M07`, `M06`. | Pending | Open |
+| `INV-CATEGORY-SEPARATION` | payload bits, proof fields, model ticks, machine state, Lean runtime, and measured performance remain distinct | Inherited | The result report records the derived probe cap separately from payload bits, allocated bits, proof fields, model probes, and Lean runtime. | `FG-15`. | Confirm the report does not conflate allocated bits with meaningful bits. | Pending | Open |
+| `INV-PUBLIC-COMPOSITION` | a theorem combining space, exactness, cost, provenance, or machine claims proves them about the same construction and execution and over the same validity domain | Inherited | Every capstone conjunct quantifies over the same `xs`, `l`, `r` and mentions the same `memory xs`. | Capstone. | `M11`, `M12-PUBLIC-TYPE-WEAKENING`. | Pending | Open |
+| `INV-MUTATION-REPRODUCIBILITY` | when acceptance relies on an exhaustive, production, or public-dependency mutation campaign, the candidate contains a versioned runner or fixtures that replay every claimed case, check the exact expected failure/acceptance surface, restore tracked state, and leave the tree clean | Inherited | The committed replay script passes in full mode with restoration hashes verified. | `FG-12`. | Omit/duplicate/reorder registry IDs; require failure. | Pending | Open |
+| `INV-GLOBAL-PHYSICAL-MACHINE` | a physical-machine claim supplies one pre-execution store/word array and a checked address translation for every executed segment, including failed/dead accesses. A theorem for one suffix or component is not a whole-machine embedding | Inherited | One `memory xs` and a translation covering every source in the closed source type. | `FG-08`. | Drop one segment from the translation and require failure. | Pending | Open |
+| `INV-WIDTH-SCALING` | one query-independent word-width declaration bounds all stored words, addresses, sentinels, operands, and primitive results, and its capacity/width is related to input size in the form required by the public word-RAM claim | Inherited | A single `w n` used everywhere, with the input-size relation proved. | `FG-04`, `FG-09`. | Check no sub-directory computes its own wider logical width. | Pending | Open |
+| `INV-VALIDATION-REACH` | executable validation imports and runs the new semantic layer. A validator for the predecessor implementation is regression evidence only and does not validate the new machine | Inherited | `RMQ/Validation/EGCPFinalFalsification.lean` imports and elaborates against the packed capstone. | `FG-12`. | `M12-PUBLIC-TYPE-WEAKENING`. | Pending | Open |
+| `INV-ALL-SIZE` | exactness covers all assigned sizes and edge cases without hidden readiness or compatibility dispatch | Inherited | Every capstone conjunct is quantified over all `xs` with no size side condition. | Capstone. | Check the interior-readiness non-monotonicity does not force a size guard. | Pending | Open |
+
+---
+
+## 3. Frozen replay registry
+
+Ordered exactly as commissioned. `scripts/eg_cp_final_falsification_replay.ps1` must encode
+this list literally and reject missing, duplicate, reordered, or unmapped IDs.
+
+| Order | ID | Mutation | Expected verdict | Named failing surface |
+| --- | --- | --- | --- | --- |
+| 1 | `A01-PRODUCTION-EXPECTED-ACCEPT` | unchanged final implementation, consumer, matrix, and result | ACCEPT | none |
+| 2 | `A02-UNREAD-CELL-EXPECTED-ACCEPT` | mutate exactly one proved-unread allocated cell and preserve the pinned run/result | ACCEPT | none |
+| 3 | `M01-WRONG-LONG-COUNT` | alter the header count | REJECT | liveness/consumer |
+| 4 | `M02-HOST-LONG-COUNT-MIRROR` | bypass the header reply with preprocessing/host metadata | REJECT | structural consumer |
+| 5 | `M03-SHAPE-PARAMETER` | add or restore a semantic `shape` input | REJECT | exact signature |
+| 6 | `M04-CANONICAL-SHAPE-BY-N` | synthesize a canonical shape from `n` inside a wrapper | REJECT | structural / same-object |
+| 7 | `M05-SIBLING-STORE` | read a logical/source store beside `memory xs` | REJECT | store identity |
+| 8 | `M06-ANSWER-ORACLE` | call the reference/semantic answer from controller execution | REJECT | oracle independence |
+| 9 | `M07-DISCONNECTED-TRACE` | retain a correct result while forging or replaying an unrelated physical trace | REJECT | trace execution |
+| 10 | `M08-FORGED-PROBE-CAP` | replace derived trace length/cap evidence with a stored number or theorem-only field | REJECT | consumer |
+| 11 | `M09-WRONG-CELL-CROSSING` | mutate one crossing codec order/bit span | REJECT | exact decoded word |
+| 12 | `M10-SPARSE-COUNT-DEPENDENCY` | introduce sparse-count metadata into a live offset | REJECT | K1 source factorization |
+| 13 | `M11-SIBLING-PAYLOAD` | prove space for one payload while executing another | REJECT | public / same-object composition |
+| 14 | `M12-PUBLIC-TYPE-WEAKENING` | remove one load-bearing capstone conjunct | REJECT | independently frozen expected-type consumer |
+| 15 | `M13-HIDDEN-UNCOUNTED-TABLE` | add a content-dependent lookup/program constant outside `memory xs` | REJECT | closed controller / program accounting |
+| 16 | `M14-LONG-COUNT-IGNORED` | retain the header read but make downstream offsets independent of its value | REJECT | liveness |
+
+### Replay harness contracts
+
+| ID | Exact frozen requirement | Evidence obtained | Status |
+| --- | --- | --- | --- |
+| `REPLAY-EXACT-REGISTRY` | encode the complete ordered frozen registry literally, validate uniqueness/order/mappings and exact verdict counts, and reject omission or duplication. | Pending | Open |
+| `REPLAY-SELECTOR-NONVACUITY` | a valid selector executes exactly one requested case; unknown, explicit empty, and whitespace selectors fail; only omitted selection may mean full mode. | Pending | Open |
+| `REPLAY-SUBPROCESS-DEADLINE` | every external stage has an evidence-based positive deadline, timeout is failure, the owned root and descendants are terminated on every gate OS, cleanup/restoration runs in `finally`, and a cheap descendant sleeper self-test precedes the semantic campaign. | Pending | Open |
+
+---
+
+## 4. Verification command ledger
+
+Roles: D = development-loop, F = final-required, C = conditional.
+
+| ID | Command | Role | Rows covered | Unique failure mode | Tree identity | Expected runtime / chosen deadline | Outcome |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `CHK-00` | `scripts/project_skill_preflight.ps1 -GovernanceRef f0c7232a... -RequiredSkills rmq-proof-sprint -RuntimeProjectSkills "rmq-proof-sprint"` | F | governance precondition | stale/missing role skill | base `1490c97` | seconds / 120s | PASS (recorded in the result report) |
+| `CHK-01` | `lake env lean RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Capstone.lean` | F | `FG-01`..`FG-11`, `FG-13` | capstone does not elaborate | final tree | to be recorded | Pending |
+| `CHK-02` | `lake env lean RMQ/Validation/EGCPFinalFalsification.lean` | F | `FG-12`, `INV-VALIDATION-REACH` | expected-type consumer does not pin the capstone | final tree | to be recorded | Pending |
+| `CHK-03` | `powershell -ExecutionPolicy Bypass -File scripts\eg_cp_final_falsification_replay.ps1` (full mode, exactly once) | F | `FG-12`, `INV-MUTATION-REPRODUCIBILITY` | a mutation is not actually rejected | committed clean candidate | to be recorded | Pending |
+| `CHK-04` | `lake build RMQ` | F | whole-library integration | a touched supporting module breaks a consumer | final tree | to be recorded | Pending |
+| `CHK-05` | `lake env lean scripts/headline_axiom_check.lean` | F | `FG-13` | a new axiom reaches a headline | final tree | to be recorded | Pending |
+| `CHK-06` | hygiene scan from `AGENTS.md` over `RMQ lakefile.toml` | F | `FG-13` | forbidden token, including as prose in a comment | final tree | seconds / 120s | Pending |
+| `CHK-07` | `rg -n "native_decide\|Lean\.ofReduceBool" RMQ` | F | `FG-13` | native decision shortcut | final tree | seconds / 120s | Pending |
+| `CHK-08` | `git diff --check` and `git diff --check 1490c97b399d136bad4e18953441da433d130d4d..HEAD` | F | committed whitespace | trailing whitespace in the committed range | post-commit | seconds / 120s | Pending |
+| `CHK-09` | `powershell -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1 -Strict -Base 1490c97b399d136bad4e18953441da433d130d4d` | F | `FG-15` | a design-sensitive path changed with no decision entry | final tree | to be recorded | Pending |
+| `CHK-10` | `powershell -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1 -Strict` | F | `FG-15` | roadmap/result prose overclaims | final tree | to be recorded | Pending |
+| `CHK-11` | `powershell -ExecutionPolicy Bypass -File scripts\gate.ps1` (aggregate, at most once on the unchanged final tree) | F | aggregate certification | anything the focused checks missed | final tree | to be recorded | Pending |
+| `CHK-12` | bounded import/startup smoke for the validation and replay roots | D | `FG-12` | replay deadline races Lean startup | development trees | to be recorded | Pending |
+| `CHK-13` | exact selector `A01-PRODUCTION-EXPECTED-ACCEPT`, then one representative mutation `M01-WRONG-LONG-COUNT` | D | `FG-12` | registry wiring broken before the full run is paid for | development trees | to be recorded | Pending |
+
+CI note carried from `WDD-20260726-007`: `scripts/design_decision_check.ps1` runs in CI at
+`-Base HEAD~1`, one commit at a time. Each commit on this branch must be validated at
+`HEAD~1`, not cumulatively.
+
+---
+
+## 5. Explicitly deferred, recorded as non-blocking by the commissioning contract
+
+| Item | Why non-blocking here |
+| --- | --- |
+| Public theorem/headline synchronization | The frozen target is the private Stage F falsification package, not publication. `README`, `docs/WHAT_IS_PROVED.md`, `docs/FAMILY_SUMMARY.md`, `artifact/CLAIMS.md` and headline prose are out of write scope. |
+| Word-RAM refinement (time bounds, operations) | The target is explicitly a cell-probe theorem. Naming the weaker model honestly is required; upgrading it is not in scope. |
+| K2 implementation, internal-padding representation, K0 self-delimiting bootstrap | Predetermined coordinator flips, not worker choices. |
+| Full historical B3 small-step execution | Superseded as the primary route; supporting research only. |
+| `FEASIBILITY_PASS`, Stage F / Stage A acceptance, publication headline selection | Coordinator decisions. This task closes the local rung only. |
+
+---
+
+## 6. Contract amendments
+
+None. Any amendment must be recorded here with the coordinator approval that authorized it,
+before the affected row's evidence changes.
