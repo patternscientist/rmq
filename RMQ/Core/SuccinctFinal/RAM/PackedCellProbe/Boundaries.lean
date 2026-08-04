@@ -213,6 +213,58 @@ theorem packedInteriorReadinessWindow :
   ⟨packedInteriorFits_1023, packedInteriorUnfits_1024,
     packedInteriorUnfits_1330, packedInteriorFits_1331⟩
 
+/-! ## The sparse-exception path is unreachable at unit stride
+
+`DD-20260804-041`. A local slot covers `localStride` occurrences, and
+`shortSuperLocalSpan` measures the span *between the slot's own occurrences* --
+base occurrence position to last occurrence position, plus one. So at unit stride
+a slot's span is at most one, the exception predicate's second conjunct becomes
+`wordBits < 1`, and `wordBits_pos` closes it.
+
+This is why the measured sparse exception count is zero everywhere: the path is
+unreachable, not merely unvisited.
+-/
+
+theorem packedShortSuperLocalSpan_le_one_of_unit_stride
+    (bits : List Bool) (target : Bool) (slot : Nat)
+    (hstride : GenericSelect.localStride bits.length = 1) :
+    GenericSelect.shortSuperLocalSpan bits target slot <= 1 := by
+  have hmin :
+      Nat.min (GenericSelect.localBaseOccurrence bits.length slot + 1)
+          (GenericSelect.superEndOccurrence bits target
+            (GenericSelect.localSuperSlot bits.length slot)) <=
+        GenericSelect.localBaseOccurrence bits.length slot + 1 :=
+    Nat.min_le_left _ _
+  have hle :
+      Nat.min (GenericSelect.localBaseOccurrence bits.length slot + 1)
+          (GenericSelect.superEndOccurrence bits target
+            (GenericSelect.localSuperSlot bits.length slot)) - 1 <=
+        GenericSelect.localBaseOccurrence bits.length slot := by
+    omega
+  have hmono := GenericSelect.position_mono bits target hle
+  simp only [GenericSelect.shortSuperLocalSpan,
+    GenericSelect.shortSuperLocalEndOccurrence, hstride]
+  omega
+
+/--
+**No sparse exception can occur at unit stride.** Not because the bit pattern is
+convenient -- because a one-occurrence span cannot exceed a machine word.
+-/
+theorem packedLocalIsSparseException_false_of_unit_stride
+    (bits : List Bool) (target : Bool) (slot : Nat)
+    (hstride : GenericSelect.localStride bits.length = 1) :
+    GenericSelect.localIsSparseException bits target slot = false := by
+  have hspan :=
+    packedShortSuperLocalSpan_le_one_of_unit_stride bits target slot hstride
+  have hword : 0 < GenericSelect.wordBits bits.length :=
+    GenericSelect.wordBits_pos _
+  have hnot :
+      ¬ GenericSelect.wordBits bits.length <
+          GenericSelect.shortSuperLocalSpan bits target slot := by
+    omega
+  unfold GenericSelect.localIsSparseException
+  simp [hnot]
+
 end PackedCellProbe
 
 end SuccinctFinal

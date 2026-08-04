@@ -1743,6 +1743,25 @@ theorem packedHeaderCountMovesTheIssuedCell :
             index stride / packedCellWidth n :=
   packedProbeCell_moves_with_longCount
 
+/-! ## The sparse-exception path is unreachable at unit stride (`DD-20260804-041`) -/
+
+/-- At unit stride a local slot's span is at most one occurrence wide. -/
+theorem packedUnitStrideSpanIsAtMostOne :
+    forall (bits : List Bool) (target : Bool) (slot : Nat),
+      GenericSelect.localStride bits.length = 1 ->
+        GenericSelect.shortSuperLocalSpan bits target slot <= 1 :=
+  packedShortSuperLocalSpan_le_one_of_unit_stride
+
+/--
+No sparse exception can occur at unit stride: a one-occurrence span cannot exceed
+a machine word.
+-/
+theorem packedNoSparseExceptionAtUnitStride :
+    forall (bits : List Bool) (target : Bool) (slot : Nat),
+      GenericSelect.localStride bits.length = 1 ->
+        GenericSelect.localIsSparseException bits target slot = false :=
+  packedLocalIsSparseException_false_of_unit_stride
+
 end Validation
 end PackedCellProbe
 end SuccinctFinal
