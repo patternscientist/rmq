@@ -6791,3 +6791,22 @@ Consequences and evidence:
   (`bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`)
   is the only part still unexamined.
 - `FG-07` remains Open: no top-level controller definition exists.
+
+### Addendum to `DD-20260804-012` (2026-08-04): the endpoint-fringe readers needed no new mirrors
+
+`bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore` and its right
+twin use exactly three shape-derived things -- the fringe chunk width, the
+local-BP window base, and the window reader -- and all three were already
+discharged. `packedLeftFringeCandidateRead` and `packedRightFringeCandidateRead`
+remove the shape with no new scalar mirrors, by `packedLeftFringeCandidateRead_eq`
+and `packedRightFringeCandidateRead_eq`.
+
+Both proofs needed `simp only` rather than `rw`, since the window base occurs
+under the `bind` continuation's binder.
+
+Pinned by `packedLeftFringeCandidateReadIsShapeFree` and
+`packedRightFringeCandidateReadIsShapeFree`.
+
+Of the cross-block branch, the remaining shape-taking callee is the interior
+range-min navigator. The two endpoint readers and the seed are done, and the
+dispatch scalar was already mirrored.

@@ -900,6 +900,31 @@ theorem packedRankCloseReadIsSizeOnly :
           pos :=
   packedRankCloseRead_size_only
 
+/-! #### The endpoint-fringe candidate readers are shape-free
+
+The cross-block branch's two endpoint readers needed no new mirrors: their only
+shape-derived inputs are the fringe chunk width, the local-BP window base and the
+window reader, all already handled.
+-/
+
+theorem packedLeftFringeCandidateReadIsShapeFree :
+    forall (shape : CartesianShape) (store : WordRAM.ReadStore)
+      (fringeSegment blockSize leftClose seed : Nat),
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+          shape store fringeSegment blockSize leftClose seed =
+        packedLeftFringeCandidateRead store fringeSegment shape.size blockSize
+          leftClose seed :=
+  packedLeftFringeCandidateRead_eq
+
+theorem packedRightFringeCandidateReadIsShapeFree :
+    forall (shape : CartesianShape) (store : WordRAM.ReadStore)
+      (fringeSegment blockSize rightClose seed : Nat),
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+          shape store fringeSegment blockSize rightClose seed =
+        packedRightFringeCandidateRead store fringeSegment shape.size blockSize
+          rightClose seed :=
+  packedRightFringeCandidateRead_eq
+
 /-! #### The same-block close branch is shape-free
 
 Composing the seed, the window reader and the seeded reader. The rank-close

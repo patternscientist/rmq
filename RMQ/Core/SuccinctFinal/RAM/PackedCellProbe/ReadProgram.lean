@@ -1046,6 +1046,82 @@ theorem packedSameBlockCloseSeededRead_eq
     packedSameBlockCloseSeededRead
   rw [packedFringeChunkBits_eq, packedLocalBPWindowBase_eq]
 
+/-! #### The endpoint-fringe candidate readers
+
+The cross-block branch's two endpoint readers use exactly three shape-derived
+things, and all three are already handled: the fringe chunk width, the local-BP
+window base, and the window reader. So they need no new mirrors at all.
+-/
+
+/-- The left endpoint-fringe candidate reader, with no shape argument. -/
+def packedLeftFringeCandidateRead (store : WordRAM.ReadStore)
+    (fringeSegment n blockSize leftClose seed : Nat) :
+    WordRAM.TraceResult (Option (Nat × Nat)) :=
+  let c := packedFringeChunkBits n
+  let base := packedLocalBPWindowBase n blockSize leftClose
+  let start := leftClose + 1
+  let count :=
+    SuccinctClose.blockStartOf blockSize
+        (SuccinctClose.blockOfClose blockSize leftClose) +
+      blockSize - leftClose
+  let relLo := start - base
+  let relHi := start + count - 1 - base
+  WordRAM.TraceResult.bind
+    (packedLocalBPWindowBitsRead store n blockSize leftClose)
+    (fun window =>
+      WordRAM.TraceResult.map
+        (fun st => SuccinctClose.bpFringeCandGlobal base seed start st.2)
+        (SuccinctClose.bpFringeChunkFoldTraceResultAtSegmentWithStore store
+          fringeSegment c window seed relLo relHi
+          (Nat.min (relHi / c + 1) 33)))
+
+theorem packedLeftFringeCandidateRead_eq
+    (shape : CartesianShape) (store : WordRAM.ReadStore)
+    (fringeSegment blockSize leftClose seed : Nat) :
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+        shape store fringeSegment blockSize leftClose seed =
+      packedLeftFringeCandidateRead store fringeSegment shape.size blockSize
+        leftClose seed := by
+  unfold
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+    packedLeftFringeCandidateRead
+  simp only [packedFringeChunkBits_eq, packedLocalBPWindowBase_eq,
+    packedLocalBPWindowBitsRead_eq]
+
+/-- The right endpoint-fringe candidate reader, with no shape argument. -/
+def packedRightFringeCandidateRead (store : WordRAM.ReadStore)
+    (fringeSegment n blockSize rightClose seed : Nat) :
+    WordRAM.TraceResult (Option (Nat × Nat)) :=
+  let c := packedFringeChunkBits n
+  let base := packedLocalBPWindowBase n blockSize rightClose
+  let start :=
+    SuccinctClose.blockStartOf blockSize
+      (SuccinctClose.blockOfClose blockSize rightClose)
+  let count := rightClose - start + 2
+  let relLo := start - base
+  let relHi := start + count - 1 - base
+  WordRAM.TraceResult.bind
+    (packedLocalBPWindowBitsRead store n blockSize rightClose)
+    (fun window =>
+      WordRAM.TraceResult.map
+        (fun st => SuccinctClose.bpFringeCandGlobal base seed start st.2)
+        (SuccinctClose.bpFringeChunkFoldTraceResultAtSegmentWithStore store
+          fringeSegment c window seed relLo relHi
+          (Nat.min (relHi / c + 1) 33)))
+
+theorem packedRightFringeCandidateRead_eq
+    (shape : CartesianShape) (store : WordRAM.ReadStore)
+    (fringeSegment blockSize rightClose seed : Nat) :
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+        shape store fringeSegment blockSize rightClose seed =
+      packedRightFringeCandidateRead store fringeSegment shape.size blockSize
+        rightClose seed := by
+  unfold
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+    packedRightFringeCandidateRead
+  simp only [packedFringeChunkBits_eq, packedLocalBPWindowBase_eq,
+    packedLocalBPWindowBitsRead_eq]
+
 /-! #### The whole same-block close branch, shape-free
 
 Composing the seed, the window reader and the seeded reader. The rank-close
