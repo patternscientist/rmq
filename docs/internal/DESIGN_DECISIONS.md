@@ -6709,3 +6709,28 @@ remains untouched.
 Pinned by `packedSameBlockCloseSeededReadIsShapeFree`.
 
 `FG-07` remains Open.
+
+### Fourth addendum to `DD-20260804-011` (2026-08-04): the close rank leaf is fully size-only
+
+`builtRelativeSplitBPCloseRankWordSize shape = machineWordBits shape.bpCode.length`
+and `builtRelativeSplitBPCloseRankBlocksPerSuper shape` is defined as that same
+word size. Both are therefore `packedBpCodeWordWidth n`, discharged by
+`packedCloseRankWordSize_eq` and `packedCloseRankBlocksPerSuper_eq`.
+
+With the bit length already `2 * n`, `packedRankCloseRead_size_only` states the
+close-side rank leaf entirely in terms of `n`, the supplied store, the segment
+base and the position:
+
+```
+concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore shape store
+    rankSegmentBase pos =
+  packedRankCloseRead store rankSegmentBase (packedFringeChunkBits shape.size)
+    (2 * shape.size) (packedBpCodeWordWidth shape.size)
+    (packedBpCodeWordWidth shape.size) pos
+```
+
+That closes the `blocksPerSuper` gap this branch had recorded as outstanding. A
+controller holding only `n` can now issue the `rankCloseIfSome` leaf outright,
+with no supplied scalars left over.
+
+Pinned by `packedRankCloseReadIsSizeOnly`.

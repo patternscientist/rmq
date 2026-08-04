@@ -881,6 +881,51 @@ theorem packedFringeChunkBits_eq (shape : CartesianShape) :
   unfold packedFringeChunkBits
   rw [CartesianShape.bpCode_length]
 
+/-! #### The close rank data's scalars are the BP-code word width
+
+`packedRankCloseRead` needs three scalars. Its bit length is the BP code length.
+The other two turn out to be the same quantity as each other:
+`builtRelativeSplitBPCloseRankWordSize shape = machineWordBits shape.bpCode.length`
+and `builtRelativeSplitBPCloseRankBlocksPerSuper shape` is defined as that word
+size. Both are `packedBpCodeWordWidth n`.
+-/
+
+theorem packedCloseRankWordSize_eq (shape : CartesianShape) :
+    (builtRelativeSplitBPCloseRankData shape).wordSize =
+      packedBpCodeWordWidth shape.size := by
+  show SuccinctRank.machineWordBits shape.bpCode.length =
+    packedBpCodeWordWidth shape.size
+  unfold packedBpCodeWordWidth
+  rw [CartesianShape.bpCode_length]
+
+theorem packedCloseRankBlocksPerSuper_eq (shape : CartesianShape) :
+    (builtRelativeSplitBPCloseRankData shape).blocksPerSuper =
+      packedBpCodeWordWidth shape.size := by
+  show SuccinctRank.machineWordBits shape.bpCode.length =
+    packedBpCodeWordWidth shape.size
+  unfold packedBpCodeWordWidth
+  rw [CartesianShape.bpCode_length]
+
+/--
+**The close-side rank leaf is a function of the input size.**
+
+Every argument is now `n`, the supplied store, the segment base or the position.
+Nothing shape-derived survives, so a controller holding only `n` can issue this
+leaf outright.
+-/
+theorem packedRankCloseRead_size_only
+    (shape : CartesianShape) (store : WordRAM.ReadStore)
+    (rankSegmentBase pos : Nat) :
+    concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore shape store
+        rankSegmentBase pos =
+      packedRankCloseRead store rankSegmentBase
+        (packedFringeChunkBits shape.size) (2 * shape.size)
+        (packedBpCodeWordWidth shape.size) (packedBpCodeWordWidth shape.size)
+        pos := by
+  rw [packedRankCloseRead_eq, packedCloseRankWordSize_eq,
+    packedCloseRankBlocksPerSuper_eq, CartesianShape.bpCode_length]
+  rfl
+
 /-! #### The same-block seeded reader
 
 Its shape uses are the fringe chunk width, the local-BP window base, and the

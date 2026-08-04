@@ -884,6 +884,22 @@ theorem packedSameBlockCloseSeededReadIsShapeFree :
           shape.size blockSize leftClose rightClose seed :=
   packedSameBlockCloseSeededRead_eq
 
+/--
+Pins that the close-side rank leaf is a function of the input size alone: every
+argument is `n`, the supplied store, the segment base or the position. This is
+the strongest form for that leaf -- no shape-derived quantity survives.
+-/
+theorem packedRankCloseReadIsSizeOnly :
+    forall (shape : CartesianShape) (store : WordRAM.ReadStore)
+      (rankSegmentBase pos : Nat),
+      concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore shape store
+          rankSegmentBase pos =
+        packedRankCloseRead store rankSegmentBase
+          (packedFringeChunkBits shape.size) (2 * shape.size)
+          (packedBpCodeWordWidth shape.size) (packedBpCodeWordWidth shape.size)
+          pos :=
+  packedRankCloseRead_size_only
+
 /-- Pins that the rank seed it supplies is already record-free. -/
 theorem packedLcaCloseRankSeedIsRecordFree :
     forall (shape : CartesianShape) (store : WordRAM.ReadStore) (pos : Nat),
