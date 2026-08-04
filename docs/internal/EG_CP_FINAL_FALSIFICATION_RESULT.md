@@ -496,8 +496,17 @@ The five helper theorems are not wasted by that decision; they are what makes th
 `Nat`-only record adequate, because they show the leaf reads the supplied store
 and consults its record only for the scalars such a record would carry.
 
-Not yet mirrored, and needed by that record: the `queryPos`, `wordSize` and
-`blocksPerSuper` of `longFlagRankData` and of `sparseDirectory.rankData`.
+Of the three rank-side scalars that record still needs, two are now settled.
+`queryPos` binds its record as `_data` and is `Nat.min pos bits.length`;
+`packedRankQueryPos` mirrors it, `packedRankQueryPos_eq` is `rfl`, and
+`packedRankQueryPos_length_determined` gives the congruence from equal bit
+lengths alone — and this development already has size-only mirrors for both
+lengths (`longFlagBits_length_eq_packed`, `sparseFlagBits_length_eq_packed`).
+`wordSize` mirrors also already exist (`longFlagRankWordSize_eq_packed`,
+`sparseFlagRankWordSize_eq_packed`).
+
+**The one scalar still unmirrored on the select side is `blocksPerSuper`, for
+each of the two rank records.** That is the next proof target.
 
 Still open: no controller definition exists; the close and LCA leaves have not
 been examined at all; and `SuccinctClose.bpFringeChunkBits shape.bpCode.length`

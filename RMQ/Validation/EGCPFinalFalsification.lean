@@ -663,8 +663,24 @@ theorem packedRankReadIsDeterminedByThreeScalars :
       blockSegment wordSegment chunkSegment chunkBits target pos hquery
       hwordSize hblocks
 
+/-- Pins the clamped query position as a function of the bit length and position. -/
+def packedRankQueryPosSignature : Nat -> Nat -> Nat := packedRankQueryPos
+
 /--
-Pins that the sparse-directory read is determined by four scalars, over
+Pins that a rank read's query position is a function of the bit length alone, so
+one of its three scalars is already reduced to a length this development mirrors.
+-/
+theorem packedRankQueryPosIsTheBitLengthAlone :
+    forall {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+      (data :
+        SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+          bits superOverhead blockOverhead queryCost)
+      (pos : Nat),
+      data.queryPos pos = packedRankQueryPos bits.length pos :=
+  fun data pos => packedRankQueryPos_eq data pos
+
+/--
+Pins the sparse-directory read is determined by four scalars, over
 directories with unrelated bit strings, targets and overheads.
 -/
 theorem packedSparseDirectoryReadIsDeterminedByFourScalars :

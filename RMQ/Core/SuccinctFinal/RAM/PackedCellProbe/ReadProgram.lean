@@ -264,6 +264,45 @@ def packedRelativeOffsetReadSignature :
   GenericSelect.bpRelativeOffsetReadTraceResultWithStore
 
 /--
+The clamped query position of a two-level rank read, as a function of the bit
+length and the requested position.
+-/
+def packedRankQueryPos (bitLength pos : Nat) : Nat :=
+  Nat.min pos bitLength
+
+/--
+**The rank read's query position is a function of the bit length alone.**
+
+`queryPos` binds its record as `_data`; its body is `Nat.min pos bits.length`.
+So one of the three scalars the rank read consumes is already reduced to a
+length, and this development has size-only mirrors for the lengths of both rank
+records the select leaf uses.
+-/
+theorem packedRankQueryPos_eq
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (pos : Nat) :
+    data.queryPos pos = packedRankQueryPos bits.length pos :=
+  rfl
+
+/-- Equal bit lengths give equal query positions, over unrelated records. -/
+theorem packedRankQueryPos_length_determined
+    {bitsLeft bitsRight : List Bool}
+    {superLeft blockLeft queryLeft superRight blockRight queryRight : Nat}
+    (dataLeft :
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+        bitsLeft superLeft blockLeft queryLeft)
+    (dataRight :
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+        bitsRight superRight blockRight queryRight)
+    (hlength : bitsLeft.length = bitsRight.length) (pos : Nat) :
+    dataLeft.queryPos pos = dataRight.queryPos pos := by
+  rw [packedRankQueryPos_eq dataLeft pos, packedRankQueryPos_eq dataRight pos,
+    hlength]
+
+/--
 **The sparse-directory read is determined by four scalars.**
 
 Its body is the chunked rank seed followed by one relative-offset read. The rank

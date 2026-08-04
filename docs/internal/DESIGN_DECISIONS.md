@@ -6287,3 +6287,24 @@ Consequences and evidence:
   as size-only functions. They are the next mirrors the `Nat`-only record needs.
 - No controller definition exists and `FG-07` remains Open. This entry chooses a
   construction route; it does not walk it.
+
+### Addendum to `DD-20260804-008` (2026-08-04): the rank query position reduces to a bit length
+
+`SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.queryPos` binds its record as
+`_data`; its body is `Nat.min pos bits.length`.
+`packedRankQueryPos bitLength pos = Nat.min pos bitLength` mirrors it, with
+`packedRankQueryPos_eq` proved by `rfl` and
+`packedRankQueryPos_length_determined` giving the congruence over unrelated
+records from equal bit lengths alone.
+
+That reduces one of the rank read's three scalars to a length, and this
+development already has size-only mirrors for the lengths of both rank records
+the select leaf uses: `longFlagBits_length_eq_packed` for `longFlagRankData` and
+`sparseFlagBits_length_eq_packed` for `sparseDirectory.rankData`.
+
+Remaining for the `Nat`-only geometry record on the select side:
+`blocksPerSuper` for both rank records. Their `wordSize` mirrors already exist
+(`longFlagRankWordSize_eq_packed`, `sparseFlagRankWordSize_eq_packed`).
+
+Pinned by `packedRankQueryPosIsTheBitLengthAlone` and
+`packedRankQueryPosSignature`.

@@ -7100,3 +7100,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit covering the fifth select read helper and choosing the controller
   construction route: matrix untouched, so no frozen-cell comparison was
   required.
+- Commit mirroring the rank query position: matrix untouched, so no frozen-cell
+  comparison was required.
