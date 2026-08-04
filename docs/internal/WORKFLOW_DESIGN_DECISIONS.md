@@ -7179,3 +7179,10 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   to `0a18548` across all 37 requirement rows; anti-vacuity unchanged; only the
   `Evidence obtained` and `Status / residual gap` cells of `INV-ADDRESS-WIDTH` and
   `FG-09` were written.
+- Commit recording the replay run: requirement cells byte-identical to `0a18548`
+  across all 37 requirement rows, with the frozen-column count made arity-aware
+  (8-cell requirement rows freeze columns 0..4; the 4-cell replay-harness contract
+  table freezes columns 0..1, its evidence and status columns being the mutable
+  pair). Anti-vacuity appended, never rewritten, on `FG-01`, `FG-02`, `FG-05`,
+  `FG-07`, `FG-09`, `FG-11` and `INV-STORE-IDENTITY`. `claim_drift_scan.ps1
+  -Strict`: 1498 hits, 0 strict failures.
