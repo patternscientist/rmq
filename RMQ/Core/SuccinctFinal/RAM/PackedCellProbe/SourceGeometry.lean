@@ -429,6 +429,104 @@ theorem packedSourceBitLength_eq
       | simp at hne
       | omega
 
+
+/-! ## The equation, for the twenty-eight size-only sources
+
+`packedSourceWords_of_some` is one-directional because of `.selectSparseRelative`.
+Excluding that one source recovers the equation, and with it the `none` direction
+a store equality needs: past the word count the store has nothing and neither does
+the packed read.
+-/
+
+theorem packedSourceWords_eq
+    (shape : CartesianShape)
+    (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
+    (hsparse :
+      source !=
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRelative)
+    (index : Nat) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape source)[index]? =
+      packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape source)
+        (packedSourceWordCount shape.size (longCount shape) source)
+        (packedSourceStride shape.size source) index := by
+  cases source with
+  | bpCode =>
+      exact packedBpCodeWords shape index
+  | selectSuperBaseOccurrence =>
+      exact packedSelectSuperBaseOccurrenceWords shape index
+  | selectSuperBaseWordIndex =>
+      exact packedSelectSuperBaseWordIndexWords shape index
+  | selectSuperRankBefore =>
+      exact packedSelectSuperRankBeforeWords shape index
+  | selectSuperFirstOffset =>
+      exact packedSelectSuperFirstOffsetWords shape index
+  | selectLocalBaseOccurrence =>
+      exact packedSelectLocalBaseOccurrenceWords shape index
+  | selectLocalBaseWordIndex =>
+      exact packedSelectLocalBaseWordIndexWords shape index
+  | selectLocalRankBefore =>
+      exact packedSelectLocalRankBeforeWords shape index
+  | selectLocalFirstOffset =>
+      exact packedSelectLocalFirstOffsetWords shape index
+  | selectLongFlagBits =>
+      exact packedSelectLongFlagBitsWords shape index
+  | selectLongFlagRankSuperTrue =>
+      exact packedSelectLongFlagRankSuperTrueWords shape index
+  | selectLongFlagRankBlockTrue =>
+      exact packedSelectLongFlagRankBlockTrueWords shape index
+  | selectLongRelative =>
+      exact packedSelectLongRelativeWords shape index
+  | selectSparseFlagBits =>
+      exact packedSelectSparseFlagBitsWords shape index
+  | selectSparseRankSuperTrue =>
+      exact packedSelectSparseRankSuperTrueWords shape index
+  | selectSparseRankBlockTrue =>
+      exact packedSelectSparseRankBlockTrueWords shape index
+  | selectSparseRelative =>
+      simp at hsparse
+  | finalRankSuperFalse =>
+      exact packedFinalRankSuperFalseWords shape index
+  | finalRankBlockFalse =>
+      exact packedFinalRankBlockFalseWords shape index
+  | finalRankBPCodeAlias =>
+      exact packedFinalRankBPCodeAliasWords shape index
+  | closeSummaryBaseline =>
+      exact packedCloseSummaryBaselineWords shape index
+  | closeSummaryMinRel =>
+      exact packedCloseSummaryMinRelWords shape index
+  | closeSummaryMaxRel =>
+      exact packedCloseSummaryMaxRelWords shape index
+  | closeSummaryArgOffset =>
+      exact packedCloseSummaryArgOffsetWords shape index
+  | closeInteriorLocal =>
+      exact packedCloseInteriorLocalWords shape index
+  | closeInteriorGlobal =>
+      exact packedCloseInteriorGlobalWords shape index
+  | closeFiniteSmallInteriorMin =>
+      exact packedCloseFiniteSmallInteriorMinWords shape index
+  | closeFiniteSmallInteriorArg =>
+      exact packedCloseFiniteSmallInteriorArgWords shape index
+  | closeFiniteSmallSameBlock =>
+      exact packedCloseFiniteSmallSameBlockWords shape index
+
+theorem packedSourceWords_of_none
+    (shape : CartesianShape)
+    (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
+    (hsparse :
+      source !=
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRelative)
+    {index : Nat}
+    (hget :
+      (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape source)[index]? =
+        none) :
+    packedSourceWordCount shape.size (longCount shape) source <= index := by
+  rw [packedSourceWords_eq shape source hsparse index] at hget
+  by_cases hlt : index < packedSourceWordCount shape.size (longCount shape) source
+  · rw [packedWordSlice_of_lt hlt] at hget
+    exact absurd hget (by simp)
+  · omega
+
 end PackedCellProbe
 
 end SuccinctFinal

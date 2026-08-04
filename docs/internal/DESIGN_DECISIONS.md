@@ -7601,3 +7601,59 @@ Consequences and evidence:
   obligation, and it is now a mapping problem rather than a geometry problem.
 - `conv_rhs` is unavailable in this toolchain; the slice chain is done by a single
   `rw` list instead. Recorded so a later reader does not assume the tactic exists.
+
+## DD-20260804-026: the packed memory as a read store, and what still separates it from the run
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`.
+
+Date: 2026-08-04
+
+Result:
+
+```
+packedBackedStore (n longCount : Nat) (memory : List (List Bool)) :
+  WordRAM.ReadStore
+```
+
+routes a logical `(segment, index)` through the already shape-free
+segment-to-source map and answers it with `packedSourceRead`. Two theorems:
+
+* `packedBackedStore_of_some` -- every **successful** read of
+  `concreteBPNativeSuccinctRMQFlatPayloadReadStore` is answered identically;
+* `packedBackedStore_eq_readWord` -- away from `.selectSparseRelative`, and under
+  the readiness guard on segments 24 and 25, the two stores are **equal** at that
+  address, failures included.
+
+The `none` direction needed a second aggregate, `packedSourceWords_eq`, which is
+the twenty-eight-source equation `packedSourceWords_of_some` could not be. Past
+the word count the store has nothing and neither does the packed read.
+
+Why the guard appears here:
+
+The close interior tables exist as objects even when the interior is not ready,
+so the *logical* store answers segments 24 and 25 regardless -- but their bits are
+then not in the counted payload, and the packed memory cannot answer. This is not
+a defect: it is exactly the dispatch `FG-07` requires the controller to perform,
+and the pre-existing
+`concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_segment_counted`
+already carries the same two hypotheses. Discharging them at the run level is a
+property of the whole-query program's readiness dispatch, not of the store.
+
+What now separates this from `FG-08`'s whole-run clause, stated exactly:
+
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint`
+turns store agreement on the executed ordered footprint into equality of the
+complete execution -- result, modeled cost, ordered trace and failed reads. So two
+obligations remain, and they are the last two:
+
+1. **the readiness dispatch** -- the run never emits a segment-24 or segment-25
+   read unless `concreteBPRelativeRmmInteriorReady shape`; and
+2. **no out-of-range sparse relative read** -- the run never emits a
+   `.selectSparseRelative` read at an index at or beyond the actual exception
+   count. This is `FG-09`'s totality clause for one source, and by
+   `DD-20260804-022` it is also the discriminator: if it fails, `K1` is
+   insufficient and the campaign has an obstruction rather than a candidate.
+
+Both are properties of the *program*, not of the geometry. The geometry work is
+finished.

@@ -330,6 +330,136 @@ theorem packedSourceRead_of_some
     unfold packedSourceRead packedSourceReadPlan
     rw [if_pos hlt, hdecode, haddr, hpayslice, hchain]
 
+/-! ## The packed memory as a read store
+
+The whole-query evaluator consumes a `WordRAM.ReadStore`. `packedBackedStore`
+presents the packed memory as one, by routing a logical `(segment, index)` through
+the already shape-free segment-to-source map and answering it with a physical
+probe.
+
+The theorem below is again one-directional, and now for two reasons rather than
+one: `DD-20260804-022`'s sparse relative capacity, and the close interior sources,
+whose stored words exist even when the interior is not ready but whose bits are
+then not in the counted payload. The second is exactly the readiness guard `FG-07`
+requires the controller to consult, so it appears here as a hypothesis on the two
+segments that need it -- the same shape the pre-existing
+`concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_segment_counted`
+already uses.
+-/
+
+/-- The packed memory, presented as the read store the evaluator expects. -/
+def packedBackedStore (n longCount : Nat) (memory : List (List Bool)) :
+    WordRAM.ReadStore where
+  readWord? segment index :=
+    match packedSegmentSource? segment with
+    | none => none
+    | some source => packedSourceRead n longCount memory source index
+
+/--
+**Every successful store read is answered identically by probing the packed
+memory.**
+-/
+theorem packedBackedStore_of_some
+    (shape : CartesianShape) {segment index : Nat} {word : List Bool}
+    (h24 :
+      segment = 24 -> SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h25 :
+      segment = 25 -> SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (hread :
+      (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord? segment
+          index = some word) :
+    (packedBackedStore shape.size (longCount shape)
+        (packedMemory shape)).readWord? segment index = some word := by
+  have hcounted :=
+    concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_segment_counted
+      shape hread h24 h25
+  have hread' :
+      (match concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? segment with
+        | some source =>
+            (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape source)[index]?
+        | none => none) = some word := hread
+  have hcounted' :
+      (match concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? segment with
+        | some source =>
+            concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat shape source
+        | none => False) := hcounted
+  show
+    (match packedSegmentSource? segment with
+      | none => none
+      | some source =>
+          packedSourceRead shape.size (longCount shape) (packedMemory shape)
+            source index) = some word
+  unfold packedSegmentSource?
+  cases hsrc :
+      concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? segment with
+  | none =>
+      rw [hsrc] at hread'
+      exact absurd hread' (by simp)
+  | some source =>
+      rw [hsrc] at hread' hcounted'
+      exact
+        packedSourceRead_of_some shape source
+          ((sourceCounted_iff_packed shape source).mp hcounted') hread'
+
+/--
+**The two stores agree exactly, away from the one non-size-only source.**
+
+For every segment other than the sparse relative table's, and under the readiness
+guard on the two close interior segments, the packed memory answers a logical read
+exactly as the flat payload store does -- including when the store has nothing to
+answer with, because past the word count neither side produces a word.
+-/
+theorem packedBackedStore_eq_readWord
+    (shape : CartesianShape) {segment index : Nat}
+    (hsparse :
+      packedSegmentSource? segment !=
+        some ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRelative)
+    (h24 :
+      segment = 24 -> SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h25 :
+      segment = 25 -> SuccinctClose.concreteBPRelativeRmmInteriorReady shape) :
+    (packedBackedStore shape.size (longCount shape)
+        (packedMemory shape)).readWord? segment index =
+      (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord? segment
+        index := by
+  cases hflat :
+      (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord? segment
+        index with
+  | some word => exact packedBackedStore_of_some shape h24 h25 hflat
+  | none =>
+      have hflat' :
+          (match concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? segment with
+            | some source =>
+                (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+                  source)[index]?
+            | none => none) = none := hflat
+      show
+        (match packedSegmentSource? segment with
+          | none => none
+          | some source =>
+              packedSourceRead shape.size (longCount shape) (packedMemory shape)
+                source index) = none
+      unfold packedSegmentSource? at hsparse ⊢
+      cases hsrc :
+          concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? segment with
+      | none => rfl
+      | some source =>
+          rw [hsrc] at hflat' hsparse
+          show
+            packedSourceRead shape.size (longCount shape) (packedMemory shape)
+              source index = none
+          have hne :
+              source !=
+                ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRelative := by
+            simpa using hsparse
+          have hcount := packedSourceWords_of_none shape source hne hflat'
+          have hnot :
+              ¬ index <
+                packedSourceWordCount shape.size (longCount shape) source := by
+            omega
+          unfold packedSourceRead
+          rw [if_neg hnot]
+
 end PackedCellProbe
 
 end SuccinctFinal

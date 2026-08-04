@@ -7169,3 +7169,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   rows are not requirement rows and are excluded from the comparison, as in the
   earlier entries of this log. `claim_drift_scan.ps1 -Strict`: 1498 hits, 0 strict
   failures.
+- Commit landing the packed-backed read store: matrix untouched, so no
+  frozen-cell comparison was required.

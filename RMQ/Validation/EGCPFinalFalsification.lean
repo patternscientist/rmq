@@ -1581,6 +1581,45 @@ theorem packedSparseRelativeIsBoundedNotDetermined :
         packedSparseRelativeCapacity shape.size :=
   packedSparseRelativeEntries_le_capacity
 
+/-! ## The packed memory as a read store (`FG-08`) -/
+
+/-- The store's exact type: a size, a decoded long count and a packed memory. -/
+def packedBackedStoreSignature :
+    Nat -> Nat -> List (List Bool) -> WordRAM.ReadStore :=
+  packedBackedStore
+
+/-- Every successful store read is answered identically by probing. -/
+theorem packedBackedStoreAnswersEverySuccessfulRead :
+    forall (shape : Cartesian.CartesianShape) {segment index : Nat}
+      {word : List Bool},
+      (segment = 24 ->
+        SuccinctClose.concreteBPRelativeRmmInteriorReady shape) ->
+      (segment = 25 ->
+        SuccinctClose.concreteBPRelativeRmmInteriorReady shape) ->
+      (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord? segment
+          index = some word ->
+        (packedBackedStore shape.size (longCount shape)
+            (packedMemory shape)).readWord? segment index = some word :=
+  packedBackedStore_of_some
+
+/--
+Away from the one source whose word count is not size-only, and under the
+readiness guard, the two stores are equal at that address -- failures included.
+-/
+theorem packedBackedStoreAgreesAwayFromTheSparseTable :
+    forall (shape : Cartesian.CartesianShape) {segment index : Nat},
+      (packedSegmentSource? segment !=
+        some ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRelative) ->
+      (segment = 24 ->
+        SuccinctClose.concreteBPRelativeRmmInteriorReady shape) ->
+      (segment = 25 ->
+        SuccinctClose.concreteBPRelativeRmmInteriorReady shape) ->
+        (packedBackedStore shape.size (longCount shape)
+            (packedMemory shape)).readWord? segment index =
+          (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
+            segment index :=
+  packedBackedStore_eq_readWord
+
 end Validation
 end PackedCellProbe
 end SuccinctFinal
