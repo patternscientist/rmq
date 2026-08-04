@@ -611,6 +611,244 @@ theorem packedLogicalRead_decode
   rw [hsource]
   exact packedSourceRead_decode shape source index width hwidth hfit
 
+/-! ### The BP code: one source lowered completely
+
+`packedBitAddress` multiplies the index by the read width, which silently assumes
+that a source's stride and its read width coincide. They do not for a chunked bit
+source: the BP code is cut into `machineWordBits (2n)`-bit words, and the last
+word is short whenever `2n` is not a multiple of that width. Reading the last
+word at full width would pull bits belonging to the next component.
+
+`packedStridedBitAddress` separates the two. The BP code is then lowered
+completely: the address, the stride and the exact read width are all functions of
+`n` and the index alone, and the decoded bits are the word the flat payload store
+would have returned.
+-/
+
+/--
+The bit address of entry `index` of a source read at a fixed stride, with the
+stride and the read width kept separate.
+-/
+def packedStridedBitAddress (n longCount : Nat)
+    (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
+    (index stride : Nat) : Nat :=
+  packedCellWidth n + packedSourceFlatOffset n longCount source + index * stride
+
+/-- The uniform-width address is the strided address with stride equal to width. -/
+theorem packedBitAddress_eq_strided (n longCount : Nat)
+    (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
+    (index width : Nat) :
+    packedBitAddress n longCount source index width =
+      packedStridedBitAddress n longCount source index width :=
+  rfl
+
+/-- The BP code's machine word width at input size `n`. -/
+def packedBpCodeWordWidth (n : Nat) : Nat :=
+  SuccinctRank.machineWordBits (2 * n)
+
+/--
+The exact number of bits BP-code word `index` carries: a full width, except in
+the final word, which is short whenever `2 * n` is not a multiple of the width.
+-/
+def packedBpCodeReadWidth (n index : Nat) : Nat :=
+  min (packedBpCodeWordWidth n) (2 * n - index * packedBpCodeWordWidth n)
+
+theorem packedBpCodeWordWidth_pos (n : Nat) : 0 < packedBpCodeWordWidth n :=
+  SuccinctRank.machineWordBits_pos _
+
+/-- A BP-code word fits one packed cell. -/
+theorem packedBpCodeWordWidth_le_cellWidth (n : Nat) :
+    packedBpCodeWordWidth n <= packedCellWidth n := by
+  unfold packedBpCodeWordWidth packedCellWidth
+  refine SuccinctRank.machineWordBits_mono_le ?_
+  unfold packedPayloadLength
+  omega
+
+theorem packedBpCodeReadWidth_le (n index : Nat) :
+    packedBpCodeReadWidth n index <= packedBpCodeWordWidth n := by
+  unfold packedBpCodeReadWidth
+  omega
+
+/-- The BP code starts the canonical payload, so its flat offset is zero. -/
+theorem packedBpCode_flatOffset (n longCount : Nat) :
+    packedSourceFlatOffset n longCount
+      ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode = 0 :=
+  rfl
+
+private theorem take_eq_take_min_length {α : Type} (s : List α) (a : Nat) :
+    s.take a = s.take (min a s.length) := by
+  by_cases h : a <= s.length
+  · rw [Nat.min_eq_left h]
+  · have hlen : s.length <= a := by omega
+    rw [Nat.min_eq_right hlen, List.take_length, List.take_of_length_le hlen]
+
+/--
+A BP-code word exists only at an index whose strided offset is inside the code.
+-/
+theorem packedBpCodeWord_index_lt
+    (shape : CartesianShape) {index : Nat} {word : List Bool}
+    (hget :
+      (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode)[index]? =
+        some word) :
+    index * packedBpCodeWordWidth shape.size < 2 * shape.size := by
+  have hbp := CartesianShape.bpCode_length shape
+  by_cases hlt : index * packedBpCodeWordWidth shape.size < 2 * shape.size
+  · exact hlt
+  · exfalso
+    have hle :
+        shape.bpCode.length <=
+          index * SuccinctRank.machineWordBits shape.bpCode.length := by
+      unfold packedBpCodeWordWidth at hlt
+      rw [hbp]
+      omega
+    have hnone :=
+      SuccinctSpace.chunkPayloadWords_get?_none_of_length_le_mul
+        (wordSize := SuccinctRank.machineWordBits shape.bpCode.length)
+        (payload := shape.bpCode) (i := index) hle
+    have hlist :
+        (SuccinctSpace.chunkPayloadWords
+          (SuccinctRank.machineWordBits shape.bpCode.length)
+          shape.bpCode)[index]? = some word := by
+      simpa [concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
+        Array.getElem?_toList] using hget
+    rw [hnone] at hlist
+    exact Option.noConfusion hlist
+
+/--
+Every BP-code word that exists is a slice of the canonical payload at the strided
+offset, of exactly the read width.
+-/
+theorem packedBpCodeWord_eq
+    (shape : CartesianShape) {index : Nat} {word : List Bool}
+    (hget :
+      (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode)[index]? =
+        some word) :
+    word =
+      ((packedPayloadBits shape).drop
+          (index * packedBpCodeWordWidth shape.size)).take
+        (packedBpCodeReadWidth shape.size index) := by
+  have hbp := CartesianShape.bpCode_length shape
+  have hwidth :
+      SuccinctRank.machineWordBits shape.bpCode.length =
+        packedBpCodeWordWidth shape.size := by
+    unfold packedBpCodeWordWidth
+    rw [hbp]
+  have hlist :
+      (SuccinctSpace.chunkPayloadWords (packedBpCodeWordWidth shape.size)
+        shape.bpCode)[index]? = some word := by
+    have := hget
+    simp only [concreteBPNativeSuccinctRMQFlatPayloadSourceWords, hwidth] at this
+    simpa [Array.getElem?_toList] using this
+  have hslice :=
+    SuccinctSpace.chunkPayloadWords_get?_eq_take_drop hlist
+  have hdroplen :
+      (shape.bpCode.drop (index * packedBpCodeWordWidth shape.size)).length =
+        2 * shape.size - index * packedBpCodeWordWidth shape.size := by
+    rw [List.length_drop, hbp]
+  have hcut :
+      (shape.bpCode.drop (index * packedBpCodeWordWidth shape.size)).take
+          (packedBpCodeWordWidth shape.size) =
+        (shape.bpCode.drop (index * packedBpCodeWordWidth shape.size)).take
+          (packedBpCodeReadWidth shape.size index) := by
+    rw [take_eq_take_min_length
+      (shape.bpCode.drop (index * packedBpCodeWordWidth shape.size))
+      (packedBpCodeWordWidth shape.size), hdroplen]
+    rfl
+  have hindex := packedBpCodeWord_index_lt shape hget
+  have hfit :
+      index * packedBpCodeWordWidth shape.size +
+          packedBpCodeReadWidth shape.size index <=
+        shape.bpCode.length := by
+    unfold packedBpCodeReadWidth
+    rw [hbp]
+    omega
+  have hpayload :
+      ((packedPayloadBits shape).drop
+            (index * packedBpCodeWordWidth shape.size)).take
+          (packedBpCodeReadWidth shape.size index) =
+        (shape.bpCode.drop (index * packedBpCodeWordWidth shape.size)).take
+          (packedBpCodeReadWidth shape.size index) := by
+    have hsplit := packedPayloadBits_eq_bpCode_append_aux shape
+    have hjle :
+        index * packedBpCodeWordWidth shape.size <= shape.bpCode.length := by
+      omega
+    have hwle :
+        packedBpCodeReadWidth shape.size index <=
+          (shape.bpCode.drop
+            (index * packedBpCodeWordWidth shape.size)).length := by
+      rw [List.length_drop]
+      omega
+    rw [hsplit, List.drop_append_of_le_length hjle,
+      List.take_append_of_le_length hwle]
+  rw [hpayload, ← hcut, hslice]
+
+/--
+**The BP code lowers completely.** For every shape and every BP-code word that
+exists, the physical probe plan at the strided address and the exact read width
+fetches successfully and decodes to exactly that word.
+
+Every quantity the plan uses -- the address, the stride and the read width -- is
+a function of the input size and the index alone.
+-/
+theorem packedBpCodeRead_decode
+    (shape : CartesianShape) {index : Nat} {word : List Bool}
+    (hget :
+      (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode)[index]? =
+        some word) :
+    (packedFetch (packedMemory shape)
+          (packedProbePlan shape.size
+            (packedStridedBitAddress shape.size (longCount shape)
+              ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode index
+              (packedBpCodeWordWidth shape.size))
+            (packedBpCodeReadWidth shape.size index))).map
+        (packedDecodeSpan shape.size
+          (packedStridedBitAddress shape.size (longCount shape)
+            ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode index
+            (packedBpCodeWordWidth shape.size))
+          (packedBpCodeReadWidth shape.size index)) =
+      some word := by
+  have hbp := CartesianShape.bpCode_length shape
+  have hserial := packedSerialized_le_allocated shape.size
+  have hpaylen : 2 * shape.size <= packedPayloadLength shape.size := by
+    unfold packedPayloadLength
+    omega
+  have hexists := packedBpCodeWord_index_lt shape hget
+  have hreadle :
+      index * packedBpCodeWordWidth shape.size +
+          packedBpCodeReadWidth shape.size index <=
+        packedPayloadLength shape.size := by
+    unfold packedBpCodeReadWidth
+    omega
+  have haddr :
+      packedStridedBitAddress shape.size (longCount shape)
+          ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode index
+          (packedBpCodeWordWidth shape.size) =
+        packedCellWidth shape.size +
+          index * packedBpCodeWordWidth shape.size := by
+    unfold packedStridedBitAddress
+    rw [packedBpCode_flatOffset]
+    omega
+  have hwidthle :
+      packedBpCodeReadWidth shape.size index <= packedCellWidth shape.size := by
+    have h1 := packedBpCodeReadWidth_le shape.size index
+    have h2 := packedBpCodeWordWidth_le_cellWidth shape.size
+    omega
+  have hfitalloc :
+      packedStridedBitAddress shape.size (longCount shape)
+            ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode index
+            (packedBpCodeWordWidth shape.size) +
+          packedBpCodeReadWidth shape.size index <=
+        packedAllocatedBits shape.size := by
+    rw [haddr]
+    omega
+  rw [packedProbePlan_decode shape hwidthle hfitalloc, haddr,
+    packedPayloadSlice shape (index * packedBpCodeWordWidth shape.size)
+      (packedBpCodeReadWidth shape.size index) hreadle,
+    ← packedBpCodeWord_eq shape hget]
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ

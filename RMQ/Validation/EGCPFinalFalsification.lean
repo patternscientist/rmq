@@ -496,6 +496,64 @@ theorem packedLogicalReadDecodesToCanonicalSlice :
   fun shape _ _ index width hsource hwidth hfit =>
     packedLogicalRead_decode shape index width hsource hwidth hfit
 
+/-! #### The BP code lowers completely
+
+The BP code is the first source whose logical read is lowered with **both** a
+shape-free address and a shape-free width. It is also the case that forced the
+stride and the read width apart: the code is chunked into
+`machineWordBits (2n)`-bit words and the final word is short whenever `2n` is not
+a multiple of that width, so reading it at full width would pull bits belonging
+to the next component.
+-/
+
+/-- Pins the strided address signature: the stride is separate from the width. -/
+def packedStridedBitAddressSignature :
+    Nat -> Nat -> ConcreteBPNativeSuccinctRMQFlatPayloadSource ->
+      Nat -> Nat -> Nat :=
+  packedStridedBitAddress
+
+/-- Pins the BP-code stride as a function of the input size alone. -/
+def packedBpCodeWordWidthSignature : Nat -> Nat := packedBpCodeWordWidth
+
+/-- Pins the BP-code read width as a function of the input size and index. -/
+def packedBpCodeReadWidthSignature : Nat -> Nat -> Nat := packedBpCodeReadWidth
+
+/-- Pins that a BP-code word fits one packed cell. -/
+theorem packedBpCodeWordFitsOneCell :
+    forall n : Nat, packedBpCodeWordWidth n <= packedCellWidth n :=
+  packedBpCodeWordWidth_le_cellWidth
+
+/-- Pins that the BP code starts the canonical payload. -/
+theorem packedBpCodeStartsThePayload :
+    forall n longCount : Nat,
+      packedSourceFlatOffset n longCount
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode = 0 :=
+  packedBpCode_flatOffset
+
+/--
+Pins the complete lowering: every BP-code word the flat payload store would
+return is fetched and decoded by the physical probe plan at the strided address
+and the exact read width, both computed from the input size and the index alone.
+-/
+theorem packedBpCodeReadDecodesToTheStoreWord :
+    forall (shape : CartesianShape) (index : Nat) (word : List Bool),
+      (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+            ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode)[index]? =
+          some word ->
+        (packedFetch (packedMemory shape)
+              (packedProbePlan shape.size
+                (packedStridedBitAddress shape.size (longCount shape)
+                  ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode index
+                  (packedBpCodeWordWidth shape.size))
+                (packedBpCodeReadWidth shape.size index))).map
+            (packedDecodeSpan shape.size
+              (packedStridedBitAddress shape.size (longCount shape)
+                ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode index
+                (packedBpCodeWordWidth shape.size))
+              (packedBpCodeReadWidth shape.size index)) =
+          some word :=
+  fun shape _ _ hget => packedBpCodeRead_decode shape hget
+
 /-! #### The two boundary facts that make the repair real -/
 
 /--

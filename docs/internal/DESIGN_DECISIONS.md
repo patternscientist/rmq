@@ -5876,3 +5876,79 @@ Consequences and evidence:
   segments 21 and 22, which `FlatPayload.lean` documents in place. Any whole-run
   lowering must state which universe it lowers, and the packed layer currently
   lowers the flat-payload one.
+
+## DD-20260804-004: separate a source's stride from its read width
+
+Status: Worker decision recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Governs how `EG-CP` row `FG-08`
+addresses a chunked bit source.
+
+Date: 2026-08-04
+
+Context:
+
+`packedBitAddress n longCount source index width` computes
+`packedCellWidth n + packedSourceFlatOffset n longCount source + index * width`.
+Multiplying the index by the *read width* silently assumes that a source's stride
+and its read width coincide. For a fixed-width natural-number table they do: the
+`FixedWidthNatTable` structure carries `width` as a type index and its
+`word_length_of_get?` field forces every stored word to that length.
+
+They do not coincide for a chunked bit source. `SuccinctSpace.chunkPayloadWords`
+cuts a bit string into `wordSize`-bit words and leaves the final word short
+whenever the length is not a multiple of `wordSize`; `chunkPayloadWords_get?_eq_take_drop`
+states exactly that: word `i` is `(payload.drop (i * wordSize)).take wordSize`,
+which truncates at the end of the payload. Four of the twenty-nine typed sources
+are such chunkings — `bpCode`, `selectLongFlagBits`, `selectSparseFlagBits` and
+`finalRankBPCodeAlias`.
+
+Reading the final word of such a source at full width against the packed memory
+would not truncate, because in the packed memory the next component follows
+immediately. It would return the correct prefix followed by bits of the next
+component. That is a wrong decoded word, not a harmless over-read.
+
+Decision:
+
+Add `packedStridedBitAddress n longCount source index stride`, identical in form
+but taking the stride rather than the width, with
+`packedBitAddress_eq_strided` recording that the uniform-width address is the
+special case. Keep `packedBitAddress` for the fixed-width tables.
+
+For the BP code, define `packedBpCodeWordWidth n = machineWordBits (2 * n)` as the
+stride and
+`packedBpCodeReadWidth n index = min (packedBpCodeWordWidth n) (2 * n - index * packedBpCodeWordWidth n)`
+as the exact read width, and prove `packedBpCodeRead_decode`: for every shape and
+every BP-code word the flat payload store would return, the probe plan at that
+address and width fetches successfully and decodes to exactly that word.
+
+Rationale:
+
+Widening `packedBitAddress` in place would have changed the meaning of an
+already-pinned signature. Adding the strided form leaves the existing consumers
+intact and makes the distinction visible at the type level, which is where the
+defect was invisible before.
+
+Defining the read width as a `min` rather than case-splitting on "last word or
+not" keeps it a single arithmetic expression in `(n, index)`, which is what a
+controller has to evaluate.
+
+Consequences and evidence:
+
+- `packedBpCodeRead_decode` is the first source lowered completely: address,
+  stride and read width are all functions of `n` and the index, and the decoded
+  bits are proved equal to the store word. Pinned by
+  `packedBpCodeReadDecodesToTheStoreWord`.
+- `packedBpCodeWord_index_lt` derives the in-range condition from the existence
+  of the word rather than assuming it, so the theorem has no side condition a
+  controller would have to discharge from outside its inputs.
+- `packedBpCodeWordWidth_le_cellWidth` discharges the width hypothesis of the
+  probe plan from `2 * n <= packedPayloadLength n + 2` and monotonicity of
+  `machineWordBits`.
+- The remaining three chunked bit sources are not done. Their stride mirrors
+  exist (`packedLongFlagWordSize`, `packedSparseWordSize`) and their payload
+  lengths are size-only (`longFlagBits_length_eq_packed`,
+  `sparseFlagBits_length_eq_packed`), so the same construction should apply; that
+  has not been checked.
+- This finding narrows the next target recorded in `DD-20260804-003`: the
+  per-source width mirror is not one function but two, a stride and a read width,
+  and only the fixed-width-table sources can share a single expression.
