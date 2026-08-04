@@ -6948,3 +6948,10 @@ Consequences:
 - The verification is stated per commit, not once per branch.
 - This entry does not authorize amending the freeze commit or any commit that
   predates the current goal.
+
+Frozen-cell verification log for `WDD-20260803-001`:
+
+- Commit `85c58f0` (FG-02/FG-03 evidence): all fifteen frozen requirement cells
+  byte-identical to the freeze commit `0a18548`.
+- Commit adding the `FG-04` header evidence: all fifteen frozen requirement cells
+  byte-identical to `0a18548`.

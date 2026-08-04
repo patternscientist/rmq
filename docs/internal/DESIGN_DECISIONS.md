@@ -5537,3 +5537,31 @@ and nothing consumes it: `FG-02` asks about offsets "used by the packed executio
 and no packed execution exists. Both `FG-02` and `FG-03` therefore stay Open with
 that dependency recorded, rather than being marked closed on the strength of the
 leaf alone.
+
+`FG-04` header leaf under `DD-20260802-001` (2026-08-03):
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Header.lean` fixes
+`packedPayloadLength n = 2 * n + concreteBPNativeSuccinctRMQOverhead
+genericSparseExceptionBPCloseAccessOverhead n` and
+`packedCellWidth n = SuccinctRank.machineWordBits (packedPayloadLength n + 2)`.
+
+The commissioned width expression is adopted unchanged. The `+ 2` is what makes
+both the largest payload bit index and the one-past-the-end address representable
+at the same width, which is the property the address bound will need; no checked
+equivalence-required correction was necessary.
+
+`longCount_lt_two_pow_width` is unconditional. It goes through
+`longCount <= packedSuperSlots n <= n <= packedPayloadLength n`, the middle step
+being `GenericSelect.selectCeilDiv_le_self_of_pos` with the `n = 0` case handled
+separately because that lemma needs a positive argument. Because the fit is
+unconditional, `packedHeaderBits_decode` is too: it discharges the `_of_lt` side
+condition of `bitsToNatLE_natToBitsLE_of_lt` from it rather than assuming a
+threshold.
+
+Also proves `shapeOfSize_self` and `mem_shapesOfSize_size`, since the canonical
+payload-length theorem is keyed on membership in `shapesOfSize n` rather than on
+`shape.size`, and every packed statement is keyed on the latter.
+
+What this does not settle: no memory exists, so "the header occupies cell zero" is
+not stated. Nothing here shows a controller ever reads the header. `FG-04` stays
+Open on the first of those.

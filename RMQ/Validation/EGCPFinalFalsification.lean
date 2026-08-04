@@ -1,4 +1,5 @@
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.SourceFactorization
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Header
 
 /-!
 # Exact-type consumers for the EG-CP packed cell-probe candidate
@@ -122,6 +123,41 @@ theorem packedLongRelativeLengthIsLongCountTimesSizeOnly :
           (GenericSelect.superStride (2 * shape.size) *
             GenericSelect.wordBits (2 * shape.size)) :=
   longSuperRelativeTable_length_eq
+
+/-! ### The `K = 1` header -/
+
+/-- Pins `P` and `w` as functions of the input size alone. -/
+def packedPayloadLengthSignature : Nat -> Nat := packedPayloadLength
+
+def packedCellWidthSignature : Nat -> Nat := packedCellWidth
+
+/-- Pins that the canonical payload's length is that size-only function. -/
+theorem packedPayloadLengthIsSizeOnly :
+    forall shape : CartesianShape,
+      (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload.length =
+        packedPayloadLength shape.size :=
+  packedPayloadLength_eq
+
+/--
+Pins the all-size count fit with no size side condition. A version guarded by a
+threshold would fail this ascription.
+-/
+theorem packedLongCountFitsOneCell :
+    forall shape : CartesianShape,
+      longCount shape < 2 ^ packedCellWidth shape.size :=
+  longCount_lt_two_pow_width
+
+/-- Pins exact one-cell header arity. -/
+theorem packedHeaderIsExactlyOneCell :
+    forall shape : CartesianShape,
+      (packedHeaderBits shape).length = packedCellWidth shape.size :=
+  packedHeaderBits_length
+
+/-- Pins that decoding the header recovers the long count exactly. -/
+theorem packedHeaderDecodes :
+    forall shape : CartesianShape,
+      SuccinctSpace.bitsToNatLE (packedHeaderBits shape) = longCount shape :=
+  packedHeaderBits_decode
 
 end Validation
 end PackedCellProbe
