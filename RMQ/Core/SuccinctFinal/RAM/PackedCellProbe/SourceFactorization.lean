@@ -380,6 +380,142 @@ theorem selectSourceComponentOffset_le_prefix
       SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockPayload,
       List.length_append, Nat.add_assoc]
 
+/-! ### The size-only counting guard -/
+
+/-- Size-only mirror of the close summary geometry base. -/
+def packedSummaryBase (n : Nat) : Nat := n.log2 + 1
+
+/-- Size-only mirror of the raw summary block count. -/
+def packedSummaryBlockCountRaw (n : Nat) : Nat := n / packedSummaryBase n
+
+/-- Size-only mirror of the raw summary super count. -/
+def packedSummarySuperCountRaw (n : Nat) : Nat :=
+  packedSummaryBlockCountRaw n / packedSummaryBase n + 1
+
+/-- Size-only mirror of the raw summary relative width. -/
+def packedSummaryRelativeWidthRaw (n : Nat) : Nat :=
+  2 * ((packedSummaryBase n).log2 + 1) + 3
+
+/-- Size-only mirror of the interior macro size. -/
+def packedInteriorMacroSize (n : Nat) : Nat :=
+  packedSummaryBase n * packedSummaryBase n
+
+/--
+Size-only mirror of `SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive`.
+
+Every conjunct of the original mentions only `shape.size` and `shape.bpCode.length`,
+and the latter is `2 * shape.size`, so the predicate is a decidable function of the
+input size. It is not monotone in `n`, but a non-monotone size-only predicate is
+still size-only.
+-/
+def PackedSummaryActive (n : Nat) : Prop :=
+  packedSummaryBlockCountRaw n * (2 * packedSummaryBase n) <= 2 * n /\
+    2 * SuccinctClose.bpSuperblockSpan (2 * packedSummaryBase n) (packedSummaryBase n) <
+        2 ^ packedSummaryRelativeWidthRaw n /\
+      2 * packedSummaryBase n < 2 ^ packedSummaryRelativeWidthRaw n /\
+        packedSummarySuperCountRaw n * SuccinctRank.machineWordBits (2 * n) <=
+            SuccinctSpace.sampledDirectoryOverhead
+              SuccinctClose.canonicalBPRelativeSummarySuperSlots n /\
+          3 * (packedSummaryBlockCountRaw n * packedSummaryRelativeWidthRaw n) <=
+              SuccinctSpace.logLogSampledDirectoryOverhead
+                SuccinctClose.canonicalBPRelativeSummaryBlockSlots n /\
+            packedSummaryRelativeWidthRaw n <= SuccinctRank.machineWordBits (2 * n)
+
+instance packedSummaryActiveDecidable (n : Nat) : Decidable (PackedSummaryActive n) := by
+  unfold PackedSummaryActive
+  infer_instance
+
+theorem summaryActive_iff_packed (shape : CartesianShape) :
+    SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape <->
+      PackedSummaryActive shape.size := by
+  have hlen : shape.bpCode.length = 2 * shape.size :=
+    CartesianShape.bpCode_length shape
+  unfold SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive
+    PackedSummaryActive
+  simp only [SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw,
+    SuccinctClose.canonicalBPRelativeSummaryBlocksPerSuperRaw,
+    SuccinctClose.canonicalBPRelativeSummaryBlockCountRaw,
+    SuccinctClose.canonicalBPRelativeSummarySuperCountRaw,
+    SuccinctClose.canonicalBPRelativeSummarySuperWidth,
+    SuccinctClose.canonicalBPRelativeSummaryRelativeWidthRaw,
+    SuccinctClose.canonicalBPRelativeSummaryBase,
+    packedSummaryBase, packedSummaryBlockCountRaw, packedSummarySuperCountRaw,
+    packedSummaryRelativeWidthRaw, hlen]
+
+/-- Size-only mirror of the guarded summary block count. -/
+def packedSummaryBlockCount (n : Nat) : Nat :=
+  if PackedSummaryActive n then packedSummaryBlockCountRaw n else 0
+
+theorem summaryBlockCount_eq_packed (shape : CartesianShape) :
+    SuccinctClose.canonicalBPRelativeSummaryBlockCount shape =
+      packedSummaryBlockCount shape.size := by
+  unfold SuccinctClose.canonicalBPRelativeSummaryBlockCount packedSummaryBlockCount
+  by_cases hactive : SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
+  · rw [if_pos hactive, if_pos ((summaryActive_iff_packed shape).mp hactive)]
+    simp [SuccinctClose.canonicalBPRelativeSummaryBlockCountRaw,
+      SuccinctClose.canonicalBPRelativeSummaryBase,
+      packedSummaryBlockCountRaw, packedSummaryBase]
+  · rw [if_neg hactive,
+      if_neg (fun h => hactive ((summaryActive_iff_packed shape).mpr h))]
+
+/--
+Size-only mirror of `SuccinctClose.concreteBPRelativeRmmInteriorReady`.
+
+This is the guard the packed controller must consult before issuing the two
+close-interior reads. It is computable from `n` alone, so nothing about it needs a
+header field.
+-/
+def PackedInteriorReady (n : Nat) : Prop :=
+  PackedSummaryActive n /\ packedInteriorMacroSize n <= packedSummaryBlockCount n
+
+instance packedInteriorReadyDecidable (n : Nat) : Decidable (PackedInteriorReady n) := by
+  unfold PackedInteriorReady
+  infer_instance
+
+theorem interiorReady_iff_packed (shape : CartesianShape) :
+    SuccinctClose.concreteBPRelativeRmmInteriorReady shape <->
+      PackedInteriorReady shape.size := by
+  unfold SuccinctClose.concreteBPRelativeRmmInteriorReady PackedInteriorReady
+  rw [summaryActive_iff_packed, summaryBlockCount_eq_packed]
+  simp only [SuccinctClose.concreteBPRelativeRmmInteriorMacroSize,
+    SuccinctClose.canonicalBPRelativeSummaryBase,
+    packedInteriorMacroSize, packedSummaryBase]
+
+/--
+Size-only mirror of `concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat`.
+
+The four close summary sources are counted exactly when the summary table is
+active, the two close interior sources exactly when the interior is ready, the
+three retired finite-small slots never, and every other source always.
+-/
+def PackedSourceCounted (n : Nat) :
+    ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Prop
+  | .closeSummaryBaseline => PackedSummaryActive n
+  | .closeSummaryMinRel => PackedSummaryActive n
+  | .closeSummaryMaxRel => PackedSummaryActive n
+  | .closeSummaryArgOffset => PackedSummaryActive n
+  | .closeInteriorLocal => PackedInteriorReady n
+  | .closeInteriorGlobal => PackedInteriorReady n
+  | .closeFiniteSmallInteriorMin => False
+  | .closeFiniteSmallInteriorArg => False
+  | .closeFiniteSmallSameBlock => False
+  | _ => True
+
+/--
+The size-only guard agrees with the canonical counting predicate on every source.
+
+Proved by case analysis over the closed source type, so a new constructor breaks
+elaboration until its counting status is decided.
+-/
+theorem sourceCounted_iff_packed
+    (shape : CartesianShape)
+    (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource) :
+    concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat shape source <->
+      PackedSourceCounted shape.size source := by
+  cases source <;>
+    simp only [concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat,
+      PackedSourceCounted, summaryActive_iff_packed, interiorReady_iff_packed]
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ

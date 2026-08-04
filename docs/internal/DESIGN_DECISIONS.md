@@ -5481,3 +5481,26 @@ congruence as evidence of a mirror inverted this branch's own decision.
 Consequently no claim is made here about the `K = 0` flip. Showing the close side
 needs no descriptor would require close-side mirrors over the flat layout, which
 do not yet exist.
+
+Further evidence under `DD-20260802-001` (no decision changes):
+
+- `packedRankWordSize`, `packedRankBlockWidth`, `packedRankSuperOverhead`,
+  `packedRankBlockOverhead`, `packedRankAuxLength` -- the rank prefix is now a
+  `Nat`-only mirror rather than a shape-taking function.
+- `selectPayload_eq_prefix_append_sparseRelative` and
+  `selectSourceComponentOffset_le_prefix` -- sparse terminality and its
+  addressing consequence.
+- `PackedSummaryActive`, `PackedInteriorReady`, `PackedSourceCounted` with
+  `summaryActive_iff_packed`, `interiorReady_iff_packed` and
+  `sourceCounted_iff_packed` -- a decidable size-only counting guard that agrees
+  with `concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat` on every
+  constructor.
+
+The guard matters beyond bookkeeping. `concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset`
+computes the two close-interior offsets unconditionally, while those sources are
+counted only when the interior is ready; in the not-ready regime the offsets
+exceed the component. Today that is discharged only by `CountedInFlat` appearing
+as a hypothesis on the slice theorem. A packed controller has no such hypothesis
+available at run time, so it must consult `PackedInteriorReady` before issuing
+those two reads. `interiorReady_iff_packed` is what makes that possible without a
+header field: readiness is decidable from `n`.
