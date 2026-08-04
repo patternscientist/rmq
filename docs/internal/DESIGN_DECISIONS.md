@@ -6427,3 +6427,31 @@ Consequences and evidence:
 - `FG-07` remains Open. One component is not a controller: there is no fixed
   top-level definition, no header-then-address sequencing, no `receipt`, and the
   close/LCA leaf tower is unexamined.
+
+### Addendum to `DD-20260804-009` (2026-08-04): the scalar-taking case behaves as predicted
+
+`packedRankRead` is the second controller component. Unlike
+`packedSelectEntryRead` it takes scalars -- the bit length, the word size and the
+blocks per super block -- because the two-level rank read genuinely consults its
+record for those three projections. `DD-20260804-009` predicted that shape, and
+it holds:
+
+```
+packedRankRead_eq (data) (store) (segments...) (target) (pos) :
+  data.bpChunkedRankTraceResultWithStore store superSegment blockSegment
+      wordSegment chunkSegment chunkBits target pos =
+    packedRankRead superSegment blockSegment wordSegment chunkSegment
+      chunkBits target store bits.length data.wordSize data.blocksPerSuper pos
+```
+
+by `rfl`, over records with any bit string, any overheads and any query cost.
+
+The three scalars are exactly the ones already discharged: `bits.length` is
+mirrored size-only for both rank records the select leaf uses, `wordSize` has
+existing mirrors, and `blocksPerSuper` is the literal `1`. So the arguments a
+controller would have to supply are all available to it from `n`.
+
+Pinned by `packedRankReadSignature` and `packedRankReadIsTheLeafRankRead`.
+
+Two of the five select helpers are now record-free definitions rather than
+theorems about records. `FG-07` remains Open.

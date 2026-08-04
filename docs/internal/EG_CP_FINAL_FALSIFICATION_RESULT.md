@@ -559,6 +559,24 @@ the geometry record earns its fields.
 results recorded what a controller could be built *from*; this is something a
 controller can *call*.
 
+The second component follows the predicted scalar-taking shape:
+
+```
+packedRankRead_eq (data) (store) (segments…) (target) (pos) :
+  data.bpChunkedRankTraceResultWithStore … pos =
+    packedRankRead … store bits.length data.wordSize data.blocksPerSuper pos
+```
+
+also by `rfl`, over records with any bit string, any overheads and any query
+cost. It takes three scalars because the two-level rank read genuinely consults
+its record for those projections — and those three are exactly the ones already
+discharged: `bits.length` is mirrored size-only for both rank records the select
+leaf uses, `wordSize` has existing mirrors, and `blocksPerSuper` is the literal
+`1`. So a controller can supply all three from `n`.
+
+Two of the five select helpers are now record-free *definitions* rather than
+theorems about records.
+
 **`FG-07` remains Open.** One component is not a controller: there is no fixed
 top-level definition, no header-then-address sequencing, no `receipt`, and the
 close/LCA leaf tower has still not been examined at all.

@@ -406,6 +406,66 @@ theorem packedSelectEntryRead_eq
       packedSelectEntryRead layout store index :=
   rfl
 
+/-! ### A record-free two-level rank read
+
+The rank read genuinely consults its record, so the record-free version takes the
+three scalars as arguments -- the bit length, the word size and the blocks per
+super block. `DD-20260804-009` predicted exactly this shape. The equation is
+still `rfl`, because the record's contribution is those three projections and
+nothing else.
+-/
+
+/--
+The chunked two-level rank read, with no record argument: the super sample, the
+block sample, the packed word, and the in-word rank, all against the supplied
+store, with the indices computed from the three supplied scalars.
+-/
+def packedRankRead
+    (superSegment blockSegment wordSegment chunkSegment chunkBits : Nat)
+    (target : Bool) (store : WordRAM.ReadStore)
+    (bitLength wordSize blocksPerSuper pos : Nat) : WordRAM.TraceResult Nat :=
+  WordRAM.TraceResult.bind
+    (SuccinctClose.bpChunkReadTraceResult store superSegment
+      (Nat.min pos bitLength / wordSize / blocksPerSuper))
+    fun super? =>
+      WordRAM.TraceResult.bind
+        (SuccinctClose.bpChunkReadTraceResult store blockSegment
+          (Nat.min pos bitLength / wordSize))
+        fun delta? =>
+          WordRAM.TraceResult.bind
+            (SuccinctClose.bpWordReadTraceResult store wordSegment
+              (Nat.min pos bitLength / wordSize))
+            fun word? =>
+              match super?, delta?, word? with
+              | some super, some delta, some word =>
+                  WordRAM.TraceResult.map
+                    (fun localRank => super + delta + localRank)
+                    (SuccinctClose.bpChunkedWordRankTraceResultAtSegmentWithStore
+                      store chunkSegment chunkBits target word
+                      (Nat.min pos bitLength -
+                        Nat.min pos bitLength / wordSize * wordSize))
+              | _, _, _ => WordRAM.TraceResult.pure 0
+
+/--
+**The record-free rank read is the record-taking rank read**, once its three
+scalars are supplied. Proved by `rfl`, over records with any bit string, any
+overheads and any query cost.
+-/
+theorem packedRankRead_eq
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (store : WordRAM.ReadStore)
+    (superSegment blockSegment wordSegment chunkSegment chunkBits : Nat)
+    (target : Bool) (pos : Nat) :
+    data.bpChunkedRankTraceResultWithStore store superSegment blockSegment
+        wordSegment chunkSegment chunkBits target pos =
+      packedRankRead superSegment blockSegment wordSegment chunkSegment
+        chunkBits target store bits.length data.wordSize data.blocksPerSuper
+        pos :=
+  rfl
+
 /-- Size-only mirror of the shared fringe chunk width. -/
 def packedFringeChunkBits (n : Nat) : Nat :=
   SuccinctClose.bpFringeChunkBits (2 * n)

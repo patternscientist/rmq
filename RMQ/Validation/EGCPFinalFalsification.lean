@@ -695,6 +695,34 @@ theorem packedSelectEntryReadIsTheLeafRead :
   fun table layout store index =>
     packedSelectEntryRead_eq table layout store index
 
+/--
+Pins the record-free rank read's signature: segments, a target bit, a supplied
+store, and the three scalars. No record, no shape, no proof argument.
+-/
+def packedRankReadSignature :
+    Nat -> Nat -> Nat -> Nat -> Nat -> Bool -> WordRAM.ReadStore ->
+      Nat -> Nat -> Nat -> Nat -> WordRAM.TraceResult Nat :=
+  packedRankRead
+
+/-- Pins that the record-free rank read is the record-taking one. -/
+theorem packedRankReadIsTheLeafRankRead :
+    forall {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+      (data :
+        SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+          bits superOverhead blockOverhead queryCost)
+      (store : WordRAM.ReadStore)
+      (superSegment blockSegment wordSegment chunkSegment chunkBits : Nat)
+      (target : Bool) (pos : Nat),
+      data.bpChunkedRankTraceResultWithStore store superSegment blockSegment
+          wordSegment chunkSegment chunkBits target pos =
+        packedRankRead superSegment blockSegment wordSegment chunkSegment
+          chunkBits target store bits.length data.wordSize data.blocksPerSuper
+          pos :=
+  fun data store superSegment blockSegment wordSegment chunkSegment chunkBits
+      target pos =>
+    packedRankRead_eq data store superSegment blockSegment wordSegment
+      chunkSegment chunkBits target pos
+
 /-- Pins the fringe chunk width mirror's signature. -/
 def packedFringeChunkBitsSignature : Nat -> Nat := packedFringeChunkBits
 
