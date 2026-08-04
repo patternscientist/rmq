@@ -7189,3 +7189,7 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit landing the named thresholds: requirement cells byte-identical to
   `0a18548` across all 37 requirement rows; anti-vacuity unchanged; only `FG-14`'s
   `Evidence obtained` and `Status / residual gap` cells were written.
+- Commit closing the word-value clause and filling the ledger: requirement cells
+  byte-identical to `0a18548` across all 37 requirement rows; anti-vacuity
+  unchanged; only `INV-WORD-WIDTH`'s evidence/status pair and the nine `CHK`
+  ledger result cells were written.

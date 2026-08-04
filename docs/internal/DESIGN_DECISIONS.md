@@ -7860,3 +7860,51 @@ What is deliberately not claimed: the `PackedSummaryActive` half of readiness is
 not kernel-checked. It does not move across `[1023, 1331]` by evaluation, and the
 clause that is checked is the one that does. Saying so is cheaper than a proof
 that would add nothing.
+
+## DD-20260804-031: values, not just widths, and the verification ledger filled in
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`.
+
+Date: 2026-08-04
+
+`INV-WORD-WIDTH` is about *values*: stored and returned words must fit one
+declared modeled machine word. `DD-20260804-024` proved the stride bound, which is
+what the probe plan needs; this closes the clause the row actually states.
+
+```
+packedStoredCellValue_lt_two_pow :
+  cell ∈ packedMemory shape ->
+    SuccinctSpace.bitsToNatLE cell < 2 ^ packedCellWidth shape.size
+packedDecodedWordValue_lt_two_pow :
+  width <= packedCellWidth n ->
+    SuccinctSpace.bitsToNatLE (packedDecodeSpan n bit width cells) <
+      2 ^ packedCellWidth n
+```
+
+The first goes through `packedMemory_cell_length`, so it is a statement about the
+counted memory's own cells rather than about arbitrary bit lists. The second holds
+because a decoded span is a `List.take` of the fetched cells and so is never wider
+than the request, which is never wider than a cell.
+
+Ledger:
+
+The verification ledger of matrix section 4 had nine rows reading "to be recorded"
+or "Pending". They are now filled in from runs at `c472146`: `CHK-02` (validation
+root builds), `CHK-03` (the single full replay, `RAN, INCOMPLETE`, exit 7),
+`CHK-05` (`headline_axiom_check` clean after `lake build RMQPaper`), `CHK-06`
+(hygiene scan clean), `CHK-07` (no native decision shortcut), `CHK-09`
+(design-decision check against base `1490c97`, 21 files), `CHK-10` (claim drift,
+1498 hits, 0 strict failures), `CHK-12` (the replay derives its deadline from a
+measured clean build, so it cannot race Lean startup) and `CHK-13` (focused
+selectors run before the full replay was paid for).
+
+`CHK-05` needed `lake build RMQPaper` first; the script imports `RMQPaper` and
+`lake build RMQ` does not produce that olean. Recorded so the next runner does not
+read the missing-module error as a failure of the check.
+
+The project-skill preflight was re-run at this tip: governance
+`f0c7232a8a52b8d61ead5e96d72a8a849bc094b5`, checkout `c472146`, expected /
+checkout / working / runtime skill sets all `rmq-audit-prompt, rmq-coordinator,
+rmq-proof-sprint`, `required=rmq-proof-sprint`, `required_mode=role-skills`,
+**PASS**.

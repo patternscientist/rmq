@@ -1665,6 +1665,23 @@ theorem packedInteriorWindowIs1024To1330 :
           packedInteriorMacroSize 1331 <= packedSummaryBlockCountRaw 1331 :=
   packedInteriorReadinessWindow
 
+/-! ## Stored and returned values fit one modeled word (`INV-WORD-WIDTH`) -/
+
+/-- Every stored cell's value fits one modeled machine word. -/
+theorem packedStoredCellValuesFitOneWord :
+    forall (shape : Cartesian.CartesianShape) {cell : List Bool},
+      cell ∈ packedMemory shape ->
+        SuccinctSpace.bitsToNatLE cell < 2 ^ packedCellWidth shape.size :=
+  packedStoredCellValue_lt_two_pow
+
+/-- Every returned word's value fits one modeled machine word. -/
+theorem packedReturnedWordValuesFitOneWord :
+    forall (n bit width : Nat) (cells : List (List Bool)),
+      width <= packedCellWidth n ->
+        SuccinctSpace.bitsToNatLE (packedDecodeSpan n bit width cells) <
+          2 ^ packedCellWidth n :=
+  packedDecodedWordValue_lt_two_pow
+
 end Validation
 end PackedCellProbe
 end SuccinctFinal

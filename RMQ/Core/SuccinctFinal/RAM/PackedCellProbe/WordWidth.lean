@@ -349,6 +349,44 @@ theorem packedProbeAddress_lt_two_pow_cellWidth
   have hcount := packedCellCount_lt_two_pow_cellWidth n
   omega
 
+/-! ## Stored and returned values, not just widths
+
+`INV-WORD-WIDTH` is about *values*: every stored and returned word must fit one
+declared modeled machine word. The stride bound above is what the probe plan
+needs; this is what the row asks.
+-/
+
+/-- **Every stored cell's value fits one modeled word.** -/
+theorem packedStoredCellValue_lt_two_pow
+    (shape : CartesianShape) {cell : List Bool}
+    (hmem : cell ∈ packedMemory shape) :
+    SuccinctSpace.bitsToNatLE cell < 2 ^ packedCellWidth shape.size := by
+  have hlen := packedMemory_cell_length shape hmem
+  have hlt := GenericSelect.bitsToNatLE_lt_two_pow_length cell
+  rw [hlen] at hlt
+  exact hlt
+
+/--
+**Every returned word's value fits one modeled word.** A decoded span is a
+`List.take` of the fetched cells, so it is never wider than the request, and the
+request is never wider than a cell.
+-/
+theorem packedDecodedWordValue_lt_two_pow
+    (n bit width : Nat) (cells : List (List Bool))
+    (hwidth : width <= packedCellWidth n) :
+    SuccinctSpace.bitsToNatLE (packedDecodeSpan n bit width cells) <
+      2 ^ packedCellWidth n := by
+  have hlen : (packedDecodeSpan n bit width cells).length <= width := by
+    unfold packedDecodeSpan
+    exact List.length_take_le _ _
+  have hlt :=
+    GenericSelect.bitsToNatLE_lt_two_pow_length (packedDecodeSpan n bit width cells)
+  have hmono :
+      (2 : Nat) ^ (packedDecodeSpan n bit width cells).length <=
+        2 ^ packedCellWidth n :=
+    Nat.pow_le_pow_right (by omega) (by omega)
+  omega
+
 end PackedCellProbe
 
 end SuccinctFinal
