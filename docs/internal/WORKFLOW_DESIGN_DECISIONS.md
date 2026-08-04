@@ -7001,3 +7001,5 @@ Consequences:
   record defects or corrections are append-only.
 - Commit adding the `FG-06` allocated-space evidence: all fifteen frozen
   requirement cells byte-identical to `0a18548`.
+- Commit updating the result report through `FG-06` and the shape-free flat
+  address: matrix untouched, so no frozen-cell comparison was required.

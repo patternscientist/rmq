@@ -96,6 +96,21 @@ longSuperRelativeTable_length_eq :
         GenericSelect.wordBits (2 * shape.size))
 ```
 
+The component bases are also shape-free, and they need **no** long count:
+
+```
+packedComponentFlatOffset : Nat -> ConcreteBPNativeSuccinctRMQFlatPayloadComponent -> Nat
+
+packedSourceFlatOffset_eq :
+  concreteBPNativeSuccinctRMQFlatPayloadSourceFlatOffset shape source =
+    packedSourceFlatOffset shape.size (longCount shape) source
+```
+
+The four components are separated by the BP code and the access padding, both
+size-only, so the long count is needed only for positions *within* the select
+component. That is sharper than "`K = 1` suffices": it says exactly what the
+header buys.
+
 ### The counting guard (`FG-02` support)
 
 `PackedSummaryActive` and `PackedInteriorReady` are decidable predicates on `Nat`,
@@ -170,14 +185,37 @@ Recorded in `DESIGN_DECISIONS.md` under
    determined by the size; a controller cannot evaluate a determination. No claim
    about the `K = 0` flip is made.
 
+### Allocated space (`FG-06` — clauses proved, row Open)
+
+```
+packedAllocatedBits_le : packedAllocatedBits n <= 2 * n + packedRho n
+packedRho n = concreteBPNativeSuccinctRMQOverhead
+                genericSparseExceptionBPCloseAccessOverhead n
+            + 2 * packedCellWidth n
+packedRho_littleO : SuccinctSpace.LittleOLinear packedRho
+```
+
+Stated on allocated cells times width, over `packedMemory`, not on meaningful
+bits. The `2 * packedCellWidth` term is the header cell plus the ceiling
+remainder of the final cell; it is logarithmic, hence `o(n)`, but it is charged.
+Its little-o proof needed a new lemma, `littleOLinear_machineWordBits_comp`,
+because every existing little-o fact is about a function *of* `n` while the cell
+width is `machineWordBits` of the payload length.
+
 ## 7. What is not done
 
 `FG-01` (payload identity) is not separately stated. `FG-05` lacks the
 cell-crossing slice behaviour and the all-reads-target-this-object theorem.
-`FG-06` through `FG-15` are not started: allocated-space bound and its little-o
-proof, the closed controller, physical lowering, totality and the derived probe
-cap, same-run correctness, liveness and anti-bypass, boundaries, trust, the
-sixteen-case committed replay harness, and the durable decision set.
+`FG-07` through `FG-15` are not started: the closed controller, physical
+lowering, totality and the derived probe cap, same-run correctness, liveness and
+anti-bypass, boundaries, trust, the sixteen-case committed replay harness, and
+the durable decision set.
+
+Rows `FG-02`, `FG-03`, `FG-04`, `FG-06` all have their own listed clauses proved
+and all remain **Open** for the same reason: each quantifies over the packed
+execution, or over "one `w(n)`-bit cell", or over the store the execution probes,
+and no execution exists. They are recorded as complete leaves with that single
+shared dependency named. That dependency is `FG-07`.
 
 `FG-07` and `FG-10` are the bulk of the remaining work: a shape-free controller
 whose actual execution reproduces the project's reference semantics. Nothing so
