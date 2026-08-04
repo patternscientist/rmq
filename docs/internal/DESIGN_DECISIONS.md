@@ -8105,3 +8105,69 @@ quantities required. `Nat.add_mul_div_left` does the rest.
 The lesson worth keeping: the estimate-versus-choose distinction. An existential
 obligation does not need a uniform bound, and reaching for one turned a provable
 statement into a false lemma.
+
+## DD-20260804-036: I lowered the wrong execution layer
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. **Corrects the conclusion of
+`DD-20260804-027`, `DD-20260804-032` and `DD-20260804-033`.**
+
+Date: 2026-08-04
+
+What I concluded before:
+
+That `FG-08`'s whole-run clause is unreachable, because `packedMemory` serializes
+the object `FG-01` names while the executed store reads the canonical reviewer
+objects from segment 20 up, and the two stores are provably unequal
+(`packedStoresNotEqual`). I reported that as a tension between two frozen rows
+requiring an owner decision.
+
+Why that was wrong:
+
+The theorem is correct. The conclusion drawn from it was not, because it assumed
+the *word-RAM* `WholeQueryProgram` layer is the execution `FG-08` is about. It is
+not the only one, and it is not the one the rest of the gate is about.
+
+`concreteBPNativeSuccinctRMQ_two_n_plus_o_constant_query_profile` -- the project's
+public bundle -- composes, for a single access family:
+
+* `overhead_littleO`;
+* `(concreteBPNativeSuccinctRMQPayload accessFamily shape).length = 2 * n + overhead n`;
+* `(concreteBPNativeSuccinctRMQQueryCosted accessFamily shape left right).cost <= constant`;
+* `(concreteBPNativeSuccinctRMQQueryCosted accessFamily shape left (left + len)).erase
+   = some (scanWindow shape.representative left len)`.
+
+Space, cost and correctness, all about **one** object: the `Costed` query over
+`concreteBPNativeSuccinctRMQPayload accessFamily shape`. That payload is what
+`FG-01` pins, what `FG-06` bounds, and what `packedMemory` serializes. Its reads
+are `PayloadWordStore.readWordCosted store i`, which is `store.words[i]?` -- the
+same shape as the `sourceWords` reads `packedSourceRead_of_some` already lowers.
+
+The word-RAM global-store layer is a *second*, additional development with its own
+payload (`canonicalReviewerPayload`) and its own space bound. Nothing in the frozen
+rows requires the packed lowering to target it. I targeted it because `FG-07`'s
+controller language and the store-parametric machinery pointed that way, and then
+read the resulting mismatch as a defect in the frozen matrix rather than as a
+consequence of my own choice.
+
+Consequences:
+
+- **The campaign is not blocked on an owner decision.** No frozen row needs
+  editing and no close route needs re-basing. `DD-20260804-032`'s theorem stands
+  as a true statement about two stores; its *interpretation* as a `FG-01`/`FG-08`
+  incompatibility does not.
+- **The geometry work is unaffected and still correct.** The twenty-nine source
+  word geometries, the width bounds, the probe plan, the address bounds and the
+  per-read lowering are all about the flat payload's own sources, which is the
+  right object. What must change is which execution they are composed with.
+- **The controller must be rebuilt against the `Costed` layer.**
+  `packedWholeQueryRun` refactors the word-RAM program and is the wrong target;
+  it stays in the tree as a proved theorem about that layer, but it is not the
+  `FG-07` controller.
+- The next target is therefore concrete and not a decision: express the `Costed`
+  query's payload-word reads in terms of the twenty-nine flat sources, then
+  compose with `packedSourceRead_of_some`.
+
+Recorded this way, rather than by quietly re-pointing the work, because the
+earlier conclusion was reported to the owner as a blocking finding and a request
+for a decision. That request is withdrawn.

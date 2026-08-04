@@ -7210,3 +7210,8 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   `0a18548` across all 37 requirement rows; anti-vacuity unchanged; only
   `INV-VALUE-DEPENDENCY`'s evidence/status pair was rewritten, to replace a
   residual that named a false lemma.
+- Commit correcting the execution-layer choice: requirement cells byte-identical
+  to `0a18548` across all 37 requirement rows; anti-vacuity unchanged; the
+  `Evidence obtained` cells of `FG-08` and `INV-GLOBAL-PHYSICAL-MACHINE` were
+  appended to and their `Status` cells rewritten, because the previously recorded
+  status reported a blocking finding that this commit withdraws.
