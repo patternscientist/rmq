@@ -55,6 +55,7 @@ import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.SourceFactorization
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Header
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Memory
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Space
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Address
 import RMQ.Validation.EGCPFinalFalsification
 import RMQ.Core.SuccinctFinalModelAdequacy
 import RMQ.Core.SuccinctRankSelect

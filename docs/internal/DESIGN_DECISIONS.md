@@ -5669,3 +5669,18 @@ This is the bound the probe cap will rest on: two physical probes per logical
 word, for every logical word no wider than a cell. Whether every executed logical
 word satisfies that width hypothesis is a separate obligation and is not claimed
 here.
+
+`FG-07`/`FG-08` address arithmetic (2026-08-04):
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Address.lean` supplies
+`packedBitAddress`, `packedProbeCells` and `packedProbeOffset`, all `Nat`-only,
+and proves `packedPayloadSlice` (the canonical payload sits exactly one header
+cell into the packed memory, so the shift in the address is justified rather than
+assumed) and `packedRead_from_two_cells`, which composes
+`packedSourceFlatOffset_eq` with `packedSpan_from_two_cells`: any fixed-width
+slice of the canonical payload, of width at most one cell, is recoverable from two
+consecutive packed cells whose addresses are computed from the input size, the
+decoded long count, the typed source, the index and the width.
+
+This is the step that turns "which source and index do I want" into "which two
+cells do I probe". It is not a controller: nothing here executes, and the range
+and decoding obligations are untouched.
