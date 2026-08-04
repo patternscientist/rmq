@@ -6343,3 +6343,19 @@ Pinned by `packedLongFlagBlocksPerSuperIsOne` and
 This does not close `FG-07`: no controller definition exists. What it means is
 that the `Nat`-only geometry record chosen in `DD-20260804-008` has no missing
 field on the select side.
+
+### Third addendum to `DD-20260804-008` (2026-08-04): the fringe chunk width
+
+`packedFringeChunkBits n = SuccinctClose.bpFringeChunkBits (2 * n)`, with
+`packedFringeChunkBits_eq` proving agreement at `shape.bpCode.length`. This is
+the one scalar the select leaf receives beside its data record -- the layout
+calls it `c` -- and it is a width of the BP code, so the mirror is immediate.
+
+With it, **nothing the select leaf consumes still needs the shape**. Every input
+is the supplied store, a query index, a literal, or a size-only function of `n`.
+
+Pinned by `packedFringeChunkBitsIsSizeOnly` and
+`packedFringeChunkBitsSignature`.
+
+`FG-07` is still Open: no controller definition exists, and the close/LCA leaf
+tower has not been examined.

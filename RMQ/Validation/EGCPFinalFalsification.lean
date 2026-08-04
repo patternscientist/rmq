@@ -663,6 +663,19 @@ theorem packedRankReadIsDeterminedByThreeScalars :
       blockSegment wordSegment chunkSegment chunkBits target pos hquery
       hwordSize hblocks
 
+/-- Pins the fringe chunk width mirror's signature. -/
+def packedFringeChunkBitsSignature : Nat -> Nat := packedFringeChunkBits
+
+/--
+Pins the one scalar supplied beside the select data: the fringe chunk width the
+leaf receives as `c`. It is a function of the input size.
+-/
+theorem packedFringeChunkBitsIsSizeOnly :
+    forall shape : CartesianShape,
+      SuccinctClose.bpFringeChunkBits shape.bpCode.length =
+        packedFringeChunkBits shape.size :=
+  packedFringeChunkBits_eq
+
 /--
 Pins that both rank records the select leaf uses group one block per super
 block. These are the last two select-side scalars; both are literals, so neither

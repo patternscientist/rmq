@@ -7104,3 +7104,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   comparison was required.
 - Commit discharging the select-side scalar list: matrix untouched, so no
   frozen-cell comparison was required.
+- Commit mirroring the fringe chunk width: matrix untouched, so no frozen-cell
+  comparison was required.

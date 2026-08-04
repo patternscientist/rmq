@@ -335,6 +335,23 @@ theorem packedSparseFlagBlocksPerSuper_eq (bits : List Bool) (target : Bool) :
         bits target).blocksPerSuper = 1 :=
   rfl
 
+/-- Size-only mirror of the shared fringe chunk width. -/
+def packedFringeChunkBits (n : Nat) : Nat :=
+  SuccinctClose.bpFringeChunkBits (2 * n)
+
+/--
+**The fringe chunk width is a function of the input size.**
+
+This is the one scalar supplied *beside* the select data rather than inside it:
+the leaf takes it as the argument the layout calls `c`. It is a width of the BP
+code, so the mirror is immediate.
+-/
+theorem packedFringeChunkBits_eq (shape : CartesianShape) :
+    SuccinctClose.bpFringeChunkBits shape.bpCode.length =
+      packedFringeChunkBits shape.size := by
+  unfold packedFringeChunkBits
+  rw [CartesianShape.bpCode_length]
+
 /--
 **The sparse-directory read is determined by four scalars.**
 

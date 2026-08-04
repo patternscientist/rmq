@@ -517,14 +517,17 @@ and `sparseExceptionEffectiveFlagRankBlocksPerSuper` each bind both arguments as
 `_bits`/`_target` and return `1`. A literal cannot carry shape content, so
 neither needs a mirror at all.
 
-Still unmirrored beside the select data: `SuccinctClose.bpFringeChunkBits
-shape.bpCode.length`. It is a length of the BP code, so the mirror is immediate,
-but it has not been written.
+The one scalar supplied *beside* the select data — the fringe chunk width the
+layout calls `c` — is mirrored too: `packedFringeChunkBits n =
+bpFringeChunkBits (2 * n)`, with `packedFringeChunkBits_eq`.
+
+**So nothing the select leaf consumes still needs the shape.** Every input is the
+supplied store, a query index, a literal, or a size-only function of `n`.
 
 **This does not close `FG-07`.** No controller definition exists. What it means is
 that the `Nat`-only geometry record chosen in `DD-20260804-008` has no missing
-field on the select side — the construction can begin without further discovery
-work there. The close/LCA side has still not been examined at all.
+field on the select side — the construction can begin there without further
+discovery work. The close/LCA leaf tower has still not been examined at all.
 
 Still open: no controller definition exists; the close and LCA leaves have not
 been examined at all; and `SuccinctClose.bpFringeChunkBits shape.bpCode.length`
