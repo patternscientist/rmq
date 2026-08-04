@@ -788,6 +788,31 @@ theorem packedLcaCloseRankSeed_eq
         (builtRelativeSplitBPCloseRankData shape).blocksPerSuper pos :=
   rfl
 
+/-! #### The navigator's dispatch is size-only
+
+The close/LCA navigator's own body uses `shape` in two places: the block size that
+decides same-block versus cross-block, and the recursive hand-off to the two
+sub-navigators. The first is settled here.
+-/
+
+/-- Size-only mirror of the summary block size that drives the close dispatch. -/
+def packedSummaryBlockSizeRaw (n : Nat) : Nat :=
+  2 * packedSummaryBase n
+
+/--
+**The close/LCA dispatch scalar is a function of the input size.**
+
+`lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore` branches on
+`blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose =
+blockOfClose … rightClose`. That block size is `2 * (n.log2 + 1)`, so the branch
+is decided by `n` and the two close endpoints alone -- exactly the inputs `FG-07`
+permits.
+-/
+theorem packedSummaryBlockSizeRaw_eq (shape : CartesianShape) :
+    SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape =
+      packedSummaryBlockSizeRaw shape.size :=
+  rfl
+
 /-- Size-only mirror of the shared fringe chunk width. -/
 def packedFringeChunkBits (n : Nat) : Nat :=
   SuccinctClose.bpFringeChunkBits (2 * n)

@@ -6634,3 +6634,26 @@ Consequences and evidence:
   through `(n, longCount)` plus store replies is an open question this branch has
   not investigated.
 - `FG-07` remains Open. Nothing here builds a controller.
+
+### Addendum to `DD-20260804-011` (2026-08-04): the navigator's dispatch is size-only
+
+`lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore` uses its `shape`
+argument in exactly two places: the block size that decides same-block versus
+cross-block, and the hand-off to the two sub-navigators.
+
+The first is now settled. `canonicalBPRelativeSummaryBlockSizeRaw shape` is
+`2 * canonicalBPRelativeSummaryBase shape`, and `packedSummaryBlockSizeRaw n =
+2 * packedSummaryBase n = 2 * (n.log2 + 1)` mirrors it, with
+`packedSummaryBlockSizeRaw_eq` proved by `rfl`.
+
+So the navigator's top-level branch is decided by `n` and the two close endpoints
+alone -- exactly the inputs `FG-07` permits. What remains of the shape's use in
+the close/LCA route is the recursive hand-off to
+`bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore` and
+`bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`,
+neither of which has been examined.
+
+Pinned by `packedCloseDispatchIsSizeOnly` and
+`packedSummaryBlockSizeRawSignature`.
+
+`FG-07` remains Open.

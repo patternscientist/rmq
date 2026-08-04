@@ -836,6 +836,21 @@ def packedLcaCloseLeafSignaturePin :
       WordRAM.TraceResult (Option Nat) :=
   packedLcaCloseLeafSignature
 
+/-- Pins the close dispatch block size as a function of the input size. -/
+def packedSummaryBlockSizeRawSignature : Nat -> Nat :=
+  packedSummaryBlockSizeRaw
+
+/--
+Pins that the close/LCA navigator's same-block versus cross-block dispatch is
+decided by `n` and the two close endpoints alone. The block size is
+`2 * (n.log2 + 1)`.
+-/
+theorem packedCloseDispatchIsSizeOnly :
+    forall shape : CartesianShape,
+      SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape =
+        packedSummaryBlockSizeRaw shape.size :=
+  packedSummaryBlockSizeRaw_eq
+
 /-- Pins that the rank seed it supplies is already record-free. -/
 theorem packedLcaCloseRankSeedIsRecordFree :
     forall (shape : CartesianShape) (store : WordRAM.ReadStore) (pos : Nat),

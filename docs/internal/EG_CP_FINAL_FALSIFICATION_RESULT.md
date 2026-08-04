@@ -658,10 +658,21 @@ Two things are recorded rather than estimated:
 
 The navigator's other arguments are three fixed segment constants, the store and
 the two close endpoints — none carry shape content. **So the residual is exactly
-the navigator's own use of `shape`**, and that is deeper than anything on the
-select side: the navigator is the compact close/LCA interior route, and whether
-its shape use factors through `(n, longCount)` plus store replies is an open
-question this branch has not investigated.
+the navigator's own use of `shape`.**
+
+That use is now itself partly settled. The navigator's body touches `shape` in
+exactly two places: the block size that decides same-block versus cross-block,
+and the hand-off to the two sub-navigators. The first is size-only —
+`canonicalBPRelativeSummaryBlockSizeRaw shape = 2 * (n.log2 + 1)`, mirrored by
+`packedSummaryBlockSizeRaw` with `packedSummaryBlockSizeRaw_eq` proved by `rfl`.
+**So the navigator's top-level branch is decided by `n` and the two close
+endpoints alone** — exactly the inputs `FG-07` permits.
+
+What remains is the recursive hand-off to
+`bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore` and
+`bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`.
+Neither has been examined, and whether their shape use factors through
+`(n, longCount)` plus store replies is an open question.
 
 `FG-07` is still **not** closed. There is no top-level controller definition, no
 header-probe-then-address sequencing, and no `receipt`.

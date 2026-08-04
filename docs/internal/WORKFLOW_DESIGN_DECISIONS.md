@@ -7118,3 +7118,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   frozen-cell comparison was required.
 - Commit locating the close/LCA shape residue: matrix untouched, so no
   frozen-cell comparison was required.
+- Commit mirroring the close dispatch block size: matrix untouched, so no
+  frozen-cell comparison was required.
