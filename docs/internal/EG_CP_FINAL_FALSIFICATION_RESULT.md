@@ -445,26 +445,32 @@ no parameter. **That closes the select-side scalar list**: four geometry mirrors
 at `2 * n` with agreement theorems, `occurrenceCount = n`, and `queryOccurrence`
 content-free. Nothing on the select side needs the shape except through `n`.
 
-### Three of the leaf's four read helpers are content-free
+### All four of the leaf's read helpers are accounted for
 
 `bpChunkedSelectTraceResultWithStore` reaches the supplied store through four
 helpers:
 
-| Helper | Status |
+| Helper | Result |
 | --- | --- |
 | four-field entry-table read | content-free (`packedSelectEntryRead_content_free`) |
 | dense two-word select read | content-free at a fixed word size (`packedDenseTwoWordSelectRead_content_free`) |
 | relative-offset read | takes no record at all; type is `ReadStore -> Nat -> Nat -> Nat -> TraceResult (Option Nat)` |
-| two-level rank read | **not covered** — consumes `data.superIndex pos` and its neighbours |
+| two-level rank read | determined by `queryPos pos`, `wordSize`, `blocksPerSuper` (`packedRankRead_scalar_determined`) |
 
-The dense two-word case is the informative one: the two bit stores are over
-*unrelated* bit strings and share only the word size, which is a type index
-rather than stored data. So the helper consults its argument for a scalar and
-reads everything else from the supplied store.
+The dense two-word case is the informative one among the content-free three: the
+two bit stores are over *unrelated* bit strings and share only the word size,
+which is a type index rather than stored data.
 
-The rank read's derived indices are computed from its record's block and super
-sizes, so the expected shape of the remaining work is another scalar mirror —
-but that is a prediction, not a result, and it is recorded as such.
+The rank read is the one helper that genuinely consults its record — but only
+through `superIndex`, `wordIndex` and `wordOffset`, which unfold to the three
+scalars above. Two records over unrelated bit strings, with unrelated overheads
+and unrelated query costs, agree whenever those three agree. That is the property
+that matters: it consults the record for scalars, not for data.
+
+What remains before the select leaf itself can be stated scalar-determined is the
+sparse-directory helper `SparseExceptionDirectory.bpChunkedReadTraceResultWithStore`,
+which has not been examined, and then an assembly theorem carrying one hypothesis
+per scalar. Neither is claimed.
 
 Still open: no controller definition exists; the close and LCA leaves have not
 been examined at all; and `SuccinctClose.bpFringeChunkBits shape.bpCode.length`

@@ -7095,3 +7095,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   evidence and status columns changed.
 - Commit covering two more select read helpers: matrix untouched, so no
   frozen-cell comparison was required.
+- Commit covering the fourth select read helper: matrix untouched, so no
+  frozen-cell comparison was required.

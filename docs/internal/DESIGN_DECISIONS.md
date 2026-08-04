@@ -6186,3 +6186,32 @@ scalar mirror, but that is a prediction and not a result.
 
 Pinned by `packedDenseTwoWordSelectReadIsDeterminedByTheStore` and
 `packedRelativeOffsetReadSignaturePin`.
+
+### Third addendum to `DD-20260804-007` (2026-08-04): the fourth read helper is scalar-determined
+
+`SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore`
+mentions its record only through `superIndex`, `wordIndex` and `wordOffset`, and
+those unfold to `queryPos pos`, `wordSize` and `blocksPerSuper`.
+
+`packedRankRead_scalar_determined` proves that two rank records over unrelated
+bit strings, with unrelated overheads and unrelated query costs, produce the same
+trace result whenever those three agree. Unlike the other three helpers this one
+is not content-free — it genuinely consults its record — but it consults it only
+for scalars, which is the property that matters.
+
+All four helpers `bpChunkedSelectTraceResultWithStore` uses to reach the store
+are now accounted for:
+
+| Helper | Result |
+| --- | --- |
+| four-field entry-table read | content-free |
+| dense two-word select read | content-free at a fixed word size |
+| relative-offset read | takes no record at all |
+| two-level rank read | determined by `queryPos pos`, `wordSize`, `blocksPerSuper` |
+
+What remains before the select leaf itself can be stated scalar-determined is the
+sparse-directory helper `SparseExceptionDirectory.bpChunkedReadTraceResultWithStore`,
+which has not been examined, and then an assembly theorem carrying one hypothesis
+per scalar. Neither is claimed.
+
+Pinned by `packedRankReadIsDeterminedByThreeScalars`.

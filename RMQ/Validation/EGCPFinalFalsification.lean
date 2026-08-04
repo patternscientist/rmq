@@ -633,6 +633,36 @@ theorem packedDenseTwoWordSelectReadIsDeterminedByTheStore :
       bitWordSegment rankTableSegment selectTableSegment chunkBits target store
       basePosition baseOccurrence occurrence
 
+/--
+Pins that the two-level rank read is determined by three scalars. The two records
+are over unrelated bit strings with unrelated overheads and unrelated query
+costs; agreeing on `queryPos pos`, `wordSize` and `blocksPerSuper` is enough.
+-/
+theorem packedRankReadIsDeterminedByThreeScalars :
+    forall {bitsLeft bitsRight : List Bool}
+      {superLeft blockLeft queryLeft superRight blockRight queryRight : Nat}
+      (dataLeft :
+        SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+          bitsLeft superLeft blockLeft queryLeft)
+      (dataRight :
+        SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+          bitsRight superRight blockRight queryRight)
+      (store : WordRAM.ReadStore)
+      (superSegment blockSegment wordSegment chunkSegment chunkBits : Nat)
+      (target : Bool) (pos : Nat),
+      dataLeft.queryPos pos = dataRight.queryPos pos ->
+        dataLeft.wordSize = dataRight.wordSize ->
+          dataLeft.blocksPerSuper = dataRight.blocksPerSuper ->
+            dataLeft.bpChunkedRankTraceResultWithStore store superSegment
+                blockSegment wordSegment chunkSegment chunkBits target pos =
+              dataRight.bpChunkedRankTraceResultWithStore store superSegment
+                blockSegment wordSegment chunkSegment chunkBits target pos :=
+  fun dataLeft dataRight store superSegment blockSegment wordSegment
+      chunkSegment chunkBits target pos hquery hwordSize hblocks =>
+    packedRankRead_scalar_determined dataLeft dataRight store superSegment
+      blockSegment wordSegment chunkSegment chunkBits target pos hquery
+      hwordSize hblocks
+
 /-- Pins that the relative-offset read takes a store and three naturals only. -/
 def packedRelativeOffsetReadSignaturePin :
     WordRAM.ReadStore -> Nat -> Nat -> Nat ->

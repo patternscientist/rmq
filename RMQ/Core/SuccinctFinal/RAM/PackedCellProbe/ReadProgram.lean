@@ -208,6 +208,51 @@ theorem packedDenseTwoWordSelectRead_content_free
   rfl
 
 /--
+**The two-level rank read is determined by three scalars.**
+
+Its body mentions its record only through `superIndex`, `wordIndex` and
+`wordOffset`, and those three unfold to `queryPos pos`, `wordSize` and
+`blocksPerSuper`. Two rank records over unrelated bit strings, with unrelated
+overheads and unrelated query costs, therefore agree whenever those three agree.
+
+This is the fourth and last helper `bpChunkedSelectTraceResultWithStore` uses to
+reach the store. With the three content-free results above, the select leaf's
+whole dependence on its shape-derived arguments is a fixed list of scalars.
+-/
+theorem packedRankRead_scalar_determined
+    {bitsLeft bitsRight : List Bool}
+    {superLeft blockLeft queryLeft : Nat}
+    {superRight blockRight queryRight : Nat}
+    (dataLeft :
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+        bitsLeft superLeft blockLeft queryLeft)
+    (dataRight :
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+        bitsRight superRight blockRight queryRight)
+    (store : WordRAM.ReadStore)
+    (superSegment blockSegment wordSegment chunkSegment chunkBits : Nat)
+    (target : Bool) (pos : Nat)
+    (hquery : dataLeft.queryPos pos = dataRight.queryPos pos)
+    (hwordSize : dataLeft.wordSize = dataRight.wordSize)
+    (hblocks : dataLeft.blocksPerSuper = dataRight.blocksPerSuper) :
+    dataLeft.bpChunkedRankTraceResultWithStore store superSegment blockSegment
+        wordSegment chunkSegment chunkBits target pos =
+      dataRight.bpChunkedRankTraceResultWithStore store superSegment blockSegment
+        wordSegment chunkSegment chunkBits target pos := by
+  have hword : dataLeft.wordIndex pos = dataRight.wordIndex pos := by
+    unfold SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndex
+    rw [hquery, hwordSize]
+  have hsuper : dataLeft.superIndex pos = dataRight.superIndex pos := by
+    unfold SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndex
+    rw [hword, hblocks]
+  have hoffset : dataLeft.wordOffset pos = dataRight.wordOffset pos := by
+    unfold SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordOffset
+    rw [hquery, hword, hwordSize]
+  unfold
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore
+  rw [hsuper, hword, hoffset]
+
+/--
 **The relative-offset read takes no record at all.**
 
 Its declared type is a supplied store and three naturals. Nothing shape-derived
