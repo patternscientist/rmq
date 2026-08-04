@@ -17,10 +17,11 @@ ancestor.
 Worktree: `C:\Users\poin\.codex\visualizations\2026\07\17\019f6d85-7626-7433-a60b-81f8be29689a\eg-cp-final-falsification-r1`.
 Never pushed, never merged, never amended, never squashed.
 
-Last update: 2026-08-04, in the commit titled "Record the replay run in the
-matrix", which was the branch tip when this line was written. Earlier tips this
-document described: `4d2ed70`, `5c05016`, `08d63c7`, the header-probe commit, the
-physical-read commit, and the executed-segment-universe commit.
+Last update: 2026-08-04, in the commit titled "Record the three payload objects",
+which was the branch tip when this line was written. Earlier tips this document
+described: `4d2ed70`, `5c05016`, `08d63c7`, the header-probe commit, the
+physical-read commit, the executed-segment-universe commit, and the replay-run
+commit.
 
 ---
 
@@ -514,6 +515,42 @@ Two records are deliberately weaker than the registry's wording. `M01` and `M14`
 reject at the source-geometry equation, which depends on the decoded header value
 but is **not** a value-projection liveness witness; `FG-11` still has no `.result`
 or next-address inequality and these mutations do not supply one.
+
+### Three payload objects, and which one each layer uses
+
+This is the campaign's terminal finding and it is negative, so it is stated with
+its evidence and with its limits.
+
+| object | who uses it | at the size-three left spine |
+| --- | --- | --- |
+| `concreteBPNativeSuccinctRMQPayload <family> shape` | what `FG-01` pins, what the public `Costed` semantics is payload-backed by, and what `packedMemory` serializes | `21466` bits, close component `0`, the rest padding to the size-only budgets |
+| `concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape` | what the word-RAM execution reads, through `concreteBPNativeSuccinctRMQGlobalReadStore` | `305` bits: canonical interior directory `100`, fringe chunk `40`, select chunk `8` |
+
+`FG-01` names a *function* with an access-family parameter, so the first thing to
+rule out was that I had instantiated it wrongly. The public payload uses a
+different family --
+`builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.toWeakFamily`
+rather than `builtGenericSparseExceptionSelectBPCloseAccessFamily` -- but the two
+produce the same payload value at the witness shape. The instantiation was not the
+error.
+
+The two objects are not related by a bridge. `packedStoresNotEqual` proves the
+flat payload store and the executed store are unequal whenever the close summary
+carries a block, disagreeing at segment `23` where the executed store is silent
+and the flat store answers.
+
+**What follows.** `FG-08`'s whole-run clause, and with it `FG-10`, `FG-11` and the
+seven `TARGET-ABSENT` replay cases, cannot be closed while `packedMemory`
+serializes the object `FG-01` names. This is not a `K1` obstruction: the header
+cell appears in none of these theorems and no frozen `K1` quantifier is
+contradicted.
+
+**What is deliberately not claimed.** That the project's headline claim conflates
+the two objects. Both layers carry their own space bound. Whether any public
+statement composes a bound proved for one with an execution performed on the other
+is a question about the headline claim rather than about this gate, and it is
+outside what has been checked here. It is written down because a reviewer running
+`M11-SIBLING-PAYLOAD` at project scale would want to ask it.
 
 ## 5. Exact-type consumers
 

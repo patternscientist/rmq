@@ -7962,3 +7962,63 @@ What this does and does not settle:
   `FG-08`'s requirement that the execution probe the memory built from it. Which
   of the two moves is an owner decision, because either resolution edits the
   meaning of a frozen row and the commissioning prompt forbids weakening one.
+
+## DD-20260804-033: the payload I pinned is the public one; the executed one is a third object
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`.
+
+Date: 2026-08-04
+
+Before accepting `DD-20260804-032`'s conclusion I checked an assumption I had not
+tested. `FG-01` names the *function* `concreteBPNativeSuccinctRMQPayload`, which
+takes an access-family parameter; I had instantiated it at
+`builtGenericSparseExceptionSelectBPCloseAccessFamily`. If the accepted semantics
+consumed a different instantiation, the whole blocking argument would have been my
+mis-instantiation rather than a conflict between frozen rows.
+
+It does consume a different *family*: the public payload is
+
+```
+concreteBPCloseNavigationPayload shape =
+  concreteBPNativeSuccinctRMQPayload
+    builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.toWeakFamily shape
+```
+
+but the two families produce the same payload **value** -- checked at the
+size-three left spine, where both are `21466` bits and `decide` reports them
+equal. So the object `FG-01` pins is the object the public claim consumes, and the
+instantiation was not the error.
+
+(The equality is not stated as a theorem here: the two families are different
+terms, `rfl` times out, and proving the directories coincide is a side quest that
+does not change any conclusion. The witness check is recorded as a witness check.)
+
+The sharper statement this yields:
+
+There are **three** payload objects, not two.
+
+1. `concreteBPNativeSuccinctRMQPayload <either family> shape` -- the object `FG-01`
+   pins, the object the public `Costed` semantics is payload-backed by, and the
+   object `packedMemory` serializes. At the size-three spine: `21466` bits, of
+   which the close component is `0`, the rest being padding to the size-only
+   budgets.
+2. `concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape` -- the object the
+   word-RAM execution reads, through `concreteBPNativeSuccinctRMQGlobalReadStore`.
+   At the same shape: `305` bits, containing the canonical interior directory
+   (`100` bits) and the two chunk tables (`40` and `8`).
+3. The two are neither equal nor related by a bridge: `packedStoresNotEqual`.
+
+So the split is not between two frozen matrix rows in the abstract. It is between
+the object the *space claim* is about and the object the *word-RAM execution*
+reads, and the packed cell-probe construction inherits it because `FG-01` sends it
+to the first.
+
+What I am **not** claiming: that the project's headline claim conflates the two.
+Both layers carry their own space bound -- the `Costed` layer through
+`concreteBPNativeSuccinctRMQOverhead` and the reviewer layer through
+`concreteBPNativeSuccinctRMQCanonicalReviewerPayload_length_le`. Whether any
+public statement composes a bound proved for one with an execution performed on
+the other is a question about the headline claim, not about this gate, and it is
+outside what I have checked. It is flagged because a reviewer of `M11` at project
+scale would want to ask it.
