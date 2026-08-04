@@ -53,6 +53,7 @@ import RMQ.Core.SuccinctFinal.RAM.GeometryClosure
 import RMQ.Core.SuccinctFinal.RAM.SourceInventory
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.SourceFactorization
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Header
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Memory
 import RMQ.Validation.EGCPFinalFalsification
 import RMQ.Core.SuccinctFinalModelAdequacy
 import RMQ.Core.SuccinctRankSelect

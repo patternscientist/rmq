@@ -5565,3 +5565,28 @@ payload-length theorem is keyed on membership in `shapesOfSize n` rather than on
 What this does not settle: no memory exists, so "the header occupies cell zero" is
 not stated. Nothing here shows a controller ever reads the header. `FG-04` stays
 Open on the first of those.
+
+`FG-05` memory definitions under `DD-20260802-001` (2026-08-03):
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Memory.lean` defines
+`packedSerializedBits = packedHeaderBits ++ payload`, `packedCellCount n = 1 +
+selectCeilDiv (P n) (w n)`, `packedAllocatedBits n = packedCellCount n * w n`,
+`packedPaddedBits`, and `packedMemory`.
+
+The chunker is a `List.range` map rather than the repository's existing fuel-based
+`SuccinctSpace.chunkPayloadWords`. That chunker leaves a short final word, and
+this representation must allocate whole cells; the difference is exactly the
+padding `FG-06` has to charge for. Reusing the existing chunker would have made
+the allocation look smaller than it is, which is the specific error
+`FG-06` names ("Do not count only meaningful bits"), so the divergence is
+deliberate and the padding is a named object rather than an implicit remainder.
+
+Proved so far: `packedSerializedBits_length`, `packedSerialized_le_allocated` (via
+`selectCeilDiv_mul_ge_of_pos`), `packedPaddedBits_length`, `packedMemory_length`,
+`packedMemory_cell_length` (every allocated cell is exactly one full width, none
+short), and `packedMemory_cell_zero` (the header is cell zero in full, so the
+payload starts at cell one uniformly and no header field straddles a boundary).
+
+Still open in this row: the join round trip, the slice/unpack behaviour for a span
+crossing a cell boundary, and the theorem that all execution reads target this one
+object. The last of those needs a controller and cannot be stated yet.
