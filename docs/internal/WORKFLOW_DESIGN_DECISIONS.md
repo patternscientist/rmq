@@ -7003,3 +7003,66 @@ Consequences:
   requirement cells byte-identical to `0a18548`.
 - Commit updating the result report through `FG-06` and the shape-free flat
   address: matrix untouched, so no frozen-cell comparison was required.
+
+## WDD-20260804-002: a stale worker report is a defect, not a cosmetic lag
+
+Status: Worker process decision recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Extends `WDD-20260804-001`.
+
+Date: 2026-08-04
+
+Context:
+
+`WDD-20260804-001` established that the durable worker report is written during
+the work. It did not say what happens when the report and the branch disagree.
+By commit `6078a29` they did: the report's "what is proved" section stopped at
+`FG-06`, its module list omitted `Address.lean` and the cell-crossing theorem,
+and its `FG-05` paragraph described a memory whose slice behaviour had since been
+proved. Separately, `DD-20260802-001` had acquired a trailing paragraph naming
+`packedProbeCells`, `packedProbeOffset` and `packedRead_from_two_cells`, three
+declarations that the next commit deleted.
+
+A stale report is worse than no report. A successor session resuming from commits
+alone reads it as the branch's state, and a decision log naming deleted
+declarations sends that session looking for them.
+
+Decision:
+
+1. Whenever a commit changes what is proved, the same commit or the next one
+   updates the result report's "what is proved" and "what is not done" sections.
+   The report's factual sections track the branch; only its defect and
+   correction sections are append-only.
+2. A design-decision entry that describes declarations later removed is
+   superseded by an explicit `Supersedes` line in the replacement entry, naming
+   the removed declarations. The original text is not edited.
+3. The result report carries a "last update" line naming the exact commit it
+   describes, so a reader can tell staleness from a mismatch rather than by
+   reading the whole branch.
+4. The report names the **next smallest proof target** explicitly, and the
+   approaches already tried and rejected. A handoff that lists only what is done
+   makes the successor rediscover the dead ends.
+
+Rationale:
+
+The alternative -- updating the report once, at the end -- is what produced the
+stale state. It also concentrates the most error-prone writing at the moment the
+worker has the least remaining context, which is exactly when a report is most
+likely to overstate.
+
+Consequences:
+
+- The report at `4d2ed70` states the tip it describes, lists the seven modules
+  with the row each serves, records both the layout defect found on 2026-08-03
+  and this branch's own probe-pair defect found and repaired on 2026-08-04, and
+  names `packedSourceWidth` plus its agreement theorem as the next smallest
+  target.
+- `DD-20260804-001` carries the `Supersedes` line for the three removed
+  declarations.
+- The frozen matrix's `ID`, `Exact frozen requirement`, `Scope`,
+  `Evidence needed` and `Named consumer` columns remain byte-identical to
+  `0a18548` across all 37 rows (15 `FG`, 19 `INV`, 3 `REPLAY`), with no missing
+  or duplicate ID and no mojibake spelling. `Anti-vacuity challenge attempted
+  and outcome` changed only by appending to the frozen text, verified as a
+  strict prefix extension on each of the nine rows that changed, as
+  `WDD-20260803-001` permits. `Evidence obtained`, `Status / residual gap` and
+  the ledger `Outcome` column changed freely.

@@ -10,27 +10,48 @@ Worker: Claude (Opus 5) runtime, role skill `rmq-proof-sprint`.
 Branch: `codex/eg-cp-final-falsification-gate-r1`.
 Base: `1490c97b399d136bad4e18953441da433d130d4d`, tree
 `4114fe2544ad0a4af4dce3c002e617a8dd55e64b`, both verified.
-Governance ref `f0c7232a8a52b8d61ead5e96d72a8a849bc094b5` verified as an ancestor.
+Frozen acceptance matrix: `0a18548539035f69f68c1b44031fba64df8297f3`, verified
+as an ancestor of every commit below.
+Governance ref `f0c7232a8a52b8d61ead5e96d72a8a849bc094b5` verified as an
+ancestor.
 Worktree: `C:\Users\poin\.codex\visualizations\2026\07\17\019f6d85-7626-7433-a60b-81f8be29689a\eg-cp-final-falsification-r1`.
-Never pushed, never merged.
+Never pushed, never merged, never amended, never squashed.
+
+Last update: 2026-08-04, at branch tip `4d2ed70`.
 
 ---
 
 ## 1. Preflight
 
 `scripts/project_skill_preflight.ps1` against the governance ref, with
-`rmq-proof-sprint` required: **PASS**.
+`rmq-proof-sprint` required: **PASS**, twice.
 
-The runtime catalog was declared as `rmq-proof-sprint` alone. That is the only
-project skill for which runtime evidence exists — it was invoked successfully
-through the Skill tool. `rmq-audit-prompt` and `rmq-coordinator` are present under
-`.claude/skills` and `.agents/skills`, but filesystem presence is not runtime
-evidence and the contract says so explicitly. Declaring the smaller set can only
-make the check stricter, never produce a false pass.
+* 2026-08-03, at base `1490c97`, runtime catalog declared as `rmq-proof-sprint`
+  alone.
+* 2026-08-04, at checkout `6078a29`, runtime catalog declared as the complete
+  actual set exposed to the session: `rmq-audit-prompt`, `rmq-coordinator`,
+  `rmq-proof-sprint`. Output: governance `f0c7232a...`; checkout `6078a29...`;
+  expected, checkout-tracked, working-tree and runtime skill sets all equal to
+  those three names; `required=rmq-proof-sprint`;
+  `required_mode=role-skills`; `PASS`.
+
+The second run is the one `AGENTS.md` asks for: the runtime list must be the RMQ
+skills actually exposed to the task. The first run's smaller declaration could
+only make the check stricter, never produce a false pass, but it was not the
+declared catalog and is superseded.
 
 ## 2. Commit ancestry
 
 ```
+4d2ed70  Type the logical read address without a shape
+293fb45  Replace the unconditional cell pair with a conditional probe plan
+6078a29  Compute packed probe addresses from the size and the decoded long count
+20497d2  Prove the cell-crossing span theorem
+06d3bc3  Name the allocated cells and pair them for the physical lowering
+e85b39c  Update the worker report through FG-06
+72613b3  Complete the shape-free flat address
+3ea5121  Bound the allocated space and prove the residual is little-o linear
+06caa3d  Land the durable worker report for the falsification gate
 5ab003d  Prove the packed memory round trip
 ca11556  Define the packed memory: cells, allocation, and the header cell
 52e7988  Fix the K=1 header schema: P n, w n, all-size count fit, decoding
@@ -44,17 +65,60 @@ b9ace55  Add a decidable size-only counting guard for the close sources
 ```
 
 The freeze at `0a18548` precedes every implementation edit, so the freeze is
-git-verifiable rather than asserted. Every commit was validated individually with
-`scripts/design_decision_check.ps1 -Strict -Base HEAD~1`, which is how CI evaluates
-them (`WDD-20260726-007`), and with `git diff --check HEAD~1..HEAD`.
+git-verifiable rather than asserted. Every commit was validated individually
+with `scripts/design_decision_check.ps1 -Strict -Base HEAD~1`, which is how CI
+evaluates them (`WDD-20260726-007`), and with `git diff --check HEAD~1..HEAD`.
 
-## 3. What is proved
+## 3. Modules on this branch
 
-All declarations live under `RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/` and are
-imported by `RMQ.lean`, so they are inside `lake build RMQ` and inside the prose
-hygiene scan.
+All under `RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/`, all imported by
+`RMQ.lean`, so all inside `lake build RMQ` and inside the prose hygiene scan.
+Import order: `SourceFactorization` → `Payload` → `Header` → `Memory` → `Space`
+→ `Address` → `Probe`. The validation root is
+`RMQ/Validation/EGCPFinalFalsification.lean`.
 
-### The K1 address factorization (`FG-02`, `FG-03` — leaf complete, rows Open)
+| Module | Row | What it establishes |
+| --- | --- | --- |
+| `SourceFactorization.lean` | `FG-02`, `FG-03` | Nat-only mirrors and the shape-free flat address |
+| `Payload.lean` | `FG-01` | the stored bits are the canonical payload object |
+| `Header.lean` | `FG-04` | `P n`, `w n`, count fit, decoding, `n = 0,1,2` |
+| `Memory.lean` | `FG-05` | cells, allocation, round trip, cell crossing |
+| `Space.lean` | `FG-06` | allocated-bits bound and its little-o residual |
+| `Address.lean` | `FG-07`, `FG-08` | bit addresses and the header shift |
+| `Probe.lean` | `FG-05`, `FG-08`, `FG-09` | the conditional physical probe plan |
+
+## 4. What is proved
+
+### The raw payload identity (`FG-01` — identity clause proved, row Open)
+
+```
+packedPayloadBits (shape : CartesianShape) : List Bool :=
+  (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload
+
+packedPayloadBits_eq_canonical :
+  packedPayloadBits shape =
+    concreteBPNativeSuccinctRMQPayload
+      builtGenericSparseExceptionSelectBPCloseAccessFamily shape
+```
+
+The proof is `rfl`, so the right-hand side is the canonical definition applied
+to the canonical access family; there is no second object to keep in sync.
+`packedPayloadBitsOfList_eq_canonical` gives the same identity at the list-facing
+front door, and `packedPayloadBits_eq_bpCode_append_aux` expands one level so
+that "no hidden table" is checkable: the whole stored string is the BP code
+followed by the auxiliary payload.
+
+The identity is consumed rather than merely stated.
+`packedSerializedBits shape = packedHeaderBits shape ++ packedPayloadBits shape`,
+so `packedPaddedBits`, `packedMemory` and every probe theorem take their bits
+from this object, and `packedSerializedBits_drop_header` proves that dropping the
+one header cell recovers it exactly.
+
+A length agreement would not have done this: a separately defined payload of the
+same length satisfies a length theorem, and `M11-SIBLING-PAYLOAD` exists to
+exploit exactly that.
+
+### The K1 address factorization (`FG-02`, `FG-03` — offset half complete, rows Open)
 
 ```
 packedSourceComponentOffset :
@@ -77,9 +141,9 @@ Component bases: `closeComponent_flatOffset` gives
 `componentFlatOffset .closePayload = 2 * shape.size + packedAccessOverhead shape.size`.
 The whole select payload, including *both* content-dependent relative tables, is
 absorbed by the access padding. This is not arithmetic luck: truncated `Nat`
-subtraction makes `a + (B - a) = B` false without `a <= B`, and that hypothesis is
-the `BPCloseAccessDirectory.payload_length_le_overhead` structure field, so the
-layout cannot be instantiated without it.
+subtraction makes `a + (B - a) = B` false without `a <= B`, and that hypothesis
+is the `BPCloseAccessDirectory.payload_length_le_overhead` structure field, so
+the layout cannot be instantiated without it.
 
 Terminality: `selectPayload_eq_prefix_append_sparseRelative` exhibits the select
 payload as a prefix that does not mention the sparse relative table, followed by
@@ -96,41 +160,41 @@ longSuperRelativeTable_length_eq :
         GenericSelect.wordBits (2 * shape.size))
 ```
 
-The component bases are also shape-free, and they need **no** long count:
-
-```
-packedComponentFlatOffset : Nat -> ConcreteBPNativeSuccinctRMQFlatPayloadComponent -> Nat
-
-packedSourceFlatOffset_eq :
-  concreteBPNativeSuccinctRMQFlatPayloadSourceFlatOffset shape source =
-    packedSourceFlatOffset shape.size (longCount shape) source
-```
-
-The four components are separated by the BP code and the access padding, both
-size-only, so the long count is needed only for positions *within* the select
-component. That is sharper than "`K = 1` suffices": it says exactly what the
-header buys.
+The component bases are also shape-free and need **no** long count, so
+`packedSourceFlatOffset_eq` holds with the long count needed only for positions
+*within* the select component. That is sharper than "`K = 1` suffices": it says
+exactly what the header buys.
 
 ### The counting guard (`FG-02` support)
 
-`PackedSummaryActive` and `PackedInteriorReady` are decidable predicates on `Nat`,
-with `summaryActive_iff_packed`, `interiorReady_iff_packed` and
+`PackedSummaryActive` and `PackedInteriorReady` are decidable predicates on
+`Nat`, with `summaryActive_iff_packed`, `interiorReady_iff_packed` and
 `sourceCounted_iff_packed` proving agreement with
-`concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat` on every constructor.
-
-This is load-bearing rather than bookkeeping — see section 5.
+`concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat` on every
+constructor. This is load-bearing rather than bookkeeping — see section 6.
 
 ### The `K = 1` header (`FG-04` — clauses proved, row Open)
 
 `packedPayloadLength n = 2 * n + concreteBPNativeSuccinctRMQOverhead
-genericSparseExceptionBPCloseAccessOverhead n`, with `packedPayloadLength_eq`;
+genericSparseExceptionBPCloseAccessOverhead n`, with `packedPayloadLength_eq` and
+its payload-object form `packedPayloadBits_length`;
 `packedCellWidth n = SuccinctRank.machineWordBits (packedPayloadLength n + 2)`,
 the commissioned expression unchanged; `longCount_lt_two_pow_width` with no size
 side condition; `packedHeaderBits_length` (exact one-cell arity);
-`packedHeaderBits_decode`. Empty and singleton instantiated as kernel-checked
-examples.
+`packedHeaderBits_decode`.
 
-### The packed memory (`FG-05` — partial)
+Small cases are now `n = 0`, `n = 1` **and `n = 2`**. Size two is the first size
+carrying more than one shape, so both are instantiated: `packedSizeTwoLeft` and
+`packedSizeTwoRight`, proved distinct, each required to have header arity
+`packedCellWidth 2` and payload length `packedPayloadLength 2`. That is the
+smallest case able to distinguish "the width is a function of the input size"
+from "the widths tried so far happened to agree".
+
+`packedCellWidth_ge_two` was added so that boundary-crossing reads exist at all:
+a one-bit cell could not be straddled and the crossing instances would be
+vacuous.
+
+### The packed memory (`FG-05` — definitions, round trip and crossing proved, row Open)
 
 `packedSerializedBits`, `packedCellCount`, `packedAllocatedBits`,
 `packedPaddedBits`, `packedMemory`, with `packedMemory_length`,
@@ -139,51 +203,9 @@ short), `packedMemory_cell_zero` (header is cell zero in full),
 `packedMemory_flatten` (join recovers the padded bits exactly) and
 `packedMemory_flatten_take`.
 
-## 4. Exact-type consumers
-
-`RMQ/Validation/EGCPFinalFalsification.lean` states each dependency's expected
-type independently and discharges it with the library result, so weakening a
-library theorem breaks that file rather than being absorbed by it. It pins the
-shape-free signature, the factorization, the close base, terminality, the counting
-guard, the long-count term, `P`, `w`, the count fit, header arity and decoding.
-
-`#print axioms` over a theorem's current type would not do this: it reports what a
-declaration happens to say now. These consumers say what it must say.
-
-## 5. A defect found in the existing layout
-
-`concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset` computes the two
-close-interior offsets **unconditionally** (`FlatPayload.lean:523-526`), while
-`concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat` counts those sources
-only when the interior is ready. Outside that regime the offsets point past the
-end of the close component.
-
-Today this is discharged only by `CountedInFlat` appearing as a *hypothesis* on
-`concreteBPNativeSuccinctRMQFlatPayloadSource_component_slice`. A controller has no
-such hypothesis available at run time: it must decide readiness. That is why
-`interiorReady_iff_packed` matters — readiness is decidable from `n`, so the guard
-costs no header field, but it has to be in the controller rather than in a proof.
-
-This is plausibly the same phenomenon as the `EG-CP-F01` campaign's escalation to
-`F07` (attempted probes returning `none` into segment 0 under canonical stores at
-small `n`). That has not been checked and should not be assumed.
-
-## 6. Corrections made to this branch's own records
-
-Recorded in `DESIGN_DECISIONS.md` under
-"Correction to the `DD-20260802-001` evidence note".
-
-1. An earlier evidence note called the long relative table "the only length
-   reachable from a select offset that the input size does not fix". That was a
-   projection from a partial map. The proved conclusion is narrower and
-   conditional: `longCount` is the only content-dependent **prefix** length needed
-   to locate later live select sources, **conditional on** terminality.
-2. The same note read `offsets_congr` (`GeometryClosure.lean:718`) as showing the
-   close side "needs no descriptor at all". That is a size **congruence**, over
-   the reviewer interior component at machine-word granularity, not an executable
-   size-only mirror over the flat payload. A congruence says offsets are
-   determined by the size; a controller cannot evaluate a determination. No claim
-   about the `K = 0` flip is made.
+Exact slice behaviour: `packedSpan_from_two_cells` for an arbitrary aligned or
+unaligned span of at most one cell width, and `packedPayloadSlice` for the header
+shift.
 
 ### Allocated space (`FG-06` — clauses proved, row Open)
 
@@ -202,39 +224,225 @@ Its little-o proof needed a new lemma, `littleOLinear_machineWordBits_comp`,
 because every existing little-o fact is about a function *of* `n` while the cell
 width is `machineWordBits` of the payload length.
 
+### The conditional physical probe plan (`FG-05`, `FG-08`, `FG-09` — per-read only)
+
+This replaces the unconditional cell pair described in section 6.
+
+```
+packedProbePlan (n bit width : Nat) : List Nat :=
+  if width = 0 then []
+  else if bit % packedCellWidth n + width <= packedCellWidth n then
+    [bit / packedCellWidth n]
+  else [bit / packedCellWidth n, bit / packedCellWidth n + 1]
+
+packedProbeCount n bit width = (packedProbePlan n bit width).length
+```
+
+Probes are issued through `packedProbeCell = List.getElem?`, so an unallocated
+address fails instead of decaying to an empty slice, and `packedFetch` returns
+`some` only when every issued address resolved.
+
+Proved:
+
+* `packedProbePlan_lt_cellCount` — every issued address is below
+  `packedCellCount n`, from the single hypothesis
+  `bit + width <= packedAllocatedBits n`;
+* `packedFetch_plan` — a fitted plan fetches to exactly the addressed cells;
+* `packedProbe_covers_range` — after skipping the in-cell offset, at least
+  `width` bits remain in the fetched window;
+* `packedProbeWindow_length` — the window is exactly one full cell per probe;
+* `packedProbePlan_decode` — the fetched cells decode to exactly the requested
+  window of the packed bit string;
+* `packedSourceRead_decode` — the same conclusion stated at the canonical
+  payload slice of a typed source;
+* `packedProbeCount_le_two`, with the exact conditional values
+  `packedProbeCount_eq_zero`, `..._eq_one`, `..._eq_two`, and
+  `packedProbeCount_pos`.
+
+Two facts make the repair real rather than cosmetic:
+
+* `packedMemory_getElem?_cellCount : (packedMemory shape)[packedCellCount
+  shape.size]? = none` — the address the old plan issued at the end of the memory
+  is genuinely absent;
+* `packedProbe_final_cell` — a positive-width read contained in the last
+  allocated cell issues exactly `[packedCellCount - 1]` and fetches
+  successfully. Under the old plan the second issued address would have been
+  `packedCellCount`, and the fetch would have returned `none`.
+
+Both branches are exhibited (`packedProbePlan_of_offset`,
+`packedProbePlan_of_crossing`), so the conditional is not constant in disguise,
+and both are instantiated at sizes 0, 1 and 2 in the validation root.
+
+### The logical read address (`FG-08` — address side only)
+
+`packedSegmentSource?` names the already shape-free segment map
+`concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? : Nat -> Option Source`.
+`packedLogicalProbePlan : Nat -> Nat -> Nat -> Nat -> Nat -> List Nat` composes
+it with the probe plan, `packedLogicalRead_decode` proves the decoding, and
+`packedLogicalProbePlan_length_le_two` covers the unmapped-segment case.
+
+The width remains an explicit argument. The mirror that would derive it from
+`(n, longCount, segment)` is deliberately **not** defined; see section 7.
+
+## 5. Exact-type consumers
+
+`RMQ/Validation/EGCPFinalFalsification.lean` states each dependency's expected
+type independently and discharges it with the library result, so weakening a
+library theorem breaks that file rather than being absorbed by it. It imports
+`Payload`, `Header`, `Memory`, `Space`, `Address` and `Probe`, and pins: the
+payload identity and the header-then-payload decomposition; the shape-free
+factorization signature, the close base, terminality, the counting guard and the
+long-count term; `P`, `w`, the count fit, header arity and decoding, including
+both shapes of size two; the memory round trip and cell arity; the space bound
+and residual; the bit-address signature and the header shift; and the probe plan
+with allocation, coverage, decoding, charged count, the two boundary facts, and
+concrete instances at sizes 0, 1 and 2.
+
+`#print axioms` over a theorem's current type would not do this: it reports what
+a declaration happens to say now. These consumers say what it must say.
+
+## 6. Two defects found and what happened to them
+
+### The layout's unconditional close-interior offsets (found 2026-08-03, still open upstream)
+
+`concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset` computes the two
+close-interior offsets **unconditionally** (`FlatPayload.lean:523-526`), while
+`concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat` counts those sources
+only when the interior is ready. Outside that regime the offsets point past the
+end of the close component.
+
+Today this is discharged only by `CountedInFlat` appearing as a *hypothesis* on
+`concreteBPNativeSuccinctRMQFlatPayloadSource_component_slice`. A controller has
+no such hypothesis available at run time: it must decide readiness. That is why
+`interiorReady_iff_packed` matters — readiness is decidable from `n`, so the
+guard costs no header field, but it has to be in the controller rather than in a
+proof.
+
+This is plausibly the same phenomenon as the `EG-CP-F01` campaign's escalation to
+`F07` (attempted probes returning `none` into segment 0 under canonical stores at
+small `n`). That has not been checked and should not be assumed.
+
+### This branch's own unconditional two-cell probe pair (found and repaired 2026-08-04)
+
+The first draft of `Address.lean` computed, for a read starting at bit `b`, the
+unconditional pair `(b / w, b / w + 1)`, and `packedRead_from_two_cells`
+recovered the requested span from the concatenation of those two cells.
+
+The theorem was true, but for the wrong reason at the end of the memory.
+`packedCellAt` is total, built from `List.drop` and `List.take`, so at any index
+at or past `packedCellCount` it returns the empty list. A read wholly contained
+in the final allocated cell therefore "succeeded" while naming an address that
+does not exist, and `cell ++ []` absorbed the difference silently.
+
+That is precisely the claim a cell-probe result must not make. The content of a
+cell-probe bound is that the algorithm touches `C` real cells of a real memory.
+
+Repaired by `293fb45`: `packedProbeCells`, `packedProbeOffset` and
+`packedRead_from_two_cells` were removed and replaced by the conditional plan of
+section 4, which fetches through a failing accessor and proves allocation.
+`DD-20260804-001` records the decision and supersedes the `FG-07`/`FG-08`
+paragraph appended to `DD-20260802-001` on 2026-08-04, which described the three
+removed declarations.
+
 ## 7. What is not done
 
-`FG-01` (payload identity) is not separately stated. `FG-05` lacks the
-cell-crossing slice behaviour and the all-reads-target-this-object theorem.
-`FG-07` through `FG-15` are not started: the closed controller, physical
-lowering, totality and the derived probe cap, same-run correctness, liveness and
-anti-bypass, boundaries, trust, the sixteen-case committed replay harness, and
-the durable decision set.
+`FG-07` and `FG-10` remain the bulk of the work: a shape-free controller whose
+actual execution reproduces the project's reference semantics. Nothing so far
+constructs one, so every row that quantifies over "the packed execution" —
+including `FG-01` through `FG-06`, whose listed clauses are proved — remains
+Open on that dependency.
 
-Rows `FG-02`, `FG-03`, `FG-04`, `FG-06` all have their own listed clauses proved
-and all remain **Open** for the same reason: each quantifies over the packed
-execution, or over "one `w(n)`-bit cell", or over the store the execution probes,
-and no execution exists. They are recorded as complete leaves with that single
-shared dependency named. That dependency is `FG-07`.
+Specifically not done:
 
-`FG-07` and `FG-10` are the bulk of the remaining work: a shape-free controller
-whose actual execution reproduces the project's reference semantics. Nothing so
-far constructs one, so every row that quantifies over "the packed execution"
-— including `FG-02` and `FG-03`, whose leaves are complete — remains Open on that
-dependency.
+* **`FG-07`** the closed controller. Not started. The existing whole-query
+  evaluator `WholeQueryProgram.evalGlobalWordTraceWithStore` takes `shape` as a
+  parameter, and its leaves take `GenericSelect.sparseExceptionSelectData
+  shape.bpCode false`, so it cannot be reused unchanged: making it shape-free
+  requires factoring each leaf's geometry through `(n, longCount)` the way the
+  offsets already are.
+* **`FG-08`** the whole-run lowering. Only the per-read half exists, and only for
+  a supplied width. There is no ordered-trace theorem with multiplicity. The
+  lowering is also stated against the **flat-payload** segment universe; the
+  executed global store numbers segments 21 and 22 differently (documented in
+  `FlatPayload.lean:280-285`), and no bridge is claimed.
+* **`FG-09`** totality and the derived cap. Only a per-read bound of two probes
+  exists. `packedProbePlan_lt_cellCount` bounds addresses by `packedCellCount n`,
+  which is a host-array bound; `INV-ADDRESS-WIDTH` explicitly rejects that as a
+  substitute for `address < 2 ^ w n`, and no capacity theorem exists.
+* **`FG-10`** same-run correctness. Not started.
+* **`FG-11`** liveness and anti-bypass. Not started.
+* **`FG-12`** the committed replay registry. Not started. `scripts/eg_cp_final_falsification_replay.ps1`
+  does not exist, so **no mutation in the frozen registry has been run**, and
+  every matrix row whose anti-vacuity challenge is a registry ID has an unrun
+  challenge.
+* **`FG-13`** trust and same-object composition. The hygiene and native-decision
+  scans are clean, but there is no capstone whose object identity could be
+  traced.
+* **`FG-14`** boundaries. Only the packed-representation boundaries exist (final
+  allocated cell, crossing, sizes 0/1/2). The query-level boundaries — empty,
+  reversed, out-of-range endpoints, the `5488/5489` long crossover, the
+  `[1024, 1330]` interior-readiness window — are untouched.
+* **`FG-15`** the durable decision set. This document and the design-decision
+  entries exist; the completed matrix does not, because the rows are open.
+
+### The next smallest proof target
+
+`packedSourceWidth : Nat -> Nat -> ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Nat`
+together with the agreement theorem that every word of
+`concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape source` has that length.
+
+It is the smallest missing piece because it is the only remaining input to
+`packedLogicalProbePlan` that is not already `Nat`-only: the segment map and the
+flat offset both are. With it, one logical read address `(segment, index)` lowers
+to physical probes by a definition a controller could evaluate, which is the
+per-read half of `FG-08` in full.
+
+Most of the underlying width mirrors already exist in `SourceFactorization.lean`
+— `packedSuperWidth`, `packedLocalWidth`, `packedRankWordSize`,
+`packedRankBlockWidth`, `packedSummarySuperWidth`, `packedSummaryRelativeWidth`,
+`packedInteriorOffsetWidth`, `packedLongFlagWordSize`, `packedSparseWordSize`.
+What is missing is the per-source selection and the 29-constructor agreement
+proof. Do **not** define the mirror before its agreement theorem: an unproved
+mirror would make the lowering look closed while the only load-bearing step was
+missing.
+
+### Approaches tried and rejected
+
+* **A congruence instead of a mirror** (recorded in `DD-20260802-001`): proving
+  that equal size and equal long count imply equal offsets would show the offsets
+  are *determined* by `(n, longCount)` without producing anything a controller
+  could evaluate. Rejected: a controller has to compute addresses, not be
+  promised they exist.
+* **Synthesizing a canonical shape from `n`** inside the offset function:
+  forbidden by registry mutation `M04-CANONICAL-SHAPE-BY-N`.
+* **An enumeration/census of executed offsets**: failed three times on this exact
+  surface (`DD-20260726-006`), always because the enumeration's completeness
+  became a separate and false argument. Replaced by closed-inductive `cases`
+  coverage.
+* **Keeping the unconditional two-cell pair and adding an in-range hypothesis**:
+  rejected in favour of the conditional plan, because with a total accessor the
+  decoding theorem holds whether or not the address exists, so no mutation of the
+  address arithmetic could be detected by it.
 
 ## 8. What a skeptical reviewer should ask
 
-- The factorization is about **bit offsets**. Spans, cell crossings and
-  reachability are not covered. Does the row's phrase "offset and span" require
-  more than is proved? (Yes, and the matrix says so.)
-- `packedSourceComponentOffset` is proved equal to the canonical offset, but
-  nothing yet *calls* it. Until the controller does, is this a factorization of
-  the executed addressing or only of a definition that happens to describe it?
-- The mirrors are `Nat`-only by signature. Are any of them nonetheless computing
-  something a controller could not, e.g. depending on a quantity only derivable
-  from the shape? Each has an equality theorem; check the equalities, not the
-  names.
+- `packedSourceComponentOffset` is proved equal to the canonical offset, and now
+  `packedLogicalProbePlan` calls it — but nothing *executes* `packedLogicalProbePlan`.
+  Is this a factorization of the executed addressing or only of a definition that
+  happens to describe it? (The latter. The row says so.)
+- The probe plan's allocation theorem bounds addresses by `packedCellCount n`.
+  That is a list-length bound. What relates it to `2 ^ packedCellWidth n`?
+  (Nothing yet. `INV-ADDRESS-WIDTH` is untouched.)
+- `packedProbeCount_le_two` is a bound on **one** read. Multiplying it by a
+  logical trace length would presuppose the trace, and the trace is what does not
+  exist. Does any prose here suggest otherwise?
+- The per-read lowering is stated against the flat-payload segment universe.
+  The executed store uses a different numbering at 21 and 22. Which universe does
+  a future whole-run theorem lower, and where is the bridge?
+- `packedProbe_final_cell` requires `0 < width`. Is the zero-width case a real
+  read, or is the three-way plan hiding a case? (Zero-width requests an empty
+  range and issues no probe; `packedProbePlan_decode` covers it and returns the
+  empty window.)
 - `PackedSummaryActive` is a six-conjunct decidable predicate. Is it actually
   decidable in the sense a controller needs, or merely `Decidable` in Lean?
 - The close side's step function is non-monotone in `n`. Does any later row
@@ -242,11 +450,23 @@ dependency.
 
 ## 9. Verification
 
-`lake build RMQ`: green; cold baseline 683 s, incremental 10–80 s. Hygiene scan
-over `RMQ lakefile.toml` and the `native_decide` / `Lean.ofReduceBool` scan: both
-clean. `claim_drift_scan.ps1 -Strict`: exit 0, 0 strict failures.
-`design_decision_check.ps1 -Strict -Base HEAD~1`: clean on every commit.
-`git diff --check`: clean on every commit.
+Development-loop checks on this branch's tip:
 
-The aggregate `scripts/gate.ps1`, the replay harness and the focused final checks
-have **not** been run; they are reserved for a final tree that does not yet exist.
+| Command | Outcome | Observed runtime |
+| --- | --- | --- |
+| `lake build RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Probe` | green | 4–13 s incremental |
+| `lake build RMQ.Validation.EGCPFinalFalsification` | green | 8 s incremental |
+| `lake env lean` on each changed module | green | 2–4 s each |
+| hygiene scan over `RMQ lakefile.toml` | clean (no matches) | seconds |
+| `rg native_decide\|Lean.ofReduceBool RMQ` | clean (no matches) | seconds |
+| `git diff --check`, `git diff --check HEAD~1..HEAD` | clean on every commit | seconds |
+| `design_decision_check.ps1 -Strict -Base HEAD~1` | clean on every commit | seconds |
+
+`lake build RMQ` was green at `6078a29` (cold baseline 683 s, incremental
+10–80 s) and has not been re-run since `293fb45`; the changed modules are inside
+its closure and were built individually.
+
+The aggregate `scripts/gate.ps1`, `scripts/headline_axiom_check.lean`,
+`claim_drift_scan.ps1` at the tip, and the replay harness have **not** been run.
+They are reserved for a final tree that does not yet exist, and the replay
+harness does not exist at all.
