@@ -17,9 +17,10 @@ ancestor.
 Worktree: `C:\Users\poin\.codex\visualizations\2026\07\17\019f6d85-7626-7433-a60b-81f8be29689a\eg-cp-final-falsification-r1`.
 Never pushed, never merged, never amended, never squashed.
 
-Last update: 2026-08-04, in the commit titled "Land the physical read", which
-was the branch tip when this line was written. Earlier tips this document
-described: `4d2ed70`, `5c05016`, `08d63c7`, and the header-probe commit.
+Last update: 2026-08-04, in the commit titled "Measure the executed segment
+universe", which was the branch tip when this line was written. Earlier tips this
+document described: `4d2ed70`, `5c05016`, `08d63c7`, the header-probe commit, and
+the physical-read commit.
 
 ---
 
@@ -93,7 +94,8 @@ Import order: `SourceFactorization` → `Payload` → `Header` → `Memory` → 
 | `SourceWords.lean` | `FG-08` | every source's word array is a payload slice at a size-only count and stride |
 | `SourceGeometry.lean` | `FG-08` | the three geometry functions and the aggregate lowering of the word arrays |
 | `WordWidth.lean` | `FG-08`, `INV-WORD-WIDTH` | every stored word fits one packed cell |
-| `PhysicalRead.lean` | `FG-08` | the physical read, and the per-read lowering of every successful store read |
+| `PhysicalRead.lean` | `FG-08` | the physical read, the per-read lowering, and the packed-backed store |
+| `ExecutedUniverse.lean` | `FG-08`, `INV-GLOBAL-PHYSICAL-MACHINE` | where the executed store stops agreeing with the flat payload store |
 
 ## 4. What is proved
 
@@ -433,6 +435,44 @@ exactly. The zero-width branch issues no probe at all and is where the sentinel
 words land; the positive-width branch derives containment from the successful read
 rather than assuming it, which is what rules out the degenerate reading in which
 the offset runs past the payload and truncated subtraction hides it.
+
+### The executed segment universe (`FG-08` clause (c), measured)
+
+This is the most consequential result on the branch and it is negative, so it is
+stated with its evidence.
+
+`concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_eq_global` (pre-existing)
+says the store the whole-query evaluator runs against is the *canonical reviewer*
+store. `ExecutedUniverse.lean` then computes what that store reads, by `rfl`:
+
+| segment | executed store reads | flat payload store reads |
+| --- | --- | --- |
+| `0`, `16`, `19` (and `1` .. `18`) | the flat payload's own sources | the same |
+| `20` | `canonicalRelativeRmmInteriorComponentStore shape` | close summary baseline column |
+| `21` | `bpFringeChunkTable ...` | close summary minRel column |
+| `22` | `bpChunkSelectTable ... false` | close summary maxRel column |
+| `23` and up | `none` | close summary argOffset, close interior, retired slots |
+
+So the two agree exactly on segments `0` .. `19` and diverge from `20` up. The
+divergence is not a renumbering: the three objects the executed store reads at
+`20`, `21` and `22` are not sources of the flat payload at all. The flat payload's
+close half is `concreteCompactBPCloseLCADirectory`, whose `payload_eq_interior`
+field makes it the **compact** interior directory (summary, local, global, under a
+readiness guard); the executed close half is
+`canonicalRelativeRmmInteriorDirectory` (summary, local, global, **local level,
+global level**) followed by the two chunk tables. The module that defines the
+reviewer layout says so in its own docstring: the flat close payload "remains
+available only through the compatibility layout".
+
+Consequence: `packedMemory`, which serializes the `FG-01` payload object, can back
+executed segments `0` .. `19` and nothing beyond. Every per-read theorem in
+`PhysicalRead.lean` is therefore sound but partial as a *whole-machine* claim, and
+`INV-GLOBAL-PHYSICAL-MACHINE` names precisely this deficit.
+
+**This is not a `K1` obstruction.** The header cell is not involved, and no frozen
+`K1` quantifier is contradicted. It is a mismatch between two frozen rows --
+`FG-01` names one payload object, `FG-08` requires the execution to probe the
+memory built from it — and resolving it is a question about the close route.
 
 ## 5. Exact-type consumers
 
@@ -857,8 +897,11 @@ Specifically not done:
   `packedSourceRead`. The lowering is also still stated against the
   **flat-payload** segment universe; the executed global store numbers segments 21
   and 22 differently (documented in `FlatPayload.lean:280-285`), and no bridge is
-  claimed. `selectSparseRelative` lowers one-directionally, and closing that gap
-  is `FG-09`'s totality clause.
+  claimed -- and that gap is now measured rather than described: the executed
+  store diverges from segment `20` up, not at `21` and `22`, and the three objects
+  it reads there are not flat payload sources (`DD-20260804-027`).
+  `selectSparseRelative` lowers one-directionally, and closing that gap is
+  `FG-09`'s totality clause.
 * **`FG-09`** totality and the derived cap. Only a per-read bound of two probes
   exists. `packedProbePlan_lt_cellCount` bounds addresses by `packedCellCount n`,
   which is a host-array bound; `INV-ADDRESS-WIDTH` explicitly rejects that as a

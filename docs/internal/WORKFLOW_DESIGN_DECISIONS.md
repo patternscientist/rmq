@@ -7171,3 +7171,7 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   failures.
 - Commit landing the packed-backed read store: matrix untouched, so no
   frozen-cell comparison was required.
+- Commit measuring the executed segment universe: requirement cells byte-identical
+  to `0a18548` across all 37 requirement rows; anti-vacuity unchanged; only the
+  `Evidence obtained` and `Status / residual gap` cells of `FG-01`, `FG-08` and
+  `INV-GLOBAL-PHYSICAL-MACHINE` were written.

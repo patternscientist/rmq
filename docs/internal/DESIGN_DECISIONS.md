@@ -7657,3 +7657,82 @@ obligations remain, and they are the last two:
 
 Both are properties of the *program*, not of the geometry. The geometry work is
 finished.
+
+## DD-20260804-027: the executed store stops agreeing with the flat payload at segment 20
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. This is the most consequential result
+on the branch and it is negative, so it is recorded with its evidence and with an
+explicit statement of what it is *not*.
+
+Date: 2026-08-04
+
+Context:
+
+`PhysicalRead.lean` lowers every logical read of
+`concreteBPNativeSuccinctRMQFlatPayloadReadStore` to a probe of `packedMemory`.
+The next step was to feed that store to the whole-query evaluator through
+`..._store_parametric_of_ordered_read_footprint`. Before doing so I checked which
+store the evaluator actually runs against.
+
+Finding:
+
+`concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_eq_global` (pre-existing)
+says the executed store is the *canonical reviewer* store. `ExecutedUniverse.lean`
+computes what that store reads, every theorem by `rfl`:
+
+| segment | executed store | flat payload store |
+| --- | --- | --- |
+| `0` .. `19` | the flat payload's own sources | the same |
+| `20` | `canonicalRelativeRmmInteriorComponentStore shape` | close summary baseline |
+| `21` | `bpFringeChunkTable ...` | close summary minRel |
+| `22` | `bpChunkSelectTable ... false` | close summary maxRel |
+| `23` and up | `none` | argOffset, close interior, retired slots |
+
+So the two agree exactly on segments `0` .. `19` and diverge from `20` up.
+
+**The divergence is not a renumbering.** The matrix's `FG-08` clause (c) said the
+executed store "numbers segments 21 and 22 differently". It does not: the three
+objects the executed store reads at `20`, `21` and `22` are not sources of the
+flat payload at all.
+
+* The flat close half is `concreteCompactBPCloseLCADirectory`, whose
+  `payload_eq_interior` field makes it the **compact** interior directory --
+  summary, local, global, under a readiness guard
+  (`concreteBPRelativeRmmInteriorDirectoryPayloadLength`).
+* The executed close half is `canonicalRelativeRmmInteriorDirectory` -- summary,
+  local, global, **local level, global level**
+  (`canonicalRelativeRmmInteriorDirectoryPayloadLength`) -- followed by the two
+  chunk tables, neither of which appears anywhere in the flat payload layout.
+* `concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout`'s own docstring
+  says the flat close payload "remains available only through the compatibility
+  layout above".
+
+Corroborating evaluation (not a proof, and recorded as such): at the size-three
+left spine the flat payload is 21466 bits of which the close component is **0**,
+while the canonical close component is 100 bits and the two chunk tables are 40
+and 8. `decide` cannot check these in the kernel -- the definitions are
+well-founded and reduction sticks -- which is why the committed evidence is the
+segment-map `rfl`s rather than the numbers.
+
+Consequences:
+
+- `packedMemory`, which serializes the `FG-01` payload object, can back executed
+  segments `0` .. `19` and nothing beyond. Every per-read theorem in
+  `PhysicalRead.lean` remains sound; as a *whole-machine* claim the lowering is
+  partial, and `INV-GLOBAL-PHYSICAL-MACHINE` names precisely this deficit -- now
+  as three named objects rather than an unquantified gap.
+- **This is not a `K1` obstruction and is not reported as one.** The header cell
+  is not involved and no frozen `K1` quantifier is contradicted. Per the
+  commissioning instruction, an obstruction is reported only when a checked
+  theorem matches the frozen `K1` quantifiers; this does not.
+- What it *is*: a tension between two frozen rows. `FG-01` names one payload
+  object; `FG-08` requires the execution to probe the memory built from it. Under
+  the current definitions those cannot both be closed unless the close route is
+  re-based, and re-basing the packed memory on the canonical reviewer payload
+  would contradict `FG-01` as frozen -- which the commissioning prompt forbids.
+- The next proof target is therefore no longer "map the run's trace". It is:
+  decide whether a bridge exists between the compact and canonical interior
+  directories. If one does, the lowering extends and the campaign continues. If a
+  checked theorem shows none can, that is a result about the close route, and the
+  owner should be told before any further construction work is spent.
