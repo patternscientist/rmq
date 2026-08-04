@@ -7537,3 +7537,67 @@ Consequences:
   needs `accessComponents_add_padding`) is available at every `n`.
 - If a future change made a stored word wider than a cell, this theorem breaks
   rather than the probe plan silently issuing too few cells.
+
+## DD-20260804-025: the physical read
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. `FG-08`'s per-read clause is proved for
+every source; the row stays open because the whole-run clause is not.
+
+Date: 2026-08-04
+
+Result:
+
+```
+packedSourceRead (n longCount : Nat) (memory : List (List Bool))
+    (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource) (index : Nat) :
+    Option (List Bool)
+```
+
+executable, shape-free, issuing `packedSourceReadPlan` and decoding it, with
+
+```
+packedSourceRead_of_some :
+  PackedSourceCounted shape.size source ->
+    (sourceWords shape source)[index]? = some word ->
+      packedSourceRead shape.size (longCount shape) (packedMemory shape) source
+        index = some word
+```
+
+Two branches, and both are load-bearing:
+
+* **Zero width.** A read whose exact width is zero -- the sentinel words the
+  chunked rank directories append -- issues *no probe at all*: the plan is `[]`,
+  the fetch is `some []`, and the decode is `[]`. The stored word is empty for
+  exactly the reason the width is zero (either the stride is zero or the payload
+  has run out), so the two agree without any containment obligation. This is the
+  branch that would have been wrong under a plan that always issued a cell.
+* **Positive width.** The read is contained in the source payload, hence in the
+  canonical payload, hence in the allocated cells. Containment is *derived* from
+  the successful read rather than assumed: `List.length` of the flat-slice
+  equation gives `min srcLen (payloadLength - offset) = srcLen`, and a positive
+  width forces `srcLen > 0`, which is what rules out the degenerate reading in
+  which the offset runs past the payload and truncated subtraction hides it.
+
+Rationale for `packedSourceReadWidth_eq_window`:
+
+The read width is computed from the size-only bit length, but the decode has to
+produce the window the source payload actually has left. Those agree for the
+twenty-eight sources whose bit length is size-only, and for
+`.selectSparseRelative` both sides collapse to the full stride, because a
+successful read there is at an index below the actual entry count while the
+packed side uses the capacity. That is the whole content of the one-directional
+asymmetry of `DD-20260804-022`, isolated in one lemma.
+
+Consequences and evidence:
+
+- Pinned by `packedSourceReadSignature`, `packedSourceReadPlanSignature`,
+  `packedEveryStoredWordFitsOneCell`, `packedLogicalWordReadIsAtMostTwoProbes`,
+  `packedEverySuccessfulReadLowers`, the three geometry signatures, and
+  `packedSparseRelativeIsBoundedNotDetermined`.
+- **What is still missing for `FG-08`.** There is no theorem relating the ordered
+  logical trace of a run to the ordered physical trace with multiplicity, because
+  the run's trace has not been mapped through this read yet. That is the next
+  obligation, and it is now a mapping problem rather than a geometry problem.
+- `conv_rhs` is unavailable in this toolchain; the slice chain is done by a single
+  `rw` list instead. Recorded so a later reader does not assume the tactic exists.

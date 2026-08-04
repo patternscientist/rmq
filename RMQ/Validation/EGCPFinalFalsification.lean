@@ -5,6 +5,10 @@ import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Space
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Address
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Probe
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReadProgram
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.SourceWords
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.SourceGeometry
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.WordWidth
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.PhysicalRead
 
 /-!
 # Exact-type consumers for the EG-CP packed cell-probe candidate
@@ -1499,6 +1503,83 @@ theorem packedSizeTwoCrossingRead :
   packedProbePlan_of_crossing 2 0 (packedCellWidth 2 - 1) 2
     (by have := packedCellWidth_pos 2; omega)
     (by have := packedCellWidth_ge_two 2; omega)
+
+/-! ## The physical read (`FG-08`, `INV-WORD-WIDTH`)
+
+The signatures below are written out here, so restoring a `CartesianShape`
+argument to the read, or widening a stored word past one cell, breaks this file.
+-/
+
+/--
+The physical read's exact type: a size, a decoded long count, a packed memory, a
+typed source and an index. No `CartesianShape`, no store, no proof callback.
+-/
+def packedSourceReadSignature :
+    Nat -> Nat -> List (List Bool) ->
+      ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Nat -> Option (List Bool) :=
+  packedSourceRead
+
+/-- The probe plan's exact type, likewise shape-free. -/
+def packedSourceReadPlanSignature :
+    Nat -> Nat -> ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Nat ->
+      List Nat :=
+  packedSourceReadPlan
+
+/-- Every stored word fits one packed cell, under the controller's own guard. -/
+theorem packedEveryStoredWordFitsOneCell :
+    forall (n : Nat) (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource),
+      PackedSourceCounted n source ->
+        packedSourceStride n source <= packedCellWidth n :=
+  packedSourceStride_le_cellWidth
+
+/-- A logical word read is charged at most two physical probes. -/
+theorem packedLogicalWordReadIsAtMostTwoProbes :
+    forall (n longCount : Nat)
+      (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource) (index : Nat),
+      (packedSourceReadPlan n longCount source index).length <= 2 :=
+  packedSourceReadPlan_length_le_two
+
+/--
+**Every successful logical word read lowers.** The flat payload store's answer is
+reproduced exactly by probing the packed memory.
+-/
+theorem packedEverySuccessfulReadLowers :
+    forall (shape : Cartesian.CartesianShape)
+      (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
+      {index : Nat} {word : List Bool},
+      PackedSourceCounted shape.size source ->
+        (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape source)[index]? =
+            some word ->
+          packedSourceRead shape.size (longCount shape) (packedMemory shape)
+              source index =
+            some word :=
+  packedSourceRead_of_some
+
+/--
+The word geometry is a function of the input size and the decoded long count
+alone. Restoring a shape argument to any of the three breaks these ascriptions.
+-/
+def packedSourceStrideSignature :
+    Nat -> ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Nat :=
+  packedSourceStride
+
+def packedSourceWordCountSignature :
+    Nat -> Nat -> ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Nat :=
+  packedSourceWordCount
+
+def packedSourceBitLengthSignature :
+    Nat -> Nat -> ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Nat :=
+  packedSourceBitLength
+
+/--
+The one source whose word count is not size-only, recorded as an inequality so
+that the asymmetry is visible in the consumer rather than only in the library.
+-/
+theorem packedSparseRelativeIsBoundedNotDetermined :
+    forall shape : Cartesian.CartesianShape,
+      (GenericSelect.sparseExceptionRelativeEntries shape.bpCode false).length <=
+        packedSparseRelativeCapacity shape.size :=
+  packedSparseRelativeEntries_le_capacity
 
 end Validation
 end PackedCellProbe
