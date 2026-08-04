@@ -9,6 +9,7 @@ import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.SourceWords
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.SourceGeometry
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.WordWidth
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.PhysicalRead
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Boundaries
 
 /-!
 # Exact-type consumers for the EG-CP packed cell-probe candidate
@@ -1638,6 +1639,31 @@ theorem packedIssuedAddressesAreMachineRepresentable :
 theorem packedCellCountIsMachineRepresentable :
     forall n : Nat, packedCellCount n < 2 ^ packedCellWidth n :=
   packedCellCount_lt_two_pow_cellWidth
+
+/-! ## Named geometry thresholds (`FG-14`) -/
+
+/--
+The long crossover, minus one / at / plus one. The threshold is located from the
+geometry -- it is where a superblock's long span stops covering the BP code -- and
+not asserted.
+-/
+theorem packedLongCrossoverIsAt5488 :
+    Nat.min (2 * 5487) (GenericSelect.superLongSpan (2 * 5487)) = 2 * 5487 /\
+      Nat.min (2 * 5488) (GenericSelect.superLongSpan (2 * 5488)) = 2 * 5488 /\
+        Nat.min (2 * 5489) (GenericSelect.superLongSpan (2 * 5489)) < 2 * 5489 :=
+  ⟨packedLongCrossover_before, packedLongCrossover_at, packedLongCrossover_after⟩
+
+/--
+The interior-readiness window, both endpoints with their neighbours. The clause
+that moves is `macroSize <= blockCount`, and it moves because the summary base
+jumps at `1024`.
+-/
+theorem packedInteriorWindowIs1024To1330 :
+    packedInteriorMacroSize 1023 <= packedSummaryBlockCountRaw 1023 /\
+      packedSummaryBlockCountRaw 1024 < packedInteriorMacroSize 1024 /\
+        packedSummaryBlockCountRaw 1330 < packedInteriorMacroSize 1330 /\
+          packedInteriorMacroSize 1331 <= packedSummaryBlockCountRaw 1331 :=
+  packedInteriorReadinessWindow
 
 end Validation
 end PackedCellProbe

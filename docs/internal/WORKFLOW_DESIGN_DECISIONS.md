@@ -7186,3 +7186,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   pair). Anti-vacuity appended, never rewritten, on `FG-01`, `FG-02`, `FG-05`,
   `FG-07`, `FG-09`, `FG-11` and `INV-STORE-IDENTITY`. `claim_drift_scan.ps1
   -Strict`: 1498 hits, 0 strict failures.
+- Commit landing the named thresholds: requirement cells byte-identical to
+  `0a18548` across all 37 requirement rows; anti-vacuity unchanged; only `FG-14`'s
+  `Evidence obtained` and `Status / residual gap` cells were written.

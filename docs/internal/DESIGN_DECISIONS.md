@@ -7822,3 +7822,41 @@ unrun would be forging exactly the evidence `FG-12` exists to demand.
 The nine runnable cases are `A01`, `M01`, `M03`, `M05`, `M08`, `M09`, `M10`,
 `M11`, `M14`. Their mutation targets are chosen in the latest module that carries
 the commissioned content, so a rebuild is proportionate to the claim.
+
+## DD-20260804-030: the two named thresholds, located rather than asserted
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. `FG-14` stays Open.
+
+Date: 2026-08-04
+
+The commissioning prompt recorded two thresholds -- a `5488/5489` long crossover
+and a `[1024, 1330]` interior-readiness window -- and `FG-14` asks for
+kernel-checked instances with the thresholds *named explicitly from the geometry*.
+They appeared nowhere in the source, so they had to be found.
+
+**`decide` cannot check either of them.** `Nat.log2` is defined by well-founded
+recursion, so kernel reduction sticks; `#eval` goes through the compiler and
+proves nothing. `packedLog2_eq` is the way around: it pins a logarithm from a pair
+of power-of-two bounds via `Nat.le_log2` and `Nat.log2_lt`, and the kernel only
+has to evaluate `2 ^ k` on literals.
+
+**The long crossover is at `5489`, and it is not a tuning constant.**
+`superLongSpan (2n) = superStride * wordBits * ell` is `10976` at `n = 5487`,
+`5488` and `5489`, because all three have `wordBits = 14` and `ell = 4`. Meanwhile
+`2n` walks past it: `10974`, `10976`, `10978`. So `min (2n) (superLongSpan (2n))`
+is `2n` up to and including `5488` and switches sides at `5489`, which is exactly
+where the select layer's relative width stops tracking the input size. A sweep of
+`[2, 20000]` found this as the *only* transition.
+
+**The readiness window is `[1024, 1330]`, and it moves for one reason.**
+`packedSummaryBase n = Nat.log2 n + 1` jumps `10 -> 11` at `n = 1024`. The macro
+size is that base squared, so it jumps `100 -> 121`; the raw block count is
+`n / base`, so it *falls* `102 -> 93` because the divisor grew. Readiness returns
+when the block count catches up, which is exactly `n = 1331` (`1331 / 11 = 121`).
+Both endpoints are checked with their neighbours.
+
+What is deliberately not claimed: the `PackedSummaryActive` half of readiness is
+not kernel-checked. It does not move across `[1023, 1331]` by evaluation, and the
+clause that is checked is the one that does. Saying so is cheaper than a proof
+that would add nothing.
