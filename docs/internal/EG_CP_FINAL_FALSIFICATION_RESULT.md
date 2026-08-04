@@ -545,11 +545,23 @@ Development-loop checks on this branch's tip:
 | `git diff --check`, `git diff --check HEAD~1..HEAD` | clean on every commit | seconds |
 | `design_decision_check.ps1 -Strict -Base HEAD~1` | clean on every commit | seconds |
 
-`lake build RMQ` was green at `6078a29` (cold baseline 683 s, incremental
-10–80 s) and has not been re-run since `293fb45`; the changed modules are inside
-its closure and were built individually.
+Checks on the tip of this session's work (clean tree, after the header-probe
+commit):
 
-The aggregate `scripts/gate.ps1`, `scripts/headline_axiom_check.lean`,
-`claim_drift_scan.ps1` at the tip, and the replay harness have **not** been run.
-They are reserved for a final tree that does not yet exist, and the replay
-harness does not exist at all.
+| Command | Outcome | Observed runtime |
+| --- | --- | --- |
+| `lake build RMQ` (whole library, under the heavy-verification mutex) | green | 1.6 s fully cached; 3.9 s on the first post-repair run |
+| `git diff --check 6078a29..HEAD` (whole committed range) | clean | seconds |
+| `claim_drift_scan.ps1 -Strict` | exit 0, 1498 hits, 0 strict failures | ~1 min |
+| `git merge-base --is-ancestor 0a18548 HEAD` | the freeze is still an ancestor | seconds |
+| `git merge-base --is-ancestor 6078a29 HEAD` | the session's starting HEAD is still an ancestor | seconds |
+
+The cold `lake build RMQ` baseline recorded at `6078a29` was 683 s; every run in
+this session was incremental against a warm tree in this worktree, which has its
+own `.lake`. Only one heavy Lean process ran at a time, under the
+`Global\RMQHeavyVerification` mutex.
+
+The aggregate `scripts/gate.ps1`, `scripts/headline_axiom_check.lean` and the
+replay harness have **not** been run. The first two are reserved for a final tree
+that does not yet exist; the third does not exist at all, which is why no
+mutation in the frozen registry has been exercised.
