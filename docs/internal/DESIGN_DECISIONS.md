@@ -5504,3 +5504,36 @@ as a hypothesis on the slice theorem. A packed controller has no such hypothesis
 available at run time, so it must consult `PackedInteriorReady` before issuing
 those two reads. `interiorReady_iff_packed` is what makes that possible without a
 header field: readiness is decidable from `n`.
+
+Factorization leaf closed under `DD-20260802-001` (2026-08-03):
+
+`packedSourceComponentOffset : Nat -> Nat -> ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Nat`
+is the address-factorization surface, and `packedSourceComponentOffset_eq` proves
+it agrees with the canonical shape-indexed offset at every shape and every one of
+the twenty-nine source constructors. The proof is `cases source`, so a new
+constructor fails to elaborate until both sides supply its arm; the alias, the
+three retired finite-small slots, and the zero arms are each present rather than
+folded into a default.
+
+Supporting mirrors, all `Nat`-only: `packedSuperSlots`, `packedSuperWidth`,
+`packedSuperColumn`, `packedSuperTableLength`, `packedLongFlagWordSize`,
+`packedLongFlagSuperOverhead`, `packedLongFlagBlockOverhead`,
+`packedLongFlagAuxLength`, `packedLocalSlots`, `packedLocalWidth`,
+`packedLocalColumn`, `packedLocalTableLength`, `packedSparseSlots`,
+`packedSparseWordSize`, `packedSparseSuperOverhead`, `packedSparseBlockOverhead`,
+`packedSparseAuxLength`, `packedRankWordSize`, `packedRankBlockWidth`,
+`packedRankSuperOverhead`, `packedRankBlockOverhead`, `packedRankSuperColumn`,
+`packedRankBlockColumn`, `packedRankAuxLength`, `packedSummaryBaselineLength`,
+`packedSummaryBlockColumnLength`, `packedSummaryLength`,
+`packedInteriorLocalLength`, `packedLongBlockBits`.
+
+`RMQ/Validation/EGCPFinalFalsification.lean` states each dependency's expected
+type independently and discharges it with the library result, so weakening a
+theorem breaks that file instead of being absorbed by it.
+
+What this does not settle. The leaf is a statement about bit offsets in the
+existing flat payload. It says nothing about spans, cell crossings, or reachability,
+and nothing consumes it: `FG-02` asks about offsets "used by the packed execution",
+and no packed execution exists. Both `FG-02` and `FG-03` therefore stay Open with
+that dependency recorded, rather than being marked closed on the strength of the
+leaf alone.

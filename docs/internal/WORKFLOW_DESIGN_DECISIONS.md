@@ -6895,3 +6895,56 @@ Consequences:
 - Later commits on this branch may append evidence to the matrix, but a diff
   touching a requirement cell is a contract amendment and must say so.
 - No theorem, roadmap acceptance, public claim, or Stage F status changes here.
+
+## WDD-20260803-001: a frozen matrix accumulates evidence without reopening its text
+
+Status: Worker decision recorded 2026-08-03 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Governs how
+`docs/internal/EG_CP_FINAL_FALSIFICATION_MATRIX.md` may be edited after its
+freeze commit `0a18548`.
+
+Date: 2026-08-03
+
+Context:
+
+The matrix was frozen before implementation so the freeze would be
+git-verifiable (`WDD-20260802-001`). Evidence then has to land somewhere, and the
+obvious place is the matrix itself. That creates the risk the freeze exists to
+prevent: an edit that quietly adjusts a requirement to match what was achieved
+looks, in a diff, much like an edit that records evidence against it.
+
+Decision:
+
+Only the `Anti-vacuity challenge attempted and outcome`, `Evidence obtained` and
+`Status / residual gap` columns may change after the freeze, and the first only
+by appending outcomes to the challenge already recorded. Before any commit that
+touches the matrix, the fifteen frozen requirement cells are extracted from the
+freeze commit and from the candidate and compared for exact equality; the result
+is stated in the commit message.
+
+A row may be marked closed only when its own frozen text is satisfied. Where a
+requirement quantifies over something that does not yet exist -- `FG-02` and
+`FG-03` both quantify over offsets used by the packed execution -- the row stays
+Open and the completed part is recorded as a named leaf with its downstream
+dependency written out.
+
+Rationale:
+
+The check is cheap and mechanical, so there is no reason to rely on care. It also
+converts a claim a reader would otherwise have to take on trust into a line of
+the commit message they can rerun.
+
+Keeping rows Open on an unbuilt consumer is the same discipline
+`COMPLETION_GATE.md` section 4 states for the final report: a matrix row does not
+close because it contains a theorem name, and a leaf whose named consumer is
+absent is a checkpoint. `EG-CP-F03` was marked closed once before on a reading of
+its evidence clause that an external audit then refuted; the cost of that was a
+retraction and a re-audit, which is more expensive than leaving a row Open.
+
+Consequences:
+
+- Every commit touching the matrix also touches this file, because the matrix is
+  a workflow-sensitive path under `scripts/design_decision_check.ps1 -Strict`.
+- The verification is stated per commit, not once per branch.
+- This entry does not authorize amending the freeze commit or any commit that
+  predates the current goal.

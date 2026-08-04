@@ -516,6 +516,564 @@ theorem sourceCounted_iff_packed
     simp only [concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat,
       PackedSourceCounted, summaryActive_iff_packed, interiorReady_iff_packed]
 
+/-! ### Size-only mirrors of the long-flag rank directory -/
+
+/-- Size-only mirror of the long-flag rank word size. -/
+def packedLongFlagWordSize (n : Nat) : Nat :=
+  SuccinctRank.machineWordBits (packedSuperSlots n)
+
+theorem longFlagRankWordSize_eq_packed (shape : CartesianShape) :
+    GenericSelect.longFlagRankWordSize shape.bpCode false =
+      packedLongFlagWordSize shape.size := by
+  unfold GenericSelect.longFlagRankWordSize packedLongFlagWordSize
+  rw [longFlagBits_length_eq_packed]
+
+/-- Size-only mirror of the long-flag rank superblock overhead. -/
+def packedLongFlagSuperOverhead (n : Nat) : Nat :=
+  (packedSuperSlots n / packedLongFlagWordSize n + 1) * packedLongFlagWordSize n +
+    (packedSuperSlots n / packedLongFlagWordSize n + 1) * packedLongFlagWordSize n
+
+theorem longFlagRankSuperOverhead_eq_packed (shape : CartesianShape) :
+    GenericSelect.longFlagRankSuperOverhead shape.bpCode false =
+      packedLongFlagSuperOverhead shape.size := by
+  unfold GenericSelect.longFlagRankSuperOverhead packedLongFlagSuperOverhead
+  rw [SuccinctRank.canonicalSuperRankSampleTables_payload_length,
+    SuccinctRank.canonicalSuperRankEntries_length,
+    SuccinctRank.canonicalSuperRankEntries_length]
+  simp only [GenericSelect.longFlagRankBlocksPerSuper, Nat.div_one]
+  rw [longFlagBits_length_eq_packed, longFlagRankWordSize_eq_packed]
+
+/-- Size-only mirror of the long-flag rank block overhead. -/
+def packedLongFlagBlockOverhead (n : Nat) : Nat :=
+  (packedSuperSlots n / packedLongFlagWordSize n + 1) * packedLongFlagWordSize n +
+    (packedSuperSlots n / packedLongFlagWordSize n + 1) * packedLongFlagWordSize n
+
+theorem longFlagRankBlockOverhead_eq_packed (shape : CartesianShape) :
+    GenericSelect.longFlagRankBlockOverhead shape.bpCode false =
+      packedLongFlagBlockOverhead shape.size := by
+  unfold GenericSelect.longFlagRankBlockOverhead packedLongFlagBlockOverhead
+  rw [SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan_payload_length,
+    SuccinctRank.canonicalBlockRankEntries_length,
+    SuccinctRank.canonicalBlockRankEntries_length]
+  simp only [GenericSelect.longFlagRankBlockWidth]
+  rw [longFlagBits_length_eq_packed, longFlagRankWordSize_eq_packed]
+
+/-- Size-only mirror of the long-flag rank auxiliary payload length. -/
+def packedLongFlagAuxLength (n : Nat) : Nat :=
+  packedLongFlagSuperOverhead n + packedLongFlagBlockOverhead n
+
+theorem longFlagRankAux_length_eq_packed (shape : CartesianShape) :
+    (GenericSelect.longFlagRankData shape.bpCode false).auxPayload.length =
+      packedLongFlagAuxLength shape.size := by
+  rw [SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.auxPayload_length,
+    longFlagRankSuperOverhead_eq_packed, longFlagRankBlockOverhead_eq_packed]
+  rfl
+
+/-! ### Size-only mirrors of the local and sparse select tables -/
+
+/-- Size-only mirror of the local slot count. -/
+def packedLocalSlots (n : Nat) : Nat :=
+  packedSuperSlots n * GenericSelect.localSlotsPerSuper (2 * n)
+
+theorem localSlotCount_eq_packed (shape : CartesianShape) :
+    GenericSelect.localSlotCount shape.bpCode false = packedLocalSlots shape.size := by
+  have hlen : shape.bpCode.length = 2 * shape.size :=
+    CartesianShape.bpCode_length shape
+  unfold GenericSelect.localSlotCount packedLocalSlots
+  rw [superSlotCount_eq_packed, hlen]
+
+/-- Size-only mirror of the local (and sparse) relative field width. -/
+def packedLocalWidth (n : Nat) : Nat :=
+  SuccinctRank.machineWordBits
+    (Nat.min (2 * n) (GenericSelect.superLongSpan (2 * n)))
+
+theorem localFieldWidth_eq_packed (shape : CartesianShape) :
+    GenericSelect.localFieldWidth shape.bpCode = packedLocalWidth shape.size := by
+  have hlen : shape.bpCode.length = 2 * shape.size :=
+    CartesianShape.bpCode_length shape
+  unfold GenericSelect.localFieldWidth GenericSelect.sparseExceptionRelativeWidth
+    packedLocalWidth
+  rw [hlen]
+
+/-- Size-only mirror of the effective sparse flag-slot count. -/
+def packedSparseSlots (n : Nat) : Nat :=
+  Nat.min (packedLocalSlots n) n
+
+theorem sparseFlagBits_length_eq_packed (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionEffectiveFlagBits shape.bpCode false).length =
+      packedSparseSlots shape.size := by
+  have hcount : GenericSelect.occurrenceCount shape.bpCode false = shape.size := by
+    unfold GenericSelect.occurrenceCount
+    exact SuccinctSpace.bpCode_rankFalse_full shape
+  rw [GenericSelect.sparseExceptionEffectiveFlagBits_length]
+  unfold GenericSelect.sparseExceptionEffectiveLocalSlotCount packedSparseSlots
+  rw [localSlotCount_eq_packed, hcount]
+
+/-- Size-only mirror of the sparse flag rank word size. -/
+def packedSparseWordSize (n : Nat) : Nat :=
+  SuccinctRank.machineWordBits (packedSparseSlots n)
+
+theorem sparseFlagRankWordSize_eq_packed (shape : CartesianShape) :
+    GenericSelect.sparseExceptionEffectiveFlagRankWordSize shape.bpCode false =
+      packedSparseWordSize shape.size := by
+  unfold GenericSelect.sparseExceptionEffectiveFlagRankWordSize packedSparseWordSize
+  rw [sparseFlagBits_length_eq_packed]
+
+/-- Size-only mirror of the sparse flag rank superblock overhead. -/
+def packedSparseSuperOverhead (n : Nat) : Nat :=
+  (packedSparseSlots n / packedSparseWordSize n + 1) * packedSparseWordSize n +
+    (packedSparseSlots n / packedSparseWordSize n + 1) * packedSparseWordSize n
+
+theorem sparseFlagRankSuperOverhead_eq_packed (shape : CartesianShape) :
+    GenericSelect.sparseExceptionEffectiveFlagRankSuperOverhead shape.bpCode false =
+      packedSparseSuperOverhead shape.size := by
+  unfold GenericSelect.sparseExceptionEffectiveFlagRankSuperOverhead
+    packedSparseSuperOverhead
+  rw [SuccinctRank.canonicalSuperRankSampleTables_payload_length,
+    SuccinctRank.canonicalSuperRankEntries_length,
+    SuccinctRank.canonicalSuperRankEntries_length]
+  simp only [GenericSelect.sparseExceptionEffectiveFlagRankBlocksPerSuper,
+    Nat.div_one]
+  rw [sparseFlagBits_length_eq_packed, sparseFlagRankWordSize_eq_packed]
+
+/-- Size-only mirror of the sparse flag rank block overhead. -/
+def packedSparseBlockOverhead (n : Nat) : Nat :=
+  (packedSparseSlots n / packedSparseWordSize n + 1) * packedSparseWordSize n +
+    (packedSparseSlots n / packedSparseWordSize n + 1) * packedSparseWordSize n
+
+theorem sparseFlagRankBlockOverhead_eq_packed (shape : CartesianShape) :
+    GenericSelect.sparseExceptionEffectiveFlagRankBlockOverhead shape.bpCode false =
+      packedSparseBlockOverhead shape.size := by
+  unfold GenericSelect.sparseExceptionEffectiveFlagRankBlockOverhead
+    packedSparseBlockOverhead
+  rw [SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan_payload_length,
+    SuccinctRank.canonicalBlockRankEntries_length,
+    SuccinctRank.canonicalBlockRankEntries_length]
+  simp only [GenericSelect.sparseExceptionEffectiveFlagRankBlockWidth]
+  rw [sparseFlagBits_length_eq_packed, sparseFlagRankWordSize_eq_packed]
+
+/-- Size-only mirror of the sparse flag rank auxiliary payload length. -/
+def packedSparseAuxLength (n : Nat) : Nat :=
+  packedSparseSuperOverhead n + packedSparseBlockOverhead n
+
+theorem sparseFlagRankAux_length_eq_packed (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionEffectiveFlagRankData
+      shape.bpCode false).auxPayload.length =
+      packedSparseAuxLength shape.size := by
+  rw [SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.auxPayload_length,
+    sparseFlagRankSuperOverhead_eq_packed, sparseFlagRankBlockOverhead_eq_packed]
+  rfl
+
+/-! ### Size-only mirrors of the close summary and interior tables -/
+
+/-- Size-only mirror of the guarded summary super count. -/
+def packedSummarySuperCount (n : Nat) : Nat :=
+  if PackedSummaryActive n then packedSummarySuperCountRaw n else 0
+
+theorem summarySuperCount_eq_packed (shape : CartesianShape) :
+    SuccinctClose.canonicalBPRelativeSummarySuperCount shape =
+      packedSummarySuperCount shape.size := by
+  unfold SuccinctClose.canonicalBPRelativeSummarySuperCount packedSummarySuperCount
+  by_cases hactive : SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
+  · rw [if_pos hactive, if_pos ((summaryActive_iff_packed shape).mp hactive)]
+    simp [SuccinctClose.canonicalBPRelativeSummarySuperCountRaw,
+      SuccinctClose.canonicalBPRelativeSummaryBlockCountRaw,
+      SuccinctClose.canonicalBPRelativeSummaryBlocksPerSuperRaw,
+      SuccinctClose.canonicalBPRelativeSummaryBase,
+      packedSummarySuperCountRaw, packedSummaryBlockCountRaw, packedSummaryBase]
+  · rw [if_neg hactive,
+      if_neg (fun h => hactive ((summaryActive_iff_packed shape).mpr h))]
+
+/-- Size-only mirror of the summary super width. -/
+def packedSummarySuperWidth (n : Nat) : Nat :=
+  SuccinctRank.machineWordBits (2 * n)
+
+theorem summarySuperWidth_eq_packed (shape : CartesianShape) :
+    SuccinctClose.canonicalBPRelativeSummarySuperWidth shape =
+      packedSummarySuperWidth shape.size := by
+  unfold SuccinctClose.canonicalBPRelativeSummarySuperWidth packedSummarySuperWidth
+  rw [CartesianShape.bpCode_length]
+
+/-- Size-only mirror of the guarded summary relative width. -/
+def packedSummaryRelativeWidth (n : Nat) : Nat :=
+  if PackedSummaryActive n then packedSummaryRelativeWidthRaw n else 0
+
+theorem summaryRelativeWidth_eq_packed (shape : CartesianShape) :
+    SuccinctClose.canonicalBPRelativeSummaryRelativeWidth shape =
+      packedSummaryRelativeWidth shape.size := by
+  unfold SuccinctClose.canonicalBPRelativeSummaryRelativeWidth
+    packedSummaryRelativeWidth
+  by_cases hactive : SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
+  · rw [if_pos hactive, if_pos ((summaryActive_iff_packed shape).mp hactive)]
+    simp [SuccinctClose.canonicalBPRelativeSummaryRelativeWidthRaw,
+      SuccinctClose.canonicalBPRelativeSummaryBase,
+      packedSummaryRelativeWidthRaw, packedSummaryBase]
+  · rw [if_neg hactive,
+      if_neg (fun h => hactive ((summaryActive_iff_packed shape).mpr h))]
+
+/-- Size-only mirror of the summary baseline sub-table length. -/
+def packedSummaryBaselineLength (n : Nat) : Nat :=
+  packedSummarySuperCount n * packedSummarySuperWidth n
+
+theorem summaryBaseline_length_eq_packed (shape : CartesianShape) :
+    (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+      shape).baselineTable.payload.length =
+      packedSummaryBaselineLength shape.size := by
+  rw [SuccinctSpace.FixedWidthNatTable.payload_length,
+    SuccinctClose.bpSuperblockBaselineEntries_length,
+    summarySuperCount_eq_packed, summarySuperWidth_eq_packed]
+  rfl
+
+/-- Size-only mirror of each summary block sub-table length. -/
+def packedSummaryBlockColumnLength (n : Nat) : Nat :=
+  packedSummaryBlockCount n * packedSummaryRelativeWidth n
+
+theorem summaryMinRel_length_eq_packed (shape : CartesianShape) :
+    (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+      shape).minRelTable.payload.length =
+      packedSummaryBlockColumnLength shape.size := by
+  rw [SuccinctSpace.FixedWidthNatTable.payload_length,
+    SuccinctClose.bpBlockRelativeMinExcessEntries_length,
+    summaryBlockCount_eq_packed, summaryRelativeWidth_eq_packed]
+  rfl
+
+theorem summaryMaxRel_length_eq_packed (shape : CartesianShape) :
+    (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+      shape).maxRelTable.payload.length =
+      packedSummaryBlockColumnLength shape.size := by
+  rw [SuccinctSpace.FixedWidthNatTable.payload_length,
+    SuccinctClose.bpBlockRelativeMaxExcessEntries_length,
+    summaryBlockCount_eq_packed, summaryRelativeWidth_eq_packed]
+  rfl
+
+theorem summaryArgOffset_length_eq_packed (shape : CartesianShape) :
+    (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+      shape).argOffsetTable.payload.length =
+      packedSummaryBlockColumnLength shape.size := by
+  rw [SuccinctSpace.FixedWidthNatTable.payload_length,
+    SuccinctClose.bpBlockArgMinLocalOffsetEntries_length,
+    summaryBlockCount_eq_packed, summaryRelativeWidth_eq_packed]
+  rfl
+
+/-- Size-only mirror of the whole summary table length. -/
+def packedSummaryLength (n : Nat) : Nat :=
+  packedSummaryBaselineLength n + packedSummaryBlockColumnLength n +
+    packedSummaryBlockColumnLength n + packedSummaryBlockColumnLength n
+
+theorem summary_length_eq_packed (shape : CartesianShape) :
+    (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+      shape).payload.length =
+      packedSummaryLength shape.size := by
+  simp only [SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.payload,
+    List.length_append, summaryBaseline_length_eq_packed,
+    summaryMinRel_length_eq_packed, summaryMaxRel_length_eq_packed,
+    summaryArgOffset_length_eq_packed, packedSummaryLength]
+
+/-- Size-only mirror of the interior macro count. -/
+def packedInteriorMacroCount (n : Nat) : Nat :=
+  packedSummaryBlockCount n / packedInteriorMacroSize n + 1
+
+theorem interiorMacroCount_eq_packed (shape : CartesianShape) :
+    SuccinctClose.concreteBPRelativeRmmInteriorMacroCount shape =
+      packedInteriorMacroCount shape.size := by
+  unfold SuccinctClose.concreteBPRelativeRmmInteriorMacroCount
+    packedInteriorMacroCount
+  rw [summaryBlockCount_eq_packed]
+  simp only [SuccinctClose.concreteBPRelativeRmmInteriorMacroSize,
+    SuccinctClose.canonicalBPRelativeSummaryBase,
+    packedInteriorMacroSize, packedSummaryBase]
+
+/-- Size-only mirror of the interior offset width. -/
+def packedInteriorOffsetWidth (n : Nat) : Nat :=
+  SuccinctRank.machineWordBits (packedInteriorMacroSize n)
+
+theorem interiorOffsetWidth_eq_packed (shape : CartesianShape) :
+    SuccinctClose.concreteBPRelativeRmmInteriorOffsetWidth shape =
+      packedInteriorOffsetWidth shape.size := by
+  unfold SuccinctClose.concreteBPRelativeRmmInteriorOffsetWidth
+    packedInteriorOffsetWidth
+  simp only [SuccinctClose.concreteBPRelativeRmmInteriorMacroSize,
+    SuccinctClose.canonicalBPRelativeSummaryBase,
+    packedInteriorMacroSize, packedSummaryBase]
+
+/-- Size-only mirror of the interior local table length. -/
+def packedInteriorLocalLength (n : Nat) : Nat :=
+  packedInteriorMacroCount n *
+      (packedInteriorOffsetWidth n * packedInteriorMacroSize n) *
+    packedInteriorOffsetWidth n
+
+theorem interiorLocal_length_eq_packed (shape : CartesianShape) :
+    (SuccinctClose.concreteBPRelativeRmmInteriorLocalTable shape).payload.length =
+      packedInteriorLocalLength shape.size := by
+  rw [SuccinctClose.PayloadLiveBPLocalSparseOffsetTable.payload_length]
+  unfold packedInteriorLocalLength
+  simp only [SuccinctClose.concreteBPRelativeRmmInteriorLevelCount,
+    interiorMacroCount_eq_packed, interiorOffsetWidth_eq_packed]
+  simp only [SuccinctClose.concreteBPRelativeRmmInteriorMacroSize,
+    SuccinctClose.canonicalBPRelativeSummaryBase,
+    packedInteriorMacroSize, packedSummaryBase]
+
+/-! ### Size-only mirrors of the final rank sample columns -/
+
+/-- Size-only mirror of one polarity of the final rank superblock samples. -/
+def packedRankSuperColumn (n : Nat) : Nat :=
+  (2 * n / packedRankWordSize n / packedRankWordSize n + 1) * packedRankWordSize n
+
+/-- Size-only mirror of one polarity of the final rank block samples. -/
+def packedRankBlockColumn (n : Nat) : Nat :=
+  (2 * n / packedRankWordSize n + 1) * packedRankBlockWidth n
+
+theorem rankSuperTrue_length_eq_packed (shape : CartesianShape) :
+    (builtRelativeSplitBPCloseRankData shape).superTables.trueTable.payload.length =
+      packedRankSuperColumn shape.size := by
+  rw [SuccinctSpace.FixedWidthNatTable.payload_length]
+  simp only [builtRelativeSplitBPCloseRankData,
+    SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
+    SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock,
+    SuccinctRank.canonicalSuperRankSampleTables,
+    SuccinctRank.canonicalSuperRankEntries_length,
+    packedRankSuperColumn]
+  rw [CartesianShape.bpCode_length, rankWordSize_eq_packed,
+    builtRelativeSplitBPCloseRankBlocksPerSuper, rankWordSize_eq_packed]
+
+theorem rankSuperTables_length_eq_packed (shape : CartesianShape) :
+    (builtRelativeSplitBPCloseRankData shape).superTables.payload.length =
+      packedRankSuperOverhead shape.size := by
+  rw [(builtRelativeSplitBPCloseRankData shape).superPayload_length,
+    rankSuperOverhead_eq_packed]
+
+theorem rankBlockTrue_length_eq_packed (shape : CartesianShape) :
+    (builtRelativeSplitBPCloseRankData shape).blockTables.trueTable.payload.length =
+      packedRankBlockColumn shape.size := by
+  rw [SuccinctSpace.FixedWidthNatTable.payload_length]
+  simp only [builtRelativeSplitBPCloseRankData,
+    SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
+    SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock,
+    SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan,
+    SuccinctRank.canonicalBlockRankEntries_length,
+    packedRankBlockColumn]
+  rw [CartesianShape.bpCode_length, rankWordSize_eq_packed,
+    rankBlockWidth_eq_packed]
+
+/-! ### Dense entry-table column lengths -/
+
+/-- One column of the select super table. -/
+def packedSuperColumn (n : Nat) : Nat :=
+  packedSuperSlots n * packedSuperWidth n
+
+/-- The whole select super table: four columns. -/
+def packedSuperTableLength (n : Nat) : Nat :=
+  packedSuperColumn n + packedSuperColumn n + packedSuperColumn n +
+    packedSuperColumn n
+
+/-- One column of the select local table. -/
+def packedLocalColumn (n : Nat) : Nat :=
+  packedLocalSlots n * packedLocalWidth n
+
+/-- The whole select local table: four columns. -/
+def packedLocalTableLength (n : Nat) : Nat :=
+  packedLocalColumn n + packedLocalColumn n + packedLocalColumn n +
+    packedLocalColumn n
+
+theorem superTable_baseWordIndex_length (shape : CartesianShape) :
+    (GenericSelect.superTable shape.bpCode false).baseWordIndexTable.payload.length =
+      packedSuperColumn shape.size := by
+  rw [SuccinctSpace.FixedWidthNatTable.payload_length]
+  simp only [GenericSelect.SparseDenseSelectDenseLocalEntry.baseWordIndices,
+    List.length_map]
+  rw [GenericSelect.superEntries_length, superSlotCount_eq_packed,
+    superFieldWidth_eq_packed]
+  rfl
+
+theorem superTable_rankBefore_length (shape : CartesianShape) :
+    (GenericSelect.superTable shape.bpCode false).rankBeforeTable.payload.length =
+      packedSuperColumn shape.size := by
+  rw [SuccinctSpace.FixedWidthNatTable.payload_length]
+  simp only [GenericSelect.SparseDenseSelectDenseLocalEntry.ranksBefore,
+    List.length_map]
+  rw [GenericSelect.superEntries_length, superSlotCount_eq_packed,
+    superFieldWidth_eq_packed]
+  rfl
+
+theorem superTable_length (shape : CartesianShape) :
+    (GenericSelect.superTable shape.bpCode false).payload.length =
+      packedSuperTableLength shape.size := by
+  rw [GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.payload_length]
+  simp only [GenericSelect.sparseDenseSelectDenseLocalEntryMultiwordPayloadBudget]
+  rw [GenericSelect.superEntries_length, superSlotCount_eq_packed,
+    superFieldWidth_eq_packed]
+  rfl
+
+theorem localTable_baseOccurrence_length (shape : CartesianShape) :
+    (GenericSelect.localTable shape.bpCode false).baseOccurrenceTable.payload.length =
+      packedLocalColumn shape.size := by
+  rw [SuccinctSpace.FixedWidthNatTable.payload_length]
+  simp only [GenericSelect.SparseDenseSelectDenseLocalEntry.baseOccurrences,
+    List.length_map]
+  rw [GenericSelect.localEntries_length, localSlotCount_eq_packed,
+    localFieldWidth_eq_packed]
+  rfl
+
+theorem localTable_baseWordIndex_length (shape : CartesianShape) :
+    (GenericSelect.localTable shape.bpCode false).baseWordIndexTable.payload.length =
+      packedLocalColumn shape.size := by
+  rw [SuccinctSpace.FixedWidthNatTable.payload_length]
+  simp only [GenericSelect.SparseDenseSelectDenseLocalEntry.baseWordIndices,
+    List.length_map]
+  rw [GenericSelect.localEntries_length, localSlotCount_eq_packed,
+    localFieldWidth_eq_packed]
+  rfl
+
+theorem localTable_rankBefore_length (shape : CartesianShape) :
+    (GenericSelect.localTable shape.bpCode false).rankBeforeTable.payload.length =
+      packedLocalColumn shape.size := by
+  rw [SuccinctSpace.FixedWidthNatTable.payload_length]
+  simp only [GenericSelect.SparseDenseSelectDenseLocalEntry.ranksBefore,
+    List.length_map]
+  rw [GenericSelect.localEntries_length, localSlotCount_eq_packed,
+    localFieldWidth_eq_packed]
+  rfl
+
+theorem localTable_length (shape : CartesianShape) :
+    (GenericSelect.localTable shape.bpCode false).payload.length =
+      packedLocalTableLength shape.size := by
+  rw [GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.payload_length]
+  simp only [GenericSelect.sparseDenseSelectDenseLocalEntryMultiwordPayloadBudget]
+  rw [GenericSelect.localEntries_length, localSlotCount_eq_packed,
+    localFieldWidth_eq_packed]
+  rfl
+
+/-! ### The shape-free address factorization -/
+
+/-- The per-long-super block of relative offsets, in bits. Size-only. -/
+def packedLongBlockBits (n : Nat) : Nat :=
+  GenericSelect.superStride (2 * n) * GenericSelect.wordBits (2 * n)
+
+/--
+**The factorization surface.** Every source's offset inside its flat-payload
+component, as a function of the input size, the decoded long count, and the typed
+source.
+
+This signature is the claim `FG-02` asks for. There is no `CartesianShape`
+argument, so no instantiation of this function can consult shape content, and the
+elaborator rather than a reviewer enforces that.
+-/
+def packedSourceComponentOffset (n longCount : Nat) :
+    ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Nat
+  | .bpCode => 0
+  | .selectSuperBaseOccurrence => 0
+  | .selectSuperBaseWordIndex => packedSuperColumn n
+  | .selectSuperRankBefore => packedSuperColumn n + packedSuperColumn n
+  | .selectSuperFirstOffset =>
+      packedSuperColumn n + packedSuperColumn n + packedSuperColumn n
+  | .selectLongFlagBits => packedSuperTableLength n
+  | .selectLongFlagRankSuperTrue => packedSuperTableLength n + packedSuperSlots n
+  | .selectLongFlagRankBlockTrue =>
+      packedSuperTableLength n + packedSuperSlots n + packedLongFlagSuperOverhead n
+  | .selectLongRelative =>
+      packedSuperTableLength n + packedSuperSlots n + packedLongFlagAuxLength n
+  | .selectLocalBaseOccurrence =>
+      packedSuperTableLength n + packedSuperSlots n + packedLongFlagAuxLength n +
+        longCount * packedLongBlockBits n
+  | .selectLocalBaseWordIndex =>
+      packedSuperTableLength n + packedSuperSlots n + packedLongFlagAuxLength n +
+        longCount * packedLongBlockBits n + packedLocalColumn n
+  | .selectLocalRankBefore =>
+      packedSuperTableLength n + packedSuperSlots n + packedLongFlagAuxLength n +
+        longCount * packedLongBlockBits n + packedLocalColumn n +
+          packedLocalColumn n
+  | .selectLocalFirstOffset =>
+      packedSuperTableLength n + packedSuperSlots n + packedLongFlagAuxLength n +
+        longCount * packedLongBlockBits n + packedLocalColumn n +
+          packedLocalColumn n + packedLocalColumn n
+  | .selectSparseFlagBits =>
+      packedSuperTableLength n + packedSuperSlots n + packedLongFlagAuxLength n +
+        longCount * packedLongBlockBits n + packedLocalTableLength n
+  | .selectSparseRankSuperTrue =>
+      packedSuperTableLength n + packedSuperSlots n + packedLongFlagAuxLength n +
+        longCount * packedLongBlockBits n + packedLocalTableLength n +
+          packedSparseSlots n
+  | .selectSparseRankBlockTrue =>
+      packedSuperTableLength n + packedSuperSlots n + packedLongFlagAuxLength n +
+        longCount * packedLongBlockBits n + packedLocalTableLength n +
+          packedSparseSlots n + packedSparseSuperOverhead n
+  | .selectSparseRelative =>
+      packedSuperTableLength n + packedSuperSlots n + packedLongFlagAuxLength n +
+        longCount * packedLongBlockBits n + packedLocalTableLength n +
+          packedSparseSlots n + packedSparseAuxLength n
+  | .finalRankSuperFalse => packedRankSuperColumn n
+  | .finalRankBlockFalse => packedRankSuperOverhead n + packedRankBlockColumn n
+  | .finalRankBPCodeAlias => 0
+  | .closeSummaryBaseline => 0
+  | .closeSummaryMinRel => packedSummaryBaselineLength n
+  | .closeSummaryMaxRel =>
+      packedSummaryBaselineLength n + packedSummaryBlockColumnLength n
+  | .closeSummaryArgOffset =>
+      packedSummaryBaselineLength n + packedSummaryBlockColumnLength n +
+        packedSummaryBlockColumnLength n
+  | .closeInteriorLocal => packedSummaryLength n
+  | .closeInteriorGlobal => packedSummaryLength n + packedInteriorLocalLength n
+  | .closeFiniteSmallInteriorMin => 0
+  | .closeFiniteSmallInteriorArg => 0
+  | .closeFiniteSmallSameBlock => 0
+
+/--
+**`FG-02`, within-component half.** The canonical shape-indexed offset agrees with
+the shape-free one at every source, for every shape.
+
+Proved by case analysis over the closed source inductive, so adding a constructor
+breaks elaboration until its offset is supplied on both sides. Aliases
+(`finalRankBPCodeAlias`), the retired finite-small slots, and the empty/dead cases
+are all present as their own arms rather than folded into a default.
+-/
+theorem packedSourceComponentOffset_eq
+    (shape : CartesianShape)
+    (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource) :
+    concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset shape source =
+      packedSourceComponentOffset shape.size (longCount shape) source := by
+  have hsuperBase := superTable_column_length shape
+  have hsuperWord := superTable_baseWordIndex_length shape
+  have hsuperRank := superTable_rankBefore_length shape
+  have hsuperAll := superTable_length shape
+  have hflag := longFlagBits_length_eq_packed shape
+  have hflagSuper :=
+    (GenericSelect.longFlagRankData shape.bpCode false).superPayload_length
+  have hflagSuperPacked := longFlagRankSuperOverhead_eq_packed shape
+  have hflagAux := longFlagRankAux_length_eq_packed shape
+  have hlongRel := longSuperRelativeTable_length_eq shape
+  have hlocalBase := localTable_baseOccurrence_length shape
+  have hlocalWord := localTable_baseWordIndex_length shape
+  have hlocalRank := localTable_rankBefore_length shape
+  have hlocalAll := localTable_length shape
+  have hsparseFlag := sparseFlagBits_length_eq_packed shape
+  have hsparseSuper :=
+    (GenericSelect.sparseExceptionEffectiveFlagRankData
+      shape.bpCode false).superPayload_length
+  have hsparseSuperPacked := sparseFlagRankSuperOverhead_eq_packed shape
+  have hsparseAux := sparseFlagRankAux_length_eq_packed shape
+  have hrankSuperTrue := rankSuperTrue_length_eq_packed shape
+  have hrankSuperAll := rankSuperTables_length_eq_packed shape
+  have hrankBlockTrue := rankBlockTrue_length_eq_packed shape
+  have hsumBaseline := summaryBaseline_length_eq_packed shape
+  have hsumMin := summaryMinRel_length_eq_packed shape
+  have hsumMax := summaryMaxRel_length_eq_packed shape
+  have hsumAll := summary_length_eq_packed shape
+  have hinteriorLocal := interiorLocal_length_eq_packed shape
+  cases source <;>
+    simp only [concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset,
+      packedSourceComponentOffset, GenericSelect.sparseExceptionSelectData,
+      GenericSelect.sparseExceptionDirectory, packedLongBlockBits,
+      hsuperBase, hsuperWord, hsuperRank, hsuperAll, hflag, hflagSuper,
+      hflagSuperPacked, hflagAux, hlongRel, hlocalBase, hlocalWord, hlocalRank,
+      hlocalAll, hsparseFlag, hsparseSuper, hsparseSuperPacked, hsparseAux,
+      hrankSuperTrue, hrankSuperAll, hrankBlockTrue, hsumBaseline, hsumMin,
+      hsumMax, hsumAll, hinteriorLocal,
+      packedSuperColumn, packedSuperTableLength, packedLocalColumn,
+      packedLocalTableLength, packedLongFlagAuxLength, packedSparseAuxLength,
+      packedSummaryLength, packedSummaryBaselineLength,
+      packedSummaryBlockColumnLength] <;>
+    omega
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
