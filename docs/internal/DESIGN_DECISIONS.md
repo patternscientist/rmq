@@ -7293,3 +7293,64 @@ Consequences and evidence:
   the next obligation.
 - The registry mutations `M03-SHAPE-PARAMETER` and `M04-CANONICAL-SHAPE-BY-N`
   now have a concrete target to be run against, which they did not before.
+
+## DD-20260804-021: two word shapes, one slice formula
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Fifteen of the twenty-nine flat-payload
+sources now have a size-only word geometry. `FG-08` remains open.
+
+Date: 2026-08-04
+
+Context:
+
+The flat payload read store answers a logical read `(segment, index)` with
+`(sourceWords shape source)[index]?`, one entry of an `Array (List Bool)`. To
+answer the same read by probing `packedMemory`, a controller must know from `n`
+and the decoded long count alone how many words that array has and where word
+`index` sits. Neither quantity was available: `DD-20260804-003` recorded that the
+width was an explicit argument for twenty-eight of the twenty-nine sources.
+
+Decision:
+
+Express both word representations by one function,
+
+```
+packedWordSlice (payload : List Bool) (count width i : Nat) : Option (List Bool) :=
+  if i < count then some ((payload.drop (i * width)).take width) else none
+```
+
+and prove one theorem per source of the form
+`(sourceWords shape source)[i]? = packedWordSlice (sourcePayload shape source) c w i`
+with `c` and `w` size-only.
+
+Rationale, and why the count is not the naive one:
+
+* **Fixed-width tables.** `packedFixedWidthTable_getElem?` is proved from the
+  structure's own fields, with **no** positivity hypothesis on the width. The
+  count comes from `read_exact` -- `words[i]?.map bitsToNatLE = entries[i]?`
+  forces the two arrays to have the same length -- rather than from the payload
+  length, which would need `0 < width`. That matters: the close summary's relative
+  width is genuinely `0` when the summary is inactive, and a zero-width table
+  still has `entries.length` empty words that `flattenPayloadWords` cannot see.
+* **Chunked bit sources.** `List.take` truncates, so the short final chunk needs
+  no separate arm; it is the slice that runs out of payload.
+* **Sentinel padding.** The three rank-directory bit stores are built by
+  `ofChunksWithSentinel`, which appends `payload.length + 1` empty words. Those
+  are absorbed by the same formula with a larger count: past the last chunk the
+  stride has run off the end, so the slice is empty for exactly the reason the
+  sentinel is. `packedChunkCount_mul_le` is the arithmetic that says so.
+
+Consequences and evidence:
+
+- Proved for fifteen sources: the eight dense select columns, the four chunked
+  bit sources (`bpCode` bare, `finalRankBPCodeAlias` and the two flag-bit stores
+  with sentinels), and the three retired finite-small slots.
+- `bpCode` and `finalRankBPCodeAlias` are the same bits at the same stride with
+  *different* word arrays -- the alias carries the sentinels. That is why the
+  source inventory keeps them apart, and the two theorems differ exactly in the
+  count.
+- Fourteen sources remain: the four rank-sample columns, the two relative tables,
+  the four close summary columns and the two close interior tables. Until all
+  twenty-nine are proved there is no packed-backed store, so `FG-08`'s whole-run
+  clause is untouched.
