@@ -199,6 +199,19 @@ theorem packedAllocatedSpaceBound :
         2 * shape.size + packedRho shape.size :=
   packedMemory_length_mul_width_le
 
+/--
+Pins the cell-crossing bound: any span of at most one cell width is a slice of two
+consecutive cells. This is the two-probes-per-logical-word bound.
+-/
+theorem packedSpanNeedsAtMostTwoCells :
+    forall (shape : CartesianShape) (p width : Nat),
+      width <= packedCellWidth shape.size ->
+        ((packedPaddedBits shape).drop p).take width =
+          ((packedCellAt shape (p / packedCellWidth shape.size) ++
+              packedCellAt shape (p / packedCellWidth shape.size + 1)).drop
+                (p % packedCellWidth shape.size)).take width :=
+  packedSpan_from_two_cells
+
 /-- Pins that the residual is little-o linear. -/
 theorem packedRhoIsLittleOLinear : SuccinctSpace.LittleOLinear packedRho :=
   packedRho_littleO

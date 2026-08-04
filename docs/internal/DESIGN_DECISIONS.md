@@ -5658,3 +5658,14 @@ exactly the double-width window at the first one's base.
 `packedCellPair` is the step the physical lowering needs: it is what will let a
 logical word of at most one cell width be read from at most two probes. The span
 theorem itself is not yet proved and is recorded as remaining.
+
+`FG-05` cell crossing (2026-08-04): `packedSpan_from_two_cells` proves that any
+span of at most one cell width, starting at any bit position, equals a slice of
+the two consecutive cells containing it. It covers the aligned and
+wholly-inside-one-cell cases too, because there the second cell simply
+contributes nothing; nothing assumes a crossing actually occurs.
+
+This is the bound the probe cap will rest on: two physical probes per logical
+word, for every logical word no wider than a cell. Whether every executed logical
+word satisfies that width hypothesis is a separate obligation and is not claimed
+here.

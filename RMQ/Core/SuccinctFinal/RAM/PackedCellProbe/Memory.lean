@@ -224,6 +224,45 @@ theorem packedCellPair (shape : CartesianShape) (i : Nat) :
   congr 1
   rw [Nat.add_mul, Nat.one_mul]
 
+/--
+**Cell crossing.** Any span of at most one cell width, starting at any bit
+position, equals a slice of the two consecutive cells that contain it.
+
+The span is addressed by its bit position `p`; the containing cells are
+`p / w` and its successor, and the offset within the pair is `p % w`. When the
+span happens to be aligned, or short enough to sit inside one cell, the second
+cell simply contributes nothing, so this covers the non-crossing case as well
+rather than assuming a crossing occurs.
+
+This is what bounds the physical probe count: two probes per logical word, for
+every logical word no wider than a cell.
+-/
+theorem packedSpan_from_two_cells
+    (shape : CartesianShape) (p width : Nat)
+    (hwidth : width <= packedCellWidth shape.size) :
+    ((packedPaddedBits shape).drop p).take width =
+      ((packedCellAt shape (p / packedCellWidth shape.size) ++
+          packedCellAt shape (p / packedCellWidth shape.size + 1)).drop
+            (p % packedCellWidth shape.size)).take width := by
+  have hw : 0 < packedCellWidth shape.size := packedCellWidth_pos shape.size
+  have hmod : p % packedCellWidth shape.size < packedCellWidth shape.size :=
+    Nat.mod_lt _ hw
+  have hidx :
+      p / packedCellWidth shape.size * packedCellWidth shape.size +
+          p % packedCellWidth shape.size = p := by
+    have h1 := Nat.mod_add_div p (packedCellWidth shape.size)
+    have h2 :
+        packedCellWidth shape.size * (p / packedCellWidth shape.size) =
+          p / packedCellWidth shape.size * packedCellWidth shape.size :=
+      Nat.mul_comm _ _
+    omega
+  have hmin :
+      min width
+          (packedCellWidth shape.size + packedCellWidth shape.size -
+            p % packedCellWidth shape.size) = width := by
+    omega
+  rw [packedCellPair, List.drop_take, List.take_take, List.drop_drop, hidx, hmin]
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
