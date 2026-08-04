@@ -7148,3 +7148,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   comparison was required.
 - Commit making the three store-touching instruction leaves shape-free: matrix
   untouched, so no frozen-cell comparison was required.
+- Commit building the packed controller: matrix untouched, so no frozen-cell
+  comparison was required.

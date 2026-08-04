@@ -868,6 +868,49 @@ theorem packedCrossBlockCloseBranchIsShapeFree :
           shape.size leftClose rightClose :=
   packedCrossBlockCloseRead_eq
 
+/-! #### The controller
+
+`FG-07` asks for one fixed definition whose dynamic inputs are exactly `n`, the
+query endpoints, the header reply and previous replies from the packed memory,
+with no `CartesianShape`, source program, list, proof callback or expected
+answer.
+
+The signature below is written out independently of the definition, so restoring
+a `shape` parameter, adding a program argument, or threading a proof callback
+breaks this ascription rather than being absorbed by it.
+-/
+
+/--
+Pins the controller's exact type: a supplied store and three naturals. No
+`CartesianShape`, no `WholeQueryProgram` argument, no `List Int`, no proof
+argument, no expected answer.
+-/
+def packedWholeQueryRunSignature :
+    WordRAM.ReadStore -> Nat -> Nat -> Nat ->
+      WordRAM.TraceResult (Option Nat) :=
+  packedWholeQueryRun
+
+/--
+Pins that the controller **is** the existing supplied-store whole-query
+execution, at every shape, store and endpoint pair. The equation is between the
+`TraceResult`s themselves, so value, modeled cost and ordered trace all agree.
+-/
+theorem packedControllerIsTheWholeQueryRun :
+    forall (shape : CartesianShape) (store : WordRAM.ReadStore)
+      (left right : Nat),
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore shape
+          store left right =
+        packedWholeQueryRun store shape.size left right :=
+  packedWholeQueryRun_eq
+
+/-- Pins that one instruction step is shape-free. -/
+theorem packedInstrStepIsShapeFree :
+    forall (shape : CartesianShape) (store : WordRAM.ReadStore)
+      (left right : Nat) (instr : WholeQueryInstr) (state : WholeQueryState),
+      instr.evalGlobalWordTraceWithStore shape store left right state =
+        packedInstrStep store shape.size left right instr state :=
+  packedInstrStep_eq
+
 /-! #### Where the shape still enters
 
 `lcaClose` is the one whole-query instruction whose leaf takes a

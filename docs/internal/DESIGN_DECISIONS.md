@@ -7224,3 +7224,72 @@ Consequences and evidence:
 - `FG-07` remains Open: the leaves are shape-free but nothing sequences them. The
   instruction evaluator, the program evaluator and the whole-query result are the
   remaining layers.
+
+## DD-20260804-020: the packed controller exists
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Builds the definition `EG-CP` row
+`FG-07` asks for. The row is **not** thereby closed; see the consequences.
+
+Date: 2026-08-04
+
+Context:
+
+Thirty-seven commits of factorization made every leaf of the whole-query program
+shape-free. Three layers remained, each a direct substitution once the leaves
+were done.
+
+Decision and result:
+
+```
+packedInstrStep     (store : WordRAM.ReadStore) (n left right : Nat)
+                    (instr : WholeQueryInstr) (state : WholeQueryState) :
+                    WordRAM.TraceResult WholeQueryState
+
+packedProgramRun    (store : WordRAM.ReadStore) (n left right : Nat) :
+                    WholeQueryProgram -> WholeQueryState ->
+                      WordRAM.TraceResult WholeQueryState
+
+packedWholeQueryRun (store : WordRAM.ReadStore) (n left right : Nat) :
+                    WordRAM.TraceResult (Option Nat)
+```
+
+with `packedWholeQueryRun_eq`:
+
+```
+concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore shape store
+    left right =
+  packedWholeQueryRun store shape.size left right
+```
+
+at every shape, every supplied store and every endpoint pair. The equation is
+between the `TraceResult`s themselves, so value, modeled cost and ordered trace
+all agree.
+
+`packedWholeQueryRun`'s declared type is a supplied store and three naturals.
+There is no `CartesianShape`, no `WholeQueryProgram` argument, no `List Int`, no
+proof callback and no expected answer. The program it runs is the fixed
+`concreteBPNativeSuccinctRMQWholeQueryProgram`, named inside the definition
+rather than accepted from a caller.
+
+Rationale:
+
+The program-evaluator step needed `congr 1; funext state'` to descend under the
+`bind` continuation, and the instruction step needed a `cases` on each register
+guard. Neither is a weakening: the statements are equations at every instruction,
+program, state, store and shape.
+
+Consequences and evidence:
+
+- Pinned by `packedWholeQueryRunSignature` -- written independently of the
+  definition, so restoring a `shape` parameter, adding a program argument or
+  threading a proof callback breaks the ascription -- and by
+  `packedControllerIsTheWholeQueryRun` and `packedInstrStepIsShapeFree`.
+- **`FG-07` is not closed by this.** The row also requires that the controller
+  consume the packed memory's header reply and the `n`-only readiness guard, and
+  that its `receipt` be the object the capstone's other conjuncts talk about.
+  What exists here is a controller over an abstract `WordRAM.ReadStore`; wiring
+  it to `packedMemory` through the physical probe plan is `FG-08`, and that is
+  the next obligation.
+- The registry mutations `M03-SHAPE-PARAMETER` and `M04-CANONICAL-SHAPE-BY-N`
+  now have a concrete target to be run against, which they did not before.

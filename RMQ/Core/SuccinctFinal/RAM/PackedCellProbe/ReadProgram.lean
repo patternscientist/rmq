@@ -2193,6 +2193,132 @@ theorem packedLcaCloseLeaf_eq
   funext pos
   exact packedRankCloseLeaf_eq shape store pos
 
+
+/-! ### The controller
+
+Three layers remain, and each is now a direct substitution: the instruction
+evaluator, the program evaluator, and the whole-query entry point.
+
+The result is `packedWholeQueryRun`, whose declared type contains a supplied
+store, three naturals and nothing else -- no `CartesianShape`, no source program,
+no list, no proof callback, no expected answer.
+-/
+
+/-- One whole-query instruction, evaluated with no shape argument. -/
+def packedInstrStep (store : WordRAM.ReadStore) (n left right : Nat)
+    (instr : WholeQueryInstr) (state : WholeQueryState) :
+    WordRAM.TraceResult WholeQueryState :=
+  match instr with
+  | .selectClose dst idx =>
+      WordRAM.TraceResult.map (fun close? => state.setOpt dst close?)
+        (packedSelectCloseLeaf store n (idx.eval left right state))
+  | .lcaClose dst leftReg rightReg =>
+      match state.opt leftReg, state.opt rightReg with
+      | some leftClose, some rightClose =>
+          WordRAM.TraceResult.map (fun answer? => state.setOpt dst answer?)
+            (packedLcaCloseLeaf store n leftClose rightClose)
+      | _, _ => WordRAM.TraceResult.pure (state.setOpt dst none)
+  | .rankCloseIfSome dst guard pos =>
+      match state.opt guard with
+      | some _ =>
+          WordRAM.TraceResult.map (fun closeRank => state.setNat dst closeRank)
+            (packedRankCloseLeaf store n (pos.eval left right state))
+      | none => WordRAM.TraceResult.pure state
+  | .outputPredIfSome dst guard src =>
+      match state.opt guard with
+      | some _ =>
+          WordRAM.TraceResult.pure
+            (state.setOpt dst (some (state.nat src - 1)))
+      | none => WordRAM.TraceResult.pure (state.setOpt dst none)
+
+/-- **One instruction step is a function of the input size.** -/
+theorem packedInstrStep_eq
+    (shape : CartesianShape) (store : WordRAM.ReadStore)
+    (left right : Nat) (instr : WholeQueryInstr) (state : WholeQueryState) :
+    instr.evalGlobalWordTraceWithStore shape store left right state =
+      packedInstrStep store shape.size left right instr state := by
+  cases instr with
+  | selectClose dst idx =>
+      simp only [WholeQueryInstr.evalGlobalWordTraceWithStore, packedInstrStep,
+        packedSelectCloseLeaf_eq]
+  | lcaClose dst leftReg rightReg =>
+      cases hleft : state.opt leftReg <;> cases hright : state.opt rightReg <;>
+        simp only [WholeQueryInstr.evalGlobalWordTraceWithStore, packedInstrStep,
+          hleft, hright, packedLcaCloseLeaf_eq]
+  | rankCloseIfSome dst guard pos =>
+      cases hguard : state.opt guard <;>
+        simp only [WholeQueryInstr.evalGlobalWordTraceWithStore, packedInstrStep,
+          hguard, packedRankCloseLeaf_eq]
+  | outputPredIfSome dst guard src =>
+      cases hguard : state.opt guard <;>
+        simp only [WholeQueryInstr.evalGlobalWordTraceWithStore, packedInstrStep,
+          hguard]
+
+/-- A whole-query program, evaluated with no shape argument. -/
+def packedProgramRun (store : WordRAM.ReadStore) (n left right : Nat) :
+    WholeQueryProgram -> WholeQueryState -> WordRAM.TraceResult WholeQueryState
+  | [], state => WordRAM.TraceResult.pure state
+  | instr :: rest, state =>
+      WordRAM.TraceResult.bind (packedInstrStep store n left right instr state)
+        fun state' => packedProgramRun store n left right rest state'
+
+/-- **A whole program run is a function of the input size.** -/
+theorem packedProgramRun_eq
+    (shape : CartesianShape) (store : WordRAM.ReadStore) (left right : Nat) :
+    forall (program : WholeQueryProgram) (state : WholeQueryState),
+      WholeQueryProgram.evalGlobalWordTraceWithStore shape store left right
+          program state =
+        packedProgramRun store shape.size left right program state := by
+  intro program
+  induction program with
+  | nil =>
+      intro state
+      rfl
+  | cons instr rest ih =>
+      intro state
+      show WordRAM.TraceResult.bind
+          (instr.evalGlobalWordTraceWithStore shape store left right state)
+          (fun state' =>
+            WholeQueryProgram.evalGlobalWordTraceWithStore shape store left
+              right rest state') = _
+      rw [packedInstrStep_eq]
+      unfold packedProgramRun
+      congr 1
+      funext state'
+      exact ih state'
+
+/--
+**The packed controller.**
+
+Its declared type is a supplied store and three naturals. There is no
+`CartesianShape`, no source program argument, no `List Int`, no proof callback and
+no expected answer: the program it runs is the fixed
+`concreteBPNativeSuccinctRMQWholeQueryProgram`, and every read it issues goes to
+the supplied store at an address computed from `n` and prior replies.
+-/
+def packedWholeQueryRun (store : WordRAM.ReadStore) (n left right : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.map WholeQueryState.output?
+    (packedProgramRun store n left right
+      concreteBPNativeSuccinctRMQWholeQueryProgram WholeQueryState.empty)
+
+/--
+**The controller is the whole-query execution.**
+
+For every shape, every supplied store and every endpoint pair, the existing
+supplied-store whole-query result *is* the packed controller at that shape's
+size. Value, modeled cost and ordered trace all agree, because the equation is
+between the `TraceResult`s themselves.
+-/
+theorem packedWholeQueryRun_eq
+    (shape : CartesianShape) (store : WordRAM.ReadStore) (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore shape
+        store left right =
+      packedWholeQueryRun store shape.size left right := by
+  unfold concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+    packedWholeQueryRun
+  rw [packedProgramRun_eq]
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
