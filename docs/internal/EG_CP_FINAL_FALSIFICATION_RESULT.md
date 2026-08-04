@@ -17,11 +17,11 @@ ancestor.
 Worktree: `C:\Users\poin\.codex\visualizations\2026\07\17\019f6d85-7626-7433-a60b-81f8be29689a\eg-cp-final-falsification-r1`.
 Never pushed, never merged, never amended, never squashed.
 
-Last update: 2026-08-04, in the commit titled "Record the three payload objects",
-which was the branch tip when this line was written. Earlier tips this document
-described: `4d2ed70`, `5c05016`, `08d63c7`, the header-probe commit, the
-physical-read commit, the executed-segment-universe commit, and the replay-run
-commit.
+Last update: 2026-08-04, in the commit titled "Synchronize the report with the
+re-target", which was the branch tip when this line was written. Earlier tips this
+document described: `4d2ed70`, `5c05016`, `08d63c7`, the header-probe commit, the
+physical-read commit, the executed-segment-universe commit, the replay-run commit,
+and the three-payload commit.
 
 ---
 
@@ -1057,6 +1057,60 @@ missing.
   rejected in favour of the conditional plan, because with a total accessor the
   decoding theorem holds whether or not the address exists, so no mutation of the
   address arithmetic could be detected by it.
+
+## 8b. State at the handoff, and the enumerated remaining work
+
+This section supersedes section 8 where they disagree. Section 8 was written
+before the payload question was settled and still describes the campaign as
+targeting the flat payload.
+
+**Where the payload question landed.** `FG-01` names two objects -- the identifier
+`concreteBPNativeSuccinctRMQPayload`, and *the object consumed by the accepted RMQ
+semantics*, which is `concreteBPNativeSuccinctRMQCanonicalReviewerPayload` because
+`buildPayload xs` is defined as exactly that. The frozen registry decides between
+them: under the identifier reading the candidate proves space for one payload
+while executing another, which is `M11-SIBLING-PAYLOAD`, a commissioned REJECT. So
+`payloadBits` is the consumed object (`DD-20260804-038`). Two earlier conclusions
+about this were wrong and are retracted in `DD-20260804-036` and `-037`; the
+record keeps both the errors and their repairs.
+
+**What that unblocks.** The segment `20`/`21`/`22` deficit of `DD-20260804-027`
+disappears, because those three are the reviewer payload's own close component and
+chunk tables. `packedStoresNotEqual` remains true about a store the candidate no
+longer uses.
+
+**The sparse count, settled.** `DD-20260804-022` recorded one source of
+twenty-nine whose word count is not a function of `(n, longCount)`, and it
+distorted the design for many commits -- forcing a capacity bound, a
+one-directional lowering, and an exclusion in the store equality. It is now proved
+vacuous below a located threshold: at unit stride a slot covers one occurrence, so
+its span is at most one, so the exception predicate is unsatisfiable, so the table
+is empty (`packedSparseExceptionEntries_nil_of_unit_stride`). `localStride (2n)`
+is `1` for every size below `2 ^ 96`, first exceeding one at `m = 2 ^ 97`.
+Consequently the reviewer payload's length is size-only on that whole range, which
+is what the cell machinery needs.
+
+**Enumerated remaining work, in order:**
+
+1. `packedReviewerPayloadLength n` -- the size-only length equation for the new
+   payload, under the unit-stride hypothesis. The eighteen live access sources
+   already have length mirrors; the close directory, fringe chunk table and select
+   chunk table need three more.
+2. Re-point `packedSerializedBits`, `packedCellWidth`, `packedCellCount`,
+   `packedAllocatedBits` and `packedMemory` at that length. The probe plan,
+   address bounds, word-width and word-value theorems are stated over those and
+   should transfer with their proofs largely intact.
+3. Seven new source word geometries for the close half: the canonical interior
+   directory's five tables and the two chunk tables.
+4. Then the whole-run lowering: `packedBackedStore` over the new memory, footprint
+   agreement, ordered trace with multiplicity, and the constant probe cap derived
+   from the run.
+5. Then `FG-10`, `FG-11`'s value half, `FG-13`, `FG-15`, and the seven
+   `TARGET-ABSENT` replay cases, all of which quantify over that run.
+
+**Until step 2 lands, `packedMemory` still serializes the old object**, `FG-06`'s
+bound is still proved over it, and the candidate would still fail `M11`. Nothing
+in this document should be read as claiming otherwise.
 
 ## 9. What a skeptical reviewer should ask
 

@@ -7241,3 +7241,7 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   `INV-STORE-AGREEMENT`'s evidence/status pair was written.
 - Commit landing the re-target's first increment: matrix untouched, so no
   frozen-cell comparison was required.
+- Commit synchronizing the worker result report with the re-target: matrix
+  untouched, so no frozen-cell comparison was required. Section 8 is superseded
+  rather than rewritten, so the record shows what was believed before the payload
+  question was settled.
