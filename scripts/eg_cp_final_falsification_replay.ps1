@@ -239,10 +239,19 @@ function Invoke-DescendantSelfTest {
   return $true
 }
 
+function Test-OnWindows {
+  # `$IsWindows` exists only on PowerShell Core. Under Windows PowerShell 5.1 it
+  # is undefined, and `Set-StrictMode` makes a bare reference a terminating
+  # error -- so probe for it instead of reading it.
+  $flag = Get-Variable -Name 'IsWindows' -ValueOnly -ErrorAction SilentlyContinue
+  if ($null -eq $flag) { return $true }
+  return [bool] $flag
+}
+
 function Stop-ProcessTree {
   param([int] $RootId)
 
-  if ($IsLinux -or $IsMacOS) {
+  if (-not (Test-OnWindows)) {
     # Owned root plus descendants: negate the pid to address the process group.
     try { & kill -- "-$RootId" 2>$null } catch { }
     try { & kill -9 -- "-$RootId" 2>$null } catch { }
