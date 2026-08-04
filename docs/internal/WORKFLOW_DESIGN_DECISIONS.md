@@ -7120,3 +7120,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   frozen-cell comparison was required.
 - Commit mirroring the close dispatch block size: matrix untouched, so no
   frozen-cell comparison was required.
+- Commit making the same-block local-BP seed shape-free: matrix untouched, so no
+  frozen-cell comparison was required.

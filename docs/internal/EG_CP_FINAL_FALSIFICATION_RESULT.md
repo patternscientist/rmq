@@ -668,11 +668,22 @@ and the hand-off to the two sub-navigators. The first is size-only —
 **So the navigator's top-level branch is decided by `n` and the two close
 endpoints alone** — exactly the inputs `FG-07` permits.
 
-What remains is the recursive hand-off to
-`bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore` and
-`bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`.
-Neither has been examined, and whether their shape use factors through
-`(n, longCount)` plus store replies is an open question.
+What remains is the recursive hand-off to the same-block and cross-block
+sub-navigators, and the same-block one has now been opened.
+
+`bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore` binds a
+local-BP seed and hands it to a seeded reader. The seed comes from
+`localBPSeedFromRankCloseTraceResult`, whose only use of the shape is
+`localBPWindowBase shape blockSize close` — and that uses the shape only through
+`machineWordBits shape.bpCode.length`, the BP-code word width already mirrored.
+So `packedLocalBPSeed n rankCloseTrace blockSize close` is the seed with no shape
+argument (`packedLocalBPSeed_eq`), and the rank-close reader it takes is supplied
+by the caller as the already record-free `packedRankCloseRead`.
+
+Still to do on this side: `bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore`,
+which still takes the shape, and the cross-block branch
+`bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`,
+untouched.
 
 `FG-07` is still **not** closed. There is no top-level controller definition, no
 header-probe-then-address sequencing, and no `receipt`.

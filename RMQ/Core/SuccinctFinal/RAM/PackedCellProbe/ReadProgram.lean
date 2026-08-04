@@ -813,6 +813,57 @@ theorem packedSummaryBlockSizeRaw_eq (shape : CartesianShape) :
       packedSummaryBlockSizeRaw shape.size :=
   rfl
 
+/-! #### The same-block sub-navigator's seed is shape-free
+
+`bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore` binds a
+local-BP seed and then hands it to the seeded reader. The seed comes from
+`localBPSeedFromRankCloseTraceResult`, whose only use of the shape is
+`localBPWindowBase shape blockSize close` -- and that in turn uses the shape only
+through `machineWordBits shape.bpCode.length`, which is the BP-code word width
+already mirrored above.
+-/
+
+/-- Size-only mirror of the local-BP window base. -/
+def packedLocalBPWindowBase (n blockSize close : Nat) : Nat :=
+  SuccinctClose.blockStartOf blockSize
+      (SuccinctClose.blockOfClose blockSize close) /
+    packedBpCodeWordWidth n * packedBpCodeWordWidth n
+
+theorem packedLocalBPWindowBase_eq
+    (shape : CartesianShape) (blockSize close : Nat) :
+    SuccinctClose.localBPWindowBase shape blockSize close =
+      packedLocalBPWindowBase shape.size blockSize close := by
+  unfold SuccinctClose.localBPWindowBase packedLocalBPWindowBase
+    packedBpCodeWordWidth
+  rw [CartesianShape.bpCode_length]
+
+/--
+The local-BP seed with no shape argument: the rank-close reader is supplied by
+the caller, and the window base comes from the input size.
+-/
+def packedLocalBPSeed (n : Nat)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (blockSize close : Nat) : WordRAM.TraceResult Nat :=
+  WordRAM.TraceResult.map
+    (fun rankFalse =>
+      SuccinctClose.localBPSeedFromRankFalse
+        (packedLocalBPWindowBase n blockSize close) rankFalse)
+    (rankCloseTrace (packedLocalBPWindowBase n blockSize close))
+
+/--
+**The same-block seed is shape-free.** Its only shape use was the window base,
+and that is a function of the input size.
+-/
+theorem packedLocalBPSeed_eq
+    (shape : CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (blockSize close : Nat) :
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSeedFromRankCloseTraceResult shape rankCloseTrace
+        blockSize close =
+      packedLocalBPSeed shape.size rankCloseTrace blockSize close := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSeedFromRankCloseTraceResult packedLocalBPSeed
+  rw [packedLocalBPWindowBase_eq]
+
 /-- Size-only mirror of the shared fringe chunk width. -/
 def packedFringeChunkBits (n : Nat) : Nat :=
   SuccinctClose.bpFringeChunkBits (2 * n)

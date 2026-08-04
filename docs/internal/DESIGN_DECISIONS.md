@@ -6657,3 +6657,29 @@ Pinned by `packedCloseDispatchIsSizeOnly` and
 `packedSummaryBlockSizeRawSignature`.
 
 `FG-07` remains Open.
+
+### Second addendum to `DD-20260804-011` (2026-08-04): the same-block seed is shape-free
+
+`bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore` binds a
+local-BP seed and hands it to the seeded reader. The seed comes from
+`ConcreteCompactBPCloseLCADirectory.localBPSeedFromRankCloseTraceResult`, whose
+only use of the shape is `localBPWindowBase shape blockSize close` -- and that in
+turn uses the shape only through `machineWordBits shape.bpCode.length`, the
+BP-code word width already mirrored by `packedBpCodeWordWidth`.
+
+So `packedLocalBPWindowBase n blockSize close` mirrors the base, with
+`packedLocalBPWindowBase_eq`, and `packedLocalBPSeed n rankCloseTrace blockSize
+close` is the seed with no shape argument, with `packedLocalBPSeed_eq`. The
+rank-close reader is supplied by the caller, and `packedRankCloseRead` is already
+record-free, so nothing shape-derived reaches it.
+
+Remaining in the same-block branch:
+`bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore`, which still takes
+the shape. Remaining in the cross-block branch:
+`bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`,
+untouched.
+
+Pinned by `packedLocalBPSeedIsShapeFree` and
+`packedLocalBPWindowBaseSignature`.
+
+`FG-07` remains Open.

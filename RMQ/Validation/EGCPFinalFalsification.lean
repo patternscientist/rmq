@@ -851,6 +851,23 @@ theorem packedCloseDispatchIsSizeOnly :
         packedSummaryBlockSizeRaw shape.size :=
   packedSummaryBlockSizeRaw_eq
 
+/-- Pins the size-only local-BP window base. -/
+def packedLocalBPWindowBaseSignature : Nat -> Nat -> Nat -> Nat :=
+  packedLocalBPWindowBase
+
+/--
+Pins that the same-block sub-navigator's local-BP seed is shape-free: its only
+shape use was the window base, and that is a function of the input size.
+-/
+theorem packedLocalBPSeedIsShapeFree :
+    forall (shape : CartesianShape)
+      (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+      (blockSize close : Nat),
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSeedFromRankCloseTraceResult
+          shape rankCloseTrace blockSize close =
+        packedLocalBPSeed shape.size rankCloseTrace blockSize close :=
+  packedLocalBPSeed_eq
+
 /-- Pins that the rank seed it supplies is already record-free. -/
 theorem packedLcaCloseRankSeedIsRecordFree :
     forall (shape : CartesianShape) (store : WordRAM.ReadStore) (pos : Nat),
