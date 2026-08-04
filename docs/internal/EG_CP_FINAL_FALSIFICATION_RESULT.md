@@ -17,7 +17,9 @@ ancestor.
 Worktree: `C:\Users\poin\.codex\visualizations\2026\07\17\019f6d85-7626-7433-a60b-81f8be29689a\eg-cp-final-falsification-r1`.
 Never pushed, never merged, never amended, never squashed.
 
-Last update: 2026-08-04, at branch tip `5c05016`.
+Last update: 2026-08-04, in the commit titled "Probe the header cell for the long
+count", which was the branch tip when this line was written. Earlier tips this
+document described: `4d2ed70`, `5c05016`, `08d63c7`.
 
 ---
 
@@ -284,6 +286,25 @@ it with the probe plan, `packedLogicalRead_decode` proves the decoding, and
 The width remains an explicit argument for a general source. The mirror that
 would derive it from `(n, longCount, segment)` is deliberately **not** defined in
 general; see section 7.
+
+### The header probe (`FG-04`, `FG-07` support)
+
+Every packed address takes `longCount` as an explicit `Nat` argument, and every
+agreement theorem instantiates it at `longCount shape`. Read literally, that is a
+definition parameterized by a shape-derived quantity, which is what `FG-07`
+forbids the controller to receive.
+
+`packedHeaderProbePlan = [0]` is the controller's first probe. `packedHeaderFetch`
+proves it is allocated at every size and returns the header cell;
+`packedHeaderProbe_decode` proves that decoding that cell with the little-endian
+codec yields exactly `longCount shape`, at every size and with no side condition;
+`packedHeaderProbePlan_length = 1` charges it. `packedMemory_cell_zero` is the
+load-bearing step: cell zero is the header **in full**, so the descriptor is not
+split across cells and the first probe needs no crossing case.
+
+This does not close `FG-07`. Nothing sequences the header probe before the
+address computation, and no definition consumes the reply. What is available is
+that such a definition would need no input beyond `n` to obtain the long count.
 
 ### The BP code, lowered completely (`FG-08` — one source)
 

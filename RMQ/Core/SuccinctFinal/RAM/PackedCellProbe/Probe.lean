@@ -611,6 +611,43 @@ theorem packedLogicalRead_decode
   rw [hsource]
   exact packedSourceRead_decode shape source index width hwidth hfit
 
+/-! ### The header probe
+
+Every other address in this development takes the decoded long count as an
+argument. This section says where that argument comes from: one physical probe of
+cell zero, decoded with the ordinary little-endian codec. It is the only read a
+controller can issue before it knows anything beyond `n`, and it is charged like
+any other probe.
+-/
+
+/-- The controller's first probe: cell zero, unconditionally. -/
+def packedHeaderProbePlan : List Nat := [0]
+
+/-- The header probe costs exactly one probe. -/
+theorem packedHeaderProbePlan_length : packedHeaderProbePlan.length = 1 := rfl
+
+/-- The header probe is allocated at every size and fetches the header cell. -/
+theorem packedHeaderFetch (shape : CartesianShape) :
+    packedFetch (packedMemory shape) packedHeaderProbePlan =
+      some [packedHeaderBits shape] := by
+  have hzero := packedMemory_cell_zero shape
+  simp [packedFetch, packedHeaderProbePlan, packedProbeCell, hzero]
+
+/--
+**The long count comes from a probe.** Fetching cell zero and decoding it with
+the little-endian codec yields exactly `longCount shape`, at every size and for
+every shape, with no size side condition.
+
+This is what makes the rest of the address arithmetic executable: `longCount` is
+an argument a controller can obtain, not a shape field it would have to be given.
+-/
+theorem packedHeaderProbe_decode (shape : CartesianShape) :
+    (packedFetch (packedMemory shape) packedHeaderProbePlan).map
+        (fun cells => SuccinctSpace.bitsToNatLE cells.flatten) =
+      some (longCount shape) := by
+  rw [packedHeaderFetch shape]
+  simp [packedHeaderBits_decode shape]
+
 /-! ### The BP code: one source lowered completely
 
 `packedBitAddress` multiplies the index by the read width, which silently assumes

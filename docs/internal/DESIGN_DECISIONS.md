@@ -5952,3 +5952,53 @@ Consequences and evidence:
 - This finding narrows the next target recorded in `DD-20260804-003`: the
   per-source width mirror is not one function but two, a stride and a read width,
   and only the fixed-width-table sources can share a single expression.
+
+## DD-20260804-005: the long count is a probe reply, not a supplied argument
+
+Status: Worker decision recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Governs how `EG-CP` rows `FG-04` and
+`FG-07` treat the header descriptor.
+
+Date: 2026-08-04
+
+Context:
+
+Every packed address function on this branch takes `longCount` as an explicit
+`Nat` argument, and every agreement theorem instantiates it at `longCount shape`.
+Read literally, that is a definition parameterized by a quantity derived from the
+shape. `FG-07` forbids the controller from receiving shape-derived data other
+than through `n` and prior replies, so leaving the long count as a supplied
+argument would leave the whole address layer outside the controller's reach even
+though its type mentions no shape.
+
+Decision:
+
+State where the argument comes from. `packedHeaderProbePlan = [0]` is the
+controller's first probe; `packedHeaderFetch` proves it is allocated at every
+size and returns the header cell; `packedHeaderProbe_decode` proves that decoding
+that cell with the ordinary little-endian codec yields exactly `longCount shape`,
+at every size and with no side condition.
+
+Rationale:
+
+This is the smallest statement that converts the long count from data the
+controller would have to be given into data it can obtain. It is deliberately
+stated over the same `packedFetch` and `packedMemory` as every other probe, so
+the header read is charged like any other read rather than treated as
+preprocessing; `packedHeaderProbePlan_length = 1` records its cost.
+
+The alternative -- proving only that the header cell decodes, which
+`packedHeaderBits_decode` already did -- leaves the gap this entry closes: a
+decodable header that nothing fetches is a field, not a reply.
+
+Consequences and evidence:
+
+- Pinned by `packedHeaderProbeCostsOneProbe`,
+  `packedHeaderProbeFetchesTheHeaderCell` and `packedLongCountComesFromAProbe`.
+- `packedMemory_cell_zero` is the load-bearing step: it states that cell zero is
+  the header **in full**, so no part of the descriptor is split across cells and
+  the first probe needs no crossing case.
+- This does not close `FG-07`. There is still no controller: nothing sequences
+  the header probe before the address computation, and no definition consumes the
+  reply. What is now available is that such a definition would not need any input
+  beyond `n` to obtain the long count.

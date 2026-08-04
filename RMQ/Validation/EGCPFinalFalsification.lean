@@ -496,6 +496,35 @@ theorem packedLogicalReadDecodesToCanonicalSlice :
   fun shape _ _ index width hsource hwidth hfit =>
     packedLogicalRead_decode shape index width hsource hwidth hfit
 
+/-! #### The long count is obtained by a probe
+
+Every packed address takes the decoded long count as an argument. These consumers
+pin where a controller gets it: one physical probe of cell zero.
+-/
+
+/-- Pins that the header probe costs exactly one probe. -/
+theorem packedHeaderProbeCostsOneProbe : packedHeaderProbePlan.length = 1 :=
+  packedHeaderProbePlan_length
+
+/-- Pins that the header probe is allocated and returns the header cell. -/
+theorem packedHeaderProbeFetchesTheHeaderCell :
+    forall shape : CartesianShape,
+      packedFetch (packedMemory shape) packedHeaderProbePlan =
+        some [packedHeaderBits shape] :=
+  packedHeaderFetch
+
+/--
+Pins that decoding the header probe yields exactly the long count, at every size
+and with no side condition. Without this the long count would be a shape field
+supplied from outside, which is what `FG-07` forbids.
+-/
+theorem packedLongCountComesFromAProbe :
+    forall shape : CartesianShape,
+      (packedFetch (packedMemory shape) packedHeaderProbePlan).map
+          (fun cells => SuccinctSpace.bitsToNatLE cells.flatten) =
+        some (longCount shape) :=
+  packedHeaderProbe_decode
+
 /-! #### The BP code lowers completely
 
 The BP code is the first source whose logical read is lowered with **both** a

@@ -7078,3 +7078,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   five columns byte-identical across all 37 rows; anti-vacuity unchanged from the
   previous commit; only `FG-08`'s `Evidence obtained` and `Status / residual gap`
   changed.
+- Commit recording the header probe in the matrix and the report: the same five
+  columns byte-identical across all 37 rows; anti-vacuity unchanged; only
+  `FG-04`'s `Evidence obtained` and `Status / residual gap` changed.
