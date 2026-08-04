@@ -7060,3 +7060,23 @@ Consequences and evidence:
   ...)`. Their entry counts and widths are exactly the ones already used by the
   eight word-count mirrors of `DD-20260804-015`, so no new geometry is needed.
 - `FG-07` remains Open.
+
+### Addendum to `DD-20260804-016` (2026-08-04): the first two interior computations
+
+With the read at five naturals and the layout and offsets mirrored, each interior
+computation is the same expression with mirrors substituted. Two are landed and
+they establish both shapes the remaining eight take.
+
+`packedSummaryComputation` is the read-bearing shape: four reads of the summary
+table's columns. Its proof is `unfold`, then one `simp only` carrying
+`packedInteriorReadNatOf_eq`, the four entry-count lemmas,
+`RelativeRmm.Layout.superWidth`, `packedInteriorLayout_eq`,
+`packedInteriorOffsets_eq` and `CartesianShape.bpCode_length`, then `rfl`. The
+entry counts and widths that appear are exactly those the word-count mirrors of
+`DD-20260804-015` already use, so nothing new is introduced.
+
+`packedMinCandidateComputation` is the composing shape: no reads of its own, one
+call to a computation already mirrored plus two layout fields. Its proof is two
+rewrites.
+
+The remaining eight are one or the other of these.

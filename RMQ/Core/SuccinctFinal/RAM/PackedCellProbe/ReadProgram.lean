@@ -1391,6 +1391,76 @@ theorem packedInteriorReadNatOf_eq
     packedInteriorReadNatOf packedBpCodeWordWidth
   rw [packedInteriorOffsets_eq, CartesianShape.bpCode_length]
 
+/-! #### The interior computations over the table-free read
+
+With the read reduced to five naturals and the layout and offsets mirrored, each
+interior computation is the same expression with mirrors substituted. The first
+one establishes the pattern: its four reads are the summary table's four columns,
+whose entry counts and widths are exactly those the word-count mirrors use.
+-/
+
+/-- The interior summary computation, with no shape argument. -/
+def packedSummaryComputation (n block : Nat) :
+    SuccinctSpace.FlatStoreComputation
+      (Option (Prod Nat (Prod Nat (Prod Nat Nat)))) :=
+  SuccinctSpace.FlatStoreComputation.bind
+    (packedInteriorReadNatOf n (packedInteriorLayout n).superSampleCount
+      (packedBpCodeWordWidth n) (packedInteriorOffsets n).baseline
+      (block / (packedInteriorLayout n).blocksPerSuper)) fun baseline =>
+    SuccinctSpace.FlatStoreComputation.bind
+      (packedInteriorReadNatOf n (packedInteriorLayout n).blockCount
+        (packedInteriorLayout n).relativeWidth
+        (packedInteriorOffsets n).minRel block) fun minRel =>
+      SuccinctSpace.FlatStoreComputation.bind
+        (packedInteriorReadNatOf n (packedInteriorLayout n).blockCount
+          (packedInteriorLayout n).relativeWidth
+          (packedInteriorOffsets n).maxRel block) fun maxRel =>
+        SuccinctSpace.FlatStoreComputation.map
+          (fun argOffset =>
+            match baseline, minRel, maxRel, argOffset with
+            | some b, some mn, some mx, some arg => some (b, mn, mx, arg)
+            | _, _, _, _ => none)
+          (packedInteriorReadNatOf n (packedInteriorLayout n).blockCount
+            (packedInteriorLayout n).relativeWidth
+            (packedInteriorOffsets n).argOffset block)
+
+/-- **The interior summary computation is a function of the input size.** -/
+theorem packedSummaryComputation_eq (shape : CartesianShape) (block : Nat) :
+    SuccinctClose.canonicalRelativeRmmMachineSummaryComputation shape block =
+      packedSummaryComputation shape.size block := by
+  unfold SuccinctClose.canonicalRelativeRmmMachineSummaryComputation
+    packedSummaryComputation packedBpCodeWordWidth
+  simp only [packedInteriorReadNatOf_eq,
+    SuccinctClose.bpSuperblockBaselineEntries_length,
+    SuccinctClose.bpBlockRelativeMinExcessEntries_length,
+    SuccinctClose.bpBlockRelativeMaxExcessEntries_length,
+    SuccinctClose.bpBlockArgMinLocalOffsetEntries_length,
+    SuccinctClose.RelativeRmm.Layout.superWidth,
+    packedInteriorLayout_eq, packedInteriorOffsets_eq,
+    CartesianShape.bpCode_length]
+  rfl
+
+/-- The interior min-candidate computation, with no shape argument. -/
+def packedMinCandidateComputation (n block : Nat) :
+    SuccinctSpace.FlatStoreComputation (Option (Prod Nat Nat)) :=
+  SuccinctSpace.FlatStoreComputation.map
+    (fun summary =>
+      summary.map
+        (SuccinctClose.bpRelativeSummaryMinCandidate
+          (packedInteriorLayout n).blockSize
+          (packedInteriorLayout n).blocksPerSuper block))
+    (packedSummaryComputation n block)
+
+/-- **The interior min-candidate computation is a function of the input size.** -/
+theorem packedMinCandidateComputation_eq
+    (shape : CartesianShape) (block : Nat) :
+    SuccinctClose.canonicalRelativeRmmMachineMinCandidateComputation shape
+        block =
+      packedMinCandidateComputation shape.size block := by
+  unfold SuccinctClose.canonicalRelativeRmmMachineMinCandidateComputation
+    packedMinCandidateComputation
+  rw [packedSummaryComputation_eq, packedInteriorLayout_eq]
+
 /-! #### The endpoint-fringe candidate readers
 
 The cross-block branch's two endpoint readers use exactly three shape-derived
