@@ -723,6 +723,35 @@ theorem packedRankReadIsTheLeafRankRead :
     packedRankRead_eq data store superSegment blockSegment wordSegment
       chunkSegment chunkBits target pos
 
+/-- Pins the record-free sparse-directory read's signature. -/
+def packedSparseDirectoryReadSignature :
+    GenericSelect.SparseExceptionDirectoryTraceSegmentBases ->
+      Nat -> WordRAM.ReadStore -> Nat ->
+        Nat -> Nat -> Nat -> Nat ->
+          Nat -> Nat -> Nat -> WordRAM.TraceResult (Option Nat) :=
+  packedSparseDirectoryRead
+
+/-- Pins that the record-free sparse-directory read is the record-taking one. -/
+theorem packedSparseDirectoryReadIsTheLeafDirectoryRead :
+    forall {bits : List Bool} {target : Bool}
+      {rankSuperOverhead rankBlockOverhead : Nat}
+      (directory :
+        GenericSelect.SparseExceptionDirectory
+          bits target rankSuperOverhead rankBlockOverhead)
+      (layout : GenericSelect.SparseExceptionDirectoryTraceSegmentBases)
+      (chunkSegment : Nat) (store : WordRAM.ReadStore) (chunkBits : Nat)
+      (base localSlot localOccurrence : Nat),
+      directory.bpChunkedReadTraceResultWithStore layout chunkSegment store
+          chunkBits base localSlot localOccurrence =
+        packedSparseDirectoryRead layout chunkSegment store chunkBits
+          directory.flagBits.length directory.rankData.wordSize
+          directory.rankData.blocksPerSuper directory.localStride base localSlot
+          localOccurrence :=
+  fun directory layout chunkSegment store chunkBits base localSlot
+      localOccurrence =>
+    packedSparseDirectoryRead_eq directory layout chunkSegment store chunkBits
+      base localSlot localOccurrence
+
 /-- Pins the fringe chunk width mirror's signature. -/
 def packedFringeChunkBitsSignature : Nat -> Nat := packedFringeChunkBits
 

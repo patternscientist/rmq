@@ -6455,3 +6455,26 @@ Pinned by `packedRankReadSignature` and `packedRankReadIsTheLeafRankRead`.
 
 Two of the five select helpers are now record-free definitions rather than
 theorems about records. `FG-07` remains Open.
+
+### Second addendum to `DD-20260804-009` (2026-08-04): the third component composes the first two
+
+`packedSparseDirectoryRead` is the record-free sparse-directory read. It is built
+from `packedRankRead` and the already record-free relative-offset read, plus one
+further scalar, the local stride, and
+`packedSparseDirectoryRead_eq` proves it equal to
+`SparseExceptionDirectory.bpChunkedReadTraceResultWithStore` by `rfl`.
+
+That the composition also closes by `rfl` is the point: the inlining technique
+composes, so a record-free definition built from record-free parts does not
+accumulate rewriting obligations.
+
+Three of the five select helpers are now record-free definitions. The
+relative-offset read never took a record. The one still stated only as a theorem
+is the dense two-word select read, which is content-free at a fixed word size;
+turning it into a definition means transcribing its body with `wordSize` as an
+argument.
+
+Pinned by `packedSparseDirectoryReadSignature` and
+`packedSparseDirectoryReadIsTheLeafDirectoryRead`.
+
+`FG-07` remains Open: there is still no top-level controller.

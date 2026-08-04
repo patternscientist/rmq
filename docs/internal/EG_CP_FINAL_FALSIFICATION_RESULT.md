@@ -574,8 +574,17 @@ discharged: `bits.length` is mirrored size-only for both rank records the select
 leaf uses, `wordSize` has existing mirrors, and `blocksPerSuper` is the literal
 `1`. So a controller can supply all three from `n`.
 
-Two of the five select helpers are now record-free *definitions* rather than
-theorems about records.
+The third composes the first two: `packedSparseDirectoryRead` is built from
+`packedRankRead` and the already record-free relative-offset read, plus the local
+stride, and `packedSparseDirectoryRead_eq` is again `rfl`. **That the composition
+also closes by `rfl` is the point** — the technique composes, so a record-free
+definition built from record-free parts accumulates no rewriting obligations.
+
+Three of the five select helpers are now record-free *definitions* rather than
+theorems about records; the relative-offset read never took one. The remaining
+case is the dense two-word select read, stated so far only as a content-free
+theorem at a fixed word size; making it a definition means transcribing its body
+with `wordSize` as an argument.
 
 **`FG-07` remains Open.** One component is not a controller: there is no fixed
 top-level definition, no header-then-address sequencing, no `receipt`, and the

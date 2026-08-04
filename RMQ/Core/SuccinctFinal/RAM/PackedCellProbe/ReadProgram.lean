@@ -466,6 +466,51 @@ theorem packedRankRead_eq
         pos :=
   rfl
 
+/-! ### A record-free sparse-directory read
+
+The third component. It composes the two already built: the record-free rank read
+followed by the record-free relative-offset read, with one further scalar, the
+local stride.
+-/
+
+/-- The sparse-directory read with no record argument. -/
+def packedSparseDirectoryRead
+    (layout : GenericSelect.SparseExceptionDirectoryTraceSegmentBases)
+    (chunkSegment : Nat) (store : WordRAM.ReadStore) (chunkBits : Nat)
+    (bitLength wordSize blocksPerSuper localStride : Nat)
+    (base localSlot localOccurrence : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.bind
+    (packedRankRead layout.rankBase (layout.rankBase + 1) (layout.rankBase + 2)
+      chunkSegment chunkBits true store bitLength wordSize blocksPerSuper
+      localSlot)
+    fun exceptionRank =>
+      GenericSelect.bpRelativeOffsetReadTraceResultWithStore store
+        layout.relativeBase base
+        (GenericSelect.relativeSplitSelectSparseCompactSlot exceptionRank
+          localOccurrence localStride)
+
+/--
+**The record-free sparse-directory read is the record-taking one**, once its four
+scalars are supplied. Proved by `rfl`.
+-/
+theorem packedSparseDirectoryRead_eq
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (directory :
+      GenericSelect.SparseExceptionDirectory
+        bits target rankSuperOverhead rankBlockOverhead)
+    (layout : GenericSelect.SparseExceptionDirectoryTraceSegmentBases)
+    (chunkSegment : Nat) (store : WordRAM.ReadStore) (chunkBits : Nat)
+    (base localSlot localOccurrence : Nat) :
+    directory.bpChunkedReadTraceResultWithStore layout chunkSegment store
+        chunkBits base localSlot localOccurrence =
+      packedSparseDirectoryRead layout chunkSegment store chunkBits
+        directory.flagBits.length directory.rankData.wordSize
+        directory.rankData.blocksPerSuper directory.localStride base localSlot
+        localOccurrence :=
+  rfl
+
 /-- Size-only mirror of the shared fringe chunk width. -/
 def packedFringeChunkBits (n : Nat) : Nat :=
   SuccinctClose.bpFringeChunkBits (2 * n)
