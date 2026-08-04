@@ -7156,3 +7156,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   frozen-cell comparison was required.
 - Commit collecting the word geometry into three functions: matrix untouched, so
   no frozen-cell comparison was required.
+- Commit proving every stored word fits one packed cell: matrix untouched, so no
+  frozen-cell comparison was required.

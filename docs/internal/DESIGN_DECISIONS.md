@@ -7476,3 +7476,64 @@ Consequences:
   earlier factorization.
 - The physical read -- turning a word slice into a probe of `packedMemory` -- is
   the next step and is not in this commit.
+
+## DD-20260804-024: every stored word fits one packed cell
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. `INV-WORD-WIDTH` is proved at the
+packed layer for all twenty-nine sources; the row remains open because its
+consumer, the physical read, does not exist yet.
+
+Date: 2026-08-04
+
+Context:
+
+`packedProbePlan_decode` is stated for reads of at most one cell, because the plan
+issues at most two cells and a wider read would need more. So the per-read
+lowering cannot even be stated until every source's stride is known to fit
+`packedCellWidth n`. That is `INV-WORD-WIDTH`, and nothing in the pre-existing
+development supplied it: the flat payload store has no word-length bound at all,
+and the select-side `_le_machine` fields bound widths by
+`machineWordBits bits.length`, not by the packed cell width.
+
+Result:
+
+`packedSourceStride_le_cellWidth n source hcounted`, by case analysis over the
+closed source inductive. Twenty-six arms reduce to
+`machineWordBits X <= machineWordBits (packedPayloadLength n + 2)` with `X` a
+count the payload obviously dominates. Three did not:
+
+1. **The final rank block sample width** is `machineWordBits (w * w)` for
+   `w = machineWordBits (2 * n)`, and `w * w` is *not* bounded by `2 * n`: at
+   `n = 2` it is `9` against `4`. The slack comes from the rank directory the
+   payload already carries -- `packedRankAux_le_payload` plus
+   `packedRankWordSize_two_le_aux` give `2 * n + 2 * w <= packedPayloadLength n` --
+   and the residual is the pure arithmetic fact `k * k <= 2 ^ k + 3`, proved by
+   finite check below `5` and induction above it (`packedSq_le_two_pow_add_three`).
+2. **The close summary relative width** is not a `machineWordBits` at all. When
+   the summary is inactive it is `0`; when active, the *last conjunct of the
+   activity predicate itself* is `relativeWidthRaw <= machineWordBits (2 * n)`.
+   The guard supplies the bound rather than a separate estimate.
+3. **The close interior offset width** is `machineWordBits (base * base)`, and
+   `base * base` is the macro size. `PackedInteriorReady n` says exactly that the
+   macro size is at most the summary block count, which is at most `n`. **The
+   readiness guard `FG-07` requires the controller to consult is what makes this
+   source's width admissible.** That is a load-bearing use of the guard, not a
+   formality.
+
+Rationale for the hypothesis shape:
+
+The theorem takes `PackedSourceCounted n source` -- the same `n`-only predicate the
+controller evaluates -- rather than a bespoke side condition per source. For
+twenty-seven sources it is unused; for the two interior sources it is what makes
+the statement true; for the three retired finite-small slots it is `False`, so
+those arms are discharged by the guard being unsatisfiable, which is the honest
+reading of a slot that carries nothing.
+
+Consequences:
+
+- `packedSpine` is introduced to have a shape of every size, so that a size-only
+  bound proved through a shape (`packedRankAuxLength_le_accessOverhead`, which
+  needs `accessComponents_add_padding`) is available at every `n`.
+- If a future change made a stored word wider than a cell, this theorem breaks
+  rather than the probe plan silently issuing too few cells.
