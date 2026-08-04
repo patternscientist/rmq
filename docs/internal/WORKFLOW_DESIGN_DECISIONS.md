@@ -7160,3 +7160,12 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   frozen-cell comparison was required.
 - Commit landing the physical read: matrix untouched, so no frozen-cell
   comparison was required.
+- Commit synchronizing the matrix and the result report with the physical read:
+  requirement cells byte-identical to `0a18548` across all 37 requirement rows
+  (verified by extracting columns 0..4 of every table row and comparing);
+  anti-vacuity column unchanged; only the `Evidence obtained` and
+  `Status / residual gap` cells of `FG-08`, `FG-09`, `INV-WORD-WIDTH`,
+  `INV-READ-BACKING` and `INV-VALIDATION-REACH` were written. The 14 `CHK` ledger
+  rows are not requirement rows and are excluded from the comparison, as in the
+  earlier entries of this log. `claim_drift_scan.ps1 -Strict`: 1498 hits, 0 strict
+  failures.

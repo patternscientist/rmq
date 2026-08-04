@@ -17,9 +17,9 @@ ancestor.
 Worktree: `C:\Users\poin\.codex\visualizations\2026\07\17\019f6d85-7626-7433-a60b-81f8be29689a\eg-cp-final-falsification-r1`.
 Never pushed, never merged, never amended, never squashed.
 
-Last update: 2026-08-04, in the commit titled "Probe the header cell for the long
-count", which was the branch tip when this line was written. Earlier tips this
-document described: `4d2ed70`, `5c05016`, `08d63c7`.
+Last update: 2026-08-04, in the commit titled "Land the physical read", which
+was the branch tip when this line was written. Earlier tips this document
+described: `4d2ed70`, `5c05016`, `08d63c7`, and the header-probe commit.
 
 ---
 
@@ -76,7 +76,8 @@ evaluates them (`WDD-20260726-007`), and with `git diff --check HEAD~1..HEAD`.
 All under `RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/`, all imported by
 `RMQ.lean`, so all inside `lake build RMQ` and inside the prose hygiene scan.
 Import order: `SourceFactorization` → `Payload` → `Header` → `Memory` → `Space`
-→ `Address` → `Probe` → `ReadProgram`. The validation root is
+→ `Address` → `Probe` → `ReadProgram` → `SourceWords` → `SourceGeometry` →
+`WordWidth` → `PhysicalRead`. The validation root is
 `RMQ/Validation/EGCPFinalFalsification.lean`.
 
 | Module | Row | What it establishes |
@@ -88,7 +89,11 @@ Import order: `SourceFactorization` → `Payload` → `Header` → `Memory` → 
 | `Space.lean` | `FG-06` | allocated-bits bound and its little-o residual |
 | `Address.lean` | `FG-07`, `FG-08` | bit addresses and the header shift |
 | `Probe.lean` | `FG-05`, `FG-08`, `FG-09` | the conditional probe plan; the header probe; the BP code lowered completely |
-| `ReadProgram.lean` | `FG-07` | logical reads carry no table content; select geometry is size-only |
+| `ReadProgram.lean` | `FG-07` | logical reads carry no table content; select geometry is size-only; the controller |
+| `SourceWords.lean` | `FG-08` | every source's word array is a payload slice at a size-only count and stride |
+| `SourceGeometry.lean` | `FG-08` | the three geometry functions and the aggregate lowering of the word arrays |
+| `WordWidth.lean` | `FG-08`, `INV-WORD-WIDTH` | every stored word fits one packed cell |
+| `PhysicalRead.lean` | `FG-08` | the physical read, and the per-read lowering of every successful store read |
 
 ## 4. What is proved
 
@@ -351,6 +356,83 @@ proved equal to the word the flat payload store would have returned.
 `packedBpCodeWord_index_lt` derives the in-range condition from the existence of
 the word rather than assuming it, so the theorem carries no side condition a
 controller would have to discharge from outside its own inputs.
+
+### The controller (`FG-07` — definition built, row Open)
+
+`packedWholeQueryRun (store : WordRAM.ReadStore) (n left right : Nat) :
+WordRAM.TraceResult (Option Nat)` runs the fixed
+`concreteBPNativeSuccinctRMQWholeQueryProgram`, named inside the definition rather
+than accepted from a caller, and
+
+```
+packedWholeQueryRun_eq :
+  concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore shape store
+      left right =
+    packedWholeQueryRun store shape.size left right
+```
+
+holds at every shape, store and endpoint pair. The equation is between the
+`TraceResult`s, so value, modeled cost and ordered trace all agree. The declared
+type has no `CartesianShape`, no `WholeQueryProgram` argument, no `List Int`, no
+proof callback and no expected answer.
+
+The row is **not** closed. It also requires the controller to consume the packed
+memory's header reply and the `n`-only readiness guard, and its `receipt` to be
+the object the capstone's other conjuncts talk about. What exists is a controller
+over an abstract `WordRAM.ReadStore`; wiring it to `packedMemory` is `FG-08`.
+
+### The word geometry of all twenty-nine sources (`FG-08` — clause (a) proved)
+
+The flat payload store answers `(segment, index)` with
+`(sourceWords shape source)[index]?`, one entry of an `Array (List Bool)`. To
+answer the same read by probing, a controller must know from `n` and the header
+how many words that array has and where word `index` sits. Both are now supplied:
+
+* `packedWordSlice payload count width i` is the single formula both word
+  representations satisfy.
+* `packedFixedWidthTable_getElem?` is proved from `FixedWidthNatTable`'s own
+  fields, with **no** positivity hypothesis on the width. The count comes from
+  `read_exact`, not from the payload length; that matters because the close
+  summary's relative width is genuinely `0` when the summary is inactive, and a
+  zero-width table still has `entries.length` empty words that
+  `flattenPayloadWords` cannot see.
+* `packedChunkedWords_getElem?` and `packedChunkedSentinelWords_getElem?` cover
+  the four chunked bit sources. `List.take` truncates, so the short final chunk
+  needs no separate arm, and the `payload.length + 1` sentinel words
+  `ofChunksWithSentinel` appends are absorbed by the same formula with a larger
+  count.
+* `packedSourceStride`, `packedSourceWordCount` and `packedSourceBitLength`
+  collect the geometry; `packedSourceWords_of_some` is the aggregate.
+
+**Exactly one source is not size-only.** `selectSparseRelative`'s entry count is
+the number of local slots whose span forced a sparse exception — a property of the
+bit pattern, not of its length. `K1` spends its single header count on
+`longCount`. The resolution taken (`DD-20260804-022`) is the size-only capacity
+`packedSparseRelativeCapacity`, with `packedSparseRelativeEntries_le_capacity`
+proving the bound, so every **successful** read still lowers exactly. If some
+reachable query ever attempts an out-of-range sparse relative read, that is a
+genuine `K1` obstruction; it is the campaign's first concrete obstruction
+candidate and is recorded rather than assumed away.
+
+### Every stored word fits one packed cell (`INV-WORD-WIDTH` — stride clause proved)
+
+`packedProbePlan_decode` is stated for reads of at most one cell, so the per-read
+lowering could not be stated until every stride was known to fit.
+`packedSourceStride_le_cellWidth` supplies it. Three arms needed more than
+monotonicity: the final rank block width (residual arithmetic `k * k <= 2 ^ k + 3`
+plus the rank directory the payload carries), the close summary relative width
+(bounded by the last conjunct of the activity predicate itself), and the close
+interior offset width (bounded by the readiness guard — a load-bearing use of the
+guard `FG-07` requires the controller to consult).
+
+### The physical read (`FG-08` — per-read clause proved)
+
+`packedSourceRead n longCount memory source index` issues the plan and decodes it.
+`packedSourceRead_of_some` proves every successful logical read is reproduced
+exactly. The zero-width branch issues no probe at all and is where the sentinel
+words land; the positive-width branch derives containment from the successful read
+rather than assuming it, which is what rules out the degenerate reading in which
+the offset runs past the payload and truncated subtraction hides it.
 
 ## 5. Exact-type consumers
 
@@ -763,21 +845,20 @@ Open on that dependency.
 
 Specifically not done:
 
-* **`FG-07`** the closed controller. Not started; no controller definition
-  exists. The existing whole-query evaluator
-  `WholeQueryProgram.evalGlobalWordTraceWithStore` takes `shape`, and its leaves
-  take `GenericSelect.sparseExceptionSelectData shape.bpCode false`, so it cannot
-  be reused unchanged. **What that argument is used for is now settled by proof
-  rather than by reading the source** (section 6): it supplies geometry, not
-  replies. Making the leaves shape-free is therefore a `Nat`-only mirror for a
-  fixed list of scalars, the same technique the offsets already use.
-* **`FG-08`** the whole-run lowering. Only the per-read half exists: with a
-  supplied width for a general source, and with everything supplied for the BP
-  code alone. Twenty-eight sources still need a stride and a read width. There is
-  no ordered-trace theorem with multiplicity. The lowering is also stated against
-  the **flat-payload** segment universe; the executed global store numbers
-  segments 21 and 22 differently (documented in `FlatPayload.lean:280-285`), and
-  no bridge is claimed.
+* **`FG-07`** the closed controller. The definition now exists
+  (`packedWholeQueryRun`) and is proved equal to the supplied-store whole-query
+  execution at every shape. What remains is that it consumes an abstract
+  `WordRAM.ReadStore` rather than the packed memory, produces no `receipt`, and
+  does not itself sequence the header probe or the readiness guard.
+* **`FG-08`** the whole-run lowering. The per-read half is now complete for all
+  twenty-nine sources, at strides and widths derived rather than supplied. What
+  remains is the whole-run half: there is no ordered-trace theorem with
+  multiplicity, because no run's trace has been mapped through
+  `packedSourceRead`. The lowering is also still stated against the
+  **flat-payload** segment universe; the executed global store numbers segments 21
+  and 22 differently (documented in `FlatPayload.lean:280-285`), and no bridge is
+  claimed. `selectSparseRelative` lowers one-directionally, and closing that gap
+  is `FG-09`'s totality clause.
 * **`FG-09`** totality and the derived cap. Only a per-read bound of two probes
   exists. `packedProbePlan_lt_cellCount` bounds addresses by `packedCellCount n`,
   which is a host-array bound; `INV-ADDRESS-WIDTH` explicitly rejects that as a
