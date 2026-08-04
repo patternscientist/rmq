@@ -7233,3 +7233,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   comparison was required.
 - Commit proving the sparse path unreachable at unit stride: matrix untouched, so
   no frozen-cell comparison was required.
+- Commit proving the sparse relative table empty at unit stride: requirement cells
+  byte-identical to `0a18548` across all 37 requirement rows; only `FG-02`'s
+  `Evidence obtained` cell was appended to.

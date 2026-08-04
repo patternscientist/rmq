@@ -1762,6 +1762,16 @@ theorem packedNoSparseExceptionAtUnitStride :
         GenericSelect.localIsSparseException bits target slot = false :=
   packedLocalIsSparseException_false_of_unit_stride
 
+/--
+**The sparse relative table is empty at unit stride.** This is what dissolves the
+one source whose word count was not a function of the input size and the header.
+-/
+theorem packedSparseRelativeTableIsEmptyAtUnitStride :
+    forall (bits : List Bool) (target : Bool),
+      GenericSelect.localStride bits.length = 1 ->
+        GenericSelect.sparseExceptionRelativeEntries bits target = [] :=
+  packedSparseExceptionEntries_nil_of_unit_stride
+
 end Validation
 end PackedCellProbe
 end SuccinctFinal

@@ -265,6 +265,60 @@ theorem packedLocalIsSparseException_false_of_unit_stride
   unfold GenericSelect.localIsSparseException
   simp [hnot]
 
+/-! ### From "no exception" to "no entries" -/
+
+theorem packedRankPrefix_true_eq_zero_of_all_false :
+    forall (l : List Bool) (k : Nat),
+      (forall b, List.Mem b l -> b = false) ->
+        RMQ.Succinct.rankPrefix true l k = 0 := by
+  intro l
+  induction l with
+  | nil =>
+      intro k _
+      cases k with
+      | zero => rfl
+      | succ _ => rfl
+  | cons bit rest ih =>
+      intro k hall
+      cases k with
+      | zero => rfl
+      | succ k =>
+          have hbit : bit = false := hall bit List.mem_cons_self
+          have hrest : forall b, List.Mem b rest -> b = false := by
+            intro b hmem
+            exact hall b (List.mem_cons_of_mem bit hmem)
+          simp [RMQ.Succinct.rankPrefix, hbit, ih k hrest]
+
+theorem packedSparseFlagBits_allFalse_of_unit_stride
+    (bits : List Bool) (target : Bool)
+    (hstride : GenericSelect.localStride bits.length = 1) :
+    forall b, List.Mem b (GenericSelect.sparseExceptionFlagBits bits target) ->
+      b = false := by
+  intro b hmem
+  unfold GenericSelect.sparseExceptionFlagBits at hmem
+  rcases List.mem_map.mp hmem with ⟨slot, _hslot, hb⟩
+  rw [← hb]
+  exact packedLocalIsSparseException_false_of_unit_stride bits target slot hstride
+
+/--
+**The sparse relative table is empty at unit stride.** This is the statement that
+dissolves `DD-20260804-022`: the one source whose word count was not a function of
+the input size and the header has no entries at all.
+-/
+theorem packedSparseExceptionEntries_nil_of_unit_stride
+    (bits : List Bool) (target : Bool)
+    (hstride : GenericSelect.localStride bits.length = 1) :
+    GenericSelect.sparseExceptionRelativeEntries bits target = [] := by
+  have hlen := GenericSelect.sparseExceptionRelativeEntries_length bits target
+  have hzero :
+      RMQ.Succinct.rankPrefix true
+        (GenericSelect.sparseExceptionFlagBits bits target)
+        (GenericSelect.localSlotCount bits target) = 0 :=
+    packedRankPrefix_true_eq_zero_of_all_false _ _
+      (packedSparseFlagBits_allFalse_of_unit_stride bits target hstride)
+  rw [hzero, Nat.zero_mul] at hlen
+  exact List.eq_nil_of_length_eq_zero hlen
+
 end PackedCellProbe
 
 end SuccinctFinal
