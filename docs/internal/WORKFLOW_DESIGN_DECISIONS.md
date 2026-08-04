@@ -7196,3 +7196,10 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit proving the store disagreement: requirement cells byte-identical to
   `0a18548` across all 37 requirement rows; anti-vacuity unchanged; only
   `INV-GLOBAL-PHYSICAL-MACHINE`'s evidence/status pair was written.
+- Commit `282a46e` recorded the three payload objects and updated the worker
+  result report without a matching entry in this log. `design_decision_check.ps1
+  -Strict -Base HEAD~1` flagged it: the result report is a workflow-sensitive
+  path. Amending is forbidden by the commissioning contract, so the omission is
+  repaired forward by this entry rather than hidden. The matrix was untouched by
+  that commit, so no frozen-cell comparison was required; `claim_drift_scan.ps1
+  -Strict` reported 1498 hits and 0 strict failures on it.
