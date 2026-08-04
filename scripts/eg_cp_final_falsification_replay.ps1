@@ -74,6 +74,7 @@ $script:Registry = @(
      Mutation = 'alter the header count';
      Verdict = 'REJECT'; Surface = 'liveness/consumer';
      Target = @{ Kind = 'Patch';
+       ExpectFile = 'PackedCellProbe/SourceGeometry.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceGeometry.lean';
        Find  = '  | .selectLongRelative => packedLongRelativeSlots n longCount';
        Repl  = '  | .selectLongRelative => packedLongRelativeSlots n (longCount + 1)' } },
@@ -84,6 +85,7 @@ $script:Registry = @(
      Mutation = 'add or restore a semantic shape input';
      Verdict = 'REJECT'; Surface = 'exact signature';
      Target = @{ Kind = 'Patch';
+       ExpectFile = 'PackedCellProbe/PhysicalRead.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/PhysicalRead.lean';
        Find  = 'def packedSourceRead (n longCount : Nat) (memory : List (List Bool))';
        Repl  = 'def packedSourceRead (shape : CartesianShape) (n longCount : Nat) (memory : List (List Bool))' } },
@@ -94,6 +96,7 @@ $script:Registry = @(
      Mutation = 'read a logical/source store beside memory xs';
      Verdict = 'REJECT'; Surface = 'store identity';
      Target = @{ Kind = 'Patch';
+       ExpectFile = 'PackedCellProbe/PhysicalRead.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/PhysicalRead.lean';
        Find  = '    | some source => packedSourceRead n longCount memory source index';
        Repl  = '    | some source => packedSourceRead n longCount (memory.drop 1) source index' } },
@@ -107,6 +110,7 @@ $script:Registry = @(
      Mutation = 'replace derived trace length/cap evidence with a stored number or theorem-only field';
      Verdict = 'REJECT'; Surface = 'consumer';
      Target = @{ Kind = 'Patch';
+       ExpectFile = 'PackedCellProbe/Probe.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Probe.lean';
        Find  = 'def packedProbeCount (n bit width : Nat) : Nat :=
   (packedProbePlan n bit width).length';
@@ -116,6 +120,7 @@ $script:Registry = @(
      Mutation = 'mutate one crossing codec order/bit span';
      Verdict = 'REJECT'; Surface = 'exact decoded word';
      Target = @{ Kind = 'Patch';
+       ExpectFile = 'PackedCellProbe/Probe.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Probe.lean';
        Find  = '    [bit / packedCellWidth n, bit / packedCellWidth n + 1]';
        Repl  = '    [bit / packedCellWidth n + 1, bit / packedCellWidth n]' } },
@@ -123,6 +128,7 @@ $script:Registry = @(
      Mutation = 'introduce sparse-count metadata into a live offset';
      Verdict = 'REJECT'; Surface = 'K1 source factorization';
      Target = @{ Kind = 'Patch';
+       ExpectFile = 'PackedCellProbe/SourceGeometry.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceGeometry.lean';
        Find  = 'def packedSourceStride (n : Nat) :';
        Repl  = 'def packedSourceStride (n _sparseCount : Nat) :' } },
@@ -130,6 +136,7 @@ $script:Registry = @(
      Mutation = 'prove space for one payload while executing another';
      Verdict = 'REJECT'; Surface = 'public / same-object composition';
      Target = @{ Kind = 'Patch';
+       ExpectFile = 'PackedCellProbe/Payload.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Payload.lean';
        Find  = 'def packedPayloadBits (shape : CartesianShape) : List Bool :=
   (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload';
@@ -145,6 +152,7 @@ $script:Registry = @(
      Mutation = 'retain the header read but make downstream offsets independent of its value';
      Verdict = 'REJECT'; Surface = 'liveness';
      Target = @{ Kind = 'Patch';
+       ExpectFile = 'PackedCellProbe/SourceGeometry.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceGeometry.lean';
        Find  = '  | .selectLongRelative => packedLongRelativeSlots n longCount';
        Repl  = '  | .selectLongRelative => packedLongRelativeSlots n 0' } }
@@ -401,8 +409,20 @@ function Invoke-RegistryCase {
         Add-Failure "$($Entry.Id): expected REJECT at surface '$($Entry.Surface)', but the mutated candidate built"
         $script:Results.Add(@{ Id = $Entry.Id; Outcome = 'UNEXPECTED-ACCEPT' }) | Out-Null
       } else {
-        Write-Stage "$($Entry.Id): REJECT as commissioned, surface '$($Entry.Surface)'"
-        $script:Results.Add(@{ Id = $Entry.Id; Outcome = 'REJECT' }) | Out-Null
+        # A build that fails somewhere is not evidence that the NAMED surface
+        # failed. Require the diagnostic to name the expected file, so a
+        # rejection caused by unrelated breakage is not read as the commissioned
+        # verdict.
+        $expected = $Entry.Target.ExpectFile
+        $seen = $run.Diagnostic.Replace([char]92, [char]47)
+        if ($seen -notlike ('*' + $expected + '*')) {
+          Add-Failure "$($Entry.Id): rejected, but not at the named surface; expected a diagnostic naming $expected"
+          Write-Host ('REPLAY-DIAG: ' + $run.Diagnostic)
+          $script:Results.Add(@{ Id = $Entry.Id; Outcome = 'WRONG-SURFACE' }) | Out-Null
+        } else {
+          Write-Stage "$($Entry.Id): REJECT as commissioned at $expected, surface '$($Entry.Surface)'"
+          $script:Results.Add(@{ Id = $Entry.Id; Outcome = 'REJECT' }) | Out-Null
+        }
       }
     } else {
       if ($run.ExitCode -ne 0) {
