@@ -1461,6 +1461,303 @@ theorem packedMinCandidateComputation_eq
     packedMinCandidateComputation
   rw [packedSummaryComputation_eq, packedInteriorLayout_eq]
 
+/-- The local span candidate computation, with no shape argument. -/
+def packedLocalSpanCandidateComputation (n macroIdx localStart level : Nat) :
+    SuccinctSpace.FlatStoreComputation (Option (Prod Nat Nat)) :=
+  SuccinctSpace.FlatStoreComputation.bind
+    (packedInteriorReadNatOf n
+      ((packedInteriorLayout n).macroSampleCount *
+        ((packedInteriorLayout n).levelCount * (packedInteriorLayout n).macroSize))
+      (packedInteriorLayout n).offsetWidth
+      (packedInteriorOffsets n).localOffset
+      (SuccinctClose.bpLocalSparseCellSlot (packedInteriorLayout n).macroSize
+        (packedInteriorLayout n).levelCount macroIdx localStart level))
+    fun offset =>
+      match offset with
+      | some value =>
+          packedMinCandidateComputation n
+            (macroIdx * (packedInteriorLayout n).macroSize + value)
+      | none => SuccinctSpace.FlatStoreComputation.pure none
+
+theorem packedLocalSpanCandidateComputation_eq
+    (shape : CartesianShape) (macroIdx localStart level : Nat) :
+    SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation
+        shape macroIdx localStart level =
+      packedLocalSpanCandidateComputation shape.size macroIdx localStart
+        level := by
+  unfold
+    SuccinctClose.canonicalRelativeRmmMachineLocalSpanCandidateComputation
+    packedLocalSpanCandidateComputation
+  simp only [packedInteriorReadNatOf_eq,
+    SuccinctClose.bpLocalSparseOffsetEntries_length,
+    packedMinCandidateComputation_eq, packedInteriorLayout_eq,
+    packedInteriorOffsets_eq]
+  rfl
+
+/-- The global span candidate computation, with no shape argument. -/
+def packedGlobalSpanCandidateComputation (n macroStart level : Nat) :
+    SuccinctSpace.FlatStoreComputation (Option (Prod Nat Nat)) :=
+  SuccinctSpace.FlatStoreComputation.bind
+    (packedInteriorReadNatOf n
+      ((packedInteriorLayout n).globalLevelCount *
+        (packedInteriorLayout n).macroSampleCount)
+      (packedInteriorLayout n).blockAddressWidth
+      (packedInteriorOffsets n).globalBlock
+      (SuccinctClose.bpGlobalSparseCellSlot
+        (packedInteriorLayout n).macroSampleCount macroStart level))
+    fun block =>
+      match block with
+      | some value => packedMinCandidateComputation n value
+      | none => SuccinctSpace.FlatStoreComputation.pure none
+
+theorem packedGlobalSpanCandidateComputation_eq
+    (shape : CartesianShape) (macroStart level : Nat) :
+    SuccinctClose.canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+        shape macroStart level =
+      packedGlobalSpanCandidateComputation shape.size macroStart level := by
+  unfold
+    SuccinctClose.canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+    packedGlobalSpanCandidateComputation
+  simp only [packedInteriorReadNatOf_eq,
+    SuccinctClose.bpGlobalSparseBlockEntries_length,
+    packedMinCandidateComputation_eq, packedInteriorLayout_eq,
+    packedInteriorOffsets_eq]
+  rfl
+
+/-- The local two-span candidate computation, with no shape argument. -/
+def packedLocalTwoSpanCandidateComputation
+    (n macroIdx localStart count : Nat) :
+    SuccinctSpace.FlatStoreComputation (Option (Prod Nat Nat)) :=
+  SuccinctSpace.FlatStoreComputation.bind
+    (packedInteriorReadNatOf n
+      (SuccinctClose.bpSparseLevelDomain (packedInteriorLayout n).macroSize)
+      (SuccinctClose.bpSparseLevelWidth
+        (SuccinctClose.bpSparseLevelDomain (packedInteriorLayout n).macroSize))
+      (packedInteriorOffsets n).localLevel count)
+    fun cell =>
+      match cell with
+      | some value =>
+          SuccinctSpace.FlatStoreComputation.bind
+            (packedLocalSpanCandidateComputation n macroIdx localStart
+              (value /
+                SuccinctClose.bpSparseLevelDomain
+                  (packedInteriorLayout n).macroSize))
+            fun left =>
+              SuccinctSpace.FlatStoreComputation.map
+                (fun right => SuccinctClose.bpCandidateMerge? left right)
+                (packedLocalSpanCandidateComputation n macroIdx
+                  (localStart + count -
+                    value %
+                      SuccinctClose.bpSparseLevelDomain
+                        (packedInteriorLayout n).macroSize)
+                  (value /
+                    SuccinctClose.bpSparseLevelDomain
+                      (packedInteriorLayout n).macroSize))
+      | none => SuccinctSpace.FlatStoreComputation.pure none
+
+theorem packedLocalTwoSpanCandidateComputation_eq
+    (shape : CartesianShape) (macroIdx localStart count : Nat) :
+    SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+        shape macroIdx localStart count =
+      packedLocalTwoSpanCandidateComputation shape.size macroIdx localStart
+        count := by
+  unfold
+    SuccinctClose.canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+    packedLocalTwoSpanCandidateComputation
+  simp only [packedInteriorReadNatOf_eq,
+    SuccinctClose.bpSparseLevelEntries_length,
+    packedLocalSpanCandidateComputation_eq, packedInteriorLayout_eq,
+    packedInteriorOffsets_eq]
+  rfl
+
+/-- The global two-span candidate computation, with no shape argument. -/
+def packedGlobalTwoSpanCandidateComputation
+    (n macroStart macroSpanCount : Nat) :
+    SuccinctSpace.FlatStoreComputation (Option (Prod Nat Nat)) :=
+  SuccinctSpace.FlatStoreComputation.bind
+    (packedInteriorReadNatOf n
+      (SuccinctClose.bpSparseLevelDomain
+        (packedInteriorLayout n).macroSampleCount)
+      (SuccinctClose.bpSparseLevelWidth
+        (SuccinctClose.bpSparseLevelDomain
+          (packedInteriorLayout n).macroSampleCount))
+      (packedInteriorOffsets n).globalLevel macroSpanCount)
+    fun cell =>
+      match cell with
+      | some value =>
+          SuccinctSpace.FlatStoreComputation.bind
+            (packedGlobalSpanCandidateComputation n macroStart
+              (value /
+                SuccinctClose.bpSparseLevelDomain
+                  (packedInteriorLayout n).macroSampleCount))
+            fun left =>
+              SuccinctSpace.FlatStoreComputation.map
+                (fun right => SuccinctClose.bpCandidateMerge? left right)
+                (packedGlobalSpanCandidateComputation n
+                  (macroStart + macroSpanCount -
+                    value %
+                      SuccinctClose.bpSparseLevelDomain
+                        (packedInteriorLayout n).macroSampleCount)
+                  (value /
+                    SuccinctClose.bpSparseLevelDomain
+                      (packedInteriorLayout n).macroSampleCount))
+      | none => SuccinctSpace.FlatStoreComputation.pure none
+
+theorem packedGlobalTwoSpanCandidateComputation_eq
+    (shape : CartesianShape) (macroStart macroSpanCount : Nat) :
+    SuccinctClose.canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+        shape macroStart macroSpanCount =
+      packedGlobalTwoSpanCandidateComputation shape.size macroStart
+        macroSpanCount := by
+  unfold
+    SuccinctClose.canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+    packedGlobalTwoSpanCandidateComputation
+  simp only [packedInteriorReadNatOf_eq,
+    SuccinctClose.bpSparseLevelEntries_length,
+    packedGlobalSpanCandidateComputation_eq, packedInteriorLayout_eq,
+    packedInteriorOffsets_eq]
+  rfl
+
+/-- The adjacent-macro candidate computation, with no shape argument. -/
+def packedAdjacentMacroCandidateComputation
+    (n macroStart localStart rightCount : Nat) :
+    SuccinctSpace.FlatStoreComputation (Option (Prod Nat Nat)) :=
+  SuccinctSpace.FlatStoreComputation.bind
+    (packedLocalTwoSpanCandidateComputation n macroStart localStart
+      ((packedInteriorLayout n).macroSize - localStart)) fun left =>
+    SuccinctSpace.FlatStoreComputation.map
+      (fun right => SuccinctClose.bpCandidateMerge? left right)
+      (packedLocalTwoSpanCandidateComputation n (macroStart + 1) 0 rightCount)
+
+theorem packedAdjacentMacroCandidateComputation_eq
+    (shape : CartesianShape) (macroStart localStart rightCount : Nat) :
+    SuccinctClose.canonicalRelativeRmmMachineAdjacentMacroCandidateComputation
+        shape macroStart localStart rightCount =
+      packedAdjacentMacroCandidateComputation shape.size macroStart localStart
+        rightCount := by
+  unfold
+    SuccinctClose.canonicalRelativeRmmMachineAdjacentMacroCandidateComputation
+    packedAdjacentMacroCandidateComputation
+  simp only [packedLocalTwoSpanCandidateComputation_eq, packedInteriorLayout_eq]
+
+/-- The left-middle-macro candidate computation, with no shape argument. -/
+def packedLeftMiddleMacroCandidateComputation
+    (n macroStart localStart middleMacroCount : Nat) :
+    SuccinctSpace.FlatStoreComputation (Option (Prod Nat Nat)) :=
+  SuccinctSpace.FlatStoreComputation.bind
+    (packedLocalTwoSpanCandidateComputation n macroStart localStart
+      ((packedInteriorLayout n).macroSize - localStart)) fun left =>
+    SuccinctSpace.FlatStoreComputation.map
+      (fun middle => SuccinctClose.bpCandidateMerge? left middle)
+      (packedGlobalTwoSpanCandidateComputation n (macroStart + 1)
+        middleMacroCount)
+
+theorem packedLeftMiddleMacroCandidateComputation_eq
+    (shape : CartesianShape) (macroStart localStart middleMacroCount : Nat) :
+    SuccinctClose.canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation
+        shape macroStart localStart middleMacroCount =
+      packedLeftMiddleMacroCandidateComputation shape.size macroStart localStart
+        middleMacroCount := by
+  unfold
+    SuccinctClose.canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation
+    packedLeftMiddleMacroCandidateComputation
+  simp only [packedLocalTwoSpanCandidateComputation_eq,
+    packedGlobalTwoSpanCandidateComputation_eq, packedInteriorLayout_eq]
+
+/-- The cross-macro candidate computation, with no shape argument. -/
+def packedCrossMacroCandidateComputation
+    (n macroStart localStart middleMacroCount rightCount : Nat) :
+    SuccinctSpace.FlatStoreComputation (Option (Prod Nat Nat)) :=
+  SuccinctSpace.FlatStoreComputation.bind
+    (packedLocalTwoSpanCandidateComputation n macroStart localStart
+      ((packedInteriorLayout n).macroSize - localStart)) fun left =>
+    SuccinctSpace.FlatStoreComputation.bind
+      (packedGlobalTwoSpanCandidateComputation n (macroStart + 1)
+        middleMacroCount) fun middle =>
+      SuccinctSpace.FlatStoreComputation.map
+        (fun right => SuccinctClose.bpCandidateMerge3? left middle right)
+        (packedLocalTwoSpanCandidateComputation n
+          (macroStart + 1 + middleMacroCount) 0 rightCount)
+
+theorem packedCrossMacroCandidateComputation_eq
+    (shape : CartesianShape)
+    (macroStart localStart middleMacroCount rightCount : Nat) :
+    SuccinctClose.canonicalRelativeRmmMachineCrossMacroCandidateComputation
+        shape macroStart localStart middleMacroCount rightCount =
+      packedCrossMacroCandidateComputation shape.size macroStart localStart
+        middleMacroCount rightCount := by
+  unfold
+    SuccinctClose.canonicalRelativeRmmMachineCrossMacroCandidateComputation
+    packedCrossMacroCandidateComputation
+  simp only [packedLocalTwoSpanCandidateComputation_eq,
+    packedGlobalTwoSpanCandidateComputation_eq, packedInteriorLayout_eq]
+
+/--
+**The interior range-min computation, with no shape argument.**
+
+The top of the interior tower. Every branch condition is a layout field or an
+arithmetic function of the two block arguments.
+-/
+def packedInteriorRangeMinComputation (n startBlock count : Nat) :
+    SuccinctSpace.FlatStoreComputation (Option (Prod Nat Nat)) :=
+  if count = 0 then
+    SuccinctSpace.FlatStoreComputation.pure none
+  else if count <=
+      (packedInteriorLayout n).macroSize -
+        startBlock % (packedInteriorLayout n).macroSize then
+    packedLocalTwoSpanCandidateComputation n
+      (startBlock / (packedInteriorLayout n).macroSize)
+      (startBlock % (packedInteriorLayout n).macroSize) count
+  else if
+      (count -
+          ((packedInteriorLayout n).macroSize -
+            startBlock % (packedInteriorLayout n).macroSize)) /
+        (packedInteriorLayout n).macroSize = 0 then
+    packedAdjacentMacroCandidateComputation n
+      (startBlock / (packedInteriorLayout n).macroSize)
+      (startBlock % (packedInteriorLayout n).macroSize)
+      ((count -
+          ((packedInteriorLayout n).macroSize -
+            startBlock % (packedInteriorLayout n).macroSize)) %
+        (packedInteriorLayout n).macroSize)
+  else if
+      (count -
+          ((packedInteriorLayout n).macroSize -
+            startBlock % (packedInteriorLayout n).macroSize)) %
+        (packedInteriorLayout n).macroSize = 0 then
+    packedLeftMiddleMacroCandidateComputation n
+      (startBlock / (packedInteriorLayout n).macroSize)
+      (startBlock % (packedInteriorLayout n).macroSize)
+      ((count -
+          ((packedInteriorLayout n).macroSize -
+            startBlock % (packedInteriorLayout n).macroSize)) /
+        (packedInteriorLayout n).macroSize)
+  else
+    packedCrossMacroCandidateComputation n
+      (startBlock / (packedInteriorLayout n).macroSize)
+      (startBlock % (packedInteriorLayout n).macroSize)
+      ((count -
+          ((packedInteriorLayout n).macroSize -
+            startBlock % (packedInteriorLayout n).macroSize)) /
+        (packedInteriorLayout n).macroSize)
+      ((count -
+          ((packedInteriorLayout n).macroSize -
+            startBlock % (packedInteriorLayout n).macroSize)) %
+        (packedInteriorLayout n).macroSize)
+
+/-- **The interior range-min computation is a function of the input size.** -/
+theorem packedInteriorRangeMinComputation_eq
+    (shape : CartesianShape) (startBlock count : Nat) :
+    SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation shape
+        startBlock count =
+      packedInteriorRangeMinComputation shape.size startBlock count := by
+  unfold SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation
+    packedInteriorRangeMinComputation
+  simp only [packedLocalTwoSpanCandidateComputation_eq,
+    packedAdjacentMacroCandidateComputation_eq,
+    packedLeftMiddleMacroCandidateComputation_eq,
+    packedCrossMacroCandidateComputation_eq, packedInteriorLayout_eq]
+
 /-! #### The endpoint-fringe candidate readers
 
 The cross-block branch's two endpoint readers use exactly three shape-derived

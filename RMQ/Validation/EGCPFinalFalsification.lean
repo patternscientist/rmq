@@ -935,6 +935,29 @@ theorem packedInteriorReadIsFiveNaturals :
         packedInteriorReadNatOf shape.size entries.length width base i :=
   fun shape table base i => packedInteriorReadNatOf_eq shape table base i
 
+/-! #### The interior computation tower is shape-free
+
+All ten interior `FlatStoreComputation` definitions now have shape-free mirrors,
+from the summary read at the bottom to the range-min dispatcher at the top.
+-/
+
+/-- Pins the top interior computation's signature: three naturals. -/
+def packedInteriorRangeMinComputationSignature :
+    Nat -> Nat -> Nat ->
+      SuccinctSpace.FlatStoreComputation (Option (Prod Nat Nat)) :=
+  packedInteriorRangeMinComputation
+
+/--
+Pins that the interior range-min computation -- the top of the interior tower --
+is a function of the input size and the two block arguments.
+-/
+theorem packedInteriorRangeMinComputationIsSizeOnly :
+    forall (shape : CartesianShape) (startBlock count : Nat),
+      SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation shape
+          startBlock count =
+        packedInteriorRangeMinComputation shape.size startBlock count :=
+  packedInteriorRangeMinComputation_eq
+
 /-- Pins the interior offsets mirror's signature. -/
 def packedInteriorOffsetsSignature :
     Nat -> SuccinctClose.CanonicalRelativeRmmInteriorComponentOffsets :=

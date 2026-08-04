@@ -7080,3 +7080,57 @@ call to a computation already mirrored plus two layout fields. Its proof is two
 rewrites.
 
 The remaining eight are one or the other of these.
+
+## DD-20260804-017: the interior computation tower is shape-free
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Completes the interior, and with it
+every computation in the close/LCA tower. Feeds `EG-CP` row `FG-07`.
+
+Date: 2026-08-04
+
+Context:
+
+`DD-20260804-016` reduced the interior read to five naturals and landed the first
+two of the ten interior computations, establishing two templates: a *read-bearing*
+one whose proof is `unfold`, one `simp only` over the read equation plus the
+relevant entry-count lemmas and the layout/offsets mirrors, then `rfl`; and a
+*composing* one whose proof is a couple of rewrites over already-mirrored
+computations.
+
+Decision and result:
+
+The remaining eight followed both templates without deviation:
+
+| Computation | Template | Entry count and width |
+| --- | --- | --- |
+| local span candidate | read-bearing | `macroSampleCount * (levelCount * macroSize)` at `offsetWidth` |
+| global span candidate | read-bearing | `globalLevelCount * macroSampleCount` at `blockAddressWidth` |
+| local two-span candidate | read-bearing | `bpSparseLevelDomain macroSize` at its level width |
+| global two-span candidate | read-bearing | `bpSparseLevelDomain macroSampleCount` at its level width |
+| adjacent macro | composing | -- |
+| left-middle macro | composing | -- |
+| cross macro | composing | -- |
+| interior range-min | composing (four-way branch) | -- |
+
+Every entry count and width is one the word-count mirrors of `DD-20260804-015`
+already use, so the tower introduced no new geometry.
+
+`packedInteriorRangeMinComputation` is the top: a four-way branch on `count = 0`,
+`count <= macroSize - localStart`, and whether the middle-macro and right counts
+vanish. Every branch condition is a layout field or arithmetic on the two block
+arguments, so the dispatcher itself needs nothing but `n`.
+
+Consequences and evidence:
+
+- Pinned by `packedInteriorRangeMinComputationIsSizeOnly` and
+  `packedInteriorRangeMinComputationSignature`.
+- **Every computation in the close/LCA tower now has a shape-free mirror.** The
+  select side was closed by `DD-20260804-010`, the same-block branch by
+  `DD-20260804-012`, the endpoint-fringe readers by its addendum, and the
+  interior here.
+- What remains on the close side is the store-parameterized wrapper
+  (`concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore`),
+  the cross-block join, and the `lcaClose` dispatcher -- all pass-throughs over
+  mirrors that now exist.
+- `FG-07` remains Open: no top-level controller definition exists.
