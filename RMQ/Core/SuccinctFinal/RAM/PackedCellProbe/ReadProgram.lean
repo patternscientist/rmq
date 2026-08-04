@@ -264,6 +264,49 @@ def packedRelativeOffsetReadSignature :
   GenericSelect.bpRelativeOffsetReadTraceResultWithStore
 
 /--
+**The sparse-directory read is determined by four scalars.**
+
+Its body is the chunked rank seed followed by one relative-offset read. The rank
+seed is scalar-determined by the theorem above; the relative-offset read takes no
+record; and the only other use of the directory is `localStride`. So four scalars
+suffice, over directories with unrelated bit strings, targets and overheads.
+
+This is the fifth and last helper reached by
+`bpChunkedSelectTraceResultWithStore`.
+-/
+theorem packedSparseDirectoryRead_scalar_determined
+    {bitsLeft bitsRight : List Bool} {targetLeft targetRight : Bool}
+    {superLeft blockLeft superRight blockRight : Nat}
+    (directoryLeft :
+      GenericSelect.SparseExceptionDirectory
+        bitsLeft targetLeft superLeft blockLeft)
+    (directoryRight :
+      GenericSelect.SparseExceptionDirectory
+        bitsRight targetRight superRight blockRight)
+    (layout : GenericSelect.SparseExceptionDirectoryTraceSegmentBases)
+    (chunkSegment : Nat) (store : WordRAM.ReadStore) (chunkBits : Nat)
+    (base localSlot localOccurrence : Nat)
+    (hquery :
+      directoryLeft.rankData.queryPos localSlot =
+        directoryRight.rankData.queryPos localSlot)
+    (hwordSize :
+      directoryLeft.rankData.wordSize = directoryRight.rankData.wordSize)
+    (hblocks :
+      directoryLeft.rankData.blocksPerSuper =
+        directoryRight.rankData.blocksPerSuper)
+    (hlocalStride : directoryLeft.localStride = directoryRight.localStride) :
+    directoryLeft.bpChunkedReadTraceResultWithStore layout chunkSegment store
+        chunkBits base localSlot localOccurrence =
+      directoryRight.bpChunkedReadTraceResultWithStore layout chunkSegment store
+        chunkBits base localSlot localOccurrence := by
+  unfold
+    GenericSelect.SparseExceptionDirectory.bpChunkedReadTraceResultWithStore
+  rw [packedRankRead_scalar_determined directoryLeft.rankData
+      directoryRight.rankData store layout.rankBase (layout.rankBase + 1)
+      (layout.rankBase + 2) chunkSegment chunkBits true localSlot hquery
+      hwordSize hblocks, hlocalStride]
+
+/--
 **The queried occurrence carries no record content.**
 
 The two records share no parameter: different bit strings, different targets,

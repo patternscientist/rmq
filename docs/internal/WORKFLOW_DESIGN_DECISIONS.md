@@ -7097,3 +7097,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   frozen-cell comparison was required.
 - Commit covering the fourth select read helper: matrix untouched, so no
   frozen-cell comparison was required.
+- Commit covering the fifth select read helper and choosing the controller
+  construction route: matrix untouched, so no frozen-cell comparison was
+  required.

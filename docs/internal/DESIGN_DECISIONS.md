@@ -6215,3 +6215,75 @@ which has not been examined, and then an assembly theorem carrying one hypothesi
 per scalar. Neither is claimed.
 
 Pinned by `packedRankReadIsDeterminedByThreeScalars`.
+
+## DD-20260804-008: build the controller through a Nat-only geometry record, not a congruence between dependent records
+
+Status: Worker decision recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Directs how the `FG-07` controller
+should be constructed, based on an obstacle found while trying to assemble the
+select leaf from its helper results.
+
+Date: 2026-08-04
+
+Context:
+
+All five helpers that `bpChunkedSelectTraceResultWithStore` uses to reach the
+supplied store are now accounted for:
+
+| Helper | Result |
+| --- | --- |
+| four-field entry-table read | content-free |
+| dense two-word select read | content-free at a fixed word size |
+| relative-offset read | takes no record at all |
+| two-level rank read | determined by `queryPos pos`, `wordSize`, `blocksPerSuper` |
+| sparse-directory read | determined by those three plus `localStride` |
+
+The obvious next step is an assembly theorem: two `SparseExceptionSelectData`
+records agreeing on the scalar list produce the same leaf result. That step does
+not go through cleanly, and the reason is worth recording rather than
+rediscovering.
+
+`data.bitWords` has type `BoundedPayloadWordStore bits data.wordSize`. Its word
+size is a **type index** carrying the record's own field. The content-free
+theorem for the dense two-word read requires both bit stores at the *same* index.
+Given only a propositional `dataLeft.wordSize = dataRight.wordSize` between two
+distinct records, closing that gap requires transporting a dependent type along
+an equation between two projections, neither of which is a local variable, so
+neither `subst` nor a plain `rw` applies. The same pattern recurs wherever a
+geometry scalar appears as a type index rather than as a value.
+
+Decision:
+
+Do not pursue the congruence-between-records route for the controller. Build the
+controller as a definition over a `Nat`-only geometry record -- the mirrors
+already proved size-only (`packedSelectWordSize`, `packedSelectSuperStride`,
+`packedSelectLocalStride`, `packedSelectLocalSlotsPerSuper`) plus the decoded
+`longCount` -- and relate it to the existing leaf by instantiating the leaf at
+the canonical shape, not by comparing two arbitrary records.
+
+Rationale:
+
+A congruence between two dependently-indexed records fights the elaborator at
+every scalar that appears as an index, and it would not produce an executable
+definition even if it succeeded -- which is the same objection `DD-20260802-001`
+raised against congruences generally. The `Nat`-only record has neither problem:
+its fields are values, so no transport arises, and it is something a controller
+can hold.
+
+The helper results are not wasted by this decision. They are what makes the
+`Nat`-only record adequate: they show the leaf reads the supplied store and
+consults its record only for the scalars the record would carry.
+
+Consequences and evidence:
+
+- The five helper theorems stand as recorded, pinned by
+  `packedSelectEntryReadIsDeterminedByTheStore`,
+  `packedDenseTwoWordSelectReadIsDeterminedByTheStore`,
+  `packedRelativeOffsetReadSignaturePin`,
+  `packedRankReadIsDeterminedByThreeScalars` and
+  `packedSparseDirectoryReadIsDeterminedByFourScalars`.
+- The rank-side scalars `queryPos`, `wordSize` and `blocksPerSuper` of
+  `longFlagRankData` and of `sparseDirectory.rankData` are **not** yet mirrored
+  as size-only functions. They are the next mirrors the `Nat`-only record needs.
+- No controller definition exists and `FG-07` remains Open. This entry chooses a
+  construction route; it does not walk it.

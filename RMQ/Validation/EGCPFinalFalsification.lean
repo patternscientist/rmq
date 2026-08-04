@@ -663,6 +663,38 @@ theorem packedRankReadIsDeterminedByThreeScalars :
       blockSegment wordSegment chunkSegment chunkBits target pos hquery
       hwordSize hblocks
 
+/--
+Pins that the sparse-directory read is determined by four scalars, over
+directories with unrelated bit strings, targets and overheads.
+-/
+theorem packedSparseDirectoryReadIsDeterminedByFourScalars :
+    forall {bitsLeft bitsRight : List Bool} {targetLeft targetRight : Bool}
+      {superLeft blockLeft superRight blockRight : Nat}
+      (directoryLeft :
+        GenericSelect.SparseExceptionDirectory
+          bitsLeft targetLeft superLeft blockLeft)
+      (directoryRight :
+        GenericSelect.SparseExceptionDirectory
+          bitsRight targetRight superRight blockRight)
+      (layout : GenericSelect.SparseExceptionDirectoryTraceSegmentBases)
+      (chunkSegment : Nat) (store : WordRAM.ReadStore) (chunkBits : Nat)
+      (base localSlot localOccurrence : Nat),
+      directoryLeft.rankData.queryPos localSlot =
+          directoryRight.rankData.queryPos localSlot ->
+        directoryLeft.rankData.wordSize = directoryRight.rankData.wordSize ->
+          directoryLeft.rankData.blocksPerSuper =
+              directoryRight.rankData.blocksPerSuper ->
+            directoryLeft.localStride = directoryRight.localStride ->
+              directoryLeft.bpChunkedReadTraceResultWithStore layout
+                  chunkSegment store chunkBits base localSlot localOccurrence =
+                directoryRight.bpChunkedReadTraceResultWithStore layout
+                  chunkSegment store chunkBits base localSlot localOccurrence :=
+  fun directoryLeft directoryRight layout chunkSegment store chunkBits base
+      localSlot localOccurrence hquery hwordSize hblocks hlocalStride =>
+    packedSparseDirectoryRead_scalar_determined directoryLeft directoryRight
+      layout chunkSegment store chunkBits base localSlot localOccurrence hquery
+      hwordSize hblocks hlocalStride
+
 /-- Pins that the relative-offset read takes a store and three naturals only. -/
 def packedRelativeOffsetReadSignaturePin :
     WordRAM.ReadStore -> Nat -> Nat -> Nat ->

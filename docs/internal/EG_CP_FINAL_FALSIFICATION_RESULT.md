@@ -456,6 +456,7 @@ helpers:
 | dense two-word select read | content-free at a fixed word size (`packedDenseTwoWordSelectRead_content_free`) |
 | relative-offset read | takes no record at all; type is `ReadStore -> Nat -> Nat -> Nat -> TraceResult (Option Nat)` |
 | two-level rank read | determined by `queryPos pos`, `wordSize`, `blocksPerSuper` (`packedRankRead_scalar_determined`) |
+| sparse-directory read | determined by those three plus `localStride` (`packedSparseDirectoryRead_scalar_determined`) |
 
 The dense two-word case is the informative one among the content-free three: the
 two bit stores are over *unrelated* bit strings and share only the word size,
@@ -467,10 +468,36 @@ scalars above. Two records over unrelated bit strings, with unrelated overheads
 and unrelated query costs, agree whenever those three agree. That is the property
 that matters: it consults the record for scalars, not for data.
 
-What remains before the select leaf itself can be stated scalar-determined is the
-sparse-directory helper `SparseExceptionDirectory.bpChunkedReadTraceResultWithStore`,
-which has not been examined, and then an assembly theorem carrying one hypothesis
-per scalar. Neither is claimed.
+### Why the assembly theorem was abandoned, and what replaces it
+
+The obvious next step is an assembly theorem: two `SparseExceptionSelectData`
+records agreeing on the scalar list produce the same leaf result. **It does not
+go through, and the reason is structural rather than a proof-engineering
+nuisance.**
+
+`data.bitWords` has type `BoundedPayloadWordStore bits data.wordSize`. Its word
+size is a *type index* carrying the record's own field, and the content-free
+theorem for the dense two-word read needs both stores at the same index. From a
+propositional `dataLeft.wordSize = dataRight.wordSize` between two distinct
+records, closing that gap means transporting a dependent type along an equation
+between two projections, neither of which is a local variable — so neither
+`subst` nor a plain `rw` applies. The pattern recurs at every geometry scalar that
+appears as an index rather than a value.
+
+`DD-20260804-008` records the conclusion: **do not build the controller as a
+congruence between dependently-indexed records.** Build it as a definition over a
+`Nat`-only geometry record — the mirrors already proved size-only, plus the
+decoded `longCount` — and relate it to the existing leaf by instantiating at the
+canonical shape, not by comparing two arbitrary records. That route has neither
+problem: the record's fields are values, so no transport arises, and it is
+something a controller can actually hold.
+
+The five helper theorems are not wasted by that decision; they are what makes the
+`Nat`-only record adequate, because they show the leaf reads the supplied store
+and consults its record only for the scalars such a record would carry.
+
+Not yet mirrored, and needed by that record: the `queryPos`, `wordSize` and
+`blocksPerSuper` of `longFlagRankData` and of `sparseDirectory.rankData`.
 
 Still open: no controller definition exists; the close and LCA leaves have not
 been examined at all; and `SuccinctClose.bpFringeChunkBits shape.bpCode.length`
