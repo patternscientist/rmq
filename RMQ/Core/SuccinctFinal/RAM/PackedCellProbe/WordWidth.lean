@@ -306,6 +306,49 @@ theorem packedSourceStride_le_cellWidth (n : Nat)
   | closeFiniteSmallInteriorArg => exact absurd hcounted (by simp [PackedSourceCounted])
   | closeFiniteSmallSameBlock => exact absurd hcounted (by simp [PackedSourceCounted])
 
+/-! ## Addresses fit the modeled machine word
+
+`INV-ADDRESS-WIDTH` rejects a host-array bound: `packedProbePlan_lt_cellCount`
+bounds an issued address by `packedCellCount n`, which says the address indexes an
+allocated cell, not that it is representable in one modeled word. The two are
+related by the cell width's own definition -- it is `machineWordBits` of the
+payload length plus two -- and the gap is one application of `Nat.log2_lt`.
+-/
+
+theorem packedCellCount_lt_two_pow_cellWidth (n : Nat) :
+    packedCellCount n < 2 ^ packedCellWidth n := by
+  have hw : 0 < packedCellWidth n := packedCellWidth_pos n
+  have hceil :
+      GenericSelect.selectCeilDiv (packedPayloadLength n)
+          (packedCellWidth n) <= packedPayloadLength n := by
+    by_cases hp : packedPayloadLength n = 0
+    · rw [hp]
+      unfold GenericSelect.selectCeilDiv
+      have hzero :
+          (0 + packedCellWidth n - 1) / packedCellWidth n = 0 :=
+        Nat.div_eq_of_lt (by omega)
+      omega
+    · exact
+        GenericSelect.selectCeilDiv_le_self_of_pos (by omega) hw
+  have hlog : packedPayloadLength n + 2 < 2 ^ packedCellWidth n := by
+    unfold packedCellWidth SuccinctRank.machineWordBits
+    exact (Nat.log2_lt (by omega)).mp (Nat.lt_succ_self _)
+  unfold packedCellCount
+  omega
+
+/--
+**Every issued probe address is representable in one modeled machine word.**
+Not merely below the host array's length.
+-/
+theorem packedProbeAddress_lt_two_pow_cellWidth
+    {n bit width addr : Nat}
+    (hfit : bit + width <= packedAllocatedBits n)
+    (hmem : addr ∈ packedProbePlan n bit width) :
+    addr < 2 ^ packedCellWidth n := by
+  have hcell := packedProbePlan_lt_cellCount hfit hmem
+  have hcount := packedCellCount_lt_two_pow_cellWidth n
+  omega
+
 end PackedCellProbe
 
 end SuccinctFinal

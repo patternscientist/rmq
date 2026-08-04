@@ -1620,6 +1620,25 @@ theorem packedBackedStoreAgreesAwayFromTheSparseTable :
             segment index :=
   packedBackedStore_eq_readWord
 
+/-! ## Addresses fit the modeled machine word (`INV-ADDRESS-WIDTH`) -/
+
+/--
+Every issued probe address is representable in one modeled machine word, not
+merely below the host array's length -- which is the substitution the row
+rejects.
+-/
+theorem packedIssuedAddressesAreMachineRepresentable :
+    forall {n bit width addr : Nat},
+      bit + width <= packedAllocatedBits n ->
+        addr ∈ packedProbePlan n bit width ->
+          addr < 2 ^ packedCellWidth n :=
+  packedProbeAddress_lt_two_pow_cellWidth
+
+/-- The allocated-cell count itself fits the modeled word. -/
+theorem packedCellCountIsMachineRepresentable :
+    forall n : Nat, packedCellCount n < 2 ^ packedCellWidth n :=
+  packedCellCount_lt_two_pow_cellWidth
+
 end Validation
 end PackedCellProbe
 end SuccinctFinal

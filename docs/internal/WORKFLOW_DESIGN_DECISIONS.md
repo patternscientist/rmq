@@ -7175,3 +7175,7 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   to `0a18548` across all 37 requirement rows; anti-vacuity unchanged; only the
   `Evidence obtained` and `Status / residual gap` cells of `FG-01`, `FG-08` and
   `INV-GLOBAL-PHYSICAL-MACHINE` were written.
+- Commit proving addresses fit the modeled word: requirement cells byte-identical
+  to `0a18548` across all 37 requirement rows; anti-vacuity unchanged; only the
+  `Evidence obtained` and `Status / residual gap` cells of `INV-ADDRESS-WIDTH` and
+  `FG-09` were written.

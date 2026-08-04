@@ -7736,3 +7736,37 @@ Consequences:
   directories. If one does, the lowering extends and the campaign continues. If a
   checked theorem shows none can, that is a result about the close route, and the
   owner should be told before any further construction work is spent.
+
+## DD-20260804-028: addresses fit the modeled word, not just the host array
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`.
+
+Date: 2026-08-04
+
+`INV-ADDRESS-WIDTH` explicitly rejects a host-array bound:
+`packedProbePlan_lt_cellCount` says an issued address indexes an *allocated cell*,
+which is not the same as being representable in one modeled machine word. The two
+are related by the cell width's own definition -- `packedCellWidth n` is
+`machineWordBits (packedPayloadLength n + 2)` -- and the gap closes with one
+application of `Nat.log2_lt`:
+
+```
+packedCellCount_lt_two_pow_cellWidth :
+  packedCellCount n < 2 ^ packedCellWidth n
+packedProbeAddress_lt_two_pow_cellWidth :
+  bit + width <= packedAllocatedBits n -> addr ∈ packedProbePlan n bit width ->
+    addr < 2 ^ packedCellWidth n
+```
+
+The `+ 2` in the width is what makes this work at every size: the count is
+`1 + ceil(P / w)`, at most `1 + P`, and `P + 2 < 2 ^ machineWordBits (P + 2)`.
+Without the `+ 2` the singleton cases would need separate treatment.
+
+Pinned by `packedIssuedAddressesAreMachineRepresentable` and
+`packedCellCountIsMachineRepresentable`.
+
+Chosen now because it is independent of `DD-20260804-027`: the executed-universe
+gap blocks the whole-run clauses of `FG-08`, `FG-10` and `FG-11`, but not the
+width and address invariants, which are properties of the packed representation
+alone.
