@@ -7239,3 +7239,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit showing the excluded source answers nothing: requirement cells
   byte-identical to `0a18548` across all 37 requirement rows; only
   `INV-STORE-AGREEMENT`'s evidence/status pair was written.
+- Commit landing the re-target's first increment: matrix untouched, so no
+  frozen-cell comparison was required.

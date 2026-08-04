@@ -8492,3 +8492,50 @@ Stated with its limit: above `2 ^ 96` the stride exceeds one and the path become
 reachable in principle. Every claim above is therefore conditional on
 `localStride = 1`, which should appear as a hypothesis rather than be silently
 assumed -- the same discipline `DD-20260804-035` arrived at the hard way.
+
+## DD-20260804-042: the re-target's first increment -- the identity, proved
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. First step of `DD-20260804-038`.
+
+Date: 2026-08-04
+
+`PackedCellProbe/ReviewerPayload.lean` names the object the accepted semantics
+consumes and proves `FG-01`'s identity clause against it:
+
+```
+packedReviewerPayloadBits shape := concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape
+
+packedReviewerPayloadBits_eq_canonical    : = the canonical object          (rfl)
+packedReviewerPayloadBits_eq_buildPayload : = SuccinctClassic.buildPayload xs (rfl)
+packedReviewerPayloadBits_length_le       : <= 2 * n + canonicalReviewerOverhead n
+packedReviewerOverhead_littleO            : LittleOLinear that overhead
+```
+
+Both identities are `rfl` at the existing definition site, in both the
+shape-facing and the `List Int`-facing direction. The second is the one that
+matters: `buildPayload` is the advertised payload of
+`listInt_two_n_plus_o_constant_query_profile` and of the strengthened execution
+story, so this is an identity to the object the *public claim* is about, not to a
+re-derived copy. That is exactly what `FG-01`'s evidence clause asks and what
+`M11-SIBLING-PAYLOAD` exists to check.
+
+`packedReviewerPayload_backs_executedCloseSegments` records the payoff in one
+statement: the executed store's segments `20`, `21` and `22` are this payload's
+close component and its two chunk tables -- the three objects the flat payload
+lacked in `DD-20260804-027`. Re-targeting removes that deficit rather than
+relocating it.
+
+The space clause keeps `FG-06`'s shape exactly: a `<= 2 * n + overhead` bound with
+a `LittleOLinear` residual, both pre-existing.
+
+What is **not** done, and must not be read into this:
+
+- `packedMemory` still serializes the old object. This module names the new
+  target and proves the identity; the header, cell, probe, geometry and store
+  layers have not been re-pointed at it.
+- The eighteen live access sources transfer, but the close half needs seven new
+  word geometries -- five interior tables and two chunk tables -- before the
+  per-read lowering applies to the new payload.
+- Until `packedMemory` moves, `FG-06`'s bound is still proved over the old object
+  and the candidate would still fail `M11`. The re-target is begun, not finished.

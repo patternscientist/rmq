@@ -10,6 +10,7 @@ import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.SourceGeometry
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.WordWidth
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.PhysicalRead
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Boundaries
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerPayload
 
 /-!
 # Exact-type consumers for the EG-CP packed cell-probe candidate
@@ -1783,6 +1784,28 @@ theorem packedSparseRelativeSourceAnswersNothingAtUnitStride :
         (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
           .selectSparseRelative)[index]? = none :=
   packedSparseRelativeWords_none_of_unit_stride
+
+/-! ## The payload the accepted semantics consumes (`FG-01` re-target) -/
+
+/-- The identity against the object the public `List Int` claim is stated about. -/
+theorem packedReviewerPayloadIsTheAdvertisedPayload :
+    forall xs : List Int,
+      packedReviewerPayloadBits (SuccinctClassic.cartesianShape xs) =
+        SuccinctClassic.buildPayload xs :=
+  packedReviewerPayloadBits_eq_buildPayload
+
+/-- Its space clause and residual, preserving `FG-06`'s shape. -/
+theorem packedReviewerPayloadSpaceBound :
+    forall {n : Nat} {shape : Cartesian.CartesianShape},
+      List.Mem shape (Cartesian.shapesOfSize n) ->
+        (packedReviewerPayloadBits shape).length <=
+          2 * n + concreteBPNativeSuccinctRMQCanonicalReviewerOverhead n :=
+  packedReviewerPayloadBits_length_le
+
+theorem packedReviewerOverheadIsLittleOLinear :
+    SuccinctSpace.LittleOLinear
+      concreteBPNativeSuccinctRMQCanonicalReviewerOverhead :=
+  packedReviewerOverhead_littleO
 
 end Validation
 end PackedCellProbe
