@@ -135,6 +135,62 @@ theorem packedMemory_cell_zero (shape : CartesianShape) :
   rw [← hlen]
   simp
 
+/-! ### Round trip -/
+
+/--
+Chunking a bit string whose length is an exact multiple of the width, then
+concatenating the chunks, recovers it.
+-/
+private theorem chunk_flatten (w : Nat) :
+    forall (k : Nat) (bs : List Bool), bs.length = k * w ->
+      ((List.range k).map fun i => (bs.drop (i * w)).take w).flatten = bs := by
+  intro k
+  induction k with
+  | zero =>
+      intro bs hbs
+      simp only [Nat.zero_mul] at hbs
+      simp [List.eq_nil_of_length_eq_zero hbs]
+  | succ k ih =>
+      intro bs hbs
+      have hdrop : (bs.drop w).length = k * w := by
+        rw [List.length_drop, hbs, Nat.succ_mul]
+        omega
+      have htail :
+          ((List.range k).map fun i => (bs.drop ((i + 1) * w)).take w) =
+            ((List.range k).map fun i => ((bs.drop w).drop (i * w)).take w) := by
+        apply List.map_congr_left
+        intro i _
+        rw [List.drop_drop, Nat.add_mul, Nat.one_mul, Nat.add_comm]
+      rw [List.range_succ_eq_map]
+      simp only [List.map_cons, List.map_map, List.flatten_cons, Function.comp_def,
+        Nat.zero_mul, List.drop_zero]
+      rw [htail, ih (bs.drop w) hdrop, List.take_append_drop]
+
+/--
+**The memory round trip.** Concatenating the allocated cells recovers exactly the
+padded bit string: the serialized bits followed by the counted final padding.
+
+Nothing is lost and nothing is invented, so the cell array and the bit string are
+two views of one object.
+-/
+theorem packedMemory_flatten (shape : CartesianShape) :
+    (packedMemory shape).flatten = packedPaddedBits shape := by
+  refine chunk_flatten (packedCellWidth shape.size) (packedCellCount shape.size)
+    (packedPaddedBits shape) ?_
+  rw [packedPaddedBits_length]
+  rfl
+
+/--
+The serialized bits are a prefix of the flattened memory, so the header and the
+whole canonical payload are recoverable from the cells alone.
+-/
+theorem packedMemory_flatten_take (shape : CartesianShape) :
+    (packedMemory shape).flatten.take (packedSerializedBits shape).length =
+      packedSerializedBits shape := by
+  rw [packedMemory_flatten]
+  unfold packedPaddedBits
+  simp
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ

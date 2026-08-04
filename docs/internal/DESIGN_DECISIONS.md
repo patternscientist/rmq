@@ -5590,3 +5590,13 @@ payload starts at cell one uniformly and no header field straddles a boundary).
 Still open in this row: the join round trip, the slice/unpack behaviour for a span
 crossing a cell boundary, and the theorem that all execution reads target this one
 object. The last of those needs a controller and cannot be stated yet.
+
+`FG-05` round trip (2026-08-04): `packedMemory_flatten` proves that concatenating
+the allocated cells recovers the padded bit string exactly, via a general
+`chunk_flatten` lemma for any width and any bit string whose length is an exact
+multiple of it. `packedMemory_flatten_take` recovers the serialized prefix, so the
+header and the whole canonical payload are readable from the cells alone.
+
+The general lemma is stated over an arbitrary width rather than specialised to
+`packedCellWidth`, so it also covers the degenerate widths at small sizes and does
+not quietly assume a positive or byte-aligned cell.
