@@ -881,6 +881,56 @@ theorem packedFringeChunkBits_eq (shape : CartesianShape) :
   unfold packedFringeChunkBits
   rw [CartesianShape.bpCode_length]
 
+/-! #### The same-block seeded reader
+
+Its shape uses are the fringe chunk width, the local-BP window base, and the
+window reader itself. The first two are already mirrored size-only, so the
+record-free version takes the window trace as a supplied argument -- the same
+pattern the rank seed used.
+-/
+
+/-- The same-block seeded close reader with no shape argument. -/
+def packedSameBlockCloseSeededRead
+    (store : WordRAM.ReadStore) (fringeSegment : Nat)
+    (windowBits : WordRAM.TraceResult (List Bool))
+    (n blockSize leftClose rightClose seed : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.bind windowBits
+    (fun window =>
+      WordRAM.TraceResult.map
+        (fun st =>
+          SuccinctClose.bpCandidateClose?
+            (SuccinctClose.bpFringeCandGlobal
+              (packedLocalBPWindowBase n blockSize leftClose) seed
+              (leftClose + 1) st.2))
+        (SuccinctClose.bpFringeChunkFoldTraceResultAtSegmentWithStore store
+          fringeSegment (packedFringeChunkBits n) window seed
+          (leftClose + 1 - packedLocalBPWindowBase n blockSize leftClose)
+          (leftClose + 1 + (rightClose - leftClose + 1) - 1 -
+            packedLocalBPWindowBase n blockSize leftClose)
+          (Nat.min
+            ((leftClose + 1 + (rightClose - leftClose + 1) - 1 -
+                packedLocalBPWindowBase n blockSize leftClose) /
+              packedFringeChunkBits n + 1) 33)))
+
+/--
+**The same-block seeded reader is shape-free given its window trace.** Its only
+remaining shape use was the window reader, which is now an argument.
+-/
+theorem packedSameBlockCloseSeededRead_eq
+    (shape : CartesianShape) (store : WordRAM.ReadStore)
+    (fringeSegment blockSize leftClose rightClose seed : Nat) :
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore
+        shape store fringeSegment blockSize leftClose rightClose seed =
+      packedSameBlockCloseSeededRead store fringeSegment
+        (SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResultWithStore shape store
+          blockSize leftClose)
+        shape.size blockSize leftClose rightClose seed := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore
+    packedSameBlockCloseSeededRead
+  rw [packedFringeChunkBits_eq, packedLocalBPWindowBase_eq]
+
+
 /--
 **The sparse-directory read is determined by four scalars.**
 

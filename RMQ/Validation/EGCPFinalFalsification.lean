@@ -868,6 +868,22 @@ theorem packedLocalBPSeedIsShapeFree :
         packedLocalBPSeed shape.size rankCloseTrace blockSize close :=
   packedLocalBPSeed_eq
 
+/--
+Pins that the same-block seeded reader is shape-free given its window trace. Its
+fringe chunk width and window base come from the input size; the window reader is
+now an argument.
+-/
+theorem packedSameBlockCloseSeededReadIsShapeFree :
+    forall (shape : CartesianShape) (store : WordRAM.ReadStore)
+      (fringeSegment blockSize leftClose rightClose seed : Nat),
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore
+          shape store fringeSegment blockSize leftClose rightClose seed =
+        packedSameBlockCloseSeededRead store fringeSegment
+          (SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResultWithStore
+            shape store blockSize leftClose)
+          shape.size blockSize leftClose rightClose seed :=
+  packedSameBlockCloseSeededRead_eq
+
 /-- Pins that the rank seed it supplies is already record-free. -/
 theorem packedLcaCloseRankSeedIsRecordFree :
     forall (shape : CartesianShape) (store : WordRAM.ReadStore) (pos : Nat),

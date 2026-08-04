@@ -680,10 +680,23 @@ So `packedLocalBPSeed n rankCloseTrace blockSize close` is the seed with no shap
 argument (`packedLocalBPSeed_eq`), and the rank-close reader it takes is supplied
 by the caller as the already record-free `packedRankCloseRead`.
 
-Still to do on this side: `bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore`,
-which still takes the shape, and the cross-block branch
-`bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`,
-untouched.
+The seeded reader has now been opened too.
+`bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore` uses its shape in
+exactly three places: the fringe chunk width, the local-BP window base, and the
+window reader. The first two are already mirrored size-only, so
+`packedSameBlockCloseSeededRead` takes the window trace as a supplied argument —
+the same pattern the rank seed used — and `packedSameBlockCloseSeededRead_eq`
+discharges the rest.
+
+**The same-block branch is therefore down to one remaining shape-taking
+function**: the window reader
+`localBPWindowBitsTraceResultWithStore`, which is
+`map flattenPayloadWords (localBPBlockWordsTraceResultWithStore shape store
+blockSize close)`. That reader has not been examined.
+
+The cross-block branch
+`bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`
+remains untouched.
 
 `FG-07` is still **not** closed. There is no top-level controller definition, no
 header-probe-then-address sequencing, and no `receipt`.

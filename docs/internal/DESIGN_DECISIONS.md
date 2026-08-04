@@ -6683,3 +6683,29 @@ Pinned by `packedLocalBPSeedIsShapeFree` and
 `packedLocalBPWindowBaseSignature`.
 
 `FG-07` remains Open.
+
+### Third addendum to `DD-20260804-011` (2026-08-04): the same-block branch is down to its window reader
+
+`bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore` uses its shape in
+exactly three places: the fringe chunk width `bpFringeChunkBits
+shape.bpCode.length`, the local-BP window base `localBPWindowBase shape blockSize
+leftClose`, and the window reader
+`localBPWindowBitsTraceResultWithStore shape store blockSize leftClose`.
+
+The first two are already mirrored size-only, so
+`packedSameBlockCloseSeededRead` takes the window trace as a supplied argument --
+the same pattern the rank seed used -- and `packedSameBlockCloseSeededRead_eq`
+discharges the rest.
+
+The same-block branch of the close/LCA route is therefore reduced to one
+remaining shape-taking function: the window reader, which is
+`WordRAM.TraceResult.map flattenPayloadWords (localBPBlockWordsTraceResultWithStore
+shape store blockSize close)`. That reader has not been examined.
+
+The cross-block branch
+(`bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`)
+remains untouched.
+
+Pinned by `packedSameBlockCloseSeededReadIsShapeFree`.
+
+`FG-07` remains Open.
