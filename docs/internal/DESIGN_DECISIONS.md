@@ -5816,3 +5816,63 @@ Consequences and evidence:
 - The identity is now consumed rather than merely stated: `packedSerializedBits`,
   hence `packedPaddedBits`, `packedMemory` and every probe theorem, take their
   bits from this object.
+
+## DD-20260804-003: type the logical read address without a shape, and leave the width mirror open
+
+Status: Worker decision recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Governs how `EG-CP` row `FG-08` will
+present a per-read lowering, and records what is deliberately not claimed.
+
+Date: 2026-08-04
+
+Context:
+
+A logical read of the flat payload store is the pair `(segment, index)`. Turning
+it into physical probes needs three things: the typed source the segment names,
+the source's bit offset, and the source's word width. The first two are already
+shape-free -- `concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?` has type
+`Nat -> Option Source`, and `packedSourceFlatOffset` has type
+`Nat -> Nat -> Source -> Nat` with `packedSourceFlatOffset_eq` proving agreement.
+The third has no mirror yet.
+
+Decision:
+
+Record the address side now, with the width as an explicit argument.
+`packedSegmentSource?` names the segment map at the packed layer,
+`packedLogicalProbePlan` composes it with the conditional probe plan, and
+`packedLogicalRead_decode` proves that the issued cells decode to the canonical
+payload slice of the source that segment names. The width is not synthesized,
+guessed, or defaulted; a caller must supply it.
+
+Do not define a `packedSourceWidth` mirror before its agreement theorem is
+proved. A mirror without its agreement theorem is a placeholder that would make
+the lowering look closed while the only load-bearing step was missing.
+
+Rationale:
+
+Partial factorization is worth recording only when the boundary is explicit. The
+alternative -- waiting until the width mirror exists before naming the logical
+plan at all -- would have hidden the fact that two of the three ingredients are
+already `Nat`-only, which is the part a successor session does not have to redo.
+
+Consequences and evidence:
+
+- `packedLogicalProbePlan : Nat -> Nat -> Nat -> Nat -> Nat -> List Nat`. Its
+  signature carries the claim for the address side: no shape, no list, no proof
+  argument, no callback.
+- `packedLogicalProbePlan_length_le_two` gives the per-read probe bound including
+  the unmapped-segment case, which issues nothing.
+- The next leaf is `packedSourceWidth : Nat -> Nat -> Source -> Nat` together
+  with the agreement theorem that every word of
+  `concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape source` has that
+  length. Most of the underlying width mirrors already exist in
+  `SourceFactorization.lean` (`packedSuperWidth`, `packedLocalWidth`,
+  `packedRankWordSize`, `packedSummaryRelativeWidth`,
+  `packedInteriorOffsetWidth`, `packedLongFlagWordSize`,
+  `packedSparseWordSize`); what is missing is the per-source selection and the
+  per-constructor agreement proof.
+- A separate gap is recorded rather than papered over: the flat-payload segment
+  universe and the executed global-store segment universe do not agree at
+  segments 21 and 22, which `FlatPayload.lean` documents in place. Any whole-run
+  lowering must state which universe it lowers, and the packed layer currently
+  lowers the flat-payload one.

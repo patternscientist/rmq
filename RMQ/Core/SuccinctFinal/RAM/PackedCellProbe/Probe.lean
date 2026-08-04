@@ -548,6 +548,69 @@ theorem packedSourceRead_decode
   unfold packedSourceProbePlan
   rw [hdecode, haddr, hslice]
 
+/-! ### Logical read addresses are typed without a shape
+
+A logical read of the flat payload store is a pair `(segment, index)`. The
+segment-to-source map is already shape-free — its type mentions only `Nat` and
+the closed source inductive — so the whole address side of a read can be typed
+and lowered by a definition a controller could evaluate.
+
+The width is still an explicit argument here. Deriving it from `(n, longCount,
+segment)` is the next leaf and is **not** claimed: see the result report.
+-/
+
+/--
+The logical-to-typed-source map used by the flat payload read store, named at
+the packed layer.
+-/
+def packedSegmentSource? :
+    Nat -> Option ConcreteBPNativeSuccinctRMQFlatPayloadSource :=
+  concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
+
+/-- The physical probe plan of one logical read address of a given width. -/
+def packedLogicalProbePlan (n longCount segment index width : Nat) : List Nat :=
+  match packedSegmentSource? segment with
+  | some source => packedSourceProbePlan n longCount source index width
+  | none => []
+
+/-- A logical read never issues more than two physical probes. -/
+theorem packedLogicalProbePlan_length_le_two
+    (n longCount segment index width : Nat) :
+    (packedLogicalProbePlan n longCount segment index width).length <= 2 := by
+  unfold packedLogicalProbePlan
+  cases packedSegmentSource? segment with
+  | none => simp
+  | some source => exact packedProbeCount_le_two _ _ _
+
+/--
+Decoding a logical read: the cells issued for `(segment, index)` at width
+`width` decode to exactly the canonical payload slice of the source that segment
+names.
+-/
+theorem packedLogicalRead_decode
+    (shape : CartesianShape) {segment : Nat}
+    {source : ConcreteBPNativeSuccinctRMQFlatPayloadSource}
+    (index width : Nat)
+    (hsource : packedSegmentSource? segment = some source)
+    (hwidth : width <= packedCellWidth shape.size)
+    (hfit :
+      concreteBPNativeSuccinctRMQFlatPayloadSourceFlatOffset shape source +
+          index * width + width <=
+        packedPayloadLength shape.size) :
+    (packedFetch (packedMemory shape)
+          (packedLogicalProbePlan shape.size (longCount shape) segment index
+            width)).map
+        (packedDecodeSpan shape.size
+          (packedBitAddress shape.size (longCount shape) source index width)
+          width) =
+      some
+        (((packedPayloadBits shape).drop
+            (concreteBPNativeSuccinctRMQFlatPayloadSourceFlatOffset shape source +
+              index * width)).take width) := by
+  unfold packedLogicalProbePlan
+  rw [hsource]
+  exact packedSourceRead_decode shape source index width hwidth hfit
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ

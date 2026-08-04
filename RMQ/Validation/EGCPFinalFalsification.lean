@@ -446,6 +446,56 @@ theorem packedSourceReadDecodesToCanonicalSlice :
   fun shape source index width hwidth hfit =>
     packedSourceRead_decode shape source index width hwidth hfit
 
+/-! #### The logical address side is already shape-free
+
+A logical read of the flat payload store is a pair `(segment, index)`. The
+consumers below pin that turning that pair into a typed source, and then into a
+physical probe plan, needs no shape. The width remains an explicit argument; the
+mirror that would derive it from `(n, longCount, segment)` does not exist yet and
+is not pinned here.
+-/
+
+/-- Pins the segment-to-source map's shape-free signature. -/
+def packedSegmentSourceSignature :
+    Nat -> Option ConcreteBPNativeSuccinctRMQFlatPayloadSource :=
+  packedSegmentSource?
+
+/-- Pins the logical probe plan's shape-free signature. -/
+def packedLogicalProbePlanSignature :
+    Nat -> Nat -> Nat -> Nat -> Nat -> List Nat :=
+  packedLogicalProbePlan
+
+/-- Pins the per-logical-read probe bound. -/
+theorem packedLogicalReadIssuesAtMostTwoProbes :
+    forall n longCount segment index width : Nat,
+      (packedLogicalProbePlan n longCount segment index width).length <= 2 :=
+  packedLogicalProbePlan_length_le_two
+
+/-- Pins that a logical read decodes to the canonical payload slice. -/
+theorem packedLogicalReadDecodesToCanonicalSlice :
+    forall (shape : CartesianShape) (segment : Nat)
+      (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
+      (index width : Nat),
+      packedSegmentSource? segment = some source ->
+        width <= packedCellWidth shape.size ->
+          concreteBPNativeSuccinctRMQFlatPayloadSourceFlatOffset shape source +
+                index * width + width <=
+              packedPayloadLength shape.size ->
+            (packedFetch (packedMemory shape)
+                  (packedLogicalProbePlan shape.size (longCount shape) segment
+                    index width)).map
+                (packedDecodeSpan shape.size
+                  (packedBitAddress shape.size (longCount shape) source index
+                    width)
+                  width) =
+              some
+                (((packedPayloadBits shape).drop
+                    (concreteBPNativeSuccinctRMQFlatPayloadSourceFlatOffset shape
+                        source +
+                      index * width)).take width) :=
+  fun shape _ _ index width hsource hwidth hfit =>
+    packedLogicalRead_decode shape index width hsource hwidth hfit
+
 /-! #### The two boundary facts that make the repair real -/
 
 /--
