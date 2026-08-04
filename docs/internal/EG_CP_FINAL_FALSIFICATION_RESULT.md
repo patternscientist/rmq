@@ -439,8 +439,16 @@ Had it been anything else, `K = 1` would have needed a second field — which is
 exactly the kind of finding that would have forced an architecture decision. It
 does not.
 
-`queryOccurrence` is the one select-side scalar still unmirrored. The close/LCA
-leaves are untouched. Recorded as `DD-20260804-007`.
+`queryOccurrence` binds its record as `_data` and therefore ignores it;
+`packedSelectQueryOccurrence_content_free` records that over two records sharing
+no parameter. **That closes the select-side scalar list**: four geometry mirrors
+at `2 * n` with agreement theorems, `occurrenceCount = n`, and `queryOccurrence`
+content-free. Nothing on the select side needs the shape except through `n`.
+
+Still open: no controller definition exists; the close and LCA leaves have not
+been examined at all; and `SuccinctClose.bpFringeChunkBits shape.bpCode.length`
+is supplied beside the select data rather than inside it, so it is a separate
+mirror obligation. Recorded as `DD-20260804-007` and its addendum.
 
 ## 7. Two defects found and what happened to them
 

@@ -593,6 +593,25 @@ theorem packedSelectValidityGuardIsTheInputSize :
       GenericSelect.occurrenceCount shape.bpCode false = shape.size :=
   packedSelectOccurrenceCount_eq_size
 
+/--
+Pins the last select-side scalar: the queried occurrence is a function of the
+index alone. The two records share no parameter, so it cannot be transporting
+anything derived from the shape.
+-/
+theorem packedSelectQueryOccurrenceIsTheIndexAlone :
+    forall {bitsLeft bitsRight : List Bool} {targetLeft targetRight : Bool}
+      {superLeft blockLeft superRight blockRight : Nat}
+      (dataLeft :
+        GenericSelect.SparseExceptionSelectData
+          bitsLeft targetLeft superLeft blockLeft)
+      (dataRight :
+        GenericSelect.SparseExceptionSelectData
+          bitsRight targetRight superRight blockRight)
+      (index : Nat),
+      dataLeft.queryOccurrence index = dataRight.queryOccurrence index :=
+  fun dataLeft dataRight index =>
+    packedSelectQueryOccurrence_content_free dataLeft dataRight index
+
 /-! #### The long count is obtained by a probe
 
 Every packed address takes the decoded long count as an argument. These consumers

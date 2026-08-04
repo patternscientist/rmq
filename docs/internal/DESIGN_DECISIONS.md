@@ -6139,3 +6139,23 @@ Consequences and evidence:
 - The close/LCA leaves are untouched. They have their own records and their own
   scalars, and nothing here is evidence about them.
 - This does not close `FG-07`. No controller definition exists.
+
+### Addendum to `DD-20260804-007` (2026-08-04): the scalar list is complete
+
+`GenericSelect.SparseExceptionSelectData.queryOccurrence` binds its record as
+`_data` and therefore ignores it. `packedSelectQueryOccurrence_content_free`
+records that as a checked theorem over two records sharing no parameter:
+different bit strings, different targets, different overheads, same occurrence at
+the same index.
+
+That closes the select-side scalar list opened by `DD-20260804-006`. Its five
+items are now: `wordSize`, `superStride`, `localStride` and `localSlotsPerSuper`
+mirrored at `2 * n` with agreement theorems; `occurrenceCount` proved equal to
+`n`; and `queryOccurrence` proved content-free. Nothing on the select side is
+left needing the shape except through `n`.
+
+Pinned by `packedSelectQueryOccurrenceIsTheIndexAlone`.
+
+This still does not close `FG-07`. No controller definition exists, the close and
+LCA leaves have not been examined, and `SuccinctClose.bpFringeChunkBits
+shape.bpCode.length` is supplied beside the select data rather than inside it.

@@ -175,6 +175,30 @@ theorem packedSelectOccurrenceCount_eq_size (shape : CartesianShape) :
   unfold GenericSelect.occurrenceCount
   exact SuccinctSpace.bpCode_rankFalse_full shape
 
+/--
+**The queried occurrence carries no record content.**
+
+The two records share no parameter: different bit strings, different targets,
+different overheads. They still map the same index to the same occurrence, so
+this last select-side scalar is a function of the index alone and needs no
+mirror.
+
+With the four geometry mirrors and the validity guard above, that completes the
+select leaf's scalar list from `DD-20260804-006`.
+-/
+theorem packedSelectQueryOccurrence_content_free
+    {bitsLeft bitsRight : List Bool} {targetLeft targetRight : Bool}
+    {superLeft blockLeft superRight blockRight : Nat}
+    (dataLeft :
+      GenericSelect.SparseExceptionSelectData
+        bitsLeft targetLeft superLeft blockLeft)
+    (dataRight :
+      GenericSelect.SparseExceptionSelectData
+        bitsRight targetRight superRight blockRight)
+    (index : Nat) :
+    dataLeft.queryOccurrence index = dataRight.queryOccurrence index :=
+  rfl
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ

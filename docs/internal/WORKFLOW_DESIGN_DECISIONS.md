@@ -7090,3 +7090,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit recording the select geometry mirrors: the same five columns
   byte-identical to `0a18548` across all 37 rows; anti-vacuity unchanged; only
   `FG-07`'s evidence and status columns changed.
+- Commit completing the select scalar list: the same five columns byte-identical
+  to `0a18548` across all 37 rows; anti-vacuity unchanged; only `FG-07`'s
+  evidence and status columns changed.
