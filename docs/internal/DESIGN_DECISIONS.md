@@ -8171,3 +8171,67 @@ Consequences:
 Recorded this way, rather than by quietly re-pointing the work, because the
 earlier conclusion was reported to the owner as a blocking finding and a request
 for a decision. That request is withdrawn.
+
+## DD-20260804-037: retracting DD-20260804-036 -- the public payload is the reviewer payload
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. **Retracts `DD-20260804-036` and
+reinstates the finding of `DD-20260804-027`, `-032` and `-033`, in a sharper
+form.**
+
+Date: 2026-08-04
+
+`DD-20260804-036` claimed I had lowered the wrong execution layer, on the grounds
+that `concreteBPNativeSuccinctRMQ_two_n_plus_o_constant_query_profile` composes
+space, cost and correctness for the `Costed` query over
+`concreteBPNativeSuccinctRMQPayload accessFamily shape`. That theorem is real, but
+it is a **family-level** profile parameterized over an access family. It is not the
+top-level public claim, and I did not check the top-level claim before writing the
+retraction.
+
+The top-level claim over `List Int` is `listInt_two_n_plus_o_constant_query_profile`
+and its strengthened form
+`listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story`. Both are stated
+about `buildPayload xs` and `queryCosted xs`, and:
+
+```
+def buildPayload (xs : List Int) : List Bool :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload (cartesianShape xs)
+
+def queryCosted (xs : List Int) (left right : Nat) : Costed (Option Nat) :=
+  (queryTraceResult xs left right).toCosted
+```
+
+So the **publicly advertised `2n + o(n)` payload is the canonical reviewer
+payload** -- the 305-bit object at the size-three spine -- and the public query is
+the word-RAM trace result, not the `Costed` adapter. `FlatPayloadStoreNoSynthetic
+ExecutionStory`'s own first conjunct says it outright:
+`canonicalReviewerPayload (cartesianShape xs) = buildPayload xs`.
+
+Consequences, stated plainly:
+
+- `DD-20260804-036` was wrong and is retracted. The word-RAM layer *is* the
+  execution the accepted semantics is about. My original targeting was right.
+- The finding of `DD-20260804-027`/`-032` stands, and is sharper than first
+  stated. It is not merely that two frozen rows are in tension. It is that
+  **`FG-01`'s own text points at two different objects**: it names the function
+  `concreteBPNativeSuccinctRMQPayload`, and it qualifies that name with *consumed
+  by the accepted RMQ semantics* -- and the accepted `List Int` semantics consumes
+  `concreteBPNativeSuccinctRMQCanonicalReviewerPayload` instead.
+- Under the *name* reading -- what I implemented -- `packedMemory` serializes the
+  flat payload and `FG-08` is unreachable, by `packedStoresNotEqual`.
+- Under the *consumed-by* reading, `packedMemory` would serialize
+  `buildPayload xs`, which does contain the interior directory and both chunk
+  tables, and the segment 20-22 gap would not arise. `FG-08` would be reachable.
+
+So the owner decision is narrower and better posed than I described two commits
+ago: it is not "re-base the close route", it is **which half of `FG-01`'s own
+sentence governs**. Both readings are available without editing the row; they
+disagree about which object the row names.
+
+Process note, recorded because it matters more than the result: I retracted a
+correct finding on the strength of a family-level theorem that I took for the
+public claim, and I did it without checking `buildPayload`. One definition would
+have settled it. The lesson is not "check more" in general -- it is that when a
+finding is about *which object a claim is about*, the only evidence that counts is
+the definition of the object the top-level claim names.

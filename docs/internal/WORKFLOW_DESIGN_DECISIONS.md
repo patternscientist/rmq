@@ -7215,3 +7215,9 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   `Evidence obtained` cells of `FG-08` and `INV-GLOBAL-PHYSICAL-MACHINE` were
   appended to and their `Status` cells rewritten, because the previously recorded
   status reported a blocking finding that this commit withdraws.
+- Commit retracting `DD-20260804-036`: requirement cells byte-identical to
+  `0a18548` across all 37 requirement rows; anti-vacuity unchanged; the `Status`
+  cells of `FG-01`, `FG-08` and `INV-GLOBAL-PHYSICAL-MACHINE` were rewritten. The
+  superseded correction is left in place in the evidence cells and marked
+  retracted there, rather than deleted, so the record shows both the error and its
+  repair.
