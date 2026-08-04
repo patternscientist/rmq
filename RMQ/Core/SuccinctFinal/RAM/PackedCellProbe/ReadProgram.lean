@@ -100,6 +100,81 @@ theorem packedSelectEntryRead_content_free
       tableRight.readTraceResultRelabeledWithStore layout store index :=
   rfl
 
+/-! ### The select leaf's geometry scalars are size-only
+
+`bpChunkedSelectTraceResultWithStore` consumes four scalars from the select data
+record and one validity guard. All five are functions of the input size alone,
+because `sparseExceptionSelectData` sets each of them from `bits.length` and the
+BP code has length `2 * n`.
+
+Together with the content-free theorems above, this is the whole select-side
+shape-dependence except `queryOccurrence`, which is not mirrored here.
+-/
+
+open RMQ.Cartesian
+
+/-- Size-only mirror of the select word size. -/
+def packedSelectWordSize (n : Nat) : Nat :=
+  GenericSelect.wordBits (2 * n)
+
+/-- Size-only mirror of the select super stride. -/
+def packedSelectSuperStride (n : Nat) : Nat :=
+  GenericSelect.superStride (2 * n)
+
+/-- Size-only mirror of the select local stride. -/
+def packedSelectLocalStride (n : Nat) : Nat :=
+  GenericSelect.localStride (2 * n)
+
+/-- Size-only mirror of the local slots per super block. -/
+def packedSelectLocalSlotsPerSuper (n : Nat) : Nat :=
+  GenericSelect.localSlotsPerSuper (2 * n)
+
+theorem packedSelectWordSize_eq (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionSelectData shape.bpCode false).wordSize =
+      packedSelectWordSize shape.size := by
+  show GenericSelect.wordBits shape.bpCode.length =
+    packedSelectWordSize shape.size
+  unfold packedSelectWordSize
+  rw [CartesianShape.bpCode_length]
+
+theorem packedSelectSuperStride_eq (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionSelectData shape.bpCode false).superStride =
+      packedSelectSuperStride shape.size := by
+  show GenericSelect.superStride shape.bpCode.length =
+    packedSelectSuperStride shape.size
+  unfold packedSelectSuperStride
+  rw [CartesianShape.bpCode_length]
+
+theorem packedSelectLocalStride_eq (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionSelectData shape.bpCode false).localStride =
+      packedSelectLocalStride shape.size := by
+  show GenericSelect.localStride shape.bpCode.length =
+    packedSelectLocalStride shape.size
+  unfold packedSelectLocalStride
+  rw [CartesianShape.bpCode_length]
+
+theorem packedSelectLocalSlotsPerSuper_eq (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).localSlotsPerSuper =
+      packedSelectLocalSlotsPerSuper shape.size := by
+  show GenericSelect.localSlotsPerSuper shape.bpCode.length =
+    packedSelectLocalSlotsPerSuper shape.size
+  unfold packedSelectLocalSlotsPerSuper
+  rw [CartesianShape.bpCode_length]
+
+/--
+**The select leaf's validity guard is the input size.**
+
+`bpChunkedSelectTraceResultWithStore` dispatches on
+`idx < occurrenceCount bits target`. For the close-select instance that guard is
+exactly `idx < n`, so a controller can evaluate it from `n` alone with no header
+field and no probe.
+-/
+theorem packedSelectOccurrenceCount_eq_size (shape : CartesianShape) :
+    GenericSelect.occurrenceCount shape.bpCode false = shape.size := by
+  unfold GenericSelect.occurrenceCount
+  exact SuccinctSpace.bpCode_rankFalse_full shape
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ

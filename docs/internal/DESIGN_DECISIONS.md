@@ -6076,3 +6076,66 @@ Consequences and evidence:
   side, which has its own leaves. It bounds the shape of the remaining work: a
   scalar factorization over a fixed list, with elaborator-enforced coverage
   available because the record's fields are fixed.
+
+## DD-20260804-007: mirror the select leaf's geometry scalars and its validity guard
+
+Status: Worker decision recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Continues `DD-20260804-006` and feeds
+`EG-CP` row `FG-07`.
+
+Date: 2026-08-04
+
+Context:
+
+`DD-20260804-006` bounded the select-side controller work to a `Nat`-only mirror
+for a fixed list of scalars. This entry does that list, except one item.
+
+`GenericSelect.sparseExceptionSelectData bits target` sets
+
+```
+wordSize           := wordBits bits.length
+superStride        := superStride bits.length
+localStride        := localStride bits.length
+localSlotsPerSuper := localSlotsPerSuper bits.length
+```
+
+Each is a function of `bits.length` alone, and for the close-select instance
+`bits = shape.bpCode`, whose length is `2 * shape.size`
+(`CartesianShape.bpCode_length`). The leaf's validity dispatch is
+`idx < occurrenceCount bits target`, and for `target = false` that count is the
+number of closing parentheses, which is the input size.
+
+Decision:
+
+Add `packedSelectWordSize`, `packedSelectSuperStride`, `packedSelectLocalStride`
+and `packedSelectLocalSlotsPerSuper`, each of type `Nat -> Nat` and each defined
+at `2 * n`, with an agreement theorem against the corresponding record field. Add
+`packedSelectOccurrenceCount_eq_size : occurrenceCount shape.bpCode false =
+shape.size`.
+
+Rationale:
+
+The mirrors are defined at `2 * n` rather than at `shape.bpCode.length` on
+purpose. Defining them at the code length would have produced theorems that are
+true and useless: a controller cannot evaluate `shape.bpCode.length` without the
+shape. Taking `bpCode_length` at the definition site rather than at the use site
+is what turns the fact into an executable expression.
+
+The validity guard is worth stating separately because it is the only place the
+leaf branches on a quantity that is not a probe reply. Had it been anything other
+than a function of `n`, the `K = 1` header would have needed a second field --
+which is precisely the kind of finding that would have forced an architecture
+decision. It does not.
+
+Consequences and evidence:
+
+- Pinned by `packedSelectWordSizeIsSizeOnly`,
+  `packedSelectSuperStrideIsSizeOnly`, `packedSelectLocalStrideIsSizeOnly`,
+  `packedSelectLocalSlotsPerSuperIsSizeOnly` and
+  `packedSelectValidityGuardIsTheInputSize`, with the four signatures pinned as
+  `Nat -> Nat`.
+- `queryOccurrence` is **not** mirrored and is not claimed. It is the one
+  remaining select-side scalar named in `DD-20260804-006`.
+- The close/LCA leaves are untouched. They have their own records and their own
+  scalars, and nothing here is evidence about them.
+- This does not close `FG-07`. No controller definition exists.

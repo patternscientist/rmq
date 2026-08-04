@@ -541,6 +541,58 @@ theorem packedSelectEntryReadIsDeterminedByTheStore :
   fun tableLeft tableRight layout store index =>
     packedSelectEntryRead_content_free tableLeft tableRight layout store index
 
+/-! #### The select leaf's geometry is size-only
+
+The four scalars `bpChunkedSelectTraceResultWithStore` consumes from the select
+data record, and its validity guard, are pinned here as functions of the input
+size alone. With the content-free theorems above, that is the whole select-side
+shape-dependence except `queryOccurrence`, which is not pinned because it is not
+mirrored.
+-/
+
+def packedSelectWordSizeSignature : Nat -> Nat := packedSelectWordSize
+
+def packedSelectSuperStrideSignature : Nat -> Nat := packedSelectSuperStride
+
+def packedSelectLocalStrideSignature : Nat -> Nat := packedSelectLocalStride
+
+def packedSelectLocalSlotsPerSuperSignature : Nat -> Nat :=
+  packedSelectLocalSlotsPerSuper
+
+theorem packedSelectWordSizeIsSizeOnly :
+    forall shape : CartesianShape,
+      (GenericSelect.sparseExceptionSelectData shape.bpCode false).wordSize =
+        packedSelectWordSize shape.size :=
+  packedSelectWordSize_eq
+
+theorem packedSelectSuperStrideIsSizeOnly :
+    forall shape : CartesianShape,
+      (GenericSelect.sparseExceptionSelectData shape.bpCode false).superStride =
+        packedSelectSuperStride shape.size :=
+  packedSelectSuperStride_eq
+
+theorem packedSelectLocalStrideIsSizeOnly :
+    forall shape : CartesianShape,
+      (GenericSelect.sparseExceptionSelectData shape.bpCode false).localStride =
+        packedSelectLocalStride shape.size :=
+  packedSelectLocalStride_eq
+
+theorem packedSelectLocalSlotsPerSuperIsSizeOnly :
+    forall shape : CartesianShape,
+      (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).localSlotsPerSuper =
+        packedSelectLocalSlotsPerSuper shape.size :=
+  packedSelectLocalSlotsPerSuper_eq
+
+/--
+Pins that the select leaf's validity dispatch is `idx < n`: evaluable from the
+input size alone, with no header field and no probe.
+-/
+theorem packedSelectValidityGuardIsTheInputSize :
+    forall shape : CartesianShape,
+      GenericSelect.occurrenceCount shape.bpCode false = shape.size :=
+  packedSelectOccurrenceCount_eq_size
+
 /-! #### The long count is obtained by a probe
 
 Every packed address takes the decoded long count as an argument. These consumers

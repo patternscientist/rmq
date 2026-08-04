@@ -88,7 +88,7 @@ Import order: `SourceFactorization` → `Payload` → `Header` → `Memory` → 
 | `Space.lean` | `FG-06` | allocated-bits bound and its little-o residual |
 | `Address.lean` | `FG-07`, `FG-08` | bit addresses and the header shift |
 | `Probe.lean` | `FG-05`, `FG-08`, `FG-09` | the conditional probe plan; the header probe; the BP code lowered completely |
-| `ReadProgram.lean` | `FG-07` | logical reads carry no table content |
+| `ReadProgram.lean` | `FG-07` | logical reads carry no table content; select geometry is size-only |
 
 ## 4. What is proved
 
@@ -408,10 +408,39 @@ direction that matters — the table is not consulted at all.
 
 **This does not close `FG-07`**, and it is not evidence about the close/LCA
 leaves, which have not been examined. It bounds the remaining work on the select
-side to a `Nat`-only mirror for a fixed list of scalars: `superStride`,
-`localStride`, `localSlotsPerSuper`, `wordSize`, `queryOccurrence`,
-`occurrenceCount bits target`, and `SuccinctClose.bpFringeChunkBits
-shape.bpCode.length`. Recorded as `DD-20260804-006`.
+side to a `Nat`-only mirror for a fixed list of scalars. Recorded as
+`DD-20260804-006`.
+
+### That list, done except one item
+
+`sparseExceptionSelectData` sets `wordSize := wordBits bits.length`,
+`superStride := superStride bits.length`,
+`localStride := localStride bits.length` and
+`localSlotsPerSuper := localSlotsPerSuper bits.length`. Each is a function of the
+code length alone, and the code length is `2 * n`. So:
+
+```
+packedSelectWordSize n           = GenericSelect.wordBits (2 * n)
+packedSelectSuperStride n        = GenericSelect.superStride (2 * n)
+packedSelectLocalStride n        = GenericSelect.localStride (2 * n)
+packedSelectLocalSlotsPerSuper n = GenericSelect.localSlotsPerSuper (2 * n)
+```
+
+each with an agreement theorem against the record field. The mirrors are defined
+at `2 * n` rather than at `shape.bpCode.length` deliberately: a mirror at the code
+length would be true and useless, because a controller cannot evaluate
+`shape.bpCode.length` without the shape. Taking `bpCode_length` at the definition
+site rather than the use site is what makes the expression executable.
+
+The leaf's validity dispatch is `idx < occurrenceCount bits target`, and
+`packedSelectOccurrenceCount_eq_size` proves that count is `shape.size`. So the
+guard is `idx < n`: evaluable from `n` alone, with no header field and no probe.
+Had it been anything else, `K = 1` would have needed a second field — which is
+exactly the kind of finding that would have forced an architecture decision. It
+does not.
+
+`queryOccurrence` is the one select-side scalar still unmirrored. The close/LCA
+leaves are untouched. Recorded as `DD-20260804-007`.
 
 ## 7. Two defects found and what happened to them
 

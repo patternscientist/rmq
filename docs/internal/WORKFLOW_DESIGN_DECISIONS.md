@@ -7087,3 +7087,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   byte-identical to `0a18548` across all 37 rows; anti-vacuity appended on
   `FG-07` only, as a strict prefix extension; `FG-07`'s evidence and status
   columns changed.
+- Commit recording the select geometry mirrors: the same five columns
+  byte-identical to `0a18548` across all 37 rows; anti-vacuity unchanged; only
+  `FG-07`'s evidence and status columns changed.
