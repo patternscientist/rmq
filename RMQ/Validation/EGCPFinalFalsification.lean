@@ -663,6 +663,38 @@ theorem packedRankReadIsDeterminedByThreeScalars :
       blockSegment wordSegment chunkSegment chunkBits target pos hquery
       hwordSize hblocks
 
+/-! #### A record-free select entry read exists
+
+The content-free theorems say the record does not affect the result. These
+consumers pin something stronger: a definition with **no record argument at all**
+that is the record-taking read, by `rfl`. A controller can call it.
+-/
+
+/--
+Pins the record-free read's signature: a segment layout, a supplied store and an
+index. No table, no shape, no list, no proof argument.
+-/
+def packedSelectEntryReadSignature :
+    GenericSelect.SparseDenseEntryTableTraceSegmentBases ->
+      WordRAM.ReadStore -> Nat ->
+        WordRAM.TraceResult
+          (Option GenericSelect.SparseDenseSelectDenseLocalEntry) :=
+  packedSelectEntryRead
+
+/-- Pins that the record-free read is the record-taking read, at every table. -/
+theorem packedSelectEntryReadIsTheLeafRead :
+    forall {entries : List GenericSelect.SparseDenseSelectDenseLocalEntry}
+      {fieldWidth : Nat}
+      (table :
+        GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable
+          entries fieldWidth)
+      (layout : GenericSelect.SparseDenseEntryTableTraceSegmentBases)
+      (store : WordRAM.ReadStore) (index : Nat),
+      table.readTraceResultRelabeledWithStore layout store index =
+        packedSelectEntryRead layout store index :=
+  fun table layout store index =>
+    packedSelectEntryRead_eq table layout store index
+
 /-- Pins the fringe chunk width mirror's signature. -/
 def packedFringeChunkBitsSignature : Nat -> Nat := packedFringeChunkBits
 

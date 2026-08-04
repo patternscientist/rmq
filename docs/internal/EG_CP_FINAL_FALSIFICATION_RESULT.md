@@ -524,10 +524,44 @@ bpFringeChunkBits (2 * n)`, with `packedFringeChunkBits_eq`.
 **So nothing the select leaf consumes still needs the shape.** Every input is the
 supplied store, a query index, a literal, or a size-only function of `n`.
 
-**This does not close `FG-07`.** No controller definition exists. What it means is
-that the `Nat`-only geometry record chosen in `DD-20260804-008` has no missing
-field on the select side — the construction can begin there without further
-discovery work. The close/LCA leaf tower has still not been examined at all.
+### The first controller component exists
+
+Everything above is analysis: it says the record does not affect the result. The
+next step removes the record from the *definition*.
+
+```
+packedSelectEntryRead
+  (layout : SparseDenseEntryTableTraceSegmentBases)
+  (store : WordRAM.ReadStore) (index : Nat) :
+  WordRAM.TraceResult (Option SparseDenseSelectDenseLocalEntry)
+
+packedSelectEntryRead_eq (table) (layout) (store) (index) :
+  table.readTraceResultRelabeledWithStore layout store index =
+    packedSelectEntryRead layout store index
+```
+
+The definition takes a segment layout, a supplied store and an index — no table,
+no shape, no list, no proof argument — and the equation holds for **every** table,
+over any entries and any field width, **by `rfl`**. The two sides are the same
+term, so nothing needs rewriting at a call site and no dependent transport arises
+— which is exactly the failure mode that killed the congruence route.
+
+The technique (`DD-20260804-009`) is to inline: where a helper's use of its
+record reduces to a term the record does not influence — as
+`PayloadWordStore.readProgram` does, binding its store as `_store` — write the
+record-free definition with that term substituted and close by `rfl`. It
+generalizes only where the influence is definitionally absent; where a helper
+genuinely consults scalars, the record-free version takes those scalars as
+arguments and the equation becomes conditional on the mirrors above. That is how
+the geometry record earns its fields.
+
+**This is the first component of the `FG-07` controller to exist** — previous
+results recorded what a controller could be built *from*; this is something a
+controller can *call*.
+
+**`FG-07` remains Open.** One component is not a controller: there is no fixed
+top-level definition, no header-then-address sequencing, no `receipt`, and the
+close/LCA leaf tower has still not been examined at all.
 
 Still open: no controller definition exists; the close and LCA leaves have not
 been examined at all; and `SuccinctClose.bpFringeChunkBits shape.bpCode.length`

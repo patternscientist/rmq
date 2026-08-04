@@ -335,6 +335,77 @@ theorem packedSparseFlagBlocksPerSuper_eq (bits : List Bool) (target : Bool) :
         bits target).blocksPerSuper = 1 :=
   rfl
 
+/-! ### A record-free select entry read
+
+The content-free theorems above say the record does not affect the result. This
+section goes one step further and removes the record from the *definition*:
+`packedSelectEntryRead` takes a segment layout, a supplied store and an index,
+and nothing else. `packedSelectEntryRead_eq` proves it is the record-taking read,
+by `rfl`.
+
+That is the difference between an analysis and a construction. A controller can
+call this definition; it could not call the record-taking one without being
+handed a shape-derived table.
+-/
+
+/--
+The four-field select entry read, with no table argument: four charged reads at
+the layout's four segments, then `entryOfFields` on the replies.
+-/
+def packedSelectEntryRead
+    (layout : GenericSelect.SparseDenseEntryTableTraceSegmentBases)
+    (store : WordRAM.ReadStore) (index : Nat) :
+    WordRAM.TraceResult
+      (Option GenericSelect.SparseDenseSelectDenseLocalEntry) :=
+  WordRAM.TraceResult.bind
+    (WordRAM.TraceResult.ofProgramWithStore
+      (WordRAM.singletonSegmentMap layout.baseOccurrence layout.deadSegment)
+      store (WordRAM.Program.mapOptWordNat (WordRAM.Program.readWord 0 index)))
+    fun baseOccurrence? =>
+      WordRAM.TraceResult.bind
+        (WordRAM.TraceResult.ofProgramWithStore
+          (WordRAM.singletonSegmentMap layout.baseWordIndex layout.deadSegment)
+          store
+          (WordRAM.Program.mapOptWordNat (WordRAM.Program.readWord 0 index)))
+        fun baseWordIndex? =>
+          WordRAM.TraceResult.bind
+            (WordRAM.TraceResult.ofProgramWithStore
+              (WordRAM.singletonSegmentMap layout.rankBefore layout.deadSegment)
+              store
+              (WordRAM.Program.mapOptWordNat
+                (WordRAM.Program.readWord 0 index)))
+            fun rankBefore? =>
+              WordRAM.TraceResult.map
+                (fun firstOffset? =>
+                  GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.entryOfFields
+                    baseOccurrence? baseWordIndex? rankBefore? firstOffset?)
+                (WordRAM.TraceResult.ofProgramWithStore
+                  (WordRAM.singletonSegmentMap layout.firstOffset
+                    layout.deadSegment)
+                  store
+                  (WordRAM.Program.mapOptWordNat
+                    (WordRAM.Program.readWord 0 index)))
+
+/--
+**The record-free read is the record-taking read.**
+
+For every select entry table, over any entries and any field width, the existing
+leaf's entry read *is* `packedSelectEntryRead` applied to the same layout, store
+and index. The proof is `rfl`, so this is not an approximation: the two are the
+same term.
+-/
+theorem packedSelectEntryRead_eq
+    {entries : List GenericSelect.SparseDenseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table :
+      GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable
+        entries fieldWidth)
+    (layout : GenericSelect.SparseDenseEntryTableTraceSegmentBases)
+    (store : WordRAM.ReadStore) (index : Nat) :
+    table.readTraceResultRelabeledWithStore layout store index =
+      packedSelectEntryRead layout store index :=
+  rfl
+
 /-- Size-only mirror of the shared fringe chunk width. -/
 def packedFringeChunkBits (n : Nat) : Nat :=
   SuccinctClose.bpFringeChunkBits (2 * n)

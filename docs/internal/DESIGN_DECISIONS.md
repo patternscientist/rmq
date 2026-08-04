@@ -6359,3 +6359,71 @@ Pinned by `packedFringeChunkBitsIsSizeOnly` and
 
 `FG-07` is still Open: no controller definition exists, and the close/LCA leaf
 tower has not been examined.
+
+## DD-20260804-009: build controller components by inlining, and prove them equal by `rfl`
+
+Status: Worker decision recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Supplies the construction technique
+for `EG-CP` row `FG-07`, and lands the first component.
+
+Date: 2026-08-04
+
+Context:
+
+`DD-20260804-006` through `DD-20260804-008` established that the select leaf
+reads the supplied store and consults its shape-derived record only for scalars,
+and that every one of those scalars is a literal or a size-only function of `n`.
+That is an analysis. It does not by itself produce a definition a controller can
+call: the existing leaf still takes the record as an argument, and `FG-07`
+forbids handing one to the controller.
+
+Two construction routes were available. Constructing a canonical dummy record
+from `n` and passing it would be registry mutation `M04-CANONICAL-SHAPE-BY-N`
+in spirit and would also require inhabiting several dependent structures.
+Rewriting the leaf into a `Nat`-only definition and proving the two equal
+propositionally would work but leaves an ordinary theorem obligation at every
+layer.
+
+Decision:
+
+Inline. Where a helper's use of its record reduces to a term the record does not
+influence -- as `PayloadWordStore.readProgram` does, binding its store as
+`_store` -- write the record-free definition with that term substituted directly,
+and prove the equality by `rfl`.
+
+`packedSelectEntryRead layout store index` is the first component built this way.
+It takes a segment layout, a supplied store and an index, and nothing else.
+`packedSelectEntryRead_eq` proves
+
+```
+table.readTraceResultRelabeledWithStore layout store index =
+  packedSelectEntryRead layout store index
+```
+
+for **every** table, over any entries and any field width, by `rfl`.
+
+Rationale:
+
+`rfl` is the strongest available form of this obligation and the cheapest. The
+two sides are the same term, so no rewriting is needed at the call site and no
+transport arises -- which is exactly the failure mode `DD-20260804-008` recorded
+for the congruence route. It also means the record-free definition cannot drift
+from the leaf: if the leaf changes, the `rfl` breaks.
+
+The technique generalizes only where the record's influence is definitionally
+absent. Where a helper genuinely consults scalars -- the two-level rank read
+does -- the record-free version must take those scalars as arguments, and the
+equation becomes conditional on the corresponding mirrors. That is expected and
+is how the geometry record of `DD-20260804-008` earns its fields.
+
+Consequences and evidence:
+
+- Pinned by `packedSelectEntryReadSignature` (the type carries the claim: no
+  table, no shape, no list, no proof argument) and
+  `packedSelectEntryReadIsTheLeafRead`.
+- This is the **first component of the `FG-07` controller to exist**. Previous
+  entries recorded what a controller could be built from; this one is something a
+  controller can call.
+- `FG-07` remains Open. One component is not a controller: there is no fixed
+  top-level definition, no header-then-address sequencing, no `receipt`, and the
+  close/LCA leaf tower is unexamined.
