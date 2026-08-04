@@ -6989,3 +6989,19 @@ Consequences and evidence:
   computations and the cross-block join must be written record-free and proved
   equal, using mirrors that now all exist.
 - `FG-07` remains Open: no top-level controller definition exists.
+
+### Addendum to `DD-20260804-015` (2026-08-04): the interior read primitive
+
+`canonicalRelativeRmmMachineReadNatComputation shape table base i` is one call to
+`machineReadComputationAt` at the BP-code word width and the offsets' dead
+address. Both shape uses are now mirrored, so `packedInteriorReadNat` removes the
+shape and `packedInteriorReadNat_eq` proves the equality.
+
+The table argument stays and is harmless: `machineReadComputationAt` binds it as
+`_table` and branches only on `entries.length`.
+`packedInteriorReadNat_geometry_only` records that by consuming the existing
+`GeometryClosure.machineReadComputationAt_geometry_only` -- two tables agreeing on
+entry count and width give the same computation, whatever their entries.
+
+This is the primitive the ten interior `FlatStoreComputation` definitions are
+built on, so each of those is now a mechanical assembly over mirrors that exist.

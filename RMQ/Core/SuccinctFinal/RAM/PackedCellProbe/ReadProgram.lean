@@ -1295,6 +1295,56 @@ theorem packedInteriorOffsets_eq (shape : CartesianShape) :
     packedArgOffsetWords_eq, packedLocalTableWords_eq, packedGlobalTableWords_eq,
     packedLocalLevelWords_eq, packedInteriorComponentWords_eq]
 
+/-! #### The interior read primitive is shape-free
+
+`canonicalRelativeRmmMachineReadNatComputation` is one call to
+`machineReadComputationAt` at the BP-code word width, the offsets' dead address,
+a base and an index. Both of its shape uses are now mirrored, so the shape comes
+straight out.
+
+The table argument stays, and stays harmless: `machineReadComputationAt` binds it
+as `_table` and branches only on `entries.length`, which
+`GeometryClosure.machineReadComputationAt_geometry_only` already records. The
+primitive therefore sees a table through its entry count and width only, exactly
+as the ten interior computations built on it require.
+-/
+
+/-- The interior machine read of a fixed-width table, with no shape argument. -/
+def packedInteriorReadNat {entries : List Nat} {width : Nat}
+    (n : Nat) (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (base i : Nat) : SuccinctSpace.FlatStoreComputation (Option Nat) :=
+  table.machineReadComputationAt (packedBpCodeWordWidth n) base
+    (packedInteriorOffsets n).deadAddress i
+
+/-- **The interior read primitive is a function of the input size.** -/
+theorem packedInteriorReadNat_eq
+    {entries : List Nat} {width : Nat}
+    (shape : CartesianShape)
+    (table : SuccinctSpace.FixedWidthNatTable entries width) (base i : Nat) :
+    SuccinctClose.canonicalRelativeRmmMachineReadNatComputation shape table
+        base i =
+      packedInteriorReadNat shape.size table base i := by
+  unfold SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+    packedInteriorReadNat packedBpCodeWordWidth
+  rw [packedInteriorOffsets_eq, CartesianShape.bpCode_length]
+
+/--
+The primitive's table argument carries no content: two tables agreeing on entry
+count and width give the same computation, whatever their entries.
+-/
+theorem packedInteriorReadNat_geometry_only
+    {entriesLeft entriesRight : List Nat} {widthLeft widthRight : Nat}
+    (n : Nat)
+    (tableLeft : SuccinctSpace.FixedWidthNatTable entriesLeft widthLeft)
+    (tableRight : SuccinctSpace.FixedWidthNatTable entriesRight widthRight)
+    (hlength : entriesLeft.length = entriesRight.length)
+    (hwidth : widthLeft = widthRight) (base i : Nat) :
+    packedInteriorReadNat n tableLeft base i =
+      packedInteriorReadNat n tableRight base i := by
+  unfold packedInteriorReadNat
+  exact GeometryClosure.machineReadComputationAt_geometry_only tableLeft
+    tableRight hlength hwidth _ _ _ _
+
 /-! #### The endpoint-fringe candidate readers
 
 The cross-block branch's two endpoint readers use exactly three shape-derived
