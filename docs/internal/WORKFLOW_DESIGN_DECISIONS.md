@@ -6955,3 +6955,47 @@ Frozen-cell verification log for `WDD-20260803-001`:
   byte-identical to the freeze commit `0a18548`.
 - Commit adding the `FG-04` header evidence: all fifteen frozen requirement cells
   byte-identical to `0a18548`.
+
+## WDD-20260804-001: write the worker report during the work, not after it
+
+Status: Worker decision recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Governs when
+`docs/internal/EG_CP_FINAL_FALSIFICATION_RESULT.md` is written.
+
+Date: 2026-08-04
+
+Context:
+
+The checkout contract names a durable completion artifact at that path. The
+natural reading is that it is written at the end, once there is a result to
+report. This branch is long enough that "the end" is not reliably reachable
+inside one session, and a report that exists only in a session transcript is
+exactly the evidence form `INV-MUTATION-REPRODUCIBILITY` and the completion gate
+reject elsewhere: prose outside the candidate.
+
+Decision:
+
+The report is created early, opens with an explicit non-completion status, and is
+updated as rows progress. It records the verified base, the preflight result and
+what was attested, the commit ancestry, the exact theorem statements proved so
+far, the defects found, the corrections made, what is not done, and the questions
+a skeptical reviewer should ask.
+
+Rationale:
+
+The point of the artifact is that a coordinator or a successor can reconstruct the
+state without the worker. That property is worth more mid-branch than at the end,
+because mid-branch is when the worker is most likely to disappear. Writing it
+early also makes the not-done section a live checklist rather than a
+retrospective, which is the part most prone to shrinking when written after the
+fact by the party whose work it describes.
+
+Consequences:
+
+- The file is a workflow-sensitive path, so every commit touching it also touches
+  this ledger.
+- Its status line is `INCOMPLETE` and must not be read as a completion claim; the
+  final report's opening status is a separate act governed by
+  `COMPLETION_GATE.md` section 6.
+- Sections that describe unfinished rows are expected to change. Sections that
+  record defects or corrections are append-only.
