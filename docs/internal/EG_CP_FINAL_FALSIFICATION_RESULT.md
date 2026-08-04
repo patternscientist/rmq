@@ -17,7 +17,7 @@ ancestor.
 Worktree: `C:\Users\poin\.codex\visualizations\2026\07\17\019f6d85-7626-7433-a60b-81f8be29689a\eg-cp-final-falsification-r1`.
 Never pushed, never merged, never amended, never squashed.
 
-Last update: 2026-08-04, at branch tip `4d2ed70`.
+Last update: 2026-08-04, at branch tip `5c05016`.
 
 ---
 
@@ -85,7 +85,7 @@ Import order: `SourceFactorization` → `Payload` → `Header` → `Memory` → 
 | `Memory.lean` | `FG-05` | cells, allocation, round trip, cell crossing |
 | `Space.lean` | `FG-06` | allocated-bits bound and its little-o residual |
 | `Address.lean` | `FG-07`, `FG-08` | bit addresses and the header shift |
-| `Probe.lean` | `FG-05`, `FG-08`, `FG-09` | the conditional physical probe plan |
+| `Probe.lean` | `FG-05`, `FG-08`, `FG-09` | the conditional probe plan; the BP code lowered completely |
 
 ## 4. What is proved
 
@@ -281,8 +281,54 @@ and both are instantiated at sizes 0, 1 and 2 in the validation root.
 it with the probe plan, `packedLogicalRead_decode` proves the decoding, and
 `packedLogicalProbePlan_length_le_two` covers the unmapped-segment case.
 
-The width remains an explicit argument. The mirror that would derive it from
-`(n, longCount, segment)` is deliberately **not** defined; see section 7.
+The width remains an explicit argument for a general source. The mirror that
+would derive it from `(n, longCount, segment)` is deliberately **not** defined in
+general; see section 7.
+
+### The BP code, lowered completely (`FG-08` — one source)
+
+`packedBitAddress` computes `index * width`, which assumes that a source's stride
+and its read width coincide. They do for a `FixedWidthNatTable`: `width` is a
+type index of that structure and its `word_length_of_get?` field forces every
+stored word to that length. They do **not** for a chunked bit source.
+`SuccinctSpace.chunkPayloadWords` leaves the final word short whenever the length
+is not a multiple of the word size, and
+`chunkPayloadWords_get?_eq_take_drop` states it: word `i` is
+`(payload.drop (i * wordSize)).take wordSize`, which truncates at the payload's
+end. Four of the twenty-nine typed sources are such chunkings — `bpCode`,
+`selectLongFlagBits`, `selectSparseFlagBits` and `finalRankBPCodeAlias`.
+
+Against the packed memory that truncation does not happen, because the next
+component follows immediately. Reading the final word at full width would return
+the correct prefix followed by foreign bits: a wrong decoded word, not a harmless
+over-read.
+
+`packedStridedBitAddress n longCount source index stride` separates the two, with
+`packedBitAddress_eq_strided` recording that the uniform-width address is the
+special case. For the BP code:
+
+```
+packedBpCodeWordWidth n = SuccinctRank.machineWordBits (2 * n)
+packedBpCodeReadWidth n index =
+  min (packedBpCodeWordWidth n) (2 * n - index * packedBpCodeWordWidth n)
+
+packedBpCodeRead_decode :
+  (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape .bpCode)[index]? =
+      some word ->
+    (packedFetch (packedMemory shape)
+        (packedProbePlan shape.size
+          (packedStridedBitAddress shape.size (longCount shape) .bpCode index
+            (packedBpCodeWordWidth shape.size))
+          (packedBpCodeReadWidth shape.size index))).map
+      (packedDecodeSpan shape.size ... ) = some word
+```
+
+This is the first source lowered completely: the address, the stride and the read
+width are all functions of `n` and the index alone, and the decoded bits are
+proved equal to the word the flat payload store would have returned.
+`packedBpCodeWord_index_lt` derives the in-range condition from the existence of
+the word rather than assuming it, so the theorem carries no side condition a
+controller would have to discharge from outside its own inputs.
 
 ## 5. Exact-type consumers
 
@@ -360,11 +406,13 @@ Specifically not done:
   shape.bpCode false`, so it cannot be reused unchanged: making it shape-free
   requires factoring each leaf's geometry through `(n, longCount)` the way the
   offsets already are.
-* **`FG-08`** the whole-run lowering. Only the per-read half exists, and only for
-  a supplied width. There is no ordered-trace theorem with multiplicity. The
-  lowering is also stated against the **flat-payload** segment universe; the
-  executed global store numbers segments 21 and 22 differently (documented in
-  `FlatPayload.lean:280-285`), and no bridge is claimed.
+* **`FG-08`** the whole-run lowering. Only the per-read half exists: with a
+  supplied width for a general source, and with everything supplied for the BP
+  code alone. Twenty-eight sources still need a stride and a read width. There is
+  no ordered-trace theorem with multiplicity. The lowering is also stated against
+  the **flat-payload** segment universe; the executed global store numbers
+  segments 21 and 22 differently (documented in `FlatPayload.lean:280-285`), and
+  no bridge is claimed.
 * **`FG-09`** totality and the derived cap. Only a per-read bound of two probes
   exists. `packedProbePlan_lt_cellCount` bounds addresses by `packedCellCount n`,
   which is a host-array bound; `INV-ADDRESS-WIDTH` explicitly rejects that as a
@@ -387,23 +435,37 @@ Specifically not done:
 
 ### The next smallest proof target
 
-`packedSourceWidth : Nat -> Nat -> ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Nat`
-together with the agreement theorem that every word of
-`concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape source` has that length.
+A shape-free **stride** and a shape-free **read width** per source, with their
+agreement theorems. The BP code has both; twenty-eight sources do not.
 
-It is the smallest missing piece because it is the only remaining input to
-`packedLogicalProbePlan` that is not already `Nat`-only: the segment map and the
-flat offset both are. With it, one logical read address `(segment, index)` lowers
-to physical probes by a definition a controller could evaluate, which is the
-per-read half of `FG-08` in full.
+The BP-code work narrowed the shape of this target: it is not one function.
+`DD-20260804-004` records why. For a `FixedWidthNatTable` source the stride and
+the read width are the same number, and it is already available as the table's
+`width` type index, so the agreement is the structure's own
+`word_length_of_get?` field composed with an existing width mirror. For a chunked
+bit source they differ, and the read width is a `min` in `(n, index)` exactly as
+`packedBpCodeReadWidth` is.
 
-Most of the underlying width mirrors already exist in `SourceFactorization.lean`
-— `packedSuperWidth`, `packedLocalWidth`, `packedRankWordSize`,
-`packedRankBlockWidth`, `packedSummarySuperWidth`, `packedSummaryRelativeWidth`,
-`packedInteriorOffsetWidth`, `packedLongFlagWordSize`, `packedSparseWordSize`.
-What is missing is the per-source selection and the 29-constructor agreement
-proof. Do **not** define the mirror before its agreement theorem: an unproved
-mirror would make the lowering look closed while the only load-bearing step was
+The smallest next step is therefore the generic chunked-source lemma the BP code
+should have been an instance of: given a source whose words are
+`chunkPayloadWords stride sourcePayload`, whose `sourcePayload` is the canonical
+payload slice at its flat offset (which
+`concreteBPNativeSuccinctRMQFlatPayloadSource_flat_slice` already supplies under
+`CountedInFlat`), and whose stride is at most one cell, the probe plan at the
+strided address and the `min` read width decodes to the store word. That closes
+`selectLongFlagBits`, `selectSparseFlagBits` and `finalRankBPCodeAlias` together;
+their stride mirrors (`packedLongFlagWordSize`, `packedSparseWordSize`) and
+payload lengths (`longFlagBits_length_eq_packed`,
+`sparseFlagBits_length_eq_packed`) already exist.
+
+The remaining twenty-five fixed-width-table sources then need one
+`packedSourceWidth` selection and a 25-arm agreement proof, built on the mirrors
+already in `SourceFactorization.lean`: `packedSuperWidth`, `packedLocalWidth`,
+`packedRankWordSize`, `packedRankBlockWidth`, `packedSummarySuperWidth`,
+`packedSummaryRelativeWidth`, `packedInteriorOffsetWidth`.
+
+Do **not** define a width mirror before its agreement theorem: an unproved mirror
+would make the lowering look closed while the only load-bearing step was
 missing.
 
 ### Approaches tried and rejected

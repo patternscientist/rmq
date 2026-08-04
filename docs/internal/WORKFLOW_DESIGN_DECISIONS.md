@@ -7066,3 +7066,15 @@ Consequences:
   strict prefix extension on each of the nine rows that changed, as
   `WDD-20260803-001` permits. `Evidence obtained`, `Status / residual gap` and
   the ledger `Outcome` column changed freely.
+
+Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
+
+- Commit synchronizing the matrix and the report (`99b21e3`): `ID`,
+  `Exact frozen requirement`, `Scope`, `Evidence needed` and `Named consumer`
+  byte-identical to `0a18548` across all 37 rows; no missing or duplicate ID; no
+  mojibake spelling; anti-vacuity changed on nine rows, each a strict prefix
+  extension.
+- Commit recording the BP-code lowering in the matrix and the report: the same
+  five columns byte-identical across all 37 rows; anti-vacuity unchanged from the
+  previous commit; only `FG-08`'s `Evidence obtained` and `Status / residual gap`
+  changed.
