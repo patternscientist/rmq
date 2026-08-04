@@ -7229,3 +7229,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   frozen-cell comparison was required.
 - Commit recording the sparse-count measurements: matrix untouched, so no
   frozen-cell comparison was required.
+- Commit recording the sparse-path mechanism: matrix untouched, so no frozen-cell
+  comparison was required.

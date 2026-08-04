@@ -8417,3 +8417,78 @@ Consequences, and the next target:
 
 Recorded as evidence with its limits stated, because "we looked and found none"
 and "there are none" are different claims and only the first is established.
+
+## DD-20260804-041: why the sparse path is empty -- the mechanism, with its exact threshold
+
+Status: Evidence and mechanism recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Explains `DD-20260804-040`'s
+measurements and names the theorem that would settle them.
+
+Date: 2026-08-04
+
+`DD-20260804-040` measured the sparse exception count as `0` everywhere it
+looked, and offered a hand-wave about density. The real mechanism is sharper and
+is visible in two definitions.
+
+```
+shortSuperLocalSpan bits target slot =
+  position (shortSuperLocalEndOccurrence ... - 1) + 1 - position (localBaseOccurrence ...)
+
+localIsSparseException bits target slot =
+  (! superIsLong ...) && decide (wordBits bits.length < shortSuperLocalSpan bits target slot)
+```
+
+The span is measured **between the slot's own occurrences** -- from its base
+occurrence's position to its last occurrence's position, plus one. It does not
+include the gap before the slot. So a slot covering a *single* occurrence has span
+exactly `1`, whatever the surrounding bit pattern, and then the second conjunct is
+`wordBits bits.length < 1`, which is unsatisfiable because `wordBits_pos`.
+
+A local slot covers `localStride bits.length` occurrences, and
+
+```
+localStride m = max 1 (wordBits m / (ell m * ell m))
+```
+
+is `1` whenever `wordBits m < 2 * ell m * ell m`. Measured:
+
+| `n` | `wordBits (2n)` | `ell (2n)` | `localStride (2n)` |
+| --- | --- | --- | --- |
+| `1` | `2` | `2` | `1` |
+| `64` | `8` | `4` | `1` |
+| `1024` | `12` | `4` | `1` |
+| `65536` | `18` | `5` | `1` |
+| `2^32` | `34` | `6` | `1` |
+
+and a sweep of `m = 2 ^ k` finds the **first** `k` with `localStride > 1` at
+`k = 97`. So `localStride = 1` for every input size below roughly `2 ^ 96`, and on
+that whole range no sparse exception can occur at all -- not because the bit
+pattern is nice, but because each local slot holds one occurrence and a one-
+occurrence span cannot exceed a word.
+
+This is why every shape of size `0` .. `8`, and four families at `64` .. `4096`,
+gave count `0`: the code path is unreachable, not merely unvisited.
+
+The theorem to prove, now with no search left in it:
+
+```
+localStride bits.length = 1 -> localIsSparseException bits target slot = false
+```
+
+which needs `shortSuperLocalSpan = 1` under a unit stride, then `wordBits_pos`.
+Composing it with `localStride (2 * n) = 1` gives
+`sparseExceptionRelativeEntries shape.bpCode false = []`, and with it:
+
+- `DD-20260804-022`'s asymmetry dissolves on the whole range: the one source whose
+  word count was not size-only has count `0`, so
+  `packedSelectSparseRelativeWords_of_some` strengthens to an equation and
+  `packedBackedStore_eq_readWord` extends to all twenty-nine sources without the
+  `.selectSparseRelative` exclusion;
+- `FG-09`'s totality clause loses the discriminator `DD-20260804-022` attached to
+  it, because there is no out-of-range sparse read to worry about;
+- the `FG-01` re-target of `DD-20260804-038` gets a size-only close offset.
+
+Stated with its limit: above `2 ^ 96` the stride exceeds one and the path becomes
+reachable in principle. Every claim above is therefore conditional on
+`localStride = 1`, which should appear as a hypothesis rather than be silently
+assumed -- the same discipline `DD-20260804-035` arrived at the hard way.
