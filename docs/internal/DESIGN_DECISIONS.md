@@ -7432,3 +7432,47 @@ Consequences and evidence:
   genuine `K1` obstruction and should be reported as one. That is the first
   concrete obstruction candidate this campaign has produced, and it is recorded
   here so it is not lost.
+
+## DD-20260804-023: the geometry as three functions, and the columns nobody sized
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`.
+
+Date: 2026-08-04
+
+Decision:
+
+Collect the per-source word geometry into three total functions --
+`packedSourceStride n source`, `packedSourceWordCount n longCount source` and
+`packedSourceBitLength n longCount source` -- and state the twenty-nine
+`SourceWords` theorems as one implication over the closed source inductive,
+`packedSourceWords_of_some`. Adding a constructor now breaks elaboration until its
+geometry is supplied on all three functions and its word theorem exists.
+
+Two arms of the count are deliberately not the number of payload-carrying words:
+
+* the three chunked rank directories append `payload.length + 1` empty sentinel
+  words, counted here because the store returns them; and
+* `.selectSparseRelative` carries the size-only capacity of `DD-20260804-022`.
+
+`packedSourceBitLength_eq` proves the bit length agrees with the shape-indexed
+payload for the twenty-eight sources other than `.selectSparseRelative`, whose
+length is the one quantity that is not size-only. The exclusion is a hypothesis on
+the theorem, not a missing case.
+
+The columns nobody had sized:
+
+`SourceFactorization` proves a length for every column an *offset* depends on. A
+column nothing is addressed after never needed one, so nine were missing: the
+fourth column of each dense entry table (`firstOffset`, super and local), the
+second polarity of each of the two final rank sample levels, the four long-flag
+and sparse-flag rank sample tables, and the interior global table. They are proved
+here, each by the same route as its already-mirrored sibling.
+
+Consequences:
+
+- Sizing every source is what a *store* needs and what placing a source did not.
+  The asymmetry is why these nine were absent rather than an oversight in the
+  earlier factorization.
+- The physical read -- turning a word slice into a probe of `packedMemory` -- is
+  the next step and is not in this commit.
