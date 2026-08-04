@@ -1046,6 +1046,36 @@ theorem packedSameBlockCloseSeededRead_eq
     packedSameBlockCloseSeededRead
   rw [packedFringeChunkBits_eq, packedLocalBPWindowBase_eq]
 
+/-! #### The interior layout is size-only
+
+The interior navigator's whole control flow -- macro sizes, sample counts, level
+counts, offset widths -- is derived from `RelativeRmm.canonicalLayout shape`, a
+four-field record. All four fields are summary scalars this development already
+mirrors, so the record itself mirrors at the input size.
+
+This is the interior's control-flow half. The remaining half is its component
+offsets, which are word counts of the eight directory tables.
+-/
+
+/-- Size-only mirror of the interior layout record. -/
+def packedInteriorLayout (n : Nat) : SuccinctClose.RelativeRmm.Layout where
+  blockSize := packedSummaryBlockSizeRaw n
+  blocksPerSuper := packedSummaryBase n
+  blockCount := packedSummaryBlockCountRaw n
+  relativeWidth := packedSummaryRelativeWidthRaw n
+
+/--
+**The interior layout is a function of the input size.**
+
+Every field of `RelativeRmm.canonicalLayout shape` is a summary scalar already
+mirrored, so the whole record is. A controller holding `n` can build the layout
+the interior navigator branches on.
+-/
+theorem packedInteriorLayout_eq (shape : CartesianShape) :
+    SuccinctClose.RelativeRmm.canonicalLayout shape =
+      packedInteriorLayout shape.size :=
+  rfl
+
 /-! #### The endpoint-fringe candidate readers
 
 The cross-block branch's two endpoint readers use exactly three shape-derived

@@ -6810,3 +6810,110 @@ Pinned by `packedLeftFringeCandidateReadIsShapeFree` and
 Of the cross-block branch, the remaining shape-taking callee is the interior
 range-min navigator. The two endpoint readers and the seed are done, and the
 dispatch scalar was already mirrored.
+
+## DD-20260804-013: T4 is not a shortcut to FG-07, and why
+
+Status: Worker decision recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Records a pre-existing in-tree theorem
+found while mapping the close/LCA tower, and the reason it is deliberately not
+used to close `FG-07`.
+
+Date: 2026-08-04
+
+Context:
+
+`RMQ/Core/SuccinctFinal/RAM/GeometryClosure.lean:1326` already contains
+
+```
+T4_wholeQuery_trace_size_only {a b : CartesianShape} (h : a.size = b.size)
+    (store : WordRAM.ReadStore) (l r : Nat) :
+  concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore a store l r =
+  concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore b store l r
+```
+
+The **entire** supplied-store whole-query execution -- value, cost and ordered
+trace -- is determined by `(size, store, left, right)`. This branch did not know
+that theorem existed when it began the factorization campaign.
+
+The tempting shortcut is immediate: define the controller as
+`packedRun n store l r := wholeQueryWithStore (someCanonicalShapeOfSize n) store l r`
+and use `T4` to transport it to every shape of that size.
+
+Decision:
+
+**Do not take it.** That definition is exactly registry mutation
+`M04-CANONICAL-SHAPE-BY-N` -- "synthesize a canonical shape from `n` inside a
+wrapper" -- which the frozen matrix lists as an expected REJECT with failing
+surface "structural / same-object". The frozen contract anticipated this shortcut
+and forbids it.
+
+The bottom-up factorization (`DD-20260804-009` through `DD-20260804-012`) remains
+the route: build record-free and shape-free definitions and prove each equal to
+the real leaf by `rfl` or by rewriting with size-only mirrors.
+
+Rationale:
+
+`T4` is a congruence. `DD-20260802-001` already recorded why a congruence is not
+executability evidence: it says the result is *determined* by the size, not that
+a controller can *compute* it. A controller built on `T4` would still have to
+produce a shape to hand the existing evaluator, and producing one from `n` is the
+forbidden mutation. The distinction is not pedantic -- it is the difference
+between a definition whose type contains no `CartesianShape` and one that
+manufactures a shape internally.
+
+Consequences and evidence:
+
+- `T4` is nonetheless valuable as **independent confirmation that no
+  architecture obstruction exists** on the executed path: an entire-trace
+  size-only congruence cannot hold if some executed read genuinely needed shape
+  content beyond the size. It is recorded here as such, not as `FG-07` evidence.
+- No consumer in `RMQ/Validation/EGCPFinalFalsification.lean` cites `T4`, by
+  design. If a later candidate closes `FG-07` by way of `T4`, that is the
+  `M04` mutation and should be rejected.
+
+## DD-20260804-014: the interior layout is size-only
+
+Status: Worker result recorded 2026-08-04 on the same branch. First half of the
+interior factorization. Feeds `EG-CP` row `FG-07`.
+
+Date: 2026-08-04
+
+Context:
+
+The interior range-min navigator, the last shape-taking callee in the cross-block
+close branch, splits into two independent halves: its **control flow**, driven by
+`RelativeRmm.canonicalLayout shape`, and its **component offsets**, which are word
+counts of the eight directory tables.
+
+Decision and result:
+
+`RelativeRmm.Layout` has exactly four fields, and all four are summary scalars
+this development already mirrors:
+
+| Field | Mirror |
+| --- | --- |
+| `blockSize` | `packedSummaryBlockSizeRaw n = 2 * (n.log2 + 1)` |
+| `blocksPerSuper` | `packedSummaryBase n = n.log2 + 1` |
+| `blockCount` | `packedSummaryBlockCountRaw n` |
+| `relativeWidth` | `packedSummaryRelativeWidthRaw n` |
+
+so `packedInteriorLayout n` mirrors the record and `packedInteriorLayout_eq` is
+`rfl`. Every derived quantity the navigator branches on -- `macroSize`,
+`macroSampleCount`, `offsetWidth`, `levelCount`, `globalLevelCount`,
+`superSampleCount` -- is a `Layout` method, so all of them follow.
+
+Consequences and evidence:
+
+- Pinned by `packedInteriorLayoutIsSizeOnly` and
+  `packedInteriorLayoutSignature`.
+- The interior's remaining half is `canonicalRelativeRmmInteriorComponentOffsets`
+  (`InteriorDirectory.lean:1614`): eight cumulative word counts plus a dead
+  address. Each is `(table.machineStore hword).store.words.size`, and
+  `machineStore_words_size_closed` (`GeometryClosure.lean:549`) already gives the
+  closed form `entries.length * (chunkPayloadWords wordSize (List.replicate width
+  false)).length`. The entry-count lemmas exist; what is missing is the
+  assembly.
+- `Layout.superWidth` takes a shape argument but returns
+  `machineWordBits shape.bpCode.length`, already mirrored -- it is a scalar, not
+  a residue.
+- `FG-07` remains Open.

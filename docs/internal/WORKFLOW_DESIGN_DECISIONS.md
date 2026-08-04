@@ -7130,3 +7130,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   frozen-cell comparison was required.
 - Commit making the endpoint-fringe candidate readers shape-free: matrix
   untouched, so no frozen-cell comparison was required.
+- Commit recording the T4 shortcut rejection and the interior layout mirror:
+  matrix untouched, so no frozen-cell comparison was required.

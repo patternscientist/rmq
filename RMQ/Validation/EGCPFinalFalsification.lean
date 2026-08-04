@@ -900,6 +900,21 @@ theorem packedRankCloseReadIsSizeOnly :
           pos :=
   packedRankCloseRead_size_only
 
+/-- Pins the interior layout mirror's signature. -/
+def packedInteriorLayoutSignature : Nat -> SuccinctClose.RelativeRmm.Layout :=
+  packedInteriorLayout
+
+/--
+Pins that the interior navigator's control-flow record is a function of the
+input size. Every field of `RelativeRmm.canonicalLayout shape` is a summary
+scalar already mirrored.
+-/
+theorem packedInteriorLayoutIsSizeOnly :
+    forall shape : CartesianShape,
+      SuccinctClose.RelativeRmm.canonicalLayout shape =
+        packedInteriorLayout shape.size :=
+  packedInteriorLayout_eq
+
 /-! #### The endpoint-fringe candidate readers are shape-free
 
 The cross-block branch's two endpoint readers needed no new mirrors: their only
