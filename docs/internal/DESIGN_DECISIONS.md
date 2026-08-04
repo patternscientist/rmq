@@ -5633,3 +5633,19 @@ linear bound on the close overhead exists in the tree.
 What this does not settle: the bound is proved over `packedMemory`, and nothing
 yet shows that object is what an execution probes. `INV-STORE-IDENTITY` stays
 open, and with it the row.
+
+Shape-free component bases under `DD-20260802-001` (2026-08-04):
+
+`packedComponentFlatOffset : Nat -> ConcreteBPNativeSuccinctRMQFlatPayloadComponent -> Nat`
+and `packedComponentFlatOffset_eq` complete the other half of the addressing
+story, and `packedSourceFlatOffset_eq` composes the two:
+
+  concreteBPNativeSuccinctRMQFlatPayloadSourceFlatOffset shape source
+    = packedSourceFlatOffset shape.size (longCount shape) source
+
+Worth recording: the component bases need **no** long count. The four components
+are separated by the BP code and the access padding, both size-only, so the long
+count is required only for positions *within* the select component. That is a
+sharper statement than "K = 1 suffices" and is what makes the header's role easy
+to describe: it moves nothing except the local, sparse and close-adjacent bases
+inside one component.

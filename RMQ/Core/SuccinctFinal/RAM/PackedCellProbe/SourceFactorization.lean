@@ -1074,6 +1074,69 @@ theorem packedSourceComponentOffset_eq
       packedSummaryBlockColumnLength] <;>
     omega
 
+/-! ### Shape-free component bases -/
+
+/--
+Where each counted component starts inside the flat payload, as a function of the
+input size alone.
+
+No long count appears: the components are separated by the access padding and the
+BP code, both of which are size-only. Only positions *within* the select component
+need the long count.
+-/
+def packedComponentFlatOffset (n : Nat) :
+    ConcreteBPNativeSuccinctRMQFlatPayloadComponent -> Nat
+  | .bpCode => 0
+  | .accessRankPayload => 2 * n
+  | .selectPayload => 2 * n + packedRankAuxLength n
+  | .closePayload => 2 * n + packedAccessOverhead n
+
+theorem packedComponentFlatOffset_eq
+    (shape : CartesianShape)
+    (component : ConcreteBPNativeSuccinctRMQFlatPayloadComponent) :
+    (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).componentFlatOffset
+        component =
+      packedComponentFlatOffset shape.size component := by
+  have hbp : (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).bpCodePayload.length =
+      2 * shape.size := by
+    simpa [concreteBPNativeSuccinctRMQFlatPayloadLayout] using
+      CartesianShape.bpCode_length shape
+  have hrank := rankAuxPayload_length shape
+  have hclose := closeComponent_flatOffset shape
+  cases component with
+  | bpCode => rfl
+  | accessRankPayload =>
+      simpa only [ConcreteBPNativeSuccinctRMQFlatPayloadLayout.componentFlatOffset,
+        packedComponentFlatOffset] using hbp
+  | selectPayload =>
+      simp only [ConcreteBPNativeSuccinctRMQFlatPayloadLayout.componentFlatOffset,
+        packedComponentFlatOffset, hbp, hrank]
+  | closePayload =>
+      simpa only [packedComponentFlatOffset] using hclose
+
+/--
+**The whole flat address, shape-free.** The bit position of a source inside the
+canonical payload, computed from the input size, the decoded long count and the
+typed source.
+-/
+def packedSourceFlatOffset (n longCount : Nat)
+    (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource) : Nat :=
+  packedComponentFlatOffset n
+      (concreteBPNativeSuccinctRMQFlatPayloadSourceComponent source) +
+    packedSourceComponentOffset n longCount source
+
+theorem packedSourceFlatOffset_eq
+    (shape : CartesianShape)
+    (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource) :
+    concreteBPNativeSuccinctRMQFlatPayloadSourceFlatOffset shape source =
+      packedSourceFlatOffset shape.size (longCount shape) source := by
+  show (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).componentFlatOffset
+        (concreteBPNativeSuccinctRMQFlatPayloadSourceComponent source) +
+      concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset shape source =
+    packedSourceFlatOffset shape.size (longCount shape) source
+  unfold packedSourceFlatOffset
+  rw [packedComponentFlatOffset_eq, packedSourceComponentOffset_eq]
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ

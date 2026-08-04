@@ -125,6 +125,21 @@ theorem packedLongRelativeLengthIsLongCountTimesSizeOnly :
             GenericSelect.wordBits (2 * shape.size)) :=
   longSuperRelativeTable_length_eq
 
+/--
+Pins the whole flat address, not just the within-component part: component base
+plus offset, both computed from the size and the decoded long count alone.
+-/
+def packedSourceFlatOffsetSignature :
+    Nat -> Nat -> ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Nat :=
+  packedSourceFlatOffset
+
+theorem packedSourceFlatOffsetAgrees :
+    forall (shape : CartesianShape)
+      (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource),
+      concreteBPNativeSuccinctRMQFlatPayloadSourceFlatOffset shape source =
+        packedSourceFlatOffset shape.size (longCount shape) source :=
+  packedSourceFlatOffset_eq
+
 /-! ### The `K = 1` header -/
 
 /-- Pins `P` and `w` as functions of the input size alone. -/
