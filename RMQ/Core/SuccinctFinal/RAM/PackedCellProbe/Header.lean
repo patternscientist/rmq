@@ -1,4 +1,4 @@
-import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.SourceFactorization
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Payload
 
 /-!
 # The `K = 1` packed header
@@ -60,6 +60,11 @@ theorem packedPayloadLength_eq (shape : CartesianShape) :
   concreteBPNativeSuccinctRMQFlatPayloadLayout_payload_length
     (mem_shapesOfSize_size shape)
 
+/-- The same length, stated at the `FG-01` payload object the memory stores. -/
+theorem packedPayloadBits_length (shape : CartesianShape) :
+    (packedPayloadBits shape).length = packedPayloadLength shape.size :=
+  packedPayloadLength_eq shape
+
 /-! ### `w n`: the packed cell width -/
 
 /--
@@ -73,6 +78,32 @@ def packedCellWidth (n : Nat) : Nat :=
 
 theorem packedCellWidth_pos (n : Nat) : 0 < packedCellWidth n :=
   SuccinctRank.machineWordBits_pos _
+
+/--
+A cell is at least two bits wide at every size.
+
+Needed so that a boundary-crossing read exists at all: a one-bit cell could not
+be straddled, and a crossing test at such a width would be vacuous.
+-/
+theorem packedCellWidth_ge_two (n : Nat) : 2 <= packedCellWidth n := by
+  have hlog : Nat.log2 2 = 1 := by
+    refine Nat.le_antisymm ?_ ((Nat.le_log2 (n := 2) (by omega)).2 (by omega))
+    by_cases hle : Nat.log2 2 <= 1
+    · exact hle
+    · have htwo : 2 <= Nat.log2 2 := by omega
+      have hpow : 2 ^ 2 <= 2 ^ Nat.log2 2 :=
+        Nat.pow_le_pow_right (by omega) htwo
+      have hself : 2 ^ Nat.log2 2 <= 2 := Nat.log2_self_le (by omega)
+      omega
+  have hmono :
+      SuccinctRank.machineWordBits 2 <=
+        SuccinctRank.machineWordBits (packedPayloadLength n + 2) :=
+    SuccinctRank.machineWordBits_mono_le (by omega)
+  have h2 : SuccinctRank.machineWordBits 2 = 2 := by
+    unfold SuccinctRank.machineWordBits
+    rw [hlog]
+  unfold packedCellWidth
+  omega
 
 /-- The payload length and its one-past-the-end address both fit one cell. -/
 theorem packedPayloadLength_lt_two_pow_width (n : Nat) :
@@ -169,6 +200,64 @@ example :
           CartesianShape.empty)) =
       longCount (CartesianShape.node CartesianShape.empty CartesianShape.empty) :=
   packedHeaderBits_decode _
+
+/-! #### `n = 2`
+
+Size two is the first size with more than one shape, so it is the smallest case
+that can distinguish "the width is a function of the input size" from "the width
+happens to agree on the shapes tried so far". Both shapes of size two are
+instantiated, and both are checked to have arity `packedCellWidth 2` — the same
+numeral applied to the same size, not two coincidentally equal widths.
+-/
+
+/-- The left-leaning shape of size two. -/
+def packedSizeTwoLeft : CartesianShape :=
+  CartesianShape.node (CartesianShape.node CartesianShape.empty
+    CartesianShape.empty) CartesianShape.empty
+
+/-- The right-leaning shape of size two. -/
+def packedSizeTwoRight : CartesianShape :=
+  CartesianShape.node CartesianShape.empty
+    (CartesianShape.node CartesianShape.empty CartesianShape.empty)
+
+example : packedSizeTwoLeft.size = 2 := rfl
+
+example : packedSizeTwoRight.size = 2 := rfl
+
+example : Not (packedSizeTwoLeft = packedSizeTwoRight) := by
+  intro h
+  exact CartesianShape.noConfusion h fun hleft _ =>
+    CartesianShape.noConfusion hleft
+
+example : (packedHeaderBits packedSizeTwoLeft).length = packedCellWidth 2 :=
+  packedHeaderBits_length packedSizeTwoLeft
+
+example : (packedHeaderBits packedSizeTwoRight).length = packedCellWidth 2 :=
+  packedHeaderBits_length packedSizeTwoRight
+
+example :
+    SuccinctSpace.bitsToNatLE (packedHeaderBits packedSizeTwoLeft) =
+      longCount packedSizeTwoLeft :=
+  packedHeaderBits_decode packedSizeTwoLeft
+
+example :
+    SuccinctSpace.bitsToNatLE (packedHeaderBits packedSizeTwoRight) =
+      longCount packedSizeTwoRight :=
+  packedHeaderBits_decode packedSizeTwoRight
+
+example : longCount packedSizeTwoLeft < 2 ^ packedCellWidth 2 :=
+  longCount_lt_two_pow_width packedSizeTwoLeft
+
+example : longCount packedSizeTwoRight < 2 ^ packedCellWidth 2 :=
+  longCount_lt_two_pow_width packedSizeTwoRight
+
+example :
+    (packedPayloadBits packedSizeTwoLeft).length = packedPayloadLength 2 :=
+  packedPayloadBits_length packedSizeTwoLeft
+
+example :
+    (packedPayloadBits packedSizeTwoRight).length = packedPayloadLength 2 :=
+  packedPayloadBits_length packedSizeTwoRight
 
 end PackedCellProbe
 end SuccinctFinal

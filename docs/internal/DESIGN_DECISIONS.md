@@ -5684,3 +5684,135 @@ decoded long count, the typed source, the index and the width.
 This is the step that turns "which source and index do I want" into "which two
 cells do I probe". It is not a controller: nothing here executes, and the range
 and decoding obligations are untouched.
+
+## DD-20260804-001: issue a conditional one-or-two-cell probe plan, and fetch through a failing accessor
+
+Status: Worker decision recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Governs how `EG-CP` rows `FG-05`,
+`FG-08` and `FG-09` compute and justify physical cell addresses. Supersedes the
+`FG-07`/`FG-08` address-arithmetic paragraph appended to `DD-20260802-001` on
+2026-08-04, which described `packedProbeCells`, `packedProbeOffset` and
+`packedRead_from_two_cells`; those three declarations no longer exist.
+
+Date: 2026-08-04
+
+Context:
+
+The first draft of the packed addressing layer computed, for a read starting at
+bit `b`, the unconditional cell pair `(b / w, b / w + 1)`, and recovered the
+requested span from the concatenation of those two cells. The recovery theorem
+was true, but for the wrong reason at the end of the memory. `packedCellAt` is a
+total function built from `List.drop` and `List.take`, so at any index at or past
+`packedCellCount` it returns the empty list. A read wholly contained in the final
+allocated cell therefore "succeeded" while naming an address that does not exist,
+and the concatenation `cell ++ []` silently absorbed the difference.
+
+That is precisely the shape of claim a cell-probe result must not make. The
+content of a cell-probe bound is that the algorithm touches `C` real cells of a
+real memory; a bound that counts an address the memory does not have is counting
+something else.
+
+Decision:
+
+1. `packedProbePlan n bit width` is executable and conditional. It issues no
+   probe for a zero-width request, one probe when
+   `bit % w + width <= w`, and two probes otherwise. The charged count
+   `packedProbeCount` is the issued plan's `length`, not a separately declared
+   numeral.
+2. Probes are issued through `packedProbeCell`, which is `List.getElem?` and
+   therefore returns `none` outside the allocation, and a plan is issued through
+   `packedFetch`, which returns `some` only when every address in the plan
+   resolved. Nothing in the probe layer consults the total `packedCellAt`
+   accessor to obtain a reply.
+3. `packedProbePlan_lt_cellCount` proves that every issued address is below
+   `packedCellCount n` from the single hypothesis
+   `bit + width <= packedAllocatedBits n`, and `packedFetch_plan` turns that into
+   a successful fetch. `packedProbePlan_decode` then proves the fetched cells
+   decode to exactly the requested window, and `packedSourceRead_decode` states
+   the same conclusion at the canonical payload slice of a typed source.
+
+Rationale:
+
+The three-way split is stronger than the two-way one the prompt's wording
+suggests, not weaker: a zero-width request has an empty requested range, and
+issuing one probe for it would be an address the allocation need not contain when
+the request sits exactly at the end of the memory. Making the empty case explicit
+removes the only hypothesis (`bit < packedAllocatedBits n`) that would otherwise
+have to be carried alongside the range-fits hypothesis, so the allocation theorem
+now has one premise instead of two.
+
+Fetching through `List.getElem?` rather than a total accessor is what makes the
+allocation claim load-bearing. With a total accessor the decoding theorem holds
+whether or not the address exists, so no mutation of the address arithmetic can
+be detected by it. With the failing accessor, an out-of-range address makes
+`packedFetch` return `none` and the decoding equation becomes unprovable.
+
+Consequences and evidence:
+
+- `packedMemory_getElem?_cellCount : (packedMemory shape)[packedCellCount
+  shape.size]? = none` records that the address the old plan issued at the end of
+  the memory is genuinely absent, so the repair is not cosmetic.
+- `packedProbe_final_cell` is the boundary case that separates the two designs: a
+  positive-width read contained in the last allocated cell issues exactly
+  `[packedCellCount - 1]` and fetches successfully. Under the old plan the second
+  issued address would have been `packedCellCount`, and the fetch would have
+  returned `none`.
+- `packedProbePlan_of_offset` and `packedProbePlan_of_crossing` show both
+  branches are reachable, so the conditional is not constant in disguise.
+  `packedCellWidth_ge_two` is needed for the second: a one-bit cell could not be
+  straddled and the crossing instances would be vacuous.
+- `packedProbe_covers_range` states coverage in the form that survives the
+  zero-width case: after skipping the in-cell offset, at least `width` bits
+  remain in the fetched window.
+- `packedProbeCount_le_two` is an upper bound on the probes of one logical read.
+  It is not a whole-run cap: no run exists yet, and `FG-09` requires the cap to
+  be derived from an actual execution.
+
+## DD-20260804-002: state the raw payload identity separately from its length
+
+Status: Worker decision recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Governs how `EG-CP` row `FG-01` is
+evidenced.
+
+Date: 2026-08-04
+
+Context:
+
+Until this commit the packed modules referred to the stored bits only through
+`(concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload` and through the
+length theorem `packedPayloadLength_eq`. A length agreement is exactly the kind
+of evidence `INV-STORE-IDENTITY` rejects: a separately defined payload of the
+same length satisfies it, and registry mutation `M11-SIBLING-PAYLOAD` is built to
+exploit that gap.
+
+Decision:
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Payload.lean` names the stored bits
+`packedPayloadBits` and proves
+`packedPayloadBits shape = concreteBPNativeSuccinctRMQPayload
+builtGenericSparseExceptionSelectBPCloseAccessFamily shape` by `rfl`, with a
+list-facing companion `packedPayloadBitsOfList_eq_canonical`. `packedSerializedBits`
+is redefined to append that object, and `packedSerializedBits_drop_header` proves
+that dropping the one header cell recovers it exactly.
+
+Rationale:
+
+`rfl` is the strongest available form of this row's evidence: the right-hand side
+is the existing canonical definition applied to the existing access family, so
+there is no second object to keep in sync and no equality that could be proved
+about a copy. Stating it separately from the length keeps the two obligations
+distinguishable in the matrix; folding it into `packedPayloadLength_eq` would
+make a sibling payload look closed.
+
+Consequences and evidence:
+
+- `packedSerializedBits_drop_header` is the "no hidden table" clause in the form
+  a reader can check: everything after the header cell is the canonical payload,
+  so an extra table would have to be inside that object and would be counted by
+  the space row.
+- `packedPayloadBits_eq_bpCode_append_aux` expands one level, recording that the
+  stored string is the BP code followed by the auxiliary payload and nothing
+  else.
+- The identity is now consumed rather than merely stated: `packedSerializedBits`,
+  hence `packedPaddedBits`, `packedMemory` and every probe theorem, take their
+  bits from this object.

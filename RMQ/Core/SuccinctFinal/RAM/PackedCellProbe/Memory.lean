@@ -30,16 +30,31 @@ open RMQ.Cartesian
 
 /-! ### Serialized bits -/
 
-/-- The header cell followed by the canonical payload. -/
+/--
+The header cell followed by the canonical payload.
+
+The second summand is `packedPayloadBits`, the `FG-01` object, so the memory
+below is built from the canonical payload rather than from a re-derived copy.
+-/
 def packedSerializedBits (shape : CartesianShape) : List Bool :=
-  packedHeaderBits shape ++
-    (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload
+  packedHeaderBits shape ++ packedPayloadBits shape
 
 theorem packedSerializedBits_length (shape : CartesianShape) :
     (packedSerializedBits shape).length =
       packedCellWidth shape.size + packedPayloadLength shape.size := by
   unfold packedSerializedBits
-  rw [List.length_append, packedHeaderBits_length, packedPayloadLength_eq]
+  rw [List.length_append, packedHeaderBits_length, packedPayloadBits_length]
+
+/--
+**Nothing but the header and the canonical payload is serialized.** Everything
+after the header cell is the `FG-01` payload object; the memory contains no
+second table beside it.
+-/
+theorem packedSerializedBits_drop_header (shape : CartesianShape) :
+    (packedSerializedBits shape).drop (packedCellWidth shape.size) =
+      packedPayloadBits shape := by
+  unfold packedSerializedBits
+  rw [← packedHeaderBits_length shape, List.drop_left]
 
 /-! ### Cell count and allocation -/
 
