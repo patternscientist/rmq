@@ -6734,3 +6734,60 @@ controller holding only `n` can now issue the `rankCloseIfSome` leaf outright,
 with no supplied scalars left over.
 
 Pinned by `packedRankCloseReadIsSizeOnly`.
+
+## DD-20260804-012: the same-block close branch is shape-free
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Completes one of the two close/LCA
+branches. Feeds `EG-CP` row `FG-07`.
+
+Date: 2026-08-04
+
+Context:
+
+`DD-20260804-011` and its addenda reduced the same-block branch step by step: the
+navigator's dispatch is `2 * (n.log2 + 1)`; the local-BP seed is shape-free given
+the caller's rank reader; the seeded reader is shape-free given its window trace.
+One function remained: the window reader.
+
+Decision and result:
+
+`localBPBlockWordsTraceResultWithStore` is four consecutive BP-code word reads
+against the supplied store, starting at
+`blockStartOf blockSize (blockOfClose blockSize close) / wordSize`, and its only
+shape use is that `wordSize = machineWordBits shape.bpCode.length`, the BP-code
+word width already mirrored. `packedLocalBPBlockWordsRead` and
+`packedLocalBPWindowBitsRead` remove it, with
+`packedLocalBPBlockWordsRead_eq` and `packedLocalBPWindowBitsRead_eq`.
+
+Composing seed, window reader and seeded reader gives
+`packedSameBlockCloseDecodedRead`, with `packedSameBlockCloseDecodedRead_eq`:
+
+```
+bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+    shape rankCloseTrace fringeSegment store blockSize leftClose rightClose =
+  packedSameBlockCloseDecodedRead store rankCloseTrace fringeSegment
+    shape.size blockSize leftClose rightClose
+```
+
+The rank-close reader stays a supplied argument, as it must -- it is the caller's
+choice -- and `packedRankCloseRead_size_only` shows the caller can build it from
+`n` with nothing shape-derived left over.
+
+Rationale:
+
+The composition proof needed `simp only` rather than `rw` for the two inner
+rewrites, because the seeded reader occurs under the `bind` continuation's binder.
+That is a proof-engineering detail, not a weakening: the statement is still an
+equation between the real branch and the shape-free one, at every shape.
+
+Consequences and evidence:
+
+- Pinned by `packedSameBlockCloseBranchIsShapeFree`,
+  `packedLocalBPWindowBitsReadIsShapeFree`,
+  `packedSameBlockCloseDecodedReadSignature`.
+- Of the close/LCA route, the same-block branch is now closed. The cross-block
+  branch
+  (`bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`)
+  is the only part still unexamined.
+- `FG-07` remains Open: no top-level controller definition exists.

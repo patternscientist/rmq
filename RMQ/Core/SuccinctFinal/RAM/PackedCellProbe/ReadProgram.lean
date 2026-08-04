@@ -926,6 +926,77 @@ theorem packedRankCloseRead_size_only
     packedCloseRankBlocksPerSuper_eq, CartesianShape.bpCode_length]
   rfl
 
+/-! #### The window reader, and with it the whole same-block branch
+
+`localBPBlockWordsTraceResultWithStore` is four consecutive BP-code word reads
+against the supplied store, starting at
+`blockStartOf blockSize (blockOfClose blockSize close) / wordSize`. Its only use
+of the shape is that `wordSize`, which is `machineWordBits shape.bpCode.length` --
+the BP-code word width already mirrored.
+
+That was the last shape-taking function in the same-block branch, so this section
+also composes the branch itself into a shape-free definition.
+-/
+
+/-- The four BP-code word reads of a local block, with no shape argument. -/
+def packedLocalBPBlockWordsRead (store : WordRAM.ReadStore)
+    (n blockSize close : Nat) : WordRAM.TraceResult (List (List Bool)) :=
+  WordRAM.TraceResult.bind
+    (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeWordReadTraceResultWithStore
+      store
+      (SuccinctClose.blockStartOf blockSize
+          (SuccinctClose.blockOfClose blockSize close) /
+        packedBpCodeWordWidth n))
+    fun w0 =>
+      WordRAM.TraceResult.bind
+        (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeWordReadTraceResultWithStore
+          store
+          (SuccinctClose.blockStartOf blockSize
+              (SuccinctClose.blockOfClose blockSize close) /
+            packedBpCodeWordWidth n + 1))
+        fun w1 =>
+          WordRAM.TraceResult.bind
+            (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeWordReadTraceResultWithStore
+              store
+              (SuccinctClose.blockStartOf blockSize
+                  (SuccinctClose.blockOfClose blockSize close) /
+                packedBpCodeWordWidth n + 2))
+            fun w2 =>
+              WordRAM.TraceResult.map (fun w3 => w0 ++ w1 ++ w2 ++ w3)
+                (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeWordReadTraceResultWithStore
+                  store
+                  (SuccinctClose.blockStartOf blockSize
+                      (SuccinctClose.blockOfClose blockSize close) /
+                    packedBpCodeWordWidth n + 3))
+
+theorem packedLocalBPBlockWordsRead_eq
+    (shape : CartesianShape) (store : WordRAM.ReadStore)
+    (blockSize close : Nat) :
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore
+        shape store blockSize close =
+      packedLocalBPBlockWordsRead store shape.size blockSize close := by
+  unfold
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore
+    packedLocalBPBlockWordsRead packedBpCodeWordWidth
+  rw [CartesianShape.bpCode_length]
+
+/-- The local window bits, with no shape argument. -/
+def packedLocalBPWindowBitsRead (store : WordRAM.ReadStore)
+    (n blockSize close : Nat) : WordRAM.TraceResult (List Bool) :=
+  WordRAM.TraceResult.map SuccinctSpace.flattenPayloadWords
+    (packedLocalBPBlockWordsRead store n blockSize close)
+
+theorem packedLocalBPWindowBitsRead_eq
+    (shape : CartesianShape) (store : WordRAM.ReadStore)
+    (blockSize close : Nat) :
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResultWithStore
+        shape store blockSize close =
+      packedLocalBPWindowBitsRead store shape.size blockSize close := by
+  unfold
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResultWithStore
+    packedLocalBPWindowBitsRead
+  rw [packedLocalBPBlockWordsRead_eq]
+
 /-! #### The same-block seeded reader
 
 Its shape uses are the fringe chunk width, the local-BP window base, and the
@@ -974,6 +1045,47 @@ theorem packedSameBlockCloseSeededRead_eq
   unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore
     packedSameBlockCloseSeededRead
   rw [packedFringeChunkBits_eq, packedLocalBPWindowBase_eq]
+
+/-! #### The whole same-block close branch, shape-free
+
+Composing the seed, the window reader and the seeded reader. The rank-close
+reader stays a supplied argument, as it must: it is the caller's choice, and
+`packedRankCloseRead_size_only` shows the caller can build it from `n`.
+-/
+
+/-- The decoded same-block close reader with no shape argument. -/
+def packedSameBlockCloseDecodedRead (store : WordRAM.ReadStore)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (fringeSegment n blockSize leftClose rightClose : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.bind
+    (packedLocalBPSeed n rankCloseTrace blockSize leftClose)
+    fun seed =>
+      packedSameBlockCloseSeededRead store fringeSegment
+        (packedLocalBPWindowBitsRead store n blockSize leftClose) n blockSize
+        leftClose rightClose seed
+
+/--
+**The same-block close branch is shape-free.**
+
+Every shape use in the branch -- the seed's window base, the seeded reader's
+fringe width and window base, and the window reader's word size -- is a function
+of the input size, and the rank-close reader is supplied by the caller.
+-/
+theorem packedSameBlockCloseDecodedRead_eq
+    (shape : CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (fringeSegment : Nat) (store : WordRAM.ReadStore)
+    (blockSize leftClose rightClose : Nat) :
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+        shape rankCloseTrace fringeSegment store blockSize leftClose rightClose =
+      packedSameBlockCloseDecodedRead store rankCloseTrace fringeSegment
+        shape.size blockSize leftClose rightClose := by
+  unfold
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+    packedSameBlockCloseDecodedRead
+  rw [packedLocalBPSeed_eq]
+  simp only [packedSameBlockCloseSeededRead_eq, packedLocalBPWindowBitsRead_eq]
 
 
 /--

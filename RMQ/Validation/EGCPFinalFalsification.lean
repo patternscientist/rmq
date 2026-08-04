@@ -900,6 +900,45 @@ theorem packedRankCloseReadIsSizeOnly :
           pos :=
   packedRankCloseRead_size_only
 
+/-! #### The same-block close branch is shape-free
+
+Composing the seed, the window reader and the seeded reader. The rank-close
+reader remains a supplied argument, and `packedRankCloseReadIsSizeOnly` shows the
+caller can build it from `n`.
+-/
+
+/-- Pins the shape-free same-block branch's signature. -/
+def packedSameBlockCloseDecodedReadSignature :
+    WordRAM.ReadStore -> (Nat -> WordRAM.TraceResult Nat) ->
+      Nat -> Nat -> Nat -> Nat -> Nat -> WordRAM.TraceResult (Option Nat) :=
+  packedSameBlockCloseDecodedRead
+
+/--
+Pins that the whole same-block close branch is shape-free: every shape use in it
+-- the seed's window base, the seeded reader's fringe width and window base, and
+the window reader's word size -- is a function of the input size.
+-/
+theorem packedSameBlockCloseBranchIsShapeFree :
+    forall (shape : CartesianShape)
+      (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+      (fringeSegment : Nat) (store : WordRAM.ReadStore)
+      (blockSize leftClose rightClose : Nat),
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+          shape rankCloseTrace fringeSegment store blockSize leftClose
+          rightClose =
+        packedSameBlockCloseDecodedRead store rankCloseTrace fringeSegment
+          shape.size blockSize leftClose rightClose :=
+  packedSameBlockCloseDecodedRead_eq
+
+/-- Pins that the local window reader is shape-free. -/
+theorem packedLocalBPWindowBitsReadIsShapeFree :
+    forall (shape : CartesianShape) (store : WordRAM.ReadStore)
+      (blockSize close : Nat),
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResultWithStore
+          shape store blockSize close =
+        packedLocalBPWindowBitsRead store shape.size blockSize close :=
+  packedLocalBPWindowBitsRead_eq
+
 /-- Pins that the rank seed it supplies is already record-free. -/
 theorem packedLcaCloseRankSeedIsRecordFree :
     forall (shape : CartesianShape) (store : WordRAM.ReadStore) (pos : Nat),

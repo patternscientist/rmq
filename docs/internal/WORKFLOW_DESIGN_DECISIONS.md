@@ -7126,3 +7126,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   so no frozen-cell comparison was required.
 - Commit making the close rank leaf fully size-only: matrix untouched, so no
   frozen-cell comparison was required.
+- Commit closing the same-block close branch: matrix untouched, so no
+  frozen-cell comparison was required.
