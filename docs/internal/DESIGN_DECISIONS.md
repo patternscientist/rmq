@@ -6917,3 +6917,24 @@ Consequences and evidence:
   `machineWordBits shape.bpCode.length`, already mirrored -- it is a scalar, not
   a residue.
 - `FG-07` remains Open.
+
+### Addendum to `DD-20260804-014` (2026-08-04): converting the interior congruences into mirrors
+
+`GeometryClosure.lean` already proves each interior table's machine-word count is
+*determined* by the size: `baselineWords_congr` and its seven siblings, joined by
+`componentStoreWords_congr` and `offsets_congr`. Those are congruences, and
+`DD-20260802-001` records why a congruence is not executability evidence.
+
+Their proofs are, however, exactly the recipe a mirror needs:
+`machineStore_words_size_closed` followed by the table's entry-count lemma, then
+`layout_congr` / `bpLen_congr` to move to the other shape. Replacing that last
+step with `packedInteriorLayout_eq` and `CartesianShape.bpCode_length` lands on a
+`Nat`-only expression instead.
+
+`packedInteriorTableWords entryCount width wordSize` is the closed form, and
+`packedBaselineWords` with `packedBaselineWords_eq` is the first of the eight
+converted this way. Seven table counts and the cumulative offsets record remain.
+
+This required importing `RMQ.Core.SuccinctFinal.RAM.GeometryClosure` into
+`ReadProgram.lean`. No cycle: `GeometryClosure` is a leaf reached only from
+`RMQ.lean`, and nothing in it imports the packed cell-probe modules.

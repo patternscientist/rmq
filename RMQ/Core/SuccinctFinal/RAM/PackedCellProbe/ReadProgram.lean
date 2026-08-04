@@ -2,6 +2,7 @@ import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Probe
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedRankSelectLeafTrace
 import RMQ.Core.SuccinctFinalStoreParam
+import RMQ.Core.SuccinctFinal.RAM.GeometryClosure
 
 /-!
 # Logical reads carry no table content
@@ -1075,6 +1076,47 @@ theorem packedInteriorLayout_eq (shape : CartesianShape) :
     SuccinctClose.RelativeRmm.canonicalLayout shape =
       packedInteriorLayout shape.size :=
   rfl
+
+/-! #### Interior component word counts, as mirrors rather than congruences
+
+`GeometryClosure.lean` already proves each interior table's machine-word count is
+*determined* by the size (`baselineWords_congr` and its seven siblings, joined by
+`offsets_congr`). Those are congruences, and `DD-20260802-001` records why a
+congruence is not executability evidence: it says the count is fixed by `n`, not
+that a controller can compute it.
+
+This section converts the first of them into a mirror, using the same recipe the
+congruence proof uses -- `machineStore_words_size_closed` plus the table's
+entry-count lemma -- but landing on a `Nat`-only expression instead of on the
+other shape.
+-/
+
+/-- The machine-word count of a fixed-width table, in closed form. -/
+def packedInteriorTableWords (entryCount width wordSize : Nat) : Nat :=
+  entryCount *
+    (SuccinctSpace.chunkPayloadWords wordSize
+      (List.replicate width false)).length
+
+/-- Size-only mirror of the superblock baseline table's machine-word count. -/
+def packedBaselineWords (n : Nat) : Nat :=
+  packedInteriorTableWords (packedInteriorLayout n).superSampleCount
+    (packedBpCodeWordWidth n) (packedBpCodeWordWidth n)
+
+/--
+**The baseline table's word count is a function of the input size.**
+
+The congruence `baselineWords_congr` says two shapes of equal size agree here.
+This says what the count *is*, in a form a controller can evaluate.
+-/
+theorem packedBaselineWords_eq (shape : CartesianShape) :
+    ((SuccinctClose.canonicalRelativeRmmSummaryTable shape).baselineTable.machineStore
+        (SuccinctRank.machineWordBits_pos shape.bpCode.length)).store.words.size =
+      packedBaselineWords shape.size := by
+  rw [GeometryClosure.machineStore_words_size_closed,
+    SuccinctClose.bpSuperblockBaselineEntries_length]
+  simp only [SuccinctClose.RelativeRmm.Layout.superWidth]
+  unfold packedBaselineWords packedInteriorTableWords packedBpCodeWordWidth
+  rw [packedInteriorLayout_eq, CartesianShape.bpCode_length]
 
 /-! #### The endpoint-fringe candidate readers
 
