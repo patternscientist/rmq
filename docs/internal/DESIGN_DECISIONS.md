@@ -8354,3 +8354,66 @@ second would be a theorem about `sparseExceptionFlagBits` on BP codes.
 Recorded as an open question with both branches stated, rather than as a finding,
 because the branch that says "obstruction" is exactly the one a worker under
 pressure to finish would be tempted to claim early.
+
+## DD-20260804-040: the obstruction candidate is not supported; the sparse path looks unreachable
+
+Status: Evidence recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. **Evaluation, not proof.** Selects the
+branch `DD-20260804-039` left open.
+
+Date: 2026-08-04
+
+`DD-20260804-039` recorded two branches. The measurements are in.
+
+The predicate is
+
+```
+localIsSparseException bits target slot =
+  (! superIsLong bits target (localSuperSlot bits.length slot)) &&
+    decide (wordBits bits.length < shortSuperLocalSpan bits target slot)
+```
+
+-- a slot is a sparse exception exactly when its superblock is **not** long yet
+its local span still exceeds `wordBits`. Nothing in the definition forces it to
+`false`, so the question was empirical.
+
+Measured sparse exception counts, `rankPrefix true (sparseExceptionFlagBits
+shape.bpCode false) (localSlotCount shape.bpCode false)`:
+
+* **exhaustively over every shape of every size `0` .. `8`**: the set of distinct
+  counts is `[0]` at each size -- not one exception among all Catalan-many shapes;
+* **sizes `64`, `256`, `1024`, `4096`, across four shape families** -- left spine,
+  right spine, balanced, zigzag -- : `0` in all sixteen cases.
+
+So **branch 2 is not supported**: no witness of a positive sparse count was found,
+and therefore no evidence that the close component's offset in the reviewer
+payload is content-dependent. The `K1` obstruction candidate of `DD-20260804-039`
+is withdrawn as unsupported. It is not refuted -- absence of a witness is not a
+proof -- but it should not be pursued as if it were live.
+
+Why this is plausible rather than a sampling accident: a BP code of a shape of
+size `n` has exactly `n` target occurrences in `2 * n` bits, so gaps average `2`.
+A local slot's span exceeds `wordBits (2 * n)` only in a locally sparse region,
+and a region sparse enough to do that is exactly what makes its superblock
+**long** -- which the first conjunct then excludes. The sparse-exception path
+appears to be designed for parameter regimes this instantiation does not reach.
+
+Consequences, and the next target:
+
+- The `FG-01` re-target of `DD-20260804-038` proceeds. The reviewer layout's close
+  offset is size-only if the sparse relative table is empty, which the evidence
+  indicates.
+- `DD-20260804-022`'s asymmetry -- the one source whose word count is not
+  size-only -- probably dissolves rather than needing the capacity bound: if the
+  count is always `0`, `packedSelectSparseRelativeWords_of_some` can be
+  strengthened from an implication to an equation with count `0`, and the store
+  equality of `packedBackedStore_eq_readWord` extends to all twenty-nine sources.
+- The next smallest target is therefore a **theorem, not a search**:
+  `sparseExceptionRelativeEntries shape.bpCode false = []` for every
+  `CartesianShape`, or equivalently
+  `localIsSparseException shape.bpCode false slot = false` for every slot. The
+  route is the observation above: `wordBits (2n) < shortSuperLocalSpan` should
+  imply `superIsLong`, making the conjunction unsatisfiable.
+
+Recorded as evidence with its limits stated, because "we looked and found none"
+and "there are none" are different claims and only the first is established.

@@ -7227,3 +7227,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   it is auditable independently of whether the construction succeeds.
 - Commit recording the re-target's first obligation: matrix untouched, so no
   frozen-cell comparison was required.
+- Commit recording the sparse-count measurements: matrix untouched, so no
+  frozen-cell comparison was required.
