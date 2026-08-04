@@ -7144,3 +7144,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   frozen-cell comparison was required.
 - Commit completing the interior computation tower: matrix untouched, so no
   frozen-cell comparison was required.
+- Commit closing the whole close/LCA route: matrix untouched, so no frozen-cell
+  comparison was required.

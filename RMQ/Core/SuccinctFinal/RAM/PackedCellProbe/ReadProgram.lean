@@ -1758,6 +1758,35 @@ theorem packedInteriorRangeMinComputation_eq
     packedLeftMiddleMacroCandidateComputation_eq,
     packedCrossMacroCandidateComputation_eq, packedInteriorLayout_eq]
 
+/-! #### The store-parameterized interior read
+
+A pass-through: it runs the interior computation against the supplied store's
+flat view. The computation is now shape-free, so the wrapper is too.
+-/
+
+/-- The store-parameterized interior range-min read, with no shape argument. -/
+def packedInteriorRangeMinRead
+    (segments : SuccinctClose.BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore) (n startBlock count : Nat) :
+    WordRAM.TraceResult (Option (Prod Nat Nat)) :=
+  SuccinctClose.flatStoreExecutionTraceResultAtSegment
+    segments.canonicalComponent
+    ((packedInteriorRangeMinComputation n startBlock count).run
+      (SuccinctClose.flatWordStoreOfReadStore
+        store segments.canonicalComponent))
+
+theorem packedInteriorRangeMinRead_eq
+    (shape : CartesianShape)
+    (segments : SuccinctClose.BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore) (startBlock count : Nat) :
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+        shape segments store startBlock count =
+      packedInteriorRangeMinRead segments store shape.size startBlock count := by
+  unfold
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+    packedInteriorRangeMinRead
+  rw [packedInteriorRangeMinComputation_eq]
+
 /-! #### The endpoint-fringe candidate readers
 
 The cross-block branch's two endpoint readers use exactly three shape-derived
@@ -1834,6 +1863,60 @@ theorem packedRightFringeCandidateRead_eq
   simp only [packedFringeChunkBits_eq, packedLocalBPWindowBase_eq,
     packedLocalBPWindowBitsRead_eq]
 
+/-! #### The cross-block close branch, shape-free
+
+Every callee is now mirrored: the dispatch block size, the local-BP seed, both
+endpoint-fringe readers, and the interior read.
+-/
+
+/-- The cross-block close reader, with no shape argument. -/
+def packedCrossBlockCloseRead
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : SuccinctClose.BPRelativeRmmInteriorTraceSegments)
+    (fringeSegment : Nat) (store : WordRAM.ReadStore)
+    (n leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
+  let blockSize := packedSummaryBlockSizeRaw n
+  let leftBlock := SuccinctClose.blockOfClose blockSize leftClose
+  let rightBlock := SuccinctClose.blockOfClose blockSize rightClose
+  WordRAM.TraceResult.bind
+    (packedLocalBPSeed n rankCloseTrace blockSize leftClose) fun leftSeed =>
+    WordRAM.TraceResult.bind
+      (packedLeftFringeCandidateRead store fringeSegment n blockSize leftClose
+        leftSeed) fun left? =>
+      WordRAM.TraceResult.bind
+        (if leftBlock + 1 < rightBlock then
+          packedInteriorRangeMinRead segments store n (leftBlock + 1)
+            (rightBlock - leftBlock - 1)
+        else
+          WordRAM.TraceResult.pure none) fun middle? =>
+        WordRAM.TraceResult.bind
+          (packedLocalBPSeed n rankCloseTrace blockSize rightClose)
+          fun rightSeed =>
+            WordRAM.TraceResult.map
+              (fun right? =>
+                SuccinctClose.bpCandidateClose?
+                  (SuccinctClose.bpCandidateMerge3? left? middle? right?))
+              (packedRightFringeCandidateRead store fringeSegment n blockSize
+                rightClose rightSeed)
+
+/-- **The cross-block close branch is shape-free.** -/
+theorem packedCrossBlockCloseRead_eq
+    (shape : CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : SuccinctClose.BPRelativeRmmInteriorTraceSegments)
+    (fringeSegment : Nat) (store : WordRAM.ReadStore)
+    (leftClose rightClose : Nat) :
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+        shape rankCloseTrace segments fringeSegment store leftClose rightClose =
+      packedCrossBlockCloseRead rankCloseTrace segments fringeSegment store
+        shape.size leftClose rightClose := by
+  unfold
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+    packedCrossBlockCloseRead
+  simp only [packedSummaryBlockSizeRaw_eq, packedLocalBPSeed_eq,
+    packedLeftFringeCandidateRead_eq, packedRightFringeCandidateRead_eq,
+    packedInteriorRangeMinRead_eq]
+
 /-! #### The whole same-block close branch, shape-free
 
 Composing the seed, the window reader and the seeded reader. The rank-close
@@ -1874,6 +1957,51 @@ theorem packedSameBlockCloseDecodedRead_eq
     packedSameBlockCloseDecodedRead
   rw [packedLocalBPSeed_eq]
   simp only [packedSameBlockCloseSeededRead_eq, packedLocalBPWindowBitsRead_eq]
+
+/-! #### The whole close/LCA route, shape-free
+
+The dispatcher chooses between the two branches on a block comparison whose block
+size is itself size-only. Both branches are now shape-free, so the route is.
+-/
+
+/-- The close/LCA route with no shape argument. -/
+def packedLcaCloseRead
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : SuccinctClose.BPRelativeRmmInteriorTraceSegments)
+    (fringeSegment : Nat) (store : WordRAM.ReadStore)
+    (n leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
+  let blockSize := packedSummaryBlockSizeRaw n
+  if SuccinctClose.blockOfClose blockSize leftClose =
+      SuccinctClose.blockOfClose blockSize rightClose then
+    packedSameBlockCloseDecodedRead store rankCloseTrace fringeSegment n
+      blockSize leftClose rightClose
+  else
+    packedCrossBlockCloseRead rankCloseTrace segments fringeSegment store n
+      leftClose rightClose
+
+/--
+**The close/LCA route is shape-free.**
+
+Every read the `lcaClose` instruction issues is now expressible from the input
+size, the supplied store, the fixed segment constants, the caller's rank reader
+and the two close endpoints.
+-/
+theorem packedLcaCloseRead_eq
+    (shape : CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : SuccinctClose.BPRelativeRmmInteriorTraceSegments)
+    (fringeSegment : Nat) (store : WordRAM.ReadStore)
+    (sameBlockSegment leftClose rightClose : Nat) :
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+        shape rankCloseTrace segments fringeSegment store sameBlockSegment
+        leftClose rightClose =
+      packedLcaCloseRead rankCloseTrace segments fringeSegment store shape.size
+        leftClose rightClose := by
+  unfold
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+    packedLcaCloseRead
+  simp only [packedSummaryBlockSizeRaw_eq, packedSameBlockCloseDecodedRead_eq,
+    packedCrossBlockCloseRead_eq]
 
 
 /--

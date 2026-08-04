@@ -7134,3 +7134,50 @@ Consequences and evidence:
   the cross-block join, and the `lcaClose` dispatcher -- all pass-throughs over
   mirrors that now exist.
 - `FG-07` remains Open: no top-level controller definition exists.
+
+## DD-20260804-018: the whole close/LCA route is shape-free
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Discharges the residue `DD-20260804-011`
+located. Feeds `EG-CP` row `FG-07`.
+
+Date: 2026-08-04
+
+Context:
+
+`DD-20260804-011` recorded, in the type system, that `lcaClose` was the one
+whole-query instruction whose leaf took a `CartesianShape` directly rather than a
+derived record, and that the residue was the navigator's own use of the shape.
+Its addenda then discharged the dispatch scalar, the seed, the seeded reader and
+the window reader; `DD-20260804-012` closed the same-block branch;
+`DD-20260804-015` and `-017` closed the interior.
+
+Decision and result:
+
+Three pass-throughs finish the route.
+
+`packedInteriorRangeMinRead` runs the now-shape-free interior computation against
+the supplied store's flat view, with `packedInteriorRangeMinRead_eq`.
+
+`packedCrossBlockCloseRead` composes the dispatch block size, the local-BP seed,
+both endpoint-fringe readers and the interior read, with
+`packedCrossBlockCloseRead_eq`.
+
+`packedLcaCloseRead` is the dispatcher: a block comparison at a size-only block
+size, choosing between the two shape-free branches, with `packedLcaCloseRead_eq`.
+
+Consequences and evidence:
+
+- Pinned by `packedLcaCloseRouteIsShapeFree`,
+  `packedCrossBlockCloseBranchIsShapeFree`, `packedLcaCloseReadSignature`.
+- **All four whole-query instruction leaves are now shape-free**: `selectClose`
+  via `packedSelectCloseRead` (`DD-20260804-010`), `rankCloseIfSome` via
+  `packedRankCloseRead` and its size-only form, `lcaClose` via
+  `packedLcaCloseRead`, and `outputPredIfSome` which touches no store at all.
+- The negative record `packedLcaCloseLeafSignature` deliberately remains: it
+  still states that the *existing* leaf takes a shape. That is the point -- the
+  new definitions are equal to it, they do not replace it, and a reader can see
+  both.
+- `FG-07` remains Open. Every leaf being shape-free is not a controller: there is
+  still no single fixed definition sequencing the header probe, the readiness
+  guard and the instruction stream, and no `receipt`.

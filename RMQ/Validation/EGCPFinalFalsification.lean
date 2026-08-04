@@ -821,6 +821,53 @@ theorem packedRankCloseReadIsTheCloseRankLeaf :
           (builtRelativeSplitBPCloseRankData shape).blocksPerSuper pos :=
   packedRankCloseRead_eq
 
+/-! #### The whole close/LCA route is shape-free
+
+`DD-20260804-011` recorded `lcaClose` as the one instruction whose leaf took a
+`CartesianShape` directly. That residue is now discharged: the dispatcher, both
+branches, and every callee beneath them have shape-free mirrors.
+-/
+
+/-- Pins the shape-free close/LCA route's signature. -/
+def packedLcaCloseReadSignature :
+    (Nat -> WordRAM.TraceResult Nat) ->
+      SuccinctClose.BPRelativeRmmInteriorTraceSegments ->
+        Nat -> WordRAM.ReadStore -> Nat -> Nat -> Nat ->
+          WordRAM.TraceResult (Option Nat) :=
+  packedLcaCloseRead
+
+/--
+Pins that every read the `lcaClose` instruction issues is expressible from the
+input size, the supplied store, the fixed segment constants, the caller's rank
+reader and the two close endpoints.
+-/
+theorem packedLcaCloseRouteIsShapeFree :
+    forall (shape : CartesianShape)
+      (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+      (segments : SuccinctClose.BPRelativeRmmInteriorTraceSegments)
+      (fringeSegment : Nat) (store : WordRAM.ReadStore)
+      (sameBlockSegment leftClose rightClose : Nat),
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+          shape rankCloseTrace segments fringeSegment store sameBlockSegment
+          leftClose rightClose =
+        packedLcaCloseRead rankCloseTrace segments fringeSegment store
+          shape.size leftClose rightClose :=
+  packedLcaCloseRead_eq
+
+/-- Pins that the cross-block branch is shape-free. -/
+theorem packedCrossBlockCloseBranchIsShapeFree :
+    forall (shape : CartesianShape)
+      (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+      (segments : SuccinctClose.BPRelativeRmmInteriorTraceSegments)
+      (fringeSegment : Nat) (store : WordRAM.ReadStore)
+      (leftClose rightClose : Nat),
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+          shape rankCloseTrace segments fringeSegment store leftClose
+          rightClose =
+        packedCrossBlockCloseRead rankCloseTrace segments fringeSegment store
+          shape.size leftClose rightClose :=
+  packedCrossBlockCloseRead_eq
+
 /-! #### Where the shape still enters
 
 `lcaClose` is the one whole-query instruction whose leaf takes a
