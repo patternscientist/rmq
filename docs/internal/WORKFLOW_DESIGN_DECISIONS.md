@@ -7152,3 +7152,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   comparison was required.
 - Commit landing the first half of the per-source word geometry: matrix
   untouched, so no frozen-cell comparison was required.
+- Commit completing the per-source word geometry: matrix untouched, so no
+  frozen-cell comparison was required.

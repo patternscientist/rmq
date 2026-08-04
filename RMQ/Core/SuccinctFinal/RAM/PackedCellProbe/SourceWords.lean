@@ -575,6 +575,448 @@ theorem packedSelectSparseFlagBitsWords (shape : CartesianShape) (i : Nat) :
     hw, hlen]
   rfl
 
+/-! ## Rank-sample columns
+
+Four two-level rank directories contribute one sampled column each to the flat
+payload. Their slot counts are the canonical entry counts, which the existing
+overhead mirrors already carry in factored form.
+-/
+
+/-- Slots in one polarity of the final rank superblock samples. -/
+def packedRankSuperSlots (n : Nat) : Nat :=
+  2 * n / packedRankWordSize n / packedRankWordSize n + 1
+
+/-- Slots in one polarity of the final rank block samples. -/
+def packedRankBlockSlots (n : Nat) : Nat :=
+  2 * n / packedRankWordSize n + 1
+
+/-- Slots in one polarity of the long-flag rank samples, at either level. -/
+def packedLongFlagRankSlots (n : Nat) : Nat :=
+  packedSuperSlots n / packedLongFlagWordSize n + 1
+
+/-- Slots in one polarity of the sparse-flag rank samples, at either level. -/
+def packedSparseRankSlots (n : Nat) : Nat :=
+  packedSparseSlots n / packedSparseWordSize n + 1
+
+theorem packedFinalRankSuperFalseWords (shape : CartesianShape) (i : Nat) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        .finalRankSuperFalse)[i]? =
+      packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+          .finalRankSuperFalse)
+        (packedRankSuperSlots shape.size) (packedRankWordSize shape.size) i := by
+  show
+    (builtRelativeSplitBPCloseRankData shape).superTables.falseTable.store.words[i]?
+      =
+      packedWordSlice
+        (builtRelativeSplitBPCloseRankData shape).superTables.falseTable.payload
+        (packedRankSuperSlots shape.size) (packedRankWordSize shape.size) i
+  rw [packedFixedWidthTable_getElem?]
+  simp only [builtRelativeSplitBPCloseRankData,
+    SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
+    SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock,
+    SuccinctRank.canonicalSuperRankSampleTables,
+    SuccinctRank.canonicalSuperRankEntries_length,
+    packedRankSuperSlots, CartesianShape.bpCode_length, rankWordSize_eq_packed,
+    builtRelativeSplitBPCloseRankBlocksPerSuper]
+
+theorem packedFinalRankBlockFalseWords (shape : CartesianShape) (i : Nat) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        .finalRankBlockFalse)[i]? =
+      packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+          .finalRankBlockFalse)
+        (packedRankBlockSlots shape.size) (packedRankBlockWidth shape.size) i := by
+  show
+    (builtRelativeSplitBPCloseRankData shape).blockTables.falseTable.store.words[i]?
+      =
+      packedWordSlice
+        (builtRelativeSplitBPCloseRankData shape).blockTables.falseTable.payload
+        (packedRankBlockSlots shape.size) (packedRankBlockWidth shape.size) i
+  rw [packedFixedWidthTable_getElem?]
+  simp only [builtRelativeSplitBPCloseRankData,
+    SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
+    SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock,
+    SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan,
+    SuccinctRank.canonicalBlockRankEntries_length,
+    packedRankBlockSlots, CartesianShape.bpCode_length, rankWordSize_eq_packed,
+    rankBlockWidth_eq_packed]
+
+theorem packedSelectLongFlagRankSuperTrueWords
+    (shape : CartesianShape) (i : Nat) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        .selectLongFlagRankSuperTrue)[i]? =
+      packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+          .selectLongFlagRankSuperTrue)
+        (packedLongFlagRankSlots shape.size)
+        (packedLongFlagWordSize shape.size) i := by
+  show
+    (GenericSelect.longFlagRankData shape.bpCode
+      false).superTables.trueTable.store.words[i]? =
+      packedWordSlice
+        (GenericSelect.longFlagRankData shape.bpCode
+          false).superTables.trueTable.payload
+        (packedLongFlagRankSlots shape.size)
+        (packedLongFlagWordSize shape.size) i
+  rw [packedFixedWidthTable_getElem?]
+  simp only [GenericSelect.longFlagRankData,
+    SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
+    SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock,
+    SuccinctRank.canonicalSuperRankSampleTables,
+    SuccinctRank.canonicalSuperRankEntries_length,
+    GenericSelect.longFlagRankBlocksPerSuper, Nat.div_one,
+    packedLongFlagRankSlots, longFlagBits_length_eq_packed,
+    longFlagRankWordSize_eq_packed]
+
+theorem packedSelectLongFlagRankBlockTrueWords
+    (shape : CartesianShape) (i : Nat) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        .selectLongFlagRankBlockTrue)[i]? =
+      packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+          .selectLongFlagRankBlockTrue)
+        (packedLongFlagRankSlots shape.size)
+        (packedLongFlagWordSize shape.size) i := by
+  show
+    (GenericSelect.longFlagRankData shape.bpCode
+      false).blockTables.trueTable.store.words[i]? =
+      packedWordSlice
+        (GenericSelect.longFlagRankData shape.bpCode
+          false).blockTables.trueTable.payload
+        (packedLongFlagRankSlots shape.size)
+        (packedLongFlagWordSize shape.size) i
+  rw [packedFixedWidthTable_getElem?]
+  simp only [GenericSelect.longFlagRankData,
+    SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
+    SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock,
+    SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan,
+    SuccinctRank.canonicalBlockRankEntries_length,
+    GenericSelect.longFlagRankBlockWidth, packedLongFlagRankSlots,
+    longFlagBits_length_eq_packed, longFlagRankWordSize_eq_packed]
+
+theorem packedSelectSparseRankSuperTrueWords
+    (shape : CartesianShape) (i : Nat) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        .selectSparseRankSuperTrue)[i]? =
+      packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+          .selectSparseRankSuperTrue)
+        (packedSparseRankSlots shape.size)
+        (packedSparseWordSize shape.size) i := by
+  show
+    (GenericSelect.sparseExceptionEffectiveFlagRankData shape.bpCode
+      false).superTables.trueTable.store.words[i]? =
+      packedWordSlice
+        (GenericSelect.sparseExceptionEffectiveFlagRankData shape.bpCode
+          false).superTables.trueTable.payload
+        (packedSparseRankSlots shape.size)
+        (packedSparseWordSize shape.size) i
+  rw [packedFixedWidthTable_getElem?]
+  simp only [GenericSelect.sparseExceptionEffectiveFlagRankData,
+    SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
+    SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock,
+    SuccinctRank.canonicalSuperRankSampleTables,
+    SuccinctRank.canonicalSuperRankEntries_length,
+    GenericSelect.sparseExceptionEffectiveFlagRankBlocksPerSuper, Nat.div_one,
+    packedSparseRankSlots, sparseFlagBits_length_eq_packed,
+    sparseFlagRankWordSize_eq_packed]
+
+theorem packedSelectSparseRankBlockTrueWords
+    (shape : CartesianShape) (i : Nat) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        .selectSparseRankBlockTrue)[i]? =
+      packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+          .selectSparseRankBlockTrue)
+        (packedSparseRankSlots shape.size)
+        (packedSparseWordSize shape.size) i := by
+  show
+    (GenericSelect.sparseExceptionEffectiveFlagRankData shape.bpCode
+      false).blockTables.trueTable.store.words[i]? =
+      packedWordSlice
+        (GenericSelect.sparseExceptionEffectiveFlagRankData shape.bpCode
+          false).blockTables.trueTable.payload
+        (packedSparseRankSlots shape.size)
+        (packedSparseWordSize shape.size) i
+  rw [packedFixedWidthTable_getElem?]
+  simp only [GenericSelect.sparseExceptionEffectiveFlagRankData,
+    SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
+    SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock,
+    SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan,
+    SuccinctRank.canonicalBlockRankEntries_length,
+    GenericSelect.sparseExceptionEffectiveFlagRankBlockWidth,
+    packedSparseRankSlots, sparseFlagBits_length_eq_packed,
+    sparseFlagRankWordSize_eq_packed]
+
+/-! ## The long relative table
+
+The one source whose word count depends on the decoded header rather than on the
+input size alone -- which is what the header cell is for.
+-/
+
+/-- Slots in the long-super relative table, from the decoded long count. -/
+def packedLongRelativeSlots (n longCount : Nat) : Nat :=
+  longCount * GenericSelect.superStride (2 * n)
+
+theorem packedSelectLongRelativeWords (shape : CartesianShape) (i : Nat) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        .selectLongRelative)[i]? =
+      packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+          .selectLongRelative)
+        (packedLongRelativeSlots shape.size (longCount shape))
+        (packedSuperWidth shape.size) i := by
+  have hlen : shape.bpCode.length = 2 * shape.size :=
+    CartesianShape.bpCode_length shape
+  show
+    (GenericSelect.longSuperRelativeTable shape.bpCode false).store.words[i]? =
+      packedWordSlice
+        (GenericSelect.longSuperRelativeTable shape.bpCode false).payload
+        (packedLongRelativeSlots shape.size (longCount shape))
+        (packedSuperWidth shape.size) i
+  rw [packedFixedWidthTable_getElem?]
+  simp only [GenericSelect.longSuperRelativeEntries_length, longCount,
+    packedLongRelativeSlots, GenericSelect.longSuperRelativeWidth,
+    packedSuperWidth, GenericSelect.wordBits, hlen]
+
+/-! ## The close summary and interior tables -/
+
+theorem packedCloseSummaryBaselineWords (shape : CartesianShape) (i : Nat) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        .closeSummaryBaseline)[i]? =
+      packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+          .closeSummaryBaseline)
+        (packedSummarySuperCount shape.size)
+        (packedSummarySuperWidth shape.size) i := by
+  show
+    (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+      shape).baselineTable.store.words[i]? =
+      packedWordSlice
+        (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+          shape).baselineTable.payload
+        (packedSummarySuperCount shape.size)
+        (packedSummarySuperWidth shape.size) i
+  rw [packedFixedWidthTable_getElem?]
+  simp only [SuccinctClose.bpSuperblockBaselineEntries_length,
+    summarySuperCount_eq_packed, summarySuperWidth_eq_packed]
+
+theorem packedCloseSummaryMinRelWords (shape : CartesianShape) (i : Nat) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        .closeSummaryMinRel)[i]? =
+      packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+          .closeSummaryMinRel)
+        (packedSummaryBlockCount shape.size)
+        (packedSummaryRelativeWidth shape.size) i := by
+  show
+    (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+      shape).minRelTable.store.words[i]? =
+      packedWordSlice
+        (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+          shape).minRelTable.payload
+        (packedSummaryBlockCount shape.size)
+        (packedSummaryRelativeWidth shape.size) i
+  rw [packedFixedWidthTable_getElem?]
+  simp only [SuccinctClose.bpBlockRelativeMinExcessEntries_length,
+    summaryBlockCount_eq_packed, summaryRelativeWidth_eq_packed]
+
+theorem packedCloseSummaryMaxRelWords (shape : CartesianShape) (i : Nat) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        .closeSummaryMaxRel)[i]? =
+      packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+          .closeSummaryMaxRel)
+        (packedSummaryBlockCount shape.size)
+        (packedSummaryRelativeWidth shape.size) i := by
+  show
+    (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+      shape).maxRelTable.store.words[i]? =
+      packedWordSlice
+        (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+          shape).maxRelTable.payload
+        (packedSummaryBlockCount shape.size)
+        (packedSummaryRelativeWidth shape.size) i
+  rw [packedFixedWidthTable_getElem?]
+  simp only [SuccinctClose.bpBlockRelativeMaxExcessEntries_length,
+    summaryBlockCount_eq_packed, summaryRelativeWidth_eq_packed]
+
+theorem packedCloseSummaryArgOffsetWords (shape : CartesianShape) (i : Nat) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        .closeSummaryArgOffset)[i]? =
+      packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+          .closeSummaryArgOffset)
+        (packedSummaryBlockCount shape.size)
+        (packedSummaryRelativeWidth shape.size) i := by
+  show
+    (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+      shape).argOffsetTable.store.words[i]? =
+      packedWordSlice
+        (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+          shape).argOffsetTable.payload
+        (packedSummaryBlockCount shape.size)
+        (packedSummaryRelativeWidth shape.size) i
+  rw [packedFixedWidthTable_getElem?]
+  simp only [SuccinctClose.bpBlockArgMinLocalOffsetEntries_length,
+    summaryBlockCount_eq_packed, summaryRelativeWidth_eq_packed]
+
+/-- Slots in the interior local offset table. -/
+def packedInteriorLocalSlots (n : Nat) : Nat :=
+  packedInteriorMacroCount n *
+    (packedInteriorOffsetWidth n * packedInteriorMacroSize n)
+
+/-- Size-only mirror of the interior global level count. -/
+def packedInteriorGlobalLevelCount (n : Nat) : Nat :=
+  SuccinctRank.machineWordBits (packedInteriorMacroCount n)
+
+/-- Size-only mirror of the interior global block width. -/
+def packedInteriorBlockWidth (n : Nat) : Nat :=
+  SuccinctRank.machineWordBits (packedSummaryBlockCount n)
+
+/-- Slots in the interior global block table. -/
+def packedInteriorGlobalSlots (n : Nat) : Nat :=
+  packedInteriorGlobalLevelCount n * packedInteriorMacroCount n
+
+theorem packedCloseInteriorLocalWords (shape : CartesianShape) (i : Nat) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        .closeInteriorLocal)[i]? =
+      packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+          .closeInteriorLocal)
+        (packedInteriorLocalSlots shape.size)
+        (packedInteriorOffsetWidth shape.size) i := by
+  show
+    (SuccinctClose.concreteBPRelativeRmmInteriorLocalTable
+      shape).table.store.words[i]? =
+      packedWordSlice
+        (SuccinctClose.concreteBPRelativeRmmInteriorLocalTable
+          shape).table.payload
+        (packedInteriorLocalSlots shape.size)
+        (packedInteriorOffsetWidth shape.size) i
+  rw [packedFixedWidthTable_getElem?]
+  unfold packedInteriorLocalSlots
+  simp only [SuccinctClose.bpLocalSparseOffsetEntries_length,
+    SuccinctClose.concreteBPRelativeRmmInteriorLevelCount,
+    interiorMacroCount_eq_packed, interiorOffsetWidth_eq_packed]
+  simp only [SuccinctClose.concreteBPRelativeRmmInteriorMacroSize,
+    SuccinctClose.canonicalBPRelativeSummaryBase,
+    packedInteriorMacroSize, packedSummaryBase]
+
+theorem packedCloseInteriorGlobalWords (shape : CartesianShape) (i : Nat) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        .closeInteriorGlobal)[i]? =
+      packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+          .closeInteriorGlobal)
+        (packedInteriorGlobalSlots shape.size)
+        (packedInteriorBlockWidth shape.size) i := by
+  show
+    (SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable
+      shape).table.store.words[i]? =
+      packedWordSlice
+        (SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable
+          shape).table.payload
+        (packedInteriorGlobalSlots shape.size)
+        (packedInteriorBlockWidth shape.size) i
+  rw [packedFixedWidthTable_getElem?]
+  unfold packedInteriorGlobalSlots packedInteriorGlobalLevelCount
+    packedInteriorBlockWidth
+  simp only [SuccinctClose.bpGlobalSparseBlockEntries_length,
+    SuccinctClose.concreteBPRelativeRmmInteriorGlobalLevelCount,
+    SuccinctClose.concreteBPRelativeRmmInteriorBlockWidth,
+    interiorMacroCount_eq_packed, summaryBlockCount_eq_packed]
+
+/-! ## The sparse relative table: the one count the header does not carry
+
+Twenty-eight of the twenty-nine sources have a word count that is a function of
+the input size and the decoded long count. This one does not.
+
+`sparseExceptionRelativeEntries_length` gives the count as
+
+```
+rankPrefix true (sparseExceptionFlagBits bits target) (localSlotCount bits target)
+  * localStride bits.length
+```
+
+and the leading factor is the number of local slots whose span forced a sparse
+exception. That is a property of the bit pattern, not of its length: two shapes of
+the same size share `n`, `longCount` does not record it, and no other stored
+scalar does either. `K1` puts exactly one count in the header, and the
+architecture spends it on `longCount`.
+
+What is still true, and what this section proves, is the direction the lowering
+needs. The exception count is bounded by the local slot count, which *is*
+size-only, so a controller can use that bound as the table's capacity and every
+**successful** logical read still lowers to the right slice. The residual is
+one-directional: at an index between the real count and the capacity the packed
+read answers where the store would have failed. Closing that gap is `FG-09`'s
+totality clause -- every attempted probe of an actual run is successful -- not a
+second header field.
+-/
+
+/-- The size-only capacity of the sparse relative table: every local slot an
+exception. -/
+def packedSparseRelativeCapacity (n : Nat) : Nat :=
+  packedLocalSlots n * GenericSelect.localStride (2 * n)
+
+theorem packedSparseRelativeEntries_le_capacity (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionRelativeEntries shape.bpCode false).length <=
+      packedSparseRelativeCapacity shape.size := by
+  have hlen : shape.bpCode.length = 2 * shape.size :=
+    CartesianShape.bpCode_length shape
+  have hrank :=
+    RMQ.Succinct.rankPrefix_le_limit true
+      (GenericSelect.sparseExceptionFlagBits shape.bpCode false)
+      (GenericSelect.localSlotCount shape.bpCode false)
+  rw [GenericSelect.sparseExceptionRelativeEntries_length]
+  unfold packedSparseRelativeCapacity
+  rw [hlen, ← localSlotCount_eq_packed shape]
+  exact Nat.mul_le_mul_right _ hrank
+
+/--
+**Every successful sparse relative read lowers.** Stated as an implication rather
+than an equation, because the packed side uses the size-only capacity and the
+store uses the actual exception count.
+-/
+theorem packedSelectSparseRelativeWords_of_some
+    (shape : CartesianShape) {i : Nat} {word : List Bool}
+    (hget :
+      (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+        .selectSparseRelative)[i]? = some word) :
+    packedWordSlice
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+          .selectSparseRelative)
+        (packedSparseRelativeCapacity shape.size)
+        (packedLocalWidth shape.size) i =
+      some word := by
+  have hlen : shape.bpCode.length = 2 * shape.size :=
+    CartesianShape.bpCode_length shape
+  have hw :
+      GenericSelect.sparseExceptionRelativeWidth shape.bpCode =
+        packedLocalWidth shape.size := by
+    unfold GenericSelect.sparseExceptionRelativeWidth packedLocalWidth
+    rw [hlen]
+  have hbound := packedSparseRelativeEntries_le_capacity shape
+  have hget' :
+      (GenericSelect.sparseExceptionRelativeTable shape.bpCode
+        false).store.words[i]? = some word := hget
+  rw [packedFixedWidthTable_getElem?] at hget'
+  show
+    packedWordSlice
+        (GenericSelect.sparseExceptionRelativeTable shape.bpCode false).payload
+        (packedSparseRelativeCapacity shape.size)
+        (packedLocalWidth shape.size) i =
+      some word
+  by_cases hi :
+      i < (GenericSelect.sparseExceptionRelativeEntries shape.bpCode false).length
+  · rw [packedWordSlice_of_lt hi] at hget'
+    rw [packedWordSlice_of_lt (by omega), ← hw]
+    exact hget'
+  · rw [packedWordSlice_of_le (by omega)] at hget'
+    exact absurd hget' (by simp)
+
 /-! ## The retired finite-small slots
 
 Three sources with no words and no payload. They are present as their own arms

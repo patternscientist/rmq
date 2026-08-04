@@ -7354,3 +7354,81 @@ Consequences and evidence:
   the four close summary columns and the two close interior tables. Until all
   twenty-nine are proved there is no packed-backed store, so `FG-08`'s whole-run
   clause is untouched.
+
+## DD-20260804-022: one source's word count is not size-only, and what follows
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. All twenty-nine flat-payload sources
+now have a proved word geometry. Twenty-eight are equations; one is an
+implication, for a reason that is a fact about the architecture rather than about
+the proof.
+
+Date: 2026-08-04
+
+The finding:
+
+`sparseExceptionRelativeEntries_length` gives the sparse relative table's entry
+count as
+
+```
+rankPrefix true (sparseExceptionFlagBits bits target) (localSlotCount bits target)
+  * localStride bits.length
+```
+
+The leading factor is the number of local slots whose span forced a sparse
+exception. It is a property of the bit pattern, not of its length. Two shapes of
+the same size can differ in it; `longCount` does not record it; no other stored
+scalar does either.
+
+`K1` puts exactly one count in the header and the architecture spends it on
+`longCount`. So of the twenty-nine sources, **exactly one** has a word count the
+controller cannot compute from `n` and the header.
+
+Decision:
+
+Do **not** read this as a `K1` obstruction, and do not add a header field. Use the
+size-only bound instead: the exception count is at most the local slot count, so
+
+```
+packedSparseRelativeCapacity n = packedLocalSlots n * localStride (2 * n)
+```
+
+is a capacity the controller can compute, and
+`packedSparseRelativeEntries_le_capacity` proves it is an upper bound
+(`Succinct.rankPrefix_le_limit`).
+
+The per-source theorem is then one-directional:
+
+```
+packedSelectSparseRelativeWords_of_some :
+  (sourceWords shape .selectSparseRelative)[i]? = some word ->
+    packedWordSlice (sourcePayload shape .selectSparseRelative)
+      (packedSparseRelativeCapacity shape.size) (packedLocalWidth shape.size) i =
+      some word
+```
+
+Rationale:
+
+Every **successful** logical read still lowers to exactly the right slice, which
+is what `FG-08` asks of "every logical read actually used by the query". The gap
+is confined to indices between the real count and the capacity, where the packed
+read answers and the store would have failed. Discharging that gap is exactly
+`FG-09`'s totality clause -- *every attempted probe of an actual run is successful
+and in range* -- which the gate already requires. So the residual is scope already
+owed, not new scope, and certainly not a second header cell.
+
+Consequences and evidence:
+
+- The other twenty-eight sources are equations, so the asymmetry is visible in
+  the theorem shapes rather than hidden in a uniform statement. A later change
+  that made a second source content-dependent would have to weaken its equation,
+  which is a diff a reviewer can see.
+- **This is the honest reason `FG-08` cannot be closed by store equality.** The
+  packed-backed store cannot equal `concreteBPNativeSuccinctRMQFlatPayloadReadStore`;
+  it can only extend it. The whole-run theorem therefore has to go through
+  agreement on the executed footprint, and that is the next obligation.
+- If `FG-09`'s totality clause turns out to be false -- if some reachable query
+  really does attempt an out-of-range sparse relative read -- then this becomes a
+  genuine `K1` obstruction and should be reported as one. That is the first
+  concrete obstruction candidate this campaign has produced, and it is recorded
+  here so it is not lost.
