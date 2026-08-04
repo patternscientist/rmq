@@ -7770,3 +7770,55 @@ Chosen now because it is independent of `DD-20260804-027`: the executed-universe
 gap blocks the whole-run clauses of `FG-08`, `FG-10` and `FG-11`, but not the
 width and address invariants, which are properties of the packed representation
 alone.
+
+## DD-20260804-029: the replay harness, and why it will not report PASS
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. `FG-12` stays Open by construction.
+
+Date: 2026-08-04
+
+`scripts/eg_cp_final_falsification_replay.ps1` encodes the sixteen-entry frozen
+registry literally and in the commissioned order, and replays a case by applying
+one textual mutation to one tracked file, rebuilding the named failing surface,
+and requiring the commissioned verdict.
+
+Design points that are obligations rather than taste:
+
+* **Registry integrity is checked before anything runs**: sixteen entries,
+  ascending orders `1` .. `16`, unique IDs, every verdict mapped, and exactly two
+  `ACCEPT` against fourteen `REJECT`. Omission, duplication or reordering fails
+  the run before a single build.
+* **Selector nonvacuity**: an explicitly supplied selector that is unknown, empty
+  or whitespace exits non-zero; only *omitting* the parameter means full mode.
+  `[AllowEmptyString()]` is on the parameter so the empty case reaches the
+  harness's own check rather than dying in parameter binding.
+* **Byte-exact restoration.** The first working version restored with
+  `Set-Content -Encoding utf8`, which on PowerShell 5.1 adds a BOM and rewrites
+  CRLF. The restoration hash caught it. The harness now captures
+  `[System.IO.File]::ReadAllBytes` and restores with `WriteAllBytes`, so the file
+  returned is the file found, not an equivalent one. This is precisely the check
+  `INV-MUTATION-REPRODUCIBILITY` asks for, and it failed the first time it was
+  run -- which is the argument for having it.
+* **Bounded stages.** `Start-Process -PassThru` reported a non-zero exit code for
+  a build that succeeds when run directly, so the harness drives
+  `System.Diagnostics.Process` itself, drains both pipes asynchronously to avoid
+  a full-pipe deadlock turning a semantic failure into a spurious timeout, and
+  derives the per-case deadline from a measured clean build (four times the
+  measurement, floor 300 s) rather than from a guess.
+* **Owned-tree termination** with a descendant self-test that spawns a detached
+  grandchild sleeper and requires it dead after the root is killed;
+  `taskkill /T /F` on Windows, negated-pid `kill` on Linux.
+
+**Why it will not report PASS on this candidate, and why that is correct.**
+
+Seven of the sixteen commissioned cases have no failing surface yet: `A02`,
+`M02`, `M04`, `M06`, `M07`, `M12`, `M13` all name a run, a trace, a controller
+over `packedMemory`, or a capstone, and none of those exist. The harness reports
+them as `TARGET-ABSENT`, never silently skips them, and exits non-zero in full
+mode when any is present. A harness that printed PASS with seven of sixteen cases
+unrun would be forging exactly the evidence `FG-12` exists to demand.
+
+The nine runnable cases are `A01`, `M01`, `M03`, `M05`, `M08`, `M09`, `M10`,
+`M11`, `M14`. Their mutation targets are chosen in the latest module that carries
+the commissioned content, so a rebuild is proportionate to the claim.
