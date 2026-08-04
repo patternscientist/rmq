@@ -76,7 +76,7 @@ evaluates them (`WDD-20260726-007`), and with `git diff --check HEAD~1..HEAD`.
 All under `RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/`, all imported by
 `RMQ.lean`, so all inside `lake build RMQ` and inside the prose hygiene scan.
 Import order: `SourceFactorization` → `Payload` → `Header` → `Memory` → `Space`
-→ `Address` → `Probe`. The validation root is
+→ `Address` → `Probe` → `ReadProgram`. The validation root is
 `RMQ/Validation/EGCPFinalFalsification.lean`.
 
 | Module | Row | What it establishes |
@@ -87,7 +87,8 @@ Import order: `SourceFactorization` → `Payload` → `Header` → `Memory` → 
 | `Memory.lean` | `FG-05` | cells, allocation, round trip, cell crossing |
 | `Space.lean` | `FG-06` | allocated-bits bound and its little-o residual |
 | `Address.lean` | `FG-07`, `FG-08` | bit addresses and the header shift |
-| `Probe.lean` | `FG-05`, `FG-08`, `FG-09` | the conditional probe plan; the BP code lowered completely |
+| `Probe.lean` | `FG-05`, `FG-08`, `FG-09` | the conditional probe plan; the header probe; the BP code lowered completely |
+| `ReadProgram.lean` | `FG-07` | logical reads carry no table content |
 
 ## 4. What is proved
 
@@ -368,7 +369,51 @@ concrete instances at sizes 0, 1 and 2.
 `#print axioms` over a theorem's current type would not do this: it reports what
 a declaration happens to say now. These consumers say what it must say.
 
-## 6. Two defects found and what happened to them
+## 6. The `FG-07` question, settled by proof
+
+The obstacle to reusing the existing supplied-store leaves is that they are built
+from `GenericSelect.sparseExceptionSelectData shape.bpCode false`. Two readings
+were possible, and they lead to very different campaigns. Either that record
+supplies the **replies**, in which case the store is decoration and `FG-07` needs
+a different execution architecture; or it supplies only the **geometry** --
+strides, field widths, slot counts -- in which case `FG-07` needs the same kind of
+`Nat`-only mirror the offsets already have.
+
+It supplies only the geometry, and that is now checked:
+
+```
+packedSelectEntryRead_content_free :
+  forall (tableLeft  : FixedWidthSparseDenseSelectDenseLocalEntryTable entriesLeft  widthLeft)
+         (tableRight : FixedWidthSparseDenseSelectDenseLocalEntryTable entriesRight widthRight)
+         (layout) (store) (index),
+    tableLeft.readTraceResultRelabeledWithStore  layout store index =
+    tableRight.readTraceResultRelabeledWithStore layout store index
+```
+
+The two tables share **no** parameter: unrelated entry lists, unrelated field
+widths. They nevertheless produce the same trace result — the same reads, in the
+same order, with the same replies, and the same decoded entry. A leaf satisfying
+this cannot be consulting its table for a reply.
+
+The underlying reason is that `SuccinctSpace.PayloadWordStore.readProgram`
+ignores its store argument: its binder is `_store` and its body is
+`WordRAM.Program.readWord 0 i`. `packedTableReadProgram_content_free` and
+`packedTableReadProgram_eq_readWord` record that at the fixed-width-table level.
+All three are `rfl`.
+
+A congruence over shapes of equal size would have been weaker and would have
+invited the objection in `DD-20260802-001`: a congruence says the result is
+determined, not that a controller can compute it. This is stronger in the
+direction that matters — the table is not consulted at all.
+
+**This does not close `FG-07`**, and it is not evidence about the close/LCA
+leaves, which have not been examined. It bounds the remaining work on the select
+side to a `Nat`-only mirror for a fixed list of scalars: `superStride`,
+`localStride`, `localSlotsPerSuper`, `wordSize`, `queryOccurrence`,
+`occurrenceCount bits target`, and `SuccinctClose.bpFringeChunkBits
+shape.bpCode.length`. Recorded as `DD-20260804-006`.
+
+## 7. Two defects found and what happened to them
 
 ### The layout's unconditional close-interior offsets (found 2026-08-03, still open upstream)
 
@@ -411,7 +456,7 @@ section 4, which fetches through a failing accessor and proves allocation.
 paragraph appended to `DD-20260802-001` on 2026-08-04, which described the three
 removed declarations.
 
-## 7. What is not done
+## 8. What is not done
 
 `FG-07` and `FG-10` remain the bulk of the work: a shape-free controller whose
 actual execution reproduces the project's reference semantics. Nothing so far
@@ -421,12 +466,14 @@ Open on that dependency.
 
 Specifically not done:
 
-* **`FG-07`** the closed controller. Not started. The existing whole-query
-  evaluator `WholeQueryProgram.evalGlobalWordTraceWithStore` takes `shape` as a
-  parameter, and its leaves take `GenericSelect.sparseExceptionSelectData
-  shape.bpCode false`, so it cannot be reused unchanged: making it shape-free
-  requires factoring each leaf's geometry through `(n, longCount)` the way the
-  offsets already are.
+* **`FG-07`** the closed controller. Not started; no controller definition
+  exists. The existing whole-query evaluator
+  `WholeQueryProgram.evalGlobalWordTraceWithStore` takes `shape`, and its leaves
+  take `GenericSelect.sparseExceptionSelectData shape.bpCode false`, so it cannot
+  be reused unchanged. **What that argument is used for is now settled by proof
+  rather than by reading the source** (section 6): it supplies geometry, not
+  replies. Making the leaves shape-free is therefore a `Nat`-only mirror for a
+  fixed list of scalars, the same technique the offsets already use.
 * **`FG-08`** the whole-run lowering. Only the per-read half exists: with a
   supplied width for a general source, and with everything supplied for the BP
   code alone. Twenty-eight sources still need a stride and a read width. There is
@@ -507,7 +554,7 @@ missing.
   decoding theorem holds whether or not the address exists, so no mutation of the
   address arithmetic could be detected by it.
 
-## 8. What a skeptical reviewer should ask
+## 9. What a skeptical reviewer should ask
 
 - `packedSourceComponentOffset` is proved equal to the canonical offset, and now
   `packedLogicalProbePlan` calls it — but nothing *executes* `packedLogicalProbePlan`.
@@ -531,7 +578,7 @@ missing.
 - The close side's step function is non-monotone in `n`. Does any later row
   assume monotonicity?
 
-## 9. Verification
+## 10. Verification
 
 Development-loop checks on this branch's tip:
 

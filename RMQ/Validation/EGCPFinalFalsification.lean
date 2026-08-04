@@ -4,6 +4,7 @@ import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Header
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Space
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Address
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Probe
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReadProgram
 
 /-!
 # Exact-type consumers for the EG-CP packed cell-probe candidate
@@ -495,6 +496,50 @@ theorem packedLogicalReadDecodesToCanonicalSlice :
                       index * width)).take width) :=
   fun shape _ _ index width hsource hwidth hfit =>
     packedLogicalRead_decode shape index width hsource hwidth hfit
+
+/-! #### A logical read carries no table content
+
+`FG-07` forbids the controller from receiving shape-derived data. The existing
+supplied-store leaves do take such data, so the question is whether it is
+load-bearing for the **replies** or only for the **geometry**. These consumers pin
+the answer at the entry-table level: it is only the geometry.
+-/
+
+/--
+Pins that a fixed-width table's read program is an index and nothing else. The
+two tables share no parameter, so the program cannot transport stored data.
+-/
+theorem packedTableReadIsAnIndexNotALookup :
+    forall {entriesLeft entriesRight : List Nat} {widthLeft widthRight : Nat}
+      (tableLeft : SuccinctSpace.FixedWidthNatTable entriesLeft widthLeft)
+      (tableRight : SuccinctSpace.FixedWidthNatTable entriesRight widthRight)
+      (index : Nat),
+      tableLeft.readProgram index = tableRight.readProgram index :=
+  fun tableLeft tableRight index =>
+    packedTableReadProgram_content_free tableLeft tableRight index
+
+/--
+Pins that the four-field select entry read against a supplied store is the same
+trace result for unrelated tables: same reads, same order, same replies, same
+decoded entry. This is what makes the remaining `FG-07` work a factorization of
+geometry scalars rather than a change of architecture.
+-/
+theorem packedSelectEntryReadIsDeterminedByTheStore :
+    forall {entriesLeft entriesRight :
+        List GenericSelect.SparseDenseSelectDenseLocalEntry}
+      {widthLeft widthRight : Nat}
+      (tableLeft :
+        GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable
+          entriesLeft widthLeft)
+      (tableRight :
+        GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable
+          entriesRight widthRight)
+      (layout : GenericSelect.SparseDenseEntryTableTraceSegmentBases)
+      (store : WordRAM.ReadStore) (index : Nat),
+      tableLeft.readTraceResultRelabeledWithStore layout store index =
+        tableRight.readTraceResultRelabeledWithStore layout store index :=
+  fun tableLeft tableRight layout store index =>
+    packedSelectEntryRead_content_free tableLeft tableRight layout store index
 
 /-! #### The long count is obtained by a probe
 

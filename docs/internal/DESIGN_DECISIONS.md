@@ -6002,3 +6002,77 @@ Consequences and evidence:
   the header probe before the address computation, and no definition consumes the
   reply. What is now available is that such a definition would not need any input
   beyond `n` to obtain the long count.
+
+## DD-20260804-006: the controller obligation is a scalar factorization, not an architecture change
+
+Status: Worker finding recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Governs how `EG-CP` row `FG-07` is
+approached. This entry records a checked structural fact, not a closure.
+
+Date: 2026-08-04
+
+Context:
+
+`FG-07` requires an executed controller whose dynamic inputs are exactly `n`, the
+query endpoints, the header reply and prior replies. The existing supplied-store
+query leaves visibly take shape-derived data:
+`concreteBPNativeSelectCloseGlobalWordTraceResultWithStore` is built from
+`GenericSelect.sparseExceptionSelectData shape.bpCode false`. Read at face value
+that looks like an architecture problem: a leaf handed the shape's own tables
+might be computing its answers from them, in which case the store would be
+decoration and no amount of address factorization would produce a controller.
+
+Two readings were possible and they lead to very different campaigns. Either the
+shape-derived record supplies the *replies*, in which case `FG-07` needs a
+different execution architecture; or it supplies only the *geometry* -- strides,
+field widths, slot counts -- in which case `FG-07` needs the same kind of
+`Nat`-only mirror the offsets already have, and nothing else.
+
+Decision:
+
+Settle it by proof rather than by reading the source, and record the result where
+the next session will find it.
+
+`SuccinctSpace.PayloadWordStore.readProgram` ignores its store argument: its
+binder is `_store` and its body is `WordRAM.Program.readWord 0 i`. Therefore:
+
+- `packedTableReadProgram_content_free` -- two `FixedWidthNatTable`s with
+  unrelated entry lists and unrelated widths issue the same read program at the
+  same index;
+- `packedTableReadProgram_eq_readWord` -- that program is
+  `mapOptWordNat (readWord 0 index)`;
+- `packedSelectEntryRead_content_free` -- given the same segment layout, the same
+  supplied store and the same index, two select entry tables with unrelated
+  entries and unrelated field widths produce the **same trace result**: the same
+  reads, in the same order, with the same replies, and the same decoded entry.
+
+All three are `rfl`.
+
+Rationale:
+
+The third theorem is the decisive one. It quantifies over two tables that share
+no parameter, so it cannot be satisfied by a leaf that consults its table for a
+reply. A congruence over shapes of equal size would have been weaker and would
+have invited the objection recorded in `DD-20260802-001`: a congruence says the
+result is determined, not that a controller can compute it. This statement is
+stronger in the direction that matters -- the table is not consulted at all.
+
+The prompt for this campaign instructed that the unconditional-two-probe defect
+be treated as a repairable lowering obligation rather than an architecture
+obstruction. This finding is the independent evidence for the same conclusion one
+level up, and it is what a future obstruction claim would have to overturn.
+
+Consequences and evidence:
+
+- Pinned by `packedTableReadIsAnIndexNotALookup` and
+  `packedSelectEntryReadIsDeterminedByTheStore`.
+- The remaining shape-dependence of `bpChunkedSelectTraceResultWithStore` is a
+  fixed list of scalars from the same record: `superStride`, `localStride`,
+  `localSlotsPerSuper`, `wordSize`, `queryOccurrence`, and
+  `occurrenceCount bits target`, plus `SuccinctClose.bpFringeChunkBits
+  shape.bpCode.length` supplied beside it. Each needs a `Nat`-only mirror and an
+  agreement theorem, exactly as the offsets did.
+- This does **not** close `FG-07`, and it is not evidence about the close/LCA
+  side, which has its own leaves. It bounds the shape of the remaining work: a
+  scalar factorization over a fixed list, with elaborator-enforced coverage
+  available because the record's fields are fixed.
