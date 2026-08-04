@@ -752,6 +752,58 @@ theorem packedSparseDirectoryReadIsTheLeafDirectoryRead :
     packedSparseDirectoryRead_eq directory layout chunkSegment store chunkBits
       base localSlot localOccurrence
 
+/-! #### The whole select leaf is record-free
+
+The consumers below pin the leaf itself, not just its helpers. The signature
+carries the `FG-07` claim for this component: segments, a supplied store,
+geometry scalars, the target bit and the query index — no
+`SparseExceptionSelectData`, no `CartesianShape`, no list, no proof argument.
+-/
+
+/-- Pins the record-free leaf's signature. -/
+def packedSelectCloseReadSignature :
+    GenericSelect.SparseExceptionSelectTraceSegmentLayout ->
+      Nat -> Nat -> WordRAM.ReadStore -> Nat -> Bool ->
+        Nat -> Nat -> Nat -> Nat -> Nat ->
+          Nat -> Nat -> Nat ->
+            Nat -> Nat -> Nat -> Nat ->
+              Nat -> WordRAM.TraceResult (Option Nat) :=
+  packedSelectCloseRead
+
+/--
+Pins that the record-free leaf is the leaf, at every `SparseExceptionSelectData`
+and every store.
+-/
+theorem packedSelectCloseReadIsTheLeaf :
+    forall {bits : List Bool} {target : Bool}
+      {rankSuperOverhead rankBlockOverhead : Nat}
+      (data :
+        GenericSelect.SparseExceptionSelectData
+          bits target rankSuperOverhead rankBlockOverhead)
+      (layout : GenericSelect.SparseExceptionSelectTraceSegmentLayout)
+      (chunkSegment selectTableSegment : Nat) (store : WordRAM.ReadStore)
+      (chunkBits idx : Nat),
+      data.bpChunkedSelectTraceResultWithStore layout chunkSegment
+          selectTableSegment store chunkBits idx =
+        packedSelectCloseRead layout chunkSegment selectTableSegment store
+          chunkBits target (GenericSelect.occurrenceCount bits target)
+          data.superStride data.wordSize data.localSlotsPerSuper
+          data.localStride data.longFlagBits.length
+          data.longFlagRankData.wordSize data.longFlagRankData.blocksPerSuper
+          data.sparseDirectory.flagBits.length
+          data.sparseDirectory.rankData.wordSize
+          data.sparseDirectory.rankData.blocksPerSuper
+          data.sparseDirectory.localStride idx :=
+  fun data layout chunkSegment selectTableSegment store chunkBits idx =>
+    packedSelectCloseRead_eq data layout chunkSegment selectTableSegment store
+      chunkBits idx
+
+/-- Pins the record-free dense two-word select read's signature. -/
+def packedDenseTwoWordSelectReadSignature :
+    Nat -> Nat -> Nat -> Nat -> Bool -> WordRAM.ReadStore -> Nat ->
+      Nat -> Nat -> Nat -> WordRAM.TraceResult (Option Nat) :=
+  packedDenseTwoWordSelectRead
+
 /-- Pins the fringe chunk width mirror's signature. -/
 def packedFringeChunkBitsSignature : Nat -> Nat := packedFringeChunkBits
 

@@ -6478,3 +6478,74 @@ Pinned by `packedSparseDirectoryReadSignature` and
 `packedSparseDirectoryReadIsTheLeafDirectoryRead`.
 
 `FG-07` remains Open: there is still no top-level controller.
+
+## DD-20260804-010: the close-select leaf is record-free
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Completes the select-side
+construction begun in `DD-20260804-009`. Feeds `EG-CP` row `FG-07`.
+
+Date: 2026-08-04
+
+Context:
+
+`DD-20260804-009` established the inlining technique and landed
+`packedSelectEntryRead`. Its addenda landed `packedRankRead` and
+`packedSparseDirectoryRead`, and showed that the technique composes: a
+record-free definition built from record-free parts closes by `rfl` with no
+accumulated rewriting.
+
+Decision and result:
+
+Apply it to the leaf itself. `packedDenseTwoWordSelectRead` completes the four
+helpers -- its body never mentions its bit store, only the word size that reaches
+it as a type index, so taking the word size as an ordinary argument removes the
+record without changing the term. `packedSelectCloseRead` is then the whole leaf:
+
+```
+packedSelectCloseRead
+  (layout : SparseExceptionSelectTraceSegmentLayout)
+  (chunkSegment selectTableSegment : Nat) (store : WordRAM.ReadStore)
+  (chunkBits : Nat) (target : Bool)
+  (occurrenceCount superStride wordSize localSlotsPerSuper localStride : Nat)
+  (longFlagBitLength longFlagWordSize longFlagBlocksPerSuper : Nat)
+  (sparseBitLength sparseWordSize sparseBlocksPerSuper sparseLocalStride : Nat)
+  (idx : Nat) : WordRAM.TraceResult (Option Nat)
+```
+
+with `packedSelectCloseRead_eq` proving
+
+```
+data.bpChunkedSelectTraceResultWithStore layout chunkSegment selectTableSegment
+    store chunkBits idx =
+  packedSelectCloseRead layout chunkSegment selectTableSegment store chunkBits
+    target (occurrenceCount bits target) data.superStride data.wordSize ... idx
+```
+
+by `rfl`, for every `SparseExceptionSelectData`.
+
+`queryOccurrence` binds its record as `_data` and returns `idx`, so it inlines to
+`idx`.
+
+Rationale:
+
+The signature is the claim. `FG-07` forbids the controller from accepting a
+`CartesianShape`, a source program, a list or a proof callback; this definition's
+type contains none of them, and the elaborator enforces that. The `rfl` means the
+record-free leaf cannot drift from the real one.
+
+Consequences and evidence:
+
+- Every scalar the equation supplies has already been discharged for the
+  close-select instance: `occurrenceCount bits target = shape.size`;
+  `superStride`, `wordSize`, `localSlotsPerSuper`, `localStride` have size-only
+  mirrors at `2 * n`; both `blocksPerSuper` are the literal `1`; both bit lengths
+  are mirrored size-only; the sparse local stride is the same `localStride`
+  expression. **A controller holding only `n` can supply every argument.**
+- Pinned by `packedSelectCloseReadSignature`, `packedSelectCloseReadIsTheLeaf`,
+  `packedDenseTwoWordSelectReadSignature`.
+- `FG-07` is **not** closed. This is one component of the query, not the query:
+  the whole-query program also has `lcaClose`, `rankCloseIfSome` and
+  `outputPredIfSome` instructions whose leaves live in the close/LCA tower, which
+  has not been examined. There is still no top-level controller definition, no
+  header-probe-then-address sequencing, and no `receipt`.

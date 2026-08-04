@@ -466,6 +466,82 @@ theorem packedRankRead_eq
         pos :=
   rfl
 
+/-! ### A record-free dense two-word select read
+
+The fourth component. Its body never mentions the bit store: it uses only the
+word size, which reaches it as a type index of that store. Taking the word size
+as an ordinary argument therefore removes the record without changing the term.
+-/
+
+/-- The dense two-word select read with no bit-store argument. -/
+def packedDenseTwoWordSelectRead
+    (bitWordSegment rankTableSegment selectTableSegment chunkBits : Nat)
+    (target : Bool) (store : WordRAM.ReadStore) (wordSize : Nat)
+    (basePosition baseOccurrence occurrence : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.bind
+    (SuccinctClose.bpWordReadTraceResult store bitWordSegment
+      (basePosition / wordSize))
+    fun firstWord? =>
+      match firstWord? with
+      | none => WordRAM.TraceResult.pure none
+      | some firstWord =>
+          WordRAM.TraceResult.bind
+            (SuccinctClose.bpChunkedWordRankTraceResultAtSegmentWithStore
+              store rankTableSegment chunkBits target firstWord
+              (basePosition - basePosition / wordSize * wordSize))
+            fun beforeFirst =>
+              WordRAM.TraceResult.bind
+                (SuccinctClose.bpChunkedWordRankTraceResultAtSegmentWithStore
+                  store rankTableSegment chunkBits target firstWord
+                  firstWord.length)
+                fun uptoFirst =>
+                  if occurrence - baseOccurrence < uptoFirst - beforeFirst then
+                    WordRAM.TraceResult.map
+                      (fun local? =>
+                        local?.map fun offset =>
+                          basePosition / wordSize * wordSize + offset)
+                      (SuccinctClose.bpChunkedWordSelectTraceResultAtSegmentsWithStore
+                        store rankTableSegment selectTableSegment chunkBits
+                        target firstWord
+                        (beforeFirst + (occurrence - baseOccurrence)))
+                  else
+                    WordRAM.TraceResult.bind
+                      (SuccinctClose.bpWordReadTraceResult store bitWordSegment
+                        (basePosition / wordSize + 1))
+                      fun secondWord? =>
+                        match secondWord? with
+                        | none => WordRAM.TraceResult.pure none
+                        | some secondWord =>
+                            WordRAM.TraceResult.map
+                              (fun local? =>
+                                local?.map fun offset =>
+                                  (basePosition / wordSize + 1) * wordSize +
+                                    offset)
+                              (SuccinctClose.bpChunkedWordSelectTraceResultAtSegmentsWithStore
+                                store rankTableSegment selectTableSegment
+                                chunkBits target secondWord
+                                (occurrence - baseOccurrence -
+                                  (uptoFirst - beforeFirst)))
+
+/--
+**The record-free dense two-word select read is the record-taking one**, once the
+word size is supplied. Proved by `rfl`, over bit stores on any bit string.
+-/
+theorem packedDenseTwoWordSelectRead_eq
+    {bits : List Bool} {wordSize : Nat}
+    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
+    (bitWordSegment rankTableSegment selectTableSegment chunkBits : Nat)
+    (target : Bool) (store : WordRAM.ReadStore)
+    (basePosition baseOccurrence occurrence : Nat) :
+    GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore
+        bitWordSegment rankTableSegment selectTableSegment chunkBits target
+        bitWords store basePosition baseOccurrence occurrence =
+      packedDenseTwoWordSelectRead bitWordSegment rankTableSegment
+        selectTableSegment chunkBits target store wordSize basePosition
+        baseOccurrence occurrence :=
+  rfl
+
 /-! ### A record-free sparse-directory read
 
 The third component. It composes the two already built: the record-free rank read
@@ -509,6 +585,122 @@ theorem packedSparseDirectoryRead_eq
         directory.flagBits.length directory.rankData.wordSize
         directory.rankData.blocksPerSuper directory.localStride base localSlot
         localOccurrence :=
+  rfl
+
+/-! ### The whole select leaf, record-free
+
+All four helpers are now record-free definitions, so the leaf itself can be
+written the same way: segments, a supplied store, the geometry scalars, and the
+query index. No `SparseExceptionSelectData`, no `CartesianShape`, no list, no
+proof argument.
+
+`queryOccurrence` binds its record as `_data` and returns `idx`, so it is
+inlined as `idx`.
+-/
+
+/--
+The chunked close-select leaf with no data record: every input is a segment
+number, the supplied store, a geometry scalar, the target bit, or the query
+index.
+-/
+def packedSelectCloseRead
+    (layout : GenericSelect.SparseExceptionSelectTraceSegmentLayout)
+    (chunkSegment selectTableSegment : Nat) (store : WordRAM.ReadStore)
+    (chunkBits : Nat) (target : Bool)
+    (occurrenceCount superStride wordSize localSlotsPerSuper
+      localStride : Nat)
+    (longFlagBitLength longFlagWordSize longFlagBlocksPerSuper : Nat)
+    (sparseBitLength sparseWordSize sparseBlocksPerSuper
+      sparseLocalStride : Nat)
+    (idx : Nat) : WordRAM.TraceResult (Option Nat) :=
+  if idx < occurrenceCount then
+    WordRAM.TraceResult.bind
+      (packedSelectEntryRead layout.superTable store
+        (GenericSelect.selectSuperSlot idx superStride))
+      fun super? =>
+        match super? with
+        | none => WordRAM.TraceResult.pure none
+        | some super =>
+            if GenericSelect.relativeSplitSelectEntryIsMarked super then
+              WordRAM.TraceResult.bind
+                (packedRankRead layout.longFlagRankBase
+                  (layout.longFlagRankBase + 1) (layout.longFlagRankBase + 2)
+                  chunkSegment chunkBits true store longFlagBitLength
+                  longFlagWordSize longFlagBlocksPerSuper
+                  (GenericSelect.selectSuperSlot idx superStride))
+                fun exceptionRank =>
+                  GenericSelect.bpRelativeOffsetReadTraceResultWithStore store
+                    layout.longRelativeBase
+                    (GenericSelect.relativeSplitSelectEntryBasePosition wordSize
+                      super)
+                    (GenericSelect.relativeSplitSelectLongCompactSlot
+                      exceptionRank (idx - super.baseOccurrence) superStride)
+            else
+              WordRAM.TraceResult.bind
+                (packedSelectEntryRead layout.localTable store
+                  (GenericSelect.relativeSplitSelectLocalSlot idx superStride
+                    localSlotsPerSuper localStride super))
+                fun loc? =>
+                  match loc? with
+                  | none => WordRAM.TraceResult.pure none
+                  | some loc =>
+                      if GenericSelect.relativeSplitSelectEntryIsMarked loc then
+                        packedSparseDirectoryRead layout.sparseDirectory
+                          chunkSegment store chunkBits sparseBitLength
+                          sparseWordSize sparseBlocksPerSuper sparseLocalStride
+                          (GenericSelect.relativeSplitSelectLocalBasePosition
+                            wordSize super loc)
+                          (GenericSelect.relativeSplitSelectLocalSlot idx
+                            superStride localSlotsPerSuper localStride super)
+                          (idx -
+                            GenericSelect.relativeSplitSelectLocalBaseOccurrence
+                              super loc)
+                      else
+                        packedDenseTwoWordSelectRead layout.bitWordBase
+                          chunkSegment selectTableSegment chunkBits target store
+                          wordSize
+                          (GenericSelect.relativeSplitSelectLocalBasePosition
+                            wordSize super loc)
+                          (GenericSelect.relativeSplitSelectLocalBaseOccurrence
+                            super loc)
+                          idx
+  else
+    WordRAM.TraceResult.pure none
+
+/--
+**The record-free leaf is the leaf.**
+
+For every `SparseExceptionSelectData`, the existing chunked close-select leaf
+*is* `packedSelectCloseRead` applied to the same segments and store together with
+that record's geometry scalars. The proof is `rfl`: the two are the same term.
+
+Every scalar on the right has been discharged for the close-select instance:
+`occurrenceCount` is `n`; `superStride`, `wordSize`, `localSlotsPerSuper` and
+`localStride` have size-only mirrors at `2 * n`; both `blocksPerSuper` are the
+literal `1`; both bit lengths are mirrored size-only; the sparse local stride is
+the same `localStride` expression. So a controller holding only `n` can supply
+every argument.
+-/
+theorem packedSelectCloseRead_eq
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (data :
+      GenericSelect.SparseExceptionSelectData
+        bits target rankSuperOverhead rankBlockOverhead)
+    (layout : GenericSelect.SparseExceptionSelectTraceSegmentLayout)
+    (chunkSegment selectTableSegment : Nat) (store : WordRAM.ReadStore)
+    (chunkBits idx : Nat) :
+    data.bpChunkedSelectTraceResultWithStore layout chunkSegment
+        selectTableSegment store chunkBits idx =
+      packedSelectCloseRead layout chunkSegment selectTableSegment store
+        chunkBits target (GenericSelect.occurrenceCount bits target)
+        data.superStride data.wordSize data.localSlotsPerSuper data.localStride
+        data.longFlagBits.length data.longFlagRankData.wordSize
+        data.longFlagRankData.blocksPerSuper
+        data.sparseDirectory.flagBits.length
+        data.sparseDirectory.rankData.wordSize
+        data.sparseDirectory.rankData.blocksPerSuper
+        data.sparseDirectory.localStride idx :=
   rfl
 
 /-- Size-only mirror of the shared fringe chunk width. -/

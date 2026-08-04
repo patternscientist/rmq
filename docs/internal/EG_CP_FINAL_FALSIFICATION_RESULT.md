@@ -580,11 +580,44 @@ stride, and `packedSparseDirectoryRead_eq` is again `rfl`. **That the compositio
 also closes by `rfl` is the point** — the technique composes, so a record-free
 definition built from record-free parts accumulates no rewriting obligations.
 
-Three of the five select helpers are now record-free *definitions* rather than
-theorems about records; the relative-offset read never took one. The remaining
-case is the dense two-word select read, stated so far only as a content-free
-theorem at a fixed word size; making it a definition means transcribing its body
-with `wordSize` as an argument.
+All five helpers are now record-free definitions. `packedDenseTwoWordSelectRead`
+completed the set — its body never mentions its bit store, only the word size
+that reaches it as a type index.
+
+### The whole close-select leaf is record-free
+
+```
+packedSelectCloseRead
+  (layout) (chunkSegment selectTableSegment) (store) (chunkBits) (target)
+  (occurrenceCount superStride wordSize localSlotsPerSuper localStride)
+  (longFlagBitLength longFlagWordSize longFlagBlocksPerSuper)
+  (sparseBitLength sparseWordSize sparseBlocksPerSuper sparseLocalStride)
+  (idx) : WordRAM.TraceResult (Option Nat)
+
+packedSelectCloseRead_eq (data) (layout) (segments…) (store) (chunkBits) (idx) :
+  data.bpChunkedSelectTraceResultWithStore … idx =
+    packedSelectCloseRead … target (occurrenceCount bits target)
+      data.superStride data.wordSize … idx
+```
+
+by `rfl`, for **every** `SparseExceptionSelectData`.
+
+The signature is the claim `FG-07` makes: no `CartesianShape`, no source program,
+no list, no proof callback — and the elaborator enforces it.
+
+**And every scalar the equation supplies has already been discharged** for the
+close-select instance: `occurrenceCount bits target = shape.size`;
+`superStride`, `wordSize`, `localSlotsPerSuper`, `localStride` have size-only
+mirrors at `2 * n`; both `blocksPerSuper` are the literal `1`; both bit lengths
+are mirrored size-only; the sparse local stride is the same `localStride`
+expression. So **a controller holding only `n` can supply every argument to this
+leaf.**
+
+`FG-07` is still **not** closed. This is one component of the query, not the
+query. The whole-query program also has `lcaClose`, `rankCloseIfSome` and
+`outputPredIfSome` instructions, whose leaves live in the close/LCA tower — never
+examined. There is no top-level controller definition, no
+header-probe-then-address sequencing, and no `receipt`.
 
 **`FG-07` remains Open.** One component is not a controller: there is no fixed
 top-level definition, no header-then-address sequencing, no `receipt`, and the
