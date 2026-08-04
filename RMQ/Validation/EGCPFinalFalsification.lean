@@ -1682,6 +1682,28 @@ theorem packedReturnedWordValuesFitOneWord :
           2 ^ packedCellWidth n :=
   packedDecodedWordValue_lt_two_pow
 
+/-! ## The executed store is a different object (`FG-08`, `INV-GLOBAL-PHYSICAL-MACHINE`)
+
+Pinned here so the finding cannot be quietly dropped: it is the reason the
+per-read lowering stops at executed segment 19.
+-/
+
+/-- The flat payload store and the executed store are not equal. -/
+theorem packedExecutedStoreIsNotTheFlatPayloadStore :
+    forall shape : Cartesian.CartesianShape,
+      0 < packedSummaryBlockCount shape.size ->
+        concreteBPNativeSuccinctRMQFlatPayloadReadStore shape ≠
+          concreteBPNativeSuccinctRMQGlobalReadStore shape :=
+  packedStoresNotEqual
+
+/-- They disagree at a named address, not merely as objects. -/
+theorem packedExecutedStoreDisagreesAtSegment23 :
+    forall shape : Cartesian.CartesianShape,
+      0 < packedSummaryBlockCount shape.size ->
+        (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord? 23 0 ≠
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 23 0 :=
+  packedStoresDisagree_atSegmentTwentyThree
+
 end Validation
 end PackedCellProbe
 end SuccinctFinal

@@ -7908,3 +7908,57 @@ The project-skill preflight was re-run at this tip: governance
 checkout / working / runtime skill sets all `rmq-audit-prompt, rmq-coordinator,
 rmq-proof-sprint`, `required=rmq-proof-sprint`, `required_mode=role-skills`,
 **PASS**.
+
+## DD-20260804-032: the universe gap is a disagreement, not a difference of notation
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`.
+
+Date: 2026-08-04
+
+`DD-20260804-027` established by `rfl` that the executed store and the flat
+payload store are *defined* by different expressions from segment 20 up. That is
+weaker than it sounds: two definitions can agree pointwise, so a bridge was still
+formally possible and the honest next step was to look for one or rule it out.
+
+Ruled out:
+
+```
+packedStoresDisagree_atSegmentTwentyThree :
+  0 < packedSummaryBlockCount shape.size ->
+    (flatPayloadReadStore shape).readWord? 23 0 ≠
+      (globalReadStore shape).readWord? 23 0
+
+packedStoresNotEqual :
+  0 < packedSummaryBlockCount shape.size ->
+    flatPayloadReadStore shape ≠ globalReadStore shape
+```
+
+At segment 23 the executed store answers `none` -- it is silent from 23 on --
+while the flat payload store answers the close summary's argOffset column, which
+has a word whenever the summary carries any block at all. So the two stores give
+different answers, and no bridge between the universes exists.
+
+The hypothesis `0 < packedSummaryBlockCount shape.size` is the ordinary case, not
+a contrivance: it is exactly the condition under which the close summary carries
+data. It is satisfied by evaluation across `[1023, 1331]`, where
+`PackedSummaryActive` holds. A kernel-checked witness would need the full activity
+predicate, whose conjuncts route through `sampledDirectoryOverhead` and
+`bpSuperblockSpan`; that is the same `Nat.log2` machinery `Boundaries.lean` uses
+and is feasible, but it is not done, so the theorem is stated conditionally rather
+than instantiated.
+
+What this does and does not settle:
+
+- It **settles** that `packedMemory`, built over the `FG-01` payload object,
+  cannot be made to back the executed run by finding a bridge. `FG-08`'s whole-run
+  clause is unreachable from the current pair of frozen rows.
+- It **does not** prove a `K1` obstruction, and is not reported as one. `K1` is
+  one header cell containing `longCount`; the header cell is not involved in this
+  theorem, and no frozen `K1` quantifier is contradicted. The commissioning
+  instruction is explicit that an obstruction is reported only when a checked
+  theorem matches the frozen `K1` quantifiers, and this does not.
+- What it is: a checked incompatibility between `FG-01`'s named payload object and
+  `FG-08`'s requirement that the execution probe the memory built from it. Which
+  of the two moves is an owner decision, because either resolution edits the
+  meaning of a frozen row and the commissioning prompt forbids weakening one.

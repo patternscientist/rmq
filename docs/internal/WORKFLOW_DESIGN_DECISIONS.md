@@ -7193,3 +7193,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   byte-identical to `0a18548` across all 37 requirement rows; anti-vacuity
   unchanged; only `INV-WORD-WIDTH`'s evidence/status pair and the nine `CHK`
   ledger result cells were written.
+- Commit proving the store disagreement: requirement cells byte-identical to
+  `0a18548` across all 37 requirement rows; anti-vacuity unchanged; only
+  `INV-GLOBAL-PHYSICAL-MACHINE`'s evidence/status pair was written.

@@ -143,6 +143,54 @@ theorem packedFlatStore_answers_at_twentyThree
         .closeSummaryArgOffset)[index]? :=
   rfl
 
+/-! ## The two universes give different *answers*, not just different definitions
+
+Everything above is `rfl`: it shows the two stores are defined by different
+expressions from segment 20 up. That alone would leave room for a bridge -- two
+definitions can agree pointwise.
+
+This section closes that room. Whenever the close summary is active with at least
+one block, the flat payload store **answers** at segment 23 and the executed store
+**does not**. So no bridge exists, and the per-read lowering of `PhysicalRead.lean`
+cannot be extended past executed segment 19 by finding one.
+
+The hypothesis is the ordinary case rather than a contrivance: it is exactly the
+condition under which the close summary carries any data at all.
+-/
+
+theorem packedStoresDisagree_atSegmentTwentyThree
+    (shape : CartesianShape)
+    (hpos : 0 < packedSummaryBlockCount shape.size) :
+    (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord? 23 0 ≠
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 23 0 := by
+  have hglobal :
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 23 0 = none := by
+    have h := packedExecutedStore_silent_from_twentyThree shape 0 0
+    simpa using h
+  have hflat :
+      (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord? 23 0 =
+        packedWordSlice
+          (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+            .closeSummaryArgOffset)
+          (packedSummaryBlockCount shape.size)
+          (packedSummaryRelativeWidth shape.size) 0 := by
+    rw [packedFlatStore_answers_at_twentyThree shape 0]
+    exact packedCloseSummaryArgOffsetWords shape 0
+  rw [hglobal, hflat, packedWordSlice_of_lt hpos]
+  exact fun h => Option.noConfusion h
+
+/--
+**The stores are not equal.** Stated on the stores themselves rather than at one
+address, so it cannot be read as an artefact of the chosen index.
+-/
+theorem packedStoresNotEqual
+    (shape : CartesianShape)
+    (hpos : 0 < packedSummaryBlockCount shape.size) :
+    concreteBPNativeSuccinctRMQFlatPayloadReadStore shape ≠
+      concreteBPNativeSuccinctRMQGlobalReadStore shape := by
+  intro heq
+  exact packedStoresDisagree_atSegmentTwentyThree shape hpos (by rw [heq])
+
 end PackedCellProbe
 
 end SuccinctFinal
