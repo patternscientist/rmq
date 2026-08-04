@@ -5649,3 +5649,12 @@ count is required only for positions *within* the select component. That is a
 sharper statement than "K = 1 suffices" and is what makes the header's role easy
 to describe: it moves nothing except the local, sparse and close-adjacent bases
 inside one component.
+
+`FG-05` cell addressing (2026-08-04): `packedCellAt` names the `i`-th allocated
+cell as a total function, `packedMemory_getElem?` ties it to the memory list at
+every in-range index, and `packedCellPair` proves that two consecutive cells are
+exactly the double-width window at the first one's base.
+
+`packedCellPair` is the step the physical lowering needs: it is what will let a
+logical word of at most one cell width be read from at most two probes. The span
+theorem itself is not yet proved and is recorded as remaining.

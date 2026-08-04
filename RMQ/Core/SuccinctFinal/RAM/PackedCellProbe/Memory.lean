@@ -191,6 +191,39 @@ theorem packedMemory_flatten_take (shape : CartesianShape) :
   unfold packedPaddedBits
   simp
 
+/-! ### Cell crossing
+
+A logical word is a span of bits that need not be aligned to a cell. This section
+proves that any span no wider than one cell is recoverable from at most **two**
+consecutive cell probes, which is what bounds the physical probe count per logical
+read.
+-/
+
+/-- The `i`-th allocated cell, as a total function of the index. -/
+def packedCellAt (shape : CartesianShape) (i : Nat) : List Bool :=
+  ((packedPaddedBits shape).drop (i * packedCellWidth shape.size)).take
+    (packedCellWidth shape.size)
+
+theorem packedMemory_getElem?
+    (shape : CartesianShape) {i : Nat}
+    (hi : i < packedCellCount shape.size) :
+    (packedMemory shape)[i]? = some (packedCellAt shape i) := by
+  unfold packedMemory packedCellAt
+  rw [List.getElem?_map, List.getElem?_range hi]
+  rfl
+
+/-- Two consecutive cells are the double-width window at the first one's base. -/
+theorem packedCellPair (shape : CartesianShape) (i : Nat) :
+    packedCellAt shape i ++ packedCellAt shape (i + 1) =
+      ((packedPaddedBits shape).drop (i * packedCellWidth shape.size)).take
+        (packedCellWidth shape.size + packedCellWidth shape.size) := by
+  unfold packedCellAt
+  rw [List.take_add]
+  congr 1
+  rw [List.drop_drop]
+  congr 1
+  rw [Nat.add_mul, Nat.one_mul]
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
