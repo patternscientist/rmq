@@ -17,10 +17,10 @@ ancestor.
 Worktree: `C:\Users\poin\.codex\visualizations\2026\07\17\019f6d85-7626-7433-a60b-81f8be29689a\eg-cp-final-falsification-r1`.
 Never pushed, never merged, never amended, never squashed.
 
-Last update: 2026-08-04, in the commit titled "Measure the executed segment
-universe", which was the branch tip when this line was written. Earlier tips this
-document described: `4d2ed70`, `5c05016`, `08d63c7`, the header-probe commit, and
-the physical-read commit.
+Last update: 2026-08-04, in the commit titled "Record the replay run in the
+matrix", which was the branch tip when this line was written. Earlier tips this
+document described: `4d2ed70`, `5c05016`, `08d63c7`, the header-probe commit, the
+physical-read commit, and the executed-segment-universe commit.
 
 ---
 
@@ -474,6 +474,47 @@ executed segments `0` .. `19` and nothing beyond. Every per-read theorem in
 `FG-01` names one payload object, `FG-08` requires the execution to probe the
 memory built from it — and resolving it is a question about the close route.
 
+### The replay harness (`FG-12`, partially exercised)
+
+`scripts/eg_cp_final_falsification_replay.ps1` encodes the sixteen-entry frozen
+registry literally and in the commissioned order. A case is replayed by applying
+one textual mutation to one tracked file, rebuilding the named failing surface,
+and requiring the commissioned verdict *at that surface* -- a build that fails
+somewhere else is reported `WRONG-SURFACE`, not as a pass.
+
+Run on 2026-08-04, full mode, committed clean tree:
+
+| case | outcome | at |
+| --- | --- | --- |
+| `A01-PRODUCTION-EXPECTED-ACCEPT` | ACCEPT | unchanged candidate builds |
+| `M01-WRONG-LONG-COUNT` | REJECT | `PackedCellProbe/SourceGeometry.lean` |
+| `M03-SHAPE-PARAMETER` | REJECT | `PackedCellProbe/PhysicalRead.lean` |
+| `M05-SIBLING-STORE` | REJECT | `PackedCellProbe/PhysicalRead.lean` |
+| `M08-FORGED-PROBE-CAP` | REJECT | `PackedCellProbe/Probe.lean` |
+| `M09-WRONG-CELL-CROSSING` | REJECT | `PackedCellProbe/Probe.lean` |
+| `M10-SPARSE-COUNT-DEPENDENCY` | REJECT | `PackedCellProbe/SourceGeometry.lean` |
+| `M11-SIBLING-PAYLOAD` | REJECT | `PackedCellProbe/Payload.lean` |
+| `M14-LONG-COUNT-IGNORED` | REJECT | `PackedCellProbe/SourceGeometry.lean` |
+| `A02`, `M02`, `M04`, `M06`, `M07`, `M12`, `M13` | TARGET-ABSENT | no such surface on this candidate |
+
+Three things the harness caught about itself, each of which would have been a
+false pass:
+
+1. Restoration through `Set-Content -Encoding utf8` adds a BOM and rewrites CRLF.
+   The SHA256 restoration check failed the first time it ran. The harness now
+   captures and restores raw bytes.
+2. `Start-Process -PassThru` reported a non-zero exit code for a build that
+   succeeds when run directly, which would have made every case look like a
+   REJECT. The harness drives `System.Diagnostics.Process` itself.
+3. `M03` was recorded as rejecting at the exact-signature consumer. It does not:
+   adding a parameter breaks the library's own uses first, so the build never
+   reaches the consumer. The expectation was corrected downward.
+
+Two records are deliberately weaker than the registry's wording. `M01` and `M14`
+reject at the source-geometry equation, which depends on the decoded header value
+but is **not** a value-projection liveness witness; `FG-11` still has no `.result`
+or next-address inequality and these mutations do not supply one.
+
 ## 5. Exact-type consumers
 
 `RMQ/Validation/EGCPFinalFalsification.lean` states each dependency's expected
@@ -908,10 +949,15 @@ Specifically not done:
   substitute for `address < 2 ^ w n`, and no capacity theorem exists.
 * **`FG-10`** same-run correctness. Not started.
 * **`FG-11`** liveness and anti-bypass. Not started.
-* **`FG-12`** the committed replay registry. Not started. `scripts/eg_cp_final_falsification_replay.ps1`
-  does not exist, so **no mutation in the frozen registry has been run**, and
-  every matrix row whose anti-vacuity challenge is a registry ID has an unrun
-  challenge.
+* **`FG-12`** the committed replay registry. The harness exists and was run once
+  in full mode on the committed clean tree: 16 cases considered, **9 as
+  commissioned at their named surfaces**, 7 `TARGET-ABSENT`, descendant self-test
+  PASS, every mutation restored with a verified SHA256, terminal tree clean,
+  exit 7. What remains is that seven commissioned cases -- `A02`, `M02`, `M04`,
+  `M06`, `M07`, `M12`, `M13` -- name a run, a trace, a controller over
+  `packedMemory`, or a capstone, none of which exist, so full mode is
+  `INCOMPLETE` rather than a pass. The row also wants an expected-type consumer
+  pinning the full capstone, and there is no capstone.
 * **`FG-13`** trust and same-object composition. The hygiene and native-decision
   scans are clean, but there is no capstone whose object identity could be
   traced.
