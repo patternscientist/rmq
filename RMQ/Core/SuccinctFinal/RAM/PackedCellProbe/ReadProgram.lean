@@ -1118,6 +1118,183 @@ theorem packedBaselineWords_eq (shape : CartesianShape) :
   unfold packedBaselineWords packedInteriorTableWords packedBpCodeWordWidth
   rw [packedInteriorLayout_eq, CartesianShape.bpCode_length]
 
+/-- Size-only mirror of the block relative-minimum table's word count. -/
+def packedMinRelWords (n : Nat) : Nat :=
+  packedInteriorTableWords (packedInteriorLayout n).blockCount
+    (packedInteriorLayout n).relativeWidth (packedBpCodeWordWidth n)
+
+theorem packedMinRelWords_eq (shape : CartesianShape) :
+    ((SuccinctClose.canonicalRelativeRmmSummaryTable shape).minRelTable.machineStore
+        (SuccinctRank.machineWordBits_pos shape.bpCode.length)).store.words.size =
+      packedMinRelWords shape.size := by
+  rw [GeometryClosure.machineStore_words_size_closed,
+    SuccinctClose.bpBlockRelativeMinExcessEntries_length]
+  unfold packedMinRelWords packedInteriorTableWords packedBpCodeWordWidth
+  rw [packedInteriorLayout_eq, CartesianShape.bpCode_length]
+
+/-- Size-only mirror of the block relative-maximum table's word count. -/
+def packedMaxRelWords (n : Nat) : Nat :=
+  packedInteriorTableWords (packedInteriorLayout n).blockCount
+    (packedInteriorLayout n).relativeWidth (packedBpCodeWordWidth n)
+
+theorem packedMaxRelWords_eq (shape : CartesianShape) :
+    ((SuccinctClose.canonicalRelativeRmmSummaryTable shape).maxRelTable.machineStore
+        (SuccinctRank.machineWordBits_pos shape.bpCode.length)).store.words.size =
+      packedMaxRelWords shape.size := by
+  rw [GeometryClosure.machineStore_words_size_closed,
+    SuccinctClose.bpBlockRelativeMaxExcessEntries_length]
+  unfold packedMaxRelWords packedInteriorTableWords packedBpCodeWordWidth
+  rw [packedInteriorLayout_eq, CartesianShape.bpCode_length]
+
+/-- Size-only mirror of the block arg-min offset table's word count. -/
+def packedArgOffsetWords (n : Nat) : Nat :=
+  packedInteriorTableWords (packedInteriorLayout n).blockCount
+    (packedInteriorLayout n).relativeWidth (packedBpCodeWordWidth n)
+
+theorem packedArgOffsetWords_eq (shape : CartesianShape) :
+    ((SuccinctClose.canonicalRelativeRmmSummaryTable shape).argOffsetTable.machineStore
+        (SuccinctRank.machineWordBits_pos shape.bpCode.length)).store.words.size =
+      packedArgOffsetWords shape.size := by
+  rw [GeometryClosure.machineStore_words_size_closed,
+    SuccinctClose.bpBlockArgMinLocalOffsetEntries_length]
+  unfold packedArgOffsetWords packedInteriorTableWords packedBpCodeWordWidth
+  rw [packedInteriorLayout_eq, CartesianShape.bpCode_length]
+
+/-- Size-only mirror of the local sparse offset table's word count. -/
+def packedLocalTableWords (n : Nat) : Nat :=
+  packedInteriorTableWords
+    ((packedInteriorLayout n).macroSampleCount *
+      ((packedInteriorLayout n).levelCount * (packedInteriorLayout n).macroSize))
+    (packedInteriorLayout n).offsetWidth (packedBpCodeWordWidth n)
+
+theorem packedLocalTableWords_eq (shape : CartesianShape) :
+    ((SuccinctClose.canonicalRelativeRmmInteriorLocalTable shape).table.machineStore
+        (SuccinctRank.machineWordBits_pos shape.bpCode.length)).store.words.size =
+      packedLocalTableWords shape.size := by
+  rw [GeometryClosure.machineStore_words_size_closed,
+    SuccinctClose.bpLocalSparseOffsetEntries_length]
+  unfold packedLocalTableWords packedInteriorTableWords packedBpCodeWordWidth
+  rw [packedInteriorLayout_eq, CartesianShape.bpCode_length]
+
+/-- Size-only mirror of the global sparse block table's word count. -/
+def packedGlobalTableWords (n : Nat) : Nat :=
+  packedInteriorTableWords
+    ((packedInteriorLayout n).globalLevelCount *
+      (packedInteriorLayout n).macroSampleCount)
+    (packedInteriorLayout n).blockAddressWidth (packedBpCodeWordWidth n)
+
+theorem packedGlobalTableWords_eq (shape : CartesianShape) :
+    ((SuccinctClose.canonicalRelativeRmmInteriorGlobalTable shape).table.machineStore
+        (SuccinctRank.machineWordBits_pos shape.bpCode.length)).store.words.size =
+      packedGlobalTableWords shape.size := by
+  rw [GeometryClosure.machineStore_words_size_closed,
+    SuccinctClose.bpGlobalSparseBlockEntries_length]
+  unfold packedGlobalTableWords packedInteriorTableWords packedBpCodeWordWidth
+  rw [packedInteriorLayout_eq, CartesianShape.bpCode_length]
+
+/-- Size-only mirror of the local sparse level table's word count. -/
+def packedLocalLevelWords (n : Nat) : Nat :=
+  packedInteriorTableWords
+    (SuccinctClose.bpSparseLevelDomain (packedInteriorLayout n).macroSize)
+    (SuccinctClose.bpSparseLevelWidth
+      (SuccinctClose.bpSparseLevelDomain (packedInteriorLayout n).macroSize))
+    (packedBpCodeWordWidth n)
+
+theorem packedLocalLevelWords_eq (shape : CartesianShape) :
+    ((SuccinctClose.canonicalRelativeRmmInteriorLocalLevelTable shape).table.machineStore
+        (SuccinctRank.machineWordBits_pos shape.bpCode.length)).store.words.size =
+      packedLocalLevelWords shape.size := by
+  rw [GeometryClosure.machineStore_words_size_closed,
+    SuccinctClose.bpSparseLevelEntries_length]
+  unfold packedLocalLevelWords packedInteriorTableWords packedBpCodeWordWidth
+  rw [packedInteriorLayout_eq, CartesianShape.bpCode_length]
+
+/-- Size-only mirror of the global sparse level table's word count. -/
+def packedGlobalLevelWords (n : Nat) : Nat :=
+  packedInteriorTableWords
+    (SuccinctClose.bpSparseLevelDomain (packedInteriorLayout n).macroSampleCount)
+    (SuccinctClose.bpSparseLevelWidth
+      (SuccinctClose.bpSparseLevelDomain
+        (packedInteriorLayout n).macroSampleCount))
+    (packedBpCodeWordWidth n)
+
+theorem packedGlobalLevelWords_eq (shape : CartesianShape) :
+    ((SuccinctClose.canonicalRelativeRmmInteriorGlobalLevelTable shape).table.machineStore
+        (SuccinctRank.machineWordBits_pos shape.bpCode.length)).store.words.size =
+      packedGlobalLevelWords shape.size := by
+  rw [GeometryClosure.machineStore_words_size_closed,
+    SuccinctClose.bpSparseLevelEntries_length]
+  unfold packedGlobalLevelWords packedInteriorTableWords packedBpCodeWordWidth
+  rw [packedInteriorLayout_eq, CartesianShape.bpCode_length]
+
+/-- Size-only mirror of the whole interior component store's word count. -/
+def packedInteriorComponentWords (n : Nat) : Nat :=
+  packedBaselineWords n +
+    (packedMinRelWords n +
+      (packedMaxRelWords n +
+        (packedArgOffsetWords n +
+          (packedLocalTableWords n +
+            (packedGlobalTableWords n +
+              (packedLocalLevelWords n + packedGlobalLevelWords n))))))
+
+theorem packedInteriorComponentWords_eq (shape : CartesianShape) :
+    (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+        shape).store.words.size =
+      packedInteriorComponentWords shape.size := by
+  rw [SuccinctClose.canonicalRelativeRmmInteriorComponentStore_words_size_eq]
+  simp only []
+  rw [packedBaselineWords_eq, packedMinRelWords_eq, packedMaxRelWords_eq,
+    packedArgOffsetWords_eq, packedLocalTableWords_eq, packedGlobalTableWords_eq,
+    packedLocalLevelWords_eq, packedGlobalLevelWords_eq]
+  rfl
+
+/--
+Size-only mirror of the nine interior component offsets: the eight prefix-summed
+table bases and the dead address.
+-/
+def packedInteriorOffsets (n : Nat) :
+    SuccinctClose.CanonicalRelativeRmmInteriorComponentOffsets where
+  baseline := 0
+  minRel := packedBaselineWords n
+  maxRel := packedBaselineWords n + packedMinRelWords n
+  argOffset := packedBaselineWords n + packedMinRelWords n + packedMaxRelWords n
+  localOffset :=
+    packedBaselineWords n + packedMinRelWords n + packedMaxRelWords n +
+      packedArgOffsetWords n
+  globalBlock :=
+    packedBaselineWords n + packedMinRelWords n + packedMaxRelWords n +
+      packedArgOffsetWords n + packedLocalTableWords n
+  localLevel :=
+    packedBaselineWords n + packedMinRelWords n + packedMaxRelWords n +
+      packedArgOffsetWords n + packedLocalTableWords n +
+      packedGlobalTableWords n
+  globalLevel :=
+    packedBaselineWords n + packedMinRelWords n + packedMaxRelWords n +
+      packedArgOffsetWords n + packedLocalTableWords n +
+      packedGlobalTableWords n + packedLocalLevelWords n
+  deadAddress := packedInteriorComponentWords n
+
+/--
+**The interior component offsets are functions of the input size.**
+
+`offsets_congr` says two shapes of equal size agree on all nine. This says what
+they *are*, so a controller can compute the interior's addresses from `n`.
+
+With `packedInteriorLayout_eq`, this is both halves of the interior's shape
+dependence: control flow and addresses.
+-/
+theorem packedInteriorOffsets_eq (shape : CartesianShape) :
+    SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets shape =
+      packedInteriorOffsets shape.size := by
+  unfold SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+    packedInteriorOffsets
+  simp only [GeometryClosure.localMachineStore_words_size,
+    GeometryClosure.globalMachineStore_words_size,
+    GeometryClosure.localLevelMachineStore_words_size]
+  rw [packedBaselineWords_eq, packedMinRelWords_eq, packedMaxRelWords_eq,
+    packedArgOffsetWords_eq, packedLocalTableWords_eq, packedGlobalTableWords_eq,
+    packedLocalLevelWords_eq, packedInteriorComponentWords_eq]
+
 /-! #### The endpoint-fringe candidate readers
 
 The cross-block branch's two endpoint readers use exactly three shape-derived

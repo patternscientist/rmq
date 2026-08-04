@@ -6938,3 +6938,54 @@ converted this way. Seven table counts and the cumulative offsets record remain.
 This required importing `RMQ.Core.SuccinctFinal.RAM.GeometryClosure` into
 `ReadProgram.lean`. No cycle: `GeometryClosure` is a leaf reached only from
 `RMQ.lean`, and nothing in it imports the packed cell-probe modules.
+
+## DD-20260804-015: the interior's addresses are size-only, so both its halves are
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Completes the interior factorization
+begun in `DD-20260804-014`. Feeds `EG-CP` row `FG-07`.
+
+Date: 2026-08-04
+
+Context:
+
+The interior navigator's shape dependence splits into control flow, settled by
+`packedInteriorLayout_eq`, and component addresses -- nine offsets, being eight
+prefix-summed table word counts plus a dead address.
+
+`GeometryClosure.lean` already proved all nine are *determined* by the size
+(`offsets_congr`, `componentStoreWords_congr`, and eight per-table congruences).
+Those are congruences.
+
+Decision and result:
+
+Convert each into a mirror by the recipe of the addendum to `DD-20260804-014`:
+`machineStore_words_size_closed`, then the table's entry-count lemma, then
+`packedInteriorLayout_eq` and `CartesianShape.bpCode_length` in place of
+`layout_congr` and `bpLen_congr`.
+
+Eight mirrors landed -- `packedBaselineWords`, `packedMinRelWords`,
+`packedMaxRelWords`, `packedArgOffsetWords`, `packedLocalTableWords`,
+`packedGlobalTableWords`, `packedLocalLevelWords`, `packedGlobalLevelWords` --
+each with an `_eq` theorem. `packedInteriorComponentWords` sums them for the dead
+address, and `packedInteriorOffsets` assembles the nine-field record with
+`packedInteriorOffsets_eq`.
+
+The widths were read off the table constructions rather than guessed: the three
+block tables use `layout.relativeWidth`, the local sparse table
+`layout.offsetWidth`, the global sparse table `layout.blockAddressWidth`, and the
+two level tables `bpSparseLevelWidth (bpSparseLevelDomain ·)` at `macroSize` and
+`macroSampleCount` respectively.
+
+Consequences and evidence:
+
+- Pinned by `packedInteriorOffsetsAreSizeOnly`,
+  `packedInteriorComponentWordsAreSizeOnly`, `packedInteriorOffsetsSignature`.
+- **Both halves of the interior are now size-only.** Combined with
+  `DD-20260804-012` (same-block branch), the addendum making the endpoint-fringe
+  readers shape-free, and the mirrored dispatch scalar, every structural unknown
+  in the close/LCA tower is discharged.
+- What remains on the close side is assembly, not discovery: the interior read
+  computations and the cross-block join must be written record-free and proved
+  equal, using mirrors that now all exist.
+- `FG-07` remains Open: no top-level controller definition exists.

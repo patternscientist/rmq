@@ -915,6 +915,33 @@ theorem packedInteriorLayoutIsSizeOnly :
         packedInteriorLayout shape.size :=
   packedInteriorLayout_eq
 
+/-- Pins the interior offsets mirror's signature. -/
+def packedInteriorOffsetsSignature :
+    Nat -> SuccinctClose.CanonicalRelativeRmmInteriorComponentOffsets :=
+  packedInteriorOffsets
+
+/--
+Pins that the nine interior component offsets are functions of the input size.
+
+`GeometryClosure.offsets_congr` says two shapes of equal size agree on all nine;
+this says what they *are*, so a controller can compute the interior's addresses
+from `n`. With `packedInteriorLayoutIsSizeOnly` this is both halves of the
+interior's shape dependence: control flow and addresses.
+-/
+theorem packedInteriorOffsetsAreSizeOnly :
+    forall shape : CartesianShape,
+      SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets shape =
+        packedInteriorOffsets shape.size :=
+  packedInteriorOffsets_eq
+
+/-- Pins the interior component store's word count as size-only. -/
+theorem packedInteriorComponentWordsAreSizeOnly :
+    forall shape : CartesianShape,
+      (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+          shape).store.words.size =
+        packedInteriorComponentWords shape.size :=
+  packedInteriorComponentWords_eq
+
 /-! #### The endpoint-fringe candidate readers are shape-free
 
 The cross-block branch's two endpoint readers needed no new mirrors: their only
