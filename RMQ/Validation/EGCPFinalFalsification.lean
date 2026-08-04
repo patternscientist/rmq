@@ -1772,6 +1772,18 @@ theorem packedSparseRelativeTableIsEmptyAtUnitStride :
         GenericSelect.sparseExceptionRelativeEntries bits target = [] :=
   packedSparseExceptionEntries_nil_of_unit_stride
 
+/--
+At unit stride the sparse relative source answers nothing, so the capacity
+over-approximation is never exercised: there is no index at which the packed read
+and the store can disagree.
+-/
+theorem packedSparseRelativeSourceAnswersNothingAtUnitStride :
+    forall (shape : Cartesian.CartesianShape) (index : Nat),
+      GenericSelect.localStride shape.bpCode.length = 1 ->
+        (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+          .selectSparseRelative)[index]? = none :=
+  packedSparseRelativeWords_none_of_unit_stride
+
 end Validation
 end PackedCellProbe
 end SuccinctFinal

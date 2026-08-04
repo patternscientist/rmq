@@ -319,6 +319,29 @@ theorem packedSparseExceptionEntries_nil_of_unit_stride
   rw [hzero, Nat.zero_mul] at hlen
   exact List.eq_nil_of_length_eq_zero hlen
 
+/--
+**The sparse relative source answers nothing at unit stride.** The store's word
+array for it is empty, so the capacity over-approximation of `DD-20260804-022` is
+never exercised: there is no index at which the packed read and the store can
+disagree.
+-/
+theorem packedSparseRelativeWords_none_of_unit_stride
+    (shape : CartesianShape) (index : Nat)
+    (hstride : GenericSelect.localStride shape.bpCode.length = 1) :
+    (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape
+      .selectSparseRelative)[index]? = none := by
+  have hnil :=
+    packedSparseExceptionEntries_nil_of_unit_stride shape.bpCode false hstride
+  show
+    (GenericSelect.sparseExceptionRelativeTable shape.bpCode
+      false).store.words[index]? = none
+  have hzero :
+      (GenericSelect.sparseExceptionRelativeEntries shape.bpCode false).length = 0 := by
+    rw [hnil]
+    rfl
+  rw [packedFixedWidthTable_getElem?]
+  exact packedWordSlice_of_le (by omega)
+
 end PackedCellProbe
 
 end SuccinctFinal

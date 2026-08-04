@@ -7236,3 +7236,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit proving the sparse relative table empty at unit stride: requirement cells
   byte-identical to `0a18548` across all 37 requirement rows; only `FG-02`'s
   `Evidence obtained` cell was appended to.
+- Commit showing the excluded source answers nothing: requirement cells
+  byte-identical to `0a18548` across all 37 requirement rows; only
+  `INV-STORE-AGREEMENT`'s evidence/status pair was written.
