@@ -629,16 +629,42 @@ machinery. Of the whole-query program's four instructions:
 | `selectClose` | record-free (`packedSelectCloseRead`) |
 | `rankCloseIfSome` | record-free (`packedRankCloseRead`) |
 | `outputPredIfSome` | touches no store at all |
-| `lcaClose` | **unexamined** |
+| `lcaClose` | takes a `CartesianShape` **directly** — see below |
 
 The two scalars the close rank leaf needs — `wordSize` and `blocksPerSuper` of
 `builtRelativeSplitBPCloseRankData` — are **not** both mirrored size-only yet.
 `packedRankWordSize` exists with `rankWordSize_eq_packed`; the `blocksPerSuper`
 mirror does not, and nothing is claimed about it.
 
+### Where the shape genuinely enters
+
+`lcaClose` is materially different from the other three, and the difference is
+visible in the type rather than inferred.
+`concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore` takes
+`CartesianShape` as its **first explicit argument** and passes it straight to
+`lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore`. The other leaves took
+a *derived record*, and inlining removed those records because the helpers
+consulted them only for scalars. Here there is no record to remove: the shape is
+an argument of the navigator itself.
+
+Two things are recorded rather than estimated:
+
+* `packedLcaCloseLeafSignature` pins the leaf's type, shape argument included.
+  This is deliberately a **negative** record — it names the one surface a
+  controller cannot call as it stands, and any later claim that `FG-07` is closed
+  must either eliminate that argument or exhibit a replacement navigator.
+* `packedLcaCloseRankSeed_eq` discharges the rank seed the leaf supplies: it is
+  `packedRankCloseRead` at the close rank segment base, by `rfl`.
+
+The navigator's other arguments are three fixed segment constants, the store and
+the two close endpoints — none carry shape content. **So the residual is exactly
+the navigator's own use of `shape`**, and that is deeper than anything on the
+select side: the navigator is the compact close/LCA interior route, and whether
+its shape use factors through `(n, longCount)` plus store replies is an open
+question this branch has not investigated.
+
 `FG-07` is still **not** closed. There is no top-level controller definition, no
-header-probe-then-address sequencing, and no `receipt`; `lcaClose` is the one
-instruction whose store access is still unknown.
+header-probe-then-address sequencing, and no `receipt`.
 
 **`FG-07` remains Open.** One component is not a controller: there is no fixed
 top-level definition, no header-then-address sequencing, no `receipt`, and the

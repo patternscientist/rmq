@@ -739,6 +739,55 @@ theorem packedRankCloseRead_eq
         (builtRelativeSplitBPCloseRankData shape).blocksPerSuper pos :=
   rfl
 
+/-! ### The close/LCA leaf is where the shape genuinely enters
+
+The other three whole-query instructions reach the store through definitions that
+take a *derived record* -- a select data record, a rank data record -- and the
+inlining technique removes those records because the helpers consult them only
+for scalars.
+
+`lcaClose` is different, and the difference is visible in the type.
+`concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore` takes
+`CartesianShape` as its first explicit argument, and passes it straight through
+to
+`SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore`.
+So the shape is not reachable by removing a record; it is an argument of the
+navigator itself.
+
+This section records that boundary precisely rather than leaving it as a guess:
+the signature that carries the shape, and the fact that everything *else* the
+leaf hands the navigator is already record-free.
+-/
+
+/--
+The close/LCA leaf's signature, pinned. Its first argument is a
+`CartesianShape`, so a controller cannot call it as it stands. This is the one
+remaining whole-query instruction leaf with that property.
+-/
+def packedLcaCloseLeafSignature :
+    CartesianShape -> WordRAM.ReadStore -> Nat -> Nat ->
+      WordRAM.TraceResult (Option Nat) :=
+  concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+
+/--
+**The rank seed the close/LCA leaf supplies is already record-free.**
+
+The navigator receives a rank-seed function, three fixed segment constants, the
+store and the two close endpoints, plus the shape. This theorem discharges the
+rank seed: it is `packedRankCloseRead` at the close rank segment base. What
+remains irreducible is the shape argument itself.
+-/
+theorem packedLcaCloseRankSeed_eq
+    (shape : CartesianShape) (store : WordRAM.ReadStore) (pos : Nat) :
+    concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore shape store
+        concreteBPNativeRankCloseTraceSegmentBase pos =
+      packedRankCloseRead store concreteBPNativeRankCloseTraceSegmentBase
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length)
+        shape.bpCode.length
+        (builtRelativeSplitBPCloseRankData shape).wordSize
+        (builtRelativeSplitBPCloseRankData shape).blocksPerSuper pos :=
+  rfl
+
 /-- Size-only mirror of the shared fringe chunk width. -/
 def packedFringeChunkBits (n : Nat) : Nat :=
   SuccinctClose.bpFringeChunkBits (2 * n)

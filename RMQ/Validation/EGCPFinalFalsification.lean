@@ -821,6 +821,33 @@ theorem packedRankCloseReadIsTheCloseRankLeaf :
           (builtRelativeSplitBPCloseRankData shape).blocksPerSuper pos :=
   packedRankCloseRead_eq
 
+/-! #### Where the shape still enters
+
+`lcaClose` is the one whole-query instruction whose leaf takes a
+`CartesianShape` directly rather than a derived record. The first consumer pins
+that — it is the surface a controller cannot call as it stands. The second
+discharges the rank seed that leaf supplies, leaving the shape argument as the
+sole residue.
+-/
+
+/-- Pins that the close/LCA leaf still takes a shape. -/
+def packedLcaCloseLeafSignaturePin :
+    CartesianShape -> WordRAM.ReadStore -> Nat -> Nat ->
+      WordRAM.TraceResult (Option Nat) :=
+  packedLcaCloseLeafSignature
+
+/-- Pins that the rank seed it supplies is already record-free. -/
+theorem packedLcaCloseRankSeedIsRecordFree :
+    forall (shape : CartesianShape) (store : WordRAM.ReadStore) (pos : Nat),
+      concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore shape store
+          concreteBPNativeRankCloseTraceSegmentBase pos =
+        packedRankCloseRead store concreteBPNativeRankCloseTraceSegmentBase
+          (SuccinctClose.bpFringeChunkBits shape.bpCode.length)
+          shape.bpCode.length
+          (builtRelativeSplitBPCloseRankData shape).wordSize
+          (builtRelativeSplitBPCloseRankData shape).blocksPerSuper pos :=
+  packedLcaCloseRankSeed_eq
+
 /-- Pins the record-free dense two-word select read's signature. -/
 def packedDenseTwoWordSelectReadSignature :
     Nat -> Nat -> Nat -> Nat -> Bool -> WordRAM.ReadStore -> Nat ->

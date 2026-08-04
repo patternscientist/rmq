@@ -6577,3 +6577,60 @@ the packed cell-probe modules.
 
 Pinned by `packedRankCloseReadSignature` and
 `packedRankCloseReadIsTheCloseRankLeaf`.
+
+## DD-20260804-011: the close/LCA leaf is where the shape genuinely enters
+
+Status: Worker finding recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Locates the residual `FG-07` work
+after the select side and the close rank side were made record-free.
+
+Date: 2026-08-04
+
+Context:
+
+Three of the whole-query program's four instructions now reach the store through
+record-free definitions or not at all. The fourth, `lcaClose`, is materially
+different, and the difference is visible in the type rather than inferred.
+
+`concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore` takes
+`CartesianShape` as its **first explicit argument** and passes it straight to
+`SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore`.
+The other leaves took a *derived record* -- a select data record, a rank data
+record -- and the inlining technique of `DD-20260804-009` removed those records
+because the helpers consulted them only for scalars. Here there is no record to
+remove: the shape is an argument of the navigator itself.
+
+Decision:
+
+Record the boundary precisely rather than leave it as a guess, and discharge
+everything on the near side of it.
+
+- `packedLcaCloseLeafSignature` pins the leaf's type, shape argument included.
+  This is deliberately a *negative* record: it names the one surface a controller
+  cannot call as it stands.
+- `packedLcaCloseRankSeed_eq` discharges the rank seed the leaf supplies to the
+  navigator: it is `packedRankCloseRead` at the close rank segment base, by
+  `rfl`.
+
+The navigator's other arguments are three fixed segment constants, the store and
+the two close endpoints, none of which carry shape content. So the residual is
+exactly the navigator's own use of `shape`.
+
+Rationale:
+
+Naming the residue in the type system is worth more than another prose estimate
+of remaining work. It also guards against a false completion: any later claim
+that `FG-07` is closed must either eliminate this argument or exhibit a
+replacement navigator, and `packedLcaCloseLeafSignaturePin` will still be there
+stating that the current one takes a shape.
+
+Consequences and evidence:
+
+- Pinned by `packedLcaCloseLeafSignaturePin` and
+  `packedLcaCloseRankSeedIsRecordFree`.
+- The remaining `FG-07` work on the close side is **deeper** than it was on the
+  select side. There, the record was a wrapper over scalars. Here, the navigator
+  is the compact close/LCA interior route, and whether its shape use factors
+  through `(n, longCount)` plus store replies is an open question this branch has
+  not investigated.
+- `FG-07` remains Open. Nothing here builds a controller.

@@ -7116,3 +7116,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   frozen-cell comparison was required.
 - Commit landing the record-free close-side rank leaf: matrix untouched, so no
   frozen-cell comparison was required.
+- Commit locating the close/LCA shape residue: matrix untouched, so no
+  frozen-cell comparison was required.
