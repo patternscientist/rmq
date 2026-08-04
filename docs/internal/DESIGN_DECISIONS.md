@@ -6549,3 +6549,31 @@ Consequences and evidence:
   `outputPredIfSome` instructions whose leaves live in the close/LCA tower, which
   has not been examined. There is still no top-level controller definition, no
   header-probe-then-address sequencing, and no `receipt`.
+
+### Addendum to `DD-20260804-010` (2026-08-04): the close-side rank leaf reuses the same component
+
+`concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore` is
+`bpChunkedRankTraceResultWithStore` on `builtRelativeSplitBPCloseRankData shape`
+at a different segment base. So the record-free version is `packedRankRead`
+again: `packedRankCloseRead` is a thin renaming of it, and
+`packedRankCloseRead_eq` is `rfl`.
+
+That is worth recording because it means the close side does not automatically
+need new machinery. Of the whole-query program's four instructions,
+`selectClose` and `rankCloseIfSome` now both reach the store through record-free
+definitions, and `outputPredIfSome` touches no store at all. Only `lcaClose`
+remains unexamined.
+
+The two scalars this leaf needs -- `wordSize` and `blocksPerSuper` of
+`builtRelativeSplitBPCloseRankData` -- are **not** yet mirrored size-only.
+`packedRankWordSize` exists in `SourceFactorization.lean` with
+`rankWordSize_eq_packed`, so the first is available; the second is not, and no
+claim is made about it here. The chunk width and the bit length are the BP code
+width and length, both already mirrored.
+
+This required importing `RMQ.Core.SuccinctFinalStoreParam` into
+`ReadProgram.lean`. There is no cycle: the store-parameter module does not import
+the packed cell-probe modules.
+
+Pinned by `packedRankCloseReadSignature` and
+`packedRankCloseReadIsTheCloseRankLeaf`.

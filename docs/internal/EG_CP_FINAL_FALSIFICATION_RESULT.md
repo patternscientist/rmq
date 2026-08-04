@@ -613,11 +613,32 @@ are mirrored size-only; the sparse local stride is the same `localStride`
 expression. So **a controller holding only `n` can supply every argument to this
 leaf.**
 
-`FG-07` is still **not** closed. This is one component of the query, not the
-query. The whole-query program also has `lcaClose`, `rankCloseIfSome` and
-`outputPredIfSome` instructions, whose leaves live in the close/LCA tower — never
-examined. There is no top-level controller definition, no
-header-probe-then-address sequencing, and no `receipt`.
+### The close-side rank leaf reuses the same component
+
+`concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore` turns out to be
+`bpChunkedRankTraceResultWithStore` on `builtRelativeSplitBPCloseRankData shape`
+at a different segment base — so the record-free version is `packedRankRead`
+again. `packedRankCloseRead` is a thin renaming and `packedRankCloseRead_eq` is
+`rfl`.
+
+That matters because it says the close side does not automatically need new
+machinery. Of the whole-query program's four instructions:
+
+| Instruction | Store access |
+| --- | --- |
+| `selectClose` | record-free (`packedSelectCloseRead`) |
+| `rankCloseIfSome` | record-free (`packedRankCloseRead`) |
+| `outputPredIfSome` | touches no store at all |
+| `lcaClose` | **unexamined** |
+
+The two scalars the close rank leaf needs — `wordSize` and `blocksPerSuper` of
+`builtRelativeSplitBPCloseRankData` — are **not** both mirrored size-only yet.
+`packedRankWordSize` exists with `rankWordSize_eq_packed`; the `blocksPerSuper`
+mirror does not, and nothing is claimed about it.
+
+`FG-07` is still **not** closed. There is no top-level controller definition, no
+header-probe-then-address sequencing, and no `receipt`; `lcaClose` is the one
+instruction whose store access is still unknown.
 
 **`FG-07` remains Open.** One component is not a controller: there is no fixed
 top-level definition, no header-then-address sequencing, no `receipt`, and the

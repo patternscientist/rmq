@@ -7114,3 +7114,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   no frozen-cell comparison was required.
 - Commit landing the record-free close-select leaf: matrix untouched, so no
   frozen-cell comparison was required.
+- Commit landing the record-free close-side rank leaf: matrix untouched, so no
+  frozen-cell comparison was required.

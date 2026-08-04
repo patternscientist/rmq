@@ -1,6 +1,7 @@
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Probe
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedRankSelectLeafTrace
+import RMQ.Core.SuccinctFinalStoreParam
 
 /-!
 # Logical reads carry no table content
@@ -701,6 +702,41 @@ theorem packedSelectCloseRead_eq
         data.sparseDirectory.rankData.wordSize
         data.sparseDirectory.rankData.blocksPerSuper
         data.sparseDirectory.localStride idx :=
+  rfl
+
+/-! ### The close-side rank leaf
+
+The whole-query program's `rankCloseIfSome` instruction reaches the store through
+`concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore`, which is the same
+two-level rank read at a different segment base. So the record-free version is
+`packedRankRead` again, and no new construction is needed.
+-/
+
+/-- The close-side rank leaf with no shape argument. -/
+def packedRankCloseRead (store : WordRAM.ReadStore)
+    (rankSegmentBase chunkBits bitLength wordSize blocksPerSuper pos : Nat) :
+    WordRAM.TraceResult Nat :=
+  packedRankRead rankSegmentBase (rankSegmentBase + 1) (rankSegmentBase + 2)
+    (rankSegmentBase + 4) chunkBits false store bitLength wordSize
+    blocksPerSuper pos
+
+/--
+**The close-side rank leaf is the record-free rank read.** Proved by `rfl`.
+
+The chunk width is written here at `shape.bpCode.length`, which
+`packedFringeChunkBits_eq` mirrors size-only; the bit length is the BP code
+length, which `CartesianShape.bpCode_length` gives as `2 * n`.
+-/
+theorem packedRankCloseRead_eq
+    (shape : CartesianShape) (store : WordRAM.ReadStore)
+    (rankSegmentBase pos : Nat) :
+    concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore shape store
+        rankSegmentBase pos =
+      packedRankCloseRead store rankSegmentBase
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length)
+        shape.bpCode.length
+        (builtRelativeSplitBPCloseRankData shape).wordSize
+        (builtRelativeSplitBPCloseRankData shape).blocksPerSuper pos :=
   rfl
 
 /-- Size-only mirror of the shared fringe chunk width. -/

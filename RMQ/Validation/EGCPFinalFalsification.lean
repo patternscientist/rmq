@@ -798,6 +798,29 @@ theorem packedSelectCloseReadIsTheLeaf :
     packedSelectCloseRead_eq data layout chunkSegment selectTableSegment store
       chunkBits idx
 
+/-- Pins the record-free close-side rank leaf's signature. -/
+def packedRankCloseReadSignature :
+    WordRAM.ReadStore -> Nat -> Nat -> Nat -> Nat -> Nat -> Nat ->
+      WordRAM.TraceResult Nat :=
+  packedRankCloseRead
+
+/--
+Pins that the whole-query program's `rankCloseIfSome` leaf is the record-free
+rank read. Two of the four instruction leaves are now record-free; the third,
+`outputPredIfSome`, touches no store at all.
+-/
+theorem packedRankCloseReadIsTheCloseRankLeaf :
+    forall (shape : CartesianShape) (store : WordRAM.ReadStore)
+      (rankSegmentBase pos : Nat),
+      concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore shape store
+          rankSegmentBase pos =
+        packedRankCloseRead store rankSegmentBase
+          (SuccinctClose.bpFringeChunkBits shape.bpCode.length)
+          shape.bpCode.length
+          (builtRelativeSplitBPCloseRankData shape).wordSize
+          (builtRelativeSplitBPCloseRankData shape).blocksPerSuper pos :=
+  packedRankCloseRead_eq
+
 /-- Pins the record-free dense two-word select read's signature. -/
 def packedDenseTwoWordSelectReadSignature :
     Nat -> Nat -> Nat -> Nat -> Bool -> WordRAM.ReadStore -> Nat ->
