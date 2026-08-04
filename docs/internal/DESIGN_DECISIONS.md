@@ -8063,3 +8063,45 @@ Two limits, stated rather than glossed:
    `packedCellWidth` is larger than the input size would suggest. It is recorded
    as the next smallest target for this row rather than assumed.
 2. The row's other half -- the *returned value* -- still needs a run.
+
+## DD-20260804-035: the cell-width bound is false, and was never needed
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Corrects the residual recorded in
+`DD-20260804-034`.
+
+Date: 2026-08-04
+
+`DD-20260804-034` lifted the header-count value-dependency witness only as far as
+the *bit* address, and recorded the next target as
+`packedCellWidth n <= packedLongBlockBits n`, described there as "not obviously
+true at small sizes".
+
+It is not merely not obvious. **It is false**: at `n = 0` it reads `10 <= 1` and at
+`n = 1` it reads `14 <= 8`. It holds from `n = 2` onward, but by evaluation only --
+a general proof would need an explicit upper bound on `packedPayloadLength`, which
+the development supplies asymptotically through `LittleOLinear` and not in closed
+form. Recording a false lemma as the next target would have sent the next session
+after something unprovable.
+
+It was also unnecessary. `FG-11` asks for *a* pinned pair of counts whose probe
+address differs, not for every pair, so the difference can be **chosen** rather
+than estimated:
+
+```
+packedStridedBitAddress_step_longCount :
+  packedStridedBitAddress n (lc + packedCellWidth n) src index stride =
+    packedStridedBitAddress n lc src index stride +
+      packedCellWidth n * packedLongBlockBits n
+
+packedProbeCell_moves_with_longCount :
+  ... (lc + packedCellWidth n) ... / packedCellWidth n ≠ ... lc ... / packedCellWidth n
+```
+
+Separating the two counts by one cell width moves the address by a whole number of
+cells, so the issued cell index differs with no inequality between the two
+quantities required. `Nat.add_mul_div_left` does the rest.
+
+The lesson worth keeping: the estimate-versus-choose distinction. An existential
+obligation does not need a uniform bound, and reaching for one turned a provable
+statement into a false lemma.

@@ -1731,6 +1731,18 @@ theorem packedHeaderCountMovesTheBitAddress :
           index stride :=
   packedStridedBitAddress_injective_longCount
 
+/-- Changing only the header count changes the **issued probe cell**, not merely
+the bit address. -/
+theorem packedHeaderCountMovesTheIssuedCell :
+    forall n lc index stride : Nat,
+      packedStridedBitAddress n (lc + packedCellWidth n)
+            ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLocalBaseOccurrence
+            index stride / packedCellWidth n ≠
+        packedStridedBitAddress n lc
+            ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLocalBaseOccurrence
+            index stride / packedCellWidth n :=
+  packedProbeCell_moves_with_longCount
+
 end Validation
 end PackedCellProbe
 end SuccinctFinal

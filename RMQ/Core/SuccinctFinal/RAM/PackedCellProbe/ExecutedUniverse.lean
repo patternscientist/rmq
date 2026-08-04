@@ -242,6 +242,53 @@ theorem packedStridedBitAddress_injective_longCount
   unfold packedStridedBitAddress at heq
   exact packedSourceFlatOffset_injective_longCount n hne (by omega)
 
+/-! ### Lifting the witness from the bit address to the issued cell
+
+The obvious lift needs `packedCellWidth n <= packedLongBlockBits n`, so that a
+one-unit change in the count cannot leave the probe inside the same cell. That
+bound is **false**: at `n = 0` it is `10 <= 1` and at `n = 1` it is `14 <= 8`. It
+holds from `n = 2` on, but only by evaluation, and a general proof would need an
+explicit upper bound on `packedPayloadLength`, which the development supplies only
+asymptotically.
+
+The bound is also unnecessary. `FG-11` asks for *a* pinned pair of counts whose
+probe address differs, not for every pair, so the difference can be chosen instead
+of estimated: separating the two counts by one cell width moves the address by
+`packedCellWidth n * packedLongBlockBits n`, which is a whole number of cells by
+construction. No inequality between the two quantities is required.
+-/
+
+theorem packedStridedBitAddress_step_longCount
+    (n lc index stride : Nat) :
+    packedStridedBitAddress n (lc + packedCellWidth n)
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLocalBaseOccurrence
+        index stride =
+      packedStridedBitAddress n lc
+          ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLocalBaseOccurrence
+          index stride +
+        packedCellWidth n * packedLongBlockBits n := by
+  simp only [packedStridedBitAddress, packedSourceFlatOffset,
+    packedSourceComponentOffset, Nat.add_mul]
+  omega
+
+/--
+**Changing only the header count changes the issued probe cell.** Not the bit
+address, and not the enclosing trace record: the cell index the plan issues.
+-/
+theorem packedProbeCell_moves_with_longCount
+    (n lc index stride : Nat) :
+    packedStridedBitAddress n (lc + packedCellWidth n)
+          ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLocalBaseOccurrence
+          index stride / packedCellWidth n ≠
+      packedStridedBitAddress n lc
+          ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLocalBaseOccurrence
+          index stride / packedCellWidth n := by
+  have hcw : 0 < packedCellWidth n := packedCellWidth_pos n
+  have hblock : 0 < packedLongBlockBits n := packedLongBlockBits_pos n
+  have hstep := packedStridedBitAddress_step_longCount n lc index stride
+  rw [hstep, Nat.add_mul_div_left _ _ hcw]
+  omega
+
 end PackedCellProbe
 
 end SuccinctFinal

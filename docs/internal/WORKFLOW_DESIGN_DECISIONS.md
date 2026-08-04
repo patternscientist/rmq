@@ -7206,3 +7206,7 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit landing the address value-dependency witness: requirement cells
   byte-identical to `0a18548` across all 37 requirement rows; anti-vacuity
   unchanged; only `INV-VALUE-DEPENDENCY`'s evidence/status pair was written.
+- Commit correcting the cell-width residual: requirement cells byte-identical to
+  `0a18548` across all 37 requirement rows; anti-vacuity unchanged; only
+  `INV-VALUE-DEPENDENCY`'s evidence/status pair was rewritten, to replace a
+  residual that named a false lemma.
