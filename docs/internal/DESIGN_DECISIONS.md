@@ -7181,3 +7181,46 @@ Consequences and evidence:
 - `FG-07` remains Open. Every leaf being shape-free is not a controller: there is
   still no single fixed definition sequencing the header probe, the readiness
   guard and the instruction stream, and no `receipt`.
+
+## DD-20260804-019: the three store-touching instruction leaves are shape-free
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. First step of the `FG-07` controller
+proper.
+
+Date: 2026-08-04
+
+Context:
+
+`WholeQueryInstr` has four constructors. Three touch the store --
+`selectClose`, `rankCloseIfSome`, `lcaClose` -- through wrappers that fix the
+global segment constants; `outputPredIfSome` touches none. With the select route
+and the close/LCA route both mirrored, the wrappers are the last per-instruction
+layer.
+
+Decision and result:
+
+`packedSelectCloseLeaf`, `packedRankCloseLeaf` and `packedLcaCloseLeaf` take the
+supplied store, the input size and the instruction's own arguments, and nothing
+else. Their `_eq` theorems prove each equals the corresponding
+`concreteBPNative...WithStore` wrapper at every shape.
+
+`packedLcaCloseLeaf` passes `packedRankCloseLeaf store n` as the rank reader,
+which is where the close route's supplied-reader argument is finally discharged:
+the caller is now the controller layer, and it builds the reader from `n`.
+
+Seven field bridges were needed. The scalar mirrors are stated about the
+standalone geometry functions, while `bpChunkedSelectTraceResultWithStore`
+reaches them through record fields
+(`selectData.longFlagBits.length`, `selectData.sparseDirectory.rankData.wordSize`
+and five more). The record fields are definitionally those functions, so each
+bridge is the mirror itself or a `rfl`.
+
+Consequences and evidence:
+
+- The `lcaClose` proof needed `congr 1; funext pos` to descend under the
+  rank-reader function argument. That is the only place a function argument had
+  to be matched pointwise rather than rewritten.
+- `FG-07` remains Open: the leaves are shape-free but nothing sequences them. The
+  instruction evaluator, the program evaluator and the whole-query result are the
+  remaining layers.

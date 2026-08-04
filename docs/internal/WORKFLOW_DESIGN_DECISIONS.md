@@ -7146,3 +7146,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   frozen-cell comparison was required.
 - Commit closing the whole close/LCA route: matrix untouched, so no frozen-cell
   comparison was required.
+- Commit making the three store-touching instruction leaves shape-free: matrix
+  untouched, so no frozen-cell comparison was required.

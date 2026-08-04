@@ -2071,6 +2071,128 @@ theorem packedSelectQueryOccurrence_content_free
     dataLeft.queryOccurrence index = dataRight.queryOccurrence index :=
   rfl
 
+
+/-! ### The whole-query instruction leaves, shape-free
+
+The three store-touching leaves of `WholeQueryInstr` are wrappers over the routes
+already mirrored. Fixing their segment constants gives three definitions taking
+only the input size, the supplied store and the instruction's own arguments.
+-/
+
+/-! #### Field projections of the select data, bridged to their mirrors
+
+The scalar mirrors are stated about the standalone geometry functions.
+`bpChunkedSelectTraceResultWithStore` reaches them through record fields, so each
+needs a one-line bridge. The record fields are definitionally those functions.
+-/
+
+theorem packedSelectLongFlagBitsLength_eq (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).longFlagBits.length =
+      packedSuperSlots shape.size :=
+  longFlagBits_length_eq_packed shape
+
+theorem packedSelectLongFlagRankWordSize_eq (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).longFlagRankData.wordSize =
+      packedLongFlagWordSize shape.size :=
+  longFlagRankWordSize_eq_packed shape
+
+theorem packedSelectLongFlagRankBlocksPerSuper_eq (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).longFlagRankData.blocksPerSuper = 1 :=
+  rfl
+
+theorem packedSelectSparseFlagBitsLength_eq (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).sparseDirectory.flagBits.length =
+      packedSparseSlots shape.size :=
+  sparseFlagBits_length_eq_packed shape
+
+theorem packedSelectSparseRankWordSize_eq (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).sparseDirectory.rankData.wordSize =
+      packedSparseWordSize shape.size :=
+  sparseFlagRankWordSize_eq_packed shape
+
+theorem packedSelectSparseRankBlocksPerSuper_eq (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).sparseDirectory.rankData.blocksPerSuper = 1 :=
+  rfl
+
+theorem packedSelectSparseLocalStride_eq (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).sparseDirectory.localStride =
+      packedSelectLocalStride shape.size := by
+  show GenericSelect.localStride shape.bpCode.length =
+    packedSelectLocalStride shape.size
+  unfold packedSelectLocalStride
+  rw [CartesianShape.bpCode_length]
+
+/-- The `selectClose` leaf with no shape argument. -/
+def packedSelectCloseLeaf (store : WordRAM.ReadStore) (n idx : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  packedSelectCloseRead concreteBPNativeSelectCloseTraceSegmentLayout
+    concreteBPNativeFringeChunkTraceSegment
+    concreteBPNativeSelectChunkTraceSegment store (packedFringeChunkBits n)
+    false n (packedSelectSuperStride n) (packedSelectWordSize n)
+    (packedSelectLocalSlotsPerSuper n) (packedSelectLocalStride n)
+    (packedSuperSlots n) (packedLongFlagWordSize n) 1 (packedSparseSlots n)
+    (packedSparseWordSize n) 1 (packedSelectLocalStride n) idx
+
+/-- **The `selectClose` leaf is a function of the input size.** -/
+theorem packedSelectCloseLeaf_eq
+    (shape : CartesianShape) (store : WordRAM.ReadStore) (idx : Nat) :
+    concreteBPNativeSelectCloseGlobalWordTraceResultWithStore shape store idx =
+      packedSelectCloseLeaf store shape.size idx := by
+  unfold concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
+    packedSelectCloseLeaf
+  rw [packedSelectCloseRead_eq]
+  simp only [packedSelectOccurrenceCount_eq_size, packedSelectSuperStride_eq,
+    packedSelectWordSize_eq, packedSelectLocalSlotsPerSuper_eq,
+    packedSelectLocalStride_eq, packedFringeChunkBits_eq,
+    packedSelectLongFlagBitsLength_eq, packedSelectLongFlagRankWordSize_eq,
+    packedSelectLongFlagRankBlocksPerSuper_eq,
+    packedSelectSparseFlagBitsLength_eq, packedSelectSparseRankWordSize_eq,
+    packedSelectSparseRankBlocksPerSuper_eq, packedSelectSparseLocalStride_eq]
+
+/-- The `rankCloseIfSome` leaf with no shape argument. -/
+def packedRankCloseLeaf (store : WordRAM.ReadStore) (n pos : Nat) :
+    WordRAM.TraceResult Nat :=
+  packedRankCloseRead store concreteBPNativeRankCloseTraceSegmentBase
+    (packedFringeChunkBits n) (2 * n) (packedBpCodeWordWidth n)
+    (packedBpCodeWordWidth n) pos
+
+theorem packedRankCloseLeaf_eq
+    (shape : CartesianShape) (store : WordRAM.ReadStore) (pos : Nat) :
+    concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore shape store
+        concreteBPNativeRankCloseTraceSegmentBase pos =
+      packedRankCloseLeaf store shape.size pos := by
+  unfold packedRankCloseLeaf
+  exact packedRankCloseRead_size_only shape store
+    concreteBPNativeRankCloseTraceSegmentBase pos
+
+/-- The `lcaClose` leaf with no shape argument. -/
+def packedLcaCloseLeaf (store : WordRAM.ReadStore)
+    (n leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
+  packedLcaCloseRead (packedRankCloseLeaf store n)
+    concreteBPNativeInteriorTraceSegments concreteBPNativeFringeChunkTraceSegment
+    store n leftClose rightClose
+
+/-- **The `lcaClose` leaf is a function of the input size.** -/
+theorem packedLcaCloseLeaf_eq
+    (shape : CartesianShape) (store : WordRAM.ReadStore)
+    (leftClose rightClose : Nat) :
+    concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+        shape store leftClose rightClose =
+      packedLcaCloseLeaf store shape.size leftClose rightClose := by
+  unfold concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+    packedLcaCloseLeaf
+  rw [packedLcaCloseRead_eq]
+  congr 1
+  funext pos
+  exact packedRankCloseLeaf_eq shape store pos
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
