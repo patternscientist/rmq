@@ -191,6 +191,57 @@ theorem packedStoresNotEqual
   intro heq
   exact packedStoresDisagree_atSegmentTwentyThree shape hpos (by rw [heq])
 
+/-! ## The header value is load-bearing for addresses
+
+`FG-11` asks for an inequality whose two sides are a probe **address** or the
+returned value, explicitly not the enclosing trace record -- an aggregate trace
+inequality can be satisfied by its log alone.
+
+The address side is checkable without an execution, because
+`packedSourceFlatOffset` takes the decoded long count as an argument and every
+source placed after the long relative table is displaced by
+`longCount * packedLongBlockBits n`. That block is never empty, so the map from
+long count to address is injective.
+
+This is a genuine value-dependency witness for the address projection. It is *not*
+the whole of `FG-11`, and the gap is named precisely below.
+-/
+
+theorem packedLongBlockBits_pos (n : Nat) : 0 < packedLongBlockBits n := by
+  unfold packedLongBlockBits
+  exact Nat.mul_pos (GenericSelect.superStride_pos (2 * n))
+    (GenericSelect.wordBits_pos (2 * n))
+
+/--
+**Changing only the header count moves the address.** For a source placed after
+the long relative table, the flat offset is injective in the decoded long count.
+-/
+theorem packedSourceFlatOffset_injective_longCount
+    (n : Nat) {lc1 lc2 : Nat} (hne : lc1 ≠ lc2) :
+    packedSourceFlatOffset n lc1
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLocalBaseOccurrence ≠
+      packedSourceFlatOffset n lc2
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLocalBaseOccurrence := by
+  intro heq
+  simp only [packedSourceFlatOffset, packedSourceComponentOffset] at heq
+  have hpos := packedLongBlockBits_pos n
+  have hmul : lc1 * packedLongBlockBits n = lc2 * packedLongBlockBits n := by
+    omega
+  exact hne (Nat.eq_of_mul_eq_mul_right hpos hmul)
+
+/-- The same, at the bit address the probe plan is computed from. -/
+theorem packedStridedBitAddress_injective_longCount
+    (n : Nat) {lc1 lc2 : Nat} (index stride : Nat) (hne : lc1 ≠ lc2) :
+    packedStridedBitAddress n lc1
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLocalBaseOccurrence
+        index stride ≠
+      packedStridedBitAddress n lc2
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLocalBaseOccurrence
+        index stride := by
+  intro heq
+  unfold packedStridedBitAddress at heq
+  exact packedSourceFlatOffset_injective_longCount n hne (by omega)
+
 end PackedCellProbe
 
 end SuccinctFinal

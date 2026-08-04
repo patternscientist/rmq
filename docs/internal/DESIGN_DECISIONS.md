@@ -8022,3 +8022,44 @@ public statement composes a bound proved for one with an execution performed on
 the other is a question about the headline claim, not about this gate, and it is
 outside what I have checked. It is flagged because a reviewer of `M11` at project
 scale would want to ask it.
+
+## DD-20260804-034: the header value is load-bearing for addresses
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. `FG-11` and `INV-VALUE-DEPENDENCY` stay
+Open; one clause of each now has real evidence.
+
+Date: 2026-08-04
+
+Both rows insist on the same distinction: an inequality must be at a probe
+*address* or the *returned value*, not at an enclosing trace record, because a
+record inequality can be satisfied by its log alone. `DD-20260804-032` blocks
+anything that quantifies over a run -- but the address side does not.
+
+```
+packedLongBlockBits_pos : 0 < packedLongBlockBits n
+packedSourceFlatOffset_injective_longCount :
+  lc1 ≠ lc2 -> packedSourceFlatOffset n lc1 .selectLocalBaseOccurrence ≠
+                 packedSourceFlatOffset n lc2 .selectLocalBaseOccurrence
+packedStridedBitAddress_injective_longCount :
+  lc1 ≠ lc2 -> packedStridedBitAddress n lc1 .selectLocalBaseOccurrence index stride ≠
+                 packedStridedBitAddress n lc2 .selectLocalBaseOccurrence index stride
+```
+
+Every source placed after the long relative table is displaced by
+`longCount * packedLongBlockBits n`, and that block is never empty because it is
+`superStride (2n) * wordBits (2n)` and both factors are positive. So the map from
+decoded header count to address is injective: the header reply determines where
+later reads go. That is the content `M14-LONG-COUNT-IGNORED` exists to attack, now
+carried by a theorem rather than only by a mutation that rejects.
+
+Two limits, stated rather than glossed:
+
+1. The inequality is at the **bit** address. Lifting it to the issued *cell*
+   index needs `packedCellWidth n <= packedLongBlockBits n`, so that a one-unit
+   change in the count cannot leave the probe inside the same cell. That is not
+   proved, and unlike the `k * k <= 2 ^ k + 3` bound it is not obviously true at
+   small sizes -- `packedPayloadLength` is dominated by padding there, so
+   `packedCellWidth` is larger than the input size would suggest. It is recorded
+   as the next smallest target for this row rather than assumed.
+2. The row's other half -- the *returned value* -- still needs a run.

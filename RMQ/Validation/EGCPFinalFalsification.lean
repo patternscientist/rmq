@@ -1704,6 +1704,33 @@ theorem packedExecutedStoreDisagreesAtSegment23 :
           (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 23 0 :=
   packedStoresDisagree_atSegmentTwentyThree
 
+/-! ## The header value is load-bearing for addresses (`FG-11`, `INV-VALUE-DEPENDENCY`)
+
+The inequality is at an address, not at an enclosing trace record, which is the
+distinction both rows insist on.
+-/
+
+/-- Changing only the decoded long count moves the flat offset of a source placed
+after the long relative table. -/
+theorem packedHeaderCountMovesTheOffset :
+    forall (n : Nat) {lc1 lc2 : Nat}, lc1 ≠ lc2 ->
+      packedSourceFlatOffset n lc1
+          ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLocalBaseOccurrence ≠
+        packedSourceFlatOffset n lc2
+          ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLocalBaseOccurrence :=
+  packedSourceFlatOffset_injective_longCount
+
+/-- The same at the bit address the probe plan is computed from. -/
+theorem packedHeaderCountMovesTheBitAddress :
+    forall (n : Nat) {lc1 lc2 : Nat} (index stride : Nat), lc1 ≠ lc2 ->
+      packedStridedBitAddress n lc1
+          ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLocalBaseOccurrence
+          index stride ≠
+        packedStridedBitAddress n lc2
+          ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLocalBaseOccurrence
+          index stride :=
+  packedStridedBitAddress_injective_longCount
+
 end Validation
 end PackedCellProbe
 end SuccinctFinal

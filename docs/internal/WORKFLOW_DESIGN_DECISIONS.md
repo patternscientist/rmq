@@ -7203,3 +7203,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   repaired forward by this entry rather than hidden. The matrix was untouched by
   that commit, so no frozen-cell comparison was required; `claim_drift_scan.ps1
   -Strict` reported 1498 hits and 0 strict failures on it.
+- Commit landing the address value-dependency witness: requirement cells
+  byte-identical to `0a18548` across all 37 requirement rows; anti-vacuity
+  unchanged; only `INV-VALUE-DEPENDENCY`'s evidence/status pair was written.
