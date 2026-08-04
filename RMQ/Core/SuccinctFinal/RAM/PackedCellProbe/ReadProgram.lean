@@ -1345,6 +1345,52 @@ theorem packedInteriorReadNat_geometry_only
   exact GeometryClosure.machineReadComputationAt_geometry_only tableLeft
     tableRight hlength hwidth _ _ _ _
 
+/-! #### The interior read with no table at all
+
+`packedInteriorReadNat` still takes a table, harmlessly. But the ten interior
+computations built on it obtain their tables from the shape, so a table argument
+keeps the shape alive one level up.
+
+`machineReadComputationAt` binds the table as `_table` and its body mentions only
+`entries.length` and `width`. Writing those two as ordinary arguments removes the
+table entirely, and with the shape already gone the read becomes a function of
+five naturals.
+-/
+
+/--
+The interior machine read as a function of naturals alone: input size, entry
+count, width, base and index. No table, no shape.
+-/
+def packedInteriorReadNatOf (n entryCount width base i : Nat) :
+    SuccinctSpace.FlatStoreComputation (Option Nat) :=
+  SuccinctSpace.FlatStoreComputation.map
+    SuccinctSpace.fixedWidthNatTableMachineDecode
+    (SuccinctSpace.FlatStoreComputation.readMany
+      (if i < entryCount then
+        SuccinctSpace.fixedWidthNatTableMachineFootprintAt base width
+          (packedBpCodeWordWidth n) i
+      else
+        [(packedInteriorOffsets n).deadAddress]))
+
+/--
+**The interior read is a function of five naturals.**
+
+For every shape and every fixed-width table, the canonical interior read *is*
+`packedInteriorReadNatOf` at that table's entry count and width. Nothing
+shape-derived and nothing table-derived survives.
+-/
+theorem packedInteriorReadNatOf_eq
+    {entries : List Nat} {width : Nat}
+    (shape : CartesianShape)
+    (table : SuccinctSpace.FixedWidthNatTable entries width) (base i : Nat) :
+    SuccinctClose.canonicalRelativeRmmMachineReadNatComputation shape table
+        base i =
+      packedInteriorReadNatOf shape.size entries.length width base i := by
+  unfold SuccinctClose.canonicalRelativeRmmMachineReadNatComputation
+    SuccinctSpace.FixedWidthNatTable.machineReadComputationAt
+    packedInteriorReadNatOf packedBpCodeWordWidth
+  rw [packedInteriorOffsets_eq, CartesianShape.bpCode_length]
+
 /-! #### The endpoint-fringe candidate readers
 
 The cross-block branch's two endpoint readers use exactly three shape-derived

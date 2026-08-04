@@ -7005,3 +7005,58 @@ entry count and width give the same computation, whatever their entries.
 
 This is the primitive the ten interior `FlatStoreComputation` definitions are
 built on, so each of those is now a mechanical assembly over mirrors that exist.
+
+## DD-20260804-016: the interior read is five naturals, with no table
+
+Status: Worker result recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. Unlocks the ten interior
+computations. Feeds `EG-CP` row `FG-07`.
+
+Date: 2026-08-04
+
+Context:
+
+`packedInteriorReadNat` removed the shape from the interior read but kept the
+table argument, on the grounds that
+`GeometryClosure.machineReadComputationAt_geometry_only` shows the read cannot see
+its contents. That is true and sufficient for the read itself, but it does not
+help one level up: the ten interior `FlatStoreComputation` definitions obtain
+their tables *from the shape*, so a table argument keeps the shape alive in every
+one of them.
+
+Decision and result:
+
+Remove the table. `machineReadComputationAt` binds it as `_table`, and its body
+mentions only `entries.length` and `width`. Writing those two as ordinary
+arguments gives
+
+```
+packedInteriorReadNatOf (n entryCount width base i : Nat) :
+  FlatStoreComputation (Option Nat)
+```
+
+with `packedInteriorReadNatOf_eq` proving that for **every** shape and **every**
+fixed-width table, the canonical interior read is this function at that table's
+entry count and width.
+
+Rationale:
+
+The alternative was to keep the table and supply a dummy of matching geometry.
+That would have worked -- `FixedWidthNatTable.ofEntries` on `List.replicate count
+0` is constructible -- but it leaves a fabricated object in the executed
+definition for no reason other than to satisfy a type. Removing the argument is
+strictly cleaner and removes the question of whether the dummy is doing anything.
+
+Note what this is *not*: it is not the `M04-CANONICAL-SHAPE-BY-N` pattern.
+Nothing shape-derived is synthesized here; two projections of an existing
+argument are promoted to arguments, and the equation is proved at every table
+rather than at a manufactured one.
+
+Consequences and evidence:
+
+- Pinned by `packedInteriorReadIsFiveNaturals` and
+  `packedInteriorReadNatOfSignature`.
+- The ten interior computations can now be written over `(n, entryCount, width,
+  ...)`. Their entry counts and widths are exactly the ones already used by the
+  eight word-count mirrors of `DD-20260804-015`, so no new geometry is needed.
+- `FG-07` remains Open.

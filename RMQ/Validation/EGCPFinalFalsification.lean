@@ -915,6 +915,26 @@ theorem packedInteriorLayoutIsSizeOnly :
         packedInteriorLayout shape.size :=
   packedInteriorLayout_eq
 
+/--
+Pins the interior read's table-free signature: input size, entry count, width,
+base, index. Five naturals -- no table, no shape, no proof argument.
+-/
+def packedInteriorReadNatOfSignature : Nat -> Nat -> Nat -> Nat -> Nat ->
+    SuccinctSpace.FlatStoreComputation (Option Nat) :=
+  packedInteriorReadNatOf
+
+/--
+Pins that the canonical interior read *is* that five-natural function, at every
+shape and every fixed-width table.
+-/
+theorem packedInteriorReadIsFiveNaturals :
+    forall {entries : List Nat} {width : Nat} (shape : CartesianShape)
+      (table : SuccinctSpace.FixedWidthNatTable entries width) (base i : Nat),
+      SuccinctClose.canonicalRelativeRmmMachineReadNatComputation shape table
+          base i =
+        packedInteriorReadNatOf shape.size entries.length width base i :=
+  fun shape table base i => packedInteriorReadNatOf_eq shape table base i
+
 /-- Pins the interior offsets mirror's signature. -/
 def packedInteriorOffsetsSignature :
     Nat -> SuccinctClose.CanonicalRelativeRmmInteriorComponentOffsets :=
