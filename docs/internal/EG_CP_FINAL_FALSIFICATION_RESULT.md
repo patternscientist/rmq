@@ -496,17 +496,35 @@ The five helper theorems are not wasted by that decision; they are what makes th
 `Nat`-only record adequate, because they show the leaf reads the supplied store
 and consults its record only for the scalars such a record would carry.
 
-Of the three rank-side scalars that record still needs, two are now settled.
-`queryPos` binds its record as `_data` and is `Nat.min pos bits.length`;
-`packedRankQueryPos` mirrors it, `packedRankQueryPos_eq` is `rfl`, and
-`packedRankQueryPos_length_determined` gives the congruence from equal bit
-lengths alone — and this development already has size-only mirrors for both
-lengths (`longFlagBits_length_eq_packed`, `sparseFlagBits_length_eq_packed`).
-`wordSize` mirrors also already exist (`longFlagRankWordSize_eq_packed`,
-`sparseFlagRankWordSize_eq_packed`).
+### The select-side scalar list is discharged
 
-**The one scalar still unmirrored on the select side is `blocksPerSuper`, for
-each of the two rank records.** That is the next proof target.
+Every scalar `bpChunkedSelectTraceResultWithStore` consumes is now accounted for:
+
+| Scalar | Status |
+| --- | --- |
+| `wordSize`, `superStride`, `localStride`, `localSlotsPerSuper` | size-only mirrors at `2 * n`, with agreement theorems |
+| `occurrenceCount bits target` | proved equal to `shape.size` — the validity guard is `idx < n` |
+| `queryOccurrence` | content-free |
+| rank `queryPos` | `Nat.min pos bits.length`; both lengths already mirrored size-only |
+| rank `wordSize` | mirrors already existed |
+| rank `blocksPerSuper`, both records | literal `1` — `rfl` |
+| `sparseDirectory.localStride` | `localStride bits.length`, the mirrored expression |
+
+and all five read helpers are content-free or scalar-determined.
+
+The last two were the ones I expected to be hardest. `longFlagRankBlocksPerSuper`
+and `sparseExceptionEffectiveFlagRankBlocksPerSuper` each bind both arguments as
+`_bits`/`_target` and return `1`. A literal cannot carry shape content, so
+neither needs a mirror at all.
+
+Still unmirrored beside the select data: `SuccinctClose.bpFringeChunkBits
+shape.bpCode.length`. It is a length of the BP code, so the mirror is immediate,
+but it has not been written.
+
+**This does not close `FG-07`.** No controller definition exists. What it means is
+that the `Nat`-only geometry record chosen in `DD-20260804-008` has no missing
+field on the select side — the construction can begin without further discovery
+work there. The close/LCA side has still not been examined at all.
 
 Still open: no controller definition exists; the close and LCA leaves have not
 been examined at all; and `SuccinctClose.bpFringeChunkBits shape.bpCode.length`

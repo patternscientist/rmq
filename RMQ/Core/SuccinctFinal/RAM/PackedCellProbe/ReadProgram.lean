@@ -302,6 +302,39 @@ theorem packedRankQueryPos_length_determined
   rw [packedRankQueryPos_eq dataLeft pos, packedRankQueryPos_eq dataRight pos,
     hlength]
 
+/-! #### The last two scalars: `blocksPerSuper`
+
+The rank read consumes `blocksPerSuper` from its record. The select leaf uses two
+rank records, and both values turn out to be reachable from the input size: the
+long-flag one is a literal, and the sparse one is `machineWordBits` of a length
+this development already mirrors.
+-/
+
+/--
+**The long-flag rank data groups one block per super block.**
+
+`longFlagRankBlocksPerSuper` binds both arguments as `_bits` and `_target` and
+returns `1`, so this scalar is a literal at every size.
+-/
+theorem packedLongFlagBlocksPerSuper_eq (bits : List Bool) (target : Bool) :
+    (GenericSelect.longFlagRankData bits target).blocksPerSuper = 1 :=
+  rfl
+
+/--
+**The sparse flag rank data also groups one block per super block.**
+
+`sparseExceptionEffectiveFlagRankBlocksPerSuper` likewise binds both arguments as
+`_bits` and `_target` and returns `1`.
+
+With this, every scalar `bpChunkedSelectTraceResultWithStore` consumes is either
+a literal or a size-only function of the input size, and the select leaf's whole
+dependence on the shape is discharged.
+-/
+theorem packedSparseFlagBlocksPerSuper_eq (bits : List Bool) (target : Bool) :
+    (GenericSelect.sparseExceptionEffectiveFlagRankData
+        bits target).blocksPerSuper = 1 :=
+  rfl
+
 /--
 **The sparse-directory read is determined by four scalars.**
 

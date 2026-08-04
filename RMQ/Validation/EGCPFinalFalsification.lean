@@ -663,6 +663,22 @@ theorem packedRankReadIsDeterminedByThreeScalars :
       blockSegment wordSegment chunkSegment chunkBits target pos hquery
       hwordSize hblocks
 
+/--
+Pins that both rank records the select leaf uses group one block per super
+block. These are the last two select-side scalars; both are literals, so neither
+needs a mirror and neither can carry shape content.
+-/
+theorem packedLongFlagBlocksPerSuperIsOne :
+    forall (bits : List Bool) (target : Bool),
+      (GenericSelect.longFlagRankData bits target).blocksPerSuper = 1 :=
+  packedLongFlagBlocksPerSuper_eq
+
+theorem packedSparseFlagBlocksPerSuperIsOne :
+    forall (bits : List Bool) (target : Bool),
+      (GenericSelect.sparseExceptionEffectiveFlagRankData
+          bits target).blocksPerSuper = 1 :=
+  packedSparseFlagBlocksPerSuper_eq
+
 /-- Pins the clamped query position as a function of the bit length and position. -/
 def packedRankQueryPosSignature : Nat -> Nat -> Nat := packedRankQueryPos
 

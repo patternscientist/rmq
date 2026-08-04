@@ -7102,3 +7102,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   required.
 - Commit mirroring the rank query position: matrix untouched, so no frozen-cell
   comparison was required.
+- Commit discharging the select-side scalar list: matrix untouched, so no
+  frozen-cell comparison was required.

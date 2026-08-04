@@ -6308,3 +6308,38 @@ Remaining for the `Nat`-only geometry record on the select side:
 
 Pinned by `packedRankQueryPosIsTheBitLengthAlone` and
 `packedRankQueryPosSignature`.
+
+### Second addendum to `DD-20260804-008` (2026-08-04): the select-side scalar list is discharged
+
+Both rank records the select leaf uses group one block per super block.
+`GenericSelect.longFlagRankBlocksPerSuper` and
+`GenericSelect.sparseExceptionEffectiveFlagRankBlocksPerSuper` each bind both
+arguments as `_bits`/`_target` and return `1`, so
+`packedLongFlagBlocksPerSuper_eq` and `packedSparseFlagBlocksPerSuper_eq` are
+`rfl`. A literal cannot carry shape content, so neither needs a mirror.
+
+That discharges the whole select-side list. Every scalar
+`bpChunkedSelectTraceResultWithStore` consumes is now one of:
+
+| Scalar | Status |
+| --- | --- |
+| `wordSize`, `superStride`, `localStride`, `localSlotsPerSuper` | size-only mirrors at `2 * n`, with agreement theorems |
+| `occurrenceCount bits target` | proved equal to `shape.size` |
+| `queryOccurrence` | content-free |
+| rank `queryPos` | `Nat.min pos bits.length`, both lengths already mirrored size-only |
+| rank `wordSize` | mirrors already existed (`longFlagRankWordSize_eq_packed`, `sparseFlagRankWordSize_eq_packed`) |
+| rank `blocksPerSuper` (both records) | literal `1` |
+| `sparseDirectory.localStride` | `localStride bits.length`, the same expression as the mirrored select local stride |
+
+and all five read helpers are content-free or scalar-determined.
+
+`SuccinctClose.bpFringeChunkBits shape.bpCode.length` is supplied beside the
+select data rather than inside it and is still unmirrored; it is a length of the
+BP code, so the mirror is immediate, but it has not been written.
+
+Pinned by `packedLongFlagBlocksPerSuperIsOne` and
+`packedSparseFlagBlocksPerSuperIsOne`.
+
+This does not close `FG-07`: no controller definition exists. What it means is
+that the `Nat`-only geometry record chosen in `DD-20260804-008` has no missing
+field on the select side.
