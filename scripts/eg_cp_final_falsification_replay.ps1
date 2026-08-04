@@ -117,8 +117,8 @@ $script:Registry = @(
      Verdict = 'REJECT'; Surface = 'exact decoded word';
      Target = @{ Kind = 'Patch';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Probe.lean';
-       Find  = '  else [bit / packedCellWidth n, bit / packedCellWidth n + 1]';
-       Repl  = '  else [bit / packedCellWidth n + 1, bit / packedCellWidth n]' } },
+       Find  = '    [bit / packedCellWidth n, bit / packedCellWidth n + 1]';
+       Repl  = '    [bit / packedCellWidth n + 1, bit / packedCellWidth n]' } },
   @{ Order = 12; Id = 'M10-SPARSE-COUNT-DEPENDENCY';
      Mutation = 'introduce sparse-count metadata into a live offset';
      Verdict = 'REJECT'; Surface = 'K1 source factorization';
