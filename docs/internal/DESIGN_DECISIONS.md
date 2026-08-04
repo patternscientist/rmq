@@ -6159,3 +6159,30 @@ Pinned by `packedSelectQueryOccurrenceIsTheIndexAlone`.
 This still does not close `FG-07`. No controller definition exists, the close and
 LCA leaves have not been examined, and `SuccinctClose.bpFringeChunkBits
 shape.bpCode.length` is supplied beside the select data rather than inside it.
+
+### Second addendum to `DD-20260804-007` (2026-08-04): two more read helpers are content-free
+
+`bpChunkedSelectTraceResultWithStore` reaches the supplied store through four
+helpers. Three are now covered:
+
+- the four-field entry-table read (`packedSelectEntryRead_content_free`,
+  `DD-20260804-006`);
+- the dense two-word select read
+  (`packedDenseTwoWordSelectRead_content_free`): two bit stores over **unrelated
+  bit strings**, sharing only the word size, give the same trace result. The word
+  size is a type index rather than stored data, so the helper consults its
+  argument for a scalar and reads everything else from the supplied store;
+- the relative-offset read, whose declared type is
+  `WordRAM.ReadStore -> Nat -> Nat -> Nat -> WordRAM.TraceResult (Option Nat)`.
+  It takes no record at all, so nothing shape-derived can reach it. Pinned by
+  `packedRelativeOffsetReadSignature`.
+
+The fourth, the two-level rank read
+(`SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore`),
+consumes derived indices of its own record (`data.superIndex pos` and its
+neighbours) and is **not** covered. Those indices are computed from the record's
+block and super sizes, so the expected shape of the remaining work is another
+scalar mirror, but that is a prediction and not a result.
+
+Pinned by `packedDenseTwoWordSelectReadIsDeterminedByTheStore` and
+`packedRelativeOffsetReadSignaturePin`.

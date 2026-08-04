@@ -612,6 +612,33 @@ theorem packedSelectQueryOccurrenceIsTheIndexAlone :
   fun dataLeft dataRight index =>
     packedSelectQueryOccurrence_content_free dataLeft dataRight index
 
+/-- Pins that the dense two-word select read carries no bit-store content. -/
+theorem packedDenseTwoWordSelectReadIsDeterminedByTheStore :
+    forall {bitsLeft bitsRight : List Bool} {wordSize : Nat}
+      (bitWordsLeft : SuccinctSpace.BoundedPayloadWordStore bitsLeft wordSize)
+      (bitWordsRight : SuccinctSpace.BoundedPayloadWordStore bitsRight wordSize)
+      (bitWordSegment rankTableSegment selectTableSegment chunkBits : Nat)
+      (target : Bool) (store : WordRAM.ReadStore)
+      (basePosition baseOccurrence occurrence : Nat),
+      GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore
+          bitWordSegment rankTableSegment selectTableSegment chunkBits target
+          bitWordsLeft store basePosition baseOccurrence occurrence =
+        GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore
+          bitWordSegment rankTableSegment selectTableSegment chunkBits target
+          bitWordsRight store basePosition baseOccurrence occurrence :=
+  fun bitWordsLeft bitWordsRight bitWordSegment rankTableSegment
+      selectTableSegment chunkBits target store basePosition baseOccurrence
+      occurrence =>
+    packedDenseTwoWordSelectRead_content_free bitWordsLeft bitWordsRight
+      bitWordSegment rankTableSegment selectTableSegment chunkBits target store
+      basePosition baseOccurrence occurrence
+
+/-- Pins that the relative-offset read takes a store and three naturals only. -/
+def packedRelativeOffsetReadSignaturePin :
+    WordRAM.ReadStore -> Nat -> Nat -> Nat ->
+      WordRAM.TraceResult (Option Nat) :=
+  packedRelativeOffsetReadSignature
+
 /-! #### The long count is obtained by a probe
 
 Every packed address takes the decoded long count as an argument. These consumers

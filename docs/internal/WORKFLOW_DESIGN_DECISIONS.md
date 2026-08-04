@@ -7093,3 +7093,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit completing the select scalar list: the same five columns byte-identical
   to `0a18548` across all 37 rows; anti-vacuity unchanged; only `FG-07`'s
   evidence and status columns changed.
+- Commit covering two more select read helpers: matrix untouched, so no
+  frozen-cell comparison was required.

@@ -445,10 +445,31 @@ no parameter. **That closes the select-side scalar list**: four geometry mirrors
 at `2 * n` with agreement theorems, `occurrenceCount = n`, and `queryOccurrence`
 content-free. Nothing on the select side needs the shape except through `n`.
 
+### Three of the leaf's four read helpers are content-free
+
+`bpChunkedSelectTraceResultWithStore` reaches the supplied store through four
+helpers:
+
+| Helper | Status |
+| --- | --- |
+| four-field entry-table read | content-free (`packedSelectEntryRead_content_free`) |
+| dense two-word select read | content-free at a fixed word size (`packedDenseTwoWordSelectRead_content_free`) |
+| relative-offset read | takes no record at all; type is `ReadStore -> Nat -> Nat -> Nat -> TraceResult (Option Nat)` |
+| two-level rank read | **not covered** — consumes `data.superIndex pos` and its neighbours |
+
+The dense two-word case is the informative one: the two bit stores are over
+*unrelated* bit strings and share only the word size, which is a type index
+rather than stored data. So the helper consults its argument for a scalar and
+reads everything else from the supplied store.
+
+The rank read's derived indices are computed from its record's block and super
+sizes, so the expected shape of the remaining work is another scalar mirror —
+but that is a prediction, not a result, and it is recorded as such.
+
 Still open: no controller definition exists; the close and LCA leaves have not
 been examined at all; and `SuccinctClose.bpFringeChunkBits shape.bpCode.length`
 is supplied beside the select data rather than inside it, so it is a separate
-mirror obligation. Recorded as `DD-20260804-007` and its addendum.
+mirror obligation. Recorded as `DD-20260804-007` and its two addenda.
 
 ## 7. Two defects found and what happened to them
 

@@ -1,5 +1,6 @@
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Probe
 import RMQ.Core.GenericSelect.RAMStoreParam
+import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedRankSelectLeafTrace
 
 /-!
 # Logical reads carry no table content
@@ -174,6 +175,48 @@ theorem packedSelectOccurrenceCount_eq_size (shape : CartesianShape) :
     GenericSelect.occurrenceCount shape.bpCode false = shape.size := by
   unfold GenericSelect.occurrenceCount
   exact SuccinctSpace.bpCode_rankFalse_full shape
+
+/-! ### The leaf's other read sub-calls
+
+`bpChunkedSelectTraceResultWithStore` reaches the store through four helpers. The
+entry-table read is content-free above. Two of the remaining three are covered
+here; the fourth, the two-level rank read, consumes scalars of its own record and
+is not covered.
+-/
+
+/--
+**The dense two-word select read carries no bit-store content.**
+
+The two bit stores are over unrelated bit strings; only the word size is shared,
+and the word size is a type index rather than stored data. The results agree, so
+this helper reads the supplied store and consults its own argument only for that
+scalar.
+-/
+theorem packedDenseTwoWordSelectRead_content_free
+    {bitsLeft bitsRight : List Bool} {wordSize : Nat}
+    (bitWordsLeft : SuccinctSpace.BoundedPayloadWordStore bitsLeft wordSize)
+    (bitWordsRight : SuccinctSpace.BoundedPayloadWordStore bitsRight wordSize)
+    (bitWordSegment rankTableSegment selectTableSegment chunkBits : Nat)
+    (target : Bool) (store : WordRAM.ReadStore)
+    (basePosition baseOccurrence occurrence : Nat) :
+    GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore
+        bitWordSegment rankTableSegment selectTableSegment chunkBits target
+        bitWordsLeft store basePosition baseOccurrence occurrence =
+      GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore
+        bitWordSegment rankTableSegment selectTableSegment chunkBits target
+        bitWordsRight store basePosition baseOccurrence occurrence :=
+  rfl
+
+/--
+**The relative-offset read takes no record at all.**
+
+Its declared type is a supplied store and three naturals. Nothing shape-derived
+can reach it, so a controller can issue it directly.
+-/
+def packedRelativeOffsetReadSignature :
+    WordRAM.ReadStore -> Nat -> Nat -> Nat ->
+      WordRAM.TraceResult (Option Nat) :=
+  GenericSelect.bpRelativeOffsetReadTraceResultWithStore
 
 /--
 **The queried occurrence carries no record content.**
