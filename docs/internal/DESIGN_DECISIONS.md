@@ -8296,3 +8296,61 @@ What transfers and what does not:
 
 Recorded before the construction rather than after, so the decision is auditable
 independently of whether the construction succeeds.
+
+## DD-20260804-039: the re-target's first obligation, and the obstruction candidate it exposes
+
+Status: Investigation target recorded 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1`. **Not a result.** Recorded so the next
+session starts from the right question.
+
+Date: 2026-08-04
+
+`DD-20260804-038` re-targets `packedPayloadBits` at the canonical reviewer
+payload. The first thing that must be checked about the new target is whether its
+component offsets are still size-only, because `FG-02`/`FG-03`/`FG-07` all depend
+on a controller computing addresses from `n` and the decoded header alone.
+
+The reviewer layout is
+
+```
+payload = bpCode ++ accessPayload ++ closePayload ++ fringePayload ++ selectChunkPayload
+closeBitOffset shape = bpCodePayload.length + accessPayload.length
+```
+
+and `accessPayload` is `concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources.flatMap
+(sourcePayload shape)`, whose **last** entry is `.selectSparseRelative`.
+
+That source's payload length is
+`rankPrefix true (sparseExceptionFlagBits ...) (localSlotCount ...) * localStride * relativeWidth`
+-- the sparse exception count, which `DD-20260804-022` established is **not** a
+function of `(n, longCount)`. So on its face the close component's offset in the
+reviewer payload is content-dependent, and a `K1` controller carrying only
+`longCount` could not address the close half.
+
+**If that is right it is a `K1` obstruction of exactly the commissioned shape**:
+a checked theorem matching the frozen `K1` quantifiers, showing `K1` needs extra
+metadata. It would also explain the earlier `M10-SPARSE-COUNT-DEPENDENCY` framing:
+the registry anticipated precisely this dependency.
+
+**It is not yet checked, and the one probe run does not support it.** Left and
+right spines of sizes 8, 16 and 32 give equal close offsets (`598`, `1023`,
+`1647`) and `longCount = 0` on both, so that probe does not discriminate -- the
+sparse exception count is evidently `0` for both spine families at those sizes.
+Two possibilities remain open and they have opposite consequences:
+
+1. The sparse exception count is always `0` for Cartesian BP codes, or is itself a
+   function of `(n, longCount)`. Then the close offset is size-only after all, the
+   re-target proceeds, and `DD-20260804-022`'s one-directional lowering can
+   probably be upgraded to an equation.
+2. It is genuinely content-dependent. Then `K1` is insufficient for the reviewer
+   payload, and the campaign has its obstruction.
+
+The next smallest target is therefore precise: **exhibit two shapes of the same
+size whose sparse exception counts differ, or prove the count is determined by
+`(n, longCount)`.** The first needs a search over shapes with mixed structure
+rather than spines -- spines are extreme and evidently produce no exceptions. The
+second would be a theorem about `sparseExceptionFlagBits` on BP codes.
+
+Recorded as an open question with both branches stated, rather than as a finding,
+because the branch that says "obstruction" is exactly the one a worker under
+pressure to finish would be tempted to claim early.
