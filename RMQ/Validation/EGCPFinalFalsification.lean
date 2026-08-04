@@ -1,5 +1,6 @@
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.SourceFactorization
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Header
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Space
 
 /-!
 # Exact-type consumers for the EG-CP packed cell-probe candidate
@@ -158,6 +159,34 @@ theorem packedHeaderDecodes :
     forall shape : CartesianShape,
       SuccinctSpace.bitsToNatLE (packedHeaderBits shape) = longCount shape :=
   packedHeaderBits_decode
+
+/-! ### Packed memory and allocated space -/
+
+/-- Pins the memory round trip: the cells recover the padded bits exactly. -/
+theorem packedMemoryRoundTrips :
+    forall shape : CartesianShape,
+      (packedMemory shape).flatten = packedPaddedBits shape :=
+  packedMemory_flatten
+
+/-- Pins that every allocated cell is exactly one full width, none short. -/
+theorem packedMemoryCellsAreFullWidth :
+    forall (shape : CartesianShape) {cell : List Bool},
+      cell ∈ packedMemory shape -> cell.length = packedCellWidth shape.size :=
+  fun shape _ h => packedMemory_cell_length shape h
+
+/--
+Pins the space bound at allocated cells times width, over the same `packedMemory`
+the execution is meant to probe, not over the number of meaningful bits.
+-/
+theorem packedAllocatedSpaceBound :
+    forall shape : CartesianShape,
+      (packedMemory shape).length * packedCellWidth shape.size <=
+        2 * shape.size + packedRho shape.size :=
+  packedMemory_length_mul_width_le
+
+/-- Pins that the residual is little-o linear. -/
+theorem packedRhoIsLittleOLinear : SuccinctSpace.LittleOLinear packedRho :=
+  packedRho_littleO
 
 end Validation
 end PackedCellProbe

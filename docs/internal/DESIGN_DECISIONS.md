@@ -5600,3 +5600,36 @@ header and the whole canonical payload are readable from the cells alone.
 The general lemma is stated over an arbitrary width rather than specialised to
 `packedCellWidth`, so it also covers the degenerate widths at small sizes and does
 not quietly assume a positive or byte-aligned cell.
+
+`FG-06` allocated space under `DD-20260802-001` (2026-08-04):
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Space.lean` proves
+`packedAllocatedBits_le : packedAllocatedBits n <= 2 * n + packedRho n` with
+`packedRho n = concreteBPNativeSuccinctRMQOverhead
+genericSparseExceptionBPCloseAccessOverhead n + 2 * packedCellWidth n`, and
+`packedRho_littleO`.
+
+The `2 * packedCellWidth` term is the honest cost of whole-cell allocation: one
+full cell for the header, and up to one more for the ceiling remainder of the
+final cell. It is logarithmic in `n`, hence `o(n)`, but it is a real allocation
+and is charged. Dropping it would have made the bound a statement about
+meaningful bits, which is the specific substitution `FG-06` forbids.
+
+Proving it `o(n)` needed a lemma the repository did not have. Every existing
+little-o fact is about a function of `n`; the cell width is `machineWordBits` of
+the *payload length*, which is linear in `n` rather than equal to it, so
+`eventually_scale_log2_succ_le_self` does not apply directly.
+`littleOLinear_machineWordBits_comp` supplies the missing step: if `f` is
+eventually bounded by `K * n + C`, then `machineWordBits (f n)` is little-o
+linear. The proof routes through `f n <= (K + C + 1) * n < 2 ^ (log2 n + K + C + 1)`,
+using `nat_succ_le_two_pow` for `K + C + 1 <= 2 ^ (K + C)`.
+
+The eventual linear bound on the payload length comes from
+`genericSparseExceptionBPCloseAccessOverhead_le_linear` (global) together with
+`compactBPCloseOverhead_littleO` at scale one (eventual). Stating the hypothesis
+as eventual rather than global is what lets the second be used at all; no global
+linear bound on the close overhead exists in the tree.
+
+What this does not settle: the bound is proved over `packedMemory`, and nothing
+yet shows that object is what an execution probes. `INV-STORE-IDENTITY` stays
+open, and with it the row.

@@ -6999,3 +6999,5 @@ Consequences:
   `COMPLETION_GATE.md` section 6.
 - Sections that describe unfinished rows are expected to change. Sections that
   record defects or corrections are append-only.
+- Commit adding the `FG-06` allocated-space evidence: all fifteen frozen
+  requirement cells byte-identical to `0a18548`.
