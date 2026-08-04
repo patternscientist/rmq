@@ -5439,3 +5439,45 @@ Recorded separately because it bears on the predetermined `K = 0` flip: the
 interior/close side was already proved size-only by `offsets_congr`
 (`GeometryClosure.lean:718`) and needs no descriptor at all. The header exists
 solely for the select side's long relative table.
+
+### Correction to the `DD-20260802-001` evidence note (2026-08-03)
+
+The running evidence list above overstated two things when it was written. Both
+sentences stand as written for the record; neither is now relied on.
+
+**Overclaim 1 -- "the only content-dependent length".** The note said
+`longSuperRelativeTable_length_eq` identifies "the only length reachable from a
+select offset that the input size does not fix". At the time only the select
+super geometry had been mirrored, so that was a projection from a partial map,
+not a proved conclusion.
+
+The exact proved conclusion is narrower and conditional:
+
+> `longCount` is the candidate's only content-dependent *prefix* length needed to
+> locate later live select sources, conditional on
+> `selectPayload_eq_prefix_append_sparseRelative`.
+
+Terminality is what makes the sparse count irrelevant to addressing, and
+terminality is a separate theorem, not a corollary of the long-table length. The
+scope of "later live select sources" is also doing real work: it is a claim about
+prefixes that positions depend on, not a claim that no other length in the
+structure varies with content. The sparse relative table's own length does vary
+with content; it simply sits after everything that is addressed.
+
+**Overclaim 2 -- congruence read as a mirror.** The note said the interior/close
+side "was already proved size-only by `offsets_congr` and needs no descriptor at
+all". `offsets_congr` (`GeometryClosure.lean:718`) is a *congruence*: for two
+shapes of equal size it proves the offsets are equal. It is also stated over
+`canonicalRelativeRmmInteriorComponentOffsets` -- the reviewer interior component
+at machine-word granularity -- not over the flat-payload bit offsets this module
+addresses.
+
+A congruence and an executable size-only mirror are different deliverables, and
+only the mirror is usable here. A congruence says the offsets are *determined* by
+the size; a controller cannot evaluate a determination. That distinction is the
+reason `DD-20260802-001` chose mirrors in the first place, so reading a
+congruence as evidence of a mirror inverted this branch's own decision.
+
+Consequently no claim is made here about the `K = 0` flip. Showing the close side
+needs no descriptor would require close-side mirrors over the flat layout, which
+do not yet exist.

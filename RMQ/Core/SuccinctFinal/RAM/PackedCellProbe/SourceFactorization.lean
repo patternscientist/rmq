@@ -127,29 +127,90 @@ theorem accessComponents_add_padding
 /-! ### Size-only component base offsets -/
 
 /--
+Size-only mirror of the final rank word size.
+
+`builtRelativeSplitBPCloseRankWordSize` is `machineWordBits` of the BP code length,
+and the BP code of a shape of size `n` has length `2 * n`.
+-/
+def packedRankWordSize (n : Nat) : Nat :=
+  SuccinctRank.machineWordBits (2 * n)
+
+theorem rankWordSize_eq_packed (shape : CartesianShape) :
+    builtRelativeSplitBPCloseRankWordSize shape = packedRankWordSize shape.size := by
+  unfold builtRelativeSplitBPCloseRankWordSize packedRankWordSize
+  rw [CartesianShape.bpCode_length]
+
+/-- Size-only mirror of the final rank block width. -/
+def packedRankBlockWidth (n : Nat) : Nat :=
+  SuccinctRank.machineWordBits (packedRankWordSize n * packedRankWordSize n)
+
+theorem rankBlockWidth_eq_packed (shape : CartesianShape) :
+    builtRelativeSplitBPCloseRankBlockWidth shape = packedRankBlockWidth shape.size := by
+  unfold builtRelativeSplitBPCloseRankBlockWidth packedRankBlockWidth
+  rw [rankWordSize_eq_packed]
+
+/--
+Size-only mirror of the final rank superblock-sample overhead.
+
+Written in the exact shape produced by `canonicalSuperRankSampleTables_payload_length`
+followed by `canonicalSuperRankEntries_length`: one summand per sample polarity,
+each an entry count times the sample width.
+-/
+def packedRankSuperOverhead (n : Nat) : Nat :=
+  (2 * n / packedRankWordSize n / packedRankWordSize n + 1) * packedRankWordSize n +
+    (2 * n / packedRankWordSize n / packedRankWordSize n + 1) * packedRankWordSize n
+
+theorem rankSuperOverhead_eq_packed (shape : CartesianShape) :
+    builtRelativeSplitBPCloseRankSuperOverhead shape =
+      packedRankSuperOverhead shape.size := by
+  unfold builtRelativeSplitBPCloseRankSuperOverhead packedRankSuperOverhead
+  rw [SuccinctRank.canonicalSuperRankSampleTables_payload_length,
+    SuccinctRank.canonicalSuperRankEntries_length,
+    SuccinctRank.canonicalSuperRankEntries_length,
+    CartesianShape.bpCode_length, rankWordSize_eq_packed,
+    builtRelativeSplitBPCloseRankBlocksPerSuper, rankWordSize_eq_packed]
+
+/-- Size-only mirror of the final rank block-sample overhead. -/
+def packedRankBlockOverhead (n : Nat) : Nat :=
+  (2 * n / packedRankWordSize n + 1) * packedRankBlockWidth n +
+    (2 * n / packedRankWordSize n + 1) * packedRankBlockWidth n
+
+theorem rankBlockOverhead_eq_packed (shape : CartesianShape) :
+    builtRelativeSplitBPCloseRankBlockOverhead shape =
+      packedRankBlockOverhead shape.size := by
+  unfold builtRelativeSplitBPCloseRankBlockOverhead packedRankBlockOverhead
+  rw [SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan_payload_length,
+    SuccinctRank.canonicalBlockRankEntries_length,
+    SuccinctRank.canonicalBlockRankEntries_length,
+    CartesianShape.bpCode_length, rankWordSize_eq_packed,
+    rankBlockWidth_eq_packed]
+
+/--
 Size-only mirror of the rank component's length.
 
 The rank data's type is indexed by its two overheads and carries
 `superPayload_length` / `blockPayload_length` as fields, so the length is fixed by
-the index rather than by the stored bits.
+the index rather than by the stored bits. Both indices are themselves size-only by
+the two theorems above, which is what makes this a mirror the controller can
+evaluate rather than a congruence it cannot.
 -/
-def packedRankAuxLength (shape : CartesianShape) : Nat :=
-  builtRelativeSplitBPCloseRankSuperOverhead shape +
-    builtRelativeSplitBPCloseRankBlockOverhead shape
+def packedRankAuxLength (n : Nat) : Nat :=
+  packedRankSuperOverhead n + packedRankBlockOverhead n
 
 theorem rankAuxPayload_length
     (shape : CartesianShape) :
     (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).accessRankPayload.length =
-      packedRankAuxLength shape := by
+      packedRankAuxLength shape.size := by
   have hsuper :=
     (builtRelativeSplitBPCloseRankData shape).superPayload_length
   have hblock :=
     (builtRelativeSplitBPCloseRankData shape).blockPayload_length
-  simp [concreteBPNativeSuccinctRMQFlatPayloadLayout, packedRankAuxLength,
+  simp only [concreteBPNativeSuccinctRMQFlatPayloadLayout, packedRankAuxLength,
     SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.auxPayload,
     SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superPayload,
     SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockPayload,
     List.length_append, hsuper, hblock]
+  rw [rankSuperOverhead_eq_packed, rankBlockOverhead_eq_packed]
 
 /--
 The close component begins at a position determined by the input size alone.
@@ -249,6 +310,75 @@ theorem superTable_column_length (shape : CartesianShape) :
     List.length_map]
   rw [GenericSelect.superEntries_length, superSlotCount_eq_packed,
     superFieldWidth_eq_packed]
+
+/-! ### Sparse terminality -/
+
+/--
+Everything the select payload places before the sparse relative table.
+
+Naming this explicitly is the point: the definition mentions the super table, the
+long flag bits and their rank, the long relative table, the local table, and the
+sparse directory's flag bits and rank, and it does not mention the sparse relative
+table at all.
+-/
+def packedSelectPrefixBits (shape : CartesianShape) : List Bool :=
+  (GenericSelect.superTable shape.bpCode false).payload ++
+    GenericSelect.longSuperFlagBits shape.bpCode false ++
+      (GenericSelect.longFlagRankData shape.bpCode false).auxPayload ++
+        (GenericSelect.longSuperRelativeTable shape.bpCode false).payload ++
+          (GenericSelect.localTable shape.bpCode false).payload ++
+            GenericSelect.sparseExceptionEffectiveFlagBits shape.bpCode false ++
+              (GenericSelect.sparseExceptionEffectiveFlagRankData
+                shape.bpCode false).auxPayload
+
+/--
+**Sparse terminality.** The canonical select payload is that prefix followed by the
+sparse relative table, with nothing after it.
+
+This is the first clause of `FG-03`. Because the sparse relative table is a proper
+suffix of the select payload, and the close component's base is fixed by the input
+size (`closeComponent_flatOffset`), the number of sparse exceptions cannot move any
+address in the layout.
+-/
+theorem selectPayload_eq_prefix_append_sparseRelative (shape : CartesianShape) :
+    (GenericSelect.sparseExceptionSelectSource shape.bpCode false).payload =
+      packedSelectPrefixBits shape ++
+        (GenericSelect.sparseExceptionRelativeTable shape.bpCode false).payload := by
+  simp [GenericSelect.sparseExceptionSelectSource,
+    GenericSelect.SparseExceptionSelectData.toChargedSelectPositionSource,
+    GenericSelect.SparseExceptionSelectData.payload,
+    GenericSelect.SparseExceptionDirectory.payload,
+    GenericSelect.sparseExceptionSelectData,
+    GenericSelect.sparseExceptionDirectory,
+    packedSelectPrefixBits, List.append_assoc]
+
+/--
+Every source that lives in the select component is addressed at or before the start
+of the sparse relative table.
+
+Stated as the bound rather than as an equality because `.selectSparseRelative`
+itself is addressed exactly at the prefix length, and every earlier source strictly
+inside it. Either way no base is a function of the sparse relative table's length.
+-/
+theorem selectSourceComponentOffset_le_prefix
+    (shape : CartesianShape)
+    (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
+    (hcomponent :
+      concreteBPNativeSuccinctRMQFlatPayloadSourceComponent source =
+        .selectPayload) :
+    concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset shape source <=
+      (packedSelectPrefixBits shape).length := by
+  cases source <;>
+    simp_all [concreteBPNativeSuccinctRMQFlatPayloadSourceComponent,
+      concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset,
+      packedSelectPrefixBits,
+      GenericSelect.sparseExceptionSelectData,
+      GenericSelect.sparseExceptionDirectory,
+      GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.payload,
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.auxPayload,
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superPayload,
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockPayload,
+      List.length_append, Nat.add_assoc]
 
 end PackedCellProbe
 end SuccinctFinal
