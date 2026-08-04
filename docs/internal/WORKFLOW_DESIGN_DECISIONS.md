@@ -7221,3 +7221,7 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   superseded correction is left in place in the evidence cells and marked
   retracted there, rather than deleted, so the record shows both the error and its
   repair.
+- Commit resolving the `FG-01` ambiguity: requirement cells byte-identical to
+  `0a18548` across all 37 requirement rows; anti-vacuity unchanged; only `FG-01`'s
+  `Status` cell was rewritten. The decision is recorded before the construction so
+  it is auditable independently of whether the construction succeeds.

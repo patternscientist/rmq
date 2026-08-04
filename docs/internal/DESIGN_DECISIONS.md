@@ -8235,3 +8235,64 @@ public claim, and I did it without checking `buildPayload`. One definition would
 have settled it. The lesson is not "check more" in general -- it is that when a
 finding is about *which object a claim is about*, the only evidence that counts is
 the definition of the object the top-level claim names.
+
+## DD-20260804-038: the frozen registry decides FG-01's ambiguity
+
+Status: Decision taken 2026-08-04 on branch
+`codex/eg-cp-final-falsification-gate-r1` under the standing decision authority
+(pick the most unimpeachable, precedent-matching option). Resolves the question
+`DD-20260804-037` left open.
+
+Date: 2026-08-04
+
+`FG-01` names two different objects: the identifier
+`concreteBPNativeSuccinctRMQPayload`, and "the object consumed by the accepted RMQ
+semantics", which is `concreteBPNativeSuccinctRMQCanonicalReviewerPayload` because
+`buildPayload xs` is defined as exactly that. I reported this as an owner
+decision. It is not: **the gate's own frozen registry decides it.**
+
+Registry entry 13 is
+
+```
+M11-SIBLING-PAYLOAD | prove space for one payload while executing another | REJECT
+```
+
+Under the identifier reading, that is precisely what the candidate does. The
+packed memory would serialize the flat payload, `FG-06` would bound *that* object,
+and the execution would read the reviewer payload -- space proved for one payload,
+execution performed on another. A candidate built that way fails `M11` by
+construction, and `M11` is a commissioned REJECT. So the identifier reading is not
+merely one of two options; it is the option the registry exists to reject.
+
+Decision: `payloadBits` is the object the accepted semantics consumes.
+`packedPayloadBits shape` re-targets to
+`concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape`, whose `List Int` face
+is `buildPayload`.
+
+This is not a weakening of `FG-01`. It satisfies the row's operative qualifier,
+uses an existing canonical object at its existing definition site as the row's
+evidence clause demands, and makes the row's own anti-vacuity challenge survivable
+rather than fatal.
+
+What transfers and what does not:
+
+* **Transfers unchanged.** The generic word-shape lemmas, the probe plan and its
+  allocation/coverage/decoding/count theorems, the address-width and word-value
+  bounds, the header schema, and the eighteen live access sources -- those are the
+  reviewer payload's access half, listed literally in
+  `concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources`.
+* **Needs redoing.** `FG-06`'s bound moves from
+  `concreteBPNativeSuccinctRMQOverhead` to
+  `concreteBPNativeSuccinctRMQCanonicalReviewerOverhead`, which already has
+  `_littleO` and a `_length_le`, so the shape of the argument is preserved.
+* **Is new work.** The close half: the canonical interior directory's five tables
+  and the two chunk tables become sources, replacing the compact directory's
+  three. Their word geometry is the same kind of obligation already discharged
+  twenty-nine times.
+* **Is discharged for free.** The segment 20/21/22 gap disappears: those are
+  exactly the objects the reviewer payload contains, so
+  `INV-GLOBAL-PHYSICAL-MACHINE`'s named deficit closes and `packedStoresNotEqual`
+  becomes a true statement about a store the candidate no longer uses.
+
+Recorded before the construction rather than after, so the decision is auditable
+independently of whether the construction succeeds.
