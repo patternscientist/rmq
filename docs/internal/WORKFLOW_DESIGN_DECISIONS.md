@@ -7275,3 +7275,7 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit adding the machine-store uniformity condition: matrix untouched, so no
   frozen-cell comparison was required. Additive and hypothesis-guarded; no existing
   row's evidence changes meaning.
+- Commit synchronizing the worker result report with the close-half findings:
+  matrix untouched, so no frozen-cell comparison was required. Section 8e is
+  appended; 8b's component-count estimate is corrected there rather than edited in
+  place, so the record shows the estimate and its correction.

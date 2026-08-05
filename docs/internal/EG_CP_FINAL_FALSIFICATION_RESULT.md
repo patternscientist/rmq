@@ -1338,3 +1338,70 @@ obstruction, and is left for the owner: the row is not rewritten and its status
 cell is not touched.
 
 This checkpoint is **not** `CANDIDATE_COMPLETE`.
+
+## 8e. The close half, and a correction to its size
+
+State: `80` campaign commits, `HEAD 3d6a327`, tree `a963a24`, build green, both
+gates clean, tree clean, freeze `0a18548` and base `6078a29` verified ancestors.
+
+Two modules since section 8d:
+
+```
+ReviewerCloseGeometry.lean  segments 21 and 22; the segment-20 split and flatten
+ReviewerMachineWords.lean   the condition making a machine store a uniform grid
+```
+
+### The close half is ten components, not seven
+
+Section 8b's estimate was wrong in both directions.
+
+**Two are free.** `bpFringeChunkTable` and `bpChunkSelectTable` are
+`FixedWidthNatTable`s, so the generic `packedFixedWidthTable_getElem?` already
+carrying the eighteen live access sources applies unchanged. Segments `21` and
+`22` are one-line proofs and are **done**.
+
+**The interior is eight components, not five.** The directory payload is five
+concatenated tables, but the component store the executed segment `20` reads is
+assembled from eight machine stores -- the summary contributes its four columns
+separately.
+
+### Segment 20 is not one uniform grid, for two reasons
+
+The first is visible from the type: the store is nested
+`BoundedPayloadWordStore.append`, so words are laid end to end at word granularity
+while payloads concatenate at bit granularity, and a component that does not fill
+its last word leaves a ragged edge.
+
+The second is not, and is the one that matters.
+`FixedWidthNatTable.machineStore`'s words are
+`table.store.words.toList.flatMap (chunkPayloadWords wordSize)` -- **each logical
+entry is chunked separately**. Even within one component the grid is uniform only
+when the entry width fits inside, or divides, the machine word.
+
+`ReviewerMachineWords.lean` pins the exact condition, `0 < width <= wordSize`, and
+proves that under it the machine store's word list *is* the table's own, so
+`packedWordSlice` applies at the table's width. Both bounds are load-bearing:
+`width <= wordSize` makes the chunk a singleton; `0 < width` stops a zero-width
+column from chunking to the empty list and shifting every later word index. Width
+zero is not hypothetical -- the flat close summary is inactive at small sizes and
+has width `0`.
+
+This is recorded as a hypothesis rather than proved unconditionally because the
+unconditional version is **false**, and false only outside the regime one samples.
+An attempt that assumed it would most likely have succeeded on every example tried
+and still been wrong.
+
+### Remaining, in order
+
+1. Discharge `0 < width <= machineWordBits (2n)` for each of the eight interior
+   components, then assemble the piecewise segment-`20` geometry using
+   `canonicalRelativeRmmInteriorComponentOffsets`.
+2. Physical read and backed store over `packedReviewerMemory`, mirroring
+   `PhysicalRead.lean`.
+3. Whole-run lowering: ordered trace with multiplicity; probe cap derived from the
+   run.
+4. `FG-10`, `FG-11`'s value half, `FG-13`, `FG-15`.
+5. The seven `TARGET-ABSENT` replay cases.
+
+**No `FG` row is closed. No `K1` obstruction is proved.** This checkpoint is not
+`CANDIDATE_COMPLETE`.
