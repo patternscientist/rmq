@@ -6822,6 +6822,227 @@ private theorem PackedReviewerRequestsFitFrom.of_invariant
               (store.readWord? request.segment request.index))
               (hstep state request hstate hrequest)⟩
 
+/-! ## Canonical rank and word-select orbits
+
+The select tower pins in-flight nested components to the exact orbit of their
+canonical start, exactly as the interior module does for segment 20.  The
+orbit witness is what later connects a completed rank to its accepted
+reference value, which the relative-directory transitions need.
+-/
+
+private def packedReviewerRankCanonicalStep
+    (shape : CartesianShape) (state : PackedReviewerRankState) :
+    PackedReviewerRankState :=
+  match packedReviewerRankNextRequest state with
+  | none => state
+  | some request =>
+      packedReviewerRankConsumeReply state
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)
+
+private def packedReviewerRankCanonicalRun
+    (shape : CartesianShape) : Nat -> PackedReviewerRankState ->
+      PackedReviewerRankState
+  | 0, state => state
+  | fuel + 1, state =>
+      packedReviewerRankCanonicalStep shape
+        (packedReviewerRankCanonicalRun shape fuel state)
+
+private def packedReviewerWordSelectCanonicalStep
+    (shape : CartesianShape) (state : PackedReviewerWordSelectState) :
+    PackedReviewerWordSelectState :=
+  match packedReviewerWordSelectNextRequest state with
+  | none => state
+  | some request =>
+      packedReviewerWordSelectConsumeReply state
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)
+
+private def packedReviewerWordSelectCanonicalRun
+    (shape : CartesianShape) : Nat -> PackedReviewerWordSelectState ->
+      PackedReviewerWordSelectState
+  | 0, state => state
+  | fuel + 1, state =>
+      packedReviewerWordSelectCanonicalStep shape
+        (packedReviewerWordSelectCanonicalRun shape fuel state)
+
+/-! ## Canonical select tower -/
+
+/--
+Constructor-exhaustive canonical invariant for the close-select machine.
+Every arm carries the ambient-size phase equality, the operand width of its
+stored invocation, the validity of the public select index, the canonical
+carriers of its decoded directory entries, and — for in-flight nested
+components — both the scalar envelope and the exact canonical orbit witness
+from that component's canonical start.
+-/
+private def PackedReviewerSelectCanonicalScalarFits
+    (shape : CartesianShape) : PackedReviewerSelectState -> Prop
+  | .superEntry invocation n index entry =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        index < shape.size ∧
+        PackedReviewerCanonicalEntryState shape invocation .super
+          (GenericSelect.selectSuperSlot index
+            (packedSelectSuperStride shape.size)) entry
+  | .localEntry invocation n index localSlot super entry =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        index < shape.size ∧
+        PackedReviewerCanonicalSuperGeometry shape index super ∧
+        GenericSelect.relativeSplitSelectEntryIsMarked super = false ∧
+        localSlot =
+          GenericSelect.relativeSplitSelectLocalSlot index
+            (packedSelectSuperStride shape.size)
+            (packedSelectLocalSlotsPerSuper shape.size)
+            (packedSelectLocalStride shape.size) super ∧
+        PackedReviewerCanonicalEntryState shape invocation .local localSlot
+          entry
+  | .longRank invocation n index super rank =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        index < shape.size ∧
+        PackedReviewerCanonicalSuperGeometry shape index super ∧
+        GenericSelect.relativeSplitSelectEntryIsMarked super = true ∧
+        PackedReviewerRankCanonicalScalarFits shape
+          (packedReviewerRankQueryPos .selectLong shape.size
+            (GenericSelect.selectSuperSlot index
+              (packedSelectSuperStride shape.size))) rank ∧
+        (exists fuel,
+          rank =
+            packedReviewerRankCanonicalRun shape fuel
+              (.superSample invocation .selectLong shape.size
+                (GenericSelect.selectSuperSlot index
+                  (packedSelectSuperStride shape.size))))
+  | .longRelative invocation base slot =>
+      (forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand) ∧
+        PackedReviewerNatFits shape.size base ∧
+        base <= 2 * shape.size + 1 ∧
+        (exists word,
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 12
+              slot = some word)
+  | .sparseRank invocation n index localSlot super loc rank =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        index < shape.size ∧
+        PackedReviewerCanonicalLocalGeometry shape index super loc ∧
+        localSlot =
+          GenericSelect.relativeSplitSelectLocalSlot index
+            (packedSelectSuperStride shape.size)
+            (packedSelectLocalSlotsPerSuper shape.size)
+            (packedSelectLocalStride shape.size) super ∧
+        GenericSelect.relativeSplitSelectEntryIsMarked loc = true ∧
+        PackedReviewerRankCanonicalScalarFits shape
+          (packedReviewerRankQueryPos .selectSparse shape.size localSlot)
+          rank ∧
+        (exists fuel,
+          rank =
+            packedReviewerRankCanonicalRun shape fuel
+              (.superSample invocation .selectSparse shape.size localSlot))
+  | .sparseRelative invocation base slot =>
+      (forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand) ∧
+        PackedReviewerNatFits shape.size base ∧
+        base <= 2 * shape.size + 1 ∧
+        (exists word,
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 16
+              slot = some word)
+  | .denseFirstWord invocation n index basePosition baseOccurrence =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        index < shape.size ∧
+        basePosition <= 2 * shape.size + 1 ∧
+        baseOccurrence <= index
+  | .denseBeforeRank invocation n index basePosition baseOccurrence word
+      rank =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        index < shape.size ∧
+        basePosition <= 2 * shape.size + 1 ∧
+        baseOccurrence <= index ∧
+        PackedReviewerWordFits shape.size word ∧
+        PackedReviewerRankCanonicalScalarFits shape word.length rank ∧
+        packedReviewerRankRemaining rank <= 8
+  | .denseUptoRank invocation n index basePosition baseOccurrence beforeFirst
+      word rank =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        index < shape.size ∧
+        basePosition <= 2 * shape.size + 1 ∧
+        baseOccurrence <= index ∧
+        beforeFirst <= word.length ∧
+        PackedReviewerWordFits shape.size word ∧
+        PackedReviewerRankCanonicalScalarFits shape word.length rank ∧
+        packedReviewerRankRemaining rank <= 8
+  | .denseFirstSelect invocation n baseWord select =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        baseWord * packedSelectWordSize shape.size <= 2 * shape.size + 1 ∧
+        (exists word,
+          PackedReviewerWordFits shape.size word ∧
+            PackedReviewerWordSelectCanonicalScalarFits shape word.length
+              select) ∧
+        packedReviewerWordSelectRemaining select <= 9
+  | .denseSecondWord invocation n index basePosition baseOccurrence
+      beforeFirst uptoFirst =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        index < shape.size ∧
+        basePosition <= 2 * shape.size + 1 ∧
+        baseOccurrence <= index ∧
+        beforeFirst <= uptoFirst ∧
+        uptoFirst <= 2 * shape.size + 1
+  | .denseSecondSelect invocation n baseWord select =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        baseWord * packedSelectWordSize shape.size <= 2 * shape.size + 1 ∧
+        (exists word,
+          PackedReviewerWordFits shape.size word ∧
+            PackedReviewerWordSelectCanonicalScalarFits shape word.length
+              select) ∧
+        packedReviewerWordSelectRemaining select <= 9
+  | .done value =>
+      forall close, value = some close ->
+        PackedReviewerNatFits shape.size close ∧ close <= 2 * shape.size + 1
+
+/-- The canonical select start satisfies the tower invariant. -/
+private theorem packedReviewerSelectStart_canonicalScalarFits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index : Nat)
+    (hinvocation :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectStart invocation shape.size index) := by
+  unfold packedReviewerSelectStart
+  simp only [hindex, if_true]
+  exact ⟨rfl, hinvocation, hindex, .baseOccurrence⟩
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
