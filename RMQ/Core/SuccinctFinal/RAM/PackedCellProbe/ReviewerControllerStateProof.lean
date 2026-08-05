@@ -7994,6 +7994,504 @@ private theorem packedReviewerSelectConsume_longRank_fits
       exact packedReviewerSelectAfterLongRank_fits shape invocation index
         super exceptionRank hinv hindex hsuperGeo hvalue.2
 
+/--
+The completed sparse exception rank addresses a fitting compact slot.  The
+clamped query position keeps the rank at or below the sparse flag slot, the
+mixed-radix base-occurrence identity absorbs the slot-times-stride product
+into the query index plus a superblock cross-term of at most `index / ws`,
+and the sparse directory's literal 512-bit allowance covers every small size.
+-/
+private theorem packedReviewerSparseCompactSlot_fits
+    (shape : CartesianShape) (index exceptionRank : Nat)
+    (super loc : GenericSelect.SparseDenseSelectDenseLocalEntry)
+    (hindex : index < shape.size)
+    (hlocalGeo : PackedReviewerCanonicalLocalGeometry shape index super loc)
+    (hrank :
+      exceptionRank <=
+        packedReviewerRankQueryPos .selectSparse shape.size
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (packedSelectSuperStride shape.size)
+            (packedSelectLocalSlotsPerSuper shape.size)
+            (packedSelectLocalStride shape.size) super)) :
+    PackedReviewerNatFits shape.size
+      (GenericSelect.relativeSplitSelectSparseCompactSlot exceptionRank
+        (index -
+          GenericSelect.relativeSplitSelectLocalBaseOccurrence super loc)
+        (packedSelectLocalStride shape.size)) := by
+  have hvalid : index < GenericSelect.occurrenceCount shape.bpCode false := by
+    rw [packedSelectOccurrenceCount_eq_size]; exact hindex
+  have hfacts := GenericSelect.localSlot_facts shape.bpCode false index
+    super (by
+      simpa [packedSelectSuperStride, CartesianShape.bpCode_length] using
+        hlocalGeo.super_geometry.get_eq)
+    hvalid hlocalGeo.super_short
+  have hbaseOccEq := hlocalGeo.baseOccurrence_eq
+  simp only [packedSelectSuperStride, packedSelectLocalSlotsPerSuper,
+    packedSelectLocalStride, packedReviewerRankQueryPos] at hrank hbaseOccEq ⊢
+  simp only [CartesianShape.bpCode_length] at hfacts hbaseOccEq
+  obtain ⟨hcount, heffective, hlive, hsuperEq, hbaseLe, hbaseLt⟩ := hfacts
+  have her :
+      exceptionRank <=
+        GenericSelect.relativeSplitSelectLocalSlot index
+          (GenericSelect.superStride (2 * shape.size))
+          (GenericSelect.localSlotsPerSuper (2 * shape.size))
+          (GenericSelect.localStride (2 * shape.size)) super :=
+    Nat.le_trans hrank (Nat.min_le_left _ _)
+  -- Local shorthand facts, all spelled at bit length `2 * shape.size`.
+  have hdivLe :
+      GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride (2 * shape.size))
+            (GenericSelect.localSlotsPerSuper (2 * shape.size))
+            (GenericSelect.localStride (2 * shape.size)) super /
+          GenericSelect.localSlotsPerSuper (2 * shape.size) *
+          GenericSelect.localSlotsPerSuper (2 * shape.size) <=
+        GenericSelect.relativeSplitSelectLocalSlot index
+          (GenericSelect.superStride (2 * shape.size))
+          (GenericSelect.localSlotsPerSuper (2 * shape.size))
+          (GenericSelect.localStride (2 * shape.size)) super :=
+    Nat.div_mul_le_self _ _
+  have hcross :=
+    GenericSelect.selectLocalSlotsPerSuper_mul_localStride_le_add
+      (GenericSelect.superStride (2 * shape.size))
+      (GenericSelect.localStride (2 * shape.size))
+  have hspsEq :
+      GenericSelect.localSlotsPerSuper (2 * shape.size) =
+        GenericSelect.selectLocalSlotsPerSuper
+          (GenericSelect.superStride (2 * shape.size))
+          (GenericSelect.localStride (2 * shape.size)) := by
+    simp [GenericSelect.localSlotsPerSuper]
+  have hexpand :
+      GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride (2 * shape.size))
+            (GenericSelect.localSlotsPerSuper (2 * shape.size))
+            (GenericSelect.localStride (2 * shape.size)) super *
+          GenericSelect.localStride (2 * shape.size) =
+        GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride (2 * shape.size))
+              (GenericSelect.localSlotsPerSuper (2 * shape.size))
+              (GenericSelect.localStride (2 * shape.size)) super /
+            GenericSelect.localSlotsPerSuper (2 * shape.size) *
+            (GenericSelect.localSlotsPerSuper (2 * shape.size) *
+              GenericSelect.localStride (2 * shape.size)) +
+          (GenericSelect.relativeSplitSelectLocalSlot index
+                (GenericSelect.superStride (2 * shape.size))
+                (GenericSelect.localSlotsPerSuper (2 * shape.size))
+                (GenericSelect.localStride (2 * shape.size)) super -
+              GenericSelect.relativeSplitSelectLocalSlot index
+                  (GenericSelect.superStride (2 * shape.size))
+                  (GenericSelect.localSlotsPerSuper (2 * shape.size))
+                  (GenericSelect.localStride (2 * shape.size)) super /
+                GenericSelect.localSlotsPerSuper (2 * shape.size) *
+                GenericSelect.localSlotsPerSuper (2 * shape.size)) *
+            GenericSelect.localStride (2 * shape.size) := by
+    have hsubmul :
+        (GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride (2 * shape.size))
+              (GenericSelect.localSlotsPerSuper (2 * shape.size))
+              (GenericSelect.localStride (2 * shape.size)) super -
+            GenericSelect.relativeSplitSelectLocalSlot index
+                (GenericSelect.superStride (2 * shape.size))
+                (GenericSelect.localSlotsPerSuper (2 * shape.size))
+                (GenericSelect.localStride (2 * shape.size)) super /
+              GenericSelect.localSlotsPerSuper (2 * shape.size) *
+              GenericSelect.localSlotsPerSuper (2 * shape.size)) *
+            GenericSelect.localStride (2 * shape.size) =
+          GenericSelect.relativeSplitSelectLocalSlot index
+                (GenericSelect.superStride (2 * shape.size))
+                (GenericSelect.localSlotsPerSuper (2 * shape.size))
+                (GenericSelect.localStride (2 * shape.size)) super *
+              GenericSelect.localStride (2 * shape.size) -
+            GenericSelect.relativeSplitSelectLocalSlot index
+                  (GenericSelect.superStride (2 * shape.size))
+                  (GenericSelect.localSlotsPerSuper (2 * shape.size))
+                  (GenericSelect.localStride (2 * shape.size)) super /
+                GenericSelect.localSlotsPerSuper (2 * shape.size) *
+                GenericSelect.localSlotsPerSuper (2 * shape.size) *
+              GenericSelect.localStride (2 * shape.size) :=
+      Nat.sub_mul _ _ _
+    have hassoc :
+        GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride (2 * shape.size))
+              (GenericSelect.localSlotsPerSuper (2 * shape.size))
+              (GenericSelect.localStride (2 * shape.size)) super /
+            GenericSelect.localSlotsPerSuper (2 * shape.size) *
+            GenericSelect.localSlotsPerSuper (2 * shape.size) *
+            GenericSelect.localStride (2 * shape.size) =
+          GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride (2 * shape.size))
+              (GenericSelect.localSlotsPerSuper (2 * shape.size))
+              (GenericSelect.localStride (2 * shape.size)) super /
+            GenericSelect.localSlotsPerSuper (2 * shape.size) *
+            (GenericSelect.localSlotsPerSuper (2 * shape.size) *
+              GenericSelect.localStride (2 * shape.size)) :=
+      Nat.mul_assoc _ _ _
+    have hxle :
+        GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride (2 * shape.size))
+              (GenericSelect.localSlotsPerSuper (2 * shape.size))
+              (GenericSelect.localStride (2 * shape.size)) super /
+            GenericSelect.localSlotsPerSuper (2 * shape.size) *
+            GenericSelect.localSlotsPerSuper (2 * shape.size) *
+            GenericSelect.localStride (2 * shape.size) <=
+          GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride (2 * shape.size))
+              (GenericSelect.localSlotsPerSuper (2 * shape.size))
+              (GenericSelect.localStride (2 * shape.size)) super *
+            GenericSelect.localStride (2 * shape.size) :=
+      Nat.mul_le_mul_right _ hdivLe
+    omega
+  have hinSuperEq :
+      GenericSelect.localSlotInSuperOfGlobal (2 * shape.size)
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride (2 * shape.size))
+            (GenericSelect.localSlotsPerSuper (2 * shape.size))
+            (GenericSelect.localStride (2 * shape.size)) super) =
+        GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride (2 * shape.size))
+            (GenericSelect.localSlotsPerSuper (2 * shape.size))
+            (GenericSelect.localStride (2 * shape.size)) super -
+          GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride (2 * shape.size))
+              (GenericSelect.localSlotsPerSuper (2 * shape.size))
+              (GenericSelect.localStride (2 * shape.size)) super /
+            GenericSelect.localSlotsPerSuper (2 * shape.size) *
+            GenericSelect.localSlotsPerSuper (2 * shape.size) := by
+    simp [GenericSelect.localSlotInSuperOfGlobal]
+  have hcrossMono :
+      GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride (2 * shape.size))
+            (GenericSelect.localSlotsPerSuper (2 * shape.size))
+            (GenericSelect.localStride (2 * shape.size)) super /
+          GenericSelect.localSlotsPerSuper (2 * shape.size) *
+          (GenericSelect.localSlotsPerSuper (2 * shape.size) *
+            GenericSelect.localStride (2 * shape.size)) <=
+        GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride (2 * shape.size))
+              (GenericSelect.localSlotsPerSuper (2 * shape.size))
+              (GenericSelect.localStride (2 * shape.size)) super /
+            GenericSelect.localSlotsPerSuper (2 * shape.size) *
+          (GenericSelect.superStride (2 * shape.size) +
+            GenericSelect.localStride (2 * shape.size)) :=
+    Nat.mul_le_mul_left _ (by rw [hspsEq]; exact hcross)
+  have hsplit :
+      GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride (2 * shape.size))
+            (GenericSelect.localSlotsPerSuper (2 * shape.size))
+            (GenericSelect.localStride (2 * shape.size)) super /
+          GenericSelect.localSlotsPerSuper (2 * shape.size) *
+          (GenericSelect.superStride (2 * shape.size) +
+            GenericSelect.localStride (2 * shape.size)) =
+        GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride (2 * shape.size))
+              (GenericSelect.localSlotsPerSuper (2 * shape.size))
+              (GenericSelect.localStride (2 * shape.size)) super /
+            GenericSelect.localSlotsPerSuper (2 * shape.size) *
+            GenericSelect.superStride (2 * shape.size) +
+          GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride (2 * shape.size))
+              (GenericSelect.localSlotsPerSuper (2 * shape.size))
+              (GenericSelect.localStride (2 * shape.size)) super /
+            GenericSelect.localSlotsPerSuper (2 * shape.size) *
+            GenericSelect.localStride (2 * shape.size) :=
+    Nat.mul_add _ _ _
+  have hbo :
+      GenericSelect.localBaseOccurrence (2 * shape.size)
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride (2 * shape.size))
+            (GenericSelect.localSlotsPerSuper (2 * shape.size))
+            (GenericSelect.localStride (2 * shape.size)) super) =
+        GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride (2 * shape.size))
+              (GenericSelect.localSlotsPerSuper (2 * shape.size))
+              (GenericSelect.localStride (2 * shape.size)) super /
+            GenericSelect.localSlotsPerSuper (2 * shape.size) *
+            GenericSelect.superStride (2 * shape.size) +
+          (GenericSelect.relativeSplitSelectLocalSlot index
+                (GenericSelect.superStride (2 * shape.size))
+                (GenericSelect.localSlotsPerSuper (2 * shape.size))
+                (GenericSelect.localStride (2 * shape.size)) super -
+              GenericSelect.relativeSplitSelectLocalSlot index
+                  (GenericSelect.superStride (2 * shape.size))
+                  (GenericSelect.localSlotsPerSuper (2 * shape.size))
+                  (GenericSelect.localStride (2 * shape.size)) super /
+                GenericSelect.localSlotsPerSuper (2 * shape.size) *
+                GenericSelect.localSlotsPerSuper (2 * shape.size)) *
+            GenericSelect.localStride (2 * shape.size) := by
+    rw [show GenericSelect.localBaseOccurrence (2 * shape.size)
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride (2 * shape.size))
+            (GenericSelect.localSlotsPerSuper (2 * shape.size))
+            (GenericSelect.localStride (2 * shape.size)) super) =
+        GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride (2 * shape.size))
+              (GenericSelect.localSlotsPerSuper (2 * shape.size))
+              (GenericSelect.localStride (2 * shape.size)) super /
+            GenericSelect.localSlotsPerSuper (2 * shape.size) *
+            GenericSelect.superStride (2 * shape.size) +
+          GenericSelect.localSlotInSuperOfGlobal (2 * shape.size)
+              (GenericSelect.relativeSplitSelectLocalSlot index
+                (GenericSelect.superStride (2 * shape.size))
+                (GenericSelect.localSlotsPerSuper (2 * shape.size))
+                (GenericSelect.localStride (2 * shape.size)) super) *
+            GenericSelect.localStride (2 * shape.size) from rfl]
+    rw [hinSuperEq]
+  -- The superblock cross-term is at most `index / wordBits`.
+  have hsuperSlotEq :
+      GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride (2 * shape.size))
+            (GenericSelect.localSlotsPerSuper (2 * shape.size))
+            (GenericSelect.localStride (2 * shape.size)) super /
+          GenericSelect.localSlotsPerSuper (2 * shape.size) =
+        GenericSelect.selectSuperSlot index
+          (GenericSelect.superStride (2 * shape.size)) := by
+    simpa [GenericSelect.localSuperSlot] using hsuperEq
+  have hlsLe :
+      GenericSelect.localStride (2 * shape.size) <=
+        GenericSelect.wordBits (2 * shape.size) := by
+    have hdivLe' :
+        GenericSelect.wordBits (2 * shape.size) /
+            (GenericSelect.ell (2 * shape.size) *
+              GenericSelect.ell (2 * shape.size)) <=
+          GenericSelect.wordBits (2 * shape.size) := Nat.div_le_self _ _
+    have hwsPos : 0 < GenericSelect.wordBits (2 * shape.size) :=
+      SuccinctRank.machineWordBits_pos _
+    simp only [GenericSelect.localStride]
+    omega
+  have hcrossLe :
+      GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride (2 * shape.size))
+            (GenericSelect.localSlotsPerSuper (2 * shape.size))
+            (GenericSelect.localStride (2 * shape.size)) super /
+          GenericSelect.localSlotsPerSuper (2 * shape.size) *
+          GenericSelect.localStride (2 * shape.size) <=
+        index / GenericSelect.wordBits (2 * shape.size) := by
+    rw [hsuperSlotEq]
+    have hslotDef :
+        GenericSelect.selectSuperSlot index
+            (GenericSelect.superStride (2 * shape.size)) =
+          index /
+            (GenericSelect.wordBits (2 * shape.size) *
+              GenericSelect.wordBits (2 * shape.size)) := by
+      simp [GenericSelect.selectSuperSlot, GenericSelect.superStride]
+    have hdd :
+        index /
+            (GenericSelect.wordBits (2 * shape.size) *
+              GenericSelect.wordBits (2 * shape.size)) =
+          index / GenericSelect.wordBits (2 * shape.size) /
+            GenericSelect.wordBits (2 * shape.size) := by
+      rw [Nat.div_div_eq_div_mul]
+    rw [hslotDef, hdd]
+    have hmono :
+        index / GenericSelect.wordBits (2 * shape.size) /
+              GenericSelect.wordBits (2 * shape.size) *
+            GenericSelect.localStride (2 * shape.size) <=
+          index / GenericSelect.wordBits (2 * shape.size) /
+              GenericSelect.wordBits (2 * shape.size) *
+            GenericSelect.wordBits (2 * shape.size) :=
+      Nat.mul_le_mul_left _ hlsLe
+    have hlast :
+        index / GenericSelect.wordBits (2 * shape.size) /
+              GenericSelect.wordBits (2 * shape.size) *
+            GenericSelect.wordBits (2 * shape.size) <=
+          index / GenericSelect.wordBits (2 * shape.size) :=
+      Nat.div_mul_le_self _ _
+    omega
+  -- Final envelope against the reviewer capacity.
+  have hermul :
+      exceptionRank * GenericSelect.localStride (2 * shape.size) <=
+        GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride (2 * shape.size))
+            (GenericSelect.localSlotsPerSuper (2 * shape.size))
+            (GenericSelect.localStride (2 * shape.size)) super *
+          GenericSelect.localStride (2 * shape.size) :=
+    Nat.mul_le_mul_right _ her
+  have hir :
+      index -
+          GenericSelect.relativeSplitSelectLocalBaseOccurrence super loc <=
+        GenericSelect.localStride (2 * shape.size) := by
+    rw [hbaseOccEq]
+    omega
+  have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
+  have hfiveTwelve := packedReviewerCellBound_ge_five_twelve shape.size
+  have htwoMul := packedTwoMul_le_reviewerBound shape.size
+  have hwsSlack := packedRankWordSize_two_le_aux shape.size
+  have hauxSlack := packedRankAux_le_reviewerBound shape.size
+  have hwsEq :
+      packedRankWordSize shape.size =
+        GenericSelect.wordBits (2 * shape.size) := rfl
+  have hdivWsLe :
+      index / GenericSelect.wordBits (2 * shape.size) <= index :=
+    Nat.div_le_self _ _
+  rw [hwsEq] at hwsSlack
+  unfold GenericSelect.relativeSplitSelectSparseCompactSlot
+  simp only [PackedReviewerNatFits]
+  omega
+
+/-- Entering the sparse-relative directory after the sparse rank completes. -/
+private theorem packedReviewerSelectAfterSparseRank_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index : Nat)
+    (super loc : GenericSelect.SparseDenseSelectDenseLocalEntry)
+    (exceptionRank : Nat)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hlocalGeo : PackedReviewerCanonicalLocalGeometry shape index super loc)
+    (hrank :
+      exceptionRank <=
+        packedReviewerRankQueryPos .selectSparse shape.size
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (packedSelectSuperStride shape.size)
+            (packedSelectLocalSlotsPerSuper shape.size)
+            (packedSelectLocalStride shape.size) super)) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectAfterSparseRank invocation shape.size index
+        (GenericSelect.relativeSplitSelectLocalSlot index
+          (packedSelectSuperStride shape.size)
+          (packedSelectLocalSlotsPerSuper shape.size)
+          (packedSelectLocalStride shape.size) super)
+        super loc exceptionRank) := by
+  unfold packedReviewerSelectAfterSparseRank
+  have hbase := (hlocalGeo.base_fields_fit).2
+  have hbaseLe :
+      GenericSelect.relativeSplitSelectLocalBasePosition
+          (packedSelectWordSize shape.size) super loc <=
+        2 * shape.size + 1 := by
+    rw [hlocalGeo.basePosition_eq]
+    have hposition :=
+      GenericSelect.position_le_length shape.bpCode false
+        (GenericSelect.localBaseOccurrence shape.bpCode.length
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (packedSelectSuperStride shape.size)
+            (packedSelectLocalSlotsPerSuper shape.size)
+            (packedSelectLocalStride shape.size) super))
+    have hlength : shape.bpCode.length <= 2 * shape.size + 1 := by
+      simp [CartesianShape.bpCode_length]
+    omega
+  exact ⟨hinv, hbase, hbaseLe,
+    packedReviewerSparseCompactSlot_fits shape index exceptionRank super loc
+      hindex hlocalGeo hrank⟩
+
+/-- One canonical reply preserves the sparse-rank arm of the select tower. -/
+private theorem packedReviewerSelectConsume_sparseRank_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index : Nat)
+    (super loc : GenericSelect.SparseDenseSelectDenseLocalEntry)
+    (rank : PackedReviewerRankState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hlocalGeo : PackedReviewerCanonicalLocalGeometry shape index super loc)
+    (hmarked : GenericSelect.relativeSplitSelectEntryIsMarked loc = true)
+    (hrankFit :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerRankNextRequest packedReviewerRankConsumeReply
+        (packedReviewerRankRemaining rank) rank)
+    (hrank :
+      PackedReviewerRankCanonicalScalarFits shape
+        (packedReviewerRankQueryPos .selectSparse shape.size
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (packedSelectSuperStride shape.size)
+            (packedSelectLocalSlotsPerSuper shape.size)
+            (packedSelectLocalStride shape.size) super)) rank)
+    (horbit :
+      exists fuel,
+        rank =
+          packedReviewerRankCanonicalRun shape fuel
+            (.superSample invocation .selectSparse shape.size
+              (GenericSelect.relativeSplitSelectLocalSlot index
+                (packedSelectSuperStride shape.size)
+                (packedSelectLocalSlotsPerSuper shape.size)
+                (packedSelectLocalStride shape.size) super)))
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerRankNextRequest rank = some request) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectConsumeReply
+        (.sparseRank invocation shape.size index
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (packedSelectSuperStride shape.size)
+            (packedSelectLocalSlotsPerSuper shape.size)
+            (packedSelectLocalStride shape.size) super)
+          super loc rank)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  have hrank' := hrank.consume hrequest
+  have hpos := packedReviewerRankNextRequest_remaining_pos hrequest
+  have hdescent :=
+    packedReviewerRankRemaining_consume_le rank
+      ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        request.segment request.index) request hrequest
+  have hfit' :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerRankNextRequest packedReviewerRankConsumeReply
+        (packedReviewerRankRemaining
+          (packedReviewerRankConsumeReply rank
+            ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+              request.segment request.index)))
+        (packedReviewerRankConsumeReply rank
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) := by
+    obtain ⟨fuel, hfuel⟩ : exists fuel,
+        packedReviewerRankRemaining rank = fuel + 1 :=
+      ⟨packedReviewerRankRemaining rank - 1, by omega⟩
+    rw [hfuel] at hrankFit
+    have hstep := (PackedReviewerRequestsFitFrom.step shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerRankNextRequest packedReviewerRankConsumeReply fuel rank
+      request hrankFit hrequest).2
+    exact PackedReviewerRequestsFitFrom.mono shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerRankNextRequest packedReviewerRankConsumeReply hstep
+      (by omega)
+  have horbit' :
+      exists fuel,
+        packedReviewerRankConsumeReply rank
+            ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+              request.segment request.index) =
+          packedReviewerRankCanonicalRun shape fuel
+            (.superSample invocation .selectSparse shape.size
+              (GenericSelect.relativeSplitSelectLocalSlot index
+                (packedSelectSuperStride shape.size)
+                (packedSelectLocalSlotsPerSuper shape.size)
+                (packedSelectLocalStride shape.size) super)) := by
+    obtain ⟨fuel, hfuel⟩ := horbit
+    refine ⟨fuel + 1, ?_⟩
+    have hrun :
+        packedReviewerRankCanonicalRun shape (fuel + 1)
+            (.superSample invocation .selectSparse shape.size
+              (GenericSelect.relativeSplitSelectLocalSlot index
+                (packedSelectSuperStride shape.size)
+                (packedSelectLocalSlotsPerSuper shape.size)
+                (packedSelectLocalStride shape.size) super)) =
+          packedReviewerRankCanonicalStep shape
+            (packedReviewerRankCanonicalRun shape fuel
+              (.superSample invocation .selectSparse shape.size
+                (GenericSelect.relativeSplitSelectLocalSlot index
+                  (packedSelectSuperStride shape.size)
+                  (packedSelectLocalSlotsPerSuper shape.size)
+                  (packedSelectLocalStride shape.size) super))) := rfl
+    rw [hrun, ← hfuel]
+    simp [packedReviewerRankCanonicalStep, hrequest]
+  simp only [packedReviewerSelectConsumeReply]
+  cases hresult :
+      packedReviewerRankResult
+        (packedReviewerRankConsumeReply rank
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none =>
+      exact ⟨rfl, hinv, hindex, hlocalGeo, rfl, hmarked, hfit', hrank',
+        horbit'⟩
+  | some exceptionRank =>
+      have hvalue := hrank'.result_fits hresult
+      exact packedReviewerSelectAfterSparseRank_fits shape invocation index
+        super loc exceptionRank hinv hindex hlocalGeo hvalue.2
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
