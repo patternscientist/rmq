@@ -9432,3 +9432,61 @@ issues exactly one probe and fetches successfully. Its companion
 probe would have issued is absent, so the same read would have returned `none`.
 Both are restated over the new memory rather than inherited, because the absent
 address is a different number.
+
+## DD-20260804-068 -- the per-source address surface over the consumed payload
+
+The flat layout offsets sources componentwise. The reviewer layout does not: its
+access half is one `flatMap` over one list, so a source's offset is the summed bit
+length of everything before it in that list. `packedReviewerAccessOffset` is defined
+as exactly that, over `takeWhile (fun x => x != source)` of the canonical list, so
+the offset and the payload it measures read the same list and cannot drift apart.
+
+### Why the prefix sum is size-only with no unit-stride hypothesis
+
+`selectSparseRelative` is the only live access source whose bit length is not a
+function of `(n, longCount)`, and in the canonical list it is **last**. Every proper
+prefix is therefore made of counted sources, and the offsets need no `hstride` --
+unlike `packedReviewerPayloadLength`, which needs one precisely because the sparse
+table is inside the total.
+
+That ordering was not something this branch arranged, so
+`packedReviewerAccessPrefix_counted` pins it by evaluation. Moving the sparse
+relative table earlier breaks the `decide`.
+
+### Three things that were wrong on the first attempt
+
+**Membership is load-bearing.** The prefix-counted lemma was first stated with only
+`source != selectSparseRelative`. `decide` reported the proposition **false** for
+eleven of the twenty-nine constructors -- every source that is not in the reviewer
+list at all. For those, `takeWhile` never fires and consumes the whole list, sparse
+relative table included. The fix is a real hypothesis, `hmem`, not a workaround: the
+offset of a source that is not in the list is meaningless.
+
+**Containment does not follow from the slice equation.** The first proof of
+`packedReviewerAccessOffset_fits` tried to get `offset + len <= total` by taking
+lengths of `packedReviewerAccessPayload_slice`. That fails, and it fails for a real
+reason rather than a tactic reason: taking lengths gives `min len (total - offset) =
+len`, which for `len = 0` holds at **every** offset, including offsets past the end.
+A source with an empty payload satisfies the slice equation anywhere. The fit has to
+come from the split itself, and now does, through `packedFlatMapPrefixFits`.
+
+**`List.drop_drop` orientation, corrected.** Section `8h` of the result report
+recorded this lemma as folding `(l.drop a).drop b = l.drop (b + a)` -- outer summand
+first. That is wrong. The actual signature in this toolchain is
+
+```
+List.drop_drop : List.drop i (List.drop j l) = List.drop (j + i) l
+```
+
+so the **inner** drop's amount comes first in the sum, and `rw [<- List.drop_drop]`
+turns `l.drop (X + Y)` into `(l.drop X).drop Y`. The earlier note reached the right
+action -- delete the anticipatory `Nat.add_comm` -- from an inverted reading, and
+that inverted reading is what put an `add_comm` back into this module and broke the
+rewrite chain again. The signature above is now quoted rather than paraphrased.
+
+### The instance question in the split lemma
+
+`packedSplitAtFirst` is stated at the concrete source type rather than generically.
+A generic version needs `DecidableEq` for the `by_cases` and `BEq` plus `LawfulBEq`
+for the `!=` in the predicate, and nothing forces the `BEq` instance in scope to be
+the one `!=` elaborates to at the use site. Specialising removes the question.
