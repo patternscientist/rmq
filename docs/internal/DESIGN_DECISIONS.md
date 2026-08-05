@@ -8728,3 +8728,34 @@ hypothesis was dropped rather than left in place, since a spurious hypothesis on
 memory theorem would misrepresent what the memory needs.
 
 Still additive: `packedMemory` is untouched.
+
+## DD-20260804-047 -- round trip and cell crossing over the consumed payload
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCrossing.lean`.
+
+```
+packedReviewerMemory_flatten           : the cells concatenate to the padded bits
+packedReviewerMemory_flatten_take      : the serialized bits are a prefix
+packedReviewerMemory_recovers_payload  : every payload bit is inside the cells
+packedReviewerCellAt / _getElem? / _CellPair
+packedReviewerSpan_from_two_cells      : any span <= one width spans two cells
+```
+
+`packedReviewerMemory_recovers_payload` is the clause worth naming separately.
+The round trip alone says the cells reconstitute *something*; this says the thing
+they reconstitute, after dropping the header cell, is the consumed payload itself.
+That is what makes "the memory contains no second table beside it" checkable at
+the new target rather than asserted.
+
+`Memory.lean`'s `chunk_flatten` is `private`, so it is copied here as
+`packedReviewerChunkFlatten`. It is a general list fact about chunking a string of
+exactly `k * w` bits, with no payload content, so the duplication carries no risk
+of the two copies meaning different things. Widening the original's visibility
+would have been the alternative; copying keeps the flat module untouched, which is
+the property that has kept this re-target reversible.
+
+The unit-stride hypothesis appears exactly where the actual bit length is
+involved, and nowhere else: the crossing algebra
+(`packedReviewerCellAt`, `_CellPair`, `_Span_from_two_cells`) is hypothesis-free,
+because it is arithmetic about `drop`/`take` at a positive width and does not care
+how long the string is.
