@@ -17,9 +17,11 @@ segment `20` reaches a computable address.
 
 ## What this module does not establish
 
-* All eight components are located, and the bridge to
-  `canonicalRelativeRmmInteriorComponentOffsets` is proved rather than asserted.
-  What remains is placing the component payloads inside the consumed payload.
+* All eight components are located, the bridge to
+  `canonicalRelativeRmmInteriorComponentOffsets` is proved, and the interior
+  directory's position inside the consumed payload is fixed. What remains is
+  composing those three into one bit address, and the physical read over
+  `packedReviewerMemory`.
 * The baseline column's payload is located inside the *interior directory*, not
   yet inside the consumed payload; that composition is still outstanding.
 -/
@@ -431,6 +433,42 @@ theorem packedInteriorOffsets_globalLevel (shape : CartesianShape) :
     canonicalRelativeRmmLocalLevelMachineStore
   simp
   omega
+
+/-! ### The close half's position inside the consumed payload -/
+
+/--
+**The consumed payload, from the close offset on, is the close half.** Everything
+before the interior directory is exactly `bpCode` and the live access payload.
+-/
+theorem packedReviewerPayload_drop_closeOffset (shape : CartesianShape) :
+    (packedReviewerPayloadBits shape).drop
+        (concreteBPNativeSuccinctRMQCanonicalReviewerCloseBitOffset shape) =
+      (canonicalRelativeRmmInteriorDirectory shape).payload ++
+        (bpFringeChunkTable (bpFringeChunkBits shape.bpCode.length)).payload ++
+          (bpChunkSelectTable (bpFringeChunkBits shape.bpCode.length)
+            false).payload := by
+  unfold packedReviewerPayloadBits
+    concreteBPNativeSuccinctRMQCanonicalReviewerPayload
+    concreteBPNativeSuccinctRMQCanonicalReviewerCloseBitOffset
+    concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout
+  dsimp only
+  rw [← List.length_append]
+  rw [show
+      shape.bpCode ++
+          concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload shape ++
+        (canonicalRelativeRmmInteriorDirectory shape).payload ++
+          (bpFringeChunkTable (bpFringeChunkBits shape.bpCode.length)).payload ++
+            (bpChunkSelectTable (bpFringeChunkBits shape.bpCode.length)
+              false).payload =
+        (shape.bpCode ++
+            concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload shape) ++
+          ((canonicalRelativeRmmInteriorDirectory shape).payload ++
+            (bpFringeChunkTable
+              (bpFringeChunkBits shape.bpCode.length)).payload ++
+              (bpChunkSelectTable (bpFringeChunkBits shape.bpCode.length)
+                false).payload) by
+    simp [List.append_assoc]]
+  exact List.drop_left
 
 end PackedCellProbe
 end SuccinctFinal

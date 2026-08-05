@@ -7323,3 +7323,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit proving the offsets bridge: matrix untouched, so no frozen-cell
   comparison was required. The DD-20260804-061 gap is closed by proof rather than
   by appeal to construction; no row status changes.
+- Commit fixing the close half's position in the consumed payload: matrix
+  untouched, so no frozen-cell comparison was required. No row status changes.

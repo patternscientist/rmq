@@ -9249,3 +9249,35 @@ Segment `20` now has a complete chain: component-store word index, through the
 located component and its offset, to a bit range of that component's own payload.
 What remains is placing the interior directory's payload inside the consumed
 payload.
+
+## DD-20260804-063 -- the close half's position inside the consumed payload
+
+`ReviewerComponentAccess.lean`, extended.
+
+```
+packedReviewerPayload_drop_closeOffset
+```
+
+Dropping `concreteBPNativeSuccinctRMQCanonicalReviewerCloseBitOffset` bits from the
+consumed payload leaves exactly the interior directory followed by the two chunk
+tables. Everything before it is `bpCode` and the live access payload, and nothing
+else.
+
+The proof needed one re-association. The layout is written
+`bpCode ++ access ++ close ++ fringe ++ select`, which is left-associated, so its
+top-level split is *after* `fringe` rather than after `access`. `List.drop_left`
+needs the split at the drop point, so the term is first rewritten to
+`(bpCode ++ access) ++ (close ++ fringe ++ select)` by `simp [List.append_assoc]`
+inside a `show`.
+
+This is the third time in this campaign that left-association of `++` has dictated
+the proof shape, after `DD-20260804-055` and `DD-20260804-060`. It is worth
+treating as a standing feature of this development rather than a recurring
+surprise: whenever a statement names an interior split point of a multi-way
+append, the term has to be re-associated at that point first.
+
+Segment `20`'s chain is now: component-store word index, to located component, to
+that component's offset, to a bit range of its own payload, to a bit range of the
+interior directory, to a position inside the consumed payload. What remains is
+composing those into a single address function and running it through
+`packedReviewerMemory`.
