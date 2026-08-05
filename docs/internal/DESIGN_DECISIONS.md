@@ -8759,3 +8759,36 @@ involved, and nowhere else: the crossing algebra
 (`packedReviewerCellAt`, `_CellPair`, `_Span_from_two_cells`) is hypothesis-free,
 because it is arithmetic about `drop`/`take` at a positive width and does not care
 how long the string is.
+
+## DD-20260804-048 -- allocated space over the consumed payload
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerSpace.lean`.
+
+```
+packedReviewerRho                          : reviewerOverhead n + 2 * width n
+packedReviewerAllocatedBits_le             : the arithmetic core
+packedReviewerMemory_length_mul_width_le   : FG-06's form, on the memory object
+packedReviewerCellWidth_littleO
+packedReviewerRho_littleO
+```
+
+`FG-06` insists the bound be stated on allocated cells times width rather than on
+the serialized length, so that padding is charged rather than dropped.
+`packedReviewerMemory_length_mul_width_le` is in exactly that form.
+
+The `longCount` dependence costs one hypothesis and no generality. The arithmetic
+core carries "the payload length is within its advertised bound"; at a shape that
+is discharged by `packedReviewerPayloadLength_le_bound` under unit stride. The
+residual `packedReviewerRho` is a function of `n` alone, which is what the row
+requires -- a `longCount`-dependent residual would not have been a space bound at
+all.
+
+`packedReviewerCellWidth_littleO` goes through the existing
+`littleOLinear_machineWordBits_comp` with an eventual-linear bound of `3 * n + 2`,
+obtained by instantiating `packedReviewerOverhead_littleO` at `1`. The flat
+module's corresponding constant is `19909 * n + 563`, because it must dominate the
+flat payload's own length; the consumed payload needs only its overhead, which is
+`o(n)` outright.
+
+This completes the space half of the re-target. The execution half -- geometries,
+lowering, controller, correctness -- is untouched.

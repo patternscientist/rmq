@@ -7261,3 +7261,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit adding the round trip and crossing algebra over the consumed payload:
   matrix untouched, so no frozen-cell comparison was required. Additive; FG-05's
   recorded evidence over the flat memory is unchanged.
+- Commit adding allocated space over the consumed payload: matrix untouched, so no
+  frozen-cell comparison was required. Additive; FG-06's recorded evidence over the
+  flat memory is unchanged and its row status is not touched.
