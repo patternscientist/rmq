@@ -6926,7 +6926,11 @@ private def PackedReviewerSelectCanonicalScalarFits
           PackedReviewerNatFits shape.size operand) ∧
         PackedReviewerNatFits shape.size base ∧
         base <= 2 * shape.size + 1 ∧
-        PackedReviewerNatFits shape.size slot
+        PackedReviewerNatFits shape.size slot ∧
+        (forall word,
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 12
+              slot = some word ->
+            base + SuccinctSpace.bitsToNatLE word <= 2 * shape.size + 1)
   | .sparseRank invocation n index localSlot super loc rank =>
       n = shape.size ∧
         (forall operand,
@@ -6957,7 +6961,11 @@ private def PackedReviewerSelectCanonicalScalarFits
           PackedReviewerNatFits shape.size operand) ∧
         PackedReviewerNatFits shape.size base ∧
         base <= 2 * shape.size + 1 ∧
-        PackedReviewerNatFits shape.size slot
+        PackedReviewerNatFits shape.size slot ∧
+        (forall word,
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 16
+              slot = some word ->
+            base + SuccinctSpace.bitsToNatLE word <= 2 * shape.size + 1)
   | .denseFirstWord invocation n index basePosition baseOccurrence =>
       n = shape.size ∧
         (forall operand,
@@ -7153,7 +7161,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
       · exact hsuperFields value hsuperMem
       · exact hrankFields value hrankMem
   | longRelative invocation base slot =>
-      obtain ⟨hinv, hbase, hbaseLe, hslot⟩ := hstate
+      obtain ⟨hinv, hbase, hbaseLe, hslot, _⟩ := hstate
       have hinvFields :
           forall value,
             value ∈ packedReviewerInvocationNatFields invocation ->
@@ -7192,7 +7200,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
       · exact hlocFields value hlocMem
       · exact hrankFields value hrankMem
   | sparseRelative invocation base slot =>
-      obtain ⟨hinv, hbase, hbaseLe, hslot⟩ := hstate
+      obtain ⟨hinv, hbase, hbaseLe, hslot, _⟩ := hstate
       have hinvFields :
           forall value,
             value ∈ packedReviewerInvocationNatFields invocation ->
@@ -7485,7 +7493,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.nextRequest_operands_fit
       exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
         (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
   | longRelative invocation base slot =>
-      obtain ⟨hinv, hbase, hbaseLe, hslot⟩ := hstate
+      obtain ⟨hinv, hbase, hbaseLe, hslot, _⟩ := hstate
       simp only [packedReviewerSelectNextRequest, Option.some.injEq]
         at hrequest
       subst request
@@ -7503,7 +7511,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.nextRequest_operands_fit
       exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
         (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
   | sparseRelative invocation base slot =>
-      obtain ⟨hinv, hbase, hbaseLe, hslot⟩ := hstate
+      obtain ⟨hinv, hbase, hbaseLe, hslot, _⟩ := hstate
       simp only [packedReviewerSelectNextRequest, Option.some.injEq]
         at hrequest
       subst request
@@ -7654,6 +7662,734 @@ private theorem PackedReviewerSelectCanonicalScalarFits.remaining_le_thirtyFive
       simp only [packedReviewerSelectRemaining]
       omega
   | done value => simp [packedReviewerSelectRemaining]
+
+/-! ## The long-flag rank reference value over the canonical store -/
+
+/-- The canonical store serves segment 21 from the shared fringe table. -/
+private theorem packedReviewerGlobalReadStore_fringeChunk
+    (shape : CartesianShape) (address : Nat) :
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 21 address =
+      (SuccinctClose.bpFringeChunkTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length)).store.words[address]? := by
+  rw [← packedExecutedStore_is_reviewerStore shape 21 address]
+  change
+    (if (21 : Nat) < 20 then
+        (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
+          21 address
+      else if (21 : Nat) = 20 then
+        (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+          shape).store.words[address]?
+      else if (21 : Nat) = concreteBPNativeFringeChunkTraceSegment then
+        (SuccinctClose.bpFringeChunkTable
+          (SuccinctClose.bpFringeChunkBits
+            shape.bpCode.length)).store.words[address]?
+      else if (21 : Nat) = concreteBPNativeSelectChunkTraceSegment then
+        (SuccinctClose.bpChunkSelectTable
+          (SuccinctClose.bpFringeChunkBits shape.bpCode.length)
+            false).store.words[address]?
+      else none) = _
+  simp [concreteBPNativeFringeChunkTraceSegment]
+
+/-- The long-flag rank reference over the canonical store is the flag rank. -/
+private theorem packedReviewerLongFlagRankReference_value_eq
+    (shape : CartesianShape) (pos : Nat) :
+    (packedRankRead 9 10 11 21 (packedFringeChunkBits shape.size) true
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (packedSuperSlots shape.size) (packedLongFlagWordSize shape.size) 1
+      pos).value =
+      RMQ.Succinct.rankPrefix true
+        (GenericSelect.longSuperFlagBits shape.bpCode false) pos := by
+  have hbits :
+      (GenericSelect.longSuperFlagBits shape.bpCode false).length =
+        packedSuperSlots shape.size :=
+    packedSelectLongFlagBitsLength_eq shape
+  have hwordSize :
+      (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).longFlagRankData.wordSize =
+        packedLongFlagWordSize shape.size :=
+    packedSelectLongFlagRankWordSize_eq shape
+  have hbps :
+      (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).longFlagRankData.blocksPerSuper = 1 :=
+    packedSelectLongFlagRankBlocksPerSuper_eq shape
+  have hsuper :
+      forall address,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 9
+            address =
+          ((GenericSelect.sparseExceptionSelectData
+            shape.bpCode false).longFlagRankData.superSampleWords
+              true)[address]? := by
+    intro address
+    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
+      (source :=
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLongFlagRankSuperTrue)
+      rfl]
+    rfl
+  have hblock :
+      forall address,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 10
+            address =
+          ((GenericSelect.sparseExceptionSelectData
+            shape.bpCode false).longFlagRankData.blockSampleWords
+              true)[address]? := by
+    intro address
+    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
+      (source :=
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLongFlagRankBlockTrue)
+      rfl]
+    rfl
+  have hchunk :
+      forall address,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 21
+            address =
+          (SuccinctClose.bpFringeChunkTable
+            (packedFringeChunkBits shape.size)).store.words[address]? := by
+    intro address
+    rw [packedReviewerGlobalReadStore_fringeChunk shape address]
+    rw [show SuccinctClose.bpFringeChunkBits shape.bpCode.length =
+      packedFringeChunkBits shape.size from by
+        unfold packedFringeChunkBits
+        rw [CartesianShape.bpCode_length]]
+  have hword :
+      forall address,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 11
+            address =
+          (GenericSelect.sparseExceptionSelectData
+            shape.bpCode
+            false).longFlagRankData.bitWords.store.words[address]? := by
+    intro address
+    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
+      (source :=
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLongFlagBits)
+      rfl]
+    rfl
+  have hconvert :=
+    (GenericSelect.sparseExceptionSelectData
+        shape.bpCode
+        false).longFlagRankData.bpChunkedRankTraceResultWithStore_toCosted_of_agree
+      hsuper hblock hword hchunk pos
+  have hbitsField :
+      (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).longFlagBits.length =
+        packedSuperSlots shape.size :=
+    packedSelectLongFlagBitsLength_eq shape
+  have hchain :
+      (packedRankRead 9 10 11 21 (packedFringeChunkBits shape.size) true
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).longFlagBits.length
+        ((GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).longFlagRankData.wordSize)
+        ((GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).longFlagRankData.blocksPerSuper)
+        pos).value =
+      RMQ.Succinct.rankPrefix true
+        (GenericSelect.longSuperFlagBits shape.bpCode false) pos := by
+    rw [← packedRankRead_eq
+      (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).longFlagRankData
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape) 9 10 11 21
+      (packedFringeChunkBits shape.size) true pos]
+    have hvalueToCosted :
+        ((GenericSelect.sparseExceptionSelectData
+          shape.bpCode
+          false).longFlagRankData.bpChunkedRankTraceResultWithStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape) 9 10 11 21
+            (packedFringeChunkBits shape.size) true pos).value =
+          ((GenericSelect.sparseExceptionSelectData
+            shape.bpCode
+            false).longFlagRankData.bpChunkedRankTraceResultWithStore
+              (concreteBPNativeSuccinctRMQGlobalReadStore shape) 9 10 11 21
+              (packedFringeChunkBits shape.size) true
+              pos).toCosted.value := rfl
+    rw [hvalueToCosted, hconvert]
+    have hc : 0 < packedFringeChunkBits shape.size := by
+      unfold packedFringeChunkBits
+      exact SuccinctClose.bpFringeChunkBits_pos _
+    have hword8 :
+        (GenericSelect.sparseExceptionSelectData
+            shape.bpCode false).longFlagRankData.wordSize <=
+          8 * packedFringeChunkBits shape.size := by
+      have hinstance :=
+        concreteBPNativeSelectCloseLongFlagRank_wordSize_le_8_chunk shape
+      rw [show SuccinctClose.bpFringeChunkBits shape.bpCode.length =
+        packedFringeChunkBits shape.size from by
+          unfold packedFringeChunkBits
+          rw [CartesianShape.bpCode_length]] at hinstance
+      exact hinstance
+    rw [SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankCosted_value_eq
+      (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).longFlagRankData hc hword8 true pos]
+    exact
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankCosted_exact
+        (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).longFlagRankData true pos
+  rw [hbitsField, hwordSize, hbps] at hchain
+  exact hchain
+
+/-- The sparse-flag rank reference over the canonical store is the flag rank. -/
+private theorem packedReviewerSparseFlagRankReference_value_eq
+    (shape : CartesianShape) (localSlot : Nat) :
+    (packedRankRead 13 14 15 21 (packedFringeChunkBits shape.size) true
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (packedSparseSlots shape.size) (packedSparseWordSize shape.size) 1
+      localSlot).value =
+      RMQ.Succinct.rankPrefix true
+        (GenericSelect.sparseExceptionEffectiveFlagBits shape.bpCode false) localSlot := by
+  have hbits :
+      (GenericSelect.sparseExceptionEffectiveFlagBits shape.bpCode false).length =
+        packedSparseSlots shape.size :=
+    sparseFlagBits_length_eq_packed shape
+  have hwordSize :
+      (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).sparseDirectory.rankData.wordSize =
+        packedSparseWordSize shape.size :=
+    packedSelectSparseRankWordSize_eq shape
+  have hbps :
+      (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).sparseDirectory.rankData.blocksPerSuper = 1 :=
+    packedSelectSparseRankBlocksPerSuper_eq shape
+  have hsuper :
+      forall address,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 13
+            address =
+          ((GenericSelect.sparseExceptionSelectData
+            shape.bpCode false).sparseDirectory.rankData.superSampleWords
+              true)[address]? := by
+    intro address
+    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
+      (source :=
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRankSuperTrue)
+      rfl]
+    rfl
+  have hblock :
+      forall address,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 14
+            address =
+          ((GenericSelect.sparseExceptionSelectData
+            shape.bpCode false).sparseDirectory.rankData.blockSampleWords
+              true)[address]? := by
+    intro address
+    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
+      (source :=
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRankBlockTrue)
+      rfl]
+    rfl
+  have hchunk :
+      forall address,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 21
+            address =
+          (SuccinctClose.bpFringeChunkTable
+            (packedFringeChunkBits shape.size)).store.words[address]? := by
+    intro address
+    rw [packedReviewerGlobalReadStore_fringeChunk shape address]
+    rw [show SuccinctClose.bpFringeChunkBits shape.bpCode.length =
+      packedFringeChunkBits shape.size from by
+        unfold packedFringeChunkBits
+        rw [CartesianShape.bpCode_length]]
+  have hword :
+      forall address,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 15
+            address =
+          (GenericSelect.sparseExceptionSelectData
+            shape.bpCode
+            false).sparseDirectory.rankData.bitWords.store.words[address]? := by
+    intro address
+    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
+      (source :=
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseFlagBits)
+      rfl]
+    rfl
+  have hconvert :=
+    (GenericSelect.sparseExceptionSelectData
+        shape.bpCode
+        false).sparseDirectory.rankData.bpChunkedRankTraceResultWithStore_toCosted_of_agree
+      hsuper hblock hword hchunk localSlot
+  have hbitsField :
+      (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).sparseDirectory.flagBits.length =
+        packedSparseSlots shape.size :=
+    packedSelectSparseFlagBitsLength_eq shape
+  have hchain :
+      (packedRankRead 13 14 15 21 (packedFringeChunkBits shape.size) true
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).sparseDirectory.flagBits.length
+        ((GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).sparseDirectory.rankData.wordSize)
+        ((GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).sparseDirectory.rankData.blocksPerSuper)
+        localSlot).value =
+      RMQ.Succinct.rankPrefix true
+        (GenericSelect.sparseExceptionEffectiveFlagBits shape.bpCode false) localSlot := by
+    rw [← packedRankRead_eq
+      (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).sparseDirectory.rankData
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape) 13 14 15 21
+      (packedFringeChunkBits shape.size) true localSlot]
+    have hvalueToCosted :
+        ((GenericSelect.sparseExceptionSelectData
+          shape.bpCode
+          false).sparseDirectory.rankData.bpChunkedRankTraceResultWithStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape) 13 14 15 21
+            (packedFringeChunkBits shape.size) true localSlot).value =
+          ((GenericSelect.sparseExceptionSelectData
+            shape.bpCode
+            false).sparseDirectory.rankData.bpChunkedRankTraceResultWithStore
+              (concreteBPNativeSuccinctRMQGlobalReadStore shape) 13 14 15 21
+              (packedFringeChunkBits shape.size) true
+              localSlot).toCosted.value := rfl
+    rw [hvalueToCosted, hconvert]
+    have hc : 0 < packedFringeChunkBits shape.size := by
+      unfold packedFringeChunkBits
+      exact SuccinctClose.bpFringeChunkBits_pos _
+    have hword8 :
+        (GenericSelect.sparseExceptionSelectData
+            shape.bpCode false).sparseDirectory.rankData.wordSize <=
+          8 * packedFringeChunkBits shape.size := by
+      have hinstance :=
+        concreteBPNativeSelectCloseSparseRank_wordSize_le_8_chunk shape
+      rw [show SuccinctClose.bpFringeChunkBits shape.bpCode.length =
+        packedFringeChunkBits shape.size from by
+          unfold packedFringeChunkBits
+          rw [CartesianShape.bpCode_length]] at hinstance
+      exact hinstance
+    rw [SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankCosted_value_eq
+      (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).sparseDirectory.rankData hc hword8 true localSlot]
+    exact
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankCosted_exact
+        (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).sparseDirectory.rankData true localSlot
+  rw [hbitsField, hwordSize, hbps] at hchain
+  exact hchain
+
+private theorem PackedReviewerSelectCanonicalScalarFits.result_fits
+    {shape : CartesianShape} {state : PackedReviewerSelectState}
+    (hstate : PackedReviewerSelectCanonicalScalarFits shape state)
+    {close : Nat}
+    (hresult : packedReviewerSelectResult state = some (some close)) :
+    PackedReviewerNatFits shape.size close ∧
+      close <= 8 * shape.size + 8 := by
+  cases state <;> simp [packedReviewerSelectResult] at hresult
+  case done value =>
+    subst hresult
+    exact hstate close rfl
+
+/-- Any successful segment-12 read at the canonical long compact slot decodes
+to the relative exception offset, so the reassembled select position stays
+inside the parenthesis string. -/
+private theorem packedReviewerLongRelative_read_content_le
+    (shape : CartesianShape) (index : Nat)
+    (super : GenericSelect.SparseDenseSelectDenseLocalEntry)
+    (hindex : index < shape.size)
+    (hsuperGeo : PackedReviewerCanonicalSuperGeometry shape index super)
+    (hlong : GenericSelect.relativeSplitSelectEntryIsMarked super = true) :
+    forall word,
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 12
+          (GenericSelect.relativeSplitSelectLongCompactSlot
+            (RMQ.Succinct.rankPrefix true
+              (GenericSelect.longSuperFlagBits shape.bpCode false)
+              (GenericSelect.selectSuperSlot index
+                (packedSelectSuperStride shape.size)))
+            (index - super.baseOccurrence)
+            (packedSelectSuperStride shape.size)) = some word ->
+        GenericSelect.relativeSplitSelectEntryBasePosition
+            (packedSelectWordSize shape.size) super +
+          SuccinctSpace.bitsToNatLE word <= 2 * shape.size + 1 := by
+  intro word hread
+  have hlen : shape.bpCode.length = 2 * shape.size :=
+    CartesianShape.bpCode_length shape
+  have hvalid : index < GenericSelect.occurrenceCount shape.bpCode false := by
+    rw [packedSelectOccurrenceCount_eq_size]
+    exact hindex
+  have hsuper' :
+      (GenericSelect.superEntries shape.bpCode false)[
+        GenericSelect.selectSuperSlot index
+          (GenericSelect.superStride shape.bpCode.length)]? = some super := by
+    simpa [packedSelectSuperStride, CartesianShape.bpCode_length] using
+      hsuperGeo.get_eq
+  have hexact :=
+    GenericSelect.longExplicit_exact shape.bpCode false index super hsuper'
+      hvalid hlong
+  have hwords :
+      forall i,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 12 i =
+          (GenericSelect.longSuperRelativeTable shape.bpCode
+            false).store.words[i]? :=
+    fun i =>
+      packedReviewerGlobalReadStore_legacy shape (by omega)
+        (source :=
+          ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLongRelative)
+        rfl i
+  have hstore :
+      (GenericSelect.longSuperRelativeTable shape.bpCode false).store.words[
+        GenericSelect.relativeSplitSelectLongCompactSlot
+          (RMQ.Succinct.rankPrefix true
+            (GenericSelect.longSuperFlagBits shape.bpCode false)
+            (GenericSelect.selectSuperSlot index
+              (GenericSelect.superStride shape.bpCode.length)))
+          (index - super.baseOccurrence)
+          (GenericSelect.superStride shape.bpCode.length)]? = some word := by
+    rw [← hwords]
+    simpa [packedSelectSuperStride, CartesianShape.bpCode_length] using hread
+  have hcodec :=
+    (GenericSelect.longSuperRelativeTable shape.bpCode false).read_exact
+      (GenericSelect.relativeSplitSelectLongCompactSlot
+        (RMQ.Succinct.rankPrefix true
+          (GenericSelect.longSuperFlagBits shape.bpCode false)
+          (GenericSelect.selectSuperSlot index
+            (GenericSelect.superStride shape.bpCode.length)))
+        (index - super.baseOccurrence)
+        (GenericSelect.superStride shape.bpCode.length))
+  rw [hstore] at hcodec
+  simp only [Option.map_some] at hcodec
+  rw [← hcodec] at hexact
+  simp only [Option.map_some] at hexact
+  have hpos := RMQ.Succinct.select_bounds hexact.symm
+  have hbase :
+      GenericSelect.relativeSplitSelectEntryBasePosition
+          (GenericSelect.wordBits shape.bpCode.length) super =
+        GenericSelect.relativeSplitSelectEntryBasePosition
+          (packedSelectWordSize shape.size) super := by
+    simp [packedSelectWordSize, CartesianShape.bpCode_length]
+  rw [hbase] at hpos
+  omega
+
+/-- Any successful segment-16 read at the canonical sparse compact slot decodes
+to the relative exception offset, so the reassembled select position stays
+inside the parenthesis string. -/
+private theorem packedReviewerSparseRelative_read_content_le
+    (shape : CartesianShape) (index : Nat)
+    (super loc : GenericSelect.SparseDenseSelectDenseLocalEntry)
+    (hindex : index < shape.size)
+    (hlocalGeo : PackedReviewerCanonicalLocalGeometry shape index super loc)
+    (hmarked : GenericSelect.relativeSplitSelectEntryIsMarked loc = true) :
+    forall word,
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 16
+          (GenericSelect.relativeSplitSelectSparseCompactSlot
+            (RMQ.Succinct.rankPrefix true
+              (GenericSelect.sparseExceptionFlagBits shape.bpCode false)
+              (GenericSelect.relativeSplitSelectLocalSlot index
+                (packedSelectSuperStride shape.size)
+                (packedSelectLocalSlotsPerSuper shape.size)
+                (packedSelectLocalStride shape.size) super))
+            (index -
+              GenericSelect.relativeSplitSelectLocalBaseOccurrence super loc)
+            (packedSelectLocalStride shape.size)) = some word ->
+        GenericSelect.relativeSplitSelectLocalBasePosition
+            (packedSelectWordSize shape.size) super loc +
+          SuccinctSpace.bitsToNatLE word <= 2 * shape.size + 1 := by
+  intro word hread
+  have hlen : shape.bpCode.length = 2 * shape.size :=
+    CartesianShape.bpCode_length shape
+  have hvalid : index < GenericSelect.occurrenceCount shape.bpCode false := by
+    rw [packedSelectOccurrenceCount_eq_size]
+    exact hindex
+  have hsuper' :
+      (GenericSelect.superEntries shape.bpCode false)[
+        GenericSelect.selectSuperSlot index
+          (GenericSelect.superStride shape.bpCode.length)]? = some super := by
+    simpa [packedSelectSuperStride, CartesianShape.bpCode_length] using
+      hlocalGeo.super_geometry.get_eq
+  obtain ⟨hslot, heff, hlive, hsameSuper, hbaseLe, hendStride⟩ :=
+    GenericSelect.localSlot_facts shape.bpCode false index super hsuper'
+      hvalid hlocalGeo.super_short
+  have hlocalAtSlot :
+      (GenericSelect.localEntries shape.bpCode false)[
+        GenericSelect.relativeSplitSelectLocalSlot index
+          (GenericSelect.superStride shape.bpCode.length)
+          (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+          (GenericSelect.localStride shape.bpCode.length) super]? =
+        some loc := by
+    simpa [packedSelectSuperStride, packedSelectLocalSlotsPerSuper,
+      packedSelectLocalStride, CartesianShape.bpCode_length] using
+      hlocalGeo.get_eq
+  have hbuiltLocal :=
+    GenericSelect.localEntries_get? shape.bpCode false
+      (globalLocalSlot :=
+        GenericSelect.relativeSplitSelectLocalSlot index
+          (GenericSelect.superStride shape.bpCode.length)
+          (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+          (GenericSelect.localStride shape.bpCode.length) super) hslot
+  rw [hbuiltLocal] at hlocalAtSlot
+  have hlocEq :
+      loc =
+        GenericSelect.localEntry shape.bpCode false
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride shape.bpCode.length)
+            (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+            (GenericSelect.localStride shape.bpCode.length) super) :=
+    (Option.some.inj hlocalAtSlot).symm
+  have hflag :
+      GenericSelect.localIsSparseException shape.bpCode false
+        (GenericSelect.relativeSplitSelectLocalSlot index
+          (GenericSelect.superStride shape.bpCode.length)
+          (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+          (GenericSelect.localStride shape.bpCode.length) super) = true := by
+    have hmark :=
+      GenericSelect.localEntry_marked_eq_flag shape.bpCode false
+        (GenericSelect.relativeSplitSelectLocalSlot index
+          (GenericSelect.superStride shape.bpCode.length)
+          (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+          (GenericSelect.localStride shape.bpCode.length) super)
+    rw [← hlocEq] at hmark
+    rw [hmark] at hmarked
+    have hpair :
+        GenericSelect.compactLocalEntryIsLive shape.bpCode false
+            (GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride shape.bpCode.length)
+              (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+              (GenericSelect.localStride shape.bpCode.length) super) = true ∧
+          GenericSelect.localIsSparseException shape.bpCode false
+            (GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride shape.bpCode.length)
+              (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+              (GenericSelect.localStride shape.bpCode.length) super) =
+            true := by
+      simpa using hmarked
+    exact hpair.2
+  have hlocalOcc :
+      index -
+          GenericSelect.localBaseOccurrence shape.bpCode.length
+            (GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride shape.bpCode.length)
+              (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+              (GenericSelect.localStride shape.bpCode.length) super) <
+        GenericSelect.localStride shape.bpCode.length := by
+    omega
+  have hqEq :
+      GenericSelect.localBaseOccurrence shape.bpCode.length
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride shape.bpCode.length)
+            (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+            (GenericSelect.localStride shape.bpCode.length) super) +
+        (index -
+          GenericSelect.localBaseOccurrence shape.bpCode.length
+            (GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride shape.bpCode.length)
+              (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+              (GenericSelect.localStride shape.bpCode.length) super)) =
+        index := by
+    omega
+  have hbaseLeSuper :
+      GenericSelect.selectSuperSlot index
+          (GenericSelect.superStride shape.bpCode.length) *
+        GenericSelect.superStride shape.bpCode.length <= index := by
+    have hmul :=
+      Nat.div_mul_le_self index
+        (GenericSelect.superStride shape.bpCode.length)
+    simpa [GenericSelect.selectSuperSlot] using hmul
+  have hqLtBaseStride :
+      index <
+        GenericSelect.selectSuperSlot index
+            (GenericSelect.superStride shape.bpCode.length) *
+          GenericSelect.superStride shape.bpCode.length +
+          GenericSelect.superStride shape.bpCode.length := by
+    have hstride := GenericSelect.superStride_pos shape.bpCode.length
+    have hlt := Nat.lt_div_mul_add hstride (a := index)
+    simpa [GenericSelect.selectSuperSlot,
+      Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using hlt
+  have hqLtSuperEnd :
+      index <
+        GenericSelect.superEndOccurrence shape.bpCode false
+          (GenericSelect.selectSuperSlot index
+            (GenericSelect.superStride shape.bpCode.length)) := by
+    unfold GenericSelect.superEndOccurrence GenericSelect.superBaseOccurrence
+    exact Nat.lt_min.mpr ⟨hqLtBaseStride, hvalid⟩
+  have hend :
+      GenericSelect.localBaseOccurrence shape.bpCode.length
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride shape.bpCode.length)
+            (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+            (GenericSelect.localStride shape.bpCode.length) super) +
+        (index -
+          GenericSelect.localBaseOccurrence shape.bpCode.length
+            (GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride shape.bpCode.length)
+              (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+              (GenericSelect.localStride shape.bpCode.length) super)) <
+        GenericSelect.superEndOccurrence shape.bpCode false
+          (GenericSelect.localSuperSlot shape.bpCode.length
+            (GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride shape.bpCode.length)
+              (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+              (GenericSelect.localStride shape.bpCode.length) super)) := by
+    rw [hqEq, hsameSuper]
+    exact hqLtSuperEnd
+  rcases GenericSelect.select_exists_of_lt_occurrenceCount shape.bpCode false
+      hvalid with ⟨pos, hselect⟩
+  have hselectLocal :
+      RMQ.Succinct.select false shape.bpCode
+          (GenericSelect.localBaseOccurrence shape.bpCode.length
+            (GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride shape.bpCode.length)
+              (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+              (GenericSelect.localStride shape.bpCode.length) super) +
+            (index -
+              GenericSelect.localBaseOccurrence shape.bpCode.length
+                (GenericSelect.relativeSplitSelectLocalSlot index
+                  (GenericSelect.superStride shape.bpCode.length)
+                  (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+                  (GenericSelect.localStride shape.bpCode.length) super))) =
+        some pos := by
+    simpa [hqEq] using hselect
+  have hlookup :=
+    GenericSelect.sparseExceptionRelativeEntries_lookup_exact shape.bpCode
+      false hslot hflag hlocalOcc hend hselectLocal
+  have hwords :
+      forall i,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 16 i =
+          (GenericSelect.sparseExceptionRelativeTable shape.bpCode
+            false).store.words[i]? :=
+    fun i =>
+      packedReviewerGlobalReadStore_legacy shape (by omega)
+        (source :=
+          ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRelative)
+        rfl i
+  have hbaseOcc :
+      GenericSelect.relativeSplitSelectLocalBaseOccurrence super loc =
+        GenericSelect.localBaseOccurrence shape.bpCode.length
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride shape.bpCode.length)
+            (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+            (GenericSelect.localStride shape.bpCode.length) super) := by
+    have hb := hlocalGeo.baseOccurrence_eq
+    simpa [packedSelectSuperStride, packedSelectLocalSlotsPerSuper,
+      packedSelectLocalStride, CartesianShape.bpCode_length] using hb
+  have hstore :
+      (GenericSelect.sparseExceptionRelativeTable shape.bpCode
+        false).store.words[
+          RMQ.Succinct.rankPrefix true
+            (GenericSelect.sparseExceptionFlagBits shape.bpCode false)
+            (GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride shape.bpCode.length)
+              (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+              (GenericSelect.localStride shape.bpCode.length) super) *
+            GenericSelect.localStride shape.bpCode.length +
+          (index -
+            GenericSelect.localBaseOccurrence shape.bpCode.length
+              (GenericSelect.relativeSplitSelectLocalSlot index
+                (GenericSelect.superStride shape.bpCode.length)
+                (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+                (GenericSelect.localStride shape.bpCode.length) super))]? =
+        some word := by
+    rw [← hwords]
+    simpa [GenericSelect.relativeSplitSelectSparseCompactSlot,
+      packedSelectSuperStride, packedSelectLocalSlotsPerSuper,
+      packedSelectLocalStride, CartesianShape.bpCode_length, hbaseOcc]
+      using hread
+  have hcodec :=
+    (GenericSelect.sparseExceptionRelativeTable shape.bpCode
+      false).read_exact
+      (RMQ.Succinct.rankPrefix true
+          (GenericSelect.sparseExceptionFlagBits shape.bpCode false)
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (GenericSelect.superStride shape.bpCode.length)
+            (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+            (GenericSelect.localStride shape.bpCode.length) super) *
+          GenericSelect.localStride shape.bpCode.length +
+        (index -
+          GenericSelect.localBaseOccurrence shape.bpCode.length
+            (GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride shape.bpCode.length)
+              (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+              (GenericSelect.localStride shape.bpCode.length) super)))
+  rw [hstore] at hcodec
+  simp only [Option.map_some] at hcodec
+  rw [hlookup] at hcodec
+  have hentry :
+      SuccinctSpace.bitsToNatLE word =
+        pos -
+          GenericSelect.position shape.bpCode false
+            (GenericSelect.localBaseOccurrence shape.bpCode.length
+              (GenericSelect.relativeSplitSelectLocalSlot index
+                (GenericSelect.superStride shape.bpCode.length)
+                (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+                (GenericSelect.localStride shape.bpCode.length) super)) :=
+    Option.some.inj hcodec
+  have hposLt := RMQ.Succinct.select_bounds hselect
+  have hposition :=
+    GenericSelect.position_le_length shape.bpCode false
+      (GenericSelect.localBaseOccurrence shape.bpCode.length
+        (GenericSelect.relativeSplitSelectLocalSlot index
+          (GenericSelect.superStride shape.bpCode.length)
+          (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+          (GenericSelect.localStride shape.bpCode.length) super))
+  have hbasePos :
+      GenericSelect.relativeSplitSelectLocalBasePosition
+          (packedSelectWordSize shape.size) super loc =
+        GenericSelect.position shape.bpCode false
+          (GenericSelect.localBaseOccurrence shape.bpCode.length
+            (GenericSelect.relativeSplitSelectLocalSlot index
+              (GenericSelect.superStride shape.bpCode.length)
+              (GenericSelect.localSlotsPerSuper shape.bpCode.length)
+              (GenericSelect.localStride shape.bpCode.length) super)) := by
+    have hb := hlocalGeo.basePosition_eq
+    simpa [packedSelectSuperStride, packedSelectLocalSlotsPerSuper,
+      packedSelectLocalStride, CartesianShape.bpCode_length] using hb
+  rw [hbasePos, hentry]
+  omega
+
+/-- A completed long-flag rank orbit is exactly the marked-super prefix rank. -/
+private theorem packedReviewerSelectLongRank_orbit_value_eq
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index : Nat) (rank : PackedReviewerRankState) {exceptionRank : Nat}
+    (horbit :
+      exists fuel,
+        rank =
+          packedReviewerRankCanonicalRun shape fuel
+            (.superSample invocation .selectLong shape.size
+              (GenericSelect.selectSuperSlot index
+                (packedSelectSuperStride shape.size))))
+    (hresult : packedReviewerRankResult rank = some exceptionRank) :
+    exceptionRank =
+      RMQ.Succinct.rankPrefix true
+        (GenericSelect.longSuperFlagBits shape.bpCode false)
+        (GenericSelect.selectSuperSlot index
+          (packedSelectSuperStride shape.size)) := by
+  obtain ⟨fuel, rfl⟩ := horbit
+  have hvalue :=
+    packedReviewerRankCanonicalRun_result_eq shape invocation .selectLong
+      (GenericSelect.selectSuperSlot index (packedSelectSuperStride shape.size))
+      fuel hresult
+  exact hvalue.trans
+    (packedReviewerLongFlagRankReference_value_eq shape
+      (GenericSelect.selectSuperSlot index
+        (packedSelectSuperStride shape.size)))
+
+/-- A completed sparse rank orbit is exactly the sparse-exception prefix rank. -/
+private theorem packedReviewerSelectSparseRank_orbit_value_eq
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (localSlot : Nat) (rank : PackedReviewerRankState) {exceptionRank : Nat}
+    (hslot : localSlot < packedSparseSlots shape.size)
+    (horbit :
+      exists fuel,
+        rank =
+          packedReviewerRankCanonicalRun shape fuel
+            (.superSample invocation .selectSparse shape.size localSlot))
+    (hresult : packedReviewerRankResult rank = some exceptionRank) :
+    exceptionRank =
+      RMQ.Succinct.rankPrefix true
+        (GenericSelect.sparseExceptionFlagBits shape.bpCode false)
+        localSlot := by
+  obtain ⟨fuel, rfl⟩ := horbit
+  have hvalue :=
+    packedReviewerRankCanonicalRun_result_eq shape invocation .selectSparse
+      localSlot fuel hresult
+  have heffective :=
+    hvalue.trans
+      (packedReviewerSparseFlagRankReference_value_eq shape localSlot)
+  rw [heffective]
+  have hcount :
+      GenericSelect.sparseExceptionEffectiveLocalSlotCount shape.bpCode
+        false = packedSparseSlots shape.size := by
+    rw [← GenericSelect.sparseExceptionEffectiveFlagBits_length,
+      sparseFlagBits_length_eq_packed]
+  exact
+    GenericSelect.sparseExceptionEffectiveFlagBits_prefix_eq shape.bpCode
+      false (by omega)
 
 /-! ## Select tower consume transitions, one arm at a time -/
 
@@ -7875,7 +8611,16 @@ private theorem packedReviewerSelectAfterLongRank_fits
       exceptionRank <=
         packedReviewerRankQueryPos .selectLong shape.size
           (GenericSelect.selectSuperSlot index
-            (packedSelectSuperStride shape.size))) :
+            (packedSelectSuperStride shape.size)))
+    (hcontent :
+      forall word,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 12
+            (GenericSelect.relativeSplitSelectLongCompactSlot exceptionRank
+              (index - super.baseOccurrence)
+              (packedSelectSuperStride shape.size)) = some word ->
+          GenericSelect.relativeSplitSelectEntryBasePosition
+              (packedSelectWordSize shape.size) super +
+            SuccinctSpace.bitsToNatLE word <= 2 * shape.size + 1) :
     PackedReviewerSelectCanonicalScalarFits shape
       (packedReviewerSelectAfterLongRank invocation shape.size index super
         exceptionRank) := by
@@ -7891,7 +8636,7 @@ private theorem packedReviewerSelectAfterLongRank_fits
     have hlength : shape.bpCode.length <= 2 * shape.size + 1 := by
       simp [CartesianShape.bpCode_length]
     omega
-  refine ⟨hinv, hbase, hbaseLe, ?_⟩
+  refine ⟨hinv, hbase, hbaseLe, ?_, hcontent⟩
   have hpos :
       packedReviewerRankQueryPos .selectLong shape.size
           (GenericSelect.selectSuperSlot index
@@ -8020,8 +8765,15 @@ private theorem packedReviewerSelectConsume_longRank_fits
       exact ⟨rfl, hinv, hindex, hsuperGeo, hlong, hfit', hrank', horbit'⟩
   | some exceptionRank =>
       have hvalue := hrank'.result_fits hresult
+      have her :=
+        packedReviewerSelectLongRank_orbit_value_eq shape invocation index _
+          horbit' hresult
+      have hcontent :=
+        packedReviewerLongRelative_read_content_le shape index super hindex
+          hsuperGeo hlong
+      rw [← her] at hcontent
       exact packedReviewerSelectAfterLongRank_fits shape invocation index
-        super exceptionRank hinv hindex hsuperGeo hvalue.2
+        super exceptionRank hinv hindex hsuperGeo hvalue.2 hcontent
 
 /--
 The completed sparse exception rank addresses a fitting compact slot.  The
@@ -8374,7 +9126,18 @@ private theorem packedReviewerSelectAfterSparseRank_fits
           (GenericSelect.relativeSplitSelectLocalSlot index
             (packedSelectSuperStride shape.size)
             (packedSelectLocalSlotsPerSuper shape.size)
-            (packedSelectLocalStride shape.size) super)) :
+            (packedSelectLocalStride shape.size) super))
+    (hcontent :
+      forall word,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 16
+            (GenericSelect.relativeSplitSelectSparseCompactSlot exceptionRank
+              (index -
+                GenericSelect.relativeSplitSelectLocalBaseOccurrence super
+                  loc)
+              (packedSelectLocalStride shape.size)) = some word ->
+          GenericSelect.relativeSplitSelectLocalBasePosition
+              (packedSelectWordSize shape.size) super loc +
+            SuccinctSpace.bitsToNatLE word <= 2 * shape.size + 1) :
     PackedReviewerSelectCanonicalScalarFits shape
       (packedReviewerSelectAfterSparseRank invocation shape.size index
         (GenericSelect.relativeSplitSelectLocalSlot index
@@ -8401,7 +9164,7 @@ private theorem packedReviewerSelectAfterSparseRank_fits
     omega
   exact ⟨hinv, hbase, hbaseLe,
     packedReviewerSparseCompactSlot_fits shape index exceptionRank super loc
-      hindex hlocalGeo hrank⟩
+      hindex hlocalGeo hrank, hcontent⟩
 
 /-- One canonical reply preserves the sparse-rank arm of the select tower. -/
 private theorem packedReviewerSelectConsume_sparseRank_fits
@@ -8519,8 +9282,101 @@ private theorem packedReviewerSelectConsume_sparseRank_fits
         horbit'⟩
   | some exceptionRank =>
       have hvalue := hrank'.result_fits hresult
+      have hcount :
+          GenericSelect.sparseExceptionEffectiveLocalSlotCount
+              shape.bpCode false =
+            packedSparseSlots shape.size := by
+        rw [← GenericSelect.sparseExceptionEffectiveFlagBits_length,
+          sparseFlagBits_length_eq_packed]
+      have hslotCount :
+          GenericSelect.relativeSplitSelectLocalSlot index
+              (packedSelectSuperStride shape.size)
+              (packedSelectLocalSlotsPerSuper shape.size)
+              (packedSelectLocalStride shape.size) super <
+            packedSparseSlots shape.size := by
+        have heff := hlocalGeo.facts.2.1
+        rw [hcount] at heff
+        exact heff
+      have her :=
+        packedReviewerSelectSparseRank_orbit_value_eq shape invocation
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (packedSelectSuperStride shape.size)
+            (packedSelectLocalSlotsPerSuper shape.size)
+            (packedSelectLocalStride shape.size) super) _ hslotCount horbit'
+          hresult
+      have hcontent :=
+        packedReviewerSparseRelative_read_content_le shape index super loc
+          hindex hlocalGeo hmarked
+      rw [← her] at hcontent
       exact packedReviewerSelectAfterSparseRank_fits shape invocation index
-        super loc exceptionRank hinv hindex hlocalGeo hvalue.2
+        super loc exceptionRank hinv hindex hlocalGeo hvalue.2 hcontent
+
+/-- The reassembled relative-directory reply is a fitting close position. -/
+private theorem packedReviewerRelativeDone_fits
+    (shape : CartesianShape) (base : Nat) (reply : Option (List Bool))
+    (hbound :
+      forall word, reply = some word ->
+        base + SuccinctSpace.bitsToNatLE word <= 2 * shape.size + 1) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (.done
+        ((packedReviewerDecodeNat reply).map fun offset => base + offset)) := by
+  intro close hclose
+  cases reply with
+  | none => simp [packedReviewerDecodeNat] at hclose
+  | some word =>
+      simp only [packedReviewerDecodeNat, Option.map_some,
+        Option.some.injEq] at hclose
+      subst close
+      have hbase := hbound word rfl
+      exact
+        ⟨packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hbase,
+          by omega⟩
+
+/-- One canonical reply resolves the long relative directory to done. -/
+private theorem packedReviewerSelectConsume_longRelative_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (base slot : Nat)
+    (hcontent :
+      forall word,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 12
+            slot = some word ->
+          base + SuccinctSpace.bitsToNatLE word <= 2 * shape.size + 1)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest :
+      packedReviewerSelectNextRequest (.longRelative invocation base slot) =
+        some request) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectConsumeReply (.longRelative invocation base slot)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  simp only [packedReviewerSelectNextRequest, Option.some.injEq] at hrequest
+  subst request
+  simp only [packedReviewerSelectConsumeReply]
+  exact packedReviewerRelativeDone_fits shape base _
+    (fun word hword => hcontent word hword)
+
+/-- One canonical reply resolves the sparse relative directory to done. -/
+private theorem packedReviewerSelectConsume_sparseRelative_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (base slot : Nat)
+    (hcontent :
+      forall word,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 16
+            slot = some word ->
+          base + SuccinctSpace.bitsToNatLE word <= 2 * shape.size + 1)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest :
+      packedReviewerSelectNextRequest (.sparseRelative invocation base slot) =
+        some request) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectConsumeReply (.sparseRelative invocation base slot)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  simp only [packedReviewerSelectNextRequest, Option.some.injEq] at hrequest
+  subst request
+  simp only [packedReviewerSelectConsumeReply]
+  exact packedReviewerRelativeDone_fits shape base _
+    (fun word hword => hcontent word hword)
 
 /-! ## Dense-phase width helpers -/
 
@@ -9313,320 +10169,6 @@ private theorem packedReviewerSelectConsume_denseSelect_fits
         exact ⟨rfl, hinv, hbaseBound, hfit',
           ⟨word, hword, hwordLen, hselect'⟩, hnine'⟩
     | some localResult => exact hdone localResult hresult
-
-/-! ## The long-flag rank reference value over the canonical store -/
-
-/-- The canonical store serves segment 21 from the shared fringe table. -/
-private theorem packedReviewerGlobalReadStore_fringeChunk
-    (shape : CartesianShape) (address : Nat) :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 21 address =
-      (SuccinctClose.bpFringeChunkTable
-        (SuccinctClose.bpFringeChunkBits
-          shape.bpCode.length)).store.words[address]? := by
-  rw [← packedExecutedStore_is_reviewerStore shape 21 address]
-  change
-    (if (21 : Nat) < 20 then
-        (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
-          21 address
-      else if (21 : Nat) = 20 then
-        (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
-          shape).store.words[address]?
-      else if (21 : Nat) = concreteBPNativeFringeChunkTraceSegment then
-        (SuccinctClose.bpFringeChunkTable
-          (SuccinctClose.bpFringeChunkBits
-            shape.bpCode.length)).store.words[address]?
-      else if (21 : Nat) = concreteBPNativeSelectChunkTraceSegment then
-        (SuccinctClose.bpChunkSelectTable
-          (SuccinctClose.bpFringeChunkBits shape.bpCode.length)
-            false).store.words[address]?
-      else none) = _
-  simp [concreteBPNativeFringeChunkTraceSegment]
-
-/-- The long-flag rank reference over the canonical store is the flag rank. -/
-private theorem packedReviewerLongFlagRankReference_value_eq
-    (shape : CartesianShape) (pos : Nat) :
-    (packedRankRead 9 10 11 21 (packedFringeChunkBits shape.size) true
-      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (packedSuperSlots shape.size) (packedLongFlagWordSize shape.size) 1
-      pos).value =
-      RMQ.Succinct.rankPrefix true
-        (GenericSelect.longSuperFlagBits shape.bpCode false) pos := by
-  have hbits :
-      (GenericSelect.longSuperFlagBits shape.bpCode false).length =
-        packedSuperSlots shape.size :=
-    packedSelectLongFlagBitsLength_eq shape
-  have hwordSize :
-      (GenericSelect.sparseExceptionSelectData
-          shape.bpCode false).longFlagRankData.wordSize =
-        packedLongFlagWordSize shape.size :=
-    packedSelectLongFlagRankWordSize_eq shape
-  have hbps :
-      (GenericSelect.sparseExceptionSelectData
-          shape.bpCode false).longFlagRankData.blocksPerSuper = 1 :=
-    packedSelectLongFlagRankBlocksPerSuper_eq shape
-  have hsuper :
-      forall address,
-        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 9
-            address =
-          ((GenericSelect.sparseExceptionSelectData
-            shape.bpCode false).longFlagRankData.superSampleWords
-              true)[address]? := by
-    intro address
-    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
-      (source :=
-        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLongFlagRankSuperTrue)
-      rfl]
-    rfl
-  have hblock :
-      forall address,
-        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 10
-            address =
-          ((GenericSelect.sparseExceptionSelectData
-            shape.bpCode false).longFlagRankData.blockSampleWords
-              true)[address]? := by
-    intro address
-    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
-      (source :=
-        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLongFlagRankBlockTrue)
-      rfl]
-    rfl
-  have hchunk :
-      forall address,
-        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 21
-            address =
-          (SuccinctClose.bpFringeChunkTable
-            (packedFringeChunkBits shape.size)).store.words[address]? := by
-    intro address
-    rw [packedReviewerGlobalReadStore_fringeChunk shape address]
-    rw [show SuccinctClose.bpFringeChunkBits shape.bpCode.length =
-      packedFringeChunkBits shape.size from by
-        unfold packedFringeChunkBits
-        rw [CartesianShape.bpCode_length]]
-  have hword :
-      forall address,
-        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 11
-            address =
-          (GenericSelect.sparseExceptionSelectData
-            shape.bpCode
-            false).longFlagRankData.bitWords.store.words[address]? := by
-    intro address
-    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
-      (source :=
-        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectLongFlagBits)
-      rfl]
-    rfl
-  have hconvert :=
-    (GenericSelect.sparseExceptionSelectData
-        shape.bpCode
-        false).longFlagRankData.bpChunkedRankTraceResultWithStore_toCosted_of_agree
-      hsuper hblock hword hchunk pos
-  have hbitsField :
-      (GenericSelect.sparseExceptionSelectData
-          shape.bpCode false).longFlagBits.length =
-        packedSuperSlots shape.size :=
-    packedSelectLongFlagBitsLength_eq shape
-  have hchain :
-      (packedRankRead 9 10 11 21 (packedFringeChunkBits shape.size) true
-        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-        (GenericSelect.sparseExceptionSelectData
-          shape.bpCode false).longFlagBits.length
-        ((GenericSelect.sparseExceptionSelectData
-          shape.bpCode false).longFlagRankData.wordSize)
-        ((GenericSelect.sparseExceptionSelectData
-          shape.bpCode false).longFlagRankData.blocksPerSuper)
-        pos).value =
-      RMQ.Succinct.rankPrefix true
-        (GenericSelect.longSuperFlagBits shape.bpCode false) pos := by
-    rw [← packedRankRead_eq
-      (GenericSelect.sparseExceptionSelectData
-        shape.bpCode false).longFlagRankData
-      (concreteBPNativeSuccinctRMQGlobalReadStore shape) 9 10 11 21
-      (packedFringeChunkBits shape.size) true pos]
-    have hvalueToCosted :
-        ((GenericSelect.sparseExceptionSelectData
-          shape.bpCode
-          false).longFlagRankData.bpChunkedRankTraceResultWithStore
-            (concreteBPNativeSuccinctRMQGlobalReadStore shape) 9 10 11 21
-            (packedFringeChunkBits shape.size) true pos).value =
-          ((GenericSelect.sparseExceptionSelectData
-            shape.bpCode
-            false).longFlagRankData.bpChunkedRankTraceResultWithStore
-              (concreteBPNativeSuccinctRMQGlobalReadStore shape) 9 10 11 21
-              (packedFringeChunkBits shape.size) true
-              pos).toCosted.value := rfl
-    rw [hvalueToCosted, hconvert]
-    have hc : 0 < packedFringeChunkBits shape.size := by
-      unfold packedFringeChunkBits
-      exact SuccinctClose.bpFringeChunkBits_pos _
-    have hword8 :
-        (GenericSelect.sparseExceptionSelectData
-            shape.bpCode false).longFlagRankData.wordSize <=
-          8 * packedFringeChunkBits shape.size := by
-      have hinstance :=
-        concreteBPNativeSelectCloseLongFlagRank_wordSize_le_8_chunk shape
-      rw [show SuccinctClose.bpFringeChunkBits shape.bpCode.length =
-        packedFringeChunkBits shape.size from by
-          unfold packedFringeChunkBits
-          rw [CartesianShape.bpCode_length]] at hinstance
-      exact hinstance
-    rw [SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankCosted_value_eq
-      (GenericSelect.sparseExceptionSelectData
-        shape.bpCode false).longFlagRankData hc hword8 true pos]
-    exact
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankCosted_exact
-        (GenericSelect.sparseExceptionSelectData
-          shape.bpCode false).longFlagRankData true pos
-  rw [hbitsField, hwordSize, hbps] at hchain
-  exact hchain
-
-/-- The sparse-flag rank reference over the canonical store is the flag rank. -/
-private theorem packedReviewerSparseFlagRankReference_value_eq
-    (shape : CartesianShape) (localSlot : Nat) :
-    (packedRankRead 13 14 15 21 (packedFringeChunkBits shape.size) true
-      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (packedSparseSlots shape.size) (packedSparseWordSize shape.size) 1
-      localSlot).value =
-      RMQ.Succinct.rankPrefix true
-        (GenericSelect.sparseExceptionEffectiveFlagBits shape.bpCode false) localSlot := by
-  have hbits :
-      (GenericSelect.sparseExceptionEffectiveFlagBits shape.bpCode false).length =
-        packedSparseSlots shape.size :=
-    sparseFlagBits_length_eq_packed shape
-  have hwordSize :
-      (GenericSelect.sparseExceptionSelectData
-          shape.bpCode false).sparseDirectory.rankData.wordSize =
-        packedSparseWordSize shape.size :=
-    packedSelectSparseRankWordSize_eq shape
-  have hbps :
-      (GenericSelect.sparseExceptionSelectData
-          shape.bpCode false).sparseDirectory.rankData.blocksPerSuper = 1 :=
-    packedSelectSparseRankBlocksPerSuper_eq shape
-  have hsuper :
-      forall address,
-        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 13
-            address =
-          ((GenericSelect.sparseExceptionSelectData
-            shape.bpCode false).sparseDirectory.rankData.superSampleWords
-              true)[address]? := by
-    intro address
-    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
-      (source :=
-        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRankSuperTrue)
-      rfl]
-    rfl
-  have hblock :
-      forall address,
-        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 14
-            address =
-          ((GenericSelect.sparseExceptionSelectData
-            shape.bpCode false).sparseDirectory.rankData.blockSampleWords
-              true)[address]? := by
-    intro address
-    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
-      (source :=
-        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRankBlockTrue)
-      rfl]
-    rfl
-  have hchunk :
-      forall address,
-        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 21
-            address =
-          (SuccinctClose.bpFringeChunkTable
-            (packedFringeChunkBits shape.size)).store.words[address]? := by
-    intro address
-    rw [packedReviewerGlobalReadStore_fringeChunk shape address]
-    rw [show SuccinctClose.bpFringeChunkBits shape.bpCode.length =
-      packedFringeChunkBits shape.size from by
-        unfold packedFringeChunkBits
-        rw [CartesianShape.bpCode_length]]
-  have hword :
-      forall address,
-        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 15
-            address =
-          (GenericSelect.sparseExceptionSelectData
-            shape.bpCode
-            false).sparseDirectory.rankData.bitWords.store.words[address]? := by
-    intro address
-    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
-      (source :=
-        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseFlagBits)
-      rfl]
-    rfl
-  have hconvert :=
-    (GenericSelect.sparseExceptionSelectData
-        shape.bpCode
-        false).sparseDirectory.rankData.bpChunkedRankTraceResultWithStore_toCosted_of_agree
-      hsuper hblock hword hchunk localSlot
-  have hbitsField :
-      (GenericSelect.sparseExceptionSelectData
-          shape.bpCode false).sparseDirectory.flagBits.length =
-        packedSparseSlots shape.size :=
-    packedSelectSparseFlagBitsLength_eq shape
-  have hchain :
-      (packedRankRead 13 14 15 21 (packedFringeChunkBits shape.size) true
-        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-        (GenericSelect.sparseExceptionSelectData
-          shape.bpCode false).sparseDirectory.flagBits.length
-        ((GenericSelect.sparseExceptionSelectData
-          shape.bpCode false).sparseDirectory.rankData.wordSize)
-        ((GenericSelect.sparseExceptionSelectData
-          shape.bpCode false).sparseDirectory.rankData.blocksPerSuper)
-        localSlot).value =
-      RMQ.Succinct.rankPrefix true
-        (GenericSelect.sparseExceptionEffectiveFlagBits shape.bpCode false) localSlot := by
-    rw [← packedRankRead_eq
-      (GenericSelect.sparseExceptionSelectData
-        shape.bpCode false).sparseDirectory.rankData
-      (concreteBPNativeSuccinctRMQGlobalReadStore shape) 13 14 15 21
-      (packedFringeChunkBits shape.size) true localSlot]
-    have hvalueToCosted :
-        ((GenericSelect.sparseExceptionSelectData
-          shape.bpCode
-          false).sparseDirectory.rankData.bpChunkedRankTraceResultWithStore
-            (concreteBPNativeSuccinctRMQGlobalReadStore shape) 13 14 15 21
-            (packedFringeChunkBits shape.size) true localSlot).value =
-          ((GenericSelect.sparseExceptionSelectData
-            shape.bpCode
-            false).sparseDirectory.rankData.bpChunkedRankTraceResultWithStore
-              (concreteBPNativeSuccinctRMQGlobalReadStore shape) 13 14 15 21
-              (packedFringeChunkBits shape.size) true
-              localSlot).toCosted.value := rfl
-    rw [hvalueToCosted, hconvert]
-    have hc : 0 < packedFringeChunkBits shape.size := by
-      unfold packedFringeChunkBits
-      exact SuccinctClose.bpFringeChunkBits_pos _
-    have hword8 :
-        (GenericSelect.sparseExceptionSelectData
-            shape.bpCode false).sparseDirectory.rankData.wordSize <=
-          8 * packedFringeChunkBits shape.size := by
-      have hinstance :=
-        concreteBPNativeSelectCloseSparseRank_wordSize_le_8_chunk shape
-      rw [show SuccinctClose.bpFringeChunkBits shape.bpCode.length =
-        packedFringeChunkBits shape.size from by
-          unfold packedFringeChunkBits
-          rw [CartesianShape.bpCode_length]] at hinstance
-      exact hinstance
-    rw [SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankCosted_value_eq
-      (GenericSelect.sparseExceptionSelectData
-        shape.bpCode false).sparseDirectory.rankData hc hword8 true localSlot]
-    exact
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankCosted_exact
-        (GenericSelect.sparseExceptionSelectData
-          shape.bpCode false).sparseDirectory.rankData true localSlot
-  rw [hbitsField, hwordSize, hbps] at hchain
-  exact hchain
-
-private theorem PackedReviewerSelectCanonicalScalarFits.result_fits
-    {shape : CartesianShape} {state : PackedReviewerSelectState}
-    (hstate : PackedReviewerSelectCanonicalScalarFits shape state)
-    {close : Nat}
-    (hresult : packedReviewerSelectResult state = some (some close)) :
-    PackedReviewerNatFits shape.size close ∧
-      close <= 8 * shape.size + 8 := by
-  cases state <;> simp [packedReviewerSelectResult] at hresult
-  case done value =>
-    subst hresult
-    exact hstate close rfl
 
 end PackedCellProbe
 end SuccinctFinal
