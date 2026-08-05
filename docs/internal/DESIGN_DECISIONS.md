@@ -8649,3 +8649,45 @@ cover "every logical read actually used by the query" and those reads hit
 segments the flat payload does not carry; and the divergence is reported rather
 than resolved by fiat. `FG-01` stays `Open` pending the owner's ruling on which
 clause governs.
+
+## DD-20260804-045 -- the width comes from the advertised bound, not the exact length
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerWidth.lean`.
+
+`DD-20260804-043` established that the consumed payload has no input-size-only
+length. The cell width may not depend on `longCount`, because cell zero has to be
+readable before the header is decoded. So the width is derived from the advertised
+size-only bound instead of from the exact length:
+
+```
+packedReviewerCellBound n = 2 * n + concreteBPNativeSuccinctRMQCanonicalReviewerOverhead n
+packedReviewerCellWidth n = machineWordBits (packedReviewerCellBound n + 2)
+```
+
+`packedReviewerPayloadLength_le_bound` is what licenses this: the exact length
+never exceeds the bound. The division of labour is then exactly `K1`'s -- width
+from `n`, count from the header.
+
+The module is **additive**. `packedCellWidth` and `packedMemory` are untouched, so
+the existing stack keeps building while the new one grows beside it. A single
+big-bang redefinition would have broken every downstream module at once with no
+way to tell a real failure from a mechanical one.
+
+`packedSourceStride_le_reviewerCellWidth` carries `INV-WORD-WIDTH`'s stride clause
+across all twenty-nine arms under the same `PackedSourceCounted` guard. Twenty-eight
+arms pass a quantity bounded by `2 * n`, and `2 * n <= packedReviewerCellBound n`
+holds by construction.
+
+The twenty-ninth, `finalRankBlockFalse`, has a stride that is `machineWordBits` of
+a square. It needed `rankWordSize n ^ 2 <= packedReviewerCellBound n + 2`, which is
+**false** if one tries to prove it from `2 * n` alone -- at `n = 2` the square is
+`9` against `2 * n + 2 = 6`. It holds because `packedAccessOverhead` is literally
+the first summand of the reviewer overhead, so the existing
+`packedRankAuxLength_le_accessOverhead` transfers with no new arithmetic. Recorded
+because the naive route looks plausible and fails at a size small enough to miss.
+
+Sampled at `n` in `0..8, 16, 64, 256, 1024, 4096`, this width agrees with
+`packedCellWidth` at every point (`10, 14, 14, 15, 17, ..., 26`) even though the
+two bounds differ -- the reviewer bound is slightly *smaller* than the flat payload
+length, so the agreement is a property of the logarithm, not an ordering. No
+theorem claims they are equal, and none should: the coincidence is not needed.

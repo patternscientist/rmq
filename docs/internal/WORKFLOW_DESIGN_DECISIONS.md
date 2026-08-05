@@ -7252,3 +7252,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   it. The `FG-01` divergence is reported in the result report and
   `DD-20260804-044` and left for the owner; the frozen row is not amended, and
   `FG-01`'s status cell is not touched by this commit.
+- Commit adding the consumed payload's cell width: matrix untouched, so no
+  frozen-cell comparison was required. The module is additive rather than a
+  redefinition, so no existing row's evidence changes meaning.

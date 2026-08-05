@@ -97,3 +97,4 @@ import RMQ.Headlines
 import RMQUnionFind
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerPayload
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerLength
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerWidth
