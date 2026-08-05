@@ -9080,3 +9080,27 @@ the first time segment `20` reaches a computable address.
 Recording the shape before attempting it (`DD-055`) rather than after is what made
 this a fifteen-line proof instead of a search. The two failed attempts recorded
 there cost one elaboration each and bought the correct structure.
+
+## DD-20260804-057 -- the second component confirms the pattern generalises
+
+`ReviewerComponentAccess.lean`, extended.
+
+```
+packedConcatIndex_second_of_eight  six peels, then one offset skip
+packedInteriorMinRelAccess         the minRel column, after the baseline column
+```
+
+`DD-20260804-055` predicted component `k` needs `7 - k` peels followed by the
+skip. Component `0` used seven peels and no skip; component `1` uses six peels and
+one skip. The prediction is now confirmed at both ends of its range rather than
+extrapolated from one instance.
+
+The six remaining components are the same shape with the counts shifted, and the
+offsets they skip by are the prefix lengths `canonicalRelativeRmmInteriorComponentOffsets`
+already records. Nothing further has to be discovered for them; only written.
+
+`packedInteriorMinRelAccess` states its offset as the baseline column's own word
+count rather than as `(canonicalRelativeRmmInteriorComponentOffsets shape).minRel`.
+The two are equal by construction, but proving that equality is a separate step,
+and stating the theorem in terms of the object it actually peels keeps it free of
+an unproved bridge.
