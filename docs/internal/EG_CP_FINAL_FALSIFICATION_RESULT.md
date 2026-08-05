@@ -1265,3 +1265,76 @@ architecture change.
    replay cases.
 
 No `FG` row is closed by this section and no `K1` obstruction is proved.
+
+## 8d. The re-target's space half is complete; the execution half is not
+
+State at this section: `77` campaign commits on
+`codex/eg-cp-final-falsification-gate-r1`, base `6078a29` and freeze `0a18548`
+both verified ancestors, `lake build RMQ` green, `claim_drift_scan -Strict` at
+`1498` hits and `0` strict failures, `design_decision_check -Strict` clean per
+commit, working tree clean.
+
+### What now exists over the consumed payload
+
+Five additive modules. `packedMemory`, `packedCellWidth` and every flat-payload
+theorem are untouched, so the previously recorded evidence still means what it
+said and the re-target has stayed reversible throughout.
+
+```
+ReviewerPayload.lean   identity to buildPayload, by rfl
+ReviewerLength.lean    exact length as a function of (n, longCount)
+ReviewerWidth.lean     input-size-only width; all 29 stride arms
+ReviewerMemory.lean    header, serialization, count, allocation, cells
+ReviewerCrossing.lean  round trip, payload recovery, two-cell span bound
+ReviewerSpace.lean     FG-06's form, with a little-o linear residual
+```
+
+The load-bearing statements:
+
+```
+packedReviewerPayloadBits_eq_buildPayload      : the object is the advertised one
+packedReviewerPayloadBits_length_eq            : exact length, under unit stride
+packedSourceStride_le_reviewerCellWidth        : INV-WORD-WIDTH's stride clause
+packedReviewerHeaderBits_decode                : the header recovers longCount
+packedReviewerMemory_cell_length               : every cell exactly one width
+packedReviewerMemory_header_cell               : the header is cell zero
+packedReviewerMemory_recovers_payload          : no payload bit lives outside
+packedReviewerSpan_from_two_cells              : two cells suffice for any span
+packedReviewerMemory_length_mul_width_le       : cells * width <= 2n + rho n
+packedReviewerRho_littleO
+```
+
+### Why the header is now load-bearing
+
+The consumed payload has no input-size-only length, so `packedReviewerCellCount`
+takes `longCount` while `packedReviewerCellWidth` takes only `n`. A controller
+reads cell zero at the size-only width, decodes `longCount`, and only then knows
+how many cells exist.
+
+Under the flat payload the count was already size-only, so a controller could have
+computed it from `n` and ignored the header entirely. That is worth stating
+plainly: `K1`'s header was decorative against the old target and is on the
+critical path of addressing against the new one.
+
+### What is still missing, in order
+
+1. Seven close-half source word geometries -- five interior tables, two chunk
+   tables. Until these exist the per-source lowering does not reach the consumed
+   payload's close half.
+2. A physical read and backed store over `packedReviewerMemory`, mirroring
+   `PhysicalRead.lean`.
+3. Whole-run lowering: ordered trace with multiplicity, and the probe cap derived
+   from the actual run rather than asserted.
+4. `FG-10` correctness against the independent reference; `FG-11`'s value half;
+   `FG-13`; `FG-15`.
+5. The seven `TARGET-ABSENT` replay cases, which need the surfaces above to exist
+   before their selectors can be non-vacuous.
+
+### Standing status
+
+**No `FG` row is closed. No `K1` obstruction is proved.** The `FG-01` divergence
+recorded in section 8c is a defect in a frozen row, not an architecture
+obstruction, and is left for the owner: the row is not rewritten and its status
+cell is not touched.
+
+This checkpoint is **not** `CANDIDATE_COMPLETE`.

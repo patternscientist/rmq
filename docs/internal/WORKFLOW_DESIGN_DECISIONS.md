@@ -7264,3 +7264,7 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit adding allocated space over the consumed payload: matrix untouched, so no
   frozen-cell comparison was required. Additive; FG-06's recorded evidence over the
   flat memory is unchanged and its row status is not touched.
+- Commit synchronizing the worker result report with the re-target's space half:
+  matrix untouched, so no frozen-cell comparison was required. Section 8d is
+  appended rather than replacing 8b or 8c, so the record still shows what was
+  believed at each earlier point.
