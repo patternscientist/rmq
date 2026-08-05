@@ -105,3 +105,4 @@ import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerCloseGeometry
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerMachineWords
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerEntryChunks
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerEntryAddress
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerInteriorWidths

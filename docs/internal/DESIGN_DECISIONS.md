@@ -8950,3 +8950,38 @@ bound, which is the work `FG-09` is actually asking for.
 
 This is the same discipline that `SourceWords.lean` applied when it took source
 counts from `read_exact` rather than from payload length.
+
+## DD-20260804-053 -- the interior widths are positive, three by computation and one by validity
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerInteriorWidths.lean`.
+
+`packedMachineStoreWords_payload` needs three inputs per interior component: a
+positive machine word size, a positive entry width, and an in-range index. The
+first two are shared across all eight; this module supplies them.
+
+```
+superWidth        = machineWordBits shape.bpCode.length   -- machineWordBits_pos
+offsetWidth       = machineWordBits layout.macroSize      -- machineWordBits_pos
+blockAddressWidth = machineWordBits layout.blockCount     -- machineWordBits_pos
+relativeWidth                                             -- Valid.relativeWidth_pos
+```
+
+Three are `machineWordBits` of something, hence positive at every argument
+including zero. The fourth is not, and its positivity is a **field of the layout's
+validity record** rather than a computation: `relativeWidth` must be wide enough to
+hold a superblock span, and `Valid` carries that as a hypothesis discharged once in
+`canonicalLayout_valid`.
+
+That asymmetry is worth recording. `relativeWidth` is the same width the three
+over-wide columns of `DD-20260804-051` carry, so the two facts this development
+needs about it -- that it is positive, and that it exceeds a machine word below
+`n ~ 512` -- come from entirely different places. A reader who found the second and
+assumed the first was equally computational would look in the wrong file.
+
+`packedInteriorComponentWord` specialises the address theorem to the interior's
+machine word size, so a component supplies only its width positivity and its index
+bound.
+
+The index bound is deliberately still outstanding for all eight. That is the
+`FG-09` obligation which `DD-20260804-052` refused to absorb into an `Option`, and
+absorbing it here instead would have defeated the point of refusing it there.
