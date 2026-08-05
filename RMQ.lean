@@ -103,3 +103,4 @@ import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerCrossing
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerSpace
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerCloseGeometry
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerMachineWords
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerEntryChunks

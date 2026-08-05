@@ -7279,3 +7279,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   matrix untouched, so no frozen-cell comparison was required. Section 8e is
   appended; 8b's component-count estimate is corrected there rather than edited in
   place, so the record shows the estimate and its correction.
+- Commit adding the hypothesis-free entry-chunk geometry: matrix untouched, so no
+  frozen-cell comparison was required. The measurement that killed the width
+  hypothesis is recorded in DD-20260804-051 alongside the lemma that replaces it.

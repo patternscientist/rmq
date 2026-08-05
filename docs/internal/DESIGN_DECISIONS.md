@@ -8870,3 +8870,48 @@ Stating it as a hypothesis rather than proving the unconditional version is the
 point. The unconditional statement is false, and it is false only outside the
 regime one naturally samples, so a proof attempt that assumed it would most likely
 have succeeded on every example tried and been wrong.
+
+## DD-20260804-051 -- measurement kills the width hypothesis for three columns
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerEntryChunks.lean`.
+
+`DD-20260804-050` proved that a machine store is the table's own uniform grid when
+`0 < width <= wordSize`, and left each of the eight interior components to
+discharge that condition. Measuring the widths first, before attempting the
+discharge, was the right order: **three of them cannot.**
+
+On the right spine, each interior column's entry width against
+`machineWordBits (2 * n)`:
+
+```
+n      0  1  2  4   8  16  64  128  256  512  1024
+W      1  2  3  4   5   6   8    9   10   11    12
+super  1  2  3  4   5   6   8    9   10   11    12   -- equals W
+offset 1  1  3  4   5   5   6    7    7    7     7   -- below W
+addr   1  1  1  1   2   2   4    5    5    6     7   -- below W
+rel    5  5  7  7   9   9   9   11   11   11    11   -- ABOVE W below ~512
+```
+
+`minRel`, `maxRel` and `argOffset` all carry `relativeWidth` entries, which exceed
+one machine word at every size below roughly `512`. Their machine stores really do
+split each entry, and the `width <= wordSize` route cannot reach them at any size
+a test would sample.
+
+This is the second time in two decisions that the sampled regime is where the
+convenient statement fails rather than where it holds. Measuring first cost one
+evaluation and saved an unprovable goal.
+
+`packedMachineStoreWords_getElem?_general` drops the hypothesis entirely: machine
+word `i` is chunk `i % c` of logical entry `i / c`, with `c` the machine words per
+entry. `packedMachineStoreWords_getElem?` is the `c = 1` case, kept because five
+of the eight components do satisfy it and the one-level statement is cheaper to
+consume.
+
+The supporting general lemma is worth naming: `packedFlatMapUniform_getElem?`
+indexes any `flatMap` whose blocks share a length, by `i / c` and `i % c`. Nothing
+about payloads enters it.
+
+The two-level index is the honest shape of this store. Entries are chunked
+individually, so the word grid is a grid of grids, and any single-level
+`packedWordSlice` claim over a component's payload is false in exactly the regime
+measured above.
