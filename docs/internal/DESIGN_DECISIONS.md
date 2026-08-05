@@ -9172,3 +9172,38 @@ hypothesis to match its siblings would have been the wrong kind of uniformity.
 Four accessors remain -- `interiorLocal`, `interiorGlobal`, `localLevel`,
 `globalLevel` -- each now a one-line application of its matching chain, exactly as
 the summary four already are.
+
+## DD-20260804-061 -- all eight interior components are located
+
+`ReviewerComponentAccess.lean`, completed.
+
+```
+packedInteriorLocalAccess        component 4, interior local offset table
+packedInteriorGlobalAccess       component 5, interior global block table
+packedInteriorLocalLevelAccess   component 6, local level table
+packedInteriorGlobalLevelAccess  component 7, global level table, no bound needed
+```
+
+Eight of eight. Each is a one-line application of its matching peel chain, which
+is what `DD-20260804-060` was for.
+
+The four component word lists are named as `abbrev`s
+(`packedInteriorBaselineWords` and siblings) so the offsets stay readable at
+seven-fold appends. That cost one round: `abbrev` is reducible, so `exact`
+unifies through it, but `rw` matches syntactically and does not. The store's own
+abbreviation has to be `unfold`ed before the split rewrite. Recorded because the
+same shape will recur wherever an abbreviation meets a rewrite.
+
+Combined with `packedInteriorComponentWord_of_lt_size`, every interior component
+now has a chain from component-store word index to a bit range of its own table's
+payload.
+
+What is still missing before segment `20` reaches a **cell**:
+
+* the bridge from these peel offsets to
+  `canonicalRelativeRmmInteriorComponentOffsets`. They are equal by construction
+  -- the offsets record is defined as exactly these prefix sizes -- but equal by
+  construction is not proved, and this gate does not accept it as such;
+* placing each component's payload inside the consumed payload, which is where the
+  interior directory sits at a known offset after `bpCode` and the live access
+  half.

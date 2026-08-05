@@ -17,10 +17,10 @@ segment `20` reaches a computable address.
 
 ## What this module does not establish
 
-* The peel chain is complete for all eight positions, from seven peels down to
-  none. Four *accessors* remain -- `interiorLocal`, `interiorGlobal`,
-  `localLevel`, `globalLevel` -- each a one-line application of the matching
-  chain, as the summary four already are.
+* All eight components are located. What remains is the bridge from these peel
+  offsets to `canonicalRelativeRmmInteriorComponentOffsets` (equal by
+  construction, unproved), and placing the component payloads inside the consumed
+  payload.
 * The baseline column's payload is located inside the *interior directory*, not
   yet inside the consumed payload; that composition is still outstanding.
 -/
@@ -31,6 +31,7 @@ namespace PackedCellProbe
 
 open RMQ.Cartesian
 open RMQ.SuccinctSpace
+open SuccinctClose
 
 /--
 **The leftmost of eight concatenated blocks.** Seven peels, each bound widened
@@ -257,6 +258,99 @@ theorem packedConcatIndex_eighth_of_eight {alpha : Type}
     (a ++ b ++ c ++ d ++ e ++ f ++ g ++ h)[
         (a ++ b ++ c ++ d ++ e ++ f ++ g).length + j]? = h[j]? :=
   packedConcatIndex_right _ _ j
+
+/-- Word list of one interior component, at the interior machine word size. -/
+abbrev packedInteriorBaselineWords (shape : CartesianShape) : List (List Bool) :=
+  ((canonicalRelativeRmmSummaryTable shape).baselineTable.machineStore
+    (packedInteriorWordSize_pos shape)).store.words.toList
+
+abbrev packedInteriorMinRelWords (shape : CartesianShape) : List (List Bool) :=
+  ((canonicalRelativeRmmSummaryTable shape).minRelTable.machineStore
+    (packedInteriorWordSize_pos shape)).store.words.toList
+
+abbrev packedInteriorMaxRelWords (shape : CartesianShape) : List (List Bool) :=
+  ((canonicalRelativeRmmSummaryTable shape).maxRelTable.machineStore
+    (packedInteriorWordSize_pos shape)).store.words.toList
+
+abbrev packedInteriorArgOffsetWords (shape : CartesianShape) : List (List Bool) :=
+  ((canonicalRelativeRmmSummaryTable shape).argOffsetTable.machineStore
+    (packedInteriorWordSize_pos shape)).store.words.toList
+
+abbrev packedInteriorLocalWords (shape : CartesianShape) : List (List Bool) :=
+  ((canonicalRelativeRmmInteriorLocalTable shape).table.machineStore
+    (packedInteriorWordSize_pos shape)).store.words.toList
+
+abbrev packedInteriorGlobalWords (shape : CartesianShape) : List (List Bool) :=
+  ((canonicalRelativeRmmInteriorGlobalTable shape).table.machineStore
+    (packedInteriorWordSize_pos shape)).store.words.toList
+
+abbrev packedInteriorLocalLevelWords (shape : CartesianShape) : List (List Bool) :=
+  ((canonicalRelativeRmmInteriorLocalLevelTable shape).table.machineStore
+    (packedInteriorWordSize_pos shape)).store.words.toList
+
+abbrev packedInteriorGlobalLevelWords (shape : CartesianShape) : List (List Bool) :=
+  ((canonicalRelativeRmmInteriorGlobalLevelTable shape).table.machineStore
+    (packedInteriorWordSize_pos shape)).store.words.toList
+
+abbrev packedInteriorStoreWords (shape : CartesianShape) : List (List Bool) :=
+  (canonicalRelativeRmmInteriorComponentStore shape).store.words.toList
+
+/-- **Component four located**: the interior local offset table. -/
+theorem packedInteriorLocalAccess (shape : CartesianShape) {j : Nat}
+    (hj : j < (packedInteriorLocalWords shape).length) :
+    (packedInteriorStoreWords shape)[
+        (packedInteriorBaselineWords shape ++ packedInteriorMinRelWords shape ++
+          packedInteriorMaxRelWords shape ++
+            packedInteriorArgOffsetWords shape).length + j]? =
+      (packedInteriorLocalWords shape)[j]? := by
+  unfold packedInteriorStoreWords
+  rw [packedReviewerInteriorComponentWords_split shape]
+  dsimp only
+  exact packedConcatIndex_fifth_of_eight _ _ _ _ _ _ _ _ hj
+
+/-- **Component five located**: the interior global block table. -/
+theorem packedInteriorGlobalAccess (shape : CartesianShape) {j : Nat}
+    (hj : j < (packedInteriorGlobalWords shape).length) :
+    (packedInteriorStoreWords shape)[
+        (packedInteriorBaselineWords shape ++ packedInteriorMinRelWords shape ++
+          packedInteriorMaxRelWords shape ++
+            packedInteriorArgOffsetWords shape ++
+              packedInteriorLocalWords shape).length + j]? =
+      (packedInteriorGlobalWords shape)[j]? := by
+  unfold packedInteriorStoreWords
+  rw [packedReviewerInteriorComponentWords_split shape]
+  dsimp only
+  exact packedConcatIndex_sixth_of_eight _ _ _ _ _ _ _ _ hj
+
+/-- **Component six located**: the local level table. -/
+theorem packedInteriorLocalLevelAccess (shape : CartesianShape) {j : Nat}
+    (hj : j < (packedInteriorLocalLevelWords shape).length) :
+    (packedInteriorStoreWords shape)[
+        (packedInteriorBaselineWords shape ++ packedInteriorMinRelWords shape ++
+          packedInteriorMaxRelWords shape ++
+            packedInteriorArgOffsetWords shape ++
+              packedInteriorLocalWords shape ++
+                packedInteriorGlobalWords shape).length + j]? =
+      (packedInteriorLocalLevelWords shape)[j]? := by
+  unfold packedInteriorStoreWords
+  rw [packedReviewerInteriorComponentWords_split shape]
+  dsimp only
+  exact packedConcatIndex_seventh_of_eight _ _ _ _ _ _ _ _ hj
+
+/-- **Component seven located**: the global level table, needing no bound. -/
+theorem packedInteriorGlobalLevelAccess (shape : CartesianShape) (j : Nat) :
+    (packedInteriorStoreWords shape)[
+        (packedInteriorBaselineWords shape ++ packedInteriorMinRelWords shape ++
+          packedInteriorMaxRelWords shape ++
+            packedInteriorArgOffsetWords shape ++
+              packedInteriorLocalWords shape ++
+                packedInteriorGlobalWords shape ++
+                  packedInteriorLocalLevelWords shape).length + j]? =
+      (packedInteriorGlobalLevelWords shape)[j]? := by
+  unfold packedInteriorStoreWords
+  rw [packedReviewerInteriorComponentWords_split shape]
+  dsimp only
+  exact packedConcatIndex_eighth_of_eight _ _ _ _ _ _ _ _ j
 
 end PackedCellProbe
 end SuccinctFinal

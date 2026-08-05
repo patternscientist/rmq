@@ -7317,3 +7317,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit completing the peel chain for all eight positions: matrix untouched, so
   no frozen-cell comparison was required. Four accessors remain; no row status
   changes.
+- Commit locating the remaining four interior components: matrix untouched, so no
+  frozen-cell comparison was required. Eight of eight located; no row status
+  changes, since FG-08 quantifies over a run and not over a component.
