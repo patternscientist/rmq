@@ -9479,6 +9479,155 @@ private theorem packedReviewerLongFlagRankReference_value_eq
   rw [hbitsField, hwordSize, hbps] at hchain
   exact hchain
 
+/-- The sparse-flag rank reference over the canonical store is the flag rank. -/
+private theorem packedReviewerSparseFlagRankReference_value_eq
+    (shape : CartesianShape) (localSlot : Nat) :
+    (packedRankRead 13 14 15 21 (packedFringeChunkBits shape.size) true
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (packedSparseSlots shape.size) (packedSparseWordSize shape.size) 1
+      localSlot).value =
+      RMQ.Succinct.rankPrefix true
+        (GenericSelect.sparseExceptionEffectiveFlagBits shape.bpCode false) localSlot := by
+  have hbits :
+      (GenericSelect.sparseExceptionEffectiveFlagBits shape.bpCode false).length =
+        packedSparseSlots shape.size :=
+    sparseFlagBits_length_eq_packed shape
+  have hwordSize :
+      (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).sparseDirectory.rankData.wordSize =
+        packedSparseWordSize shape.size :=
+    packedSelectSparseRankWordSize_eq shape
+  have hbps :
+      (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).sparseDirectory.rankData.blocksPerSuper = 1 :=
+    packedSelectSparseRankBlocksPerSuper_eq shape
+  have hsuper :
+      forall address,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 13
+            address =
+          ((GenericSelect.sparseExceptionSelectData
+            shape.bpCode false).sparseDirectory.rankData.superSampleWords
+              true)[address]? := by
+    intro address
+    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
+      (source :=
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRankSuperTrue)
+      rfl]
+    rfl
+  have hblock :
+      forall address,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 14
+            address =
+          ((GenericSelect.sparseExceptionSelectData
+            shape.bpCode false).sparseDirectory.rankData.blockSampleWords
+              true)[address]? := by
+    intro address
+    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
+      (source :=
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRankBlockTrue)
+      rfl]
+    rfl
+  have hchunk :
+      forall address,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 21
+            address =
+          (SuccinctClose.bpFringeChunkTable
+            (packedFringeChunkBits shape.size)).store.words[address]? := by
+    intro address
+    rw [packedReviewerGlobalReadStore_fringeChunk shape address]
+    rw [show SuccinctClose.bpFringeChunkBits shape.bpCode.length =
+      packedFringeChunkBits shape.size from by
+        unfold packedFringeChunkBits
+        rw [CartesianShape.bpCode_length]]
+  have hword :
+      forall address,
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 15
+            address =
+          (GenericSelect.sparseExceptionSelectData
+            shape.bpCode
+            false).sparseDirectory.rankData.bitWords.store.words[address]? := by
+    intro address
+    rw [packedReviewerGlobalReadStore_legacy shape (by omega)
+      (source :=
+        ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseFlagBits)
+      rfl]
+    rfl
+  have hconvert :=
+    (GenericSelect.sparseExceptionSelectData
+        shape.bpCode
+        false).sparseDirectory.rankData.bpChunkedRankTraceResultWithStore_toCosted_of_agree
+      hsuper hblock hword hchunk localSlot
+  have hbitsField :
+      (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).sparseDirectory.flagBits.length =
+        packedSparseSlots shape.size :=
+    packedSelectSparseFlagBitsLength_eq shape
+  have hchain :
+      (packedRankRead 13 14 15 21 (packedFringeChunkBits shape.size) true
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).sparseDirectory.flagBits.length
+        ((GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).sparseDirectory.rankData.wordSize)
+        ((GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).sparseDirectory.rankData.blocksPerSuper)
+        localSlot).value =
+      RMQ.Succinct.rankPrefix true
+        (GenericSelect.sparseExceptionEffectiveFlagBits shape.bpCode false) localSlot := by
+    rw [← packedRankRead_eq
+      (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).sparseDirectory.rankData
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape) 13 14 15 21
+      (packedFringeChunkBits shape.size) true localSlot]
+    have hvalueToCosted :
+        ((GenericSelect.sparseExceptionSelectData
+          shape.bpCode
+          false).sparseDirectory.rankData.bpChunkedRankTraceResultWithStore
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape) 13 14 15 21
+            (packedFringeChunkBits shape.size) true localSlot).value =
+          ((GenericSelect.sparseExceptionSelectData
+            shape.bpCode
+            false).sparseDirectory.rankData.bpChunkedRankTraceResultWithStore
+              (concreteBPNativeSuccinctRMQGlobalReadStore shape) 13 14 15 21
+              (packedFringeChunkBits shape.size) true
+              localSlot).toCosted.value := rfl
+    rw [hvalueToCosted, hconvert]
+    have hc : 0 < packedFringeChunkBits shape.size := by
+      unfold packedFringeChunkBits
+      exact SuccinctClose.bpFringeChunkBits_pos _
+    have hword8 :
+        (GenericSelect.sparseExceptionSelectData
+            shape.bpCode false).sparseDirectory.rankData.wordSize <=
+          8 * packedFringeChunkBits shape.size := by
+      have hinstance :=
+        concreteBPNativeSelectCloseSparseRank_wordSize_le_8_chunk shape
+      rw [show SuccinctClose.bpFringeChunkBits shape.bpCode.length =
+        packedFringeChunkBits shape.size from by
+          unfold packedFringeChunkBits
+          rw [CartesianShape.bpCode_length]] at hinstance
+      exact hinstance
+    rw [SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankCosted_value_eq
+      (GenericSelect.sparseExceptionSelectData
+        shape.bpCode false).sparseDirectory.rankData hc hword8 true localSlot]
+    exact
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankCosted_exact
+        (GenericSelect.sparseExceptionSelectData
+          shape.bpCode false).sparseDirectory.rankData true localSlot
+  rw [hbitsField, hwordSize, hbps] at hchain
+  exact hchain
+
+private theorem PackedReviewerSelectCanonicalScalarFits.result_fits
+    {shape : CartesianShape} {state : PackedReviewerSelectState}
+    (hstate : PackedReviewerSelectCanonicalScalarFits shape state)
+    {close : Nat}
+    (hresult : packedReviewerSelectResult state = some (some close)) :
+    PackedReviewerNatFits shape.size close ∧
+      close <= 8 * shape.size + 8 := by
+  cases state <;> simp [packedReviewerSelectResult] at hresult
+  case done value =>
+    subst hresult
+    exact hstate close rfl
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
