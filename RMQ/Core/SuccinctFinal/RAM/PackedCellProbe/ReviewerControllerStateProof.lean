@@ -7713,6 +7713,124 @@ private theorem packedReviewerSelectConsume_superEntry_fits
       exact packedReviewerSelectAfterSuper_fits shape invocation index super?
         hinv hindex hget
 
+/-- Entering the sparse rank or dense word phase from a local entry. -/
+private theorem packedReviewerSelectAfterLocal_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index : Nat)
+    (super : GenericSelect.SparseDenseSelectDenseLocalEntry)
+    (loc? : Option GenericSelect.SparseDenseSelectDenseLocalEntry)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hsuperGeo : PackedReviewerCanonicalSuperGeometry shape index super)
+    (hshort : GenericSelect.relativeSplitSelectEntryIsMarked super = false)
+    (hget :
+      loc? =
+        (GenericSelect.localEntries shape.bpCode false)[
+          GenericSelect.relativeSplitSelectLocalSlot index
+            (packedSelectSuperStride shape.size)
+            (packedSelectLocalSlotsPerSuper shape.size)
+            (packedSelectLocalStride shape.size) super]?) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectAfterLocal invocation shape.size index
+        (GenericSelect.relativeSplitSelectLocalSlot index
+          (packedSelectSuperStride shape.size)
+          (packedSelectLocalSlotsPerSuper shape.size)
+          (packedSelectLocalStride shape.size) super)
+        super loc?) := by
+  cases loc? with
+  | none =>
+      intro close hclose
+      simp [packedReviewerSelectAfterLocal] at hclose
+  | some loc =>
+      have hgeometry :
+          PackedReviewerCanonicalLocalGeometry shape index super loc :=
+        ⟨hsuperGeo, hshort, hget.symm⟩
+      unfold packedReviewerSelectAfterLocal
+      by_cases hmarked :
+          GenericSelect.relativeSplitSelectEntryIsMarked loc = true
+      · simp only [hmarked, if_true]
+        refine ⟨rfl, hinv, hindex, hgeometry, rfl, hmarked, ?_, ?_, ⟨0, rfl⟩⟩
+        · have hwitness :=
+            packedReviewerRankStart_requests_fit shape invocation .selectSparse
+              (GenericSelect.relativeSplitSelectLocalSlot index
+                (packedSelectSuperStride shape.size)
+                (packedSelectLocalSlotsPerSuper shape.size)
+                (packedSelectLocalStride shape.size) super) hinv
+          simpa [packedReviewerRankRemaining] using hwitness
+        · exact packedReviewerRankStart_canonicalScalarFits shape invocation
+            .selectSparse
+            (GenericSelect.relativeSplitSelectLocalSlot index
+              (packedSelectSuperStride shape.size)
+              (packedSelectLocalSlotsPerSuper shape.size)
+              (packedSelectLocalStride shape.size) super) hinv
+            hgeometry.localSlot_fits
+      · have hlocShort :
+            GenericSelect.relativeSplitSelectEntryIsMarked loc = false := by
+          simpa using hmarked
+        simp only [hmarked, if_false]
+        have hbaseFits := hgeometry.base_fields_fit
+        refine ⟨rfl, hinv, hindex, ?_, ?_⟩
+        · rw [hgeometry.basePosition_eq]
+          have hposition :=
+            GenericSelect.position_le_length shape.bpCode false
+              (GenericSelect.localBaseOccurrence shape.bpCode.length
+                (GenericSelect.relativeSplitSelectLocalSlot index
+                  (packedSelectSuperStride shape.size)
+                  (packedSelectLocalSlotsPerSuper shape.size)
+                  (packedSelectLocalStride shape.size) super))
+          have hlength : shape.bpCode.length <= 2 * shape.size + 1 := by
+            simp [CartesianShape.bpCode_length]
+          omega
+        · rw [hgeometry.baseOccurrence_eq]
+          exact hgeometry.facts.2.2.2.2
+
+/-- One canonical reply preserves the local-entry arm of the select tower. -/
+private theorem packedReviewerSelectConsume_localEntry_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index : Nat)
+    (super : GenericSelect.SparseDenseSelectDenseLocalEntry)
+    (entry : PackedReviewerEntryState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hsuperGeo : PackedReviewerCanonicalSuperGeometry shape index super)
+    (hshort : GenericSelect.relativeSplitSelectEntryIsMarked super = false)
+    (hentry :
+      PackedReviewerCanonicalEntryState shape invocation .local
+        (GenericSelect.relativeSplitSelectLocalSlot index
+          (packedSelectSuperStride shape.size)
+          (packedSelectLocalSlotsPerSuper shape.size)
+          (packedSelectLocalStride shape.size) super) entry)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerEntryNextRequest entry = some request) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectConsumeReply
+        (.localEntry invocation shape.size index
+          (GenericSelect.relativeSplitSelectLocalSlot index
+            (packedSelectSuperStride shape.size)
+            (packedSelectLocalSlotsPerSuper shape.size)
+            (packedSelectLocalStride shape.size) super)
+          super entry)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  have hentry' := hentry.consume hrequest
+  simp only [packedReviewerSelectConsumeReply]
+  cases hresult :
+      packedReviewerEntryResult
+        (packedReviewerEntryConsumeReply entry
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none => exact ⟨rfl, hinv, hindex, hsuperGeo, hshort, rfl, hentry'⟩
+  | some loc? =>
+      have hget := hentry'.result_eq hresult
+      exact packedReviewerSelectAfterLocal_fits shape invocation index super
+        loc? hinv hindex hsuperGeo hshort hget
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
