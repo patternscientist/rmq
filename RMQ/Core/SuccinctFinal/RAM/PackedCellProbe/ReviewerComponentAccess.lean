@@ -17,11 +17,10 @@ segment `20` reaches a computable address.
 
 ## What this module does not establish
 
-* Every structural fact segment `20` needs is proved: the word split, the offsets
-  bridge, the bit-level payload split, the close half's position, and the prefix
-  slice lemma. What remains is composing them into one address function -- which
-  will need the same re-association as `DD-20260804-063` -- and the physical read
-  over `packedReviewerMemory`.
+* Segment `20` is composed: any bit range inside the interior directory is a
+  range of the consumed payload, shifted by the close bit offset. What remains is
+  the physical read over `packedReviewerMemory`, which turns a bit range into
+  cells.
 * The baseline column's payload is located inside the *interior directory*, not
   yet inside the consumed payload; that composition is still outstanding.
 -/
@@ -507,6 +506,35 @@ theorem packedPrefixSlice {alpha : Type} (xs ys : List alpha) {off len : Nat}
     rw [List.length_drop]
     omega
   rw [List.take_append_of_le_length hlen]
+
+/--
+**An interior slice, read off the consumed payload.** Any bit range wholly inside
+the interior directory is the same range of the consumed payload, shifted by the
+close bit offset. This is the composition segment `20` needed.
+-/
+theorem packedReviewerPayload_interiorSlice (shape : CartesianShape) {off len : Nat}
+    (h : off + len <=
+      (canonicalRelativeRmmInteriorDirectory shape).payload.length) :
+    ((packedReviewerPayloadBits shape).drop
+        (concreteBPNativeSuccinctRMQCanonicalReviewerCloseBitOffset shape +
+          off)).take len =
+      (((canonicalRelativeRmmInteriorDirectory shape).payload).drop off).take
+        len := by
+  rw [← List.drop_drop,
+    packedReviewerPayload_drop_closeOffset shape,
+    show
+        (canonicalRelativeRmmInteriorDirectory shape).payload ++
+            (bpFringeChunkTable
+              (bpFringeChunkBits shape.bpCode.length)).payload ++
+          (bpChunkSelectTable (bpFringeChunkBits shape.bpCode.length)
+            false).payload =
+          (canonicalRelativeRmmInteriorDirectory shape).payload ++
+            ((bpFringeChunkTable
+              (bpFringeChunkBits shape.bpCode.length)).payload ++
+              (bpChunkSelectTable (bpFringeChunkBits shape.bpCode.length)
+                false).payload) by
+      simp [List.append_assoc]]
+  exact packedPrefixSlice _ _ h
 
 end PackedCellProbe
 end SuccinctFinal

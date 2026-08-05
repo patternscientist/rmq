@@ -9344,3 +9344,36 @@ that it will need the same re-association as `DD-20260804-063`: the close half i
 `directory ++ fringe ++ select`, left-associated, so a statement naming the
 directory as the prefix must re-associate to `directory ++ (fringe ++ select)`
 first. That is now the fourth appearance of this shape.
+
+## DD-20260804-066 -- segment 20 is composed
+
+`ReviewerComponentAccess.lean`, completed.
+
+```
+packedReviewerPayload_interiorSlice
+```
+
+Any bit range wholly inside the interior directory is the same range of the
+**consumed payload**, shifted by the close bit offset. With the eight component
+accessors, the offsets bridge, the bit-level payload split and the prefix slice,
+segment `20` now reaches the consumed payload as a computable bit range.
+
+The re-association predicted in `DD-20260804-065` was needed, exactly as written.
+One thing was not predicted: `List.drop_drop` folds as `(l.drop a).drop b =
+l.drop (b + a)`, so rewriting `drop (closeOffset + off)` backwards yields the
+drops in the order that is already wanted, and the `Nat.add_comm` added in
+anticipation produced the *reversed* nesting. Removing it closed the goal.
+
+Recorded because the natural instinct -- normalise the sum first -- is wrong here,
+and the error it produces is a failed rewrite deep in the chain rather than at the
+`add_comm`, so it does not point at its own cause.
+
+### What segment 20 now has
+
+Component-store word index, through the located component and its proved offset, to
+a bit range of that component's payload, to a bit range of the interior directory,
+to a bit range of the consumed payload. Every link checked.
+
+What remains for the close half is the physical read over
+`packedReviewerMemory`, which is what turns a bit range into cells, and which is
+shared with the eighteen live access sources rather than specific to segment `20`.

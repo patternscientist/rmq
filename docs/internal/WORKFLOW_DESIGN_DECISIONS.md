@@ -7329,3 +7329,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   frozen-cell comparison was required. No row status changes.
 - Commit adding the prefix slice lemma: matrix untouched, so no frozen-cell
   comparison was required. No row status changes.
+- Commit composing segment 20 to the consumed payload: matrix untouched, so no
+  frozen-cell comparison was required. FG-08's row status is not touched, since it
+  quantifies over a run and no run is lowered.
