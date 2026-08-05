@@ -2675,7 +2675,10 @@ private theorem packedReviewerInteriorStartRaw_scalarCertificate
     · have hgeo :
           PackedReviewerLocalTwoGeo shape macroStart localStart spanCount := by
         refine ⟨hspanPos, ?_, ?_⟩
-        · simpa [localStart] using hwithin
+        · have hmacroEq : (packedInteriorLayout shape.size).macroSize =
+              layout.macroSize := rfl
+          have hlocalDef : localStart = startBlock % layout.macroSize := rfl
+          omega
         · simpa [layout] using (by omega :
             macroStart * layout.macroSize + localStart + spanCount <=
               layout.blockCount)
@@ -2709,7 +2712,10 @@ private theorem packedReviewerInteriorStartRaw_scalarCertificate
       have hleftGeo :
           PackedReviewerLocalTwoGeo shape macroStart localStart firstCount := by
         refine ⟨hfirstPos, ?_, ?_⟩
-        · simp [firstCount]
+        · have hmacroEq : (packedInteriorLayout shape.size).macroSize =
+              layout.macroSize := rfl
+          simp [firstCount]
+          omega
         · simpa [layout] using (by omega :
             macroStart * layout.macroSize + localStart + firstCount <=
               layout.blockCount)
@@ -2719,27 +2725,42 @@ private theorem packedReviewerInteriorStartRaw_scalarCertificate
         have hdiv : macroStart <= startBlock := by
           simpa [macroStart] using
             Nat.div_le_self startBlock layout.macroSize
+        have hblockEq : (packedInteriorLayout shape.size).blockCount =
+            packedSummaryBlockCountRaw shape.size := rfl
+        have hmacroDef : macroStart = startBlock / layout.macroSize := rfl
         omega
       have hmiddleCountFits :
           PackedReviewerNatFits shape.size middleCount := by
         apply packedReviewerInteriorBlockCoordinate_fits
         have hdiv : middleCount <= rest := by
           simpa [middleCount] using Nat.div_le_self rest layout.macroSize
+        have hblockEq : (packedInteriorLayout shape.size).blockCount =
+            packedSummaryBlockCountRaw shape.size := rfl
+        have hmiddleDef : middleCount = rest / layout.macroSize := rfl
+        have hrestLe : rest <= spanCount := Nat.sub_le _ _
         omega
       have hrightCountFits :
           PackedReviewerNatFits shape.size rightCount := by
         apply packedReviewerInteriorLocalCoordinate_fits
         have hmod : rightCount < layout.macroSize := by
           exact Nat.mod_lt rest hmacroSizePos
+        have hmacroEq : (packedInteriorLayout shape.size).macroSize =
+            layout.macroSize := rfl
+        have hrightDef : rightCount = rest % layout.macroSize := rfl
         omega
       by_cases hmiddle : middleCount = 0
-      · have hrightEq : rightCount = rest := by omega
+      · have hmiddleZero : middleCount * layout.macroSize = 0 := by
+          rw [hmiddle, Nat.zero_mul]
+        have hrightEq : rightCount = rest := by omega
         have hrightGeo :
             PackedReviewerLocalTwoGeo shape (macroStart + 1) 0
               rightCount := by
           refine ⟨by omega, ?_, ?_⟩
           · have hmod : rightCount < layout.macroSize := by
               exact Nat.mod_lt rest hmacroSizePos
+            have hmacroEq : (packedInteriorLayout shape.size).macroSize =
+                layout.macroSize := rfl
+            have hrightDef : rightCount = rest % layout.macroSize := rfl
             omega
           · simpa [layout] using (by omega :
               (macroStart + 1) * layout.macroSize + 0 + rightCount <=
@@ -2826,6 +2847,9 @@ private theorem packedReviewerInteriorStartRaw_scalarCertificate
             refine ⟨hrightPos, ?_, ?_⟩
             · have hmod : rightCount < layout.macroSize := by
                 exact Nat.mod_lt rest hmacroSizePos
+              have hmacroEq : (packedInteriorLayout shape.size).macroSize =
+                  layout.macroSize := rfl
+              have hrightDef : rightCount = rest % layout.macroSize := rfl
               omega
             · simpa [layout] using (by omega :
                 (macroStart + 1 + middleCount) * layout.macroSize + 0 +
