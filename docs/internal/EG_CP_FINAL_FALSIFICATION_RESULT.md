@@ -1528,3 +1528,60 @@ section 8c remains a defect in a frozen row, reported and left for the owner; th
 row and its status cell are untouched.
 
 This checkpoint is **not** `CANDIDATE_COMPLETE`.
+
+## 8h. Section 8g's next target is stale; the close half is done
+
+`99` campaign commits. `HEAD cc3070c`. Build green, both gates clean, tree clean,
+freeze `0a18548` and base `6078a29` verified ancestors.
+
+Section 8g named `packedInteriorArgOffsetAccess` as the next smallest target.
+That, and everything after it in 8g's step 1, is now done. **The close half's word
+geometry is complete.**
+
+```
+ReviewerComponentAccess.lean
+  packedConcatIndex_{first..eighth}_of_eight   the peel chain, all eight positions
+  packedInterior{Baseline..GlobalLevel}Access  all eight components located
+  packedInteriorOffsets_*                      the offsets record, proved not assumed
+  packedInteriorDirectoryPayload_split         bit-level split, distinct from words
+  packedReviewerPayload_drop_closeOffset       the close half's position
+  packedPrefixSlice                            a slice inside a prefix
+  packedReviewerPayload_interiorSlice          segment 20 -> consumed payload
+```
+
+Segment `20`'s chain is checked at every link: component-store word index, located
+component, proved offset, bit range of that component's payload, bit range of the
+interior directory, bit range of the consumed payload. Segments `21` and `22` were
+already one-liners off `packedFixedWidthTable_getElem?`.
+
+### The corrected next smallest target
+
+A physical read over `packedReviewerMemory`, mirroring `PhysicalRead.lean`: turn a
+`(bit offset, width)` pair into the one-or-two cell probe plan and prove the
+decoded span equals the requested bits. It is **shared** with the eighteen live
+access sources rather than specific to the close half, so it unblocks both halves
+at once. `packedReviewerSpan_from_two_cells` is the algebra it consumes.
+
+After that, unchanged from 8g: whole-run ordered lowering with multiplicity; probe
+cap derived from the run; `FG-10`, `FG-11`'s value half, `FG-13`, `FG-15`; the
+seven `TARGET-ABSENT` replay cases.
+
+### Additional failed approaches since 8g
+
+* direct component accessors without `dsimp only`, then without accounting for
+  left-association (`DD-055`).
+* `List.length_append` with explicit list arguments -- implicit here (`DD-058`).
+* `omega` on the offsets bridge without unfolding the machine-store aliases: it
+  reports a *counterexample*, not an unfolding failure, and the atom list is the
+  only tell (`DD-062`).
+* `simp` on the directory payload split without the directory itself in the set:
+  it closes nothing and reports the payload lemmas as unused (`DD-064`).
+* normalising the sum with `Nat.add_comm` before `List.drop_drop`: produces the
+  reversed nesting, and the error surfaces later in the chain (`DD-066`).
+
+### Standing status
+
+**No `FG` row is closed. No `K1` obstruction is proved.** The `FG-01` divergence of
+section 8c is still a defect in a frozen row, reported and left for the owner.
+
+This checkpoint is **not** `CANDIDATE_COMPLETE`.

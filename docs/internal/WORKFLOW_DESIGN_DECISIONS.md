@@ -7332,3 +7332,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit composing segment 20 to the consumed payload: matrix untouched, so no
   frozen-cell comparison was required. FG-08's row status is not touched, since it
   quantifies over a run and no run is lowered.
+- Commit correcting the durable report's next-target line: matrix untouched, so no
+  frozen-cell comparison was required. Section 8h supersedes 8g's step 1 rather
+  than editing it, so the record shows what was outstanding when 8g was written.
