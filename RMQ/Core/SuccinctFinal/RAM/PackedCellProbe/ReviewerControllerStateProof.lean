@@ -6930,9 +6930,7 @@ private def PackedReviewerSelectCanonicalScalarFits
           PackedReviewerNatFits shape.size operand) ∧
         PackedReviewerNatFits shape.size base ∧
         base <= 2 * shape.size + 1 ∧
-        (exists word,
-          (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 12
-              slot = some word)
+        PackedReviewerNatFits shape.size slot
   | .sparseRank invocation n index localSlot super loc rank =>
       n = shape.size ∧
         (forall operand,
@@ -6963,9 +6961,7 @@ private def PackedReviewerSelectCanonicalScalarFits
           PackedReviewerNatFits shape.size operand) ∧
         PackedReviewerNatFits shape.size base ∧
         base <= 2 * shape.size + 1 ∧
-        (exists word,
-          (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 16
-              slot = some word)
+        PackedReviewerNatFits shape.size slot
   | .denseFirstWord invocation n index basePosition baseOccurrence =>
       n = shape.size ∧
         (forall operand,
@@ -7052,7 +7048,7 @@ private def PackedReviewerSelectCanonicalScalarFits
         packedReviewerWordSelectRemaining select <= 9
   | .done value =>
       forall close, value = some close ->
-        PackedReviewerNatFits shape.size close ∧ close <= 2 * shape.size + 1
+        PackedReviewerNatFits shape.size close ∧ close <= 8 * shape.size + 8
 
 /-- The canonical select start satisfies the tower invariant. -/
 private theorem packedReviewerSelectStart_canonicalScalarFits
@@ -7155,14 +7151,13 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
       · exact hsuperFields value hsuperMem
       · exact hrankFields value hrankMem
   | longRelative invocation base slot =>
-      obtain ⟨hinv, hbase, hbaseLe, word, hread⟩ := hstate
+      obtain ⟨hinv, hbase, hbaseLe, hslot⟩ := hstate
       have hinvFields :
           forall value,
             value ∈ packedReviewerInvocationNatFields invocation ->
               PackedReviewerNatFits shape.size value := by
         simpa [packedReviewerInvocationNatFields,
           packedReviewerInvocationOperands] using hinv
-      have hslot := packedReviewerSuccessfulLongRelativeIndex_fits shape hread
       intro value hmem
       simp [packedReviewerSelectStateNatFields] at hmem
       rcases hmem with hinvMem | rfl | rfl
@@ -7195,14 +7190,13 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
       · exact hlocFields value hlocMem
       · exact hrankFields value hrankMem
   | sparseRelative invocation base slot =>
-      obtain ⟨hinv, hbase, hbaseLe, word, hread⟩ := hstate
+      obtain ⟨hinv, hbase, hbaseLe, hslot⟩ := hstate
       have hinvFields :
           forall value,
             value ∈ packedReviewerInvocationNatFields invocation ->
               PackedReviewerNatFits shape.size value := by
         simpa [packedReviewerInvocationNatFields,
           packedReviewerInvocationOperands] using hinv
-      have hslot := packedReviewerSuccessfulSparseRelativeIndex_fits shape hread
       intro value hmem
       simp [packedReviewerSelectStateNatFields] at hmem
       rcases hmem with hinvMem | rfl | rfl
@@ -7463,7 +7457,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.nextRequest_operands_fit
       exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
         (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
   | longRelative invocation base slot =>
-      obtain ⟨hinv, hbase, hbaseLe, word, hread⟩ := hstate
+      obtain ⟨hinv, hbase, hbaseLe, hslot⟩ := hstate
       simp only [packedReviewerSelectNextRequest, Option.some.injEq]
         at hrequest
       subst request
@@ -7473,7 +7467,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.nextRequest_operands_fit
         simp [packedReviewerReadSiteOperands] at hmem
       · exact packedReviewerSegment_le_twentyTwo_fits shape.size 12
           (by omega)
-      · exact packedReviewerSuccessfulLongRelativeIndex_fits shape hread
+      · exact hslot
   | sparseRank invocation n index localSlot super loc rank =>
       obtain ⟨rfl, hinv, hindex, hlocalGeo, hslotEq, hmarked, hrankFit,
         hrank, horbit⟩ := hstate
@@ -7481,7 +7475,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.nextRequest_operands_fit
       exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
         (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
   | sparseRelative invocation base slot =>
-      obtain ⟨hinv, hbase, hbaseLe, word, hread⟩ := hstate
+      obtain ⟨hinv, hbase, hbaseLe, hslot⟩ := hstate
       simp only [packedReviewerSelectNextRequest, Option.some.injEq]
         at hrequest
       subst request
@@ -7491,7 +7485,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.nextRequest_operands_fit
         simp [packedReviewerReadSiteOperands] at hmem
       · exact packedReviewerSegment_le_twentyTwo_fits shape.size 16
           (by omega)
-      · exact packedReviewerSuccessfulSparseRelativeIndex_fits shape hread
+      · exact hslot
   | denseFirstWord invocation n index basePosition baseOccurrence =>
       obtain ⟨rfl, hinv, hindex, hbase, hocc⟩ := hstate
       simp only [packedReviewerSelectNextRequest, Option.some.injEq]
