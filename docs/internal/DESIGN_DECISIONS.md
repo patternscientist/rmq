@@ -8985,3 +8985,34 @@ bound.
 The index bound is deliberately still outstanding for all eight. That is the
 `FG-09` obligation which `DD-20260804-052` refused to absorb into an `Option`, and
 absorbing it here instead would have defeated the point of refusing it there.
+
+## DD-20260804-054 -- the index bound, discharged from what a lowering has
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerInteriorCount.lean`.
+
+`DD-20260804-052` kept `FG-09`'s in-range obligation explicit instead of absorbing
+it into an `Option`; `DD-20260804-053` left it outstanding for all eight interior
+components. This discharges it from the hypothesis a lowering actually carries.
+
+```
+packedMachineStoreWords_size            wordCount = entries.length * chunksPerEntry
+packedEntryIndex_lt_of_lt               i < count * c  ->  i / c < count
+packedInteriorComponentWord_of_lt       the address theorem, from i < wordCount
+packedInteriorComponentWord_of_lt_size  the same, against the stored word count
+```
+
+A component occupies exactly one machine word per entry per chunk, so an index
+below the word count names an entry that exists and the `i / c < entries.length`
+side condition follows by division rather than by assumption. The obligation is
+met, not moved.
+
+`packedMachineStoreWords_size` needs **no** width positivity. The first draft
+carried one; the linter flagged it unused and it was removed rather than left. The
+count is `entries.length * chunksPerEntry` unconditionally -- at width zero every
+entry chunks to the empty list and `chunksPerEntry` is zero, so both sides vanish.
+
+That is the third spurious hypothesis this campaign has removed on the same
+principle, after `hstride` on `packedReviewerMemory_header_cell` and the
+never-needed `packedCellWidth n <= packedLongBlockBits n` of `DD-20260804-035`. A
+hypothesis a theorem does not need misstates what it depends on, and in a gate
+whose whole purpose is checking dependence, that is not cosmetic.
