@@ -7314,3 +7314,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit locating the fourth interior component: matrix untouched, so no
   frozen-cell comparison was required. The summary half is complete; four interior
   tables remain. No row status changes.
+- Commit completing the peel chain for all eight positions: matrix untouched, so
+  no frozen-cell comparison was required. Four accessors remain; no row status
+  changes.

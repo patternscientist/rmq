@@ -9147,3 +9147,28 @@ Nothing new was needed for this one. The template of `DD-20260804-058` applied
 unchanged, including the `List.length_append`-as-`have` form. That is the intended
 outcome of having written the template down, and it is worth noting that the
 pattern has now survived four instantiations without amendment.
+
+## DD-20260804-060 -- the peel chain is complete for all eight positions
+
+`ReviewerComponentAccess.lean`, extended.
+
+```
+packedConcatIndex_fifth_of_eight    three peels, then the skip
+packedConcatIndex_sixth_of_eight    two peels
+packedConcatIndex_seventh_of_eight  one peel
+packedConcatIndex_eighth_of_eight   none, and no hypothesis at all
+```
+
+`DD-20260804-055`'s `7 - k` prediction now holds across the entire range, from
+seven peels at `k = 0` to zero at `k = 7`, with no amendment at any point.
+
+The eighth is worth a line. The last block is the outer right operand of the
+left-associated term, so `packedConcatIndex_right` applies **directly**, and it
+needs no `j < h.length` hypothesis -- out of range, both sides are `none`. Every
+other position needs its bound, because the peels do. That asymmetry is a property
+of the association, not an oversight, and stating the eighth with a spurious
+hypothesis to match its siblings would have been the wrong kind of uniformity.
+
+Four accessors remain -- `interiorLocal`, `interiorGlobal`, `localLevel`,
+`globalLevel` -- each now a one-line application of its matching chain, exactly as
+the summary four already are.

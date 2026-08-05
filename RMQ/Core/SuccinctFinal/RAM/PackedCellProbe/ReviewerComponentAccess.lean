@@ -17,9 +17,10 @@ segment `20` reaches a computable address.
 
 ## What this module does not establish
 
-* Four components remain (`interiorLocal`, `interiorGlobal`, `localLevel`,
-  `globalLevel`). Each needs `7 - k` peels then its offset skip; the four done
-  here cover the whole summary half and fix the pattern.
+* The peel chain is complete for all eight positions, from seven peels down to
+  none. Four *accessors* remain -- `interiorLocal`, `interiorGlobal`,
+  `localLevel`, `globalLevel` -- each a one-line application of the matching
+  chain, as the summary four already are.
 * The baseline column's payload is located inside the *interior directory*, not
   yet inside the consumed payload; that composition is still outstanding.
 -/
@@ -201,6 +202,61 @@ theorem packedInteriorArgOffsetAccess (shape : CartesianShape) {j : Nat}
   rw [packedReviewerInteriorComponentWords_split shape]
   dsimp only
   exact packedConcatIndex_fourth_of_eight _ _ _ _ _ _ _ _ hj
+
+/-- **The fifth of eight.** Three peels, then the skip. -/
+theorem packedConcatIndex_fifth_of_eight {alpha : Type}
+    (a b c d e f g h : List alpha) {j : Nat} (hj : j < e.length) :
+    (a ++ b ++ c ++ d ++ e ++ f ++ g ++ h)[(a ++ b ++ c ++ d).length + j]? =
+      e[j]? := by
+  have h4 : (a ++ b ++ c ++ d).length + j < (a ++ b ++ c ++ d ++ e).length := by
+    have hlen : (a ++ b ++ c ++ d ++ e).length =
+        (a ++ b ++ c ++ d).length + e.length := List.length_append
+    omega
+  have h5 : (a ++ b ++ c ++ d).length + j <
+      (a ++ b ++ c ++ d ++ e ++ f).length := packedConcatIndex_lt_append _ _ h4
+  have h6 : (a ++ b ++ c ++ d).length + j <
+      (a ++ b ++ c ++ d ++ e ++ f ++ g).length :=
+    packedConcatIndex_lt_append _ _ h5
+  rw [packedConcatIndex_left _ _ h6, packedConcatIndex_left _ _ h5,
+    packedConcatIndex_left _ _ h4, packedConcatIndex_right]
+
+/-- **The sixth of eight.** Two peels, then the skip. -/
+theorem packedConcatIndex_sixth_of_eight {alpha : Type}
+    (a b c d e f g h : List alpha) {j : Nat} (hj : j < f.length) :
+    (a ++ b ++ c ++ d ++ e ++ f ++ g ++ h)[(a ++ b ++ c ++ d ++ e).length + j]? =
+      f[j]? := by
+  have h5 : (a ++ b ++ c ++ d ++ e).length + j <
+      (a ++ b ++ c ++ d ++ e ++ f).length := by
+    have hlen : (a ++ b ++ c ++ d ++ e ++ f).length =
+        (a ++ b ++ c ++ d ++ e).length + f.length := List.length_append
+    omega
+  have h6 : (a ++ b ++ c ++ d ++ e).length + j <
+      (a ++ b ++ c ++ d ++ e ++ f ++ g).length :=
+    packedConcatIndex_lt_append _ _ h5
+  rw [packedConcatIndex_left _ _ h6, packedConcatIndex_left _ _ h5,
+    packedConcatIndex_right]
+
+/-- **The seventh of eight.** One peel, then the skip. -/
+theorem packedConcatIndex_seventh_of_eight {alpha : Type}
+    (a b c d e f g h : List alpha) {j : Nat} (hj : j < g.length) :
+    (a ++ b ++ c ++ d ++ e ++ f ++ g ++ h)[
+        (a ++ b ++ c ++ d ++ e ++ f).length + j]? = g[j]? := by
+  have h6 : (a ++ b ++ c ++ d ++ e ++ f).length + j <
+      (a ++ b ++ c ++ d ++ e ++ f ++ g).length := by
+    have hlen : (a ++ b ++ c ++ d ++ e ++ f ++ g).length =
+        (a ++ b ++ c ++ d ++ e ++ f).length + g.length := List.length_append
+    omega
+  rw [packedConcatIndex_left _ _ h6, packedConcatIndex_right]
+
+/--
+**The eighth of eight.** No peels and no hypothesis: the last block is the outer
+right operand, so `packedConcatIndex_right` applies directly, at every `j`.
+-/
+theorem packedConcatIndex_eighth_of_eight {alpha : Type}
+    (a b c d e f g h : List alpha) (j : Nat) :
+    (a ++ b ++ c ++ d ++ e ++ f ++ g ++ h)[
+        (a ++ b ++ c ++ d ++ e ++ f ++ g).length + j]? = h[j]? :=
+  packedConcatIndex_right _ _ j
 
 end PackedCellProbe
 end SuccinctFinal
