@@ -6833,20 +6833,16 @@ reference value, which the relative-directory transitions need.
 private def packedReviewerRankCanonicalStep
     (shape : CartesianShape) (state : PackedReviewerRankState) :
     PackedReviewerRankState :=
-  match packedReviewerRankNextRequest state with
-  | none => state
-  | some request =>
-      packedReviewerRankConsumeReply state
-        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
-          request.segment request.index)
+  packedReviewerComponentCanonicalStep packedReviewerRankNextRequest
+    packedReviewerRankConsumeReply
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape) state
 
 private def packedReviewerRankCanonicalRun
     (shape : CartesianShape) : Nat -> PackedReviewerRankState ->
-      PackedReviewerRankState
-  | 0, state => state
-  | fuel + 1, state =>
-      packedReviewerRankCanonicalStep shape
-        (packedReviewerRankCanonicalRun shape fuel state)
+      PackedReviewerRankState :=
+  packedReviewerComponentCanonicalRun packedReviewerRankNextRequest
+    packedReviewerRankConsumeReply
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape)
 
 private def packedReviewerWordSelectCanonicalStep
     (shape : CartesianShape) (state : PackedReviewerWordSelectState) :
@@ -8012,7 +8008,8 @@ private theorem packedReviewerSelectConsume_longRank_fits
                 (GenericSelect.selectSuperSlot index
                   (packedSelectSuperStride shape.size)))) := rfl
     rw [hrun, ← hfuel]
-    simp [packedReviewerRankCanonicalStep, hrequest]
+    simp [packedReviewerRankCanonicalStep,
+      packedReviewerComponentCanonicalStep, hrequest]
   simp only [packedReviewerSelectConsumeReply]
   cases hresult :
       packedReviewerRankResult
@@ -8509,7 +8506,8 @@ private theorem packedReviewerSelectConsume_sparseRank_fits
                   (packedSelectLocalSlotsPerSuper shape.size)
                   (packedSelectLocalStride shape.size) super))) := rfl
     rw [hrun, ← hfuel]
-    simp [packedReviewerRankCanonicalStep, hrequest]
+    simp [packedReviewerRankCanonicalStep,
+      packedReviewerComponentCanonicalStep, hrequest]
   simp only [packedReviewerSelectConsumeReply]
   cases hresult :
       packedReviewerRankResult
