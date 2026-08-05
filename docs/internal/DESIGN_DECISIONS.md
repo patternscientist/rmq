@@ -8539,3 +8539,113 @@ What is **not** done, and must not be read into this:
   per-read lowering applies to the new payload.
 - Until `packedMemory` moves, `FG-06`'s bound is still proved over the old object
   and the candidate would still fail `M11`. The re-target is begun, not finished.
+
+## DD-20260804-043 -- the consumed payload's length is `(n, longCount)`, not `n`
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLength.lean`.
+
+The flat payload of `Header.lean` has an input-size-only length because its
+layout carries explicit padding fields (`accessPadding`, `closePadding`) that
+absorb every input-dependent variation. Measured at `n = 3` it is `21466` bits
+against the consumed payload's `305`: the flat object is padding by a factor of
+seventy.
+
+The consumed payload has no padding fields. It is
+
+```
+bpCode ++ liveAccessPayload ++ interiorDirectory ++ fringeChunkTable ++ selectChunkTable
+```
+
+and of its eighteen live access sources `selectLongRelative` carries
+`longCount`-many rows. So no input-size-only length function exists for it, and
+`FG-04`'s literal `P(n)` cannot be supplied for the new target. This is the
+"checked equivalence-required correction" that row's own text anticipates.
+
+The correction is not a concession. `longCount` is precisely the one quantity a
+controller cannot recompute from `n`, and precisely the one quantity `K1`'s header
+carries. Under the flat payload the header was arguably decorative, because the
+layout was size-only without it; under the consumed payload it is load-bearing.
+The width stays input-size-only -- it is derived from the advertised space bound
+`2 * n + reviewerOverhead n`, not from the exact length -- so cell zero remains
+readable before `longCount` is known, and the count follows once it is decoded.
+
+```
+packedReviewerPayloadLength (n longCount : Nat) : Nat
+packedReviewerPayloadBits_length_eq   : the exact length, under unit stride
+packedReviewerPayloadLength_le_bound  : that length <= the advertised bound
+packedReviewerCountedAccessSources_eq : drift guard, by rfl
+```
+
+Checked against evaluation at sizes `0..7`: the formula reproduces
+`[75, 158, 298, 305, 613, 616, 652, 655]`, the measured lengths of the payload
+itself.
+
+### The unit-stride hypothesis is not a small-input restriction
+
+`packedSparseExceptionEntries_nil_of_unit_stride` needs
+`GenericSelect.localStride (2 * n) = 1`. That function is
+`max 1 (wordBits n / (ell n * ell n))`, which first exceeds `1` when
+`wordBits n >= 98`, i.e. when `n >= 2 ^ 97`. Evaluated at every size from `0` to
+`100000` it is `1`. The hypothesis holds at every size any machine can represent,
+so the equation is not confined to toy inputs.
+
+## DD-20260804-044 -- correcting the basis of the re-target, and an `FG-01` defect
+
+`DD-20260804-038` justified the re-target by reading `M11-SIBLING-PAYLOAD` as
+forcing "the object the accepted semantics consumes". That reading was an
+over-extension: `M11` is an anti-vacuity mutation which the existing `rfl`
+identity in `Payload.lean` already defeats. The re-target stands, but on a
+different and checkable basis.
+
+The basis is a repository theorem, not a reading of row text:
+
+```
+concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_eq_global
+  : the reviewer read store IS the executed global read store
+```
+
+recorded here as `packedExecutedStore_is_reviewerStore`. Combined with
+`packedReviewerPayloadBits_eq_buildPayload` (`rfl`), the payload measured in this
+module is the object the accepted semantics executes against.
+
+A naming trap sits directly on this question and should be recorded so the next
+reader does not fall into it. `SuccinctRMQClassic.flatPayloadReadStore` is **not**
+a store over `concreteBPNativeSuccinctRMQPayload`; it is an `abbrev` for
+`concreteBPNativeSuccinctRMQCanonicalReviewerReadStore`. Its "flat" names a
+query-independent layout, not the flat payload. It has no consumers anywhere in
+the tree.
+
+### The defect
+
+`FG-01-RAW-PAYLOAD-IDENTITY` identifies its object twice, and the two
+identifications pick out different objects:
+
+- by name: "the existing canonical `concreteBPNativeSuccinctRMQPayload` object";
+- by property: "consumed by the accepted RMQ semantics".
+
+The named object is the flat payload. The object consumed by the accepted
+semantics is `concreteBPNativeSuccinctRMQCanonicalReviewerPayload`. These are not
+equal: `packedStoresNotEqual` proves the two induced stores differ, and
+`packedFlatStore_*Segment` against `packedExecutedStore_*Segment` shows they
+differ at executed segments `20`, `21` and `22` specifically.
+
+Both clauses are now discharged separately, against the object each names:
+
+```
+packedPayloadBits_eq_canonical         : FG-01's named object      (rfl)
+packedReviewerPayloadBits_eq_buildPayload : FG-01's described object (rfl)
+```
+
+This is **not** a `K1` architecture obstruction and the campaign does not stop for
+it. `K1` -- one header cell carrying `longCount` -- is untouched, and no theorem
+here says `K1` needs extra metadata, a new primitive, or another architecture
+change. It is a defect in a frozen row: the row describes the codebase
+incorrectly.
+
+Amending a frozen row is an owner decision, and the standing instruction forbids
+weakening one. So the row is not rewritten. The memory is being built over the
+object the accepted semantics consumes, because `FG-08` requires the lowering to
+cover "every logical read actually used by the query" and those reads hit
+segments the flat payload does not carry; and the divergence is reported rather
+than resolved by fiat. `FG-01` stays `Open` pending the owner's ruling on which
+clause governs.

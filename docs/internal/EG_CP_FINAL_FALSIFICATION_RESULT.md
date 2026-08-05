@@ -1170,3 +1170,98 @@ The aggregate `scripts/gate.ps1`, `scripts/headline_axiom_check.lean` and the
 replay harness have **not** been run. The first two are reserved for a final tree
 that does not yet exist; the third does not exist at all, which is why no
 mutation in the frozen registry has been exercised.
+
+## 8c. Re-target step one, and a correction to why the re-target is happening
+
+Supersedes the corresponding parts of section 8b. Sections 8 and 8b stand as
+written; this records what changed.
+
+### What landed
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLength.lean`, the first of the
+five enumerated re-target steps.
+
+```
+packedReviewerPayloadLength (n longCount : Nat) : Nat
+packedReviewerPayloadBits_length_eq   : exact length, under unit stride
+packedReviewerPayloadLength_le_bound  : that length <= 2*n + reviewerOverhead n
+packedReviewerAccessLength_eq         : the eighteen-source live access half
+packedSparseRelativePayload_length_of_unit_stride
+packedReviewerCountedAccessSources_eq : drift guard, by rfl
+packedExecutedStore_is_reviewerStore  : the executed store IS the reviewer store
+```
+
+Two of section 8b's estimates were wrong in the branch's favour. The close
+directory, fringe chunk table and select chunk table were listed as needing three
+new length equations; all three already existed as exact size-only equalities
+(`canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw`,
+`bpFringeChunkTable_payload_length`, `bpChunkSelectTable_payload_length`) and were
+consumed directly.
+
+One estimate was wrong against the branch, and it is a design change rather than a
+missing lemma. **The consumed payload has no input-size-only length.** It carries
+no padding fields, and its `selectLongRelative` source has `longCount`-many rows,
+so `FG-04`'s literal `P(n)` does not exist for it. The exact length is
+`packedReviewerPayloadLength n longCount`. See `DD-20260804-043`: this is the
+"checked equivalence-required correction" `FG-04`'s own text allows, and it makes
+`K1`'s header load-bearing rather than decorative -- under the flat payload the
+layout was size-only without the header.
+
+The formula was checked against evaluation: at sizes `0..7` it reproduces
+`[75, 158, 298, 305, 613, 616, 652, 655]`, the measured payload lengths. The
+contrast with the flat object at `n = 3` is `305` against `21466` bits.
+
+The unit-stride hypothesis was also checked rather than assumed. `localStride`
+first exceeds `1` at `n >= 2 ^ 97`; evaluated from `0` to `100000` it is `1`
+throughout. It is not a small-input restriction.
+
+### The correction
+
+`DD-20260804-038` justified the whole re-target by reading `M11-SIBLING-PAYLOAD`
+as forcing the consumed object. **That reading was wrong** -- `M11` is an
+anti-vacuity mutation which the existing `rfl` identity already defeats. This is
+the third retraction in this campaign of a conclusion drawn from the shape of a
+requirement rather than from a definition, and like the other two it was caught by
+reading the definition.
+
+The re-target survives on a better basis: the repository theorem
+`concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_eq_global` proves the
+reviewer store *is* the executed store, so the consumed object is settled by a
+checked fact rather than by an argument.
+
+A naming trap sits on this exact question: `SuccinctRMQClassic.flatPayloadReadStore`
+is an `abbrev` for the **reviewer** store, not for a store over the flat payload,
+and it has no consumers in the tree.
+
+### An `FG-01` defect, reported and not resolved
+
+`FG-01` names its object twice and the two identifications diverge. By name it is
+`concreteBPNativeSuccinctRMQPayload`, the flat object. By property it is the one
+"consumed by the accepted RMQ semantics", which is the reviewer object. The two
+are provably different (`packedStoresNotEqual`, and the segment-by-segment
+disagreement at `20`, `21`, `22`).
+
+Both clauses are discharged separately, each against the object it names. The
+frozen row is **not** rewritten -- amending it is an owner decision and the
+standing instruction forbids weakening a frozen requirement. `FG-01` stays `Open`
+pending an owner ruling on which clause governs.
+
+This is not a `K1` obstruction and the campaign does not stop for it. `K1` is
+untouched; no theorem here shows it needs extra metadata, a new primitive, or an
+architecture change.
+
+### Remaining, in order
+
+1. Re-point `packedCellWidth` at the advertised bound `2*n + reviewerOverhead n`.
+   The single funnel is `packedMachineWordBits_le_cellWidth`; every stride use
+   passes a bound below `2*n` except the rank block square, which needs
+   `rankWordSize^2 <= 2*n + reviewerOverhead n + 2`.
+2. Re-point `packedSerializedBits`, `packedCellCount`, `packedAllocatedBits` and
+   `packedMemory`, with the count taking `longCount` from the header.
+3. Seven close-half source word geometries (five interior tables, two chunk
+   tables).
+4. Whole-run lowering over the new memory; derived probe cap.
+5. `FG-10`, `FG-11`'s value half, `FG-13`, `FG-15`, and the seven `TARGET-ABSENT`
+   replay cases.
+
+No `FG` row is closed by this section and no `K1` obstruction is proved.
