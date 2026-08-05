@@ -9128,3 +9128,22 @@ that costs an elaboration cycle each time it is rediscovered.
 Five components remain, all of the same shape with counts shifted and offsets
 lengthening. No new structure is expected; if one appears, that itself is the
 finding.
+
+## DD-20260804-059 -- the summary half of the interior is fully located
+
+`ReviewerComponentAccess.lean`, extended.
+
+```
+packedConcatIndex_fourth_of_eight  four peels, then the skip
+packedInteriorArgOffsetAccess      the argOffset column
+```
+
+Four of eight located, which is the whole **summary** half: baseline, minRel,
+maxRel, argOffset. The four remaining are the interior tables proper --
+`interiorLocal`, `interiorGlobal`, `localLevel`, `globalLevel` -- and they are the
+same shape with counts `3, 2, 1, 0` peels.
+
+Nothing new was needed for this one. The template of `DD-20260804-058` applied
+unchanged, including the `List.length_append`-as-`have` form. That is the intended
+outcome of having written the template down, and it is worth noting that the
+pattern has now survived four instantiations without amendment.

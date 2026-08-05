@@ -7311,3 +7311,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   frozen-cell comparison was required. Section 8g is appended; it names the next
   smallest proof target and lists the five failed approaches so they are not
   retried.
+- Commit locating the fourth interior component: matrix untouched, so no
+  frozen-cell comparison was required. The summary half is complete; four interior
+  tables remain. No row status changes.
