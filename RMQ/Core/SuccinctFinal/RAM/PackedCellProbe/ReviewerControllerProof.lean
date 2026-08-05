@@ -2188,7 +2188,7 @@ private theorem packedReviewerRankFold_requests_fit
                       21 slot)))
                 hremaining'
 
-private theorem packedReviewerRankStartFold_requests_fit
+theorem packedReviewerRankStartFold_requests_fit
     (shape : CartesianShape) (invocation : PackedReviewerInvocation)
     (kind : PackedReviewerRankKind) (word : List Bool) (limit base : Nat)
     (hinvocation :

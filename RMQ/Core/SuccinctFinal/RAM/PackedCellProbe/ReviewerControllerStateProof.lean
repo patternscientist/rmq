@@ -7559,6 +7559,74 @@ private theorem PackedReviewerSelectCanonicalScalarFits.nextRequest_operands_fit
   | done value =>
       simp [packedReviewerSelectNextRequest] at hrequest
 
+/-- A canonically bounded rank component never exceeds its eleven-read start. -/
+private theorem PackedReviewerRankCanonicalScalarFits.remaining_le_eleven
+    {shape : CartesianShape} {resultBound : Nat}
+    {state : PackedReviewerRankState}
+    (hstate : PackedReviewerRankCanonicalScalarFits shape resultBound state) :
+    packedReviewerRankRemaining state <= 11 := by
+  cases state with
+  | fold invocation kind n word effectiveLimit j remaining acc base =>
+      obtain ⟨-, -, -, -, hj, -⟩ := hstate
+      simp only [packedReviewerRankRemaining]
+      omega
+  | done value => simp [packedReviewerRankRemaining]
+  | superSample invocation kind n pos => simp [packedReviewerRankRemaining]
+  | blockSample invocation kind n pos superSample =>
+      simp [packedReviewerRankRemaining]
+  | word invocation kind n pos superSample blockSample =>
+      simp [packedReviewerRankRemaining]
+
+/-- The canonical select tower stays inside its thirty-five-read budget. -/
+private theorem PackedReviewerSelectCanonicalScalarFits.remaining_le_thirtyFive
+    {shape : CartesianShape} {state : PackedReviewerSelectState}
+    (hstate : PackedReviewerSelectCanonicalScalarFits shape state) :
+    packedReviewerSelectRemaining state <= 35 := by
+  cases state with
+  | superEntry invocation n index entry =>
+      cases entry <;>
+        simp [packedReviewerSelectRemaining, packedReviewerEntryRemaining]
+  | localEntry invocation n index localSlot super entry =>
+      cases entry <;>
+        simp [packedReviewerSelectRemaining, packedReviewerEntryRemaining]
+  | longRank invocation n index super rank =>
+      obtain ⟨-, -, -, -, -, -, hrank, -⟩ := hstate
+      have hbound := hrank.remaining_le_eleven
+      simp only [packedReviewerSelectRemaining]
+      omega
+  | longRelative invocation base slot =>
+      simp [packedReviewerSelectRemaining]
+  | sparseRank invocation n index localSlot super loc rank =>
+      obtain ⟨-, -, -, -, -, -, -, hrank, -⟩ := hstate
+      have hbound := hrank.remaining_le_eleven
+      simp only [packedReviewerSelectRemaining]
+      omega
+  | sparseRelative invocation base slot =>
+      simp [packedReviewerSelectRemaining]
+  | denseFirstWord invocation n index basePosition baseOccurrence =>
+      simp [packedReviewerSelectRemaining]
+  | denseBeforeRank invocation n index basePosition baseOccurrence word rank =>
+      obtain ⟨-, -, -, -, -, -, -, -, hbudget⟩ := hstate
+      simp only [packedReviewerSelectRemaining]
+      omega
+  | denseUptoRank invocation n index basePosition baseOccurrence beforeFirst
+      word rank =>
+      obtain ⟨-, -, -, -, -, -, -, -, -, hbudget⟩ := hstate
+      simp only [packedReviewerSelectRemaining]
+      omega
+  | denseFirstSelect invocation n baseWord select =>
+      obtain ⟨-, -, -, -, -, hremaining⟩ := hstate
+      simp only [packedReviewerSelectRemaining]
+      omega
+  | denseSecondWord invocation n index basePosition baseOccurrence beforeFirst
+      uptoFirst =>
+      simp [packedReviewerSelectRemaining]
+  | denseSecondSelect invocation n baseWord select =>
+      obtain ⟨-, -, -, -, -, hremaining⟩ := hstate
+      simp only [packedReviewerSelectRemaining]
+      omega
+  | done value => simp [packedReviewerSelectRemaining]
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
