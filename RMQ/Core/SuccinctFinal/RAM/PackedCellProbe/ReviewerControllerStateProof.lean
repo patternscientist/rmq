@@ -7831,6 +7831,169 @@ private theorem packedReviewerSelectConsume_localEntry_fits
       exact packedReviewerSelectAfterLocal_fits shape invocation index super
         loc? hinv hindex hsuperGeo hshort hget
 
+/-- Entering the long-relative directory after the flag rank completes. -/
+private theorem packedReviewerSelectAfterLongRank_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index : Nat)
+    (super : GenericSelect.SparseDenseSelectDenseLocalEntry)
+    (exceptionRank : Nat)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hsuperGeo : PackedReviewerCanonicalSuperGeometry shape index super)
+    (hrank :
+      exceptionRank <=
+        packedReviewerRankQueryPos .selectLong shape.size
+          (GenericSelect.selectSuperSlot index
+            (packedSelectSuperStride shape.size))) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectAfterLongRank invocation shape.size index super
+        exceptionRank) := by
+  unfold packedReviewerSelectAfterLongRank
+  have hbase := hsuperGeo.basePosition_fits
+  have hbaseLe :
+      GenericSelect.relativeSplitSelectEntryBasePosition
+          (packedSelectWordSize shape.size) super <=
+        2 * shape.size + 1 := by
+    rw [hsuperGeo.basePosition_eq]
+    have hposition :=
+      GenericSelect.position_le_length shape.bpCode false super.baseOccurrence
+    have hlength : shape.bpCode.length <= 2 * shape.size + 1 := by
+      simp [CartesianShape.bpCode_length]
+    omega
+  refine ⟨hinv, hbase, hbaseLe, ?_⟩
+  have hpos :
+      packedReviewerRankQueryPos .selectLong shape.size
+          (GenericSelect.selectSuperSlot index
+            (packedSelectSuperStride shape.size)) <=
+        GenericSelect.selectSuperSlot index
+          (packedSelectSuperStride shape.size) :=
+    Nat.min_le_left _ _
+  have hmul :
+      exceptionRank * packedSelectSuperStride shape.size <= index := by
+    have hslotMul :
+        GenericSelect.selectSuperSlot index
+            (packedSelectSuperStride shape.size) *
+          packedSelectSuperStride shape.size <= index := by
+      unfold GenericSelect.selectSuperSlot
+      exact Nat.div_mul_le_self _ _
+    have hrankMul :
+        exceptionRank * packedSelectSuperStride shape.size <=
+          GenericSelect.selectSuperSlot index
+              (packedSelectSuperStride shape.size) *
+            packedSelectSuperStride shape.size :=
+      Nat.mul_le_mul_right _ (Nat.le_trans hrank hpos)
+    omega
+  have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
+  have htwoMul := packedTwoMul_le_reviewerBound shape.size
+  unfold GenericSelect.relativeSplitSelectLongCompactSlot
+  simp only [PackedReviewerNatFits]
+  omega
+
+/-- One canonical reply preserves the long-rank arm of the select tower. -/
+private theorem packedReviewerSelectConsume_longRank_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index : Nat)
+    (super : GenericSelect.SparseDenseSelectDenseLocalEntry)
+    (rank : PackedReviewerRankState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hsuperGeo : PackedReviewerCanonicalSuperGeometry shape index super)
+    (hlong : GenericSelect.relativeSplitSelectEntryIsMarked super = true)
+    (hrankFit :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerRankNextRequest packedReviewerRankConsumeReply
+        (packedReviewerRankRemaining rank) rank)
+    (hrank :
+      PackedReviewerRankCanonicalScalarFits shape
+        (packedReviewerRankQueryPos .selectLong shape.size
+          (GenericSelect.selectSuperSlot index
+            (packedSelectSuperStride shape.size))) rank)
+    (horbit :
+      exists fuel,
+        rank =
+          packedReviewerRankCanonicalRun shape fuel
+            (.superSample invocation .selectLong shape.size
+              (GenericSelect.selectSuperSlot index
+                (packedSelectSuperStride shape.size))))
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerRankNextRequest rank = some request) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectConsumeReply
+        (.longRank invocation shape.size index super rank)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  have hrank' := hrank.consume hrequest
+  have hpos := packedReviewerRankNextRequest_remaining_pos hrequest
+  have hdescent :=
+    packedReviewerRankRemaining_consume_le rank
+      ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        request.segment request.index) request hrequest
+  have hfit' :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerRankNextRequest packedReviewerRankConsumeReply
+        (packedReviewerRankRemaining
+          (packedReviewerRankConsumeReply rank
+            ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+              request.segment request.index)))
+        (packedReviewerRankConsumeReply rank
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) := by
+    obtain ⟨fuel, hfuel⟩ : exists fuel,
+        packedReviewerRankRemaining rank = fuel + 1 :=
+      ⟨packedReviewerRankRemaining rank - 1, by omega⟩
+    rw [hfuel] at hrankFit
+    have hstep := (PackedReviewerRequestsFitFrom.step shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerRankNextRequest packedReviewerRankConsumeReply fuel rank
+      request hrankFit hrequest).2
+    exact PackedReviewerRequestsFitFrom.mono shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerRankNextRequest packedReviewerRankConsumeReply hstep
+      (by omega)
+  have horbit' :
+      exists fuel,
+        packedReviewerRankConsumeReply rank
+            ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+              request.segment request.index) =
+          packedReviewerRankCanonicalRun shape fuel
+            (.superSample invocation .selectLong shape.size
+              (GenericSelect.selectSuperSlot index
+                (packedSelectSuperStride shape.size))) := by
+    obtain ⟨fuel, hfuel⟩ := horbit
+    refine ⟨fuel + 1, ?_⟩
+    have hrun :
+        packedReviewerRankCanonicalRun shape (fuel + 1)
+            (.superSample invocation .selectLong shape.size
+              (GenericSelect.selectSuperSlot index
+                (packedSelectSuperStride shape.size))) =
+          packedReviewerRankCanonicalStep shape
+            (packedReviewerRankCanonicalRun shape fuel
+              (.superSample invocation .selectLong shape.size
+                (GenericSelect.selectSuperSlot index
+                  (packedSelectSuperStride shape.size)))) := rfl
+    rw [hrun, ← hfuel]
+    simp [packedReviewerRankCanonicalStep, hrequest]
+  simp only [packedReviewerSelectConsumeReply]
+  cases hresult :
+      packedReviewerRankResult
+        (packedReviewerRankConsumeReply rank
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none =>
+      exact ⟨rfl, hinv, hindex, hsuperGeo, hlong, hfit', hrank', horbit'⟩
+  | some exceptionRank =>
+      have hvalue := hrank'.result_fits hresult
+      exact packedReviewerSelectAfterLongRank_fits shape invocation index
+        super exceptionRank hinv hindex hsuperGeo hvalue.2
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ

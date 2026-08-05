@@ -577,7 +577,7 @@ private theorem packedReviewerNatFits_of_le_interiorOverhead
   have hcapacity := packedReviewerCellBound_lt_two_pow_width n
   omega
 
-private theorem packedReviewerLog2SuccSquare_le_self_add_twoFiftySix
+theorem packedReviewerLog2SuccSquare_le_self_add_twoFiftySix
     (n : Nat) :
     (Nat.log2 n + 1) * (Nat.log2 n + 1) <= n + 256 := by
   by_cases hlog : 6 <= Nat.log2 n
