@@ -7043,6 +7043,296 @@ private theorem packedReviewerSelectStart_canonicalScalarFits
   simp only [hindex, if_true]
   exact ⟨rfl, hinvocation, hindex, .baseOccurrence⟩
 
+/-- Every stored select scalar fits the modeled word on the canonical tower. -/
+private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
+    {shape : CartesianShape} {state : PackedReviewerSelectState}
+    (hstate : PackedReviewerSelectCanonicalScalarFits shape state) :
+    forall value, value ∈ packedReviewerSelectStateNatFields state ->
+      PackedReviewerNatFits shape.size value := by
+  have hn := packedReviewerInputSize_lt_two_pow_cellWidth shape.size
+  cases state with
+  | superEntry invocation n index entry =>
+      obtain ⟨rfl, hinv, hindex, hentry⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hslot :
+          PackedReviewerNatFits shape.size
+            (GenericSelect.selectSuperSlot index
+              (packedSelectSuperStride shape.size)) := by
+        have hle : GenericSelect.selectSuperSlot index
+            (packedSelectSuperStride shape.size) <= index :=
+          Nat.div_le_self _ _
+        omega
+      have hentryFields := hentry.scalar_fields hinv hslot
+      intro value hmem
+      simp [packedReviewerSelectStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | hentryMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · omega
+      · exact hentryFields value hentryMem
+  | localEntry invocation n index localSlot super entry =>
+      obtain ⟨rfl, hinv, hindex, hsuperGeo, hshort, hslotEq, hentry⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hvalid : index < GenericSelect.occurrenceCount shape.bpCode false := by
+        rw [packedSelectOccurrenceCount_eq_size]; exact hindex
+      have hfacts := GenericSelect.localSlot_facts shape.bpCode false index
+        super (by
+          simpa [packedSelectSuperStride, CartesianShape.bpCode_length] using
+            hsuperGeo.get_eq)
+        hvalid hshort
+      have hslotFits : PackedReviewerNatFits shape.size localSlot := by
+        rw [hslotEq]
+        have hbound := packedReviewerLocalSlots_lt_two_pow shape
+        have hlt := hfacts.1
+        rw [localSlotCount_eq_packed] at hlt
+        have hlen := CartesianShape.bpCode_length shape
+        simp only [packedSelectSuperStride, packedSelectLocalSlotsPerSuper,
+          packedSelectLocalStride, hlen] at hlt ⊢
+        omega
+      have hsuperFields := hsuperGeo.entry_scalar_fields
+      have hentryFields := hentry.scalar_fields hinv hslotFits
+      intro value hmem
+      simp [packedReviewerSelectStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | hsuperMem | hentryMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · omega
+      · exact hslotFits
+      · exact hsuperFields value hsuperMem
+      · exact hentryFields value hentryMem
+  | longRank invocation n index super rank =>
+      obtain ⟨rfl, hinv, hindex, hsuperGeo, hlong, hrank, horbit⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hrankFields := hrank.scalar_fields
+      have hsuperFields := hsuperGeo.entry_scalar_fields
+      intro value hmem
+      simp [packedReviewerSelectStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | hsuperMem | hrankMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · omega
+      · exact hsuperFields value hsuperMem
+      · exact hrankFields value hrankMem
+  | longRelative invocation base slot =>
+      obtain ⟨hinv, hbase, hbaseLe, word, hread⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hslot := packedReviewerSuccessfulLongRelativeIndex_fits shape hread
+      intro value hmem
+      simp [packedReviewerSelectStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl
+      · exact hinvFields value hinvMem
+      · exact hbase
+      · exact hslot
+  | sparseRank invocation n index localSlot super loc rank =>
+      obtain ⟨rfl, hinv, hindex, hlocalGeo, hslotEq, hmarked, hrank,
+        horbit⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hslotFits : PackedReviewerNatFits shape.size localSlot := by
+        rw [hslotEq]
+        exact hlocalGeo.localSlot_fits
+      have hsuperFields := hlocalGeo.super_geometry.entry_scalar_fields
+      have hlocFields := hlocalGeo.entry_scalar_fields
+      have hrankFields := hrank.scalar_fields
+      intro value hmem
+      simp [packedReviewerSelectStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | hsuperMem | hlocMem | hrankMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · omega
+      · exact hslotFits
+      · exact hsuperFields value hsuperMem
+      · exact hlocFields value hlocMem
+      · exact hrankFields value hrankMem
+  | sparseRelative invocation base slot =>
+      obtain ⟨hinv, hbase, hbaseLe, word, hread⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hslot := packedReviewerSuccessfulSparseRelativeIndex_fits shape hread
+      intro value hmem
+      simp [packedReviewerSelectStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl
+      · exact hinvFields value hinvMem
+      · exact hbase
+      · exact hslot
+  | denseFirstWord invocation n index basePosition baseOccurrence =>
+      obtain ⟨rfl, hinv, hindex, hbase, hocc⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hbaseFits : PackedReviewerNatFits shape.size basePosition :=
+        packedReviewerNatFits_of_le_two_mul_add_one shape.size basePosition
+          hbase
+      intro value hmem
+      simp [packedReviewerSelectStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | rfl
+      · exact hinvFields value hinvMem
+      · exact hn
+      · omega
+      · exact hbaseFits
+      · omega
+  | denseBeforeRank invocation n index basePosition baseOccurrence word rank =>
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hword, hrank, hbudget⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hbaseFits : PackedReviewerNatFits shape.size basePosition :=
+        packedReviewerNatFits_of_le_two_mul_add_one shape.size basePosition
+          hbase
+      have hrankFields := hrank.scalar_fields
+      intro value hmem
+      simp [packedReviewerSelectStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | rfl | hrankMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · omega
+      · exact hbaseFits
+      · omega
+      · exact hrankFields value hrankMem
+  | denseUptoRank invocation n index basePosition baseOccurrence beforeFirst
+      word rank =>
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hrank,
+        hbudget⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hbaseFits : PackedReviewerNatFits shape.size basePosition :=
+        packedReviewerNatFits_of_le_two_mul_add_one shape.size basePosition
+          hbase
+      have hbeforeFits : PackedReviewerNatFits shape.size beforeFirst := by
+        have hlength : word.length <= packedReviewerCellWidth shape.size := hword
+        have hwidth := Nat.lt_two_pow_self (n := packedReviewerCellWidth shape.size)
+        omega
+      have hrankFields := hrank.scalar_fields
+      intro value hmem
+      simp [packedReviewerSelectStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | rfl | rfl | hrankMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · omega
+      · exact hbaseFits
+      · omega
+      · exact hbeforeFits
+      · exact hrankFields value hrankMem
+  | denseFirstSelect invocation n baseWord select =>
+      obtain ⟨rfl, hinv, hbase, ⟨word, hword, hselect⟩, hremaining⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hwordSize : 0 < packedSelectWordSize shape.size := by
+        simpa [packedSelectWordSize] using GenericSelect.wordBits_pos (2 * shape.size)
+      have hbaseFits : PackedReviewerNatFits shape.size baseWord := by
+        apply packedReviewerNatFits_of_le_two_mul_add_one
+        have hle : baseWord <= baseWord * packedSelectWordSize shape.size :=
+          Nat.le_mul_of_pos_right baseWord hwordSize
+        omega
+      have hselectFields := hselect.scalar_fields
+      intro value hmem
+      simp [packedReviewerSelectStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | hselectMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · exact hbaseFits
+      · exact hselectFields value hselectMem
+  | denseSecondWord invocation n index basePosition baseOccurrence beforeFirst
+      uptoFirst =>
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hupto⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hbaseFits : PackedReviewerNatFits shape.size basePosition :=
+        packedReviewerNatFits_of_le_two_mul_add_one shape.size basePosition
+          hbase
+      have huptoFits : PackedReviewerNatFits shape.size uptoFirst :=
+        packedReviewerNatFits_of_le_two_mul_add_one shape.size uptoFirst hupto
+      intro value hmem
+      simp [packedReviewerSelectStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | rfl | rfl | rfl
+      · exact hinvFields value hinvMem
+      · exact hn
+      · omega
+      · exact hbaseFits
+      · omega
+      · omega
+      · exact huptoFits
+  | denseSecondSelect invocation n baseWord select =>
+      obtain ⟨rfl, hinv, hbase, ⟨word, hword, hselect⟩, hremaining⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hwordSize : 0 < packedSelectWordSize shape.size := by
+        simpa [packedSelectWordSize] using GenericSelect.wordBits_pos (2 * shape.size)
+      have hbaseFits : PackedReviewerNatFits shape.size baseWord := by
+        apply packedReviewerNatFits_of_le_two_mul_add_one
+        have hle : baseWord <= baseWord * packedSelectWordSize shape.size :=
+          Nat.le_mul_of_pos_right baseWord hwordSize
+        omega
+      have hselectFields := hselect.scalar_fields
+      intro value hmem
+      simp [packedReviewerSelectStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | hselectMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · exact hbaseFits
+      · exact hselectFields value hselectMem
+  | done value =>
+      intro fieldValue hmem
+      cases value with
+      | none =>
+          simp [packedReviewerSelectStateNatFields,
+            packedReviewerOptionNatFields] at hmem
+      | some close =>
+          simp only [packedReviewerSelectStateNatFields,
+            packedReviewerOptionNatFields, List.mem_singleton] at hmem
+          subst fieldValue
+          exact (hstate close rfl).1
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
