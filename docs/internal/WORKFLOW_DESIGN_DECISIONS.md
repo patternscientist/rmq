@@ -7245,3 +7245,10 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   untouched, so no frozen-cell comparison was required. Section 8 is superseded
   rather than rewritten, so the record shows what was believed before the payload
   question was settled.
+- Commit proving the consumed payload's exact length: matrix untouched, so no
+  frozen-cell comparison was required. Section 8c supersedes the corresponding
+  parts of 8b rather than rewriting them, so the record shows both that two of
+  8b's estimates were wrong in the branch's favour and that one was wrong against
+  it. The `FG-01` divergence is reported in the result report and
+  `DD-20260804-044` and left for the owner; the frozen row is not amended, and
+  `FG-01`'s status cell is not touched by this commit.
