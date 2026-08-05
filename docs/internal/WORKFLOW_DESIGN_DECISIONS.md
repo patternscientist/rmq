@@ -7299,3 +7299,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit adding the concatenation-indexing tools: matrix untouched, so no
   frozen-cell comparison was required. The two failed accessor attempts are
   recorded in DD-20260804-055 rather than committed half-proved.
+- Commit locating the first interior component: matrix untouched, so no frozen-cell
+  comparison was required. One of eight components is located; no row's status is
+  changed, since FG-08 quantifies over a run and not over a component.

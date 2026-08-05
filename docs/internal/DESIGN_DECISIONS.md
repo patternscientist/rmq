@@ -9055,3 +9055,28 @@ theorems that do not elaborate, or papering over them with a `simp` that might
 close them by accident, would have put an unchecked claim into a gate whose whole
 subject is checked claims. The tools are committed; the result is not, and the
 report says so.
+
+## DD-20260804-056 -- the first interior component is located
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerComponentAccess.lean`.
+
+`DD-20260804-055` diagnosed the left-associated split and predicted `7 - k` peels
+per component. Carried out for the leftmost component, the prediction holds
+exactly:
+
+```
+packedConcatIndex_first_of_eight  the seven-peel chain, generic over eight lists
+packedInteriorBaselineAccess      the baseline column IS the store's first words
+```
+
+Each peel's bound is the previous one widened by `packedConcatIndex_lt_append`, so
+the chain is six `have`s and one seven-step `rw`. No search, no `simp`, nothing
+that could close a goal by accident.
+
+Combined with `packedInteriorComponentWord_of_lt_size` this is the first interior
+component lowered end to end -- component-store index to payload bit range -- and
+the first time segment `20` reaches a computable address.
+
+Recording the shape before attempting it (`DD-055`) rather than after is what made
+this a fifteen-line proof instead of a search. The two failed attempts recorded
+there cost one elaboration each and bought the correct structure.
