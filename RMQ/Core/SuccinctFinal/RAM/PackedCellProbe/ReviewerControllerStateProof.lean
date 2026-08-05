@@ -1,5 +1,6 @@
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerControllerProof
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerControllerAtomicStateProof
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerControllerInteriorStateProof
 
 /-!
 # Canonically reachable reviewer-controller state bounds
@@ -6782,6 +6783,44 @@ structure PackedReviewerPublicRunCertificate
         index <
           2 ^ packedReviewerCellWidth
             (SuccinctClassic.cartesianShape xs).size
+
+/-! ## Invariant-driven request-width transport -/
+
+/--
+Any state invariant preserved by canonical-store consumption whose states only
+emit fitting requests transports to the fuel-indexed request-width prefix at
+every fuel.  No budget-descent obligation appears anywhere: the fuel induction
+is driven by the invariant alone, so protocols whose structural measures are
+not monotone for forged parameters are still covered on their canonical orbit.
+-/
+private theorem PackedReviewerRequestsFitFrom.of_invariant
+    {State : Type} (n : Nat) (store : WordRAM.ReadStore)
+    (nextRequest : State -> Option PackedReviewerLogicalRequest)
+    (consumeReply : State -> Option (List Bool) -> State)
+    (P : State -> Prop)
+    (hfit :
+      forall state request,
+        P state -> nextRequest state = some request ->
+          PackedReviewerLogicalRequestOperandsFit n request)
+    (hstep :
+      forall state request,
+        P state -> nextRequest state = some request ->
+          P (consumeReply state
+            (store.readWord? request.segment request.index)))
+    (fuel : Nat) (state : State) (hstate : P state) :
+    PackedReviewerRequestsFitFrom n store nextRequest consumeReply fuel
+      state := by
+  induction fuel generalizing state with
+  | zero => trivial
+  | succ fuel ih =>
+      cases hrequest : nextRequest state with
+      | none => simp [PackedReviewerRequestsFitFrom, hrequest]
+      | some request =>
+          simp only [PackedReviewerRequestsFitFrom, hrequest]
+          exact ⟨hfit state request hstate hrequest,
+            ih (consumeReply state
+              (store.readWord? request.segment request.index))
+              (hstep state request hstate hrequest)⟩
 
 end PackedCellProbe
 end SuccinctFinal
