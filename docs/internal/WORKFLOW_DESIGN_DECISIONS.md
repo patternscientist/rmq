@@ -7350,3 +7350,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   edit sections 8a-8h; where it corrects section 8h it says so in place rather than
   rewriting the earlier text, so the record still shows what was believed when 8h
   was written.
+- Commit adding the close half's chunk-table widths and reads: matrix untouched, so
+  no frozen-cell comparison was required. No row status changes -- two of the three
+  close segments lower, segment 20 does not, and FG-08 quantifies over a whole run.

@@ -9526,3 +9526,57 @@ here: they are not in the access list, so they have no `packedReviewerAccessOffs
 at all, and they are reached through `packedReviewerPayload_interiorSlice` instead.
 Their read, and therefore any store presenting the reviewer memory to the evaluator,
 remains open.
+
+## DD-20260804-070 -- the close half's chunk tables, bounded and read
+
+Segments `21` and `22` are the two close segments that are uniform word grids. They
+now have shape-free offsets into the consumed payload, width bounds, and lowerings.
+
+### The width bound is a comparison of bounds, not of widths
+
+`packedReviewerCellWidth n` is `machineWordBits (packedReviewerCellBound n + 2)` -- a
+logarithm. So "the entry is narrower than the payload" proves nothing; what is
+needed is that the entry's *bound* is no larger than the cell bound.
+
+For the select chunk table this is easy: the entry bound is `c + 1`, and the table's
+own overhead `2 ^ c * (c + 1) * W` -- which sits inside the reviewer overhead, hence
+inside the cell bound -- already exceeds it.
+
+For the fringe chunk table it is not. The entry bound `(2c+1)(2c+2)(c+1)` is cubic in
+`c`, while the naive lower bound on the table overhead, `2 ^ c * (c+1) ^ 2`, only
+overtakes it from `c = 5`. Writing out the small cases would need `Nat.log2`
+evaluated at numerals, which this toolchain does not reduce willingly.
+
+The gap is closed by the width factor instead. `W >= 4`, because `W <= 3` would give
+`entryBound < 2 ^ 3 = 8` through `bpFringeChunkEntryBound_lt_two_pow_width`, while
+`entryBound >= 24` whenever `c >= 1` -- and `bpFringeChunkBits_pos` says `c >= 1`
+always. Then `entryBound <= 4 (c+1) ^ 3 <= 4 * rowCount <= W * rowCount = overhead`.
+No logarithm is ever evaluated.
+
+### Why these two reads are simpler than the live access sources
+
+Both tables satisfy `payload.length = entries.length * width` exactly, so an in-range
+read is a full-width window. There is no partial final word and no counterpart of the
+sparse relative table's capacity gap, so the read width is the entry width itself
+rather than a `min`.
+
+### The type index that cannot be rewritten
+
+`FixedWidthNatTable` takes the entry width as a **type index**, so
+`bpFringeChunkTable c : FixedWidthNatTable (bpFringeChunkEntries c)
+(bpFringeChunkEntryWidth c)`. Rewriting the width inside any term containing the
+table makes the rewrite motive ill-typed, and `rw ... at` reports exactly that.
+
+Rewriting `shape.bpCode.length` inside the table is fine, because the whole term
+changes together and the projection `.payload` lands in `List Bool` either way. It is
+rewriting the width *alone* that fails.
+
+The proofs are therefore arranged so the size-only width appears only in the goal,
+where no table occurs, and the word equation comes from `Option.some.inj` applied to
+a transitivity rather than from rewriting a hypothesis.
+
+### Scope
+
+Segment `20` is untouched. The interior component store is not a uniform grid at all,
+so it has neither a single entry width to bound nor a single word count to guard, and
+its read remains open.
