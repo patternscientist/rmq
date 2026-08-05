@@ -9377,3 +9377,58 @@ to a bit range of the consumed payload. Every link checked.
 What remains for the close half is the physical read over
 `packedReviewerMemory`, which is what turns a bit range into cells, and which is
 shared with the eighteen live access sources rather than specific to segment `20`.
+
+## DD-20260804-067 -- the conditional probe, re-targeted at the consumed payload
+
+`Probe.lean` builds the one-or-two-cell plan over `packedMemory`. The re-target
+needs the same plan over `packedReviewerMemory`. This decision records what was
+rebuilt, what was reused, and why the split falls where it does.
+
+### Reused verbatim
+
+`packedProbeCell` and `packedFetch` both take the memory as an argument and
+mention no width or count. They are used unchanged. Duplicating them would have
+created two definitions of "issue a plan" that could drift apart, and the whole
+point of the failure they encode -- an unallocated address yields `none`, not an
+empty slice -- is that there is exactly one of them.
+
+### Rebuilt
+
+Everything naming a cell width or a cell count. Two independent reasons:
+
+* `packedReviewerCellWidth n` differs from `packedCellWidth n`, so `bit / w` and
+  `bit % w` name different cells. No amount of generalisation makes one plan serve
+  both; they are different addresses of different memories.
+* `packedReviewerCellCount n longCount` takes the decoded long count, where
+  `packedCellCount n` does not. Every allocation statement therefore carries
+  `longCount` explicitly.
+
+The second is the `K1` argument made load-bearing rather than decorative. Under the
+flat payload the cell count is size-only, so a controller could have computed it
+from `n` and the header carried nothing it needed. Over the consumed payload it
+cannot: `packedReviewerProbePlan_lt_cellCount` cannot even be stated without a
+`longCount`, so no address past cell zero can be shown allocated until cell zero
+has been probed and decoded. `packedReviewerHeaderProbe_decode` is where that value
+comes from, and it is charged as one probe like any other.
+
+### Which theorems need the unit-stride hypothesis, and which do not
+
+Only `packedReviewerProbeWindow_length`, which is about the *length* of the reply
+window and so inherits `packedReviewerPaddedBits_length`.
+
+The plan, the three count cases, the cap, the coverage bound, both reachability
+directions, the allocation of every issued address, the fetch, the boundary case and
+the decode all do without it. They are algebra on the padded bit string, not facts
+about how long it is. Carrying `hstride` on them would have misstated what they
+depend on, in the same way the three hypotheses removed under `DD-20260804-035`,
+`-050` and `-057` did.
+
+### The boundary case
+
+`packedReviewerProbe_final_cell` is the reviewer counterpart of
+`packedProbe_final_cell`: a positive-width read contained in the last allocated cell
+issues exactly one probe and fetches successfully. Its companion
+`packedReviewerMemory_getElem?_cellCount` shows the address an unconditional second
+probe would have issued is absent, so the same read would have returned `none`.
+Both are restated over the new memory rather than inherited, because the absent
+address is a different number.

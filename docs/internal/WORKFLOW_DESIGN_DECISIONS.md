@@ -7335,3 +7335,7 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit correcting the durable report's next-target line: matrix untouched, so no
   frozen-cell comparison was required. Section 8h supersedes 8g's step 1 rather
   than editing it, so the record shows what was outstanding when 8g was written.
+- Commit adding the conditional probe over the reviewer memory: matrix untouched,
+  so no frozen-cell comparison was required. FG-04's and FG-08's row statuses are
+  not touched -- the plan exists over the new memory, but no source addresses it and
+  no run is lowered.
