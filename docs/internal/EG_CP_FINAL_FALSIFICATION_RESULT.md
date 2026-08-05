@@ -1585,3 +1585,205 @@ seven `TARGET-ABSENT` replay cases.
 section 8c is still a defect in a frozen row, reported and left for the owner.
 
 This checkpoint is **not** `CANDIDATE_COMPLETE`.
+
+## 9. Independent-audit write-up at `eca109b`
+
+Self-contained. An auditor should be able to work from this section plus the
+repository, without reading sections `8a`--`8h` or any prompt.
+
+**This is not `CANDIDATE_COMPLETE`.** No `FG` row is closed. No `K1` obstruction is
+proved. What follows states exactly which propositions are checked and which are
+not.
+
+### 9.1 Exact state
+
+| Item | Value |
+| --- | --- |
+| Branch | `codex/eg-cp-final-falsification-gate-r1` |
+| HEAD | `eca109be665bf5f3f55af2166307c50c618a168c` |
+| Tree | `7a739ebc046dc1449714cb2455d7f7217d4be4e5` |
+| Base | `6078a29c318b0bd167b87b05629f576c53266fea` (verified ancestor) |
+| Frozen matrix | `0a18548539035f69f68c1b44031fba64df8297f3` (verified ancestor) |
+| Commits since base | 103 |
+| Working tree | clean |
+| `lake build RMQ` | exit 0 |
+| `design_decision_check.ps1 -Strict -Base HEAD~1` | exit 0 |
+| `claim_drift_scan.ps1 -Strict` | exit 0 |
+| `git diff --check` | exit 0 |
+| Hygiene regex (AGENTS.md command, verbatim) | no match |
+
+No frozen matrix cell has been rewritten. No commit has been amended, squashed or
+rebased.
+
+### 9.2 What the branch is doing, in one paragraph
+
+The frozen `FG-01` row identifies its object twice, and the two identifications pick
+out provably different objects: by name `concreteBPNativeSuccinctRMQPayload` (the
+flat payload, 21466 bits at `n = 3`), and by property "the payload the accepted RMQ
+semantics consumes" (the reviewer payload, 305 bits at `n = 3`). The repository
+theorem `concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_eq_global` shows the
+executed store is the reviewer one. Both clauses are discharged separately, each
+against the object it names; **the row and its status cell were not touched**,
+because amending a frozen requirement is the owner's decision, not this branch's.
+The consequence is that the packed cell-probe tower has to be built twice: once over
+the flat payload (done earlier, `Payload` through `Boundaries`), and once over the
+consumed payload (`Reviewer*`, in progress). This is a re-target, **not** a `K1`
+obstruction.
+
+### 9.3 Proved at this HEAD, over the consumed payload
+
+Three modules were added since section `8h`. Every name below is a checked theorem
+or an executable definition in the built tree.
+
+**`ReviewerProbe.lean`** -- the conditional one-or-two-cell plan.
+
+- `packedReviewerProbePlan n bit width` -- `[]` at zero width, `[bit / w]` when the
+  request fits the cell holding its first bit, `[bit / w, bit / w + 1]` otherwise.
+- `packedReviewerProbeCount_eq_zero`, `_eq_one`, `_eq_two`, `_le_two`, `_pos` -- the
+  charge is the length of the plan actually issued, not a declared constant.
+- `packedReviewerProbePlan_of_offset`, `_of_crossing` -- both branches reachable.
+- `packedReviewerProbePlan_lt_cellCount` -- every issued address is allocated, given
+  only that the requested range fits the allocation.
+- `packedReviewerFetch_memory`, `packedReviewerFetch_plan` -- the fetch succeeds and
+  returns exactly the addressed cells.
+- `packedReviewerProbePlan_decode` -- the fetched cells decode to exactly the
+  requested window of the padded bit string.
+- `packedReviewerMemory_getElem?_cellCount` -- the successor of the last cell is
+  **absent**; and `packedReviewerProbe_final_cell` -- a positive-width read inside
+  the last allocated cell issues exactly one probe and fetches successfully. Together
+  these are the audited two-probe defect, repaired: an unconditional plan issues the
+  absent address and the fetch returns `none`.
+- `packedReviewerHeaderProbe_decode` -- `longCount` is obtained by one probe of cell
+  zero, decoded with the ordinary little-endian codec, at every size.
+
+`packedProbeCell` and `packedFetch` are **reused unchanged** from `Probe.lean`; they
+take the memory as an argument. There is exactly one definition of "an unallocated
+address yields `none`".
+
+**`ReviewerSourceAddress.lean`** -- where each live access source sits.
+
+- `packedReviewerAccessOffset n longCount source` -- the summed bit length of every
+  source before it in `concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources`,
+  computed by `takeWhile` over that same list.
+- `packedReviewerSourceOffset n longCount source` -- past the balanced code, then
+  into the access half.
+- `packedReviewerAccessPrefix_counted` -- pins by evaluation that
+  `selectSparseRelative` is **last** in the canonical list, which is what makes every
+  prefix sum size-only.
+- `packedReviewerAccessPayload_slice`, `packedReviewerAccessOffset_fits`,
+  `packedReviewerPayload_drop_bpCode`, `packedReviewerPayload_accessSlice` -- the
+  source's payload is exactly the window of the consumed payload at that offset, and
+  the window is inside the payload.
+
+**`ReviewerPhysicalRead.lean`** -- the read.
+
+- `packedReviewerPayloadSlice` -- a payload range read off the padded bit string.
+- `packedReviewerSourceOffset_fits` -- the whole source window is inside the payload.
+- `packedReviewerStridedBitAddress`, `packedReviewerSourceReadPlan`,
+  `packedReviewerSourceRead` -- executable; arguments are `n`, `longCount`, the
+  memory, the typed source and the index. No `CartesianShape`.
+- `packedReviewerSourceReadPlan_length_le_two`.
+- `packedReviewerSourceRead_of_some` -- **every successful logical word read of a
+  counted live access source lowers to the physical probe plan and decodes to the
+  same word.**
+
+Per-source stride, word count and read width are reused from the flat development
+rather than rebuilt: they measure a source's own payload, not the layout it sits in.
+
+### 9.4 What an auditor should attack first
+
+1. **`packedReviewerSourceRead_of_some` is an implication, not an equation.** Check
+   that the direction is honest and not hiding a gap. The stated reason is
+   `DD-20260804-022`: between the sparse relative table's actual entry count and its
+   size-only capacity, the packed read answers where the store would have failed.
+2. **The unit-stride hypothesis.** `hstride : localStride (2n) = 1` appears on
+   `packedReviewerPayloadSlice`, `packedReviewerSourceOffset_fits` and the lowering.
+   It holds for every `n < 2^97`, so it is not a small-input restriction -- but check
+   that claim rather than accepting it.
+3. **Scope of the lowering.** Seventeen counted live access sources only. The close
+   half's segments are not read by `packedReviewerSourceRead` at all. Verify that no
+   downstream text reads as though they were.
+4. **`packedReviewerAccessPrefix_counted` really needs `hmem`.** Dropping it makes
+   the proposition false for eleven of twenty-nine constructors, and `decide` says
+   so. Confirm the hypothesis is discharged at every use rather than assumed.
+5. **The frozen `FG-01` reading.** The claim that the row names two different objects
+   is the load-bearing premise of the whole re-target. It should be checked directly
+   against `0a18548` and against
+   `concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_eq_global`.
+
+### 9.5 What remains, by frozen row
+
+Row statuses below are read from the matrix at this HEAD.
+
+**Closed leaves over the flat payload, not yet over the consumed payload.**
+`FG-02` (factorization), `FG-03` (sparse count elimination), `FG-04` (width and
+header) and `FG-06` (allocated space) are recorded as proved. `FG-05` records the
+definitions and round trip proved, with crossing behaviour partial.
+
+**Open, and what each still needs.**
+
+| Row | Status | Smallest thing that would move it |
+| --- | --- | --- |
+| `FG-07` | No controller exists | A fixed first-order controller taking only `n`, query endpoints, decoded header data and prior physical replies. What exists is a checked shape-free factorization it could consume. |
+| `FG-08` | Per-read lowering proved; whole-run absent | An ordered trace of a whole query run mapped through `packedReviewerSourceRead`, preserving order and multiplicity. |
+| `FG-09` | Per-read cap proved; run-level cap absent | A constant probe bound derived from the actual run, not declared. |
+| `FG-10` | Pending | Same-run correctness against the independent RMQ reference, for every machine-representable endpoint pair including reversed, empty and out-of-bounds. |
+| `FG-11` | Pending | Liveness and backing-cell sensitivity. |
+| `FG-12` | Runner exists | The exact committed replay registry: selectors, expected verdicts, nonvacuity, deadlines, descendant-tree termination, restoration, terminal clean state. Seven `TARGET-ABSENT` cases outstanding. |
+| `FG-13` | Pending | One same-object capstone, not sibling witnesses. |
+| `FG-14` | Both thresholds located | The boundary campaign itself. |
+| `FG-15` | Pending | The durable decision record. |
+
+Of the fourteen `INV-*` rows, eight carry partial evidence
+(`INV-VALUE-DEPENDENCY`, `INV-STORE-AGREEMENT`, `INV-READ-BACKING`,
+`INV-WORD-WIDTH`, `INV-ADDRESS-WIDTH`, `INV-GLOBAL-PHYSICAL-MACHINE`,
+`INV-MUTATION-REPRODUCIBILITY`, `INV-VALIDATION-REACH`) and the rest are `Pending`.
+The three `REPLAY-*` rows are empty. The fourteen `CHK-*` ledger rows are mostly
+`to be recorded`.
+
+### 9.6 The next smallest proof target
+
+A read of the **close half** over `packedReviewerMemory`. The access half is now
+complete end to end -- offset, slice, probe, decode -- and the close half has its
+word geometry (`ReviewerComponentAccess`, section `8h`) and its payload position
+(`packedReviewerPayload_interiorSlice`), but no offset function and no read. It needs
+the analogue of `packedReviewerAccessOffset` for segments 20, 21 and 22, which is
+simpler than the access half's because those three are single components rather than
+a `flatMap`, and then the same lowering shape as
+`packedReviewerSourceRead_of_some`.
+
+With both halves read, a store presenting `packedReviewerMemory` to the evaluator
+becomes statable, and that store is what `FG-07`'s controller and `FG-08`'s run-level
+lowering both consume.
+
+### 9.7 Failed approaches recorded since section 8h
+
+Each cost time, and none is obvious from its error message.
+
+- **`List.drop_drop` orientation.** Section `8h` recorded this lemma as folding
+  `(l.drop a).drop b = l.drop (b + a)`. That paraphrase is inverted. The actual
+  signature is `List.drop_drop : List.drop i (List.drop j l) = List.drop (j + i) l`
+  -- the **inner** drop's amount comes first in the sum. Acting on the inverted note
+  put a `Nat.add_comm` back into `ReviewerSourceAddress` and broke the rewrite chain
+  two rewrites later, at `packedReviewerPayload_drop_bpCode` rather than at the
+  `add_comm`. Now quoted rather than paraphrased, in `DD-20260804-068`.
+- **Containment does not follow from a slice equation.** Taking lengths of
+  `packedReviewerAccessPayload_slice` gives `min len (total - offset) = len`, which
+  for `len = 0` holds at every offset, including offsets past the end. A source with
+  an empty payload satisfies the slice equation anywhere. `omega` fails here for a
+  real reason, not a tactic reason. The fit is now proved from the split.
+- **`decide` proving the negation.** `packedReviewerAccessPrefix_counted` without
+  `hmem` is false for the eleven sources not in the reviewer list; for those,
+  `takeWhile` never fires and consumes the sparse relative table. The error message
+  -- "decide proved that the proposition is false", eleven times -- names the count
+  but not the reason.
+- **`simp [List.takeWhile, hx]` is worse than `simp [hx]`.** Adding `List.takeWhile`
+  to the simp set left the goal open and reported `hx` as unused. The bare
+  `simp [hx]` closes it. Verified in isolation before being applied.
+- **Binder sugar.** `forall s ∈ l, P s` does not parse with the ASCII `forall`
+  keyword in this toolchain; it is a parse error at the `∈`. The explicit
+  `forall s, s ∈ l -> P s` form is what the rest of the development uses.
+- **`conv_lhs` is unavailable**, alongside the already-recorded `conv_rhs`. Where a
+  rewrite must avoid a second occurrence of the same term, the working pattern is to
+  discharge the equation inside a helper lemma with `subst`
+  (`packedFlatMapSliceOfEq`) rather than to steer `conv`.

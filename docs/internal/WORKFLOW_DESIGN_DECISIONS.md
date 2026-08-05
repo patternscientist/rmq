@@ -7345,3 +7345,8 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit adding the physical read over the consumed payload: matrix untouched, so no
   frozen-cell comparison was required. No row status changes -- FG-08 quantifies over
   a whole run, and only the access half of one read is lowered.
+- Commit adding the independent-audit write-up: matrix untouched, so no frozen-cell
+  comparison was required. No row status changes. Section 9 is additive and does not
+  edit sections 8a-8h; where it corrects section 8h it says so in place rather than
+  rewriting the earlier text, so the record still shows what was believed when 8h
+  was written.
