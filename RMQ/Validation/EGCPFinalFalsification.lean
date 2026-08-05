@@ -11,6 +11,8 @@ import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.WordWidth
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.PhysicalRead
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Boundaries
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerPayload
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerControllerProof
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerControllerStateProof
 
 /-!
 # Exact-type consumers for the EG-CP packed cell-probe candidate
@@ -1744,6 +1746,13 @@ theorem packedHeaderCountMovesTheIssuedCell :
             index stride / packedCellWidth n :=
   packedProbeCell_moves_with_longCount
 
+/-!
+Historical predecessor evidence only: the following unit-stride declarations
+are preserved for regression history and are not imported into any `R2-*`
+proposition or composition chain. The all-size controller section below has no
+stride premise, sampled-size premise, or finite cutoff.
+-/
+
 /-! ## The sparse-exception path is unreachable at unit stride (`DD-20260804-041`) -/
 
 /-- At unit stride a local slot's span is at most one occurrence wide. -/
@@ -1806,6 +1815,1048 @@ theorem packedReviewerOverheadIsLittleOLinear :
     SuccinctSpace.LittleOLinear
       concreteBPNativeSuccinctRMQCanonicalReviewerOverhead :=
   packedReviewerOverhead_littleO
+
+/-!
+## EG-CP-ALLSIZE-R1: exact-type consumers for the reviewer-memory controller
+
+This section is the coordinator-amended validation surface for `R2-01` through
+`R2-10`.  The declarations below intentionally restate concrete signatures and
+propositions rather than adapting to whatever type a library declaration may
+later have.  In particular, the executable controller has no shape, source
+registry, semantic store, or answer-oracle argument; only its external driver
+receives physical cell memory.
+-/
+
+/-! ### `R2-01` and `R2-03`: one consumed payload, header, and allocation -/
+
+/-- The counted object is the canonical reviewer payload, not the flat sibling. -/
+theorem egcpAllSizeConsumedPayloadIdentity :
+    forall shape : CartesianShape,
+      packedReviewerPayloadBits shape =
+        concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape :=
+  packedReviewerPayloadBits_eq_canonical
+
+/-- The same exact object is the payload exposed by the public list builder. -/
+theorem egcpAllSizeConsumedPayloadIsBuildPayload :
+    forall xs : List Int,
+      packedReviewerPayloadBits (SuccinctClassic.cartesianShape xs) =
+        SuccinctClassic.buildPayload xs :=
+  packedReviewerPayloadBits_eq_buildPayload
+
+/-- The accepted logical store is exactly the canonical reviewer store. -/
+theorem egcpAllSizeConsumedStoreIdentity :
+    forall (shape : CartesianShape) (segment index : Nat),
+      (concreteBPNativeSuccinctRMQCanonicalReviewerReadStore shape).readWord?
+          segment index =
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          segment index :=
+  packedExecutedStore_is_reviewerStore
+
+/-- The exact payload length depends only on the public size and two decoded counts. -/
+def egcpAllSizeReviewerPayloadLengthSignature : Nat -> Nat -> Nat -> Nat :=
+  @packedReviewerPayloadLength
+
+/-- The executable closed length has the same shape-free three-scalar signature. -/
+def egcpAllSizeClosedPayloadLengthSignature : Nat -> Nat -> Nat -> Nat :=
+  @packedReviewerClosedPayloadLength
+
+def egcpAllSizeClosedSourceOffsetSignature :
+    Nat -> Nat -> ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Nat :=
+  @packedReviewerClosedSourceOffset
+
+/-- The closed arithmetic length is extensionally the counted reviewer length. -/
+theorem egcpAllSizeClosedPayloadLengthIdentity :
+    forall n longCount sparseCount : Nat,
+      packedReviewerClosedPayloadLength n longCount sparseCount =
+        packedReviewerPayloadLength n longCount sparseCount :=
+  packedReviewerClosedPayloadLength_eq
+
+/-- Exact all-size length of the actual counted payload. -/
+theorem egcpAllSizeConsumedPayloadLength :
+    forall shape : CartesianShape,
+      (packedReviewerPayloadBits shape).length =
+        packedReviewerPayloadLength shape.size (longCount shape)
+          (packedReviewerSparseCount shape) :=
+  packedReviewerPayloadBits_length_eq
+
+/-- The one-cell header contains only `longCount`. -/
+def egcpAllSizeHeaderSignature : CartesianShape -> List Bool :=
+  @packedReviewerHeaderBits
+
+theorem egcpAllSizeHeaderHasOneCellWidth :
+    forall shape : CartesianShape,
+      (packedReviewerHeaderBits shape).length =
+        packedReviewerCellWidth shape.size :=
+  packedReviewerHeaderBits_length
+
+theorem egcpAllSizeHeaderDecodesLongCount :
+    forall shape : CartesianShape,
+      SuccinctSpace.bitsToNatLE (packedReviewerHeaderBits shape) =
+        longCount shape :=
+  packedReviewerHeaderBits_decode
+
+/-- Dropping the single header recovers the counted payload with no interior pad. -/
+theorem egcpAllSizeSerializedDropsToConsumedPayload :
+    forall shape : CartesianShape,
+      (packedReviewerSerializedBits shape).drop
+          (packedReviewerCellWidth shape.size) =
+        packedReviewerPayloadBits shape :=
+  packedReviewerSerializedBits_drop_header
+
+theorem egcpAllSizeSerializedLengthExact :
+    forall shape : CartesianShape,
+      (packedReviewerSerializedBits shape).length =
+        packedReviewerCellWidth shape.size +
+          packedReviewerPayloadLength shape.size (longCount shape)
+            (packedReviewerSparseCount shape) :=
+  packedReviewerSerializedBits_length
+
+/-- The only padding is the final allocation suffix. -/
+theorem egcpAllSizePaddedAllocationLengthExact :
+    forall shape : CartesianShape,
+      (packedReviewerPaddedBits shape).length =
+        packedReviewerAllocatedBits shape.size (longCount shape)
+          (packedReviewerSparseCount shape) :=
+  packedReviewerPaddedBits_length
+
+def egcpAllSizeReviewerMemorySignature : CartesianShape -> List (List Bool) :=
+  @packedReviewerMemory
+
+theorem egcpAllSizeReviewerMemoryCellCountExact :
+    forall shape : CartesianShape,
+      (packedReviewerMemory shape).length =
+        packedReviewerCellCount shape.size (longCount shape)
+          (packedReviewerSparseCount shape) :=
+  packedReviewerMemory_length
+
+/-- Header and final-cell padding are both charged on the actual memory object. -/
+theorem egcpAllSizeReviewerAllocatedSpace :
+    forall shape : CartesianShape,
+      (packedReviewerMemory shape).length *
+          packedReviewerCellWidth shape.size <=
+        2 * shape.size + packedReviewerRho shape.size :=
+  packedReviewerMemory_length_mul_width_le
+
+/-- The allocation residual itself is little-o linear. -/
+theorem egcpAllSizeReviewerAllocationResidual :
+    SuccinctSpace.LittleOLinear packedReviewerRho :=
+  packedReviewerRho_littleO
+
+/-! ### `R2-02`: all-size K1 sparse-count recovery -/
+
+/-- K1 decodes only the public size and three prior physical replies. -/
+def egcpAllSizeSparseCountDecoderSignature :
+    Nat -> List Bool -> List Bool -> List Bool -> Nat :=
+  @packedReviewerSparseCountFromReplies
+
+def egcpAllSizeSparsePreludeNextSignature :
+    PackedReviewerSparsePreludeState ->
+      Option PackedReviewerSparsePreludeRequest :=
+  @packedReviewerSparsePreludeNextRequest
+
+def egcpAllSizeSparsePreludeConsumeSignature :
+    PackedReviewerSparsePreludeState -> List Bool ->
+      PackedReviewerSparsePreludeState :=
+  @packedReviewerSparsePreludeConsumeReply
+
+/-- The K1 request universe and order are exactly the three rank-at-end reads. -/
+theorem egcpAllSizeSparsePreludeRequestSequence :
+    forall n : Nat,
+      packedReviewerSparsePreludeRequests n =
+        [ .rankSuper, .rankBlock, .flagWord ] := by
+  intro n
+  rfl
+
+/-- Prelude addresses are chosen before, and independently of, `sparseCount`. -/
+theorem egcpAllSizeSparsePreludeAddressesIndependentOfSparseCount :
+    forall n longCount sparseCountLeft sparseCountRight : Nat,
+      packedReviewerSparsePreludeProbePlanAt n longCount sparseCountLeft =
+        packedReviewerSparsePreludeProbePlanAt n longCount sparseCountRight :=
+  packedReviewerSparsePreludeProbePlan_sparseCount_independent
+
+/-- Three canonical reviewer-memory reads recover the exact count at every size. -/
+theorem egcpAllSizeSparsePreludeExact :
+    forall shape : CartesianShape,
+      packedReviewerSparsePreludeRunAgainstMemory shape.size (longCount shape)
+          (packedReviewerMemory shape) =
+        some (packedReviewerSparseCount shape) :=
+  packedReviewerSparsePreludeRunAgainstMemory_exact
+
+/--
+The final controller itself executes the three K1 plans, in source order, and
+then enters the canonical whole-query state with a 210-read fuel budget (and
+therefore at most 210 actual logical reads).  This is the load-bearing
+prelude trace statement; the auxiliary sparse-prelude wrapper is deliberately
+not used as final-run evidence.
+-/
+theorem egcpAllSizeActualControllerPrelude :
+    forall (shape : CartesianShape) (left right wholeFuel : Nat),
+      let superState :=
+        packedReviewerSparsePreludeInit shape.size (longCount shape)
+      packedReviewerDriveAgainstMemoryAux (packedReviewerMemory shape)
+          ((packedReviewerSparsePreludeRequestPlan shape.size
+              (longCount shape) .rankSuper).length +
+            ((packedReviewerSparsePreludeRequestPlan shape.size
+                (longCount shape) .rankBlock).length +
+              ((packedReviewerSparsePreludeRequestPlan shape.size
+                  (longCount shape) .flagWord).length + wholeFuel)))
+          (packedReviewerNormalizePrelude 3 shape.size left right
+            (longCount shape) superState) =
+        packedReviewerPrependPhysicalEvents
+          (packedReviewerSparsePreludePhysicalTrace shape)
+          (packedReviewerDriveAgainstMemoryAux (packedReviewerMemory shape)
+            wholeFuel
+            (packedReviewerNormalizeWhole 210 shape.size left right
+              (longCount shape) (packedReviewerSparseCount shape)
+              (packedReviewerWholeStart shape.size left right))) :=
+  packedReviewerDriveCanonicalPrelude_eq
+
+/-! ### `R2-04`: all eight ragged segment-20 components -/
+
+/-- Adding or removing an interior component makes this exhaustive consumer fail. -/
+theorem egcpAllSizeInteriorComponentsAreExactlyEight
+    (component : PackedReviewerInteriorComponentTag) :
+    component = .baseline \/ component = .minRel \/ component = .maxRel \/
+      component = .argOffset \/ component = .localOffset \/
+      component = .globalBlock \/ component = .localLevel \/
+      component = .globalLevel := by
+  cases component <;> simp
+
+/-- Component identity, entry/chunk coordinates, and the short final width. -/
+theorem egcpAllSizeInteriorCoordinates :
+    forall (n : Nat) (component : PackedReviewerInteriorComponentTag)
+        (localWordIndex : Nat),
+      let location :=
+        packedReviewerInteriorLocation n component localWordIndex
+      let width := packedReviewerInteriorEntryWidth n component
+      let wordSize := packedBpCodeWordWidth n
+      let chunks := packedChunkCount width wordSize
+      location.component = component /\
+        location.localWordIndex = localWordIndex /\
+        location.entryIndex = localWordIndex / chunks /\
+        location.chunkIndex = localWordIndex % chunks /\
+        location.componentBitPrefix =
+          packedReviewerInteriorComponentBitPrefix n component /\
+        location.bitOffset = location.chunkIndex * wordSize +
+          location.entryIndex * width /\
+        location.readWidth =
+          min (width - location.chunkIndex * wordSize) wordSize :=
+  packedReviewerInteriorLocation_coordinates
+
+/-- The tagged append prefix preserves the component word at its exact position. -/
+theorem egcpAllSizeInteriorWordOrder :
+    forall (shape : CartesianShape)
+        (component : PackedReviewerInteriorComponentTag)
+        (localWordIndex : Nat),
+      localWordIndex <
+          (packedReviewerInteriorCanonicalWords shape component).length ->
+        (packedInteriorStoreWords shape)[
+            packedReviewerInteriorComponentWordPrefix shape.size component +
+              localWordIndex]? =
+          (packedReviewerInteriorCanonicalWords shape component)[
+            localWordIndex]? :=
+  packedReviewerInteriorStoreAccess
+
+/-- Every component word is exactly its entry-local, possibly short final chunk. -/
+theorem egcpAllSizeInteriorCanonicalWord :
+    forall (shape : CartesianShape)
+        (component : PackedReviewerInteriorComponentTag)
+        (localWordIndex : Nat),
+      localWordIndex <
+          (packedReviewerInteriorCanonicalWords shape component).length ->
+        (packedReviewerInteriorCanonicalWords shape component)[localWordIndex]? =
+          some (((packedReviewerInteriorCanonicalPayload shape component).drop
+            (packedReviewerInteriorLocation shape.size component
+              localWordIndex).bitOffset).take
+            (packedReviewerInteriorLocation shape.size component
+              localWordIndex).readWidth) :=
+  packedReviewerInteriorCanonicalWord
+
+/-- Component-local reviewer-memory decoding is exact for every tagged word. -/
+theorem egcpAllSizeInteriorPhysicalDecode :
+    forall (shape : CartesianShape)
+        (component : PackedReviewerInteriorComponentTag)
+        (localWordIndex : Nat),
+      localWordIndex <
+          (packedReviewerInteriorCanonicalWords shape component).length ->
+        let location :=
+          packedReviewerInteriorLocation shape.size component localWordIndex
+        (packedFetch (packedReviewerMemory shape)
+            (packedReviewerInteriorLocationPlan shape.size (longCount shape)
+              (packedReviewerSparseCount shape) location)).map
+          (packedReviewerDecodeSpan shape.size
+            (packedReviewerInteriorBitAddress shape.size (longCount shape)
+              (packedReviewerSparseCount shape) location)
+            location.readWidth) =
+          some (((packedReviewerInteriorCanonicalPayload shape component).drop
+            location.bitOffset).take location.readWidth) :=
+  packedReviewerInteriorLocationDecode
+
+/-- Aggregate segment 20 is exactly the executed logical store, including `none`. -/
+theorem egcpAllSizeSegment20Exact :
+    forall (shape : CartesianShape) (index : Nat),
+      packedReviewerInteriorRead shape.size (longCount shape)
+          (packedReviewerSparseCount shape) (packedReviewerMemory shape) index =
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 20 index :=
+  packedReviewerInteriorRead_eq_segment20
+
+/-- Non-BP legacy requests are concretely routed through closed arithmetic. -/
+theorem egcpAllSizeLegacyPlanIsClosed :
+    forall (n longCount sparseCount : Nat)
+        (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource) (index : Nat),
+      source != ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode ->
+        source !=
+            ConcreteBPNativeSuccinctRMQFlatPayloadSource.finalRankBPCodeAlias ->
+          packedReviewerLegacyRawPlan n longCount sparseCount source index =
+            packedReviewerClosedSourceReadPlan n longCount sparseCount source
+              index :=
+  packedReviewerLegacyRawPlan_eq_closed
+
+/-- Its decoder uses the same closed source address and the exact reply cells. -/
+theorem egcpAllSizeLegacyDecodeIsClosed :
+    forall (n longCount sparseCount : Nat)
+        (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource) (index : Nat)
+        (cells : List (List Bool)),
+      source != ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode ->
+        source !=
+            ConcreteBPNativeSuccinctRMQFlatPayloadSource.finalRankBPCodeAlias ->
+          packedReviewerLegacyDecode n longCount sparseCount source index cells =
+            packedReviewerDecodeSpan n
+              (packedReviewerClosedStridedBitAddress n longCount source index
+                (packedSourceStride n source))
+              (packedReviewerSourceReadWidth n longCount sparseCount source
+                index)
+              cells :=
+  packedReviewerLegacyDecode_eq_closed
+
+/-- Executed segment 20's total logical plan is the ragged closed plan. -/
+theorem egcpAllSizeSegment20LogicalPlan :
+    forall (n longCount sparseCount : Nat)
+        (request : PackedReviewerLogicalRequest),
+      request.segment = 20 ->
+        packedReviewerLogicalPlan n longCount sparseCount request =
+          packedReviewerInteriorReadPlan n longCount sparseCount
+            request.index :=
+  packedReviewerLogicalPlan_segment20_eq
+
+/-- Executed segment 20's total decoder is the classified ragged decoder. -/
+theorem egcpAllSizeSegment20LogicalDecode :
+    forall (n longCount sparseCount : Nat)
+        (request : PackedReviewerLogicalRequest) (cells : List (List Bool)),
+      request.segment = 20 ->
+        packedReviewerLogicalDecode n longCount sparseCount request cells =
+          match packedReviewerInteriorClassify n request.index with
+          | none => none
+          | some location =>
+              some (packedReviewerDecodeSpan n
+                (packedReviewerInteriorBitAddress n longCount sparseCount
+                  location)
+                location.readWidth cells) :=
+  packedReviewerLogicalDecode_segment20_eq
+
+/-! ### `R2-05` and `R2-06`: the first-order controller and memory-only driver -/
+
+/-- Exact proof-free state constructors; adding shape/store/oracle fields breaks these. -/
+def egcpAllSizeControllerHeaderStateSignature :
+    Nat -> Nat -> Nat -> PackedReviewerControllerState :=
+  @PackedReviewerControllerState.header
+
+def egcpAllSizeControllerPreludeReadyStateSignature :
+    Nat -> Nat -> Nat -> Nat -> PackedReviewerSparsePreludeState ->
+      PackedReviewerControllerState :=
+  @PackedReviewerControllerState.preludeReady
+
+def egcpAllSizeControllerPreludeProbeStateSignature :
+    Nat -> Nat -> Nat -> Nat -> PackedReviewerSparsePreludeState -> Nat ->
+      List (List Bool) -> PackedReviewerControllerState :=
+  @PackedReviewerControllerState.preludeProbe
+
+def egcpAllSizeControllerWholeReadyStateSignature :
+    Nat -> Nat -> Nat -> Nat -> Nat -> Nat -> PackedReviewerWholeState ->
+      PackedReviewerControllerState :=
+  @PackedReviewerControllerState.wholeReady
+
+def egcpAllSizeControllerWholeProbeStateSignature :
+    Nat -> Nat -> Nat -> Nat -> Nat -> Nat -> PackedReviewerWholeState -> Nat ->
+      List (List Bool) -> PackedReviewerControllerState :=
+  @PackedReviewerControllerState.wholeProbe
+
+def egcpAllSizeControllerDoneStateSignature :
+    Option Nat -> PackedReviewerControllerState :=
+  @PackedReviewerControllerState.done
+
+def egcpAllSizeControllerFailedState : PackedReviewerControllerState :=
+  PackedReviewerControllerState.failed
+
+def egcpAllSizePhysicalRequestConstructorSignature :
+    PackedReviewerPhysicalOrigin -> Nat -> Nat -> Nat ->
+      PackedReviewerPhysicalRequest :=
+  @PackedReviewerPhysicalRequest.mk
+
+def egcpAllSizePhysicalEventConstructorSignature :
+    PackedReviewerPhysicalRequest -> Option (List Bool) ->
+      PackedReviewerPhysicalEvent :=
+  @PackedReviewerPhysicalEvent.mk
+
+/-- The run stores only outcome, failure, residual state, and the actual trace. -/
+def egcpAllSizeRunConstructorSignature :
+    Option (Option Nat) -> Bool -> PackedReviewerControllerState ->
+      List PackedReviewerPhysicalEvent -> PackedReviewerRun :=
+  @PackedReviewerRun.mk
+
+def egcpAllSizeControllerSignature :
+    Nat -> Nat -> Nat -> PackedReviewerControllerState :=
+  @packedReviewerController
+
+def egcpAllSizeNextRequestSignature :
+    PackedReviewerControllerState -> Option PackedReviewerPhysicalRequest :=
+  @packedReviewerNextRequest
+
+def egcpAllSizeConsumeReplySignature :
+    PackedReviewerControllerState -> Option (List Bool) ->
+      PackedReviewerControllerState :=
+  @packedReviewerConsumeReply
+
+def egcpAllSizeControllerResultSignature :
+    PackedReviewerControllerState -> Option (Option Nat) :=
+  @packedReviewerControllerResult
+
+def egcpAllSizeControllerFailedSignature :
+    PackedReviewerControllerState -> Bool :=
+  @packedReviewerControllerFailed
+
+/-- Valid half-open endpoints enter the physical header phase exactly. -/
+theorem egcpAllSizeValidControllerEntry
+    (n left right : Nat) (hvalid : left < right ∧ right <= n) :
+    packedReviewerController n left right = .header n left right := by
+  simp [packedReviewerController, hvalid]
+
+/-- Empty, reversed, and out-of-range endpoints are terminal before any read. -/
+theorem egcpAllSizeInvalidControllerEntry
+    (n left right : Nat) (hbad : ¬ (left < right ∧ right <= n)) :
+    packedReviewerController n left right = .done none := by
+  simp [packedReviewerController, hbad]
+
+/-- The invalid public route has no decorative or unreachable child requests. -/
+theorem egcpAllSizeInvalidRunHasZeroTrace
+    (memory : List (List Bool)) (n left right : Nat)
+    (hbad : ¬ (left < right ∧ right <= n)) :
+    packedReviewerRunAgainstMemory memory n left right =
+      { terminal := some none
+        failed := false
+        state := .done none
+        trace := [] } := by
+  simp [packedReviewerRunAgainstMemory, packedReviewerController, hbad,
+    packedReviewerControllerMeasure, packedReviewerDriveAgainstMemoryAux,
+    packedReviewerControllerResult, packedReviewerControllerFailed]
+
+/-- Cell zero is the first and only header request. -/
+theorem egcpAllSizeHeaderNextRequest (n left right : Nat) :
+    packedReviewerNextRequest (.header n left right) =
+      some
+        { origin := .header
+          address := 0
+          ordinal := 0
+          cellCount := 1 } :=
+  rfl
+
+/-- A missing physical reply is a real driver failure, not a semantic fallback. -/
+theorem egcpAllSizeMissingReplyFails
+    (state : PackedReviewerControllerState) :
+    packedReviewerConsumeReply state none = .failed := by
+  cases state <;> rfl
+
+/-- The executable address table uses only size, decoded counts, and a request. -/
+def egcpAllSizeLogicalPlanSignature :
+    Nat -> Nat -> Nat -> PackedReviewerLogicalRequest -> List Nat :=
+  @packedReviewerLogicalPlan
+
+/-- Decoding adds only the physical replies already received. -/
+def egcpAllSizeLogicalDecodeSignature :
+    Nat -> Nat -> Nat -> PackedReviewerLogicalRequest -> List (List Bool) ->
+      Option (List Bool) :=
+  @packedReviewerLogicalDecode
+
+/-- The driver accepts physical memory, never a `WordRAM.ReadStore`. -/
+def egcpAllSizeRunAgainstMemorySignature :
+    List (List Bool) -> Nat -> Nat -> Nat -> PackedReviewerRun :=
+  @packedReviewerRunAgainstMemory
+
+/-- Every event reply is the literal lookup made in the supplied memory. -/
+theorem egcpAllSizeDriverMemoryOnly :
+    forall (memory : List (List Bool)) (n left right : Nat) event,
+      event ∈ (packedReviewerRunAgainstMemory memory n left right).trace ->
+        event.reply = memory[event.request.address]? :=
+  packedReviewerRunAgainstMemory_memory_only
+
+/-- Ordered agreement on the first run determines the entire second run object. -/
+theorem egcpAllSizeDynamicStoreAgreement :
+    forall (memoryA memoryB : List (List Bool)) (n left right : Nat),
+      (forall event,
+        event ∈
+            (packedReviewerDriveAgainstMemoryAux memoryA
+              (packedReviewerControllerMeasure
+                (packedReviewerController n left right))
+              (packedReviewerController n left right)).trace ->
+          memoryB[event.request.address]? = event.reply) ->
+        packedReviewerRunAgainstMemory memoryA n left right =
+          packedReviewerRunAgainstMemory memoryB n left right :=
+  by
+    intro memoryA memoryB n left right hagree
+    exact packedReviewerRunAgainstMemory_eq_of_agree memoryA memoryB n
+      left right (by
+        simpa [PackedReviewerMemoriesAgreeOnRun] using hagree)
+
+/-! ### `R2-07`: ordered logical and physical lowering -/
+
+/-- No disconnected physical trace may be supplied to the grouping target. -/
+def egcpAllSizeExpectedPhysicalTraceSignature :
+    CartesianShape -> Nat -> Nat -> List PackedReviewerPhysicalEvent :=
+  @packedReviewerExpectedPhysicalTrace
+
+/-- Every logical segment is answered from the identical reviewer memory. -/
+theorem egcpAllSizeEveryLogicalReadFromReviewerMemory :
+    forall (shape : CartesianShape) (request : PackedReviewerLogicalRequest),
+      packedReviewerLogicalRead shape.size (longCount shape)
+          (packedReviewerSparseCount shape) (packedReviewerMemory shape)
+          request =
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index :=
+  packedReviewerLogicalRead_eq_globalReadStore
+
+/-- Ordered logical simulation fixes result, state, and every reference event. -/
+theorem egcpAllSizeLogicalWholeRunSimulation :
+    forall (shape : CartesianShape) (left right : Nat),
+      left < right -> right <= shape.size ->
+        let store := concreteBPNativeSuccinctRMQGlobalReadStore shape
+        let run :=
+          packedReviewerDriveLogical store 210
+            (packedReviewerWholeStart shape.size left right)
+        let reference := packedWholeQueryRun store shape.size left right
+        run.terminal = some reference.value /\
+          run.state = .done reference.value /\
+          run.trace.map PackedReviewerLogicalEvent.erase = reference.trace :=
+  packedReviewerDriveLogical_210_simulates_packedWholeQueryRun
+
+/-- Equal repeated reads retain their global logical occurrence. -/
+theorem egcpAllSizeLogicalOccurrenceSimulation :
+    forall (shape : CartesianShape) (left right : Nat),
+      left < right -> right <= shape.size ->
+        forall (position : Nat) (event : PackedReviewerLogicalEvent),
+          (packedReviewerDriveLogical
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape) 210
+            (packedReviewerWholeStart shape.size left right)).trace[position]? =
+              some event ->
+            (packedWholeQueryRun
+              (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              shape.size left right).trace[position]? =
+              some event.erase :=
+  packedReviewerDriveLogical_210_occurrence_erases
+
+/--
+The canonical logical run and the occurrence-expanded physical trace are the
+two projections of one lowered run object.
+-/
+theorem egcpAllSizeLoweredWholeRunSimulation :
+    forall (shape : CartesianShape) (left right : Nat),
+      left < right -> right <= shape.size ->
+        let lowered :=
+          packedReviewerDriveLoweredWhole shape 210
+            (packedReviewerWholeStart shape.size left right)
+        let reference :=
+          packedWholeQueryRun
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            shape.size left right
+        lowered.terminal = some reference.value /\
+          lowered.state = .done reference.value /\
+          lowered.logicalTrace.map PackedReviewerLogicalEvent.erase =
+            reference.trace /\
+          lowered.physicalTrace =
+            packedReviewerLogicalTracePhysicalTrace shape
+              lowered.logicalTrace :=
+  packedReviewerDriveLoweredWhole_210_simulates_packedWholeQueryRun
+
+/-- Per-plan physical expansion retains address, reply, ordinal, and multiplicity. -/
+theorem egcpAllSizePhysicalOccurrenceExpansion :
+    forall (memory : List (List Bool))
+        (origin : PackedReviewerPhysicalOrigin) (plan : List Nat)
+        (position : Nat),
+      (packedReviewerPhysicalEvents memory origin plan)[position]? =
+        plan[position]?.map fun address =>
+          { request :=
+              { origin := origin
+                address := address
+                ordinal := position
+                cellCount := plan.length }
+            reply := memory[address]? } :=
+  packedReviewerPhysicalEvents_get?_eq
+
+/-- The actual valid run is header, K1, then the lowered whole run in order. -/
+theorem egcpAllSizeActualRunLowering :
+    forall (shape : CartesianShape) (left right : Nat),
+      left < right ∧ right <= shape.size ->
+        let lowered :=
+          packedReviewerDriveLoweredWhole shape 210
+            (packedReviewerWholeStart shape.size left right)
+        packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+            shape.size left right =
+          packedReviewerPrependPhysicalEvents
+            (packedReviewerHeaderPhysicalTrace shape)
+            (packedReviewerPrependPhysicalEvents
+              (packedReviewerSparsePreludePhysicalTrace shape)
+              (packedReviewerRunOfLowered lowered)) :=
+  packedReviewerRunAgainstMemory_eq_lowered
+
+/-- The grouping equality is about the actual run, not an auxiliary trace. -/
+theorem egcpAllSizeActualRunGrouping
+    (shape : CartesianShape) (left right : Nat)
+    (grouping : PackedReviewerRunGrouping shape left right) :
+    (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).trace =
+      packedReviewerExpectedPhysicalTrace shape left right :=
+  grouping.trace_eq
+
+/--
+The global physical occurrence is pinned independently: repeated equal cells
+remain distinguished by their position in the actual run and in the exact
+header/K1/logical expansion.
+-/
+theorem egcpAllSizeActualRunPhysicalOccurrence
+    {shape : CartesianShape} {left right position : Nat}
+    (grouping : PackedReviewerRunGrouping shape left right) :
+    (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).trace[position]? =
+      (packedReviewerExpectedPhysicalTrace shape left right)[position]? :=
+  grouping.get?_eq position
+
+/-! ### `R2-08` and `R2-09`: totality, capacity, cap, and public semantics -/
+
+/--
+The initial physical budget is structural.  Replacing this arm by a stored
+literal `427` breaks the consumer even if a later inequality still happens to
+compile.
+-/
+theorem egcpAllSizeHeaderMeasureIsStructural (n left right : Nat) :
+    packedReviewerControllerMeasure (.header n left right) =
+      1 +
+        2 * packedReviewerSparsePreludeRemaining
+          (packedReviewerSparsePreludeInit n 0) +
+        2 * packedReviewerWholeRemaining
+          (packedReviewerWholeStart n left right) :=
+  rfl
+
+/-- The literal cap is derived for the actual run and is not a state field. -/
+theorem egcpAllSizeActualRunProbeCap :
+    forall (memory : List (List Bool)) (n left right : Nat),
+      (packedReviewerRunAgainstMemory memory n left right).trace.length <= 427 :=
+  packedReviewerRunAgainstMemory_trace_length_le_427
+
+/-- The same literal cap is also derived through the reconstructed run grouping. -/
+theorem egcpAllSizeGroupedActualRunProbeCap :
+    forall {shape : CartesianShape} {left right : Nat},
+      PackedReviewerRunGrouping shape left right ->
+        (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+          shape.size left right).trace.length <= 427 :=
+  by
+    intro shape left right grouping
+    exact grouping.trace_length_le_427
+
+/-- Every grouped actual request is allocated in the same reviewer memory. -/
+theorem egcpAllSizeActualRunAllocated :
+    forall {shape : CartesianShape} {left right : Nat},
+      PackedReviewerRunGrouping shape left right ->
+        forall {event : PackedReviewerPhysicalEvent},
+          event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+            shape.size left right).trace ->
+            event.request.address <
+              packedReviewerCellCount shape.size (longCount shape)
+                (packedReviewerSparseCount shape) :=
+  PackedReviewerRunGrouping.address_lt_cellCount
+
+/-- Every grouped actual request fits the query-independent address width. -/
+theorem egcpAllSizeActualRunAddressWidth :
+    forall {shape : CartesianShape} {left right : Nat},
+      PackedReviewerRunGrouping shape left right ->
+        forall {event : PackedReviewerPhysicalEvent},
+          event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+            shape.size left right).trace ->
+            event.request.address < 2 ^ packedReviewerCellWidth shape.size :=
+  PackedReviewerRunGrouping.address_lt_two_pow
+
+/-- Every retained logical instruction/site/segment/index operand fits one word. -/
+theorem egcpAllSizeCanonicalLogicalRequestOperandsWidth :
+    forall (shape : CartesianShape) (left right : Nat),
+      left < right -> right <= shape.size ->
+        forall event,
+          event ∈
+              (packedReviewerDriveLogical
+                (concreteBPNativeSuccinctRMQGlobalReadStore shape) 210
+                (packedReviewerWholeStart shape.size left right)).trace ->
+            PackedReviewerLogicalRequestOperandsFit shape.size event.request :=
+  packedReviewerDriveLogical_210_request_operands_fit
+
+/-- Every actual physical origin/address/ordinal/count operand fits one word. -/
+theorem egcpAllSizeActualPhysicalRequestOperandsWidth :
+    forall {shape : CartesianShape} {left right : Nat},
+      PackedReviewerRunGrouping shape left right ->
+        forall {event : PackedReviewerPhysicalEvent},
+          event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+            shape.size left right).trace ->
+              PackedReviewerPhysicalRequestOperandsFit shape.size
+                event.request :=
+  PackedReviewerRunGrouping.request_operands_fit
+
+/-- Fixed instruction and read-site tags have explicit all-size encodings. -/
+theorem egcpAllSizeLogicalControlTagsWidth :
+    forall (n : Nat) (request : PackedReviewerLogicalRequest),
+      PackedReviewerLogicalControlCodesFit n request :=
+  packedReviewerLogicalControlCodes_fit
+
+/-- Header, K1, and whole-query physical origins retain explicit tag encodings. -/
+theorem egcpAllSizePhysicalControlTagsWidth :
+    forall (n : Nat) (origin : PackedReviewerPhysicalOrigin),
+      PackedReviewerPhysicalControlCodesFit n origin :=
+  packedReviewerPhysicalControlCodes_fit
+
+/-- Every one of the seven concrete top-level controller phases fits one word. -/
+theorem egcpAllSizeControllerPhaseTagWidth :
+    forall (n : Nat) (state : PackedReviewerControllerState),
+      PackedReviewerNatFits n
+        (packedReviewerControllerStatePhaseCode state) :=
+  packedReviewerControllerStatePhaseCode_fits
+
+/-- Every successful actual reply is exactly one reviewer-width cell. -/
+theorem egcpAllSizeActualReplyWidth :
+    forall (shape : CartesianShape) (left right : Nat)
+        {event : PackedReviewerPhysicalEvent} {cell : List Bool},
+      event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+          shape.size left right).trace ->
+        event.reply = some cell ->
+          cell.length = packedReviewerCellWidth shape.size :=
+  packedReviewerRunAgainstMemory_reply_width
+
+/-- Successful replies also fit numerically, not merely by list length. -/
+theorem egcpAllSizeActualReplyValueWidth :
+    forall (shape : CartesianShape) (left right : Nat)
+        {event : PackedReviewerPhysicalEvent} {cell : List Bool},
+      event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+          shape.size left right).trace ->
+        event.reply = some cell ->
+          SuccinctSpace.bitsToNatLE cell <
+            2 ^ packedReviewerCellWidth shape.size :=
+  packedReviewerRunAgainstMemory_reply_value_width
+
+/-- The segment-20 failed/dead logical address also fits the same width. -/
+theorem egcpAllSizeInteriorDeadAddressWidth :
+    forall (n : Nat),
+      (packedInteriorOffsets n).deadAddress <
+        2 ^ packedReviewerCellWidth n :=
+  packedReviewerInteriorDeadAddress_lt_two_pow
+
+/-- The query-independent physical word width remains logarithmic in input size. -/
+theorem egcpAllSizeReviewerWordWidthLogarithmic :
+    forall (n : Nat),
+      packedReviewerCellWidth n <= 20 * (Nat.log2 (n + 2) + 1) :=
+  packedReviewerCellWidth_le_log
+
+/-- The same physical run returns the independent guarded public semantics. -/
+theorem egcpAllSizeSameRunPublicOutcome :
+    forall (xs : List Int) (left right : Nat),
+      let shape := SuccinctClassic.cartesianShape xs
+      let run := packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right
+      run.terminal =
+          some (SuccinctClassic.queryTraceResult xs left right).value /\
+        run.failed = false /\
+        run.state =
+          .done (SuccinctClassic.queryTraceResult xs left right).value /\
+        PackedReviewerRunGrouping shape left right :=
+  packedReviewerRunAgainstMemory_public_outcome
+
+/-- Removing or weakening any public certificate field changes this exact type. -/
+theorem egcpAllSizePublicCertificateExact :
+    forall (xs : List Int) (left right : Nat),
+      PackedReviewerPublicRunCertificate xs left right :=
+  @packedReviewerRunAgainstMemory_public_certificate
+
+/--
+Independent same-object facts.  Unlike a consumer that merely repeats the
+library certificate type, every field below restates the proposition over the
+literal public payload, reviewer memory, and physical run.
+-/
+structure EGCPAllSizeIndependentRunFacts
+    (xs : List Int) (left right : Nat) : Prop where
+  payload_identity :
+    let shape := SuccinctClassic.cartesianShape xs
+    packedReviewerPayloadBits shape = SuccinctClassic.buildPayload xs
+  serialized_identity :
+    let shape := SuccinctClassic.cartesianShape xs
+    (packedReviewerSerializedBits shape).drop
+      (packedReviewerCellWidth shape.size) = SuccinctClassic.buildPayload xs
+  memory_length :
+    let shape := SuccinctClassic.cartesianShape xs
+    (packedReviewerMemory shape).length =
+      packedReviewerCellCount shape.size (longCount shape)
+        (packedReviewerSparseCount shape)
+  allocated_space :
+    let shape := SuccinctClassic.cartesianShape xs
+    (packedReviewerMemory shape).length * packedReviewerCellWidth shape.size <=
+      2 * shape.size + packedReviewerRho shape.size
+  terminal_eq :
+    let shape := SuccinctClassic.cartesianShape xs
+    (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+      shape.size left right).terminal =
+        some (SuccinctClassic.queryTraceResult xs left right).value
+  failed_false :
+    let shape := SuccinctClassic.cartesianShape xs
+    (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+      shape.size left right).failed = false
+  state_eq :
+    let shape := SuccinctClassic.cartesianShape xs
+    (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+      shape.size left right).state =
+        .done (SuccinctClassic.queryTraceResult xs left right).value
+  grouping :
+    PackedReviewerRunGrouping (SuccinctClassic.cartesianShape xs) left right
+  invalid_no_requests :
+    let shape := SuccinctClassic.cartesianShape xs
+    ¬ (left < right ∧ right <= shape.size) ->
+      (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).trace = []
+  input_size_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    shape.size < 2 ^ packedReviewerCellWidth shape.size
+  valid_endpoints_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    left < right ∧ right <= shape.size ->
+      PackedReviewerNatFits shape.size left ∧
+        PackedReviewerNatFits shape.size right
+  header_values_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    longCount shape < 2 ^ packedReviewerCellWidth shape.size ∧
+      packedReviewerSparseCount shape <
+        2 ^ packedReviewerCellWidth shape.size
+  memory_words_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall cell, cell ∈ packedReviewerMemory shape ->
+      PackedReviewerWordFits shape.size cell ∧
+        SuccinctSpace.bitsToNatLE cell <
+          2 ^ packedReviewerCellWidth shape.size
+  prelude_decode_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall state request cells word,
+      packedReviewerSparsePreludeNextRequest state = some request ->
+        packedReviewerDecodePreludeReplies shape.size (longCount shape)
+            state cells = some word ->
+          PackedReviewerWordFits shape.size word
+  logical_decode_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall request cells word,
+      packedReviewerLogicalDecode shape.size (longCount shape)
+          (packedReviewerSparseCount shape) request cells = some word ->
+        PackedReviewerWordFits shape.size word
+  logical_request_operands_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    left < right -> right <= shape.size ->
+      forall event,
+        event ∈
+            (packedReviewerDriveLogical
+              (concreteBPNativeSuccinctRMQGlobalReadStore shape) 210
+              (packedReviewerWholeStart shape.size left right)).trace ->
+          PackedReviewerLogicalRequestOperandsFit shape.size event.request
+  logical_control_tags_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall request, PackedReviewerLogicalControlCodesFit shape.size request
+  physical_control_tags_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall origin, PackedReviewerPhysicalControlCodesFit shape.size origin
+  controller_phase_tag_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall state,
+      PackedReviewerNatFits shape.size
+        (packedReviewerControllerStatePhaseCode state)
+  memory_only :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall event,
+      event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).trace ->
+        event.reply = (packedReviewerMemory shape)[event.request.address]?
+  reply_success :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall event,
+      event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).trace ->
+        exists cell, event.reply = some cell
+  allocated :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall event,
+      event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).trace ->
+        event.request.address <
+          packedReviewerCellCount shape.size (longCount shape)
+            (packedReviewerSparseCount shape)
+  address_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall event,
+      event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).trace ->
+        event.request.address < 2 ^ packedReviewerCellWidth shape.size
+  physical_request_operands_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall event,
+      event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).trace ->
+        PackedReviewerPhysicalRequestOperandsFit shape.size event.request
+  reply_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall event cell,
+      event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+          shape.size left right).trace ->
+        event.reply = some cell ->
+          cell.length = packedReviewerCellWidth shape.size
+  reply_value_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall event cell,
+      event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+          shape.size left right).trace ->
+        event.reply = some cell ->
+          SuccinctSpace.bitsToNatLE cell <
+            2 ^ packedReviewerCellWidth shape.size
+  dead_address_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    (packedInteriorOffsets shape.size).deadAddress <
+      2 ^ packedReviewerCellWidth shape.size
+  word_width_logarithmic :
+    let shape := SuccinctClassic.cartesianShape xs
+    packedReviewerCellWidth shape.size <=
+      20 * (Nat.log2 (shape.size + 2) + 1)
+  trace_cap :
+    let shape := SuccinctClassic.cartesianShape xs
+    (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+      shape.size left right).trace.length <= 427
+  result_width :
+    forall index,
+      (SuccinctClassic.queryTraceResult xs left right).value = some index ->
+        index <
+          2 ^ packedReviewerCellWidth
+            (SuccinctClassic.cartesianShape xs).size
+
+/-- Every independent fact is inhabited by projections from the public proof. -/
+theorem egcpAllSizeIndependentRunFactsExact
+    (xs : List Int) (left right : Nat) :
+    EGCPAllSizeIndependentRunFacts xs left right := by
+  have hpayload := packedReviewerPayloadBits_eq_buildPayload xs
+  have hserialized :=
+    packedReviewerSerializedBits_drop_header
+      (SuccinctClassic.cartesianShape xs)
+  rw [hpayload] at hserialized
+  have certificate :=
+    packedReviewerRunAgainstMemory_public_certificate xs left right
+  exact
+    { payload_identity := hpayload
+      serialized_identity := hserialized
+      memory_length :=
+        packedReviewerMemory_length (SuccinctClassic.cartesianShape xs)
+      allocated_space :=
+        packedReviewerMemory_length_mul_width_le
+          (SuccinctClassic.cartesianShape xs)
+      terminal_eq := certificate.terminal_eq
+      failed_false := certificate.failed_false
+      state_eq := certificate.state_eq
+      grouping := certificate.grouping
+      invalid_no_requests := certificate.invalid_no_requests
+      input_size_width := certificate.input_size_width
+      valid_endpoints_width := certificate.valid_endpoints_width
+      header_values_width := certificate.header_values_width
+      memory_words_width := certificate.memory_words_width
+      prelude_decode_width := certificate.prelude_decode_width
+      logical_decode_width := certificate.logical_decode_width
+      logical_request_operands_width :=
+        certificate.logical_request_operands_width
+      logical_control_tags_width := certificate.logical_control_tags_width
+      physical_control_tags_width := certificate.physical_control_tags_width
+      controller_phase_tag_width := certificate.controller_phase_tag_width
+      memory_only := certificate.memory_only
+      reply_success := certificate.reply_success
+      allocated := certificate.allocated
+      address_width := certificate.address_width
+      physical_request_operands_width :=
+        certificate.physical_request_operands_width
+      reply_width := certificate.reply_width
+      reply_value_width := certificate.reply_value_width
+      dead_address_width := certificate.dead_address_width
+      word_width_logarithmic := certificate.word_width_logarithmic
+      trace_cap := certificate.trace_cap
+      result_width := certificate.result_width }
+
+/--
+One independent proposition pins payload, allocation, physical run, reference
+result, grouping, backing, address capacity, reply width, and the literal cap on
+the identical objects.  A sibling payload/memory/run substitution or weakened
+certificate field does not inhabit this type.
+-/
+theorem egcpAllSizeIdenticalObjectPublicConsumer
+    (xs : List Int) (left right : Nat) :
+    let shape := SuccinctClassic.cartesianShape xs
+    let payload := SuccinctClassic.buildPayload xs
+    let memory := packedReviewerMemory shape
+    let run := packedReviewerRunAgainstMemory memory shape.size left right
+    packedReviewerPayloadBits shape = payload /\
+      (packedReviewerSerializedBits shape).drop
+          (packedReviewerCellWidth shape.size) = payload /\
+      memory.length =
+        packedReviewerCellCount shape.size (longCount shape)
+          (packedReviewerSparseCount shape) /\
+      run.terminal =
+        some (SuccinctClassic.queryTraceResult xs left right).value /\
+      run.failed = false /\
+      run.state =
+        .done (SuccinctClassic.queryTraceResult xs left right).value /\
+      PackedReviewerRunGrouping shape left right /\
+      (forall event,
+        event ∈ run.trace ->
+          event.reply = memory[event.request.address]?) /\
+      (forall event,
+        event ∈ run.trace ->
+          event.request.address <
+            packedReviewerCellCount shape.size (longCount shape)
+              (packedReviewerSparseCount shape)) /\
+      (forall event,
+        event ∈ run.trace ->
+          event.request.address < 2 ^ packedReviewerCellWidth shape.size) /\
+      (forall event cell,
+        event ∈ run.trace ->
+          event.reply = some cell ->
+            cell.length = packedReviewerCellWidth shape.size) /\
+      run.trace.length <= 427 /\
+      (forall index,
+        (SuccinctClassic.queryTraceResult xs left right).value = some index ->
+          index < 2 ^ packedReviewerCellWidth shape.size) := by
+  dsimp only
+  have hpayload := packedReviewerPayloadBits_eq_buildPayload xs
+  have hserialized :=
+    packedReviewerSerializedBits_drop_header
+      (SuccinctClassic.cartesianShape xs)
+  rw [hpayload] at hserialized
+  have hmemory :=
+    packedReviewerMemory_length (SuccinctClassic.cartesianShape xs)
+  have certificate :=
+    packedReviewerRunAgainstMemory_public_certificate xs left right
+  exact
+    ⟨hpayload, hserialized, hmemory,
+      certificate.terminal_eq, certificate.failed_false,
+      certificate.state_eq, certificate.grouping,
+      certificate.memory_only, certificate.allocated,
+      certificate.address_width, certificate.reply_width,
+      certificate.trace_cap, certificate.result_width⟩
+
+/-!
+The exact signatures above are the typed positive anti-bypass controls for
+`R2-10`: a controller shape parameter, an answer-oracle parameter, a supplied
+`WordRAM.ReadStore`, a sibling memory, a weakened grouping/correctness field, or
+a forged non-`427` cap changes one of these independently written expected types
+and therefore breaks this validation root.
+-/
 
 end Validation
 end PackedCellProbe

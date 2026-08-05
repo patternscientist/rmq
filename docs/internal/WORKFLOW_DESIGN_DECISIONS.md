@@ -7362,3 +7362,81 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   entries call these sections 9 and 10, which was their number when those entries
   were written; they collided with the report's pre-existing sections 9 and 10, and
   the earlier entries are left as written rather than rewritten.
+
+## WDD-20260805-001: replay one owned all-size stage without rewriting the frozen registry
+
+Status: Worker process decision recorded 2026-08-05 on branch
+`codex/eg-cp-allsize-reviewer-machine-r1`. Governs the locally owned mutation
+campaign in `scripts/eg_cp_final_falsification_replay.ps1`.
+
+Date: 2026-08-05
+
+Context:
+
+The frozen replay registry has sixteen commissioned IDs in a fixed order, with
+two expected accepts and fourteen expected rejects. This rung makes seven of
+those reject cases newly reachable at the final reviewer-memory controller:
+`M03`, `M05`, `M06`, `M07`, `M08`, `M11`, and `M12`. Other registry targets are
+explicitly deferred by the rung contract, so full mode must continue to report
+incomplete while any such target is absent. Running the seven owned cases as
+seven separate invocations would repeat the clean baseline build and descendant
+termination self-test seven times, turning a semantic campaign into avoidable
+gate duplication.
+
+Decision:
+
+1. Preserve all sixteen registry entries, their order, IDs, mutation text,
+   verdicts, and the two-accept/fourteen-reject totals. The seven newly reachable
+   cases replace only their mutation target records.
+2. Add the literal stage selector `R2-ALLSIZE`, whose list is exactly those seven
+   existing IDs. The registry integrity check rejects an empty or duplicate
+   stage list, an unknown or multiply registered ID, an ACCEPT ID, or a null
+   mutation target.
+3. `-Stage` and `-Case` are mutually exclusive. Explicit empty, whitespace, or
+   unknown stage selectors fail before semantic execution. A stage may not use
+   `-SkipSelfTest`.
+4. A stage invocation measures one clean validation build, runs one owned
+   descendant-termination self-test, executes the seven mutations in literal
+   stage order, restores and hash-checks every target, and passes only when all
+   seven outcomes are `REJECT` and the terminal tracked-state check is clean.
+5. Full mode remains the original sixteen-entry campaign and retains its
+   fail-closed `TARGET-ABSENT` result for deferred cases. Selected-case mode
+   remains available for focused diagnosis.
+
+Rationale:
+
+The stage is a view over the frozen registry, not a second registry. That keeps
+the commissioned identifiers and verdicts authoritative while giving this rung
+one bounded, replayable acceptance unit. Each new mutation is designed to leave
+the production construction elaborating through a trailing default parameter or
+an independently retained private theorem; the named raw-`@` or exact-type
+consumer in `RMQ/Validation/EGCPFinalFalsification.lean` must be the rejecting
+surface. The forged-cap case is stronger: replacing the structural header
+measure by literal `427` may preserve the production bound, but it must fail the
+independent structural equation.
+
+Rejected alternatives:
+
+- Adding seven new registry IDs: this would rewrite the frozen registry rather
+  than make its existing cases reachable.
+- Treating a full-mode `TARGET-ABSENT` run as the local rung's pass: that would
+  weaken both the frozen full-registry contract and the explicit deferrals.
+- Invoking `-Case` seven times: correct but needlessly duplicates the baseline
+  build and process-tree self-test, and gives no one-shot owned-campaign verdict.
+- Permitting `-Stage R2-ALLSIZE -SkipSelfTest`: this would make the efficient
+  path weaker than the full replay path precisely where timeout ownership is
+  acceptance evidence.
+
+Consequences and evidence:
+
+- The seven stage targets fail at independent `egcpAllSize*` consumers for raw
+  controller, memory, run, reply-transition, expected-trace, structural-cap, and
+  public-certificate types; the production files are not themselves accepted as
+  the named failure surface.
+- Selector validation, measured deadlines, redirected-pipe draining, owned
+  root-plus-descendant termination, byte-exact restoration, SHA256 verification,
+  and the terminal clean-state check remain shared with case and full modes.
+- Source-static certification consists of PowerShell parser success, exact
+  one-occurrence mutation anchors, sixteen unique ordered registry IDs, and the
+  literal seven-ID stage. Lean builds and replay execution remain intentionally
+  deferred until the producer modules and validation root compile green.

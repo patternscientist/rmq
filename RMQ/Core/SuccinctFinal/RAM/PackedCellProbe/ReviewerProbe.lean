@@ -15,9 +15,9 @@ because both differ:
 
 * `packedReviewerCellWidth n` is a different width from `packedCellWidth n`, so the
   plan's `bit / w` and `bit % w` are different addresses.
-* `packedReviewerCellCount n longCount` takes the decoded long count, where
-  `packedCellCount n` does not. Every allocation claim therefore carries
-  `longCount` as an explicit argument rather than deriving it from the size.
+* `packedReviewerCellCount n longCount sparseCount` takes both recovered counts,
+  where `packedCellCount n` does not. Every allocation claim therefore carries
+  them explicitly rather than deriving them from the size.
 
 That second difference is the `K1` argument made load-bearing: a controller cannot
 know which addresses are allocated until it has probed cell zero and decoded the
@@ -27,10 +27,8 @@ header.
 
 * Nothing here issues a probe on behalf of a source. The per-source geometry over
   the consumed payload is separate, and the whole-run lowering separate again.
-* `packedReviewerProbeWindow_length` carries the unit-stride hypothesis, inherited
-  from `packedReviewerPaddedBits_length`. The plan, the count, the allocation of
-  every issued address, and the decode do **not** need it: they are algebra on the
-  padded bit string rather than facts about its length.
+* The plan, count, allocation of every issued address, window length, and decode
+  are all-size statements over the actual sparse count.
 -/
 
 namespace RMQ
@@ -63,7 +61,7 @@ a total accessor would make that look harmless.
 -/
 theorem packedReviewerMemory_getElem?_cellCount (shape : CartesianShape) :
     (packedReviewerMemory shape)[packedReviewerCellCount shape.size
-        (longCount shape)]? = none := by
+        (longCount shape) (packedReviewerSparseCount shape)]? = none := by
   rw [List.getElem?_eq_none]
   rw [packedReviewerMemory_length]
   omega
@@ -71,12 +69,13 @@ theorem packedReviewerMemory_getElem?_cellCount (shape : CartesianShape) :
 /-- Every allocated cell is exactly one reviewer width, addressed by index. -/
 theorem packedReviewerCellAt_length
     (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1)
     {i : Nat}
-    (hi : i < packedReviewerCellCount shape.size (longCount shape)) :
+    (hi : i < packedReviewerCellCount shape.size (longCount shape)
+      (packedReviewerSparseCount shape)) :
     (packedReviewerCellAt shape i).length = packedReviewerCellWidth shape.size := by
-  have hpad := packedReviewerPaddedBits_length shape hstride
-  have hsucc : i + 1 <= packedReviewerCellCount shape.size (longCount shape) := hi
+  have hpad := packedReviewerPaddedBits_length shape
+  have hsucc : i + 1 <= packedReviewerCellCount shape.size (longCount shape)
+      (packedReviewerSparseCount shape) := hi
   have hmul := Nat.mul_le_mul_right (packedReviewerCellWidth shape.size) hsucc
   have hexp :
       (i + 1) * packedReviewerCellWidth shape.size =
@@ -84,9 +83,11 @@ theorem packedReviewerCellAt_length
           packedReviewerCellWidth shape.size := by
     rw [Nat.add_mul, Nat.one_mul]
   have halloc :
-      packedReviewerCellCount shape.size (longCount shape) *
+      packedReviewerCellCount shape.size (longCount shape)
+          (packedReviewerSparseCount shape) *
           packedReviewerCellWidth shape.size =
-        packedReviewerAllocatedBits shape.size (longCount shape) := rfl
+        packedReviewerAllocatedBits shape.size (longCount shape)
+          (packedReviewerSparseCount shape) := rfl
   unfold packedReviewerCellAt
   rw [List.length_take, List.length_drop, hpad]
   omega
@@ -250,18 +251,21 @@ the fetch succeeds and returns exactly the addressed cells.
 theorem packedReviewerFetch_memory
     (shape : CartesianShape) (plan : List Nat)
     (hplan : forall addr, addr ∈ plan ->
-      addr < packedReviewerCellCount shape.size (longCount shape)) :
+      addr < packedReviewerCellCount shape.size (longCount shape)
+        (packedReviewerSparseCount shape)) :
     packedFetch (packedReviewerMemory shape) plan =
       some (plan.map (packedReviewerCellAt shape)) := by
   induction plan with
   | nil => rfl
   | cons addr rest ih =>
       have haddr :
-          addr < packedReviewerCellCount shape.size (longCount shape) :=
+          addr < packedReviewerCellCount shape.size (longCount shape)
+            (packedReviewerSparseCount shape) :=
         hplan addr (by simp)
       have hrest :
           forall a, a ∈ rest ->
-            a < packedReviewerCellCount shape.size (longCount shape) := by
+            a < packedReviewerCellCount shape.size (longCount shape)
+              (packedReviewerSparseCount shape) := by
         intro a ha
         exact hplan a (List.mem_cons_of_mem _ ha)
       have hcell :
@@ -274,14 +278,14 @@ theorem packedReviewerFetch_memory
 **Plan addresses are allocated.** Every cell the plan issues is a real cell of
 `packedReviewerMemory`, given only that the requested range fits the allocation.
 
-The `longCount` argument is where this differs from its flat counterpart: the
-allocation itself depends on the decoded header.
+The `longCount` and `sparseCount` arguments are where this differs from its flat
+counterpart: the allocation depends on both recovered scalars.
 -/
 theorem packedReviewerProbePlan_lt_cellCount
-    {n longCount bit width addr : Nat}
-    (hfit : bit + width <= packedReviewerAllocatedBits n longCount)
+    {n longCount sparseCount bit width addr : Nat}
+    (hfit : bit + width <= packedReviewerAllocatedBits n longCount sparseCount)
     (hmem : addr ∈ packedReviewerProbePlan n bit width) :
-    addr < packedReviewerCellCount n longCount := by
+    addr < packedReviewerCellCount n longCount sparseCount := by
   have hw : 0 < packedReviewerCellWidth n := packedReviewerCellWidth_pos n
   have hmod : bit % packedReviewerCellWidth n < packedReviewerCellWidth n :=
     Nat.mod_lt _ hw
@@ -294,8 +298,9 @@ theorem packedReviewerProbePlan_lt_cellCount
         bit / packedReviewerCellWidth n * packedReviewerCellWidth n :=
     Nat.mul_comm _ _
   have halloc :
-      packedReviewerAllocatedBits n longCount =
-        packedReviewerCellCount n longCount * packedReviewerCellWidth n := rfl
+      packedReviewerAllocatedBits n longCount sparseCount =
+        packedReviewerCellCount n longCount sparseCount *
+          packedReviewerCellWidth n := rfl
   by_cases hzero : width = 0
   · simp [packedReviewerProbePlan, hzero] at hmem
   · by_cases hin :
@@ -304,7 +309,7 @@ theorem packedReviewerProbePlan_lt_cellCount
         simpa [packedReviewerProbePlan, hzero, hin] using hmem
       have hlt :
           bit / packedReviewerCellWidth n * packedReviewerCellWidth n <
-            packedReviewerCellCount n longCount *
+            packedReviewerCellCount n longCount sparseCount *
               packedReviewerCellWidth n := by omega
       have := packedReviewerLtOfMulLtMul hlt
       omega
@@ -315,11 +320,11 @@ theorem packedReviewerProbePlan_lt_cellCount
         rw [Nat.add_mul, Nat.one_mul]
       have hlt :
           (bit / packedReviewerCellWidth n + 1) * packedReviewerCellWidth n <
-            packedReviewerCellCount n longCount *
+            packedReviewerCellCount n longCount sparseCount *
               packedReviewerCellWidth n := by omega
       have hsucc :
           bit / packedReviewerCellWidth n + 1 <
-            packedReviewerCellCount n longCount :=
+            packedReviewerCellCount n longCount sparseCount :=
         packedReviewerLtOfMulLtMul hlt
       have hcases :
           addr = bit / packedReviewerCellWidth n ∨
@@ -331,7 +336,8 @@ theorem packedReviewerProbePlan_lt_cellCount
 theorem packedReviewerFetch_plan
     (shape : CartesianShape) {bit width : Nat}
     (hfit : bit + width <=
-      packedReviewerAllocatedBits shape.size (longCount shape)) :
+      packedReviewerAllocatedBits shape.size (longCount shape)
+        (packedReviewerSparseCount shape)) :
     packedFetch (packedReviewerMemory shape)
         (packedReviewerProbePlan shape.size bit width) =
       some ((packedReviewerProbePlan shape.size bit width).map
@@ -342,10 +348,10 @@ theorem packedReviewerFetch_plan
 /-- The fetched window is exactly one full cell per issued probe. -/
 theorem packedReviewerProbeWindow_length
     (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1)
     {bit width : Nat}
     (hfit : bit + width <=
-      packedReviewerAllocatedBits shape.size (longCount shape)) :
+      packedReviewerAllocatedBits shape.size (longCount shape)
+        (packedReviewerSparseCount shape)) :
     (packedReviewerProbeWindow shape
         (packedReviewerProbePlan shape.size bit width)).length =
       packedReviewerProbeCount shape.size bit width *
@@ -365,7 +371,7 @@ theorem packedReviewerProbeWindow_length
             packedReviewerProbePlan shape.size bit width := by
         rw [hplan]; simp
       have h0 :=
-        packedReviewerCellAt_length shape hstride
+        packedReviewerCellAt_length shape
           (packedReviewerProbePlan_lt_cellCount hfit hmem0)
       simp [packedReviewerProbeWindow, packedReviewerProbeCount, hplan, h0]
     · have hplan :
@@ -382,10 +388,10 @@ theorem packedReviewerProbeWindow_length
             packedReviewerProbePlan shape.size bit width := by
         rw [hplan]; simp
       have h0 :=
-        packedReviewerCellAt_length shape hstride
+        packedReviewerCellAt_length shape
           (packedReviewerProbePlan_lt_cellCount hfit hmem0)
       have h1 :=
-        packedReviewerCellAt_length shape hstride
+        packedReviewerCellAt_length shape
           (packedReviewerProbePlan_lt_cellCount hfit hmem1)
       simp [packedReviewerProbeWindow, packedReviewerProbeCount, hplan, h0, h1]
       omega
@@ -412,7 +418,8 @@ theorem packedReviewerProbePlan_decode
     (shape : CartesianShape) {bit width : Nat}
     (hwidth : width <= packedReviewerCellWidth shape.size)
     (hfit : bit + width <=
-      packedReviewerAllocatedBits shape.size (longCount shape)) :
+      packedReviewerAllocatedBits shape.size (longCount shape)
+        (packedReviewerSparseCount shape)) :
     (packedFetch (packedReviewerMemory shape)
           (packedReviewerProbePlan shape.size bit width)).map
         (packedReviewerDecodeSpan shape.size bit width) =
@@ -477,7 +484,8 @@ theorem packedReviewerProbePlan_decode
 probe is the last allocated cell, and the fetch succeeds.
 
 Under an unconditional two-cell plan the second issued address would have been
-`packedReviewerCellCount shape.size (longCount shape)`, which
+`packedReviewerCellCount shape.size (longCount shape)
+(packedReviewerSparseCount shape)`, which
 `packedReviewerMemory_getElem?_cellCount` shows is absent, so the fetch would have
 returned `none`.
 -/
@@ -487,33 +495,41 @@ theorem packedReviewerProbe_final_cell
     (hin : offset + width <= packedReviewerCellWidth shape.size) :
     packedReviewerProbePlan shape.size
         (offset +
-          (packedReviewerCellCount shape.size (longCount shape) - 1) *
+          (packedReviewerCellCount shape.size (longCount shape)
+              (packedReviewerSparseCount shape) - 1) *
             packedReviewerCellWidth shape.size)
         width =
-      [packedReviewerCellCount shape.size (longCount shape) - 1] /\
+      [packedReviewerCellCount shape.size (longCount shape)
+        (packedReviewerSparseCount shape) - 1] /\
     packedFetch (packedReviewerMemory shape)
         (packedReviewerProbePlan shape.size
           (offset +
-            (packedReviewerCellCount shape.size (longCount shape) - 1) *
+            (packedReviewerCellCount shape.size (longCount shape)
+                (packedReviewerSparseCount shape) - 1) *
               packedReviewerCellWidth shape.size)
           width) =
       some [packedReviewerCellAt shape
-        (packedReviewerCellCount shape.size (longCount shape) - 1)] := by
-  have hcount : 0 < packedReviewerCellCount shape.size (longCount shape) := by
+        (packedReviewerCellCount shape.size (longCount shape)
+          (packedReviewerSparseCount shape) - 1)] := by
+  have hcount : 0 < packedReviewerCellCount shape.size (longCount shape)
+      (packedReviewerSparseCount shape) := by
     unfold packedReviewerCellCount
     omega
   have hplan :=
     packedReviewerProbePlan_of_offset shape.size
-      (packedReviewerCellCount shape.size (longCount shape) - 1) offset width
+      (packedReviewerCellCount shape.size (longCount shape)
+        (packedReviewerSparseCount shape) - 1) offset width
       hpos hin
   refine ⟨hplan, ?_⟩
   rw [hplan]
   rw [packedReviewerFetch_memory shape
-    [packedReviewerCellCount shape.size (longCount shape) - 1]
+    [packedReviewerCellCount shape.size (longCount shape)
+      (packedReviewerSparseCount shape) - 1]
     (by
       intro addr hmem
       have heq :
-          addr = packedReviewerCellCount shape.size (longCount shape) - 1 := by
+          addr = packedReviewerCellCount shape.size (longCount shape)
+            (packedReviewerSparseCount shape) - 1 := by
         simpa using hmem
       omega)]
   simp
@@ -521,9 +537,9 @@ theorem packedReviewerProbe_final_cell
 /-! ### The header probe
 
 Every other address over the reviewer memory takes the decoded long count as an
-argument, and here that is not a convenience: `packedReviewerCellCount` genuinely
-needs it, so a controller cannot even name the last allocated cell before this
-probe has been issued and decoded.
+argument. This first probe is still load-bearing, but it is not sufficient by
+itself: the controller also obtains `sparseCount` through the charged sparse-rank
+prelude before it names the full allocation or the last cell.
 -/
 
 /-- The controller's first probe: cell zero, unconditionally. -/
@@ -546,8 +562,8 @@ and decoding it with the little-endian codec yields exactly `longCount shape`, a
 every size and for every shape, with no size side condition.
 
 Unlike its flat counterpart this is load-bearing rather than decorative: the flat
-cell count is size-only, so a controller could have computed it without the header,
-whereas `packedReviewerCellCount` cannot be named without this value.
+cell count is size-only, while the reviewer count requires this decoded value and
+the separately recovered sparse count.
 -/
 theorem packedReviewerHeaderProbe_decode (shape : CartesianShape) :
     (packedFetch (packedReviewerMemory shape)

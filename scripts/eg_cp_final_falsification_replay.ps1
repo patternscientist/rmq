@@ -28,6 +28,11 @@
   Replay exactly one registry ID. Unknown, empty and whitespace selectors are
   errors. Omitting the parameter, and only omitting it, means full mode.
 
+.PARAMETER Stage
+  Replay one literal owned campaign. `R2-ALLSIZE` selects exactly the seven
+  final-controller anti-bypass cases. Stage and Case are mutually exclusive;
+  an explicitly empty, whitespace, or unknown stage is an error.
+
 .PARAMETER SkipSelfTest
   Skip the descendant-termination self-test. Intended for development only; a
   full-mode run refuses it.
@@ -37,6 +42,8 @@
 param(
   [AllowEmptyString()]
   [string] $Case,
+  [AllowEmptyString()]
+  [string] $Stage,
   [switch] $SkipSelfTest
 )
 
@@ -85,10 +92,13 @@ $script:Registry = @(
      Mutation = 'add or restore a semantic shape input';
      Verdict = 'REJECT'; Surface = 'exact signature';
      Target = @{ Kind = 'Patch';
-       ExpectFile = 'PackedCellProbe/PhysicalRead.lean';
-       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/PhysicalRead.lean';
-       Find  = 'def packedSourceRead (n longCount : Nat) (memory : List (List Bool))';
-       Repl  = 'def packedSourceRead (shape : CartesianShape) (n longCount : Nat) (memory : List (List Bool))' } },
+       ExpectFile = 'Validation/EGCPFinalFalsification.lean';
+       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean';
+       Find  = 'def packedReviewerController (n left right : Nat) :
+    PackedReviewerControllerState :=';
+       Repl  = 'def packedReviewerController (n left right : Nat)
+    (_shape : Option Cartesian.CartesianShape := none) :
+    PackedReviewerControllerState :=' } },
   @{ Order = 6;  Id = 'M04-CANONICAL-SHAPE-BY-N';
      Mutation = 'synthesize a canonical shape from n inside a wrapper';
      Verdict = 'REJECT'; Surface = 'structural / same-object'; Target = $null },
@@ -96,26 +106,52 @@ $script:Registry = @(
      Mutation = 'read a logical/source store beside memory xs';
      Verdict = 'REJECT'; Surface = 'store identity';
      Target = @{ Kind = 'Patch';
-       ExpectFile = 'PackedCellProbe/PhysicalRead.lean';
-       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/PhysicalRead.lean';
-       Find  = '    | some source => packedSourceRead n longCount memory source index';
-       Repl  = '    | some source => packedSourceRead n longCount (memory.drop 1) source index' } },
+       ExpectFile = 'Validation/EGCPFinalFalsification.lean';
+       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean';
+       Find  = 'def packedReviewerRunAgainstMemory
+    (memory : List (List Bool)) (n left right : Nat) : PackedReviewerRun :=';
+       Repl  = 'def packedReviewerRunAgainstMemory
+    (memory : List (List Bool)) (n left right : Nat)
+    (_store : Option WordRAM.ReadStore := none) : PackedReviewerRun :=' } },
   @{ Order = 8;  Id = 'M06-ANSWER-ORACLE';
      Mutation = 'call the reference/semantic answer from controller execution';
-     Verdict = 'REJECT'; Surface = 'oracle independence'; Target = $null },
+     Verdict = 'REJECT'; Surface = 'oracle independence';
+     Target = @{ Kind = 'Patch';
+       ExpectFile = 'Validation/EGCPFinalFalsification.lean';
+       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean';
+       Find  = 'def packedReviewerConsumeReply
+    (state : PackedReviewerControllerState) (reply : Option (List Bool)) :
+    PackedReviewerControllerState :=';
+       Repl  = 'def packedReviewerConsumeReply
+    (state : PackedReviewerControllerState) (reply : Option (List Bool))
+    (_answerOracle : Option Nat := none) :
+    PackedReviewerControllerState :=' } },
   @{ Order = 9;  Id = 'M07-DISCONNECTED-TRACE';
      Mutation = 'retain a correct result while forging or replaying an unrelated physical trace';
-     Verdict = 'REJECT'; Surface = 'trace execution'; Target = $null },
+     Verdict = 'REJECT'; Surface = 'trace execution';
+     Target = @{ Kind = 'Patch';
+       ExpectFile = 'Validation/EGCPFinalFalsification.lean';
+       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerControllerProof.lean';
+       Find  = 'def packedReviewerExpectedPhysicalTrace
+    (shape : CartesianShape) (left right : Nat) :
+    List PackedReviewerPhysicalEvent :=';
+       Repl  = 'def packedReviewerExpectedPhysicalTrace
+    (shape : CartesianShape) (left right : Nat)
+    (_disconnectedTrace : Option (List PackedReviewerPhysicalEvent) := none) :
+    List PackedReviewerPhysicalEvent :=' } },
   @{ Order = 10; Id = 'M08-FORGED-PROBE-CAP';
      Mutation = 'replace derived trace length/cap evidence with a stored number or theorem-only field';
      Verdict = 'REJECT'; Surface = 'consumer';
      Target = @{ Kind = 'Patch';
-       ExpectFile = 'PackedCellProbe/Probe.lean';
-       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Probe.lean';
-       Find  = 'def packedProbeCount (n bit width : Nat) : Nat :=
-  (packedProbePlan n bit width).length';
-       Repl  = 'def packedProbeCount (_n _bit _width : Nat) : Nat :=
-  2' } },
+       ExpectFile = 'Validation/EGCPFinalFalsification.lean';
+       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean';
+       Find  = '  | .header n left right =>
+      1 + 2 * packedReviewerSparsePreludeRemaining
+          (packedReviewerSparsePreludeInit n 0) +
+        2 * packedReviewerWholeRemaining
+          (packedReviewerWholeStart n left right)';
+       Repl  = '  | .header _ _ _ =>
+      427' } },
   @{ Order = 11; Id = 'M09-WRONG-CELL-CROSSING';
      Mutation = 'mutate one crossing codec order/bit span';
      Verdict = 'REJECT'; Surface = 'exact decoded word';
@@ -136,15 +172,27 @@ $script:Registry = @(
      Mutation = 'prove space for one payload while executing another';
      Verdict = 'REJECT'; Surface = 'public / same-object composition';
      Target = @{ Kind = 'Patch';
-       ExpectFile = 'PackedCellProbe/Payload.lean';
-       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Payload.lean';
-       Find  = 'def packedPayloadBits (shape : CartesianShape) : List Bool :=
-  (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload';
-       Repl  = 'def packedPayloadBits (shape : CartesianShape) : List Bool :=
-  (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload ++ []' } },
+       ExpectFile = 'Validation/EGCPFinalFalsification.lean';
+       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerMemory.lean';
+       Find  = 'def packedReviewerMemory (shape : CartesianShape) : List (List Bool) :=';
+       Repl  = 'def packedReviewerMemory (shape : CartesianShape)
+    (_siblingPayload : Option (List Bool) := none) : List (List Bool) :=' } },
   @{ Order = 14; Id = 'M12-PUBLIC-TYPE-WEAKENING';
      Mutation = 'remove one load-bearing capstone conjunct';
-     Verdict = 'REJECT'; Surface = 'independently frozen expected-type consumer'; Target = $null },
+     Verdict = 'REJECT'; Surface = 'independently frozen expected-type consumer';
+     Target = @{ Kind = 'Patch';
+       ExpectFile = 'Validation/EGCPFinalFalsification.lean';
+       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerControllerStateProof.lean';
+       Find  = 'theorem packedReviewerRunAgainstMemory_public_certificate
+    (xs : List Int) (left right : Nat) :
+    PackedReviewerPublicRunCertificate xs left right := by';
+       Repl  = 'theorem packedReviewerRunAgainstMemory_public_certificate
+    (_xs : List Int) (_left _right : Nat) : True := by
+  trivial
+
+private theorem packedReviewerRunAgainstMemory_public_certificate_original
+    (xs : List Int) (left right : Nat) :
+    PackedReviewerPublicRunCertificate xs left right := by' } },
   @{ Order = 15; Id = 'M13-HIDDEN-UNCOUNTED-TABLE';
      Mutation = 'add a content-dependent lookup/program constant outside memory xs';
      Verdict = 'REJECT'; Surface = 'closed controller / program accounting'; Target = $null },
@@ -157,6 +205,20 @@ $script:Registry = @(
        Find  = '  | .selectLongRelative => packedLongRelativeSlots n longCount';
        Repl  = '  | .selectLongRelative => packedLongRelativeSlots n 0' } }
 )
+
+# One literal owned campaign over the existing frozen registry.  This does not
+# add, remove, or reorder a registry entry and does not change full-mode scope.
+$script:Stages = @{
+  'R2-ALLSIZE' = @(
+    'M03-SHAPE-PARAMETER',
+    'M05-SIBLING-STORE',
+    'M06-ANSWER-ORACLE',
+    'M07-DISCONNECTED-TRACE',
+    'M08-FORGED-PROBE-CAP',
+    'M11-SIBLING-PAYLOAD',
+    'M12-PUBLIC-TYPE-WEAKENING'
+  )
+}
 
 # ------------------------------------------------------- registry self-checks
 
@@ -200,8 +262,45 @@ function Test-RegistryIntegrity {
     $ok = $false
   }
 
+  foreach ($stageName in @($script:Stages.Keys)) {
+    $stageIds = @($script:Stages[$stageName])
+    if ([string]::IsNullOrWhiteSpace($stageName)) {
+      Add-Failure 'stage registry contains an empty or whitespace name'
+      $ok = $false
+    }
+    if ($stageIds.Count -eq 0) {
+      Add-Failure "stage '$stageName' has an empty ID list"
+      $ok = $false
+      continue
+    }
+
+    $stageUnique = @($stageIds | Sort-Object -Unique)
+    if ($stageUnique.Count -ne $stageIds.Count) {
+      Add-Failure "stage '$stageName' contains duplicate IDs"
+      $ok = $false
+    }
+
+    foreach ($stageId in $stageIds) {
+      $known = @($script:Registry | Where-Object { $_.Id -eq $stageId })
+      if ($known.Count -ne 1) {
+        Add-Failure "stage '$stageName' ID '$stageId' occurs $($known.Count) times in the registry, expected exactly once"
+        $ok = $false
+        continue
+      }
+      $entry = $known[0]
+      if ($entry.Verdict -ne 'REJECT') {
+        Add-Failure "stage '$stageName' ID '$stageId' is not a REJECT case"
+        $ok = $false
+      }
+      if ($null -eq $entry.Target) {
+        Add-Failure "stage '$stageName' ID '$stageId' has no mutation target"
+        $ok = $false
+      }
+    }
+  }
+
   if ($ok) {
-    Write-Stage "registry OK: 16 ordered entries, $accepts ACCEPT, $rejects REJECT"
+    Write-Stage "registry OK: 16 ordered entries, $accepts ACCEPT, $rejects REJECT; stage maps nonempty, unique, known, targeted REJECT IDs"
   }
   return $ok
 }
@@ -446,16 +545,34 @@ function Invoke-RegistryCase {
 
 # ------------------------------------------------------------------- driver
 
-$fullMode = -not $PSBoundParameters.ContainsKey('Case')
+$caseMode = $PSBoundParameters.ContainsKey('Case')
+$stageMode = $PSBoundParameters.ContainsKey('Stage')
+$fullMode = -not $caseMode -and -not $stageMode
 
-if (-not $fullMode) {
+if ($caseMode -and $stageMode) {
+  Write-Host 'REPLAY-FAIL: -Case and -Stage are mutually exclusive'
+  exit 2
+}
+
+if ($caseMode) {
   if ($null -eq $Case -or $Case.Trim().Length -eq 0) {
-    Write-Host 'REPLAY-FAIL: an explicitly supplied selector must not be empty or whitespace'
+    Write-Host 'REPLAY-FAIL: an explicitly supplied case selector must not be empty or whitespace'
     exit 2
   }
   $known = @($script:Registry | Where-Object { $_.Id -eq $Case })
-  if ($known.Count -eq 0) {
-    Write-Host "REPLAY-FAIL: unknown selector '$Case'"
+  if ($known.Count -ne 1) {
+    Write-Host "REPLAY-FAIL: unknown or non-unique case selector '$Case'"
+    exit 2
+  }
+}
+
+if ($stageMode) {
+  if ($null -eq $Stage -or $Stage.Trim().Length -eq 0) {
+    Write-Host 'REPLAY-FAIL: an explicitly supplied stage selector must not be empty or whitespace'
+    exit 2
+  }
+  if (-not $script:Stages.ContainsKey($Stage)) {
+    Write-Host "REPLAY-FAIL: unknown stage selector '$Stage'"
     exit 2
   }
 }
@@ -483,8 +600,12 @@ $baselineSeconds = [int][Math]::Ceiling($sw.Elapsed.TotalSeconds)
 $deadline = [Math]::Max($baselineSeconds * 4, 300)
 Write-Stage "clean build took $baselineSeconds s; per-case deadline $deadline s"
 
-if ($fullMode -and $SkipSelfTest) {
-  Write-Host 'REPLAY-FAIL: full mode refuses -SkipSelfTest'
+if (($fullMode -or $stageMode) -and $SkipSelfTest) {
+  if ($stageMode) {
+    Write-Host "REPLAY-FAIL: stage '$Stage' refuses -SkipSelfTest"
+  } else {
+    Write-Host 'REPLAY-FAIL: full mode refuses -SkipSelfTest'
+  }
   exit 5
 }
 
@@ -496,8 +617,15 @@ if (-not $SkipSelfTest) {
 }
 
 $cases = $script:Registry
-if (-not $fullMode) {
+if ($caseMode) {
   $cases = @($script:Registry | Where-Object { $_.Id -eq $Case })
+} elseif ($stageMode) {
+  $selected = New-Object System.Collections.Generic.List[object]
+  foreach ($stageId in @($script:Stages[$Stage])) {
+    $entry = @($script:Registry | Where-Object { $_.Id -eq $stageId })[0]
+    $selected.Add($entry) | Out-Null
+  }
+  $cases = @($selected)
 }
 
 foreach ($entry in $cases) {
@@ -522,12 +650,29 @@ foreach ($r in $script:Results) {
   Write-Host ("REPLAY-CASE: {0,-34} {1}" -f $r.Id, $r.Outcome)
 }
 
-if (-not $fullMode) {
+if ($caseMode) {
   if ($script:Failures.Count -gt 0) {
     Write-Host "REPLAY: SELECTED CASE FAILED ($($script:Failures.Count) failures)"
     exit 1
   }
   Write-Host 'REPLAY: SELECTED CASE OK'
+  exit 0
+}
+
+if ($stageMode) {
+  $expectedStageCount = @($script:Stages[$Stage]).Count
+  $stageRejects = @($script:Results | Where-Object { $_.Outcome -eq 'REJECT' }).Count
+  if ($ran -ne $expectedStageCount) {
+    Add-Failure "stage '$Stage' produced $ran results, expected $expectedStageCount"
+  }
+  if ($stageRejects -ne $expectedStageCount) {
+    Add-Failure "stage '$Stage' recorded $stageRejects REJECT outcomes, expected $expectedStageCount"
+  }
+  if ($script:Failures.Count -gt 0) {
+    Write-Host "REPLAY: STAGE $Stage FAILED ($($script:Failures.Count) failures)"
+    exit 1
+  }
+  Write-Host "REPLAY: STAGE $Stage PASS - all $expectedStageCount mutations rejected and tracked state restored"
   exit 0
 }
 

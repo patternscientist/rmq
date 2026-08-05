@@ -27,8 +27,8 @@ measures: both read the same list.
 `selectSparseRelative` is the only live access source without a size-only bit
 length, and in the canonical list it is **last**. Every proper prefix therefore
 consists of counted sources alone, so `packedReviewerAccessOffset` is a function of
-`n` and `longCount` with no unit-stride hypothesis anywhere -- unlike the payload's
-total length, which needs one precisely because the sparse table is included in it.
+`n` and `longCount` even though the all-size total payload length additionally
+takes the actual sparse count.
 
 That ordering is load-bearing and not obviously deliberate, so
 `packedReviewerAccessPrefix_counted` pins it: it fails if the sparse relative table
@@ -173,14 +173,12 @@ dropped.
 theorem packedReviewerAccessPrefix_counted
     (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
     (hmem :
-      source ∈ concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources)
-    (hne :
-      source != ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRelative) :
+      source ∈ concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources) :
     forall s,
       s ∈ concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources.takeWhile
           (fun x => x != source) ->
         s != ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRelative := by
-  revert hmem hne
+  revert hmem
   cases source <;> decide
 
 /--
@@ -222,9 +220,7 @@ theorem packedReviewerAccessPayload_slice
     (shape : CartesianShape)
     (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
     (hmem :
-      source ∈ concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources)
-    (hne :
-      source != ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRelative) :
+      source ∈ concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources) :
     ((concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload shape).drop
         (packedReviewerAccessOffset shape.size (longCount shape) source)).take
         (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape source).length =
@@ -234,7 +230,7 @@ theorem packedReviewerAccessPayload_slice
       concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources hmem
   have hpre :=
     packedReviewerPrefixLength_eq shape _
-      (packedReviewerAccessPrefix_counted source hmem hne)
+      (packedReviewerAccessPrefix_counted source hmem)
   unfold concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload
     packedReviewerAccessOffset
   rw [← hpre]
@@ -252,9 +248,7 @@ theorem packedReviewerAccessOffset_fits
     (shape : CartesianShape)
     (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
     (hmem :
-      source ∈ concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources)
-    (hne :
-      source != ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRelative) :
+      source ∈ concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources) :
     packedReviewerAccessOffset shape.size (longCount shape) source +
         (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape source).length <=
       (concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload shape).length := by
@@ -263,7 +257,7 @@ theorem packedReviewerAccessOffset_fits
       concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources hmem
   have hpre :=
     packedReviewerPrefixLength_eq shape _
-      (packedReviewerAccessPrefix_counted source hmem hne)
+      (packedReviewerAccessPrefix_counted source hmem)
   unfold concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload
     packedReviewerAccessOffset
   rw [← hpre]
@@ -319,16 +313,14 @@ theorem packedReviewerPayload_accessSlice
     (shape : CartesianShape)
     (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
     (hmem :
-      source ∈ concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources)
-    (hne :
-      source != ConcreteBPNativeSuccinctRMQFlatPayloadSource.selectSparseRelative) :
+      source ∈ concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources) :
     ((packedReviewerPayloadBits shape).drop
         (packedReviewerSourceOffset shape.size (longCount shape) source)).take
         (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape source).length =
       concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape source := by
   have hbp : shape.bpCode.length = 2 * shape.size :=
     CartesianShape.bpCode_length shape
-  have hfits := packedReviewerAccessOffset_fits shape source hmem hne
+  have hfits := packedReviewerAccessOffset_fits shape source hmem
   unfold packedReviewerSourceOffset
   -- `List.drop_drop` splits `l.drop (X + Y)` into `(l.drop X).drop Y`, outer summand
   -- first, so the offset is already in the order this needs. Normalising the sum
@@ -351,7 +343,7 @@ theorem packedReviewerPayload_accessSlice
                   false).payload) by
       simp [List.append_assoc]]
   rw [packedPrefixSlice _ _ hfits]
-  exact packedReviewerAccessPayload_slice shape source hmem hne
+  exact packedReviewerAccessPayload_slice shape source hmem
 
 end PackedCellProbe
 

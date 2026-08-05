@@ -12,7 +12,7 @@ consumed payload and lowers their reads to the conditional probe plan.
 
 Both are `FixedWidthNatTable`s whose payload length is exactly
 `entries.length * width`. So an in-range read is a **full**-width window: there is no
-partial final word, and no counterpart of the sparse relative table's capacity gap.
+truncated final word, and no counterpart of the sparse relative table's capacity gap.
 The read width is therefore the entry width itself rather than a `min`, and the
 lowering is an equation on successful reads rather than needing the width to be
 recomputed from the actual payload.
@@ -22,9 +22,9 @@ recomputed from the actual payload.
 The consumed payload is `bpCode ++ access ++ interior ++ fringe ++ selectChunk`, so
 the two offsets are the summed lengths of everything earlier. Each of those lengths
 is a size-only function -- `canonicalRelativeRmmInteriorRawPayloadOverhead` and
-`bpFringeTableOverhead` -- except the access half, which additionally takes the
-header's `longCount`. That is the same dependency the access half's own offsets
-have, and the same one the cell count has.
+`bpFringeTableOverhead` -- except the access half, which additionally takes
+`longCount` and the actual sparse-relative count. Those are the same recovered
+scalars the exact cell count uses.
 
 ## What this module does not establish
 
@@ -44,32 +44,34 @@ open RMQ.Cartesian
 /-! ### The offsets -/
 
 /-- The bit offset of the close half inside the consumed payload. -/
-def packedReviewerCloseOffset (n longCount : Nat) : Nat :=
-  2 * n + packedReviewerAccessLength n longCount
+def packedReviewerCloseOffset (n longCount sparseCount : Nat) : Nat :=
+  2 * n + packedReviewerAccessLength n longCount sparseCount
 
 /-- The bit offset of the fringe chunk table. -/
-def packedReviewerFringeOffset (n longCount : Nat) : Nat :=
-  packedReviewerCloseOffset n longCount +
+def packedReviewerFringeOffset (n longCount sparseCount : Nat) : Nat :=
+  packedReviewerCloseOffset n longCount sparseCount +
     SuccinctClose.canonicalRelativeRmmInteriorRawPayloadOverhead n
 
 /-- The bit offset of the select chunk table. -/
-def packedReviewerSelectChunkOffset (n longCount : Nat) : Nat :=
-  packedReviewerFringeOffset n longCount + SuccinctClose.bpFringeTableOverhead n
+def packedReviewerSelectChunkOffset (n longCount sparseCount : Nat) : Nat :=
+  packedReviewerFringeOffset n longCount sparseCount +
+    SuccinctClose.bpFringeTableOverhead n
 
 /-- The shape-facing close offset is the shape-free one. -/
 theorem packedReviewerCloseBitOffset_eq
-    (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1) :
+    (shape : CartesianShape) :
     concreteBPNativeSuccinctRMQCanonicalReviewerCloseBitOffset shape =
-      packedReviewerCloseOffset shape.size (longCount shape) := by
+      packedReviewerCloseOffset shape.size (longCount shape)
+        (packedReviewerSparseCount shape) := by
   have hbp : shape.bpCode.length = 2 * shape.size :=
     CartesianShape.bpCode_length shape
-  have haccess := packedReviewerAccessLength_eq shape hstride
+  have haccess := packedReviewerAccessLength_eq shape
   show
     shape.bpCode.length +
         (concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload
           shape).length =
       packedReviewerCloseOffset shape.size (longCount shape)
+        (packedReviewerSparseCount shape)
   unfold packedReviewerCloseOffset
   omega
 
@@ -77,20 +79,22 @@ theorem packedReviewerCloseBitOffset_eq
 
 /-- Past the fringe offset, the payload is the fringe table then the select table. -/
 theorem packedReviewerPayload_drop_fringeOffset
-    (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1) :
+    (shape : CartesianShape) :
     (packedReviewerPayloadBits shape).drop
-        (packedReviewerFringeOffset shape.size (longCount shape)) =
+        (packedReviewerFringeOffset shape.size (longCount shape)
+          (packedReviewerSparseCount shape)) =
       (SuccinctClose.bpFringeChunkTable
           (SuccinctClose.bpFringeChunkBits shape.bpCode.length)).payload ++
         (SuccinctClose.bpChunkSelectTable
           (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false).payload := by
   have hinterior :=
     SuccinctClose.canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw shape
-  have hclose := packedReviewerCloseBitOffset_eq shape hstride
+  have hclose := packedReviewerCloseBitOffset_eq shape
   have hsplit :
-      packedReviewerFringeOffset shape.size (longCount shape) =
-        packedReviewerCloseOffset shape.size (longCount shape) +
+      packedReviewerFringeOffset shape.size (longCount shape)
+          (packedReviewerSparseCount shape) =
+        packedReviewerCloseOffset shape.size (longCount shape)
+            (packedReviewerSparseCount shape) +
           (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload.length := by
     unfold packedReviewerFringeOffset
     omega
@@ -114,10 +118,10 @@ theorem packedReviewerPayload_drop_fringeOffset
 
 /-- Past the select chunk offset, the payload is exactly the select chunk table. -/
 theorem packedReviewerPayload_drop_selectChunkOffset
-    (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1) :
+    (shape : CartesianShape) :
     (packedReviewerPayloadBits shape).drop
-        (packedReviewerSelectChunkOffset shape.size (longCount shape)) =
+        (packedReviewerSelectChunkOffset shape.size (longCount shape)
+          (packedReviewerSparseCount shape)) =
       (SuccinctClose.bpChunkSelectTable
         (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false).payload := by
   have hbp : shape.bpCode.length = 2 * shape.size :=
@@ -129,61 +133,63 @@ theorem packedReviewerPayload_drop_selectChunkOffset
     rw [hbp]
     exact SuccinctClose.bpFringeChunkTable_payload_length _
   have hsplit :
-      packedReviewerSelectChunkOffset shape.size (longCount shape) =
-        packedReviewerFringeOffset shape.size (longCount shape) +
+      packedReviewerSelectChunkOffset shape.size (longCount shape)
+          (packedReviewerSparseCount shape) =
+        packedReviewerFringeOffset shape.size (longCount shape)
+            (packedReviewerSparseCount shape) +
           (SuccinctClose.bpFringeChunkTable
             (SuccinctClose.bpFringeChunkBits shape.bpCode.length)).payload.length := by
     unfold packedReviewerSelectChunkOffset
     omega
   rw [hsplit, ← List.drop_drop,
-    packedReviewerPayload_drop_fringeOffset shape hstride]
+    packedReviewerPayload_drop_fringeOffset shape]
   exact List.drop_left
 
 /-! ### Slices -/
 
 theorem packedReviewerPayload_fringeSlice
     (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1)
     {off len : Nat}
     (h :
       off + len <=
         (SuccinctClose.bpFringeChunkTable
           (SuccinctClose.bpFringeChunkBits shape.bpCode.length)).payload.length) :
     ((packedReviewerPayloadBits shape).drop
-        (packedReviewerFringeOffset shape.size (longCount shape) + off)).take len =
+        (packedReviewerFringeOffset shape.size (longCount shape)
+          (packedReviewerSparseCount shape) + off)).take len =
       (((SuccinctClose.bpFringeChunkTable
         (SuccinctClose.bpFringeChunkBits shape.bpCode.length)).payload).drop
         off).take len := by
-  rw [← List.drop_drop, packedReviewerPayload_drop_fringeOffset shape hstride]
+  rw [← List.drop_drop, packedReviewerPayload_drop_fringeOffset shape]
   exact packedPrefixSlice _ _ h
 
 theorem packedReviewerPayload_selectChunkSlice
     (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1)
     (off len : Nat) :
     ((packedReviewerPayloadBits shape).drop
-        (packedReviewerSelectChunkOffset shape.size (longCount shape) +
+        (packedReviewerSelectChunkOffset shape.size (longCount shape)
+          (packedReviewerSparseCount shape) +
           off)).take len =
       (((SuccinctClose.bpChunkSelectTable
         (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false).payload).drop
         off).take len := by
   rw [← List.drop_drop,
-    packedReviewerPayload_drop_selectChunkOffset shape hstride]
+    packedReviewerPayload_drop_selectChunkOffset shape]
 
 /-! ### The tables end inside the payload -/
 
-theorem packedReviewerFringeOffset_fits (n longCount : Nat) :
-    packedReviewerFringeOffset n longCount +
+theorem packedReviewerFringeOffset_fits (n longCount sparseCount : Nat) :
+    packedReviewerFringeOffset n longCount sparseCount +
         SuccinctClose.bpFringeTableOverhead n <=
-      packedReviewerPayloadLength n longCount := by
+      packedReviewerPayloadLength n longCount sparseCount := by
   unfold packedReviewerFringeOffset packedReviewerCloseOffset
     packedReviewerPayloadLength
   omega
 
-theorem packedReviewerSelectChunkOffset_fits (n longCount : Nat) :
-    packedReviewerSelectChunkOffset n longCount +
+theorem packedReviewerSelectChunkOffset_fits (n longCount sparseCount : Nat) :
+    packedReviewerSelectChunkOffset n longCount sparseCount +
         SuccinctClose.bpChunkSelectTableOverhead n <=
-      packedReviewerPayloadLength n longCount := by
+      packedReviewerPayloadLength n longCount sparseCount := by
   unfold packedReviewerSelectChunkOffset packedReviewerFringeOffset
     packedReviewerCloseOffset packedReviewerPayloadLength
   omega
@@ -206,48 +212,57 @@ def packedReviewerSelectChunkWidth (n : Nat) : Nat :=
 def packedReviewerSelectChunkCount (n : Nat) : Nat :=
   SuccinctClose.bpChunkSelectRowCount (SuccinctClose.bpFringeChunkBits (2 * n))
 
-def packedReviewerFringeAddress (n longCount index : Nat) : Nat :=
-  packedReviewerCellWidth n + packedReviewerFringeOffset n longCount +
+def packedReviewerFringeAddress (n longCount sparseCount index : Nat) : Nat :=
+  packedReviewerCellWidth n +
+    packedReviewerFringeOffset n longCount sparseCount +
     index * packedReviewerFringeWidth n
 
-def packedReviewerSelectChunkAddress (n longCount index : Nat) : Nat :=
-  packedReviewerCellWidth n + packedReviewerSelectChunkOffset n longCount +
+def packedReviewerSelectChunkAddress (n longCount sparseCount index : Nat) : Nat :=
+  packedReviewerCellWidth n +
+    packedReviewerSelectChunkOffset n longCount sparseCount +
     index * packedReviewerSelectChunkWidth n
 
 /-- One fringe chunk word, answered by probing the reviewer memory. -/
-def packedReviewerFringeRead (n longCount : Nat) (memory : List (List Bool))
+def packedReviewerFringeRead (n longCount sparseCount : Nat)
+    (memory : List (List Bool))
     (index : Nat) : Option (List Bool) :=
   if index < packedReviewerFringeCount n then
     (packedFetch memory
-        (packedReviewerProbePlan n (packedReviewerFringeAddress n longCount index)
+        (packedReviewerProbePlan n
+          (packedReviewerFringeAddress n longCount sparseCount index)
           (packedReviewerFringeWidth n))).map
-      (packedReviewerDecodeSpan n (packedReviewerFringeAddress n longCount index)
+      (packedReviewerDecodeSpan n
+        (packedReviewerFringeAddress n longCount sparseCount index)
         (packedReviewerFringeWidth n))
   else
     none
 
 /-- One select chunk word, answered by probing the reviewer memory. -/
-def packedReviewerSelectChunkRead (n longCount : Nat) (memory : List (List Bool))
+def packedReviewerSelectChunkRead (n longCount sparseCount : Nat)
+    (memory : List (List Bool))
     (index : Nat) : Option (List Bool) :=
   if index < packedReviewerSelectChunkCount n then
     (packedFetch memory
         (packedReviewerProbePlan n
-          (packedReviewerSelectChunkAddress n longCount index)
+          (packedReviewerSelectChunkAddress n longCount sparseCount index)
           (packedReviewerSelectChunkWidth n))).map
       (packedReviewerDecodeSpan n
-        (packedReviewerSelectChunkAddress n longCount index)
+        (packedReviewerSelectChunkAddress n longCount sparseCount index)
         (packedReviewerSelectChunkWidth n))
   else
     none
 
-theorem packedReviewerFringeReadPlan_length_le_two (n longCount index : Nat) :
-    (packedReviewerProbePlan n (packedReviewerFringeAddress n longCount index)
+theorem packedReviewerFringeReadPlan_length_le_two
+    (n longCount sparseCount index : Nat) :
+    (packedReviewerProbePlan n
+        (packedReviewerFringeAddress n longCount sparseCount index)
         (packedReviewerFringeWidth n)).length <= 2 :=
   packedReviewerProbeCount_le_two _ _ _
 
-theorem packedReviewerSelectChunkReadPlan_length_le_two (n longCount index : Nat) :
+theorem packedReviewerSelectChunkReadPlan_length_le_two
+    (n longCount sparseCount index : Nat) :
     (packedReviewerProbePlan n
-        (packedReviewerSelectChunkAddress n longCount index)
+        (packedReviewerSelectChunkAddress n longCount sparseCount index)
         (packedReviewerSelectChunkWidth n)).length <= 2 :=
   packedReviewerProbeCount_le_two _ _ _
 
@@ -268,12 +283,12 @@ is answered identically by probing the reviewer memory.
 -/
 theorem packedReviewerFringeRead_of_some
     (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1)
     {index : Nat} {word : List Bool}
     (hread :
       (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 21 index =
         some word) :
     packedReviewerFringeRead shape.size (longCount shape)
+        (packedReviewerSparseCount shape)
         (packedReviewerMemory shape) index =
       some word := by
   have hbp : shape.bpCode.length = 2 * shape.size :=
@@ -342,26 +357,32 @@ theorem packedReviewerFringeRead_of_some
     rw [hbp]
     exact SuccinctClose.bpFringeChunkTable_payload_length _
   have hfitpay := packedReviewerFringeOffset_fits shape.size (longCount shape)
+    (packedReviewerSparseCount shape)
   have hfit2 :
-      packedReviewerFringeOffset shape.size (longCount shape) +
+      packedReviewerFringeOffset shape.size (longCount shape)
+          (packedReviewerSparseCount shape) +
             index *
               SuccinctClose.bpFringeChunkEntryWidth
                 (SuccinctClose.bpFringeChunkBits shape.bpCode.length) +
           SuccinctClose.bpFringeChunkEntryWidth
             (SuccinctClose.bpFringeChunkBits shape.bpCode.length) <=
-        packedReviewerPayloadLength shape.size (longCount shape) := by
+        packedReviewerPayloadLength shape.size (longCount shape)
+          (packedReviewerSparseCount shape) := by
     omega
   have hserial :=
     packedReviewerSerialized_le_allocated shape.size (longCount shape)
+      (packedReviewerSparseCount shape)
   have hfitalloc :
       packedReviewerCellWidth shape.size +
-              packedReviewerFringeOffset shape.size (longCount shape) +
+              packedReviewerFringeOffset shape.size (longCount shape)
+                  (packedReviewerSparseCount shape) +
             index *
               SuccinctClose.bpFringeChunkEntryWidth
                 (SuccinctClose.bpFringeChunkBits shape.bpCode.length) +
           SuccinctClose.bpFringeChunkEntryWidth
             (SuccinctClose.bpFringeChunkBits shape.bpCode.length) <=
-        packedReviewerAllocatedBits shape.size (longCount shape) := by
+        packedReviewerAllocatedBits shape.size (longCount shape)
+          (packedReviewerSparseCount shape) := by
     omega
   have hwle :
       SuccinctClose.bpFringeChunkEntryWidth
@@ -372,26 +393,29 @@ theorem packedReviewerFringeRead_of_some
   have hdecode := packedReviewerProbePlan_decode shape hwle hfitalloc
   have haddr :
       packedReviewerCellWidth shape.size +
-            packedReviewerFringeOffset shape.size (longCount shape) +
+            packedReviewerFringeOffset shape.size (longCount shape)
+                (packedReviewerSparseCount shape) +
           index *
             SuccinctClose.bpFringeChunkEntryWidth
               (SuccinctClose.bpFringeChunkBits shape.bpCode.length) =
         packedReviewerCellWidth shape.size +
-          (packedReviewerFringeOffset shape.size (longCount shape) +
+          (packedReviewerFringeOffset shape.size (longCount shape)
+              (packedReviewerSparseCount shape) +
             index *
               SuccinctClose.bpFringeChunkEntryWidth
                 (SuccinctClose.bpFringeChunkBits shape.bpCode.length)) := by
     omega
   have hpadslice :=
-    packedReviewerPayloadSlice shape hstride
-      (packedReviewerFringeOffset shape.size (longCount shape) +
+    packedReviewerPayloadSlice shape
+      (packedReviewerFringeOffset shape.size (longCount shape)
+          (packedReviewerSparseCount shape) +
         index *
           SuccinctClose.bpFringeChunkEntryWidth
             (SuccinctClose.bpFringeChunkBits shape.bpCode.length))
       (SuccinctClose.bpFringeChunkEntryWidth
         (SuccinctClose.bpFringeChunkBits shape.bpCode.length)) hfit2
   have hfringeslice :=
-    packedReviewerPayload_fringeSlice shape hstride
+    packedReviewerPayload_fringeSlice shape
       (off :=
         index *
           SuccinctClose.bpFringeChunkEntryWidth
@@ -409,12 +433,12 @@ is answered identically by probing the reviewer memory.
 -/
 theorem packedReviewerSelectChunkRead_of_some
     (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1)
     {index : Nat} {word : List Bool}
     (hread :
       (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 22 index =
         some word) :
     packedReviewerSelectChunkRead shape.size (longCount shape)
+        (packedReviewerSparseCount shape)
         (packedReviewerMemory shape) index =
       some word := by
   have hbp : shape.bpCode.length = 2 * shape.size :=
@@ -475,26 +499,32 @@ theorem packedReviewerSelectChunkRead_of_some
     exact SuccinctClose.bpChunkSelectTable_payload_length _ false
   have hfitpay :=
     packedReviewerSelectChunkOffset_fits shape.size (longCount shape)
+      (packedReviewerSparseCount shape)
   have hfit2 :
-      packedReviewerSelectChunkOffset shape.size (longCount shape) +
+      packedReviewerSelectChunkOffset shape.size (longCount shape)
+          (packedReviewerSparseCount shape) +
             index *
               SuccinctClose.bpChunkSelectEntryWidth
                 (SuccinctClose.bpFringeChunkBits shape.bpCode.length) +
           SuccinctClose.bpChunkSelectEntryWidth
             (SuccinctClose.bpFringeChunkBits shape.bpCode.length) <=
-        packedReviewerPayloadLength shape.size (longCount shape) := by
+        packedReviewerPayloadLength shape.size (longCount shape)
+          (packedReviewerSparseCount shape) := by
     omega
   have hserial :=
     packedReviewerSerialized_le_allocated shape.size (longCount shape)
+      (packedReviewerSparseCount shape)
   have hfitalloc :
       packedReviewerCellWidth shape.size +
-              packedReviewerSelectChunkOffset shape.size (longCount shape) +
+              packedReviewerSelectChunkOffset shape.size (longCount shape)
+                  (packedReviewerSparseCount shape) +
             index *
               SuccinctClose.bpChunkSelectEntryWidth
                 (SuccinctClose.bpFringeChunkBits shape.bpCode.length) +
           SuccinctClose.bpChunkSelectEntryWidth
             (SuccinctClose.bpFringeChunkBits shape.bpCode.length) <=
-        packedReviewerAllocatedBits shape.size (longCount shape) := by
+        packedReviewerAllocatedBits shape.size (longCount shape)
+          (packedReviewerSparseCount shape) := by
     omega
   have hwle :
       SuccinctClose.bpChunkSelectEntryWidth
@@ -505,26 +535,29 @@ theorem packedReviewerSelectChunkRead_of_some
   have hdecode := packedReviewerProbePlan_decode shape hwle hfitalloc
   have haddr :
       packedReviewerCellWidth shape.size +
-            packedReviewerSelectChunkOffset shape.size (longCount shape) +
+            packedReviewerSelectChunkOffset shape.size (longCount shape)
+                (packedReviewerSparseCount shape) +
           index *
             SuccinctClose.bpChunkSelectEntryWidth
               (SuccinctClose.bpFringeChunkBits shape.bpCode.length) =
         packedReviewerCellWidth shape.size +
-          (packedReviewerSelectChunkOffset shape.size (longCount shape) +
+          (packedReviewerSelectChunkOffset shape.size (longCount shape)
+              (packedReviewerSparseCount shape) +
             index *
               SuccinctClose.bpChunkSelectEntryWidth
                 (SuccinctClose.bpFringeChunkBits shape.bpCode.length)) := by
     omega
   have hpadslice :=
-    packedReviewerPayloadSlice shape hstride
-      (packedReviewerSelectChunkOffset shape.size (longCount shape) +
+    packedReviewerPayloadSlice shape
+      (packedReviewerSelectChunkOffset shape.size (longCount shape)
+          (packedReviewerSparseCount shape) +
         index *
           SuccinctClose.bpChunkSelectEntryWidth
             (SuccinctClose.bpFringeChunkBits shape.bpCode.length))
       (SuccinctClose.bpChunkSelectEntryWidth
         (SuccinctClose.bpFringeChunkBits shape.bpCode.length)) hfit2
   have hselectslice :=
-    packedReviewerPayload_selectChunkSlice shape hstride
+    packedReviewerPayload_selectChunkSlice shape
       (index *
         SuccinctClose.bpChunkSelectEntryWidth
           (SuccinctClose.bpFringeChunkBits shape.bpCode.length))

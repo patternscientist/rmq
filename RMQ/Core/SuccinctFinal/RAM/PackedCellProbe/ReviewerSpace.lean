@@ -16,19 +16,19 @@ overhead, and two cell widths -- the header cell plus the ceiling remainder of t
 final cell, each counted at full width. The second is logarithmic in the input
 size, so it is `o(n)`, but it is counted rather than dropped.
 
-## What the `longCount` dependence costs here
+## What the decoded-count dependence costs here
 
-`packedReviewerAllocatedBits` takes `longCount`, so the arithmetic core carries the
-hypothesis that the payload length is within its advertised bound. At a shape that
-hypothesis is discharged by `packedReviewerPayloadLength_le_bound` under unit
-stride, so the memory-level statement needs only `hstride`. The bound itself is
-`longCount`-free: the residual is a function of `n` alone, which is what the row
-requires.
+`packedReviewerAllocatedBits` takes `longCount` and `sparseCount`, so the
+arithmetic core carries the hypothesis that their exact payload length is within
+the advertised bound. At an actual shape that hypothesis is discharged
+unconditionally by `packedReviewerPayloadLength_le_bound`. The resulting residual
+is still a function of `n` alone.
 
-## What this module does not establish
+## Layer boundary
 
-* Nothing here says the cells counted are the cells an execution probes. That is
-  the capstone's job, and there is no capstone.
+This module proves only the allocation bound.  The controller-to-allocation
+connection is supplied separately by `ReviewerControllerProof`, so the space
+proof itself remains independent of query execution.
 -/
 
 namespace RMQ
@@ -42,16 +42,18 @@ def packedReviewerRho (n : Nat) : Nat :=
   concreteBPNativeSuccinctRMQCanonicalReviewerOverhead n +
     2 * packedReviewerCellWidth n
 
-theorem packedReviewerAllocatedBits_le (n longCount : Nat)
+theorem packedReviewerAllocatedBits_le (n longCount sparseCount : Nat)
     (hlen :
-      packedReviewerPayloadLength n longCount <=
+      packedReviewerPayloadLength n longCount sparseCount <=
         2 * n + concreteBPNativeSuccinctRMQCanonicalReviewerOverhead n) :
-    packedReviewerAllocatedBits n longCount <= 2 * n + packedReviewerRho n := by
+    packedReviewerAllocatedBits n longCount sparseCount <=
+      2 * n + packedReviewerRho n := by
   have hceil :
-      GenericSelect.selectCeilDiv (packedReviewerPayloadLength n longCount)
+      GenericSelect.selectCeilDiv
+            (packedReviewerPayloadLength n longCount sparseCount)
             (packedReviewerCellWidth n) *
           packedReviewerCellWidth n <=
-        packedReviewerPayloadLength n longCount +
+        packedReviewerPayloadLength n longCount sparseCount +
           packedReviewerCellWidth n :=
     GenericSelect.selectCeilDiv_mul_le_add _ _
   unfold packedReviewerAllocatedBits packedReviewerCellCount packedReviewerRho
@@ -60,13 +62,13 @@ theorem packedReviewerAllocatedBits_le (n longCount : Nat)
 
 /-- **`FG-06` at the consumed payload**: allocated cells times width. -/
 theorem packedReviewerMemory_length_mul_width_le
-    (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1) :
+    (shape : CartesianShape) :
     (packedReviewerMemory shape).length * packedReviewerCellWidth shape.size <=
       2 * shape.size + packedReviewerRho shape.size := by
   rw [packedReviewerMemory_length]
   exact packedReviewerAllocatedBits_le shape.size (longCount shape)
-    (packedReviewerPayloadLength_le_bound shape hstride)
+    (packedReviewerSparseCount shape)
+    (packedReviewerPayloadLength_le_bound shape)
 
 /-! ### The residual is little-o linear -/
 

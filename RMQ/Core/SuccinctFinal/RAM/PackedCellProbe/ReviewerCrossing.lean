@@ -66,22 +66,21 @@ private theorem packedReviewerChunkFlatten (w : Nat) :
       rw [htail, ih (bs.drop w) hdrop, List.take_append_drop]
 
 theorem packedReviewerMemory_flatten
-    (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1) :
+    (shape : CartesianShape) :
     (packedReviewerMemory shape).flatten = packedReviewerPaddedBits shape := by
   refine packedReviewerChunkFlatten (packedReviewerCellWidth shape.size)
-    (packedReviewerCellCount shape.size (longCount shape))
+    (packedReviewerCellCount shape.size (longCount shape)
+      (packedReviewerSparseCount shape))
     (packedReviewerPaddedBits shape) ?_
-  rw [packedReviewerPaddedBits_length shape hstride]
+  rw [packedReviewerPaddedBits_length shape]
   rfl
 
 theorem packedReviewerMemory_flatten_take
-    (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1) :
+    (shape : CartesianShape) :
     (packedReviewerMemory shape).flatten.take
         (packedReviewerSerializedBits shape).length =
       packedReviewerSerializedBits shape := by
-  rw [packedReviewerMemory_flatten shape hstride]
+  rw [packedReviewerMemory_flatten shape]
   unfold packedReviewerPaddedBits
   simp
 
@@ -94,7 +93,8 @@ def packedReviewerCellAt (shape : CartesianShape) (i : Nat) : List Bool :=
 
 theorem packedReviewerMemory_getElem?
     (shape : CartesianShape) {i : Nat}
-    (hi : i < packedReviewerCellCount shape.size (longCount shape)) :
+    (hi : i < packedReviewerCellCount shape.size (longCount shape)
+      (packedReviewerSparseCount shape)) :
     (packedReviewerMemory shape)[i]? = some (packedReviewerCellAt shape i) := by
   unfold packedReviewerMemory packedReviewerCellAt
   rw [List.getElem?_map, List.getElem?_range hi]
@@ -156,13 +156,12 @@ from the flattened memory and taking the payload's own length returns the payloa
 itself, so no part of it lives outside `packedReviewerMemory`.
 -/
 theorem packedReviewerMemory_recovers_payload
-    (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1) :
+    (shape : CartesianShape) :
     ((packedReviewerMemory shape).flatten.drop
           (packedReviewerCellWidth shape.size)).take
         (packedReviewerPayloadBits shape).length =
       packedReviewerPayloadBits shape := by
-  rw [packedReviewerMemory_flatten shape hstride]
+  rw [packedReviewerMemory_flatten shape]
   unfold packedReviewerPaddedBits packedReviewerSerializedBits
   rw [List.append_assoc, ← packedReviewerHeaderBits_length shape,
     List.drop_left]

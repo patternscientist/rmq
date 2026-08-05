@@ -9580,3 +9580,273 @@ a transitivity rather than from rewriting a hypothesis.
 Segment `20` is untouched. The interior component store is not a uniform grid at all,
 so it has neither a single entry width to bound nor a single word count to guard, and
 its read remains open.
+
+## DD-20260805-071 -- keep K1 and make the reviewer machine all-size by charged discovery
+
+The all-size controller uses the payload the public semantics actually consumes,
+`concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape`.  It keeps the existing
+one-cell `longCount` header and does **not** add a `sparseCount` header cell.  Instead,
+after reading cell zero, it obtains the exact sparse-relative row count through three
+fixed logical reads of the sparse flag rank-super word, rank-block word, and final
+flag word.  Those source addresses precede the sparse-relative table, depend only on
+`n` and the decoded `longCount`, and each lowers to at most two charged physical
+cells.  The replies determine `sparseCount` by the same rank decomposition as the
+canonical table.
+
+This is the K1 branch of the all-size fork.  K2 was authorized only after a checked
+K1 obstruction.  No such obstruction exists: the three permitted prior replies give
+the missing count with a fixed six-cell upper bound.  Adding a second header anyway
+would therefore spend a counted cell and change the format without satisfying its
+authorization condition.
+
+### Closed controller geometry, list-backed proof geometry
+
+The canonical reviewer layout remains list-backed on the proof and construction
+side, where that representation prevents the serialized payload from drifting from
+its source order.  The executable controller does not traverse that list.  Its
+address surface uses a closed match over the eighteen live source tags, followed by
+closed arithmetic for the ragged interior directory and the two chunk tables.
+
+The exact access length is expressed as the fixed prefix before
+`selectSparseRelative` plus
+
+```
+sparseCount * packedLocalWidth n
+```
+
+and the total payload length adds the BP prefix and all three close components.
+Proof-only drift theorems equate every closed offset, plan, decoder, and total length
+to the canonical list-derived geometry.  This split is deliberate: a source list is
+good evidence for layout identity but is uncounted dynamic metadata if an executable
+request path walks it.
+
+### One first-order machine and one trace
+
+`packedReviewerController` is a proof-free request/reply machine.  Its state carries
+only public size/endpoints, decoded header values, fixed control tags/counters, and
+prior physical replies.  Memory appears only in `packedReviewerRunAgainstMemory`,
+whose driver obtains a reply by indexing the supplied cell array at the emitted
+address and feeds that exact reply to `packedReviewerConsumeReply`.
+
+Executed segment `20` is not flattened into a fictitious uniform word grid.  Its
+lowering classifies the logical word into one of the eight canonical components and
+retains that component's entry count, entry width, per-entry chunk number, partial
+final width, and bit prefix.  Segments `21` and `22` retain their separate uniform
+chunk geometries.  Zero-cell logical attempts advance the logical protocol without
+adding decorative physical events.
+
+The residual logical-step counter in the controller is operational state: it is the
+remaining fuel of the accepted fixed 210-step logical request/reply driver, consumed
+one logical attempt at a time.  It is not a stored physical cost claim.  The physical
+cap is proved only after the run and trace decomposition exist.  Its arithmetic is
+
+```
+1 header cell + at most 2 * 3 prelude cells + at most 2 * 210 whole-run cells = 427.
+```
+
+The capstone is required to use the identical run object for terminal value,
+reviewer-memory backing, ordered physical/logical grouping, allocation, address and
+reply width, and the literal trace cap.  Shape and the global logical store appear
+only in the proof-side refinement of that run to `packedWholeQueryRun` and the
+guarded public `queryTraceResult` semantics.
+
+### Rejected alternatives
+
+* The former `localStride = 1` chain and its informal `2^97` discussion were
+  rejected: neither is an all-size theorem, and neither is needed by the charged
+  prelude.
+* A finite astronomical cutoff was rejected as a restatement of the same gap.
+* An unconditional K2 `sparseCount` header was rejected because K1 is constructible
+  and no quantifier-matched obstruction was proved.
+* Walking `concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources` inside a
+  clean-signature wrapper was rejected as hidden controller metadata.  The closed
+  arithmetic surface replaces that traversal.
+* The older flat sibling payload, internal padding, and a sibling logical store were
+  rejected because the space, memory, execution, and public semantics must compose
+  through one object.
+* A semantic answer decorated with reads, a theorem-only trace, and a stored cap
+  were rejected because none would make the terminal value depend on the actual
+  charged replies.
+
+### Consequences and evidence surface
+
+The construction pays a small fixed prelude and accepts the conservative literal
+cap `427`; it gains an oracle-free all-size route with no content count supplied out
+of band.  The main evidence surfaces are `ReviewerSparsePrelude.lean`,
+`ReviewerClosedGeometry.lean`, `ReviewerInteriorRead.lean`,
+`ReviewerLogicalLowering.lean`, `ReviewerController.lean`,
+`ReviewerLogicalSimulation.lean`, and `ReviewerControllerProof.lean`.  Independent
+validation must pin their concrete signatures and the same-run public certificate;
+source-level cleanliness alone is not acceptance.
+
+The hardest skeptical-reviewer question is whether the apparently closed controller
+still reaches a shape-specialized list or semantic store through a helper.  The
+answer must remain a transitive call-graph fact, backed by the closed definitions and
+their proof-only drift boundary, not merely by the public function types.
+
+## DD-20260805-072 -- normalize completed child protocols before exposing a wrapper
+
+The logical reviewer controller is built by embedding smaller request/reply machines
+inside select, interior, LCA, and whole-query states.  A child constructor is allowed
+to return an already-terminal state without issuing a request.  A parent that wraps
+such a child blindly has `result = none` and `nextRequest = none`, which is a
+deadlock: the driver cannot consume a reply that would advance it.
+
+This was not hypothetical.  Four dense-select continuations could start a rank or
+word-select child on an empty/zero-chunk word.  The child was `.done`, while the
+wrapper remained `denseBeforeRank`, `denseUptoRank`, `denseFirstSelect`, or
+`denseSecondSelect`.  The fix is at each select smart constructor: inspect the child
+result immediately, advance or map the value when it is present, and construct a
+wrapper only when the child has a next request.
+
+Interior range-min has a deeper version because zero-read table decodes can cascade
+through defunctionalized continuations.  `packedReviewerInteriorStartRaw` preserves
+the branch construction, and `packedReviewerInteriorNormalize` repeatedly consumes
+already-completed child results through `packedReviewerInteriorFinishNat` before a
+public state is exposed.  Public start and every completed-child consume transition
+cross this normalization boundary.  Its fuel is
+`packedReviewerInteriorRemaining state + 1`, the existing structural continuation
+measure; normalization performs no read and does not contribute a physical probe.
+
+The whole-query protocol can also wrap an immediately done out-of-range select, but
+that state is unreachable from the actual physical machine: `packedReviewerController`
+checks `left < right` and `right <= n` before entering header, prelude, or whole-query
+execution.  Invalid, empty, reversed, and out-of-range inputs instead return the
+exact terminal `.done none` run with an empty trace.  The validation surface pins
+both sides of this guard.  On valid inputs, the two selected indices are formally
+inside `n`, so both whole-query select starts are request-producing.
+
+### Why the protocol, not the proof, changed
+
+The atomic child simulations are quantified over arbitrary supplied logical stores.
+It would have been unsound to dismiss an empty reply as impossible while proving
+those transition lemmas, and it would have hidden the protocol defect to add a
+store-content premise there.
+Similarly, increasing the outer fuel cannot repair a state with neither a result nor
+a request.  Normalization is the semantic operation the composition was missing.
+
+### Consequences
+
+Logical budgets continue to count actual read attempts only.  Synchronous child
+completion consumes structural normalization fuel but creates no logical or physical
+event, so trace multiplicity, the 210 logical bound, and the derived 427 physical
+bound keep their intended meaning.  Future embedded protocol starts must follow the
+same smart-constructor rule, and proof reviews should explicitly check the invariant:
+every reachable nonterminal wrapper exposes a next request.
+
+## DD-20260805-073 -- place fixed-budget correctness at the canonical reviewer-store boundary
+
+The physical driver is deliberately total over any list of cells: it receives only
+that memory, emits requests, consumes the returned optional cells, and records at
+most its structural fuel.  That fact does not make an arbitrary forged memory a
+semantic RMQ representation, nor does it imply that every forged reply sequence
+reaches the terminal state within the canonical 210 logical-read budget.
+
+The distinction matters in the interior route.  General canonical-layout field
+widths have checked bounds as large as seven physical words.  The tight 33-read
+interior theorem instead has canonical reachability premises: a positive-size,
+bounded block range produced by the actual close/LCA route.  An arbitrary logical
+store may forge select replies whose close positions violate that geometry and can
+therefore drive a longer interior execution.  A theorem claiming the same fixed
+210-step semantic simulation for every `WordRAM.ReadStore` would be stronger than
+the accepted cost theorem and is not the interface the physical construction uses.
+
+### Decision
+
+State ordered whole-run correctness and occurrence preservation against
+`concreteBPNativeSuccinctRMQGlobalReadStore shape`.  The composition chain is:
+
+```
+packedReviewerMemory shape
+  -> exact physical replies
+  -> packedReviewerLogicalRead_eq_globalReadStore
+  -> canonical-store 210-step ordered simulation
+  -> packedWholeQueryRun
+  -> guarded public queryTraceResult
+```
+
+Keep the generic arbitrary-memory theorem only where it is true: the physical
+driver's trace length is at most 427 because fuel bounds recorded requests.  Its
+terminal adequacy, allocation, successful replies, ordered grouping, and reference
+correctness are proved for the canonical reviewer memory on the identical public
+run object.  Atomic child simulations may remain store-parametric when their local
+budgets are genuinely independent of reply content.
+
+### Rejected alternatives
+
+* Claiming arbitrary-store 210-step termination was rejected because forged select
+  replies need not satisfy the bounded interior geometry.
+* Adding semantic range checks or an answer oracle to the executable controller was
+  rejected: the reviewer memory already supplies the canonical replies, and such a
+  check would change the accepted logical protocol rather than prove it.
+* Treating the arbitrary-memory 427 fuel cap as a success theorem was rejected.  It
+  bounds trace length even when fuel is exhausted; success is a separate canonical
+  certificate field.
+* Weakening the physical driver to accept a `WordRAM.ReadStore` was rejected because
+  it would violate reviewer-memory-only execution and make the proof target choose
+  the answer source.
+
+### Consequences and evidence
+
+Validation must pin the shape/canonical-store signature of the 210-step simulation,
+the arbitrary-memory signature of the structural 427 cap, and the canonical public
+certificate's terminal, allocation, read-backing, reply-success, and result fields.
+This is a proof-boundary correction, not an executable shortcut: the controller,
+memory lookup, request order, trace, and returned value are unchanged.
+
+## DD-20260805-074 -- close request operands at the reachable-state boundary
+
+The physical controller proof has two logically independent layers.  The first
+constructs the request/reply run and proves its exact lowering, canonical terminal
+result, ordered physical grouping, memory backing, allocation, address capacity,
+reply width, and derived probe cap.  The second proves that every scalar and control
+value retained at every canonical prefix is a modeled machine value.  A logical
+request's instruction arguments, read-site payload, segment, and index belong to
+that second prefix invariant: they are produced by the current nested protocol
+state, not by the later physical expansion alone.
+
+### Decision
+
+Keep execution and semantic refinement in `ReviewerControllerProof.lean`.  Put the
+constructor-exhaustive logical request-operand theorem, its expected-physical-trace
+lift, the grouped-run operand theorem, and the final public run certificate in
+`ReviewerControllerStateProof.lean`, which imports the base proof and owns the
+canonical reachable-state invariant.  The downstream module recreates the stable
+public names and exact signatures; validation therefore sees no weakened API.
+
+The composition is:
+
+```
+ReviewerControllerProof
+  -> actual run / grouping / allocation / backing / correctness / cap
+  -> ReviewerControllerStateProof canonical-prefix invariant
+  -> logical request operands
+  -> occurrence-preserving physical request operands
+  -> exact public run + reachable-state certificates
+```
+
+### Rejected alternatives
+
+* Duplicating Select, Interior, LCA, and Whole transition invariants in both modules
+  was rejected.  It would create two proof paths for the same derived indices and
+  make future protocol changes easy to synchronize incorrectly.
+* Making the base module import the state proof was rejected because the state proof
+  already consumes the base run and grouping theorems; that would create a module
+  cycle rather than a proof.
+* Dropping operand fields from the public certificate was rejected because it would
+  reopen `INV-ADDRESS-WIDTH` and let a correct physical address theorem coexist with
+  unbounded dormant or producing instruction operands.
+* Treating constructor tags as unencoded host-language metadata was rejected.  The
+  state proof separately enumerates all nested protocol and continuation tags and
+  proves that their fixed codes fit the same all-size word width.
+
+### Consequences and evidence
+
+`ReviewerControllerProof.lean` can compile without a forward reference to a theorem
+whose natural proof depends on canonical prefix reachability.  The downstream proof
+must still reconstruct the exact old certificate fields and prove the request
+theorem constructor-by-constructor; moving the declaration is not acceptance by
+itself.  `EGCPFinalFalsification.lean` imports both modules and independently
+restates every certificate field, so a missing operand theorem, weakened grouping,
+or uninhabited state predicate remains a compilation failure.  Replay case
+`M12-PUBLIC-TYPE-WEAKENING` follows the declaration to its new owning file.

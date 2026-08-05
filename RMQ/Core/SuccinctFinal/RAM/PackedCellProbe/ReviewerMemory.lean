@@ -10,21 +10,14 @@ string, the cell count, the allocation and the cell array, all over
 ## Where `longCount` enters
 
 `packedReviewerCellWidth` is a function of `n` alone, so cell zero is addressable
-before anything has been decoded. `packedReviewerCellCount` is a function of `n`
-**and** `longCount`, because the consumed payload's length is
-(`DD-20260804-043`).
+before anything has been decoded. `packedReviewerCellCount` is a function of
+`n`, `longCount`, and the exact sparse-relative count, because the consumed
+payload has no padding between those sources and the close tables.
 
-That is the whole shape of the `K1` argument, and here it is load-bearing rather
-than decorative: a controller reads cell zero at the size-only width, decodes
-`longCount` by `packedReviewerHeaderBits_decode`, and only then knows how many
-cells exist. Under the flat payload the count was already size-only, so the header
-carried nothing the controller could not have computed.
-
-## The unit-stride hypothesis
-
-Theorems relating the *actual* serialized bits to the count formula carry
-`hstride`, inherited from `packedReviewerPayloadBits_length_eq`. Theorems purely
-about the formulas, and `packedReviewerMemory_header_cell`, do not need it.
+The controller reads cell zero at the size-only width, decodes `longCount`, and
+then obtains the sparse count through the charged K1 prelude. The memory builder
+uses `packedReviewerSparseCount shape`, the same actual count whose recovery the
+controller proves separately. No second header field is introduced.
 
 ## What this module does not establish
 
@@ -76,14 +69,14 @@ def packedReviewerSerializedBits (shape : CartesianShape) : List Bool :=
   packedReviewerHeaderBits shape ++ packedReviewerPayloadBits shape
 
 theorem packedReviewerSerializedBits_length
-    (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1) :
+    (shape : CartesianShape) :
     (packedReviewerSerializedBits shape).length =
       packedReviewerCellWidth shape.size +
-        packedReviewerPayloadLength shape.size (longCount shape) := by
+        packedReviewerPayloadLength shape.size (longCount shape)
+          (packedReviewerSparseCount shape) := by
   unfold packedReviewerSerializedBits
   rw [List.length_append, packedReviewerHeaderBits_length,
-    packedReviewerPayloadBits_length_eq shape hstride]
+    packedReviewerPayloadBits_length_eq shape]
 
 theorem packedReviewerSerializedBits_drop_header (shape : CartesianShape) :
     (packedReviewerSerializedBits shape).drop
@@ -97,22 +90,26 @@ theorem packedReviewerSerializedBits_drop_header (shape : CartesianShape) :
 /--
 The allocated cell count: one header cell, then enough to cover the payload.
 
-Unlike the flat count this takes `longCount`, because the consumed payload's
-length does. That argument is exactly what the header supplies.
+Unlike the flat count this takes `longCount` and `sparseCount`, because the
+consumed payload's exact length does. The header supplies the first; the charged
+K1 sparse-rank prelude supplies the second.
 -/
-def packedReviewerCellCount (n longCount : Nat) : Nat :=
-  1 + GenericSelect.selectCeilDiv (packedReviewerPayloadLength n longCount)
+def packedReviewerCellCount (n longCount sparseCount : Nat) : Nat :=
+  1 + GenericSelect.selectCeilDiv
+    (packedReviewerPayloadLength n longCount sparseCount)
     (packedReviewerCellWidth n)
 
-def packedReviewerAllocatedBits (n longCount : Nat) : Nat :=
-  packedReviewerCellCount n longCount * packedReviewerCellWidth n
+def packedReviewerAllocatedBits (n longCount sparseCount : Nat) : Nat :=
+  packedReviewerCellCount n longCount sparseCount * packedReviewerCellWidth n
 
-theorem packedReviewerSerialized_le_allocated (n longCount : Nat) :
-    packedReviewerCellWidth n + packedReviewerPayloadLength n longCount <=
-      packedReviewerAllocatedBits n longCount := by
+theorem packedReviewerSerialized_le_allocated (n longCount sparseCount : Nat) :
+    packedReviewerCellWidth n +
+        packedReviewerPayloadLength n longCount sparseCount <=
+      packedReviewerAllocatedBits n longCount sparseCount := by
   have hcover :
-      packedReviewerPayloadLength n longCount <=
-        GenericSelect.selectCeilDiv (packedReviewerPayloadLength n longCount)
+      packedReviewerPayloadLength n longCount sparseCount <=
+        GenericSelect.selectCeilDiv
+            (packedReviewerPayloadLength n longCount sparseCount)
             (packedReviewerCellWidth n) *
           packedReviewerCellWidth n :=
     GenericSelect.selectCeilDiv_mul_ge_of_pos (packedReviewerCellWidth_pos n)
@@ -125,17 +122,19 @@ theorem packedReviewerSerialized_le_allocated (n longCount : Nat) :
 def packedReviewerPaddedBits (shape : CartesianShape) : List Bool :=
   packedReviewerSerializedBits shape ++
     List.replicate
-      (packedReviewerAllocatedBits shape.size (longCount shape) -
+      (packedReviewerAllocatedBits shape.size (longCount shape)
+          (packedReviewerSparseCount shape) -
         (packedReviewerSerializedBits shape).length) false
 
 theorem packedReviewerPaddedBits_length
-    (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1) :
+    (shape : CartesianShape) :
     (packedReviewerPaddedBits shape).length =
-      packedReviewerAllocatedBits shape.size (longCount shape) := by
+      packedReviewerAllocatedBits shape.size (longCount shape)
+        (packedReviewerSparseCount shape) := by
   have hle :=
     packedReviewerSerialized_le_allocated shape.size (longCount shape)
-  have hser := packedReviewerSerializedBits_length shape hstride
+      (packedReviewerSparseCount shape)
+  have hser := packedReviewerSerializedBits_length shape
   unfold packedReviewerPaddedBits
   rw [List.length_append, List.length_replicate]
   omega
@@ -143,20 +142,21 @@ theorem packedReviewerPaddedBits_length
 /-! ### The memory -/
 
 def packedReviewerMemory (shape : CartesianShape) : List (List Bool) :=
-  (List.range (packedReviewerCellCount shape.size (longCount shape))).map fun i =>
+  (List.range (packedReviewerCellCount shape.size (longCount shape)
+      (packedReviewerSparseCount shape))).map fun i =>
     ((packedReviewerPaddedBits shape).drop
       (i * packedReviewerCellWidth shape.size)).take
       (packedReviewerCellWidth shape.size)
 
 theorem packedReviewerMemory_length (shape : CartesianShape) :
     (packedReviewerMemory shape).length =
-      packedReviewerCellCount shape.size (longCount shape) := by
+      packedReviewerCellCount shape.size (longCount shape)
+        (packedReviewerSparseCount shape) := by
   unfold packedReviewerMemory
   rw [List.length_map, List.length_range]
 
 theorem packedReviewerMemory_cell_length
     (shape : CartesianShape)
-    (hstride : GenericSelect.localStride shape.bpCode.length = 1)
     {cell : List Bool}
     (hmem : cell ∈ packedReviewerMemory shape) :
     cell.length = packedReviewerCellWidth shape.size := by
@@ -164,8 +164,10 @@ theorem packedReviewerMemory_cell_length
   rw [List.mem_map] at hmem
   obtain ⟨i, hi, hcell⟩ := hmem
   rw [List.mem_range] at hi
-  have hpad := packedReviewerPaddedBits_length shape hstride
-  have hsucc : i + 1 <= packedReviewerCellCount shape.size (longCount shape) := hi
+  have hpad := packedReviewerPaddedBits_length shape
+  have hsucc : i + 1 <=
+      packedReviewerCellCount shape.size (longCount shape)
+        (packedReviewerSparseCount shape) := hi
   have hmul :=
     Nat.mul_le_mul_right (packedReviewerCellWidth shape.size) hsucc
   have hexp :
@@ -174,9 +176,11 @@ theorem packedReviewerMemory_cell_length
           packedReviewerCellWidth shape.size := by
     rw [Nat.add_mul, Nat.one_mul]
   have halloc :
-      packedReviewerCellCount shape.size (longCount shape) *
+      packedReviewerCellCount shape.size (longCount shape)
+          (packedReviewerSparseCount shape) *
           packedReviewerCellWidth shape.size =
-        packedReviewerAllocatedBits shape.size (longCount shape) := rfl
+        packedReviewerAllocatedBits shape.size (longCount shape)
+          (packedReviewerSparseCount shape) := rfl
   rw [← hcell, List.length_take, List.length_drop, hpad]
   omega
 
@@ -184,7 +188,8 @@ theorem packedReviewerMemory_cell_length
 theorem packedReviewerMemory_header_cell (shape : CartesianShape) :
     (packedReviewerMemory shape)[0]? = some (packedReviewerHeaderBits shape) := by
   have hcount :
-      0 < packedReviewerCellCount shape.size (longCount shape) := by
+      0 < packedReviewerCellCount shape.size (longCount shape)
+        (packedReviewerSparseCount shape) := by
     unfold packedReviewerCellCount
     omega
   unfold packedReviewerMemory
