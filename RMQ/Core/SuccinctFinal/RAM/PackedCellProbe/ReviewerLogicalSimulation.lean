@@ -6162,6 +6162,250 @@ theorem packedReviewerDriveLogical_210_occurrence_erases
   rw [List.getElem?_map, hget] at hindexed
   simpa using hindexed.symm
 
+/-! ## Canonical component orbits and their accepted reference values
+
+The proof-side state towers pin in-flight nested components to the exact
+orbit of their canonical start.  The orbit is the same trajectory the
+supplied-store driver walks, so a completed orbit inherits the driver's
+simulated reference value.  The bridging lemmas stay private with the
+driver; only the orbit definition and the per-component value corollaries
+are public.
+-/
+
+/-- One canonical-store request/reply step of an arbitrary component. -/
+def packedReviewerComponentCanonicalStep
+    {State : Type}
+    (nextRequest : State -> Option PackedReviewerLogicalRequest)
+    (consumeReply : State -> Option (List Bool) -> State)
+    (store : WordRAM.ReadStore) (state : State) : State :=
+  match nextRequest state with
+  | none => state
+  | some request =>
+      consumeReply state (store.readWord? request.segment request.index)
+
+/-- The exact canonical-store orbit of an arbitrary component. -/
+def packedReviewerComponentCanonicalRun
+    {State : Type}
+    (nextRequest : State -> Option PackedReviewerLogicalRequest)
+    (consumeReply : State -> Option (List Bool) -> State)
+    (store : WordRAM.ReadStore) : Nat -> State -> State
+  | 0, state => state
+  | fuel + 1, state =>
+      packedReviewerComponentCanonicalStep nextRequest consumeReply store
+        (packedReviewerComponentCanonicalRun nextRequest consumeReply store
+          fuel state)
+
+private theorem packedReviewerComponentCanonicalRun_succ_comm
+    {State : Type}
+    (nextRequest : State -> Option PackedReviewerLogicalRequest)
+    (consumeReply : State -> Option (List Bool) -> State)
+    (store : WordRAM.ReadStore) (fuel : Nat) (state : State) :
+    packedReviewerComponentCanonicalRun nextRequest consumeReply store
+        (fuel + 1) state =
+      packedReviewerComponentCanonicalRun nextRequest consumeReply store fuel
+        (packedReviewerComponentCanonicalStep nextRequest consumeReply store
+          state) := by
+  induction fuel generalizing state with
+  | zero => rfl
+  | succ fuel ih =>
+      show packedReviewerComponentCanonicalStep nextRequest consumeReply store
+          (packedReviewerComponentCanonicalRun nextRequest consumeReply store
+            (fuel + 1) state) = _
+      rw [ih]
+      rfl
+
+private theorem packedReviewerDriveComponent_terminal_mono
+    {State Value : Type}
+    (result : State -> Option Value)
+    (nextRequest : State -> Option PackedReviewerLogicalRequest)
+    (consumeReply : State -> Option (List Bool) -> State)
+    (store : WordRAM.ReadStore) {fuel fuel' : Nat} {state : State}
+    {value : Value}
+    (hterminal :
+      (packedReviewerDriveComponent result nextRequest consumeReply store
+        fuel state).terminal = some value)
+    (hle : fuel <= fuel') :
+    (packedReviewerDriveComponent result nextRequest consumeReply store fuel'
+      state).terminal = some value := by
+  induction fuel' generalizing fuel state with
+  | zero =>
+      have hzero : fuel = 0 := by omega
+      subst hzero
+      exact hterminal
+  | succ fuel' ih =>
+      cases fuel with
+      | zero =>
+          have hresult :
+              result state = some value := by
+            simpa [packedReviewerDriveComponent] using hterminal
+          simp [packedReviewerDriveComponent, hresult]
+      | succ fuel =>
+          cases hresult : result state with
+          | some other =>
+              have hvalue : other = value := by
+                simpa [packedReviewerDriveComponent, hresult] using hterminal
+              subst other
+              simp [packedReviewerDriveComponent, hresult]
+          | none =>
+              cases hrequest : nextRequest state with
+              | none =>
+                  simp [packedReviewerDriveComponent, hresult, hrequest]
+                    at hterminal
+              | some request =>
+                  have htail :
+                      (packedReviewerDriveComponent result nextRequest
+                        consumeReply store fuel
+                        (consumeReply state
+                          (store.readWord? request.segment
+                            request.index))).terminal = some value := by
+                    simpa [packedReviewerDriveComponent, hresult, hrequest]
+                      using hterminal
+                  have hnext := ih htail (by omega)
+                  simpa [packedReviewerDriveComponent, hresult, hrequest]
+                    using hnext
+
+private theorem packedReviewerDriveComponent_terminal_of_canonicalRun_result
+    {State Value : Type}
+    (result : State -> Option Value)
+    (nextRequest : State -> Option PackedReviewerLogicalRequest)
+    (consumeReply : State -> Option (List Bool) -> State)
+    (store : WordRAM.ReadStore)
+    (hdone :
+      forall state value, result state = some value ->
+        nextRequest state = none)
+    {fuel : Nat} {state : State} {value : Value}
+    (hresult :
+      result
+          (packedReviewerComponentCanonicalRun nextRequest consumeReply store
+            fuel state) = some value) :
+    (packedReviewerDriveComponent result nextRequest consumeReply store fuel
+      state).terminal = some value := by
+  induction fuel generalizing state with
+  | zero =>
+      simpa [packedReviewerDriveComponent,
+        packedReviewerComponentCanonicalRun] using hresult
+  | succ fuel ih =>
+      rw [packedReviewerComponentCanonicalRun_succ_comm] at hresult
+      cases hres : result state with
+      | some other =>
+          have hstep :
+              packedReviewerComponentCanonicalStep nextRequest consumeReply
+                store state = state := by
+            unfold packedReviewerComponentCanonicalStep
+            rw [hdone state other hres]
+          rw [hstep] at hresult
+          have hstable :
+              forall k,
+                packedReviewerComponentCanonicalRun nextRequest consumeReply
+                  store k state = state := by
+            intro k
+            induction k with
+            | zero => rfl
+            | succ k ihk =>
+                show packedReviewerComponentCanonicalStep nextRequest
+                    consumeReply store
+                    (packedReviewerComponentCanonicalRun nextRequest
+                      consumeReply store k state) = state
+                rw [ihk, hstep]
+          rw [hstable fuel] at hresult
+          have hvalue : other = value := by
+            rw [hres] at hresult
+            exact Option.some.inj hresult
+          subst other
+          simp [packedReviewerDriveComponent, hres]
+      | none =>
+          cases hrequest : nextRequest state with
+          | none =>
+              have hstep :
+                  packedReviewerComponentCanonicalStep nextRequest
+                    consumeReply store state = state := by
+                unfold packedReviewerComponentCanonicalStep
+                rw [hrequest]
+              rw [hstep] at hresult
+              have hstable :
+                  forall k,
+                    packedReviewerComponentCanonicalRun nextRequest
+                      consumeReply store k state = state := by
+                intro k
+                induction k with
+                | zero => rfl
+                | succ k ihk =>
+                    show packedReviewerComponentCanonicalStep nextRequest
+                        consumeReply store
+                        (packedReviewerComponentCanonicalRun nextRequest
+                          consumeReply store k state) = state
+                    rw [ihk, hstep]
+              rw [hstable fuel] at hresult
+              rw [hres] at hresult
+              cases hresult
+          | some request =>
+              have hstep :
+                  packedReviewerComponentCanonicalStep nextRequest
+                    consumeReply store state =
+                    consumeReply state
+                      (store.readWord? request.segment request.index) := by
+                unfold packedReviewerComponentCanonicalStep
+                rw [hrequest]
+              rw [hstep] at hresult
+              have htail := ih hresult
+              simpa [packedReviewerDriveComponent, hres, hrequest] using htail
+
+/-- A completed canonical rank orbit returns the accepted reference value. -/
+theorem packedReviewerRankCanonicalRun_result_eq
+    (shape : Cartesian.CartesianShape)
+    (invocation : PackedReviewerInvocation)
+    (kind : PackedReviewerRankKind) (pos fuel : Nat) {value : Nat}
+    (hresult :
+      packedReviewerRankResult
+          (packedReviewerComponentCanonicalRun packedReviewerRankNextRequest
+            packedReviewerRankConsumeReply
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape) fuel
+            (.superSample invocation kind shape.size pos)) = some value) :
+    value =
+      (packedRankRead kind.superSegment kind.blockSegment kind.wordSegment 21
+        (packedFringeChunkBits shape.size) kind.target
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (kind.bitLength shape.size) (kind.wordSize shape.size)
+        (kind.blocksPerSuper shape.size) pos).value := by
+  have hdone :
+      forall state v, packedReviewerRankResult state = some v ->
+        packedReviewerRankNextRequest state = none := by
+    intro state v hres
+    cases state <;>
+      simp_all [packedReviewerRankResult, packedReviewerRankNextRequest]
+  have hterm :=
+    packedReviewerDriveComponent_terminal_of_canonicalRun_result
+      packedReviewerRankResult packedReviewerRankNextRequest
+      packedReviewerRankConsumeReply
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape) hdone hresult
+  have hsim := packedReviewerDriveRank_simulates
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape) invocation kind
+    shape.size pos
+  have hsimTerminal :
+      (packedReviewerDriveComponent packedReviewerRankResult
+        packedReviewerRankNextRequest packedReviewerRankConsumeReply
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape) 11
+        (.superSample invocation kind shape.size pos)).terminal =
+        some
+          (packedRankRead kind.superSegment kind.blockSegment
+            kind.wordSegment 21 (packedFringeChunkBits shape.size) kind.target
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (kind.bitLength shape.size) (kind.wordSize shape.size)
+            (kind.blocksPerSuper shape.size) pos).value :=
+    hsim.1
+  have hvalueSide :=
+    packedReviewerDriveComponent_terminal_mono packedReviewerRankResult
+      packedReviewerRankNextRequest packedReviewerRankConsumeReply
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape) hterm
+      (Nat.le_max_left fuel 11)
+  have hreferenceSide :=
+    packedReviewerDriveComponent_terminal_mono packedReviewerRankResult
+      packedReviewerRankNextRequest packedReviewerRankConsumeReply
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape) hsimTerminal
+      (Nat.le_max_right fuel 11)
+  rw [hvalueSide] at hreferenceSide
+  exact Option.some.inj hreferenceSide
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
