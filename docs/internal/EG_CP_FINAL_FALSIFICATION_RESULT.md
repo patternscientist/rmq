@@ -1787,3 +1787,121 @@ Each cost time, and none is obvious from its error message.
   rewrite must avoid a second occurrence of the same term, the working pattern is to
   discharge the equation inside a helper lemma with `subst`
   (`packedFlatMapSliceOfEq`) rather than to steer `conv`.
+
+## 10. Amendment to section 9: the close half's chunk tables
+
+Section `9` was written at `eca109b`. Two commits later the close half's two uniform
+segments are read. This section amends `9.1`, `9.3`, `9.6` and `9.7`; everything else
+in section `9` stands as written.
+
+**Still not `CANDIDATE_COMPLETE`.** No `FG` row is closed. No `K1` obstruction is
+proved.
+
+### 10.1 Exact state, superseding 9.1
+
+| Item | Value |
+| --- | --- |
+| HEAD | `6db4c6a03af8f5432c907a5ca967d07b30964f82` |
+| Tree | `2eb27ffcc2eeb9132c5bd06b88539db6231c7863` |
+| Commits since base `6078a29` | 105 |
+| Frozen matrix `0a18548` | verified ancestor, no cell rewritten |
+| `lake build RMQ` | exit 0 |
+| `design_decision_check.ps1 -Strict -Base HEAD~1` | exit 0 |
+| `claim_drift_scan.ps1 -Strict` | exit 0 |
+| `git diff --check` | exit 0 |
+| Working tree | clean |
+
+Commits added since section `9`:
+
+- `6db4c6a` -- `ReviewerCloseWidth.lean` and `ReviewerCloseRead.lean`.
+
+### 10.2 Added to 9.3
+
+**`ReviewerCloseWidth.lean`** -- the two chunk tables fit one cell.
+
+- `packedFringeEntryWidth_le_reviewerCellWidth`
+- `packedSelectChunkEntryWidth_le_reviewerCellWidth`
+
+**`ReviewerCloseRead.lean`** -- offsets, slices and lowerings for segments `21` and
+`22`.
+
+- `packedReviewerCloseOffset`, `packedReviewerFringeOffset`,
+  `packedReviewerSelectChunkOffset` -- shape-free, taking `n` and the header's
+  `longCount`.
+- `packedReviewerCloseBitOffset_eq` -- the shape-facing close offset is the shape-free
+  one.
+- `packedReviewerPayload_drop_fringeOffset`,
+  `packedReviewerPayload_drop_selectChunkOffset`,
+  `packedReviewerPayload_fringeSlice`, `packedReviewerPayload_selectChunkSlice`.
+- `packedReviewerFringeOffset_fits`, `packedReviewerSelectChunkOffset_fits`.
+- `packedReviewerFringeRead`, `packedReviewerSelectChunkRead` -- executable, taking
+  `n`, `longCount`, the memory and the index. No `CartesianShape`.
+- `packedReviewerFringeReadPlan_length_le_two`,
+  `packedReviewerSelectChunkReadPlan_length_le_two`.
+- `packedReviewerFringeRead_of_some`, `packedReviewerSelectChunkRead_of_some` --
+  **every successful read of executed-store segment `21` or `22` is answered
+  identically by probing the reviewer memory.**
+
+### 10.3 Added to 9.4 -- what an auditor should attack here
+
+6. **The fringe width bound is the only genuinely tight inequality in the
+   development.** `packedFringeEntryWidth_le_reviewerCellWidth` needs
+   `entryBound c <= cellBound n + 2` where the entry bound is cubic in the chunk
+   parameter and the obvious lower bound on the table's own overhead is exponential
+   but does not overtake the cubic until `c = 5`. The proof closes the small-`c` gap
+   with `W >= 4`, established by contradiction against
+   `bpFringeChunkEntryBound_lt_two_pow_width` rather than by evaluating `Nat.log2`.
+   Check that the `24 <= entryBound` step really holds at `c = 1`, since everything
+   rests on it.
+7. **These lowerings are equations on successful reads, unlike the access half's.**
+   Both chunk tables satisfy `payload.length = entries.length * width` exactly, so an
+   in-range read is a full-width window with no partial final word. Verify that claim
+   against `FixedWidthNatTable.payload_length_eq` rather than accepting it.
+
+### 10.4 Amendment to 9.6 -- the next smallest proof target
+
+Section `9.6` named "a read of the close half". Two of its three segments are now
+read; what remains is **segment 20 alone**, and it is not more of the same.
+
+`ReviewerCloseGeometry` records why: the interior component store is not one uniform
+word grid. It is eight component machine stores appended, words laid end to end at
+word granularity while payloads concatenate at bit granularity, and
+`FixedWidthNatTable.machineStore` chunks each logical entry separately. So there is
+no single entry width to bound and no single word count to guard, and
+`packedWordSlice` cannot describe it.
+
+What exists for it: the eight-way word split, the eight component accessors and their
+offset bridges (`ReviewerComponentAccess`), the bit-level payload split, and the
+position of the whole interior directory inside the consumed payload
+(`packedReviewerPayload_interiorSlice`). What is missing is a per-component read that
+respects the ragged word boundaries -- eight geometries, not one.
+
+After segment 20, unchanged from `9.6`: a store presenting `packedReviewerMemory` to
+the evaluator, then `FG-07`'s controller and `FG-08`'s run-level lowering.
+
+### 10.5 Added to 9.7 -- failed approaches
+
+- **A type index cannot be rewritten.** `FixedWidthNatTable` takes the entry width as
+  a type index, so `bpFringeChunkTable c` has a type mentioning
+  `bpFringeChunkEntryWidth c`. Rewriting that width inside any term containing the
+  table gives "motive is not type correct", which names the symptom and not the
+  cause. Rewriting `shape.bpCode.length` inside the same term is fine, because the
+  whole term changes together and `.payload` lands in `List Bool` either way -- so the
+  neighbouring rewrite succeeding is actively misleading. The fix is structural: keep
+  the size-only width in the goal, where no table occurs, and obtain the word equation
+  from `Option.some.inj` applied to a transitivity instead of from `rw ... at`.
+- **`rw [h]` does not close a goal that needs a `def` unfolded.** `rw` finishes with
+  `rfl` at reducible transparency only, so `bpFringeChunkEntryWidth (bpFringeChunkBits
+  (2 * n)) = packedReviewerFringeWidth n` is left open. Unfolding the shape-free
+  definition first makes both sides syntactically equal.
+- **Forgetting that there are two slice steps, not one.** A close read has to travel
+  padded bits to consumed payload (`packedReviewerPayloadSlice`) and then consumed
+  payload to the component's own payload (`packedReviewerPayload_fringeSlice`). Naming
+  only the second and calling it `hpayslice` produced a "did not find instance of the
+  pattern" error pointing at the second rewrite, not at the missing first one.
+- **`omega` across a product it cannot see through.** The select chunk width bound
+  first tried to reach `c + 1 <= cellBound n + 2` by giving `omega` the row count, the
+  width and the overhead separately. It failed with a counterexample listing
+  `rowCount * width` and `2 ^ c * (c + 1)` as unrelated atoms. Explicit transitivity
+  through `Nat.mul_le_mul` closes it; the counterexample's atom list was the only
+  indication of what was wrong.
