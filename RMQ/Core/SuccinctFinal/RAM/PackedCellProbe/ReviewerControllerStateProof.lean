@@ -7627,6 +7627,92 @@ private theorem PackedReviewerSelectCanonicalScalarFits.remaining_le_thirtyFive
       omega
   | done value => simp [packedReviewerSelectRemaining]
 
+/-! ## Select tower consume transitions, one arm at a time -/
+
+/-- Entering the long-flag rank phase from a marked super directory entry. -/
+private theorem packedReviewerSelectAfterSuper_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index : Nat)
+    (super? : Option GenericSelect.SparseDenseSelectDenseLocalEntry)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hget :
+      super? =
+        (GenericSelect.superEntries shape.bpCode false)[
+          GenericSelect.selectSuperSlot index
+            (packedSelectSuperStride shape.size)]?) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectAfterSuper invocation shape.size index super?) := by
+  cases super? with
+  | none =>
+      intro close hclose
+      simp [packedReviewerSelectAfterSuper] at hclose
+  | some super =>
+      have hgeometry : PackedReviewerCanonicalSuperGeometry shape index super :=
+        ⟨hindex, hget.symm⟩
+      unfold packedReviewerSelectAfterSuper
+      by_cases hmarked :
+          GenericSelect.relativeSplitSelectEntryIsMarked super = true
+      · simp only [hmarked, if_true]
+        refine ⟨rfl, hinv, hindex, hgeometry, hmarked, ?_, ?_, ⟨0, rfl⟩⟩
+        · have hwitness :=
+            packedReviewerRankStart_requests_fit shape invocation .selectLong
+              (GenericSelect.selectSuperSlot index
+                (packedSelectSuperStride shape.size)) hinv
+          simpa [packedReviewerRankRemaining] using hwitness
+        · exact packedReviewerRankStart_canonicalScalarFits shape invocation
+            .selectLong
+            (GenericSelect.selectSuperSlot index
+              (packedSelectSuperStride shape.size)) hinv
+            (by
+              have hle : GenericSelect.selectSuperSlot index
+                  (packedSelectSuperStride shape.size) <= index :=
+                Nat.div_le_self _ _
+              have hn :=
+                packedReviewerInputSize_lt_two_pow_cellWidth shape.size
+              omega)
+      · have hshort :
+            GenericSelect.relativeSplitSelectEntryIsMarked super = false := by
+          simpa using hmarked
+        simp only [hmarked, if_false]
+        exact ⟨rfl, hinv, hindex, hgeometry, hshort, rfl, .baseOccurrence⟩
+
+/-- One canonical reply preserves the super-entry arm of the select tower. -/
+private theorem packedReviewerSelectConsume_superEntry_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index : Nat) (entry : PackedReviewerEntryState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hentry :
+      PackedReviewerCanonicalEntryState shape invocation .super
+        (GenericSelect.selectSuperSlot index
+          (packedSelectSuperStride shape.size)) entry)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerEntryNextRequest entry = some request) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectConsumeReply
+        (.superEntry invocation shape.size index entry)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  have hentry' := hentry.consume hrequest
+  simp only [packedReviewerSelectConsumeReply]
+  cases hresult :
+      packedReviewerEntryResult
+        (packedReviewerEntryConsumeReply entry
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none => exact ⟨rfl, hinv, hindex, hentry'⟩
+  | some super? =>
+      have hget := hentry'.result_eq hresult
+      exact packedReviewerSelectAfterSuper_fits shape invocation index super?
+        hinv hindex hget
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
