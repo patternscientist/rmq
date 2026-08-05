@@ -7255,3 +7255,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit adding the consumed payload's cell width: matrix untouched, so no
   frozen-cell comparison was required. The module is additive rather than a
   redefinition, so no existing row's evidence changes meaning.
+- Commit adding the packed memory over the consumed payload: matrix untouched, so
+  no frozen-cell comparison was required. Additive; the flat memory and its FG-05
+  evidence are unchanged and no row's evidence changes meaning.

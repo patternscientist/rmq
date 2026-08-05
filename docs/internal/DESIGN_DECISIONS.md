@@ -8691,3 +8691,40 @@ Sampled at `n` in `0..8, 16, 64, 256, 1024, 4096`, this width agrees with
 two bounds differ -- the reviewer bound is slightly *smaller* than the flat payload
 length, so the agreement is a property of the logarithm, not an ordering. No
 theorem claims they are equal, and none should: the coincidence is not needed.
+
+## DD-20260804-046 -- the packed memory over the consumed payload
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerMemory.lean`.
+
+Step three of the re-target: header, serialized bits, cell count, allocation and
+cell array over `packedReviewerPayloadBits`.
+
+```
+packedReviewerHeaderBits          : longCount at the size-only width
+packedReviewerHeaderBits_decode   : reading it back recovers longCount
+packedReviewerCellCount (n longCount)
+packedReviewerAllocatedBits (n longCount)
+packedReviewerMemory              : the cell array
+packedReviewerMemory_cell_length  : every cell exactly one full width
+packedReviewerMemory_header_cell  : the header occupies cell zero exactly
+```
+
+The signature split is the point. `packedReviewerCellWidth` takes `n`;
+`packedReviewerCellCount` takes `n` **and** `longCount`. So cell zero is
+addressable before anything is decoded, and the count is available immediately
+after. `longCount_lt_two_pow_reviewerWidth` gives the all-size count fit with no
+side condition, exactly as the flat header had it.
+
+This is where `K1` stops being decorative. Under the flat payload the cell count
+was already input-size-only, so a controller could have computed it from `n` and
+ignored the header entirely -- which is what made `FG-11`'s liveness clause awkward
+to satisfy honestly. Over the consumed payload the count is not computable from
+`n`, so the header is on the critical path of addressing.
+
+`packedReviewerMemory_header_cell` needs no unit-stride hypothesis: it is about
+cell zero, which is prefix-determined and independent of the payload's length. The
+first attempt carried `hstride` and the linter flagged it as unused; the
+hypothesis was dropped rather than left in place, since a spurious hypothesis on a
+memory theorem would misrepresent what the memory needs.
+
+Still additive: `packedMemory` is untouched.
