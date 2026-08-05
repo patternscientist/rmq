@@ -6406,6 +6406,101 @@ theorem packedReviewerRankCanonicalRun_result_eq
   rw [hvalueSide] at hreferenceSide
   exact Option.some.inj hreferenceSide
 
+/-! ## The long-flag rank reference value over the canonical store
+
+The canonical store serves the three long-flag rank sample segments from the
+accepted record's own tables, and its word segment appends sentinel entries
+past the chunked flag words.  Agreement is therefore total on the sample and
+chunk segments but only index-wise on the word segment; a per-index variant of
+the store-agreement conversion closes the gap, because a clamped in-range
+query never touches the sentinel suffix.
+-/
+
+theorem packedReviewerBpWordRead_toCosted_of_read
+    {payload : List Bool}
+    (pstore : SuccinctSpace.PayloadWordStore payload)
+    {store : WordRAM.ReadStore} {segment i : Nat}
+    (hread : store.readWord? segment i = pstore.words[i]?) :
+    (SuccinctClose.bpWordReadTraceResult store segment i).toCosted =
+      pstore.readWordCosted i := by
+  apply Costed.ext
+  · show store.readWord? segment i = (pstore.readWordCosted i).value
+    rw [hread]
+    rfl
+  · show (1 : Nat) = (pstore.readWordCosted i).cost
+    simp
+
+theorem packedReviewerRankWithStore_toCosted_of_reads_true
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    {store : WordRAM.ReadStore}
+    {superSegment blockSegment wordSegment chunkSegment c : Nat}
+    (hsuper :
+      forall address,
+        store.readWord? superSegment address =
+          (data.superSampleWords true)[address]?)
+    (hblock :
+      forall address,
+        store.readWord? blockSegment address =
+          (data.blockSampleWords true)[address]?)
+    (hchunk :
+      forall address,
+        store.readWord? chunkSegment address =
+          (SuccinctClose.bpFringeChunkTable c).store.words[address]?)
+    (pos : Nat)
+    (hword :
+      store.readWord? wordSegment (data.wordIndex pos) =
+        data.bitWords.store.words[data.wordIndex pos]?) :
+    (data.bpChunkedRankTraceResultWithStore store superSegment
+        blockSegment wordSegment chunkSegment c true pos).toCosted =
+      data.bpChunkedRankCosted c true pos := by
+  have hsuper' :
+      forall address,
+        store.readWord? superSegment address =
+          data.superTables.trueTable.store.words[address]? := hsuper
+  have hblock' :
+      forall address,
+        store.readWord? blockSegment address =
+          data.blockTables.trueTable.store.words[address]? := hblock
+  unfold SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankCosted
+  rw [WordRAM.TraceResult.bind_toCosted,
+    SuccinctClose.bpChunkReadTraceResult_toCosted_of_agree
+      data.superTables.trueTable hsuper']
+  show
+    Costed.bind
+        (data.superTables.trueTable.readCosted (data.superIndex pos))
+        _ =
+      Costed.bind
+        (data.superTables.trueTable.readCosted (data.superIndex pos))
+        _
+  congr 1
+  funext super?
+  rw [WordRAM.TraceResult.bind_toCosted,
+    SuccinctClose.bpChunkReadTraceResult_toCosted_of_agree
+      data.blockTables.trueTable hblock']
+  show
+    Costed.bind
+        (data.blockTables.trueTable.readCosted (data.wordIndex pos))
+        _ =
+      Costed.bind
+        (data.blockTables.trueTable.readCosted (data.wordIndex pos))
+        _
+  congr 1
+  funext delta?
+  rw [WordRAM.TraceResult.bind_toCosted,
+    packedReviewerBpWordRead_toCosted_of_read data.bitWords.store hword]
+  congr 1
+  funext word?
+  cases super? <;> cases delta? <;> cases word? <;>
+    first
+      | rfl
+      | rw [WordRAM.TraceResult.map_toCosted,
+          SuccinctClose.bpChunkedWordRankTraceResultAtSegmentWithStore_toCosted_of_agree
+            (SuccinctClose.bpFringeChunkTable c) hchunk]
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
