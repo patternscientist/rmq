@@ -9207,3 +9207,45 @@ What is still missing before segment `20` reaches a **cell**:
 * placing each component's payload inside the consumed payload, which is where the
   interior directory sits at a known offset after `bpCode` and the live access
   half.
+
+## DD-20260804-062 -- "equal by construction" is now proved
+
+`ReviewerComponentAccess.lean`, completed.
+
+`DD-20260804-061` flagged the bridge from the peel offsets to
+`canonicalRelativeRmmInteriorComponentOffsets` as outstanding, noting the two are
+equal by construction but that this gate does not accept construction as proof.
+All eight fields are now proved:
+
+```
+packedInteriorOffsets_baseline      = 0, by rfl
+packedInteriorOffsets_minRel
+packedInteriorOffsets_maxRel
+packedInteriorOffsets_argOffset
+packedInteriorOffsets_localOffset
+packedInteriorOffsets_globalBlock
+packedInteriorOffsets_localLevel
+packedInteriorOffsets_globalLevel
+```
+
+Each says the record's field equals the length of the corresponding prefix
+append. `baseline` is `rfl`; the rest are `unfold` then `simp` then `omega`.
+
+### The one thing that was not automatic
+
+The record's later fields are written in terms of the *machine store aliases* --
+`canonicalRelativeRmmLocalMachineStore` and siblings -- while the peel offsets are
+in terms of `(canonicalRelativeRmmInteriorLocalTable shape).table.machineStore`.
+`omega` treats those as distinct atoms and reports a counterexample rather than an
+unfolding failure, which reads as a false goal until one looks at the atom list it
+prints. Adding the aliases to the `unfold` list closes it.
+
+Worth recording because the failure presents as arithmetic and is actually
+naming: two spellings of one object, in a file where the whole exercise is
+checking that objects are what they are claimed to be. The atom list in `omega`'s
+output is the diagnostic.
+
+Segment `20` now has a complete chain: component-store word index, through the
+located component and its offset, to a bit range of that component's own payload.
+What remains is placing the interior directory's payload inside the consumed
+payload.

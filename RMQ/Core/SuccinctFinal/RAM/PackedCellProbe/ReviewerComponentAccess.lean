@@ -17,10 +17,9 @@ segment `20` reaches a computable address.
 
 ## What this module does not establish
 
-* All eight components are located. What remains is the bridge from these peel
-  offsets to `canonicalRelativeRmmInteriorComponentOffsets` (equal by
-  construction, unproved), and placing the component payloads inside the consumed
-  payload.
+* All eight components are located, and the bridge to
+  `canonicalRelativeRmmInteriorComponentOffsets` is proved rather than asserted.
+  What remains is placing the component payloads inside the consumed payload.
 * The baseline column's payload is located inside the *interior directory*, not
   yet inside the consumed payload; that composition is still outstanding.
 -/
@@ -351,6 +350,87 @@ theorem packedInteriorGlobalLevelAccess (shape : CartesianShape) (j : Nat) :
   rw [packedReviewerInteriorComponentWords_split shape]
   dsimp only
   exact packedConcatIndex_eighth_of_eight _ _ _ _ _ _ _ _ j
+
+/-! ### The offsets record is exactly these prefix lengths -/
+
+theorem packedInteriorOffsets_baseline (shape : CartesianShape) :
+    (canonicalRelativeRmmInteriorComponentOffsets shape).baseline = 0 := rfl
+
+theorem packedInteriorOffsets_minRel (shape : CartesianShape) :
+    (canonicalRelativeRmmInteriorComponentOffsets shape).minRel =
+      (packedInteriorBaselineWords shape).length := by
+  unfold canonicalRelativeRmmInteriorComponentOffsets packedInteriorBaselineWords
+  simp
+
+theorem packedInteriorOffsets_maxRel (shape : CartesianShape) :
+    (canonicalRelativeRmmInteriorComponentOffsets shape).maxRel =
+      (packedInteriorBaselineWords shape ++
+        packedInteriorMinRelWords shape).length := by
+  unfold canonicalRelativeRmmInteriorComponentOffsets packedInteriorBaselineWords
+    packedInteriorMinRelWords
+  simp
+
+theorem packedInteriorOffsets_argOffset (shape : CartesianShape) :
+    (canonicalRelativeRmmInteriorComponentOffsets shape).argOffset =
+      (packedInteriorBaselineWords shape ++ packedInteriorMinRelWords shape ++
+        packedInteriorMaxRelWords shape).length := by
+  unfold canonicalRelativeRmmInteriorComponentOffsets packedInteriorBaselineWords
+    packedInteriorMinRelWords packedInteriorMaxRelWords
+  simp
+  omega
+
+theorem packedInteriorOffsets_localOffset (shape : CartesianShape) :
+    (canonicalRelativeRmmInteriorComponentOffsets shape).localOffset =
+      (packedInteriorBaselineWords shape ++ packedInteriorMinRelWords shape ++
+        packedInteriorMaxRelWords shape ++
+          packedInteriorArgOffsetWords shape).length := by
+  unfold canonicalRelativeRmmInteriorComponentOffsets packedInteriorBaselineWords
+    packedInteriorMinRelWords packedInteriorMaxRelWords
+    packedInteriorArgOffsetWords
+  simp
+  omega
+
+theorem packedInteriorOffsets_globalBlock (shape : CartesianShape) :
+    (canonicalRelativeRmmInteriorComponentOffsets shape).globalBlock =
+      (packedInteriorBaselineWords shape ++ packedInteriorMinRelWords shape ++
+        packedInteriorMaxRelWords shape ++ packedInteriorArgOffsetWords shape ++
+          packedInteriorLocalWords shape).length := by
+  unfold canonicalRelativeRmmInteriorComponentOffsets packedInteriorBaselineWords
+    packedInteriorMinRelWords packedInteriorMaxRelWords
+    packedInteriorArgOffsetWords packedInteriorLocalWords
+    canonicalRelativeRmmLocalMachineStore
+  simp
+  omega
+
+theorem packedInteriorOffsets_localLevel (shape : CartesianShape) :
+    (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel =
+      (packedInteriorBaselineWords shape ++ packedInteriorMinRelWords shape ++
+        packedInteriorMaxRelWords shape ++ packedInteriorArgOffsetWords shape ++
+          packedInteriorLocalWords shape ++
+            packedInteriorGlobalWords shape).length := by
+  unfold canonicalRelativeRmmInteriorComponentOffsets packedInteriorBaselineWords
+    packedInteriorMinRelWords packedInteriorMaxRelWords
+    packedInteriorArgOffsetWords packedInteriorLocalWords
+    packedInteriorGlobalWords canonicalRelativeRmmLocalMachineStore
+    canonicalRelativeRmmGlobalMachineStore
+  simp
+  omega
+
+theorem packedInteriorOffsets_globalLevel (shape : CartesianShape) :
+    (canonicalRelativeRmmInteriorComponentOffsets shape).globalLevel =
+      (packedInteriorBaselineWords shape ++ packedInteriorMinRelWords shape ++
+        packedInteriorMaxRelWords shape ++ packedInteriorArgOffsetWords shape ++
+          packedInteriorLocalWords shape ++ packedInteriorGlobalWords shape ++
+            packedInteriorLocalLevelWords shape).length := by
+  unfold canonicalRelativeRmmInteriorComponentOffsets packedInteriorBaselineWords
+    packedInteriorMinRelWords packedInteriorMaxRelWords
+    packedInteriorArgOffsetWords packedInteriorLocalWords
+    packedInteriorGlobalWords packedInteriorLocalLevelWords
+    canonicalRelativeRmmLocalMachineStore
+    canonicalRelativeRmmGlobalMachineStore
+    canonicalRelativeRmmLocalLevelMachineStore
+  simp
+  omega
 
 end PackedCellProbe
 end SuccinctFinal

@@ -7320,3 +7320,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit locating the remaining four interior components: matrix untouched, so no
   frozen-cell comparison was required. Eight of eight located; no row status
   changes, since FG-08 quantifies over a run and not over a component.
+- Commit proving the offsets bridge: matrix untouched, so no frozen-cell
+  comparison was required. The DD-20260804-061 gap is closed by proof rather than
+  by appeal to construction; no row status changes.
