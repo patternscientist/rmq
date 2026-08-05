@@ -8956,6 +8956,366 @@ private theorem packedReviewerSelectAfterDenseSecondWord_fits
                 · omega
               simpa [select, hresult] using hdone
 
+/-! ## Dense-phase consume arms -/
+
+/-- One canonical reply preserves the first dense word arm. -/
+private theorem packedReviewerSelectConsume_denseFirstWord_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index basePosition baseOccurrence : Nat)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hbase : basePosition <= 2 * shape.size + 1)
+    (hocc : baseOccurrence <= index)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest :
+      packedReviewerSelectNextRequest
+          (.denseFirstWord invocation shape.size index basePosition
+            baseOccurrence) = some request) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectConsumeReply
+        (.denseFirstWord invocation shape.size index basePosition
+          baseOccurrence)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  simp only [packedReviewerSelectNextRequest, Option.some.injEq] at hrequest
+  subst request
+  simp only [packedReviewerSelectConsumeReply]
+  apply packedReviewerSelectAfterDenseFirstWord_fits shape invocation index
+    basePosition baseOccurrence _ hinv hindex hbase hocc
+  intro word hread
+  refine ⟨?_, packedReviewerBPWordRead_length_le shape hread⟩
+  exact packedReviewerGlobalReadStore_word_fits shape
+    { invocation := invocation
+      site := .denseBPWord (basePosition / packedSelectWordSize shape.size)
+      segment := 0
+      index := basePosition / packedSelectWordSize shape.size } word hread
+
+/-- One canonical reply preserves the second dense word arm. -/
+private theorem packedReviewerSelectConsume_denseSecondWord_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index basePosition baseOccurrence beforeFirst uptoFirst : Nat)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hbase : basePosition <= 2 * shape.size + 1)
+    (hocc : baseOccurrence <= index)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest :
+      packedReviewerSelectNextRequest
+          (.denseSecondWord invocation shape.size index basePosition
+            baseOccurrence beforeFirst uptoFirst) = some request) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectConsumeReply
+        (.denseSecondWord invocation shape.size index basePosition
+          baseOccurrence beforeFirst uptoFirst)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  simp only [packedReviewerSelectNextRequest, Option.some.injEq] at hrequest
+  subst request
+  simp only [packedReviewerSelectConsumeReply]
+  apply packedReviewerSelectAfterDenseSecondWord_fits shape invocation index
+    basePosition baseOccurrence beforeFirst uptoFirst _ hinv hindex hbase hocc
+  intro word hread
+  refine ⟨?_, packedReviewerBPWordRead_length_le shape hread⟩
+  exact packedReviewerGlobalReadStore_word_fits shape
+    { invocation := invocation
+      site :=
+        .denseBPWord (basePosition / packedSelectWordSize shape.size + 1)
+      segment := 0
+      index := basePosition / packedSelectWordSize shape.size + 1 } word hread
+
+/-- One canonical reply preserves the first dense fold arm. -/
+private theorem packedReviewerSelectConsume_denseBeforeRank_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index basePosition baseOccurrence : Nat) (word : List Bool)
+    (rank : PackedReviewerRankState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hbase : basePosition <= 2 * shape.size + 1)
+    (hocc : baseOccurrence <= index)
+    (hword : PackedReviewerWordFits shape.size word)
+    (hwordLen : word.length <= packedBpCodeWordWidth shape.size)
+    (hbudget : packedReviewerRankRemaining rank <= 8)
+    (hrankFit :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerRankNextRequest packedReviewerRankConsumeReply
+        (packedReviewerRankRemaining rank) rank)
+    (hrank : PackedReviewerRankCanonicalScalarFits shape word.length rank)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerRankNextRequest rank = some request) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectConsumeReply
+        (.denseBeforeRank invocation shape.size index basePosition
+          baseOccurrence word rank)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  have hrank' := hrank.consume hrequest
+  have hpos := packedReviewerRankNextRequest_remaining_pos hrequest
+  have hdescent :=
+    packedReviewerRankRemaining_consume_le rank
+      ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        request.segment request.index) request hrequest
+  have hfit' :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerRankNextRequest packedReviewerRankConsumeReply
+        (packedReviewerRankRemaining
+          (packedReviewerRankConsumeReply rank
+            ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+              request.segment request.index)))
+        (packedReviewerRankConsumeReply rank
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) := by
+    obtain ⟨fuel, hfuel⟩ : exists fuel,
+        packedReviewerRankRemaining rank = fuel + 1 :=
+      ⟨packedReviewerRankRemaining rank - 1, by omega⟩
+    rw [hfuel] at hrankFit
+    have hstep := (PackedReviewerRequestsFitFrom.step shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerRankNextRequest packedReviewerRankConsumeReply fuel rank
+      request hrankFit hrequest).2
+    exact PackedReviewerRequestsFitFrom.mono shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerRankNextRequest packedReviewerRankConsumeReply hstep
+      (by omega)
+  have hbudget' : packedReviewerRankRemaining
+      (packedReviewerRankConsumeReply rank
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) <= 8 := by
+    omega
+  simp only [packedReviewerSelectConsumeReply]
+  cases hresult :
+      packedReviewerRankResult
+        (packedReviewerRankConsumeReply rank
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none =>
+      exact ⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, hfit', hrank',
+        hbudget'⟩
+  | some beforeFirst =>
+      have hvalue := hrank'.result_fits hresult
+      exact packedReviewerSelectAfterDenseBeforeRank_fits shape invocation
+        index basePosition baseOccurrence word beforeFirst hinv hindex hbase
+        hocc hword hwordLen hvalue.2
+
+/-- One canonical reply preserves the second dense fold arm. -/
+private theorem packedReviewerSelectConsume_denseUptoRank_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index basePosition baseOccurrence beforeFirst : Nat) (word : List Bool)
+    (rank : PackedReviewerRankState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hbase : basePosition <= 2 * shape.size + 1)
+    (hocc : baseOccurrence <= index)
+    (hbefore : beforeFirst <= word.length)
+    (hword : PackedReviewerWordFits shape.size word)
+    (hwordLen : word.length <= packedBpCodeWordWidth shape.size)
+    (hbudget : packedReviewerRankRemaining rank <= 8)
+    (hrankFit :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerRankNextRequest packedReviewerRankConsumeReply
+        (packedReviewerRankRemaining rank) rank)
+    (hrank : PackedReviewerRankCanonicalScalarFits shape word.length rank)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerRankNextRequest rank = some request) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectConsumeReply
+        (.denseUptoRank invocation shape.size index basePosition
+          baseOccurrence beforeFirst word rank)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  have hrank' := hrank.consume hrequest
+  have hpos := packedReviewerRankNextRequest_remaining_pos hrequest
+  have hdescent :=
+    packedReviewerRankRemaining_consume_le rank
+      ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        request.segment request.index) request hrequest
+  have hfit' :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerRankNextRequest packedReviewerRankConsumeReply
+        (packedReviewerRankRemaining
+          (packedReviewerRankConsumeReply rank
+            ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+              request.segment request.index)))
+        (packedReviewerRankConsumeReply rank
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) := by
+    obtain ⟨fuel, hfuel⟩ : exists fuel,
+        packedReviewerRankRemaining rank = fuel + 1 :=
+      ⟨packedReviewerRankRemaining rank - 1, by omega⟩
+    rw [hfuel] at hrankFit
+    have hstep := (PackedReviewerRequestsFitFrom.step shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerRankNextRequest packedReviewerRankConsumeReply fuel rank
+      request hrankFit hrequest).2
+    exact PackedReviewerRequestsFitFrom.mono shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerRankNextRequest packedReviewerRankConsumeReply hstep
+      (by omega)
+  have hbudget' : packedReviewerRankRemaining
+      (packedReviewerRankConsumeReply rank
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) <= 8 := by
+    omega
+  simp only [packedReviewerSelectConsumeReply]
+  cases hresult :
+      packedReviewerRankResult
+        (packedReviewerRankConsumeReply rank
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none =>
+      exact ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hwordLen, hfit',
+        hrank', hbudget'⟩
+  | some uptoFirst =>
+      have hvalue := hrank'.result_fits hresult
+      exact packedReviewerSelectAfterDenseUptoRank_fits shape invocation index
+        basePosition baseOccurrence beforeFirst word uptoFirst hinv hindex
+        hbase hocc hword hwordLen hbefore hvalue.2
+
+/-- One canonical reply preserves an in-word select arm. -/
+private theorem packedReviewerSelectConsume_denseSelect_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (baseWord : Nat) (select : PackedReviewerWordSelectState)
+    (word : List Bool)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hbaseBound :
+      baseWord * packedSelectWordSize shape.size <=
+        2 * shape.size + 1 + packedSelectWordSize shape.size)
+    (hword : PackedReviewerWordFits shape.size word)
+    (hwordLen : word.length <= packedBpCodeWordWidth shape.size)
+    (hselect :
+      PackedReviewerWordSelectCanonicalScalarFits shape word.length select)
+    (hselectFit :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerWordSelectNextRequest
+        packedReviewerWordSelectConsumeReply
+        (packedReviewerWordSelectRemaining select) select)
+    (hnine : packedReviewerWordSelectRemaining select <= 9)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerWordSelectNextRequest select = some request) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectConsumeReply
+        (.denseFirstSelect invocation shape.size baseWord select)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) ∧
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectConsumeReply
+        (.denseSecondSelect invocation shape.size baseWord select)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  have hselect' := hselect.consume hrequest
+  have hpos := packedReviewerWordSelectNextRequest_remaining_pos hrequest
+  have hdescent :=
+    packedReviewerWordSelectRemaining_consume_le select
+      ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        request.segment request.index) request hrequest
+  have hfit' :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerWordSelectNextRequest
+        packedReviewerWordSelectConsumeReply
+        (packedReviewerWordSelectRemaining
+          (packedReviewerWordSelectConsumeReply select
+            ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+              request.segment request.index)))
+        (packedReviewerWordSelectConsumeReply select
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) := by
+    obtain ⟨fuel, hfuel⟩ : exists fuel,
+        packedReviewerWordSelectRemaining select = fuel + 1 :=
+      ⟨packedReviewerWordSelectRemaining select - 1, by omega⟩
+    rw [hfuel] at hselectFit
+    have hstep := (PackedReviewerRequestsFitFrom.step shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerWordSelectNextRequest
+      packedReviewerWordSelectConsumeReply fuel select request hselectFit
+      hrequest).2
+    exact PackedReviewerRequestsFitFrom.mono shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerWordSelectNextRequest
+      packedReviewerWordSelectConsumeReply hstep (by omega)
+  have hnine' : packedReviewerWordSelectRemaining
+      (packedReviewerWordSelectConsumeReply select
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) <= 9 := by
+    omega
+  have hdone :
+      forall localResult,
+        packedReviewerWordSelectResult
+            (packedReviewerWordSelectConsumeReply select
+              ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+                request.segment request.index)) = some localResult ->
+          PackedReviewerSelectCanonicalScalarFits shape
+            (.done
+              (localResult.map
+                (fun offset =>
+                  baseWord * packedSelectWordSize shape.size + offset))) := by
+    intro localResult hresult
+    cases localResult with
+    | none =>
+        intro close hclose
+        simp at hclose
+    | some offset =>
+        have hvalue := hselect'.result_fits hresult
+        intro close hclose
+        simp only [Option.map_some, Option.some.injEq] at hclose
+        subst close
+        have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
+        have htwoMul := packedTwoMul_le_reviewerBound shape.size
+        have hwsSlack := packedRankWordSize_two_le_aux shape.size
+        have hauxSlack := packedRankAux_le_reviewerBound shape.size
+        have hbp :
+            packedBpCodeWordWidth shape.size =
+              packedRankWordSize shape.size := rfl
+        have hws :
+            packedSelectWordSize shape.size =
+              packedRankWordSize shape.size := rfl
+        have hbpLinear :=
+          packedReviewerBpCodeWordWidth_le_two_mul_add_one shape.size
+        constructor
+        · simp only [PackedReviewerNatFits]
+          omega
+        · omega
+  constructor
+  · simp only [packedReviewerSelectConsumeReply]
+    cases hresult :
+        packedReviewerWordSelectResult
+          (packedReviewerWordSelectConsumeReply select
+            ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+              request.segment request.index)) with
+    | none =>
+        exact ⟨rfl, hinv, hbaseBound, hfit',
+          ⟨word, hword, hwordLen, hselect'⟩, hnine'⟩
+    | some localResult => exact hdone localResult hresult
+  · simp only [packedReviewerSelectConsumeReply]
+    cases hresult :
+        packedReviewerWordSelectResult
+          (packedReviewerWordSelectConsumeReply select
+            ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+              request.segment request.index)) with
+    | none =>
+        exact ⟨rfl, hinv, hbaseBound, hfit',
+          ⟨word, hword, hwordLen, hselect'⟩, hnine'⟩
+    | some localResult => exact hdone localResult hresult
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
