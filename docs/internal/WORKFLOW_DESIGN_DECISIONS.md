@@ -7272,3 +7272,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   comparison was required. The section 8b component count is corrected in
   DD-20260804-049 rather than by editing 8b, so the record shows the earlier
   estimate and its correction.
+- Commit adding the machine-store uniformity condition: matrix untouched, so no
+  frozen-cell comparison was required. Additive and hypothesis-guarded; no existing
+  row's evidence changes meaning.

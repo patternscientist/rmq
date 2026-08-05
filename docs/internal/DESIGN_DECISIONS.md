@@ -8838,3 +8838,35 @@ What this module establishes for segment `20` is the pair of facts the piecewise
 geometry will be stated against: the eight-way word split, and that the store
 flattens to exactly the directory payload. The bits are all present and in order;
 only the word boundaries are non-uniform.
+
+## DD-20260804-050 -- the exact condition making a machine store a uniform grid
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerMachineWords.lean`.
+
+`DD-20260804-049` recorded that `FixedWidthNatTable.machineStore` chunks each
+logical entry separately. This gives the exact condition under which its words are
+nevertheless the table's own uniform grid:
+
+```
+packedChunkPayloadWords_singleton        : a payload fitting one word chunks to [it]
+packedMachineStoreWords_eq_of_width_le   : 0 < width <= wordSize => same word list
+packedMachineStoreWords_getElem?         : hence packedWordSlice, at the table width
+```
+
+Both bounds matter and for different reasons. `width <= wordSize` is what makes the
+chunk a singleton; `0 < width` is what stops a zero-width column from chunking to
+the **empty** list, which would shift every subsequent word index rather than
+merely widening a word. A zero-width column is not hypothetical here -- the flat
+close summary is inactive at small sizes and has width `0`, which is why
+`SourceWords.lean` takes its counts from `read_exact` rather than from payload
+length.
+
+The condition is `n`-only: both widths are functions of the input size. So it
+belongs beside `PackedSourceCounted` and `PackedInteriorReady` as a guard the
+controller can consult, not as a fact about a particular shape. Each of the eight
+interior components will discharge it separately.
+
+Stating it as a hypothesis rather than proving the unconditional version is the
+point. The unconditional statement is false, and it is false only outside the
+regime one naturally samples, so a proof attempt that assumed it would most likely
+have succeeded on every example tried and been wrong.
