@@ -89,3 +89,28 @@ one marked insertion point.
 4. `RELATED_WORK_LEDGER.md` (receipts and search limitations).
 5. `EVIDENCE_MATRIX.md` (frozen rows).
 6. `README.md` and `check_paper.ps1`; then checker + PDF build + hygiene.
+
+## 2026-08-05 Deliverables 4-6 landed; checks green
+
+- `RELATED_WORK_LEDGER.md`: receipts for all 23 bibliography entries with
+  per-entry verification method (repo-doc / web / background), the
+  bibliographic field-omission policy, and five explicit search
+  limitations; no absence inference is drawn anywhere.
+- `EVIDENCE_MATRIX.md`: seven frozen rows; EV-01 through EV-06 CLOSED,
+  EV-07 blocked only on the independently accepted architecture result.
+- `README.md`, `check_paper.ps1`, `.gitignore` landed.
+- `check_paper.ps1` first run found one real defect: the preamble comment
+  documented the anchor macro with a literal that matched the anchor
+  regex. Fixed the comment (not the checker), re-ran:
+  **`CHECK-PAPER: RESULT: PASS`, exit 0** -- 23/23 citation closure both
+  directions, 39 unique labels with all refs resolving, 13 forbidden
+  patterns clean over 7 files, 34 anchors <-> 34 ledger rows with legal
+  statuses, exactly one insertion-point marker in `rmq.tex`.
+- PDF build: `latexmk -pdf rmq.tex` under TinyTeX (pdfTeX, TeX Live 2026)
+  **exit 0**, producing `rmq.pdf` (14 pages); final `rmq.log` contains
+  zero undefined citations or references (first-pass warnings before the
+  bibtex rerun are latexmk's normal fixpoint behavior). Remaining
+  overfull-hbox warnings come from long verbatim Lean identifiers and are
+  cosmetic only.
+- Build artifacts are git-ignored; the tree carries only the eight
+  intended sources.

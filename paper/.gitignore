@@ -1,0 +1,11 @@
+# LaTeX build artifacts; rmq.pdf is derived and reproducible.
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+rmq.pdf
