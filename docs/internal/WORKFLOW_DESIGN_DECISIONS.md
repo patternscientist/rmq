@@ -7342,3 +7342,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit adding the per-source address surface over the consumed payload: matrix
   untouched, so no frozen-cell comparison was required. No row status changes -- the
   offsets exist, but no word is sliced from them and no probe is issued for one.
+- Commit adding the physical read over the consumed payload: matrix untouched, so no
+  frozen-cell comparison was required. No row status changes -- FG-08 quantifies over
+  a whole run, and only the access half of one read is lowered.

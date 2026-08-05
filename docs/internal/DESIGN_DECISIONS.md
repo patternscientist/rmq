@@ -9490,3 +9490,39 @@ rewrite chain again. The signature above is now quoted rather than paraphrased.
 A generic version needs `DecidableEq` for the `by_cases` and `BEq` plus `LawfulBEq`
 for the `!=` in the predicate, and nothing forces the `BEq` instance in scope to be
 the one `!=` elaborates to at the use site. Specialising removes the question.
+
+## DD-20260804-069 -- the physical read over the consumed payload
+
+The three pieces the re-target needed are now joined: the address surface
+(`DD-20260804-068`), the width bound `packedSourceStride_le_reviewerCellWidth`, and
+the conditional probe plan (`DD-20260804-067`). `packedReviewerSourceRead` issues a
+plan, fetches, and decodes; `packedReviewerSourceRead_of_some` proves the decoded
+span is the word the source's word array returns.
+
+### What is deliberately not rebuilt
+
+The per-source word geometry -- `packedSourceStride`, `packedSourceWordCount`,
+`packedSourceReadWidth` -- is reused unchanged. Those measure a source's own
+payload, not the layout it is embedded in, so they are the same numbers over either
+memory. Rebuilding them would have created a second set of widths that could drift
+from the first while both remained provable.
+
+Only the *address* is new, and only because the offset is. That is the whole content
+of the re-target at this layer.
+
+### Direction, and why it is still an implication
+
+`packedReviewerSourceRead_of_some` is an implication rather than an equation, for
+the same reason as its flat counterpart (`DD-20260804-022`): between the sparse
+relative table's actual entry count and its size-only capacity the packed read
+answers where the store would have failed. Every **successful** logical read lowers
+exactly. Restating it as an equation would require the size-only capacity to be
+attained, which is not proved and is not needed.
+
+### Scope, stated so it is not mistaken for more
+
+Seventeen counted live access sources. The close half's segments are **not** read
+here: they are not in the access list, so they have no `packedReviewerAccessOffset`
+at all, and they are reached through `packedReviewerPayload_interiorSlice` instead.
+Their read, and therefore any store presenting the reviewer memory to the evaluator,
+remains open.
