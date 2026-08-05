@@ -17,9 +17,9 @@ segment `20` reaches a computable address.
 
 ## What this module does not establish
 
-* Six components remain. Each needs `7 - k` peels then its offset skip, with the
-  offset taken from `canonicalRelativeRmmInteriorComponentOffsets`; the two done
-  here fix the pattern.
+* Five components remain. Each needs `7 - k` peels then its offset skip; the
+  three done here fix the pattern at its start, its second step, and its first
+  compound offset.
 * The baseline column's payload is located inside the *interior directory*, not
   yet inside the consumed payload; that composition is still outstanding.
 -/
@@ -113,6 +113,51 @@ theorem packedInteriorMinRelAccess (shape : CartesianShape) {j : Nat}
   rw [packedReviewerInteriorComponentWords_split shape]
   dsimp only
   exact packedConcatIndex_second_of_eight _ _ _ _ _ _ _ _ hj
+
+/--
+**The third of eight concatenated blocks.** Five peels, then a skip by the two
+preceding blocks together -- the first case where the skipped offset is compound.
+-/
+theorem packedConcatIndex_third_of_eight {alpha : Type}
+    (a b c d e f g h : List alpha) {j : Nat} (hj : j < c.length) :
+    (a ++ b ++ c ++ d ++ e ++ f ++ g ++ h)[(a ++ b).length + j]? = c[j]? := by
+  have h2 : (a ++ b).length + j < (a ++ b ++ c).length := by
+    have hlen : (a ++ b ++ c).length = (a ++ b).length + c.length :=
+      List.length_append
+    omega
+  have h3 : (a ++ b).length + j < (a ++ b ++ c ++ d).length :=
+    packedConcatIndex_lt_append _ _ h2
+  have h4 : (a ++ b).length + j < (a ++ b ++ c ++ d ++ e).length :=
+    packedConcatIndex_lt_append _ _ h3
+  have h5 : (a ++ b).length + j < (a ++ b ++ c ++ d ++ e ++ f).length :=
+    packedConcatIndex_lt_append _ _ h4
+  have h6 : (a ++ b).length + j < (a ++ b ++ c ++ d ++ e ++ f ++ g).length :=
+    packedConcatIndex_lt_append _ _ h5
+  rw [packedConcatIndex_left _ _ h6, packedConcatIndex_left _ _ h5,
+    packedConcatIndex_left _ _ h4, packedConcatIndex_left _ _ h3,
+    packedConcatIndex_left _ _ h2, packedConcatIndex_right]
+
+/-- **Component two located**: the maxRel column. -/
+theorem packedInteriorMaxRelAccess (shape : CartesianShape) {j : Nat}
+    (hj : j <
+      ((SuccinctClose.canonicalRelativeRmmSummaryTable
+        shape).maxRelTable.machineStore
+          (packedInteriorWordSize_pos shape)).store.words.toList.length) :
+    (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+        shape).store.words.toList[
+          (((SuccinctClose.canonicalRelativeRmmSummaryTable
+            shape).baselineTable.machineStore
+              (packedInteriorWordSize_pos shape)).store.words.toList ++
+            ((SuccinctClose.canonicalRelativeRmmSummaryTable
+              shape).minRelTable.machineStore
+                (packedInteriorWordSize_pos shape)).store.words.toList).length
+            + j]? =
+      ((SuccinctClose.canonicalRelativeRmmSummaryTable
+        shape).maxRelTable.machineStore
+          (packedInteriorWordSize_pos shape)).store.words.toList[j]? := by
+  rw [packedReviewerInteriorComponentWords_split shape]
+  dsimp only
+  exact packedConcatIndex_third_of_eight _ _ _ _ _ _ _ _ hj
 
 end PackedCellProbe
 end SuccinctFinal

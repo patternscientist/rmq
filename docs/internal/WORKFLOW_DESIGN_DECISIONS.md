@@ -7304,3 +7304,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   changed, since FG-08 quantifies over a run and not over a component.
 - Commit locating the second interior component: matrix untouched, so no
   frozen-cell comparison was required. Two of eight located; no row status changes.
+- Commit locating the third interior component: matrix untouched, so no
+  frozen-cell comparison was required. Three of eight located; no row status
+  changes, since FG-08 quantifies over a run.

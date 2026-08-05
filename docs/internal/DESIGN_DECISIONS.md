@@ -9104,3 +9104,27 @@ count rather than as `(canonicalRelativeRmmInteriorComponentOffsets shape).minRe
 The two are equal by construction, but proving that equality is a separate step,
 and stating the theorem in terms of the object it actually peels keeps it free of
 an unproved bridge.
+
+## DD-20260804-058 -- the third component, and the first compound offset
+
+`ReviewerComponentAccess.lean`, extended again.
+
+```
+packedConcatIndex_third_of_eight  five peels, then a skip by two blocks together
+packedInteriorMaxRelAccess        the maxRel column
+```
+
+Three of eight located. The pattern of `DD-20260804-055` now holds at three
+distinct positions: its start (seven peels, no skip), its second step (six peels,
+simple skip), and its first **compound** skip, where the offset is
+`(baseline ++ minRel).length` rather than a single block's length.
+
+The compound case is the one worth having done explicitly. Its bound needs
+`List.length_append` supplied as a `have` rather than a rewrite -- a first attempt
+passed explicit arguments to it and failed, because in this toolchain
+`List.length_append` takes its lists implicitly. Small, but it is the kind of thing
+that costs an elaboration cycle each time it is rediscovered.
+
+Five components remain, all of the same shape with counts shifted and offsets
+lengthening. No new structure is expected; if one appears, that itself is the
+finding.
