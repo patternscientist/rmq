@@ -1405,3 +1405,57 @@ and still been wrong.
 
 **No `FG` row is closed. No `K1` obstruction is proved.** This checkpoint is not
 `CANDIDATE_COMPLETE`.
+
+## 8f. The interior word grid is two-level, and measurement is why we know
+
+State: `82` campaign commits, `HEAD 965cc58`, tree `10e3876`, build green, both
+gates clean, tree clean.
+
+Section 8e left each of the eight interior components to discharge
+`0 < width <= machineWordBits (2 * n)`. Measuring first, before attempting the
+discharge, showed **three of them cannot**:
+
+```
+n      0  1  2  4   8  16  64  128  256  512  1024
+W      1  2  3  4   5   6   8    9   10   11    12
+super  1  2  3  4   5   6   8    9   10   11    12   equals W
+offset 1  1  3  4   5   5   6    7    7    7     7   below W
+addr   1  1  1  1   2   2   4    5    5    6     7   below W
+rel    5  5  7  7   9   9   9   11   11   11    11   ABOVE W below ~512
+```
+
+`minRel`, `maxRel` and `argOffset` carry `relativeWidth` entries, wider than a
+machine word at every size below roughly `512`. Their machine stores really do
+split each entry.
+
+`packedMachineStoreWords_getElem?_general` removes the hypothesis: machine word
+`i` is chunk `i % c` of logical entry `i / c`, with `c` the machine words per
+entry. The earlier one-level lemma survives as the `c = 1` case, which the other
+five components satisfy. `packedFlatMapUniform_getElem?` is the general supporting
+fact and mentions no payloads at all.
+
+### The recurring lesson, stated once
+
+Three times now the convenient statement has been false precisely in the regime a
+test would sample, and true outside it:
+
+* the naive `rankWordSize^2 <= 2 * n + 2` route for the width (`DD-045`),
+* the single-level `packedWordSlice` claim for a machine store (`DD-049`, `DD-050`),
+* the `width <= wordSize` hypothesis for the interior columns (`DD-051`).
+
+In each case the cost of checking first was one evaluation. The campaign's
+remaining geometry work should keep that order.
+
+### Remaining, in order
+
+1. Compose the two-level index to a payload-relative bit address -- entry `i / c`
+   at `(i / c) * width`, chunk `i % c` at a further `(i % c) * wordSize` -- and
+   instantiate it at each of the eight interior components with its own width and
+   positivity. Then assemble segment `20` using
+   `canonicalRelativeRmmInteriorComponentOffsets`.
+2. Physical read and backed store over `packedReviewerMemory`.
+3. Whole-run lowering; probe cap derived from the run.
+4. `FG-10`, `FG-11`'s value half, `FG-13`, `FG-15`.
+5. The seven `TARGET-ABSENT` replay cases.
+
+**No `FG` row is closed. No `K1` obstruction is proved.** Not `CANDIDATE_COMPLETE`.

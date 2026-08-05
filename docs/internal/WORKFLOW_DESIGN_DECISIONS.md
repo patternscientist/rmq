@@ -7282,3 +7282,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit adding the hypothesis-free entry-chunk geometry: matrix untouched, so no
   frozen-cell comparison was required. The measurement that killed the width
   hypothesis is recorded in DD-20260804-051 alongside the lemma that replaces it.
+- Commit synchronizing the report with the two-level interior grid: matrix
+  untouched, so no frozen-cell comparison was required. Section 8f is appended and
+  states the recurring measure-first lesson once, with its three instances.
