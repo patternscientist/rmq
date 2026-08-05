@@ -7359,6 +7359,212 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
           subst fieldValue
           exact (hstate close rfl).1
 
+/-! ## Pending-request positivity for the nested components -/
+
+private theorem packedReviewerEntryNextRequest_remaining_pos
+    {state : PackedReviewerEntryState}
+    {request : PackedReviewerLogicalRequest}
+    (h : packedReviewerEntryNextRequest state = some request) :
+    0 < packedReviewerEntryRemaining state := by
+  cases state <;>
+    simp_all [packedReviewerEntryNextRequest, packedReviewerEntryRemaining]
+
+private theorem packedReviewerRankNextRequest_remaining_pos
+    {state : PackedReviewerRankState}
+    {request : PackedReviewerLogicalRequest}
+    (h : packedReviewerRankNextRequest state = some request) :
+    0 < packedReviewerRankRemaining state := by
+  cases state with
+  | fold invocation kind n word effectiveLimit j remaining acc base =>
+      cases remaining <;>
+        simp_all [packedReviewerRankNextRequest,
+          packedReviewerRankRemaining]
+  | done value =>
+      simp [packedReviewerRankNextRequest] at h
+  | _ =>
+      simp_all [packedReviewerRankNextRequest, packedReviewerRankRemaining]
+
+private theorem packedReviewerWordSelectNextRequest_remaining_pos
+    {state : PackedReviewerWordSelectState}
+    {request : PackedReviewerLogicalRequest}
+    (h : packedReviewerWordSelectNextRequest state = some request) :
+    0 < packedReviewerWordSelectRemaining state := by
+  cases state <;>
+    simp_all [packedReviewerWordSelectNextRequest,
+      packedReviewerWordSelectRemaining]
+
+/-- Extract the pending request's width from a remaining-fuel witness. -/
+private theorem packedReviewerRequestsFitFrom_head_operands_fit
+    {State : Type} {n : Nat} {store : WordRAM.ReadStore}
+    {nextRequest : State -> Option PackedReviewerLogicalRequest}
+    {consumeReply : State -> Option (List Bool) -> State}
+    {remaining : Nat} {state : State}
+    {request : PackedReviewerLogicalRequest}
+    (hfit :
+      PackedReviewerRequestsFitFrom n store nextRequest consumeReply
+        remaining state)
+    (hpos : 0 < remaining)
+    (hrequest : nextRequest state = some request) :
+    PackedReviewerLogicalRequestOperandsFit n request := by
+  obtain ⟨fuel, rfl⟩ : exists fuel, remaining = fuel + 1 :=
+    ⟨remaining - 1, by omega⟩
+  exact (PackedReviewerRequestsFitFrom.step n store nextRequest consumeReply
+    fuel state request hfit hrequest).1
+
+/-- Every request the canonical select tower emits has fitting operands. -/
+private theorem PackedReviewerSelectCanonicalScalarFits.nextRequest_operands_fit
+    {shape : CartesianShape} {state : PackedReviewerSelectState}
+    (hstate : PackedReviewerSelectCanonicalScalarFits shape state)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerSelectNextRequest state = some request) :
+    PackedReviewerLogicalRequestOperandsFit shape.size request := by
+  have hn := packedReviewerInputSize_lt_two_pow_cellWidth shape.size
+  cases state with
+  | superEntry invocation n index entry =>
+      obtain ⟨rfl, hinv, hindex, hentry⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      have hslot :
+          PackedReviewerNatFits shape.size
+            (GenericSelect.selectSuperSlot index
+              (packedSelectSuperStride shape.size)) := by
+        have hle : GenericSelect.selectSuperSlot index
+            (packedSelectSuperStride shape.size) <= index :=
+          Nat.div_le_self _ _
+        omega
+      exact packedReviewerRequestsFitFrom_head_operands_fit
+        (hentry.requests_fit hinv hslot)
+        (packedReviewerEntryNextRequest_remaining_pos hrequest) hrequest
+  | localEntry invocation n index localSlot super entry =>
+      obtain ⟨rfl, hinv, hindex, hsuperGeo, hshort, hslotEq, hentry⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      have hvalid : index < GenericSelect.occurrenceCount shape.bpCode false := by
+        rw [packedSelectOccurrenceCount_eq_size]; exact hindex
+      have hfacts := GenericSelect.localSlot_facts shape.bpCode false index
+        super (by
+          simpa [packedSelectSuperStride, CartesianShape.bpCode_length] using
+            hsuperGeo.get_eq)
+        hvalid hshort
+      have hslotFits : PackedReviewerNatFits shape.size localSlot := by
+        rw [hslotEq]
+        have hbound := packedReviewerLocalSlots_lt_two_pow shape
+        have hlt := hfacts.1
+        rw [localSlotCount_eq_packed] at hlt
+        have hlen := CartesianShape.bpCode_length shape
+        simp only [packedSelectSuperStride, packedSelectLocalSlotsPerSuper,
+          packedSelectLocalStride, hlen] at hlt ⊢
+        omega
+      exact packedReviewerRequestsFitFrom_head_operands_fit
+        (hentry.requests_fit hinv hslotFits)
+        (packedReviewerEntryNextRequest_remaining_pos hrequest) hrequest
+  | longRank invocation n index super rank =>
+      obtain ⟨rfl, hinv, hindex, hsuperGeo, hlong, hrankFit, hrank,
+        horbit⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
+        (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
+  | longRelative invocation base slot =>
+      obtain ⟨hinv, hbase, hbaseLe, word, hread⟩ := hstate
+      simp only [packedReviewerSelectNextRequest, Option.some.injEq]
+        at hrequest
+      subst request
+      apply packedReviewerLogicalRequestOperandsFit_mk
+      · exact hinv
+      · intro operand hmem
+        simp [packedReviewerReadSiteOperands] at hmem
+      · exact packedReviewerSegment_le_twentyTwo_fits shape.size 12
+          (by omega)
+      · exact packedReviewerSuccessfulLongRelativeIndex_fits shape hread
+  | sparseRank invocation n index localSlot super loc rank =>
+      obtain ⟨rfl, hinv, hindex, hlocalGeo, hslotEq, hmarked, hrankFit,
+        hrank, horbit⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
+        (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
+  | sparseRelative invocation base slot =>
+      obtain ⟨hinv, hbase, hbaseLe, word, hread⟩ := hstate
+      simp only [packedReviewerSelectNextRequest, Option.some.injEq]
+        at hrequest
+      subst request
+      apply packedReviewerLogicalRequestOperandsFit_mk
+      · exact hinv
+      · intro operand hmem
+        simp [packedReviewerReadSiteOperands] at hmem
+      · exact packedReviewerSegment_le_twentyTwo_fits shape.size 16
+          (by omega)
+      · exact packedReviewerSuccessfulSparseRelativeIndex_fits shape hread
+  | denseFirstWord invocation n index basePosition baseOccurrence =>
+      obtain ⟨rfl, hinv, hindex, hbase, hocc⟩ := hstate
+      simp only [packedReviewerSelectNextRequest, Option.some.injEq]
+        at hrequest
+      subst request
+      have hslotFits :
+          PackedReviewerNatFits shape.size
+            (basePosition / packedSelectWordSize shape.size) := by
+        have hle : basePosition / packedSelectWordSize shape.size <=
+            basePosition := Nat.div_le_self _ _
+        have hbound := packedReviewerTwoMul_add_three_le_cellBound shape.size
+        have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
+        omega
+      apply packedReviewerLogicalRequestOperandsFit_mk
+      · exact hinv
+      · intro operand hmem
+        simp only [packedReviewerReadSiteOperands,
+          List.mem_singleton] at hmem
+        subst operand
+        exact hslotFits
+      · exact packedReviewerSegment_le_twentyTwo_fits shape.size 0 (by omega)
+      · exact hslotFits
+  | denseBeforeRank invocation n index basePosition baseOccurrence word rank =>
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hword, hrankFit, hrank,
+        hbudget⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
+        (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
+  | denseUptoRank invocation n index basePosition baseOccurrence beforeFirst
+      word rank =>
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hrankFit,
+        hrank, hbudget⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
+        (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
+  | denseFirstSelect invocation n baseWord select =>
+      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hselect⟩,
+        hremaining⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hselectFit
+        (packedReviewerWordSelectNextRequest_remaining_pos hrequest) hrequest
+  | denseSecondWord invocation n index basePosition baseOccurrence beforeFirst
+      uptoFirst =>
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hupto⟩ := hstate
+      simp only [packedReviewerSelectNextRequest, Option.some.injEq]
+        at hrequest
+      subst request
+      have hslotFits :
+          PackedReviewerNatFits shape.size
+            (basePosition / packedSelectWordSize shape.size + 1) := by
+        have hle : basePosition / packedSelectWordSize shape.size <=
+            basePosition := Nat.div_le_self _ _
+        have hbound := packedReviewerTwoMul_add_three_le_cellBound shape.size
+        have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
+        omega
+      apply packedReviewerLogicalRequestOperandsFit_mk
+      · exact hinv
+      · intro operand hmem
+        simp only [packedReviewerReadSiteOperands,
+          List.mem_singleton] at hmem
+        subst operand
+        exact hslotFits
+      · exact packedReviewerSegment_le_twentyTwo_fits shape.size 0 (by omega)
+      · exact hslotFits
+  | denseSecondSelect invocation n baseWord select =>
+      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hselect⟩,
+        hremaining⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hselectFit
+        (packedReviewerWordSelectNextRequest_remaining_pos hrequest) hrequest
+  | done value =>
+      simp [packedReviewerSelectNextRequest] at hrequest
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
