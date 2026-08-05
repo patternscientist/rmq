@@ -3944,7 +3944,7 @@ private theorem packedReviewerSelectAfterDenseBeforeRank_storage_fits
     simpa [rank] using
       packedReviewerRankStartFold_storage_fits invocation .close word
         word.length 0 hword
-  unfold packedReviewerSelectAfterDenseBeforeRank
+  simp only [packedReviewerSelectAfterDenseBeforeRank]
   cases hresult : packedReviewerRankResult rank with
   | some uptoFirst =>
       simpa [rank, hresult] using
@@ -5923,7 +5923,7 @@ private theorem packedReviewerSelectAfterDenseFirstWord_remaining_le_twentySix
         simpa [rank] using
           packedReviewerRankStartFold_remaining_le_eight invocation .close n
             word limit 0
-      unfold packedReviewerSelectAfterDenseFirstWord
+      simp only [packedReviewerSelectAfterDenseFirstWord]
       cases hresult : packedReviewerRankResult rank with
       | none =>
           simpa [limit, rank, hresult, packedReviewerSelectRemaining] using
@@ -5958,7 +5958,7 @@ private theorem packedReviewerSelectAfterDenseSecondWord_remaining_le_nine
         simpa [select] using
           packedReviewerWordSelectStart_remaining_le_nine invocation n false
             word occurrence
-      unfold packedReviewerSelectAfterDenseSecondWord
+      simp only [packedReviewerSelectAfterDenseSecondWord]
       cases hresult : packedReviewerWordSelectResult select with
       | none =>
           simpa [occurrence, select, hresult, packedReviewerSelectRemaining]
@@ -8523,6 +8523,438 @@ private theorem packedReviewerSelectConsume_sparseRank_fits
       have hvalue := hrank'.result_fits hresult
       exact packedReviewerSelectAfterSparseRank_fits shape invocation index
         super loc exceptionRank hinv hindex hlocalGeo hvalue.2
+
+/-! ## Dense-phase width helpers -/
+
+private theorem packedReviewerBpCodeWordWidth_le_two_mul_add_one (n : Nat) :
+    packedBpCodeWordWidth n <= 2 * n + 1 := by
+  unfold packedBpCodeWordWidth SuccinctRank.machineWordBits
+  by_cases hzero : 2 * n = 0
+  · simp [hzero, Nat.log2]
+  · have hpow : 2 ^ Nat.log2 (2 * n) <= 2 * n := Nat.log2_self_le hzero
+    have hlt : Nat.log2 (2 * n) < 2 ^ Nat.log2 (2 * n) :=
+      Nat.lt_two_pow_self
+    omega
+
+private theorem packedReviewerBPWordRead_length_le
+    (shape : CartesianShape) {index : Nat} {word : List Bool}
+    (hread :
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 0 index =
+        some word) :
+    word.length <= packedBpCodeWordWidth shape.size := by
+  rw [packedReviewerGlobalReadStore_legacy shape (by omega)
+    (source := ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode) rfl,
+    packedBpCodeWords] at hread
+  unfold packedWordSlice at hread
+  by_cases hi :
+      index <
+        packedChunkCount (2 * shape.size) (packedBpCodeWordWidth shape.size)
+  · simp only [hi, if_true, Option.some.injEq] at hread
+    rw [← hread]
+    exact List.length_take_le _ _
+  · simp [hi] at hread
+
+private theorem packedReviewerStartFoldBudget_fits
+    (shape : CartesianShape) (word : List Bool) (limit : Nat)
+    (hword : word.length <= packedBpCodeWordWidth shape.size) :
+    PackedReviewerNatFits shape.size
+      (0 +
+        SuccinctClose.bpWordChunkCount (packedFringeChunkBits shape.size)
+            (SuccinctClose.bpWordRankEffLimit word limit) *
+          packedFringeChunkBits shape.size) := by
+  have hcount :
+      SuccinctClose.bpWordChunkCount (packedFringeChunkBits shape.size)
+          (SuccinctClose.bpWordRankEffLimit word limit) <=
+        (SuccinctClose.bpWordRankEffLimit word limit - 1) /
+            packedFringeChunkBits shape.size + 1 := by
+    unfold SuccinctClose.bpWordChunkCount
+    exact Nat.min_le_left _ _
+  have hdivMul :
+      (SuccinctClose.bpWordRankEffLimit word limit - 1) /
+            packedFringeChunkBits shape.size *
+          packedFringeChunkBits shape.size <=
+        SuccinctClose.bpWordRankEffLimit word limit - 1 :=
+    Nat.div_mul_le_self _ _
+  have hmul :
+      SuccinctClose.bpWordChunkCount (packedFringeChunkBits shape.size)
+            (SuccinctClose.bpWordRankEffLimit word limit) *
+          packedFringeChunkBits shape.size <=
+        ((SuccinctClose.bpWordRankEffLimit word limit - 1) /
+              packedFringeChunkBits shape.size + 1) *
+          packedFringeChunkBits shape.size :=
+    Nat.mul_le_mul_right _ hcount
+  have hadd :
+      ((SuccinctClose.bpWordRankEffLimit word limit - 1) /
+            packedFringeChunkBits shape.size + 1) *
+          packedFringeChunkBits shape.size =
+        (SuccinctClose.bpWordRankEffLimit word limit - 1) /
+              packedFringeChunkBits shape.size *
+            packedFringeChunkBits shape.size +
+          packedFringeChunkBits shape.size := by
+    rw [Nat.add_mul, Nat.one_mul]
+  have heff : SuccinctClose.bpWordRankEffLimit word limit <= word.length :=
+    Nat.min_le_right _ _
+  have hchunk :
+      packedFringeChunkBits shape.size <=
+        packedRankWordSize shape.size := by
+    unfold packedFringeChunkBits SuccinctClose.bpFringeChunkBits
+    have hdiv : Nat.log2 (2 * shape.size) / 8 <= Nat.log2 (2 * shape.size) :=
+      Nat.div_le_self _ _
+    have hws : packedRankWordSize shape.size =
+        Nat.log2 (2 * shape.size) + 1 := rfl
+    omega
+  have hbp :
+      packedBpCodeWordWidth shape.size = packedRankWordSize shape.size := rfl
+  have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
+  have htwoMul := packedTwoMul_le_reviewerBound shape.size
+  have hwsSlack := packedRankWordSize_two_le_aux shape.size
+  have hauxSlack := packedRankAux_le_reviewerBound shape.size
+  simp only [PackedReviewerNatFits]
+  omega
+
+/-! ## Dense-phase transitions -/
+
+/-- Landing after the second dense rank: an in-word select or the far word. -/
+private theorem packedReviewerSelectAfterDenseUptoRank_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index basePosition baseOccurrence beforeFirst : Nat) (word : List Bool)
+    (uptoFirst : Nat)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hbase : basePosition <= 2 * shape.size + 1)
+    (hocc : baseOccurrence <= index)
+    (hword : PackedReviewerWordFits shape.size word)
+    (hwordLen : word.length <= packedBpCodeWordWidth shape.size)
+    (hbefore : beforeFirst <= word.length)
+    (hupto : uptoFirst <= word.length) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectAfterDenseUptoRank invocation shape.size index
+        basePosition baseOccurrence beforeFirst word uptoFirst) := by
+  have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
+  have htwoMul := packedTwoMul_le_reviewerBound shape.size
+  have hwsSlack := packedRankWordSize_two_le_aux shape.size
+  have hauxSlack := packedRankAux_le_reviewerBound shape.size
+  have hbp :
+      packedBpCodeWordWidth shape.size = packedRankWordSize shape.size := rfl
+  have hbpLinear := packedReviewerBpCodeWordWidth_le_two_mul_add_one shape.size
+  have hn := packedReviewerInputSize_lt_two_pow_cellWidth shape.size
+  have hbaseWordMul :
+      basePosition / packedSelectWordSize shape.size *
+          packedSelectWordSize shape.size <=
+        basePosition := Nat.div_mul_le_self _ _
+  simp only [packedReviewerSelectAfterDenseUptoRank]
+  by_cases hwithin :
+      index - baseOccurrence < uptoFirst - beforeFirst
+  · simp only [hwithin, if_true]
+    have hoccFits :
+        PackedReviewerNatFits shape.size
+          (beforeFirst + (index - baseOccurrence)) := by
+      simp only [PackedReviewerNatFits]
+      omega
+    have hselect :=
+      packedReviewerWordSelectStart_canonicalScalarFits shape invocation
+        false word (beforeFirst + (index - baseOccurrence)) rfl hinv hword
+        hoccFits
+    let select :=
+      packedReviewerWordSelectStart invocation shape.size false word
+        (beforeFirst + (index - baseOccurrence))
+    cases hresult : packedReviewerWordSelectResult select with
+    | none =>
+        have hbaseBound :
+            basePosition / packedSelectWordSize shape.size *
+                packedSelectWordSize shape.size <=
+              2 * shape.size + 1 + packedSelectWordSize shape.size := by
+          omega
+        have hwitness :=
+          packedReviewerWordSelectStart_requests_fit shape invocation false
+            word (beforeFirst + (index - baseOccurrence)) hinv
+        have hnine :=
+          packedReviewerWordSelectStart_remaining_le_nine invocation
+            shape.size false word (beforeFirst + (index - baseOccurrence))
+        simpa [PackedReviewerSelectCanonicalScalarFits, select, hresult] using
+          (⟨rfl, hinv, hbaseBound, hwitness,
+            ⟨word, hword, hwordLen, hselect⟩, hnine⟩ :
+            PackedReviewerSelectCanonicalScalarFits shape
+              (.denseFirstSelect invocation shape.size
+                (basePosition / packedSelectWordSize shape.size)
+                (packedReviewerWordSelectStart invocation shape.size false
+                  word (beforeFirst + (index - baseOccurrence)))))
+    | some localResult =>
+        cases localResult with
+        | none =>
+            have hdone :
+                PackedReviewerSelectCanonicalScalarFits shape
+                  (.done none) := by
+              intro close hclose
+              simp at hclose
+            simpa [select, hresult] using hdone
+        | some offset =>
+            have hvalue :=
+              hselect.result_fits (by simpa [select] using hresult)
+            have hdone :
+                PackedReviewerSelectCanonicalScalarFits shape
+                  (.done
+                    (some
+                      (basePosition / packedSelectWordSize shape.size *
+                        packedSelectWordSize shape.size + offset))) := by
+              intro close hclose
+              simp only [Option.some.injEq] at hclose
+              subst close
+              constructor
+              · simp only [PackedReviewerNatFits]
+                omega
+              · omega
+            simpa [select, hresult] using hdone
+  · simp only [hwithin, if_false]
+    exact ⟨rfl, hinv, hindex, hbase, hocc, by omega, by omega⟩
+
+/-- Landing after the first dense rank: the second fold or its continuation. -/
+private theorem packedReviewerSelectAfterDenseBeforeRank_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index basePosition baseOccurrence : Nat) (word : List Bool)
+    (beforeFirst : Nat)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hbase : basePosition <= 2 * shape.size + 1)
+    (hocc : baseOccurrence <= index)
+    (hword : PackedReviewerWordFits shape.size word)
+    (hwordLen : word.length <= packedBpCodeWordWidth shape.size)
+    (hbefore : beforeFirst <= word.length) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectAfterDenseBeforeRank invocation shape.size index
+        basePosition baseOccurrence word beforeFirst) := by
+  have hfold :=
+    packedReviewerRankStartFold_canonicalScalarFits shape word.length
+      invocation .close word word.length 0 hinv hword
+      (by
+        have heff := Nat.min_le_right word.length word.length
+        simpa [SuccinctClose.bpWordRankEffLimit] using heff)
+      (packedReviewerStartFoldBudget_fits shape word word.length hwordLen)
+  simp only [packedReviewerSelectAfterDenseBeforeRank]
+  let rank :=
+    packedReviewerRankStartFold invocation .close shape.size word
+      word.length 0
+  cases hresult : packedReviewerRankResult rank with
+  | none =>
+      have hwitness :=
+        packedReviewerRankStartFold_requests_fit shape invocation .close
+          word word.length 0 hinv
+      have hbound :=
+        packedReviewerRankStartFold_remaining_le_eight invocation .close
+          shape.size word word.length 0
+      have hfit := PackedReviewerRequestsFitFrom.mono shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerRankNextRequest packedReviewerRankConsumeReply
+        hwitness hbound
+      simpa [PackedReviewerSelectCanonicalScalarFits, rank, hresult] using
+        (⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hwordLen, hfit,
+          hfold, hbound⟩ :
+          PackedReviewerSelectCanonicalScalarFits shape
+            (.denseUptoRank invocation shape.size index basePosition
+              baseOccurrence beforeFirst word
+              (packedReviewerRankStartFold invocation .close shape.size word
+                word.length 0)))
+  | some uptoFirst =>
+      have hvalue := hfold.result_fits (by simpa [rank] using hresult)
+      simpa [rank, hresult] using
+        packedReviewerSelectAfterDenseUptoRank_fits shape invocation index
+          basePosition baseOccurrence beforeFirst word uptoFirst hinv hindex
+          hbase hocc hword hwordLen hbefore hvalue.2
+
+/-- Landing after the first dense BP word arrives from segment zero. -/
+private theorem packedReviewerSelectAfterDenseFirstWord_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index basePosition baseOccurrence : Nat)
+    (word? : Option (List Bool))
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hbase : basePosition <= 2 * shape.size + 1)
+    (hocc : baseOccurrence <= index)
+    (hword? :
+      forall word, word? = some word ->
+        PackedReviewerWordFits shape.size word ∧
+          word.length <= packedBpCodeWordWidth shape.size) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectAfterDenseFirstWord invocation shape.size index
+        basePosition baseOccurrence word?) := by
+  cases word? with
+  | none =>
+      intro close hclose
+      simp [packedReviewerSelectAfterDenseFirstWord] at hclose
+  | some word =>
+      obtain ⟨hword, hwordLen⟩ := hword? word rfl
+      have hfold :=
+        packedReviewerRankStartFold_canonicalScalarFits shape word.length
+          invocation .close word
+          (basePosition -
+            basePosition / packedSelectWordSize shape.size *
+              packedSelectWordSize shape.size) 0 hinv hword
+          (by
+            have heff := Nat.min_le_right
+              (basePosition -
+                basePosition / packedSelectWordSize shape.size *
+                  packedSelectWordSize shape.size) word.length
+            simpa [SuccinctClose.bpWordRankEffLimit] using heff)
+          (packedReviewerStartFoldBudget_fits shape word _ hwordLen)
+      simp only [packedReviewerSelectAfterDenseFirstWord]
+      let rank :=
+        packedReviewerRankStartFold invocation .close shape.size word
+          (basePosition -
+            basePosition / packedSelectWordSize shape.size *
+              packedSelectWordSize shape.size) 0
+      cases hresult : packedReviewerRankResult rank with
+      | none =>
+          have hwitness :=
+            packedReviewerRankStartFold_requests_fit shape invocation .close
+              word
+              (basePosition -
+                basePosition / packedSelectWordSize shape.size *
+                  packedSelectWordSize shape.size) 0 hinv
+          have hbound :=
+            packedReviewerRankStartFold_remaining_le_eight invocation .close
+              shape.size word
+              (basePosition -
+                basePosition / packedSelectWordSize shape.size *
+                  packedSelectWordSize shape.size) 0
+          have hfit := PackedReviewerRequestsFitFrom.mono shape.size
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            packedReviewerRankNextRequest packedReviewerRankConsumeReply
+            hwitness hbound
+          simpa [PackedReviewerSelectCanonicalScalarFits, rank, hresult] using
+            (⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, hfit, hfold,
+              hbound⟩ :
+              PackedReviewerSelectCanonicalScalarFits shape
+                (.denseBeforeRank invocation shape.size index basePosition
+                  baseOccurrence word
+                  (packedReviewerRankStartFold invocation .close shape.size
+                    word
+                    (basePosition -
+                      basePosition / packedSelectWordSize shape.size *
+                        packedSelectWordSize shape.size) 0)))
+      | some beforeFirst =>
+          have hvalue := hfold.result_fits (by simpa [rank] using hresult)
+          simpa [rank, hresult] using
+            packedReviewerSelectAfterDenseBeforeRank_fits shape invocation
+              index basePosition baseOccurrence word beforeFirst hinv hindex
+              hbase hocc hword hwordLen hvalue.2
+
+/-- Landing after the second dense BP word arrives from segment zero. -/
+private theorem packedReviewerSelectAfterDenseSecondWord_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (index basePosition baseOccurrence beforeFirst uptoFirst : Nat)
+    (word? : Option (List Bool))
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hindex : index < shape.size)
+    (hbase : basePosition <= 2 * shape.size + 1)
+    (hocc : baseOccurrence <= index)
+    (hword? :
+      forall word, word? = some word ->
+        PackedReviewerWordFits shape.size word ∧
+          word.length <= packedBpCodeWordWidth shape.size) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectAfterDenseSecondWord invocation shape.size index
+        basePosition baseOccurrence beforeFirst uptoFirst word?) := by
+  cases word? with
+  | none =>
+      intro close hclose
+      simp [packedReviewerSelectAfterDenseSecondWord] at hclose
+  | some word =>
+      obtain ⟨hword, hwordLen⟩ := hword? word rfl
+      have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
+      have htwoMul := packedTwoMul_le_reviewerBound shape.size
+      have hwsSlack := packedRankWordSize_two_le_aux shape.size
+      have hauxSlack := packedRankAux_le_reviewerBound shape.size
+      have hbp :
+          packedBpCodeWordWidth shape.size = packedRankWordSize shape.size :=
+        rfl
+      have hbpLinear :=
+        packedReviewerBpCodeWordWidth_le_two_mul_add_one shape.size
+      have hws :
+          packedSelectWordSize shape.size = packedRankWordSize shape.size :=
+        rfl
+      have hn := packedReviewerInputSize_lt_two_pow_cellWidth shape.size
+      have hbaseWordMul :
+          basePosition / packedSelectWordSize shape.size *
+              packedSelectWordSize shape.size <=
+            basePosition := Nat.div_mul_le_self _ _
+      have hoccFits :
+          PackedReviewerNatFits shape.size
+            (index - baseOccurrence - (uptoFirst - beforeFirst)) := by
+        simp only [PackedReviewerNatFits]
+        omega
+      have hselect :=
+        packedReviewerWordSelectStart_canonicalScalarFits shape invocation
+          false word (index - baseOccurrence - (uptoFirst - beforeFirst)) rfl
+          hinv hword hoccFits
+      simp only [packedReviewerSelectAfterDenseSecondWord]
+      let select :=
+        packedReviewerWordSelectStart invocation shape.size false word
+          (index - baseOccurrence - (uptoFirst - beforeFirst))
+      cases hresult : packedReviewerWordSelectResult select with
+      | none =>
+          have hbaseBound :
+              (basePosition / packedSelectWordSize shape.size + 1) *
+                  packedSelectWordSize shape.size <=
+                2 * shape.size + 1 + packedSelectWordSize shape.size := by
+            rw [Nat.add_mul]
+            omega
+          have hwitness :=
+            packedReviewerWordSelectStart_requests_fit shape invocation
+              false word (index - baseOccurrence - (uptoFirst - beforeFirst))
+              hinv
+          have hnine :=
+            packedReviewerWordSelectStart_remaining_le_nine invocation
+              shape.size false word
+              (index - baseOccurrence - (uptoFirst - beforeFirst))
+          simpa [PackedReviewerSelectCanonicalScalarFits, select, hresult] using
+            (⟨rfl, hinv, hbaseBound, hwitness,
+              ⟨word, hword, hwordLen, hselect⟩, hnine⟩ :
+              PackedReviewerSelectCanonicalScalarFits shape
+                (.denseSecondSelect invocation shape.size
+                  (basePosition / packedSelectWordSize shape.size + 1)
+                  (packedReviewerWordSelectStart invocation shape.size false
+                    word
+                    (index - baseOccurrence - (uptoFirst - beforeFirst)))))
+      | some localResult =>
+          cases localResult with
+          | none =>
+              have hdone :
+                  PackedReviewerSelectCanonicalScalarFits shape
+                    (.done none) := by
+                intro close hclose
+                simp at hclose
+              simpa [select, hresult] using hdone
+          | some offset =>
+              have hvalue :=
+                hselect.result_fits (by simpa [select] using hresult)
+              have hdone :
+                  PackedReviewerSelectCanonicalScalarFits shape
+                    (.done
+                      (some
+                        ((basePosition / packedSelectWordSize shape.size +
+                            1) *
+                          packedSelectWordSize shape.size + offset))) := by
+                intro close hclose
+                simp only [Option.some.injEq] at hclose
+                subst close
+                rw [Nat.add_mul]
+                constructor
+                · simp only [PackedReviewerNatFits]
+                  omega
+                · omega
+              simpa [select, hresult] using hdone
 
 end PackedCellProbe
 end SuccinctFinal
