@@ -10170,6 +10170,90 @@ private theorem packedReviewerSelectConsume_denseSelect_fits
           ⟨word, hword, hwordLen, hselect'⟩, hnine'⟩
     | some localResult => exact hdone localResult hresult
 
+/-- One canonical reply preserves the whole select tower invariant. -/
+private theorem PackedReviewerSelectCanonicalScalarFits.consume
+    {shape : CartesianShape} {state : PackedReviewerSelectState}
+    (hstate : PackedReviewerSelectCanonicalScalarFits shape state)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerSelectNextRequest state = some request) :
+    PackedReviewerSelectCanonicalScalarFits shape
+      (packedReviewerSelectConsumeReply state
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  cases state with
+  | superEntry invocation n index entry =>
+      obtain ⟨rfl, hinv, hindex, hentry⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      exact packedReviewerSelectConsume_superEntry_fits shape invocation index
+        entry hinv hindex hentry hrequest
+  | localEntry invocation n index localSlot super entry =>
+      obtain ⟨rfl, hinv, hindex, hsuperGeo, hshort, rfl, hentry⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      exact packedReviewerSelectConsume_localEntry_fits shape invocation index
+        super entry hinv hindex hsuperGeo hshort hentry hrequest
+  | longRank invocation n index super rank =>
+      obtain ⟨rfl, hinv, hindex, hsuperGeo, hlong, hrankFit, hrank,
+        horbit⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      exact packedReviewerSelectConsume_longRank_fits shape invocation index
+        super rank hinv hindex hsuperGeo hlong hrankFit hrank horbit hrequest
+  | longRelative invocation base slot =>
+      obtain ⟨hinv, hbase, hbaseLe, hslot, hcontent⟩ := hstate
+      exact packedReviewerSelectConsume_longRelative_fits shape invocation
+        base slot hcontent hrequest
+  | sparseRank invocation n index localSlot super loc rank =>
+      obtain ⟨rfl, hinv, hindex, hlocalGeo, rfl, hmarked, hrankFit, hrank,
+        horbit⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      exact packedReviewerSelectConsume_sparseRank_fits shape invocation index
+        super loc rank hinv hindex hlocalGeo hmarked hrankFit hrank horbit
+        hrequest
+  | sparseRelative invocation base slot =>
+      obtain ⟨hinv, hbase, hbaseLe, hslot, hcontent⟩ := hstate
+      exact packedReviewerSelectConsume_sparseRelative_fits shape invocation
+        base slot hcontent hrequest
+  | denseFirstWord invocation n index basePosition baseOccurrence =>
+      obtain ⟨rfl, hinv, hindex, hbase, hocc⟩ := hstate
+      exact packedReviewerSelectConsume_denseFirstWord_fits shape invocation
+        index basePosition baseOccurrence hinv hindex hbase hocc hrequest
+  | denseBeforeRank invocation n index basePosition baseOccurrence word
+      rank =>
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, hrankFit,
+        hrank, hbudget⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      exact packedReviewerSelectConsume_denseBeforeRank_fits shape invocation
+        index basePosition baseOccurrence word rank hinv hindex hbase hocc
+        hword hwordLen hbudget hrankFit hrank hrequest
+  | denseUptoRank invocation n index basePosition baseOccurrence beforeFirst
+      word rank =>
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hwordLen,
+        hrankFit, hrank, hbudget⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      exact packedReviewerSelectConsume_denseUptoRank_fits shape invocation
+        index basePosition baseOccurrence beforeFirst word rank hinv hindex
+        hbase hocc hbefore hword hwordLen hbudget hrankFit hrank hrequest
+  | denseFirstSelect invocation n baseWord select =>
+      obtain ⟨rfl, hinv, hbaseBound, hselectFit, ⟨word, hword, hwordLen,
+        hselect⟩, hnine⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      exact (packedReviewerSelectConsume_denseSelect_fits shape invocation
+        baseWord select word hinv hbaseBound hword hwordLen hselect
+        hselectFit hnine hrequest).1
+  | denseSecondWord invocation n index basePosition baseOccurrence
+      beforeFirst uptoFirst =>
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hbeforeW, huptoW⟩ := hstate
+      exact packedReviewerSelectConsume_denseSecondWord_fits shape invocation
+        index basePosition baseOccurrence beforeFirst uptoFirst hinv hindex
+        hbase hocc hrequest
+  | denseSecondSelect invocation n baseWord select =>
+      obtain ⟨rfl, hinv, hbaseBound, hselectFit, ⟨word, hword, hwordLen,
+        hselect⟩, hnine⟩ := hstate
+      simp only [packedReviewerSelectNextRequest] at hrequest
+      exact (packedReviewerSelectConsume_denseSelect_fits shape invocation
+        baseWord select word hinv hbaseBound hword hwordLen hselect
+        hselectFit hnine hrequest).2
+  | done value => simp [packedReviewerSelectNextRequest] at hrequest
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
