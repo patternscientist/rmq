@@ -6980,6 +6980,7 @@ private def PackedReviewerSelectCanonicalScalarFits
         basePosition <= 2 * shape.size + 1 ∧
         baseOccurrence <= index ∧
         PackedReviewerWordFits shape.size word ∧
+        word.length <= packedBpCodeWordWidth shape.size ∧
         PackedReviewerRequestsFitFrom shape.size
           (concreteBPNativeSuccinctRMQGlobalReadStore shape)
           packedReviewerRankNextRequest packedReviewerRankConsumeReply
@@ -6997,6 +6998,7 @@ private def PackedReviewerSelectCanonicalScalarFits
         baseOccurrence <= index ∧
         beforeFirst <= word.length ∧
         PackedReviewerWordFits shape.size word ∧
+        word.length <= packedBpCodeWordWidth shape.size ∧
         PackedReviewerRequestsFitFrom shape.size
           (concreteBPNativeSuccinctRMQGlobalReadStore shape)
           packedReviewerRankNextRequest packedReviewerRankConsumeReply
@@ -7008,7 +7010,8 @@ private def PackedReviewerSelectCanonicalScalarFits
         (forall operand,
           operand ∈ packedReviewerInvocationOperands invocation ->
             PackedReviewerNatFits shape.size operand) ∧
-        baseWord * packedSelectWordSize shape.size <= 2 * shape.size + 1 ∧
+        baseWord * packedSelectWordSize shape.size <=
+          2 * shape.size + 1 + packedSelectWordSize shape.size ∧
         PackedReviewerRequestsFitFrom shape.size
           (concreteBPNativeSuccinctRMQGlobalReadStore shape)
           packedReviewerWordSelectNextRequest
@@ -7016,6 +7019,7 @@ private def PackedReviewerSelectCanonicalScalarFits
           (packedReviewerWordSelectRemaining select) select ∧
         (exists word,
           PackedReviewerWordFits shape.size word ∧
+            word.length <= packedBpCodeWordWidth shape.size ∧
             PackedReviewerWordSelectCanonicalScalarFits shape word.length
               select) ∧
         packedReviewerWordSelectRemaining select <= 9
@@ -7028,14 +7032,15 @@ private def PackedReviewerSelectCanonicalScalarFits
         index < shape.size ∧
         basePosition <= 2 * shape.size + 1 ∧
         baseOccurrence <= index ∧
-        beforeFirst <= uptoFirst ∧
-        uptoFirst <= 2 * shape.size + 1
+        beforeFirst <= packedBpCodeWordWidth shape.size ∧
+        uptoFirst <= packedBpCodeWordWidth shape.size
   | .denseSecondSelect invocation n baseWord select =>
       n = shape.size ∧
         (forall operand,
           operand ∈ packedReviewerInvocationOperands invocation ->
             PackedReviewerNatFits shape.size operand) ∧
-        baseWord * packedSelectWordSize shape.size <= 2 * shape.size + 1 ∧
+        baseWord * packedSelectWordSize shape.size <=
+          2 * shape.size + 1 + packedSelectWordSize shape.size ∧
         PackedReviewerRequestsFitFrom shape.size
           (concreteBPNativeSuccinctRMQGlobalReadStore shape)
           packedReviewerWordSelectNextRequest
@@ -7043,6 +7048,7 @@ private def PackedReviewerSelectCanonicalScalarFits
           (packedReviewerWordSelectRemaining select) select ∧
         (exists word,
           PackedReviewerWordFits shape.size word ∧
+            word.length <= packedBpCodeWordWidth shape.size ∧
             PackedReviewerWordSelectCanonicalScalarFits shape word.length
               select) ∧
         packedReviewerWordSelectRemaining select <= 9
@@ -7223,7 +7229,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
       · exact hbaseFits
       · omega
   | denseBeforeRank invocation n index basePosition baseOccurrence word rank =>
-      obtain ⟨rfl, hinv, hindex, hbase, hocc, hword, hrankFit, hrank, hbudget⟩ := hstate
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, hrankFit, hrank, hbudget⟩ := hstate
       have hinvFields :
           forall value,
             value ∈ packedReviewerInvocationNatFields invocation ->
@@ -7245,8 +7251,8 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
       · exact hrankFields value hrankMem
   | denseUptoRank invocation n index basePosition baseOccurrence beforeFirst
       word rank =>
-      obtain ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hrankFit, hrank,
-        hbudget⟩ := hstate
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hwordLen, hrankFit,
+        hrank, hbudget⟩ := hstate
       have hinvFields :
           forall value,
             value ∈ packedReviewerInvocationNatFields invocation ->
@@ -7272,7 +7278,8 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
       · exact hbeforeFits
       · exact hrankFields value hrankMem
   | denseFirstSelect invocation n baseWord select =>
-      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hselect⟩, hremaining⟩ := hstate
+      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hwordLen, hselect⟩,
+        hremaining⟩ := hstate
       have hinvFields :
           forall value,
             value ∈ packedReviewerInvocationNatFields invocation ->
@@ -7280,11 +7287,19 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
         simpa [packedReviewerInvocationNatFields,
           packedReviewerInvocationOperands] using hinv
       have hwordSize : 0 < packedSelectWordSize shape.size := by
-        simpa [packedSelectWordSize] using GenericSelect.wordBits_pos (2 * shape.size)
+        simpa [packedSelectWordSize] using
+          GenericSelect.wordBits_pos (2 * shape.size)
       have hbaseFits : PackedReviewerNatFits shape.size baseWord := by
-        apply packedReviewerNatFits_of_le_two_mul_add_one
         have hle : baseWord <= baseWord * packedSelectWordSize shape.size :=
           Nat.le_mul_of_pos_right baseWord hwordSize
+        have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
+        have htwoMul := packedTwoMul_le_reviewerBound shape.size
+        have hwsSlack := packedRankWordSize_two_le_aux shape.size
+        have hauxSlack := packedRankAux_le_reviewerBound shape.size
+        have hwsEq :
+            packedRankWordSize shape.size =
+              packedSelectWordSize shape.size := rfl
+        simp only [PackedReviewerNatFits]
         omega
       have hselectFields := hselect.scalar_fields
       intro value hmem
@@ -7306,8 +7321,16 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
       have hbaseFits : PackedReviewerNatFits shape.size basePosition :=
         packedReviewerNatFits_of_le_two_mul_add_one shape.size basePosition
           hbase
-      have huptoFits : PackedReviewerNatFits shape.size uptoFirst :=
-        packedReviewerNatFits_of_le_two_mul_add_one shape.size uptoFirst hupto
+      have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
+      have htwoMul := packedTwoMul_le_reviewerBound shape.size
+      have hwsSlack := packedRankWordSize_two_le_aux shape.size
+      have hauxSlack := packedRankAux_le_reviewerBound shape.size
+      have hwEq :
+          packedBpCodeWordWidth shape.size = packedRankWordSize shape.size :=
+        rfl
+      have huptoFits : PackedReviewerNatFits shape.size uptoFirst := by
+        simp only [PackedReviewerNatFits]
+        omega
       intro value hmem
       simp [packedReviewerSelectStateNatFields] at hmem
       rcases hmem with hinvMem | rfl | rfl | rfl | rfl | rfl | rfl
@@ -7319,7 +7342,8 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
       · omega
       · exact huptoFits
   | denseSecondSelect invocation n baseWord select =>
-      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hselect⟩, hremaining⟩ := hstate
+      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hwordLen, hselect⟩,
+        hremaining⟩ := hstate
       have hinvFields :
           forall value,
             value ∈ packedReviewerInvocationNatFields invocation ->
@@ -7327,11 +7351,19 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
         simpa [packedReviewerInvocationNatFields,
           packedReviewerInvocationOperands] using hinv
       have hwordSize : 0 < packedSelectWordSize shape.size := by
-        simpa [packedSelectWordSize] using GenericSelect.wordBits_pos (2 * shape.size)
+        simpa [packedSelectWordSize] using
+          GenericSelect.wordBits_pos (2 * shape.size)
       have hbaseFits : PackedReviewerNatFits shape.size baseWord := by
-        apply packedReviewerNatFits_of_le_two_mul_add_one
         have hle : baseWord <= baseWord * packedSelectWordSize shape.size :=
           Nat.le_mul_of_pos_right baseWord hwordSize
+        have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
+        have htwoMul := packedTwoMul_le_reviewerBound shape.size
+        have hwsSlack := packedRankWordSize_two_le_aux shape.size
+        have hauxSlack := packedRankAux_le_reviewerBound shape.size
+        have hwsEq :
+            packedRankWordSize shape.size =
+              packedSelectWordSize shape.size := rfl
+        simp only [PackedReviewerNatFits]
         omega
       have hselectFields := hselect.scalar_fields
       intro value hmem
@@ -7509,20 +7541,20 @@ private theorem PackedReviewerSelectCanonicalScalarFits.nextRequest_operands_fit
       · exact packedReviewerSegment_le_twentyTwo_fits shape.size 0 (by omega)
       · exact hslotFits
   | denseBeforeRank invocation n index basePosition baseOccurrence word rank =>
-      obtain ⟨rfl, hinv, hindex, hbase, hocc, hword, hrankFit, hrank,
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, hrankFit, hrank,
         hbudget⟩ := hstate
       simp only [packedReviewerSelectNextRequest] at hrequest
       exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
         (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
   | denseUptoRank invocation n index basePosition baseOccurrence beforeFirst
       word rank =>
-      obtain ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hrankFit,
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hwordLen, hrankFit,
         hrank, hbudget⟩ := hstate
       simp only [packedReviewerSelectNextRequest] at hrequest
       exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
         (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
   | denseFirstSelect invocation n baseWord select =>
-      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hselect⟩,
+      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hwordLen, hselect⟩,
         hremaining⟩ := hstate
       simp only [packedReviewerSelectNextRequest] at hrequest
       exact packedReviewerRequestsFitFrom_head_operands_fit hselectFit
@@ -7551,7 +7583,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.nextRequest_operands_fit
       · exact packedReviewerSegment_le_twentyTwo_fits shape.size 0 (by omega)
       · exact hslotFits
   | denseSecondSelect invocation n baseWord select =>
-      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hselect⟩,
+      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hwordLen, hselect⟩,
         hremaining⟩ := hstate
       simp only [packedReviewerSelectNextRequest] at hrequest
       exact packedReviewerRequestsFitFrom_head_operands_fit hselectFit
@@ -7606,12 +7638,12 @@ private theorem PackedReviewerSelectCanonicalScalarFits.remaining_le_thirtyFive
   | denseFirstWord invocation n index basePosition baseOccurrence =>
       simp [packedReviewerSelectRemaining]
   | denseBeforeRank invocation n index basePosition baseOccurrence word rank =>
-      obtain ⟨-, -, -, -, -, -, -, -, hbudget⟩ := hstate
+      obtain ⟨-, -, -, -, -, -, -, -, -, hbudget⟩ := hstate
       simp only [packedReviewerSelectRemaining]
       omega
   | denseUptoRank invocation n index basePosition baseOccurrence beforeFirst
       word rank =>
-      obtain ⟨-, -, -, -, -, -, -, -, -, hbudget⟩ := hstate
+      obtain ⟨-, -, -, -, -, -, -, -, -, -, hbudget⟩ := hstate
       simp only [packedReviewerSelectRemaining]
       omega
   | denseFirstSelect invocation n baseWord select =>
