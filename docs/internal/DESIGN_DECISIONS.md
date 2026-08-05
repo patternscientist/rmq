@@ -9281,3 +9281,35 @@ that component's offset, to a bit range of its own payload, to a bit range of th
 interior directory, to a position inside the consumed payload. What remains is
 composing those into a single address function and running it through
 `packedReviewerMemory`.
+
+## DD-20260804-064 -- word offsets and bit offsets are separate obligations
+
+`ReviewerComponentAccess.lean`, extended.
+
+```
+packedInteriorDirectoryPayload_split
+```
+
+The interior directory's **payload** splits eight ways, matching the eight-way
+split of its **words**.
+
+These are genuinely different facts and it is worth saying why, because the
+temptation is to treat one as the other. A component's word offset is the number
+of machine words before it; its bit offset is the number of payload bits before
+it. The two agree only when every preceding entry exactly fills its machine
+words -- and `DD-20260804-051` measured three interior columns whose entries do
+**not**, at every size below roughly `512`. So a bit address derived from a word
+offset would be wrong precisely where the structure is most exercised.
+
+Having both splits proved separately is what keeps the eventual address function
+from silently conflating them.
+
+The proof needed `canonicalRelativeRmmInteriorDirectory` itself in the `simp` set;
+without it the structure projection does not reduce and `simp` closes nothing while
+reporting the payload lemmas as unused. The unused-argument hint was the signal
+that the goal had not been unfolded at all, rather than that the lemmas were
+wrong.
+
+Segment `20`'s remaining work is now composition only: word split, offsets bridge,
+bit-level payload split, and close-half position are each proved, and no further
+structural fact about the interior is expected.

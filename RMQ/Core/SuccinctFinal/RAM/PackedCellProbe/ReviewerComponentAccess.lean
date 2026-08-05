@@ -17,10 +17,9 @@ segment `20` reaches a computable address.
 
 ## What this module does not establish
 
-* All eight components are located, the bridge to
-  `canonicalRelativeRmmInteriorComponentOffsets` is proved, and the interior
-  directory's position inside the consumed payload is fixed. What remains is
-  composing those three into one bit address, and the physical read over
+* The word split, the offsets bridge, the bit-level payload split, and the close
+  half's position in the consumed payload are all proved. What remains is
+  composing them into one address function, and the physical read over
   `packedReviewerMemory`.
 * The baseline column's payload is located inside the *interior directory*, not
   yet inside the consumed payload; that composition is still outstanding.
@@ -469,6 +468,30 @@ theorem packedReviewerPayload_drop_closeOffset (shape : CartesianShape) :
                 false).payload) by
     simp [List.append_assoc]]
   exact List.drop_left
+
+/--
+**The interior directory's payload, split eight ways.** The bit-level counterpart
+of `packedReviewerInteriorComponentWords_split`, which splits the *words*. The two
+are separate obligations: word offsets and bit offsets are different quantities
+whenever an entry does not fill its final machine word.
+-/
+theorem packedInteriorDirectoryPayload_split (shape : CartesianShape) :
+    (canonicalRelativeRmmInteriorDirectory shape).payload =
+      (canonicalRelativeRmmSummaryTable shape).baselineTable.payload ++
+        (canonicalRelativeRmmSummaryTable shape).minRelTable.payload ++
+          (canonicalRelativeRmmSummaryTable shape).maxRelTable.payload ++
+            (canonicalRelativeRmmSummaryTable shape).argOffsetTable.payload ++
+              (canonicalRelativeRmmInteriorLocalTable shape).table.payload ++
+                (canonicalRelativeRmmInteriorGlobalTable shape).table.payload ++
+                  (canonicalRelativeRmmInteriorLocalLevelTable
+                    shape).table.payload ++
+                    (canonicalRelativeRmmInteriorGlobalLevelTable
+                      shape).table.payload := by
+  simp [canonicalRelativeRmmInteriorDirectory,
+    PayloadLiveBPRelativeMinMaxArgSummaryTable.payload,
+    PayloadLiveBPLocalSparseOffsetTable.payload,
+    PayloadLiveBPGlobalSparseBlockTable.payload,
+    PayloadLiveBPSparseLevelTable.payload, List.append_assoc]
 
 end PackedCellProbe
 end SuccinctFinal
