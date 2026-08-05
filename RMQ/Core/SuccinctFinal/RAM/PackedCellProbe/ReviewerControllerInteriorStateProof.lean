@@ -3028,6 +3028,488 @@ theorem PackedReviewerInteriorCanonicalScalarFits.result_fits
       startBlock spanCount fuel hstate.invocation_operands hstate.range).2
       candidate hresult
 
+/-! ## Canonical orbit budget and pending-request width
+
+The structural interior measure can grow for forged table widths, so the
+whole-machine budget uses these orbit-only facts instead of a descent lemma:
+the pending read keeps at most eight chunks, and the continuation potential
+never rises along canonical steps.
+-/
+
+private def packedReviewerInteriorPotential :
+    PackedReviewerInteriorState -> Nat
+  | .done _ => 0
+  | .readNat _ _ continuation =>
+      packedReviewerInteriorNatContinuationRemaining continuation
+
+private theorem packedReviewerInteriorFinishCandidate_done_or_potential_lt
+    (invocation : PackedReviewerInvocation)
+    (value : PackedReviewerCandidate)
+    (continuation : PackedReviewerCandidateContinuation) :
+    (exists result,
+        packedReviewerInteriorFinishCandidate invocation value continuation =
+          .done result) ∨
+      packedReviewerInteriorPotential
+          (packedReviewerInteriorFinishCandidate invocation value
+            continuation) <
+        packedReviewerCandidateContinuationRemaining continuation := by
+  induction continuation generalizing value with
+  | finish =>
+      exact Or.inl ⟨value, by simp [packedReviewerInteriorFinishCandidate]⟩
+  | localTwoLeft n macroIdx localStart count encoded outer ih =>
+      right
+      simp [packedReviewerInteriorFinishCandidate,
+        packedReviewerInteriorStartLocalSpan,
+        packedReviewerInteriorReadNat,
+        packedReviewerInteriorPotential,
+        packedReviewerInteriorNatContinuationRemaining,
+        packedReviewerCandidateContinuationRemaining]
+  | localTwoRight left outer ih =>
+      simpa [packedReviewerInteriorFinishCandidate,
+        packedReviewerCandidateContinuationRemaining] using
+        ih (SuccinctClose.bpCandidateMerge? left value)
+  | globalTwoLeft n macroStart macroSpanCount encoded outer ih =>
+      right
+      simp [packedReviewerInteriorFinishCandidate,
+        packedReviewerInteriorStartGlobalSpan,
+        packedReviewerInteriorReadNat,
+        packedReviewerInteriorPotential,
+        packedReviewerInteriorNatContinuationRemaining,
+        packedReviewerCandidateContinuationRemaining]
+  | globalTwoRight left outer ih =>
+      simpa [packedReviewerInteriorFinishCandidate,
+        packedReviewerCandidateContinuationRemaining] using
+        ih (SuccinctClose.bpCandidateMerge? left value)
+  | adjacentLeft n macroStart rightCount outer ih =>
+      right
+      simp [packedReviewerInteriorFinishCandidate,
+        packedReviewerInteriorStartLocalTwo,
+        packedReviewerInteriorReadNat,
+        packedReviewerInteriorPotential,
+        packedReviewerInteriorNatContinuationRemaining,
+        packedReviewerCandidateContinuationRemaining]
+  | adjacentRight left outer ih =>
+      simpa [packedReviewerInteriorFinishCandidate,
+        packedReviewerCandidateContinuationRemaining] using
+        ih (SuccinctClose.bpCandidateMerge? left value)
+  | leftMiddleLeft n macroStart middleCount outer ih =>
+      right
+      simp [packedReviewerInteriorFinishCandidate,
+        packedReviewerInteriorStartGlobalTwo,
+        packedReviewerInteriorReadNat,
+        packedReviewerInteriorPotential,
+        packedReviewerInteriorNatContinuationRemaining,
+        packedReviewerCandidateContinuationRemaining]
+  | leftMiddleMiddle left outer ih =>
+      simpa [packedReviewerInteriorFinishCandidate,
+        packedReviewerCandidateContinuationRemaining] using
+        ih (SuccinctClose.bpCandidateMerge? left value)
+  | crossLeft n macroStart middleCount rightCount outer ih =>
+      right
+      simp only [packedReviewerInteriorFinishCandidate,
+        packedReviewerInteriorStartGlobalTwo,
+        packedReviewerInteriorReadNat,
+        packedReviewerInteriorPotential,
+        packedReviewerInteriorNatContinuationRemaining,
+        packedReviewerCandidateContinuationRemaining]
+      omega
+  | crossMiddle n macroStart middleCount rightCount left outer ih =>
+      right
+      simp [packedReviewerInteriorFinishCandidate,
+        packedReviewerInteriorStartLocalTwo,
+        packedReviewerInteriorReadNat,
+        packedReviewerInteriorPotential,
+        packedReviewerInteriorNatContinuationRemaining,
+        packedReviewerCandidateContinuationRemaining]
+  | crossRight left middle outer ih =>
+      simpa [packedReviewerInteriorFinishCandidate,
+        packedReviewerCandidateContinuationRemaining] using
+        ih (SuccinctClose.bpCandidateMerge3? left middle value)
+
+private theorem packedReviewerInteriorFinishNat_done_or_potential_lt
+    (invocation : PackedReviewerInvocation) (value : Option Nat)
+    (continuation : PackedReviewerInteriorNatContinuation) :
+    (exists result,
+        packedReviewerInteriorFinishNat invocation value continuation =
+          .done result) ∨
+      packedReviewerInteriorPotential
+          (packedReviewerInteriorFinishNat invocation value continuation) <
+        packedReviewerInteriorNatContinuationRemaining continuation := by
+  cases continuation with
+  | summaryBaseline n block outer =>
+      right
+      simp [packedReviewerInteriorFinishNat,
+        packedReviewerInteriorReadNat,
+        packedReviewerInteriorPotential,
+        packedReviewerInteriorNatContinuationRemaining]
+  | summaryMin n block baseline outer =>
+      right
+      simp [packedReviewerInteriorFinishNat,
+        packedReviewerInteriorReadNat,
+        packedReviewerInteriorPotential,
+        packedReviewerInteriorNatContinuationRemaining]
+  | summaryMax n block baseline minRel outer =>
+      right
+      simp [packedReviewerInteriorFinishNat,
+        packedReviewerInteriorReadNat,
+        packedReviewerInteriorPotential,
+        packedReviewerInteriorNatContinuationRemaining]
+  | summaryArg n block baseline minRel maxRel outer =>
+      simpa [packedReviewerInteriorFinishNat,
+        packedReviewerInteriorNatContinuationRemaining] using
+        packedReviewerInteriorFinishCandidate_done_or_potential_lt invocation
+          ((match baseline, minRel, maxRel, value with
+            | some b, some mn, some mx, some arg => some (b, mn, mx, arg)
+            | _, _, _, _ => none).map
+              (SuccinctClose.bpRelativeSummaryMinCandidate
+                (packedInteriorLayout n).blockSize
+                (packedInteriorLayout n).blocksPerSuper block)) outer
+  | localOffset n macroIdx localStart level outer =>
+      cases value with
+      | none =>
+          have hcandidate :=
+            packedReviewerInteriorFinishCandidate_done_or_potential_lt
+              invocation none outer
+          rcases hcandidate with hdone | hlt
+          · exact Or.inl (by
+              simpa [packedReviewerInteriorFinishNat] using hdone)
+          · exact Or.inr (by
+              simp only [packedReviewerInteriorFinishNat,
+                packedReviewerInteriorNatContinuationRemaining]
+              omega)
+      | some offset =>
+          right
+          simp [packedReviewerInteriorFinishNat,
+            packedReviewerInteriorStartMinCandidate,
+            packedReviewerInteriorReadNat,
+            packedReviewerInteriorPotential,
+            packedReviewerInteriorNatContinuationRemaining]
+  | globalBlock n macroStart level outer =>
+      cases value with
+      | none =>
+          have hcandidate :=
+            packedReviewerInteriorFinishCandidate_done_or_potential_lt
+              invocation none outer
+          rcases hcandidate with hdone | hlt
+          · exact Or.inl (by
+              simpa [packedReviewerInteriorFinishNat] using hdone)
+          · exact Or.inr (by
+              simp only [packedReviewerInteriorFinishNat,
+                packedReviewerInteriorNatContinuationRemaining]
+              omega)
+      | some block =>
+          right
+          simp [packedReviewerInteriorFinishNat,
+            packedReviewerInteriorStartMinCandidate,
+            packedReviewerInteriorReadNat,
+            packedReviewerInteriorPotential,
+            packedReviewerInteriorNatContinuationRemaining]
+  | localLevel n macroIdx localStart count outer =>
+      cases value with
+      | none =>
+          have hcandidate :=
+            packedReviewerInteriorFinishCandidate_done_or_potential_lt
+              invocation none outer
+          rcases hcandidate with hdone | hlt
+          · exact Or.inl (by
+              simpa [packedReviewerInteriorFinishNat] using hdone)
+          · exact Or.inr (by
+              simp only [packedReviewerInteriorFinishNat,
+                packedReviewerInteriorNatContinuationRemaining]
+              omega)
+      | some encoded =>
+          right
+          simp only [packedReviewerInteriorFinishNat,
+            packedReviewerInteriorStartLocalSpan,
+            packedReviewerInteriorReadNat,
+            packedReviewerInteriorPotential,
+            packedReviewerInteriorNatContinuationRemaining,
+            packedReviewerCandidateContinuationRemaining]
+          omega
+  | globalLevel n macroStart macroSpanCount outer =>
+      cases value with
+      | none =>
+          have hcandidate :=
+            packedReviewerInteriorFinishCandidate_done_or_potential_lt
+              invocation none outer
+          rcases hcandidate with hdone | hlt
+          · exact Or.inl (by
+              simpa [packedReviewerInteriorFinishNat] using hdone)
+          · exact Or.inr (by
+              simp only [packedReviewerInteriorFinishNat,
+                packedReviewerInteriorNatContinuationRemaining]
+              omega)
+      | some encoded =>
+          right
+          simp only [packedReviewerInteriorFinishNat,
+            packedReviewerInteriorStartGlobalSpan,
+            packedReviewerInteriorReadNat,
+            packedReviewerInteriorPotential,
+            packedReviewerInteriorNatContinuationRemaining,
+            packedReviewerCandidateContinuationRemaining]
+          omega
+
+private theorem packedReviewerInteriorNormalize_done_eq
+    (fuel : Nat) (value : PackedReviewerCandidate) :
+    packedReviewerInteriorNormalize fuel (.done value) = .done value := by
+  cases fuel <;> simp [packedReviewerInteriorNormalize]
+
+private theorem packedReviewerInteriorNormalize_potential_le
+    (fuel : Nat) (state : PackedReviewerInteriorState) :
+    packedReviewerInteriorPotential
+        (packedReviewerInteriorNormalize fuel state) <=
+      packedReviewerInteriorPotential state := by
+  induction fuel generalizing state with
+  | zero => simp [packedReviewerInteriorNormalize]
+  | succ fuel ih =>
+      cases state with
+      | done value => simp [packedReviewerInteriorNormalize]
+      | readNat invocation read continuation =>
+          cases hresult : packedReviewerInteriorNatResult read with
+          | none =>
+              simp [packedReviewerInteriorNormalize, hresult]
+          | some value =>
+              simp only [packedReviewerInteriorNormalize, hresult]
+              have hstep :=
+                packedReviewerInteriorFinishNat_done_or_potential_lt
+                  invocation value continuation
+              rcases hstep with ⟨result, heq⟩ | hlt
+              · rw [heq, packedReviewerInteriorNormalize_done_eq]
+                simp [packedReviewerInteriorPotential]
+              · have htail :=
+                  ih (packedReviewerInteriorFinishNat invocation value
+                    continuation)
+                simp only [packedReviewerInteriorPotential] at *
+                omega
+
+private theorem packedReviewerInteriorCanonicalStep_potential_le
+    (shape : CartesianShape) (state : PackedReviewerInteriorState) :
+    packedReviewerInteriorPotential
+        (packedReviewerInteriorCanonicalStep shape state) <=
+      packedReviewerInteriorPotential state := by
+  unfold packedReviewerInteriorCanonicalStep
+  cases hrequest : packedReviewerInteriorNextRequest state with
+  | none => exact Nat.le_refl _
+  | some request =>
+      cases state with
+      | done value =>
+          simp [packedReviewerInteriorConsumeReply,
+            packedReviewerInteriorPotential]
+      | readNat invocation read continuation =>
+          simp only [packedReviewerInteriorConsumeReply]
+          cases hresult :
+              packedReviewerInteriorNatResult
+                (packedReviewerInteriorNatConsumeReply read
+                  ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+                    request.segment request.index)) with
+          | none =>
+              simp [hresult, packedReviewerInteriorPotential]
+          | some value =>
+              simp only [hresult]
+              have hnormalize :=
+                packedReviewerInteriorNormalize_potential_le
+                  (packedReviewerInteriorRemaining
+                    (packedReviewerInteriorFinishNat invocation value
+                      continuation) + 1)
+                  (packedReviewerInteriorFinishNat invocation value
+                    continuation)
+              have hstep :=
+                packedReviewerInteriorFinishNat_done_or_potential_lt
+                  invocation value continuation
+              rcases hstep with ⟨result, heq⟩ | hlt
+              · rw [heq, packedReviewerInteriorNormalize_done_eq]
+                simp [packedReviewerInteriorPotential]
+              · simp only [packedReviewerInteriorPotential] at *
+                omega
+
+private theorem packedReviewerInteriorCanonicalRun_potential_le
+    (shape : CartesianShape) (fuel : Nat)
+    (state : PackedReviewerInteriorState) :
+    packedReviewerInteriorPotential
+        (packedReviewerInteriorCanonicalRun shape fuel state) <=
+      packedReviewerInteriorPotential state := by
+  induction fuel with
+  | zero => simp [packedReviewerInteriorCanonicalRun]
+  | succ fuel ih =>
+      have hrun :
+          packedReviewerInteriorCanonicalRun shape (fuel + 1) state =
+            packedReviewerInteriorCanonicalStep shape
+              (packedReviewerInteriorCanonicalRun shape fuel state) := rfl
+      rw [hrun]
+      exact Nat.le_trans
+        (packedReviewerInteriorCanonicalStep_potential_le shape
+          (packedReviewerInteriorCanonicalRun shape fuel state)) ih
+
+private theorem packedReviewerInteriorStartRaw_potential_le_thirtyTwo
+    (invocation : PackedReviewerInvocation) (n startBlock count : Nat) :
+    packedReviewerInteriorPotential
+        (packedReviewerInteriorStartRaw invocation n startBlock count) <=
+      32 := by
+  unfold packedReviewerInteriorStartRaw
+  by_cases hzero : count = 0
+  · simp [hzero, packedReviewerInteriorPotential]
+  · by_cases hwithin :
+        count <=
+          (packedInteriorLayout n).macroSize -
+            startBlock % (packedInteriorLayout n).macroSize
+    · simp [hzero, hwithin, packedReviewerInteriorStartLocalTwo,
+        packedReviewerInteriorReadNat, packedReviewerInteriorPotential,
+        packedReviewerInteriorNatContinuationRemaining,
+        packedReviewerCandidateContinuationRemaining]
+    · by_cases hmiddle :
+          (count -
+              ((packedInteriorLayout n).macroSize -
+                startBlock % (packedInteriorLayout n).macroSize)) /
+            (packedInteriorLayout n).macroSize = 0
+      · simp [hzero, hwithin, hmiddle, packedReviewerInteriorStartLocalTwo,
+          packedReviewerInteriorReadNat, packedReviewerInteriorPotential,
+          packedReviewerInteriorNatContinuationRemaining,
+          packedReviewerCandidateContinuationRemaining]
+      · by_cases hright :
+            (count -
+                ((packedInteriorLayout n).macroSize -
+                  startBlock % (packedInteriorLayout n).macroSize)) %
+              (packedInteriorLayout n).macroSize = 0
+        · simp [hzero, hwithin, hmiddle, hright,
+            packedReviewerInteriorStartLocalTwo,
+            packedReviewerInteriorReadNat, packedReviewerInteriorPotential,
+            packedReviewerInteriorNatContinuationRemaining,
+            packedReviewerCandidateContinuationRemaining]
+        · simp [hzero, hwithin, hmiddle, hright,
+            packedReviewerInteriorStartLocalTwo,
+            packedReviewerInteriorReadNat, packedReviewerInteriorPotential,
+            packedReviewerInteriorNatContinuationRemaining,
+            packedReviewerCandidateContinuationRemaining]
+
+private theorem packedReviewerInteriorStart_potential_le_thirtyTwo
+    (invocation : PackedReviewerInvocation) (n startBlock count : Nat) :
+    packedReviewerInteriorPotential
+        (packedReviewerInteriorStart invocation n startBlock count) <= 32 := by
+  unfold packedReviewerInteriorStart
+  exact Nat.le_trans
+    (packedReviewerInteriorNormalize_potential_le _ _)
+    (packedReviewerInteriorStartRaw_potential_le_thirtyTwo invocation n
+      startBlock count)
+
+private theorem packedReviewerInteriorStart_canonicalRun_certificate
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (startBlock spanCount fuel : Nat)
+    (hinvocation :
+      PackedReviewerInteriorInvocationScalarFits shape invocation)
+    (hrange :
+      startBlock + spanCount <= packedSummaryBlockCountRaw shape.size) :
+    PackedReviewerInteriorScalarCertificate shape invocation
+      (.state
+        (packedReviewerInteriorCanonicalRun shape fuel
+          (packedReviewerInteriorStart invocation shape.size startBlock
+            spanCount))) := by
+  induction fuel with
+  | zero =>
+      simpa [packedReviewerInteriorCanonicalRun] using
+        packedReviewerInteriorStart_scalarCertificate shape invocation
+          startBlock spanCount hinvocation hrange
+  | succ fuel ih =>
+      simpa [packedReviewerInteriorCanonicalRun] using ih.canonicalStep
+
+private theorem PackedReviewerInteriorScalarCertificate.read_remaining_le_eight
+    {shape : CartesianShape} {invocation : PackedReviewerInvocation}
+    {read : PackedReviewerInteriorNatState}
+    {continuation : PackedReviewerInteriorNatContinuation}
+    (hstate :
+      PackedReviewerInteriorScalarCertificate shape invocation
+        (.state (.readNat invocation read continuation))) :
+    packedReviewerInteriorNatRemaining read <= 8 := by
+  cases hstate with
+  | stateRead spec _ _ hread hcontinuation =>
+      cases read with
+      | done result => simp [packedReviewerInteriorNatRemaining]
+      | read childInvocation n2 start next remaining repliesRev =>
+          have hcontrol := hread.control
+          simp only [packedReviewerInteriorNatRemaining]
+          omega
+
+/-- Canonical orbit states keep the structural interior budget within `40`. -/
+theorem PackedReviewerInteriorCanonicalScalarFits.remaining_le_forty
+    {shape : CartesianShape} {invocation : PackedReviewerInvocation}
+    {startBlock spanCount : Nat} {state : PackedReviewerInteriorState}
+    (hstate :
+      PackedReviewerInteriorCanonicalScalarFits shape invocation startBlock
+        spanCount state) :
+    packedReviewerInteriorRemaining state <= 40 := by
+  rcases hstate.canonical_orbit with ⟨fuel, rfl⟩
+  have hpotential :=
+    Nat.le_trans
+      (packedReviewerInteriorCanonicalRun_potential_le shape fuel
+        (packedReviewerInteriorStart invocation shape.size startBlock
+          spanCount))
+      (packedReviewerInteriorStart_potential_le_thirtyTwo invocation
+        shape.size startBlock spanCount)
+  have hcertificate :=
+    packedReviewerInteriorStart_canonicalRun_certificate shape invocation
+      startBlock spanCount fuel hstate.invocation_operands hstate.range
+  cases hrun :
+      packedReviewerInteriorCanonicalRun shape fuel
+        (packedReviewerInteriorStart invocation shape.size startBlock
+          spanCount) with
+  | done value =>
+      simp [hrun, packedReviewerInteriorRemaining]
+  | readNat invocation2 read continuation =>
+      have hinvocation2 : invocation2 = invocation := by
+        rw [hrun] at hcertificate
+        cases hcertificate with
+        | stateRead _ _ _ _ _ => rfl
+      subst hinvocation2
+      rw [hrun] at hcertificate hpotential
+      have hread := hcertificate.read_remaining_le_eight
+      simp only [packedReviewerInteriorRemaining,
+        packedReviewerInteriorPotential] at *
+      omega
+
+/-- The pending request of a canonical orbit state has fitting operands. -/
+theorem PackedReviewerInteriorCanonicalScalarFits.nextRequest_operands_fit
+    {shape : CartesianShape} {invocation : PackedReviewerInvocation}
+    {startBlock spanCount : Nat} {state : PackedReviewerInteriorState}
+    (hstate :
+      PackedReviewerInteriorCanonicalScalarFits shape invocation startBlock
+        spanCount state)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerInteriorNextRequest state = some request) :
+    PackedReviewerLogicalRequestOperandsFit shape.size request := by
+  rcases hstate.canonical_orbit with ⟨fuel, rfl⟩
+  have hcertificate :=
+    packedReviewerInteriorStart_canonicalRun_certificate shape invocation
+      startBlock spanCount fuel hstate.invocation_operands hstate.range
+  cases hrun :
+      packedReviewerInteriorCanonicalRun shape fuel
+        (packedReviewerInteriorStart invocation shape.size startBlock
+          spanCount) with
+  | done value =>
+      rw [hrun] at hrequest
+      simp [packedReviewerInteriorNextRequest] at hrequest
+  | readNat invocation2 read continuation =>
+      rw [hrun] at hcertificate hrequest
+      cases hcertificate with
+      | stateRead spec _ _ hread hcontinuation =>
+          simp only [packedReviewerInteriorNextRequest] at hrequest
+          cases read with
+          | done result =>
+              simp [packedReviewerInteriorNatNextRequest] at hrequest
+          | read childInvocation n2 start next remaining repliesRev =>
+              cases remaining with
+              | zero =>
+                  simp [packedReviewerInteriorNatNextRequest] at hrequest
+              | succ remaining =>
+                  have hrequests := hread.requests
+                  simp only [packedReviewerInteriorNatRemaining] at hrequests
+                  exact
+                    (PackedReviewerRequestsFitFrom.step shape.size
+                      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+                      packedReviewerInteriorNatNextRequest
+                      packedReviewerInteriorNatConsumeReply remaining
+                      (.read childInvocation n2 start next (remaining + 1)
+                        repliesRev)
+                      request hrequests hrequest).1
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
