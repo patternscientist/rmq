@@ -7327,3 +7327,5 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   untouched, so no frozen-cell comparison was required. No row status changes.
 - Commit adding the bit-level interior payload split: matrix untouched, so no
   frozen-cell comparison was required. No row status changes.
+- Commit adding the prefix slice lemma: matrix untouched, so no frozen-cell
+  comparison was required. No row status changes.

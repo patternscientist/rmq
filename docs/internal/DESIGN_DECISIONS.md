@@ -9313,3 +9313,34 @@ wrong.
 Segment `20`'s remaining work is now composition only: word split, offsets bridge,
 bit-level payload split, and close-half position are each proved, and no further
 structural fact about the interior is expected.
+
+## DD-20260804-065 -- the prefix slice, and the last structural fact segment 20 needs
+
+`ReviewerComponentAccess.lean`, completed.
+
+```
+packedPrefixSlice : off + len <= xs.length -> ((xs ++ ys).drop off).take len
+                                            = (xs.drop off).take len
+```
+
+A slice wholly inside a prefix does not see the suffix. This is what lets a
+component's own payload slice be read off the concatenation it sits in, and it is
+the last structural fact segment `20` requires.
+
+The hypothesis is `off + len <= xs.length`, not `off < xs.length`. The stronger
+form is what is actually needed and what the callers can supply: a slice that
+*starts* inside the prefix but runs past its end would pick up suffix bits, and
+this development has at least one source where that is a live possibility rather
+than a pedantic one -- the entry chunks of `DD-20260804-051`, whose final chunk is
+short precisely because the entry ends.
+
+### Segment 20's structural work is complete
+
+Word split, offsets bridge, bit-level payload split, close-half position, prefix
+slice. All proved. No further structural fact about the interior is expected.
+
+What remains for segment `20` is composition, and it is worth noting in advance
+that it will need the same re-association as `DD-20260804-063`: the close half is
+`directory ++ fringe ++ select`, left-associated, so a statement naming the
+directory as the prefix must re-associate to `directory ++ (fringe ++ select)`
+first. That is now the fourth appearance of this shape.

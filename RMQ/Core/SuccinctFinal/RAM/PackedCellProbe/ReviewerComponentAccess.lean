@@ -17,10 +17,11 @@ segment `20` reaches a computable address.
 
 ## What this module does not establish
 
-* The word split, the offsets bridge, the bit-level payload split, and the close
-  half's position in the consumed payload are all proved. What remains is
-  composing them into one address function, and the physical read over
-  `packedReviewerMemory`.
+* Every structural fact segment `20` needs is proved: the word split, the offsets
+  bridge, the bit-level payload split, the close half's position, and the prefix
+  slice lemma. What remains is composing them into one address function -- which
+  will need the same re-association as `DD-20260804-063` -- and the physical read
+  over `packedReviewerMemory`.
 * The baseline column's payload is located inside the *interior directory*, not
   yet inside the consumed payload; that composition is still outstanding.
 -/
@@ -492,6 +493,20 @@ theorem packedInteriorDirectoryPayload_split (shape : CartesianShape) :
     PayloadLiveBPLocalSparseOffsetTable.payload,
     PayloadLiveBPGlobalSparseBlockTable.payload,
     PayloadLiveBPSparseLevelTable.payload, List.append_assoc]
+
+/--
+**A slice wholly inside a prefix does not see the suffix.** The lemma that lets a
+component's own payload slice be read off the concatenation it sits in.
+-/
+theorem packedPrefixSlice {alpha : Type} (xs ys : List alpha) {off len : Nat}
+    (h : off + len <= xs.length) :
+    ((xs ++ ys).drop off).take len = ((xs.drop off)).take len := by
+  have hoff : off <= xs.length := by omega
+  rw [List.drop_append_of_le_length hoff]
+  have hlen : len <= (xs.drop off).length := by
+    rw [List.length_drop]
+    omega
+  rw [List.take_append_of_le_length hlen]
 
 end PackedCellProbe
 end SuccinctFinal
