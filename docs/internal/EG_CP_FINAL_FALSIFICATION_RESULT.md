@@ -1586,7 +1586,7 @@ section 8c is still a defect in a frozen row, reported and left for the owner.
 
 This checkpoint is **not** `CANDIDATE_COMPLETE`.
 
-## 9. Independent-audit write-up at `eca109b`
+## 11. Independent-audit write-up at `eca109b`
 
 Self-contained. An auditor should be able to work from this section plus the
 repository, without reading sections `8a`--`8h` or any prompt.
@@ -1595,7 +1595,7 @@ repository, without reading sections `8a`--`8h` or any prompt.
 proved. What follows states exactly which propositions are checked and which are
 not.
 
-### 9.1 Exact state
+### 11.1 Exact state
 
 | Item | Value |
 | --- | --- |
@@ -1615,7 +1615,7 @@ not.
 No frozen matrix cell has been rewritten. No commit has been amended, squashed or
 rebased.
 
-### 9.2 What the branch is doing, in one paragraph
+### 11.2 What the branch is doing, in one paragraph
 
 The frozen `FG-01` row identifies its object twice, and the two identifications pick
 out provably different objects: by name `concreteBPNativeSuccinctRMQPayload` (the
@@ -1630,7 +1630,7 @@ the flat payload (done earlier, `Payload` through `Boundaries`), and once over t
 consumed payload (`Reviewer*`, in progress). This is a re-target, **not** a `K1`
 obstruction.
 
-### 9.3 Proved at this HEAD, over the consumed payload
+### 11.3 Proved at this HEAD, over the consumed payload
 
 Three modules were added since section `8h`. Every name below is a checked theorem
 or an executable definition in the built tree.
@@ -1690,7 +1690,7 @@ address yields `none`".
 Per-source stride, word count and read width are reused from the flat development
 rather than rebuilt: they measure a source's own payload, not the layout it sits in.
 
-### 9.4 What an auditor should attack first
+### 11.4 What an auditor should attack first
 
 1. **`packedReviewerSourceRead_of_some` is an implication, not an equation.** Check
    that the direction is honest and not hiding a gap. The stated reason is
@@ -1711,7 +1711,7 @@ rather than rebuilt: they measure a source's own payload, not the layout it sits
    against `0a18548` and against
    `concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_eq_global`.
 
-### 9.5 What remains, by frozen row
+### 11.5 What remains, by frozen row
 
 Row statuses below are read from the matrix at this HEAD.
 
@@ -1741,7 +1741,7 @@ Of the fourteen `INV-*` rows, eight carry partial evidence
 The three `REPLAY-*` rows are empty. The fourteen `CHK-*` ledger rows are mostly
 `to be recorded`.
 
-### 9.6 The next smallest proof target
+### 11.6 The next smallest proof target
 
 A read of the **close half** over `packedReviewerMemory`. The access half is now
 complete end to end -- offset, slice, probe, decode -- and the close half has its
@@ -1756,7 +1756,7 @@ With both halves read, a store presenting `packedReviewerMemory` to the evaluato
 becomes statable, and that store is what `FG-07`'s controller and `FG-08`'s run-level
 lowering both consume.
 
-### 9.7 Failed approaches recorded since section 8h
+### 11.7 Failed approaches recorded since section 8h
 
 Each cost time, and none is obvious from its error message.
 
@@ -1788,16 +1788,16 @@ Each cost time, and none is obvious from its error message.
   discharge the equation inside a helper lemma with `subst`
   (`packedFlatMapSliceOfEq`) rather than to steer `conv`.
 
-## 10. Amendment to section 9: the close half's chunk tables
+## 12. Amendment to section 11: the close half's chunk tables
 
-Section `9` was written at `eca109b`. Two commits later the close half's two uniform
-segments are read. This section amends `9.1`, `9.3`, `9.6` and `9.7`; everything else
-in section `9` stands as written.
+Section `11` was written at `eca109b`. Two commits later the close half's two uniform
+segments are read. This section amends `11.1`, `11.3`, `11.6` and `11.7`; everything else
+in section `11` stands as written.
 
 **Still not `CANDIDATE_COMPLETE`.** No `FG` row is closed. No `K1` obstruction is
 proved.
 
-### 10.1 Exact state, superseding 9.1
+### 12.1 Exact state, superseding 11.1
 
 | Item | Value |
 | --- | --- |
@@ -1811,11 +1811,11 @@ proved.
 | `git diff --check` | exit 0 |
 | Working tree | clean |
 
-Commits added since section `9`:
+Commits added since section `11`:
 
 - `6db4c6a` -- `ReviewerCloseWidth.lean` and `ReviewerCloseRead.lean`.
 
-### 10.2 Added to 9.3
+### 12.2 Added to 11.3
 
 **`ReviewerCloseWidth.lean`** -- the two chunk tables fit one cell.
 
@@ -1842,7 +1842,7 @@ Commits added since section `9`:
   **every successful read of executed-store segment `21` or `22` is answered
   identically by probing the reviewer memory.**
 
-### 10.3 Added to 9.4 -- what an auditor should attack here
+### 12.3 Added to 11.4 -- what an auditor should attack here
 
 6. **The fringe width bound is the only genuinely tight inequality in the
    development.** `packedFringeEntryWidth_le_reviewerCellWidth` needs
@@ -1858,9 +1858,9 @@ Commits added since section `9`:
    in-range read is a full-width window with no partial final word. Verify that claim
    against `FixedWidthNatTable.payload_length_eq` rather than accepting it.
 
-### 10.4 Amendment to 9.6 -- the next smallest proof target
+### 12.4 Amendment to 11.6 -- the next smallest proof target
 
-Section `9.6` named "a read of the close half". Two of its three segments are now
+Section `11.6` named "a read of the close half". Two of its three segments are now
 read; what remains is **segment 20 alone**, and it is not more of the same.
 
 `ReviewerCloseGeometry` records why: the interior component store is not one uniform
@@ -1876,10 +1876,10 @@ position of the whole interior directory inside the consumed payload
 (`packedReviewerPayload_interiorSlice`). What is missing is a per-component read that
 respects the ragged word boundaries -- eight geometries, not one.
 
-After segment 20, unchanged from `9.6`: a store presenting `packedReviewerMemory` to
+After segment 20, unchanged from `11.6`: a store presenting `packedReviewerMemory` to
 the evaluator, then `FG-07`'s controller and `FG-08`'s run-level lowering.
 
-### 10.5 Added to 9.7 -- failed approaches
+### 12.5 Added to 11.7 -- failed approaches
 
 - **A type index cannot be rewritten.** `FixedWidthNatTable` takes the entry width as
   a type index, so `bpFringeChunkTable c` has a type mentioning

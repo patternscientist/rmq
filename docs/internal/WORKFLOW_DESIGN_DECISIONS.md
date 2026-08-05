@@ -7357,3 +7357,8 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   was required. No row status changes. Section 10 amends section 9 additively and
   says which of its subsections it supersedes, rather than editing section 9 in
   place.
+- Commit renumbering the audit write-up to sections 11 and 12: matrix untouched, so
+  no frozen-cell comparison was required. No row status changes. The two preceding
+  entries call these sections 9 and 10, which was their number when those entries
+  were written; they collided with the report's pre-existing sections 9 and 10, and
+  the earlier entries are left as written rather than rewritten.
