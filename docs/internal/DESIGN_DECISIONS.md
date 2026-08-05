@@ -8915,3 +8915,38 @@ The two-level index is the honest shape of this store. Entries are chunked
 individually, so the word grid is a grid of grids, and any single-level
 `packedWordSlice` claim over a component's payload is false in exactly the regime
 measured above.
+
+## DD-20260804-052 -- machine word to payload bit range, and why it returns `some`
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerEntryAddress.lean`.
+
+`DD-20260804-051` indexed an entry-chunked machine store two-level, in terms of
+*words*. The packed physical read needs *bits*. This composes that index with
+`packedFixedWidthTable_getElem?` and collapses the result to one `drop`/`take`:
+
+```
+packedEntryChunkBitOffset width wordSize i = (i % c) * wordSize + (i / c) * width
+packedEntryChunkReadWidth  width wordSize i = min (width - (i % c) * wordSize) wordSize
+packedMachineStoreWords_payload            : the word is that bit range
+```
+
+The offset is the entry's base plus the chunk's offset inside it. The width is a
+full machine word except in an entry's final chunk, where the entry runs out
+first -- exactly the case the three over-wide interior columns exercise at every
+size below roughly `512`, so the `min` is load-bearing rather than defensive.
+
+### The `some` is deliberate
+
+The statement takes `i / c < entries.length` as a hypothesis and concludes
+`... = some ...`, rather than being total with a `none` branch off the end.
+
+`FG-09` requires that every attempted probe be *shown* in range, and the frozen
+instruction for this campaign says in as many words: do not rely on total
+out-of-range lookup returning an empty slice. A total formulation here would have
+type-checked, read more cleanly, and quietly relocated the range obligation into
+an `Option` that no later theorem was forced to discharge. Keeping the hypothesis
+explicit means each of the eight interior components has to produce its own index
+bound, which is the work `FG-09` is actually asking for.
+
+This is the same discipline that `SourceWords.lean` applied when it took source
+counts from `read_exact` rather than from payload length.

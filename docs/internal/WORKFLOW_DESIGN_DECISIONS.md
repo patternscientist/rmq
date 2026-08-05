@@ -7285,3 +7285,8 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit synchronizing the report with the two-level interior grid: matrix
   untouched, so no frozen-cell comparison was required. Section 8f is appended and
   states the recurring measure-first lesson once, with its three instances.
+- Commit adding the machine-word-to-payload bit range: matrix untouched, so no
+  frozen-cell comparison was required. The project-skill preflight was re-run at
+  this tip: governance f0c7232a, checkout f778c16, expected / checkout / working /
+  runtime skill sets all rmq-audit-prompt, rmq-coordinator, rmq-proof-sprint,
+  required=rmq-proof-sprint, required_mode=role-skills, PASS.

@@ -38,6 +38,9 @@ and the three-payload commit.
   expected, checkout-tracked, working-tree and runtime skill sets all equal to
   those three names; `required=rmq-proof-sprint`;
   `required_mode=role-skills`; `PASS`.
+* 2026-08-04, at tip `f778c16`, same catalog and same governance ref. Output:
+  expected, checkout-tracked, working-tree and runtime skill sets all equal;
+  `required=rmq-proof-sprint`; `required_mode=role-skills`; `PASS`.
 
 The second run is the one `AGENTS.md` asks for: the runtime list must be the RMQ
 skills actually exposed to the task. The first run's smaller declaration could
