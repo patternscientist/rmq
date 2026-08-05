@@ -7296,3 +7296,6 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit adding the interior word count and index bound: matrix untouched, so no
   frozen-cell comparison was required. Additive; FG-09's row status is not touched,
   since the obligation is discharged only for components, not for a run.
+- Commit adding the concatenation-indexing tools: matrix untouched, so no
+  frozen-cell comparison was required. The two failed accessor attempts are
+  recorded in DD-20260804-055 rather than committed half-proved.

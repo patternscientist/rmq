@@ -9016,3 +9016,42 @@ principle, after `hstride` on `packedReviewerMemory_header_cell` and the
 never-needed `packedCellWidth n <= packedLongBlockBits n` of `DD-20260804-035`. A
 hypothesis a theorem does not need misstates what it depends on, and in a gate
 whose whole purpose is checking dependence, that is not cosmetic.
+
+## DD-20260804-055 -- the component split is left-associated, and two failed attempts
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerConcatIndex.lean`.
+
+Locating one of the eight interior components inside
+`canonicalRelativeRmmInteriorComponentStore` needs three list facts, which land
+here:
+
+```
+packedConcatIndex_left       an index inside the left operand reads it
+packedConcatIndex_right      an index offset by the whole left operand reads the right
+packedConcatIndex_lt_append  widening a prefix preserves an in-range index
+```
+
+### Two failed attempts, both recorded
+
+The first attempt stated the baseline and minRel accessors directly and did not
+unify. Two distinct reasons, found in sequence:
+
+1. `packedReviewerInteriorComponentWords_split` carries `let` binders (`hword`,
+   `summary`) in its *statement*, which block the unifier. `dsimp only` removes
+   them.
+2. Once removed, the real obstacle appeared: `++` is **left**-associative, so
+   `A ++ B ++ ... ++ H` is `(((((((A ++ B) ++ C) ++ D) ++ E) ++ F) ++ G) ++ H)`.
+   A single `packedConcatIndex_left` does not reach `A`; the outermost operands are
+   the first seven components and `H`.
+
+So reading component `k` needs `7 - k` peels with `packedConcatIndex_left`, each
+justified by `packedConcatIndex_lt_append` widening the bound up through the
+prefixes, then `k` uses of `packedConcatIndex_right`. The offsets in
+`canonicalRelativeRmmInteriorComponentOffsets` are exactly those prefix lengths,
+so the arithmetic matches by construction rather than by coincidence.
+
+The half-written accessors were **not** committed. Landing a module with two
+theorems that do not elaborate, or papering over them with a `simp` that might
+close them by accident, would have put an unchecked claim into a gate whose whole
+subject is checked claims. The tools are committed; the result is not, and the
+report says so.
