@@ -1,0 +1,859 @@
+% rmq.tex -- private working draft of the RMQ manuscript substrate.
+% Branch codex/eg-cp-paper-evidence-r1, base commit
+% 1490c97b399d136bad4e18953441da433d130d4d.
+% This draft asserts only theorem surfaces present at that base commit.
+% The packed all-size architecture result is provisional and appears only at
+% the single marked insertion point in Section 9.
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+% Ledger anchors: \ledger{ID} ties the preceding mathematical claim to the
+% row ID in paper/THEOREM_LEDGER.md. The macro renders nothing; the checker
+% paper/check_paper.ps1 enforces bidirectional coverage.
+\newcommand{\ledger}[1]{}
+
+% Lean identifiers.
+\newcommand{\leanid}[1]{\texttt{#1}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{targetstmt}[theorem]{Target Statement}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\flog}[1]{\lfloor\log_2 #1\rfloor}
+\newcommand{\len}[1]{\lvert #1\rvert}
+
+\title{Payload-Accounted Succinct Range Minimum Queries,\\
+Machine-Checked in Lean~4:\\
+Reference Semantics, a Charged-Trace Cost Model,\\
+and an Explicit Trust Boundary\thanks{Private working draft. This document
+is an internal manuscript substrate pinned to repository commit
+\texttt{1490c97b399d136bad4e18953441da433d130d4d}. It is not a submission,
+not a public claim surface, and not an architecture-acceptance record.}}
+\author{RMQ repository contributors}
+\date{Draft of 2026-08-05}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We describe a Mathlib-free Lean~4 development that mechanizes a succinct
+range-minimum-query (RMQ) family over ordinary integer lists together with
+the accounting needed to state its space and query cost without ambiguity.
+The development proves: (i) a payload bound
+$\len{\mathrm{buildPayload}(xs)} \le 2n + \mathrm{overhead}(n)$ with a
+checked little-$o$-linear overhead, where $n$ is the input length;
+(ii) exact leftmost half-open RMQ answers for every valid query and uniform
+rejection of invalid queries; (iii) a uniform modeled query-cost bound: the
+canonical execution emits an explicit word-read trace whose length is at most
+the checked constant $210$, derived from a named component algebra rather
+than asserted; and (iv) an information-theoretic lower bound for exact RMQ
+encodings, stated in an integer-arithmetic ``doubled Catalan slack'' form
+equivalent to $2n - 1.5\log_2 n - O(1)$ bits. A model-adequacy layer ties
+the cost claim to an explicit trace and store: every charged event is an
+attempted word read, no synthetic cost-only markers occur, successful reads
+are backed by counted payload words, the physical word list erases exactly
+to the public payload, and store-parametricity holds under agreement on the
+execution's ordered read footprint, with checked mutation witnesses showing
+that the store is genuinely observed. We state precisely what is and is not
+charged, keep payload bits, allocated bits, charged probes, model ticks, and
+Lean wall-clock time distinct, and document the trust base (Lean kernel
+checking under a pinned toolchain, standard axioms only). A packed
+cell-probe strengthening is under separate feasibility review; this draft
+reserves exactly one marked insertion point for that result and asserts
+nothing about it. Novelty statements are deliberately conditional pending a
+completed search log.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+Range minimum query is a canonical static data-structure problem: given an
+array, preprocess it so that the position of the minimum in a queried
+subrange can be returned quickly. The classical succinct answer stores
+$2n + o(n)$ bits and answers queries in constant time in a word-RAM or
+cell-probe model~\cite{FischerHeun11,Fischer10}, and the space is essentially
+optimal because the answer function determines the Cartesian tree shape of
+the input, of which there are Catalan-many~\cite{Vuillemin80,GBT84}.
+
+Mechanizing this story in a proof assistant raises a difficulty that is
+easy to underestimate: the informal literature freely mixes several
+quantities that a formal artifact must keep apart --- the bits of the
+advertised payload, the bits actually allocated by a concrete memory object,
+the number of memory probes charged to a query, the ticks of whatever
+abstract cost model the development uses, and the wall-clock behavior of the
+proof assistant's executable fragment. A formalization that silently
+conflates any two of these can prove a theorem that reads like a succinct
+data-structure result while actually asserting something weaker. The
+repository this draft describes was built around that failure mode: its
+theorem surfaces name their model explicitly, its cost claims are traces
+rather than aggregate constants, and its documentation separates non-claims
+from claims.
+
+\subsection{Contributions of the mechanization}\label{sec:contributions}
+
+All results below are kernel-checked Lean~4 theorems at repository commit
+\texttt{1490c97b399d136bad4e18953441da433d130d4d}; the ledger
+(\texttt{paper/THEOREM\_LEDGER.md}) maps every claim in this draft to an
+exact declaration and source file.
+
+\begin{enumerate}
+\item \emph{Reference semantics.} A value-level half-open, leftmost-tie RMQ
+  contract over \leanid{List Int}, with uniqueness of the specified answer
+  (Section~\ref{sec:semantics}).
+\item \emph{Payload-accounted succinct upper bound.} A construction whose
+  advertised payload is at most $2n + \mathrm{overhead}(n)$ bits with
+  $\mathrm{overhead}$ checked little-$o$-linear, exact answers on valid
+  queries, uniform rejection of invalid queries, and a uniform modeled cost
+  bound with the checked value $210$
+  (Section~\ref{sec:upper}).\ledger{L-UB-01}
+\item \emph{An explicit charged-trace execution model.} The costed query is
+  the projection of an explicit event trace; every emitted event is an
+  attempted word read; the trace is backed by one concrete physical word
+  list that erases to the public payload; store-parametricity and
+  answer dependency on the store are checked, including a decisive
+  single-word corruption witness (Section~\ref{sec:model-adequacy}).
+\item \emph{An information-theoretic lower bound.} Every exact fixed-length
+  RMQ state encoding needs $2n - 1.5\log_2 n - O(1)$ payload bits, proved in
+  an integer-arithmetic doubled form, with a concrete $2n$-bit upper witness
+  in the same encoding class (Section~\ref{sec:lower}).\ledger{L-LB-01}
+\item \emph{Reusable spokes.} Standalone rank/select families (a plain
+  Jacobson/Clark-style $n + o(n)$ family and a fixed-weight compressed/FID
+  family) and the balanced-parentheses close-navigation layer consumed by
+  the RMQ capstone (Section~\ref{sec:upper}).
+\end{enumerate}
+
+\subsection{What this draft does not claim}\label{sec:nonclaims-intro}
+
+The development makes no claim about compiled Lean execution speed, compiler
+correctness, CPU or memory-hierarchy semantics, or production serialization.
+The modeled cost bound charges attempted payload-word reads only; controller
+dispatch, decoding, arithmetic, comparisons, and branching are uncharged in
+the current model, so the constant $210$ is a charged-trace bound in an
+explicitly named model, not a running-time bound in the conventional
+word-RAM model (Section~\ref{sec:quantities}). The current space theorem
+counts advertised payload bits, not the allocated capacity of a packed
+memory object (Section~\ref{sec:quantities}); an allocated-capacity
+strengthening is exactly what the pending architecture work targets
+(Section~\ref{sec:pending}). Priority claims are deliberately conditional:
+closely related mechanizations exist, most prominently the
+Coq/SSReflect succinct-data-structure line of Tanaka, Affeldt, Garrigue,
+and Qi~\cite{TAG16,AGQT19}, and the search log
+(\texttt{paper/RELATED\_WORK\_LEDGER.md}) is not yet complete
+(Section~\ref{sec:related}).
+
+\subsection{Draft status}\label{sec:status}
+
+This is a private working draft assembled from the repository's accepted
+claim maps at one exact commit. One result family --- a packed
+counted-header cell-probe refinement --- is under a separate feasibility
+gate and is neither accepted nor rejected at the base commit. This draft
+reserves a single insertion point for it (Section~\ref{sec:pending}) and
+otherwise excludes it from every claim.
+
+\section{Reference semantics}\label{sec:semantics}
+
+The specification layer is deliberately value-level and list-based: the
+reference objects are ordinary Lean lists of unbounded integers, and the
+reference answer is defined by arithmetic on list lookups, not by any data
+structure. All structure-level theorems refine this one contract.
+
+\begin{definition}[Valid query]\label{def:validrange}
+For $xs : \leanid{List Int}$ and naturals $\mathit{left}, \mathit{right}$,
+the query $[\mathit{left}, \mathit{right})$ is \emph{valid}, written
+$\leanid{ValidRange}\ xs\ \mathit{left}\ \mathit{right}$, when
+$\mathit{left} < \mathit{right} \wedge \mathit{right} \le \len{xs}$.
+A valid query is a nonempty half-open window inside the list.
+\end{definition}
+
+\begin{definition}[Leftmost argmin]\label{def:leftmostargmin}
+$\leanid{LeftmostArgMin}\ xs\ \mathit{left}\ \mathit{right}\ \mathit{idx}$
+holds when the query is valid, $\mathit{left} \le \mathit{idx} <
+\mathit{right}$, and there is a value $v$ with $xs[\mathit{idx}] = v$ such
+that $v \le w$ for every value $w$ at a position in
+$[\mathit{left}, \mathit{right})$, and $v < w$ strictly for every value $w$
+at a position in $[\mathit{left}, \mathit{idx})$. Ties therefore resolve to
+the leftmost minimizing index.
+\end{definition}
+
+\begin{lemma}[Uniqueness]\label{lem:unique}
+For fixed $xs$, $\mathit{left}$, $\mathit{right}$, at most one index
+satisfies \leanid{LeftmostArgMin} \textup{(}Lean:
+\leanid{leftmostArgMin\_unique}\textup{)}.\ledger{L-REF-01}
+\end{lemma}
+
+The executable reference implementation is a linear window scan
+(\leanid{scanWindow}), proved to return the \leanid{LeftmostArgMin} witness
+on every valid window; several intermediate backends (sparse table, hybrid
+block decompositions, Fischer--Heun-style structures) are each proved
+extensionally equal to this reference on their domains. The succinct
+construction of Section~\ref{sec:upper} is compared against the same
+contract, so ``correct'' means one fixed thing across the repository.
+
+A second load-bearing specification fact is \emph{shape sufficiency}: the
+answer to every RMQ query is determined by the Cartesian tree shape of the
+input~\cite{Vuillemin80,GBT84}, so a representation may discard values and
+retain shape. The repository formalizes Cartesian shapes, their
+balanced-parentheses (BP) encodings, and the RMQ/LCA reductions over
+Euler-tour depth sequences with the $\pm 1$ depth
+invariant~\cite{HarelTarjan84,BFC00}, and proves that the succinct query
+over the shape representative agrees with the value-level reference
+answer.\ledger{L-REF-02}
+
+\section{Quantities, models, and the accounting discipline}
+\label{sec:quantities}
+
+Five quantities are kept distinct throughout the development and throughout
+this draft. Conflating any two of them changes the meaning of a succinct
+data-structure claim, so we fix vocabulary once, here.
+
+\begin{description}
+\item[Payload bits.] The length of the advertised bit-level payload
+  $\leanid{buildPayload}(xs) : \leanid{List Bool}$. This is what the
+  $2n + o(n)$ upper bound of Section~\ref{sec:upper} counts. Proof-only
+  fields, certificates, and Lean-structure overhead are excluded by
+  construction, and the repository's anti-vacuity lints reject theorem
+  shapes that would smuggle reference computation into an uncounted field.
+\item[Allocated bits.] The full capacity of a concrete cell array,
+  including any header, final-cell padding, sentinel or dead cells. The
+  current mainline theorems do \emph{not} bound this quantity; the
+  physical-erasure theorem of Section~\ref{sec:model-adequacy} equates
+  payload \emph{bit contents} with the flattened word list, which is
+  deliberately weaker than an allocated-capacity bound. Bounding allocated
+  capacity by $2n + o(n)$ is part of the pending architecture target
+  (Section~\ref{sec:pending}).\ledger{L-OPEN-03}
+\item[Charged probes (model reads).] Events of the explicit trace layer.
+  On the accepted route every charged event is one attempted read of one
+  word of the modeled store, including failed reads. The constant $210$
+  bounds the number of such events per query.
+\item[Model ticks.] The \leanid{Costed} cost of a query. On the canonical
+  route this is proved \emph{equal} to the emitted trace length, so ticks
+  and charged probes coincide there by theorem, not by definition.
+\item[Lean wall-clock time.] The observable behavior of Lean's evaluator on
+  the executable fragment. No theorem in the repository mentions it; the
+  validation harness measures it separately and it plays no role in any
+  claim of this draft.
+\end{description}
+
+\paragraph{The charge policy.}
+The declared policy of the current model is: \emph{charged} --- attempted
+payload-word reads (\leanid{readWord}), one model tick each, including
+failed reads; \emph{uncharged} --- instruction dispatch, register moves,
+fixed-width decoding of a fetched word, bounded arithmetic and comparisons
+on register values, option tests, branching, candidate merging, trace
+assembly, and the validity guard. After the charged-fringe and same-block
+recharges, every uncharged step on the accepted route is a
+bounded-per-step register computation between two charged reads; no loop
+remains on the accepted route whose trip count grows with the input and
+that is silent in the trace. The chunk caps making this checkable are
+described in Section~\ref{sec:upper}.\ledger{L-UB-19}
+
+\paragraph{What the model is not.}
+Because controller work is uncharged, the bound $210$ is not a conventional
+word-RAM running-time result, and this draft never presents it as one. It
+is closer in spirit to a cell-probe accounting --- memory touches are the
+unit --- but the current theorem does not package a cell-probe object
+either: the store is word-addressed by logical segment, not a single packed
+bit array with a frozen width function. That packaging is precisely the
+pending architecture target of Section~\ref{sec:pending}. Charging an
+instruction-level controller is a separate planned strengthening
+(Section~\ref{sec:limitations}).\ledger{L-OPEN-06}
+
+\section{The information-theoretic lower bound}\label{sec:lower}
+
+The number of Cartesian shapes of size $n$ is the Catalan number $C_n$, and
+distinct shapes induce distinct RMQ answer functions, so any exact encoding
+must distinguish $C_n$ objects. The repository states the resulting bound
+for a concrete encoding class: an \leanid{ExactRMQStateEncoding}~$n$~$b$ is
+a $b$-bit-budget state encoding equipped with a decoder that answers every
+valid query exactly on all representative arrays of size $n$, together with
+a payload view that counts the bits its states charge.
+
+To avoid rational arithmetic in a Mathlib-free development, the public
+statement is doubled. Let
+$\mathrm{dSlack}(n) = 4n - (3\flog{2n+1} + 3)$
+(Lean: \leanid{doubledLogSlackLower}, with $\flog{\cdot}$ the natural
+floor logarithm \leanid{Nat.log2}).
+
+\begin{theorem}[Doubled Catalan-slack payload bound]\label{thm:lower}
+For every $n$:
+\begin{enumerate}
+\item for every $b$ and every exact encoding
+  $E : \leanid{ExactRMQStateEncoding}\ n\ b$,
+  \(\mathrm{dSlack}(n) \le 2b\);
+\item the same doubled lower bound applies to any uniform charged payload
+  budget: if every on-domain built state of $E$ charges at most
+  $\mathit{budget}$ payload bits, then
+  \(\mathrm{dSlack}(n) \le 2\,\mathit{budget}\);
+\item there exists an exact encoding with budget $2n$ whose built state
+  charges exactly $2n$ payload bits on every representative shape of
+  size~$n$.
+\end{enumerate}
+\textup{(}Lean:
+\leanid{exactRMQ\_tight\_fixed\_length\_payload\_space\_bound\_doubled\_catalan\_slack},
+public alias
+\leanid{RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack}.\textup{)}
+\ledger{L-LB-01}
+\end{theorem}
+
+Halving the doubled inequality recovers the familiar reading: every exact
+encoding needs at least $2n - 1.5\flog{2n+1} - 1.5$ bits, i.e.\
+$2n - 1.5\log_2 n - O(1)$, and the third clause shows the $2n$-bit side is
+attained by a concrete decoder rather than a bare counting existential. An
+undoubled variant with the weaker slack
+$2n - (2\flog{2n+1} + 2)$ is also checked
+(Lean: \leanid{exactRMQ\_tight\_fixed\_length\_payload\_space\_bound}).
+\ledger{L-LB-02}
+
+\paragraph{Scope.}
+This is a payload-capacity counting bound for exact encodings. It is
+\emph{not} the cell-probe lower bound of Liu and Yu~\cite{LiuYu20}, later
+sharpened by Liu~\cite{Liu21}, which bounds the redundancy of \emph{any}
+structure achieving query time $t$ in the cell-probe model. Those results
+are related work only; nothing of them is mechanized in this repository,
+and this draft cites them purely for context.\ledger{L-OPEN-05}
+
+\section{The succinct upper bound}\label{sec:upper}
+
+\subsection{Construction architecture}\label{sec:architecture}
+
+The construction follows the classical shape-based recipe: encode the
+Cartesian shape of the input as a balanced-parentheses string of exactly
+$2n$ bits, and attach $o(n)$ bits of auxiliary directories so that queries
+can navigate it with a constant number of charged reads. Concretely, the
+advertised payload $\leanid{buildPayload}(xs)$ splits into:
+
+\begin{itemize}
+\item the BP shape code ($2n$ bits);
+\item rank/access directories in the Jacobson/Clark
+  style~\cite{Jacobson89,Clark96}: sampled superblock and block counters
+  over the BP code;
+\item a sparse-exception select directory for close-parenthesis selection;
+\item four-Russians-style chunk tables for fringe windows: precomputed
+  per-chunk excess/minimum summaries consumed by the endpoint-fringe and
+  same-block legs, in the spirit of the microtable decompositions of the
+  classical RMQ literature~\cite{FischerHeun11};
+\item a compact close/LCA directory over a relative range-min-max
+  macrostructure, playing the role that range-min-max trees play in
+  succinct tree navigation~\cite{NavarroSadakane14,MunroRaman01};
+\item an interior directory with sparse sampled levels for cross-block
+  interior minima.
+\end{itemize}
+
+The query pipeline maps a valid window $[\mathit{left},\mathit{right})$ to
+close positions via select, runs the close/LCA leg (endpoint fringes by
+chunked reads, interior by the sparse directory), and maps the winning
+close position back to an index via rank.
+
+\subsection{Space}\label{sec:space}
+
+\begin{theorem}[Payload bound]\label{thm:payload}
+For every $xs : \leanid{List Int}$ with $n = \len{xs}$,
+\[
+  \len{\leanid{buildPayload}(xs)} \;\le\; 2n + \mathrm{overhead}(n),
+\]
+where $\mathrm{overhead}$ is a single closed function of $n$.
+\textup{(}Lean: \leanid{buildPayload\_length}.\textup{)}\ledger{L-UB-01}
+\end{theorem}
+
+\begin{theorem}[Little-$o$ overhead]\label{thm:littleo}
+$\mathrm{overhead}$ is little-$o$-linear in the repository's
+integer-arithmetic sense: for every positive scale $s$ there is a threshold
+$N$ such that $s \cdot \mathrm{overhead}(n) \le n$ for all $n \ge N$.
+\textup{(}Lean: \leanid{overhead\_littleO}, predicate
+\leanid{SuccinctSpace.LittleOLinear}.\textup{)}\ledger{L-UB-02}
+\end{theorem}
+
+No padding is inserted to force an exact size equality; the bound is an
+honest inequality about the constructed payload. We emphasize again that
+this counts payload bits, not allocated capacity
+(Section~\ref{sec:quantities}), and that the overhead envelope is proved
+little-$o$ but not proved tight: no theorem exhibits a reachable input
+family attaining the envelope (Section~\ref{sec:limitations}).
+\ledger{L-OPEN-04}
+
+\subsection{Correctness}\label{sec:correctness}
+
+\begin{theorem}[Exact answers on valid queries]\label{thm:exact}
+For every $xs$ and every valid query $[\mathit{left},\mathit{right})$, the
+succinct query returns \leanid{some}~$i$ where $i$ is the unique
+\leanid{LeftmostArgMin} index of Definition~\ref{def:leftmostargmin};
+moreover the same exactness transfers to any caller-supplied store that
+agrees with the canonical store on the checked read footprint.
+\textup{(}Lean:
+\leanid{listIntFinalFullModelSoundnessExactOfFootprintGlobal}; packaged in
+the paper-facing
+\leanid{RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem}.\textup{)}
+\ledger{L-UB-03}
+\end{theorem}
+
+\begin{theorem}[Invalid-query boundary]\label{thm:invalid}
+Empty, reversed, and out-of-bounds ranges return \leanid{none}, uniformly
+across the plain, costed, trace, and supplied-store query surfaces.
+\textup{(}Lean: \leanid{queryCosted\_invalid},
+\leanid{queryCosted\_empty\_range}, \leanid{queryCosted\_reversed\_range},
+\leanid{queryCosted\_out\_of\_bounds}.\textup{)}\ledger{L-UB-04}
+\end{theorem}
+
+\subsection{Modeled query cost}\label{sec:cost}
+
+\begin{theorem}[Uniform charged-trace cost bound]\label{thm:cost}
+Every query has modeled cost at most \leanid{queryCost}, and
+$\leanid{queryCost} = 210$ by a checked equality derived from the component
+algebra, uniformly for all input sizes.
+\textup{(}Lean: \leanid{queryCost\_eq};
+\leanid{concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost\_eq}.\textup{)}
+\ledger{L-UB-05}
+\end{theorem}
+
+\begin{theorem}[Component algebra]\label{thm:algebra}
+The constant decomposes as
+\[
+  2\cdot\underbrace{35}_{\textup{select}}
+  \;+\; \bigl(2\cdot\underbrace{11}_{\textup{rank}}
+  + 2\cdot\underbrace{37}_{\textup{fringe}}
+  + \underbrace{33}_{\textup{interior}}\bigr)
+  \;+\; \underbrace{11}_{\textup{rank}} \;=\; 210,
+\]
+i.e.\ two select legs, a close/LCA leg (two rank seeds, two endpoint-fringe
+windows, one interior directory pass), and one final rank. The equality is
+derived from named per-component caps, not asserted as a literal.
+\textup{(}Lean:
+\leanid{chargedTraceCostAlgebra}.\textup{)}\ledger{L-UB-06}
+\end{theorem}
+
+Two structural theorems make the constant meaningful rather than
+decorative:
+
+\begin{theorem}[Read-only event vocabulary]\label{thm:readword}
+Every event emitted by the canonical whole-query trace is a
+\leanid{readWord} event --- an attempted read of one word of the modeled
+store. \textup{(}Lean:
+\leanid{concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult\_readWord\_only}.\textup{)}
+\ledger{L-UB-07}
+\end{theorem}
+
+\begin{theorem}[No synthetic cost-only events]\label{thm:nosynthetic}
+The dedicated synthetic cost-only trace constructor, used historically to
+migrate aggregate costs, does not occur in the canonical all-size trace.
+\textup{(}Lean: the no-synthetic execution story
+\leanid{succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory} and its
+flat-payload strengthening.\textup{)}\ledger{L-UB-08}
+\end{theorem}
+
+\begin{theorem}[Certificate weight equalities]\label{thm:weight}
+On the canonical trace, the sum of per-event non-synthetic weights equals
+the emitted trace length and equals the \leanid{Costed} cost of the same
+execution, and is at most $210$; a counterfactual theorem shows that
+inserting a synthetic event anywhere breaks the weight/length equality.
+\textup{(}Lean:
+\leanid{concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult\_nonSyntheticWeight\_sum\_le\_210}
+and companions.\textup{)}\ledger{L-UB-09}
+\end{theorem}
+
+\paragraph{Bounded uncharged remainder.}
+The charge policy of Section~\ref{sec:quantities} is checkable because the
+formerly event-silent scans were recharged: fringe windows read at most $33$
+chunk-table entries plus $4$ window words (cap $37$); at most $8$ chunks fit
+one machine word; the same-block close leg is charged by the same chunk fold
+with the same cap $37$, with no size hypothesis, so the caps hold at
+$n \in \{0,1,2\}$ too. \textup{(}Lean:
+\leanid{bpChunkedSameBlockCloseSeededCosted\_cost\_le} and the cap
+identities in \leanid{ChargedFringeChunks}, \leanid{ChargedWordChunks},
+\leanid{ChargedTableRegime}.\textup{)}\ledger{L-UB-19}
+
+\begin{remark}[Why the constant moved, and why that is the policy working]
+\label{rem:constant-moved}
+The current literal $210$ supersedes a retired value $207$: recharging the
+interior directory's sparse-level reads made three genuine reads visible in
+the trace, and the literal absorbed them. The distinction is between
+algorithmic work (comparisons, merges --- unchanged) and representation
+artifacts (memory touches needed to extract an operand from the chosen
+encoding). A memory-touch cost model must charge both; leaving a
+representation artifact uncharged is not a cheaper algorithm but an
+unmodelled one. The retired literal remains frozen as a checked historical
+identity rather than deleted, so no later recharge can silently rewrite the
+record. No claim of minimality attaches to $210$
+(Section~\ref{sec:limitations}).\ledger{L-UB-06}
+\end{remark}
+
+\subsection{Reusable spokes}\label{sec:spokes}
+
+Two standalone theorem families support the capstone and are exposed
+independently. First, a plain-bitvector rank/select family in the
+Jacobson/Clark style: stored-bit access, exact rank and select, counted
+payload $n + \mathrm{overhead}(n)$ with little-$o$-linear overhead, and a
+constant modeled query bound \textup{(}Lean:
+\leanid{jacobsonClarkNPlusOConstantQuery}\textup{)}.\ledger{L-RS-01}
+Second, a fixed-weight compressed/FID family in the
+Raman--Raman--Rao line~\cite{RRR02}: an enumerative fixed-weight primary
+payload plus $o(n)$ auxiliary payload, exact access/rank/select, and one
+uniform constant modeled query bound, together with an interpreted replay
+routing the charged reads through the first-order word-RAM bridge layer
+\textup{(}Lean: \leanid{compressedFIDFixedWeightFamilyProfile},
+\leanid{compressedFIDFixedWeightInterpretedFamilyProfile}\textup{)}.
+\ledger{L-RS-02}
+Third, the BP close-navigation layer consumed by the RMQ path: $o(n)$
+auxiliary close-navigation payload, constant modeled cost, exact
+answer-close semantics for Cartesian-shape queries with exact endpoint
+close positions, and machine-word-bounded payload reads \textup{(}Lean:
+\leanid{concreteBPCloseNavigationFamily\_profile}\textup{)}.\ledger{L-BP-01}
+
+These spokes are formalized to the depth the capstone needs; the repository
+does not claim a complete succinct tree-navigation library in the sense of
+Navarro--Sadakane~\cite{NavarroSadakane14}.
+
+\section{Execution-model adequacy}\label{sec:model-adequacy}
+
+A constant like $210$ is only as meaningful as the link between the cost
+model and an execution that a skeptic can inspect. The adequacy layer makes
+that link explicit, and every clause below is a checked theorem at the base
+commit.
+
+\subsection{One physical word list, erasing to the public payload}
+
+The reviewer route fixes one pre-execution physical word list, assembled
+from an exhaustive typed universe of $22$ physical sources covering $23$
+logical segments $0..22$ (the two BP roles share one physical source), with
+exclusive regions and complete segment coverage. Its erasure --- the
+flattening of its bit contents --- is exactly the public
+$\leanid{buildPayload}$. \textup{(}Lean:
+\leanid{concreteBPNativeSuccinctRMQReviewerPhysicalWords\_erases}.\textup{)}
+\ledger{L-UB-10}
+This is an equality of payload bit contents; it is deliberately \emph{not}
+an allocated-cell or padded-capacity statement
+(Section~\ref{sec:quantities}).
+
+\subsection{Genuine supplied-store execution}
+
+The public physical execution is not a replay of a precomputed trace: the
+supplied-store evaluator reads the caller's flat store through a checked
+address-translation adapter, and canonical flat-physical execution refines
+the logical execution while preserving the decoded result, modeled cost,
+ordered successful and failed reads, repeated reads, and the
+execution-derived footprint. \textup{(}Lean:
+\leanid{succinctRMQReviewerPhysicalExecutionRefinesLogical},
+\leanid{succinctRMQReviewerPhysicalStoreAdapter}.\textup{)}\ledger{L-UB-11}
+
+\begin{theorem}[Footprint determinacy]\label{thm:footprint}
+Agreement of two stores on the first execution's consumed ordered read
+footprint determines the complete physical execution --- trace, failures,
+repetitions, and returned value. The list-facing corollary: a supplied
+store agreeing with the canonical global store on the checked footprint
+yields the canonical result, the exact RMQ answer, and the transferred cost
+bound. \textup{(}Lean:
+\leanid{concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore\_eq\_of\_orderedFootprint};
+\leanid{queryTraceResultWithStore\_eq\_of\_orderedReadFootprint};
+\leanid{listIntFinalFullModelCostLeOfFootprintGlobal}.\textup{)}
+\ledger{L-UB-12}\ledger{L-UB-18}
+\end{theorem}
+
+\begin{theorem}[The store is observed]\label{thm:corruption}
+Differing translated supplied-store evaluator values yield differing
+physical answers, and a checked decisive single-word corruption --- changing
+one consumed table word (logical segment $21$, index $3$) from the five-bit
+encoding of $1$ to the five-bit encoding of $4$ --- changes the whole-query
+answer from \leanid{some 0} to \leanid{none}. \textup{(}Lean:
+\leanid{succinctRMQReviewerPhysicalValueDependency} and the validation
+guards.\textup{)}\ledger{L-UB-13}
+\end{theorem}
+
+\begin{theorem}[Successful reads are payload-backed]\label{thm:backing}
+Under footprint agreement with the canonical store, every successful read
+in the supplied-store replay is backed by the counted flat payload --- the
+anti-oracle clause: answers cannot be fed from proof-only fields or
+uncounted certificates. \textup{(}Lean:
+\leanid{...WithStore\_successful\_reads\_backed\_by\_counted\_flat\_payload\_of\_footprint\_global}.\textup{)}
+\ledger{L-UB-14}
+\end{theorem}
+
+\subsection{Provenance, liveness, and mutation rejection}
+
+For the exact current query, every indexed read in the trace retains its
+global position, producing program-instruction occurrence, folded prefix
+state, component-local position, exact invocation parameters, source, and a
+multiplicity-preserving embedding into the composed trace.
+\textup{(}Lean:
+\leanid{succinctRMQReviewerEveryReadOccurrenceProvenance}.\textup{)}
+\ledger{L-UB-17}
+Query-independently, the manifest packet proves that every counted source
+and every shared-BP consumer has a successful occurrence through some
+actual closed whole-query execution under a valid list query; that the
+successful-occurrence predicate implies the common mutation-side predicate;
+and that a counterfactual fresh segment $23$ --- given a plausible existing
+label --- fails that predicate. Source regions are exclusive, segment
+coverage is complete, and legacy duplicate close/interior storage is
+excluded. \textup{(}Lean:
+\leanid{succinctRMQReviewerManifestSemanticAdequacy}.\textup{)}
+\ledger{L-UB-15}
+
+\subsection{Bounded event data and the machine certificate}
+
+One query-independent width,
+$\leanid{reviewerWordBits}(n) = \leanid{machineWordBits}(400000\cdot(n+1))$,
+bounds every stored and returned word, translated address, segment
+encoding, query operand, primitive operand/result, and consumed footprint
+address, with the checked all-size inequality
+$\leanid{reviewerWordBits}(n) \le 20\cdot(\flog{n+2}+1)$.
+\ledger{L-UB-16}
+These facts are collected in a $24$-field machine certificate whose fields
+are consumed, one by one, by an independent expected-type record, and
+lifted to the \leanid{List Int} surface by a guarded adequacy packet; the
+paper-facing main theorem consumes the certificate's cost field by literal
+projection rather than restating a numeral. \textup{(}Lean:
+\leanid{succinctRMQReviewerMachineWellFormed},
+\leanid{succinctRMQReviewerMachineRequiredFacts},
+\leanid{listIntSuccinctRMQReviewerNativeMachineAdequacy}.\textup{)}
+\ledger{L-UB-20}
+
+\paragraph{Replayable anti-bypass evidence.}
+Beyond the kernel theorems, the repository maintains a committed mutation
+replay of $41$ cases expecting $40$ semantic rejections and one
+packet-only expected accept, exercising shape, sibling-store, failed-probe,
+disconnected-trace, and consumer bypasses. We flag its evidence tier
+precisely: replays are reproducible-artifact evidence, one tier below the
+kernel theorems above, and nothing in this draft rests on them alone.
+
+\section{Mechanization and the trust boundary}\label{sec:trust}
+
+\paragraph{Toolchain and dependencies.}
+The development is Lean~4~\cite{MouraUllrich21}, pinned by
+\texttt{lean-toolchain} to Lean~4.22.0, and is deliberately Mathlib-free:
+it uses the Lean/Std library plus the \leanid{omega} tactic shipped with
+Lean. This is an engineering choice made to keep the checked import closure
+small and auditable, not a judgment about Mathlib.
+
+\paragraph{What must be trusted.}
+Theorem truth rests on Lean kernel checking of the committed declarations
+under the pinned toolchain. The checked surfaces use only the standard
+non-computational axioms that Lean can introduce
+(\leanid{propext}, \leanid{Quot.sound}, \leanid{Classical.choice});
+there are no project-specific axioms, and the repository gate rejects
+\leanid{sorry}/\leanid{sorryAx}, custom \leanid{axiom} declarations,
+\leanid{unsafe}, \leanid{implemented\_by}, \leanid{extern},
+\leanid{native\_decide}, and \leanid{ofReduceBool} in checked source. Axiom
+inventories are printed by per-surface \leanid{\#print axioms} scripts.
+
+\paragraph{What need not be trusted.}
+The validation executable, cost harness, example programs, lints, and the
+mutation replay are reviewer and reproducibility checks; they are not part
+of the trust base, and no theorem depends on them. Likewise, the
+development process (AI-assisted, audit-driven) is recorded as provenance;
+process evidence explains decisions but proves no mathematics.
+
+\paragraph{Import discipline.}
+The narrow paper-facing import root is \leanid{RMQPaper}, whose checked
+closure contains the succinct RMQ construction, the lower bound, and the
+word-RAM/model-adequacy machinery, and excludes legacy, compatibility,
+archive, and proposal barrels. Historical cost surfaces remain
+kernel-checked but are quarantined behind explicitly named
+compatibility aliases that \leanid{RMQPaper} does not import.
+
+\section{Reproducibility}\label{sec:repro}
+
+All claims of this draft refer to repository commit
+\texttt{1490c97b399d136bad4e18953441da433d130d4d}. The artifact reproduction
+path is:
+
+\begin{itemize}
+\item \texttt{bash scripts/reproduce\_artifact.sh} --- build, public-root
+  builds, validation executable, headline/word-RAM/full axiom checks,
+  forbidden-token and reduction-shortcut scans, whitespace checks;
+\item \texttt{powershell -File scripts/gate.ps1} --- the Windows gate
+  equivalent;
+\item \texttt{lake env lean scripts/headline\_axiom\_check.lean} --- the
+  smallest command printing the axiom inventory of the public aliases cited
+  here;
+\item \texttt{powershell -File paper/check\_paper.ps1} --- the
+  deterministic manuscript checker for this draft (citation closure,
+  duplicate labels and keys, forbidden tokens, theorem-ledger coverage, and
+  the single pending-architecture insertion point);
+\item \texttt{latexmk -pdf rmq.tex} (in \texttt{paper/}) --- the PDF build
+  used for this draft.
+\end{itemize}
+
+Continuous integration runs the repository gate on a pinned Linux image;
+validation runs report payload overhead, model cost, and wall-clock time in
+separate columns, maintaining the quantity separation of
+Section~\ref{sec:quantities} in the measurements as well as in the
+theorems. Measurements never substitute for the space or cost theorems.
+
+\section{Toward a packed cell-probe theorem (provisional)}
+\label{sec:pending}
+
+The strongest form of the succinct story packages the entire structure as
+\emph{one} read-only array of fixed-width cells and charges the query for
+every aligned cell probe, computation between probes being free --- the
+standard convention in which succinct RMQ upper and lower bounds are
+usually read~\cite{Fischer10,LiuYu20}. The repository's endgame roadmap
+freezes such a target:
+
+\begin{targetstmt}[Frozen target; not a result of this draft]
+\label{tgt:packed}
+For every input list of length $n$, preprocessing constructs one read-only
+array of exact-width $w(n)$-bit cells, with checked all-size bounds on $w$
+yielding the conventional logarithmic-width corollary. Its complete
+allocated capacity --- including a constant serialized header and final-cell
+padding --- is at most $2n + \rho(n)$ bits for a checked little-$o$-linear
+$\rho$. For every valid half-open query, a closed uniform controller, whose
+dynamic inputs are exactly $n$, the endpoints, and the words returned by
+its previous probes into that same array, returns the leftmost minimum
+index after at most $C$ adaptive probes, for one exact constant $C$
+independent of $n$.\ledger{L-ARCH-01}
+\end{targetstmt}
+
+At the base commit this target is a \emph{feasibility candidate} under an
+active gate: the geometry-closure and controller-closure rows are being
+discharged or refuted on a separate governed branch, and neither a positive
+architecture acceptance nor a checked obstruction has been recorded. This
+draft therefore asserts nothing about the target beyond its statement, and
+the repository's status labels for it are reproduced faithfully in the
+theorem ledger as \textsc{provisional\_architecture}.
+
+\subsection{Result insertion point}\label{sec:insertion}
+
+Exactly one location in this manuscript may receive the packed all-size
+result if and when it is independently accepted; until then the marker
+below is the entire content of that location, and no other section may
+state, assume, or paraphrase the pending result as established.
+
+\medskip
+\noindent\verb|ARCHITECTURE_RESULT_PENDING|
+\medskip
+
+\noindent If the gate instead records a checked obstruction or an
+unresolved pivot, this section will record that exact outcome, and the rest
+of the draft stands unchanged: every theorem above is already checked at
+the base commit and none depends on the pending target.
+
+\section{Related work}\label{sec:related}
+
+\paragraph{Classical RMQ and LCA.}
+Cartesian trees originate with Vuillemin~\cite{Vuillemin80}; the
+RMQ-to-$\pm 1$-RMQ and RMQ/LCA reductions with linear-space constant-time
+solutions descend from Gabow--Bentley--Tarjan~\cite{GBT84},
+Harel--Tarjan~\cite{HarelTarjan84}, and
+Bender--Farach-Colton~\cite{BFC00}. Fischer and
+Heun~\cite{FischerHeun11} gave the systematic $2n + o(n)$-bit,
+constant-time succinct RMQ preprocessing scheme, and
+Fischer~\cite{Fischer10} the non-systematic optimal-succinctness variant
+whose model vocabulary the pending target of Section~\ref{sec:pending}
+follows.
+
+\paragraph{Succinct building blocks.}
+Rank/select dictionaries begin with Jacobson~\cite{Jacobson89} and
+Clark~\cite{Clark96}; compressed indexable dictionaries with
+Raman--Raman--Rao~\cite{RRR02}; balanced-parentheses navigation with
+Munro--Raman~\cite{MunroRaman01} and, in fully-functional range-min-max
+form, Navarro--Sadakane~\cite{NavarroSadakane14}. Navarro's
+text~\cite{Navarro16} is the modern reference for the surrounding
+vocabulary. The repository's spokes (Section~\ref{sec:spokes}) mechanize
+the fragments of this toolkit that the RMQ capstone consumes.
+
+\paragraph{Lower bounds.}
+The information-theoretic bound mechanized here
+(Section~\ref{sec:lower}) is the counting bound implicit in the classical
+literature. The substantially stronger cell-probe redundancy lower bounds
+for succinct RMQ are due to Liu and Yu~\cite{LiuYu20} and
+Liu~\cite{Liu21}; they are not mechanized here.
+
+\paragraph{Mechanized succinct data structures.}
+The closest precedent is the Coq/SSReflect line of Tanaka, Affeldt, and
+Garrigue, who verified the Jacobson rank algorithm with extraction to
+OCaml~\cite{TAG16}, extended with Qi to tree algorithms over LOUDS and
+related succinct representations~\cite{AGQT19}. Those papers already state
+priority for mechanized succinct-structure verification in their setting;
+accordingly, this draft claims no such priority. The present development
+differs in prover (Lean~4, Mathlib-free), in problem focus (RMQ end-to-end
+from reference semantics to a payload-accounted capstone with an
+information-theoretic lower bound in the same repository), and in its
+charged-trace anti-oracle discipline (Section~\ref{sec:model-adequacy});
+whether any component of it is novel relative to all prior mechanizations
+is left conditional on the completed search log
+(\texttt{paper/RELATED\_WORK\_LEDGER.md}).
+
+\paragraph{Mechanized cost analysis.}
+Verified cost reasoning in proof assistants has several traditions:
+Nipkow's amortized analyses of functional structures~\cite{Nipkow15,
+Nipkow16}, time credits in separation logic with the
+Chargu\'eraud--Pottier union-find verification as flagship~\cite{CP19},
+asymptotic-complexity frameworks over imperative programs~\cite{GCP18,
+ZhanHaslbeck18}. Those efforts tie cost to program steps of an executable
+or deeply embedded program. The present development occupies a different
+design point: cost is defined by an explicit model-level trace over a
+declared store, with adequacy theorems (Section~\ref{sec:model-adequacy})
+substituting for a program-logic connection. We present this as a
+trade-off, not a superiority claim: the model is simpler and the
+accounting is exhaustive over reads, but no compiled-code statement
+follows. The Isabelle Archive of Formal Proofs~\cite{AFP} hosts many
+verified data-structure analyses; our search of it for succinct
+rank/select or RMQ entries is recorded, with its limitations, in the
+related-work ledger.
+
+\section{Limitations and open problems}\label{sec:limitations}
+
+Stated as theorems-not-yet-proved rather than hedges; each carries a ledger
+row.
+
+\begin{enumerate}
+\item \emph{Allocated capacity.} No current theorem bounds the full
+  allocated capacity of a single packed memory object (header, padding,
+  sentinels included) by $2n + o(n)$; the payload theorem counts advertised
+  payload bits, and the physical-erasure theorem equates bit contents only.
+  This is the pending architecture target.\ledger{L-OPEN-03}
+\item \emph{Controller charging.} Controller dispatch, decoding, bounded
+  arithmetic, comparisons, and branching are uncharged; a richer
+  instruction-level machine that charges each such step and simulates the
+  same execution is future work. Consequently no claim is made about
+  running time in the conventional word-RAM model.\ledger{L-OPEN-06}
+\item \emph{Preprocessing.} The construction's preprocessing complexity
+  (time and workspace, in any model) is unproved and unclaimed.
+  \ledger{L-OPEN-01}
+\item \emph{Tightness of the constant.} $210$ is an upper cap with an
+  exact reachable interior-cost witness at one component, but global
+  minimality across component correlations is not proved; the constant is
+  an artifact of the current representation and charge policy.
+  \ledger{L-OPEN-02}
+\item \emph{Tightness of the overhead envelope.} $\mathrm{overhead}$ is
+  little-$o$-linear but not proved tight; no reachable family is shown to
+  attain the envelope, and the envelope is not claimed comparable to
+  Fischer--Heun redundancy.\ledger{L-OPEN-04}
+\item \emph{Cell-probe lower bounds.} The Liu--Yu/Liu redundancy bounds
+  are not mechanized; the mechanized bound is the counting bound of
+  Section~\ref{sec:lower}.\ledger{L-OPEN-05}
+\item \emph{Internal audit status.} All theorems cited here are
+  kernel-checked at the base commit. The project's own acceptance process
+  additionally requires fresh-blind audits for some surfaces; at the base
+  commit the audit of the release lineage of the $210$ chain is still open
+  in that internal process. This is a process status, not a mathematical
+  caveat, and it is recorded here for candor.
+\end{enumerate}
+
+\section{Conclusion}\label{sec:conclusion}
+
+The development connects, in one kernel-checked repository: a value-level
+RMQ reference contract; Cartesian-shape and BP reductions; a
+payload-accounted $2n + o(n)$ succinct construction with exact answers and
+a uniform, algebraically derived charged-trace cost bound; an explicit
+execution model with erasure, footprint-determinacy, payload-backing,
+provenance, and mutation-rejection theorems; and an information-theoretic
+lower bound in matching integer arithmetic. The deliberate residue --- an
+allocated-capacity theorem over one packed object with a closed controller
+--- is frozen as a target with an active feasibility gate, and this draft
+will absorb exactly one result at the marked insertion point when and only
+when that work is independently accepted.
+
+\bibliographystyle{alpha}
+\bibliography{references}
+
+\end{document}
