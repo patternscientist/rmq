@@ -7268,3 +7268,7 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
   matrix untouched, so no frozen-cell comparison was required. Section 8d is
   appended rather than replacing 8b or 8c, so the record still shows what was
   believed at each earlier point.
+- Commit adding the close-half word geometry: matrix untouched, so no frozen-cell
+  comparison was required. The section 8b component count is corrected in
+  DD-20260804-049 rather than by editing 8b, so the record shows the earlier
+  estimate and its correction.

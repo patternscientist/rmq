@@ -8792,3 +8792,49 @@ flat payload's own length; the consumed payload needs only its overhead, which i
 
 This completes the space half of the re-target. The execution half -- geometries,
 lowering, controller, correctness -- is untouched.
+
+## DD-20260804-049 -- the close half is ten components, and two of them are free
+
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCloseGeometry.lean`.
+
+Section 8b estimated the close half at "seven new word geometries -- five interior
+tables and two chunk tables". The count is wrong in both directions and the
+correction matters for planning.
+
+**Two are free.** `bpFringeChunkTable` and `bpChunkSelectTable` are
+`FixedWidthNatTable`s, so `packedFixedWidthTable_getElem?` -- the generic lemma
+already carrying the eighteen live access sources -- applies unchanged. Segments
+`21` and `22` are one-line proofs.
+
+**The interior is eight components, not five.** The directory's payload is five
+concatenated tables, but the *component store* the executed segment `20` actually
+reads is assembled from **eight** machine stores: the summary contributes four
+columns separately (baseline, minRel, maxRel, argOffset), then local, global,
+local-level, global-level.
+
+### Why segment 20 is not one uniform grid
+
+Two independent reasons, and the second was not visible from the type.
+
+1. The component store is nested `BoundedPayloadWordStore.append`. Words are laid
+   end to end at *word* granularity while payloads concatenate at *bit*
+   granularity, so a component whose payload does not fill its final word leaves a
+   ragged edge and the next component's first word does not start at a multiple of
+   the machine width.
+
+2. `FixedWidthNatTable.machineStore`'s words are
+   `table.store.words.toList.flatMap (chunkPayloadWords wordSize)` -- each logical
+   entry is chunked **separately**. So even within a single component the grid is
+   uniform only when the entry width fits inside, or divides, the machine word.
+   Chunking the component's payload as a whole gives different words.
+
+The second point is the one to carry forward. The obvious approach -- treat each
+interior component as `packedWordSlice` of its own payload at the machine width --
+is **wrong in general**, and would produce a theorem that happens to hold at the
+sizes one is likely to sample while being false in general. It is recorded here
+rather than discovered later against a failing proof.
+
+What this module establishes for segment `20` is the pair of facts the piecewise
+geometry will be stated against: the eight-way word split, and that the store
+flattens to exactly the directory payload. The bits are all present and in order;
+only the word boundaries are non-uniform.
