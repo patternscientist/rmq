@@ -7307,3 +7307,7 @@ Frozen-cell verification log continued, `WDD-20260803-001` / `WDD-20260804-002`:
 - Commit locating the third interior component: matrix untouched, so no
   frozen-cell comparison was required. Three of eight located; no row status
   changes, since FG-08 quantifies over a run.
+- Commit recording the final state of this run: matrix untouched, so no
+  frozen-cell comparison was required. Section 8g is appended; it names the next
+  smallest proof target and lists the five failed approaches so they are not
+  retried.

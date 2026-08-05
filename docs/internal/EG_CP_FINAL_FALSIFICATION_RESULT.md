@@ -1462,3 +1462,69 @@ remaining geometry work should keep that order.
 5. The seven `TARGET-ABSENT` replay cases.
 
 **No `FG` row is closed. No `K1` obstruction is proved.** Not `CANDIDATE_COMPLETE`.
+
+## 8g. Final state of this run
+
+`90` campaign commits. `HEAD e9433db`, tree `5494cc7`. Base `6078a29` and freeze
+`0a18548` both verified ancestors. `lake build RMQ` green;
+`design_decision_check -Strict` clean at every commit; `claim_drift_scan -Strict`
+`1498` hits / `0` strict failures; working tree clean. Project-skill preflight
+**PASS** four times, most recently at governance
+`f0c7232a8a52b8d61ead5e96d72a8a849bc094b5`, checkout `f778c16`, all four skill sets
+equal, `required_mode=role-skills`.
+
+### Modules standing over the consumed payload
+
+```
+ReviewerPayload.lean         identity to buildPayload, by rfl
+ReviewerLength.lean          exact length as a function of (n, longCount)
+ReviewerWidth.lean           input-size-only width; all 29 stride arms
+ReviewerMemory.lean          header, serialization, count, allocation, cells
+ReviewerCrossing.lean        round trip, payload recovery, two-cell span bound
+ReviewerSpace.lean           FG-06's form, little-o linear residual
+ReviewerCloseGeometry.lean   segments 21 and 22 done; segment 20's split
+ReviewerMachineWords.lean    uniform-grid condition (0 < width <= wordSize)
+ReviewerEntryChunks.lean     two-level index with no width hypothesis
+ReviewerEntryAddress.lean    machine word -> payload bit offset and read width
+ReviewerInteriorWidths.lean  the four interior widths are positive
+ReviewerInteriorCount.lean   word count, and the index bound from i < wordCount
+ReviewerConcatIndex.lean     left/right/widening for the component concatenation
+ReviewerComponentAccess.lean components 0, 1, 2 located
+```
+
+All additive. `packedMemory`, `packedCellWidth` and every flat-payload theorem are
+untouched, so previously recorded evidence still means what it said.
+
+### The next smallest proof target
+
+`packedInteriorArgOffsetAccess`: component `3` of the interior component store.
+Four peels then a skip by `(baseline ++ minRel ++ maxRel).length`, on the template
+of `packedConcatIndex_third_of_eight`. Then components `4`..`7` identically, with
+counts shifted.
+
+After that, in order: bridge the peel offsets to
+`canonicalRelativeRmmInteriorComponentOffsets` (equal by construction, unproved);
+place the component payloads inside the consumed payload; physical read and backed
+store over `packedReviewerMemory`; whole-run ordered lowering with multiplicity;
+probe cap derived from the run; `FG-10`, `FG-11`'s value half, `FG-13`, `FG-15`;
+the seven `TARGET-ABSENT` replay cases.
+
+### Failed approaches, so they are not retried
+
+* `rankWordSize^2 <= 2 * n + 2` for the width -- false at `n = 2` (`DD-045`).
+* single-level `packedWordSlice` for a machine store -- false whenever an entry
+  does not fit a machine word (`DD-049`, `DD-050`).
+* `width <= wordSize` for the interior columns -- false below `n ~ 512` for
+  `minRel`, `maxRel`, `argOffset` (`DD-051`).
+* direct component accessors without `dsimp only`, then without accounting for
+  left-associativity (`DD-055`).
+* `List.length_append` with explicit list arguments -- implicit in this toolchain
+  (`DD-058`).
+
+### Standing status
+
+**No `FG` row is closed. No `K1` obstruction is proved.** The `FG-01` divergence of
+section 8c remains a defect in a frozen row, reported and left for the owner; the
+row and its status cell are untouched.
+
+This checkpoint is **not** `CANDIDATE_COMPLETE`.
