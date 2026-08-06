@@ -195,7 +195,7 @@ Beyond the recovered construction, the completing work landed in
 
 ## 7. Inherited invariant status for this rung
 
-All sixteen applicable inherited invariants are closed on this rung with
+All fifteen applicable inherited invariants are closed on this rung with
 evidence recorded row-by-row in matrix section 7.3 (address width, all-size,
 global physical machine, no-synthetic, oracle independence, program
 accounting, proof separation, read backing, store agreement, store identity,
@@ -216,7 +216,11 @@ landed during completion: the never-yet-executed replay stage selector
 crashed the Windows PowerShell 5.1 dynamic binder (`@(...)` over a generic
 list) and was replaced by plain array accumulation, replaying identically
 (commit `a4d18d7` on this branch); the frozen registry, selectors, deadlines,
-restoration hashes, and clean-state controls were not altered.
+restoration hashes, and clean-state controls were not altered. The `R2R1`
+repair rung subsequently added `WDD-20260805-002` (semantic replay mutants
+with mechanical activation checks; each expected failure surface names the
+honest guarding module) and `DD-20260805-075` (210-fuel wording and
+validation-header inventory repair; comment-only Lean changes).
 
 ## 9. Verification ledger
 
@@ -254,13 +258,82 @@ The coordinator independently obtained, on the exact proof-bearing tree
   clean state.
 
 Those reruns are the coordinator's own verification evidence, distinct from
-the worker-side runs above. Because the present correction is
+the worker-side runs above. Because that earlier correction was
 documentation-only on top of the frozen proof parent, the Lean builds and the
-replay stage were not repeated for this report commit; the post-commit checks
-for this commit are the documentation-appropriate subset recorded in the
-worker terminal response: strict claim drift, strict design-decision check
-against the exact base, committed-range `git diff --check`, UTF-8 inspection,
-and final cleanliness.
+replay stage were not repeated for that report commit; its post-commit checks
+were the documentation-appropriate subset: strict claim drift, strict
+design-decision check against the exact base, committed-range
+`git diff --check`, UTF-8 inspection, and final cleanliness.
+
+### `R2R1` repair receipts on the frozen proof-bearing repair parent
+
+A coordinator-commissioned repair rung (`EG-CP-ALLSIZE-R2R1`) subsequently
+landed as the frozen proof-bearing commit
+`368b828e0711dfd10a04ca90eb19c7b0d6ccfd13` (tree
+`730a8746240bdf6f705d67f9283f6d9db8f25123`), whose parent is the prior
+report commit `7abc2f5c52c7ef20faac5e4bfe23972593f60271`. The present
+document revision is a report-only child of that frozen repair commit and
+does not embed its own hash. The repair changed exactly seven paths:
+`scripts/eg_cp_final_falsification_replay.ps1`, `scripts/axiom_check.lean`,
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLogicalSimulation.lean`,
+`RMQ/Validation/EGCPFinalFalsification.lean`,
+`docs/internal/DESIGN_DECISIONS.md`,
+`docs/internal/WORKFLOW_DESIGN_DECISIONS.md`, and
+`docs/internal/EG_CP_FINAL_FALSIFICATION_MATRIX.md` (append-only repair
+addendum, section 8, inside delimited markers; every frozen row
+byte-identical).
+
+Defect repaired: the original working-tree mutation bodies for four
+registry entries edited an unused optional surface rather than enacting the
+frozen mutation description, so their earlier REJECT verdicts, while
+commissioned, did not exercise the semantic defense. The frozen registry
+itself (IDs, order, mutation descriptions, expected verdicts, selectors,
+deadline contracts, restoration contracts, and process-tree controls) was
+not changed; only the enacted mutation bodies and the runner's mechanical
+activation check are new. `M03` remains a signature-level mutation by
+design; `M08` and `M12` were already semantic and are preserved. The runner
+now verifies, before each build, that every declared activation needle is
+present in the mutated body actually written to disk, failing the stage
+with a distinct `ACTIVATION-MISSING` outcome otherwise.
+
+| Entry | Repaired enacted behavior | Failing surface (honest guarding module) |
+| --- | --- | --- |
+| `M05-SIBLING-STORE` | `packedReviewerRunAgainstMemory` drives a sibling logical store `memory ++ [[]]` instead of the counted memory. | `PackedCellProbe/ReviewerController.lean`, surface `store identity`. |
+| `M06-ANSWER-ORACLE` | the normalize-whole done arm discards the consumed value and returns a semantic answer oracle `some n`. | `PackedCellProbe/ReviewerControllerProof.lean`, surface `oracle independence`. |
+| `M07-DISCONNECTED-TRACE` | the expected physical trace is replaced by a disconnected forged empty trace in the then-branch. | `PackedCellProbe/ReviewerControllerProof.lean`, surface `trace execution`. |
+| `M11-SIBLING-PAYLOAD` | `packedReviewerSerializedBits` serializes a sibling execution payload `packedReviewerPayloadBits shape ++ [false]`. | `PackedCellProbe/ReviewerMemory.lean`, surface `public / same-object composition`. |
+
+Public axiom inventory (`lake env lean scripts/axiom_check.lean`, exit 0,
+on the frozen repair tree): `packedReviewerPayloadBits_eq_buildPayload`,
+`packedReviewerMemory_length_mul_width_le`, `packedReviewerRho_littleO`,
+`packedReviewerRunAgainstMemory_public_outcome`, and
+`packedReviewerRunAgainstMemory_public_certificate` each depend on exactly
+`[propext, Classical.choice, Quot.sound]`;
+`packedReviewerRunAgainstMemory_trace_length_le_427` depends on
+`[propext, Quot.sound]`. No `sorryAx`, no `Lean.ofReduceBool`, no
+`Lean.trustCompiler` appears in any receipt.
+
+Verification battery on the frozen repair commit (heavy commands under the
+global heavy-verification mutex):
+
+| Check | Outcome |
+| --- | --- |
+| `lake build RMQ.Validation.EGCPFinalFalsification` | PASS (exit 0, warm). |
+| `lake build RMQ` | PASS (exit 0, warm; both builds plus axiom check 3 m 34 s total). |
+| `lake env lean scripts/axiom_check.lean` | PASS (exit 0; receipts above). |
+| `R2-ALLSIZE` replay, single run, no `-SkipSelfTest` | PASS (exit 0, 8 m 20 s): registry integrity OK (16 ordered entries), descendant-termination self-test PASS, all four repaired activation checks passed (2 needles each), all seven commissioned REJECTs (`M03`, `M05`, `M06`, `M07`, `M08`, `M11`, `M12`) at their commissioned surfaces, SHA256-verified restoration per case, terminal `git status --porcelain` empty. |
+| Strict claim drift | PASS (1,511 hits, 0 strict failures). |
+| Strict design-decision check vs `6bf28dee` | PASS (32 changed files: 26 code, 4 workflow, 3 neutral). |
+| Forbidden-token/Mathlib scan | PASS (zero matches over `RMQ`, `lakefile.toml`). |
+| `native_decide`/`ofReduceBool` scan | PASS (zero matches over `RMQ`). |
+| Committed-range and working-tree `git diff --check` | PASS (clean). |
+| Final `git status --porcelain` | PASS (empty). |
+
+Because the present revision is report-only on top of the frozen repair
+commit, the Lean builds and the replay stage are not repeated for it; its
+post-commit checks are the documentation-appropriate subset: strict claim
+drift, strict design-decision check against the exact base, committed-range
+`git diff --check`, UTF-8 inspection, and final cleanliness.
 
 ## 10. Validation and anti-bypass status
 
@@ -278,7 +351,11 @@ three previously missing public names are inhabited:
 replay stage executed with all seven commissioned REJECT verdicts
 (`M03`, `M05`, `M06`, `M07`, `M08`, `M11`, `M12`), SHA-verified restoration,
 and a terminal clean tree, in both the worker-side run and the independent
-coordinator rerun.
+coordinator rerun. Under the `R2R1` repair the four formerly inert mutation
+bodies (`M05`, `M06`, `M07`, `M11`) were repaired to semantic mutations
+with mechanical activation checks, and the stage was re-executed once on
+the frozen repair parent with identical commissioned verdicts (receipts in
+section 9).
 
 ## 11. Explicit deferrals and full-node boundary
 
@@ -295,15 +372,54 @@ coordinator rerun.
 The deferrals limit this rung's scope; they do not change the frozen
 requirements or make deferred work optional for the full node.
 
-## 12. Plain-English digestion
+## 12. Proof digestion
 
-The machine shows that the succinct reviewer representation answers every
-query using one real packed memory, even though one directory length is
-content-dependent: it learns that length by reading the representation
-itself, then follows a fixed request/reply program whose events match
-one-for-one with the established logical query, all inside one modeled word
-width at every size. The hard completed part was not the high-level RMQ
-result but demonstrating that every live intermediate scalar and every
-request operand fits the same modeled word while preserving the exact
-physical prefix that produced it -- discharged by the select, LCA, and whole
-canonical towers and the coupled physical controller chain of section 6.
+**Conceptual change.** The predecessor route relied on `localStride = 1`
+and an informal astronomical cutoff. This rung replaces that route with a
+machine that discovers the content-dependent directory length by charged
+reads of its own representation: the one header word carries only
+`longCount`, and three fixed-address charged reads recover `sparseCount`
+before any sparse-dependent address is formed. Conceptually, the space
+theorem and the query machine now consume the same serialized object, and
+the query cost is accounted on the same physical trace that the
+correctness theorem constrains.
+
+**Plain-English meaning.** The succinct reviewer representation answers
+every range-minimum query using one real packed memory, at every input
+size, with no oracle: the machine reads the representation itself to learn
+its own layout, then follows a fixed request/reply program whose physical
+events match one-for-one with the established logical query, all inside
+one modeled word width. At most 427 physical probes ever occur (1 header
+cell, at most 2 x 3 discovery cells, and at most 2 x 210 logical attempts,
+where 210 is driver fuel -- an upper bound on logical attempts, not an
+exact read count and not a Word-RAM time bound). The hard completed part
+was not the high-level RMQ result but demonstrating that every live
+intermediate scalar and every request operand fits the same modeled word
+while preserving the exact physical prefix that produced it -- discharged
+by the select, LCA, and whole canonical towers and the coupled physical
+controller chain of section 6.
+
+**Live assumptions.** The claim lives in the packed counted cell-probe
+model: cost is the number of charged physical probes of the declared word
+width, not wall-clock or Word-RAM instruction time; the reference
+semantics is the guarded public `queryTraceResult`; the kernel checks
+everything down to `propext`, `Classical.choice`, and `Quot.sound` (the
+427 probe-cap theorem needs only `propext` and `Quot.sound`). Raw
+bit-addressed serialized-payload querying (`S1`) is deferred and not
+claimed here. Coordinator acceptance of this rung is still required.
+
+**Strongest skeptical question.** "Your 427-probe cap constrains a trace
+object your own definitions produce -- what forces the machine to actually
+consult the counted memory rather than smuggling the answer or decorating
+a disconnected log?" The defense is threefold and now mechanically
+exercised: the terminal result and every decisive branch trace back to
+consumed physical replies through the coupled controller invariant
+(`egcpAllSizeMissingReplyFails`, `egcpAllSizeSameRunPublicOutcome`); the
+trace accumulates only through driver steps against the one counted memory
+(`egcpAllSizeDriverMemoryOnly`,
+`egcpAllSizeEveryLogicalReadFromReviewerMemory`); and the repaired
+semantic replay REJECTs the exact three smuggling routes -- an answer
+oracle (`M06`), a disconnected forged trace (`M07`), and sibling
+store/payload substitution (`M05`, `M11`) -- with mechanical activation
+checks proving each mutation was really enacted before the build refuted
+it.
