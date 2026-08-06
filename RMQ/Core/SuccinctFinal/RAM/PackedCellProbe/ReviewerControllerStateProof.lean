@@ -11740,6 +11740,677 @@ private theorem packedReviewerLcaStart_fits
         using hwitness,
       by simpa [packedReviewerLcaRankStart] using hrank⟩
 
+/-! ## Close/LCA tower consume transitions -/
+
+/-- One canonical reply preserves the same-block seed arm. -/
+private theorem packedReviewerLcaConsume_sameSeed_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose : Nat) (rank : PackedReviewerRankState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hrankFit :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerRankNextRequest packedReviewerRankConsumeReply
+        (packedReviewerRankRemaining rank) rank)
+    (hrank :
+      PackedReviewerRankCanonicalScalarFits shape
+        (packedReviewerRankQueryPos .close shape.size
+          (packedLocalBPWindowBase shape.size
+            (packedSummaryBlockSizeRaw shape.size) leftClose)) rank)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerRankNextRequest rank = some request) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaConsumeReply
+        (.sameSeed invocation shape.size leftClose rightClose rank)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  have hrank' := hrank.consume hrequest
+  have hdescent :=
+    packedReviewerRankRemaining_consume_le rank
+      ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        request.segment request.index) request hrequest
+  have hfit' :=
+    packedReviewerRequestsFitFrom_consume_witness hrankFit hrequest
+      (by omega)
+  simp only [packedReviewerLcaConsumeReply]
+  cases hresult :
+      packedReviewerRankResult
+        (packedReviewerRankConsumeReply rank
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none => exact ⟨rfl, hinv, hleft, hright, hfit', hrank'⟩
+  | some rankFalse =>
+      exact packedReviewerLcaStartSameWindow_fits shape invocation leftClose
+        rightClose rankFalse hinv hleft hright
+
+/-- One canonical reply preserves the cross-block left seed arm. -/
+private theorem packedReviewerLcaConsume_leftSeed_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose : Nat) (rank : PackedReviewerRankState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hrankFit :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerRankNextRequest packedReviewerRankConsumeReply
+        (packedReviewerRankRemaining rank) rank)
+    (hrank :
+      PackedReviewerRankCanonicalScalarFits shape
+        (packedReviewerRankQueryPos .close shape.size
+          (packedLocalBPWindowBase shape.size
+            (packedSummaryBlockSizeRaw shape.size) leftClose)) rank)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerRankNextRequest rank = some request) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaConsumeReply
+        (.leftSeed invocation shape.size leftClose rightClose rank)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  have hrank' := hrank.consume hrequest
+  have hdescent :=
+    packedReviewerRankRemaining_consume_le rank
+      ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        request.segment request.index) request hrequest
+  have hfit' :=
+    packedReviewerRequestsFitFrom_consume_witness hrankFit hrequest
+      (by omega)
+  simp only [packedReviewerLcaConsumeReply]
+  cases hresult :
+      packedReviewerRankResult
+        (packedReviewerRankConsumeReply rank
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none => exact ⟨rfl, hinv, hleft, hright, hfit', hrank'⟩
+  | some rankFalse =>
+      exact packedReviewerLcaStartLeftWindow_fits shape invocation leftClose
+        rightClose rankFalse hinv hleft hright
+
+/-- One canonical reply preserves the right seed arm. -/
+private theorem packedReviewerLcaConsume_rightSeed_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose : Nat) (left middle : PackedReviewerCandidate)
+    (rank : PackedReviewerRankState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hleftCand : PackedReviewerCandidateScalarFits shape left)
+    (hmiddleCand : PackedReviewerCandidateScalarFits shape middle)
+    (hrankFit :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerRankNextRequest packedReviewerRankConsumeReply
+        (packedReviewerRankRemaining rank) rank)
+    (hrank :
+      PackedReviewerRankCanonicalScalarFits shape
+        (packedReviewerRankQueryPos .close shape.size
+          (packedLocalBPWindowBase shape.size
+            (packedSummaryBlockSizeRaw shape.size) rightClose)) rank)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerRankNextRequest rank = some request) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaConsumeReply
+        (.rightSeed invocation shape.size leftClose rightClose left middle
+          rank)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  have hrank' := hrank.consume hrequest
+  have hdescent :=
+    packedReviewerRankRemaining_consume_le rank
+      ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        request.segment request.index) request hrequest
+  have hfit' :=
+    packedReviewerRequestsFitFrom_consume_witness hrankFit hrequest
+      (by omega)
+  simp only [packedReviewerLcaConsumeReply]
+  cases hresult :
+      packedReviewerRankResult
+        (packedReviewerRankConsumeReply rank
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none =>
+      exact ⟨rfl, hinv, hleft, hright, hleftCand, hmiddleCand, hfit',
+        hrank'⟩
+  | some rankFalse =>
+      exact packedReviewerLcaStartRightWindow_fits shape invocation leftClose
+        rightClose rankFalse left middle hinv hleft hright hleftCand
+        hmiddleCand
+
+/-- One canonical reply preserves the same-block window arm. -/
+private theorem packedReviewerLcaConsume_sameWindow_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose seed : Nat) (window : PackedReviewerBPWindowState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hseed : seed <= 2 * shape.size + 1)
+    (hwitness :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerBPWindowNextRequest packedReviewerBPWindowConsumeReply
+        (packedReviewerBPWindowRemaining window) window)
+    (hwindow : PackedReviewerBPWindowCanonicalScalarFits shape window)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerBPWindowNextRequest window = some request) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaConsumeReply
+        (.sameWindow invocation shape.size leftClose rightClose seed window)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  have hwindow' := hwindow.consume hrequest
+  have hdescent :=
+    packedReviewerBPWindowRemaining_consume_le window
+      ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        request.segment request.index) request hrequest
+  have hfit' :=
+    packedReviewerRequestsFitFrom_consume_witness hwitness hrequest
+      (by omega)
+  simp only [packedReviewerLcaConsumeReply]
+  cases hresult :
+      packedReviewerBPWindowResult
+        (packedReviewerBPWindowConsumeReply window
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none => exact ⟨rfl, hinv, hleft, hright, hseed, hfit', hwindow'⟩
+  | some bits =>
+      exact packedReviewerLcaStartSameFringe_fits shape invocation leftClose
+        rightClose seed bits hinv hleft hright hseed
+
+/-- One canonical reply preserves the cross-block left window arm. -/
+private theorem packedReviewerLcaConsume_leftWindow_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose seed : Nat) (window : PackedReviewerBPWindowState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hseed : seed <= 2 * shape.size + 1)
+    (hwitness :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerBPWindowNextRequest packedReviewerBPWindowConsumeReply
+        (packedReviewerBPWindowRemaining window) window)
+    (hwindow : PackedReviewerBPWindowCanonicalScalarFits shape window)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerBPWindowNextRequest window = some request) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaConsumeReply
+        (.leftWindow invocation shape.size leftClose rightClose seed window)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  have hwindow' := hwindow.consume hrequest
+  have hdescent :=
+    packedReviewerBPWindowRemaining_consume_le window
+      ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        request.segment request.index) request hrequest
+  have hfit' :=
+    packedReviewerRequestsFitFrom_consume_witness hwitness hrequest
+      (by omega)
+  simp only [packedReviewerLcaConsumeReply]
+  cases hresult :
+      packedReviewerBPWindowResult
+        (packedReviewerBPWindowConsumeReply window
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none => exact ⟨rfl, hinv, hleft, hright, hseed, hfit', hwindow'⟩
+  | some bits =>
+      exact packedReviewerLcaStartLeftFringe_fits shape invocation leftClose
+        rightClose seed bits hinv hleft hright hseed
+
+/-- One canonical reply preserves the right window arm. -/
+private theorem packedReviewerLcaConsume_rightWindow_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose seed : Nat) (left middle : PackedReviewerCandidate)
+    (window : PackedReviewerBPWindowState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hseed : seed <= 2 * shape.size + 1)
+    (hleftCand : PackedReviewerCandidateScalarFits shape left)
+    (hmiddleCand : PackedReviewerCandidateScalarFits shape middle)
+    (hwitness :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerBPWindowNextRequest packedReviewerBPWindowConsumeReply
+        (packedReviewerBPWindowRemaining window) window)
+    (hwindow : PackedReviewerBPWindowCanonicalScalarFits shape window)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerBPWindowNextRequest window = some request) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaConsumeReply
+        (.rightWindow invocation shape.size leftClose rightClose seed left
+          middle window)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  have hwindow' := hwindow.consume hrequest
+  have hdescent :=
+    packedReviewerBPWindowRemaining_consume_le window
+      ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        request.segment request.index) request hrequest
+  have hfit' :=
+    packedReviewerRequestsFitFrom_consume_witness hwitness hrequest
+      (by omega)
+  simp only [packedReviewerLcaConsumeReply]
+  cases hresult :
+      packedReviewerBPWindowResult
+        (packedReviewerBPWindowConsumeReply window
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none =>
+      exact ⟨rfl, hinv, hleft, hright, hseed, hleftCand, hmiddleCand, hfit',
+        hwindow'⟩
+  | some bits =>
+      exact packedReviewerLcaStartRightFringe_fits shape invocation leftClose
+        rightClose seed left middle bits hinv hleft hright hseed hleftCand
+        hmiddleCand
+
+/-- One canonical reply preserves the same-block fringe arm. -/
+private theorem packedReviewerLcaConsume_sameFringe_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose seed base start : Nat)
+    (fringe : PackedReviewerFringeState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hseed : seed <= 2 * shape.size + 1)
+    (hbase : base <= 2 * shape.size + 1)
+    (hstart : start <= 2 * shape.size + 2)
+    (hwitness :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerFringeNextRequest packedReviewerFringeConsumeReply
+        (packedReviewerFringeRemaining fringe) fringe)
+    (hcanonical :
+      exists resultBound,
+        PackedReviewerFringeCanonicalScalarFits shape resultBound fringe)
+    (harg :
+      forall p, packedReviewerFringeCandidateArg fringe = some p ->
+        p.2 <= 34 * packedFringeChunkBits shape.size)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerFringeNextRequest fringe = some request) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaConsumeReply
+        (.sameFringe invocation shape.size leftClose rightClose seed base
+          start fringe)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  obtain ⟨resultBound, hfringe⟩ := hcanonical
+  have hfringe' := hfringe.consume hrequest
+  have hdescent :=
+    packedReviewerFringeRemaining_consume_le fringe
+      ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        request.segment request.index) request hrequest
+  have hfit' :=
+    packedReviewerRequestsFitFrom_consume_witness hwitness hrequest
+      (by omega)
+  have harg' :
+      forall p,
+        packedReviewerFringeCandidateArg
+            (packedReviewerFringeConsumeReply fringe
+              ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+                request.segment request.index)) = some p ->
+          p.2 <= 34 * packedFringeChunkBits shape.size := by
+    cases fringe with
+    | done result => simp [packedReviewerFringeNextRequest] at hrequest
+    | chunk invocation2 n2 window2 relLo relHi j remaining foldState =>
+        cases remaining with
+        | zero => simp [packedReviewerFringeNextRequest] at hrequest
+        | succ remaining =>
+            rcases foldState with ⟨acc, candidate⟩
+            obtain ⟨rfl, -, -, -, hcounters, -, -, -, -⟩ := hfringe
+            exact packedReviewerLcaFringeArg_consume shape invocation2
+              window2 relLo relHi j remaining (acc, candidate) _
+              (by omega)
+              (by
+                intro p hp
+                exact harg p
+                  (by simpa [packedReviewerFringeCandidateArg] using hp))
+  simp only [packedReviewerLcaConsumeReply]
+  cases hresult :
+      packedReviewerFringeResult
+        (packedReviewerFringeConsumeReply fringe
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none =>
+      exact ⟨rfl, hinv, hleft, hright, hseed, hbase, hstart, hfit',
+        ⟨resultBound, hfringe'⟩, harg'⟩
+  | some fold =>
+      have hresultFits := hfringe'.result_fits hresult
+      have hfoldArg :
+          forall p, fold.2 = some p ->
+            p.2 <= 34 * packedFringeChunkBits shape.size := by
+        intro p hp
+        apply harg'
+        rw [packedReviewerFringeResult_candidateArg hresult]
+        exact hp
+      have hglobal :=
+        packedReviewerLcaFringeCandidateGlobal_fits shape base seed start
+          resultBound fold hbase hseed hstart hresultFits hfoldArg
+      simpa [packedReviewerLcaFinishSameFringe] using
+        packedReviewerLcaCandidateClose_fits shape hglobal
+
+/-- One canonical reply preserves the left fringe arm; completion enters the
+interior middle dispatch with the globalized left candidate. -/
+private theorem packedReviewerLcaConsume_leftFringe_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose seed base start : Nat)
+    (fringe : PackedReviewerFringeState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hseed : seed <= 2 * shape.size + 1)
+    (hbase : base <= 2 * shape.size + 1)
+    (hstart : start <= 2 * shape.size + 2)
+    (hwitness :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerFringeNextRequest packedReviewerFringeConsumeReply
+        (packedReviewerFringeRemaining fringe) fringe)
+    (hcanonical :
+      exists resultBound,
+        PackedReviewerFringeCanonicalScalarFits shape resultBound fringe)
+    (harg :
+      forall p, packedReviewerFringeCandidateArg fringe = some p ->
+        p.2 <= 34 * packedFringeChunkBits shape.size)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerFringeNextRequest fringe = some request) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaConsumeReply
+        (.leftFringe invocation shape.size leftClose rightClose seed base
+          start fringe)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  obtain ⟨resultBound, hfringe⟩ := hcanonical
+  have hfringe' := hfringe.consume hrequest
+  have hdescent :=
+    packedReviewerFringeRemaining_consume_le fringe
+      ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        request.segment request.index) request hrequest
+  have hfit' :=
+    packedReviewerRequestsFitFrom_consume_witness hwitness hrequest
+      (by omega)
+  have harg' :
+      forall p,
+        packedReviewerFringeCandidateArg
+            (packedReviewerFringeConsumeReply fringe
+              ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+                request.segment request.index)) = some p ->
+          p.2 <= 34 * packedFringeChunkBits shape.size := by
+    cases fringe with
+    | done result => simp [packedReviewerFringeNextRequest] at hrequest
+    | chunk invocation2 n2 window2 relLo relHi j remaining foldState =>
+        cases remaining with
+        | zero => simp [packedReviewerFringeNextRequest] at hrequest
+        | succ remaining =>
+            rcases foldState with ⟨acc, candidate⟩
+            obtain ⟨rfl, -, -, -, hcounters, -, -, -, -⟩ := hfringe
+            exact packedReviewerLcaFringeArg_consume shape invocation2
+              window2 relLo relHi j remaining (acc, candidate) _
+              (by omega)
+              (by
+                intro p hp
+                exact harg p
+                  (by simpa [packedReviewerFringeCandidateArg] using hp))
+  simp only [packedReviewerLcaConsumeReply]
+  cases hresult :
+      packedReviewerFringeResult
+        (packedReviewerFringeConsumeReply fringe
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none =>
+      exact ⟨rfl, hinv, hleft, hright, hseed, hbase, hstart, hfit',
+        ⟨resultBound, hfringe'⟩, harg'⟩
+  | some fold =>
+      have hresultFits := hfringe'.result_fits hresult
+      have hfoldArg :
+          forall p, fold.2 = some p ->
+            p.2 <= 34 * packedFringeChunkBits shape.size := by
+        intro p hp
+        apply harg'
+        rw [packedReviewerFringeResult_candidateArg hresult]
+        exact hp
+      have hglobal :=
+        packedReviewerLcaFringeCandidateGlobal_fits shape base seed start
+          resultBound fold hbase hseed hstart hresultFits hfoldArg
+      exact packedReviewerLcaStartMiddle_fits shape invocation leftClose
+        rightClose (SuccinctClose.bpFringeCandGlobal base seed start fold.2)
+        hinv hleft hright hglobal
+
+/-- One canonical reply preserves the interior middle arm. -/
+private theorem packedReviewerLcaConsume_middle_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose : Nat) (left : PackedReviewerCandidate)
+    (interior : PackedReviewerInteriorState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hleftCand : PackedReviewerCandidateScalarFits shape left)
+    (hinterior :
+      PackedReviewerInteriorCanonicalScalarFits shape invocation
+        (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+            leftClose + 1)
+        (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+            rightClose -
+          SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+            leftClose - 1) interior)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerInteriorNextRequest interior = some request) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaConsumeReply
+        (.middle invocation shape.size leftClose rightClose left interior)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  have hinterior' := hinterior.consume hrequest
+  simp only [packedReviewerLcaConsumeReply]
+  cases hresult :
+      packedReviewerInteriorResult
+        (packedReviewerInteriorConsumeReply interior
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none => exact ⟨rfl, hinv, hleft, hright, hleftCand, hinterior'⟩
+  | some middle =>
+      have hmiddle := hinterior'.result_fits hresult
+      exact packedReviewerLcaStartRightSeed_fits shape invocation leftClose
+        rightClose left middle hinv hleft hright hleftCand hmiddle
+
+/-- One canonical reply preserves the right fringe arm; completion merges the
+three candidates and closes. -/
+private theorem packedReviewerLcaConsume_rightFringe_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose seed base start : Nat)
+    (left middle : PackedReviewerCandidate)
+    (fringe : PackedReviewerFringeState)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hseed : seed <= 2 * shape.size + 1)
+    (hbase : base <= 2 * shape.size + 1)
+    (hstart : start <= 2 * shape.size + 2)
+    (hleftCand : PackedReviewerCandidateScalarFits shape left)
+    (hmiddleCand : PackedReviewerCandidateScalarFits shape middle)
+    (hwitness :
+      PackedReviewerRequestsFitFrom shape.size
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        packedReviewerFringeNextRequest packedReviewerFringeConsumeReply
+        (packedReviewerFringeRemaining fringe) fringe)
+    (hcanonical :
+      exists resultBound,
+        PackedReviewerFringeCanonicalScalarFits shape resultBound fringe)
+    (harg :
+      forall p, packedReviewerFringeCandidateArg fringe = some p ->
+        p.2 <= 34 * packedFringeChunkBits shape.size)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerFringeNextRequest fringe = some request) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaConsumeReply
+        (.rightFringe invocation shape.size leftClose rightClose seed base
+          start left middle fringe)
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  obtain ⟨resultBound, hfringe⟩ := hcanonical
+  have hfringe' := hfringe.consume hrequest
+  have hdescent :=
+    packedReviewerFringeRemaining_consume_le fringe
+      ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        request.segment request.index) request hrequest
+  have hfit' :=
+    packedReviewerRequestsFitFrom_consume_witness hwitness hrequest
+      (by omega)
+  have harg' :
+      forall p,
+        packedReviewerFringeCandidateArg
+            (packedReviewerFringeConsumeReply fringe
+              ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+                request.segment request.index)) = some p ->
+          p.2 <= 34 * packedFringeChunkBits shape.size := by
+    cases fringe with
+    | done result => simp [packedReviewerFringeNextRequest] at hrequest
+    | chunk invocation2 n2 window2 relLo relHi j remaining foldState =>
+        cases remaining with
+        | zero => simp [packedReviewerFringeNextRequest] at hrequest
+        | succ remaining =>
+            rcases foldState with ⟨acc, candidate⟩
+            obtain ⟨rfl, -, -, -, hcounters, -, -, -, -⟩ := hfringe
+            exact packedReviewerLcaFringeArg_consume shape invocation2
+              window2 relLo relHi j remaining (acc, candidate) _
+              (by omega)
+              (by
+                intro p hp
+                exact harg p
+                  (by simpa [packedReviewerFringeCandidateArg] using hp))
+  simp only [packedReviewerLcaConsumeReply]
+  cases hresult :
+      packedReviewerFringeResult
+        (packedReviewerFringeConsumeReply fringe
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) with
+  | none =>
+      exact ⟨rfl, hinv, hleft, hright, hseed, hbase, hstart, hleftCand,
+        hmiddleCand, hfit', ⟨resultBound, hfringe'⟩, harg'⟩
+  | some fold =>
+      have hresultFits := hfringe'.result_fits hresult
+      have hfoldArg :
+          forall p, fold.2 = some p ->
+            p.2 <= 34 * packedFringeChunkBits shape.size := by
+        intro p hp
+        apply harg'
+        rw [packedReviewerFringeResult_candidateArg hresult]
+        exact hp
+      have hright' :=
+        packedReviewerLcaFringeCandidateGlobal_fits shape base seed start
+          resultBound fold hbase hseed hstart hresultFits hfoldArg
+      exact packedReviewerLcaCandidateClose_fits shape
+        (hleftCand.merge3 hmiddleCand hright')
+
+/-- One canonical reply preserves the whole close/LCA tower invariant. -/
+private theorem PackedReviewerLcaCanonicalScalarFits.consume
+    {shape : CartesianShape} {state : PackedReviewerLcaState}
+    (hstate : PackedReviewerLcaCanonicalScalarFits shape state)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerLcaNextRequest state = some request) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaConsumeReply state
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  cases state with
+  | sameSeed invocation n leftClose rightClose rank =>
+      obtain ⟨rfl, hinv, hleft, hright, hrankFit, hrank⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerLcaConsume_sameSeed_fits shape invocation leftClose
+        rightClose rank hinv hleft hright hrankFit hrank hrequest
+  | sameWindow invocation n leftClose rightClose seed window =>
+      obtain ⟨rfl, hinv, hleft, hright, hseed, hwitness, hwindow⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerLcaConsume_sameWindow_fits shape invocation
+        leftClose rightClose seed window hinv hleft hright hseed hwitness
+        hwindow hrequest
+  | sameFringe invocation n leftClose rightClose seed base start fringe =>
+      obtain ⟨rfl, hinv, hleft, hright, hseed, hbase, hstart, hwitness,
+        hcanonical, harg⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerLcaConsume_sameFringe_fits shape invocation
+        leftClose rightClose seed base start fringe hinv hleft hright hseed
+        hbase hstart hwitness hcanonical harg hrequest
+  | leftSeed invocation n leftClose rightClose rank =>
+      obtain ⟨rfl, hinv, hleft, hright, hrankFit, hrank⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerLcaConsume_leftSeed_fits shape invocation leftClose
+        rightClose rank hinv hleft hright hrankFit hrank hrequest
+  | leftWindow invocation n leftClose rightClose seed window =>
+      obtain ⟨rfl, hinv, hleft, hright, hseed, hwitness, hwindow⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerLcaConsume_leftWindow_fits shape invocation
+        leftClose rightClose seed window hinv hleft hright hseed hwitness
+        hwindow hrequest
+  | leftFringe invocation n leftClose rightClose seed base start fringe =>
+      obtain ⟨rfl, hinv, hleft, hright, hseed, hbase, hstart, hwitness,
+        hcanonical, harg⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerLcaConsume_leftFringe_fits shape invocation
+        leftClose rightClose seed base start fringe hinv hleft hright hseed
+        hbase hstart hwitness hcanonical harg hrequest
+  | middle invocation n leftClose rightClose left interior =>
+      obtain ⟨rfl, hinv, hleft, hright, hleftCand, hinterior⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerLcaConsume_middle_fits shape invocation leftClose
+        rightClose left interior hinv hleft hright hleftCand hinterior
+        hrequest
+  | rightSeed invocation n leftClose rightClose left middle rank =>
+      obtain ⟨rfl, hinv, hleft, hright, hleftCand, hmiddleCand, hrankFit,
+        hrank⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerLcaConsume_rightSeed_fits shape invocation
+        leftClose rightClose left middle rank hinv hleft hright hleftCand
+        hmiddleCand hrankFit hrank hrequest
+  | rightWindow invocation n leftClose rightClose seed left middle window =>
+      obtain ⟨rfl, hinv, hleft, hright, hseed, hleftCand, hmiddleCand,
+        hwitness, hwindow⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerLcaConsume_rightWindow_fits shape invocation
+        leftClose rightClose seed left middle window hinv hleft hright hseed
+        hleftCand hmiddleCand hwitness hwindow hrequest
+  | rightFringe invocation n leftClose rightClose seed base start left
+      middle fringe =>
+      obtain ⟨rfl, hinv, hleft, hright, hseed, hbase, hstart, hleftCand,
+        hmiddleCand, hwitness, hcanonical, harg⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerLcaConsume_rightFringe_fits shape invocation
+        leftClose rightClose seed base start left middle fringe hinv hleft
+        hright hseed hbase hstart hleftCand hmiddleCand hwitness hcanonical
+        harg hrequest
+  | done value => simp [packedReviewerLcaNextRequest] at hrequest
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
