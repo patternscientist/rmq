@@ -10344,6 +10344,345 @@ private theorem PackedReviewerSelectCanonicalScalarFits.consume
         hselectFit hnine hrequest).2
   | done value => simp [packedReviewerSelectNextRequest] at hrequest
 
+/-! ## Close/LCA tower foundations -/
+
+/-- One consumed reply keeps a strictly smaller request-width witness. -/
+private theorem packedReviewerRequestsFitFrom_consume_witness
+    {State : Type} {n : Nat} {store : WordRAM.ReadStore}
+    {nextRequest : State -> Option PackedReviewerLogicalRequest}
+    {consumeReply : State -> Option (List Bool) -> State}
+    {remaining remaining' : Nat} {state : State}
+    {request : PackedReviewerLogicalRequest}
+    (hfit : PackedReviewerRequestsFitFrom n store nextRequest consumeReply
+      remaining state)
+    (hrequest : nextRequest state = some request)
+    (hle : remaining' + 1 <= remaining) :
+    PackedReviewerRequestsFitFrom n store nextRequest consumeReply remaining'
+      (consumeReply state
+        (store.readWord? request.segment request.index)) := by
+  obtain ⟨fuel, hfuel⟩ : exists fuel, remaining = fuel + 1 :=
+    ⟨remaining - 1, by omega⟩
+  rw [hfuel] at hfit
+  have hstep := (PackedReviewerRequestsFitFrom.step n store nextRequest
+    consumeReply fuel state request hfit hrequest).2
+  exact PackedReviewerRequestsFitFrom.mono n store nextRequest consumeReply
+    hstep (by omega)
+
+private theorem packedReviewerBPWindowNextRequest_remaining_pos
+    {state : PackedReviewerBPWindowState}
+    {request : PackedReviewerLogicalRequest}
+    (h : packedReviewerBPWindowNextRequest state = some request) :
+    0 < packedReviewerBPWindowRemaining state := by
+  cases state with
+  | read invocation n blockSize close next wordsRev =>
+      have hnext : next < 4 := by
+        by_cases hlt : next < 4
+        · exact hlt
+        · simp [packedReviewerBPWindowNextRequest, hlt] at h
+      simp only [packedReviewerBPWindowRemaining]
+      omega
+  | done bits =>
+      simp [packedReviewerBPWindowNextRequest] at h
+
+private theorem packedReviewerBPWindowRemaining_consume_le
+    (state : PackedReviewerBPWindowState) (reply : Option (List Bool))
+    (request : PackedReviewerLogicalRequest)
+    (hrequest : packedReviewerBPWindowNextRequest state = some request) :
+    packedReviewerBPWindowRemaining
+          (packedReviewerBPWindowConsumeReply state reply) + 1 <=
+      packedReviewerBPWindowRemaining state := by
+  cases state with
+  | read invocation n blockSize close next wordsRev =>
+      have hnext : next < 4 := by
+        by_cases hlt : next < 4
+        · exact hlt
+        · simp [packedReviewerBPWindowNextRequest, hlt] at hrequest
+      by_cases hlast : next + 1 = 4
+      · simp only [packedReviewerBPWindowConsumeReply, hlast, if_true,
+          packedReviewerBPWindowRemaining]
+        omega
+      · simp only [packedReviewerBPWindowConsumeReply, hlast, if_false,
+          packedReviewerBPWindowRemaining]
+        omega
+  | done bits =>
+      simp [packedReviewerBPWindowNextRequest] at hrequest
+
+private theorem packedReviewerFringeNextRequest_remaining_pos
+    {state : PackedReviewerFringeState}
+    {request : PackedReviewerLogicalRequest}
+    (h : packedReviewerFringeNextRequest state = some request) :
+    0 < packedReviewerFringeRemaining state := by
+  cases state with
+  | chunk invocation n window relLo relHi j remaining foldState =>
+      cases remaining with
+      | zero => simp [packedReviewerFringeNextRequest] at h
+      | succ remaining =>
+          simp [packedReviewerFringeRemaining]
+  | done result =>
+      simp [packedReviewerFringeNextRequest] at h
+
+private theorem packedReviewerFringeRemaining_consume_le
+    (state : PackedReviewerFringeState) (reply : Option (List Bool))
+    (request : PackedReviewerLogicalRequest)
+    (hrequest : packedReviewerFringeNextRequest state = some request) :
+    packedReviewerFringeRemaining
+          (packedReviewerFringeConsumeReply state reply) + 1 <=
+      packedReviewerFringeRemaining state := by
+  cases state with
+  | chunk invocation n window relLo relHi j remaining foldState =>
+      cases remaining with
+      | zero => simp [packedReviewerFringeNextRequest] at hrequest
+      | succ remaining =>
+          by_cases hzero : remaining = 0
+          · simp [packedReviewerFringeConsumeReply, hzero,
+              packedReviewerFringeRemaining]
+          · simp only [packedReviewerFringeConsumeReply, hzero, if_false,
+              packedReviewerFringeRemaining]
+            omega
+  | done result =>
+      simp [packedReviewerFringeNextRequest] at hrequest
+
+/-- Segment-zero window reads emit fitting operands for any close within the
+augmented parenthesis string; the CP leaf's strict bound is not needed. -/
+private theorem packedReviewerLcaBPWindow_read_requests_fit
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (blockSize close next fuel : Nat) (wordsRev : List (List Bool))
+    (hinvocation :
+      forall operand, operand ∈ packedReviewerInvocationOperands invocation ->
+        PackedReviewerNatFits shape.size operand)
+    (hclose : close <= 2 * shape.size + 1)
+    (hfour : next + fuel = 4) :
+    PackedReviewerRequestsFitFrom shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerBPWindowNextRequest packedReviewerBPWindowConsumeReply fuel
+      (.read invocation shape.size blockSize close next wordsRev) := by
+  induction fuel generalizing next wordsRev with
+  | zero => trivial
+  | succ fuel ih =>
+      have hnext : next < 4 := by omega
+      let firstWord :=
+        SuccinctClose.blockStartOf blockSize
+            (SuccinctClose.blockOfClose blockSize close) /
+          packedBpCodeWordWidth shape.size
+      have hbase :
+          SuccinctClose.blockStartOf blockSize
+              (SuccinctClose.blockOfClose blockSize close) <= close :=
+        SuccinctClose.blockStartOf_blockOfClose_le
+      have hfirst : firstWord <= close :=
+        Nat.le_trans (Nat.div_le_self _ _) hbase
+      have hindexLe : firstWord + next <= 2 * shape.size + 4 := by omega
+      have hindex : PackedReviewerNatFits shape.size (firstWord + next) := by
+        have hbound := packedReviewerTwoMul_add_three_le_cellBound shape.size
+        have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
+        omega
+      have hnextFits : PackedReviewerNatFits shape.size next :=
+        packedReviewerSegment_le_twentyTwo_fits shape.size next (by omega)
+      have hrequest :
+          PackedReviewerLogicalRequestOperandsFit shape.size
+            { invocation := invocation
+              site := .bpWindowWord next
+              segment := 0
+              index := firstWord + next } := by
+        apply packedReviewerLogicalRequestOperandsFit_mk
+        · exact hinvocation
+        · intro operand hopen
+          simp [packedReviewerReadSiteOperands] at hopen
+          subst operand
+          exact hnextFits
+        · exact packedReviewerSegment_le_twentyTwo_fits shape.size 0 (by omega)
+        · exact hindex
+      simp only [PackedReviewerRequestsFitFrom,
+        packedReviewerBPWindowNextRequest, hnext, if_pos]
+      change
+        PackedReviewerLogicalRequestOperandsFit shape.size
+            { invocation := invocation
+              site := .bpWindowWord next
+              segment := 0
+              index := firstWord + next } ∧ _
+      refine ⟨hrequest, ?_⟩
+      by_cases hlast : next + 1 = 4
+      · have hfuel0 : fuel = 0 := by omega
+        subst fuel
+        trivial
+      · have hfour' : next + 1 + fuel = 4 := by omega
+        simpa [packedReviewerBPWindowConsumeReply, hlast, firstWord] using
+          ih (next + 1)
+            (((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+                0 (firstWord + next)).getD [] :: wordsRev)
+            hfour'
+
+private theorem packedReviewerLcaBPWindowStart_requests_fit
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (blockSize close : Nat)
+    (hinvocation :
+      forall operand, operand ∈ packedReviewerInvocationOperands invocation ->
+        PackedReviewerNatFits shape.size operand)
+    (hclose : close <= 2 * shape.size + 1) :
+    PackedReviewerRequestsFitFrom shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerBPWindowNextRequest packedReviewerBPWindowConsumeReply 4
+      (packedReviewerBPWindowStart invocation shape.size blockSize close) := by
+  simpa [packedReviewerBPWindowStart] using
+    packedReviewerLcaBPWindow_read_requests_fit shape invocation blockSize
+      close 0 4 [] hinvocation hclose rfl
+
+/-- Thirty-three fringe chunks and a seed inside the parenthesis string stay
+below the reviewer cell capacity: the fringe table's own footprint dominates
+the chunk budget at every size. -/
+private theorem packedReviewerFringeBudget_fits
+    (shape : CartesianShape) {seed count : Nat}
+    (hseed : seed <= 2 * shape.size + 1) (hcount : count <= 33) :
+    PackedReviewerNatFits shape.size
+      (seed + count * packedFringeChunkBits shape.size) := by
+  have hcap := packedReviewerCellBound_lt_two_pow_width shape.size
+  have hforty := packedReviewerFringeTableOverhead_ge_forty shape.size
+  have hoverhead :
+      2 * shape.size + SuccinctClose.bpFringeTableOverhead shape.size <=
+        packedReviewerCellBound shape.size := by
+    unfold packedReviewerCellBound
+      concreteBPNativeSuccinctRMQCanonicalReviewerOverhead
+    omega
+  have hmul :
+      count * packedFringeChunkBits shape.size <=
+        33 * packedFringeChunkBits shape.size :=
+    Nat.mul_le_mul_right _ hcount
+  have hchunkBudget :
+      33 * packedFringeChunkBits shape.size + 2 <=
+        SuccinctClose.bpFringeTableOverhead shape.size := by
+    have hc : 0 < packedFringeChunkBits shape.size := by
+      unfold packedFringeChunkBits
+      exact SuccinctClose.bpFringeChunkBits_pos _
+    by_cases hsmall : packedFringeChunkBits shape.size <= 1
+    · omega
+    · have hEB :
+          8 <=
+            SuccinctClose.bpFringeChunkEntryBound
+              (packedFringeChunkBits shape.size) := by
+        show 8 <=
+          (2 * packedFringeChunkBits shape.size + 1) *
+            ((2 * packedFringeChunkBits shape.size + 2) *
+              (packedFringeChunkBits shape.size + 1))
+        have hinner :
+            4 * 2 <=
+              (2 * packedFringeChunkBits shape.size + 2) *
+                (packedFringeChunkBits shape.size + 1) :=
+          Nat.mul_le_mul (by omega) (by omega)
+        have houter :
+            3 *
+                ((2 * packedFringeChunkBits shape.size + 2) *
+                  (packedFringeChunkBits shape.size + 1)) <=
+              (2 * packedFringeChunkBits shape.size + 1) *
+                ((2 * packedFringeChunkBits shape.size + 2) *
+                  (packedFringeChunkBits shape.size + 1)) :=
+          Nat.mul_le_mul_right _ (by omega)
+        omega
+      have hW :
+          4 <=
+            SuccinctClose.bpFringeChunkEntryWidth
+              (packedFringeChunkBits shape.size) := by
+        unfold SuccinctClose.bpFringeChunkEntryWidth
+        have hlog :
+            3 <=
+              Nat.log2
+                (SuccinctClose.bpFringeChunkEntryBound
+                  (packedFringeChunkBits shape.size)) :=
+          (Nat.le_log2 (by omega)).mpr (by simpa using hEB)
+        omega
+      have hcpow :
+          packedFringeChunkBits shape.size + 1 <=
+            2 ^ packedFringeChunkBits shape.size :=
+        Nat.lt_two_pow_self
+      have hcube :
+          (packedFringeChunkBits shape.size + 1) *
+              ((packedFringeChunkBits shape.size + 1) *
+                (packedFringeChunkBits shape.size + 1)) <=
+            SuccinctClose.bpFringeChunkRowCount
+              (packedFringeChunkBits shape.size) := by
+        show
+          (packedFringeChunkBits shape.size + 1) *
+              ((packedFringeChunkBits shape.size + 1) *
+                (packedFringeChunkBits shape.size + 1)) <=
+            2 ^ packedFringeChunkBits shape.size *
+              ((packedFringeChunkBits shape.size + 1) *
+                (packedFringeChunkBits shape.size + 1))
+        exact Nat.mul_le_mul_right _ hcpow
+      have hsq :
+          3 * (packedFringeChunkBits shape.size + 1) <=
+            (packedFringeChunkBits shape.size + 1) *
+              (packedFringeChunkBits shape.size + 1) :=
+        Nat.mul_le_mul_right _ (by omega)
+      have hnine :
+          3 * (3 * (packedFringeChunkBits shape.size + 1)) <=
+            3 *
+              ((packedFringeChunkBits shape.size + 1) *
+                (packedFringeChunkBits shape.size + 1)) :=
+        Nat.mul_le_mul_left _ hsq
+      have hlift :
+          3 *
+              ((packedFringeChunkBits shape.size + 1) *
+                (packedFringeChunkBits shape.size + 1)) <=
+            (packedFringeChunkBits shape.size + 1) *
+              ((packedFringeChunkBits shape.size + 1) *
+                (packedFringeChunkBits shape.size + 1)) :=
+        Nat.mul_le_mul_right _ (by omega)
+      have hrowW :
+          SuccinctClose.bpFringeChunkRowCount
+              (packedFringeChunkBits shape.size) * 4 <=
+            SuccinctClose.bpFringeChunkRowCount
+                (packedFringeChunkBits shape.size) *
+              SuccinctClose.bpFringeChunkEntryWidth
+                (packedFringeChunkBits shape.size) :=
+        Nat.mul_le_mul_left _ hW
+      have hcube4 :
+          ((packedFringeChunkBits shape.size + 1) *
+              ((packedFringeChunkBits shape.size + 1) *
+                (packedFringeChunkBits shape.size + 1))) * 4 <=
+            SuccinctClose.bpFringeChunkRowCount
+                (packedFringeChunkBits shape.size) * 4 :=
+        Nat.mul_le_mul_right _ hcube
+      have hFTO :
+          SuccinctClose.bpFringeChunkRowCount
+              (packedFringeChunkBits shape.size) *
+            SuccinctClose.bpFringeChunkEntryWidth
+              (packedFringeChunkBits shape.size) =
+            SuccinctClose.bpFringeTableOverhead shape.size := rfl
+      omega
+  simp only [PackedReviewerNatFits]
+  omega
+
+/-- Any close within the augmented parenthesis string lands in a summary
+block index at or below the raw block count. -/
+private theorem packedReviewerBlockOfClose_le_blockCount
+    (n close : Nat) (hclose : close <= 2 * n + 1) :
+    SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw n) close <=
+      packedSummaryBlockCountRaw n := by
+  unfold SuccinctClose.blockOfClose packedSummaryBlockSizeRaw
+    packedSummaryBlockCountRaw
+  by_cases hbase : packedSummaryBase n = 0
+  · simp [hbase]
+  · have hmono :
+        close / (2 * packedSummaryBase n) <=
+          (2 * n + 1) / (2 * packedSummaryBase n) :=
+      Nat.div_le_div_right hclose
+    have hq := Nat.div_mul_le_self (2 * n + 1) (2 * packedSummaryBase n)
+    have hassoc :
+        (2 * n + 1) / (2 * packedSummaryBase n) *
+            (2 * packedSummaryBase n) =
+          2 *
+            ((2 * n + 1) / (2 * packedSummaryBase n) *
+              packedSummaryBase n) := by
+      rw [Nat.mul_left_comm]
+    rw [hassoc] at hq
+    have hqb :
+        (2 * n + 1) / (2 * packedSummaryBase n) * packedSummaryBase n <=
+          n := by
+      omega
+    have hfin :
+        (2 * n + 1) / (2 * packedSummaryBase n) <=
+          n / packedSummaryBase n :=
+      (Nat.le_div_iff_mul_le (Nat.pos_of_ne_zero hbase)).mpr hqb
+    omega
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
