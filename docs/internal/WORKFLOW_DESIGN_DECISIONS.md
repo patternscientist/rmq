@@ -7805,3 +7805,40 @@ calibration (probe plus clean rebase). The rejected branch's failed first
 full-mode run remains the calibration-discovery receipt; the certification
 run for this candidate is the single full-mode run on this branch's frozen
 final tree.
+
+## WDD-20260806-005: the repaired campaign's evidence lands in the permitted matrix cells and the appended final record
+
+Status: Accepted under the coordinator-commissioned `EG-CP-STAGEF-CLOSE-R2`
+repair contract.
+
+Date: 2026-08-06
+
+Trigger: the final documentation commit fills the section 10.8 ledger
+outcome cells (the only matrix cells the reconstructed freeze permits to
+change), appends the Stage-F final record with the `R3` numeric residual
+estimate and the `R4` per-commit lifecycle table, and appends the worklog
+entry. The matrix is workflow-classified, so this entry rides in the same
+commit -- the discipline `WDD-20260806-001` fixed for this branch, now
+applied to its own final commit rather than one commit later as on the
+rejected branch.
+
+Decision: row evidence lives in the appended result record (the section-10
+requirement tables deliberately carry no evidence columns); only the 10.8
+`Outcome` cells change inside the matrix; every historical row stays
+byte-identical (re-verified: 148 base rows byte-exact on the final tree).
+The `R3` estimate is recorded as zero remaining focused proof-days with a
+closed consumer inventory and no unknown dynamic input; the `R4` table
+lists every workflow-sensitive commit with its same-commit WDD entry and
+its detached re-check result; changed paths and category counts come from
+Git and the strict checker on the final range, receipted in the worker
+terminal report.
+
+Alternatives rejected: evidence columns inside the frozen tables (would
+alter locked structures); a summary-only record without the per-commit
+table (the `R4` finding was precisely that lifecycle claims must be
+reproducible per commit); landing this entry after the documentation
+commit (the defect this branch exists to not repeat).
+
+Consequences: the candidate is complete as a worker submission; the next
+actors are the coordinator (reconstruction audit) and a fresh-blind
+auditor on the exact final commit.

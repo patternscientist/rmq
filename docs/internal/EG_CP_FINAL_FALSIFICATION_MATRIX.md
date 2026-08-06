@@ -801,17 +801,17 @@ or audit prose as theorem evidence.
 | ID | Command | Role | Rows covered | Outcome |
 | --- | --- | --- | --- | --- |
 | `SF-CHK-00` | `scripts/project_skill_preflight.ps1 -GovernanceRef f0c7232a... -RequiredSkills rmq-proof-sprint -RuntimeProjectSkills "rmq-audit-prompt, rmq-coordinator, rmq-proof-sprint" -CheckoutRef 0f38672...` | F | governance | PASS before edits (recorded 2026-08-06). |
-| `SF-CHK-01` | focused `lake build` of each changed PackedCellProbe module and `RMQ.Validation.EGCPFinalFalsification` | D then F | all Lean rows | Pending |
-| `SF-CHK-02` | `lake build RMQ` | F | whole-library integration | Pending |
-| `SF-CHK-03` | `lake env lean scripts/axiom_check.lean` | F | `FG-13`, axiom inventory | Pending |
-| `SF-CHK-04` | replay bounded startup, exact selector `A01-PRODUCTION-EXPECTED-ACCEPT`, exact selector `M01-WRONG-LONG-COUNT`, then full mode exactly once on the committed frozen candidate | F | `FG-12`, `INV-MUTATION-REPRODUCIBILITY` | Pending |
-| `SF-CHK-05` | `-SelfTestOnly` descendant-termination run on WSL `Ubuntu-24.04` under `pwsh` | F | `REPLAY-SUBPROCESS-DEADLINE` (Ubuntu leg) | Pending |
-| `SF-CHK-06` | strict UTF-8 section-scoped frozen-row comparison against `0f38672...` | F (before expensive final verification and at final) | `FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY` | Pending |
-| `SF-CHK-07` | `powershell -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1 -Strict` | F | `FG-15` prose | Pending |
-| `SF-CHK-08` | `powershell -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1 -Strict -Base 0f386723f56deae5eb39418e535f56e7a2b347dd` | F | design policy | Pending |
-| `SF-CHK-09` | `AGENTS.md` hygiene scan and native-shortcut scan over `RMQ` and `lakefile.toml` | F | `FG-13` | Pending |
-| `SF-CHK-10` | UTF-8 inspection of changed docs; exact changed-path allowlist check; `git diff --check` working tree and `git diff --check 0f38672...HEAD` after committing; final `git status --porcelain` cleanliness | F | hygiene, handoff | Pending |
-| `SF-CHK-11` | aggregate `scripts/gate.ps1` | C | only if a final changed surface is not owned above | Pending |
+| `SF-CHK-01` | focused `lake build` of each changed PackedCellProbe module and `RMQ.Validation.EGCPFinalFalsification` | D then F | all Lean rows | PASS: every changed module carried a focused green elaboration before its commit; frozen-tree receipts in the final record. |
+| `SF-CHK-02` | `lake build RMQ` | F | whole-library integration | PASS: `lake build RMQ` exit 0, 16 s on the frozen tree (warm; the chain was built by the replay and validation builds). |
+| `SF-CHK-03` | `lake env lean scripts/axiom_check.lean` | F | `FG-13`, axiom inventory | PASS: `lake env lean scripts/axiom_check.lean` exit 0; the six Stage-F entries on `[propext, Classical.choice, Quot.sound]`; zero forbidden axioms in the inventory (receipt in the final record). |
+| `SF-CHK-04` | replay bounded startup, exact selector `A01-PRODUCTION-EXPECTED-ACCEPT`, exact selector `M01-WRONG-LONG-COUNT`, then full mode exactly once on the committed frozen candidate | F | `FG-12`, `INV-MUTATION-REPRODUCIBILITY` | PASS: bounded startup with a genuine mutated-chain probe (228 s -> 912 s deadline), exact `A01` selector ACCEPT, one full-mode certification run on frozen `f105971`: 16/16 as commissioned, 0 target-absent, `FULL MODE PASS` exit 0 in 1430.4 s, SHA-verified restorations, terminal clean tree. |
+| `SF-CHK-05` | `-SelfTestOnly` descendant-termination run on WSL `Ubuntu-24.04` under `pwsh` | F | `REPLAY-SUBPROCESS-DEADLINE` (Ubuntu leg) | PASS: `-SelfTestOnly` on WSL `Ubuntu-24.04` under `pwsh 7.6.4` (51.3 s) and on Windows (6.4 s), identical script bytes, pid-verified root and descendant termination. |
+| `SF-CHK-06` | strict UTF-8 section-scoped frozen-row comparison against `0f38672...` | F (before expensive final verification and at final) | `FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY` | PASS on the final tree: 148 base rows byte-exact under strict UTF-8, 0 missing/duplicated/changed, all 34 added rows inside section 10. |
+| `SF-CHK-07` | `powershell -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1 -Strict` | F | `FG-15` prose | PASS required and rerun on the tree containing the final record immediately before the documentation commit; counts in the worker terminal report. |
+| `SF-CHK-08` | `powershell -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1 -Strict -Base 0f386723f56deae5eb39418e535f56e7a2b347dd` | F | design policy | PASS at every commit against its exact parent (commit-time and detached re-check), and on the final `0f38672..HEAD` range; receipts in the final record and worker terminal report. |
+| `SF-CHK-09` | `AGENTS.md` hygiene scan and native-shortcut scan over `RMQ` and `lakefile.toml` | F | `FG-13` | PASS: zero matches for both scans over `RMQ` and `lakefile.toml` on the frozen tree. |
+| `SF-CHK-10` | UTF-8 inspection of changed docs; exact changed-path allowlist check; `git diff --check` working tree and `git diff --check 0f38672...HEAD` after committing; final `git status --porcelain` cleanliness | F | hygiene, handoff | PASS required: strict UTF-8 doc inspection, changed-path allowlist, working-tree and committed-range `git diff --check`, terminal cleanliness; receipts in the worker terminal report. |
+| `SF-CHK-11` | aggregate `scripts/gate.ps1` | C | only if a final changed surface is not owned above | Skipped: every changed surface and acceptance row is owned by `SF-CHK-01`..`SF-CHK-10`; a duplicate aggregate run adds no unique coverage. |
 
 CI note carried from `WDD-20260726-007`: each commit on this branch must
 validate `design_decision_check.ps1` at `-Base HEAD~1`.

@@ -85,3 +85,44 @@ progress record in `RMQ_ENDGAME_ROADMAP.md`.
 - The fringe candidate argument stays `<= 34 * packedFringeChunkBits n`; its
   globalization fits because the fringe table's own footprint dominates the
   chunk budget at every size (40-floor below `c = 2`, cube bound above).
+
+## Stage-F residual repair (2026-08-06, `EG-CP-STAGEF-CLOSE-R2`)
+
+An external audit rejected candidate `cefc4ef` (four repairs: `R1` decisive
+provenance/transition, `R2` capstone input boundary, `R3` F12 numeric
+estimate, `R4` lifecycle/report accuracy). Clean-history reconstruction on
+branch `codex/eg-cp-stagef-close-r2` from accepted local `main` `0f38672`;
+the rejected branch is immutable source evidence. Milestones:
+
+21. `8d22684` the corrected contract: round-log records (2026-08-05
+    integration; 2026-08-06 rejection), matrix section 10 with exactly the
+    two authorized repair amendments, `WDD-20260806-001` (same commit).
+22. `c1eada6` the capstone born with the exact-type
+    `controller_input_boundary` (fourteen conjuncts), universal header
+    liveness, FG-14 instances, runner enactments, portable self-test;
+    `DD-20260806-076`/`WDD-20260806-002` (same commit). On-branch probe:
+    the M03-style parameter is ill-typed at `ReviewerCapstone.lean:114`.
+23. `37764ad` the fixture with the `R1`-strengthened
+    `packedReviewerDecisiveCellConnection` (driver prefix decomposition
+    `packedReviewerDriveStateAt` + `packedReviewerDriveAux_decompose`;
+    invocation fields, transition, and continuation in the conclusion),
+    corrected validation consumers, A02 enactment, M03 `ExpectFile`
+    follow, axiom entries; `DD-20260806-077`/`WDD-20260806-003` (same
+    commit). Probe: weakening the producer back to the rejected form
+    fails `egcpStageFDecisiveCellConnection`.
+24. `f105971` the deadline calibration in final form (private-definition
+    probe; M08/M12 `ExpectFile` follow); `WDD-20260806-004` (same commit).
+25. Frozen-tree battery: Windows and Ubuntu `-SelfTestOnly` PASS; exact
+    `A01` selector ACCEPT; one full-mode certification run `FULL MODE
+    PASS` 16/16 (1430.4 s, deadline 912 s from a genuine 228 s probe);
+    both anti-vacuity probes REJECT at their named consumers; builds,
+    axiom inventory, scans, frozen-row byte integrity, and detached
+    per-commit design re-checks all green.
+26. The final documentation commit: this entry, the completed section
+    10.8 cells, the Stage-F final record with the `R3` numeric estimate
+    (zero remaining focused proof-days) and the `R4` per-commit lifecycle
+    table; `WDD-20260806-005` (same commit).
+
+Boundary: repaired local candidate only. Coordinator audit and a separate
+fresh-blind audit are requested next; `FEASIBILITY_PASS`, Stage A, public
+synchronization, `S1`, and `V1` remain open.
