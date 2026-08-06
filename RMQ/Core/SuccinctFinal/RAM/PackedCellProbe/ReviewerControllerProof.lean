@@ -3158,7 +3158,7 @@ private theorem packedReviewerFixedWidthMachineWords_length_le_payload
       exact congrArg List.length table.store.erases
 
 /-- The segment-20 dead/sentinel word index fits the reviewer address word. -/
-theorem packedReviewerInteriorDeadAddress_lt_two_pow
+theorem packedReviewerInteriorDeadAddress_lt_two_pow_of_shape
     (shape : CartesianShape) :
     (packedInteriorOffsets shape.size).deadAddress <
       2 ^ packedReviewerCellWidth shape.size := by
@@ -3303,7 +3303,7 @@ private theorem packedReviewerInteriorNat_read_requests_fit
   | succ remaining ih =>
       have hslot :
           PackedReviewerNatFits shape.size (start + next) := by
-        have hdead := packedReviewerInteriorDeadAddress_lt_two_pow shape
+        have hdead := packedReviewerInteriorDeadAddress_lt_two_pow_of_shape shape
         omega
       have hrequest :
           PackedReviewerLogicalRequestOperandsFit shape.size

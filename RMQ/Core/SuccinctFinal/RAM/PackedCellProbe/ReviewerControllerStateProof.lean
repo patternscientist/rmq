@@ -13875,6 +13875,16 @@ theorem packedReviewerReachableStateCertificate_of_reachable
       control_fields := hfits.control_fields }
 /-! ## Physical request-operand closure and the public run certificate -/
 
+/-- The dead/sentinel index bound at every size, via a realizing shape. -/
+theorem packedReviewerInteriorDeadAddress_lt_two_pow (n : Nat) :
+    (packedInteriorOffsets n).deadAddress <
+      2 ^ packedReviewerCellWidth n := by
+  have h :=
+    packedReviewerInteriorDeadAddress_lt_two_pow_of_shape
+      (RMQ.Cartesian.shape (List.replicate n 0))
+  rw [RMQ.Cartesian.shape_size] at h
+  simpa using h
+
 /-- Every expected-trace physical request retains only fitting operands. -/
 private theorem packedReviewerExpectedPhysicalTrace_request_operands_fit
     (shape : CartesianShape) (left right : Nat)
@@ -14023,7 +14033,7 @@ theorem packedReviewerRunAgainstMemory_public_certificate
           (SuccinctClassic.cartesianShape xs) left right hmem hreply
       dead_address_width :=
         packedReviewerInteriorDeadAddress_lt_two_pow
-          (SuccinctClassic.cartesianShape xs)
+          (SuccinctClassic.cartesianShape xs).size
       word_width_logarithmic :=
         packedReviewerCellWidth_le_log
           (SuccinctClassic.cartesianShape xs).size
