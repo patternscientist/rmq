@@ -9884,3 +9884,86 @@ Consequences: comment-only Lean changes in
 and `RMQ/Validation/EGCPFinalFalsification.lean`; theorem bodies and types
 are unchanged; the strict design-decision classifier requires this ledger
 entry because those paths are Lean paths.
+
+## DD-20260806-076 -- the Stage-F capstone is a projection bundle, and header liveness is a universal second-address theorem
+
+The Stage-F residual campaign needed two new theorem surfaces: one combined
+capstone over the accepted reviewer-machine objects, and the `FG-11` header
+liveness witness. Both live in
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCapstone.lean`.
+
+### Decision
+
+`PackedReviewerStageFCapstone xs left right` is a structure whose fourteen
+frozen conjuncts (matrix section 10.5, as corrected by the audited repair
+`R2`) are each stated over the literal
+`SuccinctClassic.cartesianShape xs`, `packedReviewerMemory shape`, and
+`packedReviewerRunAgainstMemory (packedReviewerMemory shape) shape.size left
+right`, and whose producer `packedReviewerStageFCapstone_holds` is pure
+projection: every field is discharged from
+`packedReviewerRunAgainstMemory_public_certificate`, the payload/memory/space
+equations, `packedReviewerRunAgainstMemory_eq_of_agree`, or -- for the
+`controller_input_boundary` field -- two `rfl`s: the eta-form exact-type pin
+`@packedReviewerController = fun (n left right : Nat) =>
+packedReviewerController n left right`, which elaborates only at the exact
+public entry type `Nat -> Nat -> Nat -> PackedReviewerControllerState`, and
+the zeta-form run factorization exhibiting that memory is supplied only to
+the physical driver interface. A compile-negative probe on this branch
+confirmed the anti-vacuity direction: adding the `M03`-style optional shape
+parameter to `packedReviewerController` makes this field ill-typed and
+`ReviewerCapstone.lean` is the first failing module of the chain. The
+former length/arity and store-agreement facts are retained under the
+accurate names `closed_length_and_memory_arity` and
+`store_agreement_determinism`; they are conjuncts, not an input boundary. No new execution
+story is introduced; the capstone's value is that deleting or weakening any
+accepted theorem breaks one named conjunct, and the validation root restates
+every conjunct independently.
+
+Header liveness is proved universally rather than at a sampled size:
+`packedReviewerHeaderCellAddressLiveness` shows, for every shape and valid
+endpoint pair, that replacing only memory cell `0` by the same-width encoding
+of `longCount + w(n)` changes the run's second attempted physical address.
+The proof route is two-step symbolic execution of the driver on both
+memories, plus the linearity of the closed first-order access prefix
+(`packedReviewerSparseRankSuperPrefixLength`) in the decoded count: the only
+count-dependent prefix term is the long relative table, contributing
+`longCount * superStride (2n) * packedSuperWidth n` bits, so a one-cell-width
+count shift moves the first `.rankSuper` probe by at least one whole cell.
+Supporting facts: the prelude's terminal-sample index is inside the
+sparse-rank directory by the successor inequality (`packedSparseRankSlots n`
+is literally `index + 1`), the terminal sample is read at the full word size,
+and `longCount + w(n)` still fits one cell
+(`packedReviewerLongCount_add_width_lt_two_pow`, via
+`log2 (bound + 2) + 1 + n <= bound + 2`).
+
+`FG-14` boundary instances are all instantiations of the one universal
+capstone: empty, singleton, both size-two lists (with a distinctness proof by
+answer divergence, since kernel `decide` cannot reduce `cartesianShape`),
+crossover `5487/5488/5489`, the readiness window's six sizes, invalid-query
+cases, and the duplicate-minimum fixture `[7, 3, 3]` whose expected `some 1`
+comes from `scanWindow`/`queryCosted_exact`/`queryCosted_leftmost`, never
+from the implementation output.
+
+### Rejected alternatives
+
+* Restating capstone conjuncts as new proofs rather than projections was
+  rejected: a second proof route would let a library weakening survive behind
+  the capstone's own copy.
+* A sampled header-liveness instance (the frozen row's minimum) was rejected
+  in favour of the universal theorem: the geometry is linear in the decoded
+  count at every size, so proving one size would spend almost the same work
+  for strictly weaker evidence.
+* Deriving the second-address fact from the grouping theorem was rejected:
+  the mutated memory is no shape's canonical memory, so the grouping does not
+  apply to it; direct two-step driver execution covers both runs uniformly.
+* A `decide`-based size-two shape distinctness was rejected because
+  `cartesianShape` is not kernel-reducible; the answer-divergence proof uses
+  only public theorems.
+
+### Consequences and evidence
+
+`ReviewerCapstone.lean` elaborates in under four seconds, which keeps every
+replay rebuild chain that includes it far inside the harness deadline. The
+validation root gains independently written consumers for the capstone and
+the liveness theorems. The decisive-cell and unread-cell fixture theorems
+land in the same module and are recorded separately.

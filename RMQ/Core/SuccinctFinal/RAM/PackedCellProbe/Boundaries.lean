@@ -201,6 +201,51 @@ theorem packedInteriorFits_1331 :
   rw [packedSummaryBase_1331]
   decide
 
+/-- The base does not move inside the window: `1025` still sits in
+`[2^10, 2^11)`, so the divisor that jumped at `1024` stays put. -/
+theorem packedSummaryBase_1025 : packedSummaryBase 1025 = 11 := by
+  unfold packedSummaryBase
+  rw [packedLog2_eq (n := 1025) (k := 10) (by omega) (by decide) (by decide)]
+
+/-- One step past the lower endpoint nothing has recovered: with the base pinned
+at `11` the block count is still `93` against a macro size of `121`, so the
+unreadiness at `1024` is not a boundary accident. -/
+theorem packedInteriorUnfits_1025 :
+    packedSummaryBlockCountRaw 1025 < packedInteriorMacroSize 1025 := by
+  unfold packedInteriorMacroSize packedSummaryBlockCountRaw
+  rw [packedSummaryBase_1025]
+  decide
+
+/-- The base has been `11` the whole way across: `1329` is still short of
+`2048`. -/
+theorem packedSummaryBase_1329 : packedSummaryBase 1329 = 11 := by
+  unfold packedSummaryBase
+  rw [packedLog2_eq (n := 1329) (k := 10) (by omega) (by decide) (by decide)]
+
+/-- One step before the upper endpoint the block count has already climbed to
+`120` -- the same one-block shortfall as at `1330`, because `n / 11` only moves
+every eleventh step. -/
+theorem packedInteriorUnfits_1329 :
+    packedSummaryBlockCountRaw 1329 < packedInteriorMacroSize 1329 := by
+  unfold packedInteriorMacroSize packedSummaryBlockCountRaw
+  rw [packedSummaryBase_1329]
+  decide
+
+/--
+**The window with a step inside each endpoint.** The readiness clause fails one
+step into the interval as well as at its endpoints, so the failure belongs to the
+interval `[1024, 1330]` itself and not to an accident of its edges.
+-/
+theorem packedInteriorReadinessWindowNeighbors :
+    packedInteriorMacroSize 1023 <= packedSummaryBlockCountRaw 1023 /\
+      packedSummaryBlockCountRaw 1024 < packedInteriorMacroSize 1024 /\
+        packedSummaryBlockCountRaw 1025 < packedInteriorMacroSize 1025 /\
+          packedSummaryBlockCountRaw 1329 < packedInteriorMacroSize 1329 /\
+            packedSummaryBlockCountRaw 1330 < packedInteriorMacroSize 1330 /\
+              packedInteriorMacroSize 1331 <= packedSummaryBlockCountRaw 1331 :=
+  ⟨packedInteriorFits_1023, packedInteriorUnfits_1024, packedInteriorUnfits_1025,
+    packedInteriorUnfits_1329, packedInteriorUnfits_1330, packedInteriorFits_1331⟩
+
 /--
 **The window, as one statement.** The readiness clause that moves fails at both
 endpoints of `[1024, 1330]` and holds at both neighbours.

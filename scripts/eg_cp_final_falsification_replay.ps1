@@ -36,6 +36,15 @@
 .PARAMETER SkipSelfTest
   Skip the descendant-termination self-test. Intended for development only; a
   full-mode run refuses it.
+
+.PARAMETER SelfTestOnly
+  Validate the selectors, check registry integrity, run the
+  descendant-termination self-test, and exit without building anything. This
+  is the build-free leg that exercises owned root-plus-descendant termination
+  on a gate OS without a Lean toolchain (the Ubuntu contract of
+  `REPLAY-SUBPROCESS-DEADLINE`). It refuses -Case, -Stage, and -SkipSelfTest,
+  and changes no registry, selector, deadline, restoration, or full-mode
+  semantics.
 #>
 
 [CmdletBinding()]
@@ -44,7 +53,8 @@ param(
   [string] $Case,
   [AllowEmptyString()]
   [string] $Stage,
-  [switch] $SkipSelfTest
+  [switch] $SkipSelfTest,
+  [switch] $SelfTestOnly
 )
 
 Set-StrictMode -Version Latest
@@ -81,13 +91,40 @@ $script:Registry = @(
      Mutation = 'alter the header count';
      Verdict = 'REJECT'; Surface = 'liveness/consumer';
      Target = @{ Kind = 'Patch';
-       ExpectFile = 'PackedCellProbe/SourceGeometry.lean';
-       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceGeometry.lean';
-       Find  = '  | .selectLongRelative => packedLongRelativeSlots n longCount';
-       Repl  = '  | .selectLongRelative => packedLongRelativeSlots n (longCount + 1)' } },
+       ExpectFile = 'PackedCellProbe/ReviewerControllerProof.lean';
+       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean';
+       Find  = '      let longCount := SuccinctSpace.bitsToNatLE cell';
+       Repl  = '      let longCount := SuccinctSpace.bitsToNatLE cell + 1' };
+     Activation = @(
+       'let longCount := SuccinctSpace.bitsToNatLE cell + 1') },
   @{ Order = 4;  Id = 'M02-HOST-LONG-COUNT-MIRROR';
      Mutation = 'bypass the header reply with preprocessing/host metadata';
-     Verdict = 'REJECT'; Surface = 'structural consumer'; Target = $null },
+     Verdict = 'REJECT'; Surface = 'structural consumer';
+     Target = @{ Kind = 'Patch';
+       ExpectFile = 'PackedCellProbe/ReviewerController.lean';
+       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean';
+       Find  = 'def packedReviewerRunAgainstMemory
+    (memory : List (List Bool)) (n left right : Nat) : PackedReviewerRun :=
+  let controller := packedReviewerController n left right
+  packedReviewerDriveAgainstMemoryAux memory
+    (packedReviewerControllerMeasure controller) controller';
+       Repl  = 'def packedReviewerRunAgainstMemory
+    (memory : List (List Bool)) (n left right : Nat) : PackedReviewerRun :=
+  let hostLongCountMirror := SuccinctSpace.bitsToNatLE ((memory[0]?).getD [])
+  let controller :=
+    match packedReviewerController n left right with
+    | .header nStart leftStart rightStart =>
+        packedReviewerNormalizePrelude
+          (packedReviewerSparsePreludeRemaining
+            (packedReviewerSparsePreludeInit nStart hostLongCountMirror))
+          nStart leftStart rightStart hostLongCountMirror
+          (packedReviewerSparsePreludeInit nStart hostLongCountMirror)
+    | state => state
+  packedReviewerDriveAgainstMemoryAux memory
+    (packedReviewerControllerMeasure controller) controller' };
+     Activation = @(
+       'let hostLongCountMirror := SuccinctSpace.bitsToNatLE ((memory[0]?).getD [])',
+       'packedReviewerSparsePreludeInit nStart hostLongCountMirror') },
   @{ Order = 5;  Id = 'M03-SHAPE-PARAMETER';
      Mutation = 'add or restore a semantic shape input';
      Verdict = 'REJECT'; Surface = 'exact signature';
@@ -101,7 +138,21 @@ $script:Registry = @(
     PackedReviewerControllerState :=' } },
   @{ Order = 6;  Id = 'M04-CANONICAL-SHAPE-BY-N';
      Mutation = 'synthesize a canonical shape from n inside a wrapper';
-     Verdict = 'REJECT'; Surface = 'structural / same-object'; Target = $null },
+     Verdict = 'REJECT'; Surface = 'structural / same-object';
+     Target = @{ Kind = 'Patch';
+       ExpectFile = 'PackedCellProbe/ReviewerController.lean';
+       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean';
+       Find  = '  let controller := packedReviewerController n left right
+  packedReviewerDriveAgainstMemoryAux memory
+    (packedReviewerControllerMeasure controller) controller';
+       Repl  = '  let controller := packedReviewerController n left right
+  let canonicalShapeFromN := packedSpine n
+  let canonicalMemoryFromN := packedReviewerMemory canonicalShapeFromN
+  packedReviewerDriveAgainstMemoryAux canonicalMemoryFromN
+    (packedReviewerControllerMeasure controller) controller' };
+     Activation = @(
+       'let canonicalShapeFromN := packedSpine n',
+       'packedReviewerDriveAgainstMemoryAux canonicalMemoryFromN') },
   @{ Order = 7;  Id = 'M05-SIBLING-STORE';
      Mutation = 'read a logical/source store beside memory xs';
      Verdict = 'REJECT'; Surface = 'store identity';
@@ -220,15 +271,32 @@ private theorem packedReviewerRunAgainstMemory_public_certificate_original
     PackedReviewerPublicRunCertificate xs left right := by' } },
   @{ Order = 15; Id = 'M13-HIDDEN-UNCOUNTED-TABLE';
      Mutation = 'add a content-dependent lookup/program constant outside memory xs';
-     Verdict = 'REJECT'; Surface = 'closed controller / program accounting'; Target = $null },
+     Verdict = 'REJECT'; Surface = 'closed controller / program accounting';
+     Target = @{ Kind = 'Patch';
+       ExpectFile = 'PackedCellProbe/ReviewerController.lean';
+       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean';
+       Find  = '          | some request =>
+              let reply := memory[request.address]?';
+       Repl  = '          | some request =>
+              let hiddenUncountedTable := memory.take 1
+              let reply :=
+                if request.address < hiddenUncountedTable.length then
+                  hiddenUncountedTable[request.address]?
+                else
+                  memory[request.address]?' };
+     Activation = @(
+       'let hiddenUncountedTable := memory.take 1',
+       'hiddenUncountedTable[request.address]?') },
   @{ Order = 16; Id = 'M14-LONG-COUNT-IGNORED';
      Mutation = 'retain the header read but make downstream offsets independent of its value';
      Verdict = 'REJECT'; Surface = 'liveness';
      Target = @{ Kind = 'Patch';
-       ExpectFile = 'PackedCellProbe/SourceGeometry.lean';
-       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceGeometry.lean';
-       Find  = '  | .selectLongRelative => packedLongRelativeSlots n longCount';
-       Repl  = '  | .selectLongRelative => packedLongRelativeSlots n 0' } }
+       ExpectFile = 'PackedCellProbe/ReviewerControllerProof.lean';
+       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean';
+       Find  = '      let longCount := SuccinctSpace.bitsToNatLE cell';
+       Repl  = '      let longCount := 0' };
+     Activation = @(
+       'let longCount := 0') }
 )
 
 # One literal owned campaign over the existing frozen registry.  This does not
@@ -337,15 +405,50 @@ function Invoke-DescendantSelfTest {
 
   Write-Stage 'descendant-termination self-test'
 
-  $marker = Join-Path ([System.IO.Path]::GetTempPath()) ("egcp-replay-" + [System.Guid]::NewGuid().ToString('N') + ".txt")
-  # A root that spawns a detached grandchild sleeper, so killing the root alone
-  # would leave the grandchild running.
-  $childScript = "Start-Process -FilePath '$($PSHOME)\powershell.exe' -ArgumentList '-NoProfile','-Command','Start-Sleep -Seconds 120; Set-Content -Path ''$marker'' -Value done' -WindowStyle Hidden; Start-Sleep -Seconds 120"
+  # The grandchild's pid is reported through a file, so absence of BOTH the
+  # owned root and the named descendant is checked directly by pid. The prior
+  # marker-file check could fire only 120 s after spawn and therefore could
+  # not observe a surviving grandchild at all; and on a non-Windows host the
+  # prior body spawned 'powershell.exe' (absent) and name-grepped 'powershell'
+  # (never matching), so the Ubuntu leg could have reported a pass without
+  # ever exercising the kill. This body is the honest portable replacement.
+  $pidFile = Join-Path ([System.IO.Path]::GetTempPath()) ("egcp-replay-" + [System.Guid]::NewGuid().ToString('N') + ".pid")
+  $onWindows = Test-OnWindows
+  $shellExe = if ($onWindows) { Join-Path $PSHOME 'powershell.exe' }
+    else { Join-Path $PSHOME 'pwsh' }
+  # A root that spawns a detached grandchild sleeper and records its pid, so
+  # killing the root alone would leave a running grandchild whose pid we know.
+  $childScript = "`$grandchild = Start-Process -FilePath '$shellExe' -ArgumentList '-NoProfile','-Command','Start-Sleep -Seconds 120' -PassThru; Set-Content -Path '$pidFile' -Value `$grandchild.Id; Start-Sleep -Seconds 120"
 
-  $proc = Start-Process -FilePath (Join-Path $PSHOME 'powershell.exe') `
-    -ArgumentList '-NoProfile', '-Command', $childScript `
-    -PassThru -WindowStyle Hidden
-  Start-Sleep -Seconds 2
+  if ($onWindows) {
+    $proc = Start-Process -FilePath $shellExe `
+      -ArgumentList '-NoProfile', '-Command', $childScript `
+      -PassThru -WindowStyle Hidden
+  } else {
+    # `setsid` gives the root its own process group -- the object the Unix
+    # branch of Stop-ProcessTree addresses by negated pid.
+    $proc = Start-Process -FilePath 'setsid' `
+      -ArgumentList $shellExe, '-NoProfile', '-Command', $childScript `
+      -PassThru
+  }
+
+  $grandchildId = $null
+  for ($i = 0; $i -lt 100; $i++) {
+    if (Test-Path -LiteralPath $pidFile) {
+      $raw = @(Get-Content -LiteralPath $pidFile -ErrorAction SilentlyContinue)
+      if ($raw.Count -gt 0 -and $null -ne $raw[0] -and $raw[0].ToString().Trim().Length -gt 0) {
+        $grandchildId = [int] $raw[0].ToString().Trim()
+        break
+      }
+    }
+    Start-Sleep -Milliseconds 200
+  }
+  if ($null -eq $grandchildId) {
+    try { Stop-ProcessTree -RootId $proc.Id | Out-Null } catch { }
+    if (Test-Path -LiteralPath $pidFile) { Remove-Item -LiteralPath $pidFile -Force }
+    Add-Failure 'descendant self-test: the grandchild sleeper did not report a pid'
+    return $false
+  }
 
   $killed = Stop-ProcessTree -RootId $proc.Id
   if (-not $killed) {
@@ -354,19 +457,19 @@ function Invoke-DescendantSelfTest {
   }
 
   Start-Sleep -Seconds 2
-  $survivors = Get-Process -Name 'powershell' -ErrorAction SilentlyContinue |
-    Where-Object { $_.Id -eq $proc.Id }
-  if ($null -ne $survivors) {
+  $rootSurvivor = Get-Process -Id $proc.Id -ErrorAction SilentlyContinue
+  if ($null -ne $rootSurvivor) {
     Add-Failure 'descendant self-test: the owned root survived termination'
     return $false
   }
-
-  if (Test-Path -LiteralPath $marker) {
-    Remove-Item -LiteralPath $marker -Force
-    Add-Failure 'descendant self-test: a descendant outlived its root and wrote the marker'
+  $grandchildSurvivor = Get-Process -Id $grandchildId -ErrorAction SilentlyContinue
+  if ($null -ne $grandchildSurvivor) {
+    try { Stop-ProcessTree -RootId $grandchildId | Out-Null } catch { }
+    Add-Failure 'descendant self-test: the grandchild sleeper outlived its root'
     return $false
   }
 
+  if (Test-Path -LiteralPath $pidFile) { Remove-Item -LiteralPath $pidFile -Force }
   Write-Stage 'descendant-termination self-test: PASS'
   return $true
 }
@@ -598,6 +701,16 @@ if ($caseMode -and $stageMode) {
   exit 2
 }
 
+if ($SelfTestOnly -and ($caseMode -or $stageMode)) {
+  Write-Host 'REPLAY-FAIL: -SelfTestOnly is exclusive with -Case and -Stage'
+  exit 2
+}
+
+if ($SelfTestOnly -and $SkipSelfTest) {
+  Write-Host 'REPLAY-FAIL: -SelfTestOnly refuses -SkipSelfTest'
+  exit 2
+}
+
 if ($caseMode) {
   if ($null -eq $Case -or $Case.Trim().Length -eq 0) {
     Write-Host 'REPLAY-FAIL: an explicitly supplied case selector must not be empty or whitespace'
@@ -624,6 +737,15 @@ if ($stageMode) {
 if (-not (Test-RegistryIntegrity)) {
   Write-Host 'REPLAY-FAIL: registry integrity check failed'
   exit 3
+}
+
+if ($SelfTestOnly) {
+  if (-not (Invoke-DescendantSelfTest -DeadlineSeconds 300)) {
+    Write-Host 'REPLAY-FAIL: descendant-termination self-test failed'
+    exit 6
+  }
+  Write-Host 'REPLAY: SELF-TEST-ONLY PASS - registry integrity and descendant termination verified'
+  exit 0
 }
 
 $surfaceModule = 'RMQ.Validation.EGCPFinalFalsification'

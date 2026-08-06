@@ -7602,3 +7602,64 @@ Consequences: the corrected propositions are binding on every later commit
 of this branch; a proof that only satisfies the rejected weaker forms does
 not close its row. The per-commit gate discipline is verified twice: at
 commit time and by the final-tree re-check table in the result record.
+
+## WDD-20260806-002: the residual replay targets are enacted and the descendant self-test verifies named pids portably, because the prior Ubuntu branch could false-pass
+
+Status: Accepted under the coordinator-commissioned `EG-CP-STAGEF-CLOSE-R2`
+repair contract (clean-history reconstruction of the rejected branch's
+`WDD-20260806-001`/`002` enactment decisions, landed in the same commit as
+the runner changes they govern).
+
+Date: 2026-08-06
+
+Enactment scope carried by this commit, exactly as frozen in matrix section
+10.4: `M01`/`M14` retargeted from the flat source-geometry equation to the
+executed controller's header decode (REJECT surface
+`ReviewerControllerProof.lean`); `M02` host long-count mirror, `M04`
+canonical shape synthesized from `n` driving a second memory, and `M13`
+hidden uncounted lookup table (REJECT surface `ReviewerController.lean`),
+each with mechanical activation needles; the `-SelfTestOnly` build-free
+mode for the Ubuntu termination leg; and the pid-verified portable
+descendant self-test below.
+
+Trigger: preparing the Ubuntu leg of `REPLAY-SUBPROCESS-DEADLINE` exposed
+three defects in the never-yet-run non-Windows branch of
+`Invoke-DescendantSelfTest` in `scripts/eg_cp_final_falsification_replay.ps1`.
+First, it spawned `$PSHOME\powershell.exe`, which does not exist under Linux
+`pwsh`, so no process tree was ever created. Second, the survivor check
+name-grepped `powershell`, which never matches on Linux, so the missing kill
+was invisible. Third, the only descendant evidence was a marker file the
+grandchild would write 120 seconds after spawn, while the check ran about
+four seconds in -- a surviving grandchild could never be observed on either
+OS. Together these meant an Ubuntu invocation could have printed PASS
+without exercising `Stop-ProcessTree` at all: exactly the
+`M1R5-OWNED-PROCESS-TREE-MUST-MATCH-GATE-OS` failure the frozen contract
+guards against.
+
+Decision: replace the body with a portable pid-verified test. The root
+sleeper is spawned from `$PSHOME` under the correct executable name per OS
+(`powershell.exe` / `pwsh`), on Linux under `setsid` so the root owns the
+process group that the Unix branch of `Stop-ProcessTree` addresses by
+negated pid. The root records its grandchild's pid in a temp file before
+sleeping; the harness waits for that pid, kills the tree once, and then
+requires `Get-Process -Id` to find NEITHER the root NOR the named
+grandchild. A `-SelfTestOnly` switch (frozen in matrix section 10.4) runs
+selector validation, registry integrity, and this self-test with no build,
+so the Ubuntu contract is exercised on local WSL `Ubuntu-24.04` under
+`pwsh 7.6.4` without a Linux Lean toolchain, a push, or new authority.
+
+Alternatives rejected: keeping the marker-file check (cannot observe a
+surviving grandchild inside the test's own window); waiting 120 seconds for
+the marker (turns every invocation into a two-minute stall and still checks
+a proxy rather than the pid); a Linux-only sibling script (the frozen
+contract requires the harness's own owned-tree implementation on every gate
+OS, not a lookalike); recursive parent-pid walking instead of `setsid`
+(races with reparenting to init after the root dies, which is exactly the
+window under test).
+
+Consequences: the self-test is strictly stronger on Windows too -- both pids
+are named and checked, where previously only the root was. Receipts: the
+Windows `-SelfTestOnly` run and the WSL `Ubuntu-24.04` run both PASS on this
+branch and are re-run on the final frozen tree for the `FG-15` record. The
+full sixteen-case campaign continues to run the same self-test before any
+semantic case, exactly as before.
