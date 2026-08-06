@@ -37,9 +37,11 @@ This file is the validation root for the falsification gate. It currently pins:
   allocation, coverage, decoding, charged probe count and boundary instances
   (towards `FG-08`, `FG-09`).
 
-The controller, whole-run lowering, same-run correctness, liveness and the
-committed replay are not stated here because they do not yet exist, and a
-consumer for an absent theorem would be a placeholder rather than a check.
+The proof-free first-order controller, the ordered whole-run lowering, the
+same-run reference correctness, and the locally owned seven-case `R2-ALLSIZE`
+replay stage all exist and are pinned by the consumers below. Full `FG-11`
+liveness mutations and the complete sixteen-case `FG-12` replay remain open
+full-node obligations outside this local rung.
 -/
 
 namespace RMQ

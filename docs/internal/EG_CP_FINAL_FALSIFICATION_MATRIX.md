@@ -254,3 +254,76 @@ row in sections 1 and 2 above; this amendment neither duplicates nor edits it:
 | Full EG-CP node | Remains open until `FG-01` through `FG-15`, every inherited invariant, exact replay, coordinator reconstruction, and fresh-blind audit close. | Not claimed by this local rung. |
 
 <!-- COORDINATOR-AMENDMENT-EG-CP-ALLSIZE-R1-END -->
+
+<!-- COORDINATOR-REPAIR-EG-CP-ALLSIZE-R2R1-BEGIN -->
+
+## 8. R2R1 repair addendum: semantic replay fidelity, axiom inventory, wording
+
+Append-only repair record commissioned by the coordinator (`R2R1`). Every
+original `FG-*` row, every `R2-*` requirement, and every frozen registry row
+above remains byte-for-byte unchanged; this addendum records only the repair
+evidence. Frozen registry controls (sixteen IDs, order, mutation
+descriptions, expected verdicts, selectors, deadline contracts, restoration
+contracts, process-tree controls) are untouched.
+
+### 8.1 The defect
+
+The prior `M05-SIBLING-STORE`, `M06-ANSWER-ORACLE`, `M07-DISCONNECTED-TRACE`,
+and `M11-SIBLING-PAYLOAD` implementations appended unused optional parameters
+to load-bearing signatures. Their REJECT verdicts were produced exclusively by
+exact-signature pins, so the replay evidence certified arity sensitivity, not
+the frozen semantic requirements. `M03-SHAPE-PARAMETER` legitimately remains a
+signature mutation (its frozen requirement is the concrete controller
+signature); `M08` and `M12` were already semantic and are unchanged.
+
+### 8.2 The repaired mutants
+
+Each repaired mutant modifies a load-bearing definition body, enacts the
+frozen behavior, and is rejected at the module whose guarding theorem
+genuinely fails. The runner now performs a mechanical activation check after
+writing each mutant: every declared needle must be present in the written
+body before any build is attempted, so a signature-only or unused-parameter
+edit can no longer produce a REJECT (`WDD-20260805-002`).
+
+| Case | Patched behavior (load-bearing body) | Activation needles | Observed failing consumer |
+| --- | --- | --- | --- |
+| `M05-SIBLING-STORE` | The external driver `packedReviewerRunAgainstMemory` binds `siblingLogicalStore := memory ++ [[]]` and drives `packedReviewerDriveAgainstMemoryAux` against that sibling store beside the counted memory. | `let siblingLogicalStore := memory ++ [[]]`; `packedReviewerDriveAgainstMemoryAux siblingLogicalStore` | `packedReviewerRunAgainstMemory_memory_only` fails; REJECT at `PackedCellProbe/ReviewerController.lean`. |
+| `M06-ANSWER-ORACLE` | The whole-query normalization's completion arm discards the computed value and returns `semanticAnswerOracle := some n`, a metadata-derived answer influencing the returned result. | `let semanticAnswerOracle := some n`; `.done semanticAnswerOracle` | The same-run correctness/driver-structure proofs fail; REJECT at `PackedCellProbe/ReviewerControllerProof.lean`. |
+| `M07-DISCONNECTED-TRACE` | The valid-branch of `packedReviewerExpectedPhysicalTrace` is replaced by a disconnected forged trace (`disconnectedForgedTrace := []`) while the result path under challenge is untouched. | `let disconnectedForgedTrace : List PackedReviewerPhysicalEvent := []`; `; disconnectedForgedTrace)` | The grouping/lowering theorems over the expected trace fail; REJECT at `PackedCellProbe/ReviewerControllerProof.lean`. |
+| `M11-SIBLING-PAYLOAD` | `packedReviewerSerializedBits` embeds `siblingExecutionPayload := packedReviewerPayloadBits shape ++ [false]`, so execution consumes a sibling payload while the public space/object chain remains pinned to the original. | `let siblingExecutionPayload := packedReviewerPayloadBits shape ++ [false]`; `++ siblingExecutionPayload` | The exact serialized-length/identity theorems fail; REJECT at `PackedCellProbe/ReviewerMemory.lean`. |
+
+Calibration evidence (single-case replay on the pre-freeze tree with
+identical Lean and script blobs): all four cases reported the activation
+check passed, `REJECT as commissioned` at the surfaces above, and SHA256
+restoration verified. The `ExpectFile` of each repaired entry names the
+observed failing module, so a rejection caused by unrelated breakage cannot
+be recorded as the commissioned verdict. Final certification is the single
+`-Stage R2-ALLSIZE` run on the frozen repair commit, recorded in the result
+report and the worker terminal response.
+
+### 8.3 Public axiom inventory (`R2R1-02`)
+
+`scripts/axiom_check.lean` gained curated `#print axioms` entries for
+`packedReviewerPayloadBits_eq_buildPayload`,
+`packedReviewerMemory_length_mul_width_le`, `packedReviewerRho_littleO`,
+`packedReviewerRunAgainstMemory_trace_length_le_427`,
+`packedReviewerRunAgainstMemory_public_outcome`, and
+`packedReviewerRunAgainstMemory_public_certificate`. Receipt
+(`lake env lean scripts/axiom_check.lean`, exit 0): every one of the six
+depends only on `[propext, Classical.choice, Quot.sound]`, with the trace-cap
+theorem on `[propext, Quot.sound]` alone. No custom axiom, `sorryAx`, or
+native-reduction axiom appears.
+
+### 8.4 Wording accuracy (`R2R1-03`)
+
+The simulation docstring no longer says "fixed 210-read"; it says "210-fuel
+... at most 210 logical attempts, not an exact read count"
+(`DD-20260805-075`). The validation header inventory now states that the
+controller, whole-run lowering, same-run correctness, and the locally owned
+seven-case `R2-ALLSIZE` replay exist and are pinned, while full `FG-11`
+liveness and the complete sixteen-case `FG-12` replay remain open full-node
+obligations. Nothing describes `210` as an exact read count, nor the theorem
+as word-RAM instruction time or `S1` bit-addressed serialized-payload
+querying.
+
+<!-- COORDINATOR-REPAIR-EG-CP-ALLSIZE-R2R1-END -->

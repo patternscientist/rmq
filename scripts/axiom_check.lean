@@ -1199,3 +1199,13 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.Headlines.listIntSuccinctRMQCompatibility328FinalFullModelCostLeOfFootprintGlobal
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCanonicalReviewerPayloadOfFootprintGlobal
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal
+
+-- EG-CP all-size packed reviewer machine: public axiom inventory (R2R1-02).
+-- Payload identity, allocated space with its little-o witness, the derived
+-- probe cap, the same-run public outcome, and the public certificate.
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerPayloadBits_eq_buildPayload
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerMemory_length_mul_width_le
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRho_littleO
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunAgainstMemory_trace_length_le_427
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunAgainstMemory_public_outcome
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunAgainstMemory_public_certificate

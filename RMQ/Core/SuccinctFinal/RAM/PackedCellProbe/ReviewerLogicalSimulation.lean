@@ -6097,9 +6097,9 @@ private theorem packedReviewerDriveLogical_eq_component
                 packedReviewerDriveComponent, hresult, hrequest] using htail
 
 /--
-On every valid half-open query, the fixed 210-read logical controller over the
-canonical reviewer store is the accepted packed whole-query run occurrence by
-occurrence.
+On every valid half-open query, the 210-fuel logical controller (at most 210
+logical attempts, not an exact read count) over the canonical reviewer store
+is the accepted packed whole-query run occurrence by occurrence.
 -/
 theorem packedReviewerDriveLogical_210_simulates_packedWholeQueryRun
     (shape : Cartesian.CartesianShape) (left right : Nat)

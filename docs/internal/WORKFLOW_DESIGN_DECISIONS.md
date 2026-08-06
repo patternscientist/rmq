@@ -7440,3 +7440,48 @@ Consequences and evidence:
   one-occurrence mutation anchors, sixteen unique ordered registry IDs, and the
   literal seven-ID stage. Lean builds and replay execution remain intentionally
   deferred until the producer modules and validation root compile green.
+
+## WDD-20260805-002: replace vacuous signature mutants with semantic body mutants plus activation checks
+
+Status: Accepted under the coordinator-commissioned `R2R1-01` repair.
+
+Date: 2026-08-05
+
+Trigger: coordinator review of the `R2-ALLSIZE` replay evidence found that the
+`M05-SIBLING-STORE`, `M06-ANSWER-ORACLE`, `M07-DISCONNECTED-TRACE`, and
+`M11-SIBLING-PAYLOAD` implementations only appended unused optional
+parameters. Those mutants were rejected exclusively by exact-signature pins,
+so the recorded REJECT verdicts certified arity sensitivity rather than the
+frozen semantic requirements (sibling store use, oracle-influenced results,
+trace disconnection, sibling payload execution).
+
+Decision: keep the frozen registry untouched in its sixteen IDs, order,
+mutation descriptions, expected verdicts, selectors, deadline contracts,
+restoration contracts, and process-tree controls, and replace only the four
+`Target.Find`/`Target.Repl` bodies with mutations that enact the frozen
+behavior inside load-bearing definition bodies: the driver reads a sibling
+store (`memory ++ [[]]`), the whole-query normalization returns a
+metadata-derived oracle answer (`some n`) in place of the computed value, the
+expected physical trace is replaced by a disconnected forged trace (`[]`),
+and the serialized bits embed a sibling execution payload
+(`packedReviewerPayloadBits shape ++ [false]`). Each entry now also carries an
+`Activation` needle list, and the runner verifies after writing the mutant
+that every needle is present in the written body before any build is
+attempted; a signature-only or unused-parameter edit cannot pass this check.
+`ExpectFile` for each repaired case names the module whose guarding theorem
+actually fails, so a REJECT is recorded only at the honest first failing
+consumer.
+
+Alternatives rejected: keeping the signature mutants (vacuous, the trigger);
+engineering mutants that fail only at the validation root (impossible without
+weakening upstream guarding theorems, because the guarding theorems live with
+their definitions and fail first by construction); deleting the four cases
+(would shrink the frozen registry).
+
+Consequences: `M03-SHAPE-PARAMETER` legitimately remains an exact-signature
+mutation because its frozen requirement is the concrete controller signature;
+`M08` and `M12` remain unchanged; the `R2-ALLSIZE` stage must still finish
+with all seven commissioned REJECTs, SHA-verified restoration, descendant
+termination, and a terminal clean tree. The repaired mutant bodies, activation
+needles, and observed failing surfaces are recorded in the matrix repair
+addendum of the same commit.

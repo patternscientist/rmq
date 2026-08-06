@@ -106,39 +106,59 @@ $script:Registry = @(
      Mutation = 'read a logical/source store beside memory xs';
      Verdict = 'REJECT'; Surface = 'store identity';
      Target = @{ Kind = 'Patch';
-       ExpectFile = 'Validation/EGCPFinalFalsification.lean';
+       ExpectFile = 'PackedCellProbe/ReviewerController.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean';
        Find  = 'def packedReviewerRunAgainstMemory
-    (memory : List (List Bool)) (n left right : Nat) : PackedReviewerRun :=';
+    (memory : List (List Bool)) (n left right : Nat) : PackedReviewerRun :=
+  let controller := packedReviewerController n left right
+  packedReviewerDriveAgainstMemoryAux memory
+    (packedReviewerControllerMeasure controller) controller';
        Repl  = 'def packedReviewerRunAgainstMemory
-    (memory : List (List Bool)) (n left right : Nat)
-    (_store : Option WordRAM.ReadStore := none) : PackedReviewerRun :=' } },
+    (memory : List (List Bool)) (n left right : Nat) : PackedReviewerRun :=
+  let controller := packedReviewerController n left right
+  let siblingLogicalStore := memory ++ [[]]
+  packedReviewerDriveAgainstMemoryAux siblingLogicalStore
+    (packedReviewerControllerMeasure controller) controller' };
+     Activation = @(
+       'let siblingLogicalStore := memory ++ [[]]',
+       'packedReviewerDriveAgainstMemoryAux siblingLogicalStore') },
   @{ Order = 8;  Id = 'M06-ANSWER-ORACLE';
      Mutation = 'call the reference/semantic answer from controller execution';
      Verdict = 'REJECT'; Surface = 'oracle independence';
      Target = @{ Kind = 'Patch';
-       ExpectFile = 'Validation/EGCPFinalFalsification.lean';
+       ExpectFile = 'PackedCellProbe/ReviewerControllerProof.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean';
-       Find  = 'def packedReviewerConsumeReply
-    (state : PackedReviewerControllerState) (reply : Option (List Bool)) :
-    PackedReviewerControllerState :=';
-       Repl  = 'def packedReviewerConsumeReply
-    (state : PackedReviewerControllerState) (reply : Option (List Bool))
-    (_answerOracle : Option Nat := none) :
-    PackedReviewerControllerState :=' } },
+       Find  = '  | fuel + 1, n, left, right, longCount, sparseCount, state =>
+      match packedReviewerWholeResult state with
+      | some value => .done value';
+       Repl  = '  | fuel + 1, n, left, right, longCount, sparseCount, state =>
+      match packedReviewerWholeResult state with
+      | some _value =>
+          let semanticAnswerOracle := some n
+          .done semanticAnswerOracle' };
+     Activation = @(
+       'let semanticAnswerOracle := some n',
+       '.done semanticAnswerOracle') },
   @{ Order = 9;  Id = 'M07-DISCONNECTED-TRACE';
      Mutation = 'retain a correct result while forging or replaying an unrelated physical trace';
      Verdict = 'REJECT'; Surface = 'trace execution';
      Target = @{ Kind = 'Patch';
-       ExpectFile = 'Validation/EGCPFinalFalsification.lean';
+       ExpectFile = 'PackedCellProbe/ReviewerControllerProof.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerControllerProof.lean';
-       Find  = 'def packedReviewerExpectedPhysicalTrace
-    (shape : CartesianShape) (left right : Nat) :
-    List PackedReviewerPhysicalEvent :=';
-       Repl  = 'def packedReviewerExpectedPhysicalTrace
-    (shape : CartesianShape) (left right : Nat)
-    (_disconnectedTrace : Option (List PackedReviewerPhysicalEvent) := none) :
-    List PackedReviewerPhysicalEvent :=' } },
+       Find  = '    packedReviewerHeaderPhysicalTrace shape ++
+      packedReviewerSparsePreludePhysicalTrace shape ++
+        packedReviewerLogicalTracePhysicalTrace shape
+          (packedReviewerDriveLogical
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape) 210
+            (packedReviewerWholeStart shape.size left right)).trace
+  else
+    []';
+       Repl  = '    (let disconnectedForgedTrace : List PackedReviewerPhysicalEvent := []; disconnectedForgedTrace)
+  else
+    []' };
+     Activation = @(
+       'let disconnectedForgedTrace : List PackedReviewerPhysicalEvent := []',
+       '; disconnectedForgedTrace)') },
   @{ Order = 10; Id = 'M08-FORGED-PROBE-CAP';
      Mutation = 'replace derived trace length/cap evidence with a stored number or theorem-only field';
      Verdict = 'REJECT'; Surface = 'consumer';
@@ -172,11 +192,16 @@ $script:Registry = @(
      Mutation = 'prove space for one payload while executing another';
      Verdict = 'REJECT'; Surface = 'public / same-object composition';
      Target = @{ Kind = 'Patch';
-       ExpectFile = 'Validation/EGCPFinalFalsification.lean';
+       ExpectFile = 'PackedCellProbe/ReviewerMemory.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerMemory.lean';
-       Find  = 'def packedReviewerMemory (shape : CartesianShape) : List (List Bool) :=';
-       Repl  = 'def packedReviewerMemory (shape : CartesianShape)
-    (_siblingPayload : Option (List Bool) := none) : List (List Bool) :=' } },
+       Find  = 'def packedReviewerSerializedBits (shape : CartesianShape) : List Bool :=
+  packedReviewerHeaderBits shape ++ packedReviewerPayloadBits shape';
+       Repl  = 'def packedReviewerSerializedBits (shape : CartesianShape) : List Bool :=
+  let siblingExecutionPayload := packedReviewerPayloadBits shape ++ [false]
+  packedReviewerHeaderBits shape ++ siblingExecutionPayload' };
+     Activation = @(
+       'let siblingExecutionPayload := packedReviewerPayloadBits shape ++ [false]',
+       '++ siblingExecutionPayload') },
   @{ Order = 14; Id = 'M12-PUBLIC-TYPE-WEAKENING';
      Mutation = 'remove one load-bearing capstone conjunct';
      Verdict = 'REJECT'; Surface = 'independently frozen expected-type consumer';
@@ -494,6 +519,25 @@ function Invoke-RegistryCase {
     $mutated = $haystack -replace [regex]::Escape($needle), ($Entry.Target.Repl -replace "`r`n", "`n")
     $utf8NoBom = New-Object System.Text.UTF8Encoding $false
     [System.IO.File]::WriteAllText($path, $mutated, $utf8NoBom)
+
+    # Mechanical activation check: a semantic mutant must actually contain and
+    # use its illicit source/oracle/trace/payload in the written body. A
+    # signature-only or unused-parameter edit cannot pass this check, so a
+    # REJECT verdict cannot be produced by vacuous evidence.
+    if ($Entry.ContainsKey('Activation') -and $null -ne $Entry.Activation) {
+      $writtenBody = [System.Text.Encoding]::UTF8.GetString(
+        [System.IO.File]::ReadAllBytes($path)) -replace "`r`n", "`n"
+      foreach ($activationNeedle in @($Entry.Activation)) {
+        $normalizedNeedle = $activationNeedle -replace "`r`n", "`n"
+        if (-not $writtenBody.Contains($normalizedNeedle)) {
+          Add-Failure "$($Entry.Id): activation needle absent from mutated body: $normalizedNeedle"
+          $script:Results.Add(@{ Id = $Entry.Id; Outcome = 'ACTIVATION-MISSING' }) | Out-Null
+          return
+        }
+      }
+      Write-Stage "$($Entry.Id): activation check passed ($(@($Entry.Activation).Count) needles present and used)"
+    }
+
     Write-Stage "$($Entry.Id): mutated $relative, rebuilding $Surface"
 
     $run = Invoke-BoundedLake -Module $Surface -DeadlineSeconds $DeadlineSeconds

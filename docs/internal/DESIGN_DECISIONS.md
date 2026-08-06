@@ -9850,3 +9850,37 @@ itself.  `EGCPFinalFalsification.lean` imports both modules and independently
 restates every certificate field, so a missing operand theorem, weakened grouping,
 or uninhabited state predicate remains a compilation failure.  Replay case
 `M12-PUBLIC-TYPE-WEAKENING` follows the declaration to its new owning file.
+
+## DD-20260805-075 -- accurate fuel wording and validation-header inventory
+
+Status: Accepted under the coordinator-commissioned `R2R1-03` repair.
+
+Date: 2026-08-05
+
+Trigger: the coordinator's repair commission identified two inaccurate Lean
+comments on the candidate: the simulation docstring described a "fixed
+210-read" controller, and the validation root's header still claimed the
+controller, whole-run lowering, same-run correctness, and committed replay
+"do not yet exist" although the same file pins all of them.
+
+Decision: correct both comments without touching any theorem, definition, or
+proof. The simulation docstring now says "210-fuel ... at most 210 logical
+attempts, not an exact read count", matching the derived-cap accounting
+(1 header cell + at most 2 * 3 K1 cells + at most 2 * 210 logical attempts
+= 427). The validation header now states that the controller, lowering,
+correctness, and the locally owned seven-case `R2-ALLSIZE` replay exist and
+are pinned below, while full `FG-11` liveness and the complete sixteen-case
+`FG-12` replay remain open full-node obligations. `210` is never described as
+an exact read count, and the theorem is never described as word-RAM
+instruction time or as `S1` bit-addressed serialized-payload querying.
+
+Alternatives rejected: leaving the stale header until the claims
+synchronization wave (it is a factual in-file inaccuracy on the audited
+surface, not a public-claim wording choice); rewording the cap itself
+(the numerals and theorems are unchanged and correct).
+
+Consequences: comment-only Lean changes in
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLogicalSimulation.lean`
+and `RMQ/Validation/EGCPFinalFalsification.lean`; theorem bodies and types
+are unchanged; the strict design-decision classifier requires this ledger
+entry because those paths are Lean paths.
