@@ -13330,6 +13330,549 @@ theorem packedReviewerDriveLogical_210_request_operands_fit
       (packedReviewerWholeStart_operational_fits shape left right
         ⟨hleft, hright⟩)
       hmem
+/-! ## Physically reachable controller states
+
+The physical chain threads two facts through every canonical transition: the
+committed exact-plan invariant, and — for parked whole-query probes — the
+whole-level canonical coupling that regenerates the operational witness after
+each logical consume.  The coupling rides beside the committed invariant as a
+conjunction, so no committed declaration is modified.  Successor operational
+witnesses are built field-wise from the coupling; the descent-carrying
+`PackedReviewerWholeOperationalFits.consume` is deliberately unused.
+-/
+
+/-- The whole-query canonical coupling retained beside a parked physical probe. -/
+private def packedReviewerControllerWholeCoupling
+    (shape : CartesianShape) : PackedReviewerControllerState -> Prop
+  | .wholeProbe _ _ _ _ _ _ whole _ _ =>
+      PackedReviewerWholeCanonicalScalarFits shape whole
+  | _ => True
+
+/--
+The committed exact physical invariant together with the whole coupling.  The
+first component is exactly the frozen `PackedReviewerCanonicalControllerInvariant`;
+the second is `True` outside parked whole-query probes.
+-/
+private def PackedReviewerCanonicalControllerCoupledInvariant
+    (shape : CartesianShape) (left right : Nat)
+    (state : PackedReviewerControllerState) : Prop :=
+  PackedReviewerCanonicalControllerInvariant shape left right state /\
+    packedReviewerControllerWholeCoupling shape state
+
+/--
+Field-wise successor construction for the coupled whole witness.  Scalars and
+the phase equality come from the advanced coupling, storage and continuation
+shape from the reply-generic preservation lemmas, the budget literal from the
+coupling's arm bounds, and the request prefix is regenerated at the successor's
+own structural budget by the descent-free invariant transport.
+-/
+private theorem packedReviewerWholeCanonicalConsume_operational_fits
+    {shape : CartesianShape} {state : PackedReviewerWholeState}
+    {request : PackedReviewerLogicalRequest}
+    (hfit : PackedReviewerWholeOperationalFits shape state)
+    (hcanonical : PackedReviewerWholeCanonicalScalarFits shape state)
+    (hrequest : packedReviewerWholeNextRequest state = some request) :
+    PackedReviewerWholeOperationalFits shape
+        (packedReviewerWholeConsumeReply state
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) /\
+      PackedReviewerWholeCanonicalScalarFits shape
+        (packedReviewerWholeConsumeReply state
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index)) := by
+  have hcanonical' :=
+    PackedReviewerWholeCanonicalScalarFits.consume hcanonical hrequest
+  refine
+    ⟨{ size_eq := by
+         revert hcanonical'
+         generalize packedReviewerWholeConsumeReply state
+           ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+             request.segment request.index) = next
+         intro hcanonical'
+         cases next with
+         | leftSelect n left right select => exact hcanonical'.1
+         | rightSelect n left right leftClose select => exact hcanonical'.1
+         | lcaClose n left right leftClose rightClose lca =>
+             exact hcanonical'.1
+         | finalRank n left right answerClose rank => exact hcanonical'.1
+         | done value => trivial
+       scalar_fields :=
+         PackedReviewerWholeCanonicalScalarFits.scalar_fields hcanonical'
+       storage_fits := ?_
+       continuation_shape :=
+         packedReviewerWholeConsumeReply_shape_safe state
+           ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+             request.segment request.index)
+           hfit.continuation_shape
+       remaining_le :=
+         PackedReviewerWholeCanonicalScalarFits.remaining_le_twoHundredTen
+           hcanonical'
+       requests_fit :=
+         PackedReviewerRequestsFitFrom.of_invariant shape.size
+           (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+           packedReviewerWholeNextRequest packedReviewerWholeConsumeReply
+           (PackedReviewerWholeCanonicalScalarFits shape)
+           (fun st req hst hreq =>
+             PackedReviewerWholeCanonicalScalarFits.nextRequest_operands_fit
+               hst hreq)
+           (fun st req hst hreq =>
+             PackedReviewerWholeCanonicalScalarFits.consume hst hreq)
+           _ _ hcanonical' },
+     hcanonical'⟩
+  apply packedReviewerWholeConsumeReply_storage_fits shape state
+    ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+      request.segment request.index) request hrequest hfit.storage_fits
+  intro word hword
+  exact packedReviewerGlobalReadStore_word_fits shape request word hword
+
+/-- A terminal whole value is one of its own retained scalar fields. -/
+private theorem packedReviewerWholeDone_coupledInvariant
+    {shape : CartesianShape} {left right : Nat} {value : Option Nat}
+    (hwhole : PackedReviewerWholeOperationalFits shape (.done value)) :
+    PackedReviewerCanonicalControllerCoupledInvariant shape left right
+      (.done value) := by
+  refine ⟨PackedReviewerCanonicalControllerInvariant.done value ?_, trivial⟩
+  intro index hindex
+  subst hindex
+  exact hwhole.scalar_fields index (by
+    simp [packedReviewerWholeStateNatFields, packedReviewerOptionNatFields])
+
+/-- Whole normalization lands inside the coupled invariant. -/
+private theorem packedReviewerNormalizeWhole_invariant
+    (shape : CartesianShape) (left right : Nat)
+    (hvalid : left < right /\ right <= shape.size) :
+    forall fuel, fuel <= 210 ->
+      forall whole : PackedReviewerWholeState,
+        PackedReviewerWholeOperationalFits shape whole ->
+        PackedReviewerWholeCanonicalScalarFits shape whole ->
+        PackedReviewerCanonicalControllerCoupledInvariant shape left right
+          (packedReviewerNormalizeWhole fuel shape.size left right
+            (longCount shape) (packedReviewerSparseCount shape) whole) := by
+  intro fuel
+  induction fuel with
+  | zero =>
+      intro hfuel whole hwhole hcanonical
+      cases hresult : packedReviewerWholeResult whole with
+      | some value =>
+          cases whole with
+          | done doneValue =>
+              simp only [packedReviewerNormalizeWhole,
+                packedReviewerWholeResult]
+              exact packedReviewerWholeDone_coupledInvariant hwhole
+          | leftSelect n stateLeft stateRight select =>
+              simp [packedReviewerWholeResult] at hresult
+          | rightSelect n stateLeft stateRight leftClose select =>
+              simp [packedReviewerWholeResult] at hresult
+          | lcaClose n stateLeft stateRight leftClose rightClose lca =>
+              simp [packedReviewerWholeResult] at hresult
+          | finalRank n stateLeft stateRight answerClose rank =>
+              simp [packedReviewerWholeResult] at hresult
+      | none =>
+          simp only [packedReviewerNormalizeWhole, hresult]
+          exact ⟨PackedReviewerCanonicalControllerInvariant.failed, trivial⟩
+  | succ fuel ih =>
+      intro hfuel whole hwhole hcanonical
+      cases hresult : packedReviewerWholeResult whole with
+      | some value =>
+          cases whole with
+          | done doneValue =>
+              simp only [packedReviewerNormalizeWhole,
+                packedReviewerWholeResult]
+              exact packedReviewerWholeDone_coupledInvariant hwhole
+          | leftSelect n stateLeft stateRight select =>
+              simp [packedReviewerWholeResult] at hresult
+          | rightSelect n stateLeft stateRight leftClose select =>
+              simp [packedReviewerWholeResult] at hresult
+          | lcaClose n stateLeft stateRight leftClose rightClose lca =>
+              simp [packedReviewerWholeResult] at hresult
+          | finalRank n stateLeft stateRight answerClose rank =>
+              simp [packedReviewerWholeResult] at hresult
+      | none =>
+          cases hrequest : packedReviewerWholeNextRequest whole with
+          | none =>
+              simp only [packedReviewerNormalizeWhole, hresult, hrequest]
+              exact ⟨PackedReviewerCanonicalControllerInvariant.failed,
+                trivial⟩
+          | some request =>
+              cases hplan :
+                  packedReviewerLogicalPlan shape.size (longCount shape)
+                    (packedReviewerSparseCount shape) request with
+              | nil =>
+                  have hfetch :
+                      packedFetch (packedReviewerMemory shape)
+                          (packedReviewerLogicalPlan shape.size
+                            (longCount shape)
+                            (packedReviewerSparseCount shape) request) =
+                        some [] := by
+                    rw [hplan]
+                    simp [packedFetch]
+                  have hdecode :=
+                    packedReviewerLogicalDecode_eq_globalReadStore_of_fetch
+                      shape request [] hfetch
+                  have hstep :=
+                    packedReviewerWholeCanonicalConsume_operational_fits
+                      hwhole hcanonical hrequest
+                  simp only [packedReviewerNormalizeWhole, hresult, hrequest,
+                    hplan]
+                  rw [hdecode]
+                  exact ih (by omega) _ hstep.1 hstep.2
+              | cons address tail =>
+                  simp only [packedReviewerNormalizeWhole, hresult, hrequest,
+                    hplan]
+                  refine
+                    ⟨PackedReviewerCanonicalControllerInvariant.wholeProbe
+                      hvalid fuel (by omega) whole hwhole request hrequest
+                      0 []
+                      (packedReviewerProbePrefix_zero
+                        (packedReviewerMemory shape)
+                        (packedReviewerLogicalPlan shape.size
+                          (longCount shape)
+                          (packedReviewerSparseCount shape) request))
+                      address tail hplan, ?_⟩
+                  show PackedReviewerWholeCanonicalScalarFits shape whole
+                  exact hcanonical
+
+/-- K1 prelude normalization lands inside the coupled invariant. -/
+private theorem packedReviewerNormalizePrelude_invariant
+    (shape : CartesianShape) (left right : Nat)
+    (hvalid : left < right /\ right <= shape.size)
+    (replies : PackedReviewerCanonicalPreludeReplies shape) :
+    forall fuel (prelude : PackedReviewerSparsePreludeState),
+      PackedReviewerCanonicalPreludeState shape replies prelude ->
+      PackedReviewerCanonicalControllerCoupledInvariant shape left right
+        (packedReviewerNormalizePrelude fuel shape.size left right
+          (longCount shape) prelude) := by
+  intro fuel
+  induction fuel with
+  | zero =>
+      intro prelude hprelude
+      cases hresult : packedReviewerSparsePreludeResult prelude with
+      | some sparseCount =>
+          have hsparse := hprelude.result_eq hresult
+          simp only [packedReviewerNormalizePrelude, hresult, hsparse]
+          exact packedReviewerNormalizeWhole_invariant shape left right hvalid
+            210 (by omega) (packedReviewerWholeStart shape.size left right)
+            (packedReviewerWholeStart_operational_fits shape left right hvalid)
+            (packedReviewerWholeStart_canonicalScalarFits shape left right
+              hvalid)
+      | none =>
+          simp only [packedReviewerNormalizePrelude, hresult]
+          exact ⟨PackedReviewerCanonicalControllerInvariant.failed, trivial⟩
+  | succ fuel ih =>
+      intro prelude hprelude
+      cases hresult : packedReviewerSparsePreludeResult prelude with
+      | some sparseCount =>
+          have hsparse := hprelude.result_eq hresult
+          simp only [packedReviewerNormalizePrelude, hresult, hsparse]
+          exact packedReviewerNormalizeWhole_invariant shape left right hvalid
+            210 (by omega) (packedReviewerWholeStart shape.size left right)
+            (packedReviewerWholeStart_operational_fits shape left right hvalid)
+            (packedReviewerWholeStart_canonicalScalarFits shape left right
+              hvalid)
+      | none =>
+          cases hpreludeRequest :
+              packedReviewerSparsePreludeNextRequest prelude with
+          | none =>
+              cases hprelude with
+              | awaitSuper =>
+                  simp [packedReviewerSparsePreludeNextRequest]
+                    at hpreludeRequest
+              | awaitBlock =>
+                  simp [packedReviewerSparsePreludeNextRequest]
+                    at hpreludeRequest
+              | awaitFlag =>
+                  simp [packedReviewerSparsePreludeNextRequest]
+                    at hpreludeRequest
+              | done =>
+                  simp [packedReviewerSparsePreludeResult] at hresult
+          | some preludeRequest =>
+              obtain ⟨word, hread⟩ :=
+                hprelude.request_read hpreludeRequest
+              have hplanEq :=
+                packedReviewerCurrentPreludePlan_eq_requestPlan_of_read
+                  shape.size (longCount shape) (packedReviewerMemory shape)
+                  prelude preludeRequest word hpreludeRequest hread
+              cases hplan :
+                  packedReviewerCurrentPreludePlan shape.size
+                    (longCount shape) prelude with
+              | nil =>
+                  have hfetch :
+                      packedFetch (packedReviewerMemory shape)
+                          (packedReviewerSparsePreludeRequestPlan shape.size
+                            (longCount shape) preludeRequest) = some [] := by
+                    rw [← hplanEq, hplan]
+                    simp [packedFetch]
+                  have hdecode :=
+                    packedReviewerDecodePreludeReplies_eq_of_request_read
+                      shape.size (longCount shape)
+                      (packedReviewerMemory shape) prelude preludeRequest []
+                      word hpreludeRequest hfetch hread
+                  simp only [packedReviewerNormalizePrelude, hresult, hplan,
+                    hdecode]
+                  exact ih _ (hprelude.consume hpreludeRequest hread)
+              | cons address tail =>
+                  simp only [packedReviewerNormalizePrelude, hresult, hplan]
+                  exact
+                    ⟨PackedReviewerCanonicalControllerInvariant.preludeProbe
+                      hvalid replies prelude hprelude preludeRequest word
+                      hpreludeRequest hread 0 []
+                      (packedReviewerProbePrefix_zero
+                        (packedReviewerMemory shape)
+                        (packedReviewerCurrentPreludePlan shape.size
+                          (longCount shape) prelude))
+                      address tail hplan, trivial⟩
+
+/--
+One actual canonical-memory reply preserves the coupled invariant.  Header
+decodes the exact header cell; parked probes either advance their exact plan
+prefix or complete it, hand the completed fetch to the exact logical decode,
+and re-enter the corresponding normalization.
+-/
+private theorem PackedReviewerCanonicalControllerCoupledInvariant.consume
+    {shape : CartesianShape} {left right : Nat}
+    {state : PackedReviewerControllerState}
+    (hstate :
+      PackedReviewerCanonicalControllerCoupledInvariant shape left right
+        state)
+    {request : PackedReviewerPhysicalRequest}
+    (hrequest : packedReviewerNextRequest state = some request) :
+    PackedReviewerCanonicalControllerCoupledInvariant shape left right
+      (packedReviewerConsumeReply state
+        ((packedReviewerMemory shape)[request.address]?)) := by
+  obtain ⟨hinvariant, hcoupling⟩ := hstate
+  cases hinvariant with
+  | header hvalid =>
+      have hrequestEq :
+          request =
+            { origin := .header, address := 0, ordinal := 0,
+              cellCount := 1 } := by
+        simpa [packedReviewerNextRequest] using hrequest.symm
+      have haddress : request.address = 0 := by rw [hrequestEq]
+      obtain ⟨replies⟩ := packedReviewerCanonicalPreludeReplies_exists shape
+      rw [haddress, packedReviewerMemory_header_cell shape]
+      simp only [packedReviewerConsumeReply, packedReviewerHeaderBits_decode]
+      exact packedReviewerNormalizePrelude_invariant shape left right hvalid
+        replies _ _ (packedReviewerCanonicalPreludeState_start shape replies)
+  | preludeProbe hvalid replies prelude hprelude preludeRequest word
+      hpreludeRequest hread nextOrdinal repliesRev probePrefix address tail
+      rest_eq =>
+      obtain ⟨allCells, hfull⟩ :=
+        packedReviewerCurrentPreludePlan_fetch_of_read shape.size
+          (longCount shape) (packedReviewerMemory shape) prelude
+          preludeRequest word hpreludeRequest hread
+      obtain ⟨cell, hcell, nextPrefix, hnextRest⟩ :=
+        probePrefix.advance_head allCells hfull address tail rest_eq
+      have hget :
+          (packedReviewerCurrentPreludePlan shape.size (longCount shape)
+            prelude)[nextOrdinal]? = some address := by
+        have hplanDecomp := probePrefix.plan_eq
+        have hnextEq := probePrefix.next_eq
+        simpa [hplanDecomp, hnextEq, rest_eq]
+      have hrequestEq :
+          request =
+            { origin := .sparsePrelude preludeRequest, address := address,
+              ordinal := nextOrdinal,
+              cellCount :=
+                (packedReviewerCurrentPreludePlan shape.size (longCount shape)
+                  prelude).length } := by
+        simpa [packedReviewerNextRequest, hpreludeRequest, hget] using
+          hrequest.symm
+      have haddress : request.address = address := by rw [hrequestEq]
+      have hreply : (packedReviewerMemory shape)[address]? = some cell := by
+        simpa [packedProbeCell] using hcell
+      have hlen :
+          (packedReviewerCurrentPreludePlan shape.size (longCount shape)
+              prelude).length = nextOrdinal + 1 + tail.length := by
+        have hplanDecomp := probePrefix.plan_eq
+        have hnextEq := probePrefix.next_eq
+        rw [rest_eq] at hplanDecomp
+        have hlength := congrArg List.length hplanDecomp
+        simp at hlength
+        omega
+      rw [haddress, hreply]
+      simp only [packedReviewerConsumeReply]
+      by_cases hmid :
+          nextOrdinal + 1 <
+            (packedReviewerCurrentPreludePlan shape.size (longCount shape)
+              prelude).length
+      · rw [if_pos hmid]
+        cases tail with
+        | nil =>
+            exfalso
+            simp at hlen
+            omega
+        | cons nextAddress nextTail =>
+            exact
+              ⟨PackedReviewerCanonicalControllerInvariant.preludeProbe hvalid
+                replies prelude hprelude preludeRequest word hpreludeRequest
+                hread (nextOrdinal + 1) (cell :: repliesRev) nextPrefix
+                nextAddress nextTail hnextRest, trivial⟩
+      · rw [if_neg hmid]
+        have htail : tail = [] := by
+          cases tail with
+          | nil => rfl
+          | cons headAddress restAddresses =>
+              exfalso
+              apply hmid
+              simp at hlen
+              omega
+        subst htail
+        have hfetchFull := nextPrefix.fetch_eq_of_rest_nil hnextRest
+        have hfetchRequest :
+            packedFetch (packedReviewerMemory shape)
+                (packedReviewerSparsePreludeRequestPlan shape.size
+                  (longCount shape) preludeRequest) =
+              some ((cell :: repliesRev).reverse) := by
+          rw [← packedReviewerCurrentPreludePlan_eq_requestPlan_of_read
+            shape.size (longCount shape) (packedReviewerMemory shape) prelude
+            preludeRequest word hpreludeRequest hread]
+          exact hfetchFull
+        have hdecode :=
+          packedReviewerDecodePreludeReplies_eq_of_request_read shape.size
+            (longCount shape) (packedReviewerMemory shape) prelude
+            preludeRequest ((cell :: repliesRev).reverse) word
+            hpreludeRequest hfetchRequest hread
+        simp only [hdecode]
+        exact packedReviewerNormalizePrelude_invariant shape left right
+          hvalid replies _ _ (hprelude.consume hpreludeRequest hread)
+  | wholeProbe hvalid logicalStepsAfterReply hsteps whole hwhole
+      logicalRequest hlogicalRequest nextOrdinal repliesRev probePrefix
+      address tail rest_eq =>
+      have hcanonical : PackedReviewerWholeCanonicalScalarFits shape whole :=
+        hcoupling
+      obtain ⟨allCells, hfull⟩ :=
+        packedReviewerLogicalPlan_fetch shape logicalRequest
+      obtain ⟨cell, hcell, nextPrefix, hnextRest⟩ :=
+        probePrefix.advance_head allCells hfull address tail rest_eq
+      have hget :
+          (packedReviewerLogicalPlan shape.size (longCount shape)
+            (packedReviewerSparseCount shape)
+            logicalRequest)[nextOrdinal]? = some address := by
+        have hplanDecomp := probePrefix.plan_eq
+        have hnextEq := probePrefix.next_eq
+        simpa [hplanDecomp, hnextEq, rest_eq]
+      have hrequestEq :
+          request =
+            { origin := .wholeQuery logicalRequest, address := address,
+              ordinal := nextOrdinal,
+              cellCount :=
+                (packedReviewerLogicalPlan shape.size (longCount shape)
+                  (packedReviewerSparseCount shape)
+                  logicalRequest).length } := by
+        simpa [packedReviewerNextRequest, hlogicalRequest, hget] using
+          hrequest.symm
+      have haddress : request.address = address := by rw [hrequestEq]
+      have hreply : (packedReviewerMemory shape)[address]? = some cell := by
+        simpa [packedProbeCell] using hcell
+      have hlen :
+          (packedReviewerLogicalPlan shape.size (longCount shape)
+              (packedReviewerSparseCount shape) logicalRequest).length =
+            nextOrdinal + 1 + tail.length := by
+        have hplanDecomp := probePrefix.plan_eq
+        have hnextEq := probePrefix.next_eq
+        rw [rest_eq] at hplanDecomp
+        have hlength := congrArg List.length hplanDecomp
+        simp at hlength
+        omega
+      rw [haddress, hreply]
+      simp only [packedReviewerConsumeReply, hlogicalRequest]
+      by_cases hmid :
+          nextOrdinal + 1 <
+            (packedReviewerLogicalPlan shape.size (longCount shape)
+              (packedReviewerSparseCount shape) logicalRequest).length
+      · rw [if_pos hmid]
+        cases tail with
+        | nil =>
+            exfalso
+            simp at hlen
+            omega
+        | cons nextAddress nextTail =>
+            refine
+              ⟨PackedReviewerCanonicalControllerInvariant.wholeProbe hvalid
+                logicalStepsAfterReply hsteps whole hwhole logicalRequest
+                hlogicalRequest (nextOrdinal + 1) (cell :: repliesRev)
+                nextPrefix nextAddress nextTail hnextRest, ?_⟩
+            show PackedReviewerWholeCanonicalScalarFits shape whole
+            exact hcanonical
+      · rw [if_neg hmid]
+        have htail : tail = [] := by
+          cases tail with
+          | nil => rfl
+          | cons headAddress restAddresses =>
+              exfalso
+              apply hmid
+              simp at hlen
+              omega
+        subst htail
+        have hfetchFull := nextPrefix.fetch_eq_of_rest_nil hnextRest
+        have hdecode :=
+          packedReviewerLogicalDecode_eq_globalReadStore_of_fetch shape
+            logicalRequest ((cell :: repliesRev).reverse) hfetchFull
+        have hstep :=
+          packedReviewerWholeCanonicalConsume_operational_fits hwhole
+            hcanonical hlogicalRequest
+        rw [hdecode]
+        exact packedReviewerNormalizeWhole_invariant shape left right hvalid
+          logicalStepsAfterReply hsteps _ hstep.1 hstep.2
+  | done value hvalue =>
+      simp [packedReviewerNextRequest] at hrequest
+  | failed =>
+      simp [packedReviewerNextRequest] at hrequest
+
+/-- Strengthened reachability motive: coupled invariant along every prefix. -/
+private theorem packedReviewerCanonicalReachable_invariant
+    {shape : CartesianShape} {left right : Nat}
+    {state : PackedReviewerControllerState}
+    (hstate : PackedReviewerCanonicalReachable shape left right state) :
+    PackedReviewerCanonicalControllerCoupledInvariant shape left right
+      state := by
+  induction hstate with
+  | start =>
+      refine
+        ⟨packedReviewerCanonicalController_start_invariant shape left right,
+          ?_⟩
+      by_cases hvalid : left < right /\ right <= shape.size <;>
+        simp [packedReviewerController, hvalid,
+          packedReviewerControllerWholeCoupling]
+  | @step state request hreachable hrequestStep ih =>
+      exact PackedReviewerCanonicalControllerCoupledInvariant.consume ih
+        hrequestStep
+
+/--
+Every canonically reachable actual controller prefix satisfies the fixed
+state-machine envelope.
+-/
+theorem packedReviewerCanonicalReachable_state_machine_fits
+    {shape : CartesianShape} {left right : Nat}
+    {state : PackedReviewerControllerState}
+    (hstate : PackedReviewerCanonicalReachable shape left right state) :
+    PackedReviewerControllerStateMachineFits shape.size state :=
+  packedReviewerControllerStateMachineFits_of_core
+    (packedReviewerCanonicalReachable_invariant hstate).1.core_fits
+
+/--
+The reachable-state certificate from an actual canonical-memory reachability
+witness.
+-/
+theorem packedReviewerReachableStateCertificate_of_reachable
+    {shape : CartesianShape} {left right : Nat}
+    {state : PackedReviewerControllerState}
+    (hstate : PackedReviewerCanonicalReachable shape left right state) :
+    PackedReviewerReachableStateCertificate shape left right state := by
+  have hfits := packedReviewerCanonicalReachable_state_machine_fits hstate
+  exact
+    { reachable := hstate
+      state_machine_fits := hfits
+      phase_tag := hfits.phase_tag
+      nested_control_tags :=
+        packedReviewerControllerNestedTagCodes_fits shape.size state
+      scalar_register_count := hfits.scalar_register_count
+      scalar_fields := hfits.scalar_fields
+      word_buffer := hfits.word_buffer
+      wide_buffer_count := hfits.wide_buffer_count
+      wide_fields := hfits.wide_fields
+      continuation_depth := hfits.continuation_depth
+      control_fields := hfits.control_fields }
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
