@@ -10683,6 +10683,1063 @@ private theorem packedReviewerBlockOfClose_le_blockCount
       (Nat.le_div_iff_mul_le (Nat.pos_of_ne_zero hbase)).mpr hqb
     omega
 
+/-- The candidate the fringe fold currently carries. -/
+private def packedReviewerFringeCandidateArg :
+    PackedReviewerFringeState -> Option (Nat × Nat)
+  | .chunk _ _ _ _ _ _ _ foldState => foldState.2
+  | .done result => result.2
+
+private theorem packedReviewerFringeResult_candidateArg
+    {state : PackedReviewerFringeState} {fold : Nat × Option (Nat × Nat)}
+    (hresult : packedReviewerFringeResult state = some fold) :
+    packedReviewerFringeCandidateArg state = fold.2 := by
+  cases state with
+  | chunk invocation n window relLo relHi j remaining foldState =>
+      simp [packedReviewerFringeResult] at hresult
+  | done result =>
+      have heq : result = fold := by
+        simpa [packedReviewerFringeResult] using Option.some.inj hresult
+      subst fold
+      rfl
+
+/-- One decoded chunk step keeps every carried candidate argument inside the
+thirty-four chunk window. -/
+private theorem packedReviewerLcaFringeArg_step
+    (shape : CartesianShape) (relLo relHi j : Nat)
+    (foldState : Nat × Option (Nat × Nat)) (value : Option Nat)
+    (hj : j <= 32)
+    (hold : forall p, foldState.2 = some p ->
+      p.2 <= 34 * packedFringeChunkBits shape.size) :
+    forall p,
+      (SuccinctClose.bpFringeChunkStepDecoded
+          (packedFringeChunkBits shape.size) relLo relHi j foldState
+          value).2 = some p ->
+        p.2 <= 34 * packedFringeChunkBits shape.size := by
+  intro p hp
+  have hc : 0 < packedFringeChunkBits shape.size := by
+    unfold packedFringeChunkBits
+    exact SuccinctClose.bpFringeChunkBits_pos _
+  have hmod :
+      (value.getD 0) % (packedFringeChunkBits shape.size + 1) <=
+        packedFringeChunkBits shape.size := by
+    have hlt := Nat.mod_lt (value.getD 0)
+      (show 0 < packedFringeChunkBits shape.size + 1 by omega)
+    omega
+  have hjc :
+      j * packedFringeChunkBits shape.size <=
+        32 * packedFringeChunkBits shape.size :=
+    Nat.mul_le_mul_right _ hj
+  simp only [SuccinctClose.bpFringeChunkStepDecoded] at hp
+  by_cases hoff :
+      SuccinctClose.bpFringeChunkStartOff
+          (packedFringeChunkBits shape.size) relLo j <
+        SuccinctClose.bpFringeChunkEndOff
+          (packedFringeChunkBits shape.size) relHi j
+  · rw [if_pos hoff] at hp
+    cases hfold : foldState.2 with
+    | none =>
+        rw [hfold] at hp
+        simp only [SuccinctClose.bpFringeMergeCand,
+          Option.some.injEq] at hp
+        rw [← hp]
+        show
+          j * packedFringeChunkBits shape.size +
+              (value.getD 0) % (packedFringeChunkBits shape.size + 1) <=
+            34 * packedFringeChunkBits shape.size
+        omega
+    | some best =>
+        rw [hfold] at hp
+        have hbest := hold best hfold
+        simp only [SuccinctClose.bpFringeMergeCand] at hp
+        by_cases hbetter :
+            foldState.1 +
+                (value.getD 0) / (packedFringeChunkBits shape.size + 1) %
+                  (2 * packedFringeChunkBits shape.size + 2) -
+              packedFringeChunkBits shape.size < best.1
+        · rw [if_pos hbetter] at hp
+          have hpe := Option.some.inj hp
+          rw [← hpe]
+          show
+            j * packedFringeChunkBits shape.size +
+                (value.getD 0) % (packedFringeChunkBits shape.size + 1) <=
+              34 * packedFringeChunkBits shape.size
+          omega
+        · rw [if_neg hbetter] at hp
+          have hpe := Option.some.inj hp
+          rw [← hpe]
+          exact hbest
+  · rw [if_neg hoff] at hp
+    cases hfold : foldState.2 with
+    | none =>
+        rw [hfold] at hp
+        simp [SuccinctClose.bpFringeMergeCand] at hp
+    | some best =>
+        rw [hfold] at hp
+        have hbest := hold best hfold
+        simp only [SuccinctClose.bpFringeMergeCand,
+          Option.some.injEq] at hp
+        rw [← hp]
+        exact hbest
+
+/-- Consuming one canonical fringe reply keeps the candidate argument inside
+the thirty-four chunk window. -/
+private theorem packedReviewerLcaFringeArg_consume
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (window : List Bool) (relLo relHi j remaining : Nat)
+    (foldState : Nat × Option (Nat × Nat)) (reply : Option (List Bool))
+    (hj : j <= 32)
+    (hold : forall p, foldState.2 = some p ->
+      p.2 <= 34 * packedFringeChunkBits shape.size) :
+    forall p,
+      packedReviewerFringeCandidateArg
+          (packedReviewerFringeConsumeReply
+            (.chunk invocation shape.size window relLo relHi j (remaining + 1)
+              foldState) reply) = some p ->
+        p.2 <= 34 * packedFringeChunkBits shape.size := by
+  intro p hp
+  apply packedReviewerLcaFringeArg_step shape relLo relHi j foldState
+    (packedReviewerDecodeNat reply) hj hold p
+  by_cases hzero : remaining = 0
+  · simpa [packedReviewerFringeConsumeReply, hzero,
+      packedReviewerFringeCandidateArg] using hp
+  · simpa [packedReviewerFringeConsumeReply, hzero,
+      packedReviewerFringeCandidateArg] using hp
+
+/-- A globalized fringe argument fits: the base is inside the parenthesis
+string and the argument inside the chunk window the table already stores. -/
+private theorem packedReviewerLcaGlobalArg_fits
+    (shape : CartesianShape) (base arg : Nat)
+    (hbase : base <= 2 * shape.size + 1)
+    (harg : arg <= 34 * packedFringeChunkBits shape.size) :
+    PackedReviewerNatFits shape.size (base + arg) := by
+  have hcap := packedReviewerCellBound_lt_two_pow_width shape.size
+  have hforty := packedReviewerFringeTableOverhead_ge_forty shape.size
+  have hoverhead :
+      2 * shape.size + SuccinctClose.bpFringeTableOverhead shape.size <=
+        packedReviewerCellBound shape.size := by
+    unfold packedReviewerCellBound
+      concreteBPNativeSuccinctRMQCanonicalReviewerOverhead
+    omega
+  have hchunkBudget :
+      34 * packedFringeChunkBits shape.size + 3 <=
+        SuccinctClose.bpFringeTableOverhead shape.size := by
+    have hc : 0 < packedFringeChunkBits shape.size := by
+      unfold packedFringeChunkBits
+      exact SuccinctClose.bpFringeChunkBits_pos _
+    by_cases hsmall : packedFringeChunkBits shape.size <= 1
+    · omega
+    · have hEB :
+          8 <=
+            SuccinctClose.bpFringeChunkEntryBound
+              (packedFringeChunkBits shape.size) := by
+        show 8 <=
+          (2 * packedFringeChunkBits shape.size + 1) *
+            ((2 * packedFringeChunkBits shape.size + 2) *
+              (packedFringeChunkBits shape.size + 1))
+        have hinner :
+            4 * 2 <=
+              (2 * packedFringeChunkBits shape.size + 2) *
+                (packedFringeChunkBits shape.size + 1) :=
+          Nat.mul_le_mul (by omega) (by omega)
+        have houter :
+            3 *
+                ((2 * packedFringeChunkBits shape.size + 2) *
+                  (packedFringeChunkBits shape.size + 1)) <=
+              (2 * packedFringeChunkBits shape.size + 1) *
+                ((2 * packedFringeChunkBits shape.size + 2) *
+                  (packedFringeChunkBits shape.size + 1)) :=
+          Nat.mul_le_mul_right _ (by omega)
+        omega
+      have hW :
+          4 <=
+            SuccinctClose.bpFringeChunkEntryWidth
+              (packedFringeChunkBits shape.size) := by
+        unfold SuccinctClose.bpFringeChunkEntryWidth
+        have hlog :
+            3 <=
+              Nat.log2
+                (SuccinctClose.bpFringeChunkEntryBound
+                  (packedFringeChunkBits shape.size)) :=
+          (Nat.le_log2 (by omega)).mpr (by simpa using hEB)
+        omega
+      have hcpow :
+          packedFringeChunkBits shape.size + 1 <=
+            2 ^ packedFringeChunkBits shape.size :=
+        Nat.lt_two_pow_self
+      have hcube :
+          (packedFringeChunkBits shape.size + 1) *
+              ((packedFringeChunkBits shape.size + 1) *
+                (packedFringeChunkBits shape.size + 1)) <=
+            SuccinctClose.bpFringeChunkRowCount
+              (packedFringeChunkBits shape.size) := by
+        show
+          (packedFringeChunkBits shape.size + 1) *
+              ((packedFringeChunkBits shape.size + 1) *
+                (packedFringeChunkBits shape.size + 1)) <=
+            2 ^ packedFringeChunkBits shape.size *
+              ((packedFringeChunkBits shape.size + 1) *
+                (packedFringeChunkBits shape.size + 1))
+        exact Nat.mul_le_mul_right _ hcpow
+      have hsq :
+          3 * (packedFringeChunkBits shape.size + 1) <=
+            (packedFringeChunkBits shape.size + 1) *
+              (packedFringeChunkBits shape.size + 1) :=
+        Nat.mul_le_mul_right _ (by omega)
+      have hnine :
+          3 * (3 * (packedFringeChunkBits shape.size + 1)) <=
+            3 *
+              ((packedFringeChunkBits shape.size + 1) *
+                (packedFringeChunkBits shape.size + 1)) :=
+        Nat.mul_le_mul_left _ hsq
+      have hlift :
+          3 *
+              ((packedFringeChunkBits shape.size + 1) *
+                (packedFringeChunkBits shape.size + 1)) <=
+            (packedFringeChunkBits shape.size + 1) *
+              ((packedFringeChunkBits shape.size + 1) *
+                (packedFringeChunkBits shape.size + 1)) :=
+        Nat.mul_le_mul_right _ (by omega)
+      have hrowW :
+          SuccinctClose.bpFringeChunkRowCount
+              (packedFringeChunkBits shape.size) * 4 <=
+            SuccinctClose.bpFringeChunkRowCount
+                (packedFringeChunkBits shape.size) *
+              SuccinctClose.bpFringeChunkEntryWidth
+                (packedFringeChunkBits shape.size) :=
+        Nat.mul_le_mul_left _ hW
+      have hcube4 :
+          ((packedFringeChunkBits shape.size + 1) *
+              ((packedFringeChunkBits shape.size + 1) *
+                (packedFringeChunkBits shape.size + 1))) * 4 <=
+            SuccinctClose.bpFringeChunkRowCount
+                (packedFringeChunkBits shape.size) * 4 :=
+        Nat.mul_le_mul_right _ hcube
+      have hFTO :
+          SuccinctClose.bpFringeChunkRowCount
+              (packedFringeChunkBits shape.size) *
+            SuccinctClose.bpFringeChunkEntryWidth
+              (packedFringeChunkBits shape.size) =
+            SuccinctClose.bpFringeTableOverhead shape.size := rfl
+      omega
+  simp only [PackedReviewerNatFits]
+  omega
+
+/-- The summary block never outgrows two rank words. -/
+private theorem packedReviewerBlockSizeRaw_le_two_ws (n : Nat) :
+    packedSummaryBlockSizeRaw n <= 2 * packedRankWordSize n := by
+  unfold packedSummaryBlockSizeRaw packedSummaryBase
+  have hws : packedRankWordSize n = Nat.log2 (2 * n) + 1 := rfl
+  have hmono :
+      SuccinctRank.machineWordBits n <=
+        SuccinctRank.machineWordBits (2 * n) :=
+    SuccinctRank.machineWordBits_mono_le (by omega)
+  unfold SuccinctRank.machineWordBits at hmono
+  omega
+
+/-- The base of the local BP window never passes its close. -/
+private theorem packedReviewerLcaWindowBase_le (n blockSize close : Nat) :
+    packedLocalBPWindowBase n blockSize close <= close := by
+  unfold packedLocalBPWindowBase
+  have hstart :
+      SuccinctClose.blockStartOf blockSize
+          (SuccinctClose.blockOfClose blockSize close) <= close :=
+    SuccinctClose.blockStartOf_blockOfClose_le
+  exact Nat.le_trans (Nat.div_mul_le_self _ _) hstart
+
+/-- Canonical scalar invariant for the close/LCA tower. -/
+private def PackedReviewerLcaCanonicalScalarFits
+    (shape : CartesianShape) : PackedReviewerLcaState -> Prop
+  | .sameSeed invocation n leftClose rightClose rank =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        leftClose <= 2 * shape.size + 1 ∧
+        rightClose <= 2 * shape.size + 1 ∧
+        PackedReviewerRequestsFitFrom shape.size
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          packedReviewerRankNextRequest packedReviewerRankConsumeReply
+          (packedReviewerRankRemaining rank) rank ∧
+        PackedReviewerRankCanonicalScalarFits shape
+          (packedReviewerRankQueryPos .close shape.size
+            (packedLocalBPWindowBase shape.size
+              (packedSummaryBlockSizeRaw shape.size) leftClose)) rank
+  | .sameWindow invocation n leftClose rightClose seed window =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        leftClose <= 2 * shape.size + 1 ∧
+        rightClose <= 2 * shape.size + 1 ∧
+        seed <= 2 * shape.size + 1 ∧
+        PackedReviewerRequestsFitFrom shape.size
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          packedReviewerBPWindowNextRequest packedReviewerBPWindowConsumeReply
+          (packedReviewerBPWindowRemaining window) window ∧
+        PackedReviewerBPWindowCanonicalScalarFits shape window
+  | .sameFringe invocation n leftClose rightClose seed base start fringe =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        leftClose <= 2 * shape.size + 1 ∧
+        rightClose <= 2 * shape.size + 1 ∧
+        seed <= 2 * shape.size + 1 ∧
+        base <= 2 * shape.size + 1 ∧
+        start <= 2 * shape.size + 2 ∧
+        PackedReviewerRequestsFitFrom shape.size
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          packedReviewerFringeNextRequest packedReviewerFringeConsumeReply
+          (packedReviewerFringeRemaining fringe) fringe ∧
+        (exists resultBound,
+          PackedReviewerFringeCanonicalScalarFits shape resultBound fringe) ∧
+        (forall p, packedReviewerFringeCandidateArg fringe = some p ->
+          p.2 <= 34 * packedFringeChunkBits shape.size)
+  | .leftSeed invocation n leftClose rightClose rank =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        leftClose <= 2 * shape.size + 1 ∧
+        rightClose <= 2 * shape.size + 1 ∧
+        PackedReviewerRequestsFitFrom shape.size
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          packedReviewerRankNextRequest packedReviewerRankConsumeReply
+          (packedReviewerRankRemaining rank) rank ∧
+        PackedReviewerRankCanonicalScalarFits shape
+          (packedReviewerRankQueryPos .close shape.size
+            (packedLocalBPWindowBase shape.size
+              (packedSummaryBlockSizeRaw shape.size) leftClose)) rank
+  | .leftWindow invocation n leftClose rightClose seed window =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        leftClose <= 2 * shape.size + 1 ∧
+        rightClose <= 2 * shape.size + 1 ∧
+        seed <= 2 * shape.size + 1 ∧
+        PackedReviewerRequestsFitFrom shape.size
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          packedReviewerBPWindowNextRequest packedReviewerBPWindowConsumeReply
+          (packedReviewerBPWindowRemaining window) window ∧
+        PackedReviewerBPWindowCanonicalScalarFits shape window
+  | .leftFringe invocation n leftClose rightClose seed base start fringe =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        leftClose <= 2 * shape.size + 1 ∧
+        rightClose <= 2 * shape.size + 1 ∧
+        seed <= 2 * shape.size + 1 ∧
+        base <= 2 * shape.size + 1 ∧
+        start <= 2 * shape.size + 2 ∧
+        PackedReviewerRequestsFitFrom shape.size
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          packedReviewerFringeNextRequest packedReviewerFringeConsumeReply
+          (packedReviewerFringeRemaining fringe) fringe ∧
+        (exists resultBound,
+          PackedReviewerFringeCanonicalScalarFits shape resultBound fringe) ∧
+        (forall p, packedReviewerFringeCandidateArg fringe = some p ->
+          p.2 <= 34 * packedFringeChunkBits shape.size)
+  | .middle invocation n leftClose rightClose left interior =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        leftClose <= 2 * shape.size + 1 ∧
+        rightClose <= 2 * shape.size + 1 ∧
+        PackedReviewerCandidateScalarFits shape left ∧
+        PackedReviewerInteriorCanonicalScalarFits shape invocation
+          (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+              leftClose + 1)
+          (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+              rightClose -
+            SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+              leftClose - 1) interior
+  | .rightSeed invocation n leftClose rightClose left middle rank =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        leftClose <= 2 * shape.size + 1 ∧
+        rightClose <= 2 * shape.size + 1 ∧
+        PackedReviewerCandidateScalarFits shape left ∧
+        PackedReviewerCandidateScalarFits shape middle ∧
+        PackedReviewerRequestsFitFrom shape.size
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          packedReviewerRankNextRequest packedReviewerRankConsumeReply
+          (packedReviewerRankRemaining rank) rank ∧
+        PackedReviewerRankCanonicalScalarFits shape
+          (packedReviewerRankQueryPos .close shape.size
+            (packedLocalBPWindowBase shape.size
+              (packedSummaryBlockSizeRaw shape.size) rightClose)) rank
+  | .rightWindow invocation n leftClose rightClose seed left middle window =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        leftClose <= 2 * shape.size + 1 ∧
+        rightClose <= 2 * shape.size + 1 ∧
+        seed <= 2 * shape.size + 1 ∧
+        PackedReviewerCandidateScalarFits shape left ∧
+        PackedReviewerCandidateScalarFits shape middle ∧
+        PackedReviewerRequestsFitFrom shape.size
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          packedReviewerBPWindowNextRequest packedReviewerBPWindowConsumeReply
+          (packedReviewerBPWindowRemaining window) window ∧
+        PackedReviewerBPWindowCanonicalScalarFits shape window
+  | .rightFringe invocation n leftClose rightClose seed base start left middle
+        fringe =>
+      n = shape.size ∧
+        (forall operand,
+          operand ∈ packedReviewerInvocationOperands invocation ->
+            PackedReviewerNatFits shape.size operand) ∧
+        leftClose <= 2 * shape.size + 1 ∧
+        rightClose <= 2 * shape.size + 1 ∧
+        seed <= 2 * shape.size + 1 ∧
+        base <= 2 * shape.size + 1 ∧
+        start <= 2 * shape.size + 2 ∧
+        PackedReviewerCandidateScalarFits shape left ∧
+        PackedReviewerCandidateScalarFits shape middle ∧
+        PackedReviewerRequestsFitFrom shape.size
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          packedReviewerFringeNextRequest packedReviewerFringeConsumeReply
+          (packedReviewerFringeRemaining fringe) fringe ∧
+        (exists resultBound,
+          PackedReviewerFringeCanonicalScalarFits shape resultBound fringe) ∧
+        (forall p, packedReviewerFringeCandidateArg fringe = some p ->
+          p.2 <= 34 * packedFringeChunkBits shape.size)
+  | .done value =>
+      forall answer, value = some answer ->
+        PackedReviewerNatFits shape.size answer ∧
+          PackedReviewerNatFits shape.size (answer + 1)
+
+/-- A fitting candidate closes to a fitting done value with `+1` slack. -/
+private theorem packedReviewerLcaCandidateClose_fits
+    (shape : CartesianShape) {candidate : PackedReviewerCandidate}
+    (hcandidate : PackedReviewerCandidateScalarFits shape candidate) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (.done (SuccinctClose.bpCandidateClose? candidate)) := by
+  intro answer hanswer
+  cases candidate with
+  | none => simp [SuccinctClose.bpCandidateClose?] at hanswer
+  | some candidate =>
+      rcases candidate with ⟨value, index⟩
+      simp only [SuccinctClose.bpCandidateClose?, Option.map_some,
+        Option.some.injEq] at hanswer
+      subst answer
+      have hindex := hcandidate.2
+      have hforty := packedReviewerCellBound_ge_forty shape.size
+      have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
+      constructor
+      · simp only [PackedReviewerNatFits] at hindex ⊢
+        omega
+      · simp only [PackedReviewerNatFits] at hindex ⊢
+        omega
+
+/-- The globalized fringe fold candidate has fitting components. -/
+private theorem packedReviewerLcaFringeCandidateGlobal_fits
+    (shape : CartesianShape) (base seed start resultBound : Nat)
+    (result : Nat × Option (Nat × Nat))
+    (hbase : base <= 2 * shape.size + 1)
+    (hseed : seed <= 2 * shape.size + 1)
+    (hstart : start <= 2 * shape.size + 2)
+    (hresult : PackedReviewerFringeResultScalarFits shape resultBound result)
+    (harg :
+      forall p, result.2 = some p ->
+        p.2 <= 34 * packedFringeChunkBits shape.size) :
+    PackedReviewerCandidateScalarFits shape
+      (SuccinctClose.bpFringeCandGlobal base seed start result.2) := by
+  rcases result with ⟨acc, candidate⟩
+  rcases hresult with ⟨hboundFits, hacc, hwithin⟩
+  cases candidate with
+  | none =>
+      simp only [SuccinctClose.bpFringeCandGlobal]
+      refine ⟨packedReviewerNatFits_of_le_two_mul_add_one shape.size seed
+        hseed, ?_⟩
+      have hbound := packedReviewerTwoMul_add_three_le_cellBound shape.size
+      have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
+      simp only [PackedReviewerNatFits]
+      omega
+  | some p =>
+      obtain ⟨hp1, hp2⟩ := hwithin
+      have hargBound := harg p rfl
+      simp only [SuccinctClose.bpFringeCandGlobal]
+      exact ⟨Nat.lt_of_le_of_lt hp1 hboundFits,
+        packedReviewerLcaGlobalArg_fits shape base p.2 hbase hargBound⟩
+
+/-- Entering the right-block seed once both endpoint candidates are ready. -/
+private theorem packedReviewerLcaStartRightSeed_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose : Nat) (left middle : PackedReviewerCandidate)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hleftCand : PackedReviewerCandidateScalarFits shape left)
+    (hmiddleCand : PackedReviewerCandidateScalarFits shape middle) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaStartRightSeed invocation shape.size leftClose
+        rightClose left middle) := by
+  have hwbLe := packedReviewerLcaWindowBase_le shape.size
+    (packedSummaryBlockSizeRaw shape.size) rightClose
+  have hbaseFits :
+      PackedReviewerNatFits shape.size
+        (packedLocalBPWindowBase shape.size
+          (packedSummaryBlockSizeRaw shape.size) rightClose) :=
+    packedReviewerNatFits_of_le_two_mul_add_one shape.size _ (by omega)
+  have hwitness :=
+    packedReviewerRankStart_requests_fit shape invocation .close
+      (packedLocalBPWindowBase shape.size
+        (packedSummaryBlockSizeRaw shape.size) rightClose) hinv
+  have hrank :=
+    packedReviewerRankStart_canonicalScalarFits shape invocation .close
+      (packedLocalBPWindowBase shape.size
+        (packedSummaryBlockSizeRaw shape.size) rightClose) hinv hbaseFits
+  unfold packedReviewerLcaStartRightSeed
+  exact ⟨rfl, hinv, hleft, hright, hleftCand, hmiddleCand,
+    by simpa [packedReviewerLcaRankStart, packedReviewerRankRemaining]
+      using hwitness,
+    by simpa [packedReviewerLcaRankStart] using hrank⟩
+
+/-- Entering the same-block or cross-block window after the seed rank. -/
+private theorem packedReviewerLcaStartSameWindow_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose rankFalse : Nat)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaStartSameWindow invocation shape.size leftClose
+        rightClose rankFalse) := by
+  have hws2 := packedRankWordSize_two_le_aux shape.size
+  have haux := packedRankAux_le_reviewerBound shape.size
+  have hcap := packedReviewerCellBound_lt_two_pow_width shape.size
+  have hbs := packedReviewerBlockSizeRaw_le_two_ws shape.size
+  have hwbLe := packedReviewerLcaWindowBase_le shape.size
+    (packedSummaryBlockSizeRaw shape.size) leftClose
+  have hseed :
+      packedReviewerLcaSeed shape.size (packedSummaryBlockSizeRaw shape.size)
+          leftClose rankFalse <= 2 * shape.size + 1 := by
+    unfold packedReviewerLcaSeed SuccinctClose.localBPSeedFromRankFalse
+    omega
+  have hblockFits :
+      PackedReviewerNatFits shape.size
+        (packedSummaryBlockSizeRaw shape.size) := by
+    simp only [PackedReviewerNatFits]
+    omega
+  have hcloseFits : PackedReviewerNatFits shape.size leftClose :=
+    packedReviewerNatFits_of_le_two_mul_add_one shape.size leftClose hleft
+  have hwitness :=
+    packedReviewerLcaBPWindowStart_requests_fit shape invocation
+      (packedSummaryBlockSizeRaw shape.size) leftClose hinv hleft
+  have hwindow :=
+    packedReviewerBPWindowStart_canonicalScalarFits shape invocation
+      (packedSummaryBlockSizeRaw shape.size) leftClose hinv hblockFits
+      hcloseFits
+  unfold packedReviewerLcaStartSameWindow
+  exact ⟨rfl, hinv, hleft, hright, hseed,
+    by simpa [packedReviewerBPWindowStart,
+      packedReviewerBPWindowRemaining] using hwitness,
+    hwindow⟩
+
+/-- Entering the cross-block left window after the seed rank. -/
+private theorem packedReviewerLcaStartLeftWindow_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose rankFalse : Nat)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaStartLeftWindow invocation shape.size leftClose
+        rightClose rankFalse) := by
+  have hws2 := packedRankWordSize_two_le_aux shape.size
+  have haux := packedRankAux_le_reviewerBound shape.size
+  have hcap := packedReviewerCellBound_lt_two_pow_width shape.size
+  have hbs := packedReviewerBlockSizeRaw_le_two_ws shape.size
+  have hwbLe := packedReviewerLcaWindowBase_le shape.size
+    (packedSummaryBlockSizeRaw shape.size) leftClose
+  have hseed :
+      packedReviewerLcaSeed shape.size (packedSummaryBlockSizeRaw shape.size)
+          leftClose rankFalse <= 2 * shape.size + 1 := by
+    unfold packedReviewerLcaSeed SuccinctClose.localBPSeedFromRankFalse
+    omega
+  have hblockFits :
+      PackedReviewerNatFits shape.size
+        (packedSummaryBlockSizeRaw shape.size) := by
+    simp only [PackedReviewerNatFits]
+    omega
+  have hcloseFits : PackedReviewerNatFits shape.size leftClose :=
+    packedReviewerNatFits_of_le_two_mul_add_one shape.size leftClose hleft
+  have hwitness :=
+    packedReviewerLcaBPWindowStart_requests_fit shape invocation
+      (packedSummaryBlockSizeRaw shape.size) leftClose hinv hleft
+  have hwindow :=
+    packedReviewerBPWindowStart_canonicalScalarFits shape invocation
+      (packedSummaryBlockSizeRaw shape.size) leftClose hinv hblockFits
+      hcloseFits
+  unfold packedReviewerLcaStartLeftWindow
+  exact ⟨rfl, hinv, hleft, hright, hseed,
+    by simpa [packedReviewerBPWindowStart,
+      packedReviewerBPWindowRemaining] using hwitness,
+    hwindow⟩
+
+/-- Entering the right window with both candidates in hand. -/
+private theorem packedReviewerLcaStartRightWindow_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose rankFalse : Nat)
+    (left middle : PackedReviewerCandidate)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hleftCand : PackedReviewerCandidateScalarFits shape left)
+    (hmiddleCand : PackedReviewerCandidateScalarFits shape middle) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaStartRightWindow invocation shape.size leftClose
+        rightClose rankFalse left middle) := by
+  have hws2 := packedRankWordSize_two_le_aux shape.size
+  have haux := packedRankAux_le_reviewerBound shape.size
+  have hcap := packedReviewerCellBound_lt_two_pow_width shape.size
+  have hbs := packedReviewerBlockSizeRaw_le_two_ws shape.size
+  have hwbLe := packedReviewerLcaWindowBase_le shape.size
+    (packedSummaryBlockSizeRaw shape.size) rightClose
+  have hseed :
+      packedReviewerLcaSeed shape.size (packedSummaryBlockSizeRaw shape.size)
+          rightClose rankFalse <= 2 * shape.size + 1 := by
+    unfold packedReviewerLcaSeed SuccinctClose.localBPSeedFromRankFalse
+    omega
+  have hblockFits :
+      PackedReviewerNatFits shape.size
+        (packedSummaryBlockSizeRaw shape.size) := by
+    simp only [PackedReviewerNatFits]
+    omega
+  have hcloseFits : PackedReviewerNatFits shape.size rightClose :=
+    packedReviewerNatFits_of_le_two_mul_add_one shape.size rightClose hright
+  have hwitness :=
+    packedReviewerLcaBPWindowStart_requests_fit shape invocation
+      (packedSummaryBlockSizeRaw shape.size) rightClose hinv hright
+  have hwindow :=
+    packedReviewerBPWindowStart_canonicalScalarFits shape invocation
+      (packedSummaryBlockSizeRaw shape.size) rightClose hinv hblockFits
+      hcloseFits
+  unfold packedReviewerLcaStartRightWindow
+  exact ⟨rfl, hinv, hleft, hright, hseed, hleftCand, hmiddleCand,
+    by simpa [packedReviewerBPWindowStart,
+      packedReviewerBPWindowRemaining] using hwitness,
+    hwindow⟩
+
+/-- The fringe start carries no candidate, so its argument clause is vacuous. -/
+private theorem packedReviewerLcaFringeStartArg_vacuous
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (window : List Bool) (seed relLo relHi count : Nat) :
+    forall p,
+      packedReviewerFringeCandidateArg
+          (packedReviewerFringeStart invocation shape.size window seed relLo
+            relHi count) = some p ->
+        p.2 <= 34 * packedFringeChunkBits shape.size := by
+  intro p hp
+  by_cases hcount0 : count = 0 <;>
+    simp [packedReviewerFringeStart, hcount0,
+      packedReviewerFringeCandidateArg] at hp
+
+/-- Entering the same-block fringe fold after the window assembles. -/
+private theorem packedReviewerLcaStartSameFringe_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose seed : Nat) (window : List Bool)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hseed : seed <= 2 * shape.size + 1) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaStartSameFringe invocation shape.size leftClose
+        rightClose seed window) := by
+  have hcap := packedReviewerCellBound_lt_two_pow_width shape.size
+  have hthree := packedReviewerTwoMul_add_three_le_cellBound shape.size
+  have hwbLe := packedReviewerLcaWindowBase_le shape.size
+    (packedSummaryBlockSizeRaw shape.size) leftClose
+  have hbase :
+      packedLocalBPWindowBase shape.size
+          (packedSummaryBlockSizeRaw shape.size) leftClose <=
+        2 * shape.size + 1 := by
+    omega
+  have hstart : leftClose + 1 <= 2 * shape.size + 2 := by omega
+  have hrelLo :
+      PackedReviewerNatFits shape.size
+        (leftClose + 1 -
+          packedLocalBPWindowBase shape.size
+            (packedSummaryBlockSizeRaw shape.size) leftClose) := by
+    simp only [PackedReviewerNatFits]
+    omega
+  have hrelHi :
+      PackedReviewerNatFits shape.size
+        (leftClose + 1 + (rightClose - leftClose + 1) - 1 -
+          packedLocalBPWindowBase shape.size
+            (packedSummaryBlockSizeRaw shape.size) leftClose) := by
+    simp only [PackedReviewerNatFits]
+    omega
+  have hcount :
+      Nat.min
+          ((leftClose + 1 + (rightClose - leftClose + 1) - 1 -
+              packedLocalBPWindowBase shape.size
+                (packedSummaryBlockSizeRaw shape.size) leftClose) /
+              packedFringeChunkBits shape.size + 1) 33 <= 33 :=
+    Nat.min_le_right _ _
+  have hbudget := packedReviewerFringeBudget_fits shape hseed hcount
+  have hfits :=
+    packedReviewerFringeStart_canonicalScalarFits shape invocation window
+      seed _ _ _ hinv hrelLo hrelHi hcount hbudget
+  have hwitness :=
+    packedReviewerFringeStart_requests_fit shape invocation window seed
+      (leftClose + 1 -
+        packedLocalBPWindowBase shape.size
+          (packedSummaryBlockSizeRaw shape.size) leftClose)
+      (leftClose + 1 + (rightClose - leftClose + 1) - 1 -
+        packedLocalBPWindowBase shape.size
+          (packedSummaryBlockSizeRaw shape.size) leftClose)
+      (Nat.min
+        ((leftClose + 1 + (rightClose - leftClose + 1) - 1 -
+            packedLocalBPWindowBase shape.size
+              (packedSummaryBlockSizeRaw shape.size) leftClose) /
+            packedFringeChunkBits shape.size + 1) 33) hinv
+  unfold packedReviewerLcaStartSameFringe
+  exact ⟨rfl, hinv, hleft, hright, hseed, hbase, hstart, hwitness,
+    ⟨_, hfits⟩,
+    packedReviewerLcaFringeStartArg_vacuous shape invocation window seed _ _ _⟩
+
+/-- Entering the cross-block left fringe fold after the window assembles. -/
+private theorem packedReviewerLcaStartLeftFringe_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose seed : Nat) (window : List Bool)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hseed : seed <= 2 * shape.size + 1) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaStartLeftFringe invocation shape.size leftClose
+        rightClose seed window) := by
+  have hcap := packedReviewerCellBound_lt_two_pow_width shape.size
+  have hthree := packedReviewerTwoMul_add_three_le_cellBound shape.size
+  have hws2 := packedRankWordSize_two_le_aux shape.size
+  have haux := packedRankAux_le_reviewerBound shape.size
+  have hbs := packedReviewerBlockSizeRaw_le_two_ws shape.size
+  have hwbLe := packedReviewerLcaWindowBase_le shape.size
+    (packedSummaryBlockSizeRaw shape.size) leftClose
+  have hblockStartLe :
+      SuccinctClose.blockStartOf (packedSummaryBlockSizeRaw shape.size)
+          (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+            leftClose) <= leftClose :=
+    SuccinctClose.blockStartOf_blockOfClose_le
+  have hbase :
+      packedLocalBPWindowBase shape.size
+          (packedSummaryBlockSizeRaw shape.size) leftClose <=
+        2 * shape.size + 1 := by
+    omega
+  have hstart : leftClose + 1 <= 2 * shape.size + 2 := by omega
+  have hrelLo :
+      PackedReviewerNatFits shape.size
+        (leftClose + 1 -
+          packedLocalBPWindowBase shape.size
+            (packedSummaryBlockSizeRaw shape.size) leftClose) := by
+    simp only [PackedReviewerNatFits]
+    omega
+  have hrelHi :
+      PackedReviewerNatFits shape.size
+        (leftClose + 1 +
+            (SuccinctClose.blockStartOf (packedSummaryBlockSizeRaw shape.size)
+                (SuccinctClose.blockOfClose
+                  (packedSummaryBlockSizeRaw shape.size) leftClose) +
+              packedSummaryBlockSizeRaw shape.size - leftClose) - 1 -
+          packedLocalBPWindowBase shape.size
+            (packedSummaryBlockSizeRaw shape.size) leftClose) := by
+    simp only [PackedReviewerNatFits]
+    omega
+  have hcount :
+      Nat.min
+          ((leftClose + 1 +
+              (SuccinctClose.blockStartOf
+                  (packedSummaryBlockSizeRaw shape.size)
+                  (SuccinctClose.blockOfClose
+                    (packedSummaryBlockSizeRaw shape.size) leftClose) +
+                packedSummaryBlockSizeRaw shape.size - leftClose) - 1 -
+              packedLocalBPWindowBase shape.size
+                (packedSummaryBlockSizeRaw shape.size) leftClose) /
+              packedFringeChunkBits shape.size + 1) 33 <= 33 :=
+    Nat.min_le_right _ _
+  have hbudget := packedReviewerFringeBudget_fits shape hseed hcount
+  have hfits :=
+    packedReviewerFringeStart_canonicalScalarFits shape invocation window
+      seed _ _ _ hinv hrelLo hrelHi hcount hbudget
+  have hwitness :=
+    packedReviewerFringeStart_requests_fit shape invocation window seed
+      (leftClose + 1 -
+        packedLocalBPWindowBase shape.size
+          (packedSummaryBlockSizeRaw shape.size) leftClose)
+      (leftClose + 1 +
+          (SuccinctClose.blockStartOf (packedSummaryBlockSizeRaw shape.size)
+              (SuccinctClose.blockOfClose
+                (packedSummaryBlockSizeRaw shape.size) leftClose) +
+            packedSummaryBlockSizeRaw shape.size - leftClose) - 1 -
+        packedLocalBPWindowBase shape.size
+          (packedSummaryBlockSizeRaw shape.size) leftClose)
+      (Nat.min
+        ((leftClose + 1 +
+            (SuccinctClose.blockStartOf (packedSummaryBlockSizeRaw shape.size)
+                (SuccinctClose.blockOfClose
+                  (packedSummaryBlockSizeRaw shape.size) leftClose) +
+              packedSummaryBlockSizeRaw shape.size - leftClose) - 1 -
+            packedLocalBPWindowBase shape.size
+              (packedSummaryBlockSizeRaw shape.size) leftClose) /
+            packedFringeChunkBits shape.size + 1) 33) hinv
+  unfold packedReviewerLcaStartLeftFringe
+  exact ⟨rfl, hinv, hleft, hright, hseed, hbase, hstart, hwitness,
+    ⟨_, hfits⟩,
+    packedReviewerLcaFringeStartArg_vacuous shape invocation window seed _ _ _⟩
+
+/-- Entering the right fringe fold with both candidates in hand. -/
+private theorem packedReviewerLcaStartRightFringe_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose seed : Nat)
+    (left middle : PackedReviewerCandidate) (window : List Bool)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hseed : seed <= 2 * shape.size + 1)
+    (hleftCand : PackedReviewerCandidateScalarFits shape left)
+    (hmiddleCand : PackedReviewerCandidateScalarFits shape middle) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaStartRightFringe invocation shape.size leftClose
+        rightClose seed left middle window) := by
+  have hcap := packedReviewerCellBound_lt_two_pow_width shape.size
+  have hthree := packedReviewerTwoMul_add_three_le_cellBound shape.size
+  have hwbLe := packedReviewerLcaWindowBase_le shape.size
+    (packedSummaryBlockSizeRaw shape.size) rightClose
+  have hblockStartLe :
+      SuccinctClose.blockStartOf (packedSummaryBlockSizeRaw shape.size)
+          (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+            rightClose) <= rightClose :=
+    SuccinctClose.blockStartOf_blockOfClose_le
+  have hbase :
+      packedLocalBPWindowBase shape.size
+          (packedSummaryBlockSizeRaw shape.size) rightClose <=
+        2 * shape.size + 1 := by
+    omega
+  have hstart :
+      SuccinctClose.blockStartOf (packedSummaryBlockSizeRaw shape.size)
+          (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+            rightClose) <= 2 * shape.size + 2 := by
+    omega
+  have hrelLo :
+      PackedReviewerNatFits shape.size
+        (SuccinctClose.blockStartOf (packedSummaryBlockSizeRaw shape.size)
+            (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+              rightClose) -
+          packedLocalBPWindowBase shape.size
+            (packedSummaryBlockSizeRaw shape.size) rightClose) := by
+    simp only [PackedReviewerNatFits]
+    omega
+  have hrelHi :
+      PackedReviewerNatFits shape.size
+        (SuccinctClose.blockStartOf (packedSummaryBlockSizeRaw shape.size)
+            (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+              rightClose) +
+            (rightClose -
+              SuccinctClose.blockStartOf (packedSummaryBlockSizeRaw shape.size)
+                (SuccinctClose.blockOfClose
+                  (packedSummaryBlockSizeRaw shape.size) rightClose) + 2) -
+            1 -
+          packedLocalBPWindowBase shape.size
+            (packedSummaryBlockSizeRaw shape.size) rightClose) := by
+    simp only [PackedReviewerNatFits]
+    omega
+  have hcount :
+      Nat.min
+          ((SuccinctClose.blockStartOf (packedSummaryBlockSizeRaw shape.size)
+              (SuccinctClose.blockOfClose
+                (packedSummaryBlockSizeRaw shape.size) rightClose) +
+              (rightClose -
+                SuccinctClose.blockStartOf
+                  (packedSummaryBlockSizeRaw shape.size)
+                  (SuccinctClose.blockOfClose
+                    (packedSummaryBlockSizeRaw shape.size) rightClose) + 2) -
+              1 -
+              packedLocalBPWindowBase shape.size
+                (packedSummaryBlockSizeRaw shape.size) rightClose) /
+              packedFringeChunkBits shape.size + 1) 33 <= 33 :=
+    Nat.min_le_right _ _
+  have hbudget := packedReviewerFringeBudget_fits shape hseed hcount
+  have hfits :=
+    packedReviewerFringeStart_canonicalScalarFits shape invocation window
+      seed _ _ _ hinv hrelLo hrelHi hcount hbudget
+  have hwitness :=
+    packedReviewerFringeStart_requests_fit shape invocation window seed
+      (SuccinctClose.blockStartOf (packedSummaryBlockSizeRaw shape.size)
+          (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+            rightClose) -
+        packedLocalBPWindowBase shape.size
+          (packedSummaryBlockSizeRaw shape.size) rightClose)
+      (SuccinctClose.blockStartOf (packedSummaryBlockSizeRaw shape.size)
+          (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+            rightClose) +
+          (rightClose -
+            SuccinctClose.blockStartOf (packedSummaryBlockSizeRaw shape.size)
+              (SuccinctClose.blockOfClose
+                (packedSummaryBlockSizeRaw shape.size) rightClose) + 2) - 1 -
+        packedLocalBPWindowBase shape.size
+          (packedSummaryBlockSizeRaw shape.size) rightClose)
+      (Nat.min
+        ((SuccinctClose.blockStartOf (packedSummaryBlockSizeRaw shape.size)
+            (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+              rightClose) +
+            (rightClose -
+              SuccinctClose.blockStartOf
+                (packedSummaryBlockSizeRaw shape.size)
+                (SuccinctClose.blockOfClose
+                  (packedSummaryBlockSizeRaw shape.size) rightClose) + 2) -
+            1 -
+            packedLocalBPWindowBase shape.size
+              (packedSummaryBlockSizeRaw shape.size) rightClose) /
+            packedFringeChunkBits shape.size + 1) 33) hinv
+  unfold packedReviewerLcaStartRightFringe
+  exact ⟨rfl, hinv, hleft, hright, hseed, hbase, hstart, hleftCand,
+    hmiddleCand, hwitness, ⟨_, hfits⟩,
+    packedReviewerLcaFringeStartArg_vacuous shape invocation window seed _ _ _⟩
+
+/-- Entering (or skipping) the interior middle phase after the left fringe. -/
+private theorem packedReviewerLcaStartMiddle_fits
+    (shape : CartesianShape) (invocation : PackedReviewerInvocation)
+    (leftClose rightClose : Nat) (left : PackedReviewerCandidate)
+    (hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands invocation ->
+          PackedReviewerNatFits shape.size operand)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1)
+    (hleftCand : PackedReviewerCandidateScalarFits shape left) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaStartMiddle invocation shape.size leftClose rightClose
+        left) := by
+  have hblock :=
+    packedReviewerBlockOfClose_le_blockCount shape.size rightClose hright
+  simp only [packedReviewerLcaStartMiddle]
+  by_cases hspan :
+      SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+          leftClose + 1 <
+        SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+          rightClose
+  · have hrange :
+        SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+              leftClose + 1 +
+            (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+                rightClose -
+              SuccinctClose.blockOfClose
+                (packedSummaryBlockSizeRaw shape.size) leftClose - 1) <=
+          packedSummaryBlockCountRaw shape.size := by
+      omega
+    have hinterior :=
+      packedReviewerInteriorStart_canonicalScalarFits shape invocation
+        (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+            leftClose + 1)
+        (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+            rightClose -
+          SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+            leftClose - 1) hinv hrange
+    rw [if_pos hspan]
+    cases hresult :
+        packedReviewerInteriorResult
+          (packedReviewerInteriorStart invocation shape.size
+            (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+                leftClose + 1)
+            (SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+                rightClose -
+              SuccinctClose.blockOfClose
+                (packedSummaryBlockSizeRaw shape.size) leftClose - 1)) with
+    | some middle =>
+        have hmiddle := hinterior.result_fits hresult
+        exact packedReviewerLcaStartRightSeed_fits shape invocation leftClose
+          rightClose left middle hinv hleft hright hleftCand hmiddle
+    | none =>
+        exact ⟨rfl, hinv, hleft, hright, hleftCand, hinterior⟩
+  · rw [if_neg hspan]
+    exact packedReviewerLcaStartRightSeed_fits shape invocation leftClose
+      rightClose left none hinv hleft hright hleftCand trivial
+
+/-- The canonical close/LCA start satisfies the tower invariant. -/
+private theorem packedReviewerLcaStart_fits
+    (shape : CartesianShape) (leftClose rightClose : Nat)
+    (hleft : leftClose <= 2 * shape.size + 1)
+    (hright : rightClose <= 2 * shape.size + 1) :
+    PackedReviewerLcaCanonicalScalarFits shape
+      (packedReviewerLcaStart shape.size leftClose rightClose) := by
+  have hinv :
+      forall operand,
+        operand ∈ packedReviewerInvocationOperands
+          { instruction := .lcaClose
+            argument := leftClose
+            argument2 := rightClose } ->
+          PackedReviewerNatFits shape.size operand := by
+    intro operand hmem
+    simp [packedReviewerInvocationOperands] at hmem
+    rcases hmem with rfl | rfl
+    · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hleft
+    · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hright
+  have hwbLe := packedReviewerLcaWindowBase_le shape.size
+    (packedSummaryBlockSizeRaw shape.size) leftClose
+  have hbaseFits :
+      PackedReviewerNatFits shape.size
+        (packedLocalBPWindowBase shape.size
+          (packedSummaryBlockSizeRaw shape.size) leftClose) :=
+    packedReviewerNatFits_of_le_two_mul_add_one shape.size _ (by omega)
+  have hwitness :=
+    packedReviewerRankStart_requests_fit shape
+      { instruction := .lcaClose
+        argument := leftClose
+        argument2 := rightClose } .close
+      (packedLocalBPWindowBase shape.size
+        (packedSummaryBlockSizeRaw shape.size) leftClose) hinv
+  have hrank :=
+    packedReviewerRankStart_canonicalScalarFits shape
+      { instruction := .lcaClose
+        argument := leftClose
+        argument2 := rightClose } .close
+      (packedLocalBPWindowBase shape.size
+        (packedSummaryBlockSizeRaw shape.size) leftClose) hinv hbaseFits
+  simp only [packedReviewerLcaStart]
+  by_cases hsame :
+      SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+          leftClose =
+        SuccinctClose.blockOfClose (packedSummaryBlockSizeRaw shape.size)
+          rightClose
+  · rw [if_pos hsame]
+    exact ⟨rfl, hinv, hleft, hright,
+      by simpa [packedReviewerLcaRankStart, packedReviewerRankRemaining]
+        using hwitness,
+      by simpa [packedReviewerLcaRankStart] using hrank⟩
+  · rw [if_neg hsame]
+    exact ⟨rfl, hinv, hleft, hright,
+      by simpa [packedReviewerLcaRankStart, packedReviewerRankRemaining]
+        using hwitness,
+      by simpa [packedReviewerLcaRankStart] using hrank⟩
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
