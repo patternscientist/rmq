@@ -13873,6 +13873,166 @@ theorem packedReviewerReachableStateCertificate_of_reachable
       wide_fields := hfits.wide_fields
       continuation_depth := hfits.continuation_depth
       control_fields := hfits.control_fields }
+/-! ## Physical request-operand closure and the public run certificate -/
+
+/-- Every expected-trace physical request retains only fitting operands. -/
+private theorem packedReviewerExpectedPhysicalTrace_request_operands_fit
+    (shape : CartesianShape) (left right : Nat)
+    {event : PackedReviewerPhysicalEvent}
+    (hmem : event ∈ packedReviewerExpectedPhysicalTrace shape left right) :
+    PackedReviewerPhysicalRequestOperandsFit shape.size event.request := by
+  by_cases hvalid : left < right ∧ right <= shape.size
+  · rw [packedReviewerExpectedPhysicalTrace, if_pos hvalid] at hmem
+    rcases List.mem_append.mp hmem with hprefix | hlogical
+    · rcases List.mem_append.mp hprefix with hheader | hprelude
+      · refine packedReviewerPhysicalEvents_request_operands_fit shape.size
+          (packedReviewerMemory shape) .header [0] ?_ ?_ ?_ hheader
+        · intro operand hoperand
+          simp only [packedReviewerPhysicalOriginOperands] at hoperand
+          exact False.elim (List.not_mem_nil hoperand)
+        · intro address haddress
+          simp only [List.mem_singleton] at haddress
+          have hsize :=
+            packedReviewerInputSize_lt_two_pow_cellWidth shape.size
+          omega
+        · decide
+      · unfold packedReviewerSparsePreludePhysicalTrace at hprelude
+        rw [List.mem_flatMap] at hprelude
+        rcases hprelude with ⟨request, hrequest, hevent⟩
+        refine packedReviewerPhysicalEvents_request_operands_fit shape.size
+          (packedReviewerMemory shape) (.sparsePrelude request)
+          (packedReviewerSparsePreludeRequestPlan shape.size (longCount shape)
+            request) ?_ ?_ ?_ hevent
+        · intro operand hoperand
+          simp only [packedReviewerPhysicalOriginOperands] at hoperand
+          exact False.elim (List.not_mem_nil hoperand)
+        · intro address haddress
+          have hcell : address <
+              packedReviewerCellCount shape.size (longCount shape)
+                (packedReviewerSparseCount shape) := by
+            apply packedReviewerSparsePreludeProbePlan_address_lt_cellCount
+              shape
+            exact List.mem_flatMap.mpr ⟨request, hrequest, haddress⟩
+          exact Nat.lt_trans hcell
+            (packedReviewerSparsePreludeCellCount_lt_two_pow_reviewerWidth
+              shape)
+        · exact packedReviewerSparsePreludeRequestPlan_length_le_two
+            shape.size (longCount shape) request
+    · unfold packedReviewerLogicalTracePhysicalTrace at hlogical
+      rw [List.mem_flatMap] at hlogical
+      rcases hlogical with ⟨logicalEvent, hlogicalMem, hevent⟩
+      have hfit := packedReviewerDriveLogical_210_request_operands_fit shape
+        left right hvalid.1 hvalid.2 logicalEvent hlogicalMem
+      refine packedReviewerPhysicalEvents_request_operands_fit shape.size
+        (packedReviewerMemory shape) (.wholeQuery logicalEvent.request)
+        (packedReviewerLogicalPlan shape.size (longCount shape)
+          (packedReviewerSparseCount shape) logicalEvent.request)
+        ?_ ?_ ?_ hevent
+      · intro operand hoperand
+        simp only [packedReviewerPhysicalOriginOperands] at hoperand
+        exact hfit.operands_fit operand hoperand
+      · intro address haddress
+        exact packedReviewerLogicalPlan_address_lt_two_pow shape
+          logicalEvent.request haddress
+      · exact packedReviewerLogicalPlan_length_le_two shape.size
+          (longCount shape) (packedReviewerSparseCount shape)
+          logicalEvent.request
+  · simp [packedReviewerExpectedPhysicalTrace, hvalid] at hmem
+
+/-- Every attempted request of a grouped canonical run has fitting operands. -/
+theorem PackedReviewerRunGrouping.request_operands_fit
+    {shape : CartesianShape} {left right : Nat}
+    (grouping : PackedReviewerRunGrouping shape left right)
+    {event : PackedReviewerPhysicalEvent}
+    (hmem : event ∈
+      (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).trace) :
+    PackedReviewerPhysicalRequestOperandsFit shape.size event.request := by
+  rw [grouping.trace_eq] at hmem
+  exact packedReviewerExpectedPhysicalTrace_request_operands_fit shape
+    left right hmem
+
+/--
+Every field of the stable twenty-six-fact public bundle is a checked
+projection of an independent run theorem; the two request-operand fields are
+the canonical-start closure and its grouped physical transport.
+-/
+theorem packedReviewerRunAgainstMemory_public_certificate
+    (xs : List Int) (left right : Nat) :
+    PackedReviewerPublicRunCertificate xs left right := by
+  have houtcome := packedReviewerRunAgainstMemory_public_outcome xs left right
+  dsimp only at houtcome
+  obtain ⟨hterminal, hfailed, hstate, hgrouping⟩ := houtcome
+  exact
+    { terminal_eq := hterminal
+      failed_false := hfailed
+      state_eq := hstate
+      grouping := hgrouping
+      invalid_no_requests :=
+        packedReviewerRunAgainstMemory_invalid_trace_eq_nil
+          (SuccinctClassic.cartesianShape xs) left right
+      input_size_width :=
+        packedReviewerInputSize_lt_two_pow_cellWidth
+          (SuccinctClassic.cartesianShape xs).size
+      valid_endpoints_width :=
+        packedReviewerValidEndpoints_lt_two_pow_cellWidth
+          (SuccinctClassic.cartesianShape xs).size left right
+      header_values_width :=
+        ⟨longCount_lt_two_pow_reviewerWidth
+            (SuccinctClassic.cartesianShape xs),
+          packedReviewerSparseCount_lt_two_pow
+            (SuccinctClassic.cartesianShape xs)⟩
+      memory_words_width := fun _cell hcell =>
+        packedReviewerMemory_word_and_value_fit
+          (SuccinctClassic.cartesianShape xs) hcell
+      prelude_decode_width :=
+        packedReviewerDecodePreludeReplies_word_fits
+          (SuccinctClassic.cartesianShape xs).size
+          (longCount (SuccinctClassic.cartesianShape xs))
+      logical_decode_width :=
+        packedReviewerLogicalDecode_word_fits
+          (SuccinctClassic.cartesianShape xs).size
+          (longCount (SuccinctClassic.cartesianShape xs))
+          (packedReviewerSparseCount (SuccinctClassic.cartesianShape xs))
+      logical_request_operands_width :=
+        packedReviewerDriveLogical_210_request_operands_fit
+          (SuccinctClassic.cartesianShape xs) left right
+      logical_control_tags_width :=
+        packedReviewerLogicalControlCodes_fit
+          (SuccinctClassic.cartesianShape xs).size
+      physical_control_tags_width :=
+        packedReviewerPhysicalControlCodes_fit
+          (SuccinctClassic.cartesianShape xs).size
+      controller_phase_tag_width :=
+        packedReviewerControllerStatePhaseCode_fits
+          (SuccinctClassic.cartesianShape xs).size
+      memory_only :=
+        packedReviewerRunAgainstMemory_memory_only
+          (packedReviewerMemory (SuccinctClassic.cartesianShape xs))
+          (SuccinctClassic.cartesianShape xs).size left right
+      reply_success := fun _event hmem => hgrouping.reply_some hmem
+      allocated := fun _event hmem => hgrouping.address_lt_cellCount hmem
+      address_width := fun _event hmem => hgrouping.address_lt_two_pow hmem
+      physical_request_operands_width := fun _event hmem =>
+        hgrouping.request_operands_fit hmem
+      reply_width := fun _event _cell hmem hreply =>
+        packedReviewerRunAgainstMemory_reply_width
+          (SuccinctClassic.cartesianShape xs) left right hmem hreply
+      reply_value_width := fun _event _cell hmem hreply =>
+        packedReviewerRunAgainstMemory_reply_value_width
+          (SuccinctClassic.cartesianShape xs) left right hmem hreply
+      dead_address_width :=
+        packedReviewerInteriorDeadAddress_lt_two_pow
+          (SuccinctClassic.cartesianShape xs)
+      word_width_logarithmic :=
+        packedReviewerCellWidth_le_log
+          (SuccinctClassic.cartesianShape xs).size
+      trace_cap :=
+        packedReviewerRunAgainstMemory_trace_length_le_427
+          (packedReviewerMemory (SuccinctClassic.cartesianShape xs))
+          (SuccinctClassic.cartesianShape xs).size left right
+      result_width :=
+        packedReviewerPublicResult_lt_two_pow xs left right }
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
