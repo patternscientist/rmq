@@ -28,18 +28,24 @@ frozen R2 coordinator-amendment matrix is the first commit (`c0cd387`).
    LCA surface (scalars, operands, `<= 129` budget, result fits with `+1`
    slack); `2a43b5c` both towers packaged as `RequestsFitFrom` producers.
 
-## In flight
+## Completed after the two-tower milestone
 
-- Whole-tower coupling (leftSelect/rightSelect/lcaClose/finalRank arms into
-  `PackedReviewerWholeOperationalFits`, producing the public
-  `packedReviewerDriveLogical_210_request_operands_fit` with the validation
-  binder shape).
-- Physical chain (NormalizeWhole/Prelude invariants, canonical controller
-  invariant consume, reachable state-machine fits, reachable certificate).
-- Validation-facing N3/N4/N5 (expected trace operands, run grouping request
-  operands, the 26-field public certificate).
-- Then: validation elaboration, matrix/result documentation, focused checks,
-  `lake build RMQ`, design-decision and hygiene gates, replay stage.
+9. `f911d3e` five-arm whole coupling and the public
+   `packedReviewerDriveLogical_210_request_operands_fit` in the validation
+   binder shape; `d28de40` the coupled physical controller chain (reachable
+   state-machine fits and the reachable-state certificate); `0e85ecb` the
+   physical operand closure and the twenty-six-fact public certificate.
+10. `cd02789` the dead-address width generalized to every size; the frozen
+    `RMQ/Validation/EGCPFinalFalsification.lean` elaborates end-to-end.
+11. Gates on the final tree: `lake build RMQ` green (3 m 38 s); strict
+    design-decision check green (31 files); claim-drift green (0 strict
+    failures); forbidden-token and native-shortcut scans empty; frozen rows
+    byte-identical (append-only amendment); `a4d18d7` one recorded replay
+    harness repair (stage selector vs the Windows PowerShell 5.1 binder);
+    replay stage `R2-ALLSIZE` PASS (seven commissioned REJECTs, SHA-verified
+    restoration, terminal clean tree).
+12. Matrix amendment closed row-by-row with the validation consumer evidence;
+    coordinator acceptance still required.
 
 ## Load-bearing design facts for a successor
 
