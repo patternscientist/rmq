@@ -12866,6 +12866,470 @@ private theorem packedReviewerLca_requests_fitFrom
     (fun _ _ hstate' hrequest => hstate'.nextRequest_operands_fit hrequest)
     (fun _ _ hstate' hrequest => hstate'.consume hrequest) fuel state hstate
 
+/-! ## Canonical whole tower
+
+The five-arm whole coupling ties the select tower and the close/LCA tower to
+the four instruction occurrences of the public whole-query program.  Every
+arm carries the ambient-size phase equality and the endpoint validity that
+the next fresh component start needs, and hands the in-flight component to
+its own canonical invariant.  The done arm carries exactly the width fact
+the physical controller's done phase stores.
+-/
+
+private def PackedReviewerWholeCanonicalScalarFits
+    (shape : CartesianShape) : PackedReviewerWholeState -> Prop
+  | .leftSelect n left right select =>
+      n = shape.size ∧
+        left < right ∧
+        right <= shape.size ∧
+        PackedReviewerSelectCanonicalScalarFits shape select
+  | .rightSelect n left right leftClose select =>
+      n = shape.size ∧
+        left < right ∧
+        right <= shape.size ∧
+        (forall value, leftClose = some value ->
+          PackedReviewerNatFits shape.size value ∧
+            value <= 2 * shape.size + 1) ∧
+        PackedReviewerSelectCanonicalScalarFits shape select
+  | .lcaClose n left right leftClose rightClose lca =>
+      n = shape.size ∧
+        left < right ∧
+        right <= shape.size ∧
+        leftClose <= 2 * shape.size + 1 ∧
+        rightClose <= 2 * shape.size + 1 ∧
+        PackedReviewerLcaCanonicalScalarFits shape lca
+  | .finalRank n left right answerClose rank =>
+      n = shape.size ∧
+        left < right ∧
+        right <= shape.size ∧
+        PackedReviewerNatFits shape.size answerClose ∧
+        PackedReviewerRequestsFitFrom shape.size
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          packedReviewerRankNextRequest packedReviewerRankConsumeReply
+          (packedReviewerRankRemaining rank) rank ∧
+        PackedReviewerRankCanonicalScalarFits shape
+          (packedReviewerRankQueryPos .close shape.size (answerClose + 1))
+          rank
+  | .done value =>
+      forall index, value = some index ->
+        PackedReviewerNatFits shape.size index
+
+/-- The canonical whole start satisfies the tower invariant. -/
+private theorem packedReviewerWholeStart_canonicalScalarFits
+    (shape : CartesianShape) (left right : Nat)
+    (hvalid : left < right ∧ right <= shape.size) :
+    PackedReviewerWholeCanonicalScalarFits shape
+      (packedReviewerWholeStart shape.size left right) := by
+  unfold packedReviewerWholeStart
+  exact ⟨rfl, hvalid.1, hvalid.2,
+    packedReviewerSelectStart_canonicalScalarFits shape
+      { instruction := .leftSelect, argument := left } left
+      (packedReviewerSelectInvocation_operands_fit shape .leftSelect left
+        (by omega))
+      (by omega)⟩
+
+/-- Completing the left select launches the fresh right select in envelope. -/
+private theorem packedReviewerWholeAfterLeftSelect_fits
+    (shape : CartesianShape) (left right : Nat) (leftClose : Option Nat)
+    (hleftRight : left < right) (hrightLe : right <= shape.size)
+    (hleftClose :
+      forall value, leftClose = some value ->
+        PackedReviewerNatFits shape.size value ∧
+          value <= 2 * shape.size + 1) :
+    PackedReviewerWholeCanonicalScalarFits shape
+      (packedReviewerWholeAfterLeftSelect shape.size left right leftClose) := by
+  unfold packedReviewerWholeAfterLeftSelect
+  exact ⟨rfl, hleftRight, hrightLe, hleftClose,
+    packedReviewerSelectStart_canonicalScalarFits shape
+      { instruction := .rightSelect, argument := right - 1 } (right - 1)
+      (packedReviewerSelectInvocation_operands_fit shape .rightSelect
+        (right - 1) (by omega))
+      (by omega)⟩
+
+/-- Two decoded closes launch the LCA machine inside the string envelope. -/
+private theorem packedReviewerWholeAfterRightSelect_fits
+    (shape : CartesianShape) (left right : Nat)
+    (leftClose rightClose : Option Nat)
+    (hleftRight : left < right) (hrightLe : right <= shape.size)
+    (hleftClose :
+      forall value, leftClose = some value ->
+        PackedReviewerNatFits shape.size value ∧
+          value <= 2 * shape.size + 1)
+    (hrightClose :
+      forall value, rightClose = some value ->
+        PackedReviewerNatFits shape.size value ∧
+          value <= 2 * shape.size + 1) :
+    PackedReviewerWholeCanonicalScalarFits shape
+      (packedReviewerWholeAfterRightSelect shape.size left right leftClose
+        rightClose) := by
+  cases leftClose with
+  | none =>
+      intro index hindex
+      simp at hindex
+  | some leftValue =>
+      cases rightClose with
+      | none =>
+          intro index hindex
+          simp at hindex
+      | some rightValue =>
+          obtain ⟨hlcFits, hlcLe⟩ := hleftClose leftValue rfl
+          obtain ⟨hrcFits, hrcLe⟩ := hrightClose rightValue rfl
+          simp only [packedReviewerWholeAfterRightSelect]
+          exact ⟨rfl, hleftRight, hrightLe, hlcLe, hrcLe,
+            packedReviewerLcaStart_fits shape leftValue rightValue hlcLe
+              hrcLe⟩
+
+/-- A decoded LCA answer launches the final rank at the next position. -/
+private theorem packedReviewerWholeAfterLca_fits
+    (shape : CartesianShape) (left right : Nat) (answerClose : Option Nat)
+    (hleftRight : left < right) (hrightLe : right <= shape.size)
+    (hanswer :
+      forall answer, answerClose = some answer ->
+        PackedReviewerNatFits shape.size answer ∧
+          PackedReviewerNatFits shape.size (answer + 1)) :
+    PackedReviewerWholeCanonicalScalarFits shape
+      (packedReviewerWholeAfterLca shape.size left right answerClose) := by
+  cases answerClose with
+  | none =>
+      intro index hindex
+      simp at hindex
+  | some answer =>
+      obtain ⟨hanswerFits, hanswerPlusFits⟩ := hanswer answer rfl
+      have hinvFit :
+          forall operand,
+            operand ∈ packedReviewerInvocationOperands
+              { instruction := .finalRank, argument := answer + 1 } ->
+              PackedReviewerNatFits shape.size operand := by
+        apply packedReviewerInvocationOperands_fit
+        · exact hanswerPlusFits
+        · exact Nat.two_pow_pos _
+      simp only [packedReviewerWholeAfterLca]
+      refine ⟨rfl, hleftRight, hrightLe, hanswerFits, ?_, ?_⟩
+      · have hwitness :=
+          packedReviewerRankStart_requests_fit shape
+            { instruction := .finalRank, argument := answer + 1 } .close
+            (answer + 1) hinvFit
+        simpa [packedReviewerRankRemaining] using hwitness
+      · exact packedReviewerRankStart_canonicalScalarFits shape
+          { instruction := .finalRank, argument := answer + 1 } .close
+          (answer + 1) hinvFit hanswerPlusFits
+
+/-- Every stored whole scalar fits the modeled word on the canonical tower. -/
+private theorem PackedReviewerWholeCanonicalScalarFits.scalar_fields
+    {shape : CartesianShape} {state : PackedReviewerWholeState}
+    (hstate : PackedReviewerWholeCanonicalScalarFits shape state) :
+    forall value, value ∈ packedReviewerWholeStateNatFields state ->
+      PackedReviewerNatFits shape.size value := by
+  have hn := packedReviewerInputSize_lt_two_pow_cellWidth shape.size
+  cases state with
+  | leftSelect n left right select =>
+      obtain ⟨rfl, hleftRight, hrightLe, hselect⟩ := hstate
+      have hselectFields := hselect.scalar_fields
+      intro value hmem
+      simp [packedReviewerWholeStateNatFields] at hmem
+      rcases hmem with rfl | rfl | rfl | hselectMem
+      · exact hn
+      · omega
+      · omega
+      · exact hselectFields value hselectMem
+  | rightSelect n left right leftClose select =>
+      obtain ⟨rfl, hleftRight, hrightLe, hleftClose, hselect⟩ := hstate
+      have hselectFields := hselect.scalar_fields
+      intro value hmem
+      simp [packedReviewerWholeStateNatFields] at hmem
+      rcases hmem with rfl | rfl | rfl | hoptMem | hselectMem
+      · exact hn
+      · omega
+      · omega
+      · cases leftClose with
+        | none =>
+            simp [packedReviewerOptionNatFields] at hoptMem
+        | some stored =>
+            simp only [packedReviewerOptionNatFields,
+              List.mem_singleton] at hoptMem
+            subst hoptMem
+            exact (hleftClose value rfl).1
+      · exact hselectFields value hselectMem
+  | lcaClose n left right leftClose rightClose lca =>
+      obtain ⟨rfl, hleftRight, hrightLe, hlcLe, hrcLe, hlca⟩ := hstate
+      have hlcaFields := hlca.scalar_fields
+      intro value hmem
+      simp [packedReviewerWholeStateNatFields] at hmem
+      rcases hmem with rfl | rfl | rfl | rfl | rfl | hlcaMem
+      · exact hn
+      · omega
+      · omega
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hlcLe
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hrcLe
+      · exact hlcaFields value hlcaMem
+  | finalRank n left right answerClose rank =>
+      obtain ⟨rfl, hleftRight, hrightLe, hanswerFits, hrankFit,
+        hrank⟩ := hstate
+      have hrankFields := hrank.scalar_fields
+      intro value hmem
+      simp [packedReviewerWholeStateNatFields] at hmem
+      rcases hmem with rfl | rfl | rfl | rfl | hrankMem
+      · exact hn
+      · omega
+      · omega
+      · exact hanswerFits
+      · exact hrankFields value hrankMem
+  | done value =>
+      intro fieldValue hmem
+      cases value with
+      | none =>
+          simp [packedReviewerWholeStateNatFields,
+            packedReviewerOptionNatFields] at hmem
+      | some index =>
+          simp only [packedReviewerWholeStateNatFields,
+            packedReviewerOptionNatFields, List.mem_singleton] at hmem
+          subst fieldValue
+          exact hstate index rfl
+
+/-- Every request the canonical whole tower emits has fitting operands. -/
+private theorem PackedReviewerWholeCanonicalScalarFits.nextRequest_operands_fit
+    {shape : CartesianShape} {state : PackedReviewerWholeState}
+    (hstate : PackedReviewerWholeCanonicalScalarFits shape state)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerWholeNextRequest state = some request) :
+    PackedReviewerLogicalRequestOperandsFit shape.size request := by
+  cases state with
+  | leftSelect n left right select =>
+      obtain ⟨rfl, -, -, hselect⟩ := hstate
+      simp only [packedReviewerWholeNextRequest] at hrequest
+      exact hselect.nextRequest_operands_fit hrequest
+  | rightSelect n left right leftClose select =>
+      obtain ⟨rfl, -, -, -, hselect⟩ := hstate
+      simp only [packedReviewerWholeNextRequest] at hrequest
+      exact hselect.nextRequest_operands_fit hrequest
+  | lcaClose n left right leftClose rightClose lca =>
+      obtain ⟨rfl, -, -, -, -, hlca⟩ := hstate
+      simp only [packedReviewerWholeNextRequest] at hrequest
+      exact hlca.nextRequest_operands_fit hrequest
+  | finalRank n left right answerClose rank =>
+      obtain ⟨rfl, -, -, -, hrankFit, -⟩ := hstate
+      simp only [packedReviewerWholeNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
+        (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
+  | done value =>
+      simp [packedReviewerWholeNextRequest] at hrequest
+
+/-- The canonical whole tower stays inside its 210-read budget. -/
+private theorem
+    PackedReviewerWholeCanonicalScalarFits.remaining_le_twoHundredTen
+    {shape : CartesianShape} {state : PackedReviewerWholeState}
+    (hstate : PackedReviewerWholeCanonicalScalarFits shape state) :
+    packedReviewerWholeRemaining state <= 210 := by
+  cases state with
+  | leftSelect n left right select =>
+      obtain ⟨-, -, -, hselect⟩ := hstate
+      have hbound := hselect.remaining_le_thirtyFive
+      simp only [packedReviewerWholeRemaining]
+      omega
+  | rightSelect n left right leftClose select =>
+      obtain ⟨-, -, -, -, hselect⟩ := hstate
+      have hbound := hselect.remaining_le_thirtyFive
+      simp only [packedReviewerWholeRemaining]
+      omega
+  | lcaClose n left right leftClose rightClose lca =>
+      obtain ⟨-, -, -, -, -, hlca⟩ := hstate
+      have hbound := hlca.remaining_le_oneTwentyNine
+      simp only [packedReviewerWholeRemaining]
+      omega
+  | finalRank n left right answerClose rank =>
+      obtain ⟨-, -, -, -, -, hrank⟩ := hstate
+      have hbound := hrank.remaining_le_eleven
+      simp only [packedReviewerWholeRemaining]
+      omega
+  | done value => simp [packedReviewerWholeRemaining]
+
+/-- One canonical reply preserves the whole tower invariant. -/
+private theorem PackedReviewerWholeCanonicalScalarFits.consume
+    {shape : CartesianShape} {state : PackedReviewerWholeState}
+    (hstate : PackedReviewerWholeCanonicalScalarFits shape state)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerWholeNextRequest state = some request) :
+    PackedReviewerWholeCanonicalScalarFits shape
+      (packedReviewerWholeConsumeReply state
+        ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          request.segment request.index)) := by
+  cases state with
+  | leftSelect n left right select =>
+      obtain ⟨rfl, hleftRight, hrightLe, hselect⟩ := hstate
+      simp only [packedReviewerWholeNextRequest] at hrequest
+      have hselect' := hselect.consume hrequest
+      simp only [packedReviewerWholeConsumeReply]
+      cases hresult :
+          packedReviewerSelectResult
+            (packedReviewerSelectConsumeReply select
+              ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+                request.segment request.index)) with
+      | none => exact ⟨rfl, hleftRight, hrightLe, hselect'⟩
+      | some leftClose =>
+          refine packedReviewerWholeAfterLeftSelect_fits shape left right
+            leftClose hleftRight hrightLe ?_
+          intro value hvalue
+          subst hvalue
+          exact hselect'.result_fits hresult
+  | rightSelect n left right leftClose select =>
+      obtain ⟨rfl, hleftRight, hrightLe, hleftClose, hselect⟩ := hstate
+      simp only [packedReviewerWholeNextRequest] at hrequest
+      have hselect' := hselect.consume hrequest
+      simp only [packedReviewerWholeConsumeReply]
+      cases hresult :
+          packedReviewerSelectResult
+            (packedReviewerSelectConsumeReply select
+              ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+                request.segment request.index)) with
+      | none => exact ⟨rfl, hleftRight, hrightLe, hleftClose, hselect'⟩
+      | some rightClose =>
+          refine packedReviewerWholeAfterRightSelect_fits shape left right
+            leftClose rightClose hleftRight hrightLe hleftClose ?_
+          intro value hvalue
+          subst hvalue
+          exact hselect'.result_fits hresult
+  | lcaClose n left right leftClose rightClose lca =>
+      obtain ⟨rfl, hleftRight, hrightLe, hlcLe, hrcLe, hlca⟩ := hstate
+      simp only [packedReviewerWholeNextRequest] at hrequest
+      have hlca' := hlca.consume hrequest
+      simp only [packedReviewerWholeConsumeReply]
+      cases hresult :
+          packedReviewerLcaResult
+            (packedReviewerLcaConsumeReply lca
+              ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+                request.segment request.index)) with
+      | none => exact ⟨rfl, hleftRight, hrightLe, hlcLe, hrcLe, hlca'⟩
+      | some answerClose =>
+          exact packedReviewerWholeAfterLca_fits shape left right answerClose
+            hleftRight hrightLe (hlca'.result_fits hresult)
+  | finalRank n left right answerClose rank =>
+      obtain ⟨rfl, hleftRight, hrightLe, hanswerFits, hrankFit,
+        hrank⟩ := hstate
+      simp only [packedReviewerWholeNextRequest] at hrequest
+      have hrank' := hrank.consume hrequest
+      have hdescent :=
+        packedReviewerRankRemaining_consume_le rank
+          ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            request.segment request.index) request hrequest
+      have hfit' :=
+        packedReviewerRequestsFitFrom_consume_witness hrankFit hrequest
+          (by omega)
+      simp only [packedReviewerWholeConsumeReply]
+      cases hresult :
+          packedReviewerRankResult
+            (packedReviewerRankConsumeReply rank
+              ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+                request.segment request.index)) with
+      | none =>
+          exact ⟨rfl, hleftRight, hrightLe, hanswerFits, hfit', hrank'⟩
+      | some closeRank =>
+          have hvalue := hrank'.result_fits hresult
+          intro index hindex
+          have heq : closeRank - 1 = index := Option.some.inj hindex
+          subst heq
+          have hcapacity := hvalue.1
+          simp only [PackedReviewerNatFits] at hcapacity ⊢
+          omega
+  | done value =>
+      simp [packedReviewerWholeNextRequest] at hrequest
+
+/-- A completed canonical whole state exposes a fitting result scalar. -/
+private theorem PackedReviewerWholeCanonicalScalarFits.result_fits
+    {shape : CartesianShape} {state : PackedReviewerWholeState}
+    {value : Option Nat}
+    (hstate : PackedReviewerWholeCanonicalScalarFits shape state)
+    (hresult : packedReviewerWholeResult state = some value) :
+    forall index, value = some index ->
+      PackedReviewerNatFits shape.size index := by
+  cases state with
+  | done stored =>
+      have heq : stored = value := by
+        simpa [packedReviewerWholeResult] using hresult
+      subst value
+      exact hstate
+  | leftSelect n left right select =>
+      simp [packedReviewerWholeResult] at hresult
+  | rightSelect n left right leftClose select =>
+      simp [packedReviewerWholeResult] at hresult
+  | lcaClose n left right leftClose rightClose lca =>
+      simp [packedReviewerWholeResult] at hresult
+  | finalRank n left right answerClose rank =>
+      simp [packedReviewerWholeResult] at hresult
+
+/-- The invariant transports to the request-width prefix at any budget. -/
+private theorem packedReviewerWholeStart_requests_fit
+    (shape : CartesianShape) (left right : Nat)
+    (hvalid : left < right ∧ right <= shape.size) :
+    PackedReviewerRequestsFitFrom shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerWholeNextRequest packedReviewerWholeConsumeReply
+      (packedReviewerWholeRemaining
+        (packedReviewerWholeStart shape.size left right))
+      (packedReviewerWholeStart shape.size left right) :=
+  PackedReviewerRequestsFitFrom.of_invariant shape.size
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+    packedReviewerWholeNextRequest packedReviewerWholeConsumeReply
+    (PackedReviewerWholeCanonicalScalarFits shape)
+    (fun _ _ hstate hrequest => hstate.nextRequest_operands_fit hrequest)
+    (fun _ _ hstate hrequest => hstate.consume hrequest)
+    (packedReviewerWholeRemaining
+      (packedReviewerWholeStart shape.size left right))
+    (packedReviewerWholeStart shape.size left right)
+    (packedReviewerWholeStart_canonicalScalarFits shape left right hvalid)
+
+/-- The constructor-exhaustive producer for the canonical whole start. -/
+private theorem packedReviewerWholeStart_operational_fits
+    (shape : CartesianShape) (left right : Nat)
+    (hvalid : left < right ∧ right <= shape.size) :
+    PackedReviewerWholeOperationalFits shape
+      (packedReviewerWholeStart shape.size left right) :=
+  { size_eq := by simp [packedReviewerWholeStart]
+    scalar_fields :=
+      (packedReviewerWholeStart_canonicalScalarFits shape left right
+        hvalid).scalar_fields
+    storage_fits := packedReviewerWholeStart_storage_fits shape.size left right
+    continuation_shape :=
+      packedReviewerWholeStart_shape_safe shape.size left right
+    remaining_le := by
+      have hbudget :=
+        packedReviewerWholeStart_remaining_eq_two_ten shape left right hvalid
+      omega
+    requests_fit := packedReviewerWholeStart_requests_fit shape left right
+      hvalid }
+
+/--
+A finished whole machine feeds the physical done phase exactly through its
+option field list, so the controller's done-value width obligation is a
+projection of the coupled scalar invariant — no separate result envelope.
+-/
+private theorem PackedReviewerWholeOperationalFits.done_value_fits
+    {shape : CartesianShape} {value : Option Nat}
+    (hfit : PackedReviewerWholeOperationalFits shape (.done value)) :
+    forall index, value = some index ->
+      PackedReviewerNatFits shape.size index := by
+  intro index hindex
+  subst hindex
+  exact hfit.scalar_fields index
+    (by simp [packedReviewerWholeStateNatFields,
+      packedReviewerOptionNatFields])
+
+/-- Every retained logical operand of the 210-fuel canonical drive fits. -/
+theorem packedReviewerDriveLogical_210_request_operands_fit
+    (shape : CartesianShape) (left right : Nat)
+    (hleft : left < right) (hright : right <= shape.size) :
+    forall event,
+      event ∈
+          (packedReviewerDriveLogical
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape) 210
+            (packedReviewerWholeStart shape.size left right)).trace ->
+        PackedReviewerLogicalRequestOperandsFit shape.size event.request := by
+  intro event hmem
+  exact
+    packedReviewerDriveLogical_210_request_operands_fit_of_start_operational_fits
+      shape left right ⟨hleft, hright⟩
+      (packedReviewerWholeStart_operational_fits shape left right
+        ⟨hleft, hright⟩)
+      hmem
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
