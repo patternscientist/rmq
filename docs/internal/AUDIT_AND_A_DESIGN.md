@@ -542,3 +542,120 @@ report was written. Durable report:
 Best next target: a checked exhaustive source/consumer inventory connected to a
 closed-controller invariant whose only dynamic inputs are `n`, endpoints, typed
 header words, and replies already present in the ordered trace of `memory xs`.
+
+## 2026-08-05 (AUDIT + INTEGRATION) — EG-CP-ALLSIZE-AUD1 verdict landed; local rung EG-CP-ALLSIZE-R1 ACCEPTED
+
+**Coordinator reconstruction.** This entry is recorded by the first
+`EG-CP-STAGEF-CLOSE-R1` task commit to repair one known integration bookkeeping
+omission: the 2026-08-05 disposition was integrated without its round-log
+record, while `WDD-20260726-008` requires the round-log entry to land with the
+report it cites. The auditor supplied no separate round-log block, so nothing
+below is an auditor quotation: every statement is reconstructed from the durable
+audit report `docs/internal/audit_reports/2026-08-05_EG_CP_ALLSIZE_R2_fresh_blind.md`
+(commit `118284833eb312fc06e794dd0708f48b4909dbd1`) and from
+`docs/internal/EG_CP_FINAL_FALSIFICATION_MATRIX.md` section 9.
+
+**Verdict, as corrected.** Fresh-blind, report-only audit `EG-CP-ALLSIZE-AUD1`
+of exact target `a0a0f92b8f9081ee59797affb5045952d9e39fbf` (branch
+`codex/eg-cp-allsize-reviewer-machine-r1`) from base
+`6bf28dee32c96da4705b139959fd35e4a782bac4`: **`LOCAL_RUNG_ACCEPTABLE`**, no
+`P0`/`P1`/`P2` finding, three `P3` bookkeeping findings. The report text carries
+two in-place coordinator corrections, both marked so the original wording stays
+recoverable: the branch-audited count ("41 commits above base" -> 40, the 41
+being the report commit's own distance) and the `FG-12` remainder ("the seven
+outstanding registry cases" -> four `Target = $null` entries plus five already
+runnable; seven is the size of the replayed `R2-ALLSIZE` stage).
+
+**Acceptance and integration.** Coordinator disposition `EG-CP-ALLSIZE-INT-R1`
+recorded local rung `EG-CP-ALLSIZE-R1` **`ACCEPTED`** at exact candidate
+`a0a0f92` on the evidence of the audit report plus an independent
+reconstruction, and integrated it into local `main` by fast-forward at commit
+`0f386723f56deae5eb39418e535f56e7a2b347dd` (tree
+`ec0ab9c96f598ddc81a0e30424410461296abe71`, parent `1182848`). The integration
+is documentation-only over byte-identical proof and executable blobs.
+
+**Three `P3` dispositions** (matrix section 9.5):
+
+- `P3-1` (title drift): matrix section 7.2 cites three inherited rows by
+  non-canonical titles; resolved append-only by a recorded mapping to the
+  canonical `FG-08-PHYSICAL-LOWERING`, `FG-09-TOTALITY-AND-CAP`,
+  `FG-10-SAME-RUN-CORRECTNESS`; the frozen text was not edited.
+- `P3-2` (scope of the `M06` mutant): the enacted `M06-ANSWER-ORACLE` body
+  substitutes a metadata-derived precomputed result (`some n`), not a literal
+  call to the independent reference semantics; recorded without upgrade, with a
+  carry-forward obligation on the later full-registry campaign to either enact
+  the exact answer-oracle predicate or prove a checked bridge to it.
+- `P3-3` (stale ledger row): the superseded pre-repair `R2-ALLSIZE` row in
+  `EG_CP_FINAL_FALSIFICATION_RESULT.md` section 9 was marked `SUPERSEDED` in
+  place, pointing at the `R2R1` repair and the audit's independent rerun.
+
+**Exact post-report checks** (auditor, rerun on the tree containing the
+report, per `AUDIT_PROTOCOL.md`): strict claim-drift scan, strict
+design-decision check, `git diff --check`, UTF-8 inspection, and cleanliness.
+Audit-side commands on the exact target, one heavy process at a time: skill
+preflight PASS (explicit no-role); `lake build
+RMQ.Validation.EGCPFinalFalsification` PASS (16 m 12 s cold);
+`lake build RMQ` PASS (4 m 47 s); `lake env lean scripts/axiom_check.lean` PASS
+(six reviewer entries on `[propext, Classical.choice, Quot.sound]`, the 427
+trace-cap theorem on `[propext, Quot.sound]`); hygiene and native-shortcut
+scans zero matches; strict claim-drift 1513 hits, 0 failures; strict
+design-decision check 32 files; committed-range `git diff --check` clean;
+frozen-row integrity append-only (+175/-0); one `-Stage R2-ALLSIZE` replay,
+PASS exit 0 (seven commissioned REJECTs at their commissioned surfaces,
+activation checks passed, SHA256-verified restoration, terminal clean tree).
+
+**Exact post-integration checks** (coordinator, independently re-derived at
+`0f38672`, matrix section 9.2): exact identity arithmetic by `git rev-parse` /
+`rev-list` / `diff --name-status` (40 commits / 32 changed paths audited; the
+report commit adds exactly one path); guarded blob identity over 327
+`RMQ.lean` / `RMQ/**/*.lean` / replay-runner / axiom-script paths, compared by
+Git blob SHA; strict-UTF-8 section-scoped frozen-row comparison (51 inherited
+matrix row IDs byte-identical, 0 missing, 0 duplicated, 0 changed; the
+`6bf28dee..1182848` matrix diff is append-only `+175/-0`); re-enumeration of
+the sixteen-entry frozen registry and its partition; and re-derivation of the
+`R2-ALLSIZE` stage membership from the runner source. No Lean build, axiom
+check, or replay was repeated: every proof-bearing and executable blob is
+byte-identical to the audited objects, and the integration changes only
+documentation.
+
+**Boundary.** This acceptance closes the local rung only. Explicitly still
+open, and not recorded by this entry: the full EG-CP falsification node
+(`FG-11`, full `FG-12`, `FG-14`, `FG-15`), `FEASIBILITY_PASS`, Stage A
+(`A01`..`A13`), public-claim synchronization, `S1`, `V1`, and architecture
+acceptance. The replay controls `REPLAY-EXACT-REGISTRY`,
+`REPLAY-SELECTOR-NONVACUITY`, and `REPLAY-SUBPROCESS-DEADLINE` are preserved
+and were not re-certified by the documentation-only integration.
+
+## 2026-08-06 (AUDIT) — Stage-F candidate `cefc4ef` rejected; clean-history repair commissioned
+
+**Coordinator reconstruction from the commissioning contract of
+`EG-CP-STAGEF-CLOSE-R2`; the external audit report itself was not supplied
+verbatim and nothing below quotes it.** An outside audit rejected the
+Stage-F residual candidate `cefc4efa255d0456c94d217a9819c6dbf0325cff`
+(retained as source evidence; never to be amended, rebased, reset, or
+presented as accepted). Four audited repairs were commissioned:
+
+- `R1` decisive provenance and transition: the rejected
+  `packedReviewerDecisiveCellConnection` conclusion erased the producing
+  invocation fields and did not connect reply consumption to the terminal
+  continuation; the repaired conclusion must retain the global occurrence,
+  the exact `leftSelect`/`entryFirstOffset`/segment-8/index-0 request, the
+  reply cell, the checked pre-state decomposition, the
+  `packedReviewerNextRequest`/`packedReviewerConsumeReply` transition, and a
+  checked continuation to the run's `.done (some 1)`.
+- `R2` capstone dynamic-input boundary: the rejected
+  `dynamic_input_boundary` field held length/arity/store-agreement facts
+  that do not pin controller inputs; the repaired field must pin
+  `@packedReviewerController` at the exact public type and the
+  memory-only-at-the-driver factorization, with the former facts retained
+  under accurate names.
+- `R3` `EG-CP-F12-RESIDUAL-ESTIMATE`: the final record must give a numeric
+  focused-proof-day estimate with a closed consumer inventory.
+- `R4` report and lifecycle accuracy: real changed-path counts from Git,
+  and every workflow-sensitive commit carrying its own same-commit
+  workflow-decision entry, re-verified per commit on the final tree.
+
+Disposition: repair on the fresh branch `codex/eg-cp-stagef-close-r2` from
+exact base `0f386723f56deae5eb39418e535f56e7a2b347dd`, followed by
+coordinator audit and a separate fresh-blind audit. No acceptance is
+recorded here.

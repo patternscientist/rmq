@@ -7550,3 +7550,55 @@ by a documentation-only integration; they remain inputs to the later
 full-registry campaign. Named regression for this rule: an acceptance record
 that states a rung closed without a not-closed table, or that cites `M06` as
 having refuted a reference-semantics oracle, is rejected on sight.
+
+## WDD-20260806-001: the Stage-F contract is reconstructed on clean history with exactly two audited proposition corrections
+
+Status: Accepted under the coordinator-commissioned `EG-CP-STAGEF-CLOSE-R2`
+repair contract.
+
+Date: 2026-08-06
+
+Trigger: an external audit rejected Stage-F candidate
+`cefc4efa255d0456c94d217a9819c6dbf0325cff` for four defects: an
+origin-erasing decisive-connection conclusion (`R1`), a mislabeled capstone
+dynamic-input boundary (`R2`), a missing `EG-CP-F12` numeric residual
+estimate (`R3`), and lifecycle/report inaccuracies including two
+workflow-decision entries that landed one commit after the workflow-
+sensitive changes they governed (`R4`). The rejected branch is immutable
+source evidence.
+
+Decision, in four parts.
+
+1. **Clean history from the exact base.** New commits are built from
+   `0f386723f56deae5eb39418e535f56e7a2b347dd`; the rejected commits are
+   diff source material only, never merged or cherry-picked as completed
+   commits, and nothing is amended, rebased, or reset after creation.
+2. **The contract lands first, corrected.** This commit recreates the
+   frozen section 10 with exactly the two authorized corrections (`R1`
+   contract in 10.3, `R2` conjunct list in 10.5), identified in the
+   section preamble as coordinator repair amendments; every pre-section-10
+   matrix row stays byte-identical to the exact base, and the sixteen-entry
+   registry, verdict partition, selectors, deadlines, and restoration
+   contracts are untouched.
+3. **Every workflow-sensitive commit carries its own entry.** The two
+   one-commit ledger lags of the rejected branch are not reproduced: each
+   reconstruction commit that touches the matrix, the replay runner, the
+   axiom script, or any other workflow-classified path contains its
+   matching `WDD` entry, and the strict design check runs against each
+   commit's exact parent immediately after it is created.
+4. **Evidence lands only where the contract permits.** Row evidence goes
+   to the appended result record; inside the matrix only the section 10.8
+   outcome cells change after this freeze; the `R3` numeric estimate and
+   the `R4` per-commit lifecycle table are mandatory sections of the final
+   record.
+
+Alternatives rejected: amending the rejected branch (forbidden and
+history-destroying); a fresh contract diverging from the rejected section
+10 beyond the two authorized corrections (would silently re-freeze
+requirements the audit did not question); deferring the corrections to the
+proof commits (the contract must precede the code it governs).
+
+Consequences: the corrected propositions are binding on every later commit
+of this branch; a proof that only satisfies the rejected weaker forms does
+not close its row. The per-commit gate discipline is verified twice: at
+commit time and by the final-tree re-check table in the result record.

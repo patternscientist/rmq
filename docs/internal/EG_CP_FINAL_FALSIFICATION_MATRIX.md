@@ -505,3 +505,325 @@ difference would have been out of scope for this task and grounds to stop
 rather than to repair.
 
 <!-- COORDINATOR-DISPOSITION-EG-CP-ALLSIZE-INT-R1-END -->
+
+
+<!-- COORDINATOR-AMENDMENT-EG-CP-STAGEF-CLOSE-R2-BEGIN -->
+
+---
+
+## 10. Coordinator residual-closure amendment: `EG-CP-STAGEF-CLOSE-R2`
+
+Coordinator authority: delegated task `EG-CP-STAGEF-CLOSE-R1`, received
+2026-08-06, reconstructed on clean history by the coordinator-commissioned
+repair task `EG-CP-STAGEF-CLOSE-R2` after an external audit rejected
+candidate `cefc4efa255d0456c94d217a9819c6dbf0325cff`.
+Worker branch: `codex/eg-cp-stagef-close-r2`.
+Exact base: `0f386723f56deae5eb39418e535f56e7a2b347dd` (tree
+`ec0ab9c96f598ddc81a0e30424410461296abe71`, parent
+`118284833eb312fc06e794dd0708f48b4909dbd1`).
+Workflow-governance ref: `f0c7232a8a52b8d61ead5e96d72a8a849bc094b5` (verified
+ancestor of the base).
+
+This is an append-only coordinator amendment. Every original `FG-*` row, every
+`R2-*` row, every inherited invariant row, the frozen replay registry of
+section 3, and the entire sections 7-9 above remain byte-for-byte identical to
+the exact base blob. This amendment freezes, **before any Lean or replay
+edit**, the accepted predicate `P`, mutation predicate `Q`, quantifiers,
+guards, exact consumer, and expected failing surface for every residual case
+of the Stage-F falsification campaign. After this commit only the `Evidence
+obtained` and `Status / residual gap` columns of section 10 tables may change;
+any other change requires a recorded coordinator-approved contract amendment.
+
+This amendment does not record `FEASIBILITY_PASS`, does not accept Stage F or
+Stage A, does not authorize merge, push, publication, or public-claim
+synchronization, and does not close the coordinator reconstruction or the
+mandatory fresh-blind audit that must follow worker candidate completion.
+
+**Coordinator repair amendments (audited, exactly two).** The rejected
+candidate `cefc4ef` is retained as source evidence only. This
+reconstruction carries exactly two authorized contract corrections relative
+to that candidate's frozen section 10, both strengthenings and neither a
+retroactive evidence edit: (`R1`) the `SF-FG11-DECISIVE` connection
+contract in 10.3 now requires the producing invocation fields and the
+reply-transition/continuation chain to survive in the theorem conclusion;
+(`R2`) the 10.5 capstone conjunct list replaces the mislabeled
+dynamic-input conjunction by an exact-type controller input boundary,
+retaining the former facts under accurate names. Every other frozen
+requirement, registry row, and harness contract is unchanged.
+
+### 10.1 The residual obligations, original propositions copied verbatim
+
+The controlling requirement text is the byte-identical original row above; it
+is repeated here verbatim (requirement cell only) so this amendment is
+self-contained. The five `FG` rows:
+
+- `FG-11-LIVENESS-AND-ANTI-BYPASS`: supply a pinned valid execution where changing only the counted long-count cell changes a later probe address or returned result; bridge the existing consumed-payload-cell witness to the packed run's returned answer; and supply a proved-unread-cell mutation that is an expected accept. Aggregate trace inequality alone is insufficient when the requirement concerns the value.
+- `FG-12-REPLAY-AND-CONSUMER`: commit one portable exact-registry replay with the ordered cases and expected verdicts below, named failing surfaces, one unchanged production accept, one unread-cell accept, restoration hashes, clean-tree checks, positive evidence-based subprocess deadlines, owned root-plus-descendant termination on Windows and Ubuntu, selector nonvacuity, and an independent expected-type consumer whose literal type pins the full capstone.
+- `FG-13-TRUST-AND-SAME-OBJECT`: no reachable `sorry`, `admit`, axiom, unsafe/opaque/partial/extern implementation, native decision shortcut, Mathlib import, proof-value oracle, semantic callback, or mismatch of payload/store/run/width objects supports the capstone. Proof-only fields may certify but not choose answers, routes, or addresses.
+- `FG-14-BOUNDARIES`: check empty representation, singleton, size two, each relevant threshold minus one/at/plus one, empty range, reversed range, and out-of-range endpoints. Preserve the half-open contract and leftmost tie policy. The top-level architecture is uniform; total empty tables and guards are allowed, but an undocumented second representation is not.
+- `FG-15-DURABLE-DECISION`: commit the completed matrix, result report, design rationale, rejected K0/K2/padding/historical alternatives, exact theorem types and object-composition chain, skeptical-reviewer questions, verification ledger, and every remaining assumption. Do not call commissioning prompts or audit prose theorem evidence.
+
+The seven frozen registry entries whose enactment this amendment freezes,
+copied verbatim from section 3 (order, ID, mutation, expected verdict, named
+failing surface unchanged; only the runner `Target` bodies are enacted):
+
+| Order | ID | Mutation | Expected verdict | Named failing surface |
+| --- | --- | --- | --- | --- |
+| 2 | `A02-UNREAD-CELL-EXPECTED-ACCEPT` | mutate exactly one proved-unread allocated cell and preserve the pinned run/result | ACCEPT | none |
+| 3 | `M01-WRONG-LONG-COUNT` | alter the header count | REJECT | liveness/consumer |
+| 4 | `M02-HOST-LONG-COUNT-MIRROR` | bypass the header reply with preprocessing/host metadata | REJECT | structural consumer |
+| 6 | `M04-CANONICAL-SHAPE-BY-N` | synthesize a canonical shape from `n` inside a wrapper | REJECT | structural / same-object |
+| 8 | `M06-ANSWER-ORACLE` | call the reference/semantic answer from controller execution | REJECT | oracle independence |
+| 15 | `M13-HIDDEN-UNCOUNTED-TABLE` | add a content-dependent lookup/program constant outside `memory xs` | REJECT | closed controller / program accounting |
+| 16 | `M14-LONG-COUNT-IGNORED` | retain the header read but make downstream offsets independent of its value | REJECT | liveness |
+
+The three replay harness contracts of section 3 remain controlling verbatim:
+`REPLAY-EXACT-REGISTRY`, `REPLAY-SELECTOR-NONVACUITY`,
+`REPLAY-SUBPROCESS-DEADLINE`.
+
+The roadmap Stage-F rows consumed by this rung, copied verbatim from
+`docs/internal/RMQ_ENDGAME_ROADMAP.md`:
+
+- `EG-CP-F10-ANTI-BYPASS`: "Reject shape, source-list, proof-oracle,
+  uncounted-table, disconnected-trace, forged-count, and sibling-store
+  mutations" / minimum evidence "Committed replay with exact expected failures
+  and unchanged accept control".
+- `EG-CP-F11-BOUNDARIES`: "Empty representation, singleton, threshold, valid,
+  reversed, empty-range, and out-of-range query behavior are explicit" /
+  "Checked theorem/fixture matrix".
+- `EG-CP-F12-RESIDUAL-ESTIMATE`: "Close the dependency inventory and estimate
+  the exact remaining theorem surface" / "Coordinator-reviewed path/theorem
+  inventory; no unknown dynamic input".
+- `EG-CP-F13-NO-ASSUMED-CAPSTONE`: "Every reachable controller state, next
+  address, reply, and final result is produced by the packed execution under
+  one explicit invariant; final correctness is not stored in a field,
+  hypothesis, or precomputed answer" / "Base/step/final invariant,
+  decisive-cell corruption rejection, and a proved-unread-cell expected-accept
+  control".
+
+Inherited invariant rows retained by reference (requirement text is the
+byte-identical section 2 row; this rung must close each at the full-node
+objects): `INV-VALUE-DEPENDENCY`, `INV-SEMANTIC-NONVACUITY`,
+`INV-STORE-AGREEMENT`, `INV-READ-BACKING`, `INV-PUBLIC-COMPOSITION`,
+`INV-MUTATION-REPRODUCIBILITY`, `INV-CATEGORY-SEPARATION`.
+
+`FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY` applies as written in
+`.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md` section 1,
+against exact base `0f386723f56deae5eb39418e535f56e7a2b347dd`.
+
+`COMPLETE-STAGEF-EVIDENCE` (commissioning goal, verbatim): "produce one
+full-node falsification candidate with actual address/result liveness,
+decisive and unread-cell controls, a semantically faithful portable
+sixteen-case replay, complete query-level boundaries, and a durable final
+evidence record."
+
+### 10.2 Frozen canonical fixture
+
+All fixture constants below are frozen; the exact witnesses live in
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCapstone.lean` and the
+replay registry, and may not drift from this record.
+
+- Input `xs0 = [7, 3, 3]`, query `left0 = 0`, `right0 = 3`,
+  `shape0 = SuccinctClassic.cartesianShape xs0` (`n = 3`). This is
+  simultaneously the `FG-14` duplicate-minimum fixture: the minimum value `3`
+  occurs at indices `1` and `2`, and the guarded leftmost result is `some 1`,
+  connected through the established `scanWindow` reference spec
+  (`queryCosted_exact` / `queryCosted_leftmost`), never by citing the
+  implementation output being tested (`INV-ORACLE-INDEPENDENCE`).
+- Canonical objects: `mem0 = packedReviewerMemory shape0` (22 cells at the one
+  derived width `packedReviewerCellWidth 3`; `longCount shape0 = 0`,
+  `packedReviewerSparseCount shape0 = 0`), canonical run
+  `run0 = packedReviewerRunAgainstMemory mem0 shape0.size 0 3` (68 attempted
+  probes, terminal `some (some 1)`).
+- Decisive consumed cell `c0 = 8`; frozen replacement `v0` = the bitwise
+  complement of `mem0[8]`. Expected mutated terminal: `some (some 2)`, i.e.
+  the returned answer moves from index `1` to index `2` under a one-cell
+  payload corruption, while remaining a proper terminal value.
+- Proved-unread allocated cell `u0 = 4` (an interior payload cell, not the
+  final padding cell; the canonical run also leaves cells 12-17 and 21
+  unprobed, and `4` is frozen as the witness). Frozen committed replacement
+  `w0 = List.replicate (packedReviewerCellWidth 3) true`.
+- Header mutation: cell `0` replaced by
+  `SuccinctSpace.natToBitsLE (packedReviewerCellWidth shape.size) (longCount shape + packedReviewerCellWidth shape.size)`;
+  the universal theorem covers every shape and valid query, and its fixture
+  instance is recorded with the concrete moved second address.
+
+Evidence discipline for this section: canonical-side facts are derived from
+the existing symbolic theorems (`packedReviewerRunAgainstMemory_public_outcome`,
+grouping, `queryCosted_exact`); the mutated-run facts are kernel-checked
+evaluations of the same literal objects. `#eval` output is exploration only
+and closes nothing.
+
+### 10.3 Frozen `FG-11` liveness targets
+
+| ID | Accepted predicate `P` | Mutation predicate `Q` | Quantifiers and guards | Exact consumer | Expected surface |
+| --- | --- | --- | --- | --- | --- |
+| `SF-FG11-HEADER` | For every `shape` and endpoints with `left < right /\ right <= shape.size`, the run `packedReviewerRunAgainstMemory (packedReviewerMemory shape) shape.size left right` opens with the header request at cell `0` and its second attempted physical request is the first `.rankSuper` prelude probe; the same run returns the guarded reference result (`packedReviewerRunAgainstMemory_public_outcome`). | Replacing **only** cell `0` of `packedReviewerMemory shape` by `SuccinctSpace.natToBitsLE (packedReviewerCellWidth shape.size) (longCount shape + packedReviewerCellWidth shape.size)` yields a run whose **second attempted physical address differs**: the conclusion is an inequality between `((packedReviewerRunAgainstMemory mutated shape.size left right).trace[1]?).map (fun event => event.request.address)` and the same projection of the canonical run, both `some`, unequal. The inequality is at the address projection of trace position 1, not at an enclosing record. | Universal over `shape : CartesianShape` and all valid endpoint pairs (strictly stronger than the frozen row's "one pinned valid execution"), plus one pinned instance at the section 10.2 fixture. Guard: `left < right /\ right <= shape.size`. Identical driver, controller, fuel; only memory cell `0` differs. | `RMQ/Validation/EGCPFinalFalsification.lean` independent expected-type consumer `egcpStageFHeaderAddressLiveness`; replay cases `M01-WRONG-LONG-COUNT` and `M14-LONG-COUNT-IGNORED` (10.4). | Theorem in `RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCapstone.lean`. |
+| `SF-FG11-DECISIVE` | The pinned fixture run returns `some (SuccinctClassic.queryTraceResult xs0 left0 right0).value`; the decisive cell `c0` occurs in its trace at a recorded global position with a successful reply, and the connection theorem's **conclusion** retains, on the identical canonical fixture objects: the global position and event; the exact producing whole-query request with `request.invocation.instruction = .leftSelect`, `request.invocation.argument = 0`, `request.invocation.argument2 = 0`, `request.site = .entryFirstOffset`, `request.segment = 8`, `request.index = 0`; physical address `8`; the successful reply cell; the exact controller pre-state as a checked driver prefix decomposition (`packedReviewerDriveStateAt` at that position); `packedReviewerNextRequest preState = some event.request`; `packedReviewerConsumeReply preState event.reply = postState`; and a checked continuation from `postState` to the same run's `.done (some 1)` state and terminal and the guarded leftmost reference result. A record literal hidden only in the proof term, an unrelated existential, `List.Mem`, or a bare successful-reply-plus-eventual-terminal conjunction does not close this row. | `(packedReviewerRunAgainstMemory ((packedReviewerMemory shape0).set c0 v0) shape0.size left0 right0).terminal` differs from the canonical run's `.terminal`: the conclusion is an inequality at the **returned-answer projection** of the two runs. `v0` is the frozen full-width replacement cell of 10.2. | One pinned canonical valid query (existential witness, as the frozen row demands). Identical `n`, `left0`, `right0`, driver, controller; only memory cell `c0` differs. | Consumers `egcpStageFDecisiveCellLiveness` and the literal expected-type restatement `egcpStageFDecisiveCellConnection`, which must fail if the producer is weakened back to the rejected origin-erasing proposition; the `M06` bridge of 10.4 consumes the same pair; the FG-13 capstone supplies the canonical side's reference connection. | Theorems in `ReviewerCapstone.lean`. |
+| `SF-FG11-UNREAD` | The pinned fixture run's trace contains **no** event whose address is `u0`, and `u0 < packedReviewerCellCount shape0.size (longCount shape0) (packedReviewerSparseCount shape0)` (the cell is allocated). | For the frozen replacement cell `w0` of 10.2, `packedReviewerRunAgainstMemory ((packedReviewerMemory shape0).set u0 w0) shape0.size left0 right0 = packedReviewerRunAgainstMemory (packedReviewerMemory shape0) shape0.size left0 right0` -- complete run-record equality (terminal, failed, state, and trace), proved through the ordered agreement route (`packedReviewerRunAgainstMemory_eq_of_agree`), not by computing the mutated run separately. | Same pinned fixture and identical objects; only cell `u0` differs. Equality of complete run records. | Consumer `egcpStageFUnreadCellAccept` in the validation root; replay case `A02-UNREAD-CELL-EXPECTED-ACCEPT` (10.4). | Theorems in `ReviewerCapstone.lean`; this is the implementation and theorem basis for `A02`. |
+
+### 10.4 Frozen registry enactments
+
+The registry itself (sixteen IDs, order, mutation descriptions, verdicts,
+named failing surfaces, 2 ACCEPT / 14 REJECT partition) is untouched. This
+section freezes only the enacted `Target` bodies, activation needles, and
+`ExpectFile` values, following `WDD-20260805-002`: every mutant is a
+load-bearing definition-body mutation with mechanical activation needles, and
+`ExpectFile` names the module whose guarding theorem genuinely fails first.
+
+| Case | Enacted load-bearing mutation (frozen) | Activation needles | `ExpectFile` (honest first failing consumer) |
+| --- | --- | --- | --- |
+| `A02-UNREAD-CELL-EXPECTED-ACCEPT` | Patch `ReviewerCapstone.lean`'s frozen unread replacement-cell definition `egcpStageFUnreadReplacementCell`, changing the written replacement bit pattern (replacing `List.replicate (packedReviewerCellWidth 3) true` by `false :: List.replicate (packedReviewerCellWidth 3 - 1) true`). The pinned run/result theorems must still elaborate, because `SF-FG11-UNREAD` is proved through the agreement route and is therefore independent of the replaced value. Expected verdict ACCEPT: the full validation surface builds on the mutated tree. | the replacement literal written by the patch | none (build must pass) |
+| `M01-WRONG-LONG-COUNT` | Retarget from the flat source-geometry equation to the actual run: in `ReviewerController.lean`, `packedReviewerConsumeReply`'s header arm binds `let longCount := SuccinctSpace.bitsToNatLE cell + 1`, so the executed controller consumes an altered header count. | `SuccinctSpace.bitsToNatLE cell + 1` | `PackedCellProbe/ReviewerControllerProof.lean` |
+| `M02-HOST-LONG-COUNT-MIRROR` | In `ReviewerController.lean`, `packedReviewerRunAgainstMemory` binds `let hostLongCountMirror := SuccinctSpace.bitsToNatLE ((memory[0]?).getD [])` and starts the controller past the header phase from that host-preprocessed mirror, so the header reply is bypassed by preprocessing/host metadata and the charged header read disappears. | `let hostLongCountMirror := SuccinctSpace.bitsToNatLE ((memory[0]?).getD [])`; `hostLongCountMirror` | `PackedCellProbe/ReviewerController.lean` |
+| `M04-CANONICAL-SHAPE-BY-N` | In `ReviewerController.lean`, `packedReviewerRunAgainstMemory` binds `let canonicalShapeFromN := packedSpine n` and drives `packedReviewerDriveAgainstMemoryAux` against `packedReviewerMemory canonicalShapeFromN` in place of the supplied memory: a canonical shape synthesized from `n` inside the wrapper. | `let canonicalShapeFromN := packedSpine n`; `packedReviewerDriveAgainstMemoryAux canonicalMemoryFromN` | `PackedCellProbe/ReviewerController.lean` |
+| `M06-ANSWER-ORACLE` | The enacted body is unchanged from `R2R1` (the normalize-whole completion arm discards the computed value and returns the metadata-derived `semanticAnswerOracle := some n`). The `P3-2` carry-forward obligation is discharged by the frozen checked bridge below, not by upgrading the mutant's description. | unchanged (`let semanticAnswerOracle := some n`; `.done semanticAnswerOracle`) | `PackedCellProbe/ReviewerControllerProof.lean` |
+| `M13-HIDDEN-UNCOUNTED-TABLE` | In `ReviewerController.lean`, `packedReviewerDriveAgainstMemoryAux`'s request branch binds `let hiddenUncountedTable := memory.take 1` -- a content-dependent lookup table outside the counted memory object -- and serves replies from `hiddenUncountedTable[request.address]?` when the address falls inside it. | `let hiddenUncountedTable := memory.take 1`; `hiddenUncountedTable[request.address]?` | `PackedCellProbe/ReviewerController.lean` |
+| `M14-LONG-COUNT-IGNORED` | Retarget from the flat source-geometry equation to the actual run: in `ReviewerController.lean`, `packedReviewerConsumeReply`'s header arm binds `let longCount := 0`, retaining the charged header read (the driver still probes cell `0` and records the event) while every downstream offset becomes independent of the decoded value. | `let longCount := 0` | `PackedCellProbe/ReviewerControllerProof.lean` |
+
+**Frozen `M06` bridge (`SF-M06-BRIDGE`).** Accepted predicate `P`: the
+canonical fixture pair of `SF-FG11-DECISIVE` -- the identical run object
+returns the guarded reference value, and mutating only consumed cell `c0`
+changes the returned answer -- together with ordered request/reply
+determinism (`packedReviewerRunAgainstMemory_eq_of_agree`). Enacted mutation
+predicate `Q`: the run's terminal value is produced by a completion function
+of the public metadata alone -- any `f : Nat -> Nat -> Nat -> Option Nat`
+applied to `(n, left, right)`, independent of the consumed replies. The
+frozen bridge is one checked theorem, `packedReviewerNoMetadataCompletion` in
+`ReviewerCapstone.lean`, concluding: for **every** such `f`, it is not the
+case that both fixture runs (canonical and `c0`-mutated) have
+`.terminal = some (f shape0.size left0 right0)`. Its guards and quantifiers
+are identical to `SF-FG11-DECISIVE` (same two pinned run objects, same
+endpoints). Coverage: the enacted `M06` body is the instance
+`f = fun n _ _ => some n`; the frozen answer-oracle direction -- a
+reference/semantic-answer call, which on the packed machine is necessarily a
+memory-independent function of the pinned query -- is the instance
+`f = fun _ left right => (SuccinctClassic.queryTraceResult xs0 left right).value`.
+Both are refuted by the same theorem at the same objects, which is the
+checked bridge from the accepted oracle-independence predicate to the enacted
+mutation predicate demanded by the `P3-2` carry-forward obligation. A literal
+in-controller call to the reference semantics is untypeable without a shape
+or list parameter (the state and driver carry neither), so enactment of the
+literal oracle is impossible without the already-rejected `M03` signature
+mutation; the bridge is therefore the only faithful route, and no document
+may cite `M06` alone as having refuted a reference-semantics oracle.
+
+**Runner mode addition (frozen).** The runner gains one additive switch,
+`-SelfTestOnly`: it validates selectors, runs `Test-RegistryIntegrity`, runs
+`Invoke-DescendantSelfTest`, and exits, building nothing. It changes no
+registry entry, selector semantics, deadline contract, restoration contract,
+or full-mode semantics; `-SelfTestOnly` combined with `-Case`, `-Stage`, or
+`-SkipSelfTest` fails before any action. Purpose: executing the owned
+root-plus-descendant termination contract on the Ubuntu gate OS (local
+isolated WSL `Ubuntu-24.04`, `pwsh 7.6.4`) without requiring a Linux Lean
+toolchain, closing the `REPLAY-SUBPROCESS-DEADLINE` residual recorded in
+section 3 ("The Ubuntu branch of `Stop-ProcessTree` is written but has not
+been run on that gate").
+
+### 10.5 Frozen `FG-13` capstone shape and consumer
+
+One focused capstone in the new module
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCapstone.lean`:
+`structure PackedReviewerStageFCapstone (xs : List Int) (left right : Nat) :
+Prop`, every field stated over the identical let-bound objects
+`shape := SuccinctClassic.cartesianShape xs`,
+`memory := packedReviewerMemory shape`,
+`run := packedReviewerRunAgainstMemory memory shape.size left right`, with
+exactly these fourteen frozen conjuncts:
+
+1. `payload_is_buildPayload`: `packedReviewerPayloadBits shape = SuccinctClassic.buildPayload xs`.
+2. `serialized_header_payload`: `packedReviewerSerializedBits shape = packedReviewerHeaderBits shape ++ packedReviewerPayloadBits shape` (definitional split pinned as a proposition).
+3. `padded_final_padding`: `packedReviewerPaddedBits shape` is the serialized bits followed by exactly the final-cell `false` padding, with `(packedReviewerPaddedBits shape).length` the allocated bit count.
+4. `one_cell_width`: every cell of `memory` has length exactly `packedReviewerCellWidth shape.size`.
+5. `allocation_two_n_plus_rho`: `memory.length * packedReviewerCellWidth shape.size <= 2 * shape.size + packedReviewerRho shape.size`.
+6. `rho_little_o`: `SuccinctSpace.LittleOLinear packedReviewerRho`.
+7. `probes_backed_by_memory`: every trace event's reply is literally `memory[event.request.address]?` (memory-only execution of the literal run object).
+8. `probes_allocated_and_successful`: every attempted probe address is `< packedReviewerCellCount shape.size (longCount shape) (packedReviewerSparseCount shape)` and receives `some` cell.
+9. `ordered_grouping`: `PackedReviewerRunGrouping shape left right` (order- and multiplicity-sensitive trace identity).
+10. `derived_cap_427`: `run.trace.length <= 427`.
+11. `guarded_reference_result`: `run.terminal = some (SuccinctClassic.queryTraceResult xs left right).value`, `run.failed = false`, `run.state = .done (...)` -- the guarded half-open leftmost reference result on the same run object.
+12. `controller_input_boundary`: the exact-type controller pin `@packedReviewerController = fun (n left right : Nat) => packedReviewerController n left right` -- an equation that elaborates only at the exact public entry type `Nat -> Nat -> Nat -> PackedReviewerControllerState`, so an added shape, list, oracle, or advice parameter (optional or not) makes this capstone field ill-typed -- together with the literal run factorization `packedReviewerRunAgainstMemory (packedReviewerMemory shape) shape.size left right = packedReviewerDriveAgainstMemoryAux (packedReviewerMemory shape) (packedReviewerControllerMeasure (packedReviewerController shape.size left right)) (packedReviewerController shape.size left right)`, which exhibits that the controller receives only `(n, left, right)` while memory is supplied only to the physical driver interface.
+13. `closed_length_and_memory_arity` (the former length/arity facts under an accurate name; they are NOT an input boundary): the exact payload length equals the closed three-scalar function (`packedReviewerClosedPayloadLength_eq` instance) and `memory.length` equals `packedReviewerCellCount` at `(shape.size, longCount shape, packedReviewerSparseCount shape)`.
+14. `store_agreement_determinism` (the former agreement fact under an accurate name): ordered request/reply agreement determines the run (`packedReviewerRunAgainstMemory_eq_of_agree` shape).
+
+Producer: `packedReviewerStageFCapstone_holds : forall xs left right,
+PackedReviewerStageFCapstone xs left right`. Consumer: an **independently
+written** restatement in `RMQ/Validation/EGCPFinalFalsification.lean`
+(`EGCPStageFCapstoneFacts` structure plus `egcpStageFCapstoneFactsExact`)
+that writes out every conjunct at the literal objects and discharges it by
+projection, so deleting or weakening any capstone conjunct breaks the
+validation root. `RMQ.lean` imports the new module.
+
+### 10.6 Frozen `FG-14` boundary campaign
+
+Kernel-checked instances, each obtained from the one universal
+`packedReviewerStageFCapstone_holds` (no per-size variant, no readiness or
+compatibility dispatch), at exactly:
+
+- empty representation `[]`; singleton `[0]`; both size-two Cartesian shapes
+  via `[0, 1]` and `[1, 0]` (connected to the distinct `packedSizeTwoLeft` /
+  `packedSizeTwoRight` shapes);
+- long crossover sizes `5487`, `5488`, `5489` via `List.replicate`;
+- interior-readiness boundaries and neighbours `1023`, `1024`, `1025` and
+  `1329`, `1330`, `1331` via `List.replicate` (the `1025` and `1329` interior
+  facts are added to `Boundaries.lean` beside the existing four);
+- query cases on a pinned shape: one valid half-open query, empty range
+  (`left = right`), reversed endpoints (`left > right`), right endpoint out of
+  range (`right > n`), left endpoint out of range; invalid cases must return
+  the exact `.done none` run with an empty trace;
+- the duplicate-minimum fixture `xs0 = [7, 3, 3]` with query `(0, 3)`: minima at indices `1` and `2`, leftmost result `some 1` proving the leftmost tie
+  result through the run's terminal value.
+
+No-second-representation obligation: a checked statement that the controller
+entry and the memory builder are single uniform definitions -- the capstone
+instances at every boundary size instantiate one quantifier, the located
+threshold geometry (`Boundaries.lean`) shows the moving clause moves while
+the capstone statement is unchanged, and the `M04`/`M11` rejections plus the
+uniform-entry pins show no dispatch selects a second representation.
+
+### 10.7 Frozen `FG-15` durable record
+
+Append to `docs/internal/EG_CP_FINAL_FALSIFICATION_RESULT.md`, behind
+delimited markers, the Stage-F final falsification record: row-by-row
+evidence for every section 10 row; the full-registry replay outcome per ID
+and OS; K1 survived / K2 unused; rejected K0 / K2 / internal-padding /
+historical alternatives; exact theorem types and the object-composition
+chain; live assumptions; the strongest skeptical question; the verification
+command ledger with observed durations; all OS receipts (Windows and
+Ubuntu); and every still-open downstream node (`FEASIBILITY_PASS`, Stage A,
+public synchronization, `S1`, `V1`). A four-part digestion (conceptual
+change, plain-English meaning, live assumptions, strongest skeptical
+question) is mandatory. No row may cite commissioning prompts, worker prose,
+or audit prose as theorem evidence.
+
+### 10.8 Verification command ledger for this amendment
+
+| ID | Command | Role | Rows covered | Outcome |
+| --- | --- | --- | --- | --- |
+| `SF-CHK-00` | `scripts/project_skill_preflight.ps1 -GovernanceRef f0c7232a... -RequiredSkills rmq-proof-sprint -RuntimeProjectSkills "rmq-audit-prompt, rmq-coordinator, rmq-proof-sprint" -CheckoutRef 0f38672...` | F | governance | PASS before edits (recorded 2026-08-06). |
+| `SF-CHK-01` | focused `lake build` of each changed PackedCellProbe module and `RMQ.Validation.EGCPFinalFalsification` | D then F | all Lean rows | Pending |
+| `SF-CHK-02` | `lake build RMQ` | F | whole-library integration | Pending |
+| `SF-CHK-03` | `lake env lean scripts/axiom_check.lean` | F | `FG-13`, axiom inventory | Pending |
+| `SF-CHK-04` | replay bounded startup, exact selector `A01-PRODUCTION-EXPECTED-ACCEPT`, exact selector `M01-WRONG-LONG-COUNT`, then full mode exactly once on the committed frozen candidate | F | `FG-12`, `INV-MUTATION-REPRODUCIBILITY` | Pending |
+| `SF-CHK-05` | `-SelfTestOnly` descendant-termination run on WSL `Ubuntu-24.04` under `pwsh` | F | `REPLAY-SUBPROCESS-DEADLINE` (Ubuntu leg) | Pending |
+| `SF-CHK-06` | strict UTF-8 section-scoped frozen-row comparison against `0f38672...` | F (before expensive final verification and at final) | `FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY` | Pending |
+| `SF-CHK-07` | `powershell -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1 -Strict` | F | `FG-15` prose | Pending |
+| `SF-CHK-08` | `powershell -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1 -Strict -Base 0f386723f56deae5eb39418e535f56e7a2b347dd` | F | design policy | Pending |
+| `SF-CHK-09` | `AGENTS.md` hygiene scan and native-shortcut scan over `RMQ` and `lakefile.toml` | F | `FG-13` | Pending |
+| `SF-CHK-10` | UTF-8 inspection of changed docs; exact changed-path allowlist check; `git diff --check` working tree and `git diff --check 0f38672...HEAD` after committing; final `git status --porcelain` cleanliness | F | hygiene, handoff | Pending |
+| `SF-CHK-11` | aggregate `scripts/gate.ps1` | C | only if a final changed surface is not owned above | Pending |
+
+CI note carried from `WDD-20260726-007`: each commit on this branch must
+validate `design_decision_check.ps1` at `-Base HEAD~1`.
+
+### 10.9 Node boundary and deferrals
+
+| Item | Disposition |
+| --- | --- |
+| Coordinator `FEASIBILITY_PASS` decision | Deferred to the coordinator; requires reconstruction of the exact final candidate commit plus mandatory fresh-blind audit. Not recordable by this worker. |
+| Stage A `A01`..`A13` campaign and matrix freeze | Deferred; may follow only `FEASIBILITY_PASS`. Existing facts resembling `A01`..`A12` do not start Stage A early. |
+| Public-claim synchronization, headline promotion, manuscript/artifact work | Deferred; out of write scope. |
+| `S1` bit-addressed querying, `V1`, Word-RAM instruction-time claim, preprocessing-time claim | Deferred; not claimed. |
+| `FG-11` / full `FG-12` / `FG-14` / `FG-15` | **Not deferrable in this task.** |
+
+<!-- COORDINATOR-AMENDMENT-EG-CP-STAGEF-CLOSE-R2-END -->
