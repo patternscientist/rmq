@@ -12834,6 +12834,38 @@ private theorem PackedReviewerLcaCanonicalScalarFits.result_fits
       middle fringe =>
       simp [packedReviewerLcaResult] at hresult
 
+/-- The select tower invariant supplies request-width prefixes of any fuel. -/
+private theorem packedReviewerSelect_requests_fitFrom
+    (shape : CartesianShape) {state : PackedReviewerSelectState}
+    (hstate : PackedReviewerSelectCanonicalScalarFits shape state)
+    (fuel : Nat) :
+    PackedReviewerRequestsFitFrom shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerSelectNextRequest packedReviewerSelectConsumeReply fuel
+      state :=
+  PackedReviewerRequestsFitFrom.of_invariant shape.size
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+    packedReviewerSelectNextRequest packedReviewerSelectConsumeReply
+    (PackedReviewerSelectCanonicalScalarFits shape)
+    (fun _ _ hstate' hrequest => hstate'.nextRequest_operands_fit hrequest)
+    (fun _ _ hstate' hrequest => hstate'.consume hrequest) fuel state hstate
+
+/-- The LCA tower invariant supplies request-width prefixes of any fuel. -/
+private theorem packedReviewerLca_requests_fitFrom
+    (shape : CartesianShape) {state : PackedReviewerLcaState}
+    (hstate : PackedReviewerLcaCanonicalScalarFits shape state)
+    (fuel : Nat) :
+    PackedReviewerRequestsFitFrom shape.size
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      packedReviewerLcaNextRequest packedReviewerLcaConsumeReply fuel
+      state :=
+  PackedReviewerRequestsFitFrom.of_invariant shape.size
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+    packedReviewerLcaNextRequest packedReviewerLcaConsumeReply
+    (PackedReviewerLcaCanonicalScalarFits shape)
+    (fun _ _ hstate' hrequest => hstate'.nextRequest_operands_fit hrequest)
+    (fun _ _ hstate' hrequest => hstate'.consume hrequest) fuel state hstate
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
