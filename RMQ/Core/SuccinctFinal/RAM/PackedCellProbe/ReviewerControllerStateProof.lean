@@ -12411,6 +12411,429 @@ private theorem PackedReviewerLcaCanonicalScalarFits.consume
         harg hrequest
   | done value => simp [packedReviewerLcaNextRequest] at hrequest
 
+/-- Every stored LCA scalar fits the modeled word on the canonical tower. -/
+private theorem PackedReviewerLcaCanonicalScalarFits.scalar_fields
+    {shape : CartesianShape} {state : PackedReviewerLcaState}
+    (hstate : PackedReviewerLcaCanonicalScalarFits shape state) :
+    forall value, value ∈ packedReviewerLcaStateNatFields state ->
+      PackedReviewerNatFits shape.size value := by
+  have hn := packedReviewerInputSize_lt_two_pow_cellWidth shape.size
+  have hthree := packedReviewerTwoMul_add_three_le_cellBound shape.size
+  have hcap := packedReviewerCellBound_lt_two_pow_width shape.size
+  cases state with
+  | sameSeed invocation n leftClose rightClose rank =>
+      obtain ⟨rfl, hinv, hleft, hright, -, hrank⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hrankFields := hrank.scalar_fields
+      intro value hmem
+      simp [packedReviewerLcaStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | hrankMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hleft
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hright
+      · exact hrankFields value hrankMem
+  | leftSeed invocation n leftClose rightClose rank =>
+      obtain ⟨rfl, hinv, hleft, hright, -, hrank⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hrankFields := hrank.scalar_fields
+      intro value hmem
+      simp [packedReviewerLcaStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | hrankMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hleft
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hright
+      · exact hrankFields value hrankMem
+  | sameWindow invocation n leftClose rightClose seed window =>
+      obtain ⟨rfl, hinv, hleft, hright, hseed, -, hwindow⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hwindowFields := hwindow.scalar_fields
+      intro value hmem
+      simp [packedReviewerLcaStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | rfl | hwindowMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hleft
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hright
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hseed
+      · exact hwindowFields value hwindowMem
+  | leftWindow invocation n leftClose rightClose seed window =>
+      obtain ⟨rfl, hinv, hleft, hright, hseed, -, hwindow⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hwindowFields := hwindow.scalar_fields
+      intro value hmem
+      simp [packedReviewerLcaStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | rfl | hwindowMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hleft
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hright
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hseed
+      · exact hwindowFields value hwindowMem
+  | sameFringe invocation n leftClose rightClose seed base start fringe =>
+      obtain ⟨rfl, hinv, hleft, hright, hseed, hbase, hstart, -,
+        ⟨resultBound, hfringe⟩, -⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hfringeFields := hfringe.scalar_fields
+      intro value hmem
+      simp [packedReviewerLcaStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | rfl | rfl | rfl |
+        hfringeMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hleft
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hright
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hseed
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hbase
+      · simp only [PackedReviewerNatFits]
+        omega
+      · exact hfringeFields value hfringeMem
+  | leftFringe invocation n leftClose rightClose seed base start fringe =>
+      obtain ⟨rfl, hinv, hleft, hright, hseed, hbase, hstart, -,
+        ⟨resultBound, hfringe⟩, -⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hfringeFields := hfringe.scalar_fields
+      intro value hmem
+      simp [packedReviewerLcaStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | rfl | rfl | rfl |
+        hfringeMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hleft
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hright
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hseed
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hbase
+      · simp only [PackedReviewerNatFits]
+        omega
+      · exact hfringeFields value hfringeMem
+  | middle invocation n leftClose rightClose left interior =>
+      obtain ⟨rfl, hinv, hleft, hright, hleftCand, hinterior⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hleftFields := hleftCand.scalar_fields
+      have hinteriorFields := hinterior.scalar_fields
+      intro value hmem
+      simp [packedReviewerLcaStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | hleftMem | hinteriorMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hleft
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hright
+      · exact hleftFields value hleftMem
+      · exact hinteriorFields value hinteriorMem
+  | rightSeed invocation n leftClose rightClose left middle rank =>
+      obtain ⟨rfl, hinv, hleft, hright, hleftCand, hmiddleCand, -,
+        hrank⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hleftFields := hleftCand.scalar_fields
+      have hmiddleFields := hmiddleCand.scalar_fields
+      have hrankFields := hrank.scalar_fields
+      intro value hmem
+      simp [packedReviewerLcaStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | hleftMem | hmiddleMem |
+        hrankMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hleft
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hright
+      · exact hleftFields value hleftMem
+      · exact hmiddleFields value hmiddleMem
+      · exact hrankFields value hrankMem
+  | rightWindow invocation n leftClose rightClose seed left middle window =>
+      obtain ⟨rfl, hinv, hleft, hright, hseed, hleftCand, hmiddleCand, -,
+        hwindow⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hleftFields := hleftCand.scalar_fields
+      have hmiddleFields := hmiddleCand.scalar_fields
+      have hwindowFields := hwindow.scalar_fields
+      intro value hmem
+      simp [packedReviewerLcaStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | rfl | hleftMem |
+        hmiddleMem | hwindowMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hleft
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hright
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hseed
+      · exact hleftFields value hleftMem
+      · exact hmiddleFields value hmiddleMem
+      · exact hwindowFields value hwindowMem
+  | rightFringe invocation n leftClose rightClose seed base start left
+      middle fringe =>
+      obtain ⟨rfl, hinv, hleft, hright, hseed, hbase, hstart, hleftCand,
+        hmiddleCand, -, ⟨resultBound, hfringe⟩, -⟩ := hstate
+      have hinvFields :
+          forall value,
+            value ∈ packedReviewerInvocationNatFields invocation ->
+              PackedReviewerNatFits shape.size value := by
+        simpa [packedReviewerInvocationNatFields,
+          packedReviewerInvocationOperands] using hinv
+      have hleftFields := hleftCand.scalar_fields
+      have hmiddleFields := hmiddleCand.scalar_fields
+      have hfringeFields := hfringe.scalar_fields
+      intro value hmem
+      simp [packedReviewerLcaStateNatFields] at hmem
+      rcases hmem with hinvMem | rfl | rfl | rfl | rfl | rfl | rfl |
+        hleftMem | hmiddleMem | hfringeMem
+      · exact hinvFields value hinvMem
+      · exact hn
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hleft
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hright
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hseed
+      · exact packedReviewerNatFits_of_le_two_mul_add_one shape.size _ hbase
+      · simp only [PackedReviewerNatFits]
+        omega
+      · exact hleftFields value hleftMem
+      · exact hmiddleFields value hmiddleMem
+      · exact hfringeFields value hfringeMem
+  | done value =>
+      intro fieldValue hmem
+      cases value with
+      | none =>
+          simp [packedReviewerLcaStateNatFields,
+            packedReviewerOptionNatFields] at hmem
+      | some answer =>
+          simp only [packedReviewerLcaStateNatFields,
+            packedReviewerOptionNatFields, List.mem_singleton] at hmem
+          subst fieldValue
+          exact (hstate answer rfl).1
+
+/-- Every request the canonical LCA tower emits has fitting operands. -/
+private theorem PackedReviewerLcaCanonicalScalarFits.nextRequest_operands_fit
+    {shape : CartesianShape} {state : PackedReviewerLcaState}
+    (hstate : PackedReviewerLcaCanonicalScalarFits shape state)
+    {request : PackedReviewerLogicalRequest}
+    (hrequest : packedReviewerLcaNextRequest state = some request) :
+    PackedReviewerLogicalRequestOperandsFit shape.size request := by
+  cases state with
+  | sameSeed invocation n leftClose rightClose rank =>
+      obtain ⟨rfl, -, -, -, hrankFit, -⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
+        (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
+  | leftSeed invocation n leftClose rightClose rank =>
+      obtain ⟨rfl, -, -, -, hrankFit, -⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
+        (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
+  | rightSeed invocation n leftClose rightClose left middle rank =>
+      obtain ⟨rfl, -, -, -, -, -, hrankFit, -⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
+        (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
+  | sameWindow invocation n leftClose rightClose seed window =>
+      obtain ⟨rfl, -, -, -, -, hwitness, -⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hwitness
+        (packedReviewerBPWindowNextRequest_remaining_pos hrequest) hrequest
+  | leftWindow invocation n leftClose rightClose seed window =>
+      obtain ⟨rfl, -, -, -, -, hwitness, -⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hwitness
+        (packedReviewerBPWindowNextRequest_remaining_pos hrequest) hrequest
+  | rightWindow invocation n leftClose rightClose seed left middle window =>
+      obtain ⟨rfl, -, -, -, -, -, -, hwitness, -⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hwitness
+        (packedReviewerBPWindowNextRequest_remaining_pos hrequest) hrequest
+  | sameFringe invocation n leftClose rightClose seed base start fringe =>
+      obtain ⟨rfl, -, -, -, -, -, -, hwitness, -, -⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hwitness
+        (packedReviewerFringeNextRequest_remaining_pos hrequest) hrequest
+  | leftFringe invocation n leftClose rightClose seed base start fringe =>
+      obtain ⟨rfl, -, -, -, -, -, -, hwitness, -, -⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hwitness
+        (packedReviewerFringeNextRequest_remaining_pos hrequest) hrequest
+  | rightFringe invocation n leftClose rightClose seed base start left
+      middle fringe =>
+      obtain ⟨rfl, -, -, -, -, -, -, -, -, hwitness, -, -⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact packedReviewerRequestsFitFrom_head_operands_fit hwitness
+        (packedReviewerFringeNextRequest_remaining_pos hrequest) hrequest
+  | middle invocation n leftClose rightClose left interior =>
+      obtain ⟨rfl, -, -, -, -, hinterior⟩ := hstate
+      simp only [packedReviewerLcaNextRequest] at hrequest
+      exact hinterior.nextRequest_operands_fit hrequest
+  | done value => simp [packedReviewerLcaNextRequest] at hrequest
+
+/-- The canonical LCA tower stays inside its 129-read budget. -/
+private theorem PackedReviewerLcaCanonicalScalarFits.remaining_le_oneTwentyNine
+    {shape : CartesianShape} {state : PackedReviewerLcaState}
+    (hstate : PackedReviewerLcaCanonicalScalarFits shape state) :
+    packedReviewerLcaRemaining state <= 129 := by
+  cases state with
+  | sameSeed invocation n leftClose rightClose rank =>
+      obtain ⟨-, -, -, -, -, hrank⟩ := hstate
+      have hbound := hrank.remaining_le_eleven
+      simp only [packedReviewerLcaRemaining]
+      omega
+  | leftSeed invocation n leftClose rightClose rank =>
+      obtain ⟨-, -, -, -, -, hrank⟩ := hstate
+      have hbound := hrank.remaining_le_eleven
+      simp only [packedReviewerLcaRemaining]
+      omega
+  | rightSeed invocation n leftClose rightClose left middle rank =>
+      obtain ⟨-, -, -, -, -, -, -, hrank⟩ := hstate
+      have hbound := hrank.remaining_le_eleven
+      simp only [packedReviewerLcaRemaining]
+      omega
+  | sameWindow invocation n leftClose rightClose seed window =>
+      have hwin : packedReviewerBPWindowRemaining window <= 4 := by
+        cases window with
+        | read invocation2 n2 blockSize close next wordsRev =>
+            simp only [packedReviewerBPWindowRemaining]
+            omega
+        | done bits => simp [packedReviewerBPWindowRemaining]
+      simp only [packedReviewerLcaRemaining]
+      omega
+  | leftWindow invocation n leftClose rightClose seed window =>
+      have hwin : packedReviewerBPWindowRemaining window <= 4 := by
+        cases window with
+        | read invocation2 n2 blockSize close next wordsRev =>
+            simp only [packedReviewerBPWindowRemaining]
+            omega
+        | done bits => simp [packedReviewerBPWindowRemaining]
+      simp only [packedReviewerLcaRemaining]
+      omega
+  | rightWindow invocation n leftClose rightClose seed left middle window =>
+      have hwin : packedReviewerBPWindowRemaining window <= 4 := by
+        cases window with
+        | read invocation2 n2 blockSize close next wordsRev =>
+            simp only [packedReviewerBPWindowRemaining]
+            omega
+        | done bits => simp [packedReviewerBPWindowRemaining]
+      simp only [packedReviewerLcaRemaining]
+      omega
+  | sameFringe invocation n leftClose rightClose seed base start fringe =>
+      obtain ⟨-, -, -, -, -, -, -, -, ⟨resultBound, hfringe⟩, -⟩ := hstate
+      have hfr : packedReviewerFringeRemaining fringe <= 33 := by
+        cases fringe with
+        | chunk invocation2 n2 window2 relLo relHi j remaining foldState =>
+            rcases foldState with ⟨acc, candidate⟩
+            obtain ⟨-, -, -, -, hcounters, -, -, -, -⟩ := hfringe
+            simp only [packedReviewerFringeRemaining]
+            omega
+        | done result => simp [packedReviewerFringeRemaining]
+      simp only [packedReviewerLcaRemaining]
+      omega
+  | leftFringe invocation n leftClose rightClose seed base start fringe =>
+      obtain ⟨-, -, -, -, -, -, -, -, ⟨resultBound, hfringe⟩, -⟩ := hstate
+      have hfr : packedReviewerFringeRemaining fringe <= 33 := by
+        cases fringe with
+        | chunk invocation2 n2 window2 relLo relHi j remaining foldState =>
+            rcases foldState with ⟨acc, candidate⟩
+            obtain ⟨-, -, -, -, hcounters, -, -, -, -⟩ := hfringe
+            simp only [packedReviewerFringeRemaining]
+            omega
+        | done result => simp [packedReviewerFringeRemaining]
+      simp only [packedReviewerLcaRemaining]
+      omega
+  | rightFringe invocation n leftClose rightClose seed base start left
+      middle fringe =>
+      obtain ⟨-, -, -, -, -, -, -, -, -, -, ⟨resultBound, hfringe⟩,
+        -⟩ := hstate
+      have hfr : packedReviewerFringeRemaining fringe <= 33 := by
+        cases fringe with
+        | chunk invocation2 n2 window2 relLo relHi j remaining foldState =>
+            rcases foldState with ⟨acc, candidate⟩
+            obtain ⟨-, -, -, -, hcounters, -, -, -, -⟩ := hfringe
+            simp only [packedReviewerFringeRemaining]
+            omega
+        | done result => simp [packedReviewerFringeRemaining]
+      simp only [packedReviewerLcaRemaining]
+      omega
+  | middle invocation n leftClose rightClose left interior =>
+      obtain ⟨-, -, -, -, -, hinterior⟩ := hstate
+      have hbound := hinterior.remaining_le_forty
+      simp only [packedReviewerLcaRemaining]
+      omega
+  | done value => simp [packedReviewerLcaRemaining]
+
+/-- A successful LCA result is a fitting close with `+1` slack for the final
+rank position. -/
+private theorem PackedReviewerLcaCanonicalScalarFits.result_fits
+    {shape : CartesianShape} {state : PackedReviewerLcaState}
+    (hstate : PackedReviewerLcaCanonicalScalarFits shape state)
+    {value : Option Nat}
+    (hresult : packedReviewerLcaResult state = some value) :
+    forall answer, value = some answer ->
+      PackedReviewerNatFits shape.size answer ∧
+        PackedReviewerNatFits shape.size (answer + 1) := by
+  cases state with
+  | done stored =>
+      have heq : stored = value := by
+        simpa [packedReviewerLcaResult] using Option.some.inj hresult
+      subst value
+      exact hstate
+  | sameSeed invocation n leftClose rightClose rank =>
+      simp [packedReviewerLcaResult] at hresult
+  | sameWindow invocation n leftClose rightClose seed window =>
+      simp [packedReviewerLcaResult] at hresult
+  | sameFringe invocation n leftClose rightClose seed base start fringe =>
+      simp [packedReviewerLcaResult] at hresult
+  | leftSeed invocation n leftClose rightClose rank =>
+      simp [packedReviewerLcaResult] at hresult
+  | leftWindow invocation n leftClose rightClose seed window =>
+      simp [packedReviewerLcaResult] at hresult
+  | leftFringe invocation n leftClose rightClose seed base start fringe =>
+      simp [packedReviewerLcaResult] at hresult
+  | middle invocation n leftClose rightClose left interior =>
+      simp [packedReviewerLcaResult] at hresult
+  | rightSeed invocation n leftClose rightClose left middle rank =>
+      simp [packedReviewerLcaResult] at hresult
+  | rightWindow invocation n leftClose rightClose seed left middle window =>
+      simp [packedReviewerLcaResult] at hresult
+  | rightFringe invocation n leftClose rightClose seed base start left
+      middle fringe =>
+      simp [packedReviewerLcaResult] at hresult
+
 end PackedCellProbe
 end SuccinctFinal
 end RMQ
