@@ -7727,3 +7727,81 @@ Consequences: the sixteen-entry registry has no null target; full mode can
 no longer exit 7 for `TARGET-ABSENT`. The strict range check
 (`design_decision_check.ps1 -Strict -Base 0f38672...`) covers both commits
 together; the one-commit ledger lag is disclosed in the `FG-15` record.
+
+## WDD-20260806-004: the replay deadline measures a representative mutated-chain rebuild, and the M08/M12 surfaces follow the capstone
+
+Status: Accepted under the coordinator-commissioned `EG-CP-STAGEF-CLOSE-R2`
+repair contract (clean-history reconstruction of the rejected branch's
+`WDD-20260806-004` and `005` calibration decisions, landed in the same
+commit as the runner changes they govern; the evidence narrated below was
+produced on the rejected branch, in the order stated, and is receipted in
+its retained run logs).
+
+Date: 2026-08-06
+
+Trigger: the first full-mode sixteen-case run on the frozen candidate ended
+`FULL MODE FAILED (3 failures)` -- receipts retained in the campaign record.
+`M03-SHAPE-PARAMETER` timed out at the 300-second floor: its mutant only
+fails at the validation root, so its build first re-elaborates the entire
+controller-to-capstone chain, which now includes the ~120-second
+`ReviewerCapstone.lean`, and a deadline derived from a warm no-op build
+(2 s, so the floor) is not evidence about a mutated rebuild.
+`M08-FORGED-PROBE-CAP` and `M12-PUBLIC-TYPE-WEAKENING` were rejected but at
+`PackedCellProbe/ReviewerCapstone.lean` rather than the expected validation
+root: the Stage-F capstone consumes the derived controller measure (the
+fuel lemma `packedReviewerControllerMeasure_header_ge_two` diverges under a
+stored `427`) and projects every public-certificate field (its producer
+fails on `True` field projections), so the honest first failing consumer
+moved upstream of the validation root when the capstone landed.
+
+Decision, in two parts.
+
+1. **Deadline calibration measures what it bounds.** After the existing
+   clean-build gate, the runner appends a comment line to the registry's
+   deepest target (`ReviewerController.lean`, imported by every proof module
+   and the capstone), rebuilds the surface once as a representative
+   mutated-chain measurement, byte-restores the file with the same SHA256
+   discipline as a mutation case, rebuilds the clean tree once so cases
+   start from restored artifacts, and sets
+   `deadline = max(max(clean, probe) * 4, 300)`. A mutated case is never
+   materially slower than the probe -- a failing build stops at its first
+   error inside the same chain -- so the multiplier bounds every case with
+   margin. Timeout remains failure; no per-case deadline is stored.
+2. **`ExpectFile` for `M08` and `M12` follows the honest first failing
+   consumer** to `PackedCellProbe/ReviewerCapstone.lean`, per the
+   `WDD-20260805-002` rule that a REJECT is recorded only at the module
+   whose guarding theorem genuinely fails. The frozen registry columns
+   (IDs, order, mutation descriptions, verdicts, named-surface categories
+   `consumer` and `independently frozen expected-type consumer`) are
+   untouched: the capstone producer and the fuel lemma ARE independently
+   written consumers of exactly the mutated facts, sitting earlier in the
+   build order than the validation root, which restates the same
+   propositions and would fail next.
+
+Alternatives rejected: raising the floor to a hand-picked number (a stored
+deadline, not a measurement); keeping the no-op baseline and retrying until
+the machine is fast enough (a timeout is evidence, not noise); weakening the
+capstone so the validation root fails first (deliberately breaking the
+stronger consumer to preserve a cosmetic surface expectation); splitting the
+capstone out of the mutated chains (it must consume the certificate and the
+derived measure -- that consumption is `FG-13`'s point).
+
+A second defect followed on the rejected branch: the probe first appended a
+COMMENT, and lake rebuilds by compiled-artifact hash, so the comment probe
+produced an identical `.olean`, no downstream rebuild, and a hollow 9-second
+measurement, while an accidental stale-artifact clean build showed the real
+197-second chain. The probe therefore appends
+`private def egcpDeadlineCalibrationProbe : Nat := 0` -- a new declaration
+changes the artifact and forces the genuine chain rebuild -- and this
+reconstruction enacts that final form directly, with the intermediate
+comment form recorded only here as history. `M08`/`M12` `ExpectFile`
+follows the honest first failing consumer to
+`PackedCellProbe/ReviewerCapstone.lean` exactly as the rejected branch's
+receipts showed (the capstone's fuel lemma diverges under a stored `427`;
+its certificate-projecting producer fails on `True` projections).
+
+Consequences: full mode pays roughly two genuine chain rebuilds for
+calibration (probe plus clean rebase). The rejected branch's failed first
+full-mode run remains the calibration-discovery receipt; the certification
+run for this candidate is the single full-mode run on this branch's frozen
+final tree.

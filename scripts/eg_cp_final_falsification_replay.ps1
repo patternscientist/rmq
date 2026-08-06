@@ -223,7 +223,7 @@ $script:Registry = @(
      Mutation = 'replace derived trace length/cap evidence with a stored number or theorem-only field';
      Verdict = 'REJECT'; Surface = 'consumer';
      Target = @{ Kind = 'Patch';
-       ExpectFile = 'Validation/EGCPFinalFalsification.lean';
+       ExpectFile = 'PackedCellProbe/ReviewerCapstone.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean';
        Find  = '  | .header n left right =>
       1 + 2 * packedReviewerSparsePreludeRemaining
@@ -266,7 +266,7 @@ $script:Registry = @(
      Mutation = 'remove one load-bearing capstone conjunct';
      Verdict = 'REJECT'; Surface = 'independently frozen expected-type consumer';
      Target = @{ Kind = 'Patch';
-       ExpectFile = 'Validation/EGCPFinalFalsification.lean';
+       ExpectFile = 'PackedCellProbe/ReviewerCapstone.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerControllerStateProof.lean';
        Find  = 'theorem packedReviewerRunAgainstMemory_public_certificate
     (xs : List Int) (left right : Nat) :
@@ -772,8 +772,59 @@ if ($baseline.TimedOut -or $baseline.ExitCode -ne 0) {
   exit 4
 }
 $baselineSeconds = [int][Math]::Ceiling($sw.Elapsed.TotalSeconds)
-$deadline = [Math]::Max($baselineSeconds * 4, 300)
-Write-Stage "clean build took $baselineSeconds s; per-case deadline $deadline s"
+
+# A warm no-op build is not evidence about a MUTATED build: every patch case
+# invalidates its target module's whole downstream chain, so the honest
+# deadline measurement is a representative full-chain rebuild. The probe
+# appends a comment to the registry's deepest target (the controller module,
+# imported by every proof module and the capstone), rebuilds once, and
+# byte-restores the file with the same SHA discipline as a mutation case.
+# A mutated case is never slower than this probe by more than elaboration
+# noise -- a failing build stops at its first error inside the same chain --
+# so four times the larger measurement, with the historical floor, bounds
+# every case with margin.
+$probeRelative = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean'
+$probePath = Join-Path $script:RepoRoot $probeRelative
+$probeOriginalBytes = [System.IO.File]::ReadAllBytes($probePath)
+$probeOriginalHash = Get-FileHashHex -Path $probePath
+$probeSeconds = 0
+try {
+  $probeText = [System.Text.Encoding]::UTF8.GetString($probeOriginalBytes)
+  $utf8NoBomProbe = New-Object System.Text.UTF8Encoding $false
+  # The probe must change the module's compiled artifact, not only its
+  # source bytes: a comment-only edit produces an identical .olean, so the
+  # downstream chain is never rebuilt and the probe measures nothing. A
+  # private definition changes the artifact and forces the chain.
+  [System.IO.File]::WriteAllText($probePath,
+    ($probeText + "`nprivate def egcpDeadlineCalibrationProbe : Nat := 0`n"), $utf8NoBomProbe)
+  Write-Stage "measuring a representative mutated-chain rebuild (probe on $probeRelative)"
+  $swProbe = [System.Diagnostics.Stopwatch]::StartNew()
+  $probeRun = Invoke-BoundedLake -Module $surfaceModule -DeadlineSeconds 3600
+  $swProbe.Stop()
+  if ($probeRun.TimedOut -or $probeRun.ExitCode -ne 0) {
+    Write-Host 'REPLAY-FAIL: the deadline calibration probe rebuild failed'
+    if (-not $probeRun.TimedOut) { Write-Host $probeRun.Diagnostic }
+    exit 4
+  }
+  $probeSeconds = [int][Math]::Ceiling($swProbe.Elapsed.TotalSeconds)
+} finally {
+  [System.IO.File]::WriteAllBytes($probePath, $probeOriginalBytes)
+  $probeRestoredHash = Get-FileHashHex -Path $probePath
+  if ($probeRestoredHash -ne $probeOriginalHash) {
+    Write-Host "REPLAY-FAIL: probe restoration hash mismatch for $probeRelative"
+    exit 4
+  }
+}
+# The probe rebuild left the chain's oleans at the probe content; rebuild the
+# clean tree once so the first case starts from restored artifacts.
+$rebase = Invoke-BoundedLake -Module $surfaceModule -DeadlineSeconds 3600
+if ($rebase.TimedOut -or $rebase.ExitCode -ne 0) {
+  Write-Host 'REPLAY-FAIL: the post-probe clean rebuild failed'
+  if (-not $rebase.TimedOut) { Write-Host $rebase.Diagnostic }
+  exit 4
+}
+$deadline = [Math]::Max([Math]::Max($baselineSeconds, $probeSeconds) * 4, 300)
+Write-Stage "clean build took $baselineSeconds s; mutated-chain probe took $probeSeconds s; per-case deadline $deadline s"
 
 if (($fullMode -or $stageMode) -and $SkipSelfTest) {
   if ($stageMode) {
