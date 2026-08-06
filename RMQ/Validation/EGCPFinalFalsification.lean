@@ -13,6 +13,7 @@ import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Boundaries
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerPayload
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerControllerProof
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerControllerStateProof
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerCapstone
 
 /-!
 # Exact-type consumers for the EG-CP packed cell-probe candidate
@@ -39,9 +40,13 @@ This file is the validation root for the falsification gate. It currently pins:
 
 The proof-free first-order controller, the ordered whole-run lowering, the
 same-run reference correctness, and the locally owned seven-case `R2-ALLSIZE`
-replay stage all exist and are pinned by the consumers below. Full `FG-11`
-liveness mutations and the complete sixteen-case `FG-12` replay remain open
-full-node obligations outside this local rung.
+replay stage all exist and are pinned by the consumers below. The Stage-F
+residual campaign's combined capstone (`FG-13`), the universal header-liveness
+theorem, the pinned decisive-cell and unread-cell fixture theorems (`FG-11`),
+and the boundary instances (`FG-14`) are pinned in the closing sections of
+this file; the sixteen-case `FG-12` replay is owned by
+`scripts/eg_cp_final_falsification_replay.ps1`, and coordinator
+`FEASIBILITY_PASS` remains a separate open decision.
 -/
 
 namespace RMQ
@@ -2859,6 +2864,430 @@ The exact signatures above are the typed positive anti-bypass controls for
 a forged non-`427` cap changes one of these independently written expected types
 and therefore breaks this validation root.
 -/
+
+/-! ### Stage-F residual campaign: the combined capstone (`FG-13`)
+
+`EGCPStageFCapstoneFacts` restates every frozen capstone conjunct
+independently over the literal public payload, reviewer memory, and physical
+run, and `egcpStageFCapstoneFactsExact` discharges it by projection from
+`packedReviewerStageFCapstone_holds`.  Removing or weakening any capstone
+conjunct breaks this structure's producer rather than being absorbed by it.
+-/
+
+/-- The Stage-F capstone's exact shape, pinned as a signature. -/
+def egcpStageFCapstoneSignature : List Int -> Nat -> Nat -> Prop :=
+  @PackedReviewerStageFCapstone
+
+/-- Independent restatement of the twelve frozen Stage-F conjuncts. -/
+structure EGCPStageFCapstoneFacts
+    (xs : List Int) (left right : Nat) : Prop where
+  payload_is_buildPayload :
+    packedReviewerPayloadBits (SuccinctClassic.cartesianShape xs) =
+      SuccinctClassic.buildPayload xs
+  serialized_header_payload :
+    let shape := SuccinctClassic.cartesianShape xs
+    packedReviewerSerializedBits shape =
+      packedReviewerHeaderBits shape ++ packedReviewerPayloadBits shape
+  padded_final_padding :
+    let shape := SuccinctClassic.cartesianShape xs
+    packedReviewerPaddedBits shape =
+        packedReviewerSerializedBits shape ++
+          List.replicate
+            (packedReviewerAllocatedBits shape.size (longCount shape)
+                (packedReviewerSparseCount shape) -
+              (packedReviewerSerializedBits shape).length) false /\
+      (packedReviewerPaddedBits shape).length =
+        packedReviewerAllocatedBits shape.size (longCount shape)
+          (packedReviewerSparseCount shape)
+  one_cell_width :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall cell, cell ∈ packedReviewerMemory shape ->
+      cell.length = packedReviewerCellWidth shape.size
+  allocation_two_n_plus_rho :
+    let shape := SuccinctClassic.cartesianShape xs
+    (packedReviewerMemory shape).length * packedReviewerCellWidth shape.size <=
+      2 * shape.size + packedReviewerRho shape.size
+  rho_little_o : SuccinctSpace.LittleOLinear packedReviewerRho
+  probes_backed_by_memory :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall event,
+      event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).trace ->
+        event.reply = (packedReviewerMemory shape)[event.request.address]?
+  probes_allocated_and_successful :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall event,
+      event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).trace ->
+        event.request.address <
+            packedReviewerCellCount shape.size (longCount shape)
+              (packedReviewerSparseCount shape) /\
+          exists cell, event.reply = some cell
+  ordered_grouping :
+    PackedReviewerRunGrouping (SuccinctClassic.cartesianShape xs) left right
+  derived_cap_427 :
+    let shape := SuccinctClassic.cartesianShape xs
+    (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+      shape.size left right).trace.length <= 427
+  guarded_reference_result :
+    let shape := SuccinctClassic.cartesianShape xs
+    (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).terminal =
+          some (SuccinctClassic.queryTraceResult xs left right).value /\
+      (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).failed = false /\
+      (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).state =
+          .done (SuccinctClassic.queryTraceResult xs left right).value
+  controller_input_boundary :
+    let shape := SuccinctClassic.cartesianShape xs
+    @packedReviewerController =
+        (fun (n left right : Nat) => packedReviewerController n left right) /\
+      packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+          shape.size left right =
+        packedReviewerDriveAgainstMemoryAux (packedReviewerMemory shape)
+          (packedReviewerControllerMeasure
+            (packedReviewerController shape.size left right))
+          (packedReviewerController shape.size left right)
+  closed_length_and_memory_arity :
+    let shape := SuccinctClassic.cartesianShape xs
+    (forall n longCount sparseCount : Nat,
+        packedReviewerClosedPayloadLength n longCount sparseCount =
+          packedReviewerPayloadLength n longCount sparseCount) /\
+      (packedReviewerMemory shape).length =
+        packedReviewerCellCount shape.size (longCount shape)
+          (packedReviewerSparseCount shape)
+  store_agreement_determinism :
+    let shape := SuccinctClassic.cartesianShape xs
+    forall memoryB : List (List Bool),
+      (forall event,
+        event ∈ (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+          shape.size left right).trace ->
+          memoryB[event.request.address]? = event.reply) ->
+      packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+          shape.size left right =
+        packedReviewerRunAgainstMemory memoryB shape.size left right
+
+/-- Every independent Stage-F fact is inhabited by capstone projection. -/
+theorem egcpStageFCapstoneFactsExact
+    (xs : List Int) (left right : Nat) :
+    EGCPStageFCapstoneFacts xs left right := by
+  have capstone := packedReviewerStageFCapstone_holds xs left right
+  exact
+    { payload_is_buildPayload := capstone.payload_is_buildPayload
+      serialized_header_payload := capstone.serialized_header_payload
+      padded_final_padding := capstone.padded_final_padding
+      one_cell_width := capstone.one_cell_width
+      allocation_two_n_plus_rho := capstone.allocation_two_n_plus_rho
+      rho_little_o := capstone.rho_little_o
+      probes_backed_by_memory := capstone.probes_backed_by_memory
+      probes_allocated_and_successful :=
+        capstone.probes_allocated_and_successful
+      ordered_grouping := capstone.ordered_grouping
+      derived_cap_427 := capstone.derived_cap_427
+      guarded_reference_result := capstone.guarded_reference_result
+      controller_input_boundary := capstone.controller_input_boundary
+      closed_length_and_memory_arity :=
+        capstone.closed_length_and_memory_arity
+      store_agreement_determinism :=
+        capstone.store_agreement_determinism }
+
+/-! ### Stage-F residual campaign: `FG-11` header liveness
+
+The expected type below is written out in full: the two projections are the
+`trace[1]` request addresses of the canonical and the header-mutated runs of
+the identical driver, and the conclusion is their inequality.  A retreat to
+an enclosing-record inequality, or to a sampled size, no longer inhabits this
+type.
+-/
+
+/-- Replacing only the counted long-count header cell moves the second
+attempted physical address, for every shape and every valid query. -/
+theorem egcpStageFHeaderAddressLiveness :
+    forall (shape : CartesianShape) (left right : Nat),
+      left < right -> right <= shape.size ->
+        exists addressCanonical addressMutated,
+          ((packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+              shape.size left right).trace.map
+                (fun event => event.request.address))[1]? =
+              some addressCanonical /\
+          ((packedReviewerRunAgainstMemory
+              ((packedReviewerMemory shape).set 0
+                (SuccinctSpace.natToBitsLE (packedReviewerCellWidth shape.size)
+                  (longCount shape + packedReviewerCellWidth shape.size)))
+              shape.size left right).trace.map
+                (fun event => event.request.address))[1]? =
+              some addressMutated /\
+          addressCanonical ≠ addressMutated :=
+  fun shape left right hleft hright =>
+    packedReviewerHeaderCellAddressLiveness shape left right hleft hright
+
+/-- The canonical run opens with the header probe at cell zero. -/
+theorem egcpStageFRunOpensWithHeader :
+    forall (shape : CartesianShape) (left right : Nat),
+      left < right -> right <= shape.size ->
+        ((packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+            shape.size left right).trace.map
+              (fun event => event.request.address))[0]? = some 0 :=
+  fun shape left right hleft hright =>
+    packedReviewerRunOpensWithHeader shape left right hleft hright
+
+/-! ### Stage-F residual campaign: `FG-14` boundary instances
+
+Every instance is the one universal capstone instantiated; the geometry
+thresholds themselves are pinned by the `Boundaries.lean` consumers earlier
+in this file, and the six-size readiness-window neighbour fact is added
+here.
+-/
+
+/-- Empty, singleton, and both size-two shapes inhabit the capstone. -/
+theorem egcpStageFSmallSizeInstances :
+    PackedReviewerStageFCapstone [] 0 0 /\
+      PackedReviewerStageFCapstone [0] 0 1 /\
+      PackedReviewerStageFCapstone [0, 1] 0 2 /\
+      PackedReviewerStageFCapstone [1, 0] 0 2 :=
+  ⟨packedReviewerStageFCapstone_empty,
+    packedReviewerStageFCapstone_singleton,
+    packedReviewerStageFCapstone_sizeTwoLeft,
+    packedReviewerStageFCapstone_sizeTwoRight⟩
+
+/-- The two size-two shapes are distinct, witnessed by diverging answers. -/
+theorem egcpStageFSizeTwoDistinct :
+    SuccinctClassic.cartesianShape [(0 : Int), 1] ≠
+      SuccinctClassic.cartesianShape [(1 : Int), 0] :=
+  packedReviewerStageFCapstone_sizeTwoShapesDistinct
+
+/-- The long crossover triple inhabits the capstone. -/
+theorem egcpStageFCrossoverInstances :
+    PackedReviewerStageFCapstone (List.replicate 5487 0) 0 5487 /\
+      PackedReviewerStageFCapstone (List.replicate 5488 0) 0 5488 /\
+      PackedReviewerStageFCapstone (List.replicate 5489 0) 0 5489 :=
+  ⟨packedReviewerStageFCapstone_crossover5487,
+    packedReviewerStageFCapstone_crossover5488,
+    packedReviewerStageFCapstone_crossover5489⟩
+
+/-- The readiness window's six sizes inhabit the capstone. -/
+theorem egcpStageFReadinessWindowInstances :
+    PackedReviewerStageFCapstone (List.replicate 1023 0) 0 1023 /\
+      PackedReviewerStageFCapstone (List.replicate 1024 0) 0 1024 /\
+      PackedReviewerStageFCapstone (List.replicate 1025 0) 0 1025 /\
+      PackedReviewerStageFCapstone (List.replicate 1329 0) 0 1329 /\
+      PackedReviewerStageFCapstone (List.replicate 1330 0) 0 1330 /\
+      PackedReviewerStageFCapstone (List.replicate 1331 0) 0 1331 :=
+  packedReviewerStageFCapstone_readinessWindow
+
+/-- The readiness clause moves across the window while the capstone statement
+does not: both endpoints and both neighbours, kernel-checked. -/
+theorem egcpStageFReadinessNeighbors :
+    packedInteriorMacroSize 1023 <= packedSummaryBlockCountRaw 1023 /\
+      packedSummaryBlockCountRaw 1024 < packedInteriorMacroSize 1024 /\
+      packedSummaryBlockCountRaw 1025 < packedInteriorMacroSize 1025 /\
+      packedSummaryBlockCountRaw 1329 < packedInteriorMacroSize 1329 /\
+      packedSummaryBlockCountRaw 1330 < packedInteriorMacroSize 1330 /\
+      packedInteriorMacroSize 1331 <= packedSummaryBlockCountRaw 1331 :=
+  packedInteriorReadinessWindowNeighbors
+
+/-- Empty-range, reversed, and out-of-range queries inhabit the capstone. -/
+theorem egcpStageFInvalidQueryInstances :
+    PackedReviewerStageFCapstone [7, 3, 3] 1 1 /\
+      PackedReviewerStageFCapstone [7, 3, 3] 2 1 /\
+      PackedReviewerStageFCapstone [7, 3, 3] 0 4 /\
+      PackedReviewerStageFCapstone [7, 3, 3] 5 7 :=
+  packedReviewerStageFCapstone_invalidQueries
+
+/-- Invalid endpoint pairs return the exact `.done none` run with an empty
+trace. -/
+theorem egcpStageFInvalidRunExact :
+    forall (xs : List Int) (left right : Nat),
+      Not (left < right /\
+          right <= (SuccinctClassic.cartesianShape xs).size) ->
+        (packedReviewerRunAgainstMemory
+            (packedReviewerMemory (SuccinctClassic.cartesianShape xs))
+            (SuccinctClassic.cartesianShape xs).size left right).terminal =
+              some none /\
+          (packedReviewerRunAgainstMemory
+            (packedReviewerMemory (SuccinctClassic.cartesianShape xs))
+            (SuccinctClassic.cartesianShape xs).size left right).trace = [] :=
+  fun xs left right hbad =>
+    packedReviewerStageFInvalidRunExact xs left right hbad
+
+/-- The duplicate-minimum fixture: reference value, leftmost-tie spec, and
+the packed run's own terminal, all at `[7, 3, 3]` with query `(0, 3)`. -/
+theorem egcpStageFDuplicateMinimum :
+    (SuccinctClassic.queryTraceResult [7, 3, 3] 0 3).value = some 1 /\
+      LeftmostArgMin [7, 3, 3] 0 3 1 /\
+      (packedReviewerRunAgainstMemory
+          (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+          (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).terminal =
+        some (some 1) :=
+  ⟨packedReviewerStageFDuplicateMinReference,
+    packedReviewerStageFDuplicateMinLeftmost,
+    packedReviewerStageFDuplicateMinRun⟩
+
+/-- No second representation: the controller entry and the memory builder are
+single uniform definitions with no size or readiness dispatch. -/
+theorem egcpStageFNoSecondRepresentation :
+    (forall n left right : Nat,
+        packedReviewerController n left right =
+          if left < right /\ right <= n then .header n left right
+          else .done none) /\
+      (forall shape : CartesianShape,
+        packedReviewerMemory shape =
+          (List.range (packedReviewerCellCount shape.size (longCount shape)
+              (packedReviewerSparseCount shape))).map fun i =>
+            ((packedReviewerPaddedBits shape).drop
+              (i * packedReviewerCellWidth shape.size)).take
+              (packedReviewerCellWidth shape.size)) :=
+  ⟨packedReviewerControllerUniformEntry, packedReviewerMemoryUniformBuilder⟩
+
+/-! ### Stage-F residual campaign: the pinned fixture (`FG-11` value liveness)
+
+The fixture is frozen by matrix section 10.2: input `[7, 3, 3]`, query
+`(0, 3)`, decisive consumed cell `8`, proved-unread allocated cell `4`.  The
+expected types below restate the value-projection inequality, the complete
+unread-cell run equality, and the metadata-completion bridge independently.
+-/
+
+/-- Mutating only consumed cell `8` changes the returned answer: the
+inequality is at the `.terminal` projection of the two runs of the identical
+driver, and both sides are proper terminal values. -/
+theorem egcpStageFDecisiveCellLiveness :
+    (packedReviewerRunAgainstMemory
+        (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+        (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).terminal =
+          some (some 1) /\
+      (packedReviewerRunAgainstMemory
+          ((packedReviewerMemory
+              (SuccinctClassic.cartesianShape [7, 3, 3])).set 8
+            egcpDecisiveMutantCell)
+          (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).terminal =
+        some (some 2) /\
+      (packedReviewerRunAgainstMemory
+          (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+          (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).terminal ≠
+        (packedReviewerRunAgainstMemory
+            ((packedReviewerMemory
+                (SuccinctClassic.cartesianShape [7, 3, 3])).set 8
+              egcpDecisiveMutantCell)
+            (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).terminal :=
+  packedReviewerDecisiveCellLiveness
+
+/--
+The decisive occurrence chain, restated at its full literal expected type
+(`R1`): the producing invocation fields, the driver prefix decomposition to
+the pre-state, the `nextRequest`/`consumeReply` transition, and the checked
+continuation to the same run's `.done (some 1)` must all survive in the
+producer's conclusion.  Weakening the producer back to the rejected
+origin-erasing proposition makes this consumer fail to elaborate.
+-/
+theorem egcpStageFDecisiveCellConnection :
+    exists (position : Nat) (event : PackedReviewerPhysicalEvent)
+      (request : PackedReviewerLogicalRequest) (replyCell : List Bool)
+      (preState postState : PackedReviewerControllerState),
+      ((packedReviewerRunAgainstMemory
+          (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+          (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).trace)[position]? =
+          some event /\
+      position = 11 /\
+      event.request.origin = PackedReviewerPhysicalOrigin.wholeQuery request /\
+      request.invocation.instruction =
+        PackedReviewerInstructionSite.leftSelect /\
+      request.invocation.argument = 0 /\
+      request.invocation.argument2 = 0 /\
+      request.site = PackedReviewerReadSite.entryFirstOffset /\
+      request.segment = 8 /\
+      request.index = 0 /\
+      event.request.address = 8 /\
+      event.reply = some replyCell /\
+      event.reply =
+        (packedReviewerMemory
+          (SuccinctClassic.cartesianShape [7, 3, 3]))[event.request.address]? /\
+      preState =
+        packedReviewerDriveStateAt
+          (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+          (packedReviewerController
+            (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3)
+          position /\
+      packedReviewerNextRequest preState = some event.request /\
+      packedReviewerConsumeReply preState event.reply = postState /\
+      (packedReviewerDriveAgainstMemoryAux
+          (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+          (packedReviewerControllerMeasure
+              (packedReviewerController
+                (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3) -
+            (position + 1))
+          postState).terminal = some (some 1) /\
+      (packedReviewerDriveAgainstMemoryAux
+          (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+          (packedReviewerControllerMeasure
+              (packedReviewerController
+                (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3) -
+            (position + 1))
+          postState).state = .done (some 1) /\
+      (packedReviewerRunAgainstMemory
+          (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+          (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).terminal =
+        some (some 1) /\
+      (packedReviewerRunAgainstMemory
+          (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+          (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).state =
+        .done (some 1) /\
+      (SuccinctClassic.queryTraceResult [7, 3, 3] 0 3).value = some 1 :=
+  packedReviewerDecisiveCellConnection
+
+/-- Mutating the proved-unread allocated cell `4` changes nothing: complete
+run-record equality (terminal, failed, state, and trace), for every
+replacement cell, with the allocated-cell bound recorded beside it. -/
+theorem egcpStageFUnreadCellAccept :
+    (4 < packedReviewerCellCount
+        (SuccinctClassic.cartesianShape [7, 3, 3]).size
+        (longCount (SuccinctClassic.cartesianShape [7, 3, 3]))
+        (packedReviewerSparseCount
+          (SuccinctClassic.cartesianShape [7, 3, 3]))) /\
+      (forall event,
+        event ∈ (packedReviewerRunAgainstMemory
+            (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+            (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).trace ->
+          event.request.address ≠ 4) /\
+      (forall replacement : List Bool,
+        packedReviewerRunAgainstMemory
+            ((packedReviewerMemory
+                (SuccinctClassic.cartesianShape [7, 3, 3])).set 4 replacement)
+            (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3 =
+          packedReviewerRunAgainstMemory
+            (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+            (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3) :=
+  packedReviewerUnreadCellAccept
+
+/-- The pinned `A02` instance at the frozen committed replacement value. -/
+theorem egcpStageFUnreadCellAcceptPinned :
+    packedReviewerRunAgainstMemory
+        ((packedReviewerMemory
+            (SuccinctClassic.cartesianShape [7, 3, 3])).set 4
+          egcpStageFUnreadReplacementCell)
+        (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3 =
+      packedReviewerRunAgainstMemory
+        (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+        (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3 :=
+  packedReviewerUnreadCellAcceptPinned
+
+/-- The `M06` bridge: no completion function of the public metadata alone --
+including the enacted `some n` oracle and the reference-semantics oracle of
+the pinned query -- can produce both fixture terminals, with the guards and
+quantifiers of the decisive-cell pair. -/
+theorem egcpStageFNoMetadataCompletion :
+    forall f : Nat -> Nat -> Nat -> Option Nat,
+      Not ((packedReviewerRunAgainstMemory
+            (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+            (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).terminal =
+              some (f (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3) /\
+          (packedReviewerRunAgainstMemory
+              ((packedReviewerMemory
+                  (SuccinctClassic.cartesianShape [7, 3, 3])).set 8
+                egcpDecisiveMutantCell)
+              (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).terminal =
+            some (f (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3)) :=
+  packedReviewerNoMetadataCompletion
 
 end Validation
 end PackedCellProbe

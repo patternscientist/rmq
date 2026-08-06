@@ -127,3 +127,4 @@ import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerController
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerLogicalSimulation
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerControllerProof
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerControllerStateProof
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerCapstone

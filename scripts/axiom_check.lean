@@ -1209,3 +1209,14 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunAgainstMemory_trace_length_le_427
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunAgainstMemory_public_outcome
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunAgainstMemory_public_certificate
+
+-- EG-CP Stage-F residual campaign: public axiom inventory.
+-- The combined capstone, the universal header-liveness theorem, the pinned
+-- decisive-cell and unread-cell fixture theorems, and the checked
+-- metadata-completion bridge that discharges the M06 carry-forward.
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerStageFCapstone_holds
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerHeaderCellAddressLiveness
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerDecisiveCellLiveness
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerDecisiveCellConnection
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerUnreadCellAccept
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerNoMetadataCompletion

@@ -9967,3 +9967,99 @@ replay rebuild chain that includes it far inside the harness deadline. The
 validation root gains independently written consumers for the capstone and
 the liveness theorems. The decisive-cell and unread-cell fixture theorems
 land in the same module and are recorded separately.
+
+## DD-20260806-077 -- fixture value-liveness is proved by staged literal evaluation: pin every log2 scalar, then let the kernel decide
+
+The `FG-11` decisive-cell and unread-cell obligations need kernel facts
+about concrete runs -- the canonical 68-probe trace of the pinned fixture
+(`[7, 3, 3]`, query `(0, 3)`), its terminal value, and the terminal value of
+the one-cell mutants.  `#eval` proves nothing, `native_decide` is forbidden,
+and plain `decide` sticks because `Nat.log2` is defined by well-founded
+recursion and is not kernel-reducible in this toolchain.
+
+### Decision
+
+Stage the evaluation in `ReviewerCapstone.lean` around the observation that
+`Nat.log2` is the only kernel-irreducible function in the whole pipeline:
+
+1. Pin every `log2`-carrying scalar to its literal by `simp` over the
+   definition closure (`packedReviewerCellWidth 3 = 15`, cell count `22`,
+   allocation `330`, controller fuel `427`, chunk-table entry widths, the
+   decoded counts) -- small, fast simps.
+2. Hand every remaining log2-free literal computation to `decide`: the
+   payload component literals (access flatMap, the five interior close
+   tables separately, fringe and select chunk tables), the 305-bit payload,
+   the padded bits, the 22x15 memory literal, and the three driver runs
+   (canonical trace/terminal, decisive mutant terminal).
+3. Transport the literal facts to the real public objects through one
+   kernel equality `packedReviewerMemory (cartesianShape [7,3,3]) =
+   egcpMemLit` and the shape/size pins, so the final theorems
+   (`packedReviewerDecisiveCellLiveness`,
+   `packedReviewerDecisiveCellConnection`, `packedReviewerUnreadCellAccept`,
+   `packedReviewerNoMetadataCompletion`) are stated over
+   `packedReviewerMemory`/`packedReviewerRunAgainstMemory` themselves.
+
+The unread-cell equality is deliberately NOT a second evaluation: it goes
+through `packedReviewerRunAgainstMemory_eq_of_agree` and the literal trace's
+address list (no event addresses cell `4`), so it holds for EVERY
+replacement value -- which is exactly what lets replay case `A02` patch the
+frozen replacement definition while the pinned theorems keep elaborating.
+
+The `M06` carry-forward (matrix section 9.5, `P3-2`) is discharged by
+`packedReviewerNoMetadataCompletion`: the decisive pair returns `some 1` and
+`some 2` at identical `(n, left, right)`, so NO completion function of the
+public metadata alone -- the enacted `some n` oracle and the
+reference-semantics oracle of the pinned query are both such functions --
+can produce both terminals.  A literal in-controller reference call is
+untypeable without the already-rejected `M03` shape parameter, so the bridge
+is the only faithful route.
+
+### Rejected alternatives
+
+* One blind mega-simp over the 609-definition closure (ran 781 s and still
+  needed a final kernel step; the staged form runs the whole fixture in
+  about 70 s).
+* Evaluating the close directory as one simp (262 s+; its five sub-tables
+  pin separately in about 6 s total).
+* A second evaluation of the unread-mutant run (the agreement route is both
+  cheaper and value-generic).
+* Trusting `#eval` output as evidence (compiler execution proves nothing;
+  every literal here is kernel-checked).
+
+### The `R1` provenance repair: a checked driver prefix decomposition
+
+The audited repair `R1` additionally requires the decisive occurrence's
+provenance and transition to survive in the theorem conclusion. The module
+therefore defines `packedReviewerDriveStep` (one driver step: consult the
+controller, perform the driver's single memory lookup, consume the reply)
+and the prefix fold `packedReviewerDriveStateAt`, and proves
+`packedReviewerDriveAux_decompose`: at every trace position the fold is
+live, computes the emitted request, the recorded event is exactly that
+request with the driver's own lookup, and the drive restarted at the fold
+with the remaining fuel reproduces the whole run's terminal, state, and
+trace suffix. This is a prefix-fold decomposition, not an equivalent
+substitute, so it pins the same occurrence, transition, and continuation by
+construction. `packedReviewerDecisiveCellConnection` then concludes, on the
+identical fixture objects: position `11`; the exact
+`leftSelect`/`entryFirstOffset`/segment-`8`/index-`0` producing request,
+field by field; address `8`; the successful reply cell as the driver's own
+lookup; `preState = packedReviewerDriveStateAt ... 11`;
+`packedReviewerNextRequest preState = some event.request`;
+`packedReviewerConsumeReply preState event.reply = postState`; and the
+checked continuation from `postState` with the remaining structural fuel to
+the same run's `.done (some 1)` state and terminal. An on-branch
+compile-negative probe replaced the producer by the rejected origin-erasing
+proposition: the literal validation consumer
+`egcpStageFDecisiveCellConnection` fails at
+`RMQ/Validation/EGCPFinalFalsification.lean` (type mismatch), which is the
+`R1` anti-vacuity direction.
+
+### Consequences and evidence
+
+`ReviewerCapstone.lean` elaborates in about 120 s wall on a warm tree, which
+keeps every replay rebuild chain that includes it inside the harness's
+300-second floor deadline.  The curated axiom check gains the six Stage-F
+entries; each must depend only on the standard axioms.  The one dependent
+rewrite gotcha is recorded in the module: `simp` will not rewrite
+`bpFringeChunkBits` inside `FixedWidthNatTable`'s type indices, so the
+fringe/select pins first fix that scalar by an explicit `rw`.

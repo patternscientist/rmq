@@ -7663,3 +7663,67 @@ Windows `-SelfTestOnly` run and the WSL `Ubuntu-24.04` run both PASS on this
 branch and are re-run on the final frozen tree for the `FG-15` record. The
 full sixteen-case campaign continues to run the same self-test before any
 semantic case, exactly as before.
+
+## WDD-20260806-003: the A02 expected-accept patches the frozen replacement value, and the curated axiom list gains the six Stage-F entries
+
+Status: Accepted under the coordinator-commissioned `EG-CP-STAGEF-CLOSE-R2`
+repair contract, landed in the same commit as the runner and axiom-script
+changes it governs (the rejected branch's copy of this entry arrived one
+commit late; that `R4` lifecycle defect is repaired here by construction,
+not by history rewriting).
+
+Date: 2026-08-06
+
+Additional enactment carried by this commit: `M03-SHAPE-PARAMETER`'s
+`ExpectFile` moves to `PackedCellProbe/ReviewerCapstone.lean`, because the
+`R2`-corrected capstone's `controller_input_boundary` field is an
+exact-type equation over `@packedReviewerController` and is therefore the
+honest first failing consumer of an added shape parameter once the
+validation root imports the capstone -- confirmed by an on-branch
+compile-negative probe (type mismatch at `ReviewerCapstone.lean:114`).
+The frozen registry surface category (`exact signature`) is unchanged.
+
+Trigger: the last registry null target, `A02-UNREAD-CELL-EXPECTED-ACCEPT`,
+needed an enactment whose ACCEPT verdict is meaningful rather than vacuous,
+and the six new Stage-F public theorems needed curated axiom coverage.
+
+Decision, in two parts.
+
+1. **`A02` patches the frozen replacement-value definition, not a theorem.**
+   The runner's `A02` target rewrites
+   `egcpStageFUnreadReplacementCell` in `ReviewerCapstone.lean` from
+   `List.replicate (packedReviewerCellWidth 3) true` to
+   `false :: List.replicate (packedReviewerCellWidth 3 - 1) true`, with the
+   new literal as the activation needle. The pinned instance
+   `packedReviewerUnreadCellAcceptPinned` and the full validation surface
+   must keep elaborating, because `packedReviewerUnreadCellAccept` proves
+   run-record equality for EVERY replacement through the ordered agreement
+   route -- the mutation is accepted exactly because the cell is proved
+   unread, not because nothing consumes the value. The ACCEPT is
+   discriminating: the same patch applied to the decisive cell's value
+   (`egcpDecisiveMutantCell`) would change a kernel-checked terminal and be
+   rejected, which is the category boundary between `A02` and
+   `M01`/`M06`-style REJECTs.
+2. **Curated axiom entries are added for the six Stage-F names**
+   (`packedReviewerStageFCapstone_holds`,
+   `packedReviewerHeaderCellAddressLiveness`,
+   `packedReviewerDecisiveCellLiveness`,
+   `packedReviewerDecisiveCellConnection`,
+   `packedReviewerUnreadCellAccept`,
+   `packedReviewerNoMetadataCompletion`), following the R2R1-02 precedent:
+   every one must depend only on `[propext, Classical.choice, Quot.sound]`.
+   Receipt on this branch: `lake env lean scripts/axiom_check.lean` exit 0,
+   486.3 s, no `sorryAx`, `ofReduceBool`, or `trustCompiler` anywhere in the
+   inventory.
+
+Alternatives rejected: patching a theorem statement for `A02` (an ACCEPT
+that elaborates because nothing checks the value would be vacuous);
+`#print axioms` without the curated list extension (the gate would not pin
+the new names); rewriting the previous commit to attach this entry (history
+rewriting is forbidden by the launch contract; disclosure is the honest
+repair).
+
+Consequences: the sixteen-entry registry has no null target; full mode can
+no longer exit 7 for `TARGET-ABSENT`. The strict range check
+(`design_decision_check.ps1 -Strict -Base 0f38672...`) covers both commits
+together; the one-commit ledger lag is disclosed in the `FG-15` record.

@@ -86,7 +86,16 @@ $script:Registry = @(
      Verdict = 'ACCEPT'; Surface = 'none'; Target = @{ Kind = 'None' } },
   @{ Order = 2;  Id = 'A02-UNREAD-CELL-EXPECTED-ACCEPT';
      Mutation = 'mutate exactly one proved-unread allocated cell and preserve the pinned run/result';
-     Verdict = 'ACCEPT'; Surface = 'none'; Target = $null },
+     Verdict = 'ACCEPT'; Surface = 'none';
+     Target = @{ Kind = 'Patch';
+       ExpectFile = 'none';
+       File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCapstone.lean';
+       Find  = 'def egcpStageFUnreadReplacementCell : List Bool :=
+  List.replicate (packedReviewerCellWidth 3) true';
+       Repl  = 'def egcpStageFUnreadReplacementCell : List Bool :=
+  false :: List.replicate (packedReviewerCellWidth 3 - 1) true' };
+     Activation = @(
+       'false :: List.replicate (packedReviewerCellWidth 3 - 1) true') },
   @{ Order = 3;  Id = 'M01-WRONG-LONG-COUNT';
      Mutation = 'alter the header count';
      Verdict = 'REJECT'; Surface = 'liveness/consumer';
@@ -129,7 +138,7 @@ $script:Registry = @(
      Mutation = 'add or restore a semantic shape input';
      Verdict = 'REJECT'; Surface = 'exact signature';
      Target = @{ Kind = 'Patch';
-       ExpectFile = 'Validation/EGCPFinalFalsification.lean';
+       ExpectFile = 'PackedCellProbe/ReviewerCapstone.lean';
        File = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean';
        Find  = 'def packedReviewerController (n left right : Nat) :
     PackedReviewerControllerState :=';
