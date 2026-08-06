@@ -387,6 +387,29 @@ precedent/audit lane, and no competing heavy B3 worker.
 | `EG-CP-F06` enumeration | **Amendment 2026-07-26, post-A10.** `EG-CP-F06` inherits the syntactic-elimination obligation that the `EG-CP-F03` evidence amendment relocated: an enumeration of every content-dependent site that must be rewritten to remove the `shape` parameter, including sites that are dead or that cancel before any emitted event. F06 may not cite the F03 amendment, or `T4_wholeQuery_trace_size_only`, as progress on it. | Discover the list **by performing the packed rewrite**, not by enumerating in advance. Three independent attempts to build a standalone geometry inventory have shipped false exhaustiveness claims (A10-F03-01; DD-20260726-006), because that universe has no closed inductive to case on and completeness must be argued separately. The rewrite visits every site by construction, so the enumeration falls out as a by-product with the elaborator enforcing coverage. The reusable technique is `GeometryCensus`'s Nat-only mirror functions with `_mirror` congruences -- sound design whose only defect was an exhaustiveness claim it could not check. Contrast `SourceInventory.lean`, where the universe IS a closed inductive and the enumeration is elaborator-enforced. |
 | `EG-CP-F13-NO-ASSUMED-CAPSTONE` | Every reachable controller state, next address, reply, and final result is produced by the packed execution under one explicit invariant; final correctness is not stored in a field, hypothesis, or precomputed answer | Base/step/final invariant, decisive-cell corruption rejection, and a proved-unread-cell expected-accept control |
 
+### Stage F progress record
+
+Append-only. Records accepted local rungs feeding Stage F. A row here is
+evidence toward the gate; it never records the gate outcome.
+
+| Date | Local rung | Disposition |
+| --- | --- | --- |
+| 2026-08-05 | `EG-CP-ALLSIZE-R1` (all-size reviewer machine, including the `R2R1` replay-fidelity repair) | **`ACCEPTED` and integrated into local `main`.** Exact candidate `a0a0f92b8f9081ee59797affb5045952d9e39fbf`; fresh-blind audit `118284833eb312fc06e794dd0708f48b4909dbd1` (`LOCAL_RUNG_ACCEPTABLE`, no `P0`/`P1`/`P2`); coordinator disposition in `EG_CP_FINAL_FALSIFICATION_MATRIX.md` section 9. Local rung only -- **not** `FEASIBILITY_PASS`, **not** architecture acceptance, **not** a Stage A row. |
+
+**Exact next sequencing.** Stage F is not closable yet. In order:
+
+1. Finish the Stage-F residual falsification campaign: `FG-11` liveness and
+   anti-bypass; full `FG-12` (enact targets for the four registry entries that
+   still carry `Target = $null` -- `A02-UNREAD-CELL-EXPECTED-ACCEPT`,
+   `M02-HOST-LONG-COUNT-MIRROR`, `M04-CANONICAL-SHAPE-BY-N`,
+   `M13-HIDDEN-UNCOUNTED-TABLE` -- then certify all sixteen in one campaign);
+   `FG-14` boundaries; `FG-15` durable record.
+2. Coordinator and fresh-blind auditor disposition of that exact final
+   evidence.
+3. **Only then** may `FEASIBILITY_PASS` be recorded -- and only then may the
+   Stage A matrix be frozen. Freezing Stage A before step 2 is a lifecycle
+   violation, not a scheduling shortcut.
+
 ### FEASIBILITY_PASS rule
 
 Record `FEASIBILITY_PASS` and proceed to a separately frozen implementation

@@ -239,7 +239,7 @@ validation-header inventory repair; comment-only Lean changes).
 | Frozen original-row byte comparison against `6bf28dee` | PASS: matrix diff is append-only (102 insertions inside the amendment markers, 0 deletions), mojibake-free. |
 | Committed-range and working-tree `git diff --check` | PASS. |
 | Clean index and untracked state | PASS at the proof-bearing HEAD. |
-| `R2-ALLSIZE` replay stage | PASS: bounded startup with measured deadline, positive selector case, then all seven commissioned mutations REJECT with SHA-verified restoration and terminal clean tree. |
+| `R2-ALLSIZE` replay stage | **SUPERSEDED -- do not rely on this row.** PASS: bounded startup with measured deadline, positive selector case, then all seven commissioned mutations REJECT with SHA-verified restoration and terminal clean tree. *(Coordinator annotation, 2026-08-05, audit finding P3-3: this row records the **pre-repair** run, whose `M05`/`M06`/`M07`/`M11` bodies were later found to be arity-only mutations, so those four REJECTs certified signature sensitivity rather than the frozen semantic requirements. The defect and its repair are recorded in the `R2R1` receipts later in this section, in matrix section 8, and in `WDD-20260805-002`. The authoritative evidence is the post-repair stage run on `368b828` and the independent rerun in the fresh-blind audit report.)* |
 
 ### Independent coordinator reruns on the exact proof tree
 

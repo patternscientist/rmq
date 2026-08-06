@@ -7485,3 +7485,68 @@ with all seven commissioned REJECTs, SHA-verified restoration, descendant
 termination, and a terminal clean tree. The repaired mutant bodies, activation
 needles, and observed failing surfaces are recorded in the matrix repair
 addendum of the same commit.
+
+## WDD-20260805-003: a local-rung acceptance must name the node boundary it does not cross, and P3 report defects are corrected before integration
+
+Status: Accepted under the coordinator integration task `EG-CP-ALLSIZE-INT-R1`.
+
+Date: 2026-08-05
+
+Trigger: disposition of local rung `EG-CP-ALLSIZE-R1`. The fresh-blind audit
+(`1182848`) returned `LOCAL_RUNG_ACCEPTABLE` with no `P0`/`P1`/`P2` finding.
+Two facts made a silent "accepted" record hazardous. First, the audited rung
+discharges most of the falsification matrix's evidence forms, so an
+unqualified acceptance reads as node closure to a later reader, and Stage A's
+matrix freeze is gated on `FEASIBILITY_PASS`, which is gated on residual work
+(`FG-11`, full `FG-12`, `FG-14`, `FG-15`) that this rung did not touch.
+Second, the audit report carried two bookkeeping errors that would have been
+integrated verbatim into `main`: it recorded the branch as 41 commits above
+base when 40 were audited (41 is the report commit's own distance), and it
+described the `FG-12` remainder as "seven outstanding registry cases" when
+seven is the size of the *replayed* stage and the actual remainder is four
+`Target = $null` entries plus five already-runnable entries.
+
+Decision, in three parts.
+
+1. **A local-rung acceptance is recorded append-only in the governing frozen
+   matrix and must carry an explicit not-closed table.** The disposition names
+   the exact candidate and the exact audit commit, and states separately that
+   the full node, `FEASIBILITY_PASS`, Stage A, public-claim synchronization,
+   `S1`, and `V1` remain open. Frozen rows are never edited to reflect
+   acceptance; the disposition is a new section behind its own markers.
+2. **`P3` bookkeeping defects are corrected before integration, in place, with
+   a visible coordinator-correction marker.** They are not deferred (they would
+   land in `main` as fact) and not silently rewritten (an audit report is
+   evidence; its original text must stay recoverable). The marker states what
+   the text originally said and why the correction is right.
+3. **A finding that scopes a mutant down is recorded as a carry-forward
+   obligation, never as an upgrade.** The enacted `M06-ANSWER-ORACLE` uses a
+   metadata-derived constant, not a call to the independent reference
+   semantics; the disposition says so, attributes local acceptance to the
+   positive closed-controller and result-dependency theorems plus the joint
+   `M06`/`M07` evidence, and requires the later full-registry campaign to
+   either enact the exact answer-oracle predicate or prove a checked bridge to
+   it.
+
+Alternatives rejected: recording acceptance in the roadmap alone (the matrix
+is the frozen contract a later auditor reads first, and a roadmap-only record
+separates the verdict from the rows it disposes); editing section 7.2's
+mismatched inherited-row titles in place to resolve `P3-1` (would break the
+byte-for-byte freeze the amendment itself promises -- the numeric IDs already
+disambiguate, so the mapping is recorded in the disposition instead);
+deferring all three `P3` items to the next rung (they are cheap now and become
+load-bearing prose once merged); treating the audit's `LOCAL_RUNG_ACCEPTABLE`
+as sufficient for acceptance without independent reconstruction (forbidden by
+the coordinator integration checklist, and the two count errors are exactly
+what independent reconstruction catches).
+
+Consequences: the acceptance commit is documentation-only over byte-identical
+proof and executable blobs, so no Lean build, axiom check, or replay was
+repeated -- justified mechanically by a 327-path blob-identity comparison
+against the audited objects, not by schedule pressure. The replay controls
+`REPLAY-EXACT-REGISTRY`, `REPLAY-SELECTOR-NONVACUITY`, and
+`REPLAY-SUBPROCESS-DEADLINE` are preserved and explicitly **not** re-certified
+by a documentation-only integration; they remain inputs to the later
+full-registry campaign. Named regression for this rule: an acceptance record
+that states a rung closed without a not-closed table, or that cites `M06` as
+having refuted a reference-semantics oracle, is rejected on sight.

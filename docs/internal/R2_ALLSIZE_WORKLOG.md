@@ -47,6 +47,29 @@ frozen R2 coordinator-amendment matrix is the first commit (`c0cd387`).
 12. Matrix amendment closed row-by-row with the validation consumer evidence;
     coordinator acceptance still required.
 
+## Coordinator disposition (2026-08-05, `EG-CP-ALLSIZE-INT-R1`)
+
+13. `368b828` froze the `R2R1` replay-fidelity repair; `a0a0f92` is its
+    report-only child (one changed path, the result report).
+14. Fresh-blind audit `1182848` (report-only child of `a0a0f92`, one added
+    path) returned `LOCAL_RUNG_ACCEPTABLE` with no `P0`/`P1`/`P2` finding and
+    three `P3` bookkeeping findings.
+15. **Local rung `EG-CP-ALLSIZE-R1` `ACCEPTED`** at exact candidate `a0a0f92`
+    and integrated into local `main` by fast-forward. Item 12's "coordinator
+    acceptance still required" is now discharged. The three `P3` findings were
+    corrected before integration: the audit's branch-audited count (41 -> 40,
+    the 41 being the report commit's own distance), its registry remainder
+    ("seven outstanding cases" -> four null-target entries plus five already
+    runnable), and the superseded pre-repair replay row in the result report.
+    Full evidence and the `P3-2` carry-forward obligation on the `M06` mutant
+    are in `EG_CP_FINAL_FALSIFICATION_MATRIX.md` section 9.
+
+**This closes the local rung only.** Stage F remains open: `FG-11`, full
+`FG-12`, `FG-14`, and `FG-15` must close and be dispositioned by the
+coordinator and a fresh-blind auditor before `FEASIBILITY_PASS`, and
+`FEASIBILITY_PASS` must precede any Stage A matrix freeze. See the Stage F
+progress record in `RMQ_ENDGAME_ROADMAP.md`.
+
 ## Load-bearing design facts for a successor
 
 - Fuel-free closure via `PackedReviewerRequestsFitFrom.of_invariant`; orbit

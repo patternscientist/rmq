@@ -327,3 +327,181 @@ as word-RAM instruction time or `S1` bit-addressed serialized-payload
 querying.
 
 <!-- COORDINATOR-REPAIR-EG-CP-ALLSIZE-R2R1-END -->
+
+<!-- COORDINATOR-DISPOSITION-EG-CP-ALLSIZE-INT-R1-BEGIN -->
+
+---
+
+## 9. Coordinator disposition: local rung `EG-CP-ALLSIZE-R1` `ACCEPTED`
+
+Append-only coordinator record (`EG-CP-ALLSIZE-INT-R1`, 2026-08-05). Every
+original `FG-*` row, every `R2-*` requirement, every inherited invariant row,
+every frozen registry row, and the entire `R2R1` addendum above remain
+byte-for-byte unchanged; this section adds only the disposition. It does not
+edit, reopen, or re-freeze any row above.
+
+### 9.1 Exact identities, independently reconstructed
+
+Reconstructed from the Git objects, not from any worker or auditor prose.
+
+| Object | Exact value |
+| --- | --- |
+| Rung base | `6bf28dee32c96da4705b139959fd35e4a782bac4`, tree `4d173458db3e1ad33186a2f843ee7dd5cbd87d97` |
+| Frozen `R2R1` proof-bearing repair | `368b828e0711dfd10a04ca90eb19c7b0d6ccfd13`, tree `730a8746240bdf6f705d67f9283f6d9db8f25123` |
+| Audited candidate | `a0a0f92b8f9081ee59797affb5045952d9e39fbf`, tree `ffc90f00b3cd864921e9fc23233e30b5432ad3d8`, parent `368b828` |
+| Fresh-blind audit report commit | `118284833eb312fc06e794dd0708f48b4909dbd1`, tree `e991ca8317bf26fd1e435e80342935ac61bb7dc0`, parent `a0a0f92` |
+| `git rev-list --count 6bf28dee..a0a0f92` | **40** |
+| `git diff --name-status 6bf28dee a0a0f92` | **32** changed tracked paths |
+| `git rev-list --count 6bf28dee..1182848` | **41** |
+| `git diff --name-status a0a0f92 1182848` | exactly one path added: `docs/internal/audit_reports/2026-08-05_EG_CP_ALLSIZE_R2_fresh_blind.md` |
+| `git diff --name-status 368b828 a0a0f92` | exactly one path: `docs/internal/EG_CP_FINAL_FALSIFICATION_RESULT.md` (the candidate tip is report-only over the frozen proof bytes) |
+
+The 40-versus-41 distinction is the substance of coordinator correction (a) in
+section 9.3: 40 commits were audited; 41 is the distance of the report commit
+itself.
+
+### 9.2 What this coordinator reconstructed rather than accepted on report
+
+Acceptance does **not** rest on the auditor's verdict, on Claude prose, on a
+green strict scan, or on declaration names. Independently re-derived here:
+
+- **Exact identity and scope arithmetic** -- every row of 9.1, by direct
+  `git rev-parse` / `rev-list` / `diff --name-status`.
+- **Guarded blob identity.** Every `RMQ.lean`, `RMQ/**/*.lean`,
+  `scripts/eg_cp_final_falsification_replay.ps1`, and `scripts/axiom_check.lean`
+  blob -- **327 paths** -- is byte-identical between `a0a0f92` and `1182848`,
+  compared by Git blob SHA, with no path present on only one side. The audit
+  report therefore describes the same proof and executable bytes it was
+  committed on top of.
+- **Frozen-row byte integrity** (`FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY`).
+  Both matrix blobs were decoded as **strict** UTF-8 (invalid sequences would
+  throw), checked for BOM and for U+FFFD, and every table row was keyed by the
+  pair *(section heading, stable ID)* -- the section scope is load-bearing,
+  because the fifteen `INV-*` IDs deliberately recur in section 7.3 with
+  rung-specific evidence and a global keying would misreport them as
+  duplicates. Result: **51 inherited row IDs byte-identical, 0 missing, 0
+  duplicated, 0 changed**; the 53 added IDs all lie inside sections 7 and 8.
+  The `6bf28dee..1182848` matrix diff is `+175 / -0`, i.e. append-only.
+- **Registry enumeration.** The sixteen frozen entries were re-read from the
+  runner source and re-partitioned by hand (see 9.4); this is the basis of
+  coordinator correction (b).
+- **Replay-stage membership.** `$script:Stages['R2-ALLSIZE']` is exactly the
+  seven IDs the addendum names.
+
+Relied on as valid prior exact-tree evidence, deliberately **not** repeated
+(see 9.7): the independent Lean builds, the axiom run, and the seven-case
+`R2-ALLSIZE` replay.
+
+### 9.3 Corrections applied to the fresh-blind audit report
+
+Both are bookkeeping (`P3`) defects in the report's own prose. Neither
+disturbs an evidence claim, and both are marked in place as coordinator
+corrections so the original text stays recoverable.
+
+| # | Location | Correction |
+| --- | --- | --- |
+| (a) | Section 1, "Branch audited" | "41 commits above base" -> **40**, with the report commit's own 41-commit distance stated separately. |
+| (b) | Section 9, "Best next target" | "the seven outstanding registry cases" -> the exact registry partition of 9.4. Seven is the size of the *replayed* stage, not the remainder. |
+
+### 9.4 Exact frozen-registry state (basis of correction (b))
+
+| Group | Count | IDs |
+| --- | --- | --- |
+| Replayed by this rung's `R2-ALLSIZE` stage | 7 | `M03`, `M05`, `M06`, `M07`, `M08`, `M11`, `M12` |
+| Non-`R2`-stage, `Target = $null` -- commissioned surface does not yet exist, each replays `TARGET-ABSENT` | 4 | `A02-UNREAD-CELL-EXPECTED-ACCEPT`, `M02-HOST-LONG-COUNT-MIRROR`, `M04-CANONICAL-SHAPE-BY-N`, `M13-HIDDEN-UNCOUNTED-TABLE` |
+| Non-`R2`-stage, already runnable from the prior registry campaign | 5 | `A01-PRODUCTION-EXPECTED-ACCEPT`, `M01-WRONG-LONG-COUNT`, `M09-WRONG-CELL-CROSSING`, `M10-SPARSE-COUNT-DEPENDENCY`, `M14-LONG-COUNT-IGNORED` |
+
+Outstanding `FG-12` work is therefore: enact targets for the **four** null
+entries, then certify all sixteen in one campaign. The five runnable entries
+need re-certification against the current tree, not construction.
+
+### 9.5 Disposition of the audit's `P3` findings
+
+- **`P3-1` (title drift), resolved append-only.** Section 7.2 cites three
+  inherited rows by titles that do not appear in section 1. The frozen text is
+  **not** edited; the mapping is recorded here instead, and the numeric IDs
+  make it unambiguous:
+
+  | Cited in 7.2 | Canonical title in section 1 |
+  | --- | --- |
+  | `FG-08-PHYSICAL-CODEC-AND-CAP` | `FG-08-PHYSICAL-LOWERING` |
+  | `FG-09-PROBE-TOTALITY-AND-SAME-OBJECT-CORRECTNESS` | `FG-09-TOTALITY-AND-CAP` |
+  | `FG-10-ANTI-VACUITY` | `FG-10-SAME-RUN-CORRECTNESS` |
+
+  Any future amendment should use the canonical titles. No evidence is
+  affected: the 7.2 obligation text is self-contained.
+
+- **`P3-2` (scope of the `M06` mutant), recorded without upgrade.** The
+  enacted `M06-ANSWER-ORACLE` body substitutes a **metadata-derived**
+  precomputed result (`some n`) for the computed completion value. It is
+  **not** a literal call to the independent reference semantics, so it does
+  not by itself exercise the full smuggle-the-right-answer direction of an
+  answer oracle. That is the honest reading of the mutant, and this
+  disposition does not silently upgrade it.
+
+  Local acceptance of `R2-06` / `INV-ORACLE-INDEPENDENCE` /
+  `INV-VALUE-DEPENDENCY` accordingly rests on **the positive theorems plus the
+  scoped mutation evidence**, not on `M06` alone: the closed proof-free
+  controller and driver-only memory indexing
+  (`egcpAllSizeValidControllerEntry`, `egcpAllSizeDriverMemoryOnly`,
+  `egcpAllSizeEveryLogicalReadFromReviewerMemory`), the coupled-invariant
+  result dependency carrying the terminal value back to consumed physical
+  replies (`PackedReviewerCanonicalControllerCoupledInvariant.consume` through
+  `egcpAllSizeSameRunPublicOutcome`), and the joint `M06` (result path is
+  live) / `M07` (trace connection is load-bearing) rejections.
+
+  **Obligation carried forward:** the later full-registry campaign must either
+  enact the exact answer-oracle predicate -- a mutant that genuinely consults
+  the independent reference semantics -- or prove a checked bridge from the
+  enacted predicate to it. Until one of those exists, no document may describe
+  `M06` as having refuted a reference-semantics oracle.
+
+- **`P3-3` (stale ledger row), annotated.** The pre-repair `R2-ALLSIZE` row in
+  `EG_CP_FINAL_FALSIFICATION_RESULT.md` section 9 is now marked
+  `SUPERSEDED` in place, pointing to the `R2R1` repair (section 8 above,
+  `WDD-20260805-002`) and to the fresh-blind audit's independent rerun.
+
+### 9.6 Disposition
+
+**Local rung `EG-CP-ALLSIZE-R1` is `ACCEPTED`** at exact candidate
+`a0a0f92b8f9081ee59797affb5045952d9e39fbf`, on the evidence of fresh-blind
+audit report commit `118284833eb312fc06e794dd0708f48b4909dbd1`
+(`LOCAL_RUNG_ACCEPTABLE`, no `P0`/`P1`/`P2` finding) together with the
+independent coordinator reconstruction of 9.2. No `P0`, `P1`, or `P2` source
+defect was found by this coordinator; the three `P3` bookkeeping defects are
+corrected or recorded above, before integration.
+
+**Separately, and explicitly still open:**
+
+| Item | Status |
+| --- | --- |
+| Full EG-CP falsification node (`FG-01`..`FG-15`) | **OPEN.** `FG-11`, full `FG-12`, `FG-14`, `FG-15` are unclosed. |
+| `FEASIBILITY_PASS` (Stage F outcome) | **NOT RECORDED.** Requires the residual campaign above plus coordinator review of the exact final evidence. |
+| Stage A packed-architecture acceptance (`A01`..`A13`) | **NOT STARTED.** May be frozen only after `FEASIBILITY_PASS`. |
+| Public-claim synchronization, headline selection | **OPEN**, untouched by this rung. |
+| `S1`, `V1` | **OPEN**, untouched by this rung. |
+| Architecture acceptance | **NOT RECORDED.** This is a local rung acceptance only. |
+
+Accepting this rung records that the all-size reviewer machine is a sound
+local rung. It does **not** assert that the packed cell-probe architecture is
+accepted, and nothing here describes the `210` figure as an exact read count
+or as a word-RAM time bound: it is driver fuel bounding logical attempts
+(`DD-20260805-075`).
+
+### 9.7 Replay controls and verification economics
+
+The runner controls `REPLAY-EXACT-REGISTRY`, `REPLAY-SELECTOR-NONVACUITY`, and
+`REPLAY-SUBPROCESS-DEADLINE` are **preserved and not re-certified by this
+integration**. They remain inputs to the later full-registry campaign; a
+documentation-only integration commit is not evidence for them.
+
+No Lean build, axiom check, or semantic replay was repeated here. The
+justification is mechanical rather than economic: every `RMQ.lean`,
+`RMQ/**/*.lean`, replay-runner, and axiom-script blob is byte-identical to the
+audited objects (9.2, 327 paths), and this integration changes only
+documentation. Repeating a multi-minute Lean or replay certification on
+bit-identical inputs would add no coverage. Had any such blob differed, that
+difference would have been out of scope for this task and grounds to stop
+rather than to repair.
+
+<!-- COORDINATOR-DISPOSITION-EG-CP-ALLSIZE-INT-R1-END -->

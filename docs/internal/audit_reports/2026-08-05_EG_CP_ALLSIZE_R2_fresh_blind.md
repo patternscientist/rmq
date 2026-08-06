@@ -8,7 +8,7 @@
 | Auditor | `EG-CP-ALLSIZE-AUD1` (fresh session, isolated worktree, no worker transcript). |
 | Exact base | `6bf28dee32c96da4705b139959fd35e4a782bac4` (tree `4d173458db3e1ad33186a2f843ee7dd5cbd87d97`). |
 | Exact target | `a0a0f92b8f9081ee59797affb5045952d9e39fbf` (report-only child of frozen repair `368b828e0711dfd10a04ca90eb19c7b0d6ccfd13`, tree `730a8746240bdf6f705d67f9283f6d9db8f25123`; proof-bearing ancestor `5bca709ad64fb4d8971db76c75da2baa24b5b214`, tree `cc75bcb8b334d2de39007a4213affa0a38deafd7`). |
-| Branch audited | `codex/eg-cp-allsize-reviewer-machine-r1` (41 commits above base). |
+| Branch audited | `codex/eg-cp-allsize-reviewer-machine-r1`, **40 commits above base** at the audited target `a0a0f92`. *(Coordinator correction, 2026-08-05: this cell originally read "41 commits above base". `git rev-list --count 6bf28dee..a0a0f92` is 40; the 41 is the distance of this report's own commit `1182848`, which adds exactly one path -- this file. The audited object is unchanged; only the count is corrected. See matrix section 9.)* |
 | Audit worktree | fresh isolated checkout of the exact target; report branch `audit/eg-cp-allsize-aud1-fresh-blind`; only this report file added. |
 | Governance | `f0c7232a8a52b8d61ead5e96d72a8a849bc094b5`, verified ancestor of the target. `scripts/project_skill_preflight.ps1 -GovernanceRef f0c7232a... -AllowNoRequiredSkills -RuntimeProjectSkills "rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint"`: PASS, `required_mode=explicit-no-role`, checkout/working/runtime catalogs all equal. No proof or prompt-authoring role skill was substituted for the audit-worker role. |
 | Acceptance criteria | The frozen coordinator amendment `EG-CP-ALLSIZE-R1` (`docs/internal/EG_CP_FINAL_FALSIFICATION_MATRIX.md` section 7): rows `R2-01`..`R2-10`, inherited rows `R2-INHERITED-FG-02/04/05/06/07/08/09/10`, the fifteen inherited invariant rows of section 7.3, ledger `R2-CHK-00`..`R2-CHK-12`, deferral boundary 7.5, and the `R2R1` repair addendum (section 8). |
@@ -225,9 +225,24 @@ rung.
 
 Coordinator disposition of this rung (acceptance decision and lifecycle
 update), then the full-node falsification remainder in the frozen order:
-the `FG-11` liveness mutation campaign and the seven outstanding registry
-cases toward full `FG-12`, followed by the `FG-14` boundary campaign and the
+the `FG-11` liveness mutation campaign and the outstanding registry work
+toward full `FG-12`, followed by the `FG-14` boundary campaign and the
 `FG-15` durable record.
+
+*(Coordinator correction, 2026-08-05: this section originally said "the seven
+outstanding registry cases". Seven is the size of the replayed `R2-ALLSIZE`
+stage, not the remainder. The exact state of the sixteen-entry frozen registry
+is:)*
+
+| Group | Count | IDs |
+| --- | --- | --- |
+| Replayed by the `R2-ALLSIZE` stage of this rung | 7 | `M03-SHAPE-PARAMETER`, `M05-SIBLING-STORE`, `M06-ANSWER-ORACLE`, `M07-DISCONNECTED-TRACE`, `M08-FORGED-PROBE-CAP`, `M11-SIBLING-PAYLOAD`, `M12-PUBLIC-TYPE-WEAKENING` |
+| Non-`R2`-stage entries still carrying `Target = $null` (commissioned surface does not yet exist; each replays `TARGET-ABSENT`) | 4 | `A02-UNREAD-CELL-EXPECTED-ACCEPT`, `M02-HOST-LONG-COUNT-MIRROR`, `M04-CANONICAL-SHAPE-BY-N`, `M13-HIDDEN-UNCOUNTED-TABLE` |
+| Non-`R2`-stage entries already runnable from the prior registry campaign | 5 | `A01-PRODUCTION-EXPECTED-ACCEPT`, `M01-WRONG-LONG-COUNT`, `M09-WRONG-CELL-CROSSING`, `M10-SPARSE-COUNT-DEPENDENCY`, `M14-LONG-COUNT-IGNORED` |
+
+*(So the outstanding `FG-12` work is: enact targets for the four null entries,
+then certify all sixteen in one campaign. The five runnable entries need
+re-certification against the current tree, not construction.)*
 
 ## 10. Durable report path
 
