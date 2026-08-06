@@ -620,12 +620,14 @@ $cases = $script:Registry
 if ($caseMode) {
   $cases = @($script:Registry | Where-Object { $_.Id -eq $Case })
 } elseif ($stageMode) {
-  $selected = New-Object System.Collections.Generic.List[object]
+  # A generic List[object] under the Windows PowerShell 5.1 dynamic binder
+  # fails to convert through `@(...)`; accumulate a plain array instead.
+  $selected = @()
   foreach ($stageId in @($script:Stages[$Stage])) {
     $entry = @($script:Registry | Where-Object { $_.Id -eq $stageId })[0]
-    $selected.Add($entry) | Out-Null
+    $selected += , $entry
   }
-  $cases = @($selected)
+  $cases = $selected
 }
 
 foreach ($entry in $cases) {
