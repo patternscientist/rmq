@@ -6985,6 +6985,9 @@ private def PackedReviewerSelectCanonicalScalarFits
         baseOccurrence <= index ∧
         PackedReviewerWordFits shape.size word ∧
         word.length <= packedBpCodeWordWidth shape.size ∧
+        basePosition / packedSelectWordSize shape.size *
+            packedSelectWordSize shape.size + word.length <=
+          2 * shape.size ∧
         PackedReviewerRequestsFitFrom shape.size
           (concreteBPNativeSuccinctRMQGlobalReadStore shape)
           packedReviewerRankNextRequest packedReviewerRankConsumeReply
@@ -7003,6 +7006,9 @@ private def PackedReviewerSelectCanonicalScalarFits
         beforeFirst <= word.length ∧
         PackedReviewerWordFits shape.size word ∧
         word.length <= packedBpCodeWordWidth shape.size ∧
+        basePosition / packedSelectWordSize shape.size *
+            packedSelectWordSize shape.size + word.length <=
+          2 * shape.size ∧
         PackedReviewerRequestsFitFrom shape.size
           (concreteBPNativeSuccinctRMQGlobalReadStore shape)
           packedReviewerRankNextRequest packedReviewerRankConsumeReply
@@ -7024,6 +7030,8 @@ private def PackedReviewerSelectCanonicalScalarFits
         (exists word,
           PackedReviewerWordFits shape.size word ∧
             word.length <= packedBpCodeWordWidth shape.size ∧
+            baseWord * packedSelectWordSize shape.size + word.length <=
+              2 * shape.size ∧
             PackedReviewerWordSelectCanonicalScalarFits shape word.length
               select) ∧
         packedReviewerWordSelectRemaining select <= 9
@@ -7053,12 +7061,14 @@ private def PackedReviewerSelectCanonicalScalarFits
         (exists word,
           PackedReviewerWordFits shape.size word ∧
             word.length <= packedBpCodeWordWidth shape.size ∧
+            baseWord * packedSelectWordSize shape.size + word.length <=
+              2 * shape.size ∧
             PackedReviewerWordSelectCanonicalScalarFits shape word.length
               select) ∧
         packedReviewerWordSelectRemaining select <= 9
   | .done value =>
       forall close, value = some close ->
-        PackedReviewerNatFits shape.size close ∧ close <= 8 * shape.size + 8
+        PackedReviewerNatFits shape.size close ∧ close <= 2 * shape.size + 1
 
 /-- The canonical select start satisfies the tower invariant. -/
 private theorem packedReviewerSelectStart_canonicalScalarFits
@@ -7233,7 +7243,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
       · exact hbaseFits
       · omega
   | denseBeforeRank invocation n index basePosition baseOccurrence word rank =>
-      obtain ⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, hrankFit, hrank, hbudget⟩ := hstate
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, -, hrankFit, hrank, hbudget⟩ := hstate
       have hinvFields :
           forall value,
             value ∈ packedReviewerInvocationNatFields invocation ->
@@ -7255,8 +7265,8 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
       · exact hrankFields value hrankMem
   | denseUptoRank invocation n index basePosition baseOccurrence beforeFirst
       word rank =>
-      obtain ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hwordLen, hrankFit,
-        hrank, hbudget⟩ := hstate
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hwordLen, -,
+        hrankFit, hrank, hbudget⟩ := hstate
       have hinvFields :
           forall value,
             value ∈ packedReviewerInvocationNatFields invocation ->
@@ -7282,7 +7292,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
       · exact hbeforeFits
       · exact hrankFields value hrankMem
   | denseFirstSelect invocation n baseWord select =>
-      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hwordLen, hselect⟩,
+      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hwordLen, -, hselect⟩,
         hremaining⟩ := hstate
       have hinvFields :
           forall value,
@@ -7346,7 +7356,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.scalar_fields
       · omega
       · exact huptoFits
   | denseSecondSelect invocation n baseWord select =>
-      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hwordLen, hselect⟩,
+      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hwordLen, -, hselect⟩,
         hremaining⟩ := hstate
       have hinvFields :
           forall value,
@@ -7545,20 +7555,20 @@ private theorem PackedReviewerSelectCanonicalScalarFits.nextRequest_operands_fit
       · exact packedReviewerSegment_le_twentyTwo_fits shape.size 0 (by omega)
       · exact hslotFits
   | denseBeforeRank invocation n index basePosition baseOccurrence word rank =>
-      obtain ⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, hrankFit, hrank,
-        hbudget⟩ := hstate
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, -, hrankFit,
+        hrank, hbudget⟩ := hstate
       simp only [packedReviewerSelectNextRequest] at hrequest
       exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
         (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
   | denseUptoRank invocation n index basePosition baseOccurrence beforeFirst
       word rank =>
-      obtain ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hwordLen, hrankFit,
-        hrank, hbudget⟩ := hstate
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hwordLen, -,
+        hrankFit, hrank, hbudget⟩ := hstate
       simp only [packedReviewerSelectNextRequest] at hrequest
       exact packedReviewerRequestsFitFrom_head_operands_fit hrankFit
         (packedReviewerRankNextRequest_remaining_pos hrequest) hrequest
   | denseFirstSelect invocation n baseWord select =>
-      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hwordLen, hselect⟩,
+      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hwordLen, -, hselect⟩,
         hremaining⟩ := hstate
       simp only [packedReviewerSelectNextRequest] at hrequest
       exact packedReviewerRequestsFitFrom_head_operands_fit hselectFit
@@ -7587,7 +7597,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.nextRequest_operands_fit
       · exact packedReviewerSegment_le_twentyTwo_fits shape.size 0 (by omega)
       · exact hslotFits
   | denseSecondSelect invocation n baseWord select =>
-      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hwordLen, hselect⟩,
+      obtain ⟨rfl, hinv, hbase, hselectFit, ⟨word, hword, hwordLen, -, hselect⟩,
         hremaining⟩ := hstate
       simp only [packedReviewerSelectNextRequest] at hrequest
       exact packedReviewerRequestsFitFrom_head_operands_fit hselectFit
@@ -7642,12 +7652,12 @@ private theorem PackedReviewerSelectCanonicalScalarFits.remaining_le_thirtyFive
   | denseFirstWord invocation n index basePosition baseOccurrence =>
       simp [packedReviewerSelectRemaining]
   | denseBeforeRank invocation n index basePosition baseOccurrence word rank =>
-      obtain ⟨-, -, -, -, -, -, -, -, -, hbudget⟩ := hstate
+      obtain ⟨-, -, -, -, -, -, -, -, -, -, hbudget⟩ := hstate
       simp only [packedReviewerSelectRemaining]
       omega
   | denseUptoRank invocation n index basePosition baseOccurrence beforeFirst
       word rank =>
-      obtain ⟨-, -, -, -, -, -, -, -, -, -, hbudget⟩ := hstate
+      obtain ⟨-, -, -, -, -, -, -, -, -, -, -, hbudget⟩ := hstate
       simp only [packedReviewerSelectRemaining]
       omega
   | denseFirstSelect invocation n baseWord select =>
@@ -7971,7 +7981,7 @@ private theorem PackedReviewerSelectCanonicalScalarFits.result_fits
     {close : Nat}
     (hresult : packedReviewerSelectResult state = some (some close)) :
     PackedReviewerNatFits shape.size close ∧
-      close <= 8 * shape.size + 8 := by
+      close <= 2 * shape.size + 1 := by
   cases state <;> simp [packedReviewerSelectResult] at hresult
   case done value =>
     subst hresult
@@ -9408,6 +9418,59 @@ private theorem packedReviewerBPWordRead_length_le
     exact List.length_take_le _ _
   · simp [hi] at hread
 
+/-- A segment-zero read never reaches past the parenthesis string: the word
+index times the word size plus the returned length stays within `2n`. -/
+private theorem packedReviewerBPWordRead_index_length_le
+    (shape : CartesianShape) {index : Nat} {word : List Bool}
+    (hread :
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 0 index =
+        some word) :
+    index * packedSelectWordSize shape.size + word.length <=
+      2 * shape.size := by
+  rw [packedReviewerGlobalReadStore_legacy shape (by omega)
+    (source := ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode) rfl,
+    packedBpCodeWords] at hread
+  unfold packedWordSlice at hread
+  by_cases hi :
+      index <
+        packedChunkCount (2 * shape.size) (packedBpCodeWordWidth shape.size)
+  · simp only [hi, if_true, Option.some.injEq] at hread
+    have hlenPayload :
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape
+            ConcreteBPNativeSuccinctRMQFlatPayloadSource.bpCode).length =
+          2 * shape.size := by
+      show shape.bpCode.length = 2 * shape.size
+      exact CartesianShape.bpCode_length shape
+    have hle :
+        index <= 2 * shape.size / packedBpCodeWordWidth shape.size := by
+      by_cases hmod :
+          2 * shape.size % packedBpCodeWordWidth shape.size = 0
+      · simp only [packedChunkCount, hmod, if_true] at hi
+        omega
+      · simp only [packedChunkCount, hmod, if_false] at hi
+        omega
+    have hmul :
+        index * packedBpCodeWordWidth shape.size <=
+          2 * shape.size / packedBpCodeWordWidth shape.size *
+            packedBpCodeWordWidth shape.size :=
+      Nat.mul_le_mul_right _ hle
+    have hdivMul :
+        2 * shape.size / packedBpCodeWordWidth shape.size *
+          packedBpCodeWordWidth shape.size <= 2 * shape.size :=
+      Nat.div_mul_le_self _ _
+    have hword :
+        word.length =
+          min (packedBpCodeWordWidth shape.size)
+            (2 * shape.size - index * packedBpCodeWordWidth shape.size) := by
+      rw [← hread]
+      rw [List.length_take, List.length_drop, hlenPayload]
+    have hws :
+        packedSelectWordSize shape.size = packedBpCodeWordWidth shape.size :=
+      rfl
+    rw [hws, hword]
+    omega
+  · simp [hi] at hread
+
 private theorem packedReviewerStartFoldBudget_fits
     (shape : CartesianShape) (word : List Bool) (limit : Nat)
     (hword : word.length <= packedBpCodeWordWidth shape.size) :
@@ -9483,7 +9546,11 @@ private theorem packedReviewerSelectAfterDenseUptoRank_fits
     (hword : PackedReviewerWordFits shape.size word)
     (hwordLen : word.length <= packedBpCodeWordWidth shape.size)
     (hbefore : beforeFirst <= word.length)
-    (hupto : uptoFirst <= word.length) :
+    (hupto : uptoFirst <= word.length)
+    (hword2n :
+      basePosition / packedSelectWordSize shape.size *
+          packedSelectWordSize shape.size + word.length <=
+        2 * shape.size) :
     PackedReviewerSelectCanonicalScalarFits shape
       (packedReviewerSelectAfterDenseUptoRank invocation shape.size index
         basePosition baseOccurrence beforeFirst word uptoFirst) := by
@@ -9530,7 +9597,7 @@ private theorem packedReviewerSelectAfterDenseUptoRank_fits
             shape.size false word (beforeFirst + (index - baseOccurrence))
         simpa [PackedReviewerSelectCanonicalScalarFits, select, hresult] using
           (⟨rfl, hinv, hbaseBound, hwitness,
-            ⟨word, hword, hwordLen, hselect⟩, hnine⟩ :
+            ⟨word, hword, hwordLen, hword2n, hselect⟩, hnine⟩ :
             PackedReviewerSelectCanonicalScalarFits shape
               (.denseFirstSelect invocation shape.size
                 (basePosition / packedSelectWordSize shape.size)
@@ -9579,7 +9646,11 @@ private theorem packedReviewerSelectAfterDenseBeforeRank_fits
     (hocc : baseOccurrence <= index)
     (hword : PackedReviewerWordFits shape.size word)
     (hwordLen : word.length <= packedBpCodeWordWidth shape.size)
-    (hbefore : beforeFirst <= word.length) :
+    (hbefore : beforeFirst <= word.length)
+    (hword2n :
+      basePosition / packedSelectWordSize shape.size *
+          packedSelectWordSize shape.size + word.length <=
+        2 * shape.size) :
     PackedReviewerSelectCanonicalScalarFits shape
       (packedReviewerSelectAfterDenseBeforeRank invocation shape.size index
         basePosition baseOccurrence word beforeFirst) := by
@@ -9607,8 +9678,8 @@ private theorem packedReviewerSelectAfterDenseBeforeRank_fits
         packedReviewerRankNextRequest packedReviewerRankConsumeReply
         hwitness hbound
       simpa [PackedReviewerSelectCanonicalScalarFits, rank, hresult] using
-        (⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hwordLen, hfit,
-          hfold, hbound⟩ :
+        (⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hwordLen, hword2n,
+          hfit, hfold, hbound⟩ :
           PackedReviewerSelectCanonicalScalarFits shape
             (.denseUptoRank invocation shape.size index basePosition
               baseOccurrence beforeFirst word
@@ -9619,7 +9690,7 @@ private theorem packedReviewerSelectAfterDenseBeforeRank_fits
       simpa [rank, hresult] using
         packedReviewerSelectAfterDenseUptoRank_fits shape invocation index
           basePosition baseOccurrence beforeFirst word uptoFirst hinv hindex
-          hbase hocc hword hwordLen hbefore hvalue.2
+          hbase hocc hword hwordLen hbefore hvalue.2 hword2n
 
 /-- Landing after the first dense BP word arrives from segment zero. -/
 private theorem packedReviewerSelectAfterDenseFirstWord_fits
@@ -9636,7 +9707,10 @@ private theorem packedReviewerSelectAfterDenseFirstWord_fits
     (hword? :
       forall word, word? = some word ->
         PackedReviewerWordFits shape.size word ∧
-          word.length <= packedBpCodeWordWidth shape.size) :
+          word.length <= packedBpCodeWordWidth shape.size ∧
+          basePosition / packedSelectWordSize shape.size *
+              packedSelectWordSize shape.size + word.length <=
+            2 * shape.size) :
     PackedReviewerSelectCanonicalScalarFits shape
       (packedReviewerSelectAfterDenseFirstWord invocation shape.size index
         basePosition baseOccurrence word?) := by
@@ -9645,7 +9719,7 @@ private theorem packedReviewerSelectAfterDenseFirstWord_fits
       intro close hclose
       simp [packedReviewerSelectAfterDenseFirstWord] at hclose
   | some word =>
-      obtain ⟨hword, hwordLen⟩ := hword? word rfl
+      obtain ⟨hword, hwordLen, hword2n⟩ := hword? word rfl
       have hfold :=
         packedReviewerRankStartFold_canonicalScalarFits shape word.length
           invocation .close word
@@ -9684,8 +9758,8 @@ private theorem packedReviewerSelectAfterDenseFirstWord_fits
             packedReviewerRankNextRequest packedReviewerRankConsumeReply
             hwitness hbound
           simpa [PackedReviewerSelectCanonicalScalarFits, rank, hresult] using
-            (⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, hfit, hfold,
-              hbound⟩ :
+            (⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, hword2n, hfit,
+              hfold, hbound⟩ :
               PackedReviewerSelectCanonicalScalarFits shape
                 (.denseBeforeRank invocation shape.size index basePosition
                   baseOccurrence word
@@ -9699,7 +9773,7 @@ private theorem packedReviewerSelectAfterDenseFirstWord_fits
           simpa [rank, hresult] using
             packedReviewerSelectAfterDenseBeforeRank_fits shape invocation
               index basePosition baseOccurrence word beforeFirst hinv hindex
-              hbase hocc hword hwordLen hvalue.2
+              hbase hocc hword hwordLen hvalue.2 hword2n
 
 /-- Landing after the second dense BP word arrives from segment zero. -/
 private theorem packedReviewerSelectAfterDenseSecondWord_fits
@@ -9716,7 +9790,10 @@ private theorem packedReviewerSelectAfterDenseSecondWord_fits
     (hword? :
       forall word, word? = some word ->
         PackedReviewerWordFits shape.size word ∧
-          word.length <= packedBpCodeWordWidth shape.size) :
+          word.length <= packedBpCodeWordWidth shape.size ∧
+          (basePosition / packedSelectWordSize shape.size + 1) *
+              packedSelectWordSize shape.size + word.length <=
+            2 * shape.size) :
     PackedReviewerSelectCanonicalScalarFits shape
       (packedReviewerSelectAfterDenseSecondWord invocation shape.size index
         basePosition baseOccurrence beforeFirst uptoFirst word?) := by
@@ -9725,7 +9802,7 @@ private theorem packedReviewerSelectAfterDenseSecondWord_fits
       intro close hclose
       simp [packedReviewerSelectAfterDenseSecondWord] at hclose
   | some word =>
-      obtain ⟨hword, hwordLen⟩ := hword? word rfl
+      obtain ⟨hword, hwordLen, hword2n⟩ := hword? word rfl
       have hcapacity := packedReviewerCellBound_lt_two_pow_width shape.size
       have htwoMul := packedTwoMul_le_reviewerBound shape.size
       have hwsSlack := packedRankWordSize_two_le_aux shape.size
@@ -9774,7 +9851,7 @@ private theorem packedReviewerSelectAfterDenseSecondWord_fits
               (index - baseOccurrence - (uptoFirst - beforeFirst))
           simpa [PackedReviewerSelectCanonicalScalarFits, select, hresult] using
             (⟨rfl, hinv, hbaseBound, hwitness,
-              ⟨word, hword, hwordLen, hselect⟩, hnine⟩ :
+              ⟨word, hword, hwordLen, hword2n, hselect⟩, hnine⟩ :
               PackedReviewerSelectCanonicalScalarFits shape
                 (.denseSecondSelect invocation shape.size
                   (basePosition / packedSelectWordSize shape.size + 1)
@@ -9803,7 +9880,6 @@ private theorem packedReviewerSelectAfterDenseSecondWord_fits
                 intro close hclose
                 simp only [Option.some.injEq] at hclose
                 subst close
-                rw [Nat.add_mul]
                 constructor
                 · simp only [PackedReviewerNatFits]
                   omega
@@ -9840,7 +9916,8 @@ private theorem packedReviewerSelectConsume_denseFirstWord_fits
   apply packedReviewerSelectAfterDenseFirstWord_fits shape invocation index
     basePosition baseOccurrence _ hinv hindex hbase hocc
   intro word hread
-  refine ⟨?_, packedReviewerBPWordRead_length_le shape hread⟩
+  refine ⟨?_, packedReviewerBPWordRead_length_le shape hread,
+    packedReviewerBPWordRead_index_length_le shape hread⟩
   exact packedReviewerGlobalReadStore_word_fits shape
     { invocation := invocation
       site := .denseBPWord (basePosition / packedSelectWordSize shape.size)
@@ -9875,7 +9952,8 @@ private theorem packedReviewerSelectConsume_denseSecondWord_fits
   apply packedReviewerSelectAfterDenseSecondWord_fits shape invocation index
     basePosition baseOccurrence beforeFirst uptoFirst _ hinv hindex hbase hocc
   intro word hread
-  refine ⟨?_, packedReviewerBPWordRead_length_le shape hread⟩
+  refine ⟨?_, packedReviewerBPWordRead_length_le shape hread,
+    packedReviewerBPWordRead_index_length_le shape hread⟩
   exact packedReviewerGlobalReadStore_word_fits shape
     { invocation := invocation
       site :=
@@ -9897,6 +9975,10 @@ private theorem packedReviewerSelectConsume_denseBeforeRank_fits
     (hocc : baseOccurrence <= index)
     (hword : PackedReviewerWordFits shape.size word)
     (hwordLen : word.length <= packedBpCodeWordWidth shape.size)
+    (hword2n :
+      basePosition / packedSelectWordSize shape.size *
+          packedSelectWordSize shape.size + word.length <=
+        2 * shape.size)
     (hbudget : packedReviewerRankRemaining rank <= 8)
     (hrankFit :
       PackedReviewerRequestsFitFrom shape.size
@@ -9953,13 +10035,13 @@ private theorem packedReviewerSelectConsume_denseBeforeRank_fits
           ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
             request.segment request.index)) with
   | none =>
-      exact ⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, hfit', hrank',
-        hbudget'⟩
+      exact ⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, hword2n, hfit',
+        hrank', hbudget'⟩
   | some beforeFirst =>
       have hvalue := hrank'.result_fits hresult
       exact packedReviewerSelectAfterDenseBeforeRank_fits shape invocation
         index basePosition baseOccurrence word beforeFirst hinv hindex hbase
-        hocc hword hwordLen hvalue.2
+        hocc hword hwordLen hvalue.2 hword2n
 
 /-- One canonical reply preserves the second dense fold arm. -/
 private theorem packedReviewerSelectConsume_denseUptoRank_fits
@@ -9976,6 +10058,10 @@ private theorem packedReviewerSelectConsume_denseUptoRank_fits
     (hbefore : beforeFirst <= word.length)
     (hword : PackedReviewerWordFits shape.size word)
     (hwordLen : word.length <= packedBpCodeWordWidth shape.size)
+    (hword2n :
+      basePosition / packedSelectWordSize shape.size *
+          packedSelectWordSize shape.size + word.length <=
+        2 * shape.size)
     (hbudget : packedReviewerRankRemaining rank <= 8)
     (hrankFit :
       PackedReviewerRequestsFitFrom shape.size
@@ -10032,13 +10118,13 @@ private theorem packedReviewerSelectConsume_denseUptoRank_fits
           ((concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
             request.segment request.index)) with
   | none =>
-      exact ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hwordLen, hfit',
-        hrank', hbudget'⟩
+      exact ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hwordLen,
+        hword2n, hfit', hrank', hbudget'⟩
   | some uptoFirst =>
       have hvalue := hrank'.result_fits hresult
       exact packedReviewerSelectAfterDenseUptoRank_fits shape invocation index
         basePosition baseOccurrence beforeFirst word uptoFirst hinv hindex
-        hbase hocc hword hwordLen hbefore hvalue.2
+        hbase hocc hword hwordLen hbefore hvalue.2 hword2n
 
 /-- One canonical reply preserves an in-word select arm. -/
 private theorem packedReviewerSelectConsume_denseSelect_fits
@@ -10054,6 +10140,9 @@ private theorem packedReviewerSelectConsume_denseSelect_fits
         2 * shape.size + 1 + packedSelectWordSize shape.size)
     (hword : PackedReviewerWordFits shape.size word)
     (hwordLen : word.length <= packedBpCodeWordWidth shape.size)
+    (hword2n :
+      baseWord * packedSelectWordSize shape.size + word.length <=
+        2 * shape.size)
     (hselect :
       PackedReviewerWordSelectCanonicalScalarFits shape word.length select)
     (hselectFit :
@@ -10157,7 +10246,7 @@ private theorem packedReviewerSelectConsume_denseSelect_fits
               request.segment request.index)) with
     | none =>
         exact ⟨rfl, hinv, hbaseBound, hfit',
-          ⟨word, hword, hwordLen, hselect'⟩, hnine'⟩
+          ⟨word, hword, hwordLen, hword2n, hselect'⟩, hnine'⟩
     | some localResult => exact hdone localResult hresult
   · simp only [packedReviewerSelectConsumeReply]
     cases hresult :
@@ -10167,7 +10256,7 @@ private theorem packedReviewerSelectConsume_denseSelect_fits
               request.segment request.index)) with
     | none =>
         exact ⟨rfl, hinv, hbaseBound, hfit',
-          ⟨word, hword, hwordLen, hselect'⟩, hnine'⟩
+          ⟨word, hword, hwordLen, hword2n, hselect'⟩, hnine'⟩
     | some localResult => exact hdone localResult hresult
 
 /-- One canonical reply preserves the whole select tower invariant. -/
@@ -10218,26 +10307,27 @@ private theorem PackedReviewerSelectCanonicalScalarFits.consume
         index basePosition baseOccurrence hinv hindex hbase hocc hrequest
   | denseBeforeRank invocation n index basePosition baseOccurrence word
       rank =>
-      obtain ⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, hrankFit,
-        hrank, hbudget⟩ := hstate
+      obtain ⟨rfl, hinv, hindex, hbase, hocc, hword, hwordLen, hword2n,
+        hrankFit, hrank, hbudget⟩ := hstate
       simp only [packedReviewerSelectNextRequest] at hrequest
       exact packedReviewerSelectConsume_denseBeforeRank_fits shape invocation
         index basePosition baseOccurrence word rank hinv hindex hbase hocc
-        hword hwordLen hbudget hrankFit hrank hrequest
+        hword hwordLen hword2n hbudget hrankFit hrank hrequest
   | denseUptoRank invocation n index basePosition baseOccurrence beforeFirst
       word rank =>
       obtain ⟨rfl, hinv, hindex, hbase, hocc, hbefore, hword, hwordLen,
-        hrankFit, hrank, hbudget⟩ := hstate
+        hword2n, hrankFit, hrank, hbudget⟩ := hstate
       simp only [packedReviewerSelectNextRequest] at hrequest
       exact packedReviewerSelectConsume_denseUptoRank_fits shape invocation
         index basePosition baseOccurrence beforeFirst word rank hinv hindex
-        hbase hocc hbefore hword hwordLen hbudget hrankFit hrank hrequest
+        hbase hocc hbefore hword hwordLen hword2n hbudget hrankFit hrank
+        hrequest
   | denseFirstSelect invocation n baseWord select =>
       obtain ⟨rfl, hinv, hbaseBound, hselectFit, ⟨word, hword, hwordLen,
-        hselect⟩, hnine⟩ := hstate
+        hword2n, hselect⟩, hnine⟩ := hstate
       simp only [packedReviewerSelectNextRequest] at hrequest
       exact (packedReviewerSelectConsume_denseSelect_fits shape invocation
-        baseWord select word hinv hbaseBound hword hwordLen hselect
+        baseWord select word hinv hbaseBound hword hwordLen hword2n hselect
         hselectFit hnine hrequest).1
   | denseSecondWord invocation n index basePosition baseOccurrence
       beforeFirst uptoFirst =>
@@ -10247,10 +10337,10 @@ private theorem PackedReviewerSelectCanonicalScalarFits.consume
         hbase hocc hrequest
   | denseSecondSelect invocation n baseWord select =>
       obtain ⟨rfl, hinv, hbaseBound, hselectFit, ⟨word, hword, hwordLen,
-        hselect⟩, hnine⟩ := hstate
+        hword2n, hselect⟩, hnine⟩ := hstate
       simp only [packedReviewerSelectNextRequest] at hrequest
       exact (packedReviewerSelectConsume_denseSelect_fits shape invocation
-        baseWord select word hinv hbaseBound hword hwordLen hselect
+        baseWord select word hinv hbaseBound hword hwordLen hword2n hselect
         hselectFit hnine hrequest).2
   | done value => simp [packedReviewerSelectNextRequest] at hrequest
 
