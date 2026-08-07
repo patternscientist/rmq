@@ -199,10 +199,30 @@ and equals `352`.
 
 ### U3. Reprove One Principled All-Size Cost Bound
 
-Status: **candidate complete after the A05 publication-topology correction on
-`codex/rmq-u3-principled-allsize-cost`**; the next fresh blind exact-commit audit
-remains coordinator-owned. A05 report commit `64cfd2d...` was read directly and
-was not merged.
+Status (updated 2026-08-07): **integrated and kernel-checked on mainline;
+acceptance disposed by subsumption into the V1 release-candidate audit**
+(`WDD-20260807-014`). No standalone fresh-blind U3 audit will be commissioned.
+
+Why the earlier status could not be discharged as written. It named a candidate
+on `codex/rmq-u3-principled-allsize-cost`, pinned in
+`RMQ_ENDGAME_ROADMAP.md` as `880dfdf`. That commit is **not an ancestor of
+mainline** and proves
+`concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 76`, a numeral
+this repository records as a retired cap. The arithmetic stated below (`210`)
+therefore contradicted the commit the node pinned, and no exact commit
+satisfying the node existed for an auditor to be sent at. What actually landed
+is the sibling lineage `c2694b7` -> `8859911` -> `95b5bc2`, followed by the
+recharges `d1d645e` (`76` -> `142`), `f1c8af3` (`-> 207`) and `f6000c3`
+(`-> 210`); mainline proves `= 210` at
+`RMQ/Core/SuccinctFinalRAM.lean`. Each numeral in that sequence was read
+directly from the named commit.
+
+The unmerged enforcement machinery carried by `880dfdf` but never landed --
+roughly 234 additional lines of `scripts/paper_topology_lint.ps1`, 65 of
+`scripts/claim_drift_scan.ps1`, `docs/internal/PUBLICATION_DOCUMENT_ROLES.json`,
+and the W22 acceptance matrix -- is recorded as **deliberately not adopted**;
+see `WDD-20260807-014` for the reasoning and for what would justify revisiting
+it. A05 report commit `64cfd2d...` was read directly and was not merged.
 
 The unchanged uniform route now has the principled checked charged-trace sum
 `210 = 2*35 + (2*11 + 2*37 + 33) + 11`, proved by

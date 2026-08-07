@@ -137,7 +137,7 @@ the next theorem target but cannot satisfy an acceptance row.
 | Governance | `f0c7232a8a52b8d61ead5e96d72a8a849bc094b5` | Governs skills and workflow policy |
 | Main | `bc5851ad7a0e6a14cfab89745b0fd0707cf6a0e4`, tree `e182bd19531060a422e881ce8889279a1f0494bf` | Clean governed base for this roadmap |
 | U2 | `4f7ec8be47ecd65b2859a3784fadeab48a629e4e` | Accepted uniform directory route |
-| U3 | candidate `880dfdfd7409d5dbdfd226921a701055f3ec0fd7`; migration `f6000c3ee1cc8d5b04201257b8226bb7952ef051`; integration `0b8490cb1dee4f02e7c72a5e097c1fa78361c588` | Kernel-checked `210` chain is integrated; roadmap node remains candidate/open pending fresh-blind acceptance |
+| U3 | landed lineage `c2694b7` -> `8859911` -> `95b5bc2`, then the recharges `d1d645e` (`142`), `f1c8af3` (`207`), `f6000c3` (`210`); integration `0b8490cb1dee4f02e7c72a5e097c1fa78361c588`. Superseded sibling: `880dfdfd7409d5dbdfd226921a701055f3ec0fd7` (see below) | Kernel-checked `210` chain is integrated and is what mainline proves. Node **disposed 2026-08-07** by subsumption into the V1 release-candidate audit scope (`WDD-20260807-014`); it is no longer awaiting a standalone fresh-blind audit |
 | M1 | candidate `977a4df8b5d9e908fe66d012dd242006790ebaf3`, audit report commit `e7c936d8a070a1db26e87b60c656044ee8a37b56` | Accepted and integrated under supplied-store scope |
 | E1 B1 shared image | candidate `1727de15f2030bfb9296a9b31508bc00581aa33a`; audit `728174e2c049a29acf19d34661dfec6ebcde49fb` | Accepted branch-local validation prerequisite, off-main at `bc5851ad...`; not a `2n + o(n)` allocated packed representation |
 | PRELOGIC/PRECUR/PREHIST | `d3a23540b124e8c7b9a5306d5c616954372e56d2`, `517317117c07858ebd8be6f71bc8c73ef353c935`, `50c5f8ccf7be83a56b90a6c29142ac32860f0a27` | Accepted branch-local research reports, off-main at `bc5851ad...`; not route verdicts or integrated theorem surfaces |
@@ -819,7 +819,16 @@ or fully allocated `2n + o(n)` storage.
 - [x] Stage F returned `FEASIBILITY_PASS` on 2026-08-06 at repaired proof tree
       `174989f26a681a3a04a74e0f3d8f2d414f915075`; the Stage-A matrix is
       authorized but not yet frozen.
-- [ ] U3 acceptance status resolved; no "certified floor" overstatement.
+- [x] U3 acceptance status resolved on 2026-08-07 by **subsumption**, not by a
+      standalone audit: the U3 propositions are folded into the V1
+      release-candidate audit scope (`WDD-20260807-014`). The previously pinned
+      candidate `880dfdf` was found to be **off-main** (not an ancestor of
+      `745a3c5`) and to prove `= 76`, a numeral this repository lists as
+      retired, so no exact commit satisfying the node as written existed to
+      audit. Mainline proves `= 210`. No "certified floor" wording is used
+      anywhere; U3 is described as integrated and kernel-checked, and its
+      acceptance is carried by the release audit rather than claimed
+      separately.
 - [x] Selected theorem surface reaches candidate complete: Stage-A worker rung
       `A01`-`A12` on the combined `PackedReviewerArchitectureCapstone`,
       candidate `ec35b5d9f513f639cb75044a5d1ea52e8dfc3d23`.

@@ -8200,3 +8200,91 @@ Alternatives rejected: landing the sweep with a follow-up ledger commit
 failing its own gate); disabling or relaxing the clean-baseline check to make
 a local run pass (weakening a check to clear it is the failure mode the check
 exists to catch).
+
+## WDD-20260807-014 -- dispose the U3 node by subsumption, and repair its pin
+
+Status: Accepted (coordinator disposition).
+
+Date: 2026-08-07
+
+Context: the roadmap checklist carried "U3 acceptance status resolved; no
+'certified floor' overstatement", and `RMQ_ENDGAME_ROADMAP.md:565-567` offered
+two paths: commission the missing U3 fresh-blind exact-commit acceptance audit,
+or freeze an explicit release-audit scope that genuinely reconstructs the whole
+current U3/`210` surface.
+
+Finding that forced the decision: **path 1 was not executable.** The node pinned
+candidate `880dfdfd7409d5dbdfd226921a701055f3ec0fd7`. Verified directly:
+
+- `git merge-base --is-ancestor 880dfdf 745a3c5` returns false -- it is **not on
+  mainline**;
+- `git show 880dfdf:RMQ/Core/SuccinctFinalRAM.lean` proves
+  `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 76`, while
+  mainline proves `= 210`. `76` is a numeral this repository lists as a retired
+  cap, and the claim-drift policy guards it as such.
+
+So the node pinned a commit that is absent from the release history and
+contradicts the arithmetic the node itself states. An auditor sent at it would
+have spent a full cycle rediscovering exactly that and returned a finding
+against the pin rather than against the mathematics.
+
+The lineage that actually landed, each numeral read from the named commit:
+
+| commit | cost proved |
+| --- | --- |
+| `880dfdf` (off-main sibling) | `76` |
+| `d1d645e` | `142` |
+| `f1c8af3` | `207` |
+| `f6000c3` | `210` |
+| `745a3c5` (mainline) | `210` |
+
+Decision, two parts.
+
+1. **Repair the pin.** `RMQ_ENDGAME_ROADMAP.md` and `RMQ_FINAL_ROADMAP.md` now
+   name the landed lineage `c2694b7` -> `8859911` -> `95b5bc2` plus the three
+   recharges, and record `880dfdf` as a superseded sibling rather than as the
+   candidate. Both files are governed current-fact surfaces, so this edit runs
+   under the strict claim-drift and strict design-decision gates.
+
+2. **Dispose the node by subsumption**, not by a standalone audit. The U3
+   propositions are folded into the V1 release-candidate audit scope. This is
+   the governing policy's own named alternative (`RMQ_ENDGAME_ROADMAP.md:792`;
+   C06 standing disposition 3), so it is compliance rather than a shortcut.
+
+Why subsumption is the right call, beyond path 1 being unexecutable:
+
+- The expensive reconstruction is already done and still valid. The M1
+  fresh-blind audit independently reconstructed the `210` decomposition, the
+  same-trace weight = length = cost chain, and the public `<= 210` bound. A new
+  U3 audit would re-derive the same propositions from the same bytes.
+- U3 is no longer the load-bearing route. Stage A is accepted, and its `427`
+  cap uses a **different** `210` -- the packed controller's own structural fuel
+  (`ReviewerWholeProtocol.lean`), not the U3 charged-trace cost. Grep of
+  `PackedCellProbe/` finds zero references to `SuccinctClassic.queryCost` or
+  `nonSyntheticWeight`. The two `210`s are numerically equal and provably
+  independent; that coincidence is a documentation hazard and is now stated
+  wherever both appear.
+- U3 nevertheless remains on the public surface -- `RMQ/Headlines/RMQ.lean`
+  still states the `210` bound and `427` appears on no public surface -- so it
+  cannot simply be dropped. Subsumption keeps it audited without pretending a
+  standalone acceptance happened.
+
+Unmerged enforcement machinery, disposed explicitly rather than left silent:
+`880dfdf` carries roughly 234 extra lines of `paper_topology_lint.ps1`, 65 of
+`claim_drift_scan.ps1`, `PUBLICATION_DOCUMENT_ROLES.json`, and the W22
+acceptance matrix, none of which landed. These are **not adopted**. Adopting
+lint machinery from an off-main commit whose proof content is two recharges
+stale would import rules written against a `76`-era surface. If any of it is
+wanted, it should be re-derived against the current surface as its own governed
+change.
+
+Consequence for the V1 freeze: the release-candidate audit scope must name the
+U3 propositions explicitly. If that audit is commissioned without them, this
+disposition is void and path 1 returns -- against the repaired lineage, not
+against `880dfdf`.
+
+Alternatives rejected: commissioning an audit of mainline "as U3" (that is a
+release audit wearing a U3 label, and would double-count the same work);
+re-pinning to `880dfdf` and auditing it (audits a commit that is not in the
+release and proves a retired numeral); deleting the node (U3's `210` is still
+the public bound, so silence would be an overstatement by omission).
