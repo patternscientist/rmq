@@ -10615,3 +10615,43 @@ the Lean build until updated, after which 51 public lines across 15 registry
 surfaces would silently keep asserting `210` with green CI. Guarding a retired
 value needs only a negative grep; guarding a current one needs a positive
 doc-versus-Lean equality check, which this scanner's architecture cannot express.
+
+## DD-20260807-088 -- close the Lean docstring half of the claim inventory
+
+Status: Accepted for `codex/claim-sync-r1`.
+
+Date: 2026-08-07
+
+Context: the roadmap checklist pairs the 18-surface registry with a "public Lean
+comment/docstring inventory" (`RMQ_ENDGAME_ROADMAP.md:835`). That half was open,
+and it is not covered by any existing check: `claim_drift_scan.ps1` walks only
+`README.md`, `artifact/`, and `docs/` (`:7`), so `RMQ/**/*.lean` sits outside
+every scan root and no gate reads Lean docstrings for claim language.
+
+Inventory performed: every comment and docstring line under `RMQ/` was swept for
+`O(1)`, `constant[- ]time`, `word-RAM time`, `after preprocessing`, `linear
+preprocessing`, and `wall-clock`. Result: **exactly one** offending line in the
+entire tree, and **zero** in `RMQ/Headlines/`, the most public surface.
+
+Decision: repair the one line. `RMQ/Core/GenericSelect/Family.lean:233` read
+
+```
+/-- Public plain-bitvector family: `n + o(n)` payload and constant-time queries. -/
+```
+
+"constant-time" is the wrong unit, and the theorem immediately below the
+docstring bounds `(directory.accessQueryCosted i).cost`, a modeled cost, not a
+time. Every documentation surface describing this same family already uses the
+house term -- `artifact/CLAIMS.md:101` "constant modeled query cost",
+`docs/PAPER_CLAIM_CORRESPONDENCE.md:100` "constant modeled access/rank/select",
+`README.md:109` likewise. The docstring now matches them.
+
+Verification: `lake build RMQ.Core.GenericSelect.Family` green (260 s). The edit
+is confined to a docstring; no declaration, statement, or proof term changes.
+
+Consequence for the checklist: the Lean docstring half of the synchronization
+item is closed, with the finding that it was nearly clean already. The scan-root
+gap remains -- nothing prevents a future Lean docstring from drifting, since the
+scanner cannot see `RMQ/**`. That is recorded here rather than fixed, because
+extending the scan roots changes a gate and needs its own workflow decision
+alongside the `210`/`427` enforcement gap in `DD-20260807-087`.

@@ -230,7 +230,8 @@ theorem sparseExceptionSelectSource_rankSelectSpec_adapter_profile
             RMQ.Succinct.select target bits occurrence) := by
   exact jacobsonClarkBitVectorRankSelectDirectory_profile bits
 
-/-- Public plain-bitvector family: `n + o(n)` payload and constant-time queries. -/
+/-- Public plain-bitvector family: `n + o(n)` payload and constant modeled
+query cost. -/
 def jacobsonClarkRankSelectFamily :
     RankSelectSpec.BitVectorRankSelectFamily
       jacobsonClarkRankSelectOverhead
