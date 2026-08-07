@@ -10655,3 +10655,68 @@ gap remains -- nothing prevents a future Lean docstring from drifting, since the
 scanner cannot see `RMQ/**`. That is recorded here rather than fixed, because
 extending the scan roots changes a gate and needs its own workflow decision
 alongside the `210`/`427` enforcement gap in `DD-20260807-087`.
+
+## DD-20260807-089 -- split InteriorDirectory.lean behind an unchanged hub
+
+Status: Accepted for `codex/refactor-wave3-split`.
+
+Date: 2026-08-07
+
+Context: `InteriorDirectory.lean` was 7419 lines, the largest file in the tree
+not pinned by any gate script. An earlier inventory deferred all nine candidate
+file splits past V1 on the grounds that Lean 4's `private` is module-scoped, so
+any split forces private declarations into the public surface. That reasoning
+was applied uniformly to all nine and is wrong for this file.
+
+Decision: split at the two existing top-level section markers -- line 4178
+(`/-! ### Charged sparse-level table ...`) and line 6158 (`/-! ### Sparse-level
+returned-value dependency witness (B7) -/`) -- into
+
+| module | lines |
+| --- | --- |
+| `InteriorDirectory/Base.lean` | 4179 |
+| `InteriorDirectory/SparseLevelWidth.lean` | 1998 |
+| `InteriorDirectory/ValueDependency.lean` | 1277 |
+| `InteriorDirectory.lean` (hub) | 14 |
+
+The hub keeps its module name and path and imports `.ValueDependency`, which
+chains to `.SparseLevelWidth` and `.Base`. Lean imports are transitive, so every
+downstream `import ... InteriorDirectory` resolves exactly as before. **No call
+site, and no other file, changes.**
+
+Why this costs zero public surface, established mechanically rather than by
+inspection. The file has 25 `private` declarations. For each, every reference in
+the file was located and compared against the seam positions:
+
+- `3891`, `3905` -> references at `3911`, `3958`, both below seam 4178;
+- `4200`-`4421` (nine declarations) -> all references in `4219`-`4527`, between
+  the two seams;
+- `6435`-`7113` (fourteen declarations) -> all references in `6482`-`7130`,
+  above seam 6158.
+
+**Privates crossing a seam: 0.** Nothing is forced public.
+
+Why the import chain is sound by construction: Lean requires a definition to
+precede its use within a file, so preserving source order guarantees that part
+*N* references only parts below it. Forward references are impossible, so the
+chain `Base <- SparseLevelWidth <- ValueDependency` cannot be cyclic or
+ill-ordered. This is a structural argument, not an empirical one.
+
+Content preservation was verified independently of the build: the concatenated
+bodies of the three parts were diffed against the original body, giving 7083
+non-blank lines on both sides, identical and in order.
+
+The file has no `attribute [local simp]`, `open ... in`, `set_option ... in`,
+`section`, or top-level `variable` binder; its single file-scoped `open
+SuccinctSpace` is replicated in each part. No lakefile change is needed --
+`lean_lib RMQ` resolves modules through the import graph from `RMQ.lean`, and
+the module count rose 314 -> 317 on the first build, confirming pickup.
+
+Scope, stated so this is not read as a general green light: of the five large
+unpinned files examined, only this one and `RelativeSummary.lean` (safe at a cut
+on line 1441) are clean. `ReviewerLogicalSimulation.lean` would force 43
+private->public promotions, because its driver definitions -- notably
+`packedReviewerDriveComponent` -- are referenced from every one of its ten
+regions. `ConcreteDirectoryRAMStoreParam.lean` and `ConcreteDirectoryRAM.lean`
+have no internal section markers at all, so any cut would be arbitrary
+line-count bisection rather than refactoring, and neither is taken.
