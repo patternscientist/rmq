@@ -8432,3 +8432,50 @@ afterwards.
 This converts the repository's most quotable architectural claim from an
 assertion into a checked property, which is worth more before a freeze than
 after, because after the freeze the claim is what reviewers will cite.
+
+## WDD-20260807-018 -- draft the V1 release-candidate audit prompt without launching it
+
+Status: Accepted (V1 freeze, phase 1).
+
+Date: 2026-08-07
+
+Context: the freeze's terminal requirement is a fresh-blind audit **of the exact
+release candidate**. The existing Stage-A audit no longer satisfies it: it
+targeted `ec35b5d9`, re-certified at `a8d2a5c`, and ten commits have landed
+since -- five of which delete modules, remove 2,276 lines, relocate theorems,
+replace proof bodies, or split a module. Each preserved public statements
+byte-identically and passed the gate and both CI workflows, so the mathematics
+is unaffected. The process requirement is not: the audited tree no longer
+exists.
+
+Decision: write the commissioning prompt now, while the reasoning is fresh, but
+**do not launch it**, and leave the commit as the literal placeholder `<RC-SHA>`
+with the preconditions listed in its section 0.
+
+Why a draft rather than a launch. Any tree-touching change landing after the
+audit invalidates it again, exactly as the refactor wave invalidated the last
+one. Two such changes are still outstanding -- merging `paper/`, which is absent
+from `main` while the freeze requires a placeholder-free PDF build, and the
+union-find cordon. Launching before those land would spend an audit cycle to
+produce a certificate for a tree nobody intends to ship.
+
+Three properties the prompt is built around, each from a defect this project
+actually hit:
+
+- **Gates are claims to falsify, not evidence.** The auditor is told that
+  `claim_drift_scan.ps1` reporting zero strict failures is not evidence the
+  claims are accurate, and is pointed at the open `210`/`427` enforcement gap
+  (`DD-20260807-087`) to confirm or refute independently.
+- **Verify the coincidence.** Two numerically identical `210`s sit on the
+  release path -- the charged-trace cost and the packed controller's structural
+  fuel. Their independence is a claim, and the prompt requires it to be checked
+  adversarially rather than assumed.
+- **Stated limits are mandatory.** The report must say what could not be
+  verified; an audit with no stated limits is not credible.
+
+The prompt also carries the U3 subsumption: `RC-02` folds the U3 propositions
+in, and says explicitly that if the auditor cannot discharge it, disposition
+`WDD-20260807-014` is void.
+
+Section 7 preserves the union-find cordon analysis, including the trap that
+broke the first attempt, so the next attempt does not rediscover it.
