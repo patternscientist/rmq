@@ -1601,3 +1601,51 @@ RMQ semantics. A skeptical graduate student should next ask whether S1 can
 connect this accepted supplied-store theorem to a raw serialized payload
 without weakening the same-object and returned-value dependencies; that is a
 separate deferred architecture task, not residual M1 work.
+
+## 2026-08-06 -- EG-CP Stage A candidate: one combined packed-architecture proposition (worker rung A01-A12)
+
+Conceptually, Stage A consolidates the accepted packed reviewer machine into
+one public object: `PackedReviewerArchitectureCapstone`, a thirty-eight-field
+proposition quantified over every input list and every endpoint pair, in
+which the same literal `header ++ buildPayload ++ padding` memory carries the
+complete allocated `2n + o(n)` capacity, the explicit all-size width bounds
+(with kernel-checked small-size literals `10/14/14/15`), the counted-header
+decoding and its universal address liveness (the frozen `10 -> 37` fixture
+included), the aligned fixed-width probe semantics with the exact
+two-probe crossing expansion, the derived `427 = 1 + 2*3 + 2*210` probe cap,
+the guarded leftmost half-open correctness with a universal leftmost-tie
+connection, the exact invalid-domain behavior, the closed
+`(n, left, right)`-only controller boundary, and the reachable-state
+invariant with decisive-corruption, unread-cell, and metadata-completion
+controls -- with an independent validation root restating every field
+literally so no conjunct can be weakened without a named build failure, and
+a 21-case frozen replay campaign re-certifying every bypass family.
+
+In plain English: for any integer list we build one packed bit array; a
+fixed controller that sees only the length, the endpoints, and the words its
+probes return answers every valid range-minimum query with the leftmost
+minimum's index in at most 427 probes into that one array, whose total
+allocated size is 2n plus a checked lower-order term; invalid queries return
+"no answer" without probing; and nothing outside that array feeds the
+answer -- corrupting what was read moves the answer, corrupting what was
+proved unread changes nothing.
+
+Live assumptions: the cell-probe model (charged probes, free computation
+between probes -- not word-RAM instruction time, not preprocessing time, not
+measured runtime); the project charged-event cost semantics with `210` as
+logical fuel and `427` as an upper bound on attempted physical probes (no
+attainment claim); the Mathlib-free Lean/Std plus `omega` trust base, with
+the new public theorems pinned to `[propext, Classical.choice, Quot.sound]`;
+and a proved-but-loose `o(n)` envelope.
+
+Downstream consumer: the independent fresh-blind `EG-CP-A13` capstone audit
+of the exact candidate lineage, then coordinator reconstruction; public-claim
+synchronization, `S1` bit-addressed probe accounting, and `V1` remain
+separate open nodes and are not claimed.
+
+A skeptical graduate student should next ask whether the thirty-eight
+conjuncts are the complete closure of "architecture acceptance" -- whether
+any reviewer-facing property of the packed machine is missing from the
+combined proposition -- and whether the loose `o(n)` envelope and the `427`
+constant survive comparison against Fischer-style constants once `S1` fixes
+bit-level probe accounting.

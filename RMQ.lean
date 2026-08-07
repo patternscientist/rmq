@@ -66,6 +66,7 @@ import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.PhysicalRead
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ExecutedUniverse
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Boundaries
 import RMQ.Validation.EGCPFinalFalsification
+import RMQ.Validation.EGCPStageA
 import RMQ.Core.SuccinctFinalModelAdequacy
 import RMQ.Core.SuccinctRankSelect
 import RMQ.Core.BPCloseNavigation
@@ -128,3 +129,4 @@ import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerLogicalSimulation
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerControllerProof
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerControllerStateProof
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerCapstone
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerArchitectureCapstone

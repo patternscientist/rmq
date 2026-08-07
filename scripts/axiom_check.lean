@@ -1222,3 +1222,13 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerDecisiveCellConnection
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerUnreadCellAccept
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerNoMetadataCompletion
+
+-- EG-CP Stage-A architecture capstone: public axiom inventory.
+-- The combined thirty-eight-field architecture proposition and its producer,
+-- the universal leftmost-tie connection, the reachable-state invariant at the
+-- literal run, and the independent expected-type consumer of the validation
+-- root.
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerArchitectureCapstone_holds
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunLeftmostTie
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunReachableInvariant
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.Validation.egcpStageAArchitectureFactsExact

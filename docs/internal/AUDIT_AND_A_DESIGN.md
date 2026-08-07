@@ -723,3 +723,136 @@ The next governed worker must freeze the exact `A01`..`A13` matrix before
 proof edits, map every row to the accepted Stage-F evidence, close `A01`..
 `A12` on one combined public proposition, and leave `A13` for a fresh-blind
 exact-commit audit plus coordinator reconstruction.
+
+## 2026-08-06 (WORKER ROUND) -- EG-CP-STAGEA-CLOSE-R1: Stage-A matrix frozen; A01-A12 candidate closed on one combined proposition
+
+Worker round on branch `codex/eg-cp-stagea-close-r1` from exact accepted
+Stage-F `FEASIBILITY_PASS` base `270d78559adc33fe872b6d17bd54d8e51567a605`
+(tree `7b872cf144503cebf61097f857fa779081076107`), preflighted at governance
+`f0c7232a8a52b8d61ead5e96d72a8a849bc094b5`.
+
+Round shape: (1) matrix-freeze commit
+`f4107cd15173fef690ba05e51becb9c65b6c7d60` froze `EG-CP-A01`..`EG-CP-A13`
+(roadmap sentences verbatim), seven inherited invariants, five
+harness/integrity contracts, the 38-field combined-proposition shape, the
+inherited `[7, 3, 3]` fixture, and the ordered 21-case replay registry
+(2 ACCEPT / 19 REJECT) before any Lean or replay edit, with
+`WDD-20260806-008` for the new runner contract.  (2) Frozen proof/replay
+commit `08dd29d4d72047c9da1f938d411d65264bdfd2b2` landed
+`ReviewerArchitectureCapstone.lean` (the 38-field
+`PackedReviewerArchitectureCapstone` and its producer, plus the structural
+`1 + 2*3 + 2*210 = 427` decomposition, the universal leftmost-tie bridge,
+the invalid-domain reference agreement, and the reachable-state invariant at
+the literal run), the independent validation root
+`RMQ/Validation/EGCPStageA.lean` (literal 38-field restatement, signature
+pins, kernel-checked width literals `10/14/14/15`, boundary campaign,
+fixture re-pins), the Stage-A runner `scripts/eg_cp_stagea_replay.ps1`,
+`RMQ.lean`/`scripts/axiom_check.lean` registrations, `DD-20260806-079`, and
+`WDD-20260806-009`.  (3) The campaign and final gates ran once on the frozen
+tree; the report commit is documentation-only on top of it.
+
+Key receipts: focused and whole-library builds green; four curated Stage-A
+axiom entries on the standard axioms; the full 21-case campaign as
+commissioned at the frozen surfaces with SHA-verified restoration and a
+terminal clean tree; selector/integrity/self-test boundary controls PASS;
+strict claim-drift and strict design checks PASS; frozen-row byte-integrity
+46/46 with firing negative controls; `git diff --check` clean over the
+committed range; the inherited Stage-F runner byte-identical to the base.
+Full receipts: `docs/internal/EG_CP_STAGEA_RESULT.md` and the matrix
+section-8 ledger.
+
+Worker status: `CANDIDATE_COMPLETE` for the Stage-A worker rung `A01`-`A12`
+only.  `EG-CP-A13-CAPSTONE-AUDIT` is OPEN/AUDITOR_OWNED; the verdict-free
+packet is `docs/internal/audit_packets/EG_CP_STAGEA_AUD1_PACKET.md`.  No
+architecture acceptance, merge readiness, integration, push, public-claim
+synchronization, `S1`, or `V1` is recorded or implied.  Requested next
+lifecycle step: fresh-blind `EG-CP-A13` audit of the exact candidate
+lineage, then coordinator reconstruction if and only if the audit is clean.
+
+## 2026-08-07 (AUDIT + COORDINATOR REPAIR) -- Stage-A AUD1 fresh-blind: merge-ready with follow-up; P3-3 repaired by amendment
+
+Fresh-blind report-only audit `EG-CP-STAGEA-AUD1` of the Stage-A
+packed-architecture candidate, exact target
+`ec35b5d9f513f639cb75044a5d1ea52e8dfc3d23` (base
+`270d78559adc33fe872b6d17bd54d8e51567a605`, branch
+`codex/eg-cp-stagea-close-r1`). Audit report committed as
+`60827a13d38de0a74fc2ae861c5526deae012ff2` at
+`docs/internal/audit_reports/2026-08-06_EG_CP_STAGEA_CLOSE_R1_fresh_blind.md`
+on the audit branch `claude/stagea-packed-arch-audit-3f7f78` -- exactly one
+file added, directly on the audited candidate. This round-log entry is written
+by the coordinator because the audit prompt restricted the auditor to a single
+file; the standing default is that each audit round is logged here, and the
+prompt's one-file restriction should carve the round log out next time.
+
+Auditor recommendation: **merge-ready with follow-up**; no `P0`, no `P1`; one
+`P2` and five `P3`. The auditor reproduced the builds, the axiom inventory,
+the 21/21 replay, and 46/46 frozen-row byte integrity independently, and
+authored five counterfactual mutations beyond the committed registry -- the
+sharpest being a single-conjunct weakening (field 29 to `True`) that leaves the
+capstone module elaborating but breaks the committed consumer, which is a
+stronger anti-bypass witness than the registry's own `SA-M19`. Two mid-audit
+self-corrections are recorded in the report (an inconclusive counterfactual
+discarded and re-run; a receipt re-ranked `P2` to `P3` after its section
+heading was found to scope it correctly), as is one self-inflicted
+contamination: the report was written into the working tree during the
+campaign, so the runner's terminal clean-tree check caught the untracked file
+and the run exited 1. The 21 semantic verdicts are unaffected -- the check runs
+after the case loop -- and the porcelain output listing only that untracked
+file, with no modified tracked path, is stronger evidence than a bare "clean"
+that all 20 restorations were byte-exact.
+
+Coordinator audit of the audit: every finding was independently reproduced
+before disposition (the `ea08f28` gate failure in a detached worktree; the
+packet blob identity; the needle tabulation from the runner literal; the
+absence of any `some (some _)` assertion under a valid guard; the
+`ea08f28..ec35b5d` file list). The auditor's positive claims were spot-checked
+where an audit can fail quietly: no flat-universe (`packed*`) leakage into
+either new module, `LeftmostArgMin` is a genuine `List Int` specification, and
+the candidate makes no `A13`/acceptance/merge-readiness claim. No finding was
+overstated and none was missed that this coordinator could detect.
+
+Dispositions: `P3-3` **repaired** by contract amendment `CA-20260807-001`
+(field 39 `valid_answer_is_index`, `DD-20260807-080`) -- the combined
+proposition now states on its own that a valid query is answered with the
+leftmost minimum's index, making `EG-CP-A07` self-contained. `P3-1` and `P3-2`
+repaired; `P3-4` and `P3-5` recorded with precise corrections. `P2-1` disposed
+as **squash integration** (`WDD-20260807-012`), preserving the audited Git
+objects rather than rewriting history; execution needs owner authority.
+Because the repair changes Lean, every transitively dependent check was re-run
+on the repaired tree rather than inherited.
+
+Still open and unchanged by this round: `EG-CP-A13` remains the coordinator's
+acceptance decision on top of this audit, and architecture acceptance,
+integration, public-claim synchronization, `S1`, and `V1` remain open. An
+auditor may only recommend.
+
+## 2026-08-07 (ACCEPTANCE + INTEGRATION) -- Stage A `ACCEPTED`; squash-integrated into local `main`
+
+Following the `EG-CP-STAGEA-AUD1` fresh-blind audit and the coordinator
+reconstruction recorded above, the coordinator records **local Stage-A
+packed-architecture acceptance** and integrates the branch.
+
+`EG-CP-A13` closed on both halves: the fresh-blind audit (report
+`60827a13d38de0a74fc2ae861c5526deae012ff2`, merge-ready with follow-up, no
+`P0`/`P1`) and coordinator reconstruction in which every finding was
+reproduced independently before disposition. The substantive finding `P3-3`
+was repaired by contract amendment `CA-20260807-001` (field 39
+`valid_answer_is_index`) and the repaired tree re-certified from scratch:
+builds exit 0, curated axiom inventory exit 0 with zero forbidden axioms, the
+full 21-case campaign `FULL MODE PASS` 21/21 in 1214 s, strict design and
+claim-drift gates PASS, and frozen-row byte integrity 46/46 against the freeze
+blob with both negative controls firing.
+
+Integration form: **squash merge** into local `main`, per the `P2-1`
+disposition (`WDD-20260807-012`). The squash means `main` receives one commit
+that passes the per-commit design gate, with a tree byte-identical to the
+branch tip, while `ea08f28` -- the superseded documentation commit that fails
+that gate -- stays only on the branch, where it must remain because it is in
+the parent chain of both the audited candidate and the audit report. The AUD1
+audit report is carried onto `main` with the integration so the acceptance and
+its evidence land together.
+
+Open and untouched by this record: public-claim synchronization and the
+18-surface registry, the manuscript and novelty log, U3 acceptance status,
+`S1`, `V1`, publication, and full EG-CP closure. No push occurred;
+`origin/main` remains behind and is a separate owner decision.

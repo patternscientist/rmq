@@ -491,6 +491,40 @@ The worker may report only `CANDIDATE_COMPLETE`. Only the coordinator records
 local acceptance after A13. Public synchronization and V1 remain separate
 roadmap nodes.
 
+### Stage A outcome (2026-08-07): `ACCEPTED` (local packed-architecture acceptance)
+
+The coordinator records **local Stage-A packed-architecture acceptance**. This
+closes the Stage-A roadmap node and nothing beyond it: public-claim
+synchronization, `S1`, `V1`, publication, and full EG-CP closure remain open,
+and no headline is promoted by this record.
+
+| Object | Exact value |
+| --- | --- |
+| Matrix freeze (before any Lean/replay edit) | `f4107cd15173fef690ba05e51becb9c65b6c7d60` |
+| Audited candidate | `ec35b5d9f513f639cb75044a5d1ea52e8dfc3d23` |
+| Fresh-blind audit report | `60827a13d38de0a74fc2ae861c5526deae012ff2`, verdict **merge-ready with follow-up**, no `P0`/`P1`, one `P2`, five `P3` |
+| Coordinator repair (`CA-20260807-001`, field 39) | `a8d2a5c2881564abd85d651041f7d9953c4054f0` |
+| Re-certification receipts | `ea39aa19734b485c4a31985896120c39be8fbe51` |
+
+`A01`-`A12` closed on one exact candidate lineage over a single combined
+proposition; `A13` closed by the fresh-blind audit plus this coordinator
+reconstruction, in which every finding was independently reproduced before
+disposition and the auditor's positive claims were spot-checked. The one `P2`
+(a superseded documentation commit failing the per-commit design gate) is
+disposed as **squash integration** (`WDD-20260807-012`), so `main` receives a
+single passing commit with a byte-identical tree while the audited Git objects
+are preserved on the branch.
+
+Accepted claim, exactly: for every input list, one allocated
+`header ++ buildPayload ++ padding` packed memory of complete capacity
+`2n + o(n)` answers every valid half-open query with the leftmost minimum's
+index, in at most `427` attempted aligned `w(n)`-bit cell probes into that same
+memory, under a closed controller whose dynamic inputs are exactly `n`, the
+endpoints, and prior probe replies. `427` is an upper bound derived from the
+run's own measure, not an attainment claim; `210` is logical fuel; this is a
+cell-probe result and not word-RAM instruction time, preprocessing time, or a
+measured-runtime claim.
+
 Feasibility-to-production mapping is explicit:
 
 - F01/F05 witness A02/A03;
@@ -786,10 +820,17 @@ or fully allocated `2n + o(n)` storage.
       `174989f26a681a3a04a74e0f3d8f2d414f915075`; the Stage-A matrix is
       authorized but not yet frozen.
 - [ ] U3 acceptance status resolved; no "certified floor" overstatement.
-- [ ] Selected theorem surface reaches candidate complete.
-- [ ] Same-object, allocated-space, probe-totality, state-invariant, and
-      anti-bypass rows close.
-- [ ] Fresh-blind exact-commit capstone audit passes.
+- [x] Selected theorem surface reaches candidate complete: Stage-A worker rung
+      `A01`-`A12` on the combined `PackedReviewerArchitectureCapstone`,
+      candidate `ec35b5d9f513f639cb75044a5d1ea52e8dfc3d23`.
+- [x] Same-object, allocated-space, probe-totality, state-invariant, and
+      anti-bypass rows close, on one exact candidate lineage with a
+      21/21 replay campaign and an independent expected-type consumer.
+- [x] Fresh-blind exact-commit capstone audit passes: `EG-CP-STAGEA-AUD1`,
+      report `60827a13d38de0a74fc2ae861c5526deae012ff2`, **merge-ready with
+      follow-up**, no `P0`/`P1`; all findings disposed and the `P3-3` gap
+      repaired by amendment `CA-20260807-001` (field 39), re-certified on
+      `a8d2a5c2881564abd85d651041f7d9953c4054f0`.
 - [ ] Manuscript and novelty log complete.
 - [ ] Exact 18-surface policy inventory and public Lean comment/docstring
       inventory synchronized to the accepted theorem only.

@@ -10103,3 +10103,118 @@ adding only prose with `10 -> 37` (would not be kernel evidence); computing a
 second independent run proof (would duplicate the accepted driver argument);
 changing the old existential theorem's type (would create avoidable consumer
 drift).
+
+## DD-20260806-079 -- the Stage-A capstone is one thirty-eight-field combined proposition whose instances live only in its validation root
+
+Status: Accepted for `EG-CP-STAGEA-CLOSE-R1`.
+
+Date: 2026-08-06
+
+Context: `EG-CP-A01`..`EG-CP-A10` demand one literal combined
+packed-architecture proposition over the accepted
+`header ++ buildPayload ++ padding` reviewer memory, and `EG-CP-A11` demands
+an independent expected-type consumer that pins the full combined
+proposition.  The accepted Stage-F capstone
+(`PackedReviewerStageFCapstone`, fourteen conjuncts) covers the object
+identity, allocation, grouping, cap, guarded result, input boundary, and
+agreement facts, but Stage A additionally requires the explicit all-size
+width bounds, the counted-header liveness inside the combined proposition,
+the conditional crossing expansion, the structural `1 + 2*3 + 2*210 = 427`
+derivation, the universal leftmost-tie connection, the exact invalid-domain
+behavior with reference agreement, the reachable-state base/step/final
+invariant at the literal run, and the frozen fixture controls.
+
+Decision: introduce
+`RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerArchitectureCapstone.lean`
+with one structure `PackedReviewerArchitectureCapstone` of exactly the
+thirty-eight fields frozen in matrix section 1.1, produced by
+`packedReviewerArchitectureCapstone_holds` purely by projection from the
+accepted public run certificate, payload/memory/space/width theorems, the
+universal header-liveness theorem, the driver decomposition, and the frozen
+fixture theorems, plus four small new bridges owned by this module:
+`packedReviewerPreludeRemaining_init_eq_three` and
+`packedReviewerWholeRemaining_start_eq_210` (the structural cap
+decomposition), `packedReviewerInvalidReferenceNone` (the invalid-domain
+reference agreement, forced by composing the unconditional terminal equality
+with the invalid certificate), and `packedReviewerRunLeftmostTie` (the
+universal leftmost-tie connection through `queryCosted_exact`/
+`queryCosted_leftmost` and the independent `scanWindow` reference), together
+with `packedReviewerRunReachableInvariant`
+(`packedReviewerDriveAux_decompose` instantiated at the literal public run).
+The module deliberately contains no instance consumption: every boundary
+instance, signature pin, and the thirty-eight-field literal restatement
+(`EGCPStageAArchitectureFacts` / `egcpStageAArchitectureFactsExact`) live in
+the new validation root `RMQ/Validation/EGCPStageA.lean`, so an M12-style
+weakening of the producer to `True` keeps the core module compiling and
+breaks exactly the committed consumer -- the failure surface `EG-CP-A11`
+names.
+
+Consequences: the combined proposition is a checked consequence of the
+accepted implementation with no new execution, memory, controller, result,
+or cost model; every conjunct names the identical `memory`/`run` terms; the
+fixture controls are constant conjuncts pinning the frozen `[7, 3, 3]`
+`(0, 3)` evidence inside the public proposition; and the replay case
+`SA-M19-ARCHITECTURE-PROPOSITION-WEAKENING` gains its commissioned failing
+surface.  `427` remains an upper bound on attempted physical probes derived
+from the run's own fuel measure, and `210` remains logical fuel
+(`DD-20260805-075`); no attainment claim is introduced.
+
+Alternatives rejected: extending `PackedReviewerStageFCapstone` in place
+(edits the audited frozen Stage-F surface and its consumers); closing the
+A-rows with separate per-row theorems and no combined proposition (fails the
+`EG-CP-A01`/`INV-PUBLIC-COMPOSITION` same-object composition requirement and
+leaves `EG-CP-A11` nothing to pin); keeping boundary instances beside the
+producer in the core module (an M12-style producer weakening would then fail
+in the same module, hiding the consumer surface); restating the leftmost-tie
+connection only at the duplicate-minimum fixture (a singleton witness cannot
+close the universal `EG-CP-A07` row).
+
+## DD-20260807-080 -- the Stage-A capstone states that a valid query is answered, not merely that it equals the reference
+
+Status: Accepted coordinator repair for `EG-CP-STAGEA-CLOSE-R1`, authorized by
+contract amendment `CA-20260807-001`.
+
+Date: 2026-08-07
+
+Trigger: fresh-blind audit `EG-CP-STAGEA-AUD1` (report commit
+`60827a13d38de0a74fc2ae861c5526deae012ff2`), finding `P3-3`. The frozen
+38-field proposition pinned `run.terminal = some reference.value`
+unconditionally (field 28) and made the leftmost-tie connection conditional on
+the terminal already being `some (some index)` (field 29). Nothing in the
+combined proposition, and nothing in the independent consumer, said that a
+valid query's terminal *is* of that form. The invalid domain already had its
+companion (field 31, `invalid_reference_none`); the valid domain did not.
+Read as a self-contained statement, `EG-CP-A07` therefore closed only by
+composition with a theorem outside the proposition, and no registry case
+would have caught a regression.
+
+Decision: add exactly one field, appended as field 39 so that all 38 frozen
+fields remain byte-unchanged:
+
+`valid_answer_is_index` : under `left < right /\ right <= n`,
+`∃ index, run.terminal = some (some index) /\ (SuccinctClassic.queryTraceResult xs left right).value = some index /\ LeftmostArgMin xs left right index`.
+
+Its producer `packedReviewerValidRunAnswersIndex` derives the index side from
+`SuccinctClassic.queryCosted_exact` at `len := right - left` (with the
+`queryCosted.erase` / `queryTraceResult.value` bridge holding by `rfl`),
+composes it with the public run certificate's `terminal_eq`, and reuses the
+existing `packedReviewerRunLeftmostTie` for the specification side. The
+expected value therefore comes from the independent `scanWindow` reference,
+never from the implementation under test (`INV-ORACLE-INDEPENDENCE`).
+
+Consequences: the combined proposition now asserts, on its own, that the
+packed machine answers every valid half-open query with the leftmost minimum's
+index; the valid and invalid domains are symmetric; and the audit's open
+question 7 ("is anything reviewer-facing true of the packed machine but absent
+from the combined proposition?") has a concrete answer rather than a standing
+caveat. No existing field, guard, object, quantifier, or numeral changed, and
+the `427` cap remains an upper bound with no attainment claim.
+
+Alternatives rejected: leaving it as an accepted `P3` follow-up (cheap to fix,
+reviewer-visible in the public capstone, and the last chance to fix it before
+a public freeze); adding a standalone theorem outside the structure (the
+finding is precisely that the *combined proposition* does not display the
+fact, so a sibling theorem would not answer it); restating field 29
+unconditionally (that would rewrite a frozen field rather than extend the
+contract, and the freeze permits extension by recorded amendment but not
+edits).

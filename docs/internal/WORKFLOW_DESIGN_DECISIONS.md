@@ -7918,3 +7918,241 @@ before its checks existed; editing the frozen Stage-F matrix to masquerade as
 a Stage-A freeze; closing `A13` by inheritance from the Stage-F audit; calling
 representation feasibility architecture acceptance; rerunning an unchanged
 twenty-five-minute mutation campaign solely to refresh a timestamp.
+
+## WDD-20260806-008: the Stage-A replay runner is a new sibling with a 21-case registry, byte-frozen rows, and script-boundary integrity probes
+
+Status: Accepted for `EG-CP-STAGEA-CLOSE-R1`.
+
+Date: 2026-08-06
+
+Trigger: `EG-CP-A12-REPLAY` commissions a replayable Stage-A campaign whose
+frozen registry must include discriminating cases for every A-row family,
+while the inherited Stage-F runner (`scripts/eg_cp_final_falsification_replay.ps1`)
+hard-codes a sixteen-entry registry, the `RMQ.Validation.EGCPFinalFalsification`
+surface, and the frozen Stage-F stage map. Its registry rows are historical
+evidence and may not be mutated in place.
+
+Decision: commit a new runner `scripts/eg_cp_stagea_replay.ps1` rather than a
+wrapper, because a wrapper could not reuse the Stage-F script without changing
+its frozen registry, surface module, or stage semantics -- exactly the edits
+the Stage-F contract forbids. The new runner:
+
+- encodes the 21-case Stage-A registry of
+  `docs/internal/EG_CP_STAGEA_ACCEPTANCE_MATRIX.md` section 4 literally, with
+  per-entry covered-row and capstone-field mappings validated by
+  `Test-RegistryIntegrity` before any build (count, ascending order, unique
+  IDs, mapped verdicts, exact 2 ACCEPT / 19 REJECT totals, nonempty
+  mappings);
+- reuses ten enacted Stage-F mutation bodies byte-for-byte (same P/Q,
+  decoder, objects, guards, quantifiers -- all target the reviewer
+  controller/memory/run) and re-executes each against the Stage-A surface
+  `RMQ.Validation.EGCPStageA`, satisfying `NAMED-REGRESSION-REALITY` by
+  reproduction rather than citation; adds nine new Stage-A bodies (allocation,
+  width, crossing, result-offset, invalid-guard, decisive-neutralization,
+  architecture-weakening) where no inherited case discriminates the row;
+- keeps the Stage-F mechanics that survived audit: byte-exact capture and
+  `finally` restoration with SHA256 verification, mechanical activation
+  needles on every semantic mutant (`WDD-20260805-002`), expected-surface
+  matching of the build diagnostic, evidence-based deadlines from a measured
+  clean build plus a representative mutated-chain probe
+  (`WDD-20260806-004`), the detached-grandchild sleeper self-test, and the
+  terminal clean-tree check;
+- adds `-IntegrityProbe OmitMiddle|DuplicateMiddle`: an additive switch that
+  corrupts an in-memory copy of the registry and requires the integrity check
+  to fail, so the omitted/duplicate middle-ID rejections demanded by
+  `REPLAY-SELECTOR-NONVACUITY` are exercised at the real script boundary
+  without touching the frozen registry literal;
+- certifies process-tree termination on Windows only, the required gate
+  platform for this task; the non-Windows branch is carried but explicitly
+  uncertified (no cross-platform claim).
+
+The Stage-A matrix itself strengthens the template's mutable-cell allowance:
+requirement, invariant, harness, and registry rows are byte-frozen in their
+entirety and all evidence lands in an append-only keyed ledger section, so
+`FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY` compares complete row bytes with no
+column exception.
+
+Alternatives rejected: editing the Stage-F runner's registry or stage map in
+place (mutates frozen historical evidence); a wrapper invoking the Stage-F
+runner per-case (its surface module and expected-surface table are frozen to
+the Stage-F validation root, so verdicts would be observed at the wrong
+surface); making `RMQ.Validation.EGCPStageA` import the Stage-F validation
+root solely to widen the build surface (couples the independent consumer's
+elaboration to a sibling root without adding discrimination); freezing
+mutable evidence cells inside the requirement rows (would force the
+byte-integrity check to except columns and re-open the normalized-comparison
+hole the contract forbids).
+
+## WDD-20260806-009: the Stage-A runner and curated axiom entries are enacted exactly as frozen, with the inherited/new body partition corrected
+
+Status: Accepted for `EG-CP-STAGEA-CLOSE-R1`.
+
+Date: 2026-08-06
+
+Trigger: the implementation commit lands `scripts/eg_cp_stagea_replay.ps1`
+and the four curated Stage-A entries in `scripts/axiom_check.lean`, enacting
+the contract of `WDD-20260806-008` and matrix section 4.
+
+Decision: the runner encodes the frozen 21-case registry literally with the
+`-Case`/`-SelfTestOnly`/`-IntegrityProbe` boundary semantics exactly as
+frozen; `Test-RegistryIntegrity` additionally accepts an in-memory entry list
+so the two integrity probes exercise the omitted/duplicate middle-ID
+rejections without touching the frozen literal.  The curated axiom entries
+are `packedReviewerArchitectureCapstone_holds`,
+`packedReviewerRunLeftmostTie`, `packedReviewerRunReachableInvariant`, and
+`Validation.egcpStageAArchitectureFactsExact`.
+
+Correction to `WDD-20260806-008`'s prose (append-only, the entry itself is
+not edited): the enacted partition is thirteen bodies byte-reused from the
+frozen Stage-F campaign (the `A02` expected-accept patch plus twelve REJECT
+bodies) and seven new Stage-A REJECT bodies -- not "ten" and "nine".  Matrix
+section 4 was always authoritative and is unchanged.
+
+Alternatives rejected: editing the committed `WDD-20260806-008` text in
+place (ledger entries are append-only history); deferring the correction to
+the result report alone (the ledger would keep a wrong count beside a
+correct matrix).
+
+## WDD-20260806-010: replay-runner mutation needles must be pure ASCII under Windows PowerShell 5.1
+
+Status: Accepted for `EG-CP-STAGEA-CLOSE-R1`; standing rule for every future
+runner in this repository.
+
+Date: 2026-08-06
+
+Trigger: the first full Stage-A campaign run (diagnostic, on frozen tree
+`08dd29d4d72047c9da1f938d411d65264bdfd2b2`) reported 20 of 21 cases as
+commissioned at their frozen surfaces and exactly one defect:
+`SA-M13-INVALID-GUARD-RESULT` failed with `ANCHOR-DRIFT` -- its Find anchor
+occurred zero times.  Root cause: the anchor quoted the controller guard
+line containing the Unicode conjunction character, and Windows
+PowerShell 5.1 decodes a BOM-free `.ps1` as ANSI, so the script-side literal
+was corrupted before matching while the target file was read as UTF-8.  The
+inherited Stage-F runner never hit this because its needles are pure ASCII
+-- an implicit convention this entry makes explicit.
+
+Decision: repair `SA-M13`'s Find/Repl to an ASCII-only three-line anchor
+(`.header` arm / `else` / `.done none`) that enacts the identical frozen
+mutation (the invalid entry arm returns `.done (some 0)`); verified unique
+in the target module.  The frozen matrix registry row is untouched: it
+freezes the mutation intent, verdict, surface, and mappings, not the needle
+bytes.  Rule going forward: runner needles and activation strings must be
+ASCII-only; a needle that must reference non-ASCII source text anchors on
+the adjacent ASCII lines instead.  Adding a BOM was rejected because the
+repository's UTF-8 inspection treats BOM-free files as canonical and the
+Stage-F runner is BOM-free ASCII.
+
+Verification economics: the diagnostic full run is retained as evidence for
+the twenty as-commissioned verdicts; the certification run is the single
+full-mode rerun on the repaired frozen tree, per the one-aggregate-rerun
+rule.  The repaired case is first verified alone (`-Case`) before the full
+rerun is paid for.
+
+## WDD-20260806-011: worker report-record commits pair with a same-commit workflow-ledger entry, repaired by revert-and-reland rather than history rewrite
+
+Status: Accepted for `EG-CP-STAGEA-CLOSE-R1`.
+
+Date: 2026-08-06
+
+Trigger: the Stage-A report commit `ea08f2851e8be9951dceb56a1c021ab170de80b8`
+landed the result report, the verdict-free `AUD1` packet, and the round-log
+entry -- three workflow-sensitive paths -- without a same-commit
+`WORKFLOW_DESIGN_DECISIONS.md` change, so the per-commit strict design check
+(`-Base HEAD~1`, `WDD-20260726-007`) fails for that one commit even though
+the full-range check passes.  The accepted Stage-F campaign explicitly
+repaired the analogous one-commit lags by construction rather than excusing
+them, so leaving this defect would recreate a rejected pattern.
+
+Decision: repair on clean history.  This commit reverts `ea08f28` and
+carries part one of this entry (the revert itself changes the same
+workflow-sensitive paths, so the pairing rule applies to it too); the next
+commit re-lands the identical report bytes together with this entry's
+completion line, so every commit on the branch validates at `-Base HEAD~1`.
+The checkout contract forbids amend/rebase/squash, so history rewrite was
+not an option; the reverted commit remains visible as an intentional
+checkpoint and is identified as superseded in the result report.  The
+frozen proof/replay candidate `1198ff6` is untouched: every commit above it
+changes documentation only, which `git diff 1198ff6..<final> --name-only`
+verifies mechanically.
+
+Standing rule: any commit that touches a `docs/internal` audit-report,
+audit-packet, result-report, or round-log surface carries its
+workflow-ledger entry in the same commit, exactly as proof-bearing commits
+carry their design-ledger entries.
+
+Alternatives rejected: amending or resetting away `ea08f28` (forbidden by
+the checkout contract and destroys an intentional checkpoint); a lone
+follow-up WDD commit (leaves one commit failing the per-commit gate -- the
+rejected Stage-F pattern); reclassifying the report surfaces as neutral
+(they are the durable workflow record; weakening the classifier to pass a
+check is exactly the failure mode the gate exists to reject).
+
+Completion (part 2 of `WDD-20260806-011`): the identical report bytes are
+re-landed in this commit together with this line, the result report's
+identity table and `SA-CHK-09` row now record the repair explicitly, and the
+matrix ledger carries the append-only `EV-A13` correction.  Every commit on
+the branch now validates at `-Base HEAD~1`.
+
+## WDD-20260807-012: a reachable commit that fails the per-commit gate is remedied by squash integration, not by history rewrite; and semantic replay entries must declare activation needles
+
+Status: Accepted coordinator disposition for `EG-CP-STAGEA-CLOSE-R1`, in
+response to fresh-blind audit `EG-CP-STAGEA-AUD1`.
+
+Date: 2026-08-07
+
+Trigger: audit findings `P2-1` (commit `ea08f28` fails
+`design_decision_check.ps1 -Strict -Base HEAD~1` at its own parent, and stays
+reachable in branch history even though `WDD-20260806-011` repaired the tip)
+and `P3-2` (three registry entries the frozen contract labels *semantic*
+declared no activation needle, contradicting the frozen `EG-CP-A12` evidence
+cell). Both were independently reproduced by the coordinator before
+disposition: the gate failure in a detached worktree at `ea08f28`, and the
+needle gap by extracting the runner's registry literal.
+
+Decision, `P2-1`: **integrate the branch into `main` as a squash merge.** The
+tree is byte-identical either way, and `main` — where the CI per-commit gate
+actually runs — then receives a single commit that passes. Branch history is
+deliberately preserved: `ea08f28` is in the parent chain of the audited
+candidate `ec35b5d` and of the audit report commit `60827a1`, and rewriting it
+would destroy the exact Git objects those audits name, which is a worse defect
+than a superseded commit that fails a gate. This choice must be made before
+integration; afterwards it would itself require a history rewrite. Execution
+requires explicit owner authority and is not performed by this disposition.
+
+Decision, `P3-2`: **every registry entry whose frozen label is semantic
+declares at least one activation needle.** `SA-M04`, `SA-M09`, and `SA-M18`
+now do. The only needle-less entries are the production control `SA-A01`,
+which patches nothing, and the two entries frozen as *structural* (`SA-M11`,
+`SA-M14`), for which absence is correct and consistent with their labels. No
+frozen registry row changed: section 4 freezes mutation intent, verdict,
+named failing surface, and row/field mappings — not needle bytes. Standing
+rule for future runners: the label in the frozen registry and the presence of
+an activation needle must agree, and the mismatch is a reviewable defect even
+when, as here, anchor-uniqueness and expected-surface matching already make a
+false PASS impossible.
+
+Pairing note: this commit itself changes workflow-sensitive documentation
+paths, and carries this entry in the same commit, exactly as
+`WDD-20260806-011` requires.
+
+Alternatives rejected for `P2-1`: rewriting or squashing the branch in place
+(destroys the audited objects); a merge commit without squash (puts the
+failing commit into `main`'s history, which is what the CI rule exists to
+prevent); reclassifying the report surfaces as neutral so the gate passes
+(weakening a classifier to pass a check is the failure mode the gate exists to
+catch). Alternatives rejected for `P3-2`: relabelling the three entries
+"structural" to match the missing needles (their mutations are genuinely
+semantic — a dropped header cell, a swapped crossing order, and a weakened
+public certificate — so the labels are right and the needles were the gap).
+
+Completion (`WDD-20260807-012`): the repair commit
+`a8d2a5c2881564abd85d651041f7d9953c4054f0` and this receipts commit each
+carry their workflow-ledger pairing in the same commit, so every commit on
+this branch above `ea08f28` passes `-Base HEAD~1`. Re-certification receipts
+for the repaired tree are in matrix section 8 and result-report section 11.
+
+Integration record (`WDD-20260807-012`): the squash merge into local `main`
+was executed on 2026-08-07 under explicit owner authorization, carrying the
+`AUD1` audit report with it. `main` receives a single commit passing
+`-Base HEAD~1`; the branch retains full history including the audited objects.
+No push was performed or authorized.
