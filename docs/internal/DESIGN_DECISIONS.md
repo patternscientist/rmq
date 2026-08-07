@@ -10218,3 +10218,58 @@ fact, so a sibling theorem would not answer it); restating field 29
 unconditionally (that would rewrite a frozen field rather than extend the
 contract, and the freeze permits extension by recorded amendment but not
 edits).
+
+## DD-20260807-081 -- delete the nine unreachable GenericSelect/Proposal alias modules
+
+Status: Accepted for `codex/refactor-wave1-r1` (pre-V1 cleanup wave 1).
+
+Date: 2026-08-07
+
+Context: a module-reachability census over the import graph found thirteen
+modules unreachable from any declared `lean_lib` root. Two of the thirteen
+(`RMQ.Validation.SuccinctClassic`, `...SuccinctClassicCostHarness`) are
+**not** dead -- they back the declared `lean_exe` roots
+`rmq_succinct_classic_validate` / `rmq_succinct_classic_cost_harness`, which
+`gate.ps1` derives from `lakefile.toml`; the census walked only `lean_lib`
+roots and undercounted the live set. Of the remainder, nine form a
+self-contained cluster of import barrels and `export`/`abbrev` alias shims.
+
+Decision: delete, as one atomic change,
+`RMQ/Core/GenericSelect/{LegacyNames,PrimitiveLegacyNames,Tables}.lean`,
+`RMQ/Core/GenericSelect{Legacy,Builder,Params,Primitives}.lean`, and
+`RMQ/Core/Succinct{Rank,Select}Proposal.lean`.
+
+Evidence gathered before deleting, not after:
+- The cluster is import-closed among its own members: the only importers of
+  `LegacyNames` are `PrimitiveLegacyNames` and `GenericSelectLegacy`; the only
+  importer of `PrimitiveLegacyNames` is `GenericSelectLegacy`; the only
+  importers of `GenericSelectLegacy` are `GenericSelectBuilder` and
+  `GenericSelectPrimitives`. Nothing outside the cluster imports any of them,
+  so the deletion must be atomic and is safe as such.
+- No frozen acceptance matrix and no audit report under
+  `docs/internal/audit_reports/` cites any of the nine.
+- Post-deletion `lake build` completes in ~1 s with zero recompilation,
+  confirming none was in the reachable closure; `scripts/shim_lint.ps1`
+  (a negative lint that fails if these are imported) stays PASS.
+
+Deliberately NOT deleted, though also unreachable:
+- `RMQ/Core/SuccinctCloseProposal.lean` -- cited in frozen audit report
+  `docs/internal/audit_reports/2026-07-10_A03_u1_total_layout_audit.md`,
+  whose recorded PASS reasoning depends on its export list. Deleting it would
+  retroactively falsify recorded evidence.
+- `RMQ/Core/RankSelectCompressedSubLogSelectRoute.lean` -- mechanically dead,
+  but the only dead module carrying real proof content (240 lines, nine
+  theorems including an obstruction). Deleting proof content during a release
+  freeze for zero benefit is a bad trade; revisit post-V1 with owner sign-off.
+
+Consequences: nine files that were not in the build graph no longer appear in
+a V1 artifact, and ~700 lines of shadowed-alias surface are gone. Every alias
+name that still appears live resolves to an independent definition under
+`RMQ.SuccinctSelect`. `scripts/shim_lint.ps1` is retained as the
+reintroduction guard.
+
+Alternatives rejected: deleting the cluster piecemeal (breaks the survivors,
+since the cluster is import-closed); deleting all thirteen census candidates
+(two are live `lean_exe` roots and two more are evidence-blocked, as above);
+keeping them as "harmless" (an auditor opening the V1 tree finds files absent
+from the build graph, which costs credibility for free).
