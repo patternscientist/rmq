@@ -2,7 +2,16 @@
 .lake-packages/
 build/
 .codex/worktrees/
+.claude/worktrees/
 .worktrees/
 .tmp_rank_select_materials/
 local_archive/
 .audit-packets/
+
+# Per-machine agent-runtime state. Never repository content: machine-specific,
+# never tracked in this repository's history, and read by no build or gate.
+# Declared here rather than in a per-user global ignore file because the gate's
+# clean-baseline check deliberately disables user-global excludes so that
+# untracked-state enforcement is deterministic and reviewable in-tree
+# (scripts/owned_process_tree.ps1, Invoke-RMQCheckedGit).
+.claude/settings.local.json

@@ -10439,3 +10439,51 @@ three component facts (unnecessary -- the shared lemma already exists and is
 public, and a new declaration on a freezing surface needs a coordinator
 decision); keeping the longhand proof "because it works" (it is 668 lines of
 literal duplication in the proof a reviewer is most likely to open first).
+
+## DD-20260807-085 -- declare per-machine agent-runtime state in the repository ignore file
+
+Status: Accepted for `codex/refactor-wave1-r1`.
+
+Date: 2026-08-07
+
+Context: the pre-push gate's clean-baseline check runs `git status --short
+--untracked-files=all` through `Invoke-RMQCheckedGit`, which injects `-c
+core.excludesfile=`. In any worktree driven by the Claude runtime the runtime
+writes `.claude/settings.local.json`, a per-machine permission cache. That file
+is covered by the operator's user-global ignore file, so it is invisible in
+ordinary use but reported as untracked once the gate neutralizes global
+excludes -- which fails the clean baseline and makes the gate unrunnable in the
+very worktree the work was done in.
+
+Decision: add `.claude/settings.local.json` to the repository `.gitignore`, with
+a comment recording why the declaration belongs there and not in a per-user
+file. Add `.claude/worktrees/` alongside the already-ignored `.codex/worktrees/`
+and `.worktrees/`, which it is the exact sibling of.
+
+Why this is not a weakened gate. The check disables *only* the user-global
+ignore file, and its own comment states the reason: "so untracked-state
+enforcement is deterministic." The rule being enforced is that exemptions must
+be visible to a reviewer of the repository rather than dependent on an
+operator's private configuration. Moving this exemption into a committed,
+commented `.gitignore` line satisfies that rule exactly; it does not exempt any
+repository content from verification. `.claude/settings.local.json` is
+machine-specific, is read by no build or gate, and has never been tracked at any
+commit in this repository's history (`git log --all -- .claude/settings.local.json`
+is empty). The three tracked files under `.claude/` are the skill wrappers, which
+remain tracked and unaffected.
+
+The practical effect is a stronger gate, not a weaker one. Before this change
+the only way to get a green clean baseline was to run the gate from some other
+worktree that happened not to contain the file -- which verifies a different
+directory than the one the work was done in, and creates standing pressure to
+route around the check. After it, the gate runs where the work is.
+
+Consequences: `scripts/gate.ps1` runs to completion in a Claude-runtime
+worktree. No tracked file changes; no build, proof, or claim surface is
+affected.
+
+Alternatives rejected: deleting the file before each gate run (it is recreated
+by the runtime, so the failure returns every session); relaxing the
+`core.excludesfile=` injection in `owned_process_tree.ps1` (that would restore
+exactly the per-user invisibility the check exists to prevent, and would weaken
+the check for every path rather than declaring one non-repository file).
