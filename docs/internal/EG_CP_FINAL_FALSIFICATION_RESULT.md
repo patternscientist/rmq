@@ -803,3 +803,96 @@ sizes beyond the pinned fixture — remains a strictly-stronger-than-frozen
 item listed for the coordinator, exactly as before.
 
 <!-- STAGEF-FINAL-RECORD-EG-CP-STAGEF-CLOSE-R2-END -->
+
+# Coordinator Stage-F disposition (`EG-CP-STAGEF-INT-R1`)
+
+Status: **`FEASIBILITY_PASS`**
+
+Accepted proof tree: repair commit
+`174989f26a681a3a04a74e0f3d8f2d414f915075`, tree
+`1068b2c455c674ad1af8ffccf0391595e4f947d7`, whose parent is independent
+fresh-blind report commit `afe9e64047a54227cf770f3df1b5ecdb0f78a921`.
+The report's exact target is proof candidate
+`9687b4ad4f3cb8c843625dc2ffbb486cdecb6b5f`; its parent chain is the five
+clean-history Stage-F commits above exact accepted local-rung base
+`0f386723f56deae5eb39418e535f56e7a2b347dd`. The defective same-session
+bookkeeping commits `3cd3f32e471fa2b0a6974496eecbd487e8526391` and
+`ae84d1b6a634ea60260ebd55853f89807acb608b` are not ancestors of this
+accepted tree.
+
+## Disposition of the audit findings
+
+- No `P0` or `P1` was found.
+- `P2-1` is closed by
+  `packedReviewerHeaderCellAddressLiveness_exact`, the frozen fixture theorem
+  `packedReviewerHeaderCellAddressLiveness_fixture` (`10 -> 37`), and the
+  literal independent consumer `egcpStageFHeaderAddressLivenessFixture`.
+- The fourteen-conjunct comment and the missing K1/K2/K0,
+  internal-padding/sibling-memory, and historical-route dispositions are
+  corrected in the repair commit.
+- The non-Windows build-timeout process-group note remains a nonblocking
+  harness portability follow-up: the frozen exercised deadline contract is
+  Windows plus Ubuntu `SelfTestOnly`, both independently passed. It is not
+  silently promoted to cross-platform build-timeout evidence.
+- `M13` remains a value-preserving but structurally honest hidden-table
+  mutation, exactly as frozen and audited; no stronger semantic-mutation
+  claim is made for that case.
+
+## Gate decision
+
+- `F01`-`F08`: closed by kernel/model theorems over the accepted one-cell K1
+  header, exact `buildPayload` serialization, final-cell-padded reviewer
+  memory, all-size width/space, closed controller, successful allocated
+  probes, universal physical codec, and derived `427` cap.
+- `F09`: closed as the required real-packed-store composition witness. It is
+  not misreported as the final Stage-A correctness theorem.
+- `F10`: closed by the exact sixteen-entry campaign: two ACCEPT controls and
+  fourteen REJECTs, including every reusable bypass family, with activation,
+  deadline, restoration, and clean-state controls.
+- `F11`: closed by the universal capstone plus the full small-size,
+  threshold-neighbour, invalid-domain, and duplicate-minimum/leftmost fixture
+  matrix; no second representation is selected.
+- `F12`: closed with zero remaining focused Stage-F proof-days after the
+  literal fixture repair, a named consumer inventory, and no unknown dynamic
+  input. This is below the ten-day gate ceiling.
+- `F13`: closed by the proof-free reachable controller state, memory-only
+  reply driver, structural measure/cap, same-run reference refinement,
+  decisive corruption rejection, and proved-unread-cell accept control. The
+  result and capstone are not stored state or hypotheses.
+
+Accordingly, `FG-11`, full `FG-12`, `FG-13`, `FG-14`, and `FG-15` are
+accepted closed at the Stage-F objects, and the coordinator records
+**`FEASIBILITY_PASS`**. This is representation feasibility only. The Stage-A
+matrix is now authorized to freeze but is not yet frozen; `A01`..`A13`, local
+packed-architecture acceptance, public-claim synchronization, `S1`, `V1`,
+publication, and full EG-CP closure remain open.
+
+## Coordinator verification on the repaired proof tree
+
+- `lake build RMQ.Validation.EGCPFinalFalsification`: PASS, 194 targets,
+  941.6 s on the fresh integration worktree.
+- `lake build RMQ`: PASS, 312 targets, 265.8 s.
+- `lake env lean scripts/axiom_check.lean`: PASS, 190.2 s; the new exact,
+  existential, and fixture header-liveness theorems each use exactly
+  `[propext, Classical.choice, Quot.sound]`.
+- Forbidden-token/Mathlib scan: zero matches. Native-shortcut scan: zero
+  matches.
+- Strict claim drift: 1,518 hits, zero strict failures. Strict design check
+  against exact base `0f386723...`: PASS, 13 range paths classified.
+- Committed-range and working-tree `git diff --check`: clean. Strict UTF-8:
+  13 range paths inspected, zero invalid files.
+- The 1,494-second fresh-blind sixteen-case replay is attributed to the
+  independent auditor on exact candidate `9687b4a`; it was not repeated after
+  the proof-only exact/fixture corollary because controller, memory, runner,
+  registry, selectors, mutations, and expected surfaces are byte-identical.
+
+## Proof digestion
+
+Conceptually, Stage F has answered the feasibility question: one counted
+header cell and three charged discovery reads suffice to drive the canonical
+packed payload at every size, and the executed run is both space-accounted and
+semantically tied to the leftmost half-open RMQ reference. The skeptical next
+question is no longer whether the architecture can exist; it is whether the
+final combined proposition is frozen tightly enough that all Stage-A
+consumers, replay mutations, and a fresh-blind capstone audit can certify one
+unchanged production theorem. That is the purpose of `A01`..`A13`.

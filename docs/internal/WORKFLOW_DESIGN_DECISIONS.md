@@ -7883,3 +7883,38 @@ and repairing its history in place;
 dropping the independent report from integrated history; treating the P2 as
 prose-only supersession; rerunning the 25-minute full mutation campaign after
 a proof-only corollary whose executable and replay bytes are unchanged.
+
+## WDD-20260806-007: record `FEASIBILITY_PASS` only after the repaired proof-tree gates, then authorize a separate Stage-A freeze
+
+Status: Accepted coordinator lifecycle decision.
+
+Date: 2026-08-06
+
+Trigger: the independent audit made the Stage-F candidate merge-ready subject
+to one literal `P2`, and `174989f26a681a3a04a74e0f3d8f2d414f915075`
+closed that finding without changing executable or replay bytes. The roadmap
+forbids freezing Stage A until both the audit disposition and coordinator
+reconstruction are complete.
+
+Decision: land a documentation-only coordinator record after, never before,
+the repaired tree passes focused and aggregate builds, curated axiom inventory,
+hygiene/native scans, strict claim drift, strict design checking, diff checks,
+and UTF-8 inspection. That record closes the named Stage-F residual rows and
+records exactly `FEASIBILITY_PASS`; it does not label the packed architecture
+accepted. The official roadmap status, final falsification result, and round
+log are updated together in this same commit. The new Stage-A matrix remains a
+separate worker artifact: it must freeze `A01`..`A13` from the exact integrated
+base before proof edits and may report only `CANDIDATE_COMPLETE`; `A13` remains
+the fresh-blind audit and coordinator-reconstruction row.
+
+The full Stage-F replay is not repeated after the micro-repair. Its runner,
+registry, selectors, mutations, expected surfaces, controller, memory, and
+driver blobs are identical to audited candidate `9687b4a`; the independent
+1,494-second receipt is attributed to the auditor, while the coordinator's
+new proof builds and trust/policy gates cover the changed bytes.
+
+Alternatives rejected: recording `FEASIBILITY_PASS` inside the proof commit
+before its checks existed; editing the frozen Stage-F matrix to masquerade as
+a Stage-A freeze; closing `A13` by inheritance from the Stage-F audit; calling
+representation feasibility architecture acceptance; rerunning an unchanged
+twenty-five-minute mutation campaign solely to refresh a timestamp.

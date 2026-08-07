@@ -396,19 +396,23 @@ evidence toward the gate; it never records the gate outcome.
 | --- | --- | --- |
 | 2026-08-05 | `EG-CP-ALLSIZE-R1` (all-size reviewer machine, including the `R2R1` replay-fidelity repair) | **`ACCEPTED` and integrated into local `main`.** Exact candidate `a0a0f92b8f9081ee59797affb5045952d9e39fbf`; fresh-blind audit `118284833eb312fc06e794dd0708f48b4909dbd1` (`LOCAL_RUNG_ACCEPTABLE`, no `P0`/`P1`/`P2`); coordinator disposition in `EG_CP_FINAL_FALSIFICATION_MATRIX.md` section 9. Local rung only -- **not** `FEASIBILITY_PASS`, **not** architecture acceptance, **not** a Stage A row. |
 
-**Exact next sequencing.** Stage F is not closable yet. In order:
+**Sequencing outcome (2026-08-06).** The three required steps are complete.
+The residual campaign closed `FG-11`, full `FG-12`, `FG-13`, `FG-14`, and
+`FG-15` on candidate `9687b4ad4f3cb8c843625dc2ffbb486cdecb6b5f`.
+Fresh-blind audit report commit
+`afe9e64047a54227cf770f3df1b5ecdb0f78a921` found no `P0`/`P1`, one
+literal-contract `P2`, and four `P3` notes. Coordinator repair
+`174989f26a681a3a04a74e0f3d8f2d414f915075` closes the `P2` by pinning the
+frozen `[7,3,3]` / `(0,3)` header mutation's second-address movement
+`10 -> 37`, corrects the fourteen-conjunct comment, and restates the required
+K/representation/historical dispositions. The repaired proof tree passed
+focused and aggregate builds, curated axiom inventory, strict policy and
+design checks, hygiene/native scans, diff checks, and UTF-8 inspection.
 
-1. Finish the Stage-F residual falsification campaign: `FG-11` liveness and
-   anti-bypass; full `FG-12` (enact targets for the four registry entries that
-   still carry `Target = $null` -- `A02-UNREAD-CELL-EXPECTED-ACCEPT`,
-   `M02-HOST-LONG-COUNT-MIRROR`, `M04-CANONICAL-SHAPE-BY-N`,
-   `M13-HIDDEN-UNCOUNTED-TABLE` -- then certify all sixteen in one campaign);
-   `FG-14` boundaries; `FG-15` durable record.
-2. Coordinator and fresh-blind auditor disposition of that exact final
-   evidence.
-3. **Only then** may `FEASIBILITY_PASS` be recorded -- and only then may the
-   Stage A matrix be frozen. Freezing Stage A before step 2 is a lifecycle
-   violation, not a scheduling shortcut.
+The coordinator therefore records **`FEASIBILITY_PASS`** under the rule below.
+This authorizes a separately frozen Stage A matrix; it does not itself freeze
+that matrix, close `A01`..`A13`, record architecture acceptance, synchronize
+public claims, or close `S1`/`V1`.
 
 ### FEASIBILITY_PASS rule
 
@@ -778,9 +782,9 @@ or fully allocated `2n + o(n)` storage.
 
 - [ ] Roadmap delta audited and accepted as coordination policy.
 - [ ] Feasibility prompt frozen and preflighted from current governance.
-- [ ] Stage F returns exactly `FEASIBILITY_PASS`, `CHECKED_OBSTRUCTION`, or
-      `RUNWAY_PIVOT_UNRESOLVED`, or records
-      `ARCHITECTURE_DECISION_REQUIRED` and stops for the owner.
+- [x] Stage F returned `FEASIBILITY_PASS` on 2026-08-06 at repaired proof tree
+      `174989f26a681a3a04a74e0f3d8f2d414f915075`; the Stage-A matrix is
+      authorized but not yet frozen.
 - [ ] U3 acceptance status resolved; no "certified floor" overstatement.
 - [ ] Selected theorem surface reaches candidate complete.
 - [ ] Same-object, allocated-space, probe-totality, state-invariant, and

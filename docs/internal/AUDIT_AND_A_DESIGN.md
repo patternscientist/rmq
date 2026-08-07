@@ -659,3 +659,67 @@ Disposition: repair on the fresh branch `codex/eg-cp-stagef-close-r2` from
 exact base `0f386723f56deae5eb39418e535f56e7a2b347dd`, followed by
 coordinator audit and a separate fresh-blind audit. No acceptance is
 recorded here.
+
+## 2026-08-06 (AUDIT + REPAIR + INTEGRATION) -- Stage F accepted; `FEASIBILITY_PASS` recorded
+
+**Exact lineage.** The repaired clean-history candidate is
+`9687b4ad4f3cb8c843625dc2ffbb486cdecb6b5f`, five single-parent commits above
+accepted local-rung base `0f386723f56deae5eb39418e535f56e7a2b347dd`.
+Fresh-blind report-only audit commit
+`afe9e64047a54227cf770f3df1b5ecdb0f78a921` has that exact candidate as its
+parent. Coordinator micro-repair
+`174989f26a681a3a04a74e0f3d8f2d414f915075` (tree
+`1068b2c455c674ad1af8ffccf0391595e4f947d7`) has the audit report as its
+parent. The source branch's later defective same-session bookkeeping commits
+`3cd3f32e471fa2b0a6974496eecbd487e8526391` and
+`ae84d1b6a634ea60260ebd55853f89807acb608b` are explicitly excluded from the
+accepted lineage.
+
+**Fresh-blind verdict.** No `P0`/`P1`; one `P2` and four `P3` notes. The
+substantive machine, capstone, full sixteen-case replay, boundaries, trust
+base, same-object chain, and residual estimate were accepted. The `P2` was
+literal contract coverage: the universal header-address theorem implied but
+did not durably name the matrix's pinned `[7,3,3]` / `(0,3)` instance and its
+concrete moved second address.
+
+**Coordinator repair and P3 disposition.** `DD-20260806-078` factors the
+unchanged universal driver proof through an exact-witness theorem, preserves
+the old existential public type, and adds the kernel fixture `10 -> 37` plus
+an independent literal consumer. The validation comment now says fourteen
+capstone conjuncts, and the final record explicitly dispositions K1, unused
+K2, K0, internal padding/sibling memory, and the historical B3 route. The
+non-Windows build-timeout process-group note is retained as a nonblocking
+portability follow-up outside the frozen exercised build-timeout contract;
+`M13` remains a structurally honest, value-preserving mutation and is not
+overstated.
+
+**Independent and coordinator evidence.** The auditor independently ran the
+full sixteen-case campaign on `9687b4a`: `FULL MODE PASS`, exit 0, 1,494 s,
+2 ACCEPT / 14 REJECT, activation checks, SHA restoration, descendant
+termination, and terminal cleanliness. On the repaired proof tree the
+coordinator ran the focused validation build (PASS, 941.6 s), aggregate
+`RMQ` build (PASS, 265.8 s), curated axiom inventory (PASS, 190.2 s; the
+three repaired header-liveness surfaces use only `[propext,
+Classical.choice, Quot.sound]`), zero-match hygiene/native scans, strict claim
+drift 1,518/0, strict design check against exact base (PASS, 13 range paths),
+clean committed/working diff checks, and strict UTF-8 (13/0). The replay was
+not repeated because the micro-repair changes only proof theorem factoring,
+one expected-type consumer, the axiom inventory, and records; executable and
+replay bytes are identical to the audited target.
+
+**Coordinator verdict.** `FG-11`, full `FG-12`, `FG-13`, `FG-14`, and
+`FG-15` are accepted closed at the Stage-F objects. `F01`-`F08` are
+kernel/model closed; `F09` is the real-store composition witness; `F10` has
+the required discriminating counterfactuals; `F11` exposes no model split;
+`F12` is zero remaining focused Stage-F proof-days after the literal repair
+with a closed consumer inventory; and `F13` rules out assumed or replayed
+capstone state. The coordinator therefore records **`FEASIBILITY_PASS`**.
+
+**Boundary and next action.** This is not Stage-A or architecture acceptance.
+It authorizes the final Stage-A matrix freeze. `A01`..`A13`, the final
+fresh-blind capstone audit, local packed-architecture acceptance, public-claim
+synchronization, `S1`, `V1`, publication, and full EG-CP closure remain open.
+The next governed worker must freeze the exact `A01`..`A13` matrix before
+proof edits, map every row to the accepted Stage-F evidence, close `A01`..
+`A12` on one combined public proposition, and leave `A13` for a fresh-blind
+exact-commit audit plus coordinator reconstruction.
