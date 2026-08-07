@@ -10487,3 +10487,60 @@ by the runtime, so the failure returns every session); relaxing the
 `core.excludesfile=` injection in `owned_process_tree.ps1` (that would restore
 exactly the per-user invisibility the check exists to prevent, and would weaken
 the check for every path rather than declaring one non-repository file).
+
+## DD-20260807-086 -- collapse the three remaining duplicated component proofs
+
+Status: Accepted for `codex/refactor-wave1-r1` (pre-V1 elegance pass, final step).
+
+Date: 2026-08-07
+
+Context: `DD-20260807-083` relocated the merge-family theorems into
+`PayloadMacro.lean` and `DD-20260807-084` collapsed the largest consumer of that
+relocation. Three further theorems in
+`PayloadLiveBPEndpointFringeRangeMacro` were duplicating the same three shared
+lemmas by the same mechanism.
+
+Decision: replace all three proof bodies with the delegation already ratified in
+`DD-20260807-084`.
+
+| theorem | shared lemma it duplicated | body lines | after |
+| --- | --- | --- | --- |
+| `lcaCloseCosted_exact_of_left_fringe_leftmost` | `bpRelativeRmmCandidateMerge_exact_of_left_fringe_leftmost` (`:15`) | 184 | 6 |
+| `lcaCloseCosted_exact_of_decoded_right_fringe_candidate` | `..._of_right_fringe_leftmost` (`:264`) | 34 | 5 |
+| `lcaCloseCosted_exact_of_decoded_middle_candidate` | `..._of_middle_leftmost` (`:376`) | 37 | 5 |
+
+All three public statements -- names, binders, hypotheses, conclusions -- are
+byte-identical; only proof terms change.
+
+Why this typechecks, established before editing rather than by trial. For each
+of the three, the shared lemma's conclusion was diffed against the `hmerge`
+hypothesis slot of `lcaCloseCosted_exact_of_decoded_merged_candidate` (`:1486`):
+39 lines against 39 lines, **zero token differences**, the sole difference being
+the trailing delimiter (`:= by` against `) :`). The three shared lemmas'
+conclusions are also pairwise identical to each other across all 38 preceding
+lines. Binder names coincide exactly in every case, and the required call shape
+is already exercised by three working call sites in this same file (`:697`,
+`:764`, `:1216`).
+
+The duplication was literal, not merely logical. For
+`..._of_left_fringe_leftmost`, hypotheses `:1647-1712` match the shared lemma's
+`:19-84` with zero differences *including whitespace*; proof lines `:1719-1817`
+match `:124-222` with zero differences; `:1858-1897` match `:223-262` differing
+only by two leading spaces of re-indentation; and the intervening
+`have hmerge` statement reproduces the shared lemma's conclusion verbatim. The
+body was a copy of the shared proof wrapped in a restatement of the shared
+conclusion, ending in `exact hmerge`.
+
+Consequences: 242 further lines of duplicated proof leave the tree.
+`PayloadMacro.lean` goes 2682 -> 2440. Combined across `083`/`084`/`086`,
+`RelativeMerge.lean` is 1291 -> 87 and the duplicated-proof content removed
+totals roughly 900 lines. No public declaration, statement, type, or import
+changes.
+
+Scope note recorded against over-claiming: a rolling-hash duplicate scan over
+the five largest Lean files (43,500 lines combined; windows of 40+ significant
+lines) found only 332 duplicated lines, under 1%. The `PayloadMacro` duplication
+was a consequence of the import order that placed the shared lemma out of scope,
+not a habit in this codebase. De-duplication is therefore substantially
+exhausted as a size lever after this commit, and the remaining tractability
+problem is genuine file length.

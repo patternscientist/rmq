@@ -1712,190 +1712,11 @@ theorem lcaCloseCosted_exact_of_left_fringe_leftmost
               bpExcessAt shape pos) :
     (component.lcaCloseCosted leftClose rightClose).erase =
       some answerClose := by
-  apply component.lcaCloseCosted_exact_of_decoded_merged_candidate
-    (leftClose := leftClose) (rightClose := rightClose)
-    (answerClose := answerClose)
-    hblockSize hleftBlock hrightBlock
-  have hleftPair :
-      (bpPrefixRangeMinExcess shape (leftClose + 1)
-          (blockStartOf blockSize
-              (blockOfClose blockSize leftClose) +
-            blockSize - leftClose),
-        bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
-          (blockStartOf blockSize
-              (blockOfClose blockSize leftClose) +
-            blockSize - leftClose)) =
-        (bpExcessAt shape (answerClose + 1), answerClose + 1) := by
-    exact
-      bpPrefixRangeWitness_eq_of_leftmost_min_excess
-        hanswerLeft hleftBound
-        (by
-          intro pos hlo hhi
-          exact hmin hlo (hleftInside hlo hhi))
-        (by
-          intro pos hlo hhi
-          exact hleftmost hlo hhi)
-  have hrightCount :
-      0 <
-        rightClose -
-            blockStartOf blockSize
-              (blockOfClose blockSize rightClose) +
-          2 := by
-    omega
-  have hrightLe :
-      bpExcessAt shape (answerClose + 1) <=
-        bpPrefixRangeMinExcess shape
-          (blockStartOf blockSize
-            (blockOfClose blockSize rightClose))
-          (rightClose -
-              blockStartOf blockSize
-                (blockOfClose blockSize rightClose) +
-            2) := by
-    exact
-      bpPrefixRangeMinExcess_ge_of_all_prefix_ge
-        hrightCount hrightBound
-        (by
-          intro pos hlo hhi
-          have hinside := hrightInside hlo hhi
-          exact hmin hinside.1 hinside.2)
-  have hmiddleLe :
-      forall middle,
-        (if blockOfClose blockSize leftClose + 1 <
-              blockOfClose blockSize rightClose then
-            some
-              (bpRangeMinExcess shape blockSize
-                (blockOfClose blockSize leftClose + 1)
-                (blockOfClose blockSize rightClose -
-                  blockOfClose blockSize leftClose - 1),
-                bpRangeArgMinPrefixPos shape blockSize
-                  (blockOfClose blockSize leftClose + 1)
-                  (blockOfClose blockSize rightClose -
-                    blockOfClose blockSize leftClose - 1))
-          else
-            none) = some middle ->
-          bpExcessAt shape (answerClose + 1) <= middle.1 := by
-    intro middle hmiddle
-    by_cases hblocks :
-        blockOfClose blockSize leftClose + 1 <
-          blockOfClose blockSize rightClose
-    · simp [hblocks] at hmiddle
-      subst middle
-      have hcount :
-          0 <
-            blockOfClose blockSize rightClose -
-              blockOfClose blockSize leftClose - 1 := by
-        omega
-      exact
-        bpRangeMinExcess_ge_of_all_prefix_ge
-          (shape := shape) (blockSize := blockSize)
-          (startBlock := blockOfClose blockSize leftClose + 1)
-          (blockCount :=
-            blockOfClose blockSize rightClose -
-              blockOfClose blockSize leftClose - 1)
-          (lower := bpExcessAt shape (answerClose + 1))
-          hcount
-          (by
-            have hend :
-                blockOfClose blockSize leftClose + 1 +
-                    (blockOfClose blockSize rightClose -
-                      blockOfClose blockSize leftClose - 1) =
-                  blockOfClose blockSize rightClose := by
-              omega
-            simpa [hend] using hmiddleBound hblocks)
-          (by
-            intro pos hlo hhi
-            have hend :
-                blockOfClose blockSize leftClose + 1 +
-                    (blockOfClose blockSize rightClose -
-                      blockOfClose blockSize leftClose - 1) =
-                  blockOfClose blockSize rightClose := by
-              omega
-            have hinside :=
-              hmiddleInside (pos := pos) hblocks hlo
-                (by simpa [hend] using hhi)
-            exact hmin hinside.1 hinside.2)
-    · simp [hblocks] at hmiddle
-  have hmerge :
-      bpCandidateMerge3?
-          (some
-            (bpPrefixRangeMinExcess shape (leftClose + 1)
-              (blockStartOf blockSize
-                  (blockOfClose blockSize leftClose) +
-                blockSize - leftClose),
-              bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
-                (blockStartOf blockSize
-                    (blockOfClose blockSize leftClose) +
-                  blockSize - leftClose)))
-          (if blockOfClose blockSize leftClose + 1 <
-              blockOfClose blockSize rightClose then
-            some
-              (bpRangeMinExcess shape blockSize
-                (blockOfClose blockSize leftClose + 1)
-                (blockOfClose blockSize rightClose -
-                  blockOfClose blockSize leftClose - 1),
-                bpRangeArgMinPrefixPos shape blockSize
-                  (blockOfClose blockSize leftClose + 1)
-                  (blockOfClose blockSize rightClose -
-                    blockOfClose blockSize leftClose - 1))
-          else
-            none)
-          (some
-            (bpPrefixRangeMinExcess shape
-              (blockStartOf blockSize
-                (blockOfClose blockSize rightClose))
-              (rightClose -
-                  blockStartOf blockSize
-                    (blockOfClose blockSize rightClose) +
-                2),
-              bpPrefixRangeArgMinPrefixPos shape
-                (blockStartOf blockSize
-                  (blockOfClose blockSize rightClose))
-                (rightClose -
-                    blockStartOf blockSize
-                      (blockOfClose blockSize rightClose) +
-                  2))) =
-        some (bpExcessAt shape (answerClose + 1), answerClose + 1) := by
-    simpa [hleftPair] using
-      bpCandidateMerge3?_eq_some_left_of_fst_le
-        (left := (bpExcessAt shape (answerClose + 1), answerClose + 1))
-        (middle? :=
-          if blockOfClose blockSize leftClose + 1 <
-              blockOfClose blockSize rightClose then
-            some
-              (bpRangeMinExcess shape blockSize
-                (blockOfClose blockSize leftClose + 1)
-                (blockOfClose blockSize rightClose -
-                  blockOfClose blockSize leftClose - 1),
-                bpRangeArgMinPrefixPos shape blockSize
-                  (blockOfClose blockSize leftClose + 1)
-                  (blockOfClose blockSize rightClose -
-                    blockOfClose blockSize leftClose - 1))
-          else
-            none)
-        (right? :=
-          some
-            (bpPrefixRangeMinExcess shape
-              (blockStartOf blockSize
-                (blockOfClose blockSize rightClose))
-              (rightClose -
-                  blockStartOf blockSize
-                    (blockOfClose blockSize rightClose) +
-                2),
-              bpPrefixRangeArgMinPrefixPos shape
-                (blockStartOf blockSize
-                  (blockOfClose blockSize rightClose))
-                (rightClose -
-                    blockStartOf blockSize
-                      (blockOfClose blockSize rightClose) +
-                  2)))
-        (by
-          intro middle hmiddle
-          exact hmiddleLe middle hmiddle)
-        (by
-          intro right hright
-          cases hright
-          exact hrightLe)
-  exact hmerge
+  exact component.lcaCloseCosted_exact_of_decoded_merged_candidate
+    leftClose rightClose hblockSize hleftBlock hrightBlock
+    (bpRelativeRmmCandidateMerge_exact_of_left_fringe_leftmost
+      leftClose rightClose hanswerLeft hleftBound hleftInside
+      hrightBound hrightInside hmiddleBound hmiddleInside hmin hleftmost)
 
 theorem lcaCloseCosted_exact_of_decoded_right_fringe_candidate
     {shape : Cartesian.CartesianShape}
@@ -1950,40 +1771,10 @@ theorem lcaCloseCosted_exact_of_decoded_right_fringe_candidate
           bpExcessAt shape (answerClose + 1) < middle.1) :
     (component.lcaCloseCosted leftClose rightClose).erase =
       some answerClose := by
-  apply component.lcaCloseCosted_exact_of_decoded_merged_candidate
-    (leftClose := leftClose) (rightClose := rightClose)
-    (answerClose := answerClose)
-    hblockSize hleftBlock hrightBlock
-  simpa [hrightPair] using
-    bpCandidateMerge3?_eq_some_right_of_fst_lt_left_middle
-      (left :=
-        (bpPrefixRangeMinExcess shape (leftClose + 1)
-          (blockStartOf blockSize
-              (blockOfClose blockSize leftClose) +
-            blockSize - leftClose),
-          bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
-            (blockStartOf blockSize
-                (blockOfClose blockSize leftClose) +
-              blockSize - leftClose)))
-      (right := (bpExcessAt shape (answerClose + 1), answerClose + 1))
-      (middle? :=
-        if blockOfClose blockSize leftClose + 1 <
-            blockOfClose blockSize rightClose then
-          some
-            (bpRangeMinExcess shape blockSize
-              (blockOfClose blockSize leftClose + 1)
-              (blockOfClose blockSize rightClose -
-                blockOfClose blockSize leftClose - 1),
-              bpRangeArgMinPrefixPos shape blockSize
-                (blockOfClose blockSize leftClose + 1)
-                (blockOfClose blockSize rightClose -
-                  blockOfClose blockSize leftClose - 1))
-        else
-          none)
-      hleftGt
-      (by
-        intro middle hmiddle
-        exact hmiddleGt middle hmiddle)
+  exact component.lcaCloseCosted_exact_of_decoded_merged_candidate
+    leftClose rightClose hblockSize hleftBlock hrightBlock
+    (bpRelativeRmmCandidateMerge_exact_of_right_fringe_leftmost
+      leftClose rightClose hrightPair hleftGt hmiddleGt)
 
 theorem lcaCloseCosted_exact_of_decoded_middle_candidate
     {shape : Cartesian.CartesianShape}
@@ -2028,43 +1819,10 @@ theorem lcaCloseCosted_exact_of_decoded_middle_candidate
             2)) :
     (component.lcaCloseCosted leftClose rightClose).erase =
       some answerClose := by
-  apply component.lcaCloseCosted_exact_of_decoded_merged_candidate
-    (leftClose := leftClose) (rightClose := rightClose)
-    (answerClose := answerClose)
-    hblockSize hleftBlock hrightBlock
-  simpa [hblocks, hmiddlePair] using
-    bpCandidateMerge3?_eq_some_middle_of_fst_lt_left_le_right
-      (left :=
-        (bpPrefixRangeMinExcess shape (leftClose + 1)
-          (blockStartOf blockSize
-              (blockOfClose blockSize leftClose) +
-            blockSize - leftClose),
-          bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
-            (blockStartOf blockSize
-                (blockOfClose blockSize leftClose) +
-              blockSize - leftClose)))
-      (middle := (bpExcessAt shape (answerClose + 1), answerClose + 1))
-      (right? :=
-        some
-          (bpPrefixRangeMinExcess shape
-            (blockStartOf blockSize
-              (blockOfClose blockSize rightClose))
-            (rightClose -
-                blockStartOf blockSize
-                  (blockOfClose blockSize rightClose) +
-              2),
-            bpPrefixRangeArgMinPrefixPos shape
-              (blockStartOf blockSize
-                (blockOfClose blockSize rightClose))
-              (rightClose -
-                  blockStartOf blockSize
-                    (blockOfClose blockSize rightClose) +
-                2)))
-      hmiddleLeft
-      (by
-        intro right hright
-        cases hright
-        exact hrightLe)
+  exact component.lcaCloseCosted_exact_of_decoded_merged_candidate
+    leftClose rightClose hblockSize hleftBlock hrightBlock
+    (bpRelativeRmmCandidateMerge_exact_of_middle_leftmost
+      leftClose rightClose hblocks hmiddlePair hmiddleLeft hrightLe)
 
 theorem lcaCloseCosted_exact_of_spanning_root_left_fringe
     {leftShape rightShape : Cartesian.CartesianShape}
