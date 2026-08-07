@@ -8332,3 +8332,55 @@ Stated so it is not misread: these are wall-clock seconds on a CI runner,
 recorded as reproduction evidence. This repository proves **no** runtime bound,
 and the timings must never be cited as one. The proved cost quantities are
 charged probes and modeled cost, both of which are independent of wall clock.
+
+## WDD-20260807-016 -- paper/check_paper.ps1 as a governed gate
+
+Status: Accepted.
+
+Date: 2026-08-07
+
+Context: `paper/check_paper.ps1` is workflow-classified by the per-commit design
+gate, and its commits on the unmerged paper branch carried no workflow decision.
+This entry supplies it.
+
+The checker's original revision advertised five properties it did not all
+enforce. Audit found, and this revision closes:
+
+- multi-word patterns matched only raw text while `rmq.tex` is hard-wrapped at
+  110 columns, so a banned phrase split across a newline evaded the scan;
+- no model-vocabulary patterns at all, so the framings retired from the public
+  surfaces on 2026-08-07 could be reintroduced with the checker green;
+- the ledger status guard compared two totals and could not see a row that lost
+  its status while another gained a spare;
+- `-notcontains` is case-insensitive, so `open` and `Accepted_Base` were legal;
+- the label section printed "all refs resolve" unconditionally, immediately
+  after reporting an unresolved ref. That is the mechanism by which a green log
+  came to be cited as evidence for a property the script had just contradicted;
+- cross-reference checking covered only `\ref`.
+
+Design decisions worth recording, because both are places where a naive fix
+would have been wrong:
+
+**Attribution allowance.** Model-vocabulary phrases are excused by a citation
+within a window, because describing a cited author's constant-time result is
+legitimate while asserting it unattributed is the overclaim. This was forced by
+a real hit: `constant-time succinct` at `rmq.tex:767` is Fischer and Heun's
+scheme, correctly attributed. Weakening the pattern would have been the wrong
+repair.
+
+**Claim surfaces vs record surfaces.** `WORKLOG.md` and `NOVELTY_LOG.md` are
+records ABOUT claims -- a novelty log must name priority claims to retire them
+and quote third parties who made them. They are held to a marker requirement
+rather than a ban; every other file is banned outright.
+
+The first version of that rule was **vacuous**: its marker set contained a quote
+character, and ordinary prose has a quote within the window almost always, so a
+bare priority claim in the novelty log passed. Found by injection, not by
+reading. The marker set now contains no punctuation, and three self-tests hold
+the line, including one asserting the marker set contains no punctuation.
+
+Verification: `-SelfTest` runs 16 detector cases. End-to-end, six injected
+violation classes each produce exit 1, bare claims are caught on both record
+surfaces, and claim surfaces stay strict including the wrap case. The decisive
+comparison, on identical input: the pre-hardening checker exits 0 where this one
+exits 1.

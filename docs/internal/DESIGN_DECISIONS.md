@@ -10771,3 +10771,45 @@ RMQ-specific module, and `RMQUnionFind`'s only shared dependencies are the hub's
 `Cost` and `Amortized`. That is the one genuine hub-and-spoke instance;
 `RMQRankSelect` and `RMQBPNavigation` both reach the RMQ problem specification
 and are not separable today.
+
+## DD-20260807-091 -- the paper/ substrate as a governed surface
+
+Status: Accepted.
+
+Date: 2026-08-07
+
+Context: the `paper/` substrate (manuscript, theorem ledger, related-work
+ledger, evidence matrix, novelty log, README, worklog) was built on an unmerged
+branch and its commits carried no design-log entries. The per-commit design gate
+classifies `paper/*.md` and `paper/rmq.tex` as code-bearing public surfaces, so
+those commits did not satisfy it. This entry supplies the missing record for the
+branch as a whole rather than rewriting the individual commits, which are the
+audited objects.
+
+What the substrate now asserts, and the decisions behind it:
+
+1. **Base pin.** Pinned to `e3362d4f0300b3b0aef22d104ed67844d80134a0`, moved
+   twice: `1490c97` -> `745a3c5` on rebase past 183 commits, then `745a3c5` ->
+   `e3362d4` on this rebase. `WORKLOG.md` deliberately retains its original
+   `1490c97` references: it records what a session did, and is not a statement
+   about the current base. All 11 cited files and all 58 cited Lean declarations
+   were verified to exist at the new base before the first repin.
+
+2. **Two false statements retracted.** `rmq.tex` asserted that no current
+   theorem bounds allocated capacity; Stage A field 8
+   `allocation_two_n_plus_rho` proves exactly that. Repinning additionally
+   turned five statements hedged "at the base commit" from safe to false, and
+   those were repaired in the same edit. Ledger row `L-ARCH-01` moved
+   `PROVISIONAL_ARCHITECTURE` -> `ACCEPTED_BASE`, `L-PACK-01` was added, and
+   `L-OPEN-03` was retired as falsified. Row count held at 34.
+
+3. **Novelty log.** A completed search retires twelve candidate claims, each
+   with a primary-source receipt, including the repository's own prior framing
+   that its novelty was the machine-checked asymptotic `o(n)`. What survives is
+   stated in the weakest form the evidence supports and phrased "we did not
+   find", never "there is no". No claim of priority is made anywhere.
+
+Consequence for the V1 freeze: `paper/` is now part of the release candidate and
+must be inside the release-audit scope. It was previously absent from `main`
+entirely, which the freeze checklist flags as a blocker (a placeholder-free PDF
+build is required).

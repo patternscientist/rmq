@@ -2,7 +2,7 @@
 
 Frozen acceptance rows for the manuscript/evidence substrate on branch
 `codex/eg-cp-paper-evidence-r1`, base commit
-`745a3c5b1fe99fe1072fbcf03f18f5dc9c23cb82`. Row IDs and requirement text
+`e3362d4f0300b3b0aef22d104ed67844d80134a0`. Row IDs and requirement text
 are frozen as of 2026-08-05; evidence and status fields are append-only.
 Statuses: **CLOSED** (evidence in place at this commit) or
 **BLOCKED_ONLY_ON: ARCHITECTURE_RESULT_PENDING** (nothing remains except
@@ -117,7 +117,7 @@ closes no roadmap node.
   (PROVISIONAL_ARCHITECTURE); Section 9.1 holds the single marker;
   `check_paper.ps1` fails unless the marker count in `rmq.tex` is exactly
   one; the ledger confines the target to Section 9.
-- Evidence (appended 2026-08-07, base repinned to `745a3c5b...`): the
+- Evidence (appended 2026-08-07, base repinned to `e3362d4f...`): the
   acceptance condition named in the frozen requirement has been met. Stage A
   was recorded `ACCEPTED` on 2026-08-07 after a fresh-blind exact-commit
   audit and a coordinator reconstruction, and ledger row L-ARCH-01 moved

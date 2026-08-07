@@ -1,7 +1,7 @@
 # paper/ -- RMQ manuscript and evidence substrate
 
 Private working draft of the RMQ manuscript, pinned to repository base
-commit `745a3c5b1fe99fe1072fbcf03f18f5dc9c23cb82`, authored on branch
+commit `e3362d4f0300b3b0aef22d104ed67844d80134a0`, authored on branch
 `codex/eg-cp-paper-evidence-r1` under governance
 `f0c7232a8a52b8d61ead5e96d72a8a849bc094b5`. This directory is a manuscript
 substrate only: it records no architecture acceptance, no coordinator
