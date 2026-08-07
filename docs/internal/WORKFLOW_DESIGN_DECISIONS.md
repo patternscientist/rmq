@@ -8479,3 +8479,20 @@ in, and says explicitly that if the auditor cannot discharge it, disposition
 
 Section 7 preserves the union-find cordon analysis, including the trap that
 broke the first attempt, so the next attempt does not rediscover it.
+
+### WDD-20260807-018 addendum (2026-08-07)
+
+`codex/eg-cp-paper-evidence-r1` merged to `main` at `a54088b`, closing the first
+precondition in section 0 of the audit prompt. Recorded as an amendment rather
+than a new decision because it changes no policy: it discharges a condition the
+decision already stated.
+
+One consequence is substantive and is now written into the prompt: `paper/` is
+part of the release candidate, so the manuscript, its ledgers and its novelty
+log are **in-scope claim surfaces** for the auditor under `RC-10`, not an
+external draft to be taken on trust. The prompt previously described `paper/` as
+absent from `main`, which would have invited an auditor to skip it.
+
+Remaining preconditions are unchanged: the union-find cordon (landed or
+explicitly deferred), the `210`/`427` enforcement decision, the advisory
+independent checker, and the DOI / anonymous-bundle question.

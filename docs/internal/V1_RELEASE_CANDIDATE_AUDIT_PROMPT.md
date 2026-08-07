@@ -21,9 +21,10 @@ unaffected; the *process* requirement is not.
 The consequence sets the launch order: **any tree-touching change after the
 audit invalidates it again.** Therefore, before `<RC-SHA>` is chosen:
 
-- [ ] `codex/eg-cp-paper-evidence-r1` is merged (the manuscript substrate, its
-      hardened checker, and the novelty log). `paper/` is currently absent from
-      `main`, and the freeze requires a placeholder-free PDF build.
+- [x] `codex/eg-cp-paper-evidence-r1` merged at `a54088b` on 2026-08-07: the
+      manuscript substrate, its hardened checker, and the novelty log. `paper/`
+      is now part of the release candidate, so the auditor must treat it as an
+      in-scope claim surface (`RC-10`) rather than as an external draft.
 - [ ] The union-find cordon is either landed or explicitly deferred with a
       recorded reason. It is a tree-touching rename and must not follow the
       audit. **Not started as of `5fe284f`**; see §7.
@@ -163,7 +164,7 @@ Do **not** state a verdict you cannot support from source you read yourself.
 
 Close or explicitly defer each before choosing `<RC-SHA>`:
 
-- `paper/` not on `main` (branch `codex/eg-cp-paper-evidence-r1` ready).
+- ~~`paper/` not on `main`~~ — closed at `a54088b`, 2026-08-07.
 - Union-find cordon not started (§7).
 - `210`/`427` claim enforcement gap (`DD-20260807-087`).
 - Advisory independent checker (nanoda) not started.
