@@ -148,20 +148,20 @@ bridges, and store/accounting lemmas that public aliases summarize.
 Several files are intentionally compatibility shims rather than new proof
 frontiers:
 
-- `RMQ/Core/SuccinctRankProposal.lean`
-- `RMQ/Core/SuccinctSelectProposal.lean`
 - `RMQ/Core/SuccinctCloseProposal.lean`
-- `RMQ/Core/GenericSelectBuilder.lean`
-- `RMQ/Core/GenericSelectParams.lean`
-- `RMQ/Core/GenericSelectPrimitives.lean`
-- `RMQ/Core/GenericSelectLegacy.lean`
 - `RMQ/Core/GenericSelectBPCompat.lean`
-- `RMQ/Core/GenericSelect/LegacyNames.lean`
-- `RMQ/Core/GenericSelect/PrimitiveLegacyNames.lean`
 - `RMQ/Core/GenericSelect/SuccinctSelectLegacyNames.lean`
 
 They are retained so older downstream imports and names remain checked. New
 in-repository code should import the canonical split modules instead.
+
+Deleted on 2026-08-07 in `def5cb3` after a reverse-dependency census found them
+unreachable from every `lean_lib` root and every `lean_exe`: the eight
+`SuccinctRankProposal`, `SuccinctSelectProposal`, `GenericSelectBuilder`,
+`GenericSelectParams`, `GenericSelectPrimitives`, `GenericSelectLegacy`,
+`GenericSelect/LegacyNames` and `GenericSelect/PrimitiveLegacyNames` modules.
+They are listed here only so that a reader of an older revision of this file
+knows what became of them; the paths no longer exist.
 
 `scripts/shim_lint.ps1` is the guardrail for this boundary. It scans live roots,
 docs, examples, and scripts to prevent stale proposal shims and old flat

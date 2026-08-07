@@ -8288,3 +8288,47 @@ release audit wearing a U3 label, and would double-count the same work);
 re-pinning to `880dfdf` and auditing it (audits a commit that is not in the
 release and proves a retired numeral); deleting the node (U3's `210` is still
 the public bound, so silence would be an overstatement by omission).
+
+## WDD-20260807-015 -- pin the floating CI inputs and capture reproduction timings
+
+Status: Accepted (V1 freeze, phase 1).
+
+Date: 2026-08-07
+
+Context: the freeze requires "pinned Linux CI with stored logs and timings". An
+inventory at `745a3c5` found CI green and Linux, but not pinned in the sense the
+freeze means, and capturing no timings at all.
+
+Five floating inputs, all three workflows: `ubuntu-latest`,
+`actions/checkout@v4`, `actions/upload-artifact@v4`, `elan-init.sh` fetched from
+`master`, and an unversioned `apt-get install ripgrep` -- with `ripgrep`
+load-bearing for five separate lint scripts.
+
+Decision and the exact pins, each looked up and confirmed rather than guessed
+(a wrong action SHA breaks CI silently at the next run):
+
+| input | pinned to | how confirmed |
+| --- | --- | --- |
+| runner | `ubuntu-24.04` | GitHub-supported explicit label |
+| `actions/checkout` | `11d5960a326750d5838078e36cf38b85af677262` | releases page and the `git/ref/tags/v4` API agreed |
+| `actions/upload-artifact` | `ea165f8d65b6e75b540449e92b4886f43607fa02` | `git/ref/tags/v4` API |
+| `elan-init.sh` | tag `v4.2.3` | latest release API, then fetched the tagged script and confirmed it serves a valid `#!/bin/sh` installer |
+
+`ripgrep` is deliberately **not** version-pinned. Apt package versions are not
+stable across runner images, so a pin would break the build on the next image
+refresh while protecting little. Instead each workflow now runs `rg --version`,
+so the version in force is recorded in the stored log and a drift becomes
+visible in the diff of two logs rather than invisible.
+
+Timings: `scripts/reproduce_artifact.sh` now emits `TIMING: <section>: <n>s` per
+section plus `TIMING: TOTAL`, via a `trap ... EXIT` so the final section and the
+total are reported even on failure. The harness was smoke-tested standalone
+before landing. No new capture plumbing was needed: `artifact-repro.yml`
+already tees the reproduction log and uploads it, and `release-artifact.yml`
+already attaches the same log to the GitHub release, so timings now reach a
+durable location rather than only 90-day Actions retention.
+
+Stated so it is not misread: these are wall-clock seconds on a CI runner,
+recorded as reproduction evidence. This repository proves **no** runtime bound,
+and the timings must never be cited as one. The proved cost quantities are
+charged probes and modeled cost, both of which are independent of wall clock.

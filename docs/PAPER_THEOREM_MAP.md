@@ -200,9 +200,42 @@ This is the coefficient-correct Catalan/entropy lower-bound slack in doubled
 integer form, kept separate from the upper-bound construction. It is not the
 Liu-Yu/Liu cell-probe lower bound.
 
+## Packed Cell-Probe Architecture (Stage A, accepted 2026-08-07)
+
+```lean
+RMQ.SuccinctFinal.PackedCellProbe.PackedReviewerArchitectureCapstone
+RMQ.SuccinctFinal.PackedCellProbe.packedReviewerArchitectureCapstone_holds
+```
+
+A 39-field structure discharged for every input list and endpoint pair. Over one
+allocated `header ++ buildPayload ++ padding` packed memory it states: complete
+allocated capacity at most `2n + rho(n)` for a checked little-`o`-linear `rho`
+(fields 8 and 9); every valid half-open query returns the leftmost minimum's
+index (field 39); and at most `427` attempted aligned `w(n)`-bit cell probes
+into that same memory (field `derived_cap_le_427`), under a closed controller
+whose dynamic inputs are exactly `n`, the endpoints, and prior probe replies.
+
+Scope, stated because each part is easy to over-read:
+
+- `427` is an **upper bound derived from the run's own measure**, not an
+  attainment claim. The pinned fixture run issues 68 probes.
+- This is a **cell-probe** result. Computation between probes is free;
+  controller dispatch, decoding, arithmetic, comparisons and branching are
+  uncharged. It is not word-RAM instruction time, not preprocessing time, and
+  not measured runtime.
+- The `210` inside `427 = 1 + 2*3 + 2*210` is the packed controller's own
+  structural fuel, proved in
+  `RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerWholeProtocol.lean`. It is
+  **not** the charged-trace `210` of the canonical reviewer route above. The two
+  are numerically equal and provably independent: nothing under
+  `PackedCellProbe/` references `SuccinctClassic.queryCost` or
+  `nonSyntheticWeight`. Do not merge the two numbers when quoting either.
+
 ## Non-Claims
 
 The public theorem map does not assert compiled Lean execution performance, compiler
 correctness, full CPU semantics, production serialization, or an exact/minimal
 dynamic read-set characterization. See `docs/PAPER_MODEL_ADEQUACY.md` for the
-model-adequacy scope.
+model-adequacy scope. It does not assert word-RAM query time, preprocessing
+complexity for the succinct construction, or that either `210` or `427` is
+attained or minimal.

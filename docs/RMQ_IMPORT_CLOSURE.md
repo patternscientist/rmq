@@ -114,14 +114,39 @@ dependency used by the paper closure.
 
 ## Interpretation
 
-The approximate 170k-line presentation number describes the whole repository
-as a checked data-structure testbed: RMQ, lower bounds, rank/select,
-BP-navigation, union-find, examples, validation, compatibility shims, archive,
-and reviewer scripts. In this worktree the measured whole-workspace Lean source
-count is 164618 lines.
+The presentation number describes the whole repository as a checked
+data-structure testbed: RMQ, lower bounds, rank/select, BP-navigation,
+union-find, examples, validation, compatibility shims, archive, and reviewer
+scripts.
 
-The RMQ paper root is smaller: `RMQPaper` has 126 workspace source files and
-105607 Lean LOC. That closure still includes the construction-heavy succinct
-RMQ, lower-bound, and WordRAM/model-adequacy machinery needed for the paper
-claims, but it no longer asks reviewers to mentally subtract unrelated public
-spokes or historical/proposal/obstruction roots.
+**Counts regenerated 2026-08-07 at commit `745a3c5`** with the walker above,
+counting every `.lean` outside `.lake/`. The previous figures in this section
+(whole workspace 164618 lines; `RMQPaper` 126 files / 105607 LOC) were measured
+before the Stage-A packed cell-probe work landed and before the 2026-08-07
+refactor wave, and are superseded:
+
+| Root | Files in closure | Lean lines |
+| --- | --- | --- |
+| `RMQPaper` | 153 | 139054 |
+| `RMQ` | 315 | 264003 |
+| `RMQHub` | 12 | 2871 |
+| `RMQUnionFind` | 14 | 11449 |
+| whole workspace | 577 | 296389 |
+
+Two readings that matter more than the totals:
+
+- The `RMQPaper` closure remains a strict subset of `RMQ` (153 of 315 files).
+  It still includes the construction-heavy succinct RMQ, lower-bound, and
+  WordRAM/model-adequacy machinery the paper claims need, but it does not ask a
+  reviewer to mentally subtract unrelated public spokes or
+  historical/proposal/obstruction roots.
+- `RMQHub` is 12 files and 2871 lines, and its closure contains **no**
+  RMQ-specific module -- no `Spec`, `Backend`, `Window`, `LCA`, `Reduction`,
+  `Cartesian`, or `Shape`. `RMQUnionFind` is 14 files whose only shared
+  dependencies are the hub's `Cost` and `Amortized`. That is the one genuine
+  hub-and-spoke instance in the repository; `RMQRankSelect` and
+  `RMQBPNavigation` both reach the RMQ problem specification and are not
+  separable today.
+
+The whole-workspace figure counts 577 files because it includes the frozen
+evidence fixtures under `docs/`; the Lean sources proper are 349 of them.

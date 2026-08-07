@@ -4,10 +4,34 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
 
+# Per-section wall-clock. The V1 freeze requires stored logs AND timings; before
+# this, no timing was captured anywhere. Times are wall-clock seconds on the
+# runner and are reproduction evidence, not a performance claim about the
+# artifact -- nothing in this repository proves a runtime bound.
+_rmq_t0="$(date +%s)"
+_rmq_section_start=""
+_rmq_section_name=""
+
+_rmq_close_section() {
+  if [ -n "$_rmq_section_name" ]; then
+    echo "TIMING: ${_rmq_section_name}: $(( $(date +%s) - _rmq_section_start ))s"
+  fi
+}
+
 section() {
+  _rmq_close_section
+  _rmq_section_name="$1"
+  _rmq_section_start="$(date +%s)"
   echo
   echo "== $1 =="
 }
+
+_rmq_total() {
+  _rmq_close_section
+  echo
+  echo "TIMING: TOTAL: $(( $(date +%s) - _rmq_t0 ))s"
+}
+trap _rmq_total EXIT
 
 echo "== Tool versions =="
 if command -v elan >/dev/null 2>&1; then

@@ -7,10 +7,10 @@ on:
 jobs:
   lean:
     name: Lean gate
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           # The strict design-decision scan diffs against HEAD~1 on push
           # events; the default depth-1 checkout cannot resolve that base.
@@ -20,7 +20,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ripgrep
-          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+          rg --version
+          curl https://raw.githubusercontent.com/leanprover/elan/v4.2.3/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
       - name: Show Lean toolchain

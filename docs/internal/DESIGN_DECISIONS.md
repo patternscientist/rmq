@@ -10720,3 +10720,54 @@ private->public promotions, because its driver definitions -- notably
 regions. `ConcreteDirectoryRAMStoreParam.lean` and `ConcreteDirectoryRAM.lean`
 have no internal section markers at all, so any cut would be arbitrary
 line-count bisection rather than refactoring, and neither is taken.
+
+## DD-20260807-090 -- synchronize the paper-facing surfaces to the accepted theorem
+
+Status: Accepted (V1 freeze, phase 1).
+
+Date: 2026-08-07
+
+Context: `docs/PAPER_THEOREM_MAP.md` and `docs/PAPER_CLAIM_CORRESPONDENCE.md`
+had not been touched since 2026-07-20 and contained **zero** occurrences of
+`PackedReviewerArchitectureCapstone` or `427`, while Stage A was accepted on
+2026-08-07 and integrated into mainline. An auditor handed the release candidate
+would have been auditing a July description of an August theorem. This was the
+largest correctness gap in the freeze list.
+
+Decision: add a packed cell-probe section to both surfaces, stating the accepted
+claim and, in the same block, the three things a reader most reliably gets wrong:
+
+- `427` is an upper bound derived from the run's own measure, not an attainment
+  claim; the pinned fixture issues 68 probes.
+- The result is cell-probe. Computation between probes is free and controller
+  steps are uncharged, so it is not word-RAM time, not preprocessing time, and
+  not measured runtime.
+- The `210` in `427 = 1 + 2*3 + 2*210` is the packed controller's structural
+  fuel from `ReviewerWholeProtocol.lean`, and is a **different quantity** from
+  the canonical route's charged-trace `210` that already appears on both
+  surfaces. They are numerically equal and provably independent: nothing under
+  `PackedCellProbe/` references `SuccinctClassic.queryCost` or
+  `nonSyntheticWeight`. Two equal numerals denoting different quantities on one
+  page is a documentation hazard, so it is called out wherever both appear
+  rather than left for a reader to notice.
+
+Also in scope, both consequences of this session's own refactoring:
+
+- `docs/CODE_MAP.md` listed eight modules under "Compatibility And Archive"
+  that commit `def5cb3` deleted. Presenting deleted paths as live shims is worse
+  than omitting them, so they are recorded as deleted, with the reason (a
+  reverse-dependency census found them unreachable from every `lean_lib` root
+  and every `lean_exe`) and a note that the paths no longer exist.
+- `docs/RMQ_IMPORT_CLOSURE.md` carried counts measured before Stage A and before
+  the refactor wave. Regenerated with the import-graph walker the document
+  itself publishes, so the method is the document's own rather than a substitute:
+  `RMQPaper` 153 files / 139054 lines, `RMQ` 315 / 264003, `RMQHub` 12 / 2871,
+  `RMQUnionFind` 14 / 11449, whole workspace 577 / 296389. The superseded figures
+  are named so the change is auditable.
+
+Recorded alongside the counts, because it is the load-bearing architectural
+fact and was previously only asserted: the `RMQHub` closure contains no
+RMQ-specific module, and `RMQUnionFind`'s only shared dependencies are the hub's
+`Cost` and `Amortized`. That is the one genuine hub-and-spoke instance;
+`RMQRankSelect` and `RMQBPNavigation` both reach the RMQ problem specification
+and are not separable today.

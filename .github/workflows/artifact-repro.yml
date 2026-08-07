@@ -10,10 +10,10 @@ on:
 jobs:
   reproduce:
     name: Reproduce artifact
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 2
 
@@ -21,7 +21,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ripgrep
-          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+          rg --version
+          curl https://raw.githubusercontent.com/leanprover/elan/v4.2.3/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
       - name: Run artifact reproduction script
@@ -34,7 +35,7 @@ jobs:
 
       - name: Upload reproduction log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: artifact-reproduction-log
           path: ${{ runner.temp }}/artifact-reproduction.log
@@ -46,7 +47,7 @@ jobs:
 
       - name: Upload audit packet
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: audit-packet
           path: audit-packet

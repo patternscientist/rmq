@@ -105,6 +105,28 @@ capstones, or their current obstruction/history rows.
 | Concrete BP close-navigation global payload-store execution story. | `RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory` | `RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_execution_story` | `RMQ/Core/BPNavigationRAM.lean` | `lake env lean scripts/headline_axiom_check.lean` |
 | Checked obstruction for reusing the current close/LCA store as the matching-open leg for fuller succinct tree navigation. | `RMQ.Headlines.concreteSuccinctBPTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStoreObstruction` | `RMQ.BPNavigation.concreteSuccinctTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStore_obstruction` | `RMQ/Core/BPNavigationRAM.lean` | `lake env lean scripts/headline_axiom_check.lean` |
 
+## Packed Cell-Probe Architecture (Stage A, accepted 2026-08-07)
+
+| Claim | Public identity | Source declaration | File | Check |
+| --- | --- | --- | --- | --- |
+| One allocated `header ++ buildPayload ++ padding` packed memory answers every valid half-open query with the leftmost minimum's index, in at most `427` attempted aligned `w(n)`-bit cell probes into that same memory, with complete allocated capacity `2n + o(n)`, under a closed controller whose dynamic inputs are exactly `n`, the endpoints, and prior probe replies. | `RMQ.SuccinctFinal.PackedCellProbe.PackedReviewerArchitectureCapstone` | `RMQ.SuccinctFinal.PackedCellProbe.packedReviewerArchitectureCapstone_holds` | `RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerArchitectureCapstone.lean` | `lake env lean scripts/axiom_check.lean` |
+| Complete allocated capacity, counting header cell, every payload cell and final padding at full cell width, is at most `2n + rho(n)` with `rho` little-`o`-linear. | field 8 `allocation_two_n_plus_rho` with field 9 `rho_little_o` | same producer | same file (`:356`, `:361`) | same |
+| Every valid half-open query's terminal state carries an index equal to the reference leftmost-minimum answer. | field 39 `valid_answer_is_index` | same producer | same file | same |
+| Attempted probes are capped by the derived numeral `427`. | field `derived_cap_le_427` | same producer | same file (`:490`) | same |
+
+Reading rules for this block, each of which a reader will otherwise get wrong:
+
+- `427` is an upper bound derived from the run's own measure, **not** an
+  attainment claim; the pinned fixture issues 68 probes.
+- The result is **cell-probe**: computation between probes is free and
+  controller steps are uncharged. It is not word-RAM time, not preprocessing
+  time, not measured runtime.
+- The `210` in `427 = 1 + 2*3 + 2*210` is the packed controller's structural
+  fuel and is **a different quantity** from the canonical route's charged-trace
+  `210` in the table above, despite being the same numeral. They are provably
+  independent; nothing under `PackedCellProbe/` references
+  `SuccinctClassic.queryCost` or `nonSyntheticWeight`.
+
 ## Reproduction Commands
 
 The table above uses focused per-row commands. The reviewer one-command path is:
