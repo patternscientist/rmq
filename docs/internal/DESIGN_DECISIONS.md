@@ -10325,3 +10325,61 @@ extents (a stale range silently eats a live declaration); leaving the archives
 as "documentation" (they are superseded proofs, not documentation, and two
 carry mojibake); splitting the files instead (splits are deferred past V1 --
 see the Wave-1 plan and `DD-20260807-081`).
+
+## DD-20260807-083 -- relocate the merge-family theorems upstream so the duplicated proof can delegate
+
+Status: Accepted for `codex/refactor-wave1-r1` (pre-V1 elegance pass, step 1 of 2).
+
+Date: 2026-08-07
+
+Context: `bpRelativeRmmCandidateMerge_exact_of_query_semantics`
+(`RelativeMerge.lean`, 738 lines) and
+`PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_query_semantics_cross_block`
+(`PayloadMacro.lean`, 707 lines) are the same argument written twice; a direct
+diff of the two bodies differs in 67 lines, nearly all signature. The same
+duplication repeats for the three `*_leftmost` component lemmas, so the defect
+is four pairs, not one.
+
+The cause is import order, not proof content. `RelativeMerge` imports
+`PayloadMacro`, so `PayloadMacro` cannot cite the merge theorem and the proof
+was written out longhand a second time. That this is the whole story is
+confirmed by `RelativeRmmMacro/AbstractMacro.lean:285`, which proves the same
+shape for a different component type in six lines --
+`rw [component.lcaCloseCosted_erase_decoded ...]`, `have hmerge := bpRelativeRmmCandidateMerge_exact_of_query_semantics ...`,
+`simp [hmerge, bpCandidateClose?]` -- and gets away with it only because it
+sits downstream of `RelativeMerge`.
+
+Decision (step 1): relocate the four merge-family theorems
+(`..._of_left_fringe_leftmost`, `..._of_right_fringe_leftmost`,
+`..._of_middle_leftmost`, `..._of_query_semantics`) verbatim from
+`RelativeMerge.lean:15-1218` into `PayloadMacro.lean` immediately after
+`open SuccinctSpace`, ahead of the `PayloadLiveBPEndpointFringeRangeMacro`
+structure. No name, statement, binder, or proof-term character changes.
+
+Verified before moving, not after:
+- `RelativeMerge` imports `PayloadMacro`; `PayloadMacro` imports `RangeTables`.
+- The two files' namespace preambles (`namespace RMQ` / `namespace SuccinctClose`
+  / `open SuccinctSpace`) are byte-identical, so the paste is context-neutral.
+- `RelativeMerge` cites **zero** `PayloadMacro` declarations -- every identifier
+  `PayloadMacro` declares was grepped against all 1290 lines with no hit -- so
+  the move introduces no cycle and needs no import edit.
+- The insertion point is above the structure and its namespace (now at
+  `PayloadMacro:1233`), so the four theorems keep their fully-qualified
+  `RMQ.SuccinctClose.*` names. This matters: `SuccinctCloseProposal.lean:58-62`
+  re-exports all four by name, and that file is retained because a frozen audit
+  report depends on its export list (`DD-20260807-081`).
+- `lake build` green after the move (831 s).
+
+Consequences: `RelativeMerge.lean` drops from 1291 to 87 lines, retaining only
+`bpRelativeRmmCandidateMerge_exact`, which still reaches the moved theorems
+through its unchanged import. Module identity and every downstream import are
+untouched. This step is deliberately line-neutral: it is the enabler for step 2,
+which replaces `PayloadMacro`'s duplicated bodies with delegations and is where
+the ~950 duplicated lines actually leave the tree.
+
+Alternatives rejected: inventing a new shared lemma parameterized over the three
+component facts (the shared lemma already exists and is already public, so a new
+abstraction would add a declaration to a freezing surface for no gain); making
+the shared lemma `private` (module-scoped in Lean 4, so invisible to the very
+consumer that needs it); leaving the duplication and splitting the files instead
+(splits move text between files without removing a single duplicated line).
