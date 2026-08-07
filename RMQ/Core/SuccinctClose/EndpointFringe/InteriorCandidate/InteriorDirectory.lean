@@ -14,30 +14,7 @@ namespace SuccinctClose
 
 open SuccinctSpace
 
-private def interiorPayloadWordReadOfGet?
-    (words : Array (List Bool)) (index : Nat) : List (List Bool) :=
-  match words[index]? with
-  | some word => [word]
-  | none => []
 
-private theorem interiorPayloadWordReadOfGet?_length_le
-    {n : Nat}
-    {words : Array (List Bool)}
-    (hwords :
-      forall {index : Nat} {word : List Bool},
-        words[index]? = some word ->
-          word.length <= SuccinctRank.machineWordBits n)
-    {index : Nat} {word : List Bool}
-    (hmem : word ∈ interiorPayloadWordReadOfGet? words index) :
-    word.length <= SuccinctRank.machineWordBits n := by
-  unfold interiorPayloadWordReadOfGet? at hmem
-  cases hget : words[index]? with
-  | none =>
-      simp [hget] at hmem
-  | some stored =>
-      simp [hget] at hmem
-      subst word
-      exact hwords hget
 
 /--
 Interior full-block range-minimum directory for the relative-rmM close layer.

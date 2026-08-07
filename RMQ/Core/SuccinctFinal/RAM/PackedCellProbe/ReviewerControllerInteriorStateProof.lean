@@ -1095,24 +1095,6 @@ private theorem PackedReviewerInteriorNatSpec.start_requests_fit
   · exact packedReviewerInteriorComponentMachineSpan_le_dead shape.size
       spec.component
 
-private theorem packedReviewerInteriorNatStart_progress
-    (invocation : PackedReviewerInvocation)
-    (n entryCount width base index : Nat) :
-    let state :=
-      packedReviewerInteriorNatStart invocation n entryCount width base index
-    packedReviewerInteriorNatResult state ≠ none ∨
-      0 < packedReviewerInteriorNatRemaining state := by
-  unfold packedReviewerInteriorNatStart
-  by_cases hindex : index < entryCount
-  · simp only [hindex, if_true]
-    by_cases hcount :
-        SuccinctSpace.fixedWidthNatTableMachineChunkCount width
-            (packedBpCodeWordWidth n) = 0
-    · simp [hcount, packedReviewerInteriorNatResult]
-    · right
-      simp [hcount, packedReviewerInteriorNatRemaining]
-      omega
-  · simp [hindex, packedReviewerInteriorNatRemaining]
 
 private theorem packedReviewerInteriorNatStart_read_control
     (invocation : PackedReviewerInvocation)

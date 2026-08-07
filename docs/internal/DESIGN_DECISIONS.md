@@ -10273,3 +10273,55 @@ since the cluster is import-closed); deleting all thirteen census candidates
 (two are live `lean_exe` roots and two more are evidence-blocked, as above);
 keeping them as "harmless" (an auditor opening the V1 tree finds files absent
 from the build graph, which costs credibility for free).
+
+## DD-20260807-082 -- remove 2,276 lines of dead declarations and legacy comment archives
+
+Status: Accepted for `codex/refactor-wave1-r1` (pre-V1 cleanup wave 1).
+
+Date: 2026-08-07
+
+Context: a pre-V1 legibility pass found two categories of inert text in the
+load-bearing proof tree: private declarations with no consumer anywhere in the
+repository, and large `/- ... -/` blocks explicitly self-labelled "legacy proof
+archive". Neither affects any theorem; both are read by anyone auditing the V1
+artifact.
+
+Decision: delete, across seven files,
+- 25 dead private declarations (17 in `SuccinctFinalRAM.lean`, 4 in
+  `SuccinctFinalStoreParam.lean`, 2 in `ReviewerReachabilitySmall.lean`, 1 in
+  `ReviewerControllerInteriorStateProof.lean`, a dead `def`/`theorem` pair in
+  `InteriorDirectory.lean`);
+- 7 legacy comment archives (3 in `ConcreteDirectoryRAMStoreParam.lean` at 978
+  lines total, 2 in `SuccinctFinalRAM.lean`, 2 in `ConcreteDirectoryRAM.lean`).
+
+Method, chosen because reported line ranges are not trustworthy evidence:
+every dead declaration was confirmed by repo-wide occurrence count (exactly one
+occurrence = its own definition) before deletion, and each deletion extent was
+computed programmatically by scanning to the next column-zero construct rather
+than taken from a report. Extents were checked for overlap, and boundaries
+spot-checked -- the largest block (168 lines) ends exactly where the next dead
+declaration begins. `InteriorDirectory.lean`'s dead `def` is consumed by its own
+dead lemma, so the pair is deleted together; neither has an external user.
+
+One notable case: `packedReviewerInteriorNatStart_progress` existed twice as a
+`private theorem`, in `ReviewerControllerInteriorStateProof.lean` (unused) and
+`ReviewerLogicalSimulation.lean` (used locally). Only the unused copy is
+removed.
+
+Also corrected here: `scripts/axiom_check.lean` still described the Stage-A
+capstone as "thirty-eight-field" after amendment `CA-20260807-001` added field
+39. Comment-only, self-introduced in the amendment commit, fixed now.
+
+Consequences: 2,276 lines leave the V1 artifact; no public declaration, type,
+statement, or proof term changes; `lake build` is green (909 s full rebuild).
+Because `SuccinctFinalRAM.lean` and `SuccinctFinalStoreParam.lean` are
+text-pinned by `scripts/m1_certificate_mutation_regression.ps1` (wired as a hard
+failure at `gate.ps1:77-78`), that regression is re-run explicitly against this
+commit rather than inferred from a successful build; every deletion lies
+outside its frozen extraction span.
+
+Alternatives rejected: deleting by the reported line ranges without recomputing
+extents (a stale range silently eats a live declaration); leaving the archives
+as "documentation" (they are superseded proofs, not documentation, and two
+carry mojibake); splitting the files instead (splits are deferred past V1 --
+see the Wave-1 plan and `DD-20260807-081`).

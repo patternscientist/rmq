@@ -1224,7 +1224,8 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerNoMetadataCompletion
 
 -- EG-CP Stage-A architecture capstone: public axiom inventory.
--- The combined thirty-eight-field architecture proposition and its producer,
+-- The combined architecture proposition (38 frozen fields plus field 39 by
+-- coordinator amendment CA-20260807-001) and its producer,
 -- the universal leftmost-tie connection, the reachable-state invariant at the
 -- literal run, and the independent expected-type consumer of the validation
 -- root.

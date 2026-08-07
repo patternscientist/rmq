@@ -1952,35 +1952,6 @@ def crossBlockCloseTraceResultWithRankSeedOfReady
                     (localBPRightFringeCandidateSeededTraceResult
                       shape blockSize rightClose rightSeed)
 
-/- theorem crossBlockCloseTraceResultWithRankSeedOfSizeGe_refines
-    (shape : Cartesian.CartesianShape)
-    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
-    (rankCloseCosted : Nat -> Costed Nat)
-    (hsize : 2 ^ 128 <= shape.size)
-    (leftClose rightClose : Nat)
-    (hrank :
-      forall pos, (rankCloseTrace pos).toCosted = rankCloseCosted pos) :
-    (crossBlockCloseTraceResultWithRankSeedOfSizeGe
-      shape rankCloseTrace hsize leftClose rightClose).toCosted =
-      ConcreteCompactBPCloseLCADirectory.crossBlockCloseCostedWithRankSeed
-        (concreteCompactBPCloseLCADirectory shape)
-        rankCloseCosted leftClose rightClose := by
-  unfold crossBlockCloseTraceResultWithRankSeedOfSizeGe
-  unfold ConcreteCompactBPCloseLCADirectory.crossBlockCloseCostedWithRankSeed
-  let blockSize := canonicalBPRelativeSummaryBlockSize shape
-  by_cases hmiddle :
-      blockOfClose blockSize leftClose + 1 <
-        blockOfClose blockSize rightClose
-  Â· simp [localBPSeedFromRankCloseTraceResult_refines, hrank,
-      localBPLeftFringeCandidateSeededTraceResult_refines,
-      localBPRightFringeCandidateSeededTraceResult_refines,
-      concreteBPRelativeRmmInteriorRangeMinTraceResultOfSizeGe_refines,
-      blockSize, hmiddle]
-  Â· simp [localBPSeedFromRankCloseTraceResult_refines, hrank,
-      localBPLeftFringeCandidateSeededTraceResult_refines,
-      localBPRightFringeCandidateSeededTraceResult_refines,
-      blockSize, hmiddle]
--/
 
 theorem crossBlockCloseTraceResultWithRankSeedOfReady_refines
     (shape : Cartesian.CartesianShape)
@@ -3602,34 +3573,6 @@ def lcaCloseTraceResultWithRankSeedOfReady
     crossBlockCloseTraceResultWithRankSeedOfReady
       shape rankCloseTrace hready leftClose rightClose
 
-/- theorem lcaCloseTraceResultWithRankSeedOfSizeGe_refines
-    (shape : Cartesian.CartesianShape)
-    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
-    (rankCloseCosted : Nat -> Costed Nat)
-    (hsize : 2 ^ 128 <= shape.size)
-    (leftClose rightClose : Nat)
-    (hrank :
-      forall pos, (rankCloseTrace pos).toCosted = rankCloseCosted pos) :
-    (lcaCloseTraceResultWithRankSeedOfSizeGe
-      shape rankCloseTrace hsize leftClose rightClose).toCosted =
-      ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed
-        (concreteCompactBPCloseLCADirectory shape)
-        rankCloseCosted leftClose rightClose := by
-  have hdispatch :=
-    ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_eq_positive_dispatch_of_size_ge
-      (concreteCompactBPCloseLCADirectory shape)
-      rankCloseCosted leftClose rightClose hsize
-  rw [hdispatch]
-  by_cases hsame :
-      blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
-        blockOfClose (canonicalBPRelativeSummaryBlockSize shape) rightClose
-  Â· simp [lcaCloseTraceResultWithRankSeedOfSizeGe, hsame,
-      localBPSameBlockCloseDecodedTraceResultWithRankSeed_refines,
-      hrank]
-  Â· simp [lcaCloseTraceResultWithRankSeedOfSizeGe, hsame,
-      crossBlockCloseTraceResultWithRankSeedOfSizeGe_refines,
-      hrank]
--/
 
 theorem lcaCloseTraceResultWithRankSeedOfReady_refines
     (shape : Cartesian.CartesianShape)

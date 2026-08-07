@@ -1170,36 +1170,7 @@ private theorem firstSelectClose_read_mem_wholeQuery
   simpa [WholeQueryInstr.evalGlobalWordTrace,
     WholeQueryNatExpr.eval] using hmem
 
-private theorem denseTwoWordSelect_first_successful_read
-    (bitWordSegmentBase deadSegment : Nat)
-    (target : Bool) {bits : List Bool} {wordSize : Nat}
-    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
-    (basePosition baseOccurrence q : Nat) (word : WordRAM.Word)
-    (hword : bitWords.store.words[basePosition / wordSize]? = some word) :
-    .readWord bitWordSegmentBase (basePosition / wordSize) (some word) ∈
-      (GenericSelect.denseTwoWordSelectTraceResultRelabeled
-        bitWordSegmentBase deadSegment target bitWords
-        basePosition baseOccurrence q).trace := by
-  unfold GenericSelect.denseTwoWordSelectTraceResultRelabeled
-    GenericSelect.denseTwoWordSelectTraceResult
-  simp [WordRAM.TraceResult.relabelReadSegmentsWith,
-    WordRAM.TraceEvent.relabelReadSegmentWith,
-    WordRAM.singletonSegmentMap, WordRAM.TraceEvent.singletonSegmentMap,
-    SuccinctSpace.PayloadWordStore.readProgram,
-    SuccinctSpace.PayloadWordStore.wordRAMStore,
-    WordRAM.Program.eval, WordRAM.Store.readWord?, hword]
 
-private theorem reviewerSingleton_bitWord_zero :
-    (GenericSelect.sparseExceptionSelectData
-      (Cartesian.shape reviewerSingletonInput).bpCode false).bitWords.store.words[0]? =
-        some [true, false] := by
-  rw [reviewerSingletonInput_bpCode]
-  simp [GenericSelect.sparseExceptionSelectData,
-    SuccinctSpace.BoundedPayloadWordStore.ofChunks,
-    SuccinctSpace.chunkPayloadWords,
-    SuccinctSpace.chunkPayloadWordsFuel,
-    GenericSelect.wordBits, SuccinctRank.machineWordBits,
-    reviewerSingleton_log2_two]
 
 private theorem reviewerSingleton_sharedBP_select_successful_read :
     .readWord 0 0 (some [true, false]) ∈

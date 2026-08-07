@@ -296,24 +296,6 @@ private theorem ofProgramWithStore_storeTraceLocal
       (fun store => WordRAM.TraceResult.ofResult (program.evalR store))
       (ofResultProgram_storeTraceLocal program)
 
-private theorem ofNatProgramWithStore_storeTraceLocal
-    (segmentMap : Nat -> Nat) (program : WordRAM.Register.NatProgram)
-    (regs : WordRAM.Register.RegFile) :
-    StoreTraceLocal (fun store =>
-      WordRAM.TraceResult.ofNatProgramWithStore segmentMap store program regs) := by
-  have hinner : StoreTraceLocal (fun store =>
-      WordRAM.TraceResult.ofResult (program.evalR store regs)) := by
-    intro storeA storeB hagree
-    exact congrArg WordRAM.TraceResult.ofResult
-      (natProgram_evalR_eq_of_trace_read_agreement
-        program storeA storeB regs (by
-          intro segment index word? hmem
-          apply hagree segment index word?
-          simpa [WordRAM.TraceResult.ofResult] using hmem))
-  simpa [WordRAM.TraceResult.ofNatProgramWithStore] using
-    storeTraceLocal_relabelReadSegmentsWith_pullback segmentMap
-      (fun store => WordRAM.TraceResult.ofResult (program.evalR store regs))
-      hinner
 
 /-! ### Store-trace locality for the chunked rank/select trace atoms -/
 
@@ -1745,15 +1727,6 @@ private theorem localBPWindowBitsWithStore_storeTraceLocal
   apply storeTraceLocal_map
   exact localBPBlockWordsWithStore_storeTraceLocal shape blockSize close
 
-private theorem localBPSameBlockSeededWithStore_storeTraceLocal
-    (shape : Cartesian.CartesianShape)
-    (blockSize leftClose rightClose seed : Nat) :
-    StoreTraceLocal (fun store =>
-      SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseSeededTraceResultWithStore
-        shape store blockSize leftClose rightClose seed) := by
-  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseSeededTraceResultWithStore
-  apply storeTraceLocal_map
-  exact localBPWindowBitsWithStore_storeTraceLocal shape blockSize leftClose
 
 private theorem localBPLeftFringeSeededWithStore_storeTraceLocal
     (shape : Cartesian.CartesianShape)
@@ -1828,21 +1801,6 @@ private theorem canonicalInteriorWithStore_storeTraceLocal
     (SuccinctClose.flatStoreExecutionTraceResultAtSegment
       segments.canonicalComponent) hexecution
 
-private theorem finalSameBlockLcaWithStore_storeTraceLocal
-    (shape : Cartesian.CartesianShape)
-    (blockSize leftClose rightClose : Nat) :
-    StoreTraceLocal (fun store =>
-      SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore
-        shape
-        (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
-          shape store concreteBPNativeRankCloseTraceSegmentBase)
-        store blockSize leftClose rightClose) := by
-  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore
-  apply storeTraceLocal_bind
-  · exact finalRankSeedWithStore_storeTraceLocal shape blockSize leftClose
-  · intro seed
-    exact localBPSameBlockSeededWithStore_storeTraceLocal
-      shape blockSize leftClose rightClose seed
 
 private theorem chunkedFringeFoldWithStore_storeTraceLocal
     (fringeSegment c : Nat) (window : List Bool)
@@ -1970,47 +1928,6 @@ private theorem finalChunkedCrossBlockLcaWithStore_storeTraceLocal
           exact chunkedRightFringeSeededWithStore_storeTraceLocal
             shape fringeSegment blockSize rightClose rightSeed
 
-private theorem finalCrossBlockLcaWithStore_storeTraceLocal
-    (shape : Cartesian.CartesianShape)
-    (segments : SuccinctClose.BPRelativeRmmInteriorTraceSegments)
-    (leftClose rightClose : Nat) :
-    StoreTraceLocal (fun store =>
-      SuccinctClose.ConcreteCompactBPCloseLCADirectory.crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
-        shape
-        (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
-          shape store concreteBPNativeRankCloseTraceSegmentBase)
-        segments store leftClose rightClose) := by
-  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
-  let blockSize := SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
-  let leftBlock := SuccinctClose.blockOfClose
-    blockSize leftClose
-  let rightBlock := SuccinctClose.blockOfClose
-    blockSize rightClose
-  dsimp only
-  apply storeTraceLocal_bind
-  · exact finalRankSeedWithStore_storeTraceLocal shape blockSize leftClose
-  · intro leftSeed
-    apply storeTraceLocal_bind
-    · exact localBPLeftFringeSeededWithStore_storeTraceLocal
-        shape blockSize leftClose leftSeed
-    · intro left?
-      apply storeTraceLocal_bind
-      · by_cases hmiddle : leftBlock + 1 < rightBlock
-        · dsimp only [blockSize, leftBlock, rightBlock] at hmiddle
-          simp only [hmiddle, if_pos]
-          exact canonicalInteriorWithStore_storeTraceLocal
-            shape segments (leftBlock + 1) (rightBlock - leftBlock - 1)
-        · dsimp only [blockSize, leftBlock, rightBlock] at hmiddle
-          simp only [hmiddle]
-          exact storeTraceLocal_const _
-      · intro middle?
-        apply storeTraceLocal_bind
-        · exact finalRankSeedWithStore_storeTraceLocal
-            shape blockSize rightClose
-        · intro rightSeed
-          apply storeTraceLocal_map
-          exact localBPRightFringeSeededWithStore_storeTraceLocal
-            shape blockSize rightClose rightSeed
 
 private theorem finalLcaCloseWithStore_storeTraceLocal
     (shape : Cartesian.CartesianShape) (leftClose rightClose : Nat) :

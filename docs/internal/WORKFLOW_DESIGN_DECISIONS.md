@@ -8156,3 +8156,47 @@ was executed on 2026-08-07 under explicit owner authorization, carrying the
 `AUD1` audit report with it. `main` receives a single commit passing
 `-Base HEAD~1`; the branch retains full history including the audited objects.
 No push was performed or authorized.
+
+## WDD-20260807-013: the curated axiom inventory is workflow-sensitive, and a dead-code sweep re-runs the text-pinned regressions rather than inferring them from a build
+
+Status: Accepted for `codex/refactor-wave1-r1`.
+
+Date: 2026-08-07
+
+Trigger: the Wave-1 dead-code sweep (`DD-20260807-082`) touched
+`scripts/axiom_check.lean` to correct a stale field-count comment. The strict
+design check classifies that script as workflow-sensitive, so the commit needs
+a same-commit workflow-ledger entry -- the rule established by
+`WDD-20260806-011` and re-confirmed here on a *script* rather than a document.
+
+Decision, process: any commit touching `scripts/axiom_check.lean` or a sibling
+curated-inventory script carries its workflow-ledger entry in the same commit.
+This entry was folded in by amending the sweep commit before it was pushed or
+referenced, so every commit on this branch passes
+`design_decision_check.ps1 -Strict -Base HEAD~1` at its own parent. Amending
+was available precisely because the commit was not yet pushed, audited, or
+cited; once any of those is true, the correct remedy is the paired
+revert-and-reland of `WDD-20260806-011`, not a rewrite.
+
+Decision, verification: a dead-code sweep that edits a file text-pinned by
+`scripts/m1_certificate_mutation_regression.ps1` must re-run that regression
+explicitly. A green `lake build` is not evidence for it: the regression
+extracts exact declaration blocks by text needle and throws when a needle is
+missing *or* non-unique, which no compiler error would reveal.
+`SuccinctFinalRAM.lean` and `SuccinctFinalStoreParam.lean` are both pinned, and
+`gate.ps1:77-78` propagates the regression's exit code as a hard failure.
+
+Local-environment note, recorded so it is not rediscovered: the regression's
+clean-baseline check deliberately runs `git status` with
+`-c core.excludesfile=` and `--untracked-files=all`, so it sees files the
+global gitignore hides. On this host `.claude/settings.local.json` (present
+since 2026-07-08, globally ignored) therefore fails it locally while a CI
+checkout is unaffected. Wave-1 verification of that regression is consequently
+delegated to CI on a clean checkout rather than worked around locally by
+moving a user file.
+
+Alternatives rejected: landing the sweep with a follow-up ledger commit
+(reproduces the `P2-1` defect the Stage-A audit flagged -- a reachable commit
+failing its own gate); disabling or relaxing the clean-baseline check to make
+a local run pass (weakening a check to clear it is the failure mode the check
+exists to catch).
