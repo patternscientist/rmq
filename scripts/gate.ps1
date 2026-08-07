@@ -146,6 +146,13 @@ if ($LASTEXITCODE -ne 0) { SoftFail "succinct_cost_lint.ps1 found issues" }
 & "$PSScriptRoot\shim_lint.ps1"
 if ($LASTEXITCODE -ne 0) { SoftFail "shim_lint.ps1 found issues" }
 
+# 5b. Hub import-closure boundary. RMQHub.lean's docstring claims the hub layer
+# depends on nothing RMQ-specific. That was true but enforced by nothing: both
+# `lake build RMQHub` and hub_axiom_check.lean would still pass with
+# `import RMQ.Core.Spec` added to ModelHub.lean. This makes the claim checked.
+& "$PSScriptRoot\hub_closure_lint.ps1" -SelfTest
+if ($LASTEXITCODE -ne 0) { SoftFail "hub_closure_lint.ps1 found issues" }
+
 # 6. Claim-drift policy mutations must enforce the full canonical-role/exponent
 # category, contextual allowances, parser shapes, and allowance bypasses.
 & "$PSScriptRoot\claim_drift_policy_regression.ps1"

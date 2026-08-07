@@ -8384,3 +8384,51 @@ violation classes each produce exit 1, bare claims are caught on both record
 surfaces, and claim surfaces stay strict including the wrap case. The decisive
 comparison, on identical input: the pre-hardening checker exits 0 where this one
 exits 1.
+
+## WDD-20260807-017 -- enforce the hub import-closure claim
+
+Status: Accepted (V1 freeze, phase 1).
+
+Date: 2026-08-07
+
+Context: `RMQHub.lean`'s docstring states that the hub layer "imports only
+modules that do not depend on RMQ ranges, Cartesian shapes, Euler tours, or any
+RMQ backend". A structural audit at `745a3c5` confirmed the claim is **true**:
+the transitive closure of `RMQ/Core/ModelHub.lean` is 11 modules and reaches
+none of `Spec`, `Cartesian`, `Shape`, `Backend`, `Window`, `LCA`, `Reduction`,
+`Succinct`, `SuccinctFinal`, or `EncodingLowerBound`.
+
+The audit also found it is **enforced by nothing**. `lake build RMQHub`
+(`gate.ps1:80`) and `scripts/hub_axiom_check.lean` (`gate.ps1:132`) would both
+still pass if someone added `import RMQ.Core.Spec` to `ModelHub.lean`, and
+neither `shim_lint.ps1` nor `paper_topology_lint.ps1` has a hub rule. There was
+no negative-direction guard anywhere in `scripts/`.
+
+Decision: add `scripts/hub_closure_lint.ps1`, wired into `gate.ps1` as step 5b
+with `-SelfTest`, pinning the closure to the 11 measured modules.
+
+Design points, each chosen against a plausible alternative:
+
+- It is a **negative** check. Growth beyond the pinned set fails; shrinkage only
+  emits a note, because shrinkage is not a soundness problem but a stale pin
+  hides future growth.
+- Reaching an RMQ-specific module is reported **separately** from a mere
+  allowlist miss, because the diagnosis differs: one says "the hub grew", the
+  other says "the hub is no longer a hub".
+- The allowlist is a literal pin rather than a pattern. Adding to it is a
+  deliberate act that should carry its own workflow decision, which a pattern
+  would silently permit.
+- It walks `import` lines rather than requiring a build, so it costs no build
+  time and runs even when the toolchain is unavailable.
+
+Verification, because a guard that cannot fail is not a guard: `-SelfTest`
+builds a throwaway tree whose hub imports `RMQ.Core.Spec` and asserts the walker
+reaches it and classifies it as tainting. Separately, and decisively, the import
+was injected into the **real** `RMQ/Core/ModelHub.lean`: the lint exits 1 with
+"hub closure reaches RMQ-specific module 'RMQ.Core.Spec'; RMQHub.lean's
+docstring claim is falsified", and the file was restored byte-identical
+afterwards.
+
+This converts the repository's most quotable architectural claim from an
+assertion into a checked property, which is worth more before a freeze than
+after, because after the freeze the claim is what reviewers will cite.
