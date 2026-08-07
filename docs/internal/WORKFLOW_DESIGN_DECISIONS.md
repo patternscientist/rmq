@@ -7842,3 +7842,44 @@ commit (the defect this branch exists to not repeat).
 Consequences: the candidate is complete as a worker submission; the next
 actors are the coordinator (reconstruction audit) and a fresh-blind
 auditor on the exact final commit.
+
+## WDD-20260806-006: integrate the audited proof lineage, repair the literal P2, and exclude defective post-candidate bookkeeping
+
+Status: Accepted coordinator integration procedure.
+
+Date: 2026-08-06
+
+The proof-bearing Stage-F candidate is
+`9687b4ad4f3cb8c843625dc2ffbb486cdecb6b5f`. Independent audit report commit
+`afe9e64047a54227cf770f3df1b5ecdb0f78a921` has that exact candidate as its
+parent and records no `P0` or `P1`, one literal-contract `P2`, and four `P3`
+notes. Claude's source branch later acquired defective same-session audit
+bookkeeping commit `3cd3f32e471fa2b0a6974496eecbd487e8526391` and a late
+workflow entry at `ae84d1b6a634ea60260ebd55853f89807acb608b`; neither belongs
+in accepted history.
+
+Decision: create the integration branch from the independent report commit,
+not from the source-branch tip. Retain the five clean-history candidate
+commits and the fresh-blind report, apply `P2-1` as the exact fixture theorem
+and independent consumer of `DD-20260806-078`, correct the fourteen-conjunct
+docstring, and restate the K1/K2/K0/padding/historical-route dispositions in
+the Stage-F record. The audit's non-Windows build-timeout process-group note
+is recorded as nonblocking because the frozen exercised deadline contract is
+Windows plus Ubuntu `SelfTestOnly`; changing the runner would expand the
+audited contract. The value-preserving `M13` mutant remains exactly as frozen
+and is described honestly rather than rewritten after audit.
+
+Integration is conditional on focused and aggregate Lean builds, curated
+axiom inventory, hygiene/native scans, strict claim drift, strict design
+checking against base `0f386723f56deae5eb39418e535f56e7a2b347dd`, committed
+range and working-tree diff checks, UTF-8 inspection, exact history/parent
+reconstruction, and a clean terminal tree. A second coordinator record
+commit may state `FEASIBILITY_PASS` only after those checks succeed. `main`
+may then advance by fast-forward only; no rejected or defective source-tip
+commit is cherry-picked, merged, amended, rebased, or presented as accepted.
+
+Alternatives rejected: merging `ae84d1b6a634ea60260ebd55853f89807acb608b`
+and repairing its history in place;
+dropping the independent report from integrated history; treating the P2 as
+prose-only supersession; rerunning the 25-minute full mutation campaign after
+a proof-only corollary whose executable and replay bytes are unchanged.

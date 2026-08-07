@@ -478,22 +478,28 @@ zero of the identical reviewer memory -- by the same-width encoding of
 The conclusion is an inequality between the two `trace[1]` address
 projections, not between enclosing run records.
 -/
-theorem packedReviewerHeaderCellAddressLiveness
+theorem packedReviewerHeaderCellAddressLiveness_exact
     (shape : CartesianShape) (left right : Nat)
     (hleft : left < right) (hright : right <= shape.size) :
-    exists addressCanonical addressMutated,
-      ((packedReviewerRunAgainstMemory (packedReviewerMemory shape)
-          shape.size left right).trace.map
-            (fun event => event.request.address))[1]? =
-          some addressCanonical /\
+    ((packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+        shape.size left right).trace.map
+          (fun event => event.request.address))[1]? =
+        some (packedReviewerSparsePreludeRequestBitAddress shape.size
+          (longCount shape) .rankSuper / packedReviewerCellWidth shape.size) /\
       ((packedReviewerRunAgainstMemory
           ((packedReviewerMemory shape).set 0
             (SuccinctSpace.natToBitsLE (packedReviewerCellWidth shape.size)
               (longCount shape + packedReviewerCellWidth shape.size)))
           shape.size left right).trace.map
             (fun event => event.request.address))[1]? =
-          some addressMutated /\
-      addressCanonical ≠ addressMutated := by
+          some (packedReviewerSparsePreludeRequestBitAddress shape.size
+            (longCount shape + packedReviewerCellWidth shape.size) .rankSuper /
+              packedReviewerCellWidth shape.size) /\
+      packedReviewerSparsePreludeRequestBitAddress shape.size
+          (longCount shape) .rankSuper / packedReviewerCellWidth shape.size ≠
+        packedReviewerSparsePreludeRequestBitAddress shape.size
+            (longCount shape + packedReviewerCellWidth shape.size) .rankSuper /
+          packedReviewerCellWidth shape.size := by
   have hvalid : left < right /\ right <= shape.size := ⟨hleft, hright⟩
   have hcontroller :
       packedReviewerController shape.size left right =
@@ -572,11 +578,7 @@ theorem packedReviewerHeaderCellAddressLiveness
       exact Nat.add_mul_div_left _ _ hwpos
     rw [hstep]
     omega
-  refine ⟨packedReviewerSparsePreludeRequestBitAddress shape.size
-      (longCount shape) .rankSuper / packedReviewerCellWidth shape.size,
-    packedReviewerSparsePreludeRequestBitAddress shape.size
-        (longCount shape + packedReviewerCellWidth shape.size) .rankSuper /
-      packedReviewerCellWidth shape.size, ?_, ?_, hne⟩
+  refine ⟨?_, ?_, hne⟩
   · have hfirst := packedReviewerDriveAux_first_two_addresses
       (packedReviewerMemory shape)
       (packedReviewerControllerMeasure
@@ -676,6 +678,30 @@ theorem packedReviewerHeaderCellAddressLiveness
       exact packedReviewerNextRequest_preludeProbe shape.size left right
         (longCount shape + packedReviewerCellWidth shape.size)
         hplanHeadMutated
+
+/-- The existential public form of universal header-address liveness. -/
+theorem packedReviewerHeaderCellAddressLiveness
+    (shape : CartesianShape) (left right : Nat)
+    (hleft : left < right) (hright : right <= shape.size) :
+    exists addressCanonical addressMutated,
+      ((packedReviewerRunAgainstMemory (packedReviewerMemory shape)
+          shape.size left right).trace.map
+            (fun event => event.request.address))[1]? =
+          some addressCanonical /\
+      ((packedReviewerRunAgainstMemory
+          ((packedReviewerMemory shape).set 0
+            (SuccinctSpace.natToBitsLE (packedReviewerCellWidth shape.size)
+              (longCount shape + packedReviewerCellWidth shape.size)))
+          shape.size left right).trace.map
+            (fun event => event.request.address))[1]? =
+          some addressMutated /\
+      addressCanonical ≠ addressMutated := by
+  refine ⟨packedReviewerSparsePreludeRequestBitAddress shape.size
+      (longCount shape) .rankSuper / packedReviewerCellWidth shape.size,
+    packedReviewerSparsePreludeRequestBitAddress shape.size
+        (longCount shape + packedReviewerCellWidth shape.size) .rankSuper /
+      packedReviewerCellWidth shape.size, ?_⟩
+  exact packedReviewerHeaderCellAddressLiveness_exact shape left right hleft hright
 
 /-- The same inequality at the frozen projection form: `trace[1]?` first,
 then the address map.  `List.getElem?_map` makes the two forms one fact. -/
@@ -1810,6 +1836,56 @@ theorem egcpFixtureTraceAddresses :
     (packedReviewerRunAgainstMemory egcpMemLit 3 0 3).trace.map
       (fun event => event.request.address) = [0, 10, 11, 11, 2, 2, 2, 3, 3, 5, 6, 8, 1, 20, 20, 20, 20, 19, 20, 20, 19, 20, 2, 2, 2, 3, 3, 5, 7, 9, 1, 19, 20, 19, 20, 19, 19, 20, 19, 20, 1, 1, 1, 19, 1, 1, 20, 20, 19, 18, 19, 20, 1, 1, 2, 1, 18, 1, 19, 19, 20, 18, 18, 1, 1, 2, 1, 19] := by
   simp +decide [egcpMemLit]
+
+/--
+The frozen `SF-FG11-HEADER` fixture instance.  On `[7, 3, 3]` with query
+`(0, 3)`, replacing only header cell `0` by the commissioned same-width
+`longCount + w(n)` encoding moves the second attempted physical address
+from the concrete canonical cell `10` to the concrete mutated cell `37`.
+-/
+theorem packedReviewerHeaderCellAddressLiveness_fixture :
+    ((packedReviewerRunAgainstMemory
+        (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+        (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).trace.map
+          (fun event => event.request.address))[1]? = some 10 /\
+      ((packedReviewerRunAgainstMemory
+          ((packedReviewerMemory
+              (SuccinctClassic.cartesianShape [7, 3, 3])).set 0
+            (SuccinctSpace.natToBitsLE
+              (packedReviewerCellWidth
+                (SuccinctClassic.cartesianShape [7, 3, 3]).size)
+              (longCount (SuccinctClassic.cartesianShape [7, 3, 3]) +
+                packedReviewerCellWidth
+                  (SuccinctClassic.cartesianShape [7, 3, 3]).size)))
+          (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).trace.map
+            (fun event => event.request.address))[1]? = some 37 /\
+      (10 : Nat) ≠ 37 := by
+  have hright :
+      3 <= (SuccinctClassic.cartesianShape [7, 3, 3]).size := by
+    rw [egcpShapePin, egcpSizePin]
+    omega
+  have hcanonicalAddress :
+      packedReviewerSparsePreludeRequestBitAddress
+          (SuccinctClassic.cartesianShape [7, 3, 3]).size
+          (longCount (SuccinctClassic.cartesianShape [7, 3, 3])) .rankSuper /
+        packedReviewerCellWidth
+          (SuccinctClassic.cartesianShape [7, 3, 3]).size = 10 := by
+    rw [egcpShapePin, egcpSizePin, egcpLongCountPin, egcpWidthPin]
+    simp +decide
+  have hmutatedAddress :
+      packedReviewerSparsePreludeRequestBitAddress
+          (SuccinctClassic.cartesianShape [7, 3, 3]).size
+          (longCount (SuccinctClassic.cartesianShape [7, 3, 3]) +
+            packedReviewerCellWidth
+              (SuccinctClassic.cartesianShape [7, 3, 3]).size) .rankSuper /
+        packedReviewerCellWidth
+          (SuccinctClassic.cartesianShape [7, 3, 3]).size = 37 := by
+    rw [egcpShapePin, egcpSizePin, egcpLongCountPin, egcpWidthPin]
+    simp +decide
+  have hexact := packedReviewerHeaderCellAddressLiveness_exact
+    (SuccinctClassic.cartesianShape [7, 3, 3]) 0 3 (by decide) hright
+  rw [hcanonicalAddress, hmutatedAddress] at hexact
+  exact hexact
 
 /-! ### Deliverable 5: the decisive cell 8 is genuinely probed -/
 

@@ -525,11 +525,16 @@ on this branch: the literal expected-type consumer
 The audited-good rows carry over with their evidence unchanged in
 substance; the two repaired rows carry the strengthened evidence above.
 
-- `SF-FG11-HEADER`: `packedReviewerHeaderCellAddressLiveness` (universal
-  second-address movement under a header-cell replacement, address
-  projection), exact-form corollary `_proj`, opening pin
+- `SF-FG11-HEADER`: `packedReviewerHeaderCellAddressLiveness_exact` and
+  `packedReviewerHeaderCellAddressLiveness` (universal second-address
+  movement under a header-cell replacement, address projection),
+  projection-form corollary `_proj`, and the frozen fixture corollary
+  `packedReviewerHeaderCellAddressLiveness_fixture`, which pins the exact
+  second-address movement `10 -> 37` at `[7,3,3]` / `(0,3)`; opening pin
   `packedReviewerRunOpensWithHeader`; consumers
-  `egcpStageFHeaderAddressLiveness`, `egcpStageFRunOpensWithHeader`;
+  `egcpStageFHeaderAddressLiveness`,
+  `egcpStageFHeaderAddressLivenessFixture`,
+  `egcpStageFRunOpensWithHeader`;
   replay `M01`/`M14` REJECT at `PackedCellProbe/ReviewerControllerProof.lean`.
 - `SF-FG11-DECISIVE`: section 2 (`R1`) above; consumers
   `egcpStageFDecisiveCellLiveness`, `egcpStageFDecisiveCellConnection`.
@@ -571,6 +576,29 @@ substance; the two repaired rows carry the strengthened evidence above.
   `INV-MUTATION-REPRODUCIBILITY`, `INV-CATEGORY-SEPARATION`) close at the
   same objects through the rows above; `FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY`
   in section 6.
+
+### K branch, representation, and historical-route dispositions
+
+- **K1 survived.** The charged three-read prelude recovers `sparseCount`
+  all-size and feeds every later sparse-dependent length and address. This is
+  the selected construction of `DD-20260805-071`.
+- **K2 was unused and remains rejected here.** It was authorized only after
+  a quantifier-matched checked K1 obstruction; no such obstruction exists,
+  so adding a counted `sparseCount` header cell would be unauthorized format
+  drift (`DD-20260805-071`, especially its rejected alternatives).
+- **K0 self-delimiting bootstrap was not selected.** The frozen matrix treats
+  K0 as a coordinator flip, not a worker substitute (sections 6.5 and 10.7);
+  K1 already supplies the required bounded charged discovery without a new
+  format.
+- **Internal padding and sibling-memory variants remain rejected.** The one
+  accepted object is the final-cell-padded
+  `header ++ buildPayload ++ padding` memory; internal padding, the older
+  flat sibling payload, and a sibling logical store break the same-object
+  composition (`DD-20260805-071`).
+- **The historical B3 small-step route remains superseded as the primary
+  route.** It is retained as supporting research only, exactly as matrix
+  section 6.5 records; no historical program or companion memory is smuggled
+  into this packed controller.
 
 ## 4. Full-registry outcome per ID and OS
 

@@ -10063,3 +10063,43 @@ entries; each must depend only on the standard axioms.  The one dependent
 rewrite gotcha is recorded in the module: `simp` will not rewrite
 `bpFringeChunkBits` inside `FixedWidthNatTable`'s type indices, so the
 fringe/select pins first fix that scalar by an explicit `rw`.
+
+## DD-20260806-078 -- preserve universal header liveness and pin the frozen fixture's exact `10 -> 37` movement
+
+Status: Accepted coordinator repair after fresh-blind finding `P2-1` on
+Stage-F candidate `9687b4ad4f3cb8c843625dc2ffbb486cdecb6b5f`.
+
+Date: 2026-08-06
+
+The accepted Stage-F matrix row `SF-FG11-HEADER` requires both universal
+header-address liveness and one committed instance at `[7, 3, 3]`, query
+`(0, 3)`, with the concrete moved second address recorded. The candidate's
+universal theorem strictly subsumed existence of the instance, but did not
+name that literal contract. The fresh-blind audit therefore left one `P2`:
+the frozen cell was semantically implied but not durably pinned.
+
+Decision: factor the existing proof through
+`packedReviewerHeaderCellAddressLiveness_exact`, whose conclusion exposes
+the two closed arithmetic witnesses. Preserve the old public existential
+type as `packedReviewerHeaderCellAddressLiveness`, derived immediately from
+that stronger theorem, so existing consumers and the audited proposition do
+not weaken or drift. Add
+`packedReviewerHeaderCellAddressLiveness_fixture`, which kernel-checks the
+canonical second address `10`, the header-mutated second address `37`, and
+their inequality at the exact `[7, 3, 3]` / `(0, 3)` objects. Add the literal
+independent consumer `egcpStageFHeaderAddressLivenessFixture` and curate both
+the exact and fixture theorems in `scripts/axiom_check.lean`.
+
+The concrete `37` is not accepted from `#eval`: the theorem specializes the
+universal two-step driver proof and reduces only the closed first-order
+address arithmetic under the fixture's already kernel-checked scalar pins.
+No controller, memory, mutation, trace, result, width, allocation, or replay
+definition changes. The adjacent validation docstring is corrected from
+"twelve" to the actual fourteen capstone conjuncts.
+
+Alternatives rejected: declaring the universal theorem to supersede the
+literal frozen cell (would silently weaken the durable matrix contract);
+adding only prose with `10 -> 37` (would not be kernel evidence); computing a
+second independent run proof (would duplicate the accepted driver argument);
+changing the old existential theorem's type (would create avoidable consumer
+drift).

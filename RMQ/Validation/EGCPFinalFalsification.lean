@@ -2878,7 +2878,7 @@ conjunct breaks this structure's producer rather than being absorbed by it.
 def egcpStageFCapstoneSignature : List Int -> Nat -> Nat -> Prop :=
   @PackedReviewerStageFCapstone
 
-/-- Independent restatement of the twelve frozen Stage-F conjuncts. -/
+/-- Independent restatement of the fourteen frozen Stage-F conjuncts. -/
 structure EGCPStageFCapstoneFacts
     (xs : List Int) (left right : Nat) : Prop where
   payload_is_buildPayload :
@@ -3021,6 +3021,27 @@ theorem egcpStageFHeaderAddressLiveness :
           addressCanonical ≠ addressMutated :=
   fun shape left right hleft hright =>
     packedReviewerHeaderCellAddressLiveness shape left right hleft hright
+
+/-- The frozen fixture instance pins the concrete moved second address:
+canonical cell `10`, header-mutated cell `37`. -/
+theorem egcpStageFHeaderAddressLivenessFixture :
+    ((packedReviewerRunAgainstMemory
+        (packedReviewerMemory (SuccinctClassic.cartesianShape [7, 3, 3]))
+        (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).trace.map
+          (fun event => event.request.address))[1]? = some 10 /\
+      ((packedReviewerRunAgainstMemory
+          ((packedReviewerMemory
+              (SuccinctClassic.cartesianShape [7, 3, 3])).set 0
+            (SuccinctSpace.natToBitsLE
+              (packedReviewerCellWidth
+                (SuccinctClassic.cartesianShape [7, 3, 3]).size)
+              (longCount (SuccinctClassic.cartesianShape [7, 3, 3]) +
+                packedReviewerCellWidth
+                  (SuccinctClassic.cartesianShape [7, 3, 3]).size)))
+          (SuccinctClassic.cartesianShape [7, 3, 3]).size 0 3).trace.map
+            (fun event => event.request.address))[1]? = some 37 /\
+      (10 : Nat) ≠ 37 :=
+  packedReviewerHeaderCellAddressLiveness_fixture
 
 /-- The canonical run opens with the header probe at cell zero. -/
 theorem egcpStageFRunOpensWithHeader :

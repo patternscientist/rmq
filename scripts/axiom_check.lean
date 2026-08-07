@@ -1215,7 +1215,9 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 -- decisive-cell and unread-cell fixture theorems, and the checked
 -- metadata-completion bridge that discharges the M06 carry-forward.
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerStageFCapstone_holds
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerHeaderCellAddressLiveness_exact
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerHeaderCellAddressLiveness
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerHeaderCellAddressLiveness_fixture
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerDecisiveCellLiveness
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerDecisiveCellConnection
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerUnreadCellAccept
