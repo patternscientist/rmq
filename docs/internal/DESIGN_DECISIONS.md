@@ -10544,3 +10544,74 @@ was a consequence of the import order that placed the shared lemma out of scope,
 not a habit in this codebase. De-duplication is therefore substantially
 exhausted as a size lever after this commit, and the remaining tractability
 problem is genuine file length.
+
+## DD-20260807-087 -- correct five public over-claims to the accepted theorem
+
+Status: Accepted for `codex/claim-sync-r1`.
+
+Date: 2026-08-07
+
+Context: the roadmap's public-claim synchronization contract requires the exact
+base-derived match count, the full inspected-path set, and the expected repair
+paths to be recorded before the work, and forbids a hand list or worker-side
+first discovery (`docs/internal/CLAIM_DRIFT_POLICY.md:171-178`). The 18
+current-fact surfaces were derived by expanding `currentFactSurfacePathRegex`
+(`CLAIM_DRIFT_POLICY.json:4`, policy version 23, blob
+`437e37e171d974c4821d6e38c0115025a2fe4e02`) and all 18 verified to exist at base
+`7763348`. Every `O(1)` occurrence on those surfaces was then read in context:
+16 occurrences, of which 5 are over-claims and 11 are correct.
+
+Decision: repair exactly the five, plus one wrong-unit phrase found by a second
+sweep. No surface gains a claim; every edit narrows.
+
+| ID | Path | Repair |
+| --- | --- | --- |
+| `T1-a` | `docs/PUBLICATION_STRATEGY.md:51` | bare `O(1)` contribution claim -> `2n + o(n)` payload bits at constant modeled query cost, explicitly contrasted with the word-RAM `O(1)` of the time-credit line above |
+| `T1-b` | `docs/PUBLICATION_STRATEGY.md:166` | bare `O(1)` in the paper thesis -> constant modeled (charged-probe) query cost |
+| `T1-c` | `docs/ROADMAP.md:41` | `` `2*n + o(n), O(1)` `` -> `2*n + o(n)` payload / constant modeled query cost |
+| `T1-d` | `docs/ROADMAP.md:342` | same |
+| `T1-e` | `README.md:6-7` | "after preprocessing an array … in constant modeled time" -> drops the preprocessing implicature; "time" -> "cost"; adds what the cost unit is |
+| `T1-f` | `docs/ROADMAP.md:371` | "packed constant-time succinct RMQ query structure" -> "constant-query", matching the same sentence's own later wording |
+
+Two findings that changed the repair and are recorded so they are not re-derived:
+
+1. `constant modeled cost` is this repository's established house term, correct
+   and used consistently at `README.md:44`, `:208`, `docs/WHAT_IS_PROVED.md:297`,
+   `:398`, `:628`, `docs/FAMILY_SUMMARY.md:205`, `:601`, `:1057`,
+   `docs/PAPER_CLAIM_CORRESPONDENCE.md:100-101`, `artifact/CLAIMS.md:101`, `:103`,
+   `docs/ROADMAP.md:736`, and elsewhere. The defect at `README.md:7` was narrow --
+   it wrote "constant modeled **time**" where every other surface writes
+   "constant modeled **cost**". The repair aligns the noun rather than abandoning
+   the term.
+2. **A linear preprocessing bound exists**, so the repair must not deny one.
+   `docs/ROADMAP.md:311-331` records the landed
+   `denseLCA_linearBuild_constantQuery_profile`:
+   `densePreprocessBuildCost tree <= densePreprocessLinearBudget tree` with
+   budget `22 * eulerTrace.nodes.length + 3` and `query.cost <= 16`. That is the
+   **dense LCA (Fischer-Heun) spoke**, not the succinct `2n + o(n)` RMQ payload.
+   A blanket "preprocessing is not bounded by this development" would therefore
+   have been a false negative claim and was rejected; the README now says only
+   that payload construction is accounted separately and is not part of the query
+   bound.
+
+The 11 correct `O(1)` uses are deliberately untouched: genuine asymptotic
+bit-count terms in the lower bound and chunk count (`README.md:10`, `:209`,
+`docs/WHAT_IS_PROVED.md:160`, `:527`, `docs/FAMILY_SUMMARY.md:781`), and
+self-qualifying or historical prose (`docs/FAMILY_SUMMARY.md:644`,
+`docs/WHAT_IS_PROVED.md:412`, `docs/ROADMAP.md:97`, `:266`, `:320`,
+`docs/PUBLICATION_STRATEGY.md:44`, `:46`).
+
+Verification: `claim_drift_scan.ps1 -Strict` reports 1531 hits, 0 strict
+failures, exit 0 -- unchanged from base, so no allowlist was widened and no new
+violation introduced. No policy file was edited.
+
+Known remaining gap, deliberately NOT closed in this commit because it needs a
+new gate and therefore its own workflow decision: the current constants `210` and
+`427` are unenforced. `427` appears zero times in `CLAIM_DRIFT_POLICY.json`; `210`
+appears once, at `:138`, inside an `allowedLineRegex` exception -- never as a
+`pattern`. Every *retired* constant (`76`, `142`, `207`, `328`, `352`, `118`,
+`4144`, `196727`, `2^128`) is guarded. So a change to the proved bound would break
+the Lean build until updated, after which 51 public lines across 15 registry
+surfaces would silently keep asserting `210` with green CI. Guarding a retired
+value needs only a negative grep; guarding a current one needs a positive
+doc-versus-Lean equality check, which this scanner's architecture cannot express.

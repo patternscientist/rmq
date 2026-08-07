@@ -3,11 +3,14 @@
 [![CI](https://github.com/patternscientist/rmq/actions/workflows/ci.yml/badge.svg)](https://github.com/patternscientist/rmq/actions/workflows/ci.yml)
 
 **TL;DR:** This project uses Lean to machine-check a classic optimal RMQ
-story: after preprocessing an array, exact range-minimum queries can be answered
-in constant modeled time from a Cartesian-shape payload of at most
+story: exact range-minimum queries can be answered at constant modeled query
+cost from a Cartesian-shape payload of at most
 `2*n + o(n)` bits,
 and any fixed-length payload-only exact RMQ encoding needs
-`2n - 1.5 log n - O(1)` bits. The same code base is now growing into a
+`2n - 1.5 log n - O(1)` bits. "Modeled cost" counts charged probes into that
+payload, not machine instructions or wall-clock time, and the cost of building
+the payload is accounted separately and is not part of this bound.
+The same code base is now growing into a
 verified advanced-data-structures testbed, with standalone rank/select,
 balanced-parentheses navigation, and union-find spokes.
 

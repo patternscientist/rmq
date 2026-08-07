@@ -38,7 +38,8 @@ and formalization gaps.
 
 - "Done" means the stated theorem typechecks `sorry`-free with the standard Lean
   trust base only. The build gate enforces soundness; this file enforces value.
-- For the landed `2*n + o(n), O(1)` succinct RMQ finish line, read
+- For the landed `2*n + o(n)` payload / constant modeled query cost succinct
+  RMQ finish line, read
   `docs/internal/SUCCINCT_FINAL_PATH.md` for current status plus historical stop-audit
   guardrails. It is no longer an active missing-component contract.
 - For the research-backed construction choices behind that finish line, read
@@ -339,7 +340,8 @@ Alternative target.
 
 Status: landed. The first fixed-length sandwich, BP-native theorem shape,
 generic sparse-exception false-close/select access family, compact BP
-close/LCA directory, and final `2*n + o(n), O(1)` BP-native RMQ capstone all
+close/LCA directory, and final `2*n + o(n)` payload / constant modeled query
+cost BP-native RMQ capstone all
 typecheck. The older relative-split capstone is intentionally kept as a checked
 archived old capstone.
 
@@ -366,7 +368,7 @@ Current status:
 Anti-vacuity: the upper side must remain a concrete encoder with proved exact
 queries, not a bare existential. Those first-stage fixed-length `2*n` witnesses
 are valid exact upper bounds, but by themselves they were not yet a packed
-constant-time succinct RMQ query structure; the landed BP-native capstone below
+constant-query succinct RMQ query structure; the landed BP-native capstone below
 is the packed constant-query upper side.
 
 Next refinement: package an even flatter encoded/payload-only view of the same

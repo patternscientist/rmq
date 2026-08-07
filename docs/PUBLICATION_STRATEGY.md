@@ -48,7 +48,11 @@ realistic venues, and the sitting precedent each would judge us against:
 Against those three, the candidate contributions here — the paper's thesis
 candidates, subject to the novelty search described below — are:
 
-- **(a)** a mechanized succinct RMQ **upper bound** `2n + o(n)`, `O(1)`,
+- **(a)** a mechanized succinct RMQ **upper bound**: `2n + o(n)` payload bits
+  with constant modeled query cost — a *charged-probe* bound, and deliberately
+  not the word-RAM `O(1)` of the time-credit line above, since computation
+  between charged probes is free in this model and payload construction is
+  accounted separately —
   with any priority wording deferred until a referee-grade novelty search;
 - **(b)** a mechanized **matching lower bound** (rare: the three lines above are
   all upper-bound/correctness; a mechanized information-theoretic lower bound is
@@ -159,7 +163,8 @@ extraction + benchmarks; E1 fully charged simulation.**
 ## 5. Recommended target
 
 **ITP**, with the thesis: *a mechanized succinct RMQ — upper bound
-`2n + o(n)` / `O(1)` and a matching Catalan lower bound — in a Mathlib-free
+`2n + o(n)` payload bits at constant modeled (charged-probe) query cost, and a
+matching Catalan lower bound — in a Mathlib-free
 Lean 4 development, using an anti-oracle Word-RAM trace discipline for
 cost-honesty.* The lower bound and the anti-oracle method are the proposed
 deltas over Affeldt ITP 2019, contingent on referee-grade novelty search and
