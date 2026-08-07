@@ -73,6 +73,7 @@ $related = ReadText "RELATED_WORK_LEDGER.md"
 $matrix  = ReadText "EVIDENCE_MATRIX.md"
 $readme  = ReadText "README.md"
 $worklog = ReadText "WORKLOG.md"
+$novelty = ReadText "NOVELTY_LOG.md"
 
 # ---------------------------------------------------------------- 1. cites
 $before = $failures
@@ -121,13 +122,22 @@ InfoIfClean $before ("labels: {0} unique labels, {1} cross-references, all resol
 # --------------------------------------------------- 3. forbidden phrasings
 $before = $failures
 
-# Editorial placeholders and priority claims.
-$forbidden = @(
+# Editorial placeholders. Unconditional everywhere, no allowance of any kind.
+$editorial = @(
   '\bTODO\b',
   '\bFIXME\b',
   '\bXXX\b',
   '\bTBD\b',
-  '\bPLACEHOLDER\b',
+  '\bPLACEHOLDER\b'
+)
+
+# Priority claims. Unconditional everywhere EXCEPT NOVELTY_LOG.md, whose entire
+# purpose is to name such claims in order to retire them, and to quote third
+# parties who made them. There the phrase must carry a retirement or
+# attribution marker; a bare priority claim in the novelty log still fails.
+$citeWindow = 220
+
+$priority = @(
   'we are the first',
   'first-ever',
   'first machine-checked',
@@ -136,6 +146,33 @@ $forbidden = @(
   'first mechanized succinct',
   'first verified succinct'
 )
+# Two tiers of file, because they play different roles for a referee.
+#
+# CLAIM SURFACES (everything not listed below) are read as assertions by the
+# project: rmq.tex, the bibliography, the ledgers, the evidence matrix, the
+# README. A priority phrase or model-vocabulary phrase there is a claim, and is
+# banned outright (model-vocabulary phrases keep only the attribution allowance).
+#
+# RECORD SURFACES are records ABOUT claims: the worklog records what the project
+# did, and the novelty log exists precisely to name priority claims in order to
+# retire them and to quote third parties who made them. Banning the phrases there
+# would make it impossible to write down that they are retired. So on record
+# surfaces the phrases are permitted only when accompanied by a retirement,
+# attribution, or quotation marker within the window. A bare, unmarked priority
+# claim in the worklog or novelty log still fails.
+# The marker set is deliberately narrow and contains NO punctuation. An earlier
+# revision of this rule included a quote character, which made the allowance
+# vacuous: ordinary prose has a quote within the window almost always, so a bare
+# priority claim in the novelty log passed. Verified by injection, and that is
+# now a standing self-test case (see 'bare priority claim on a record surface').
+$recordSurfaces = @('WORKLOG.md', 'NOVELTY_LOG.md')
+$retirementMarker = 'Killed by|Retire|retired|Restriction|Drop any|No claim|not license|must not|may not|is dead|not defensible|cannot drift|Abstract:|scoped to|we do not claim|attributed|supersed'
+# For model-vocabulary phrases on a record surface, quoting a source is the
+# legitimate mechanism, so a quote character close to the match also excuses --
+# but within a much tighter window than the marker rule.
+$quoteWindow = 60
+
+$forbidden = $editorial + $priority
 
 # Model-vocabulary overclaims. These mirror the framings retired from the
 # repository's public surfaces on 2026-08-07. They are deliberately narrow:
@@ -162,6 +199,7 @@ $scanTargets = [ordered]@{
   'EVIDENCE_MATRIX.md'     = $matrix
   'README.md'              = $readme
   'WORKLOG.md'             = $worklog
+  'NOVELTY_LOG.md'         = $novelty
 }
 # A model-vocabulary phrase is allowed when it carries an attribution within
 # this many characters either side, in normalized text: describing a cited
@@ -171,7 +209,6 @@ $scanTargets = [ordered]@{
 # constant-time succinct RMQ preprocessing scheme". Editorial placeholders and
 # priority claims get NO such allowance; a citation does not license "we are
 # the first".
-$citeWindow = 220
 
 function HasNearbyCite([string]$norm, [int]$at, [int]$len, [int]$window) {
   $lo = [Math]::Max(0, $at - $window)
@@ -184,8 +221,8 @@ foreach ($name in $scanTargets.Keys) {
   $raw  = $scanTargets[$name]
   $norm = Normalize $raw
 
-  # Unconditional patterns: matched raw and unwrapped, no allowance.
-  foreach ($pat in $forbidden) {
+  # Editorial placeholders: unconditional, matched raw and unwrapped.
+  foreach ($pat in $editorial) {
     if ([regex]::IsMatch($raw, $pat, 'IgnoreCase')) {
       Fail "forbidden phrase '$pat' in $name"
     }
@@ -194,11 +231,41 @@ foreach ($name in $scanTargets.Keys) {
     }
   }
 
+  # Priority claims: unconditional, except in the novelty log where a
+  # retirement or attribution marker excuses the phrase.
+  foreach ($pat in $priority) {
+    foreach ($m in [regex]::Matches($norm, $pat, 'IgnoreCase')) {
+      $excused = $false
+      if ($recordSurfaces -contains $name) {
+        $lo = [Math]::Max(0, $m.Index - $citeWindow)
+        $hi = [Math]::Min($norm.Length, $m.Index + $m.Length + $citeWindow)
+        $slice = $norm.Substring($lo, $hi - $lo)
+        $excused = [regex]::IsMatch($slice, $retirementMarker)
+      }
+      if (-not $excused) {
+        $ctx = $norm.Substring([Math]::Max(0, $m.Index - 40),
+                 [Math]::Min($norm.Length - [Math]::Max(0, $m.Index - 40), $m.Length + 80))
+        Fail "priority claim '$pat' in ${name}: ...$ctx..."
+      }
+    }
+  }
+
   # Model-vocabulary patterns: matched on normalized text (so wraps cannot
   # hide them), excused only by a nearby attribution.
   foreach ($pat in $forbiddenClaims) {
     foreach ($m in [regex]::Matches($norm, $pat, 'IgnoreCase')) {
-      if (-not (HasNearbyCite $norm $m.Index $m.Length $citeWindow)) {
+      $ok = HasNearbyCite $norm $m.Index $m.Length $citeWindow
+      if (-not $ok -and ($recordSurfaces -contains $name)) {
+        $lo2 = [Math]::Max(0, $m.Index - $citeWindow)
+        $hi2 = [Math]::Min($norm.Length, $m.Index + $m.Length + $citeWindow)
+        $ok = [regex]::IsMatch($norm.Substring($lo2, $hi2 - $lo2), $retirementMarker)
+        if (-not $ok) {
+          $lo3 = [Math]::Max(0, $m.Index - $quoteWindow)
+          $hi3 = [Math]::Min($norm.Length, $m.Index + $m.Length + $quoteWindow)
+          $ok = [regex]::IsMatch($norm.Substring($lo3, $hi3 - $lo3), '["“”]')
+        }
+      }
+      if (-not $ok) {
         $ctx = $norm.Substring([Math]::Max(0, $m.Index - 40),
                  [Math]::Min($norm.Length - [Math]::Max(0, $m.Index - 40), $m.Length + 80))
         Fail "unattributed model-vocabulary claim '$pat' in ${name}: ...$ctx..."
@@ -333,6 +400,25 @@ if ($SelfTest) {
   $cited1st = Normalize 'We are the first to do this~\cite{FischerHeun11}.'
   STCase "citation does not license a priority claim" `
     ([regex]::IsMatch($cited1st, 'we are the first', 'IgnoreCase'))
+
+  # The record-surface allowance must NOT be vacuous. A bare priority claim in
+  # the novelty log or worklog must still fail; only a marked retirement passes.
+  $bareRecord = Normalize 'This work is the first machine-checked succinct RMQ structure ever produced anywhere.'
+  $markedRecord = Normalize 'R99. The first machine-checked succinct structure. Killed by TAG16.'
+  $pp = 'first machine-checked'
+  $mBare = [regex]::Match($bareRecord, $pp, 'IgnoreCase')
+  $mMark = [regex]::Match($markedRecord, $pp, 'IgnoreCase')
+  function ExcusedOnRecord([string]$n, [System.Text.RegularExpressions.Match]$mm) {
+    $l = [Math]::Max(0, $mm.Index - $citeWindow)
+    $h = [Math]::Min($n.Length, $mm.Index + $mm.Length + $citeWindow)
+    return [regex]::IsMatch($n.Substring($l, $h - $l), $retirementMarker)
+  }
+  STCase "bare priority claim on a record surface is NOT excused" `
+    ($mBare.Success -and -not (ExcusedOnRecord $bareRecord $mBare))
+  STCase "marked retirement on a record surface IS excused" `
+    ($mMark.Success -and (ExcusedOnRecord $markedRecord $mMark))
+  STCase "marker set contains no punctuation" `
+    (-not ($retirementMarker -match '["“”`]'))
 
   # A row that loses its status must be caught even if the total is preserved.
   $fakeLedger = "#### L-AAA-01`r`n- Status: OPEN`r`n- Status: OPEN`r`n`r`n#### L-BBB-02`r`n- Note: none`r`n"
