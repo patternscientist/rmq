@@ -10383,3 +10383,59 @@ abstraction would add a declaration to a freezing surface for no gain); making
 the shared lemma `private` (module-scoped in Lean 4, so invisible to the very
 consumer that needs it); leaving the duplication and splitting the files instead
 (splits move text between files without removing a single duplicated line).
+
+## DD-20260807-084 -- replace the duplicated cross-block merge proof with a delegation
+
+Status: Accepted for `codex/refactor-wave1-r1` (pre-V1 elegance pass, step 2 of 2).
+
+Date: 2026-08-07
+
+Context: step 1 (`DD-20260807-083`) relocated the merge-family theorems into
+`PayloadMacro.lean`, making `bpRelativeRmmCandidateMerge_exact_of_query_semantics`
+visible to the 707-line theorem that had been re-proving it longhand.
+
+Decision: replace the 668-line proof body of
+`PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_query_semantics_cross_block`
+with the five-line instantiation
+
+```
+  exact component.lcaCloseCosted_exact_of_decoded_merged_candidate
+    leftClose rightClose hblockSize hleftBlock hrightBlock
+    (bpRelativeRmmCandidateMerge_exact_of_query_semantics
+      (hlen := hlen) hleft hright hanswer hblockSize
+      hleftBlock hrightBlock hcross hmin hleftmost)
+```
+
+The public statement -- name, every binder, every hypothesis, and the
+conclusion `(component.lcaCloseCosted leftClose rightClose).erase = some
+answerClose` -- is byte-identical; only the proof term changes.
+
+Why this typechecks, established before the edit rather than by trial: the
+relocated theorem's conclusion and the `hmerge` hypothesis of
+`lcaCloseCosted_exact_of_decoded_merged_candidate` were diffed after stripping
+indentation and are identical across 38 of their 39 lines, the sole difference
+being the trailing delimiter (`:= by` against `) :`). The binder names of the
+two theorems coincide exactly (`hlen hleft hright hanswer hblockSize
+hleftBlock hrightBlock hcross hmin hleftmost`). The shape is also already
+ratified in this repository: `RelativeRmmMacro/AbstractMacro.lean:285` proves
+the same proposition for a different component type in six lines by the same
+delegation, which it can do only because it sits downstream of the merge
+theorem.
+
+Consequences: 663 lines of duplicated proof content leave the tree. Focused
+elaboration of `PayloadMacro` takes 15 s; the full `lake build` is green
+(770 s). `PayloadMacro.lean` drops 3346 -> 2682 lines; combined with step 1,
+`RelativeMerge.lean` is 1291 -> 87. No public declaration, statement, type, or
+downstream import changes.
+
+Remaining duplication, deliberately not taken in this commit: the three
+component lemmas (`..._of_left_fringe_leftmost` and the two decoded-candidate
+siblings) are duplicated by the same mechanism, roughly 350 further lines, and
+follow the identical recipe. They are a separate, equally mechanical change and
+are left for a follow-up so this one stays reviewable.
+
+Alternatives rejected: introducing a new shared lemma parameterized over the
+three component facts (unnecessary -- the shared lemma already exists and is
+public, and a new declaration on a freezing surface needs a coordinator
+decision); keeping the longhand proof "because it works" (it is 668 lines of
+literal duplication in the proof a reviewer is most likely to open first).
