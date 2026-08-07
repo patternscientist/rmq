@@ -80,8 +80,10 @@ while another build task owns the tree.
    updating its `\ledger` row in `THEOREM_LEDGER.md` in the same change;
    the checker fails otherwise.
 2. Adding a citation requires a receipt in `RELATED_WORK_LEDGER.md`.
-3. The pending architecture result may be inserted only by replacing the
-   single marker in Section 9.1, only after independent acceptance, under
-   a new governed task; `EVIDENCE_MATRIX.md` row EV-07 then closes.
+3. The packed architecture result may be inserted only by replacing the
+   single marker in Section 9.1, under a new governed task; the independent
+   acceptance condition has been met (Stage A `ACCEPTED`, 2026-08-07), so
+   what remains is the editorial insertion, after which `EVIDENCE_MATRIX.md`
+   row EV-07 closes.
 4. Evidence-matrix requirement text is frozen; evidence/status fields are
    append-only.

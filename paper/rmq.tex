@@ -270,8 +270,9 @@ word-RAM running-time result, and this draft never presents it as one. It
 is closer in spirit to a cell-probe accounting --- memory touches are the
 unit --- but the current theorem does not package a cell-probe object
 either: the store is word-addressed by logical segment, not a single packed
-bit array with a frozen width function. That packaging is precisely the
-pending architecture target of Section~\ref{sec:pending}. Charging an
+bit array with a frozen width function. That packaging is precisely what the
+accepted packed cell-probe result of Section~\ref{sec:pending} supplies, over
+a different object than the theorem discussed here. Charging an
 instruction-level controller is a separate planned strengthening
 (Section~\ref{sec:limitations}).\ledger{L-OPEN-06}
 
@@ -766,8 +767,8 @@ Bender--Farach-Colton~\cite{BFC00}. Fischer and
 Heun~\cite{FischerHeun11} gave the systematic $2n + o(n)$-bit,
 constant-time succinct RMQ preprocessing scheme, and
 Fischer~\cite{Fischer10} the non-systematic optimal-succinctness variant
-whose model vocabulary the pending target of Section~\ref{sec:pending}
-follows.
+whose model vocabulary the packed cell-probe result of
+Section~\ref{sec:pending} follows.
 
 \paragraph{Succinct building blocks.}
 Rank/select dictionaries begin with Jacobson~\cite{Jacobson89} and

@@ -117,4 +117,19 @@ closes no roadmap node.
   (PROVISIONAL_ARCHITECTURE); Section 9.1 holds the single marker;
   `check_paper.ps1` fails unless the marker count in `rmq.tex` is exactly
   one; the ledger confines the target to Section 9.
-- Status: BLOCKED_ONLY_ON: ARCHITECTURE_RESULT_PENDING
+- Evidence (appended 2026-08-07, base repinned to `745a3c5b...`): the
+  acceptance condition named in the frozen requirement has been met. Stage A
+  was recorded `ACCEPTED` on 2026-08-07 after a fresh-blind exact-commit
+  audit and a coordinator reconstruction, and ledger row L-ARCH-01 moved
+  `PROVISIONAL_ARCHITECTURE` -> `ACCEPTED_BASE`, declaration
+  `RMQ.SuccinctFinal.PackedCellProbe.packedReviewerArchitectureCapstone_holds`.
+  The requirement text is frozen and therefore still reads "labeled
+  provisional"; that wording describes the state at the old base and is
+  superseded by this entry rather than edited. The containment half of the
+  requirement still holds and is still enforced: exactly one marker, and no
+  section outside Section 9 states, assumes, or paraphrases the result.
+- Status (appended 2026-08-07): BLOCKED_ONLY_ON: EDITORIAL_INSERTION. The
+  prior status is retained below for lineage. What blocks closure is no
+  longer acceptance but the single edit replacing the marker with the
+  theorem statement and its proof obligations.
+- Status (superseded): BLOCKED_ONLY_ON: ARCHITECTURE_RESULT_PENDING

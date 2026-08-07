@@ -114,3 +114,56 @@ one marked insertion point.
   cosmetic only.
 - Build artifacts are git-ignored; the tree carries only the eight
   intended sources.
+
+## 2026-08-07 -- repin, retraction, and checker hardening
+
+Base moved `1490c97b...` -> `745a3c5b...` by rebase (183 commits). All 11 cited
+files and all 58 cited Lean declarations were verified to still exist at the new
+base before anything else was touched; the dead-code sweep and file split that
+happened in between broke no anchor.
+
+Two statements were **false**, not stale, and were retracted: `rmq.tex:229`
+("the current mainline theorems do not bound this quantity") and `rmq.tex:809`
+("no current theorem bounds the full allocated capacity ... by 2n+o(n)"). Stage
+A field 8 `allocation_two_n_plus_rho` proves exactly that bound. Repinning also
+turned five hedged statements false, since they were scoped "at the base
+commit"; those were repaired in the same edit.
+
+Checker hardened before writing any new prose, because the old forbidden list
+contained no pattern for the framings retired from the repository's public
+surfaces on 2026-08-07, so a redraft could have reintroduced them and still
+passed. Defects closed, each found by audit:
+
+- multi-word patterns were matched only against raw text, and `rmq.tex` is
+  hard-wrapped at 110 columns, so a banned phrase split across a newline
+  evaded the scan. Now matched against a whitespace-normalized copy too.
+- no model-vocabulary patterns at all. Added eight, with an attribution
+  allowance: a cited description of prior work is legitimate ("Fischer and
+  Heun~\cite{FischerHeun11} gave the ... constant-time succinct RMQ ...");
+  the same phrase unattributed is not. Priority claims get no allowance --
+  a citation does not license "we are the first".
+- the ledger status guard compared two totals and could not see a row that
+  lost its status while another gained a spare. Now per-row.
+- status comparison used `-notcontains`, which is case-insensitive, so
+  `open` and `Accepted_Base` were legal. Now `-cnotcontains`.
+- the label section printed "all refs resolve" unconditionally, immediately
+  after reporting an unresolved ref. Success lines are now printed only when
+  the section recorded no failure. This is how a green log came to be cited
+  as evidence for a property the script had just contradicted.
+- cross-reference checking covered only `\ref`, silently ignoring `\cref`,
+  `\eqref`, `\autoref`, `\pageref` and starred forms. Latent, now closed.
+
+Verification. `-SelfTest` adds 16 detector cases, all passing, each
+corresponding to one audited defect. End-to-end injection: six violation
+classes were appended to a throwaway copy and all six produced exit 1. The
+decisive comparison, on identical input containing a priority claim wrapped
+across a newline: the **old** checker exits 0 (`RESULT: PASS`), the new one
+exits 1 with "split across a line wrap".
+
+The hardened checker also caught a live hit on its first run --
+`constant-time succinct` at `rmq.tex:767` -- which inspection showed to be a
+correctly attributed description of Fischer and Heun, and which motivated the
+attribution allowance rather than a weakening of the pattern.
+
+`check_paper.ps1 -SelfTest` exit 0; `latexmk` clean rebuild exit 0, 15 pages,
+zero undefined citations or references.
