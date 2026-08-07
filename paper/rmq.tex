@@ -1,6 +1,6 @@
 % rmq.tex -- private working draft of the RMQ manuscript substrate.
 % Branch codex/eg-cp-paper-evidence-r1, base commit
-% 1490c97b399d136bad4e18953441da433d130d4d.
+% 745a3c5b1fe99fe1072fbcf03f18f5dc9c23cb82.
 % This draft asserts only theorem surfaces present at that base commit.
 % The packed all-size architecture result is provisional and appears only at
 % the single marked insertion point in Section 9.
@@ -39,7 +39,7 @@ Machine-Checked in Lean~4:\\
 Reference Semantics, a Charged-Trace Cost Model,\\
 and an Explicit Trust Boundary\thanks{Private working draft. This document
 is an internal manuscript substrate pinned to repository commit
-\texttt{1490c97b399d136bad4e18953441da433d130d4d}. It is not a submission,
+\texttt{745a3c5b1fe99fe1072fbcf03f18f5dc9c23cb82}. It is not a submission,
 not a public claim surface, and not an architecture-acceptance record.}}
 \author{RMQ repository contributors}
 \date{Draft of 2026-08-05}
@@ -70,9 +70,10 @@ that the store is genuinely observed. We state precisely what is and is not
 charged, keep payload bits, allocated bits, charged probes, model ticks, and
 Lean wall-clock time distinct, and document the trust base (Lean kernel
 checking under a pinned toolchain, standard axioms only). A packed
-cell-probe strengthening is under separate feasibility review; this draft
-reserves exactly one marked insertion point for that result and asserts
-nothing about it. Novelty statements are deliberately conditional pending a
+cell-probe strengthening, bounding the allocated capacity of one packed
+object and the probes into it, has been accepted in the repository but is
+not yet absorbed into this draft; we reserve exactly one marked insertion
+point for it and assert it nowhere else. Novelty statements are deliberately conditional pending a
 completed search log.
 \end{abstract}
 
@@ -103,7 +104,7 @@ from claims.
 \subsection{Contributions of the mechanization}\label{sec:contributions}
 
 All results below are kernel-checked Lean~4 theorems at repository commit
-\texttt{1490c97b399d136bad4e18953441da433d130d4d}; the ledger
+\texttt{745a3c5b1fe99fe1072fbcf03f18f5dc9c23cb82}; the ledger
 (\texttt{paper/THEOREM\_LEDGER.md}) maps every claim in this draft to an
 exact declaration and source file.
 
@@ -141,10 +142,11 @@ The modeled cost bound charges attempted payload-word reads only; controller
 dispatch, decoding, arithmetic, comparisons, and branching are uncharged in
 the current model, so the constant $210$ is a charged-trace bound in an
 explicitly named model, not a running-time bound in the conventional
-word-RAM model (Section~\ref{sec:quantities}). The current space theorem
-counts advertised payload bits, not the allocated capacity of a packed
-memory object (Section~\ref{sec:quantities}); an allocated-capacity
-strengthening is exactly what the pending architecture work targets
+word-RAM model (Section~\ref{sec:quantities}). The space theorem of
+Section~\ref{sec:upper} counts advertised payload bits, not the allocated
+capacity of a packed memory object (Section~\ref{sec:quantities}); the
+allocated-capacity strengthening is a separate accepted result over a
+different object, which this draft states in one place and nowhere else
 (Section~\ref{sec:pending}). Priority claims are deliberately conditional:
 closely related mechanizations exist, most prominently the
 Coq/SSReflect succinct-data-structure line of Tanaka, Affeldt, Garrigue,
@@ -225,13 +227,17 @@ data-structure claim, so we fix vocabulary once, here.
   construction, and the repository's anti-vacuity lints reject theorem
   shapes that would smuggle reference computation into an uncounted field.
 \item[Allocated bits.] The full capacity of a concrete cell array,
-  including any header, final-cell padding, sentinel or dead cells. The
-  current mainline theorems do \emph{not} bound this quantity; the
-  physical-erasure theorem of Section~\ref{sec:model-adequacy} equates
-  payload \emph{bit contents} with the flattened word list, which is
-  deliberately weaker than an allocated-capacity bound. Bounding allocated
-  capacity by $2n + o(n)$ is part of the pending architecture target
-  (Section~\ref{sec:pending}).\ledger{L-OPEN-03}
+  including any header, final-cell padding, sentinel or dead cells. This is
+  strictly stronger than payload bits, and neither theorem of
+  Section~\ref{sec:upper} establishes it: the $2n + o(n)$ bound there counts
+  the advertised payload, and the physical-erasure theorem of
+  Section~\ref{sec:model-adequacy} equates payload \emph{bit contents} with
+  the flattened word list. Allocated capacity is bounded separately, and by
+  a different object --- the packed cell-probe representation of
+  Section~\ref{sec:pending}, whose complete capacity, counting the header
+  cell, every payload cell, and final padding at full cell width, is at most
+  $2n + \rho(n)$ for a checked little-$o$-linear
+  $\rho$.\ledger{L-PACK-01}
 \item[Charged probes (model reads).] Events of the explicit trace layer.
   On the accepted route every charged event is one attempted read of one
   word of the modeled store, including failed reads. The constant $210$
@@ -662,7 +668,7 @@ compatibility aliases that \leanid{RMQPaper} does not import.
 \section{Reproducibility}\label{sec:repro}
 
 All claims of this draft refer to repository commit
-\texttt{1490c97b399d136bad4e18953441da433d130d4d}. The artifact reproduction
+\texttt{745a3c5b1fe99fe1072fbcf03f18f5dc9c23cb82}. The artifact reproduction
 path is:
 
 \begin{itemize}
@@ -698,7 +704,7 @@ standard convention in which succinct RMQ upper and lower bounds are
 usually read~\cite{Fischer10,LiuYu20}. The repository's endgame roadmap
 freezes such a target:
 
-\begin{targetstmt}[Frozen target; not a result of this draft]
+\begin{targetstmt}[Accepted in the repository; not yet absorbed into this draft]
 \label{tgt:packed}
 For every input list of length $n$, preprocessing constructs one read-only
 array of exact-width $w(n)$-bit cells, with checked all-size bounds on $w$
@@ -712,29 +718,42 @@ index after at most $C$ adaptive probes, for one exact constant $C$
 independent of $n$.\ledger{L-ARCH-01}
 \end{targetstmt}
 
-At the base commit this target is a \emph{feasibility candidate} under an
-active gate: the geometry-closure and controller-closure rows are being
-discharged or refuted on a separate governed branch, and neither a positive
-architecture acceptance nor a checked obstruction has been recorded. This
-draft therefore asserts nothing about the target beyond its statement, and
-the repository's status labels for it are reproduced faithfully in the
-theorem ledger as \textsc{provisional\_architecture}.
+At the base commit this statement is no longer a target: the feasibility
+gate closed and the repository recorded a positive architecture acceptance,
+discharging the geometry-closure and controller-closure rows on one exact
+candidate lineage together with a fresh-blind exact-commit audit and a
+coordinator reconstruction. The theorem ledger reproduces the repository's
+status label accordingly.
+
+What has \emph{not} happened is editorial: this draft has not yet absorbed
+the accepted statement into a theorem environment with its proof obligations
+spelled out at the level the rest of the manuscript uses. Until it does, the
+marked insertion point below remains the only location licensed to carry the
+result, and no other section states, assumes, or paraphrases it as a theorem
+of this draft. Two consequences of the acceptance are already reflected
+above, because leaving them out would have made the draft assert falsehoods:
+the allocated-bits entry of Section~\ref{sec:quantities} now points here
+rather than denying that any theorem bounds capacity, and the corresponding
+limitation has been withdrawn.
 
 \subsection{Result insertion point}\label{sec:insertion}
 
-Exactly one location in this manuscript may receive the packed all-size
-result if and when it is independently accepted; until then the marker
-below is the entire content of that location, and no other section may
-state, assume, or paraphrase the pending result as established.
+Exactly one location in this manuscript may carry the packed all-size
+result. The acceptance condition has been met; the remaining step is
+editorial, and until it is taken the marker below is the entire content of
+that location, and no other section states, assumes, or paraphrases the
+result as a theorem of this draft.
 
 \medskip
 \noindent\verb|ARCHITECTURE_RESULT_PENDING|
 \medskip
 
-\noindent If the gate instead records a checked obstruction or an
-unresolved pivot, this section will record that exact outcome, and the rest
-of the draft stands unchanged: every theorem above is already checked at
-the base commit and none depends on the pending target.
+\noindent The marker is retained deliberately rather than deleted: it is
+what the manuscript checker keys on to confirm that the result appears in
+exactly one place, and it will be replaced by the theorem statement and its
+proof obligations in the same edit that removes this paragraph. Every
+theorem above is already checked at the base commit and none depends on the
+result carried here, so that edit is additive.
 
 \section{Related work}\label{sec:related}
 
@@ -806,11 +825,6 @@ Stated as theorems-not-yet-proved rather than hedges; each carries a ledger
 row.
 
 \begin{enumerate}
-\item \emph{Allocated capacity.} No current theorem bounds the full
-  allocated capacity of a single packed memory object (header, padding,
-  sentinels included) by $2n + o(n)$; the payload theorem counts advertised
-  payload bits, and the physical-erasure theorem equates bit contents only.
-  This is the pending architecture target.\ledger{L-OPEN-03}
 \item \emph{Controller charging.} Controller dispatch, decoding, bounded
   arithmetic, comparisons, and branching are uncharged; a richer
   instruction-level machine that charges each such step and simulates the
@@ -847,11 +861,14 @@ payload-accounted $2n + o(n)$ succinct construction with exact answers and
 a uniform, algebraically derived charged-trace cost bound; an explicit
 execution model with erasure, footprint-determinacy, payload-backing,
 provenance, and mutation-rejection theorems; and an information-theoretic
-lower bound in matching integer arithmetic. The deliberate residue --- an
-allocated-capacity theorem over one packed object with a closed controller
---- is frozen as a target with an active feasibility gate, and this draft
-will absorb exactly one result at the marked insertion point when and only
-when that work is independently accepted.
+lower bound in matching integer arithmetic. The one result held apart ---
+an allocated-capacity theorem over a single packed object queried by a
+closed controller --- has since been accepted in the repository, and this
+draft will absorb it at the marked insertion point, and only there. What
+remains genuinely open is listed in Section~\ref{sec:limitations}: the
+controller's uncharged steps, preprocessing complexity, tightness of both
+the constant and the overhead envelope, and mechanized cell-probe
+redundancy bounds.
 
 \bibliographystyle{alpha}
 \bibliography{references}
