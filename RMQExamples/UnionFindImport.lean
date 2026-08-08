@@ -9,20 +9,20 @@ reference operations, backend profile, and amortized-accounting profile.
 
 namespace RMQ.Examples.UnionFindImport
 
-abbrev State := RMQ.UnionFind.State
+abbrev State := VerifiedDS.UnionFind.State
 
-abbrev Backend := RMQ.UnionFind.Backend
+abbrev Backend := VerifiedDS.UnionFind.Backend
 
-abbrev AmortizedBackend := RMQ.UnionFind.AmortizedBackend
+abbrev AmortizedBackend := VerifiedDS.UnionFind.AmortizedBackend
 
-abbrev referenceBackend := RMQ.UnionFind.referenceBackend
+abbrev referenceBackend := VerifiedDS.UnionFind.referenceBackend
 
-abbrev referenceBackendProfile := RMQ.UnionFind.referenceBackend_profile
+abbrev referenceBackendProfile := VerifiedDS.UnionFind.referenceBackend_profile
 
 abbrev referenceAmortizedBackend :=
-  RMQ.UnionFind.referenceAmortizedBackend
+  VerifiedDS.UnionFind.referenceAmortizedBackend
 
 abbrev referenceAmortizedBackendProfile :=
-  RMQ.UnionFind.referenceAmortizedBackend_profile
+  VerifiedDS.UnionFind.referenceAmortizedBackend_profile
 
 end RMQ.Examples.UnionFindImport

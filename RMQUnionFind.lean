@@ -1,4 +1,17 @@
-import RMQ.Core.UnionFind.TarjanEvents
+import VerifiedDS.UnionFind.TarjanEvents
+
+/-!
+# Compatibility root
+
+The union-find development moved to `VerifiedDS.UnionFind` on 2026-08-08.
+It is a general verified data structure with no dependency on RMQ ranges,
+Cartesian shapes, Euler tours, or any RMQ backend; its only shared
+dependency is the model-layer hub module `RMQ.Core.Amortized`, which the
+moved modules reach through an explicit `open RMQ`.
+
+This root is retained so existing `import RMQUnionFind` call sites keep
+resolving. New code should import `VerifiedDS.UnionFind`.
+-/
 
 /-!
 # Standalone union-find spoke
@@ -13,73 +26,73 @@ compression/rank-mass checkpoints, and the first mixed-operation sequence
 surface and compression-event scorecard future Tarjan analyses can consume.
 
 The current public profile theorems are
-`RMQ.UnionFind.referenceBackend_profile`,
-`RMQ.UnionFind.referenceAmortizedBackend_profile`, and
-`RMQ.UnionFind.Forest.parentForestRefinement_profile`; the first concrete
+`VerifiedDS.UnionFind.referenceBackend_profile`,
+`VerifiedDS.UnionFind.referenceAmortizedBackend_profile`, and
+`VerifiedDS.UnionFind.Forest.parentForestRefinement_profile`; the first concrete
 singleton-component forest checkpoint is
-`RMQ.UnionFind.Forest.ParentForest.identity_profile`, and the first concrete
-union checkpoint is `RMQ.UnionFind.Forest.ParentForest.union_profile`.  The
+`VerifiedDS.UnionFind.Forest.ParentForest.identity_profile`, and the first concrete
+union checkpoint is `VerifiedDS.UnionFind.Forest.ParentForest.union_profile`.  The
 root-link frontier is tracked by
-`RMQ.UnionFind.Forest.ParentForest.rootLink_refinement_profile`; the first
+`VerifiedDS.UnionFind.Forest.ParentForest.rootLink_refinement_profile`; the first
 rank-guided closure checkpoints are
-`RMQ.UnionFind.Forest.ParentForest.rootLink_rank_lt_refinement_profile` and
-`RMQ.UnionFind.Forest.ParentForest.rootLink_rank_eq_bump_refinement_profile`.
+`VerifiedDS.UnionFind.Forest.ParentForest.rootLink_rank_lt_refinement_profile` and
+`VerifiedDS.UnionFind.Forest.ParentForest.rootLink_rank_eq_bump_refinement_profile`.
 The representative-insensitive union-by-rank boundary is exposed by
-`RMQ.UnionFind.State.SamePartition`,
-`RMQ.UnionFind.Forest.ParentForest.rankedRootLink_refinement_profile`, and
-`RMQ.UnionFind.Forest.ParentForest.unionByRank_refinement_profile`; its
+`VerifiedDS.UnionFind.State.SamePartition`,
+`VerifiedDS.UnionFind.Forest.ParentForest.rankedRootLink_refinement_profile`, and
+`VerifiedDS.UnionFind.Forest.ParentForest.unionByRank_refinement_profile`; its
 equal-rank bump premise is discharged by the proof-only
-`RMQ.UnionFind.Forest.ParentForest.RankSizeInvariant`.  Preservation across
+`VerifiedDS.UnionFind.Forest.ParentForest.RankSizeInvariant`.  Preservation across
 one union-by-rank step is tracked by
-`RMQ.UnionFind.Forest.ParentForest.RankComponentInvariant` and
-`RMQ.UnionFind.Forest.ParentForest.unionByRank_rankSizeInvariant_profile`.
+`VerifiedDS.UnionFind.Forest.ParentForest.RankComponentInvariant` and
+`VerifiedDS.UnionFind.Forest.ParentForest.unionByRank_rankSizeInvariant_profile`.
 The executable root-mass accounting layer is tracked by
-`RMQ.UnionFind.Forest.ParentForest.RootMassInvariant`,
-`RMQ.UnionFind.Forest.ParentForest.identity_rootMassInvariant`,
-`RMQ.UnionFind.Forest.ParentForest.unionByRank_rootMassInvariant_profile`, and
+`VerifiedDS.UnionFind.Forest.ParentForest.RootMassInvariant`,
+`VerifiedDS.UnionFind.Forest.ParentForest.identity_rootMassInvariant`,
+`VerifiedDS.UnionFind.Forest.ParentForest.unionByRank_rootMassInvariant_profile`, and
 the mass-carrying no-compression costed forest surface
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest`, including
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest`, including
 its concrete singleton init profile, finite repeated-union profile, and
 `SamePartition` refinement to the abstract `State.unionSpecMany` fold.  The
 representation-backed adapter surface is
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState`, whose
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState`, whose
 `findCosted`, one-node-compressing `compressFindCosted`, full-path
 `fullCompressFindCosted`, `unionCosted`, and `unionManyCosted` profiles carry
 the rank-power/root-mass certificate internally while exposing the induced
-abstract `State` boundary.  `RMQ.UnionFind.RepresentationBackend` is the cleaner representation
+abstract `State` boundary.  `VerifiedDS.UnionFind.RepresentationBackend` is the cleaner representation
 boundary for non-`State` executable backends, and
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRepresentationBackend_profile`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRepresentationBackend_profile`
 instantiates it with full path compression for `find`.  The executable
 `fullCompressFindTrace` plus
 `fullCompressFindCosted_trace_parent?_eq_root_of_findRoot?` theorem record that
 every node in the discovered trace, not just the query node, is rewritten to
 the returned root after a successful full-compression find. The current
 potential-method checkpoint is
-`RMQ.UnionFind.RepresentationAmortizedBackend` instantiated by
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRepresentationAmortizedBackend_profile`;
+`VerifiedDS.UnionFind.RepresentationAmortizedBackend` instantiated by
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRepresentationAmortizedBackend_profile`;
 it uses zero potential with exact trace-length credit for compressed find and
 unit credit for union-by-rank. The rank/height/cardinality bridge is exposed by
 `fullCompressFindCosted_cost_eq_trace_length`,
 `fullCompressFindTrace_length_le_rank_gap_of_findRoot?`, and
 `fullCompressFindTrace_length_le_rootMass_of_findRoot?`. The stronger
-`RMQ.UnionFind.Forest.ParentForest.RankPowerMassInvariant` layer proves and
+`VerifiedDS.UnionFind.Forest.ParentForest.RankPowerMassInvariant` layer proves and
 preserves the exponential component-size lower bound
 `2 ^ rank root <= mass root`, and
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankGapAmortizedBackend_profile`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankGapAmortizedBackend_profile`
 is the first nonzero-potential checkpoint: finite-size potential, rank-gap
 find credit, and unit union credit. The logarithmic-rank follow-up is exposed by
-`RMQ.UnionFind.Forest.ParentForest.RankPowerMassInvariant.rank_le_log2_mass`,
-`RMQ.UnionFind.Forest.ParentForest.RankPowerMassInvariant.rank_le_log2_size`,
+`VerifiedDS.UnionFind.Forest.ParentForest.RankPowerMassInvariant.rank_le_log2_mass`,
+`VerifiedDS.UnionFind.Forest.ParentForest.RankPowerMassInvariant.rank_le_log2_size`,
 and
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionLogRankAmortizedBackend_profile`,
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionLogRankAmortizedBackend_profile`,
 which replaces successful-find rank-gap credit with a global
 `log2 forest.size + 1` credit while retaining the invalid-query fuel fallback.
 The first explicit bucketed checkpoint is
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankBucketAmortizedBackend_profile`:
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankBucketAmortizedBackend_profile`:
 it defines logarithmic rank buckets, pays successful full-compression finds by
 the returned root bucket's geometric width, and keeps the statement explicitly
 pre-inverse-Ackermann. The local path-compression drop kernel is
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackCheckpoint_profile`:
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackCheckpoint_profile`:
 it preserves ranks through full compression, bounds a successful trace by
 original parent-rank slack plus two, and proves the compressed final state
 zeroes that slack on the visited trace. The theorem
@@ -126,53 +139,53 @@ potential or final inverse-Ackermann theorem. The obstruction theorem
 why this exact residual definition cannot be the final answer: when the level
 gap is a true sub-gap, adding `levelGap` and `rankSlack - levelGap` collapses
 back to ordinary rank slack. The sequence-level boundary is exposed by
-`RMQ.UnionFind.UFOp`, `RMQ.UnionFind.State.runOpsSpec`,
-`RMQ.UnionFind.RepresentationBackend.runOpsCosted`,
-`RMQ.UnionFind.RepresentationBackend.runOpsCosted_refinement_profile`,
-`RMQ.UnionFind.RepresentationAmortizedBackend.runOpsCosted_amortized`, and
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runFullCompressionTarjanLevelIndexAmortized_profile`.
+`VerifiedDS.UnionFind.UFOp`, `VerifiedDS.UnionFind.State.runOpsSpec`,
+`VerifiedDS.UnionFind.RepresentationBackend.runOpsCosted`,
+`VerifiedDS.UnionFind.RepresentationBackend.runOpsCosted_refinement_profile`,
+`VerifiedDS.UnionFind.RepresentationAmortizedBackend.runOpsCosted_amortized`, and
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runFullCompressionTarjanLevelIndexAmortized_profile`.
 The companion
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.chargedUnionCosted`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.chargedUnionCosted`
 surface models public union as two full-compression finds followed by the
 rank-guided link, with
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionOpsCosted_refinement_profile`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionOpsCosted_refinement_profile`
 exposing the honest mixed-operation refinement boundary. The charged public
 operation sequence is also consumed by
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionTarjanLevelIndexAmortized_profile`.
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionTarjanLevelIndexAmortized_profile`.
 The first Tarjan-event scorecard is
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionEventCost_profile`;
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionEventCost_profile`;
 it decomposes modeled public-operation cost into compression-trace events plus
 rank-link events. The scheduled-event checkpoint
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduledEventCost_profile`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduledEventCost_profile`
 splits compression events into terminal, cross-level, and same-level residual
 events for a `RankSchedule`. Under valid-node operation sequences,
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionCost_le_scheduledResiduals_add_three_mul_length_of_valid`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionCost_le_scheduledResiduals_add_three_mul_length_of_valid`
 reduces modeled cost to scheduled cross/residual events plus a linear
 operation-count term. For the current iterated-log schedule,
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindIteratedLogScheduleCrossCount_le_traceLevelGap_of_findRoot?`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindIteratedLogScheduleCrossCount_le_traceLevelGap_of_findRoot?`
 shows cross-level events are paid by the existing level-gap potential. The
 root-edge-aware strict checkpoint
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionStrictScheduledEventCost_profile`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionStrictScheduledEventCost_profile`
 then separates root/root-edge events from strict cross-level and strict
 same-level residual events. Under valid-node operation sequences,
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionCost_le_strictScheduledResiduals_add_five_mul_length_of_valid`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionCost_le_strictScheduledResiduals_add_five_mul_length_of_valid`
 reduces modeled cost to strict cross/residual events plus linear overhead, and
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualCount_le_traceRootParentRankSlack_of_findRoot?`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualCount_le_traceRootParentRankSlack_of_findRoot?`
 records that strict residual events have positive rank slack, while
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_strictResidual_parent_rank_progress_of_trace_mem`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_strictResidual_parent_rank_progress_of_trace_mem`
 shows each strict residual trace event rewrites that node to a strictly
 higher-rank parent.
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualNodes_length`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualNodes_length`
 packages the strict residual counter as a whole-run event-node stream.
 The event-record follow-up
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualEvents_length`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualEvents_length`
 and
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualEvents_rankProgress`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualEvents_rankProgress`
 upgrade that stream to rank snapshots, while
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualEvents_parent?_eq_root_of_mem`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualEvents_parent?_eq_root_of_mem`
 records that each full-find event's node is rewired to the event root.
 The sequence hook
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionOpsCosted_rank_le`
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionOpsCosted_rank_le`
 records that charged runs never decrease ranks. The
 remaining true-Tarjan gap is bounding strict same-level residual event nodes by
 a recursively bucketed Ackermann/alpha counter over the whole sequence.

@@ -1,4 +1,4 @@
-import RMQ.Core.UnionFind.Forest.Reference
+import VerifiedDS.UnionFind.Forest.Reference
 
 /-!
 # Union-find parent-forest barrel
@@ -15,6 +15,6 @@ This stable import root re-exports the role-split parent-forest development:
 - `Forest.Reference` for the direct `State` adapter and public refinement
   checkpoint.
 
-Public names remain in `RMQ.UnionFind.Forest` and nested `ParentForest`
+Public names remain in `VerifiedDS.UnionFind.Forest` and nested `ParentForest`
 namespaces.
 -/

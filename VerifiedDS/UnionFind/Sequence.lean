@@ -1,4 +1,4 @@
-import RMQ.Core.UnionFind.Forest
+import VerifiedDS.UnionFind.Forest
 
 /-!
 # Union-find operation sequences
@@ -11,7 +11,9 @@ runners, a representative-insensitive refinement theorem, and a generic
 potential-method telescope theorem.
 -/
 
-namespace RMQ
+namespace VerifiedDS
+
+open RMQ
 
 namespace UnionFind
 
@@ -623,4 +625,4 @@ end Forest
 
 end UnionFind
 
-end RMQ
+end VerifiedDS

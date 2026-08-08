@@ -1,6 +1,8 @@
-import RMQ.Core.UnionFind.Forest.NoCompression
+import VerifiedDS.UnionFind.Forest.NoCompression
 
-namespace RMQ
+namespace VerifiedDS
+
+open RMQ
 
 namespace UnionFind
 
@@ -1209,4 +1211,4 @@ end Forest
 
 end UnionFind
 
-end RMQ
+end VerifiedDS

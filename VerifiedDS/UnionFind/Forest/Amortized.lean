@@ -1,6 +1,8 @@
-import RMQ.Core.UnionFind.Forest.PotentialProofs
+import VerifiedDS.UnionFind.Forest.PotentialProofs
 
-namespace RMQ
+namespace VerifiedDS
+
+open RMQ
 
 namespace UnionFind
 
@@ -665,4 +667,4 @@ end Forest
 
 end UnionFind
 
-end RMQ
+end VerifiedDS

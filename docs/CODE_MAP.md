@@ -42,7 +42,7 @@ Start with these files in this order:
   and union-find spokes.
 - `VerifiedDS.lean` and `VerifiedDS/` are thin facade roots over those public
   roots. The canonical theorem names still live under `RMQ`, `RMQ.Headlines`,
-  `RMQ.RankSelect`, `RMQ.BPNavigation`, and `RMQ.UnionFind`.
+  `RMQ.RankSelect`, `RMQ.BPNavigation`, and `VerifiedDS.UnionFind`.
 - `RMQArchive.lean` is an optional archive root. It keeps retired or historical
   surfaces checked without making `import RMQ` depend on them.
 

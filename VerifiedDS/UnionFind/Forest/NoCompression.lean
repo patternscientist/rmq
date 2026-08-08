@@ -1,6 +1,8 @@
-import RMQ.Core.UnionFind.Forest.Base
+import VerifiedDS.UnionFind.Forest.Base
 
-namespace RMQ
+namespace VerifiedDS
+
+open RMQ
 
 namespace UnionFind
 
@@ -653,4 +655,4 @@ end Forest
 
 end UnionFind
 
-end RMQ
+end VerifiedDS

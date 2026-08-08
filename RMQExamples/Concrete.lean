@@ -1,7 +1,7 @@
 import RMQ.Core.Window
 import RMQ.Core.Succinct
 import RMQ.Core.SuccinctRMQClassic
-import RMQ.Core.UnionFind
+import VerifiedDS.UnionFind
 
 /-!
 # Tiny executable examples
@@ -260,7 +260,7 @@ example :
       _hproducer0, hproducer15, _hreceipt0, hreceipt15⟩
   exact ⟨word, hquery, hget15, hproducer15, hreceipt15⟩
 
-def tinyUnionFind : RMQ.UnionFind.State where
+def tinyUnionFind : VerifiedDS.UnionFind.State where
   size := 3
   repr := fun x => x
   repr_lt := by
@@ -268,9 +268,9 @@ def tinyUnionFind : RMQ.UnionFind.State where
     exact hx
 
 example : tinyUnionFind.find? 1 = some 1 := by
-  simp [tinyUnionFind, RMQ.UnionFind.State.find?]
+  simp [tinyUnionFind, VerifiedDS.UnionFind.State.find?]
 
 example : tinyUnionFind.find? 4 = none := by
-  simp [tinyUnionFind, RMQ.UnionFind.State.find?]
+  simp [tinyUnionFind, VerifiedDS.UnionFind.State.find?]
 
 end RMQ.Examples.Concrete

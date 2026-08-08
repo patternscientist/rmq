@@ -8496,3 +8496,33 @@ absent from `main`, which would have invited an auditor to skip it.
 Remaining preconditions are unchanged: the union-find cordon (landed or
 explicitly deferred), the `210`/`427` enforcement decision, the advisory
 independent checker, and the DOI / anonymous-bundle question.
+
+## WDD-20260808-019 -- axiom-check scripts follow the union-find rename
+
+Status: Accepted (V1 freeze, phase 1).
+
+Date: 2026-08-08
+
+Context: `DD-20260808-092` moves the union-find spoke to
+`VerifiedDS.UnionFind`. Two gate scripts pin its declarations by fully
+qualified name and are workflow-classified:
+`scripts/union_find_axiom_check.lean` (174 `#print axioms` lines) and
+`scripts/axiom_check.lean` (38).
+
+Decision: rewrite the qualified names in both, and nothing else. No assertion is
+added, removed, or weakened -- the same declarations are checked, under the names
+they now have. This is the property that made the rename affordable: because the
+namespace moved wholesale and no theorem was renamed *within* it, the pins map
+one-to-one and their coverage is unchanged.
+
+Why this is worth a decision rather than a silent edit: a mass rewrite of
+`#print axioms` lines is exactly the shape of change that can quietly reduce
+coverage -- a mistyped name becomes `unknown constant`, and a script that
+tolerates that would report success while checking fewer declarations than
+before. So the verification is that the scripts still **run clean**, not merely
+that they still parse: `scripts/union_find_axiom_check.lean` exits 0 with every
+one of the 174 declarations resolving, and the full `scripts/axiom_check.lean`
+is run over the moved tree as well.
+
+`scripts/hub_closure_lint.ps1` is unaffected -- the hub closure does not include
+the spoke, and the lint still reports exactly the pinned 11 modules.

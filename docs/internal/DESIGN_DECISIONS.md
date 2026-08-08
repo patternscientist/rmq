@@ -10813,3 +10813,72 @@ Consequence for the V1 freeze: `paper/` is now part of the release candidate and
 must be inside the release-audit scope. It was previously absent from `main`
 entirely, which the freeze checklist flags as a blocker (a placeholder-free PDF
 build is required).
+
+## DD-20260808-092 -- cordon the union-find spoke out of the RMQ namespace
+
+Status: Accepted (V1 freeze, phase 1).
+
+Date: 2026-08-08
+
+Context: union-find is a general verified data structure with no dependency on
+RMQ. It nevertheless lived at `RMQ/Core/UnionFind/**` in namespace
+`RMQ.UnionFind`, reachable under three names -- the source path, the
+`RMQUnionFind` Lake root, and a `VerifiedDS.UnionFind` facade that merely
+re-exported the RMQ-named root. The facades relabelled without cordoning.
+
+Measured before acting, and it is the reason this spoke and no other was moved:
+
+- `RMQ.lean` does **not** import the spoke at all;
+- only two external files import it (`RMQExamples/Concrete.lean`,
+  `RMQUnionFind.lean`);
+- the spoke has **zero** `private` declarations, so no promotion risk;
+- its only non-UnionFind dependency is the hub module `RMQ.Core.Amortized`.
+
+Of the four candidate spokes this is the only one where the premise held.
+`RankSelect` and `BPNavigation` are not directories at all -- they are namespace
+regions inside files that also hold RMQ-internal namespaces -- and
+`BPNavigation`'s exported theorems are quantified over
+`RMQ.Cartesian.CartesianShape`, with 195 frozen Stage-F evidence fixtures
+pinning `import RMQ.Core.BPNavigationRAM`. Those remain out of scope.
+
+Decision: move all 11 files to `VerifiedDS/UnionFind{,/**}.lean` and rename the
+namespace to `VerifiedDS.UnionFind`, inverting the roots so the neutral name is
+canonical and `RMQUnionFind.lean` becomes the compatibility shim.
+
+**The load-bearing detail, which the earlier structural analysis did not
+predict**: the spoke references hub names such as `Amortized.CostedBound`
+unqualified. Those resolved only because the files sat inside `namespace RMQ`,
+and `RMQ.Core.Amortized` declares into `RMQ.Amortized`. Every moved file
+therefore carries an explicit `open RMQ`. Without it the move compiles to
+`unknown identifier`, which is how the first attempt failed.
+
+Two things deliberately preserved:
+
+- `RMQUnionFind.lean` is one import plus a 179-line docstring naming the public
+  profile theorems. It is **not** overwritten; a move note is prepended and the
+  docstring's theorem names were renamed in place.
+- Dated digests (`docs/digests/**`, `docs/DIGESTION_LOG.md`) are **not**
+  rewritten. They record what was true at a past commit, and renaming their
+  identifiers would falsify the record -- the same rule already applied to
+  `paper/WORKLOG.md`.
+
+Process note, recorded because it cost a full attempt: a first pass was reverted
+to a byte-identical tree after three sequential line-ending failures -- a regex
+that inserted isolated carriage returns, a namespace rename that silently
+matched nothing under CRLF, and a repair that rewrote zero files while reporting
+success. The second pass is entirely line-based: each file is read with
+`newline=''`, normalised to `\n` once, edited by line identity rather than
+regex, and rejoined with its original terminator, with an assertion that no
+element contains a terminator. **Do not use regex with `$` anchors on this
+repository's CRLF files.**
+
+Verification: `lake build VerifiedDS.UnionFind RMQUnionFind VerifiedDS` exit 0
+(675 s); `scripts/union_find_axiom_check.lean` exit 0 with all 174 pinned
+declarations resolving under their new names; hub closure lint unaffected; zero
+residual `RMQ.UnionFind` references; zero isolated carriage returns repo-wide.
+
+Residual, stated rather than hidden: the cordoned spoke still depends on
+`RMQ.Core.Amortized`, which remains RMQ-pathed. Moving the hub layer is a
+separate and larger decision -- `RMQ/Core/ModelHub.lean` has zero declarations,
+so the hub's content is `Cost`, `Amortized`, `RAM`, `WordRAM` and friends, which
+RMQ core also uses.

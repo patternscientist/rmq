@@ -637,19 +637,19 @@ navigation spoke plus the first reusable close/rank bridge.
 partition-state specification, exact costed reference `find` and `union`
 operations, a reusable potential-method backend interface, and a concrete
 parent-pointer forest layer:
-`RMQ.UnionFind.referenceBackend_profile`,
-`RMQ.UnionFind.referenceAmortizedBackend_profile`, and
-`RMQ.UnionFind.Forest.parentForestRefinement_profile`.
+`VerifiedDS.UnionFind.referenceBackend_profile`,
+`VerifiedDS.UnionFind.referenceAmortizedBackend_profile`, and
+`VerifiedDS.UnionFind.Forest.parentForestRefinement_profile`.
 
 The forest spoke now includes executable root search, union-by-rank refinement
 checkpoints, root-mass and rank-power invariants, full path-compression find
 refinement, logarithmic-rank and rank-bucket amortized checkpoints, and a
 rank-slack compression-drop kernel. The current frontier profiles are
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankBucketAmortizedBackend_profile`,
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackCheckpoint_profile`,
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackAmortizedBackend_profile`,
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankBucketAmortizedBackend_profile`,
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackCheckpoint_profile`,
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackAmortizedBackend_profile`,
 and
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackSizeUnionAmortizedBackend_profile`.
+`VerifiedDS.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackSizeUnionAmortizedBackend_profile`.
 Successful full-compression find is paid by rank-slack potential drop up to
 constant credit, while the cleaned union checkpoint still uses the coarse
 credit `rankBucketPotential backend + 1`. It is still not the final Tarjan

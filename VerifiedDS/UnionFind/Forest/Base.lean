@@ -1,4 +1,4 @@
-import RMQ.Core.UnionFind
+import VerifiedDS.UnionFind
 
 /-!
 # Parent-pointer forests for union-find
@@ -10,7 +10,9 @@ fuel budget, and `ParentForest.Invariant` packages the root/bounded-depth facts
 needed to adapt the forest back to the abstract representative state.
 -/
 
-namespace RMQ
+namespace VerifiedDS
+
+open RMQ
 
 namespace UnionFind
 
@@ -2959,4 +2961,4 @@ end Forest
 
 end UnionFind
 
-end RMQ
+end VerifiedDS

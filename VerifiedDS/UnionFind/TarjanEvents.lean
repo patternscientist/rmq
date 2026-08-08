@@ -1,4 +1,4 @@
-import RMQ.Core.UnionFind.Sequence
+import VerifiedDS.UnionFind.Sequence
 
 /-!
 # Union-find Tarjan event accounting
@@ -10,7 +10,9 @@ separate modeled public-operation cost into compression-trace events and
 rank-link events for the charged full-compression backend.
 -/
 
-namespace RMQ
+namespace VerifiedDS
+
+open RMQ
 
 namespace UnionFind
 namespace Forest
@@ -2452,4 +2454,4 @@ end Forest
 
 end UnionFind
 
-end RMQ
+end VerifiedDS
