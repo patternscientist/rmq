@@ -8705,3 +8705,26 @@ The DOI remains unminted and is an owner action; the constraint that it must not
 be cited in an anonymous submission is recorded in
 `docs/PUBLICATION_STRATEGY.md` §5 where whoever prepares the submission will
 read it, rather than in the audit prompt.
+
+### WDD-20260808-022 addendum (2026-08-08)
+
+The coordinator record's range now ends at `<RC-SHA>`, the tip of its own
+lineage, rather than naming a commit that stops being the tip the moment
+anything else lands. Two findings were added to its findings table (ITP 2026 has
+passed; an anonymised artifact is required) and the open DOI/anonymity item was
+replaced by its resolution.
+
+One item was added to section 8 that is not a blocker but is the kind of thing a
+coordinator should see before choosing a venue: **venue fit is coupled to E1.**
+An external expert independently recommended ITP as best fit with CPP as a
+secondary, which matches this project's own analysis arrived at from the
+precedent lineage. Their premise, however, included "a compiled small ISA
+machine to make the cost claim operational" -- that is E1, and it is not done;
+controller dispatch, decoding, arithmetic and branching remain uncharged.
+
+Both of the expert's secondary suggestions (CPP, and PL venues "if framed
+correctly") lean on precisely that operational angle, which is the same
+condition `docs/PUBLICATION_STRATEGY.md` already attaches to CPP. So the
+convergence is real for ITP and conditional for everything else, and the
+condition is a piece of unfinished work rather than a framing choice. Recorded
+so the agreement is not read as broader than it is.

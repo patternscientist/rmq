@@ -1,7 +1,8 @@
 # Coordinator record: Stage-A closure through the V1 release candidate
 
-**Range:** `a0402e1` (Stage-A integration) .. `bdb79bf` (`main`, 2026-08-08)
-**25 commits, 83 files, +20,830 / −14,182**
+**Range:** `a0402e1` (Stage-A integration) .. `<RC-SHA>`, the tip of this
+lineage. 27 commits as of this writing; the measured delta at `bdb79bf`
+(25 commits in) was 83 files, +20,830 / −14,182.
 
 ## 0. What this document is for, and when to read it
 
@@ -104,7 +105,8 @@ project previously believed.
 | **A linear preprocessing bound exists** for the dense-LCA spoke (`denseLCA_linearBuild_constantQuery_profile`), though not for the succinct payload. | preprocessing wholly unproved | `docs/ROADMAP.md:311-331` |
 | **"Our novelty is the machine-checked asymptotic `o(n)`" is dead**, and so is any "first machine-checked query-cost bound": JIP 2018 §6.5.2 already machine-checks succinct query cost in Coq. | the repository's stated novelty framing | primary source; the JIP PDF was fetched and read, lemmas `RankInitNumBitsExamined` / `RankLookupNumBitsExamined` confirmed on page 67 |
 | **The blanket deferral of all nine file splits was wrong for one file.** | module-scoped `private` forces promotions in every case | per-file measurement: 0 of 25 privates cross a seam in `InteriorDirectory` |
-| **ITP 2025 used lightweight double-blind review**, and ITP is the stated target. | anonymity treated as an open nicety | ITP 2025 CFP |
+| **ITP 2026 has already run** (26-29 July 2026, LIPIcs vol. 382), so the target is ITP 2027 and the runway is longer than the roadmap assumed. | an imminent deadline | the ITP 2026 site |
+| **An anonymised artifact is REQUIRED, not optional**: the call requires "anonymised supplementary material containing verifiable evidence of a suitable implementation". The DOI must therefore not be cited in the submission. | anonymity treated as an open nicety | the ITP 2026 call for papers |
 
 ---
 
@@ -203,13 +205,22 @@ This is the operative section.
 
 ## 8. Open at `bdb79bf`
 
-- **DOI and anonymity — the only substantive decision left.** ITP 2025 used
-  lightweight double-blind review; `PUBLICATION_STRATEGY.md` names ITP. The
-  repository URL, `CITATION.cff` and the commit history each deanonymize a
-  submission independently, so this constrains *how the artifact is published*
-  and cannot be repaired by tooling afterwards. ITP 2026's policy is
-  unconfirmed. Minting the DOI is an action on the owner's identity and is left
-  to them.
+- **DOI and anonymity — resolved 2026-08-08** (`DD-20260808-094`) by reading
+  the venue's own call. An anonymised artifact is **required**; ITP 2026 has
+  already run so the target is ITP 2027; and the DOI must not be cited in an
+  anonymous submission, so it belongs to the public release and camera-ready.
+  Minting it remains an action on the owner's identity and is left to them.
+  Anonymisation tooling is deliberately **not** built yet: on an ITP 2027
+  timescale there is no reason to freeze that choice now.
+- **Venue fit is coupled to E1.** An external expert independently recommended
+  ITP as best fit with CPP as a secondary, matching this project's own analysis.
+  But their premise included "a compiled small ISA machine to make the cost
+  claim operational" -- that is E1, which is **not done**; controller dispatch,
+  decoding, arithmetic and branching remain uncharged. Both of the secondary
+  suggestions (CPP, and PL venues "if framed correctly") lean on exactly that
+  operational angle, which is the same condition `PUBLICATION_STRATEGY.md`
+  already attaches to CPP. ITP is the recommendation that holds for the artifact
+  as it stands.
 - The remaining `V1_RELEASE_CANDIDATE_AUDIT_PROMPT.md` §0 boxes are launch
   mechanics: choose `<RC-SHA>`, confirm green, build the packet.
 - Deferred with reasons recorded: the `RankSelect` and `BPNavigation` cordons
