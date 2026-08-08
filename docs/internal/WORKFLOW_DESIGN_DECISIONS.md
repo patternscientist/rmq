@@ -8565,3 +8565,54 @@ cited as evidence that an independent kernel confirmed anything.
 
 If a reviewer runs it, the outcome belongs in `docs/internal/audit_reports/`
 with the exporter and checker commits pinned.
+
+## WDD-20260808-021 -- close the current-constant enforcement gap
+
+Status: Accepted (owner-approved 2026-08-08). Closes `DD-20260807-087`.
+
+Date: 2026-08-08
+
+Context: `docs/internal/CLAIM_DRIFT_POLICY.json` guards every **retired**
+constant -- `76`, `142`, `207`, `328`, `352`, `118`, `4144`, `196727`, `2^128` --
+and neither **current** one. `427` appears nowhere in the policy; `210` appears
+once, inside an `allowedLineRegex` exception. So a green claim-drift scan said
+nothing about whether the headline numbers were still right.
+
+The gap is structural, not an oversight. Guarding a retired value is a negative
+"must not appear" grep, which a regex policy expresses well. Guarding a current
+value needs a positive Lean-versus-docs equality check, which it cannot express
+at all. That is why this is a new script rather than another policy term.
+
+Decision: add `scripts/constant_sync_check.ps1`, wired into `gate.ps1` as step
+7b with `-SelfTest`. Lean is the source of truth: each constant names a Lean file
+and a capture regex, and the script extracts the value, compares it against a pin
+recorded in the script, requires every listed public surface to state it, and
+fails on a superseded value appearing without a historical marker.
+
+The pin is the mechanism, and it is deliberate. Changing a proved bound fails
+*this script too*, which forces the documentation update into the same change
+instead of leaving it to be noticed later. A checker that only read Lean and the
+docs would pass the moment both were wrong together.
+
+Three failure modes it is built to avoid, each drawn from a defect this project
+actually shipped:
+
+- **Blindness on a moved anchor.** If the extraction regex stops matching, the
+  script fails loudly rather than treating "no value found" as agreement.
+  Self-tested.
+- **Vacuous success.** `-SelfTest` asserts the extractor really reads Lean, that
+  a changed value is detected, that a moved anchor yields no false pass, and that
+  the historical-marker allowance distinguishes "the current cap is 207" from
+  "Historical comparison: the retired cap is 207".
+- **A guard that cannot fail.** Verified end-to-end and side by side: with the
+  Lean bound moved `210 -> 214` on the real tree,
+  `constant_sync_check.ps1` exits 1 naming both values, while
+  `claim_drift_scan.ps1 -Strict` reports `1553 hits, 0 strict failures` and exits
+  0. The file was restored byte-identical.
+
+Scope, so this is not over-read: the script pins the surfaces most likely to be
+cited, not all 18. It checks numeral agreement, not that surrounding prose
+describes the constant correctly -- that remains a human and audit
+responsibility. It does not know the difference between the two numerically
+identical `210`s; the packed controller's structural fuel is documented
+separately and is not extracted here.

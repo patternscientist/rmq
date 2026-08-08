@@ -162,6 +162,14 @@ if ($LASTEXITCODE -ne 0) { SoftFail "claim_drift_policy_regression.ps1 found iss
 & "$PSScriptRoot\claim_drift_scan.ps1" -Strict
 if ($LASTEXITCODE -ne 0) { SoftFail "claim_drift_scan.ps1 found strict violations" }
 
+# 7b. Current-constant synchronization. The claim-drift policy guards every
+# RETIRED constant and neither current one, so a moved bound would leave public
+# surfaces asserting a stale numeral with the scan still reporting zero strict
+# failures -- demonstrated by moving 210 to 214, where the scan exits 0 and this
+# check exits 1. Lean is the source of truth here.
+& "$PSScriptRoot\constant_sync_check.ps1" -SelfTest
+if ($LASTEXITCODE -ne 0) { SoftFail "constant_sync_check.ps1 found constant drift" }
+
 # 8. The paper root must expose only the canonical reviewer-payload,
 # readWord-only, derived-210 query topology; historical profiles remain in the
 # explicit compatibility module.
