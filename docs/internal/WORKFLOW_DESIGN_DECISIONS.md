@@ -8682,3 +8682,26 @@ Three properties it is built around:
 The document restates the accepted claim verbatim rather than paraphrasing it,
 because every judgement in section 7 is made against that wording and a
 paraphrase would silently move the target.
+
+### WDD-20260807-018 addendum 3 (2026-08-08)
+
+The last substantive section-6 item is closed. `DD-20260808-094` records the ITP
+submission constraints read from the venue's own call: submission is lightweight
+double-blind and **anonymised supplementary material is required**, so the
+anonymous artifact is not an optional extra. It also records that ITP 2026 has
+already run, making ITP 2027 the target.
+
+Effect on the audit prompt: section 6 now lists no open blocker that is work.
+What remains in section 0 is launch mechanics -- choose `<RC-SHA>`, confirm both
+CI workflows green on it, build the packet with `make_audit_packet.ps1`.
+
+Two things the auditor is **not** asked to check, deliberately. Venue policy is
+not a property of the release candidate, and anonymisation is a submission-time
+concern rather than a soundness one. Putting them in the prompt would widen a
+fresh-blind proof audit into a publication review and dilute what its verdict
+means.
+
+The DOI remains unminted and is an owner action; the constraint that it must not
+be cited in an anonymous submission is recorded in
+`docs/PUBLICATION_STRATEGY.md` §5 where whoever prepares the submission will
+read it, rather than in the audit prompt.

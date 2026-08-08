@@ -175,12 +175,13 @@ Close or explicitly defer each before choosing `<RC-SHA>`:
   `docs/INDEPENDENT_CHECK.md` documents the procedure and states that it has
   **not** been executed; Lean 4.22.0 ships no exporter. Check that the document
   does not read as a result.
-- DOI and anonymous-bundle decision **still open**; `CITATION.cff` version is
-  `provisional` with no `doi:`. ITP 2025 used *lightweight double-blind* review
-  and `docs/PUBLICATION_STRATEGY.md` names ITP as the target, so an anonymous
-  bundle may be required rather than optional -- the repository URL,
-  `CITATION.cff`, and the commit history each deanonymize a submission. Confirm
-  ITP 2026's policy before the freeze.
+- DOI and anonymous bundle — **resolved 2026-08-08 by reading the ITP 2026
+  call**; see `docs/PUBLICATION_STRATEGY.md` §5. An anonymised artifact is
+  **required**: "All submissions are expected to be accompanied by anonymised
+  supplementary material containing verifiable evidence of a suitable
+  implementation". ITP 2026 has already run (26–29 July 2026, LIPIcs vol. 382),
+  so the target is **ITP 2027**. The DOI is still unminted and remains an owner
+  action; note it must not be cited in an anonymous submission.
 
 ## 7. Union-find cordon — state and plan
 

@@ -170,6 +170,41 @@ cost-honesty.* The lower bound and the anti-oracle method are the proposed
 deltas over Affeldt ITP 2019, contingent on referee-grade novelty search and
 artifact packaging before any priority wording appears in a paper.
 
+### Target instance and submission constraints (checked 2026-08-08)
+
+**ITP 2026 has passed** — it ran 26–29 July 2026 in Lisbon, with proceedings
+published as LIPIcs volume 382, and its deadlines were 12/19 February 2026. The
+realistic target is therefore **ITP 2027**, whose call is not yet out. Plan
+against a February-2027-shaped deadline rather than an imminent one.
+
+**Submission is lightweight double-blind, and this constrains the artifact, not
+only the paper.** The ITP 2026 call states: "Submission for both is lightweight
+double-blind. This means that (1) author names and institutions must be omitted
+using the anonymous option of the document class, (2) references to authors' own
+related work should be in the third person." ITP 2025 used the same model, so
+treat it as stable for 2027 while re-checking the 2027 call when it appears.
+
+Decisively for this project, the same call requires: "All submissions are
+expected to be accompanied by **anonymised supplementary material** containing
+verifiable evidence of a suitable implementation, such as the source files of a
+formalization for the proof assistant used." An anonymised artifact is therefore
+**required, not optional**.
+
+Three consequences that are easy to get wrong:
+
+1. The repository URL, `CITATION.cff`, the commit history, and the release page
+   each deanonymize a submission **independently**. Anonymisation is a decision
+   about how the artifact is prepared and shipped, not a filter applied at the
+   end.
+2. **The DOI and the anonymity requirement interact.** A minted Zenodo DOI
+   pointing at a named public repository must not be cited in the anonymous
+   submission or embedded in the anonymised supplement. The DOI belongs to the
+   public release and the camera-ready version; the submission bundle carries
+   source files without provenance links.
+3. Self-citation of this project's own prior material must be third-person, and
+   the manuscript's own scope prose refers to internal documents by path — those
+   paths are repository-identifying and must be reviewed before submission.
+
 ## References
 
 - R. Affeldt, J. Garrigue, K. Tanaka. *Proving Tree Algorithms for Succinct

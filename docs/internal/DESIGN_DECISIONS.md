@@ -10913,3 +10913,52 @@ the disclaimer is placed in the status line at the top as well as the body.
 
 It also warns that an export-format mismatch between exporter and checker
 presents as a parse failure and must not be reported as a soundness finding.
+
+## DD-20260808-094 -- record the ITP submission constraints, and that ITP 2026 has passed
+
+Status: Accepted.
+
+Date: 2026-08-08
+
+Context: the last open V1 item was "DOI and anonymous-bundle decision". It was
+being carried as an open question. Reading the venue's own call resolves it and
+turns up a second fact that changes planning.
+
+**Finding 1 — ITP 2026 has already run.** 26-29 July 2026 in Lisbon, proceedings
+published as LIPIcs volume 382; submission deadlines were 12 and 19 February
+2026. The realistic target is **ITP 2027**, whose call is not yet published.
+This is recorded because the roadmap and publication strategy were written as
+though a nearer deadline applied; the practical effect is more runway, not less
+work.
+
+**Finding 2 — the anonymity requirement is not optional, and binds the
+artifact.** The ITP 2026 call states submission is "lightweight double-blind",
+requiring author names and institutions omitted via the anonymous document-class
+option and self-references in the third person. It further requires that "All
+submissions are expected to be accompanied by anonymised supplementary material
+containing verifiable evidence of a suitable implementation, such as the source
+files of a formalization for the proof assistant used." ITP 2025 used the same
+model, so it is treated as stable while the 2027 call is re-checked when it
+appears.
+
+Decision: record both in `docs/PUBLICATION_STRATEGY.md` §5 as a target-instance
+and submission-constraints subsection, and close the corresponding V1 item.
+
+Three consequences written down because each is easy to get wrong:
+
+1. The repository URL, `CITATION.cff`, the commit history and the release page
+   each deanonymize a submission **independently**. Anonymisation is therefore a
+   property of how the artifact is prepared, not a filter applied at the end. No
+   tooling repairs it afterwards.
+2. **The DOI and the anonymity requirement interact.** A Zenodo DOI pointing at
+   a named public repository must not be cited in the anonymous submission or
+   embedded in the anonymised supplement. The DOI belongs to the public release
+   and camera-ready; the submission bundle carries source files without
+   provenance links. Minting it remains an owner action on their own identity.
+3. The manuscript refers to internal documents by repository path. Those paths
+   are repository-identifying and must be reviewed before submission.
+
+What is deliberately **not** decided here: whether to build anonymisation
+tooling now. With an ITP 2027 timescale there is no reason to freeze that
+decision today, and the constraint is now recorded where whoever prepares the
+submission will read it.
