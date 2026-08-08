@@ -8616,3 +8616,31 @@ describes the constant correctly -- that remains a human and audit
 responsibility. It does not know the difference between the two numerically
 identical `210`s; the packed controller's structural fuel is documented
 separately and is not extracted here.
+
+### WDD-20260807-018 addendum 2 (2026-08-08)
+
+Three further section-0 preconditions discharged, leaving one:
+
+- Union-find cordon **landed** at `8a37b5a`. The prompt now tells the auditor to
+  expect `VerifiedDS.UnionFind` and to treat `RMQUnionFind.lean` as a shim.
+  Section 7 is kept, not deleted: it records how the move was done and what
+  broke the first attempt, which is what makes the result checkable.
+- `210`/`427` enforcement **closed** at `c14d7a5` (`WDD-20260808-021`). The
+  prompt still directs the auditor to test it rather than take it on trust,
+  because a new gate is exactly the kind of thing that can be green and wrong.
+- Advisory independent checker **dispositioned** at `a3ba169`, as a documented
+  procedure explicitly not executed. The auditor is asked to check that
+  `docs/INDEPENDENT_CHECK.md` does not read as a result -- the failure mode for
+  that document is a reader citing it loosely, not an error inside it.
+
+Remaining: the DOI and anonymous-bundle decision, now carrying a finding rather
+than an open question. ITP 2025 used *lightweight double-blind* review and
+`docs/PUBLICATION_STRATEGY.md` names ITP as the target, so an anonymous bundle
+is plausibly required rather than optional. The repository URL, `CITATION.cff`
+and the commit history each deanonymize a submission independently, so this is
+not something anonymization tooling can fully fix after the fact -- it is a
+decision about how the artifact is published. ITP 2026's own policy could not be
+confirmed from its site and must be checked before the freeze.
+
+Minting the DOI is an outward-facing action on the owner's identity (linking
+Zenodo to their GitHub account) and is deliberately left to them.

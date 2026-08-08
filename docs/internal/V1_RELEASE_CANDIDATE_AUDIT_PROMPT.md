@@ -25,9 +25,9 @@ audit invalidates it again.** Therefore, before `<RC-SHA>` is chosen:
       manuscript substrate, its hardened checker, and the novelty log. `paper/`
       is now part of the release candidate, so the auditor must treat it as an
       in-scope claim surface (`RC-10`) rather than as an external draft.
-- [ ] The union-find cordon is either landed or explicitly deferred with a
-      recorded reason. It is a tree-touching rename and must not follow the
-      audit. **Not started as of `5fe284f`**; see §7.
+- [x] Union-find cordon **landed** at `8a37b5a` (2026-08-08). The spoke is now
+      `VerifiedDS.UnionFind` and `RMQ/Core/UnionFind/` no longer exists. Expect
+      the neutral name; `RMQUnionFind.lean` is a compatibility shim.
 - [ ] Any remaining V1 gap the coordinator intends to close in this cycle has
       landed (see §6 for the known-open list).
 - [ ] `<RC-SHA>` is on `main`, both CI workflows are green on it, and
@@ -165,11 +165,22 @@ Do **not** state a verdict you cannot support from source you read yourself.
 Close or explicitly defer each before choosing `<RC-SHA>`:
 
 - ~~`paper/` not on `main`~~ — closed at `a54088b`, 2026-08-07.
-- Union-find cordon not started (§7).
-- `210`/`427` claim enforcement gap (`DD-20260807-087`).
-- Advisory independent checker (nanoda) not started.
-- DOI and anonymous-bundle decision not made; `CITATION.cff` version is
-  `provisional` with no `doi:`.
+- ~~Union-find cordon~~ — landed at `8a37b5a`, 2026-08-08. §7 is kept as the
+  record of how it was done and what broke the first attempt.
+- ~~`210`/`427` claim enforcement gap~~ — closed at `c14d7a5` by
+  `scripts/constant_sync_check.ps1` (`WDD-20260808-021`), gate step 7b.
+  **Still test it** (§4): check the pin mechanism, and that moving a Lean
+  constant fails it.
+- ~~Advisory independent checker~~ — dispositioned at `a3ba169`.
+  `docs/INDEPENDENT_CHECK.md` documents the procedure and states that it has
+  **not** been executed; Lean 4.22.0 ships no exporter. Check that the document
+  does not read as a result.
+- DOI and anonymous-bundle decision **still open**; `CITATION.cff` version is
+  `provisional` with no `doi:`. ITP 2025 used *lightweight double-blind* review
+  and `docs/PUBLICATION_STRATEGY.md` names ITP as the target, so an anonymous
+  bundle may be required rather than optional -- the repository URL,
+  `CITATION.cff`, and the commit history each deanonymize a submission. Confirm
+  ITP 2026's policy before the freeze.
 
 ## 7. Union-find cordon — state and plan
 
