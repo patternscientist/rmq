@@ -8644,3 +8644,41 @@ confirmed from its site and must be checked before the freeze.
 
 Minting the DOI is an outward-facing action on the owner's identity (linking
 Zenodo to their GitHub account) and is deliberately left to them.
+
+## WDD-20260808-022 -- a coordinator reconstruction packet for the post-audit review
+
+Status: Accepted.
+
+Date: 2026-08-08
+
+Context: 25 commits separate Stage-A integration (`a0402e1`) from the release
+candidate (`bdb79bf`) -- 83 files, +20,830 / -14,182. The coordinator will read
+the fresh-blind audit verdict against that range and needs to answer whether the
+verdict actually covers it.
+
+Decision: add `docs/internal/COORDINATOR_RECORD_STAGEA_TO_V1RC.md`, and state in
+its own header that it is **not** given to the auditor. Handing a worker's
+account of events to a fresh-blind auditor converts an independent audit into a
+review of that account, which is the failure the blind protocol exists to
+prevent.
+
+Three properties it is built around:
+
+- **It is read after, not before.** Its operative content is section 7, a
+  checklist for judging the audit rather than the code. The most load-bearing
+  item: `RC-02` must actually be discharged, because the U3 subsumption
+  (`WDD-20260807-014`) is void without it -- subsumption was chosen precisely on
+  the grounds that the release audit would carry those propositions.
+- **It records what the project got wrong.** Section 5 lists five defects in
+  this period's own work, including that the refactor wave invalidated the
+  Stage-A audit and that a drafted claim repair was itself false. A
+  reconstruction packet that only records successes cannot be used to weigh the
+  worker's account, which is its purpose.
+- **It separates settled findings from open ones.** Section 3 lists six
+  conclusions that overturned a prior belief, each with how it was established,
+  so that section 7 item 5 can be executed: if the auditor contradicts something
+  section 3 calls settled, this record is what is wrong.
+
+The document restates the accepted claim verbatim rather than paraphrasing it,
+because every judgement in section 7 is made against that wording and a
+paraphrase would silently move the target.
