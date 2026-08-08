@@ -8526,3 +8526,42 @@ is run over the moved tree as well.
 
 `scripts/hub_closure_lint.ps1` is unaffected -- the hub closure does not include
 the spoke, and the lint still reports exactly the pinned 11 modules.
+
+## WDD-20260808-020 -- advisory independent checker: document the procedure, do not claim the result
+
+Status: Accepted (V1 freeze, phase 1).
+
+Date: 2026-08-08
+
+Context: the freeze list asks for an "advisory independent checker where
+supported", and `RMQ_FINAL_ROADMAP.md:497` names `nanoda`. Nothing existed.
+
+Finding that determines the shape of the answer: **Lean 4.22.0 has no built-in
+exporter.** Verified on the pinned toolchain -- `lean --help` lists no
+`--export`. An external kernel consumes an export file, not `.olean`s, so a
+re-check requires the separate `lean4export` project built out of tree against a
+matching toolchain. `ADD_WORKFLOW_TOOLING_PLAN.md:52-55` already scopes nanoda as
+"advisory/nightly ... distinct from the kernel gate" and forbids broadening the
+project's Lake dependency graph for tooling.
+
+Decision: add `docs/INDEPENDENT_CHECK.md` giving the exact out-of-tree
+procedure, and state prominently that this project has **not executed it**. The
+requirement is treated as satisfied by a documented, reproducible procedure --
+which is what "where supported" licenses -- and explicitly **not** as a
+performed check.
+
+Why not just run it. Building an exporter and a Rust checker, matching export
+format versions, and exporting a 153-file / ~139k-line closure is a
+multi-hour out-of-tree exercise whose failure mode is a format mismatch that
+looks like a parse error, not a proof error. Doing it badly and reporting
+"independent check green" would be worse than not doing it: it would add a claim
+the project cannot support to the exact surface a reviewer trusts most.
+
+The document therefore ends with an explicit split between what was executed
+(Lean kernel checking on every CI run, plus five axiom-check scripts) and what
+was not (any independent-kernel re-check; no export file has ever been
+produced). It states that it "is a procedure, not a result" and must not be
+cited as evidence that an independent kernel confirmed anything.
+
+If a reviewer runs it, the outcome belongs in `docs/internal/audit_reports/`
+with the exporter and checker commits pinned.

@@ -10882,3 +10882,34 @@ Residual, stated rather than hidden: the cordoned spoke still depends on
 separate and larger decision -- `RMQ/Core/ModelHub.lean` has zero declarations,
 so the hub's content is `Cost`, `Amortized`, `RAM`, `WordRAM` and friends, which
 RMQ core also uses.
+
+## DD-20260808-093 -- `docs/INDEPENDENT_CHECK.md` as a public procedure document
+
+Status: Accepted (V1 freeze, phase 1).
+
+Date: 2026-08-08
+
+`docs/INDEPENDENT_CHECK.md` is a new public-facing document, so it is a claim
+surface and needs a code decision alongside the workflow decision
+(`WDD-20260808-020`) that covers the tooling reasoning.
+
+What it claims, and the limits it states:
+
+- It claims a **procedure**: how to build `lean4export` out of tree against the
+  pinned toolchain, export a root module, and check it with `nanoda` or
+  `Lean4Lean`.
+- It claims one verified negative fact: Lean 4.22.0 ships no exporter, checked
+  against `lean --help` on the pinned toolchain.
+- It explicitly does **not** claim that any independent kernel has confirmed
+  this development. The final section splits executed work from unexecuted work
+  by name and ends "this document is a procedure, not a result".
+
+The reason for that emphasis is the failure mode this project has already hit
+twice: a green-looking artifact being cited as evidence for a property nobody
+established -- the manuscript checker's unconditional success line, and the
+claim-drift scan's zero-failures report. A document titled "independent check"
+sitting in `docs/` is exactly the kind of thing a reader would cite loosely, so
+the disclaimer is placed in the status line at the top as well as the body.
+
+It also warns that an export-format mismatch between exporter and checker
+presents as a parse failure and must not be reported as a soundness finding.
