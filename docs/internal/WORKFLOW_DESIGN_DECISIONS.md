@@ -8728,3 +8728,51 @@ condition `docs/PUBLICATION_STRATEGY.md` already attaches to CPP. So the
 convergence is real for ITP and conditional for everything else, and the
 condition is a piece of unfinished work rather than a framing choice. Recorded
 so the agreement is not read as broader than it is.
+
+## WDD-20260808-023 -- the audit packet was shipping an empty evidence file
+
+Status: Accepted (V1 freeze).
+
+Date: 2026-08-08
+
+Found while assembling the release-candidate packet: the packet's
+`claim-drift-advisory.txt` was **zero bytes**, while the scan's output appeared
+on the console instead.
+
+Cause: `Write-CommandOutput` captured with `2>&1`. PowerShell 5+ routes
+`Write-Host` to the **information** stream (6), which `2>&1` does not redirect.
+Every lint under `scripts/` reports via `Write-Host` -- `claim_drift_scan.ps1`
+alone has 13 such calls -- so the capture wrote an empty file and the evidence
+went to the terminal. Confirmed empirically before changing anything: a probe
+emitting both `Write-Host` and `Write-Output` captures only the latter under
+`2>&1`, and both under `*>&1`.
+
+Why this mattered more than its size suggests. An auditor receiving a zero-byte
+`claim-drift-advisory.txt` would most naturally read it as *no findings*, when
+it actually meant *not captured*. That is the same defect class as the
+manuscript checker's unconditional success line and the claim-drift scan's
+zero-failures report: **an artifact that looks like evidence for a property
+nobody established.** Shipping it inside the audit packet would have put that
+failure mode in the one place designed to be trusted.
+
+Decision, two parts:
+
+1. Capture with `*>&1` so information-stream output is recorded.
+2. Add an **empty-evidence guard**: any capture not explicitly marked
+   `-MayBeEmpty` fails the packet build if it produces zero bytes, and the
+   script now exits non-zero with a `RESULT:` line. `git status`, `git tag` and
+   `git diff --stat` are marked `-MayBeEmpty`, since a clean tree legitimately
+   produces nothing from them.
+
+The guard, not the stream fix, is the durable part. The stream bug is one
+mistake; a packet that cannot tell "empty" from "uncaptured" would have hidden
+the next one too.
+
+Verified: the advisory goes 0 -> 715,212 bytes, the script reports
+`AUDIT-PACKET: RESULT: PASS`, and a standalone harness confirms the guard fires
+on a silent capture, stays quiet under `-MayBeEmpty`, and no longer trips on a
+`Write-Host`-only command.
+
+Consequence for the freeze: the release candidate moves by one commit. That is
+the correct trade -- commissioning an audit with a packet that ships an empty
+evidence file would be worse than one more CI cycle.
