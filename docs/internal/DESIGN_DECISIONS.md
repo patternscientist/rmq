@@ -11251,3 +11251,41 @@ the substrate does require moving the per-row `Commit:` fields -- but the honest
 basis for that is a green build plus the axiom inventories at the new commit,
 confirming each row's *named declaration* still exists. It is not a licence to
 also trust the line numbers, which no build checks.
+
+## DD-20260809-102 -- repin the paper substrate to `688c54a3`, with evidence
+
+Status: Accepted. Date: 2026-08-09. Closes handoff item 4.3.
+
+The substrate moves from `e3362d4f...` to `688c54a39d9a2410d281f1ded9b70937908beb4a`,
+the last commit of the RC-1 correction round with both CI workflows green.
+
+The pin has two roles and the round's earlier working note got the second one
+wrong. Reading the ledger header settled it: **`ACCEPTED_BASE` is defined as
+"kernel-checked declaration present on the base commit"**. It is a claim about
+the pinned tree, not a historical acceptance date. So the 29 per-row `Commit:`
+fields *do* move with the substrate pin -- and each move restates a claim.
+
+Because it restates a claim, it was not done on faith. At `688c54a3`:
+
+- `lake build RMQ` exit 0.
+- `scripts/axiom_check.lean` exit 0; no `sorryAx`, no `ofReduceBool`.
+- `scripts/ledger_decl_check.lean` (new, see WDD-20260809-021): all **53**
+  declaration names cited by `ACCEPTED_BASE` rows are present.
+- All **27** `:NNN` citations resolve, after three corrections (DD-20260809-101).
+- Both CI workflows green.
+
+What deliberately did **not** move: `paper/EVIDENCE_MATRIX.md` keeps three
+mentions of the old base and `paper/THEOREM_LEDGER.md` keeps one, because those
+are statements about what was true at the previous pin. A blanket
+search-and-replace would have rewritten history to say the old audit happened at
+a commit that did not exist yet. The repin was done by classifying each of the
+38 occurrences, not by `sed`.
+
+`L-ARCH-01` gains an `Amended` line rather than a silent restamp: this round
+retracted its "logical fuel (charged trace events)" gloss on the packed `210`.
+The row's *proposition* was not re-audited -- the fresh-blind audit of
+`audit-v1-rc-1` stands behind it -- so the amendment says it corrects a gloss and
+says explicitly that no re-audit occurred.
+
+The repin commit changes no Lean library code. The pinned tree and the substrate
+commit differ by documentation plus one checker, which `paper/README.md` states.

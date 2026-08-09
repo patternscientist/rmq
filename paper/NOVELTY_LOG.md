@@ -2,7 +2,7 @@
 
 **Document:** `paper/NOVELTY_LOG.md`
 **Companion to:** `paper/rmq.tex`, `paper/references.bib`, `paper/RELATED_WORK_LEDGER.md`
-**Manuscript base commit:** `e3362d4f0300b3b0aef22d104ed67844d80134a0`
+**Manuscript base commit:** `688c54a39d9a2410d281f1ded9b70937908beb4a`
 **Search date:** 2026-08-07
 **Status:** first completed novelty search. This log supersedes the "search log not yet complete" hedge in `rmq.tex` §1.2 and §10 only to the extent stated in §3 below; it does **not** license any unconditional priority claim.
 

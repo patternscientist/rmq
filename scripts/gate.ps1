@@ -148,6 +148,15 @@ lake env lean scripts/independence_check.lean
 if ($LASTEXITCODE -ne 0) { Fail "independence_check.lean failed (see output above)" }
 Write-Host "INDEPENDENCE CHECK: PASS"
 
+# 3c. Every declaration cited by an ACCEPTED_BASE row of paper/THEOREM_LEDGER.md
+# still exists.  That status means "kernel-checked declaration present on the
+# base commit", so a rename or removal makes the ledger assert something false
+# without breaking any build.  Existence only -- whether a declaration still
+# says what its row claims is the audit's job, not this script's.
+lake env lean scripts/ledger_decl_check.lean
+if ($LASTEXITCODE -ne 0) { Fail "ledger_decl_check.lean failed (see output above)" }
+Write-Host "LEDGER DECL CHECK: PASS"
+
 # 4. Succinct frontier cost/space lints.
 & "$PSScriptRoot\succinct_cost_lint.ps1"
 if ($LASTEXITCODE -ne 0) { SoftFail "succinct_cost_lint.ps1 found issues" }

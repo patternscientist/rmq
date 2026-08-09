@@ -1,7 +1,7 @@
 # paper/ -- RMQ manuscript and evidence substrate
 
 Private working draft of the RMQ manuscript, pinned to repository base
-commit `e3362d4f0300b3b0aef22d104ed67844d80134a0`, authored on branch
+commit `688c54a39d9a2410d281f1ded9b70937908beb4a`, authored on branch
 `codex/eg-cp-paper-evidence-r1` under governance
 `f0c7232a8a52b8d61ead5e96d72a8a849bc094b5`. This directory is a manuscript
 substrate only: it records no architecture acceptance, no coordinator
@@ -9,6 +9,32 @@ acceptance, and no roadmap closure, and it is not one of the repository's
 registered public claim surfaces (the claim-drift policy scans `README.md`,
 `artifact/`, and `docs/`; `paper/` is deliberately outside that registry
 until a release-synchronization task admits it).
+
+### What the base pin asserts, and what verified it
+
+The pin was moved from `e3362d4f...` to `688c54a3...` on 2026-08-09. Two roles
+depend on it and they are not the same claim:
+
+- **This substrate statement** -- "the manuscript describes that tree".
+- **The 29 `ACCEPTED_BASE` rows** in `THEOREM_LEDGER.md`. That status is defined
+  in the ledger header as *kernel-checked declaration present on the base
+  commit*, so those rows move with the pin and each restates a claim about the
+  new tree.
+
+Because moving them restates a claim, they were not restamped on faith. At
+`688c54a3`: `lake build RMQ` exit 0; `scripts/axiom_check.lean` exit 0 with no
+`sorryAx` and no `ofReduceBool`; `scripts/ledger_decl_check.lean` confirms all
+**53** declaration names those rows cite are present in the environment; and all
+**27** `:NNN` source citations resolve to the declaration or structure field
+their row names, after three were corrected (see `EVIDENCE_MATRIX.md`). Both CI
+workflows are green on `688c54a3`.
+
+The commit carrying this repin adds only these substrate edits and
+`scripts/ledger_decl_check.lean`; it changes no Lean library code, so the pinned
+tree and the substrate commit differ by documentation and one checker.
+
+Historical mentions of `e3362d4` elsewhere in this directory are deliberate and
+were not rewritten: they record what was true at the previous pin.
 
 ## Contents
 

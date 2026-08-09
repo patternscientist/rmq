@@ -9184,3 +9184,38 @@ range-versus-per-commit error in WDD-20260809-019: a check that resembles the
 real property closely enough to feel conclusive while testing something weaker.
 Three instances in one day is the argument for writing the checker rather than
 repeating the sweep.
+
+## WDD-20260809-021 -- `scripts/ledger_decl_check.lean` as gate step 3c
+
+Status: Accepted. Date: 2026-08-09. Companion to DD-20260809-102.
+
+Checks that every declaration cited by an `ACCEPTED_BASE` row of
+`paper/THEOREM_LEDGER.md` exists in the environment. A rename or removal makes
+those rows assert something false **without breaking any build**, so nothing else
+in the gate catches it.
+
+Existence only. Whether a declaration still says what its row claims belongs to
+the row's proposition text and to the audit. Saying so in the script matters:
+the failure mode for this class of check is a green run being read as more than
+it proves.
+
+Three guards, following the pattern this round has had to learn repeatedly:
+
+1. **Count floor** (`expectedCount = 53`) -- emptying the name list fails rather
+   than passes vacuously.
+2. **Negative control** -- a deliberately absent name that must not resolve. A
+   check that finds everything is as useless as one that finds nothing, and only
+   a negative control tells them apart.
+3. **Wide imports** -- the library root *and* every artifact root.
+
+Guard 3 exists because of a live near-miss. The first run reported 2 of 53
+absent. Both existed: `RMQ/Headlines.lean` is imported only by the library root
+`RMQ.lean` and is **not** in the closure of `RMQPaper`, `RMQHub`, or the spoke
+roots, though it defines headline aliases that ledger rows cite. Trusting that
+run would have produced two phantom ledger defects. An import list that is too
+narrow turns an existence check into a false-positive generator -- the mirror of
+the vacuity failures in WDD-20260809-017, and worth naming because a check that
+cries wolf gets weakened, and weakening it is how the real defect gets through.
+
+Verified: baseline PASS at 53 names; three injections each exit 1 -- a renamed
+citation, an emptied list, and a negative control made to resolve.
