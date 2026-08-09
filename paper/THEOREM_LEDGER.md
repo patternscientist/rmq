@@ -496,7 +496,7 @@ references are at the base commit.
   (39-field structure), discharged for every input list and endpoint pair by
   `RMQ.SuccinctFinal.PackedCellProbe.packedReviewerArchitectureCapstone_holds`
 - File: `RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerArchitectureCapstone.lean`
-  (structure at :300, producer at :702)
+  (structure at :300, producer at :723)
 - Status history: this row was `PROVISIONAL_ARCHITECTURE` while the
   substrate was pinned to base `1490c97b...` and the Stage F feasibility
   gate was open. The gate closed and Stage A was recorded `ACCEPTED` on

@@ -9150,3 +9150,37 @@ can hold when the real one fails.
 This is the same shape as the two gate defects the fresh-blind audit found and
 the collector defect caught in WDD-20260809-017: a verification that resembles
 the real check closely enough to feel conclusive while testing something weaker.
+
+## WDD-20260809-020 -- ad-hoc greps are sampling, not verification
+
+Status: Accepted. Date: 2026-08-09.
+
+Auditing the `:NNN` citations in `paper/THEOREM_LEDGER.md` took three sweeps and
+produced three different answers, the first two confidently wrong:
+
+1. Matched `:NNN` only on lines also containing a `` `....lean` `` path. The
+   `File:` line comes *after* `Declaration:` in every row, so all citations
+   written inside `Declaration:` entries were invisible. Found 9 of 27; reported
+   "nine citations, seven correct".
+2. Attributed each citation to the nearest *preceding* `.lean` mention. Found all
+   27 but pointed several at the wrong file, manufacturing three "past EOF"
+   defects that did not exist.
+3. Parsed rows, collected every `.lean` file named in the row, resolved each
+   citation against all of them. 24 resolve; 3 genuinely wrong.
+
+Sweep 1's answer was reported before sweep 3 existed. One real defect
+(`L-ARCH-01`) appears only in sweep 3.
+
+The rule this establishes: **a grep over a structured document is sampling with
+an unknown miss rate, not verification.** It is acceptable for locating things.
+It is not acceptable as the basis for a claim about *all* of something --
+"every citation resolves", "no surface mentions X" -- because the miss rate is
+invisible in a clean result. When the claim is universal, parse the structure, or
+state the claim as "a grep for P found no hits", which is a different and weaker
+sentence.
+
+This is the same defect class as the vacuous gates in WDD-20260809-017 and the
+range-versus-per-commit error in WDD-20260809-019: a check that resembles the
+real property closely enough to feel conclusive while testing something weaker.
+Three instances in one day is the argument for writing the checker rather than
+repeating the sweep.

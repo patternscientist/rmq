@@ -145,30 +145,47 @@ closes no roadmap node.
   theorem statement and its proof obligations.
 - Status (superseded): BLOCKED_ONLY_ON: ARCHITECTURE_RESULT_PENDING
 
-## 2026-08-09 -- line-number citations audited, two corrected
+## 2026-08-09 -- line-number citations audited (corrected: 27 citations, 3 defective)
 
-Every `:NNN` source citation in `THEOREM_LEDGER.md` was resolved against the
-tree. Nine citations; seven resolve to the declaration they name. Two did not:
+**This entry supersedes a first version that reported "nine citations, seven
+correct". That count was wrong, and the way it was wrong is the point.**
 
-- `L-PACK-01`, producer at `:702` in `ReviewerArchitectureCapstone.lean`. Correct
-  at base `e3362d4` and still correct at the audited candidate `f958f54`; moved
-  to `:723` by the field-32 docstring added in this correction round. Drift
-  introduced by this round and corrected in it.
-- `L-UB-06`, `concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq`
-  at `:9349` in `SuccinctFinalRAM.lean`. **This one was already wrong at the
-  pinned base commit**: at `e3362d4` the theorem was at `:8261`, roughly 1,090
-  lines from where the ledger pointed. It was not introduced by any recent
-  change and was not caught by the fresh-blind audit. Now `:8269`.
+The first sweep matched `:NNN` only on lines that also contained a
+`` `....lean` `` path. In this ledger the `File:` line comes *after* the
+`Declaration:` line, so every citation written inside a `Declaration:` entry was
+invisible to it -- 18 of 27. The second sweep then over-corrected by attributing
+each citation to the nearest *preceding* `.lean` mention, which pointed several
+citations at the wrong file and reported three of them as "past EOF" defects that
+did not exist.
 
-Recorded rather than quietly fixed because the second case shows the pinned base
-commit does not make a citation right -- a reviewer following `:9349` at the very
-commit the ledger names would have landed in unrelated code. Nothing checks these
-citations; they are prose that happens to look like a reference. A checker on the
-`file:line -> expected declaration name` pairs would make them a checked property,
-in the manner of the constant-sync and independence checks. Deferred here to keep
-the correction round converging, and carried in
-`docs/internal/RC1_CORRECTION_HANDOFF.md` as follow-up.
+Correct method, third attempt: parse the ledger into rows, collect every `.lean`
+file named anywhere in the row, and resolve each citation against all of them.
 
-Line numbers in a ledger rot on every edit above them. The durable fix is to cite
-declaration names, which are stable and greppable, and to keep line numbers only
-where a checker verifies them.
+Result over 27 citations:
+
+- **24 resolve** to the declaration or structure field the row names.
+- **3 were wrong**, all now fixed:
+  - `L-PACK-01`, producer `:702` -> `:723`. Correct at base `e3362d4` and at the
+    audited candidate `f958f54`; displaced by the field-32 docstring added in
+    this round.
+  - `L-ARCH-01`, producer `:702` -> `:723`. Same cause. **Missed by both earlier
+    sweeps** and only found by the third.
+  - `L-UB-06`, `concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq`
+    `:9349` -> `:8269`. **Already wrong at the pinned base commit**: at
+    `e3362d4` that theorem sat at `:8261`, about 1,090 lines from where the
+    ledger pointed. Not introduced recently, and not caught by the fresh-blind
+    audit.
+
+Two lessons, recorded because they are more useful than the corrections:
+
+1. A pinned base commit does not make a citation right. A reviewer following
+   `L-UB-06` at the exact commit the ledger names would have landed in unrelated
+   code.
+2. **Three sweeps of the same artifact gave three different answers**, and the
+   first two were confidently wrong -- one under-matching, one mis-attributing.
+   Ad-hoc greps over a structured document are not verification; they are
+   sampling with an unknown miss rate. The durable fix is a checker over
+   `row -> file -> line -> expected declaration`, which is deferred in
+   `docs/internal/RC1_CORRECTION_HANDOFF.md`, or better, citing declaration
+   names -- which are stable, greppable, and cannot silently rot -- and keeping
+   line numbers only where a checker verifies them.
