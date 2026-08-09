@@ -11126,3 +11126,44 @@ The mechanism is a transitive walk of `ConstantInfo.type` and
 a copy of this at the two names rather than by asserting it in prose. If that
 happens twice more, factor the walker out rather than copying it a third time.
 
+## DD-20260809-099 -- retire two overstatements the fresh-blind audit flagged (P3-1)
+
+Status: Accepted. Date: 2026-08-09. Non-blocking findings from the 2026-08-09
+audit, fixed before cutting `audit-v1-rc-2`.
+
+### Decorative premise, and the chain behind it
+
+`bpChunkedCrossBlockCloseCostedWithRankSeed_cost_le_principled` accepted
+`_hleftCloseBound : leftClose < shape.bpCode.length` and never used it. Removing
+it exposed that the premise was load-bearing for nothing at all: the identical
+premise on both `canonicalLcaCloseCostedWithRankSeed_cost_le` and
+`..._cost_le_principled` existed *only* to be passed down, and went dead the
+moment the leaf's did. Three theorems, one decorative hypothesis chain.
+
+All three are now stated without it. This is a **strengthening** -- conclusions
+and quantifiers are untouched and the theorems demand strictly less -- so every
+frozen row that cites them still discharges. It is nonetheless a statement
+change, disclosed in each docstring in the manner `B6` REQ-B6-09 disclosed its
+`hsameBlock` *addition*; the precedent permits statement changes with explicit
+disclosure, and removal is the safer direction. `B6_SAMEBLOCK_ACCEPTANCE_MATRIX.md`
+and `docs/PAPER_MODEL_ADEQUACY.md` cite the branch-cap conclusion, not the
+hypothesis list, so neither needed editing -- checked, not assumed.
+
+One doc defect fell out of this that the audit did not catch: the docstring on
+`canonicalLcaCloseCostedWithRankSeed_cost_le` said the cap "requires the genuine
+close-position bounds", plural. The proof requires exactly one. Corrected.
+
+### "Tight operation-wise caps"
+
+The comment on `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra`
+called the component caps *tight*. They are `<=` bounds. The aggregate `210` they
+compose into likewise has no attainment witness; only the interior directory
+component `33` has one. The comment now says so, and says not to reintroduce
+"tight" without a theorem exhibiting an execution that attains the number.
+
+This is the recurring defect class for this project -- a green artifact standing
+in for an unestablished property -- in its documentation form: the proof was
+always `<=`, and only the prose claimed more.
+
+Verified: `lake build RMQ` exit 0; the two `unused variable hleftCloseBound`
+warnings that the removal surfaced are gone and no new warning replaced them.

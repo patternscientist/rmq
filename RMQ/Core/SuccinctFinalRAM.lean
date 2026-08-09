@@ -8104,9 +8104,17 @@ def wholeQuery (cost : CanonicalRMQChargedTraceCostAlgebra) : Nat :=
 
 end CanonicalRMQChargedTraceCostAlgebra
 
-/-- Tight operation-wise caps for the accepted B3 chunked execution: the
-select and rank components are the derived chunked bounds `35` and `11`
-(`bpChunkedSelectCosted_cost_le` / `bpChunkedRankCosted_cost_le`). -/
+/-- Operation-wise caps for the accepted B3 chunked execution: the select and
+rank components are the derived chunked bounds `35` and `11`
+(`bpChunkedSelectCosted_cost_le` / `bpChunkedRankCosted_cost_le`).
+
+These are **upper bounds**, not established tight ones. This comment said "tight
+operation-wise caps" until 2026-08-09; that overstated the development. What is
+proved is `<=` per component, and the aggregate `210` they compose into is
+likewise an upper bound with no attainment witness. Only the interior directory
+component `33` has one. Do not restate any of these as exact costs, and do not
+reintroduce "tight" here without a theorem exhibiting an execution that attains
+the number. -/
 def concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra :
     CanonicalRMQChargedTraceCostAlgebra where
   selectClose := 35
@@ -8361,7 +8369,7 @@ theorem concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le_princ
           have hlca :=
             SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalLcaCloseCostedWithRankSeed_cost_le_principled
               shape (concreteBPNativeRankCloseInterpretedCosted shape)
-              leftClose rightClose 11 hleftBound hrightBound hrankCost
+              leftClose rightClose 11 hrightBound hrankCost
           have hlcaBound :
               (SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalLcaCloseCostedWithRankSeed
                 shape (concreteBPNativeRankCloseInterpretedCosted shape)
