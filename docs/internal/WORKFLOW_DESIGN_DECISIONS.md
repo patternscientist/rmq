@@ -9246,3 +9246,27 @@ The general lesson for this row set: a claim map and a build artifact can each b
 internally consistent and disagree with each other. Rows that check surfaces
 against source do not catch that; only a row that starts from the artifact and
 asks what it exports does.
+
+## WDD-20260809-023 -- RC-1 round logged; handoff reduced to a resume card
+
+Status: Accepted. Date: 2026-08-09.
+
+Writes the 2026-08-09 round-log entry in `docs/internal/AUDIT_AND_A_DESIGN.md`.
+It was **owed**: the standing default is that every audit round is logged there,
+and the RC-1 fresh-blind round had been dispositioned and corrected in full
+without an entry. Worth noting how that happened -- the round was busy and
+productive, and the log is the one artifact whose absence nothing else notices.
+A missing round-log entry has no failing gate.
+
+The entry deliberately records the non-blind review alongside the blind audit,
+because the round's sharpest finding (`RMQPaper` exporting the wrong theorem)
+came from the non-blind one and no `RC` row would have caught it. A round log
+that recorded only the commissioned audit would have made that look like a
+coincidence rather than a coverage gap, and the gap is the reusable part.
+
+`RC1_CORRECTION_HANDOFF.md` is rewritten as a short resume card. Its detailed
+working notes are kept below a "superseded" heading rather than deleted: they
+record what was believed mid-round, including one belief the ledger header later
+refuted (that per-row `ACCEPTED_BASE` commits should not move on a repin).
+Deleting them would erase evidence of a corrected mistake, which is exactly the
+evidence a later auditor wants.

@@ -856,3 +856,94 @@ Open and untouched by this record: public-claim synchronization and the
 18-surface registry, the manuscript and novelty log, U3 acceptance status,
 `S1`, `V1`, publication, and full EG-CP closure. No push occurred;
 `origin/main` remains behind and is a separate owner decision.
+
+## 2026-08-09 (AUDIT + CORRECTION ROUND) -- V1 RC-1 fresh-blind: `NOT_ACCEPTABLE`; corrected and re-cut as `audit-v1-rc-2`
+
+Fresh-blind exact-commit audit of the V1 release candidate, target
+`f958f54` (tag `audit-v1-rc-1`). Report at
+`docs/internal/audit_reports/2026-08-09_V1_RC_fresh_blind.md`. A second,
+**non-blind** strategic review ran in parallel and is recorded here because one
+of its findings mattered more than anything in the blind report.
+
+Auditor verdict: **`NOT_ACCEPTABLE`**. Every blocking finding was independently
+reproduced by the coordinator before disposition, and **none were wrong**. No
+mathematics failed: `RC-01`, `RC-03`--`RC-08` reconstruct, builds are green, and
+the axiom inventories report standard axioms only. The failures were claim
+wording, gate coverage, and packaging.
+
+Three findings worth carrying forward.
+
+**1. The exact-cost defect originated in this project's own commissioning
+prompt.** Its section 2 told the auditor the route "has a uniform charged-trace
+cost of `210`". The theorem is `..._cost_le_...`, and a guarded invalid query
+costs `0`. The auditor was auditing against an overstated target supplied by the
+coordinator. A prompt is a claim surface and drifts like one.
+
+**2. Two of the four broken gates were written by this project and had been
+claimed injection-verified** (`hub_closure_lint`, `constant_sync_check`). Both
+failed the same way: the injection tested the failure shape the author imagined,
+not the space of failures. `constant_sync_check` asked only whether a numeral
+appeared anywhere in a file, so the auditor corrupted one of five `427`s and it
+passed. Both now check per-surface anchors with pinned counts.
+
+**3. The sharpest finding came from the non-blind review, not the blind audit.**
+`RMQPaper`'s import closure was 153 files containing **zero** `PackedCellProbe`
+modules, so the paper artifact root exported the charged-trace `210` story while
+`docs/PAPER_CLAIM_CORRESPONDENCE.md` named the packed cell-probe theorem as the
+accepted claim. A reviewer asking "which single import gives me the paper's
+theorem?" got two different answers. No `RC` row would have caught it -- `RC-10`
+compares the manuscript against theorems that exist and never starts from the
+artifact. `RC-11` is added for the next round to close that hole.
+
+Governance consequence, live during the round: `RC-02` was not discharged in its
+commissioned literal form, so by its own terms `WDD-20260807-014` (the U3
+subsumption) was **void** until the corrected wording is re-audited. It is
+restored by wording, not by any Lean change; the audit confirms the row
+discharges as "at most `210`". **This must be re-recorded when the RC-2 audit
+returns, and is not closed by this entry.**
+
+Correction round on `codex/rc1-corrections`, `a484bbc`..`a03fcc4` (17 commits),
+each with both CI workflows green at the tip. Auditor items 1--6 fixed and
+verified against the auditor's own mutations. Item 7 -- the two-`210`
+independence claim -- was prose in the ledger and is now a checked property of
+the proof term (`scripts/independence_check.lean`, gate step 3b): 1855 constants
+in the transitive closure of `packedReviewerControllerMeasure_valid_eq_427`,
+neither `SuccinctClassic.queryCost` nor `nonSyntheticWeight` among them. The
+packed result is exported from `RMQPaper`. P3-1 closed, including a decorative
+premise that turned out to be a chain across three theorems. Substrate repinned
+to `688c54a3` with checked evidence rather than assertion.
+
+**The round's own recurring defect, stated plainly because it recurred three
+times after the audit that was about it.** Each time, a verification stood in for
+a weaker property than the one claimed: (a) the new independence checker passed
+while examining 16 constants instead of 1855, because its positive control found
+its witness in a *type* and never exercised proof-term walking -- caught by
+injection, and a second non-transitive injection then passed *both* controls,
+leaving only a closure-size floor to catch it; (b) the design-decision gate was
+verified with `-Base HEAD~2/HEAD~3` across a batch while CI runs it `-Base
+HEAD~1` per commit, so a collectively-compliant range hid non-compliant commits;
+(c) a citation sweep reported "nine citations, seven correct" when there were 27
+and three were wrong, and a second sweep then manufactured three defects that did
+not exist. Recorded as `WDD-20260809-017`, `-019`, `-020`. The generalization:
+**a grep over a structured document is sampling with an unknown miss rate, and a
+check whose controls do not exercise every mechanism it depends on can be green
+while examining almost nothing.** In both cases the failure is invisible in a
+clean result, which is exactly why it keeps surviving review.
+
+Also found, and not attributable to any recent change: `L-UB-06` cited
+`SuccinctFinalRAM.lean:9349` for a theorem that sat at `:8261` **at the pinned
+base commit itself** -- roughly 1,090 lines off. The fresh-blind audit did not
+catch it. A pinned base commit constrains the tree; it does not make a
+hand-written line number point anywhere in particular.
+
+New tag `audit-v1-rc-2` at `a03fcc4ef5c3293b9e9ab2544443bbc85c74c839`,
+deliberately **not** matching `v*` so it cannot fire `release-artifact.yml`;
+verified afterwards that no GitHub Release was created. Packet rebuilt from the
+tagged tree with the empty-evidence guard passing.
+
+Open and untouched by this record: the RC-2 fresh-blind audit itself (not yet
+commissioned), the `WDD-20260807-014` re-recording above, the separate minimal
+paper root -- the `RMQPaper` promotion grew the reviewer closure from 139,054 to
+190,529 lines, +37%, against a standing owner goal of reducing it -- the deferred
+`file:line -> declaration` citation checker, DOI/anonymity for ITP 2027, and
+merge to `main`. No merge and no `main` push occurred.

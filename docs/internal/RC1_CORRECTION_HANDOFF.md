@@ -1,4 +1,48 @@
-# RC-1 correction round — working state and what remains
+# RC-1 correction round -- COMPLETE; re-cut as `audit-v1-rc-2`
+
+**Round closed 2026-08-09.** Tag `audit-v1-rc-2` at
+`a03fcc4ef5c3293b9e9ab2544443bbc85c74c839`, both CI workflows green on that
+commit before tagging and again on the tag. Full narrative is the
+2026-08-09 entry in `docs/internal/AUDIT_AND_A_DESIGN.md`; this file is now the
+short resume card.
+
+## What is still open
+
+1. **Commission the RC-2 fresh-blind audit.** Two inputs, nothing else: the
+   prompt `docs/internal/V1_RELEASE_CANDIDATE_AUDIT_PROMPT.md` (now
+   `RC-01`..`RC-11`) and the packet `.audit-packets/audit-v1-rc-2.zip`. Do not
+   give the auditor `COORDINATOR_RECORD_STAGEA_TO_V1RC.md` or this file.
+2. **`WDD-20260807-014` (the U3 subsumption) is still void** until `RC-02` is
+   discharged in its corrected "at most `210`" form by that audit. Re-record it
+   when the report returns. It is restored by wording, not by any Lean change.
+3. **Owner decision: separate minimal paper root.** Exporting the packed result
+   grew `RMQPaper`'s closure `153 -> 204` files and `139,054 -> 190,529` lines,
+   **+37%**, against the standing goal of reducing the reviewer surface.
+   Correctness was taken first; the resolution is likely a second, minimal root
+   carrying the packed capstone and its genuine spine, leaving `RMQPaper` as the
+   broad compatibility root. Which theorem the paper is *about* decides what
+   that root contains, so it was not settled silently.
+4. **Deferred checker:** `file:line -> expected declaration` over the ledger,
+   in the manner of `constant_sync_check` / `independence_check` /
+   `ledger_decl_check`. Deferred to let this round converge, not because it is
+   unnecessary -- three sweeps of those citations gave three different answers.
+   Better still: cite declaration names and keep line numbers only where a
+   checker verifies them.
+5. Owner decision: DOI / anonymity for ITP 2027 (anonymised artifact required; a
+   DOI must not be cited in an anonymous submission).
+6. Merge to `main` has **not** happened. The branch is pushed, not merged.
+
+## The one thing to carry into the next round
+
+Three times *after* an audit whose whole subject was vacuous verification, a
+check in this round stood in for a weaker property than it claimed -- a
+collector examining 16 constants instead of 1855 while its control stayed green,
+a per-commit gate verified across a range, and a citation sweep reporting 9 of 27.
+Each was caught, none by reading. **Assume any check written here is weaker than
+intended until an injection says otherwise, and make the injection test the
+mechanism, not the failure you imagined.**
+
+## Superseded working notes follow
 
 **Branch:** `codex/rc1-corrections`, on top of `main` = `f958f54`
 (tag `audit-v1-rc-1`, the audited candidate).
