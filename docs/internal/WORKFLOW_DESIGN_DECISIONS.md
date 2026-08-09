@@ -8991,3 +8991,38 @@ The count arm of the constant check will fail on any legitimate edit that
 changes how often a constant appears. That friction is the mechanism, not a side
 effect: it forces the pin and the prose to move together, exactly as the Lean-side
 pin does.
+
+## WDD-20260809-029 -- a resumable handoff for the RC-1 correction round
+
+Status: Accepted.
+
+Date: 2026-08-09
+
+The correction round following the `NOT_ACCEPTABLE` audit is partly done and the
+remaining piece -- promoting the packed result into `RMQPaper` -- changes the
+Lean import graph and needs a full build. Starting that at the end of a long
+working stretch is how the union-find cordon was corrupted and reverted earlier
+in the same session.
+
+Decision: stop, push what is verified, and write
+`docs/internal/RC1_CORRECTION_HANDOFF.md` so the round resumes cold.
+
+It records what a resumer would otherwise have to rediscover: which auditor
+items are closed and by which verification; that `WDD-20260807-014` is currently
+**void** by its own terms until the corrected wording is re-audited; the measured
+fact that `RMQPaper`'s closure contains zero `PackedCellProbe` modules; the exact
+import chain that makes module-level `210`-independence false while
+declaration-level independence holds; that the base repin must happen **last**;
+and that the next tag must not begin with `v` or it publishes a release.
+
+Two things are recorded as unresolved rather than papered over. Promoting the
+packed result **grows** the reviewer surface the owner wants reduced -- both
+goals are legitimate and the likely resolution is a separate minimal paper root,
+which is a design decision and not something to settle silently mid-edit. And
+one claim in the parallel non-blind review is simply **wrong** -- it reports no
+`#print axioms` for the packed capstone, which exists at
+`scripts/axiom_check.lean:1232` -- so a resumer does not act on it.
+
+The handoff also carries the method rule that cost this session five separate
+file corruptions: edit CRLF files by exact-string replacement, never Python
+`str.replace`, and verify the *effect* rather than an exit status.
