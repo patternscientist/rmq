@@ -9026,3 +9026,29 @@ one claim in the parallel non-blind review is simply **wrong** -- it reports no
 The handoff also carries the method rule that cost this session five separate
 file corruptions: edit CRLF files by exact-string replacement, never Python
 `str.replace`, and verify the *effect* rather than an exit status.
+
+## WDD-20260809-016 -- audit the paper's headline claim from the headline inventory
+
+Status: Accepted. Date: 2026-08-09. Pairs with DD-20260809-097.
+
+`scripts/headline_axiom_check.lean` now runs
+`#print axioms RMQ.Headlines.succinctRMQPackedCellProbeArchitecture`.
+
+The producer was already audited from `scripts/axiom_check.lean:1232`, so this
+adds no new trust coverage in the strict sense, and a reviewer who runs the full
+inventory already saw it. The reason to duplicate it anyway is that the two
+scripts answer different questions. `axiom_check.lean` is the exhaustive
+inventory; `headline_axiom_check.lean` is the short one a reviewer runs to check
+**the claims the paper actually makes**, in one command and one screenful. As of
+DD-20260809-097 the packed cell-probe architecture is a paper-exported headline
+claim, so its absence from the headline inventory was a real gap between what the
+paper asserts and what the cheap check covers -- the same class of gap as the
+`RMQPaper` closure defect that occasioned it.
+
+The 2026-08-09 parallel review asserted no `#print axioms` existed for this
+capstone at all. That was **wrong** -- `axiom_check.lean:1232` predates it. The
+change is made on the headline-surface argument above, not on that finding.
+
+Verified: `lake env lean scripts/headline_axiom_check.lean` exit 0 in 61s;
+reports `[propext, Classical.choice, Quot.sound]`; no `sorryAx`, no
+`ofReduceBool`, no errors.
