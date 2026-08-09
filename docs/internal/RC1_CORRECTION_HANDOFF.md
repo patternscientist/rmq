@@ -2,7 +2,7 @@
 
 **Branch:** `codex/rc1-corrections`, on top of `main` = `f958f54`
 (tag `audit-v1-rc-1`, the audited candidate).
-**Commits so far:** `a484bbc`, `4980596`. Pushed, not merged.
+**Commits so far:** `a484bbc`, `4980596`, `1c0c8bb`, `7655ee8`, `1ff8cd2`. Pushed, not merged.
 
 Written so this round can be resumed cold. Read §4 first if you are picking up.
 
@@ -50,33 +50,31 @@ discharges as "at most `210`". Re-record this when the next audit returns.
 
 ## 4. What remains
 
-### 4.1 Promote the packed result into `RMQPaper` — the biggest item
+### 4.1 Promote the packed result into `RMQPaper` — **DONE** (`7655ee8`, `1ff8cd2`)
 
-**Measured:** `RMQPaper`'s import closure is 153 files and contains **zero**
-`PackedCellProbe` modules. So the paper artifact root exports the old `210`
-story while `docs/PAPER_CLAIM_CORRESPONDENCE.md` says the accepted claim is the
-packed theorem. A reviewer asking "what single import gives me the paper's
-theorem?" gets two different answers.
+Was: `RMQPaper`'s closure was 153 files with **zero** `PackedCellProbe` modules,
+so the paper root exported the old `210` story while
+`docs/PAPER_CLAIM_CORRESPONDENCE.md` named the packed theorem as the accepted
+claim. A reviewer asking "what single import gives me the paper's theorem?" got
+two different answers.
 
-Shape of the work:
-- `RMQPaper.lean` imports only `RMQ.Headlines.RMQ`.
-- `RMQ/Headlines/RMQ.lean` imports `EncodingLowerBound`,
-  `SuccinctFinalModelAdequacy`, `SuccinctRMQClassicProvenance` — and references
-  the packed capstone **nowhere**.
-- The capstone is `RMQ.SuccinctFinal.PackedCellProbe.PackedReviewerArchitectureCapstone`
-  (`ReviewerArchitectureCapstone.lean:300`), discharged by
-  `packedReviewerArchitectureCapstone_holds` (`:702`).
-- So: add the import plus a headline alias in `RMQ/Headlines/RMQ.lean`, following
-  the naming convention of the existing aliases there.
+Now: `RMQ/Headlines/RMQ.lean` imports the capstone module and exports
+`SuccinctRMQPackedCellProbeArchitecture` (the 39-field certificate) and
+`succinctRMQPackedCellProbeArchitecture` (its producer), with a docstring
+carrying the three reading rules this result is repeatedly over-read without.
+The claim map cites the **public alias**, so the documented identity and the
+importable identity are now the same string.
+`scripts/headline_axiom_check.lean` audits it: `[propext, Classical.choice,
+Quot.sound]`, nothing else. See DD-20260809-097 / WDD-20260809-016.
 
-**Needs a full `lake build`** (~13 min) — it changes the import graph. Do it
-fresh, not at the end of a long session.
-
-**Known tension, unresolved and deliberately so:** the owner also wants the
-reviewer surface (~139k LOC in the `RMQPaper` closure) drastically reduced.
-Promoting the packed result *grows* that closure. Both are right; the resolution
-is probably a separate minimal paper root rather than widening the existing one.
-Flagged for a design decision, not to be settled silently.
+**The tension is now measured, and it is an owner decision.** The closure grew
+`153 → 204` files and `139,054 → 190,529` lines — **+51 files, +51,475 lines,
++37%** in exactly the reviewer surface the owner wants reduced drastically.
+Correctness was taken first: a paper root advertising the wrong theorem is a
+defect, a large closure is a cost. The likely resolution is a **separate minimal
+paper root** carrying the packed capstone and its genuine dependency spine,
+leaving `RMQPaper` as the broad compatibility root. But which theorem the paper
+is *about* determines what that root contains, so it was **not** settled here.
 
 ### 4.2 Independence regression (auditor item 7)
 
