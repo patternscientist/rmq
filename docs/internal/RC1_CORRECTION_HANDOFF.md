@@ -2,7 +2,7 @@
 
 **Branch:** `codex/rc1-corrections`, on top of `main` = `f958f54`
 (tag `audit-v1-rc-1`, the audited candidate).
-**Commits so far:** `a484bbc` .. `29b1e85` (13 commits). Pushed, not merged.
+**Commits so far:** `a484bbc` .. `9389655` (15 commits). Pushed, not merged.
 
 Written so this round can be resumed cold. Read §4 first if you are picking up.
 

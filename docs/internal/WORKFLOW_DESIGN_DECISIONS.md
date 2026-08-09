@@ -9124,3 +9124,29 @@ Deliberately in the broad inventory and **not** in
 claims the paper makes (WDD-20260809-016), and this is a fixture detail, not a
 headline claim. Adding it there would dilute exactly the one-screenful property
 that makes the headline inventory worth running.
+
+## WDD-20260809-019 -- verify the design-decision gate the way CI runs it
+
+Status: Accepted. Date: 2026-08-09.
+
+`docs/internal/RC1_CORRECTION_HANDOFF.md` is classified workflow/process-sensitive
+by `scripts/design_decision_check.ps1`, so **every commit that touches it must
+also update this file**. Two commits in this round did not (`2bd03d8`, `9389655`),
+and CI failed on both.
+
+The interesting part is why local verification missed it. The gate was run
+locally as `-Base HEAD~2` / `HEAD~3` -- spanning the whole group of commits just
+made, where some other commit in the range did update this file, so the range
+looked satisfied. CI runs `-Base HEAD~1`: **each commit is checked against its own
+parent**. A range that is collectively compliant can contain individual commits
+that are not.
+
+Rule, for this repository and generally: **verify a gate at the granularity the
+gate runs at.** For `design_decision_check` that means `-Base HEAD~1` after each
+commit, not one range check at the end of a batch. Checking a wider range is not
+a conservative approximation of checking each step -- it is a weaker property that
+can hold when the real one fails.
+
+This is the same shape as the two gate defects the fresh-blind audit found and
+the collector defect caught in WDD-20260809-017: a verification that resembles
+the real check closely enough to feel conclusive while testing something weaker.
