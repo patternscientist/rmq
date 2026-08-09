@@ -9104,3 +9104,23 @@ targeted controls cannot see.**
 
 Verified: baseline exit 0, both controls green; three injections (no proof-term
 walk, non-transitive walk, renamed target) each exit 1 with a distinct message.
+
+## WDD-20260809-018 -- cover the fixture probe count in the axiom inventory
+
+Status: Accepted. Date: 2026-08-09. Companion to DD-20260809-100.
+
+`scripts/axiom_check.lean` gains
+`#print axioms RMQ.SuccinctFinal.PackedCellProbe.egcpFixtureTraceLength`.
+
+Follows the precedent set at B6 REQ-B6-08, where the R1 repair made the rung's
+trust evidence durable in the inventories rather than leaving it as a one-time
+observation in a report. A fixture fact that documents cite by number should be
+covered by the same standing check as the theorems around it, so that a future
+change which reintroduces an axiom dependency is caught by the gate rather than
+by the next auditor. Reports: `[propext, Quot.sound]`.
+
+Deliberately in the broad inventory and **not** in
+`scripts/headline_axiom_check.lean`: the headline inventory is the short list of
+claims the paper makes (WDD-20260809-016), and this is a fixture detail, not a
+headline claim. Adding it there would dilute exactly the one-screenful property
+that makes the headline inventory worth running.
