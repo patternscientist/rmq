@@ -2,7 +2,7 @@
 
 **Branch:** `codex/rc1-corrections`, on top of `main` = `f958f54`
 (tag `audit-v1-rc-1`, the audited candidate).
-**Commits so far:** `a484bbc`, `4980596`, `1c0c8bb`, `7655ee8`, `1ff8cd2`. Pushed, not merged.
+**Commits so far:** `a484bbc`, `4980596`, `1c0c8bb`, `7655ee8`, `1ff8cd2`, `c9cb19f`, `3652d4b`, `c140d68`. Pushed, not merged.
 
 Written so this round can be resumed cold. Read §4 first if you are picking up.
 
@@ -76,15 +76,20 @@ paper root** carrying the packed capstone and its genuine dependency spine,
 leaving `RMQPaper` as the broad compatibility root. But which theorem the paper
 is *about* determines what that root contains, so it was **not** settled here.
 
-### 4.2 Independence regression (auditor item 7)
+### 4.2 Independence regression (auditor item 7) — **DONE** (`3652d4b`, `c140d68`)
 
-Add a check that the packed structural countdown does not acquire a dependency
-on charged-cost declarations. Current status is recorded honestly in
-`paper/THEOREM_LEDGER.md`: independence holds at **declaration and proof-term**
-level; the module closure does transitively reach the charged declaration
-(`ReviewerController.lean` → `ReviewerSparsePrelude` → `ReadProgram` →
-`SuccinctFinalStoreParam` → `SuccinctFinalRAM`). Guard the narrow property, not
-the false one.
+`scripts/independence_check.lean`, gate step 3b. Walks the transitive constant
+closure of `packedReviewerControllerMeasure_valid_eq_427`'s type and value and
+fails if `SuccinctClassic.queryCost` or `nonSyntheticWeight` appears. Observed:
+1855 constants, neither present. Scope is the narrow property the ledger
+actually claims — proof-term level, not module closure, since the packed
+module's compilation closure *does* reach the charged declaration.
+
+Three vacuity guards; two were added **because injection broke the first
+version**: skipping proof terms left the type-reachable control green while the
+target closure collapsed `1855 → 16` and still passed, and a non-transitive walk
+left *both* controls green because both are shallow — only the closure floor
+caught it (`74 < 500`). See WDD-20260809-017 / DD-20260809-098.
 
 ### 4.3 Base repin
 
