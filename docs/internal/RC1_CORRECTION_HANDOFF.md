@@ -2,7 +2,7 @@
 
 **Branch:** `codex/rc1-corrections`, on top of `main` = `f958f54`
 (tag `audit-v1-rc-1`, the audited candidate).
-**Commits so far:** `a484bbc`, `4980596`, `1c0c8bb`, `7655ee8`, `1ff8cd2`, `c9cb19f`, `3652d4b`, `c140d68`. Pushed, not merged.
+**Commits so far:** `a484bbc` .. `29b1e85` (13 commits). Pushed, not merged.
 
 Written so this round can be resumed cold. Read §4 first if you are picking up.
 
@@ -96,7 +96,25 @@ caught it (`74 < 500`). See WDD-20260809-017 / DD-20260809-098.
 `paper/*` still pins base `e3362d4`. It must be repinned to whatever commit the
 round lands as. **Do this last**, after the tree stops moving.
 
-### 4.4 P3-1 polish (non-blocking)
+### 4.4 P3-1 polish (non-blocking) -- **DONE** (`8e913b9`, `3265987`, `29b1e85`)
+
+All four items closed. DD-20260809-099 (decorative premise, "tight" caps) and
+DD-20260809-100 (fixture probe count, field 32); WDD-20260809-018.
+
+- The decorative premise was a **chain of three**: removing the leaf's exposed
+  that the same premise on `canonicalLcaCloseCostedWithRankSeed_cost_le` and
+  `..._cost_le_principled` existed only to feed it. All three now stated without
+  it -- a strengthening, disclosed per the B6 REQ-B6-09 precedent. Checked that
+  the frozen matrix and `PAPER_MODEL_ADEQUACY.md` cite the conclusion, not the
+  hypothesis list.
+- "Tight operation-wise caps" -> upper bounds, with a note not to reintroduce
+  "tight" without an attainment theorem.
+- `egcpFixtureTraceLength` exported and added to `axiom_check`; the old local
+  `have` routes through it.
+- Field 32's docstring now states what it does **not** establish and points at
+  fields 33/34.
+
+Superseded original list:
 
 - `_hleftCloseBound` accepted but unused in
   `ChargedFringeSubstitution.lean:359-365` — decorative premise.
