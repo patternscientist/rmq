@@ -8816,3 +8816,38 @@ with zero issues, and a packet reporting `AUDIT-PACKET: RESULT: PASS`.
 Consequence: the release candidate moves by one commit again, and the tag is
 applied to *that* commit. This is the last such move -- the tag closes the
 regress, since nothing further needs to name the SHA from inside the tree.
+
+## WDD-20260808-025 -- the audit tag must not trigger a public release
+
+Status: Accepted.
+
+Date: 2026-08-08
+
+Caught before pushing: `.github/workflows/release-artifact.yml` triggers on
+`push: tags: "v*"`, holds `contents: write`, and runs `gh release create`.
+Pushing the intended tag `v1-rc-1` would therefore have **published a public
+GitHub Release**.
+
+Three reasons that is wrong here, in order of weight:
+
+1. **It publishes.** Nobody asked for a release. The task was to assemble a
+   candidate for a fresh-blind audit. Creating public, outward-facing content as
+   a side effect of an internal checkpoint is not a step that should happen
+   without an explicit decision.
+2. **It would pre-empt an open owner decision.** The DOI question is
+   deliberately unresolved and reserved to the owner (`DD-20260808-094`), and a
+   GitHub Release is precisely the object a Zenodo DOI is minted from. Publishing
+   one here would quietly make part of that decision.
+3. **It conflates two things.** An audit checkpoint and a version release are
+   different objects with different audiences. A tagging scheme that cannot tell
+   them apart will keep producing this collision.
+
+Decision: name the audit tag **`audit-v1-rc-1`**. It does not match `v*`, so
+pushing it runs CI and the reproduction workflow — both harmless, neither
+publishes — and creates no release. The rationale is recorded in the prompt
+itself, next to where the tag is introduced, so the next person does not
+"tidy" the name back to `v1-rc-1`.
+
+Note for whenever a real V1 release *is* wanted: a `v*` tag is the correct
+mechanism and the workflow is already built for it. That is a separate, owner-
+authorized act, and it should come after the audit verdict rather than before.

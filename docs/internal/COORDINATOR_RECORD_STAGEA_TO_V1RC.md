@@ -1,6 +1,6 @@
 # Coordinator record: Stage-A closure through the V1 release candidate
 
-**Range:** `a0402e1` (Stage-A integration) .. the commit tagged **`v1-rc-1`**,
+**Range:** `a0402e1` (Stage-A integration) .. the commit tagged **`audit-v1-rc-1`**,
 the release candidate. 29 commits; the measured delta at `bdb79bf` (25 commits
 in) was 83 files, +20,830 / −14,182.
 
@@ -222,7 +222,7 @@ This is the operative section.
   already attaches to CPP. ITP is the recommendation that holds for the artifact
   as it stands.
 - The remaining `V1_RELEASE_CANDIDATE_AUDIT_PROMPT.md` §0 boxes are launch
-  mechanics: choose `v1-rc-1`, confirm green, build the packet.
+  mechanics: choose `audit-v1-rc-1`, confirm green, build the packet.
 - Deferred with reasons recorded: the `RankSelect` and `BPNavigation` cordons
   (§7 of the prompt; `BPNavigation` has 195 frozen Stage-F fixtures pinning its
   import path), the remaining eight file splits, and an executed
