@@ -11050,3 +11050,53 @@ these edits were made through exact-string replacement, **not** through Python
 return, silently corrupting LaTeX cross-references; a byte-level repair attempt
 then mangled the file's line endings. Edits to this repository's CRLF files
 should be made on exact quoted strings.
+
+## DD-20260809-097 -- export the packed cell-probe result from `RMQPaper`
+
+Status: Accepted, with one consequence escalated to the owner (see below).
+
+Date: 2026-08-09
+
+The 2026-08-09 parallel review's sharpest finding, reproduced by measurement:
+`RMQPaper`'s import closure was **153 files containing zero `PackedCellProbe`
+modules**. The paper artifact root therefore exported the charged-trace `210`
+story, while `docs/PAPER_CLAIM_CORRESPONDENCE.md` named the packed cell-probe
+theorem as the accepted claim. A reviewer asking "which import gives me the
+paper's theorem?" got two different answers depending on which surface they
+trusted. That is a release-blocking artifact defect independent of whether any
+proof is correct.
+
+Decision: export the packed result from `RMQ/Headlines/RMQ.lean`, and hence from
+`RMQPaper`, as two aliases following the file's existing convention --
+`SuccinctRMQPackedCellProbeArchitecture` for the 39-field certificate and
+`succinctRMQPackedCellProbeArchitecture` for its producer. The claim map now
+cites the public alias rather than the internal name, so the documented identity
+and the importable identity are the same string.
+
+The alias is also added to `scripts/headline_axiom_check.lean`. It was already
+audited from `axiom_check.lean:1232`, but it is the paper's headline claim and is
+now paper-exported, so its trust story belongs in the inventory a reviewer
+actually runs. Verified: it depends on `[propext, Classical.choice, Quot.sound]`
+and nothing else.
+
+The alias docstring carries the three reading rules that this result is
+repeatedly over-read without: `427` bounds **attempted** probes and is an upper
+bound, not an attainment claim; the result is cell-probe, so not word-RAM time,
+preprocessing time, or measured runtime; and the `210` inside
+`427 = 1 + 2*3 + 2*210` is the packed controller's structural countdown, not the
+charged-trace `210` exported a few lines above in the same file.
+
+**Consequence escalated rather than absorbed.** Exporting the correct theorem
+grows the closure `153 -> 204` files and `139,054 -> 190,529` lines: **+51 files,
++51,475 lines, a 37% increase** in the reviewer surface the owner has separately
+asked to reduce drastically. Both goals are legitimate and they are in direct
+tension here. This commit takes correctness first, because a paper root that
+advertises the wrong theorem is a defect while a large closure is a cost. The
+likely resolution is a **separate minimal paper root** carrying the packed
+capstone and its genuine dependency spine, leaving `RMQPaper` as the broad
+compatibility root -- but which theorem the paper is *about* determines what that
+minimal root contains, so it is an owner decision and is not settled here.
+
+Verification: `lake build RMQPaper` exit 0; `headline_axiom_check.lean` exit 0
+with standard axioms only; `constant_sync_check`, strict `claim_drift_scan`, and
+`check_paper -SelfTest` all PASS; `git diff --check` clean.

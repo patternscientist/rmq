@@ -200,6 +200,12 @@ example :
 #print axioms RMQ.Headlines.concreteSuccinctBPTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStoreObstruction
 #print axioms RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery
 
+-- Packed cell-probe architecture (Stage A). The producer is also audited from
+-- `scripts/axiom_check.lean`, but it is the paper's headline claim and is now
+-- exported from `RMQPaper`, so its trust story belongs in the headline
+-- inventory a reviewer runs: one command, one screenful.
+#print axioms RMQ.Headlines.succinctRMQPackedCellProbeArchitecture
+
 
 /-!
 Frozen public expected type for the reviewer-native M1 paper theorem.

@@ -1,6 +1,7 @@
 import RMQ.Core.EncodingLowerBound
 import RMQ.Core.SuccinctFinalModelAdequacy
 import RMQ.Core.SuccinctRMQClassicProvenance
+import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerArchitectureCapstone
 
 /-!
 RMQ-only public headline aliases for the paper artifact.
@@ -772,5 +773,46 @@ abbrev succinctRMQCanonicalReviewerValidQueryOperandsFit :=
 /-- All-size canonical interior profile, including store and footprint guarantees. -/
 abbrev succinctRMQCanonicalInteriorDirectoryProfileAllSize :=
   RMQ.SuccinctClose.canonicalRelativeRmmInteriorDirectory_profile_allSize
+
+/-!
+## Packed cell-probe architecture (Stage A)
+
+The two aliases below are the paper-facing surface of the accepted packed
+result. They are exported here, and hence from `RMQPaper`, because the paper's
+headline claim is the packed cell-probe theorem: before this, `RMQPaper`'s
+import closure contained no `PackedCellProbe` module at all, so the artifact
+root advertised the charged-trace `210` story while
+`docs/PAPER_CLAIM_CORRESPONDENCE.md` named the packed theorem as the accepted
+claim. A reviewer asking which import yields the paper's theorem got two
+different answers depending on which surface they trusted.
+
+Reading rules, because each is easy to over-read:
+
+* `427` bounds **attempted** aligned `w(n)`-bit probes and is an upper bound
+  derived from the run's own measure, not an attainment claim; the pinned
+  fixture issues 68.
+* This is a **cell-probe** result. Computation between probes is free and
+  controller dispatch, decoding, arithmetic and branching are uncharged, so it
+  is not word-RAM instruction time, not preprocessing time, and not measured
+  runtime.
+* The `210` inside `427 = 1 + 2*3 + 2*210` is the packed controller's own
+  structural countdown. It is **not** the charged-trace `210` of
+  `succinctRMQWholeQueryGlobalWordTraceCostedCostLe` above. The two are
+  numerically equal and independent at declaration and proof-term level.
+-/
+
+/-- Packed cell-probe architecture certificate: one allocated
+`header ++ buildPayload ++ padding` memory whose complete capacity is
+`2n + o(n)`, answering every valid half-open query with the leftmost minimum's
+index in at most `427` attempted aligned `w(n)`-bit probes into that same
+memory, under a controller whose dynamic inputs are exactly `n`, the endpoints,
+and prior probe replies. -/
+abbrev SuccinctRMQPackedCellProbeArchitecture :=
+  RMQ.SuccinctFinal.PackedCellProbe.PackedReviewerArchitectureCapstone
+
+/-- The packed cell-probe architecture certificate holds for every input list
+and every endpoint pair. -/
+abbrev succinctRMQPackedCellProbeArchitecture :=
+  RMQ.SuccinctFinal.PackedCellProbe.packedReviewerArchitectureCapstone_holds
 
 end RMQ.Headlines
