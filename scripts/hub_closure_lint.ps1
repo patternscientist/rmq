@@ -74,7 +74,10 @@ function Get-Closure([string]$root, [string]$entryFile) {
     if ($seen.Contains($f)) { continue }
     $seen[$f] = $true
     foreach ($line in (Get-Content -LiteralPath $f)) {
-      if ($line -match '^import\s+(.+?)\s*$') {
+      # Leading whitespace is legal before `import` in Lean 4, so anchoring at
+      # column zero let an indented RMQ-specific import evade this guard while
+      # Lean still accepted it. Found by external audit 2026-08-09.
+      if ($line -match '^\s*import\s+(.+?)\s*$') {
         foreach ($mod in ($Matches[1].Trim() -split '\s+')) {
           if ($mod -eq '') { continue }
           $p = ModuleToPath $root $mod
@@ -124,10 +127,10 @@ if ($SelfTest) {
     $core = Join-Path $tmp 'RMQ/Core'
     New-Item -ItemType Directory -Force -Path $core | Out-Null
     Set-Content -LiteralPath (Join-Path $core 'Spec.lean') -Value '-- fake' -Encoding utf8
-    Set-Content -LiteralPath (Join-Path $core 'ModelHub.lean') -Value 'import RMQ.Core.Spec' -Encoding utf8
+    Set-Content -LiteralPath (Join-Path $core 'ModelHub.lean') -Value '  import RMQ.Core.Spec' -Encoding utf8
     $c2 = Get-Closure $tmp (Join-Path $core 'ModelHub.lean')
     $detected = ($c2 -contains 'RMQ.Core.Spec')
-    if ($detected) { Info '  SELFTEST PASS injected RMQ.Core.Spec import is reached by the walker' }
+    if ($detected) { Info '  SELFTEST PASS injected INDENTED RMQ.Core.Spec import is reached by the walker' }
     else { Write-Host 'HUB-CLOSURE: SELFTEST FAIL walker did not reach the injected import'; $failures = $failures + 1 }
 
     # And that such a module is classified as tainting, not merely unexpected.

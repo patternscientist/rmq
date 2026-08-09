@@ -10962,3 +10962,41 @@ What is deliberately **not** decided here: whether to build anonymisation
 tooling now. With an ITP 2027 timescale there is no reason to freeze that
 decision today, and the constraint is now recorded where whoever prepares the
 submission will read it.
+
+## DD-20260809-095 -- `210` is an upper budget; correct every exact-cost claim
+
+Status: Accepted.
+
+Date: 2026-08-09
+
+The 2026-08-09 fresh-blind audit found the release wording stronger than the
+theorem, and it is right. Verified directly:
+
+- the execution theorem is `..._cost_le_principledAllSizeChargedTrace` --
+  `cost <= 210`, an upper budget (`RMQ/Core/SuccinctFinalRAM.lean:8776-8785`);
+- a guarded invalid query is `Costed.pure none`
+  (`RMQ/Core/SuccinctRMQClassic.lean:255-261`) and `pure` has cost `0`
+  (`RMQ/Core/Cost.lean:41-44`), so a concrete execution costs zero, refuting any
+  exact-cost reading.
+
+Two governed surfaces asserted exact cost and are corrected to "at most":
+
+- `docs/PAPER_CLAIM_CORRESPONDENCE.md:7`, which said the trace "has principled
+  charged-trace cost `210`" while citing an alias literally named
+  `...NonSyntheticWeightSumLe210`. The prose contradicted the theorem name in
+  its own row.
+- `artifact/CLAIMS.md:82`, which the audit did not cite and which carried the
+  same overstatement.
+
+**The origin of this defect is the commissioning prompt.** Its section 2 said
+"The canonical reviewer route has a uniform charged-trace cost of `210`" -- an
+exact-cost sentence written by this project and handed to the auditor as the
+claim to audit against. It is corrected in the same commit, and now names the
+`_cost_le_` theorem and the zero-cost invalid query explicitly, so a future
+auditor cannot be pointed at an overstated target.
+
+Consequence for governance: `RC-02` is not discharged in its commissioned literal
+form, so per its own terms `WDD-20260807-014` -- the U3 subsumption -- is void.
+It is restored by the corrected wording rather than by any proof change: the
+audit confirms the row discharges as "at most `210`". No Lean edit is required
+or made.

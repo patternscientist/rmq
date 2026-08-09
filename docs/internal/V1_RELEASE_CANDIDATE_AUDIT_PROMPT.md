@@ -65,7 +65,9 @@ intends to publish; your task includes deciding whether that form is honest.
 index, and rejects invalid, reversed, empty and out-of-range queries.
 
 **Charged-trace cost (U3 lineage).** The canonical reviewer route has a uniform
-charged-trace cost of `210`, decomposed
+charged-trace cost of **at most** `210` -- the theorem is
+`..._cost_le_principledAllSizeChargedTrace`, an upper budget, and a guarded
+invalid query costs zero, so no exact-cost reading is available. Decomposed
 `2*35 + (2*11 + 2*37 + 33) + 11 = 210`, with the emitted trace containing only
 `readWord` events and non-synthetic certificate weights summing to both trace
 length and the `Costed` cost of the same execution.

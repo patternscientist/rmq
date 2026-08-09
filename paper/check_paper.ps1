@@ -186,7 +186,18 @@ $forbiddenClaims = @(
   'succinct\s+RMQ\s+in\s+constant\s+time',
   '\bin\s+O\(1\)\s+time',
   '\bO\(1\)\s+query\s+time',
-  '\bO\(1\)[-\s]time\b'
+  '\bO\(1\)[-\s]time\b',
+  # Added after an external audit on 2026-08-09 passed a manuscript sentence
+  # asserting constant query time on a conventional RAM model, phrased outside
+  # the patterns above. The MODEL word is what makes such a claim false here,
+  # not the word "constant" -- the repository's house term is "constant modeled
+  # query cost", which these patterns deliberately leave alone.
+  'conventional\s+RAM',
+  'standard\s+RAM\s+model',
+  'RAM\s+model[^.]{0,40}constant',
+  'constant[^.]{0,40}\bRAM\s+model',
+  'constant\s+query\s+time',
+  'queries?\s+in\s+constant\s+time'
 )
 
 $allForbidden = $forbidden + $forbiddenClaims
@@ -211,10 +222,21 @@ $scanTargets = [ordered]@{
 # the first".
 
 function HasNearbyCite([string]$norm, [int]$at, [int]$len, [int]$window) {
+  # A citation is `\cite{...}` in LaTeX, but the markdown ledgers attribute with
+  # the bib key itself in backticks -- e.g. "**Fischer & Heun 2011**
+  # (`FischerHeun11`) ... constant query time in the standard model". That is a
+  # description of cited prior work, not a claim about this development, so it
+  # must be excused by the same rule. The keys are the ones actually parsed from
+  # references.bib, so this recognises real attributions rather than anything
+  # that merely looks like one.
   $lo = [Math]::Max(0, $at - $window)
   $hi = [Math]::Min($norm.Length, $at + $len + $window)
   $slice = $norm.Substring($lo, $hi - $lo)
-  return [regex]::IsMatch($slice, '\\cite[tp]?\*?(?:\[[^\]]*\])*\{')
+  if ([regex]::IsMatch($slice, '\\cite[tp]?\*?(?:\[[^\]]*\])*\{')) { return $true }
+  foreach ($k in $bibKeySet) {
+    if ($slice -match ('`' + [regex]::Escape($k) + '`')) { return $true }
+  }
+  return $false
 }
 
 foreach ($name in $scanTargets.Keys) {
@@ -366,6 +388,12 @@ if ($SelfTest) {
     '\bin\s+O\(1\)\s+time'                 = 'answered in O(1) time'
     '\bO\(1\)\s+query\s+time'              = 'with O(1) query time'
     '\bO\(1\)[-\s]time\b'                  = 'an O(1)-time query'
+    'conventional\s+RAM'                   = 'constant query time on a conventional RAM machine'
+    'standard\s+RAM\s+model'               = 'queries in the standard RAM model'
+    'RAM\s+model[^.]{0,40}constant'        = 'in the RAM model this is constant'
+    'constant[^.]{0,40}\bRAM\s+model'      = 'constant query time in a RAM model'
+    'constant\s+query\s+time'              = 'the structure has constant query time'
+    'queries?\s+in\s+constant\s+time'      = 'answers queries in constant time'
   }
   foreach ($pat in $forbiddenClaims) {
     if ($positives.ContainsKey($pat)) {

@@ -170,6 +170,15 @@ if ($LASTEXITCODE -ne 0) { SoftFail "claim_drift_scan.ps1 found strict violation
 & "$PSScriptRoot\constant_sync_check.ps1" -SelfTest
 if ($LASTEXITCODE -ne 0) { SoftFail "constant_sync_check.ps1 found constant drift" }
 
+# 7c. Manuscript checker. `paper/` is part of the release candidate, but the
+# aggregate gate never invoked its checker, so a citation, ledger-coverage,
+# insertion-marker or claim-language failure in the manuscript could pass the
+# advertised aggregate. Found by external audit 2026-08-09.
+if (Test-Path "$PSScriptRoot\..\paper\check_paper.ps1") {
+  & "$PSScriptRoot\..\paper\check_paper.ps1" -SelfTest
+  if ($LASTEXITCODE -ne 0) { SoftFail "paper/check_paper.ps1 found issues" }
+}
+
 # 8. The paper root must expose only the canonical reviewer-payload,
 # readWord-only, derived-210 query topology; historical profiles remain in the
 # explicit compatibility module.

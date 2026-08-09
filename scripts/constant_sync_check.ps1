@@ -51,9 +51,19 @@ $constants = @(
     # Values this constant has previously had. Their appearance in a
     # current-claim context on a public surface is drift.
     retired  = @('76', '142', '207')
-    surfaces = @('README.md', 'artifact/CLAIMS.md', 'docs/WHAT_IS_PROVED.md',
-                 'docs/PAPER_THEOREM_MAP.md', 'docs/PAPER_CLAIM_CORRESPONDENCE.md',
-                 'docs/TRUST_AUDIT_PACKET.md', 'docs/FAMILY_SUMMARY.md')
+    # `anchors` are claim-shaped phrases that must carry the current numeral;
+    # `{VALUE}` is substituted with the Lean-derived value. `count` pins the
+    # total occurrences so corrupting ANY of them fails, including ones no
+    # anchor names. A count of 0 disables the count check for that surface.
+    surfaces = @(
+      @{ path = 'README.md';                          count = 9;  anchors = @('charged-trace cap is `{VALUE}`') },
+      @{ path = 'artifact/CLAIMS.md';                 count = 10; anchors = @('at most\*\* `{VALUE}`') },
+      @{ path = 'docs/WHAT_IS_PROVED.md';             count = 9;  anchors = @('charged-trace bound is `{VALUE}`') },
+      @{ path = 'docs/PAPER_THEOREM_MAP.md';          count = 11; anchors = @('`{VALUE}`') },
+      @{ path = 'docs/PAPER_CLAIM_CORRESPONDENCE.md'; count = 11; anchors = @('at most\*\* `{VALUE}`') },
+      @{ path = 'docs/TRUST_AUDIT_PACKET.md';         count = 7;  anchors = @('`{VALUE}`') },
+      @{ path = 'docs/FAMILY_SUMMARY.md';             count = 7;  anchors = @('`{VALUE}`') }
+    )
   },
   @{
     name     = 'derived packed probe cap'
@@ -61,7 +71,14 @@ $constants = @(
     leanFile = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerArchitectureCapstone.lean'
     leanPat  = 'derived_cap_le_(\d+)'
     retired  = @()
-    surfaces = @('docs/PAPER_THEOREM_MAP.md', 'docs/PAPER_CLAIM_CORRESPONDENCE.md')
+    surfaces = @(
+      @{ path = 'docs/PAPER_THEOREM_MAP.md';          count = 5;
+         anchors = @('at most `{VALUE}` attempted aligned', 'derived_cap_le_{VALUE}',
+                     '`{VALUE}` is an \*\*upper bound') },
+      @{ path = 'docs/PAPER_CLAIM_CORRESPONDENCE.md'; count = 5;
+         anchors = @('at most `{VALUE}` attempted aligned', 'derived numeral `{VALUE}`',
+                     '`{VALUE}` is an upper bound') }
+    )
   }
 )
 
@@ -89,13 +106,36 @@ foreach ($c in $constants) {
     continue
   }
 
-  # every listed surface must state the current value
-  foreach ($s in $c.surfaces) {
+  # Every listed surface must state the current value, checked at ANCHORS and by
+  # COUNT -- not by file-wide presence.
+  #
+  # The previous revision asked only whether the numeral appeared anywhere in the
+  # file. An external audit on 2026-08-09 corrupted one of five `427`s in
+  # PAPER_THEOREM_MAP.md to `999`; four remained, so the check passed. That is
+  # the vacuity failure this script exists to prevent, reproduced inside the
+  # script itself.
+  #
+  # Two independent conditions now hold per surface:
+  #   anchors -- named claim-shaped phrases must carry the current numeral, so a
+  #              corrupted claim fails even if the numeral survives elsewhere;
+  #   count   -- the total occurrences must match the pin, so corrupting ANY
+  #              occurrence fails even one this script does not name.
+  foreach ($entry in $c.surfaces) {
+    $s = $entry.path
     $p = Join-Path $repoRoot $s
     if (-not (Test-Path -LiteralPath $p)) { Fail "surface missing: $s"; continue }
     $text = [System.IO.File]::ReadAllText($p)
-    if ($text -notmatch [regex]::Escape($actual)) {
-      Fail ("{0}: {1} does not state the current value {2}" -f $c.name, $s, $actual)
+
+    foreach ($anchor in $entry.anchors) {
+      $pat = $anchor -replace '{VALUE}', [regex]::Escape($actual)
+      if ($text -notmatch $pat) {
+        Fail ("{0}: {1} anchor /{2}/ does not carry the current value {3}" -f $c.name, $s, $anchor, $actual)
+      }
+    }
+
+    $occ = ([regex]::Matches($text, '(?<![0-9])' + [regex]::Escape($actual) + '(?![0-9])')).Count
+    if ($occ -ne $entry.count) {
+      Fail ("{0}: {1} states {2} {3} time(s), pinned at {4}. If the surface genuinely changed, update the pin in the same edit." -f $c.name, $s, $actual, $occ, $entry.count)
     }
     # a superseded value in a current-claim context is drift
     foreach ($r in $c.retired) {

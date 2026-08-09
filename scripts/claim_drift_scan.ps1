@@ -46,10 +46,24 @@ foreach ($attribution in @($policy.requiredAttributions)) {
     exit 1
   }
 }
+# A requested root that does not exist means the scan covered less than it was
+# asked to. Reporting success for that is how a scan of nothing looks identical
+# to a scan that found nothing. External audit 2026-08-09 pointed a strict run at
+# a missing path and got exit 0.
+$missingRoots = @($Path | Where-Object { -not (Test-Path $_) })
 $roots = @($Path | Where-Object { Test-Path $_ })
+
+foreach ($mr in $missingRoots) {
+  Write-Host "CLAIM-DRIFT: requested scan root does not exist: $mr"
+}
+if ($Strict -and $missingRoots.Count -gt 0) {
+  Write-Host ("CLAIM-DRIFT: RESULT: FAIL ({0} requested scan root(s) missing; the scan did not cover what it was asked to)" -f $missingRoots.Count)
+  exit 1
+}
 
 if ($roots.Count -eq 0) {
   Write-Host "CLAIM-DRIFT: no scan roots exist"
+  if ($Strict) { Write-Host "CLAIM-DRIFT: RESULT: FAIL (nothing scanned)"; exit 1 }
   exit 0
 }
 

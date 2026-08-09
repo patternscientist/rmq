@@ -8950,3 +8950,44 @@ Decision, three parts:
 Result: 264 lines to 165, and every remaining section is something the auditor
 acts on -- the commit, independence rules, the claim, the rows, how to treat the
 gates, and the deliverable.
+
+## WDD-20260809-028 -- repair the four gate false negatives found by external audit
+
+Status: Accepted.
+
+Date: 2026-08-09
+
+The 2026-08-09 fresh-blind audit returned `NOT_ACCEPTABLE` and demonstrated
+concrete false negatives in four required gates. Every one was reproduced here
+before being fixed, and each fix is verified against the auditor's own mutation.
+
+**Two of the four are gates this project wrote and claimed to have verified by
+injection.** They failed for the same reason in both cases: the injection tested
+the failure shape the author had in mind, not the space of failures. That is the
+defect this repository has been cataloguing in other people's checks all week,
+reproduced inside its own.
+
+| gate | defect | fix | verified by |
+| --- | --- | --- | --- |
+| `hub_closure_lint.ps1` | parsed `^import` only; Lean accepts leading whitespace, so an indented RMQ-specific import was invisible | `^\s*import` | the auditor's indented injection now exits 1; the self-test injects the indented shape |
+| `constant_sync_check.ps1` | asked only whether the numeral appeared *anywhere* in a surface; corrupting one of five `427`s left four and passed | per-surface **anchors** (claim-shaped phrases that must carry the value) **plus a pinned occurrence count** | the auditor's mutation exits 1; so does corrupting a non-anchored occurrence |
+| `claim_drift_scan.ps1` | exited 0 when a requested scan root did not exist -- a scan of nothing looked identical to a scan that found nothing | strict mode fails on any missing requested root, and on scanning nothing at all | missing root under `-Strict` exits 1; normal strict run unchanged at exit 0 |
+| `paper/check_paper.ps1` | phrase list did not cover conventional-RAM constant-time claims | six model-vocabulary patterns added, with positive fixtures | unattributed injection produces 2 failures; the same sentence attributed to a real bib key is excused |
+
+Also fixed, the fifth finding: **`gate.ps1` never invoked `paper/check_paper.ps1`**,
+so a manuscript citation, ledger, insertion-marker or claim-language failure
+could pass the advertised aggregate gate. It now runs as step 7c with
+`-SelfTest`.
+
+One design point worth recording. Extending the paper checker's patterns
+initially broke the baseline on `RELATED_WORK_LEDGER.md`, which correctly
+describes Fischer and Heun's classical constant-query-time result. The right fix
+was not to narrow the pattern but to teach the attribution allowance that a
+markdown ledger cites with a **bib key in backticks** rather than `\cite{}` --
+and to match against the keys actually parsed from `references.bib`, so the
+allowance recognises real attributions rather than anything key-shaped.
+
+The count arm of the constant check will fail on any legitimate edit that
+changes how often a constant appears. That friction is the mechanism, not a side
+effect: it forces the pin and the prose to move together, exactly as the Lean-side
+pin does.
