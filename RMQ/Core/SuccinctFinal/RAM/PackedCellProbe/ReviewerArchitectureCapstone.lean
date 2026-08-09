@@ -553,7 +553,28 @@ structure PackedReviewerArchitectureCapstone
       (SuccinctClassic.queryTraceResult xs left right).value = none
   /-- Field 32 (`EG-CP-A09`): the exact-type controller input boundary --
   this equation elaborates only at
-  `Nat -> Nat -> Nat -> PackedReviewerControllerState`. -/
+  `Nat -> Nat -> Nat -> PackedReviewerControllerState`.
+
+  **Read this field precisely.** It is an eta equation, closed by `rfl`. All of
+  its content is in the *elaboration*, not the proof: the statement typechecks
+  only if `packedReviewerController` has exactly that arity and those argument
+  types, which is what pins the controller's static interface -- in particular
+  it cannot take `xs`, a shape, an oracle, or any further argument, because such
+  a controller would not elaborate here.
+
+  It is **not** the semantic no-hidden-input theorem, and it should not be cited
+  as one. It says nothing about the controller's behaviour; a controller of the
+  right type that consulted something it should not would satisfy this field. The
+  semantic content lives in the neighbouring fields -- field 33
+  (`controller_uniform_entry`: one guard and one uniform state at every size, so
+  no readiness or compatibility dispatch) and field 34
+  (`store_agreement_determinism`: equal replies on the run's trace determine the
+  complete run record, which is what actually forces the dynamic inputs to be
+  `n`, the endpoints, and prior probe replies).
+
+  Clarified 2026-08-09 after a fresh-blind audit observed that this field *reads*
+  like the no-hidden-input result. The field is sound; the way it invited being
+  cited was not. -/
   controller_exact_input_boundary :
     @packedReviewerController =
       (fun (n left right : Nat) => packedReviewerController n left right)

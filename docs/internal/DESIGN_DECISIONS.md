@@ -11167,3 +11167,56 @@ always `<=`, and only the prose claimed more.
 
 Verified: `lake build RMQ` exit 0; the two `unused variable hleftCloseBound`
 warnings that the removal surfaced are gone and no new warning replaced them.
+
+## DD-20260809-100 -- export the fixture probe count; say what field 32 is not (P3-1)
+
+Status: Accepted. Date: 2026-08-09. Completes the P3-1 items from the 2026-08-09
+fresh-blind audit; see DD-20260809-099 for the first two.
+
+### `egcpFixtureTraceLength`
+
+`68` is cited across `EG_CP_STAGEA_ACCEPTANCE_MATRIX.md`, `EG_CP_STAGEA_RESULT.md`,
+`EG_CP_FINAL_FALSIFICATION_RESULT.md`, and the manuscript as "the fixture run
+issues 68 attempted probes". It was true and derivable, but lived **only** as a
+local `have` inside one proof, so no reviewer could cite a theorem for it and
+nothing outside that proof would have broken had it drifted. It is now a named
+theorem, derived from `egcpFixtureTraceAddresses` so the length cannot disagree
+with the literal address list, and the former local `have` is routed through it
+rather than reproving it. Added to `scripts/axiom_check.lean`; depends on
+`propext` and `Quot.sound` only.
+
+Stated in the docstring and the inventory comment because this number is easy to
+misread: it is `=` for **one pinned fixture**, and it is **not** an attainment
+witness for `427`. `427` remains an upper bound over all valid queries with no
+execution known to attain it (`B7-UPPER-BOUND-IS-NOT-ATTAINMENT`). `68 <= 427`
+is a fact about this run, not evidence the cap is tight.
+
+Proof note: the obvious `simpa using congrArg List.length ...` exhausts the
+`isDefEq` heartbeat budget here -- `simpa` tries to evaluate the run term in the
+goal. Raising `maxRecDepth` does not help and misdiagnoses it. `rw
+[List.length_map] at hmap; exact hmap` leaves the run term untouched on both
+sides and elaborates immediately.
+
+### Capstone field 32
+
+Field 32 (`controller_exact_input_boundary`) is an eta equation closed by `rfl`.
+All its content is in the **elaboration**: the statement typechecks only if
+`packedReviewerController` has exactly arity three at `Nat -> Nat -> Nat ->
+PackedReviewerControllerState`, which pins the controller's static interface --
+it cannot take `xs`, a shape, or an oracle, because such a controller would not
+elaborate there.
+
+The audit's observation was that it *reads* like the semantic no-hidden-input
+theorem. The field is sound; the way it invited being cited was not. Its
+docstring now says plainly what it does not establish -- it constrains the
+interface, not the behaviour -- and points at the fields carrying the semantic
+content: field 33 (`controller_uniform_entry`, no readiness or compatibility
+dispatch) and field 34 (`store_agreement_determinism`, which is what actually
+forces the dynamic inputs to be `n`, the endpoints, and prior probe replies).
+
+This is the documentation form of the recurring defect class: not a false
+theorem, but a true one positioned to be read as a stronger one.
+
+Verified: `lake build RMQ` exit 0; `scripts/axiom_check.lean` exit 0 with no
+`sorryAx` and no `ofReduceBool`; `independence_check` still PASS at 1855
+constants.

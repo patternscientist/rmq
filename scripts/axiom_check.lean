@@ -1233,3 +1233,9 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunLeftmostTie
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunReachableInvariant
 #print axioms RMQ.SuccinctFinal.PackedCellProbe.Validation.egcpStageAArchitectureFactsExact
+-- The pinned fixture's probe count. Cited as "the fixture run issues 68
+-- attempted probes" across the acceptance matrices, the result documents, and
+-- the manuscript; exported as a theorem 2026-08-09 so those citations have
+-- something to point at. Note this is `= 68` for one fixture and is NOT an
+-- attainment witness for the `427` cap.
+#print axioms RMQ.SuccinctFinal.PackedCellProbe.egcpFixtureTraceLength
