@@ -91,7 +91,35 @@ target closure collapsed `1855 → 16` and still passed, and a non-transitive wa
 left *both* controls green because both are shallow — only the closure floor
 caught it (`74 < 500`). See WDD-20260809-017 / DD-20260809-098.
 
-### 4.3 Base repin
+### 4.3 Base repin -- **DO THIS LAST**, and it is not a string swap
+
+`paper/*` still pins base `e3362d4`. Before doing it mechanically, note the pin
+appears in **two different roles** and they must not be treated alike:
+
+1. **Substrate pin** -- `paper/README.md`, `paper/rmq.tex` (4 places),
+   `NOVELTY_LOG.md`, `RELATED_WORK_LEDGER.md`: "this manuscript is pinned to
+   repository base commit X". This is a statement about which tree the
+   manuscript describes. It **must** move to the landing commit.
+2. **Per-row acceptance records** -- 31 `Commit:` fields in
+   `THEOREM_LEDGER.md`, each paired with `Status: ACCEPTED_BASE`. These assert
+   *the row was verified against that tree*. Blanket-restamping them to a new
+   commit asserts a re-verification that did not happen -- the project's own
+   recurring defect class. Only restamp rows whose evidence was actually
+   re-established, and say in the commit what re-established it.
+
+Nothing enforces the pin: `paper/check_paper.ps1` never reads it.
+
+**Citations audited 2026-08-09** (see `paper/EVIDENCE_MATRIX.md`): 9 `:NNN`
+citations, 7 correct, 2 fixed. One had drifted from this round's own edits; the
+other, `L-UB-06`'s `:9349`, **was already wrong at the pinned base commit** by
+~1,090 lines and the fresh-blind audit did not catch it.
+
+Follow-up, deliberately deferred to keep this round converging: a checker over
+`file:line -> expected declaration` pairs, in the manner of the constant-sync and
+independence checks. Better still, cite declaration names and keep line numbers
+only where a checker verifies them.
+
+Superseded original note:
 
 `paper/*` still pins base `e3362d4`. It must be repinned to whatever commit the
 round lands as. **Do this last**, after the tree stops moving.

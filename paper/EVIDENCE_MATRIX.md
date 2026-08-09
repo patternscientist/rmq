@@ -144,3 +144,31 @@ closes no roadmap node.
   longer acceptance but the single edit replacing the marker with the
   theorem statement and its proof obligations.
 - Status (superseded): BLOCKED_ONLY_ON: ARCHITECTURE_RESULT_PENDING
+
+## 2026-08-09 -- line-number citations audited, two corrected
+
+Every `:NNN` source citation in `THEOREM_LEDGER.md` was resolved against the
+tree. Nine citations; seven resolve to the declaration they name. Two did not:
+
+- `L-PACK-01`, producer at `:702` in `ReviewerArchitectureCapstone.lean`. Correct
+  at base `e3362d4` and still correct at the audited candidate `f958f54`; moved
+  to `:723` by the field-32 docstring added in this correction round. Drift
+  introduced by this round and corrected in it.
+- `L-UB-06`, `concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq`
+  at `:9349` in `SuccinctFinalRAM.lean`. **This one was already wrong at the
+  pinned base commit**: at `e3362d4` the theorem was at `:8261`, roughly 1,090
+  lines from where the ledger pointed. It was not introduced by any recent
+  change and was not caught by the fresh-blind audit. Now `:8269`.
+
+Recorded rather than quietly fixed because the second case shows the pinned base
+commit does not make a citation right -- a reviewer following `:9349` at the very
+commit the ledger names would have landed in unrelated code. Nothing checks these
+citations; they are prose that happens to look like a reference. A checker on the
+`file:line -> expected declaration name` pairs would make them a checked property,
+in the manner of the constant-sync and independence checks. Deferred here to keep
+the correction round converging, and carried in
+`docs/internal/RC1_CORRECTION_HANDOFF.md` as follow-up.
+
+Line numbers in a ledger rot on every edit above them. The durable fix is to cite
+declaration names, which are stable and greppable, and to keep line numbers only
+where a checker verifies them.

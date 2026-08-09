@@ -143,7 +143,7 @@ references are at the base commit.
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra`);
   frozen historical identity
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq`
-  (`= 207`, `RMQ/Core/SuccinctFinalRAM.lean` :9349)
+  (`= 207`, `RMQ/Core/SuccinctFinalRAM.lean` :8269)
 - File: `RMQ/Core/SuccinctFinalRAM.lean`; `RMQ/Core/SuccinctRMQClassic.lean`
 - Proposition: the constant satisfies the named component algebra
   `2*35 + (2*11 + 2*37 + 33) + 11 = 210` (two select legs at 35, a
@@ -547,7 +547,7 @@ references are at the base commit.
   with field 9 `rho_little_o`; inhabited by
   `RMQ.SuccinctFinal.PackedCellProbe.packedReviewerArchitectureCapstone_holds`
 - File: `RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerArchitectureCapstone.lean`
-  (field 8 at :356--359, field 9 at :361, producer at :702)
+  (field 8 at :356--359, field 9 at :361, producer at :723)
 - Proposition: for every `xs : List Int`, letting
   `shape := SuccinctClassic.cartesianShape xs`, the complete allocated
   capacity of the packed memory satisfies
