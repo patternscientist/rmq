@@ -4,15 +4,15 @@
 
 ## THE COMMIT UNDER AUDIT
 
-> **Tag: `audit-v1-rc-1`** — in `github.com/patternscientist/rmq`.
-> Audit this commit and no other. Every `audit-v1-rc-1` below means this commit.
+> **Tag: `audit-v1-rc-2`** — in `github.com/patternscientist/rmq`.
+> Audit this commit and no other. Every `audit-v1-rc-2` below means this commit.
 
 Obtain and verify it:
 
 ```bash
 git fetch origin --tags
-git checkout audit-v1-rc-1          # detached HEAD is expected and correct
-git rev-list -n1 audit-v1-rc-1      # the SHA under audit; record it in your report
+git checkout audit-v1-rc-2          # detached HEAD is expected and correct
+git rev-list -n1 audit-v1-rc-2      # the SHA under audit; record it in your report
 git status --porcelain              # MUST be empty: a dirty tree is not the candidate
 ```
 
@@ -20,9 +20,9 @@ Confirm you have the right tree before starting. All four must hold:
 
 | check | expected |
 | --- | --- |
-| `git rev-parse HEAD` equals `git rev-list -n1 audit-v1-rc-1` | yes |
+| `git rev-parse HEAD` equals `git rev-list -n1 audit-v1-rc-2` | yes |
 | `git status --porcelain` | empty |
-| `git tag --points-at HEAD` | includes `audit-v1-rc-1` |
+| `git tag --points-at HEAD` | includes `audit-v1-rc-2` |
 | `paper/` exists at the root | yes — it is in scope (`RC-10`) |
 
 If any fails, stop and report it rather than auditing a tree you cannot
@@ -41,7 +41,7 @@ You are a **fresh-blind exact-commit auditor**. You have not seen this
 repository's chat history, worker verdicts, or working trees, and you must not
 seek them. You were given exactly two things -- this prompt and the audit packet
 -- and the prompt names the commit to fetch. Those, plus the tree at
-`audit-v1-rc-1`, are your only inputs.
+`audit-v1-rc-2`, are your only inputs.
 
 Follow `docs/internal/AUDIT_PROTOCOL.md`. Report findings at `P0`/`P1`/`P2`/`P3`.
 
@@ -103,7 +103,7 @@ dynamic inputs are exactly `n`, the endpoints, and prior probe replies.
 
 ## 3. Rows to discharge
 
-For each, reconstruct independently from source at `audit-v1-rc-1`. Do not accept a
+For each, reconstruct independently from source at `audit-v1-rc-2`. Do not accept a
 docstring, a report, or a ledger row as evidence for the proposition it
 describes.
 
@@ -118,7 +118,8 @@ describes.
 | `RC-07` | Trust base: `sorry`-free, standard axioms only, pinned toolchain; the axiom-check scripts genuinely cover the cited declarations rather than a subset. |
 | `RC-08` | **Anti-vacuity.** For each headline, check that hypotheses are satisfiable and the statement is not trivially true. Dropping a load-bearing hypothesis should break the proof; if it does not, the hypothesis was decorative. |
 | `RC-09` | **Claim honesty across public surfaces.** Every surface in `currentFactSurfacePathRegex` states only what §2 licenses. Report any word-RAM, preprocessing, runtime, or attainment implicature. |
-| `RC-10` | The manuscript in `paper/` and its ledgers describe the theorems that exist at `audit-v1-rc-1`, with no claim stronger than its cited declaration. |
+| `RC-10` | The manuscript in `paper/` and its ledgers describe the theorems that exist at `audit-v1-rc-2`, with no claim stronger than its cited declaration. |
+| `RC-11` | **Artifact-root correspondence.** Take the theorem `docs/PAPER_CLAIM_CORRESPONDENCE.md` names as the accepted claim and check that importing the paper artifact root actually gives you it. A reviewer asking "which single import yields the paper's theorem?" must get one answer, and the documented identity and the importable identity must be the same string. |
 
 ---
 
@@ -153,7 +154,7 @@ the script anyway.
 A report at `docs/internal/audit_reports/<date>_V1_RC_fresh_blind.md`:
 
 1. The exact commit audited and how the packet was obtained.
-2. Per-row verdict for `RC-01`..`RC-10`, each with the reconstruction you
+2. Per-row verdict for `RC-01`..`RC-11`, each with the reconstruction you
    performed — file and line, not a summary of someone else's claim.
 3. Findings at `P0`/`P1`/`P2`/`P3`, each with a concrete failure scenario.
 4. An explicit statement of what you could **not** verify and why. This is

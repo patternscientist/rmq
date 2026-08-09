@@ -9219,3 +9219,30 @@ cries wolf gets weakened, and weakening it is how the real defect gets through.
 
 Verified: baseline PASS at 53 names; three injections each exit 1 -- a renamed
 citation, an emptied list, and a negative control made to resolve.
+
+## WDD-20260809-022 -- retarget the commissioning prompt to `audit-v1-rc-2`, add `RC-11`
+
+Status: Accepted. Date: 2026-08-09.
+
+Nine references retargeted from `audit-v1-rc-1`. **Nine, not the eight a `grep -n`
+reported** -- one line carries two occurrences, and the count assertion in the
+edit script caught it. The same line-versus-occurrence distinction had already
+bitten the citation audit and the substrate repin today; three times in one day
+is enough to state it as a rule: **`grep -c` counts lines, not occurrences, and
+for a rewrite the occurrence count is the one that matters.**
+
+New row `RC-11`, artifact-root correspondence: take the theorem
+`docs/PAPER_CLAIM_CORRESPONDENCE.md` names as the accepted claim and check that
+importing the paper artifact root actually yields it.
+
+`RC-11` exists because the defect it targets was found by a *non-blind* review
+rather than by the fresh-blind audit, and no existing row would have caught it.
+`RC-10` compares the manuscript against the theorems that exist; it never asks
+"which single import gives me the paper's theorem?", so `RMQPaper`'s closure
+could hold zero `PackedCellProbe` modules while the claim map named the packed
+theorem, and every row still discharged.
+
+The general lesson for this row set: a claim map and a build artifact can each be
+internally consistent and disagree with each other. Rows that check surfaces
+against source do not catch that; only a row that starts from the artifact and
+asks what it exports does.
