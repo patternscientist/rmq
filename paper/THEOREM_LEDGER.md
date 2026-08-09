@@ -520,10 +520,22 @@ references are at the base commit.
   one exact constant `C` independent of `n`. Computation between probes is
   free (cell-probe convention).
 - Scope discipline, unchanged by acceptance: `427` is an upper bound derived
-  from the run's own measure, not an attainment claim; `210` is logical fuel
-  (charged trace events); and this is a cell-probe result, so it is not
-  word-RAM instruction time, not preprocessing time, and not measured
-  runtime. Computation between probes is free.
+  from the run's own measure, not an attainment claim; and this is a
+  cell-probe result, so it is not word-RAM instruction time, not preprocessing
+  time, and not measured runtime. Computation between probes is free.
+- **The two `210`s are different quantities.** The `210` inside
+  `427 = 1 + 2*3 + 2*210` is the packed controller's own **structural
+  countdown**, assembled from controller-state counters in
+  `ReviewerWholeProtocol.lean` and proved by
+  `packedReviewerControllerMeasure_valid_eq_427`. It is **not** the
+  charged-trace event budget of `SuccinctFinalRAM.lean`. They are numerically
+  equal and independent at declaration and proof-term level: the packed proof
+  references neither `SuccinctClassic.queryCost` nor `nonSyntheticWeight`.
+  This row previously called the packed `210` "logical fuel (charged trace
+  events)", which merged the two; that wording is retired here. Note the
+  independence claim is about declarations and proof terms, not module
+  closures -- the packed module's compilation closure does transitively reach
+  the charged declaration.
 - Manuscript location: Section 9, Statement 9.1 (`tgt:packed`) and the
   Section 9.1 insertion point.
 

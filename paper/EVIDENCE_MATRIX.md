@@ -128,6 +128,17 @@ closes no roadmap node.
   superseded by this entry rather than edited. The containment half of the
   requirement still holds and is still enforced: exactly one marker, and no
   section outside Section 9 states, assumes, or paraphrases the result.
+- Evidence (appended 2026-08-09, after external audit): the frozen requirement
+  above says the packed result appears **only** as the quoted target and the
+  single marker. **That is false at this commit, and was false when written.**
+  The allocated-bits entry of `rmq.tex` Section 3 states the capacity bound; it
+  was added by the same commit that retracted the earlier false denial that any
+  theorem bounded capacity, so repairing one claim created a containment
+  violation with another. The requirement text is frozen and is therefore not
+  edited; this entry records that the invariant as literally worded does not
+  hold. The manuscript now states the accurate invariant -- the result appears
+  in exactly two places, the allocated-bits entry and Section 9, and nowhere
+  else -- and the marker count is still exactly one, which the checker enforces.
 - Status (appended 2026-08-07): BLOCKED_ONLY_ON: EDITORIAL_INSERTION. The
   prior status is retained below for lineage. What blocks closure is no
   longer acceptance but the single edit replacing the marker with the

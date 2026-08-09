@@ -72,9 +72,10 @@ Lean wall-clock time distinct, and document the trust base (Lean kernel
 checking under a pinned toolchain, standard axioms only). A packed
 cell-probe strengthening, bounding the allocated capacity of one packed
 object and the probes into it, has been accepted in the repository but is
-not yet absorbed into this draft; we reserve exactly one marked insertion
-point for it and assert it nowhere else. Novelty statements are deliberately conditional pending a
-completed search log.
+not yet absorbed into this draft; we reserve one marked insertion point for
+it, and state it only there and in the allocated-bits entry of
+Section~\ref{sec:quantities}. Novelty statements are deliberately
+conditional pending a completed search log.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
@@ -146,8 +147,8 @@ word-RAM model (Section~\ref{sec:quantities}). The space theorem of
 Section~\ref{sec:upper} counts advertised payload bits, not the allocated
 capacity of a packed memory object (Section~\ref{sec:quantities}); the
 allocated-capacity strengthening is a separate accepted result over a
-different object, which this draft states in one place and nowhere else
-(Section~\ref{sec:pending}). Priority claims are deliberately conditional:
+different object, which this draft states only in the allocated-bits entry of
+Section~\ref{sec:quantities} and in Section~\ref{sec:pending}. Priority claims are deliberately conditional:
 closely related mechanizations exist, most prominently the
 Coq/SSReflect succinct-data-structure line of Tanaka, Affeldt, Garrigue,
 and Qi~\cite{TAG16,AGQT19}, and the search log
@@ -158,10 +159,11 @@ and Qi~\cite{TAG16,AGQT19}, and the search log
 
 This is a private working draft assembled from the repository's accepted
 claim maps at one exact commit. One result family --- a packed
-counted-header cell-probe refinement --- is under a separate feasibility
-gate and is neither accepted nor rejected at the base commit. This draft
-reserves a single insertion point for it (Section~\ref{sec:pending}) and
-otherwise excludes it from every claim.
+counted-header cell-probe refinement --- has been \emph{accepted} in the
+repository at the base commit, but is not yet absorbed into a theorem
+environment here. This draft states it in exactly two places: the
+allocated-bits entry of Section~\ref{sec:quantities}, which cites its ledger
+row, and Section~\ref{sec:pending}. It asserts it nowhere else.
 
 \section{Reference semantics}\label{sec:semantics}
 
@@ -730,8 +732,10 @@ What has \emph{not} happened is editorial: this draft has not yet absorbed
 the accepted statement into a theorem environment with its proof obligations
 spelled out at the level the rest of the manuscript uses. Until it does, the
 marked insertion point below remains the only location licensed to carry the
-result, and no other section states, assumes, or paraphrases it as a theorem
-of this draft. Two consequences of the acceptance are already reflected
+result \emph{as a theorem of this draft}. The allocated-bits entry of
+Section~\ref{sec:quantities} also states the capacity bound, with an explicit
+ledger citation rather than as a theorem here; no section other than that
+entry and this one states, assumes, or paraphrases the result. Two consequences of the acceptance are already reflected
 above, because leaving them out would have made the draft assert falsehoods:
 the allocated-bits entry of Section~\ref{sec:quantities} now points here
 rather than denying that any theorem bounds capacity, and the corresponding
@@ -742,8 +746,9 @@ limitation has been withdrawn.
 Exactly one location in this manuscript may carry the packed all-size
 result. The acceptance condition has been met; the remaining step is
 editorial, and until it is taken the marker below is the entire content of
-that location, and no other section states, assumes, or paraphrases the
-result as a theorem of this draft.
+that location. Outside it, only the allocated-bits entry of
+Section~\ref{sec:quantities} states the capacity bound, and it does so with an
+explicit ledger citation rather than as a theorem of this draft.
 
 \medskip
 \noindent\verb|ARCHITECTURE_RESULT_PENDING|

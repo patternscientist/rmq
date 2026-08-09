@@ -11000,3 +11000,53 @@ form, so per its own terms `WDD-20260807-014` -- the U3 subsumption -- is void.
 It is restored by the corrected wording rather than by any proof change: the
 audit confirms the row discharges as "at most `210`". No Lean edit is required
 or made.
+
+## DD-20260809-096 -- reconcile the manuscript's Stage-A status and containment claims
+
+Status: Accepted.
+
+Date: 2026-08-09
+
+The 2026-08-09 audit's `P1-2`/`RC-10` finding, reproduced and confirmed here: the
+manuscript contradicted itself about Stage A and merged the two `210`s.
+
+- `rmq.tex` said in the abstract that Stage A "has been accepted", and a hundred
+  lines later that it "is under a separate feasibility gate and is neither
+  accepted nor rejected". A reader could conclude both.
+- Three separate passages asserted the result is stated "nowhere else" than the
+  Section 9 insertion point, while the allocated-bits entry of Section 3 states
+  the capacity bound outright.
+- `THEOREM_LEDGER.md` called the packed `210` "logical fuel (charged trace
+  events)", which is the charged-trace quantity's description, not the packed
+  controller's structural countdown.
+
+Decision: state one status, and make the containment claim *accurate* rather
+than aspirational. The result is now described consistently as accepted in the
+repository but not yet absorbed into a theorem environment, and stated in
+exactly two places -- the allocated-bits entry, which cites its ledger row, and
+Section 9 -- with all three "nowhere else" assertions corrected to match.
+
+The ledger now separates the two `210`s explicitly, names the packed one as a
+structural countdown proved by `packedReviewerControllerMeasure_valid_eq_427`,
+and records the limit the audit established: independence holds at
+**declaration and proof-term** level, not module-closure level, because the
+packed module transitively reaches the charged declaration through its imports.
+
+`EVIDENCE_MATRIX.md`'s frozen requirement asserts the containment invariant that
+Section 3 falsifies. The requirement text is frozen and so is not edited; an
+appended entry records that it does not hold as worded, and why -- **the
+violation was created by the same commit that retracted the earlier false denial
+that any theorem bounded allocated capacity.** Repairing one claim produced a
+contradiction with another, which is the failure mode worth remembering from
+this round.
+
+Verification: `check_paper.ps1 -SelfTest` PASS, `latexmk` exit 0 with zero
+undefined references, 15 pages, `git diff --check` clean, strict claim-drift
+unchanged at 0 failures.
+
+Method note, recorded because it cost this session five separate corruptions:
+these edits were made through exact-string replacement, **not** through Python
+`str.replace`. Writing `"\ref"` in a Python replacement string emits a carriage
+return, silently corrupting LaTeX cross-references; a byte-level repair attempt
+then mangled the file's line endings. Edits to this repository's CRLF files
+should be made on exact quoted strings.
