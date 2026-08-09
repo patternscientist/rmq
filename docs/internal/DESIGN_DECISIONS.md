@@ -11100,3 +11100,29 @@ minimal root contains, so it is an owner decision and is not settled here.
 Verification: `lake build RMQPaper` exit 0; `headline_axiom_check.lean` exit 0
 with standard axioms only; `constant_sync_check`, strict `claim_drift_scan`, and
 `check_paper -SelfTest` all PASS; `git diff --check` clean.
+
+## DD-20260809-098 -- `scripts/independence_check.lean` as a new checked artifact
+
+Status: Accepted. Date: 2026-08-09. Companion to WDD-20260809-017, which records
+the gate policy and the injection results; this entry records the artifact.
+
+New script, and the repository's first constant-level dependency checker. It is
+also the first script here to `import Lean`: the RMQ development is Std-only, so
+the metaprogramming API is not otherwise in scope. Two consequences worth
+knowing before writing another one.
+
+- Several RMQ modules introduce their own `Name`, which shadows `Lean.Name`
+  under a bare `open Lean`. Every metaprogramming identifier in the script is
+  fully qualified for that reason. A future script that opens `Lean` and gets
+  baffling `Name : Type ?u` mismatches is hitting this.
+- `import Lean` in a *script* is safe -- `lake env lean` runs it standalone and
+  nothing in the library imports it. Do not add it to a library module; the
+  Mathlib-free/Std-only trust story is about the library, and the proof-hygiene
+  scan at gate step 2 covers library roots, not `scripts/`.
+
+The mechanism is a transitive walk of `ConstantInfo.type` and
+`ConstantInfo.value?` via `Expr.getUsedConstants`. It is reusable: any future
+"X does not depend on Y" claim in this repository should be stated by pointing
+a copy of this at the two names rather than by asserting it in prose. If that
+happens twice more, factor the walker out rather than copying it a third time.
+
