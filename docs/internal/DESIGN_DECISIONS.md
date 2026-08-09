@@ -11220,3 +11220,34 @@ theorem, but a true one positioned to be read as a stronger one.
 Verified: `lake build RMQ` exit 0; `scripts/axiom_check.lean` exit 0 with no
 `sorryAx` and no `ofReduceBool`; `independence_check` still PASS at 1855
 constants.
+
+## DD-20260809-101 -- ledger citation corrections (public-surface record)
+
+Status: Accepted. Date: 2026-08-09. Public-surface companion to
+WDD-20260809-020, which records the method failure; this records the content
+change to `paper/THEOREM_LEDGER.md` and `paper/EVIDENCE_MATRIX.md`.
+
+Three `:NNN` source citations in the theorem ledger were wrong and are corrected:
+
+| row | was | now | cause |
+| --- | --- | --- | --- |
+| `L-PACK-01` | producer `:702` | `:723` | displaced by this round's field-32 docstring |
+| `L-ARCH-01` | producer `:702` | `:723` | same; missed by two earlier audit sweeps |
+| `L-UB-06` | `:9349` | `:8269` | **already wrong at the pinned base commit**, by ~1,090 lines |
+
+24 of the 27 citations resolve correctly and are unchanged. No proposition, no
+declaration name, and no status changed -- these are reference corrections to
+prose, and the underlying rows are untouched.
+
+`L-UB-06` is the one worth remembering: it was wrong at `e3362d4`, the very
+commit the ledger pins itself to, so a reviewer following the reference at the
+named commit would have landed roughly 1,090 lines away in unrelated code. The
+fresh-blind audit did not catch it. A pinned base commit constrains the *tree*;
+it does not make a hand-written line number point anywhere in particular.
+
+Consequence for the pending base repin: `ACCEPTED_BASE` is defined in the ledger
+header as "kernel-checked declaration present on the base commit", so repinning
+the substrate does require moving the per-row `Commit:` fields -- but the honest
+basis for that is a green build plus the axiom inventories at the new commit,
+confirming each row's *named declaration* still exists. It is not a licence to
+also trust the line numbers, which no build checks.
