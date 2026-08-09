@@ -8851,3 +8851,55 @@ itself, next to where the tag is introduced, so the next person does not
 Note for whenever a real V1 release *is* wanted: a `v*` tag is the correct
 mechanism and the workflow is already built for it. That is a separate, owner-
 authorized act, and it should come after the audit verdict rather than before.
+
+## WDD-20260808-026 -- lead the prompt with the commit under audit
+
+Status: Accepted.
+
+Date: 2026-08-08
+
+The prompt named the tag correctly but buried it: the header opened with three
+paragraphs explaining *why* a tag was used before stating *which* commit. A
+reader skimming for "what am I auditing" had to get past the rationale to find
+it. Rationale is worth keeping, but it is not the first thing a commissioned
+auditor needs.
+
+Decision: hoist a `## THE COMMIT UNDER AUDIT` block to the top containing, in
+order: the tag in a blockquote, the exact commands to fetch and check it out,
+and a four-row table of properties the auditor must confirm before starting --
+`HEAD` equals the tag's commit, `git status --porcelain` empty, the tag points
+at `HEAD`, and `paper/` present. The rationale moves below under its own
+subheading.
+
+Two details that are protections rather than instructions:
+
+- The auditor is told to **record the resolved SHA in their report**. A verdict
+  that does not name the tree it examined cannot be checked against the
+  candidate later, which is exactly the failure that made the Stage-A audit
+  stop certifying anything shippable.
+- They are told a dirty tree is **not** the candidate, and to stop and report
+  rather than audit a tree they cannot identify. Auditing something adjacent to
+  the candidate and reporting on it as the candidate is worse than not auditing.
+
+The cross-check is stated too: the packet's `git-log.txt` records the same SHA,
+so prompt, tag and packet can be reconciled against each other rather than
+trusted individually.
+
+Consequence: the candidate moves one commit and the tag moves with it. Safe by
+construction here -- this file names only the tag, never a SHA, which is the
+property that made the tag worth adopting.
+
+### WDD-20260808-026 addendum (2026-08-08)
+
+The handover is **two artifacts, not three**: the prompt and the packet.
+
+The commit was previously listed as a third item to hand over. It should not be,
+because the prompt already names it and carries the commands to fetch and verify
+it. Listing it separately invites the failure it was meant to prevent -- a SHA
+communicated out of band, drifting from the document that says what to do with
+it, with no way to tell which is authoritative when they disagree.
+
+Section 1 was corrected to match: the auditor's inputs are the two artifacts
+they were given, plus the tree they fetch using the prompt. Previously it listed
+the commit as though it had been handed to them.
+

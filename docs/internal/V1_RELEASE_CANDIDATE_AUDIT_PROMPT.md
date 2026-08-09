@@ -1,19 +1,48 @@
 # V1 Release-Candidate Fresh-Blind Audit — commissioning prompt
 
-**Status: READY TO LAUNCH.** Every precondition in §0 is discharged. The
-release candidate is the commit tagged **`audit-v1-rc-1`**.
+**Status: READY TO LAUNCH.** Every precondition in §0 is discharged.
 
-The candidate is identified by tag rather than by a SHA written into this file,
-because a SHA cannot name the commit that contains it: substituting one would
-move the tip and leave this document pointing at its own parent. A tag is
-applied after the commit, so it names the candidate exactly. Read
-`audit-v1-rc-1` below wherever the commit under audit is meant.
+## THE COMMIT UNDER AUDIT
 
-The tag deliberately does **not** begin with `v`. `.github/workflows/release-artifact.yml`
-triggers on `push: tags: v*` and calls `gh release create`, so a `v`-prefixed tag
-would publish a public GitHub Release. An audit checkpoint is not a release, and
-publishing one here would also pre-empt the still-open DOI decision, since a
-GitHub Release is what a DOI would be minted from.
+> **Tag: `audit-v1-rc-1`** — in `github.com/patternscientist/rmq`.
+> Audit this commit and no other. Every `audit-v1-rc-1` below means this commit.
+
+Obtain and verify it:
+
+```bash
+git fetch origin --tags
+git checkout audit-v1-rc-1          # detached HEAD is expected and correct
+git rev-list -n1 audit-v1-rc-1      # the SHA under audit; record it in your report
+git status --porcelain              # MUST be empty: a dirty tree is not the candidate
+```
+
+Confirm you have the right tree before starting. All four must hold:
+
+| check | expected |
+| --- | --- |
+| `git rev-parse HEAD` equals `git rev-list -n1 audit-v1-rc-1` | yes |
+| `git status --porcelain` | empty |
+| `git tag --points-at HEAD` | includes `audit-v1-rc-1` |
+| `paper/` exists at the root | yes — it is in scope (`RC-10`) |
+
+If any fails, stop and report it rather than auditing a tree you cannot
+identify. The accompanying audit packet was built from this commit; its
+`git-log.txt` records the same SHA, so the two can be cross-checked against each
+other.
+
+### Why a tag and not a SHA in this file
+
+A SHA cannot name the commit that contains it — writing one in moves the tip and
+leaves the document pointing at its own parent. A tag is applied after the
+commit exists, so it names the candidate exactly, and the tag can be moved
+without this file going stale.
+
+The tag deliberately does **not** begin with `v`.
+`.github/workflows/release-artifact.yml` triggers on `push: tags: v*` and calls
+`gh release create`, so a `v`-prefixed tag would publish a public GitHub
+Release. An audit checkpoint is not a release, and publishing one here would
+also pre-empt the still-open DOI decision, since a GitHub Release is what a DOI
+would be minted from.
 
 Launching against a moving tree is the specific failure this document exists to
 prevent, so **nothing may land between commissioning and the verdict**.
@@ -51,8 +80,16 @@ audit invalidates it again.** All of the following were satisfied before
 
 ### What to hand the auditor
 
-Exactly three things: this prompt, the commit tagged `audit-v1-rc-1`, and the audit
-packet built from it. **Nothing else.** In particular *not*
+**Exactly two things: this prompt and the audit packet.**
+
+The commit is not a third item. It is named in this document -- tag
+`audit-v1-rc-1` -- with the commands to fetch and verify it, so an auditor
+holding the prompt can obtain the candidate themselves. Keeping the commit
+inside the prompt rather than alongside it removes the failure where a SHA is
+communicated separately, out of band, and drifts from the document that
+describes what to do with it.
+
+**Nothing else.** In particular *not*
 `docs/internal/COORDINATOR_RECORD_STAGEA_TO_V1RC.md`, which is the coordinator's
 own account of this period; giving it to a fresh-blind auditor would convert an
 independent audit into a review of that account.
@@ -63,8 +100,9 @@ independent audit into a review of that account.
 
 You are a **fresh-blind exact-commit auditor**. You have not seen this
 repository's chat history, worker verdicts, or working trees, and you must not
-seek them. Your inputs are exactly: the commit `audit-v1-rc-1`, the audit packet, and
-this prompt.
+seek them. You were given exactly two things -- this prompt and the audit packet
+-- and the prompt names the commit to fetch. Those, plus the tree at
+`audit-v1-rc-1`, are your only inputs.
 
 Follow `docs/internal/AUDIT_PROTOCOL.md`. Report findings at `P0`/`P1`/`P2`/`P3`.
 
