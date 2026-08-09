@@ -1,9 +1,16 @@
 # V1 Release-Candidate Fresh-Blind Audit — commissioning prompt
 
-**Status: DRAFT. Do not launch until the release candidate is frozen.** The
-exact commit is deliberately left as `<RC-SHA>` below; see §0 for the conditions
-that must hold before it is filled in. Launching this prompt against a moving
-tree is the specific failure this document exists to prevent.
+**Status: READY TO LAUNCH.** Every precondition in §0 is discharged. The
+release candidate is the commit tagged **`v1-rc-1`**.
+
+The candidate is identified by tag rather than by a SHA written into this file,
+because a SHA cannot name the commit that contains it: substituting one would
+move the tip and leave this document pointing at its own parent. A tag is
+applied after the commit, so it names the candidate exactly. Read `v1-rc-1`
+below wherever the commit under audit is meant.
+
+Launching against a moving tree is the specific failure this document exists to
+prevent, so **nothing may land between commissioning and the verdict**.
 
 ---
 
@@ -19,7 +26,8 @@ statements byte-identically and passed the gate and CI, so the mathematics is
 unaffected; the *process* requirement is not.
 
 The consequence sets the launch order: **any tree-touching change after the
-audit invalidates it again.** Therefore, before `<RC-SHA>` is chosen:
+audit invalidates it again.** All of the following were satisfied before
+`v1-rc-1` was tagged:
 
 - [x] `codex/eg-cp-paper-evidence-r1` merged at `a54088b` on 2026-08-07: the
       manuscript substrate, its hardened checker, and the novelty log. `paper/`
@@ -28,12 +36,20 @@ audit invalidates it again.** Therefore, before `<RC-SHA>` is chosen:
 - [x] Union-find cordon **landed** at `8a37b5a` (2026-08-08). The spoke is now
       `VerifiedDS.UnionFind` and `RMQ/Core/UnionFind/` no longer exists. Expect
       the neutral name; `RMQUnionFind.lean` is a compatibility shim.
-- [ ] Any remaining V1 gap the coordinator intends to close in this cycle has
-      landed (see §6 for the known-open list).
-- [ ] `<RC-SHA>` is on `main`, both CI workflows are green on it, and
-      `scripts/gate.ps1` exits 0 on it.
-- [ ] The audit packet is built from `<RC-SHA>` with
-      `scripts/make_audit_packet.ps1`.
+- [x] Every V1 gap intended for this cycle is closed or explicitly
+      dispositioned; §6 records each with its commit.
+- [x] `v1-rc-1` is on `main`, both CI workflows are green on it, and
+      `scripts/gate.ps1` exits 0 on it (zero issues).
+- [x] The audit packet is built from `v1-rc-1` with
+      `scripts/make_audit_packet.ps1`, reporting `AUDIT-PACKET: RESULT: PASS`.
+
+### What to hand the auditor
+
+Exactly three things: this prompt, the commit tagged `v1-rc-1`, and the audit
+packet built from it. **Nothing else.** In particular *not*
+`docs/internal/COORDINATOR_RECORD_STAGEA_TO_V1RC.md`, which is the coordinator's
+own account of this period; giving it to a fresh-blind auditor would convert an
+independent audit into a review of that account.
 
 ---
 
@@ -41,7 +57,7 @@ audit invalidates it again.** Therefore, before `<RC-SHA>` is chosen:
 
 You are a **fresh-blind exact-commit auditor**. You have not seen this
 repository's chat history, worker verdicts, or working trees, and you must not
-seek them. Your inputs are exactly: the commit `<RC-SHA>`, the audit packet, and
+seek them. Your inputs are exactly: the commit `v1-rc-1`, the audit packet, and
 this prompt.
 
 Follow `docs/internal/AUDIT_PROTOCOL.md`. Report findings at `P0`/`P1`/`P2`/`P3`.
@@ -102,7 +118,7 @@ dynamic inputs are exactly `n`, the endpoints, and prior probe replies.
 
 ## 3. Rows to discharge
 
-For each, reconstruct independently from source at `<RC-SHA>`. Do not accept a
+For each, reconstruct independently from source at `v1-rc-1`. Do not accept a
 docstring, a report, or a ledger row as evidence for the proposition it
 describes.
 
@@ -117,7 +133,7 @@ describes.
 | `RC-07` | Trust base: `sorry`-free, standard axioms only, pinned toolchain; the axiom-check scripts genuinely cover the cited declarations rather than a subset. |
 | `RC-08` | **Anti-vacuity.** For each headline, check that hypotheses are satisfiable and the statement is not trivially true. Dropping a load-bearing hypothesis should break the proof; if it does not, the hypothesis was decorative. |
 | `RC-09` | **Claim honesty across public surfaces.** Every surface in `currentFactSurfacePathRegex` states only what §2 licenses. Report any word-RAM, preprocessing, runtime, or attainment implicature. |
-| `RC-10` | The manuscript in `paper/` and its ledgers describe the theorems that exist at `<RC-SHA>`, with no claim stronger than its cited declaration. |
+| `RC-10` | The manuscript in `paper/` and its ledgers describe the theorems that exist at `v1-rc-1`, with no claim stronger than its cited declaration. |
 
 ---
 
@@ -162,7 +178,7 @@ Do **not** state a verdict you cannot support from source you read yourself.
 
 ## 6. Known-open items at `5fe284f` (for the coordinator, not the auditor)
 
-Close or explicitly defer each before choosing `<RC-SHA>`:
+Close or explicitly defer each before choosing `v1-rc-1`:
 
 - ~~`paper/` not on `main`~~ — closed at `a54088b`, 2026-08-07.
 - ~~Union-find cordon~~ — landed at `8a37b5a`, 2026-08-08. §7 is kept as the

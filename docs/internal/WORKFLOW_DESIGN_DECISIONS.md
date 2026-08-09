@@ -8776,3 +8776,43 @@ on a silent capture, stays quiet under `-MayBeEmpty`, and no longer trips on a
 Consequence for the freeze: the release candidate moves by one commit. That is
 the correct trade -- commissioning an audit with a packet that ships an empty
 evidence file would be worse than one more CI cycle.
+
+## WDD-20260808-024 -- identify the release candidate by tag, and mark the prompt ready
+
+Status: Accepted.
+
+Date: 2026-08-08
+
+Two defects in the commissioning prompt, one cosmetic and one structural.
+
+**Cosmetic but misleading:** the header still read "Status: DRAFT. Do not launch
+until the release candidate is frozen." after every precondition had been
+discharged and the candidate qualified. Whoever picked the document up next
+would have concluded there was work left to do.
+
+**Structural:** the candidate was identified by the placeholder `<RC-SHA>`,
+which was never going to be substitutable. A SHA cannot name the commit that
+contains it -- writing one in moves the tip, leaving the document pointing at
+its own parent. The earlier reasoning ("keep the placeholder, supply the SHA at
+commissioning") was a workaround for a problem with a clean solution.
+
+Decision: identify the candidate by the annotated tag **`v1-rc-1`**. A tag is
+applied *after* the commit exists, so it names the candidate exactly, with no
+circularity. The prompt now says so and explains why, so the next person does
+not re-derive the workaround.
+
+Also folded in, because it was stated everywhere except the one document that
+governs commissioning: a "What to hand the auditor" subsection naming exactly
+three artifacts -- the prompt, the tagged commit, the packet -- and naming
+`COORDINATOR_RECORD_STAGEA_TO_V1RC.md` as specifically excluded. That record is
+the coordinator's own account of the period; handing it to a fresh-blind auditor
+would convert an independent audit into a review of that account. The record's
+own header said this; the prompt did not, and the prompt is what gets followed.
+
+Section 0's five preconditions are now all `[x]`, with the last three recording
+the evidence: `main` placement with both CI workflows green, `gate.ps1` exit 0
+with zero issues, and a packet reporting `AUDIT-PACKET: RESULT: PASS`.
+
+Consequence: the release candidate moves by one commit again, and the tag is
+applied to *that* commit. This is the last such move -- the tag closes the
+regress, since nothing further needs to name the SHA from inside the tree.
