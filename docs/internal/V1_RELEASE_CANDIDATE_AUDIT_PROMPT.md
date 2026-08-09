@@ -1,6 +1,6 @@
 # V1 Release-Candidate Fresh-Blind Audit — commissioning prompt
 
-**Status: READY TO LAUNCH.** Every precondition in §0 is discharged.
+**Status: READY TO LAUNCH.**
 
 ## THE COMMIT UNDER AUDIT
 
@@ -30,69 +30,8 @@ identify. The accompanying audit packet was built from this commit; its
 `git-log.txt` records the same SHA, so the two can be cross-checked against each
 other.
 
-### Why a tag and not a SHA in this file
-
-A SHA cannot name the commit that contains it — writing one in moves the tip and
-leaves the document pointing at its own parent. A tag is applied after the
-commit exists, so it names the candidate exactly, and the tag can be moved
-without this file going stale.
-
-The tag deliberately does **not** begin with `v`.
-`.github/workflows/release-artifact.yml` triggers on `push: tags: v*` and calls
-`gh release create`, so a `v`-prefixed tag would publish a public GitHub
-Release. An audit checkpoint is not a release, and publishing one here would
-also pre-empt the still-open DOI decision, since a GitHub Release is what a DOI
-would be minted from.
-
 Launching against a moving tree is the specific failure this document exists to
 prevent, so **nothing may land between commissioning and the verdict**.
-
----
-
-## 0. Preconditions the coordinator must satisfy before launching
-
-The freeze's terminal requirement is a fresh-blind audit **of the exact release
-candidate**. The previous Stage-A audit no longer certifies anything shippable:
-it targeted `ec35b5d9`, re-certified at `a8d2a5c`, and **ten commits** have
-landed since, five of which move, delete, or restructure proof surface —
-deleting nine modules, removing 2,276 lines, relocating theorems, replacing
-proof bodies, and splitting a module. Every one of those preserved public
-statements byte-identically and passed the gate and CI, so the mathematics is
-unaffected; the *process* requirement is not.
-
-The consequence sets the launch order: **any tree-touching change after the
-audit invalidates it again.** All of the following were satisfied before
-`audit-v1-rc-1` was tagged:
-
-- [x] `codex/eg-cp-paper-evidence-r1` merged at `a54088b` on 2026-08-07: the
-      manuscript substrate, its hardened checker, and the novelty log. `paper/`
-      is now part of the release candidate, so the auditor must treat it as an
-      in-scope claim surface (`RC-10`) rather than as an external draft.
-- [x] Union-find cordon **landed** at `8a37b5a` (2026-08-08). The spoke is now
-      `VerifiedDS.UnionFind` and `RMQ/Core/UnionFind/` no longer exists. Expect
-      the neutral name; `RMQUnionFind.lean` is a compatibility shim.
-- [x] Every V1 gap intended for this cycle is closed or explicitly
-      dispositioned; §6 records each with its commit.
-- [x] `audit-v1-rc-1` is on `main`, both CI workflows are green on it, and
-      `scripts/gate.ps1` exits 0 on it (zero issues).
-- [x] The audit packet is built from `audit-v1-rc-1` with
-      `scripts/make_audit_packet.ps1`, reporting `AUDIT-PACKET: RESULT: PASS`.
-
-### What to hand the auditor
-
-**Exactly two things: this prompt and the audit packet.**
-
-The commit is not a third item. It is named in this document -- tag
-`audit-v1-rc-1` -- with the commands to fetch and verify it, so an auditor
-holding the prompt can obtain the candidate themselves. Keeping the commit
-inside the prompt rather than alongside it removes the failure where a SHA is
-communicated separately, out of band, and drifts from the document that
-describes what to do with it.
-
-**Nothing else.** In particular *not*
-`docs/internal/COORDINATOR_RECORD_STAGEA_TO_V1RC.md`, which is the coordinator's
-own account of this period; giving it to a fresh-blind auditor would convert an
-independent audit into a review of that account.
 
 ---
 
@@ -181,27 +120,31 @@ describes.
 
 ---
 
-## 4. Gate claims to test rather than trust
+## 4. Gates are claims, not evidence
 
-The project's own gates have twice been found weaker than advertised. Treat
-every gate as a claim to be falsified, not as evidence.
+This repository runs several self-checks. **A green gate is not evidence that
+the property it advertises holds.** Test each as a claim you are trying to
+falsify, and report what you find whether or not it agrees with the gate.
 
-- `scripts/claim_drift_scan.ps1` reports `0 strict failures`. **This is not
-  evidence the claims are accurate.** Verify for yourself: which terms does the
-  policy actually enforce, and are the *current* constants `210` and `427` among
-  them? A known-open gap (`DD-20260807-087`) says they are not — `427` appears
-  nowhere in the policy and `210` only inside an exception clause — so a bound
-  change would leave public lines asserting a stale numeral with green CI.
-  Confirm or refute, and judge whether the deferral is acceptable for V1.
-- `paper/check_paper.ps1` was hardened after an audit found a wrapped phrase
-  could evade it and a success line printed unconditionally after a failure. Run
-  `-SelfTest`, then try to defeat it yourself.
-- `scripts/hub_closure_lint.ps1` is new. Try to make the hub reach an
-  RMQ-specific module without the lint firing.
-- The claim-drift scan **cannot fail without `-Strict`**; check every invocation
-  site passes it.
+Deliberately, this prompt does not tell you what previous reviews concluded
+about these scripts. Supplying those answers would narrow your search to
+confirming them.
 
----
+Gates present at this commit, and what each asserts:
+
+| script | asserts |
+| --- | --- |
+| `scripts/claim_drift_scan.ps1 -Strict` | no forbidden claim language on the governed surfaces |
+| `scripts/constant_sync_check.ps1` | the constants stated in the docs equal the ones Lean proves |
+| `scripts/hub_closure_lint.ps1` | the hub layer's import closure reaches nothing RMQ-specific |
+| `paper/check_paper.ps1` | the manuscript's citations, labels, ledger coverage and claim language |
+| `scripts/gate.ps1` | the aggregate: builds, axiom checks, mutation regressions, the above |
+
+Useful questions for each: what exactly does it match, and what would slip past?
+Does it fail when it should — construct an input that ought to trip it? Can it
+pass while reporting nothing, or report success after a failure? Does it examine
+the files it claims to? Several ship a `-SelfTest`; run it, then try to defeat
+the script anyway.
 
 ## 5. Deliverable
 
@@ -219,46 +162,3 @@ A report at `docs/internal/audit_reports/<date>_V1_RC_fresh_blind.md`:
 Do **not** state a verdict you cannot support from source you read yourself.
 
 ---
-
-## 6. Known-open items at `5fe284f` (for the coordinator, not the auditor)
-
-Close or explicitly defer each before choosing `audit-v1-rc-1`:
-
-- ~~`paper/` not on `main`~~ — closed at `a54088b`, 2026-08-07.
-- ~~Union-find cordon~~ — landed at `8a37b5a`, 2026-08-08. §7 is kept as the
-  record of how it was done and what broke the first attempt.
-- ~~`210`/`427` claim enforcement gap~~ — closed at `c14d7a5` by
-  `scripts/constant_sync_check.ps1` (`WDD-20260808-021`), gate step 7b.
-  **Still test it** (§4): check the pin mechanism, and that moving a Lean
-  constant fails it.
-- ~~Advisory independent checker~~ — dispositioned at `a3ba169`.
-  `docs/INDEPENDENT_CHECK.md` documents the procedure and states that it has
-  **not** been executed; Lean 4.22.0 ships no exporter. Check that the document
-  does not read as a result.
-- DOI and anonymous bundle — **resolved 2026-08-08 by reading the ITP 2026
-  call**; see `docs/PUBLICATION_STRATEGY.md` §5. An anonymised artifact is
-  **required**: "All submissions are expected to be accompanied by anonymised
-  supplementary material containing verifiable evidence of a suitable
-  implementation". ITP 2026 has already run (26–29 July 2026, LIPIcs vol. 382),
-  so the target is **ITP 2027**. The DOI is still unminted and remains an owner
-  action; note it must not be cited in an anonymous submission.
-
-## 7. Union-find cordon — state and plan
-
-Attempted at `5fe284f` and **reverted** to a byte-identical tree after repeated
-line-ending errors during the mechanical pass; nothing was committed. The
-analysis stands and should be reused:
-
-- 11 files move (`RMQ/Core/UnionFind{,/**}.lean` -> `VerifiedDS/UnionFind{,/**}`).
-- Zero private declarations, so no promotion risk.
-- Only two external importers; `RMQ.lean` does not import the spoke at all.
-- 212 `#print axioms` lines across `scripts/axiom_check.lean` and
-  `scripts/union_find_axiom_check.lean` need the renamed identifiers.
-- `RMQUnionFind.lean` must be **preserved**, not overwritten: it is one import
-  plus a 179-line docstring naming the public profile theorems.
-- Dated digests under `docs/digests/` and `docs/DIGESTION_LOG.md` must **not**
-  be rewritten; they record what was true at a past commit.
-- **The trap that broke the first attempt:** the spoke references hub names such
-  as `Amortized.CostedBound` unqualified, which resolved only because it sat
-  inside `namespace RMQ`. After the rename each moved file needs `open RMQ`.
-  Insert it line-based, not by regex on CRLF files.

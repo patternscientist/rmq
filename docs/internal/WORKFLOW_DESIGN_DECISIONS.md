@@ -8903,3 +8903,50 @@ Section 1 was corrected to match: the auditor's inputs are the two artifacts
 they were given, plus the tree they fetch using the prompt. Previously it listed
 the commit as though it had been handed to them.
 
+
+## WDD-20260808-027 -- strip coordinator material out of the audit prompt
+
+Status: Accepted.
+
+Date: 2026-08-08
+
+Raised by the owner: the prompt carried a lot of internal context that an
+external blind auditor does not need. Measured rather than assumed -- of 264
+lines, roughly a third was coordinator material:
+
+- `§0 Preconditions` (46 lines), whose own title said "the coordinator must
+  satisfy";
+- `§6 Known-open items` (22 lines), subtitled **"for the coordinator, not the
+  auditor"** while sitting in the auditor's document;
+- `§7 Union-find cordon state and plan` (18 lines), an internal refactor record
+  including a failed attempt;
+- the tag/release-workflow rationale in the commit block (~15 lines).
+
+Length was the smaller problem. The real one is **independence**. `§0` walked
+the auditor through the project's own account of its history, and `§4` told them
+which gates had previously been found weak and what was concluded. A fresh-blind
+audit is supposed to reach those conclusions independently; supplying them
+narrows the search to confirming what the project already believes.
+
+`§4` was also **stale in a way that would have misdirected the audit**: it
+described the `210`/`427` enforcement gap as known-open and asked the auditor to
+judge whether the deferral was acceptable. That gap was closed at `c14d7a5` by
+`constant_sync_check.ps1`. The prompt was written before the fix and only `§6`
+was updated afterwards, so the auditor would have hunted a gap that no longer
+exists and evaluated a deferral that never happened.
+
+Decision, three parts:
+
+1. Move `§0`, `§6`, `§7` verbatim into
+   `COORDINATOR_RECORD_STAGEA_TO_V1RC.md` as a new section 9, which is already
+   the document the auditor does not receive. Nothing is lost.
+2. Drop the tag/release rationale from the commit block; the block now gives the
+   tag, the commands, and the verification table, and nothing else.
+3. Rewrite `§4` to instruct without pre-answering: it states that a green gate is
+   not evidence, says plainly that previous conclusions are withheld **and why**,
+   lists the gates present with what each asserts, and gives the shape of the
+   questions to ask. It supplies no findings.
+
+Result: 264 lines to 165, and every remaining section is something the auditor
+acts on -- the commit, independence rules, the claim, the rows, how to treat the
+gates, and the deliverable.
