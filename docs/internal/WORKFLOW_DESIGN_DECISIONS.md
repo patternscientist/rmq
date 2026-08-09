@@ -9052,3 +9052,55 @@ change is made on the headline-surface argument above, not on that finding.
 Verified: `lake env lean scripts/headline_axiom_check.lean` exit 0 in 61s;
 reports `[propext, Classical.choice, Quot.sound]`; no `sorryAx`, no
 `ofReduceBool`, no errors.
+
+## WDD-20260809-017 -- make the two-`210` independence claim a checked property
+
+Status: Accepted. Date: 2026-08-09. Closes fresh-blind auditor item 7.
+
+`paper/THEOREM_LEDGER.md` row `L-PACK-00` asserts that the `210` inside
+`427 = 1 + 2*3 + 2*210` is the packed controller's structural countdown and not
+the charged-trace budget, in a precise form: "the packed proof references neither
+`SuccinctClassic.queryCost` nor `nonSyntheticWeight`". That was prose about a
+proof term. `scripts/independence_check.lean` (gate step 3b) now walks the
+transitive constant closure of `packedReviewerControllerMeasure_valid_eq_427`'s
+type and value and fails if either charged declaration appears. Observed: 1855
+constants, neither present.
+
+**Scope is deliberately narrow and matches the ledger.** The property is about
+declarations and proof terms, **not** module closures -- the packed module's
+compilation closure *does* transitively reach the charged declaration. The check
+guards the true property; guarding the false one would fail immediately and
+tempt someone to weaken it.
+
+### The vacuity guards, and why there are three
+
+Written into the script because a dependency check that examines nothing passes
+everything, and that failure is invisible from a green run.
+
+1. **Existence.** Every name is resolved first, so a rename errors instead of
+   silently checking nothing.
+2. **Two positive controls.** Control A is type-reachable; control B
+   (`valueOnlyControl`, defined in the script) has a type mentioning only
+   `TraceEvent` and `Nat`, so its witness is reachable *only* through the body.
+3. **Collapse floor** on the target's closure size (500, against an observed
+   1855).
+
+Guards 2B and 3 exist because the first version had only guard 1 and control A,
+**and injection testing broke it**:
+
+- Making the collector skip proof terms left control A green -- it finds its
+  witness in the *type* -- while the target's closure collapsed `1855 -> 16` and
+  the script still reported PASS.
+- Making the collector non-transitive left **both** controls green, because both
+  are shallow. Only the floor caught it (`74 < 500`).
+
+That is the third instance this session of the same defect class -- an injection
+that tests the failure shape the author imagined rather than the space of
+failures -- and the first caught in this project's own gate before shipping
+rather than by an external auditor. The general lesson is recorded here because
+it keeps recurring: **a check's controls must exercise every mechanism the check
+depends on, and a blunt magnitude tripwire catches the regressions the
+targeted controls cannot see.**
+
+Verified: baseline exit 0, both controls green; three injections (no proof-term
+walk, non-transitive walk, renamed target) each exit 1 with a distinct message.

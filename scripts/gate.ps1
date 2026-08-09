@@ -138,6 +138,16 @@ RunAxiomCheck "scripts/rank_select_axiom_check.lean" "rank_select_axiom_check.le
 RunAxiomCheck "scripts/bp_navigation_axiom_check.lean" "bp_navigation_axiom_check.lean"
 RunAxiomCheck "scripts/union_find_axiom_check.lean" "union_find_axiom_check.lean"
 
+# 3b. Independence regression for the packed structural countdown.  The claim
+# that the `210` in `427 = 1 + 2*3 + 2*210` is not the charged-trace `210` was
+# prose in paper/THEOREM_LEDGER.md and in the RMQ/Headlines/RMQ.lean docstring;
+# this makes it a checked property of the proof term.  Unlike the axiom checks
+# it signals purely by exit code, so it gets its own step rather than
+# RunAxiomCheck's output grep.
+lake env lean scripts/independence_check.lean
+if ($LASTEXITCODE -ne 0) { Fail "independence_check.lean failed (see output above)" }
+Write-Host "INDEPENDENCE CHECK: PASS"
+
 # 4. Succinct frontier cost/space lints.
 & "$PSScriptRoot\succinct_cost_lint.ps1"
 if ($LASTEXITCODE -ne 0) { SoftFail "succinct_cost_lint.ps1 found issues" }
