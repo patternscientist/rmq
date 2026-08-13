@@ -48,3 +48,43 @@ jobs:
           } else {
             ./scripts/design_decision_check.ps1 -Base "HEAD~1" -Strict
           }
+
+  owned-process-windows:
+    # The repository gate's process-ownership layer has two implementations --
+    # a POSIX setsid process group and a Windows kill-on-close job -- and only
+    # the POSIX one was ever exercised by CI, because every job here runs
+    # ubuntu.  The Windows path shipped to `audit-v1-rc-2` without a
+    # descendant-death barrier: it closed the job and waited on the root alone,
+    # so a grandchild could still be alive when a caller asserted the tree was
+    # dead.  The 2026-08-12 fresh-blind audit hit exactly that on the required
+    # Windows gate path.
+    #
+    # This job is deliberately small: it runs only the ownership self-tests, so
+    # it needs no Lean build and costs a minute, while covering the code path
+    # that a green ubuntu run says nothing about.  `-AllowInconclusive` must
+    # never be passed here; an inconclusive barrier run exits nonzero on
+    # purpose.
+    name: Owned-process ownership (Windows)
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Owned-process self-test (Windows job ownership + descendant barrier)
+        shell: pwsh
+        run: ./scripts/owned_process_tree.ps1 -SelfTest
+
+  owned-process-posix:
+    # The POSIX twin of the job above, run standalone for the same reason: the
+    # aggregate gate reaches these assertions only after a full Lean build, so a
+    # regression in either ownership implementation should be visible in a
+    # minute rather than behind twenty.
+    name: Owned-process ownership (POSIX)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Owned-process self-test (setsid group + descendant barrier)
+        shell: pwsh
+        run: ./scripts/owned_process_tree.ps1 -SelfTest

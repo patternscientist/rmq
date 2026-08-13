@@ -66,8 +66,13 @@ same-trace `nonSyntheticWeight <= 210` fact literally. The exact 41-case replay
 expects 40 semantic rejections and one packet-only expected accept.
 The capacity is linear and the query-independent reviewer width has an explicit
 all-size logarithmic bound while covering stored/returned words, addresses, and
-primitive operands/results. The principled charged-trace cost is exactly `210`;
-earlier checked cost and dispatch rows live only in the explicit
+primitive operands/results. The principled charged-trace **budget** is `210`,
+and every guarded execution costs **at most** it: the theorem is an inequality
+(`..._cost_le_...`), and an invalid range is `Costed.pure none` at cost `0`, so
+there is no honest reading under which every execution costs `210`. This
+sentence previously said the cost "is exactly `210`" -- corrected 2026-08-12,
+since it contradicted the attainment disclaimer later in this same file.
+Earlier checked cost and dispatch rows live only in the explicit
 [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md)
 and are not the current reviewer path.
 

@@ -52,7 +52,7 @@ candidates, subject to the novelty search described below — are:
   with constant modeled query cost — a *charged-probe* bound, and deliberately
   not the word-RAM `O(1)` of the time-credit line above, since computation
   between charged probes is free in this model and payload construction is
-  accounted separately —
+  unproved and excluded from the bound rather than separately accounted —
   with any priority wording deferred until a referee-grade novelty search;
 - **(b)** a mechanized **matching lower bound** (rare: the three lines above are
   all upper-bound/correctness; a mechanized information-theoretic lower bound is

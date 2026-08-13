@@ -12,6 +12,8 @@ using System.Runtime.InteropServices;
 
 public static class RMQOwnedWindowsJob {
   private const int JobObjectExtendedLimitInformation = 9;
+  private const int JobObjectBasicProcessIdList = 3;
+  private const int ERROR_MORE_DATA = 234;
   private const uint JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000;
 
   [StructLayout(LayoutKind.Sequential)]
@@ -51,6 +53,43 @@ public static class RMQOwnedWindowsJob {
 
   [DllImport("kernel32.dll", SetLastError = true)]
   private static extern bool CloseHandle(IntPtr handle);
+
+  [DllImport("kernel32.dll", SetLastError = true)]
+  private static extern bool QueryInformationJobObject(
+    IntPtr job, int infoClass, IntPtr info, uint length, IntPtr returnLength);
+
+  // Every process currently assigned to the job, root included.  Captured
+  // BEFORE the handle is closed, because closing it is what starts the kill
+  // and there is no way to enumerate the members afterwards.  The caller
+  // waits on this list; without it the Windows path has no descendant-death
+  // barrier and races the assertion that the tree is gone.
+  public static int[] ProcessIds(IntPtr job) {
+    if (job == IntPtr.Zero) return new int[0];
+    for (int capacity = 64; capacity <= 8192; capacity *= 4) {
+      int size = (2 * sizeof(uint)) + (capacity * IntPtr.Size);
+      IntPtr buffer = Marshal.AllocHGlobal(size);
+      try {
+        Marshal.WriteInt32(buffer, 0, 0);
+        Marshal.WriteInt32(buffer, 4, 0);
+        if (!QueryInformationJobObject(
+            job, JobObjectBasicProcessIdList, buffer, (uint)size, IntPtr.Zero)) {
+          int error = Marshal.GetLastWin32Error();
+          if (error == ERROR_MORE_DATA) continue;
+          throw new Win32Exception(error);
+        }
+        int count = Marshal.ReadInt32(buffer, 4);
+        int[] ids = new int[count];
+        for (int i = 0; i < count; i++) {
+          ids[i] = (int)Marshal.ReadIntPtr(buffer, 8 + (i * IntPtr.Size)).ToInt64();
+        }
+        return ids;
+      } finally {
+        Marshal.FreeHGlobal(buffer);
+      }
+    }
+    throw new InvalidOperationException(
+      "owned job process list exceeded 8192 entries");
+  }
 
   public static IntPtr CreateKillOnClose() {
     IntPtr job = CreateJobObject(IntPtr.Zero, null);
@@ -210,6 +249,50 @@ function Read-RMQBoundedProcessOutput(
   return @($lines)
 }
 
+# Windows counterpart of Stop-RMQPosixOwnedProcessGroup, and deliberately the
+# same shape: terminate the owned unit, then WAIT for every member to be gone
+# and throw if any survives.
+#
+# Until 2026-08-12 the Windows path closed the kill-on-close job and then waited
+# only on the ROOT process.  Job termination is asynchronous, so a grandchild
+# could still be enumerable when a caller asserted the tree was dead -- which is
+# exactly what the 2026-08-12 fresh-blind audit hit on the required Windows gate
+# path ("sleeper child 19096 survived owned-tree termination").  The POSIX path
+# had had this barrier all along; CI runs ubuntu only, so nothing exercised the
+# asymmetry.  The bug was the missing wait, not the kill.
+function Stop-RMQWindowsOwnedJob(
+    [IntPtr]$JobHandle,
+    [int]$RootProcessId = 0,
+    [int]$GraceMilliseconds = 10000) {
+  if ($JobHandle -eq [IntPtr]::Zero) { return @() }
+  $ids = @()
+  try {
+    $ids = @([RMQOwnedWindowsJob]::ProcessIds($JobHandle))
+  } catch {
+    # An unreadable member list must not silently degrade to "no barrier"; fall
+    # back to the root so the wait below still has something to wait on.
+    $ids = @()
+  }
+  if ($RootProcessId -gt 0 -and $ids -notcontains $RootProcessId) {
+    $ids = @($ids) + @($RootProcessId)
+  }
+  [RMQOwnedWindowsJob]::Close($JobHandle)
+  $alive = { @($ids | Where-Object {
+    $_ -gt 0 -and $null -ne (Get-Process -Id $_ -ErrorAction SilentlyContinue)
+  }) }
+  $watch = [Diagnostics.Stopwatch]::StartNew()
+  while ($watch.ElapsedMilliseconds -lt $GraceMilliseconds -and
+      (& $alive).Count -gt 0) {
+    Start-Sleep -Milliseconds 50
+  }
+  $survivors = & $alive
+  if ($survivors.Count -gt 0) {
+    throw ("owned Windows job process(es) survived cleanup: " +
+      ($survivors -join ','))
+  }
+  return $ids
+}
+
 function Stop-RMQPosixOwnedProcessGroup(
     [int]$GroupId,
     [int]$GraceMilliseconds = 2000) {
@@ -351,7 +434,7 @@ exit ([int]$LASTEXITCODE)
     if ($timedOut -or $outputLimitExceeded) {
       $terminatedIds = @($process.Id)
       if ($jobHandle -ne [IntPtr]::Zero) {
-        [RMQOwnedWindowsJob]::Close($jobHandle)
+        $terminatedIds = @(Stop-RMQWindowsOwnedJob $jobHandle $process.Id)
         $jobHandle = [IntPtr]::Zero
       } elseif ($posixGroupId -gt 0) {
         Stop-RMQPosixOwnedProcessGroup $posixGroupId
@@ -362,8 +445,9 @@ exit ([int]$LASTEXITCODE)
       $process.WaitForExit()
       $exitCode = [int]$process.ExitCode
       if ($jobHandle -ne [IntPtr]::Zero) {
-        # Closing a completed root's job also removes any residual descendant.
-        [RMQOwnedWindowsJob]::Close($jobHandle)
+        # Closing a completed root's job also removes any residual descendant --
+        # and, since 2026-08-12, waits for that removal instead of assuming it.
+        $null = Stop-RMQWindowsOwnedJob $jobHandle $process.Id
         $jobHandle = [IntPtr]::Zero
       } elseif ($posixGroupId -gt 0) {
         # A root may exit after spawning an inherited-output child.  The owned
@@ -390,7 +474,8 @@ exit ([int]$LASTEXITCODE)
   } finally {
     $stopwatch.Stop()
     if ($jobHandle -ne [IntPtr]::Zero) {
-      [RMQOwnedWindowsJob]::Close($jobHandle)
+      $rootId = if ($null -ne $process) { $process.Id } else { 0 }
+      $null = Stop-RMQWindowsOwnedJob $jobHandle $rootId
       $jobHandle = [IntPtr]::Zero
     }
     if ($posixGroupId -gt 0) {
@@ -735,4 +820,88 @@ function Invoke-RMQCleanBaselineFixtureTests(
     -DeadlineSeconds $DeadlineSeconds `
     -OutputLimitBytes $OutputLimitBytes `
     -TempRoot $TempRoot
+}
+
+# Standalone barrier self-test: a bounded root that spawns a GRANDCHILD, times
+# out, and must leave no member of the owned tree alive.
+#
+# This exists as its own entry point because the equivalent assertions live
+# inside the M1 and topology runners, which need a built Lean tree -- so CI
+# could only reach them by paying for a full build, and in practice CI ran
+# ubuntu only and never reached the Windows path at all.  That is how the
+# missing Windows descendant barrier survived to a release candidate.  Run it
+# directly: `pwsh -File scripts/owned_process_tree.ps1 -SelfTest`.
+function Invoke-RMQOwnedProcessBarrierSelfTest([int]$DeadlineSeconds = 6) {
+  $encoding = New-Object System.Text.UTF8Encoding $false
+  $root = Join-Path ([IO.Path]::GetTempPath()) ("rmq-barrier-" + [Guid]::NewGuid().ToString('N'))
+  New-Item -ItemType Directory -Force -Path $root | Out-Null
+  try {
+    $shellPath = (Get-Process -Id $PID).Path
+    $childPidPath = Join-Path $root 'grandchild.pid'
+    $scriptPath = Join-Path $root 'sleeper.ps1'
+    $quotedShell = $shellPath.Replace("'", "''")
+    $quotedPid = $childPidPath.Replace("'", "''")
+    $text = @"
+`$child = Start-Process -FilePath '$quotedShell' -ArgumentList @(
+  '-NoLogo', '-NoProfile', '-Command', 'Start-Sleep -Seconds 120') -PassThru
+[IO.File]::WriteAllText('$quotedPid', [string]`$child.Id)
+Start-Sleep -Seconds 120
+"@
+    [IO.File]::WriteAllText($scriptPath, $text, $encoding)
+    $result = Invoke-RMQOwnedBoundedProcess `
+      -FilePath $shellPath `
+      -Arguments @('-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass',
+        '-File', $scriptPath) `
+      -WorkingDirectory $root `
+      -Stage 'barrier-self-test' `
+      -DeadlineSeconds $DeadlineSeconds `
+      -OutputLimitBytes 1000000 `
+      -TempRoot $root
+    if (-not $result.TimedOut) {
+      throw 'barrier self-test did not classify the deadline as a timeout'
+    }
+    if (-not (Test-Path -LiteralPath $childPidPath -PathType Leaf)) {
+      # The grandchild never launched, so this run proves nothing about the
+      # barrier.  Say so rather than reporting a pass: a self-test that cannot
+      # create the condition it checks is not evidence.
+      Write-Host (
+        'OWNED-PROCESS BARRIER SELF-TEST INCONCLUSIVE ' +
+        '(grandchild never started; nothing to outlive the owner)')
+      return $false
+    }
+    $childId = [int]([IO.File]::ReadAllText($childPidPath).Trim())
+    $alive = $null -ne (Get-Process -Id $childId -ErrorAction SilentlyContinue)
+    if ($alive) {
+      try { Stop-Process -Id $childId -Force -ErrorAction SilentlyContinue } catch { }
+      throw "grandchild $childId survived owned-tree termination"
+    }
+    Write-Host (
+      'OWNED-PROCESS BARRIER SELF-TEST PASS ' +
+      "(grandchild=$childId absent immediately after the barrier; " +
+      "terminated=$($result.TerminatedIds -join ','); " +
+      "duration=$($result.DurationSeconds)s)")
+    return $true
+  } finally {
+    Remove-Item -LiteralPath $root -Recurse -Force -ErrorAction SilentlyContinue
+  }
+}
+
+if ($MyInvocation.InvocationName -ne '.' -and $args -contains '-SelfTest') {
+  $ErrorActionPreference = 'Stop'
+  Invoke-RMQOwnedProcessDeterministicTests
+  $conclusive = Invoke-RMQOwnedProcessBarrierSelfTest
+  if (-not $conclusive -and -not ($args -contains '-AllowInconclusive')) {
+    # An inconclusive barrier test must not exit zero.  The whole point of this
+    # entry point is to cover the descendant barrier; a run in which no
+    # descendant could be created has covered nothing, and reporting PASS for it
+    # would reproduce, in the regression itself, the defect it guards against.
+    # `-AllowInconclusive` exists only for restricted sandboxes that forbid
+    # grandchild process creation; CI must never pass it.
+    Write-Host (
+      'OWNED-PROCESS SELF-TEST: RESULT: FAIL ' +
+      '(barrier self-test inconclusive; it could not create the grandchild it ' +
+      'exists to check, so this run is not evidence)')
+    exit 1
+  }
+  Write-Host 'OWNED-PROCESS SELF-TEST: RESULT: PASS'
 }

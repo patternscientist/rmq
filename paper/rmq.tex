@@ -150,8 +150,9 @@ allocated-capacity strengthening is a separate accepted result over a
 different object, which this draft states only in the allocated-bits entry of
 Section~\ref{sec:quantities} and in Section~\ref{sec:pending}. Priority claims are deliberately conditional:
 closely related mechanizations exist, most prominently the
-Coq/SSReflect succinct-data-structure line of Tanaka, Affeldt, Garrigue,
-and Qi~\cite{TAG16,AGQT19}, and the search log
+Coq/SSReflect succinct-data-structure line of Akira Tanaka, Affeldt and
+Garrigue~\cite{TAG16}, continued by Affeldt and Garrigue with Qi and
+Kazunari Tanaka~\cite{AGQT19}, and the search log
 (\texttt{paper/RELATED\_WORK\_LEDGER.md}) is not yet complete
 (Section~\ref{sec:related}).
 
@@ -704,7 +705,7 @@ The strongest form of the succinct story packages the entire structure as
 \emph{one} read-only array of fixed-width cells and charges the query for
 every aligned cell probe, computation between probes being free --- the
 standard convention in which succinct RMQ upper and lower bounds are
-usually read~\cite{Fischer10,LiuYu20}. The repository's endgame roadmap
+usually read~\cite{GalMiltersen07,LiuYu20}. The repository's endgame roadmap
 freezes such a target:
 
 \begin{targetstmt}[Accepted in the repository; not yet absorbed into this draft]
@@ -768,12 +769,16 @@ Cartesian trees originate with Vuillemin~\cite{Vuillemin80}; the
 RMQ-to-$\pm 1$-RMQ and RMQ/LCA reductions with linear-space constant-time
 solutions descend from Gabow--Bentley--Tarjan~\cite{GBT84},
 Harel--Tarjan~\cite{HarelTarjan84}, and
-Bender--Farach-Colton~\cite{BFC00}. Fischer and
-Heun~\cite{FischerHeun11} gave the systematic $2n + o(n)$-bit,
-constant-time succinct RMQ preprocessing scheme, and
-Fischer~\cite{Fischer10} the non-systematic optimal-succinctness variant
-whose model vocabulary the packed cell-probe result of
-Section~\ref{sec:pending} follows.
+Bender--Farach-Colton~\cite{BFC00}. Fischer and Heun~\cite{FischerHeun07}
+gave the systematic $2n + o(n) + \len{A}$-bit constant-time scheme; the
+non-systematic (encoding) $2n + o(n)$-bit constant-time scheme, which
+answers without consulting the array, is Fischer and
+Heun's~\cite[Thm.~5.8, Cor.~5.9]{FischerHeun11}, with
+Fischer~\cite{Fischer10} its preliminary LATIN~2010 version. The earliest
+non-systematic succinct RMQ is Sadakane's $4n + o(n)$ balanced-parentheses
+encoding of the Cartesian tree with an $o(n)$-bit LCA computation
+therein~\cite{Sadakane07}, whose setting --- though not whose mechanism ---
+the construction of Section~\ref{sec:architecture} shares.
 
 \paragraph{Succinct building blocks.}
 Rank/select dictionaries begin with Jacobson~\cite{Jacobson89} and
@@ -787,18 +792,29 @@ the fragments of this toolkit that the RMQ capstone consumes.
 
 \paragraph{Lower bounds.}
 The information-theoretic bound mechanized here
-(Section~\ref{sec:lower}) is the counting bound implicit in the classical
-literature. The substantially stronger cell-probe redundancy lower bounds
+(Section~\ref{sec:lower}) is the classical counting bound, stated
+explicitly by Fischer~\cite[\S1.1]{Fischer10} as
+$\log\binom{2n-1}{n-1}/(2n-1) = 2n - \Theta(\log n)$ and sharpened with
+its exact leading constants by Liu~\cite{Liu21}; what is new here is its
+mechanization in integer arithmetic together with a concrete $2n$-bit
+attaining decoder. The substantially stronger cell-probe redundancy lower bounds
 for succinct RMQ are due to Liu and Yu~\cite{LiuYu20} and
 Liu~\cite{Liu21}; they are not mechanized here.
 
 \paragraph{Mechanized succinct data structures.}
-The closest precedent is the Coq/SSReflect line of Tanaka, Affeldt, and
-Garrigue, who verified the Jacobson rank algorithm with extraction to
-OCaml~\cite{TAG16}, extended with Qi to tree algorithms over LOUDS and
-related succinct representations~\cite{AGQT19}. Those papers already state
-priority for mechanized succinct-structure verification in their setting;
-accordingly, this draft claims no such priority. The present development
+The closest precedent is the Coq/SSReflect line begun by Akira Tanaka,
+Affeldt and Garrigue, who verified the Jacobson rank algorithm with
+extraction to OCaml~\cite{TAG16} and later machine-checked a counted
+bits-examined bound for it~\cite{TAG18}, and continued by Affeldt and
+Garrigue with Xuanrui Qi and Kazunari Tanaka, who formalized tree
+algorithms over LOUDS and dynamic bit vectors~\cite{AGQT19}. The two
+Tanakas are different authors.
+Tanaka, Affeldt and Garrigue state that, to the best of their knowledge,
+theirs is ``the first application of formal verification to succinct data
+structures''~\cite{TAG16}; Affeldt, Garrigue, Qi and Tanaka record a
+similar priority belief, scoped to their LOUDS and dynamic-bit-vector
+developments~\cite{AGQT19}. Accordingly, this draft claims no priority for
+mechanized succinct-structure verification. The present development
 differs in prover (Lean~4, Mathlib-free), in problem focus (RMQ end-to-end
 from reference semantics to a payload-accounted capstone with an
 information-theoretic lower bound in the same repository), and in its

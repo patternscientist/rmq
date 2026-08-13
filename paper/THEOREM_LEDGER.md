@@ -582,10 +582,18 @@ references are at the base commit.
 #### L-OPEN-02
 - Status: OPEN
 - Statement: global minimality of the constant `210` across component
-  correlations is unproved. The repository has a tight component-wise cap
-  and an exact reachable interior-cost-33 witness, but no theorem that a
-  smaller whole-query constant is impossible for this representation and
-  charge policy.
+  correlations is unproved. The repository has component-wise **upper**
+  caps and one exact reachable interior-cost-33 witness, but no theorem
+  that a smaller whole-query constant is impossible for this
+  representation and charge policy. Only the interior `33` is witnessed as
+  attained; the select `35`, rank `11`, endpoint-fringe `37`, and the
+  aggregate `210` are upper bounds with no attainment witness.
+- Amended 2026-08-12: this row said "a tight component-wise cap", claiming
+  tightness for four caps never shown tight. The source comment on
+  `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra`
+  was corrected on 2026-08-09 without syncing this row or the other two
+  surfaces repeating it; the fresh-blind audit of `audit-v1-rc-2` caught
+  the gap. The row's OPEN status and proposition are otherwise unchanged.
 - Manuscript location: Section 11, item 4.
 
 #### L-OPEN-04

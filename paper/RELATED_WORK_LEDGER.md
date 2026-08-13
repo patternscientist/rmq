@@ -23,16 +23,50 @@ Search Limitations section.
 ## RMQ and Fischer-Heun
 
 - **Fischer & Heun 2011** (`FischerHeun11`), SIAM J. Comput. 40(2),
-  465-492. Result used: systematic succinct RMQ preprocessing with
-  `2n + o(n)` bits and constant query time in the standard model; the
-  classical setting motivating the repository's contract. Verification:
-  repo-doc + background (journal/volume/pages standard).
+  465-492. Result used: the **non-systematic** (encoding) `2n + o(n)`-bit
+  constant-time succinct RMQ scheme, Thm. 5.8 / Cor. 5.9, which answers
+  without consulting the original array; the classical setting motivating
+  the repository's contract. FH11 covers **both** settings -- its Thm. 3.7
+  is a genuine systematic constant-time scheme -- so it must not be
+  relabelled wholesale as "the non-systematic scheme" either. Verification:
+  repo-doc + background (journal/volume/pages standard); setting corrected
+  against FH11's abstract and its Section 5 title, "Optimal Preprocessing
+  in the Non-Systematic Setting". **Corrected 2026-08-12:** this row
+  previously called FH11 the *systematic* scheme -- a confirmed factual
+  error recorded with its evidence in `paper/NOVELTY_LOG.md` section 5.3
+  and shipped unrepaired through two release candidates.
+- **Fischer & Heun 2007** (`FischerHeun07`), ESCAPE 2007, LNCS 4614,
+  459-470. Result used: the systematic `2n + o(n) + |A|`-bit constant-time
+  scheme -- what the manuscript's systematic sentence should have cited.
+  Verification: web (DOI 10.1007/978-3-540-74450-4_41). **Never cite this
+  entry for a lower bound.**
 - **Fischer 2010** (`Fischer10`), LATIN 2010, LNCS 6034; extended version
-  arXiv:0812.2775. Result used: non-systematic optimal-succinctness RMQ
-  representation; the model vocabulary the pending packed cell-probe
-  target follows. Verification: repo-doc (the endgame roadmap names this
-  paper and the arXiv id as primary precedent) + background for the LNCS
-  volume; pages omitted from the bib entry as unverified.
+  arXiv:0812.2775. Result used: the preliminary LATIN 2010 version of
+  FH11's Section 5, and the explicit statement of the classical counting
+  lower bound in its Section 1.1. **It is a word-RAM paper** -- its
+  Section 2 declares "the standard word-RAM model" and charges the
+  computation the cell-probe convention makes free -- so it is **not** the
+  source of the cell-probe convention and must not be cited for it.
+  Verification: repo-doc (the endgame roadmap names this paper and the
+  arXiv id as primary precedent) + background for the LNCS volume; pages
+  omitted from the bib entry as unverified. **Corrected 2026-08-12:** this
+  row previously credited it with "the model vocabulary the pending packed
+  cell-probe target follows"; see `paper/NOVELTY_LOG.md` section 5.4.
+- **Gal & Miltersen 2007** (`GalMiltersen07`), Theor. Comput. Sci. 379(3),
+  405-417. Result used: the origin of the free-computation cell-probe
+  convention -- charging only for reading bits, not for computation -- and
+  of the systematic/index vocabulary; now the citation carrying that
+  convention in Section 9. Author order is Gal then Miltersen. Do **not**
+  attribute the term "encoding data structure" to them. Verification: web
+  (DOI 10.1016/j.tcs.2007.02.047).
+- **Sadakane 2007** (`Sadakane07`), J. Discrete Algorithms 5(1), 12-22.
+  Result used: the earliest non-systematic succinct RMQ -- a `4n + o(n)`
+  balanced-parentheses encoding of the Cartesian tree with an `o(n)`-bit
+  LCA computation therein; the setting, though not the mechanism, that the
+  repository's construction shares. Verification: web (DOI
+  10.1016/j.jda.2006.03.011). The paper body has not been read here and the
+  ISAAC 2002 precursor has not been checked, so **2007 must not be asserted
+  as a priority date**.
 - **Vuillemin 1980** (`Vuillemin80`), CACM 23(4), 229-239. Result used:
   Cartesian trees. Verification: background (standard).
 - **Gabow, Bentley & Tarjan 1984** (`GBT84`), STOC 1984, 135-143. Result
@@ -99,7 +133,13 @@ Search Limitations section.
   DOI 10.1007/978-3-319-47846-3_16. Result used: Coq verification of the
   Jacobson rank algorithm for succinct data structures with extraction to
   OCaml. Verification: **web** (title, authors, venue, DOI confirmed this
-  session); LNCS volume number omitted as unverified.
+  session); LNCS volume number omitted as unverified. **Akira** Tanaka --
+  a different author from the Kazunari Tanaka of `AGQT19`.
+- **Tanaka, Affeldt & Garrigue 2018** (`TAG18`), J. Inf. Process. 26,
+  54-72, DOI 10.2197/ipsjjip.26.54. Result used: the same lineage's
+  machine-checked counted bits-examined bound for the rank algorithm --
+  the closest precedent for charging a succinct query. Verification: web
+  (DOI, journal, volume, pages).
 - **Affeldt, Garrigue, Qi & Tanaka 2019** (`AGQT19`), ITP 2019, LIPIcs
   141, article 5, DOI 10.4230/LIPIcs.ITP.2019.5. Result used: Coq/
   SSReflect verification of tree algorithms for succinct data structures
@@ -144,15 +184,17 @@ Search Limitations section.
 
 ## Search limitations (explicit)
 
-1. **AFP**: one web query for succinct rank/select entries was run this
-   session and surfaced no such entry. This is a single-query sweep, not a
-   browse of the AFP topic index; it must not be read as evidence that no
-   AFP entry exists. The full novelty log the endgame roadmap requires
-   (AFP, Rocq/Coq package corpus, Lean libraries including Mathlib and
-   CSLib-adjacent work, ITP/CPP/JAR/JFP proceedings, the Affeldt
-   succinct-structure lineage, and current verified low-level algorithm
-   work) has not been completed in this session, and nothing here
-   substitutes for it.
+1. **AFP**: 27 full-text queries for succinct rank/select and RMQ entries
+   were run, plus three exhaustive topic enumerations and direct reads of
+   theory sources; none surfaced such an entry. **The residual gap is real
+   and is the reason this remains a limitation rather than a negative
+   result:** the AFP search indexes entry abstracts, not `.thy` sources, so
+   the roughly 5.35M lines of proof text were not grepped; nine of the ten
+   Algorithms subtopics and most non-CS topics were not enumerated. It must
+   not be read as evidence that no AFP entry exists.
+   (**Corrected 2026-08-12:** this item previously described "one web
+   query", which understated the work actually done and was flagged in
+   `paper/NOVELTY_LOG.md` section 5.13. The limitation itself stands.)
 2. **Rocq/Coq corpus**: only the Tanaka/Affeldt/Garrigue/Qi lineage was
    verified. No systematic sweep of the Coq opam package index or of
    `affeldt-aist` repositories was performed here.
@@ -169,9 +211,26 @@ Search Limitations section.
 
 ## Bibliographic field policy
 
-`references.bib` includes only fields verified at the **repo-doc**,
-**web**, or confident **background** level; where confidence was lacking
-(specific pages, article numbers, DOIs, LNCS volumes noted above), the
-field was omitted from the entry rather than filled in. No field in
-`references.bib` was invented, and no entry cites a source that was not
-checked at one of the three levels.
+`references.bib` fields carry one of four receipts, and `references.bib`'s
+own header now names the same four: **source** (checked against the paper
+itself), **web** (an explicit web check recorded here), **repo-doc**
+(pinned by an accepted repository claim map), and **background** (not
+independently re-verified). Where none of these applied -- specific pages,
+article numbers, DOIs, LNCS volumes noted above -- the field was omitted
+rather than filled in.
+
+**Corrected 2026-08-12.** This section previously named three tiers and
+asserted that "no field in `references.bib` was invented". Both statements
+were wrong, and they were wrong together. The header and this ledger named
+*different* trios, so `background` -- the tier most entries actually rest
+on -- was licensed by neither; and one field was in fact invented: the
+`ZhanHaslbeck18` title carried a `/HOL` fragment that the true title does
+not have, on a `background` receipt. It is corrected, and the tier that
+produced it is now named explicitly in both documents.
+
+The general rule this establishes: a field policy that does not name its
+weakest tier cannot flag the entries that depend on it, and a blanket "no
+field was invented" is a claim about every field at once -- exactly the
+kind of universal statement that should be a checked property or not made.
+Nothing here checks bibliographic truth; `paper/check_paper.ps1` verifies
+citation-key closure, not that a title matches its paper.

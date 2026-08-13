@@ -59,8 +59,13 @@ remains a safe overapproximation.
   [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
 - The auxiliary logical layout footprint is not claimed minimal; the reviewer
   flat-physical footprint is execution-derived and recorded exactly.
-- The current theorem gives a tight component-wise cap and an exact reachable
-  interior-cost-`33` witness, but does not prove global minimality of `210`
-  across correlations between whole-query component maxima.
+- The current theorem gives component-wise **upper** caps and one exact
+  reachable interior-cost-`33` witness, but does not prove global minimality of
+  `210` across correlations between whole-query component maxima. Only the
+  interior `33` is witnessed as attained; the select `35`, rank `11`, and
+  endpoint-fringe `37` caps, and the aggregate `210`, are upper bounds with no
+  attainment witness. This item said "a tight component-wise cap" until
+  2026-08-12, which claimed tightness for four component caps that have never
+  been shown tight.
 - The cell-probe lower bounds of Liu-Yu/Liu are related work, not mechanized
   theorem content here.

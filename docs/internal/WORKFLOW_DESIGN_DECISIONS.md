@@ -9270,3 +9270,92 @@ record what was believed mid-round, including one belief the ledger header later
 refuted (that per-row `ACCEPTED_BASE` commits should not move on a repin).
 Deleting them would erase evidence of a corrected mistake, which is exactly the
 evidence a later auditor wants.
+
+## WDD-20260812-024 -- the Windows descendant barrier, and the CI gap that hid it
+
+Status: Accepted. Date: 2026-08-12. Answers `P1-03` of the 2026-08-12
+fresh-blind audit: `scripts/gate.ps1` exited 1 on the required Windows path at
+the M1 owned-process deadline control, "sleeper child 19096 survived owned-tree
+termination".
+
+**Diagnosis.** The two ownership implementations were asymmetric.
+`Stop-RMQPosixOwnedProcessGroup` sends SIGTERM, **waits for the whole group to
+disappear**, escalates to SIGKILL, waits again, and throws on survivors. The
+Windows path closed the kill-on-close job and then waited on
+`$process.WaitForExit` -- the **root only**. Job termination is asynchronous, so
+a grandchild could still be enumerable when a caller asserted the tree was dead.
+The kill was never the bug; the missing wait was.
+
+**Fix.** `Stop-RMQWindowsOwnedJob` captures the job's member PID list via
+`QueryInformationJobObject(JobObjectBasicProcessIdList)` *before* closing the
+handle -- closing is what starts the kill, and members cannot be enumerated
+afterwards -- then closes, then polls until every member is gone, and throws on
+survivors. Same shape as the POSIX barrier, which is the point.
+
+**The gap that let this reach a release candidate.** Every CI job ran
+`ubuntu-24.04`. The Windows ownership path had **no CI coverage at all**, so
+"both workflows green" was, for this code, a statement about the other branch of
+an `if`. Two new jobs run the ownership self-tests standalone on
+`windows-2022` and `ubuntu-24.04`; they need no Lean build and cost about a
+minute each, where the equivalent assertions inside the M1 and topology runners
+sit behind a full build.
+
+**An inconclusive self-test now exits nonzero.** The barrier test reports
+`INCONCLUSIVE` when the grandchild never starts -- it then proves nothing, and a
+sandbox that forbids grandchild creation produces exactly that. The standalone
+entry point treats inconclusive as failure unless `-AllowInconclusive` is passed,
+which CI never does. Reporting PASS for a run that could not create the
+condition it checks would reproduce, inside the regression itself, the defect
+class this round exists to eliminate.
+
+Honest limit on the verification: the barrier was validated here against normal
+completion and the timeout path (job members enumerated, zero survivors after
+the wait), but **the grandchild case could not be exercised in this sandbox** --
+`Start-Process` from the bounded child never spawned, which is why the
+inconclusive path exists and why it is loud. The Windows CI job is what will
+actually exercise it.
+
+## WDD-20260812-025 -- guard the property, not the sentence (`independence_check` forbidden set)
+
+Status: Accepted. Date: 2026-08-12. Answers `P2-01`.
+
+The forbidden set held exactly two names, `queryCost` and `nonSyntheticWeight` --
+transcribed from the ledger sentence that names those two. A future packed proof
+could have reached the charged cost through `CanonicalRMQChargedTraceCostAlgebra`,
+the accepted instance, the aggregate value, or any `_eq` theorem, and passed
+untouched. Now all eight are listed.
+
+The instructive part is the injection history. This checker was validated with
+three injections -- a collector that skipped proof terms, a non-transitive
+collector, and a renamed target. All three tested the **mechanism**; not one
+asked whether the **set** was the right set. A dependency check is only as strong
+as its forbidden list, and a list transcribed from prose inherits the prose's
+scope rather than the property's.
+
+Rule worth keeping: when a check is derived from a sentence, the sentence is a
+*symptom* of the property, not the property. Enumerate what the property
+quantifies over.
+
+## WDD-20260812-026 -- a claim-drift rule for exactness and tightness
+
+Status: Accepted. Date: 2026-08-12. Prevention for `P1-01`.
+
+`scripts/claim_drift_scan.ps1 -Strict` exited 0 on all three live `P1-01`
+counterexamples. It had no rule for equality-versus-inequality or tightness
+language, and `constant_sync_check.ps1` reads numerals without ever seeing the
+relation around them -- so "the cost is exactly `210`" satisfies a check pinned
+to the numeral `210` perfectly.
+
+New term `current-charged-cap-exactness-or-tightness` forbids exact/tight/attained
+formulations of `210` and `427` outside `docs/internal/` and the novelty log,
+with an allowance for lines that mark a correction or state the upper-bound
+reading.
+
+Injection-verified against the **real** defects rather than imagined ones:
+reinstating the audited "is exactly `210`" wording exits 1; reinstating "a tight
+component-wise cap" exits 1; the corrected tree exits 0.
+
+One consequence worth recording, because it will bite the next editor: the
+scanner is **line-based**, so a correction note only excuses the line it sits on.
+The first repair here put "exactly `210`" and its "until 2026-08-12" excuse on
+adjacent lines and still failed. Keep the marker on the same line as the phrase.

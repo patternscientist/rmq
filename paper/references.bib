@@ -1,8 +1,24 @@
 % Primary-source bibliography for paper/rmq.tex.
-% Field policy: only fields verified against the source, the repository's
-% accepted claim maps, or an explicit web check recorded in
-% RELATED_WORK_LEDGER.md are included. Where a field (pages, volume, DOI)
-% could not be verified, it is omitted rather than guessed.
+%
+% Field policy.  Every field carries one of four receipts, and the receipt
+% tiers here are the same four RELATED_WORK_LEDGER.md uses:
+%
+%   source    -- checked against the paper itself (PDF or publisher record)
+%   web       -- an explicit web check recorded in RELATED_WORK_LEDGER.md
+%   repo-doc  -- pinned by an accepted repository claim map
+%   background-- NOT independently re-verified in this repository
+%
+% Where a field (pages, volume, DOI) has none of these, it is omitted rather
+% than guessed.
+%
+% The `background' tier is stated plainly because the previous version of this
+% header named only the first three and thereby licensed nothing for the tier
+% that most entries actually rest on.  That gap is not cosmetic: the one
+% outright factual error found in this bibliography -- an invented
+% `/HOL' fragment in the ZhanHaslbeck18 title, corrected 2026-08-12 -- sat on
+% a `background' receipt the header did not admit existed.  A policy that does
+% not name its weakest tier cannot flag entries that depend on it.
+% See paper/NOVELTY_LOG.md sections 5.7 and 5.11.
 
 @article{Vuillemin80,
   author  = {Jean Vuillemin},
@@ -201,7 +217,7 @@
 @inproceedings{ZhanHaslbeck18,
   author    = {Bohua Zhan and Maximilian P. L. Haslbeck},
   title     = {Verifying Asymptotic Time Complexity of Imperative Programs in
-               {Isabelle/HOL}},
+               Isabelle},
   booktitle = {Proceedings of the 9th International Joint Conference on
                Automated Reasoning ({IJCAR} 2018)},
   year      = {2018}
@@ -222,4 +238,50 @@
   title        = {Archive of Formal Proofs},
   howpublished = {\url{https://isa-afp.org}},
   note         = {Accessed 2026-08-05}
+}
+
+@article{Sadakane07,
+  author  = {Kunihiko Sadakane},
+  title   = {Succinct data structures for flexible text retrieval systems},
+  journal = {Journal of Discrete Algorithms},
+  volume  = {5},
+  number  = {1},
+  pages   = {12--22},
+  year    = {2007},
+  doi     = {10.1016/j.jda.2006.03.011}
+}
+
+@inproceedings{FischerHeun07,
+  author    = {Johannes Fischer and Volker Heun},
+  title     = {A New Succinct Representation of {RMQ}-Information and
+               Improvements in the Enhanced Suffix Array},
+  booktitle = {Combinatorics, Algorithms, Probabilistic and Experimental
+               Methodologies ({ESCAPE} 2007)},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {4614},
+  pages     = {459--470},
+  year      = {2007},
+  doi       = {10.1007/978-3-540-74450-4_41}
+}
+
+@article{GalMiltersen07,
+  author  = {Anna G\'{a}l and Peter Bro Miltersen},
+  title   = {The cell probe complexity of succinct data structures},
+  journal = {Theoretical Computer Science},
+  volume  = {379},
+  number  = {3},
+  pages   = {405--417},
+  year    = {2007},
+  doi     = {10.1016/j.tcs.2007.02.047}
+}
+
+@article{TAG18,
+  author  = {Akira Tanaka and Reynald Affeldt and Jacques Garrigue},
+  title   = {Safe Low-level Code Generation in {Coq} Using Monomorphization
+             and Monadification},
+  journal = {Journal of Information Processing},
+  volume  = {26},
+  pages   = {54--72},
+  year    = {2018},
+  doi     = {10.2197/ipsjjip.26.54}
 }

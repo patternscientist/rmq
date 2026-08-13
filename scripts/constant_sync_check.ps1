@@ -59,7 +59,14 @@ $constants = @(
       @{ path = 'README.md';                          count = 9;  anchors = @('charged-trace cap is `{VALUE}`') },
       @{ path = 'artifact/CLAIMS.md';                 count = 10; anchors = @('at most\*\* `{VALUE}`') },
       @{ path = 'docs/WHAT_IS_PROVED.md';             count = 9;  anchors = @('charged-trace bound is `{VALUE}`') },
-      @{ path = 'docs/PAPER_THEOREM_MAP.md';          count = 11; anchors = @('`{VALUE}`') },
+      # 11 -> 13 on 2026-08-12: the execution-cost sentence was corrected from
+      # "is exactly `210`" to a budget-plus-inequality statement, which names
+      # the constant twice more.  The pin moved in the same edit, as this check
+      # demands.  Note what that does and does not show: the count moving
+      # proves the change was deliberate, not that the new wording is right.
+      # This check reads numerals, never the relation around them, so it would
+      # have passed "exactly 210" forever.
+      @{ path = 'docs/PAPER_THEOREM_MAP.md';          count = 13; anchors = @('`{VALUE}`') },
       @{ path = 'docs/PAPER_CLAIM_CORRESPONDENCE.md'; count = 11; anchors = @('at most\*\* `{VALUE}`') },
       @{ path = 'docs/TRUST_AUDIT_PACKET.md';         count = 7;  anchors = @('`{VALUE}`') },
       @{ path = 'docs/FAMILY_SUMMARY.md';             count = 7;  anchors = @('`{VALUE}`') }

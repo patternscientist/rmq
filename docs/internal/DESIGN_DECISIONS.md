@@ -11289,3 +11289,72 @@ says explicitly that no re-audit occurred.
 
 The repin commit changes no Lean library code. The pinned tree and the substrate
 commit differ by documentation plus one checker, which `paper/README.md` states.
+
+## DD-20260812-103 -- RC-2 corrections: claim honesty and the manuscript repairs
+
+Status: Accepted. Date: 2026-08-12. Answers `P1-01`, `P1-02`, `P1-04`, `P2-02`,
+and `P3-01` of the 2026-08-12 fresh-blind audit of `audit-v1-rc-2`. Every
+finding was independently reproduced before being fixed; **none were wrong**.
+
+### `P1-01` -- exact/tight language on governed surfaces
+
+Three surfaces claimed more than the source: `docs/PAPER_THEOREM_MAP.md` said the
+charged-trace cost "is exactly `210`" (while the *same file* disclaimed
+attainment), and `docs/RELATED_WORK_AND_LIMITATIONS.md` plus
+`paper/THEOREM_LEDGER.md` claimed a "tight component-wise cap". Only the interior
+`33` has an attainment witness; select `35`, rank `11`, fringe `37`, and the
+aggregate `210` are upper bounds.
+
+**This was our own incomplete fix.** `DD-20260809-099` retracted exactly this
+overstatement in the *source comment* three days earlier and did not sync the
+surfaces repeating it -- including `paper/THEOREM_LEDGER.md`, edited in that same
+commit. The source now says "do not reintroduce 'tight' without an attainment
+theorem" while three surfaces asserted it. Fixing a claim at its origin is not
+fixing the claim.
+
+### `P1-02` -- the preprocessing implicature
+
+`README.md` and `docs/PUBLICATION_STRATEGY.md` said payload construction "is
+accounted separately", which asserts a separate accounting that does not exist;
+ledger row `L-OPEN-01` says preprocessing complexity is unproved and unclaimed.
+Both now say **unproved and excluded from the bound**.
+
+### `P1-04` -- the novelty log's repairs, applied at last
+
+`paper/NOVELTY_LOG.md` section 5 documents each defect with evidence and an exact
+replacement, opening "Every repair below quotes the current text". They had never
+been applied, and survived two release candidates and one fresh-blind audit.
+Applied here: the Tanaka conflation (two locations), the priority-attribution
+overreach, Fischer-Heun mislabelled "systematic", the cell-probe convention
+mis-sourced to a self-declared word-RAM paper, "implicit in the classical
+literature", and the invented `/HOL` fragment in the `ZhanHaslbeck18` title.
+Four load-bearing entries the repaired prose needs -- `Sadakane07`,
+`FischerHeun07`, `GalMiltersen07`, `TAG18` -- were added, and
+`paper/RELATED_WORK_LEDGER.md` rows carrying the same errors were corrected.
+
+**One deliberate deviation from the log's verbatim text.** Its section 5.2
+replacement paraphrases AGQT19's priority belief as "the first formalizations of
+those representations". `paper/check_paper.ps1` rejected it, correctly: that
+detector deliberately does not let a citation license a priority claim, so a
+paraphrase asserting "the first" on our own surface is caught regardless of
+attribution. The sentence now reports that they *record a priority belief*,
+scoped to their representations. The log's intent is preserved; its exact wording
+is not, and our own gate is why.
+
+The "should add" and "may add" entry lists in section 5.10 are **not** applied.
+They are enhancements, not error corrections, and several carry receipts the log
+itself marks unverified; adding ten such entries while repairing a bibliography
+error would trade one class of defect for another.
+
+### `P2-02` and `P3-01` -- two capstone docstrings
+
+Field 27's "never a stored numeral" reads as an intensional guarantee its four
+extensional equalities cannot carry; the audit exhibited a hard-coded
+counterfactual satisfying all four. Scoped to what the field proves, with the
+structurality located in the definition where it actually lives. Field 15 said
+"both decoded header fields" when the header stores exactly one --
+`ReviewerMemory.lean` says so in as many words. The inequalities were always
+correct.
+
+Field 27 is the neighbour of field 32, whose identical elaboration-versus-proof
+distinction was documented on 2026-08-09 without checking the adjacent field.

@@ -62,10 +62,32 @@ partial def deps (env : Lean.Environment) (n : Lean.Name) (seen : Lean.NameSet) 
 def target : Lean.Name :=
   `RMQ.SuccinctFinal.PackedCellProbe.packedReviewerControllerMeasure_valid_eq_427
 
-/-- The charged-cost declarations the countdown must stay clear of. -/
+/-- The charged-cost declarations the countdown must stay clear of.
+
+Expanded 2026-08-12 after a fresh-blind audit observed that the original pair
+guarded the ledger's *sentence* rather than the property behind it. The sentence
+names `queryCost` and `nonSyntheticWeight`, so those became the whole list --
+and a future packed proof could have reached the charged cost through the
+component algebra, its accepted instance, the aggregate value, or any of its
+`_eq` theorems, and passed this check untouched.
+
+The original three injections all exercised the *collector*; none asked whether
+the *set* was the right set. A dependency checker is only as strong as its
+forbidden list, and a list transcribed from prose inherits the prose's scope
+rather than the property's. -/
 def forbidden : List Lean.Name :=
-  [ `RMQ.SuccinctClassic.queryCost
-  , `RMQ.WordRAM.TraceEvent.nonSyntheticWeight ]
+  [ -- the two names the ledger sentence uses
+    `RMQ.SuccinctClassic.queryCost
+  , `RMQ.WordRAM.TraceEvent.nonSyntheticWeight
+    -- the component algebra and its accepted instance
+  , `RMQ.SuccinctFinal.CanonicalRMQChargedTraceCostAlgebra
+  , `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra
+    -- the aggregate value and its checked equalities
+  , `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost
+  , `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq
+  , `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCloseCost_eq
+    -- the whole-query charged cost bound
+  , `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace ]
 
 /-- Positive control A, **type-reachable**: a projection whose statement *is*
 about the charged sum, so the witness sits in its type. -/
