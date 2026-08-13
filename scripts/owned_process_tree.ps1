@@ -249,6 +249,15 @@ function Read-RMQBoundedProcessOutput(
   return @($lines)
 }
 
+# Which of the given process IDs are still alive.  Always returns an array at
+# the call site via @(...); see the note in Stop-RMQWindowsOwnedJob.
+function Get-RMQAliveProcessIds([int[]]$ProcessIds) {
+  if ($null -eq $ProcessIds) { return @() }
+  return @($ProcessIds | Where-Object {
+    $_ -gt 0 -and $null -ne (Get-Process -Id $_ -ErrorAction SilentlyContinue)
+  })
+}
+
 # Windows counterpart of Stop-RMQPosixOwnedProcessGroup, and deliberately the
 # same shape: terminate the owned unit, then WAIT for every member to be gone
 # and throw if any survives.
@@ -277,15 +286,18 @@ function Stop-RMQWindowsOwnedJob(
     $ids = @($ids) + @($RootProcessId)
   }
   [RMQOwnedWindowsJob]::Close($JobHandle)
-  $alive = { @($ids | Where-Object {
-    $_ -gt 0 -and $null -ne (Get-Process -Id $_ -ErrorAction SilentlyContinue)
-  }) }
+  # Every survivor query is wrapped in @(...) at the call site.  A pipeline that
+  # matches nothing yields $null rather than an empty array once it leaves a
+  # scriptblock, and `$null.Count` throws "The property 'Count' cannot be found
+  # on this object" -- which is what the second full-gate run after this barrier
+  # landed on, in the common case where the tree had already died cleanly.
   $watch = [Diagnostics.Stopwatch]::StartNew()
+  $survivors = @(Get-RMQAliveProcessIds $ids)
   while ($watch.ElapsedMilliseconds -lt $GraceMilliseconds -and
-      (& $alive).Count -gt 0) {
+      $survivors.Count -gt 0) {
     Start-Sleep -Milliseconds 50
+    $survivors = @(Get-RMQAliveProcessIds $ids)
   }
-  $survivors = & $alive
   if ($survivors.Count -gt 0) {
     throw ("owned Windows job process(es) survived cleanup: " +
       ($survivors -join ','))
@@ -896,9 +908,47 @@ Start-Sleep -Seconds 120
   }
 }
 
+# Edge cases that broke this file twice on 2026-08-12/13, pinned so they cannot
+# break it a third time.  Both were empty-collection defects: a PowerShell
+# pipeline matching nothing becomes `$null`, not an empty array, and `.Count` on
+# `$null` throws.  The common, healthy case -- a tree that died cleanly, so no
+# survivors -- is exactly the case that produced an empty collection, which is
+# why a barrier written without these assertions failed on success rather than
+# on failure.
+function Invoke-RMQOwnedProcessCollectionSelfTest {
+  $cases = @(
+    @{ name = 'null';     ids = $null;                expected = 0 },
+    @{ name = 'empty';    ids = @();                  expected = 0 },
+    @{ name = 'all-dead'; ids = @(999991, 999992);    expected = 0 },
+    @{ name = 'one-live'; ids = @($PID);              expected = 1 },
+    @{ name = 'mixed';    ids = @($PID, 999991);      expected = 1 }
+  )
+  foreach ($case in $cases) {
+    $observed = @(Get-RMQAliveProcessIds $case.ids)
+    if ($observed.Count -ne $case.expected) {
+      throw ("alive-process query [$($case.name)] returned " +
+        "$($observed.Count), expected $($case.expected)")
+    }
+  }
+  # A zero handle is a no-op that must still return an enumerable, and a live
+  # job with no surviving members must complete rather than throw.
+  $none = @(Stop-RMQWindowsOwnedJob ([IntPtr]::Zero) 0)
+  if ($none.Count -ne 0) {
+    throw "zero-handle barrier returned $($none.Count) ids, expected 0"
+  }
+  if (Test-RMQOwnedProcessWindows) {
+    $handle = [RMQOwnedWindowsJob]::CreateKillOnClose()
+    $null = Stop-RMQWindowsOwnedJob $handle 0
+  }
+  Write-Host (
+    'OWNED-PROCESS COLLECTION SELF-TEST PASS ' +
+    "($($cases.Count) alive-query cases; zero-handle and empty-job barriers)")
+}
+
 if ($MyInvocation.InvocationName -ne '.' -and $args -contains '-SelfTest') {
   $ErrorActionPreference = 'Stop'
   Invoke-RMQOwnedProcessDeterministicTests
+  Invoke-RMQOwnedProcessCollectionSelfTest
   $conclusive = Invoke-RMQOwnedProcessBarrierSelfTest
   if (-not $conclusive -and -not ($args -contains '-AllowInconclusive')) {
     # An inconclusive barrier test must not exit zero.  The whole point of this

@@ -9390,3 +9390,37 @@ release must transfer ownership before it can fail**, or its failure path will
 corrupt the diagnosis of the very condition it exists to report. An error
 handler that destroys evidence is worse than no error handler, because a wrong
 diagnosis costs more than a missing one.
+
+## WDD-20260813-028 -- the barrier's empty-collection defect, and a pinned self-test
+
+Status: Accepted. Date: 2026-08-13. Second amendment to WDD-20260812-024.
+
+The second full-gate run failed with
+
+    The property 'Count' cannot be found on this object.
+
+A PowerShell pipeline that matches nothing yields `$null` rather than an empty
+array once it leaves a scriptblock, and `$null.Count` throws. The barrier's wait
+loop evaluated `(& $alive).Count`, so it failed **whenever no member survived**
+-- that is, on the healthy path. A barrier written to detect survivors crashed
+precisely when there were none.
+
+Fixed with a named `Get-RMQAliveProcessIds` helper whose result is wrapped in
+`@(...)` at every call site.
+
+**Three defects in one function across two days**: the missing wait (the
+original audit finding), the handle released after the throw
+(WDD-20260812-027), and this. All three were caught by running the thing, none
+by reading it, and two of the three were caught only by a ~90-minute aggregate
+gate -- an expensive oracle for a unit-level bug.
+
+So the edge cases are now pinned in `Invoke-RMQOwnedProcessCollectionSelfTest`,
+which the standalone `-SelfTest` entry point runs and which therefore executes
+in the new Windows and POSIX CI jobs in about a minute: null, empty, all-dead,
+one-live and mixed ID lists, a zero-handle barrier, and a live job with no
+surviving members.
+
+The rule worth carrying: **when a fix lands in a function reached only through a
+long integration run, write the unit assertions first.** Two of these three
+defects would have been caught in seconds by the five-line table now committed
+alongside them.
