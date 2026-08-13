@@ -434,8 +434,15 @@ exit ([int]$LASTEXITCODE)
     if ($timedOut -or $outputLimitExceeded) {
       $terminatedIds = @($process.Id)
       if ($jobHandle -ne [IntPtr]::Zero) {
-        $terminatedIds = @(Stop-RMQWindowsOwnedJob $jobHandle $process.Id)
+        # Hand ownership of the handle to the barrier BEFORE calling it.  The
+        # barrier closes the handle and then throws if a member survives; if the
+        # caller still held a non-zero handle at that point, `finally` would call
+        # the barrier a second time and `CloseHandle` would fail on an
+        # already-closed handle, replacing the real "survived cleanup" diagnosis
+        # with "The handle is invalid".  Releasing first keeps the true error.
+        $handle = $jobHandle
         $jobHandle = [IntPtr]::Zero
+        $terminatedIds = @(Stop-RMQWindowsOwnedJob $handle $process.Id)
       } elseif ($posixGroupId -gt 0) {
         Stop-RMQPosixOwnedProcessGroup $posixGroupId
         $posixGroupId = 0
@@ -447,8 +454,10 @@ exit ([int]$LASTEXITCODE)
       if ($jobHandle -ne [IntPtr]::Zero) {
         # Closing a completed root's job also removes any residual descendant --
         # and, since 2026-08-12, waits for that removal instead of assuming it.
-        $null = Stop-RMQWindowsOwnedJob $jobHandle $process.Id
+        # Handle released before the call, for the reason given above.
+        $handle = $jobHandle
         $jobHandle = [IntPtr]::Zero
+        $null = Stop-RMQWindowsOwnedJob $handle $process.Id
       } elseif ($posixGroupId -gt 0) {
         # A root may exit after spawning an inherited-output child.  The owned
         # group remains the cleanup unit even when the root is already gone.
@@ -475,8 +484,9 @@ exit ([int]$LASTEXITCODE)
     $stopwatch.Stop()
     if ($jobHandle -ne [IntPtr]::Zero) {
       $rootId = if ($null -ne $process) { $process.Id } else { 0 }
-      $null = Stop-RMQWindowsOwnedJob $jobHandle $rootId
+      $handle = $jobHandle
       $jobHandle = [IntPtr]::Zero
+      $null = Stop-RMQWindowsOwnedJob $handle $rootId
     }
     if ($posixGroupId -gt 0) {
       Stop-RMQPosixOwnedProcessGroup $posixGroupId

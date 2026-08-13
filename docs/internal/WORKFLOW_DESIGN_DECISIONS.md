@@ -9359,3 +9359,34 @@ One consequence worth recording, because it will bite the next editor: the
 scanner is **line-based**, so a correction note only excuses the line it sits on.
 The first repair here put "exactly `210`" and its "until 2026-08-12" excuse on
 adjacent lines and still failed. Keep the marker on the same line as the phrase.
+
+## WDD-20260812-027 -- amendment to WDD-20260812-024: the barrier masked its own diagnosis
+
+Status: Accepted. Date: 2026-08-13.
+
+The first version of the Windows barrier introduced a second defect while fixing
+the first. `Stop-RMQWindowsOwnedJob` closes the job handle and *then* throws if a
+member survives. The callers were written as
+
+    $null = Stop-RMQWindowsOwnedJob $jobHandle $process.Id
+    $jobHandle = [IntPtr]::Zero
+
+so when the barrier threw, the assignment never ran, the caller still held a
+non-zero handle, and `finally` invoked the barrier a second time. The second
+`CloseHandle` failed on an already-closed handle, and the surfaced error became
+
+    Exception calling "Close" with "1" argument(s): "The handle is invalid"
+
+which replaced the true "survived cleanup" diagnosis with a misleading one. The
+first full-gate run after the fix failed exactly this way, at
+`CLEAN-BASELINE/PORTABILITY` rather than at the deadline control.
+
+Fixed by handing ownership of the handle to the barrier **before** calling it:
+the caller zeroes its own copy first, so a throw cannot cause a second close.
+
+The lesson is narrower than the earlier ones in this round and worth keeping
+separate: **a cleanup routine that both releases a resource and validates the
+release must transfer ownership before it can fail**, or its failure path will
+corrupt the diagnosis of the very condition it exists to report. An error
+handler that destroys evidence is worse than no error handler, because a wrong
+diagnosis costs more than a missing one.
