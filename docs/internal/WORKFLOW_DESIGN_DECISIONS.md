@@ -9445,10 +9445,31 @@ Raised to 20 for parity.
 Two things worth recording.
 
 **This was not introduced by this round.** `git log` on that file shows no commit
-from this work. It has presumably been fragile for some time and was invisible
-because the M1 control failed first and aborted the gate before this stage ran.
-Fixing one failure exposed the next; the aggregate gate had never actually run to
-completion on Windows, so nothing downstream of M1 had platform evidence at all.
+from this work. It has been fragile for some time and stayed invisible because
+the M1 control failed first on the runs where it failed at all.
+
+**Correction, same day.** An earlier draft of this entry said "the aggregate gate
+had never actually run to completion on Windows". That is **not supported**, and
+this repository's own records contradict it:
+`docs/internal/M1_REVIEWER_NATIVE_ADEQUACY_ACCEPTANCE_MATRIX.md` carries a
+Windows deadline-control PASS at `98.3s`, and a full `scripts/gate.ps1` exit 0 in
+`3101.473s` covering all 16 topology cases. (That aggregate receipt's platform is
+not named in the cell, so it settles neither reading; the Windows deadline pass
+is unambiguous.) The claim was inferred from two consecutive failures -- the
+auditor's and this round's -- which does not license "never".
+
+The accurate account is worse for the check and better for the history: the
+missing barrier did not make the Windows control *fail*, it made it a **race
+that usually wins**. Closing a kill-on-close job terminates the tree almost at
+once, and the assertion ran after a `WaitForExit(10000)` on the root, so the
+grandchild was normally already gone. It loses only under load -- which is
+exactly the topology 5s-versus-20s story as well. Windows receipts therefore
+mostly said PASS, and a genuine defect presented as an occasional flake.
+
+What made that survivable is the CI gap, which *is* separately verifiable: every
+job ran `ubuntu-24.04`, so the Windows path had no automated coverage and the
+race could never be observed repeatedly or bisected. A flake with no
+reproduction gets charged to the machine rather than to the code.
 
 **Divergent twins are a defect in themselves.** Two harnesses implementing the
 same control with a 4x difference in budget, and no comment explaining why, is
@@ -9458,3 +9479,23 @@ duplicates should agree or say why they differ.
 General rule: **a self-test whose deadline can expire during its own fixture
 setup measures the machine, not the property.** Bound the property, and give the
 setup unconditional headroom.
+
+## WDD-20260813-030 -- RC-2 round logged; resume card written
+
+Status: Accepted. Date: 2026-08-13.
+
+Writes the 2026-08-12/13 round-log entry in `docs/internal/AUDIT_AND_A_DESIGN.md`
+and adds `docs/internal/RC2_CORRECTION_HANDOFF.md`. Same standing default as
+`WDD-20260809-023`: every audit round is logged, and a missing round-log entry is
+the one artifact whose absence no gate catches.
+
+The entry records the auditor's four `P1`s, but the reusable content is what the
+*repair* produced: three further defects, two of them introduced by the fix
+itself, none found by reading. It also carries the correction to the earlier
+"never ran on Windows" claim, because a round log that quietly drops a retracted
+statement is worth less than one that shows the retraction.
+
+The resume card states the gate cost honestly -- **>90 minutes on Windows, budget
+3-4 hours** -- and the sequencing constraint that cost this round two runs: the
+gate must be run on the exact tree to be tagged, because any edit afterwards
+invalidates the evidence it produced.

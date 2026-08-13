@@ -947,3 +947,98 @@ paper root -- the `RMQPaper` promotion grew the reviewer closure from 139,054 to
 190,529 lines, +37%, against a standing owner goal of reducing it -- the deferred
 `file:line -> declaration` citation checker, DOI/anonymity for ITP 2027, and
 merge to `main`. No merge and no `main` push occurred.
+
+## 2026-08-12/13 (AUDIT + CORRECTION ROUND) -- V1 RC-2 fresh-blind: `NOT_ACCEPTABLE`; corrected on `codex/rc2-corrections`
+
+Fresh-blind exact-commit audit of `audit-v1-rc-2` (`a03fcc4`), report at
+`docs/internal/audit_reports/2026-08-12_V1_RC_fresh_blind.md`. Verdict
+**`NOT_ACCEPTABLE`**: no `P0`, four `P1`, two `P2`, one `P3`.
+
+Every finding was independently reproduced before disposition and **none were
+wrong**. Eight of the auditor's source citations were spot-checked and all eight
+resolved exactly -- better accuracy than this repository's own ledger had.
+
+The Lean stack held. `RC-01`--`RC-08` and `RC-11` discharge, including the
+`RC-02` charged-trace chain, which means **the corrected "at most `210`" wording
+was independently discharged** and the source-level obligation behind
+`WDD-20260807-014` is met. Publication was blocked by claim wording, a gate
+failure, and unrepaired manuscript defects -- not by mathematics.
+
+### The four findings that mattered
+
+**`P1-01` was our own incomplete fix.** `DD-20260809-099` retracted the "tight
+component-wise cap" overstatement in the *source comment* three days earlier and
+never synced the three surfaces repeating it -- one of them edited in that same
+commit. `docs/PAPER_THEOREM_MAP.md` simultaneously said the cost "is exactly
+`210`" and, later in the same file, that `210` is not attained. Fixing a claim at
+its origin is not fixing the claim.
+
+**`P1-04`: the novelty log's repairs had never been applied.**
+`paper/NOVELTY_LOG.md` section 5 documents each defect with evidence and an exact
+replacement, opening "Every repair below quotes the current text". Those repairs
+sat unapplied through two release candidates and one fresh-blind audit --
+including an **invented `/HOL` fragment** in a bibliography title, which the log
+itself rates the highest-severity bibliographic error. A standing, fully
+specified to-do list inside the repository is not self-executing.
+
+**`P1-03`, and how it survived.** The Windows ownership path closed its
+kill-on-close job and waited only on the **root**, while the POSIX path waits for
+the whole group and throws on survivors. The kill was never broken; the **wait**
+was missing, which made the control a race that usually wins. Windows receipts
+mostly said PASS -- this repository holds a Windows deadline PASS at `98.3s` --
+so a real defect presented as an occasional flake. Every CI job ran
+`ubuntu-24.04`, so the race could never be observed repeatedly or bisected.
+
+**`P2-01`: a checker that guarded the sentence, not the property.** The
+independence forbidden set held exactly the two names the ledger prose uses. Its
+three injections all exercised the *collector*; none asked whether the *set* was
+right.
+
+### Repair round, `codex/rc2-corrections`
+
+All seven findings corrected. Claim wording synced across all 18 governed
+surfaces (the sweep that should have run on 2026-08-09), the novelty log's
+repairs applied with four load-bearing bibliography entries added, a real
+descendant barrier on the Windows path, the forbidden set expanded to eight
+declarations, two capstone docstrings scoped to what they prove, and two new
+CI jobs -- `windows-2022` and `ubuntu-24.04` -- running the ownership self-tests
+without a Lean build.
+
+**Three further defects surfaced during the repair, two of them mine.**
+
+1. The barrier closed the handle then threw on survivors, while callers zeroed
+   their handle *after* the call -- so `finally` closed it again and the surfaced
+   error became "The handle is invalid", **destroying the real diagnosis**.
+2. The wait loop evaluated `.Count` on a pipeline that matches nothing, which is
+   `$null`, not an empty array. It therefore crashed **whenever no member
+   survived** -- on the healthy path. A barrier written to detect survivors broke
+   precisely when there were none.
+3. Pre-existing: `paper_topology_lint_regression.ps1` bounded its sleeper at `5s`
+   where the identical M1 control uses `20s`, and the sleeper must complete two
+   sequential PowerShell startups before writing the receipt its assertion needs.
+
+Both deadline controls now pass on Windows, twice consecutively, with the barrier
+enumerating four job members rather than the root alone.
+
+### Method notes worth keeping
+
+- **A grep over a structured document is sampling with an unknown miss rate.**
+  Three sweeps of the ledger's citations gave three different answers.
+- **`grep -c` counts lines, not occurrences.** That distinction mattered three
+  separate times this round.
+- **A cleanup routine that both releases a resource and validates the release
+  must transfer ownership before it can fail**, or its failure path corrupts the
+  diagnosis of the condition it exists to report.
+- **When a fix lands in code reached only through a long integration run, write
+  the unit assertions first.** Two of the three defects above would have been
+  caught in seconds by a five-line table; instead each cost a ~90-minute gate.
+- **Divergent twins are a defect.** Two implementations of one control differing
+  4x in budget, with no comment, is the shape that hides this class of bug.
+- **Do not infer "never" from two consecutive failures.** An earlier draft of
+  `WDD-20260813-029` claimed the aggregate gate had never completed on Windows;
+  the repository's own receipts contradict it, and the entry now carries the
+  correction.
+
+Open at the close of this record: the full aggregate gate to completion on the
+final tree, `audit-v1-rc-3`, and the fresh-blind audit itself. `main` unchanged;
+no merge and no push to `main` occurred.
