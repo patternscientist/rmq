@@ -9499,3 +9499,33 @@ The resume card states the gate cost honestly -- **>90 minutes on Windows, budge
 3-4 hours** -- and the sequencing constraint that cost this round two runs: the
 gate must be run on the exact tree to be tagged, because any edit afterwards
 invalidates the evidence it produced.
+
+## WDD-20260813-031 -- retarget the prompt to `audit-v1-rc-3`; name the ownership gate
+
+Status: Accepted. Date: 2026-08-13.
+
+Nine tag references retargeted. Two additions, both earned by this round's
+findings:
+
+- The gate table now lists `scripts/owned_process_tree.ps1 -SelfTest` and what it
+  asserts. It was previously unlisted, so an auditor enumerating the gates would
+  not have found the layer whose defect produced `P1-03`.
+- A note that `scripts/gate.ps1` must be run **to completion** with the platform
+  named, that its ownership layer has two implementations of which only one
+  executes per host -- so a green run says nothing about the other -- and that an
+  **inconclusive** self-test must be treated as uncovered rather than as
+  evidence.
+
+That last sentence is the reusable one. This round added a self-test that reports
+`INCONCLUSIVE` when it cannot create the condition it checks, precisely so a
+restricted environment cannot be mistaken for a pass. Telling the auditor how to
+read that report closes the loop; otherwise the honest signal gets rounded up to
+green by whoever reads the log next.
+
+**Tag/gate sequencing, disclosed.** The Windows `GATE PASS` was captured on
+`60c81ae`. This commit changes one markdown file under `docs/internal/`, so the
+tagged tree differs from the gate-verified tree by that file. CI re-runs the
+full aggregate gate plus both ownership jobs on the tagged commit; the local
+Windows run is cited for `60c81ae` and the delta is stated rather than papered
+over. The alternative -- another ~2.5-hour Windows gate for a prose edit -- buys
+no evidence that CI does not already provide for the changed file.

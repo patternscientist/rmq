@@ -4,15 +4,15 @@
 
 ## THE COMMIT UNDER AUDIT
 
-> **Tag: `audit-v1-rc-2`** — in `github.com/patternscientist/rmq`.
-> Audit this commit and no other. Every `audit-v1-rc-2` below means this commit.
+> **Tag: `audit-v1-rc-3`** — in `github.com/patternscientist/rmq`.
+> Audit this commit and no other. Every `audit-v1-rc-3` below means this commit.
 
 Obtain and verify it:
 
 ```bash
 git fetch origin --tags
-git checkout audit-v1-rc-2          # detached HEAD is expected and correct
-git rev-list -n1 audit-v1-rc-2      # the SHA under audit; record it in your report
+git checkout audit-v1-rc-3          # detached HEAD is expected and correct
+git rev-list -n1 audit-v1-rc-3      # the SHA under audit; record it in your report
 git status --porcelain              # MUST be empty: a dirty tree is not the candidate
 ```
 
@@ -20,9 +20,9 @@ Confirm you have the right tree before starting. All four must hold:
 
 | check | expected |
 | --- | --- |
-| `git rev-parse HEAD` equals `git rev-list -n1 audit-v1-rc-2` | yes |
+| `git rev-parse HEAD` equals `git rev-list -n1 audit-v1-rc-3` | yes |
 | `git status --porcelain` | empty |
-| `git tag --points-at HEAD` | includes `audit-v1-rc-2` |
+| `git tag --points-at HEAD` | includes `audit-v1-rc-3` |
 | `paper/` exists at the root | yes — it is in scope (`RC-10`) |
 
 If any fails, stop and report it rather than auditing a tree you cannot
@@ -41,7 +41,7 @@ You are a **fresh-blind exact-commit auditor**. You have not seen this
 repository's chat history, worker verdicts, or working trees, and you must not
 seek them. You were given exactly two things -- this prompt and the audit packet
 -- and the prompt names the commit to fetch. Those, plus the tree at
-`audit-v1-rc-2`, are your only inputs.
+`audit-v1-rc-3`, are your only inputs.
 
 Follow `docs/internal/AUDIT_PROTOCOL.md`. Report findings at `P0`/`P1`/`P2`/`P3`.
 
@@ -103,7 +103,7 @@ dynamic inputs are exactly `n`, the endpoints, and prior probe replies.
 
 ## 3. Rows to discharge
 
-For each, reconstruct independently from source at `audit-v1-rc-2`. Do not accept a
+For each, reconstruct independently from source at `audit-v1-rc-3`. Do not accept a
 docstring, a report, or a ledger row as evidence for the proposition it
 describes.
 
@@ -118,7 +118,7 @@ describes.
 | `RC-07` | Trust base: `sorry`-free, standard axioms only, pinned toolchain; the axiom-check scripts genuinely cover the cited declarations rather than a subset. |
 | `RC-08` | **Anti-vacuity.** For each headline, check that hypotheses are satisfiable and the statement is not trivially true. Dropping a load-bearing hypothesis should break the proof; if it does not, the hypothesis was decorative. |
 | `RC-09` | **Claim honesty across public surfaces.** Every surface in `currentFactSurfacePathRegex` states only what §2 licenses. Report any word-RAM, preprocessing, runtime, or attainment implicature. |
-| `RC-10` | The manuscript in `paper/` and its ledgers describe the theorems that exist at `audit-v1-rc-2`, with no claim stronger than its cited declaration. |
+| `RC-10` | The manuscript in `paper/` and its ledgers describe the theorems that exist at `audit-v1-rc-3`, with no claim stronger than its cited declaration. |
 | `RC-11` | **Artifact-root correspondence.** Take the theorem `docs/PAPER_CLAIM_CORRESPONDENCE.md` names as the accepted claim and check that importing the paper artifact root actually gives you it. A reviewer asking "which single import yields the paper's theorem?" must get one answer, and the documented identity and the importable identity must be the same string. |
 
 ---
@@ -142,12 +142,22 @@ Gates present at this commit, and what each asserts:
 | `scripts/hub_closure_lint.ps1` | the hub layer's import closure reaches nothing RMQ-specific |
 | `paper/check_paper.ps1` | the manuscript's citations, labels, ledger coverage and claim language |
 | `scripts/gate.ps1` | the aggregate: builds, axiom checks, mutation regressions, the above |
+| `scripts/owned_process_tree.ps1 -SelfTest` | the gate's process-ownership layer: that a bounded run's whole tree, descendants included, is dead when the runner says so |
 
 Useful questions for each: what exactly does it match, and what would slip past?
 Does it fail when it should — construct an input that ought to trip it? Can it
 pass while reporting nothing, or report success after a failure? Does it examine
 the files it claims to? Several ship a `-SelfTest`; run it, then try to defeat
 the script anyway.
+
+Two notes specific to `scripts/gate.ps1`. It is the required aggregate and takes
+well over an hour on some platforms; run it to completion rather than reporting
+a partial result, and say which platform you ran it on. Its process-ownership
+layer has two implementations -- a POSIX `setsid` process group and a Windows
+kill-on-close job object -- and only one of them executes on any given host, so
+a green run says nothing about the other. A self-test that cannot create the
+condition it checks is required to report itself inconclusive rather than pass;
+if you see such a report, treat it as uncovered, not as evidence.
 
 ## 5. Deliverable
 
