@@ -9424,3 +9424,37 @@ The rule worth carrying: **when a fix lands in a function reached only through a
 long integration run, write the unit assertions first.** Two of these three
 defects would have been caught in seconds by the five-line table now committed
 alongside them.
+
+## WDD-20260813-029 -- the topology deadline self-test raced its own fixture
+
+Status: Accepted. Date: 2026-08-13. A **pre-existing** defect, newly visible.
+
+With the M1 deadline control repaired, the aggregate gate reached
+`scripts/paper_topology_lint_regression.ps1` for the first time and failed there:
+
+    sleeper child PID receipt was not written
+
+Cause: that harness bounded its sleeper at `SelfTestDeadlineSeconds = 5`, while
+its twin in `m1_certificate_mutation_regression.ps1` uses `20`. The sleeper must
+complete **two sequential PowerShell startups** -- its own, then the grandchild
+it spawns via `Start-Process` -- before it can write the PID receipt the
+assertion requires. Five seconds races that on a loaded machine, and the loser
+looks like a broken harness rather than a deadline too tight for its own setup.
+Raised to 20 for parity.
+
+Two things worth recording.
+
+**This was not introduced by this round.** `git log` on that file shows no commit
+from this work. It has presumably been fragile for some time and was invisible
+because the M1 control failed first and aborted the gate before this stage ran.
+Fixing one failure exposed the next; the aggregate gate had never actually run to
+completion on Windows, so nothing downstream of M1 had platform evidence at all.
+
+**Divergent twins are a defect in themselves.** Two harnesses implementing the
+same control with a 4x difference in budget, and no comment explaining why, is
+the shape that hides this class of bug. When a check is duplicated, the
+duplicates should agree or say why they differ.
+
+General rule: **a self-test whose deadline can expire during its own fixture
+setup measures the machine, not the property.** Bound the property, and give the
+setup unconditional headroom.

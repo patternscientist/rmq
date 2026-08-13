@@ -8,7 +8,17 @@ param(
   [ValidateRange(4096, 16777216)]
   [int]$StageOutputLimitBytes = 4194304,
   [ValidateRange(1, 30)]
-  [int]$SelfTestDeadlineSeconds = 5,
+  # 5 -> 20 on 2026-08-13, matching the M1 twin in
+  # scripts/m1_certificate_mutation_regression.ps1.  The sleeper this bounds must
+  # complete TWO sequential PowerShell startups -- its own, then the grandchild
+  # it spawns via Start-Process -- before it can write the PID receipt the
+  # assertion requires.  Five seconds races that on a loaded machine, and the
+  # failure surfaces as "sleeper child PID receipt was not written", which reads
+  # like a broken harness rather than a deadline too tight for its own fixture.
+  # Observed on the first full gate run that reached this stage: the M1 deadline
+  # control had always failed earlier and hidden it.  A self-test that races its
+  # own setup measures the machine, not the property.
+  [int]$SelfTestDeadlineSeconds = 20,
   [switch]$SelectorBoundaryProbeOnly,
   [switch]$SelectorSelfTestOnly,
   [switch]$DeadlineSelfTestOnly,
