@@ -3,6 +3,17 @@
 [CmdletBinding()]
 param(
   [string]$Base = "",
+  # A committed commit-ish to diff TO, instead of the working tree.
+#
+# Without this the check can only ask "does the worktree, against some base,
+# carry its design-log update?" -- which is the AGGREGATE question. CI asked it
+# once per push and once per pull request, so a commit that changed a
+# code-sensitive file with no log entry passed whenever ANOTHER commit in the
+# range touched the log. WDD-20260816-043 records exactly that: twelve of
+# thirteen commits passed, one did not, and CI could not see it.
+#
+# With -Head the check becomes per-commit and CI can iterate the range.
+  [string]$Head = "",
   [switch]$Strict
 )
 
@@ -81,9 +92,19 @@ function Resolve-BaseRef {
 }
 
 function Get-ChangedFiles {
-  param([string]$ResolvedBase)
+  param([string]$ResolvedBase, [string]$ResolvedHead = "")
 
   $files = @()
+  if ($ResolvedHead) {
+    # Commit-to-commit. The worktree and index passes below are deliberately
+    # skipped: this mode asks what a COMMIT carried, and a dirty worktree is
+    # not part of that question.
+    $files += @(& git diff --name-only $ResolvedBase $ResolvedHead -- 2>$null)
+    if ($LASTEXITCODE -ne 0) {
+      Stop-DesignCheck "could not diff '$ResolvedBase'..'$ResolvedHead'"
+    }
+    return @($files | Where-Object { $_ } | Sort-Object -Unique)
+  }
   if ($ResolvedBase) {
     $files += @(& git diff --name-only $ResolvedBase -- 2>$null)
     if ($LASTEXITCODE -ne 0) {
@@ -194,7 +215,13 @@ function Get-PathDisposition {
 }
 
 $resolvedBase = Resolve-BaseRef -BaseRef $Base -FailClosed ([bool]$Strict)
-$files = Get-ChangedFiles -ResolvedBase $resolvedBase
+$resolvedHead = ""
+if ($Head) {
+  $resolvedHead = Resolve-BaseRef -BaseRef $Head -FailClosed ([bool]$Strict)
+  if (-not $resolvedHead) { Stop-DesignCheck "could not resolve head '$Head'" }
+  if (-not $resolvedBase) { Stop-DesignCheck "-Head requires a resolvable -Base" }
+}
+$files = Get-ChangedFiles -ResolvedBase $resolvedBase -ResolvedHead $resolvedHead
 
 if ($files.Count -eq 0) {
   $range = if ($resolvedBase) { " relative to $resolvedBase" } else { "" }

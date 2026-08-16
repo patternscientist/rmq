@@ -475,6 +475,105 @@ try {
   }
 }
 
+# ---------------------------------------------------------------------------
+# PER-COMMIT CERTIFICATION, and the blind spot it closes.
+#
+# The repository states that EVERY commit carries its own design-log update.
+# CI ran the check once over a whole range, which does not enforce that: one
+# commit's DESIGN_DECISIONS.md satisfies the membership test for every
+# code-sensitive file in the range. WDD-20260816-043 records a commit that
+# breached the invariant and passed CI for exactly this reason.
+#
+# This case builds the smallest tree exhibiting it and asserts all three legs.
+# Leg 1 is the one that matters: if the aggregate ever starts REJECTING this
+# fixture, the blind spot is gone and legs 2-3 no longer prove anything, so the
+# case fails rather than passing for the wrong reason.
+$pcRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("rmq-percommit-" + [Guid]::NewGuid().ToString('N'))
+try {
+  [System.IO.Directory]::CreateDirectory($pcRoot) | Out-Null
+  [System.IO.Directory]::CreateDirectory((Join-Path $pcRoot 'scripts')) | Out-Null
+  Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'design_decision_check.ps1') `
+    -Destination (Join-Path $pcRoot 'scripts\design_decision_check.ps1') -Force
+
+  Push-Location $pcRoot
+  try {
+    & git init -q . 2>&1 | Out-Null
+    & git config user.email 'regression@local' | Out-Null
+    & git config user.name 'regression' | Out-Null
+    & git config commit.gpgsign false | Out-Null
+
+    Write-FixtureFile -Root $pcRoot -RelativePath 'docs/internal/DESIGN_DECISIONS.md' `
+      -Content '# Design decisions'
+    Write-FixtureFile -Root $pcRoot -RelativePath 'docs/internal/WORKFLOW_DESIGN_DECISIONS.md' `
+      -Content '# Workflow design decisions'
+    Write-FixtureFile -Root $pcRoot -RelativePath 'paper/rmq.tex' -Content 'baseline'
+    & git add -A 2>&1 | Out-Null; & git commit -qm 'c0 baseline' 2>&1 | Out-Null
+    $c0 = (& git rev-parse HEAD)
+
+    # c1: a code-sensitive file changed with NO design-log entry -- the breach.
+    Write-FixtureFile -Root $pcRoot -RelativePath 'paper/rmq.tex' -Content 'changed with no entry'
+    & git add -A 2>&1 | Out-Null; & git commit -qm 'c1 breach' 2>&1 | Out-Null
+    $c1 = (& git rev-parse HEAD)
+
+    # c2: an unrelated commit that DOES touch the design log.
+    Write-FixtureFile -Root $pcRoot -RelativePath 'docs/internal/DESIGN_DECISIONS.md' `
+      -Content '## DD-20000101-002 -- unrelated' -Append
+    & git add -A 2>&1 | Out-Null; & git commit -qm 'c2 unrelated entry' 2>&1 | Out-Null
+    $c2 = (& git rev-parse HEAD)
+
+    $checker = Join-Path $pcRoot 'scripts\design_decision_check.ps1'
+    function Invoke-PcCheck { param([string[]]$CheckArgs)
+      & $shellPath -NoProfile -ExecutionPolicy Bypass -File $checker @CheckArgs 2>&1 | Out-Null
+      return $LASTEXITCODE
+    }
+
+    $aggregate = Invoke-PcCheck @('-Base', $c0, '-Strict')
+    $perCommitBreach = Invoke-PcCheck @('-Base', ($c1 + '~1'), '-Head', $c1, '-Strict')
+    $perCommitClean = Invoke-PcCheck @('-Base', ($c2 + '~1'), '-Head', $c2, '-Strict')
+
+    if ($aggregate -ne 0) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-blind-spot] the aggregate run rejected the fixture (exit $aggregate); it is supposed to MISS this, and legs 2-3 prove nothing if it does not"
+      $failures += 1
+    } else {
+      Write-Host 'DESIGN-CHECK-REGRESSION: PASS [per-commit-blind-spot] aggregate accepts a range containing an uncertified commit'
+    }
+    if ($perCommitBreach -eq 0) {
+      Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-detects] per-commit accepted the uncertified commit'
+      $failures += 1
+    } else {
+      Write-Host 'DESIGN-CHECK-REGRESSION: PASS [per-commit-detects] REJECT the uncertified commit the aggregate accepted'
+    }
+    if ($perCommitClean -ne 0) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-control] per-commit rejected a compliant commit (exit $perCommitClean); it would reject everything"
+      $failures += 1
+    } else {
+      Write-Host 'DESIGN-CHECK-REGRESSION: PASS [per-commit-control] ACCEPT a compliant commit'
+    }
+  } finally {
+    Pop-Location
+  }
+} finally {
+  Remove-FixtureTree -Path $pcRoot
+}
+
+# And CI must actually USE it. A checker that supports -Head while CI still runs
+# one aggregate invocation closes nothing.
+$ciPath = Join-Path $PSScriptRoot '..\.github\workflows\ci.yml'
+if (-not (Test-Path -LiteralPath $ciPath)) {
+  Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] .github/workflows/ci.yml is missing'
+  $failures += 1
+} else {
+  $ciText = [IO.File]::ReadAllText($ciPath)
+  $wired = ($ciText -match 'git rev-list --reverse') -and ($ciText -match '-Head \$c')
+  $stillAggregate = $ciText -match 'design_decision_check\.ps1 -Base "origin/\$\{\{ github\.base_ref \}\}" -Strict'
+  if (-not $wired -or $stillAggregate) {
+    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml does not iterate the range with -Head'
+    $failures += 1
+  } else {
+    Write-Host 'DESIGN-CHECK-REGRESSION: PASS [per-commit-ci-wiring] ci.yml certifies each commit in the range'
+  }
+}
+
 if ($rejectCount -ne 15 -or $acceptCount -ne 10) {
   Write-Host "DESIGN-CHECK-REGRESSION: FAIL [final-verdict-counts] expected 15 reject and 10 accept; got $rejectCount reject and $acceptCount accept"
   $failures += 1

@@ -10738,3 +10738,15 @@ inventory becoming a no-op, but not this one.
 Naming the limit is not fixing it. It is stated because a reader of
 `GATE COVERAGE: 17 of 17` would otherwise take it for the whole gate, and the
 number covers rather less than half the stages.
+
+## WDD-20260816-060 -- A residual is a claim too
+
+`WDD-20260816-043` recorded the CI per-commit gap as a residual: *"making CI
+enforce per-commit would require iterating the range."* True, and it took one
+parameter and a `foreach`.
+
+Recorded because "would require X" is a claim about cost, and this one stood for
+a day while the invariant it protects was the one the round kept breaching. The
+work is DD-20260816-119; the point here is that a residual left in a design log
+should carry either a measured cost or a reason it is not being paid, and this
+one carried neither.

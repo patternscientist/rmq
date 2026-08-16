@@ -11944,3 +11944,41 @@ distinction is the one that matters to a reader deciding whether a claim here is
 governed.
 
 The policy scoping that accompanies this correction is WDD-20260816-058.
+
+## DD-20260816-119 -- CI now enforces the invariant the repository states
+
+`design_decision_check.ps1` could only ask "does the worktree, against some base,
+carry its design-log update?" -- the AGGREGATE question. CI asked it once per push
+and once per pull request. The repository states a stronger invariant: **every
+commit carries its own entry.**
+
+Those are not the same, because one commit's `DESIGN_DECISIONS.md` satisfies the
+membership test for every code-sensitive file in the range.
+WDD-20260816-043 records the consequence: `c9ca9ff` changed `paper/rmq.tex` with
+no entry, twelve of thirteen commits passed and that one did not, **and CI could
+not see it.** The gap was filed as a residual -- "making CI enforce per-commit
+would require iterating the range".
+
+`-Head` makes the diff commit-to-commit, so the range can be iterated. `ci.yml`
+now walks `git rev-list --reverse` and certifies each commit, failing with a
+count rather than on the first breach.
+
+**The blind spot is demonstrated, not asserted.** The regression builds the
+smallest tree that exhibits it -- `c0` baseline, `c1` changes `paper/rmq.tex` with
+no entry, `c2` adds an unrelated entry -- and asserts three legs:
+
+| run | result |
+|---|---|
+| aggregate over `c0..c2` | exit 0 -- the breach is invisible |
+| per-commit on `c1` | exit 1 -- caught |
+| per-commit on `c2` | exit 0 -- a compliant commit still passes |
+
+Leg 1 is the load-bearing one. If the aggregate ever starts REJECTING that
+fixture, the blind spot is gone and legs 2 and 3 no longer demonstrate anything,
+so the case fails rather than passing for the wrong reason.
+
+A fourth case pins the wiring, because a checker that supports `-Head` while CI
+still runs one aggregate invocation closes nothing.
+
+`-Head` deliberately skips the worktree and index passes: this mode asks what a
+COMMIT carried, and a dirty worktree is not part of that question.

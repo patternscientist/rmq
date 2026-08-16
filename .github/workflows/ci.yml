@@ -49,12 +49,34 @@ jobs:
         if: always()
         shell: pwsh
         run: |
+          # PER-COMMIT, not aggregate. The repository states that every commit
+          # carries its own design-log update; running the check once over a
+          # whole range does not enforce that, because one commit's
+          # DESIGN_DECISIONS.md satisfies the membership test for every
+          # code-sensitive file in the range. WDD-20260816-043 records a commit
+          # that breached the invariant and passed CI for exactly this reason.
           if ("${{ github.event_name }}" -eq "pull_request") {
-            git fetch origin "${{ github.base_ref }}" --depth=1
-            ./scripts/design_decision_check.ps1 -Base "origin/${{ github.base_ref }}" -Strict
+            git fetch origin "${{ github.base_ref }}" --depth=0
+            $range = "origin/${{ github.base_ref }}..HEAD"
           } else {
-            ./scripts/design_decision_check.ps1 -Base "HEAD~1" -Strict
+            $range = "HEAD~1..HEAD"
           }
+          $commits = @(git rev-list --reverse $range)
+          if ($commits.Count -eq 0) {
+            Write-Host "DESIGN-CHECK: no commits in $range; nothing to certify"
+            exit 1
+          }
+          $bad = 0
+          foreach ($c in $commits) {
+            Write-Host "--- $c $(git log -1 --format=%s $c)"
+            ./scripts/design_decision_check.ps1 -Base "$c~1" -Head $c -Strict
+            if ($LASTEXITCODE -ne 0) { $bad++ }
+          }
+          if ($bad -gt 0) {
+            Write-Host "DESIGN-CHECK: $bad of $($commits.Count) commit(s) failed per-commit certification"
+            exit 1
+          }
+          Write-Host "DESIGN-CHECK: all $($commits.Count) commit(s) certified individually"
 
   owned-process-windows:
     # The repository gate's process-ownership layer has two implementations --
