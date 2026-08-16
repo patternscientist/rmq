@@ -36,7 +36,11 @@
 #             file is pinned exactly; the name must be one on `- Declaration:`.
 #   row    -- context named none; any name on `- Declaration:` was accepted.
 #
-# All three admit ONLY names on the row's `- Declaration:` line, and the cited
+# The two FALLBACK bindings admit only names on the row's `- Declaration:`
+# line. The `nearest name` binding also admits a name quoted immediately
+# before the citation, which is deliberate -- that is what `$RowNames` is for,
+# as the comment at the fallback site says. This sentence read "All three
+# admit ONLY", which the file contradicted two hundred lines later. The cited
 # line must DECLARE that name -- a `theorem`/`def`/`structure`/... keyword, or a
 # structure field `name :` -- rather than merely mention it.
 #

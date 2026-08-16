@@ -10750,3 +10750,27 @@ a day while the invariant it protects was the one the round kept breaching. The
 work is DD-20260816-119; the point here is that a residual left in a design log
 should carry either a measured cost or a reason it is not being paid, and this
 one carried neither.
+
+## WDD-20260816-061 -- The citation checker's header described a rule the checker does not follow
+
+Companion to DD-20260816-120.
+
+`paper/check_citations.ps1`'s header said its three bindings "admit ONLY names on
+the row's `- Declaration:` line". Two hundred lines down, at the fallback site,
+the same file says *"`$RowNames` is still right for the `nearest name` binding,
+where the identifier was quoted immediately before the citation and is
+deliberate."*
+
+Both cannot be true, and the code follows the second: `L-REF-01` resolves through
+`LeftmostArgMin`, which is not on its `- Declaration:` line. The header is now
+scoped to the two fallback bindings, with the third described as it behaves.
+
+The load-bearing half of that header -- that a cited line must DECLARE the name
+rather than mention it -- is unchanged, and still rejects a citation moved off
+its declaration site.
+
+Recorded separately from DD-20260816-120 because the file is
+workflow-classified: the per-commit governance check added this round
+(DD-20260816-119) rejected the commit that carried only the `DESIGN_DECISIONS.md`
+half. The aggregate check would have accepted it, since the same commit touched
+that log for other reasons -- the blind spot, caught on the round that closed it.

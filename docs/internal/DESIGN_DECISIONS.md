@@ -11920,7 +11920,7 @@ Each pin also records what it does NOT pin, and why. The lower bound's
 uniform-budget conjunct is excluded because it generalises the first rather than
 adding a public claim; the List-Int store's invalid-range, scan-window,
 leftmost-argmin and no-synthetic conjuncts are excluded because each has its own
-alias and its own ledger row. A pin over a conjunction that quietly drops
+are already pinned at the same `queryCosted` level by
 conjuncts is the same defect as a green check standing in for an unestablished
 property, one level down.
 
@@ -11982,3 +11982,52 @@ still runs one aggregate invocation closes nothing.
 
 `-Head` deliberately skips the worktree and index passes: this mode asks what a
 COMMIT carried, and a dirty worktree is not part of that question.
+
+`M1ReviewerNativeExpectedPaperType`, in this file.
+
+**That reason is a correction.** This entry first said each excluded conjunct
+"has its own alias and its own ledger row". Measured against the ledger's
+`- Declaration:` fields, only invalid-range does (`queryCosted_invalid`); the
+scan-window and leftmost-argmin names there are a representative-equality
+lemma and a spec-uniqueness lemma, which are different statements; and the
+no-synthetic name there is the very alias this pin guards. The exclusions are
+still right -- the reason given for them was not.
+
+A pin over a conjunction that quietly drops
+## DD-20260816-120 -- Three claims that were true when written and are not true now
+
+From the same fresh audit, all `P3`, all the same species: a record that reads as
+a present-tense statement and stopped being one.
+
+**`paper/NOVELTY_LOG.md` §1.5** — "Four classical papers are missing from
+`references.bib`". Measured at this pin: `references.bib` holds 27 entries and
+`Sadakane07`, `FischerHeun07` and `GalMiltersen07` are all present. Only
+`Patrascu08` is absent. True when written, false from the commit that added the
+three.
+
+This is the species DD-20260816-115 handled ten entries ago -- it marked §5
+HISTORICAL and re-anchored §1.6 for exactly this 23-to-27 growth, and did not
+reach §1.5. Annotated rather than rewritten: the sentence is a search record and
+its value is what the search found, so the correction states the status at the
+pin beside it.
+
+**DD-20260816-117** said the four excluded List-Int conjuncts each have "its own
+alias and its own ledger row". Measured against the ledger's `- Declaration:`
+fields: only invalid-range does (`queryCosted_invalid`). The scan-window and
+leftmost-argmin names there are a representative-equality lemma and a
+spec-uniqueness lemma -- different statements. The no-synthetic name there is the
+very alias the pin guards. The exclusions remain correct, because those conjuncts
+are pinned at the same `queryCosted` level by `M1ReviewerNativeExpectedPaperType`
+in the same file; the reason given was wrong, and the entry now gives the right
+one.
+
+**`paper/check_citations.ps1`** said "All three admit ONLY names on the row's
+`- Declaration:` line". The file contradicts that two hundred lines later --
+*"`$RowNames` is still right for the `nearest name` binding"* -- and the `exact`
+binding does resolve `L-REF-01` through a name that is not on its Declaration
+line. The two fallback bindings are as described; the third is not, and the
+sentence now says so. The declaration-site requirement, which is the load-bearing
+half, is unchanged and still rejects a moved citation.
+
+None of the three changes what any checker does. They are here because a design
+log that says a false thing is a defect in the log.
