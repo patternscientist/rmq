@@ -147,6 +147,31 @@ closes no roadmap node.
   prior status is retained below for lineage. What blocks closure is no
   longer acceptance but the single edit replacing the marker with the
   theorem statement and its proof obligations.
+- Evidence (appended 2026-08-16, RC-4): the editorial insertion named by the
+  2026-08-07 status entry **has been performed**. `rmq.tex` Section 9 states the
+  result as a `theorem` with the constant `427`; the `ARCHITECTURE_RESULT_PENDING`
+  marker count in `rmq.tex` is now **zero**, and `check_paper.ps1` was changed to
+  permit at most one rather than to require exactly one. Until that change the
+  checker demanded the presence of the marker, so it reported success while the
+  manuscript presented an accepted theorem as a future insertion, and it would
+  have failed the corrected manuscript.
+
+  Consequently three statements in the entries above are false at this commit and
+  are superseded rather than edited, per the append-only rule: "Section 9.1 holds
+  the single marker"; "`check_paper.ps1` fails unless the marker count in
+  `rmq.tex` is exactly one"; and "the marker count is still exactly one, which the
+  checker enforces". The containment half of the frozen requirement still holds in
+  substance -- the result appears in the allocated-bits entry of Section 3 and in
+  Section 9, and nowhere else.
+
+  Recorded plainly because the omission is the point: the RC-4 round performed the
+  insertion and did not amend this row, so the substrate's own acceptance record
+  went on describing the pre-insertion state. That is the same staleness class as
+  the `RC-10` finding that caused the round, inside the record that exists to
+  catch it. It was found by audit, not by the round.
+- Status (appended 2026-08-16, RC-4): BLOCKED_ONLY_ON: FRESH_BLIND_ACCEPTANCE.
+  Nothing editorial remains. What the row now turns on is the pending fresh-blind
+  audit of the RC-4 candidate; no earlier status is retracted, they are lineage.
 - Status (superseded): BLOCKED_ONLY_ON: ARCHITECTURE_RESULT_PENDING
 
 ## 2026-08-09 -- line-number citations audited (corrected: 27 citations, 3 defective)

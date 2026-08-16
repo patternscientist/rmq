@@ -9885,3 +9885,103 @@ Two things remain and neither should be decided by inference from a Windows host
 
 Until then the honest statement is: **owned-tree containment is demonstrated on
 Windows and demonstrated only for group-resident descendants on POSIX.**
+
+## WDD-20260816-040 -- corrections to this round, from an agent audit of it
+
+The RC-4 round was audited before tagging. Every finding below was reproduced
+independently before being accepted; none were wrong. The round's own checkers
+supplied several of the defects.
+
+### The citation checker was defeatable by ordinary drift (P1-1)
+
+`check_citations.ps1` accepted, for its two weaker bindings, ANY backticked
+identifier appearing anywhere in the row -- which includes prose metavariables
+from the `Proposition:` text: `xs`, `v`, `w`, `idx`, `lem`, `thm`. `xs` occurs on
+about a third of the lines of the cited sources, so 8 of 27 citations were
+satisfiable by almost any line in the right file.
+
+Reproduced: moving `L-REF-01`'s `:48` to `:44` (a `ValidRange` definition) and
+`L-REF-02`'s `:1198` to `:900` (298 lines of drift) both reported
+`RESULT: PASS`. Both now fail.
+
+Fixed by restricting every fallback to the names on the `- Declaration:` line --
+what the row CLAIMS, not what it mentions. This also narrows the `producer` and
+`structure` bindings, which had been accepting sets containing `ACCEPTED`,
+`PROVISIONAL_ARCHITECTURE` and the bare letter `C`.
+
+**The checker was reported working, with counts, in the same commit that
+introduced this hole.** Three surfaces published the strong property it did not
+have. The lesson is not new and that is the problem: measurement of the right
+quantity is the whole of verification, and "27 citations resolve" was the wrong
+quantity -- it says nothing about what resolution was permitted to mean.
+
+### The doc-comment window could span a whole file (P2-3)
+
+The window's terminator search looked for `-/` at end of line. `/-- One line. -/
+def x := 1` is legal Lean and terminates inline; on such a line the search ran
+past EOF and the citation resolved against the entire file. Latent -- no cited
+file contains that shape today -- and one reformat from live. Now hard-bounded
+at six lines, with a fixture in `-SelfTest`.
+
+### Single-digit citations were skipped (P3-3)
+
+`:(\d{2,})` silently ignored `:1`..`:9`. None exist today; the regex now accepts
+`:(\d+)` and the real ledger is unchanged at 27.
+
+This one bit twice. The first version of the new metavariable self-test used a
+single-digit citation in its fixture, so the run parsed **zero** citations and
+reported zero failures -- and the assertion read "0 failures" as "the checker
+handled it". A fixture that parsed to nothing was indistinguishable from a
+fixture that passed. Both fixture assertions now require `Total >= 1` first.
+
+### The constant guard's conflict scan covered 6 of 9 surfaces (P2-2)
+
+`Test-IsClaimShape`'s four-letter threshold excludes a bare `` `{VALUE}` ``
+anchor, correctly -- as a shape it matches every backticked numeral in the file.
+But three `210` surfaces carry ONLY that anchor, so they were outside the
+conflict scan entirely while WDD-20260816-035 presented the hole as closed.
+Injecting the very text that entry cites as its proof into
+`docs/FAMILY_SUMMARY.md` exited 0.
+
+Those three now declare explicit `claimShapes`, and a surface with no shape at
+all is itself a failure, so a surface added later cannot slip through silently.
+Verified by injection on all three: each now exits 1.
+
+A first attempt used `bounded by \`{VALUE}\`` for `FAMILY_SUMMARY.md`. It
+matched `bounded by \`13\`` -- the Fischer-Heun query cost, a different constant
+entirely -- and would have reported a conflict that is not one. Narrowed to
+`charged-trace constant \`{VALUE}\``. A detector that cries wolf gets disabled.
+
+### The tag check passed having checked nothing (P2-4)
+
+The no-tags branch carried a comment reading "Not a pass … reporting success
+would hide that", and then fell through to `RESULT: PASS`, exit 0. A comment
+asserting a property directly above the code that violates it. A CI checkout
+with `fetch-depth: 1` or `--no-tags` would have exited clean having examined
+nothing. Now fails unless `-AllowNoTags` is passed, mirroring
+`-AllowInconclusive` in `owned_process_tree.ps1`.
+
+The exception-list count pin also ran only under `-SelfTest` while
+`AUDIT_PROTOCOL.md` states it unconditionally (P3-4). It now runs on every
+invocation.
+
+### The published leak counts do not reproduce (P2-5, P3-1)
+
+WDD-20260816-033 states the neutered-glob injection reports "104 emitted
+line(s)" and that the fix took process-record citations from "339 -> 0". Both
+numbers are wrong.
+
+- The injection reports **338**. 104 is the `audit_reports/` subset alone;
+  `*WORKLOG.md` contributes the other 234.
+- The true before-count is **338**, not 339.
+
+The 339 came from counting whole lines matching `audit_reports|WORKLOG`, which
+includes one governed document that merely mentions `E1_WORKLOG.md` in its
+prose. That is exactly the whole-line-versus-path-field confusion the same
+entry documents as the wrong way to measure -- documented as wrong, then used.
+
+The entry's own standing lesson was "a repair reported without a measurement
+that could have failed is not a repair". It needs a second clause: **the
+measurement has to be of the right quantity, and the report has to quote what
+the measurement actually said.** The self-test itself was sound throughout; only
+the numbers written down were wrong.

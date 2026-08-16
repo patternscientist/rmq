@@ -66,10 +66,13 @@ $constants = @(
       # proves the change was deliberate, not that the new wording is right.
       # This check reads numerals, never the relation around them, so it would
       # have passed "exactly 210" forever.
-      @{ path = 'docs/PAPER_THEOREM_MAP.md';          count = 13; anchors = @('`{VALUE}`') },
+      @{ path = 'docs/PAPER_THEOREM_MAP.md';          count = 13; anchors = @('`{VALUE}`');
+         claimShapes = @('charged-trace \*\*budget\*\* is `{VALUE}`', 'literal bound `{VALUE}`') },
       @{ path = 'docs/PAPER_CLAIM_CORRESPONDENCE.md'; count = 11; anchors = @('at most\*\* `{VALUE}`') },
-      @{ path = 'docs/TRUST_AUDIT_PACKET.md';         count = 7;  anchors = @('`{VALUE}`') },
-      @{ path = 'docs/FAMILY_SUMMARY.md';             count = 7;  anchors = @('`{VALUE}`') }
+      @{ path = 'docs/TRUST_AUDIT_PACKET.md';         count = 7;  anchors = @('`{VALUE}`');
+         claimShapes = @('charged-trace cost at most `{VALUE}`') },
+      @{ path = 'docs/FAMILY_SUMMARY.md';             count = 7;  anchors = @('`{VALUE}`');
+         claimShapes = @('charged-trace constant `{VALUE}`') }
     )
   },
   @{
@@ -127,29 +130,49 @@ function Get-SurfaceFailures {
     if ($Text -notmatch $pat) {
       $out += ("{0}: {1} anchor /{2}/ does not carry the current value {3}" -f $ConstantName, $SurfacePath, $anchor, $Actual)
     }
+  }
 
-    # CONFLICTING NUMERALS. The anchor check asks whether the claim appears with
-    # the right value SOMEWHERE; the count check asks whether the right value
-    # appears the right number of times. Neither catches an ADDED claim carrying
-    # a different numeral: inserting "at most **`214`**" leaves every `210`
-    # intact and every anchor satisfied, so both conditions hold and the surface
-    # asserts two incompatible bounds with the guard green.
-    #
-    # So: every instantiation of a claim shape must carry the current value, not
-    # merely one of them.
-    if (Test-IsClaimShape $anchor) {
-      $shape = $anchor -replace '\{VALUE\}', '(\d+)'
-      foreach ($hit in [regex]::Matches($Text, $shape)) {
-        if ($hit.Groups[1].Value -eq $Actual) { continue }
-        # A historical line may legitimately restate a superseded value.
-        $lineStart = $Text.LastIndexOf("`n", [Math]::Max(0, [Math]::Min($hit.Index, $Text.Length - 1))) + 1
-        $lineEnd = $Text.IndexOf("`n", $hit.Index)
-        if ($lineEnd -lt 0) { $lineEnd = $Text.Length }
-        $line = $Text.Substring($lineStart, $lineEnd - $lineStart)
-        if ($line -match $historicalMarker) { continue }
-        $out += ("{0}: {1} states a CONFLICTING value {2} in a current claim (shape /{3}/); the proved value is {4}: {5}" -f `
-          $ConstantName, $SurfacePath, $hit.Groups[1].Value, $anchor, $Actual, $line.Trim())
-      }
+  # CONFLICTING NUMERALS. The anchor check asks whether the claim appears with
+  # the right value SOMEWHERE; the count check asks whether the right value
+  # appears the right number of times. Neither catches an ADDED claim carrying a
+  # different numeral: inserting "at most **`214`**" leaves every `210` intact
+  # and every anchor satisfied, so both conditions hold while the surface asserts
+  # two incompatible bounds.
+  #
+  # Every instantiation of a claim shape must carry the current value, not merely
+  # one of them.
+  #
+  # Shapes come from qualifying anchors PLUS explicit `claimShapes`. Three
+  # surfaces carry only a bare `` `{VALUE}` `` anchor, which cannot serve as a
+  # shape -- it matches every backticked numeral in the file, historical ones
+  # included. Those three were therefore outside this scan entirely while
+  # WDD-20260816-035 presented the hole as closed: injecting the very text that
+  # entry cites as its proof into `docs/FAMILY_SUMMARY.md` exited 0. Found by
+  # audit. A surface with no shape at all is now itself a failure, so this cannot
+  # recur silently for a surface added later.
+  $conflictShapes = @()
+  foreach ($anchor in $Entry.anchors) {
+    if (Test-IsClaimShape $anchor) { $conflictShapes += $anchor }
+  }
+  if ($Entry.ContainsKey('claimShapes')) {
+    foreach ($declared in @($Entry.claimShapes)) { $conflictShapes += $declared }
+  }
+  if ($conflictShapes.Count -eq 0) {
+    $out += ("{0}: {1} declares no claim shape, so a conflicting numeral added to it would go undetected; give it a 'claimShapes' entry" -f $ConstantName, $SurfacePath)
+  }
+
+  foreach ($shapeSpec in $conflictShapes) {
+    $shape = $shapeSpec -replace '\{VALUE\}', '(\d+)'
+    foreach ($hit in [regex]::Matches($Text, $shape)) {
+      if ($hit.Groups[1].Value -eq $Actual) { continue }
+      # A historical line may legitimately restate a superseded value.
+      $lineStart = $Text.LastIndexOf("`n", [Math]::Max(0, [Math]::Min($hit.Index, $Text.Length - 1))) + 1
+      $lineEnd = $Text.IndexOf("`n", $hit.Index)
+      if ($lineEnd -lt 0) { $lineEnd = $Text.Length }
+      $line = $Text.Substring($lineStart, $lineEnd - $lineStart)
+      if ($line -match $historicalMarker) { continue }
+      $out += ("{0}: {1} states a CONFLICTING value {2} in a current claim (shape /{3}/); the proved value is {4}: {5}" -f `
+        $ConstantName, $SurfacePath, $hit.Groups[1].Value, $shapeSpec, $Actual, $line.Trim())
     }
   }
 

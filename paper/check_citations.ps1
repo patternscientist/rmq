@@ -33,8 +33,14 @@
 #
 #   exact  -- context named one identifier; that identifier was required.
 #   file   -- the citation follows a `.lean` path (the `- File:` shape). The
-#             file is pinned exactly; the name must be one the row declares.
-#   row    -- context named none; any identifier the row names was accepted.
+#             file is pinned exactly; the name must be one on `- Declaration:`.
+#   row    -- context named none; any name on `- Declaration:` was accepted.
+#
+# All three admit ONLY names the row declares. An earlier version let the two
+# weaker bindings accept any backticked identifier anywhere in the row, which
+# included prose metavariables from the `Proposition:` text (`xs`, `v`, `idx`).
+# `xs` appears on about a third of the lines of the cited sources, so those
+# citations were satisfied by almost any line. See `Get-RowDeclarationNames`.
 #
 # What this does NOT check: that the declaration is true, that it is the right
 # declaration for the claim, or that it kernel-checks. This is a pointer
@@ -143,16 +149,35 @@ function Get-RowNames {
   return @($found | Sort-Object -Unique)
 }
 
-# The first identifier on the `Declaration:` line is the row's primary subject.
-function Get-RowPrimaryDeclaration {
+# The identifiers on the `- Declaration:` line: the names the row actually
+# CLAIMS, as opposed to every identifier it happens to mention.
+#
+# This distinction is the difference between a check and a formality. An earlier
+# version used every backticked identifier in the row as the acceptable set for
+# the weaker bindings, which swept in prose metavariables from the `Proposition:`
+# text -- `xs`, `v`, `w`, `idx`, `lem`, `thm`. `xs` occurs on 35% of the lines of
+# `RMQ/Core/SuccinctRMQClassic.lean`, so "the citation lands on a line naming
+# something this row mentions" was satisfied by roughly any line at all.
+#
+# Demonstrated, not theorised: with that set, moving L-REF-01's `:48` to `:44`
+# (a `ValidRange` definition) and L-REF-02's `:1198` to `:900` (298 lines of
+# drift) both still reported RESULT: PASS.
+function Get-RowDeclarationNames {
   param([string]$Body)
   $m = [regex]::Match($Body, '(?ms)^- Declaration:(.*?)(?=^- [A-Z])')
-  if (-not $m.Success) { return $null }
+  if (-not $m.Success) { return @() }
+  $found = @()
   foreach ($tick in [regex]::Matches($m.Groups[1].Value, '`([^`]+)`')) {
     $candidate = $tick.Groups[1].Value.Trim()
-    if (Test-IsLeanIdentifier $candidate) { return $candidate }
+    if (Test-IsLeanIdentifier $candidate) {
+      $found += $candidate
+      continue
+    }
+    if ($candidate -match "^([A-Za-z_][A-Za-z0-9_.']*)\s*:") {
+      if (Test-IsLeanIdentifier $Matches[1]) { $found += $Matches[1] }
+    }
   }
-  return $null
+  return @($found | Sort-Object -Unique)
 }
 
 # Map "field 8 `allocation_two_n_plus_rho`" -> @{ 8 = 'allocation_two_n_plus_rho' }
@@ -172,8 +197,15 @@ function Get-CitationBinding {
   param(
     [string]$Preceding,
     [hashtable]$FieldMap,
-    [string[]]$RowNames
+    [string[]]$RowNames,
+    [string[]]$DeclarationNames
   )
+
+  # Every FALLBACK below uses $DeclarationNames -- the names the row claims --
+  # never $RowNames, which includes prose metavariables from the `Proposition:`
+  # text. $RowNames is still right for the `nearest name` binding, where the
+  # identifier was quoted immediately before the citation and is deliberate.
+  $fallback = @($DeclarationNames)
 
   # Only the tail of the preceding text is context; anything further back
   # belongs to a different citation. Cut at the previous citation if present.
@@ -195,7 +227,7 @@ function Get-CitationBinding {
 
   # "producer at :723" -- the declaration that inhabits the structure.
   if ($segment -match 'producer\s+(at\s+)?$' -or $segment -match 'inhabited by\s*$') {
-    $producers = @($RowNames | Where-Object { (Get-NameLeaf $_) -match '_holds$|_valid$' })
+    $producers = @($fallback | Where-Object { (Get-NameLeaf $_) -match '_holds$|_valid$' })
     if ($producers.Count -gt 0) {
       return @{ Names = $producers; Strength = "exact"; Why = "producer" }
     }
@@ -203,7 +235,7 @@ function Get-CitationBinding {
 
   # "structure at :300" -- the capitalized structure name.
   if ($segment -match 'structure\s+(at\s+)?$') {
-    $structures = @($RowNames | Where-Object { (Get-NameLeaf $_) -cmatch '^[A-Z]' })
+    $structures = @($fallback | Where-Object { (Get-NameLeaf $_) -cmatch '^[A-Z]' })
     if ($structures.Count -gt 0) {
       return @{ Names = $structures; Strength = "exact"; Why = "structure" }
     }
@@ -222,7 +254,7 @@ function Get-CitationBinding {
   for ($i = $ticked.Count - 1; $i -ge 0; $i--) {
     $candidate = $ticked[$i].Groups[1].Value.Trim()
     if ($candidate -match '\.lean$') {
-      return @{ Names = $RowNames; Files = @($candidate); Strength = "file"; Why = "in $candidate" }
+      return @{ Names = $fallback; Files = @($candidate); Strength = "file"; Why = "in $candidate" }
     }
     if (Test-IsLeanIdentifier $candidate) {
       return @{ Names = @($candidate); Strength = "exact"; Why = "nearest name" }
@@ -234,7 +266,7 @@ function Get-CitationBinding {
     }
   }
 
-  return @{ Names = $RowNames; Strength = "row"; Why = "row-wide" }
+  return @{ Names = $fallback; Strength = "row"; Why = "row-wide" }
 }
 
 function Test-CitationResolves {
@@ -263,12 +295,23 @@ function Test-CitationResolves {
     # blank lines after it. Nothing else is tolerated: the extension stops at
     # the first line that is not a comment or blank, so genuine rot (a citation
     # 29 or 1,090 lines away) still fails.
+    # Hard-bounded. The terminator search looks for `-/` at END OF LINE, but
+    # `/-- One line. -/ def width := 3` is legal Lean and terminates inline. On
+    # such a line the search would never match, run past the end of the file,
+    # and set the window to the whole file -- so the citation would resolve
+    # against any line anywhere. No cited file contains that shape today; one
+    # reformat would have introduced it silently.
+    $docCommentWindowLimit = 6
     if ($content[$Start - 1] -match '^\s*/--') {
       $scan = $Start
-      while ($scan -le $content.Count -and $content[$scan - 1] -notmatch '-/\s*$') { $scan++ }
+      $budget = $docCommentWindowLimit
+      while ($scan -le $content.Count -and $budget -gt 0 -and
+             $content[$scan - 1] -notmatch '-/') { $scan++; $budget-- }
       $scan++
-      while ($scan -le $content.Count -and $content[$scan - 1] -match '^\s*$') { $scan++ }
-      if ($scan -gt $upper) { $upper = [Math]::Min($scan, $content.Count) }
+      while ($scan -le $content.Count -and $budget -gt 0 -and
+             $content[$scan - 1] -match '^\s*$') { $scan++; $budget-- }
+      $capped = [Math]::Min($scan, $Start + $docCommentWindowLimit)
+      if ($capped -gt $upper) { $upper = [Math]::Min($capped, $content.Count) }
     }
 
     for ($lineNo = $Start; $lineNo -le $upper; $lineNo++) {
@@ -302,8 +345,9 @@ function Invoke-CitationCheck {
     $files = Get-RowFiles -Body $body
     $names = Get-RowNames -Body $body
     $fieldMap = Get-RowFieldMap -Body $body
+    $declarationNames = Get-RowDeclarationNames -Body $body
 
-    foreach ($m in [regex]::Matches($body, ':(\d{2,})(?:--(\d+))?')) {
+    foreach ($m in [regex]::Matches($body, ':(\d+)(?:--(\d+))?')) {
       $start = [int]$m.Groups[1].Value
       $end = if ($m.Groups[2].Success) { [int]$m.Groups[2].Value } else { $start }
       $total += 1
@@ -319,7 +363,7 @@ function Invoke-CitationCheck {
         continue
       }
 
-      $binding = Get-CitationBinding -Preceding $body.Substring(0, $m.Index) -FieldMap $fieldMap -RowNames $names
+      $binding = Get-CitationBinding -Preceding $body.Substring(0, $m.Index) -FieldMap $fieldMap -RowNames $names -DeclarationNames $declarationNames
       if ($binding.Strength -eq "exact") { $exact += 1 }
       if ($binding.Strength -eq "file") { $fileScoped += 1 }
 
@@ -392,6 +436,53 @@ if ($SelfTest) {
       exit 1
     }
     Write-Host "CITATIONS SELFTEST: ok -- one mutated citation produced exactly one failure"
+
+    # Two defects a :999901 mutation cannot see, both found by audit after this
+    # checker was first reported working. Fixtures, because each needs a source
+    # file shaped a particular way.
+    $fixtureRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("citefx_" + [System.Guid]::NewGuid().ToString("N"))
+    try {
+      New-Item -ItemType Directory -Force -Path (Join-Path $fixtureRoot "Fake") | Out-Null
+
+      # (a) PROSE METAVARIABLES. A rot onto a line mentioning `xs` used to pass,
+      #     because every backticked identifier in the row -- including `xs`,
+      #     `v`, `idx` from the Proposition text -- was an acceptable target.
+      #     `xs` occurs on ~35% of lines of a real source file.
+      $drifted = @(1..40 | ForEach-Object { "  cases xs with" })
+      $drifted[19] = "theorem real_decl : True := trivial"   # line 20
+      [IO.File]::WriteAllLines((Join-Path $fixtureRoot "Fake\M.lean"), $drifted)
+      $metavarLedger = Join-Path $fixtureRoot "meta.md"
+      [IO.File]::WriteAllText($metavarLedger,
+        "#### L-FX-01`n- Declaration: ``real_decl```n- File: ``Fake/M.lean`` (:5)`n- Proposition: for all ``xs``, with ``v`` and ``idx``.`n")
+      $metavarResult = Invoke-CitationCheck -LedgerPath $metavarLedger -Root $fixtureRoot
+      if ($metavarResult.Failures -lt 1) {
+        Write-Host "CITATIONS SELFTEST: RESULT: FAIL (a citation drifted onto a line mentioning only a prose metavariable still passed)"
+        exit 1
+      }
+      Write-Host "CITATIONS SELFTEST: ok -- prose metavariables are not acceptable citation targets"
+
+      # (b) DOC-COMMENT WINDOW. `/-- One line. -/ def x := 1` terminates inline,
+      #     so a terminator search anchored to end-of-line never matches. Before
+      #     the window was bounded it ran past EOF and the citation resolved
+      #     against the entire file.
+      $inline = @(1..400 | ForEach-Object { "-- filler" })
+      $inline[9] = "/-- Inline terminated. -/ def decoy : Nat := 1"   # line 10
+      $inline[399] = "theorem far_away : True := trivial"             # line 400
+      [IO.File]::WriteAllLines((Join-Path $fixtureRoot "Fake\W.lean"), $inline)
+      $windowLedger = Join-Path $fixtureRoot "window.md"
+      [IO.File]::WriteAllText($windowLedger,
+        "#### L-FX-02`n- Declaration: ``far_away```n- File: ``Fake/W.lean`` (:10)`n- Proposition: x`n")
+      $windowResult = Invoke-CitationCheck -LedgerPath $windowLedger -Root $fixtureRoot
+      if ($windowResult.Failures -lt 1) {
+        Write-Host "CITATIONS SELFTEST: RESULT: FAIL (an inline-terminated doc comment opened a whole-file resolution window)"
+        exit 1
+      }
+      Write-Host "CITATIONS SELFTEST: ok -- the doc-comment window is bounded"
+    } finally {
+      if (Test-Path -LiteralPath $fixtureRoot) {
+        Remove-Item -LiteralPath $fixtureRoot -Recurse -Force -ErrorAction SilentlyContinue
+      }
+    }
   } finally {
     if (Test-Path -LiteralPath $temporary) { Remove-Item -LiteralPath $temporary -Force }
   }

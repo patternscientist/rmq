@@ -1,7 +1,12 @@
 # Paper Substrate Worklog
 
 Branch: `codex/eg-cp-paper-evidence-r1`
-Base: `1490c97b399d136bad4e18953441da433d130d4d` (clean, verified)
+Base: `1490c97b399d136bad4e18953441da433d130d4d` (clean, verified) -- HISTORICAL,
+deliberately not moved by later repins: a session log records what was true when
+the session ran. The substrate's current base pin lives in `README.md` and
+`THEOREM_LEDGER.md`. Annotated 2026-08-16 because this is the only full-SHA base
+in `paper/` that a repin does not touch, so an unmarked third SHA reads like a
+straggler from the repin rather than a record.
 Governance: `f0c7232a8a52b8d61ead5e96d72a8a849bc094b5` (verified ancestor of base)
 Scope: private manuscript/evidence substrate under `paper/` only. No edits to
 `README.md`, `docs/WHAT_IS_PROVED.md`, `docs/FAMILY_SUMMARY.md`, artifact or

@@ -31,6 +31,9 @@
 [CmdletBinding()]
 param(
   [switch]$SelfTest,
+  # Accept a run in which no annotated tag matched. For clones that cannot fetch
+  # tags; CI must not pass it.
+  [switch]$AllowNoTags,
   [string]$Pattern = "audit-*"
 )
 
@@ -120,11 +123,35 @@ docs/internal/V1_RELEASE_CANDIDATE_AUDIT_PROMPT.md.
   if ($stf -gt 0) { $failures = $failures + $stf } else { Info 'self-test: all cases pass' }
 }
 
+# The exception-list count pin runs on EVERY invocation, not only under
+# -SelfTest. `docs/internal/AUDIT_PROTOCOL.md` states unconditionally that the
+# list "is pinned by count and cannot absorb a new tag silently"; a pin that
+# only fires in a mode the standalone path does not use does not support that
+# sentence.
+if ($publishedContaminated.Count -ne $publishedContaminatedCount) {
+  Fail ("the known-contaminated tag list holds {0} entries but is pinned at {1}; a tag was added or removed without updating the pin" -f `
+    $publishedContaminated.Count, $publishedContaminatedCount)
+}
+
 $tags = @(Get-AnnotatedTags $Pattern)
 if ($tags.Count -eq 0) {
-  # Not a pass. A repository with no annotated audit tags may simply have been
-  # cloned without them, and reporting success would hide that.
+  # Not a pass, and now the code agrees with that.
+  #
+  # This block previously printed the sentence below and then fell through to
+  # RESULT: PASS, exit 0 -- a comment asserting the check must not pass silently,
+  # sitting directly above the code that made it pass silently. A CI checkout
+  # with `fetch-depth: 1` or `--no-tags` would have got a clean exit having
+  # examined nothing. Found by audit.
+  #
+  # `-AllowNoTags` mirrors `-AllowInconclusive` in `owned_process_tree.ps1`: it
+  # exists for environments that genuinely cannot fetch tags, and CI must not
+  # pass it.
   Info "no annotated tags match '$Pattern' (nothing checked -- tags may not be present in this clone)"
+  if (-not $AllowNoTags) {
+    Write-Host "TAG-ANNOTATION: RESULT: FAIL (nothing was checked; fetch tags, or pass -AllowNoTags to accept that)"
+    exit 1
+  }
+  Info "-AllowNoTags was passed; accepting a run that checked nothing"
 } else {
   foreach ($tag in $tags) {
     $annotation = Get-TagAnnotation $tag

@@ -11568,3 +11568,55 @@ Verified to fail closed rather than assumed to: weakening
 `wrong_answer_impossible`'s wrong answer from `+ 1` to `+ 0` makes `omega`
 fail and the file stops compiling. Unmutated, `lake env lean` exits 0 and all
 104 axiom lines still report only the three standard axioms.
+
+## DD-20260816-110 -- substrate state-claims corrected after an agent audit
+
+Status: Accepted. Date: 2026-08-16. Companion to WDD-20260816-040, which records
+the checker defects from the same audit. This entry records the *claims* that
+were false.
+
+All three are the same class as the `RC-10` finding that caused the RC-4 round:
+a statement describing a state the tree no longer has. Two of the three were
+introduced or left standing by the round that exists to answer `RC-10`.
+
+### `paper/README.md` claimed 27 citations resolved at the old pin
+
+It said all 27 `:NNN` citations resolved at `688c54a3` "after three were
+corrected". **False when written.** `L-UB-12` cited `:1324`, which at
+`688c54a3` held `queryCostedWithStore_eq_of_orderedReadFootprint` while the row
+names `queryTraceResultWithStore_eq_of_orderedReadFootprint` at `:1298`.
+`SuccinctRMQClassic.lean` is byte-identical between `688c54a3` and the current
+pin, so the defect the RC-4 round found was present at both.
+
+The shape of the error is worth more than the correction: the round fixed the
+POINTER and left the SENTENCE asserting the pointers were sound. Fixing a claim
+at its origin is not fixing the claim. The paragraph now records what was
+verified at that pin and what was not.
+
+### `EVIDENCE_MATRIX.md` row EV-07 still described the pre-insertion manuscript
+
+Three statements were false: "Section 9.1 holds the single marker" (the marker
+count is zero), "`check_paper.ps1` fails unless the marker count is exactly one"
+(it now permits at most one), and "the marker count is still exactly one, which
+the checker enforces". The status remained `BLOCKED_ONLY_ON:
+EDITORIAL_INSERTION` -- describing as pending the exact edit commit `0665b49`
+performed.
+
+Amended by appending, per the matrix's own frozen-requirement rule, with a new
+status of `BLOCKED_ONLY_ON: FRESH_BLIND_ACCEPTANCE`. The substrate's acceptance
+record had gone stale about the substrate, which is the failure it exists to
+prevent.
+
+### A third pre-absorption passage survived in `paper/README.md`
+
+Editing rule 3 still said the result "may be inserted only by replacing the
+single marker in Section 9.1 … what remains is the editorial insertion". The
+commit that repaired the other two README passages stated it had fixed "two",
+and two is what it fixed. Corrected, along with the Contents bullet describing
+`EVIDENCE_MATRIX.md`.
+
+Also annotated: `paper/WORKLOG.md`'s `Base: 1490c97b…`, the one full-SHA base in
+`paper/` a repin does not move. It is genuinely historical -- a session log
+records its own session -- but it was not covered by the README's
+deliberate-historical carve-out, so it read as a straggler from the 38-SHA
+repin. Both the log and the carve-out now say so.

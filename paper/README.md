@@ -24,10 +24,24 @@ depend on it and they are not the same claim:
 Because moving them restates a claim, they were not restamped on faith. At
 `688c54a3`: `lake build RMQ` exit 0; `scripts/axiom_check.lean` exit 0 with no
 `sorryAx` and no `ofReduceBool`; `scripts/ledger_decl_check.lean` confirms all
-**53** declaration names those rows cite are present in the environment; and all
-**27** `:NNN` source citations resolve to the declaration or structure field
-their row names, after three were corrected (see `EVIDENCE_MATRIX.md`). Both CI
+**53** declaration names those rows cite are present in the environment. Both CI
 workflows are green on `688c54a3`.
+
+**Corrected 2026-08-16.** This paragraph also claimed that all **27** `:NNN`
+citations resolved at `688c54a3`, "after three were corrected". That was false
+when written. `L-UB-12` cited `:1324`, which at `688c54a3` held
+`queryCostedWithStore_eq_of_orderedReadFootprint` while the row names
+`queryTraceResultWithStore_eq_of_orderedReadFootprint` at `:1298`
+(`git show 688c54a3:RMQ/Core/SuccinctRMQClassic.lean | sed -n '1324p'`).
+`SuccinctRMQClassic.lean` is byte-identical between `688c54a3` and the current
+pin, so the defect was present at both.
+
+The claim was a hand count, and a hand count is what it was worth: the same
+three-sweeps-three-answers problem recorded in `EVIDENCE_MATRIX.md`. The
+citation set is now machine-checked by `check_citations.ps1`, which found this
+one. Note the shape of the mistake -- the RC-4 round corrected the *pointer* and
+left the *sentence asserting the pointers were fine* untouched. Fixing a claim
+at its origin is not the same as fixing the claim.
 
 The commit carrying that repin added only substrate edits and
 `scripts/ledger_decl_check.lean`; it changed no Lean library code, so the pinned
@@ -63,6 +77,11 @@ the verified tree, differing by the substrate edits themselves.
 Historical mentions of `e3362d4` elsewhere in this directory are deliberate and
 were not rewritten: they record what was true at the previous pin.
 
+The same applies to `1490c97b…` in the header of `WORKLOG.md`, which is the base
+of the session that log describes. It is the only full-SHA base in `paper/` that
+a repin does not move, and it is annotated in place as historical so it is not
+mistaken for a straggler.
+
 ## Contents
 
 - `rmq.tex` -- the manuscript. Every mathematical claim carries an
@@ -80,9 +99,11 @@ were not rewritten: they record what was true at the previous pin.
 - `RELATED_WORK_LEDGER.md` -- source/date/result receipts for all
   precedent statements, per-entry verification method, and explicit
   search limitations.
-- `EVIDENCE_MATRIX.md` -- frozen acceptance rows for this substrate; every
-  row is CLOSED except the final-result row, which is blocked only on the
-  independently accepted architecture result.
+- `EVIDENCE_MATRIX.md` -- frozen acceptance rows for this substrate. Every
+  row is CLOSED except `EV-07`, whose remaining blocker was the editorial
+  insertion of the accepted architecture result. That insertion was performed
+  on 2026-08-16; see the `EV-07` status entry of that date for what the row now
+  turns on.
 - `check_paper.ps1` -- deterministic checker (see below).
 - `WORKLOG.md` -- session log, including the preflight record and the
   declaration-verification inventory.
@@ -146,10 +167,17 @@ while another build task owns the tree.
    updating its `\ledger` row in `THEOREM_LEDGER.md` in the same change;
    the checker fails otherwise.
 2. Adding a citation requires a receipt in `RELATED_WORK_LEDGER.md`.
-3. The packed architecture result may be inserted only by replacing the
-   single marker in Section 9.1, under a new governed task; the independent
-   acceptance condition has been met (Stage A `ACCEPTED`, 2026-08-07), so
-   what remains is the editorial insertion, after which `EVIDENCE_MATRIX.md`
-   row EV-07 closes.
+3. The packed architecture result is **inserted** (RC-4, 2026-08-16). Section 9
+   states it as a theorem with the constant `427`; there is no
+   `ARCHITECTURE_RESULT_PENDING` marker left to replace, and the checker now
+   permits at most one rather than requiring exactly one. Changing that
+   statement is an ordinary claim change and falls under rule 1.
+
+   This rule previously read "may be inserted only by replacing the single
+   marker in Section 9.1 … what remains is the editorial insertion". That
+   described the state before the insertion and survived the commit that
+   performed it -- the third such passage in this file, after the Contents
+   bullet and the checker paragraph, and the same staleness class as the
+   `RC-10` finding the RC-4 round exists to answer.
 4. Evidence-matrix requirement text is frozen; evidence/status fields are
    append-only.
