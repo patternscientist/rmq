@@ -250,7 +250,7 @@ T1 fetches: the CSLib PDF (pp. 1–16); the calf POPL 2022 PDF; the ITP 2019 LIP
 
 ### 1.6 Modality F — bibliographic integrity of `references.bib` and `rmq.tex`
 
-**Scope.** Independent field-by-field verification of all 27 `references.bib` entries, plus verification of the three specific manuscript defects the audit brief named.
+**Scope.** Independent field-by-field verification of all 23 `references.bib` entries, plus verification of the three specific manuscript defects the audit brief named.
 
 **Queries run.** 20 dblp API queries (one per entry, plus reformulations after two HTTP 500s), plus direct fetches of the ICFEM 2016 author preprint, the ITP 2019 LIPIcs PDF, the ITP 2019 dblp record, the FSCD 2016 DROPS entity and opus pages, arXiv:1802.01336, and four general web searches for Clark 1996, Navarro 2016, and AFP coverage.
 
@@ -502,7 +502,14 @@ Each is named and killed. None may be reintroduced without new receipts.
 
 ## 5. Bibliography repairs
 
-Every repair below quotes the current text. Line numbers are at the base commit.
+**HISTORICAL (annotated 2026-08-16).** Every repair below quoted the text as it
+stood when the section was written, with line numbers at the base commit **of
+that time**. The substrate was repinned to `0665b494` by the RC-4 round, and at
+that commit the repairs are already applied and the line numbers no longer
+resolve — §5.1's quoted "before" text is absent, and §5.7/§5.11's cited
+`references.bib` lines hold different content. The section is left standing as a
+record of what was repaired, in the same way `WORKLOG.md` marks its superseded
+entries; it is not a description of the current tree.
 
 ### 5.1 `rmq.tex` — the Tanaka conflation (two locations, HIGH)
 
@@ -668,7 +675,16 @@ Note for `Gál`: the surname carries an acute accent (`G\'al`); author order **G
 > `% accepted claim maps, or an explicit web check recorded in`
 > `% RELATED_WORK_LEDGER.md are included.`
 
-The header names three tiers; `RELATED_WORK_LEDGER.md` names a **different** three (repo-doc / web / background). So the header names a tier the ledger never uses ("verified against the source": **0 entries**) and the ledger uses a tier the header never licenses ("background"). Measured across all 23 entries at the base commit:
+The header names three tiers; `RELATED_WORK_LEDGER.md` names a **different** three (repo-doc / web / background). So the header names a tier the ledger never uses ("verified against the source": **0 entries**) and the ledger uses a tier the header never licenses ("background"). Measured across the **23** entries the bibliography held when this section was
+written. **That is not the base commit named in this file's header:**
+`references.bib` reached 27 entries on 2026-08-12 (`de510d0`), and the current
+base `0665b494` holds 27. The four entries added since have **not** been folded
+into the percentages below, so every `n/23` is a measurement of the 2026-08-07
+bibliography and is left standing as a record rather than restated as current.
+Re-deriving it over 27 would require re-auditing four receipt sets, which is
+open work, not a number to adjust.
+
+Measured across those 23 entries:
 
 - **background as the sole basis: 13/23 (57%)** — Vuillemin80, GBT84, HarelTarjan84, BFC00, MunroRaman01, Jacobson89, Clark96, RRR02, Nipkow15, GCP18, CP19, MouraUllrich21, AFP.
 - **background relied on for at least one field: 17/23 (74%)** — the above plus FischerHeun11, Fischer10, Navarro16, ZhanHaslbeck18.

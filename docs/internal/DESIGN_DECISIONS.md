@@ -11827,3 +11827,41 @@ Manuscript line numbers are deliberately not cited in the ledger row: every
 `:NNN` in that file is parsed as a Lean source pointer by
 `check_citations.ps1`, so an `rmq.tex:717` would be checked as one and fail.
 Adding two such references is what turned the checker red mid-repair.
+
+## DD-20260816-115 -- round 5 addendum: the correct "23" was changed and the wrong one left
+
+Status: Accepted. Date: 2026-08-16. Corrects DD-20260816-114.
+
+DD-114 recorded changing "all 23 bib entries" to 27 in `paper/NOVELTY_LOG.md`.
+**That edit was wrong and is reverted.**
+
+`paper/NOVELTY_LOG.md` §1.6 is a search record and the file dates it:
+`**Search date:** 2026-08-07`. `references.bib` held **23** entries then
+(`bb15006`, 2026-08-05) and did not reach 27 until `de510d0` on 2026-08-12 --
+five days later. The edit therefore asserted that a 2026-08-07 search had
+verified 27 entries that did not yet exist. It also widened the gap with the
+next line, "20 dblp API queries (one per entry...)", from 3 to 7.
+
+Meanwhile the occurrence that IS wrong was left untouched: the tally at `:671`
+says "Measured across all 23 entries **at the base commit**", and the base
+commit `0665b494` holds 27.
+
+**Two "23"s, one right and one wrong, and the round changed the right one.** The
+finding named both; the repair re-measured neither before applying. That is the
+failure the standing rule exists to prevent -- *an auditor's conclusion is an
+input to be checked* -- reproduced one entry after the entry recording it.
+
+Repaired now, and deliberately **not** by adjusting numerals:
+
+- §1.6's scope is restored to 23 and remains a search-date record.
+- The `:671` tally states its true anchor: 23 entries as of 2026-08-07, **not**
+  the base commit, with the four later additions explicitly not folded in. Every
+  `n/23` stands as a record. Re-deriving over 27 means re-auditing four receipt
+  sets, which is open work, not a number to edit.
+- §5's "Line numbers are at the base commit" is marked **HISTORICAL**, matching
+  `WORKLOG.md`'s treatment of its superseded entries. At `0665b494` the repairs
+  are already applied, §5.1's quoted "before" text is absent, and §5.7/§5.11's
+  cited `references.bib` lines hold different content.
+
+`paper/EVIDENCE_MATRIX.md` EV-03's "all 27 bib entries" is correct and stands:
+that row describes the substrate at the current pin, where the count is 27.
