@@ -387,7 +387,19 @@ function Test-CitationResolves {
         # scanning from the top of the file rather than by inspecting one line.
         if ($text -match '^\s*(--|/-|-/)') { continue }
         if (Test-InsideBlockComment -Lines $content -LineNumber $lineNo) { continue }
+        # String literals are prose too. `throwError "expected theorem foo"`
+        # satisfies the declaration-site pattern -- the keyword is preceded by a
+        # space, which is all `(^|\s)` asks for. Stripping literals costs
+        # nothing on real declaration lines, which contain none.
+        #
+        # KNOWN LIMIT, stated rather than implied: a `where`-clause binding
+        # `  foo : Nat := 3` matches the field-site pattern and would resolve a
+        # citation whose leaf is `foo`. Distinguishing it needs the enclosing
+        # declaration, which this line-local matcher does not have. It requires
+        # a cited line to be a `where` binding of the same leaf name as the
+        # declaration the row names; no row in this ledger is that shape.
         $code = ($text -split '--', 2)[0]
+        $code = [regex]::Replace($code, '"(?:[^"\\]|\\.)*"', '""')
         if ($code -match $declarationSite -or $code -match $fieldSite) {
           return @{ Ok = $true; File = $relative; Line = $lineNo; Name = $leaf; MissingFiles = $missingFiles }
         }

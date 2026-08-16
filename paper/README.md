@@ -23,8 +23,14 @@ depend on it and they are not the same claim:
 
 Because moving them restates a claim, they were not restamped on faith. At
 `688c54a3`: `lake build RMQ` exit 0; `scripts/axiom_check.lean` exit 0 with no
-`sorryAx` and no `ofReduceBool`; `scripts/ledger_decl_check.lean` confirms all
-**53** declaration names those rows cite are present in the environment. Both CI
+`sorryAx` and no `ofReduceBool`; `scripts/ledger_decl_check.lean` confirms the
+**54** fully-qualified declaration names those rows cite are present in the
+environment. Those rows also refer to further declarations in elided
+(`...ReviewerSuccessfulReadWordFits`), short and type-annotated forms, which
+that script cannot resolve as written and does not check; `paper/check_paper.ps1`
+step 5c reports how many, and fails if the checked set and the cited set differ.
+The figure was **53** and the word was "all" until 2026-08-16, when deriving the
+set from the ledger showed one cited name checked by nothing. Both CI
 workflows are green on `688c54a3`.
 
 **Corrected 2026-08-16.** This paragraph also claimed that all **27** `:NNN`

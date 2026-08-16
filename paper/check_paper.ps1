@@ -373,6 +373,59 @@ if ($markerCount -gt 1) {
 }
 InfoIfClean $before ("insertion-point marker: {0} in rmq.tex (0 = absorbed, 1 = pending, >1 fails)" -f $markerCount)
 
+# ------------------------- 5c. the decl-check list is DERIVED, not trusted
+#
+# `paper/README.md` says `scripts/ledger_decl_check.lean` confirms the
+# declaration names the ACCEPTED_BASE rows cite. That script checks a list
+# TRANSCRIBED BY HAND, and nothing compared the transcription to the ledger. It
+# was short by one: `...WholeQueryProgram.evalGlobalWordTrace_getElem?_producer`
+# was named by a row and checked by nothing, and the script's own count pin
+# could not see it -- a pin catches a list shrinking, not a list that never
+# grew. This derives the expected set from the ledger and compares both ways.
+$before = $failures
+$declCheckPath = Join-Path $PSScriptRoot '..\scripts\ledger_decl_check.lean'
+if (-not (Test-Path -LiteralPath $declCheckPath)) {
+  Fail 'scripts/ledger_decl_check.lean is missing; the ledger declaration-coverage check cannot run'
+} else {
+  $declCheckText = [IO.File]::ReadAllText($declCheckPath)
+  $listed = @([regex]::Matches($declCheckText, "(?m)^\s*``(RMQ\.[A-Za-z0-9_.'?]+),?\s*$") |
+    ForEach-Object { $_.Groups[1].Value })
+
+  # Declaration fields of ACCEPTED_BASE entries only. A field runs from its
+  # `- Declaration:` line to the next `- Field:` line.
+  $cited = @()
+  $unresolvable = @()
+  $entries = [regex]::Split($ledger, '(?m)^(?=#{2,4}\s+`?L-)')
+  foreach ($entry in $entries) {
+    if ($entry -notmatch '(?m)^- Status: ACCEPTED_BASE\s*$') { continue }
+    $m = [regex]::Match($entry, '(?ms)^- Declaration:(.*?)(?=^- [A-Za-z][A-Za-z ]*:|\z)')
+    if (-not $m.Success) { continue }
+    foreach ($t in [regex]::Matches($m.Groups[1].Value, '`([^`\r\n]+)`')) {
+      $tok = $t.Groups[1].Value
+      if ($tok -match '\.(lean|ps1|tex|md|json)$') { continue }
+      if ($tok -match "^RMQ\.[A-Za-z0-9_.'?]+$") { $cited += $tok }
+      else { $unresolvable += $tok }
+    }
+  }
+  $cited = @($cited | Sort-Object -Unique)
+  $unresolvable = @($unresolvable | Sort-Object -Unique)
+
+  $notChecked = @($cited | Where-Object { $listed -cnotcontains $_ })
+  $notCited   = @($listed | Where-Object { $cited -cnotcontains $_ })
+  if ($notChecked.Count -gt 0) {
+    Fail ("ledger_decl_check.lean omits {0} declaration(s) an ACCEPTED_BASE row cites: {1}" -f $notChecked.Count, ($notChecked -join ', '))
+  }
+  if ($notCited.Count -gt 0) {
+    Fail ("ledger_decl_check.lean checks {0} name(s) no ACCEPTED_BASE row cites: {1}" -f $notCited.Count, ($notCited -join ', '))
+  }
+
+  # Named-but-unresolvable references are NOT a failure -- elided (`...Foo`),
+  # short-form and annotated forms are legitimate ledger prose. They are the
+  # exact measure of what a green decl-check does NOT cover, so the number is
+  # printed rather than left for a reader to assume it is zero.
+  Info ("ledger declaration coverage: {0} fully-qualified name(s) checked; {1} further reference(s) named in elided/short/annotated form are outside the decl-check by construction" -f $cited.Count, $unresolvable.Count)
+}
+InfoIfClean $before 'ledger declaration coverage: the decl-check list is exactly the set the ACCEPTED_BASE rows cite'
 # ------------------------------------- 5b. ledger status counts are CHECKED
 #
 # `paper/EVIDENCE_MATRIX.md` publishes the ledger's status breakdown. It stated
@@ -396,8 +449,20 @@ $before = $failures
 $matrixPathForStatus = Join-Path $PSScriptRoot 'EVIDENCE_MATRIX.md'
 if (Test-Path -LiteralPath $matrixPathForStatus) {
   $matrixText = [IO.File]::ReadAllText($matrixPathForStatus)
+  # The vocabulary is read from the HEADER, not from the whole file. Scanning
+  # the whole file let a status permit itself: a bold `**BLOCKED_ONLY_ON: X**`
+  # written anywhere in the body joined the permitted set and then validated
+  # its own use. The header is the region up to the sentence that makes the
+  # claim, so the scope of the check is the scope of the claim.
+  $headerEnd = [regex]::Match($matrixText, 'No other status is permitted')
+  if (-not $headerEnd.Success) {
+    Fail 'EVIDENCE_MATRIX.md no longer states "No other status is permitted"; the status check has no header to read its vocabulary from'
+    $matrixHeader = ''
+  } else {
+    $matrixHeader = $matrixText.Substring(0, $headerEnd.Index)
+  }
   $permitted = @()
-  foreach ($m in [regex]::Matches($matrixText, '\*\*(CLOSED|BLOCKED_ONLY_ON:\s*[A-Z_]+)\*\*')) {
+  foreach ($m in [regex]::Matches($matrixHeader, '\*\*(CLOSED|BLOCKED_ONLY_ON:\s*[A-Z_]+)\*\*')) {
     $permitted += ($m.Groups[1].Value -replace '\s+', ' ')
   }
   $permitted = @($permitted | Sort-Object -Unique)

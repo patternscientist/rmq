@@ -11865,3 +11865,29 @@ Repaired now, and deliberately **not** by adjusting numerals:
 
 `paper/EVIDENCE_MATRIX.md` EV-03's "all 27 bib entries" is correct and stands:
 that row describes the substrate at the current pin, where the count is 27.
+
+## DD-20260816-116 -- The ledger declaration check now has a source of truth
+
+`scripts/ledger_decl_check.lean` holds `ledgerNames`, a list transcribed by hand
+from `paper/THEOREM_LEDGER.md`'s `ACCEPTED_BASE` rows, plus `expectedCount` as a
+floor so the list cannot be silently emptied.
+
+That floor is one-directional. It catches the list SHRINKING and cannot catch a
+list that never grew -- which is what happened: the `Declaration:` fields name
+**54** fully-qualified declarations and the list held **53**, omitting
+`RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace_getElem?_producer`. A
+row cited it and nothing checked it, through every green run of this script.
+
+Two changes. The name is added and `expectedCount` moves to 54. And
+`paper/check_paper.ps1` step 5c now **derives** the expected set by parsing the
+ledger, and fails if the derived set and `ledgerNames` differ in either
+direction. The Lean script keeps the count pin -- it guards a different failure
+-- but the transcription is no longer trusted.
+
+The `Declaration:` fields also name 27 declarations in forms this script cannot
+resolve as written: 15 elided (`...ReviewerSuccessfulReadWordFits`), 9 short-form
+without the `RMQ.` prefix, 3 carrying an inline type annotation. Step 5c prints
+that number. It is not a defect in the ledger; it is the size of what a green
+decl-check does not establish, and it was previously invisible to a reader of
+`paper/README.md`, which said the script confirmed **all** the names those rows
+cite.

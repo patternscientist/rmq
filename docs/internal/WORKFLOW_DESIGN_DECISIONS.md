@@ -10367,3 +10367,59 @@ the conflict-shape scan and the retired-value scan, which had the same whole-lin
 test. Three fixtures: a far marker must NOT excuse, a near marker must STILL
 excuse (so the rule is proximity and not a blanket removal), and the same pair on
 the retired-value path.
+
+## WDD-20260816-050 -- The ledger decl-check list was transcribed by hand and nothing compared it to the ledger
+
+`paper/README.md` said `scripts/ledger_decl_check.lean` "confirms **all** 53
+declaration names those rows cite are present". The script checks a list
+transcribed by hand from the ledger, and nothing compared the transcription to
+its source.
+
+Deriving the set instead of trusting it: the `ACCEPTED_BASE` `Declaration:`
+fields name **54** fully-qualified declarations. The list held 53.
+`RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace_getElem?_producer` was
+cited by a row and checked by nothing. The script's own `expectedCount` pin could
+not have caught it -- a pin catches a list shrinking, not a list that never grew.
+
+They also name **27** further declarations in forms the script cannot resolve as
+written: 15 elided (`...ReviewerSuccessfulReadWordFits`), 9 short-form, 3
+carrying an inline type annotation. That is not a defect in the ledger; it is the
+exact measure of what a green decl-check does not cover, and it was invisible.
+
+Three changes: the missing name is added (`expectedCount` 53 -> 54);
+`paper/check_paper.ps1` step 5c derives the expected set from the ledger and
+fails on a difference in either direction, and prints the unresolvable count
+rather than leaving a reader to assume it is zero; and the README says 54
+fully-qualified names and names what is outside the check, instead of "all".
+
+An audit reported this as "64 declarations, 11 absent". That figure comes from
+counting every backticked dotted token, which includes five filenames, a SHA, and
+five prose references. The direction was right and the numbers were not -- so the
+numbers here are the measured ones, and the finding was checked before it was
+adopted.
+
+## WDD-20260816-051 -- The evidence-matrix status vocabulary was read from the whole file
+
+`paper/check_paper.ps1` parses the permitted status vocabulary out of
+`EVIDENCE_MATRIX.md` rather than restating it, so that adding a status requires
+amending the header -- the property the header claims to have.
+
+It scanned the whole file. A bold `**BLOCKED_ONLY_ON: SOMETHING_NEW**` written
+anywhere in the body would join the permitted set and then validate its own use.
+The vocabulary is now read only from the region above the sentence
+"No other status is permitted", and its absence is a failure rather than an empty
+permitted set -- the scope of the check is now the scope of the claim.
+
+## WDD-20260816-052 -- String literals satisfied the citation checker's declaration-site test
+
+`paper/check_citations.ps1` strips `--` comments before deciding whether a line
+DECLARES the cited name. It did not strip string literals, and the pattern only
+requires whitespace before the keyword -- so `throwError "expected theorem foo"`
+is a declaration site for `foo`. No ledger row currently resolves this way; the
+strip costs nothing on real declaration lines, which contain no literals.
+
+One limit is now STATED rather than implied, in the checker itself: a
+`where`-clause binding `  foo : Nat := 3` matches the field-site pattern.
+Distinguishing it needs the enclosing declaration, which a line-local matcher
+does not have. No row in this ledger has that shape, and saying so is better than
+a comment that implies the case was handled.

@@ -83,6 +83,7 @@ def ledgerNames : List Lean.Name :=
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases,
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQSilentSparseLevelChargedTraceCost_eq,
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_eq_of_orderedFootprint,
+  `RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace_getElem?_producer,
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical,
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne,
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_successful_reads_backed_by_counted_flat_payload_of_footprint_global,
@@ -94,8 +95,17 @@ def ledgerNames : List Lean.Name :=
   `RMQ.leftmostArgMin_unique
 ]
 
-/-- Floor on the transcribed list, so silently emptying it cannot pass. -/
-def expectedCount : Nat := 53
+/-- Floor on the transcribed list, so silently emptying it cannot pass.
+
+`54` since 2026-08-16. The list is TRANSCRIBED from the ledger by hand, and a
+hand-maintained list beside the thing it tracks drifts: it sat at 53 while the
+`ACCEPTED_BASE` `Declaration:` fields named 54 fully-qualified declarations, so
+`RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace_getElem?_producer` was
+cited by a row and checked by nothing. The count pin below cannot catch that --
+it only catches the list SHRINKING. What catches it is the set-equality check in
+`paper/check_paper.ps1` step 5c, which derives the expected set from the ledger
+and compares. -/
+def expectedCount : Nat := 54
 
 /-- A name that must NOT resolve. Guards against an `env.find?` that always
 succeeds -- a check that finds everything is as useless as one that finds
