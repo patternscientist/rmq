@@ -183,8 +183,7 @@ if ($LASTEXITCODE -ne 0) { Fail "lake build RMQPaper failed" }
 # M1R3-MUTATION-RUNNER-GATE-ANCHOR
 # The exact 41-case M1 certificate/public-dependency replay runs once in the
 # aggregate gate. Its exit code is propagated before later certification.
-& "$PSScriptRoot\m1_certificate_mutation_regression.ps1"
-if ($LASTEXITCODE -ne 0) { Fail "m1_certificate_mutation_regression.ps1 found issues" }
+Invoke-Checker -Path "$PSScriptRoot\m1_certificate_mutation_regression.ps1"
 
 # EG-CP-REPLAY-GATE-ANCHOR
 # The two committed EG-CP architecture replays run from the aggregate.
@@ -200,11 +199,9 @@ if ($LASTEXITCODE -ne 0) { Fail "m1_certificate_mutation_regression.ps1 found is
 # Found by the 2026-08-15 fresh-blind audit (P1-2), after surviving two prior
 # fresh-blind audits and a coordinator review.  Exit codes propagate; each
 # runner keeps its own clean-tree and hash-restoration checks.
-& "$PSScriptRoot\eg_cp_stagea_replay.ps1"
-if ($LASTEXITCODE -ne 0) { Fail "eg_cp_stagea_replay.ps1 found issues" }
+Invoke-Checker -Path "$PSScriptRoot\eg_cp_stagea_replay.ps1"
 
-& "$PSScriptRoot\eg_cp_final_falsification_replay.ps1"
-if ($LASTEXITCODE -ne 0) { Fail "eg_cp_final_falsification_replay.ps1 found issues" }
+Invoke-Checker -Path "$PSScriptRoot\eg_cp_final_falsification_replay.ps1"
 
 lake build RMQHub
 if ($LASTEXITCODE -ne 0) { Fail "lake build RMQHub failed" }
@@ -352,6 +349,9 @@ if ($LASTEXITCODE -ne 0) { SoftFail "git diff --check found issues" }
 # shorter green run. The list is the gate's advertised coverage, so it is
 # written out rather than derived from the calls it is checking.
 $expectedCheckers = @(
+  'm1_certificate_mutation_regression.ps1',
+  'eg_cp_stagea_replay.ps1',
+  'eg_cp_final_falsification_replay.ps1',
   'project_skill_preflight_regression.ps1',
   'worker_prompt_preflight_regression.ps1',
   'design_decision_check_regression.ps1',
@@ -375,7 +375,20 @@ $unadvertised = @($script:checkersRun | Where-Object { $expectedCheckers -cnotco
 if ($unadvertised.Count -gt 0) {
   SoftFail ("{0} checker(s) ran that the roster does not list: {1}" -f $unadvertised.Count, ($unadvertised -join ', '))
 }
-Write-Host ("GATE COVERAGE: {0} of {1} advertised checkers invoked" -f ($script:checkersRun.Count), ($expectedCheckers.Count))
+# And no call site may bypass Invoke-Checker. The roster above is written by
+# hand, so it catches a checker dropped from the gate -- but it cannot catch a
+# checker that was never converted, because I would omit it from both. Three
+# were: the M1 mutation regression and both replays kept the raw pattern while
+# WDD-20260816-046 said "all sixteen call sites" go through the helper. This
+# reads the gate's own source and fails on any surviving raw invocation, which
+# is the check the roster could not be.
+$gateSource = Get-Content -Raw -LiteralPath $PSCommandPath
+$rawCallSites = @([regex]::Matches($gateSource, '(?m)^&\s*"\$PSScriptRoot\[^"]+\.ps1"'))
+if ($rawCallSites.Count -gt 0) {
+  SoftFail ("{0} sub-checker call site(s) bypass Invoke-Checker and would score a non-running checker as PASS: {1}" -f `
+    $rawCallSites.Count, (($rawCallSites | ForEach-Object { $_.Value }) -join '; '))
+}
+Write-Host ("GATE COVERAGE: {0} of {1} advertised checkers invoked; {2} raw call site(s)" -f ($script:checkersRun.Count), ($expectedCheckers.Count), $rawCallSites.Count)
 if ($script:issues.Count -gt 0) {
   Write-Host ""
   Write-Host "GATE FAIL: $($script:issues.Count) check(s) failed. ALL of them:"

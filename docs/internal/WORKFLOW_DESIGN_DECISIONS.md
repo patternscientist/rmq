@@ -10284,9 +10284,14 @@ Two changes:
 1. `Invoke-Checker` removes `$LASTEXITCODE` before the call, so "still undefined
    afterwards" is decidable, and catches the exception so a throw is
    distinguishable from a clean run that never called `exit`. A missing file is
-   named as a missing file, not reported as a pass. All sixteen call sites and
+   named as a missing file, not reported as a pass. All `.ps1` call sites and
    step 7c now go through it. `lake` gets a single `Get-Command` assertion for
    the same reason, since the build stages have the same shape.
+
+   **That sentence read "All sixteen call sites" when written, and was false:
+   fourteen were converted and three were not. Corrected in place; the
+   measurement, and what it says about the roster pin below, are
+   WDD-20260816-054.**
 
 2. A **roster pin**. `Invoke-Checker` turns "the checker is gone" into a failure;
    the roster turns "the CALL to the checker is gone" into one too. An edit that
@@ -10450,3 +10455,50 @@ One incidental: the readWord pin needs its three implicit binders NAMED in the
 `Nat`/`Prop` mismatch that reads like a statement error rather than a binder one.
 The comment above it says so, because the next person to widen that pin will hit
 it.
+
+## WDD-20260816-054 -- Three call sites the previous entry said it had converted
+
+Corrects WDD-20260816-046, which said "All sixteen call sites and step 7c now go
+through it."
+
+Measured: **14 converted, 3 not.** `m1_certificate_mutation_regression.ps1`,
+`eg_cp_stagea_replay.ps1` and `eg_cp_final_falsification_replay.ps1` kept the raw
+`& script; if ($LASTEXITCODE -ne 0) { Fail ... }` shape -- the three heaviest
+stages in the gate, and the three whose silent non-execution would be least
+visible.
+
+**The roster pin could not catch this, by construction.** It is a hand-written
+list of what the gate should invoke, and I wrote it from the same incomplete
+enumeration I converted from, so the roster and the calls agreed with each other
+and both were short. A hand-maintained list beside the thing it tracks -- the
+species this project keeps rediscovering, here inside the fix for a different
+instance of it.
+
+What catches it is a check that reads the gate's own source and fails on any
+surviving `^& "$PSScriptRoot\...ps1"` invocation. That is not derivable from the
+roster and does not agree with it by construction; it asks a different question
+-- "is there a call site that bypasses the helper?" -- and it answers `3` on the
+tree this entry corrects.
+
+Found by re-deriving the program plan's `gate.ps1` line citations after the
+helper shifted them. The re-derivation was for the plan's benefit; the defect it
+exposed was in the gate.
+
+### The wiring regression had to move with it
+
+`design_decision_check_regression.ps1` pins the gate's wiring for two checkers by
+exact text, so converting them broke it -- correctly. The pin now matches the
+`Invoke-Checker` shape, and expresses "the design regression is HARD" as the
+ABSENCE of `-Soft` **plus** the helper's non-Soft branch actually calling `Fail`.
+Pinning the call text alone would still pass if that branch were weakened to
+`SoftFail`.
+
+Verified by mutation rather than assumed: adding `-Soft` to that one call site
+makes the regression exit 1; restoring it returns exit 0.
+
+One trap worth recording. The new patterns first ended `[^\r\n]*$` and matched
+**nothing**, silently: these files are CRLF, .NET's multiline `$` matches before
+`\n`, and a class excluding `\r` cannot consume the `\r` in between. The original
+patterns ended `\s*$` for exactly this reason. A pattern that matches nothing and
+a pattern that matches correctly produce the same exit code on a well-formed
+file, so only the negative control distinguishes them.

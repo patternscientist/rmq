@@ -351,9 +351,22 @@ Write-Host "DESIGN-CHECK-REGRESSION: PASS [case-verdict-drift-control] REJECT"
 Write-Host "DESIGN-CHECK-REGRESSION: PASS [exact-case-registry] $($cases.Count) ordered cases"
 
 $gateText = Get-Content -Raw -LiteralPath $gatePath
-$designInvocationPattern = '(?m)^\s*& "\$PSScriptRoot\\design_decision_check_regression\.ps1"\s*$'
-$claimInvocationPattern = '(?m)^\s*& "\$PSScriptRoot\\claim_drift_policy_regression\.ps1"\s*$'
-$designPropagationPattern = '(?ms)& "\$PSScriptRoot\\design_decision_check_regression\.ps1"\s*\r?\nif \(\$LASTEXITCODE -ne 0\) \{ Fail "design_decision_check_regression\.ps1 found issues" \}'
+# Wiring moved from `& script; if ($LASTEXITCODE -ne 0) { Fail ... }` to
+# Invoke-Checker (WDD-20260816-046): the old shape scored a checker that never
+# ran as a PASS. The property defended here is unchanged -- each regression is
+# invoked exactly once, and the design one is HARD, its failure stopping the
+# gate rather than being collected. Under Invoke-Checker that is the ABSENCE
+# of -Soft, so the absence is asserted, together with the helper's non-Soft
+# branch actually calling Fail -- pinning the call text alone would still pass
+# if that branch were weakened to SoftFail.
+# The tails end `\s*$` rather than `$`: these files are CRLF, and .NET's
+# multiline `$` matches before `\n`, not before the `\r` preceding it. A
+# character class excluding `\r` cannot consume it, so the anchor never lands.
+# The original patterns had `\s*$` for the same reason; dropping it silently
+# turned both counts to zero.
+$designInvocationPattern = '(?m)^\s*Invoke-Checker -Path "\$PSScriptRoot\\design_decision_check_regression\.ps1"(?![^\r\n]*-Soft)[^\r\n]*\s*$'
+$claimInvocationPattern = '(?m)^\s*Invoke-Checker -Path "\$PSScriptRoot\\claim_drift_policy_regression\.ps1"[^\r\n]*\s*$'
+$designPropagationPattern = '(?ms)if \(\$Soft\) \{ SoftFail \$m; return \}\s*\r?\n\s*Fail \$m'
 if ([regex]::Matches($gateText, $designInvocationPattern).Count -ne 1 -or
     [regex]::Matches($gateText, $claimInvocationPattern).Count -ne 1 -or
     -not [regex]::IsMatch($gateText, $designPropagationPattern)) {
