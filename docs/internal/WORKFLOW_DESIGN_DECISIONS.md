@@ -10328,3 +10328,24 @@ through.
 
 This mattered now rather than later: the next action on this branch is to create
 `audit-v1-rc-4` and hand it to an outside auditor.
+
+## WDD-20260816-048 -- The claim-drift scan never read `paper/`
+
+`scripts/claim_drift_scan.ps1` defaulted to
+`$Path = @("README.md", "artifact", "docs")`.
+
+`paper/` was not among them. The manuscript, the novelty log, the theorem ledger
+and the evidence matrix -- the most public claim surfaces in the release
+candidate -- were outside the scan the aggregate gate advertises over it. The
+scan reported `PASS` having never opened them.
+
+Adding the root produced eight strict failures on the first run. **All eight are
+lines that PROHIBIT the phrase they contain**: `NOVELTY_LOG.md`'s restrictions
+("No claim of the form ...", "Retire outright ..."), `check_paper.ps1`'s own
+forbidden-phrase table, and a `THEOREM_LEDGER.md` amendment recording the removal
+of a tightness claim. So the policy was widened in the same change --
+`CLAIM_DRIFT_POLICY.json` version 24 -- with the allowance keyed to the
+prohibiting language (`restriction`, `retire`, `killed by`, `no claim`,
+`amended`, `this row said`) rather than granted to the path wholesale. A path
+allowance would have exempted future prose in those files; a language allowance
+exempts the sentence shape that is actually safe.

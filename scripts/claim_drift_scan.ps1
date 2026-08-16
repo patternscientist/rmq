@@ -14,7 +14,14 @@ param(
   # Verify the process-record exclusion actually excludes. See below.
   [switch]$SelfTest,
   [string]$PolicyPath = "docs/internal/CLAIM_DRIFT_POLICY.json",
-  [string[]]$Path = @("README.md", "artifact", "docs")
+  # `paper` since 2026-08-16. It was absent, so the manuscript, the novelty log,
+  # the theorem ledger and the evidence matrix -- the most public claim surfaces
+  # in the release candidate -- were outside the scan the aggregate gate
+  # advertises over it. Adding the root produced eight strict failures on the
+  # first run, all in lines that PROHIBIT the phrase they contain; the policy
+  # allowances for those two terms were widened in the same change, and the
+  # allowance is keyed to the prohibiting language rather than to the path.
+  [string[]]$Path = @("README.md", "artifact", "docs", "paper")
 )
 
 $ErrorActionPreference = "Continue"
