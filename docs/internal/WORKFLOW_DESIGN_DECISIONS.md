@@ -10011,9 +10011,9 @@ Measured strength, which is the only honest way to state this:
 |---|---|
 | any backticked identifier in the row | 570 of 1,617 lines |
 | only `- Declaration:` names | 35 of 746 lines |
-| a declaration site (current) | **2 of 861 lines** |
+| a declaration site (current) | **2 of 209 lines** |
 
-24 of the 26 cited names have exactly one satisfying line in their file. All
+26 of the 26 cited names have exactly one satisfying line in their file. All
 seven known rots now fail; all 27 real citations still resolve.
 
 **Round 1's comment claimed "genuine rot (a citation 29 or 1,090 lines away)
@@ -10074,7 +10074,7 @@ field assignment, docstring mention, proof step -- each required to fail.
 
 **This is the third round in which the citation checker was narrowed rather than
 fixed, and each round's commit message claimed the kind was addressed.** The
-progression is real (570/1617 -> 35/746 -> 2/861 -> declaration sites only) and
+progression is real (570/1617 -> 35/746 -> 2/209 -> declaration sites only) and
 each stated conclusion outran it.
 
 ### The constant guard's injection verification never exercised its shape
@@ -10196,11 +10196,18 @@ Companion to DD-20260816-114.
 
 | rule | worst case |
 |---|---|
-| a declaration site (current) | 2 of **861** lines |
+| a declaration site (current) | 2 of **861** lines  *(as published; the denominator is wrong -- see below)* |
 
 and "**24** of the 26 cited names have exactly one satisfying line".
 
-Both were correct when written in round 2. Round 3 tightened `$fieldSite` from
+The "24 of 26" was correct when written in round 2; the "861" never was. **No
+tracked file has ever had 861 lines** -- not at `acfb7ef`, not at `b0b83b9`, not
+at the pin. It is an off-by-one on the 860-line packed capstone: `($raw -split
+"`n").Count` returns one more than the line count when the file ends with a
+newline. So the table published a denominator produced by a measurement bug and
+carried it through three rounds, while the numerator beside it was real.
+
+Round 3 tightened `$fieldSite` from
 `\s*:` to `\s*:(?!=)` -- the repair that stopped field *assignments* counting as
 declaration sites -- and that removed exactly the two exceptions behind "24 of
 26". The figures were not re-derived. Current, measured by replaying the
@@ -10215,3 +10222,29 @@ Note also how the error survived review: a later auditor confirmed "24 of 26"
 and reported it VERIFIED. That measurement was taken against the pre-round-3
 predicate, and was correct about a rule the code no longer had. An independent
 confirmation is only as current as the code it was run against.
+
+## WDD-20260816-045 -- "861" was never a file length, and my correction to it was also wrong
+
+Amends WDD-20260816-044.
+
+`-044` corrected "2 of 861 lines" to "2 of 209" and explained the provenance as:
+"Both were correct when written in round 2." **That explanation is false.** No
+tracked file has ever had 861 lines -- not at `acfb7ef` (round 2), not at
+`b0b83b9`, not at the pin. Measured by enumerating every tracked path and
+counting lines at each commit.
+
+The real provenance is a measurement bug: `($raw -split "`n").Count` returns one
+more than the line count for a file ending in a newline, and the packed capstone
+has **860** lines. The table published a denominator that never described
+anything, and three rounds of review -- including one that confirmed the
+neighbouring figure as VERIFIED -- carried it forward.
+
+So the figure was wrong, the correction to the figure was right, and the
+explanation attached to the correction was wrong. **A repair is a claim too**,
+and this one asserted a provenance nobody had measured.
+
+The two other surfaces carrying the number are corrected in the same change:
+WDD-20260816-042's progression line and the program plan's §J item 1 / lineage
+species 1, which quoted this table faithfully -- which is the failure mode
+`§A.2b` names, committed inside the rule item titled "A checker is worth exactly
+what it measures".
