@@ -11676,3 +11676,70 @@ Also corrected: `paper/WORKLOG.md`'s undated scope preamble ("stays provisional
 ... one marked insertion point"), annotated historical like its `Base:` line; and
 the ledger header's `PROVISIONAL_ARCHITECTURE` definition, which described a
 marked insertion point that no longer exists and which no row now holds.
+
+## DD-20260816-112 -- round 3: corrections to DD-109, DD-111 and the manuscript
+
+Status: Accepted. Date: 2026-08-16. A third agent audit, of the round-2
+corrections. Every finding reproduced.
+
+### DD-20260816-109 named the wrong structure
+
+That entry says the lower bound's force "is all in
+`ExactRMQShapeEncoding.query_exact`". It is not.
+`exactRMQ_tight_fixed_length_payload_space_bound`
+(`RMQ/Core/EncodingLowerBound.lean:1840`) quantifies over
+**`ExactRMQStateEncoding`** and never mentions `ExactRMQShapeEncoding`. They are
+two distinct structures with two distinct `query_exact` fields
+(`:104` and `:136`); the only bridge is
+`exactRMQShapeEncoding_of_stateEncoding` (`:164`), which neither the entry nor
+the `.lean` docstring cited.
+
+Consequences, stated plainly:
+
+- The three counterfactuals (`query_ne_none`, `null_decoder_impossible`,
+  `wrong_answer_impossible`) constrain `ExactRMQShapeEncoding.query_exact`, which
+  is **not** the field the cited theorem quantifies over.
+- The inhabitation witness in the theorem's third conjunct is a
+  `StateEncoding`, so it does not discharge the trailing `example`'s assumed
+  `encoding : ExactRMQShapeEncoding 1 bits`. DD-109's "the null decoder is
+  demonstrably the only unmet premise" is **false**: the encoding is assumed too.
+
+This is the shape of `WDD-20260816-032`'s own `P2-1` -- "the checker guarded a
+sibling theorem while the published cap's actual supplier was unguarded" --
+committed again, one round later, by the entry that cites that lesson.
+
+The counterfactuals are not worthless: `exactRMQShapeEncoding_of_stateEncoding`
+sets `query_exact := encoding.query_exact`, so the two fields are coupled by
+construction. But coupling by construction is an argument, and the entry
+presented it as a guard. **The honest scope is: the counterfactuals establish
+that `ExactRMQShapeEncoding.query_exact` is not trivially satisfiable, and reach
+`ExactRMQStateEncoding` only through a bridge the entry did not name.** Retargeting
+them at the structure the theorem actually quantifies over is open work.
+
+### DD-20260816-111's own line citations are wrong
+
+It cites `EVIDENCE_MATRIX.md:140` for the "exactly one marker" sentence. That
+text is at `:133` in the commits it describes and `:147` at HEAD; `:140` is
+right at no commit. It also says the RC-4 amendment "named lines 128, 129-130
+and 149" -- the amendment names no line numbers at all and enumerates by
+quotation.
+
+Citation rot inside the entry announcing the citation-rot fix. Corrected here by
+quotation rather than by line number, which is the practice the same entry
+recommends.
+
+### `paper/rmq.tex:693` -- the fifth stale statement
+
+The reproduction-commands list described `check_paper.ps1` as verifying "the
+single pending-architecture insertion point". There are none, and the checker
+permits at most one. This line survived DD-105's sweep of four unabsorbed
+assertions, DD-110's round-1 sweep and DD-111's round-2 sweep -- in the primary
+release artifact. Now corrected, and the list also names the two checks added
+since (status vocabulary, source citations).
+
+### `paper/WORKLOG.md`'s verification inventory
+
+It asserts 18 line references were "verified by direct grep/read this session".
+`SuccinctRMQClassic.lean:1324` was wrong at `1490c97b`, the base that sentence
+names. The RC-4 round corrected the pointer in the ledger and left this sentence
+standing -- the same defect as DD-110's README finding, in a second file.

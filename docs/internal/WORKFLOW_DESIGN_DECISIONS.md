@@ -10047,3 +10047,79 @@ Failures=1` comes out identical to a healthy run and "failed for the reason unde
 test" is otherwise indistinguishable from "fixture never got written".
 
 Every patch in this round asserts its search text is present before writing.
+
+## WDD-20260816-042 -- round 3: the field-assignment hole, and a verification that never ran
+
+### `name :=` was a declaration site
+
+`$fieldSite` was `'^\s*' + name + '\s*:'`, unanchored on the right, so it matched
+a field **assignment** as well as a field **declaration**. Those are opposite
+things: a declaration states a type, an assignment discharges it inside a proof.
+
+Live, not hypothetical: `ReviewerArchitectureCapstone.lean:771` is
+`allocation_two_n_plus_rho :=` inside the `refine { ... }` proving the capstone.
+Moving L-PACK-01's `field 8 at :356` to `:771` -- 415 lines of drift, off the
+structure and into a proof -- reported `RESULT: PASS`.
+
+Comment text was also accepted: `-- theorem foo` and a docstring mentioning
+`theorem foo` both satisfied the declaration pattern.
+
+Fixed: the field pattern is `\s*:(?!=)`, whole-line comments are skipped, and a
+`--` tail is stripped before matching. Round 2's claim that "proof steps,
+hypothesis lines, imports, prose ... is rejected" was **false when written**;
+three of those four were accepted.
+
+A persistent self-test now checks four non-declaration shapes at once -- comment,
+field assignment, docstring mention, proof step -- each required to fail.
+
+**This is the third round in which the citation checker was narrowed rather than
+fixed, and each round's commit message claimed the kind was addressed.** The
+progression is real (570/1617 -> 35/746 -> 2/861 -> declaration sites only) and
+each stated conclusion outran it.
+
+### The constant guard's injection verification never exercised its shape
+
+`WDD-20260816-035` quotes its proof as inserting ``revised: at most **`214`**``.
+The declared shape is `` 'at most\*\* `{VALUE}`' `` -- it requires
+``at most** ` ``, and the quoted text has a space before the bold marker. **The
+shape could not match the text the entry cites as its verification.** Injecting
+the quoted string exits 0 on all seven `210` surfaces.
+
+The shape is nonetheless correct and was not loosened: broadening it to
+`at most\*{0,2} *` makes it match the *other* constant's legitimate
+``at most `427` `` claim and report a conflict that is not one. The defect was in
+the record, not the detector.
+
+What is now enforced instead: **a declared claim shape that matches nothing in
+its file is a failure.** A shape protecting nothing was previously
+indistinguishable from one that works -- the same equivalence that made three
+no-op patches look like repairs.
+
+### The standing limitation, stated rather than closed
+
+The conflict scan is **shape-limited by construction**. It catches a conflicting
+numeral phrased in one of a surface's 1-2 declared shapes; a conflict phrased any
+other way changes no `210` count, satisfies every anchor, matches no shape, and
+passes. Seven of nine surfaces carry exactly one shape.
+
+`WDD-20260816-035` presented this class as closed. It is not, and no shape-based
+detector can close it. Recorded as a residual with its mechanism, because the
+alternative -- a topic-word scan over every backticked numeral -- produced false
+positives on unrelated constants (`13`, `427`) on first trial.
+
+### `c9ca9ff` does not pass the per-commit governance check
+
+It changes `paper/rmq.tex` only, which `Get-PathDisposition` classifies as
+code-sensitive, with no `DESIGN_DECISIONS.md` update:
+`design_decision_check.ps1 -Base HEAD~1 -Strict` exits 1. Twelve of thirteen
+commits pass; this one does not.
+
+**The breach is invisible to CI.** `ci.yml` runs the check once at the tip
+against its parent (push) or once against the whole branch diff (PR). In PR mode
+other commits contribute `DESIGN_DECISIONS.md` to the aggregate diff, satisfying
+the membership test for every code-sensitive file in the range. So the invariant
+the repo states -- every commit carries its design-log update -- is not the
+invariant CI enforces, and this violation would never have surfaced.
+
+Repaired by rewriting the commit with its entry. The CI gap is recorded as a
+residual: making CI enforce per-commit would require iterating the range.

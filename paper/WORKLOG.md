@@ -85,8 +85,9 @@ as a record rather than rewritten.
 - `THEOREM_LEDGER.md`: 34 rows (2 reference-semantics, 20 upper-bound and
   adequacy, 2 lower-bound, 3 spokes, 1 PROVISIONAL_ARCHITECTURE, 6 OPEN),
   each ACCEPTED_BASE row pinned to `1490c97b...` with declaration and file
-  verified by direct grep/read this session (line references included where
-  read directly: Spec.lean:34/:48, SuccinctRMQClassic.lean:114/:1198/:1233/
+  verified by direct grep/read this session -- **one of those line references
+  was wrong; see the 2026-08-16 correction below** -- (line references included
+  where read directly: Spec.lean:34/:48, SuccinctRMQClassic.lean:114/:1198/:1233/
   :1240/:1256/:1282/:1324, EncodingLowerBound.lean:1650/:1654/:1840/:1878,
   ReviewerPhysical.lean:1474, SuccinctFinalRAM.lean:9349,
   RankSelectPublic/Capstones.lean:244, BPNavigationPublic.lean:1666,
@@ -178,3 +179,23 @@ attribution allowance rather than a weakening of the pattern.
 
 `check_paper.ps1 -SelfTest` exit 0; `latexmk` clean rebuild exit 0, 15 pages,
 zero undefined citations or references.
+
+## 2026-08-16 -- correction to the declaration-verification inventory above
+
+The inventory says every listed line reference was "verified by direct
+grep/read this session". **`SuccinctRMQClassic.lean:1324` was not right at
+`1490c97b`, the base this log names.** At that commit `:1324` is
+`theorem queryCostedWithStore_eq_of_orderedReadFootprint`, while the row that
+cites it (`L-UB-12`) names
+`queryTraceResultWithStore_eq_of_orderedReadFootprint`, which is at `:1298`.
+The other 17 references resolve.
+
+The pointer was corrected in `THEOREM_LEDGER.md` during the RC-4 round, and
+this sentence -- which asserts the pointers were checked -- was left standing.
+That is the same defect the round found in `paper/README.md` and recorded as
+DD-20260816-110: **fixing a claim at its origin is not fixing the claim.** It
+was found by a third audit, not by the round that corrected the pointer.
+
+Line references are now machine-checked by `paper/check_citations.ps1`, which
+covers `THEOREM_LEDGER.md`. This log is not covered; the correction above is a
+one-time manual pass over its 18 references, not a standing guarantee.

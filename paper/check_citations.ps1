@@ -332,17 +332,32 @@ function Test-CitationResolves {
     # like it passed. "Mentions the name somewhere" is not "is the declaration".
     #
     # Accepted shapes: a Lean declaration keyword followed by the name, or a
-    # structure field / anonymous-constructor field `name :`. Everything else --
-    # proof steps, hypothesis lines, imports, prose -- is rejected.
+    # structure field declaration `name :`. Rejected: proof steps, hypothesis
+    # lines, imports, prose, comments, and field ASSIGNMENTS.
+    #
+    # `name :=` is the trap. The field pattern was `\s*:` unanchored on the
+    # right, so it matched `allocation_two_n_plus_rho :=` -- a field assignment
+    # inside the `refine { ... }` that PROVES the capstone, 415 lines below the
+    # structure. L-PACK-01's `field 8 at :356` could be moved to `:771` and the
+    # run still reported PASS. A field declaration states a type; a field
+    # assignment discharges it. Only the former is a declaration site, so the
+    # right-hand side must not be `=`.
+    #
+    # Comment text is stripped before matching for the same reason: `-- theorem
+    # foo` and a docstring mentioning `theorem foo` are prose about a
+    # declaration, not one.
     foreach ($leaf in $leaves) {
       $escaped = [regex]::Escape($leaf)
       $declarationSite =
         '(^|\s)(theorem|lemma|def|abbrev|structure|inductive|instance|axiom|opaque|example)\s+' +
         $escaped + "(?![A-Za-z0-9_'.])"
-      $fieldSite = '^\s*' + $escaped + "(?![A-Za-z0-9_'.])\s*:"
+      $fieldSite = '^\s*' + $escaped + "(?![A-Za-z0-9_'.])\s*:(?!=)"
       for ($lineNo = $Start; $lineNo -le $upper; $lineNo++) {
         $text = $content[$lineNo - 1]
-        if ($text -match $declarationSite -or $text -match $fieldSite) {
+        # Drop comment text: a whole-line comment, and any `--` tail.
+        if ($text -match '^\s*(--|/-|-/)') { continue }
+        $code = ($text -split '--', 2)[0]
+        if ($code -match $declarationSite -or $code -match $fieldSite) {
           return @{ Ok = $true; File = $relative; Line = $lineNo; Name = $leaf; MissingFiles = $missingFiles }
         }
       }
@@ -528,6 +543,38 @@ if ($SelfTest) {
         exit 1
       }
       Write-Host "CITATIONS SELFTEST: ok -- the doc-comment window is bounded"
+
+      # (c) NON-DECLARATION SHAPES. Each of these mentions the name in a context
+      #     that is not a declaration. A field ASSIGNMENT (`name :=`) is the one
+      #     that bit: it appears in the `refine { ... }` proving a structure,
+      #     hundreds of lines from the structure itself, and an unanchored
+      #     `name\s*:` pattern matched it. L-PACK-01 could be moved 415 lines
+      #     into a proof and still report PASS.
+      $decoy = @(1..60 | ForEach-Object { "  filler" })
+      $decoy[9]  = "-- theorem decoy_target is described here"      # comment
+      $decoy[19] = "  decoy_target := by simp"                      # field assignment
+      $decoy[29] = "/-- Mentions theorem decoy_target in prose. -/" # docstring
+      $decoy[39] = "  exact decoy_target xs left right"             # proof step
+      [IO.File]::WriteAllLines((Join-Path $fixtureRoot "Fake\D.lean"), $decoy)
+      if (-not (Test-Path -LiteralPath (Join-Path $fixtureRoot "Fake\D.lean"))) {
+        Write-Host "CITATIONS SELFTEST: RESULT: FAIL (non-declaration fixture source was not written)"
+        exit 1
+      }
+      foreach ($decoyLine in @(10, 20, 30, 40)) {
+        $decoyLedger = Join-Path $fixtureRoot ("decoy" + $decoyLine + ".md")
+        [IO.File]::WriteAllText($decoyLedger,
+          "#### L-FX-03`n- Declaration: ``decoy_target```n- File: ``Fake/D.lean`` (:$decoyLine)`n- Proposition: x`n")
+        $decoyResult = Invoke-CitationCheck -LedgerPath $decoyLedger -Root $fixtureRoot
+        if ($decoyResult.Total -lt 1) {
+          Write-Host "CITATIONS SELFTEST: RESULT: FAIL (decoy fixture at :$decoyLine parsed 0 citations)"
+          exit 1
+        }
+        if ($decoyResult.Failures -lt 1) {
+          Write-Host "CITATIONS SELFTEST: RESULT: FAIL (a citation to line $decoyLine resolved; that line mentions the name but does not declare it)"
+          exit 1
+        }
+      }
+      Write-Host "CITATIONS SELFTEST: ok -- comments, field assignments and proof steps are not declaration sites"
     } finally {
       if (Test-Path -LiteralPath $fixtureRoot) {
         Remove-Item -LiteralPath $fixtureRoot -Recurse -Force -ErrorAction SilentlyContinue

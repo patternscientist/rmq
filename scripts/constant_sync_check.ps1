@@ -163,6 +163,14 @@ function Get-SurfaceFailures {
 
   foreach ($shapeSpec in $conflictShapes) {
     $shape = $shapeSpec -replace '\{VALUE\}', '(\d+)'
+    # A shape matching nothing is silent non-protection. WDD-20260816-035
+    # reported this hole closed and quoted an injection its own shape could not
+    # match ("at most **`214`**" against a shape requiring "at most** `"), so
+    # the verification never exercised the shape it claimed to verify.
+    if (-not [regex]::IsMatch($Text, ($shapeSpec -replace '\{VALUE\}', [regex]::Escape($Actual)))) {
+      $out += ("{0}: {1} declares claim shape /{2}/ but nothing in the file matches it with the current value; the shape protects nothing" -f `
+        $ConstantName, $SurfacePath, $shapeSpec)
+    }
     foreach ($hit in [regex]::Matches($Text, $shape)) {
       if ($hit.Groups[1].Value -eq $Actual) { continue }
       # A historical line may legitimately restate a superseded value.
