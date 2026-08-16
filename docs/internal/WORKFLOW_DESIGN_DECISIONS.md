@@ -9529,3 +9529,95 @@ full aggregate gate plus both ownership jobs on the tagged commit; the local
 Windows run is cited for `60c81ae` and the delta is stated rather than papered
 over. The alternative -- another ~2.5-hour Windows gate for a prose edit -- buys
 no evidence that CI does not already provide for the changed file.
+
+## WDD-20260816-032 -- RC-4 gate and checker repairs
+
+Status: Accepted. Date: 2026-08-16. Answers `P1-2`, `P1-3`, `P2-1`, `P2-3`,
+`P2-4` and `P3-1` of the 2026-08-15 fresh-blind audit. Every finding was
+reproduced before repair.
+
+### The required gate now runs the release headline's adversarial suite (`P1-2`)
+
+`scripts/gate.ps1` invoked the 41-case M1 registry and **neither** EG-CP replay,
+so the aggregate's advertised mutation coverage excluded the packed cell-probe
+architecture -- the release headline. Both suites were committed and both pass
+when run by hand; nothing required them. A coordinated implementation/proof edit
+could keep elaboration green while making a sibling store, hidden oracle,
+fabricated cap or weakened consumer acceptable. Both now run from the aggregate
+with propagated exit codes.
+
+This survived two prior fresh-blind audits and a coordinator review. What made
+it invisible is that every individual piece was green: the suites passed, the
+gate passed, and no one asked whether the gate *contained* the suites.
+
+### Deadlines are derived, not chosen (`P1-3`)
+
+Six topology fixtures timed out at the 300 s per-case bound on the auditor's
+Windows runner; a focused warm rerun of one produced the intended reject in
+298.145 s -- 1.855 s of margin. The same cases run 120-180 s on coordinator
+hardware. The verdicts were never wrong; the budget was sized to one machine.
+
+The topology pair moves to 900 s with the derivation recorded beside the value
+(worst observed 298.1 s, observed spread ~2.5x across supported hardware, budget
+= 3x worst). `scripts/paper_topology_lint.ps1` moves with its regression twin
+because it bounds the lint invocation *inside* each case.
+
+`m1_certificate_mutation_regression.ps1` stays at 300 s **and now says why**:
+all 41 mutations completed inside it on the same host where topology timed out,
+because an M1 stage is a focused elaboration and a topology case is a full
+rebuild under mutation. Divergent twins are a defect only when unexplained.
+
+**This is the second deadline defect in this file.** The sleeper bound was
+5 s against a 20 s twin, fixed 2026-08-13. Fixing the sleeper without asking
+what else in the file was chosen rather than derived is what left this one.
+
+### The independence checker watches the published field's supplier (`P2-1`)
+
+It targeted `packedReviewerControllerMeasure_valid_eq_427`. The capstone's
+public `derived_cap_le_427` is populated from `certificate.trace_cap` =
+`packedReviewerRunAgainstMemory_trace_length_le_427`. The checker guarded a
+sibling theorem while the published cap's actual supplier was unguarded. It now
+checks all three cap-supplying theorems.
+
+**Third defect in this one file**, and the three together are the lesson: the
+collector was wrong (its control found its witness in a *type*), then the
+forbidden SET was wrong (only the two names the ledger sentence used), now the
+TARGET was wrong. Each repair fixed precisely what the finding named and left
+the neighbouring chosen value unexamined.
+
+### Axiom checking is a whitelist (`P2-3`)
+
+`RunAxiomCheck` rejected only `sorryAx`/`ofReduceBool`, so a declaration
+depending on a differently-named project axiom printed its dependency set and
+received `AXIOM CHECK PASS`. These inventories advertise "only the three
+standard axioms"; a blacklist of two known-bad names is a check that happens to
+agree with that on the current tree, not that property. Now parsed and
+whitelisted against `propext`, `Classical.choice`, `Quot.sound`.
+
+### The strict scanner no longer leaks prior audits (`P2-4`)
+
+It printed every hit including `allowed` ones, and its default root recurses all
+of `docs`, so a required strict run emitted ~1,579 lines including prior audit
+reports and worklogs -- to a commissioned fresh-blind auditor, before they froze
+conclusions. `allowed` hits are by definition matches outside the governed
+surfaces: bookkeeping, not findings. They are now suppressed unless
+`-ShowAllowed` is passed; counts are unchanged.
+
+**This leak was identified in the previous round, scheduled, and not fixed. It
+then contaminated the next audit.** A known leak left open for one round is a
+leak chosen.
+
+### Published counts are checked, not stated (`P3-1`)
+
+`EVIDENCE_MATRIX.md` published 27/1/6 while the ledger held 29/0/5, stale since
+the Stage-A acceptance moved the architecture row out of PROVISIONAL. Corrected,
+and `check_paper.ps1` now derives the breakdown from the ledger and fails on
+mismatch. Also fixed: a `:490` line pointer for a field at `:498`.
+
+`check_paper.ps1` also stopped *requiring* the pending marker. It demanded
+exactly one, so while `rmq.tex` presented an accepted theorem as a future
+insertion, the checker reported success -- a gate enforcing the presence of the
+defect it should catch. Zero is now the healthy state; more than one still fails.
+
+Verified: both new `check_paper` assertions fail closed under injection (stale
+count -> exit 1; two markers -> exit 1; restored -> exit 0).

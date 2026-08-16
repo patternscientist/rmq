@@ -348,13 +348,51 @@ for ($i = 0; $i -lt $rowIds.Count; $i++) {
 }
 InfoIfClean $before ("ledger coverage: {0} anchors <-> {1} rows, one legal status per row" -f $texLedger.Count, $ledgerIds.Count)
 
-# ------------------------------------------- 5. single pending-result marker
+# ------------------------------------------- 5. pending-result marker
+#
+# This REQUIRED exactly one marker until 2026-08-16, which made it enforce the
+# presence of a defect: while `rmq.tex` carried the marker, the manuscript
+# presented an already-accepted theorem as a future editorial insertion, and
+# this checker reported success for it. The 2026-08-15 fresh-blind audit failed
+# RC-10 on exactly that (P1-1) and noted the checker reinforcing the mismatch.
+#
+# The marker is now permitted but never required: zero is the healthy state once
+# a result is absorbed; more than one is still a defect.
 $before = $failures
 $markerCount = ([regex]::Matches($tex, 'ARCHITECTURE_RESULT_PENDING')).Count
-if ($markerCount -ne 1) {
-  Fail ("rmq.tex must contain exactly one ARCHITECTURE_RESULT_PENDING marker, found {0}" -f $markerCount)
+if ($markerCount -gt 1) {
+  Fail ("rmq.tex must contain at most one ARCHITECTURE_RESULT_PENDING marker, found {0}" -f $markerCount)
 }
-InfoIfClean $before "insertion-point marker: exactly one in rmq.tex"
+InfoIfClean $before ("insertion-point marker: {0} in rmq.tex (0 = absorbed, 1 = pending, >1 fails)" -f $markerCount)
+
+# ------------------------------------- 5b. ledger status counts are CHECKED
+#
+# `paper/EVIDENCE_MATRIX.md` publishes the ledger's status breakdown. It stated
+# 27/1/6 while the ledger held 29/0/5 -- stale because the Stage-A acceptance
+# moved the architecture row out of PROVISIONAL and nothing re-derived the
+# published figure (2026-08-15 audit, P3-1). A count stated in prose beside one
+# derivable from source is a claim; it is derived here instead of asserted.
+$before = $failures
+$ledgerAccepted = ([regex]::Matches($ledger, '(?m)^- Status: ACCEPTED_BASE\s*$')).Count
+$ledgerProvisional = ([regex]::Matches($ledger, '(?m)^- Status: PROVISIONAL_ARCHITECTURE\s*$')).Count
+$ledgerOpen = ([regex]::Matches($ledger, '(?m)^- Status: OPEN\s*$')).Count
+$matrixPath = Join-Path $PSScriptRoot 'EVIDENCE_MATRIX.md'
+if (Test-Path -LiteralPath $matrixPath) {
+  $matrix = [IO.File]::ReadAllText($matrixPath)
+  $stated = [regex]::Match($matrix,
+    '(\d+)\s+rows:\s*(\d+)\s+ACCEPTED_BASE,\s*(\d+)\s*[\r\n]+\s*PROVISIONAL_ARCHITECTURE,\s*(\d+)\s+OPEN')
+  if (-not $stated.Success) {
+    Fail "EVIDENCE_MATRIX.md no longer states a parseable ledger status breakdown; the count check cannot run"
+  } elseif ([int]$stated.Groups[2].Value -ne $ledgerAccepted -or
+            [int]$stated.Groups[3].Value -ne $ledgerProvisional -or
+            [int]$stated.Groups[4].Value -ne $ledgerOpen -or
+            [int]$stated.Groups[1].Value -ne $ledgerIds.Count) {
+    Fail ("EVIDENCE_MATRIX.md states {0} rows {1}/{2}/{3} accepted/provisional/open; the ledger has {4} rows {5}/{6}/{7}" -f
+      $stated.Groups[1].Value, $stated.Groups[2].Value, $stated.Groups[3].Value, $stated.Groups[4].Value,
+      $ledgerIds.Count, $ledgerAccepted, $ledgerProvisional, $ledgerOpen)
+  }
+}
+InfoIfClean $before ("ledger status counts: {0} rows, {1}/{2}/{3} accepted/provisional/open, matching EVIDENCE_MATRIX.md" -f $ledgerIds.Count, $ledgerAccepted, $ledgerProvisional, $ledgerOpen)
 
 # ------------------------------------------------------------------ selftest
 if ($SelfTest) {

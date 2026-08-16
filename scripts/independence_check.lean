@@ -57,10 +57,35 @@ partial def deps (env : Lean.Environment) (n : Lean.Name) (seen : Lean.NameSet) 
            | none => #[])
       used.foldl (fun acc m => deps env m acc) seen
 
-/-- The packed controller's structural countdown: the source of the `210` in
-`427 = 1 + 2*3 + 2*210`. -/
-def target : Lean.Name :=
-  `RMQ.SuccinctFinal.PackedCellProbe.packedReviewerControllerMeasure_valid_eq_427
+/-- Every theorem that supplies the published `427` cap, checked together.
+
+**Corrected 2026-08-16.** This was a single target -- the structural countdown
+`packedReviewerControllerMeasure_valid_eq_427` -- and that is *not* the theorem
+behind the capstone's public field. `derived_cap_le_427`
+(`ReviewerArchitectureCapstone.lean:498`) is populated from
+`certificate.trace_cap`, which is
+`packedReviewerRunAgainstMemory_trace_length_le_427` (supplied at
+`ReviewerControllerStateProof.lean:14041`, declared at
+`ReviewerController.lean:412`), reached via
+`packedReviewerControllerMeasure_start_le_427`. The checker watched a sibling
+theorem while the published cap's actual supplier went unguarded.
+
+This is the third defect in this one file, and the three are instructive
+together: the collector was wrong (its control found its witness in a *type*),
+then the forbidden SET was wrong (it held only the two names the ledger
+sentence used), and now the TARGET was wrong. Each repair fixed exactly the
+thing named in the finding and left the neighbouring chosen value unexamined.
+
+Rule: **a dependency check must name the theorem that supplies the published
+field**, and that correspondence is re-derived whenever the population site
+moves. -/
+def targets : List Lean.Name :=
+  [ -- the structural countdown: source of the `210` in `427 = 1 + 2*3 + 2*210`
+    `RMQ.SuccinctFinal.PackedCellProbe.packedReviewerControllerMeasure_valid_eq_427
+    -- the start-measure bound the run cap flows through
+  , `RMQ.SuccinctFinal.PackedCellProbe.packedReviewerControllerMeasure_start_le_427
+    -- THE PUBLISHED CAP'S ACTUAL SUPPLIER (populates `certificate.trace_cap`)
+  , `RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunAgainstMemory_trace_length_le_427 ]
 
 /-- The charged-cost declarations the countdown must stay clear of.
 
@@ -121,8 +146,9 @@ end RMQIndependenceCheck
 
 #eval show Lean.Elab.Command.CommandElabM Unit from do
   let env ← Lean.getEnv
-  let names := RMQIndependenceCheck.target :: RMQIndependenceCheck.controlType ::
-    RMQIndependenceCheck.controlValue :: RMQIndependenceCheck.forbidden
+  let names := RMQIndependenceCheck.targets ++
+    (RMQIndependenceCheck.controlType :: RMQIndependenceCheck.controlValue ::
+      RMQIndependenceCheck.forbidden)
   -- Guard 1: existence. A rename must break this script, not quietly pass it.
   let missing := names.filter (fun n => (env.find? n).isNone)
   unless missing.isEmpty do
@@ -142,23 +168,26 @@ Update the names and re-derive the claim; do not delete the check."
 would mean nothing."
     Lean.logInfo m!"INDEPENDENCE: control {lbl} OK ({d.size} constants, \
 charged witness present)"
-  -- The actual property.
-  let targetDeps :=
-    RMQIndependenceCheck.deps env RMQIndependenceCheck.target Lean.NameSet.empty
-  -- Guard 3: collapse tripwire, for collector regressions the shallow controls
-  -- cannot see.
-  if targetDeps.size < RMQIndependenceCheck.closureFloor then
-    throwError "INDEPENDENCE: FAIL (closure of {RMQIndependenceCheck.target} is \
-{targetDeps.size} constants, below the floor of \
-{RMQIndependenceCheck.closureFloor}). This is a collapse, not a cleanup: the \
-check is examining too little to mean anything. Diagnose the collector before \
-touching this floor."
-  let leaked := RMQIndependenceCheck.forbidden.filter targetDeps.contains
-  unless leaked.isEmpty do
-    throwError "INDEPENDENCE: FAIL ({RMQIndependenceCheck.target} now depends \
-on charged-cost declaration(s): {leaked}). The two 210s are no longer \
-independent at proof-term level, so paper/THEOREM_LEDGER.md row L-PACK-00 and \
-the RMQ/Headlines/RMQ.lean docstring are false as written. Fix the dependency \
-or retract the claim -- do not weaken this check."
-  Lean.logInfo m!"INDEPENDENCE: RESULT: PASS ({RMQIndependenceCheck.target} closure \
-= {targetDeps.size} constants, none of {RMQIndependenceCheck.forbidden})"
+  -- The actual property, checked for EVERY theorem that supplies the published
+  -- cap -- not only the structural countdown. See the `targets` docstring.
+  for target in RMQIndependenceCheck.targets do
+    let targetDeps := RMQIndependenceCheck.deps env target Lean.NameSet.empty
+    -- Guard 3: collapse tripwire, for collector regressions the shallow
+    -- controls cannot see.
+    if targetDeps.size < RMQIndependenceCheck.closureFloor then
+      throwError "INDEPENDENCE: FAIL (closure of {target} is {targetDeps.size} \
+constants, below the floor of {RMQIndependenceCheck.closureFloor}). This is a \
+collapse, not a cleanup: the check is examining too little to mean anything. \
+Diagnose the collector before touching this floor."
+    let leaked := RMQIndependenceCheck.forbidden.filter targetDeps.contains
+    unless leaked.isEmpty do
+      throwError "INDEPENDENCE: FAIL ({target} now depends on charged-cost \
+declaration(s): {leaked}). The two 210s are no longer independent at \
+proof-term level, so paper/THEOREM_LEDGER.md row L-PACK-00 and the \
+RMQ/Headlines/RMQ.lean docstring are false as written. Fix the dependency or \
+retract the claim -- do not weaken this check."
+    Lean.logInfo m!"INDEPENDENCE: {target} OK ({targetDeps.size} constants, \
+none of the {RMQIndependenceCheck.forbidden.length} charged declarations)"
+  Lean.logInfo m!"INDEPENDENCE: RESULT: PASS \
+({RMQIndependenceCheck.targets.length} cap-supplying theorems checked against \
+{RMQIndependenceCheck.forbidden.length} charged declarations)"

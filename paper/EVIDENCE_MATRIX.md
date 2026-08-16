@@ -39,8 +39,12 @@ closes no roadmap node.
   declaration and file at the base commit, with proposition-level
   hypotheses and conclusion recorded; the provisional target maps to a
   PROVISIONAL_ARCHITECTURE row; unproved statements map to OPEN rows.
-- Evidence: `THEOREM_LEDGER.md` (34 rows: 27 ACCEPTED_BASE, 1
-  PROVISIONAL_ARCHITECTURE, 6 OPEN); every ACCEPTED_BASE declaration was
+- Evidence: `THEOREM_LEDGER.md` (34 rows: 29 ACCEPTED_BASE, 0
+  PROVISIONAL_ARCHITECTURE, 5 OPEN -- corrected 2026-08-16 from a stale
+  27/1/6 that predated the Stage-A acceptance moving the architecture row out
+  of PROVISIONAL; found by the 2026-08-15 fresh-blind audit, P3-1. These
+  counts are now checked, not stated: see the ledger-count assertion in
+  `paper/check_paper.ps1`); every ACCEPTED_BASE declaration was
   verified present at the base commit by direct source inspection this
   session (see `WORKLOG.md` for the line-reference inventory);
   `check_paper.ps1` enforces bidirectional anchor coverage between

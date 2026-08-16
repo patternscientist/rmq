@@ -45,8 +45,34 @@ function RunAxiomCheck($script, $label) {
     SoftFail "non-standard axiom in ${label}:`n$bad"
     return
   }
+  # WHITELIST, not only a blacklist.  Until 2026-08-16 this function rejected
+  # just the two names above, so a declaration depending on a differently-named
+  # project axiom printed its dependency set and still received
+  # `AXIOM CHECK PASS`.  The property these inventories advertise is "only the
+  # three standard axioms"; a blacklist of two known-bad names is not that
+  # property, it is a check that happens to agree with it on the current tree.
+  # Found by the 2026-08-15 fresh-blind audit (P2-3).
+  $allowed = @('propext', 'Classical.choice', 'Quot.sound')
+  $unexpected = @()
+  foreach ($line in (Get-Content $tmp)) {
+    # `#print axioms` emits: 'X' depends on axioms: [a, b, c]
+    if ($line -match "depends on axioms:\s*\[(.*)\]") {
+      foreach ($name in ($Matches[1] -split ',')) {
+        $trimmed = $name.Trim(" ", "]", "[")
+        if ($trimmed -and ($allowed -cnotcontains $trimmed)) {
+          $unexpected += $trimmed
+        }
+      }
+    }
+  }
+  if ($unexpected.Count -gt 0) {
+    Remove-Item $tmp -ErrorAction SilentlyContinue
+    SoftFail ("axiom outside the standard three in ${label}: " +
+      (($unexpected | Select-Object -Unique) -join ', '))
+    return
+  }
   Remove-Item $tmp -ErrorAction SilentlyContinue
-  Write-Host "AXIOM CHECK PASS: $label"
+  Write-Host "AXIOM CHECK PASS: $label (standard axioms only)"
 }
 
 # 0. Project-skill startup policy must reject stale checkout/runtime catalogs.
@@ -76,6 +102,26 @@ if ($LASTEXITCODE -ne 0) { Fail "lake build RMQPaper failed" }
 # aggregate gate. Its exit code is propagated before later certification.
 & "$PSScriptRoot\m1_certificate_mutation_regression.ps1"
 if ($LASTEXITCODE -ne 0) { Fail "m1_certificate_mutation_regression.ps1 found issues" }
+
+# EG-CP-REPLAY-GATE-ANCHOR
+# The two committed EG-CP architecture replays run from the aggregate.
+#
+# Until 2026-08-16 neither was invoked here, so the required gate's advertised
+# mutation coverage EXCLUDED the release headline: the packed cell-probe
+# architecture.  Both suites existed, were committed, and passed when run by
+# hand -- the defect was that nothing required them.  A coordinated
+# implementation/proof edit could therefore keep ordinary elaboration green
+# while making a sibling store, hidden oracle, fabricated cap or weakened
+# consumer acceptable, and no step of this gate would notice.
+#
+# Found by the 2026-08-15 fresh-blind audit (P1-2), after surviving two prior
+# fresh-blind audits and a coordinator review.  Exit codes propagate; each
+# runner keeps its own clean-tree and hash-restoration checks.
+& "$PSScriptRoot\eg_cp_stagea_replay.ps1"
+if ($LASTEXITCODE -ne 0) { Fail "eg_cp_stagea_replay.ps1 found issues" }
+
+& "$PSScriptRoot\eg_cp_final_falsification_replay.ps1"
+if ($LASTEXITCODE -ne 0) { Fail "eg_cp_final_falsification_replay.ps1 found issues" }
 
 lake build RMQHub
 if ($LASTEXITCODE -ne 0) { Fail "lake build RMQHub failed" }

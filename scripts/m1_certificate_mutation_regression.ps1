@@ -4,6 +4,16 @@
 param(
   [string]$OnlyCase = '',
   [ValidateRange(1, 3600)]
+  # Deliberately still 300 s while the topology pair moved to 900 s on
+  # 2026-08-16 -- recorded here so the difference is stated, not silent.
+  #
+  # Basis: all 41 M1 mutations completed inside this bound on the supported
+  # Windows runner during the 2026-08-15 fresh-blind audit, on the same host
+  # where six topology fixtures timed out. The workloads differ: an M1 stage is
+  # a focused elaboration, a topology case is a full rebuild under mutation.
+  # Divergent twins are a defect only when the divergence is unexplained; this
+  # one is measured. If an M1 stage ever lands within ~2x of this bound, derive
+  # a new value from the measurement rather than copying the topology number.
   [int]$StageDeadlineSeconds = 300,
   [ValidateRange(4096, 16777216)]
   [int]$StageOutputLimitBytes = 4194304,

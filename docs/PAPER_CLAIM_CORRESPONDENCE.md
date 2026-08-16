@@ -112,7 +112,7 @@ capstones, or their current obstruction/history rows.
 | One allocated `header ++ buildPayload ++ padding` packed memory answers every valid half-open query with the leftmost minimum's index, in at most `427` attempted aligned `w(n)`-bit cell probes into that same memory, with complete allocated capacity `2n + o(n)`, under a closed controller whose dynamic inputs are exactly `n`, the endpoints, and prior probe replies. | `RMQ.Headlines.succinctRMQPackedCellProbeArchitecture` (type: `RMQ.Headlines.SuccinctRMQPackedCellProbeArchitecture`) — exported from `RMQPaper` | `RMQ.SuccinctFinal.PackedCellProbe.packedReviewerArchitectureCapstone_holds` | `RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerArchitectureCapstone.lean` | `lake build RMQPaper`; `lake env lean scripts/headline_axiom_check.lean` |
 | Complete allocated capacity, counting header cell, every payload cell and final padding at full cell width, is at most `2n + rho(n)` with `rho` little-`o`-linear. | field 8 `allocation_two_n_plus_rho` with field 9 `rho_little_o` | same producer | same file (`:356`, `:361`) | same |
 | Every valid half-open query's terminal state carries an index equal to the reference leftmost-minimum answer. | field 39 `valid_answer_is_index` | same producer | same file | same |
-| Attempted probes are capped by the derived numeral `427`. | field `derived_cap_le_427` | same producer | same file (`:490`) | same |
+| Attempted probes are capped by the derived numeral `427`. | field `derived_cap_le_427` | same producer | same file (`:498`) | same |
 
 Reading rules for this block, each of which a reader will otherwise get wrong:
 

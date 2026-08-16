@@ -11358,3 +11358,30 @@ correct.
 
 Field 27 is the neighbour of field 32, whose identical elaboration-versus-proof
 distinction was documented on 2026-08-09 without checking the adjacent field.
+
+## DD-20260816-104 -- public-surface corrections from the RC-3 audit
+
+Status: Accepted. Date: 2026-08-16. Public-surface companion to
+WDD-20260816-032, which carries the gate/checker rationale.
+
+**`docs/PAPER_CLAIM_CORRESPONDENCE.md`** pointed the `derived_cap_le_427` field
+at source line `:490`; the field is at `:498`. Corrected. This is the fourth
+distinct citation-rot finding across three audit rounds, after `L-UB-06`'s
+~1,090-line error, the `:702 -> :723` drift, and the evidence-matrix counts
+below. The `file:line -> declaration` checker has been scheduled since the RC-2
+round and remains the standing repair; until it lands, this class recurs.
+
+**`paper/EVIDENCE_MATRIX.md`** published the ledger breakdown as 34 rows
+27/1/6 (accepted/provisional/open) while the ledger holds 29/0/5 -- stale since
+the Stage-A acceptance moved the architecture row out of PROVISIONAL. Corrected,
+and the figure is no longer merely stated: `paper/check_paper.ps1` derives it
+from the ledger and fails on mismatch, injection-verified.
+
+**`scripts/independence_check.lean`** now guards all three theorems that supply
+the published `427` cap rather than the structural countdown alone. The claim
+this file exists to protect -- that the two `210`s are independent -- was
+checked against a theorem that does not populate the public field.
+
+None of these changes a proposition. All three are cases of a published
+statement drifting from the source it describes, which is the failure mode this
+project has now seen in three consecutive external audits.

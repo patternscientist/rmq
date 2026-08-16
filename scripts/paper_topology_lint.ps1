@@ -9,7 +9,16 @@ param(
   [ValidateSet('', 'A01', 'A02', 'R1LEGACY')]
   [string]$MutationCase = '',
   [ValidateRange(1, 3600)]
-  [int]$StageDeadlineSeconds = 300,
+  # 300 -> 900 on 2026-08-16, matching its regression twin. Same derivation:
+  # the measured slow path on the supported Windows runner is ~298.1 s and the
+  # coordinator's hardware runs the same work in 120-180 s, so the observed
+  # spread is ~2.5x and the budget is 3x the worst observation. See the
+  # derivation table in scripts/paper_topology_lint_regression.ps1.
+  #
+  # These two must move together: the regression bounds a case, this bounds the
+  # lint invocation inside it, and the lint is the bulk of the case's cost.
+  # Raising only the outer bound would leave the inner one marginal.
+  [int]$StageDeadlineSeconds = 900,
   [ValidateRange(4096, 16777216)]
   [int]$StageOutputLimitBytes = 4194304,
   [string]$LaunchReleasePath = ''

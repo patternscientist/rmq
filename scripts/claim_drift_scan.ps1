@@ -3,6 +3,10 @@
 [CmdletBinding()]
 param(
   [switch]$Strict,
+  # Print `allowed` hits too. Off by default since 2026-08-16: printing every
+  # match leaked prior audit reports to a commissioned blind auditor. See the
+  # emission site below.
+  [switch]$ShowAllowed,
   [string]$PolicyPath = "docs/internal/CLAIM_DRIFT_POLICY.json",
   [string[]]$Path = @("README.md", "artifact", "docs")
 )
@@ -219,7 +223,23 @@ foreach ($term in $policy.terms) {
       $failures += 1
     }
 
-    Write-Host ("CLAIM-DRIFT[{0}][{1}][{2}] {3}:{4}: {5}" -f $term.id, $term.status, $label, $file, $lineNo, $line.Trim())
+    # Emit `fail` and `review` always; emit `allowed` only when asked.
+    #
+    # Until 2026-08-16 every hit was printed, so a required strict run emitted
+    # ~1,579 lines -- including PRIOR AUDIT REPORTS AND WORKLOGS, because the
+    # default root recurses all of `docs`. A commissioned fresh-blind auditor ran
+    # this gate before freezing conclusions and was involuntarily shown earlier
+    # verdicts and findings: a contamination channel built into a required gate.
+    # It fired on the 2026-08-15 audit (P2-4) after being identified in the
+    # previous round and left unfixed -- a known leak left open is a leak chosen.
+    #
+    # `allowed` hits are by definition matches OUTSIDE the governed surfaces:
+    # scan bookkeeping, not findings. `-ShowAllowed` restores the old output for
+    # policy debugging. Counts below are unaffected, so the summary line still
+    # reports the true total.
+    if ($label -ne "allowed" -or $ShowAllowed) {
+      Write-Host ("CLAIM-DRIFT[{0}][{1}][{2}] {3}:{4}: {5}" -f $term.id, $term.status, $label, $file, $lineNo, $line.Trim())
+    }
   }
 }
 

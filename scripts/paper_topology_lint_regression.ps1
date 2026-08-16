@@ -4,7 +4,27 @@
 param(
   [string]$OnlyCase = '',
   [ValidateRange(30, 3600)]
-  [int]$StageDeadlineSeconds = 300,
+  # 300 -> 900 on 2026-08-16. DERIVATION, not a chosen number:
+  #
+  #   measured slow path on the supported Windows runner   ~298.1 s
+  #   (2026-08-15 fresh-blind audit, focused warm-cache rerun of
+  #    `compatibility-as-current-anchor`: intended reject, exit 0, 298.145 s)
+  #   neighbouring cases on the same run                    297.4 s, 299.9 s
+  #   coordinator hardware, same cases                      120-180 s
+  #   => observed spread across supported hardware is ~2.5x
+  #   => budget = 300 s worst observed x 3 = 900 s
+  #
+  # At 300 s the margin on the auditor's machine was 1.855 s and SIX fixtures
+  # timed out, failing the required aggregate with the correct semantic verdicts
+  # underneath. The verdicts were never wrong; the budget was sized to one
+  # machine.
+  #
+  # This is the second deadline in this file sized that way: the sleeper bound
+  # was 5 s against a 20 s twin (fixed 2026-08-13). Fixing the sleeper without
+  # asking what else here was chosen rather than derived is what left this one.
+  # Any future change to this value replaces the table above with new
+  # measurements -- do not adjust it to make a run pass.
+  [int]$StageDeadlineSeconds = 900,
   [ValidateRange(4096, 16777216)]
   [int]$StageOutputLimitBytes = 4194304,
   [ValidateRange(1, 30)]
