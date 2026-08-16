@@ -333,6 +333,68 @@ example : M1ReviewerNativeExpectedPaperType :=
 end M1PublicExpectedTypeCheck
 
 /-!
+Frozen public expected type for the packed cell-probe architecture headline.
+
+`RMQ.Headlines.succinctRMQPackedCellProbeArchitecture` is an `abbrev`, so its
+type is whatever `PackedReviewerArchitectureCapstone` currently says.  Weaken a
+field of that 39-field structure -- `427` to `999`, or drop field 39 -- and the
+alias weakens with it silently, while `#print axioms` above still reports the
+same three standard axioms.  Axiom checking reports the trust base, never the
+statement; only a type can pin a statement.
+
+The proposition below is written independently of the structure: it names the
+underlying definitions directly and never mentions
+`PackedReviewerArchitectureCapstone`.  The `example` uses the headline value as
+its entire proof, projecting the fields it needs; it reconstructs nothing.
+
+It pins exactly the three readings the manuscript's Section 9 theorem
+publishes, and nothing more:
+
+  1. complete allocated capacity `2n + rho n`, with `rho` little-o linear;
+  2. at most `427` attempted aligned probes into that same memory;
+  3. a valid half-open query is actually answered, with an index that is the
+     leftmost argmin and agrees with the reference decoder.
+
+Verified to fail closed: changing the cap to `428`, or weakening the third
+conjunct's `LeftmostArgMin` to `True`, both stop this file compiling.
+-/
+namespace PackedCellProbePublicExpectedTypeCheck
+
+-- EG-CP-PUBLIC-TYPE-PIN-ANCHOR
+def PackedCellProbeExpectedPaperType : Prop :=
+  RMQ.SuccinctSpace.LittleOLinear RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRho /\
+  forall (xs : List Int) (left right : Nat),
+    ((RMQ.SuccinctFinal.PackedCellProbe.packedReviewerMemory
+          (RMQ.SuccinctClassic.cartesianShape xs)).length *
+        RMQ.SuccinctFinal.PackedCellProbe.packedReviewerCellWidth
+          (RMQ.SuccinctClassic.cartesianShape xs).size <=
+      2 * (RMQ.SuccinctClassic.cartesianShape xs).size +
+        RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRho
+          (RMQ.SuccinctClassic.cartesianShape xs).size) /\
+    ((RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunAgainstMemory
+          (RMQ.SuccinctFinal.PackedCellProbe.packedReviewerMemory
+            (RMQ.SuccinctClassic.cartesianShape xs))
+          (RMQ.SuccinctClassic.cartesianShape xs).size left right).trace.length <= 427) /\
+    (left < right -> right <= (RMQ.SuccinctClassic.cartesianShape xs).size ->
+      exists index : Nat,
+        (RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunAgainstMemory
+            (RMQ.SuccinctFinal.PackedCellProbe.packedReviewerMemory
+              (RMQ.SuccinctClassic.cartesianShape xs))
+            (RMQ.SuccinctClassic.cartesianShape xs).size left right).terminal =
+          some (some index) /\
+        (RMQ.SuccinctClassic.queryTraceResult xs left right).value = some index /\
+        RMQ.LeftmostArgMin xs left right index)
+
+example : PackedCellProbeExpectedPaperType :=
+  ⟨(RMQ.Headlines.succinctRMQPackedCellProbeArchitecture [] 0 0).rho_little_o,
+   fun xs left right =>
+     ⟨(RMQ.Headlines.succinctRMQPackedCellProbeArchitecture xs left right).allocation_two_n_plus_rho,
+      (RMQ.Headlines.succinctRMQPackedCellProbeArchitecture xs left right).derived_cap_le_427,
+      (RMQ.Headlines.succinctRMQPackedCellProbeArchitecture xs left right).valid_answer_is_index⟩⟩
+
+end PackedCellProbePublicExpectedTypeCheck
+
+/-!
 Typed M1 anti-bypass checks.  The positive examples ascribe the exact guarded,
 complete-result, value-projection, and canonical-object propositions used by
 the paper surface.  The `fail_if_success` examples mechanically reject the

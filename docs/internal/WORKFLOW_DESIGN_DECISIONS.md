@@ -9799,3 +9799,22 @@ that actually leaked is not a detector for this problem. It also asserts the
 catch is for a *verdict* specifically, not an incidental word match, and that a
 clean identity/scope annotation stays silent -- a rule that flags compliant
 annotations gets switched off within a round.
+
+## WDD-20260816-037 -- the headline inventory now pins a type, not just axioms
+
+Companion to DD-20260816-108, which records the pin itself.
+
+`scripts/headline_axiom_check.lean` is the one-command inventory a reviewer
+runs. Until now every entry in it was a `#print axioms` line. That answers
+"what does this rest on", never "what does this say" -- so a headline alias
+could be weakened to a triviality and the inventory would print exactly the
+same three standard axioms and exit 0.
+
+The file now carries expected-type pins alongside the axiom lines: the M1
+paper theorem (pre-existing) and the packed cell-probe architecture (added
+here). The two questions are separate and the inventory should answer both.
+
+Its self-evidence is the mutation record in DD-20260816-108: the pin was shown
+to stop the file compiling under two independent weakenings before it was
+committed. An expected-type pin that has never been observed to fail is in
+exactly the position of the axiom check it supplements -- green, and unproven.

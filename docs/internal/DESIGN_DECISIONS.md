@@ -11494,3 +11494,36 @@ Also corrected here: two `paper/README.md` passages still describing the
 pre-absorption manuscript ("exactly one `ARCHITECTURE_RESULT_PENDING` marker",
 "appears only as a quoted provisional target"). Same staleness class as
 `RC-10`, introduced by the fix for it.
+
+## DD-20260816-108 -- the packed architecture headline has an expected-type pin
+
+Status: Accepted. Date: 2026-08-16. Second half of RC-3 audit item 7; the axiom
+whitelist was the first half (DD-20260816-104).
+
+`RMQ.Headlines.succinctRMQPackedCellProbeArchitecture` is an `abbrev` onto
+`packedReviewerArchitectureCapstone_holds`. Its type is therefore whatever the
+39-field `PackedReviewerArchitectureCapstone` currently says. Weaken field 26
+from `427` to `999`, or drop field 39, and the public alias weakens with it --
+while `scripts/headline_axiom_check.lean` still prints the same three standard
+axioms for it, because **axiom checking reports the trust base, never the
+statement.** This is the release's headline claim and the paper's Section 9
+theorem, and nothing tied the two together.
+
+`PackedCellProbeExpectedPaperType` in `scripts/headline_axiom_check.lean`
+(anchor `EG-CP-PUBLIC-TYPE-PIN-ANCHOR`) states the three published readings
+independently -- naming `packedReviewerMemory`, `packedReviewerCellWidth`,
+`packedReviewerRho` and `packedReviewerRunAgainstMemory` directly, never
+mentioning the capstone structure -- and an `example` inhabits it from the
+headline alias alone, projecting fields and reconstructing nothing. It follows
+the `M1ReviewerNativeExpectedPaperType` precedent.
+
+Verified to fail closed rather than assumed to: with the cap in the expected
+type changed to `428`, `lake env lean` exits 1 with an application type
+mismatch on `derived_cap_le_427`; with the third conjunct's `LeftmostArgMin`
+weakened to `True`, it exits 1 likewise. Unmutated, it exits 0 and every one of
+the 104 axiom lines still reports only `propext`, `Classical.choice`,
+`Quot.sound`.
+
+Scope: the pin covers the three readings the manuscript publishes. It does not
+pin the other 36 fields, and does not claim to. A reviewer reading the pin
+learns exactly which three statements are mechanically tied to the headline.
