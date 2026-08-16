@@ -224,6 +224,15 @@ if ($LASTEXITCODE -ne 0) { SoftFail "hub_closure_lint.ps1 found issues" }
 if ($LASTEXITCODE -ne 0) { SoftFail "claim_drift_policy_regression.ps1 found issues" }
 
 # 7. Strict claim-policy violations block the aggregate gate.
+#
+# The self-test runs FIRST because the scan's own output is a contamination
+# channel: a fresh-blind auditor is required to run this gate, and until
+# 2026-08-16 the strict run printed 104 lines of PRIOR AUDIT REPORTS at them. The
+# exclusion that closed it is unobservable from the exit code -- two earlier
+# attempts were no-ops and both exited 0 -- so it is asserted, not assumed.
+& "$PSScriptRoot\claim_drift_scan.ps1" -SelfTest
+if ($LASTEXITCODE -ne 0) { SoftFail "claim_drift_scan.ps1 self-test failed" }
+
 & "$PSScriptRoot\claim_drift_scan.ps1" -Strict
 if ($LASTEXITCODE -ne 0) { SoftFail "claim_drift_scan.ps1 found strict violations" }
 

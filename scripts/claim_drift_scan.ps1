@@ -7,11 +7,91 @@ param(
   # match leaked prior audit reports to a commissioned blind auditor. See the
   # emission site below.
   [switch]$ShowAllowed,
+  # Scan process records (audit reports, worklogs) too. Excluded by default
+  # since 2026-08-16: they leaked prior verdicts to a blind auditor. See
+  # Get-ScanFiles below.
+  [switch]$IncludeProcessRecords,
+  # Verify the process-record exclusion actually excludes. See below.
+  [switch]$SelfTest,
   [string]$PolicyPath = "docs/internal/CLAIM_DRIFT_POLICY.json",
   [string[]]$Path = @("README.md", "artifact", "docs")
 )
 
 $ErrorActionPreference = "Continue"
+
+# Self-test for the process-record exclusion.
+#
+# Written because the first two attempts at that exclusion were both no-ops and
+# both looked exactly like success. Attempt one suppressed `allowed` labels, but
+# the leaking hits are labelled `review`. Attempt two filtered Get-ScanFiles with
+# `-like "*\\audit_reports\\*"`, where the backslash is not an escape character,
+# so it matched nothing -- AND Get-ScanFiles only feeds the required-attribution
+# pass anyway, while the leak comes from the term scan, which hands the roots to
+# `rg` and never calls that function. A no-op filter and a working filter produce
+# the same exit code, so only a measurement distinguishes them.
+#
+# Assertion 2 is the one that matters: it fails if the exclusion removes nothing.
+if ($SelfTest) {
+  $hostExe = if ($PSVersionTable.PSEdition -eq "Core") { "pwsh" } else { "powershell" }
+  $selfPath = $PSCommandPath
+  $selfTestFailures = 0
+
+  $defaultRun = @(& $hostExe -NoProfile -ExecutionPolicy Bypass -File $selfPath -Strict 2>&1 |
+    ForEach-Object { [string]$_ })
+  $recordRun = @(& $hostExe -NoProfile -ExecutionPolicy Bypass -File $selfPath -Strict -IncludeProcessRecords 2>&1 |
+    ForEach-Object { [string]$_ })
+
+  # (1) No emitted finding may CITE a process-record path.
+  #
+  # Match the path field specifically, not the whole line: governed documents
+  # legitimately mention "E1_WORKLOG.md" in their prose, and a whole-line grep
+  # reports those as leaks.
+  $leaked = @()
+  foreach ($emitted in $defaultRun) {
+    if ($emitted -match '^CLAIM-DRIFT\[[^\]]*\]\[[^\]]*\]\[[^\]]*\] (.+?):[0-9]+: ') {
+      $citedPath = $Matches[1]
+      if ($citedPath -match '[\\/]audit_reports[\\/]' -or $citedPath -match 'WORKLOG\.md$') {
+        $leaked += $citedPath
+      }
+    }
+  }
+  if ($leaked.Count -gt 0) {
+    Write-Host ("CLAIM-DRIFT SELFTEST: FAIL -- {0} emitted line(s) cite process records, e.g. {1}" -f `
+        $leaked.Count, $leaked[0])
+    $selfTestFailures += 1
+  } else {
+    Write-Host "CLAIM-DRIFT SELFTEST: ok -- no emitted line cites a process-record path"
+  }
+
+  # (2) The exclusion must actually remove something.
+  function Get-ReportedHitCount {
+    param([string[]]$Lines)
+    foreach ($reported in $Lines) {
+      if ($reported -match 'scan complete \(([0-9]+) hits') { return [int]$Matches[1] }
+    }
+    return -1
+  }
+  $defaultHits = Get-ReportedHitCount -Lines $defaultRun
+  $recordHits = Get-ReportedHitCount -Lines $recordRun
+  if ($defaultHits -lt 0 -or $recordHits -lt 0) {
+    Write-Host "CLAIM-DRIFT SELFTEST: FAIL -- could not read a hit count from both runs"
+    $selfTestFailures += 1
+  } elseif ($recordHits -le $defaultHits) {
+    Write-Host ("CLAIM-DRIFT SELFTEST: FAIL -- exclusion removed nothing ({0} hits with records, {1} without); a filter that matches nothing looks identical to one that works" -f `
+        $recordHits, $defaultHits)
+    $selfTestFailures += 1
+  } else {
+    Write-Host ("CLAIM-DRIFT SELFTEST: ok -- exclusion removed {0} hits ({1} -> {2})" -f `
+        ($recordHits - $defaultHits), $recordHits, $defaultHits)
+  }
+
+  if ($selfTestFailures -gt 0) {
+    Write-Host "CLAIM-DRIFT SELFTEST: RESULT: FAIL"
+    exit 1
+  }
+  Write-Host "CLAIM-DRIFT SELFTEST: RESULT: PASS"
+  exit 0
+}
 
 if (-not (Test-Path $PolicyPath)) {
   Write-Host "CLAIM-DRIFT: policy not found: $PolicyPath"
@@ -132,6 +212,28 @@ function Get-ScanFiles {
       $files += $item
     }
   }
+  # Exclude PROCESS RECORDS from the default roots.
+  #
+  # Suppressing `allowed`-labelled output was not enough and fixing only that
+  # was this repair's own first mistake: hits inside `docs/internal/audit_reports`
+  # are frequently labelled `review`, not `allowed`, so 104 lines of prior audit
+  # reports still printed after that change. The label is not the property; the
+  # PATH is. These directories hold verdicts, findings and worklogs -- process
+  # evidence that is never a governed claim surface, and precisely the material
+  # a commissioned fresh-blind auditor must not be shown while forming
+  # conclusions (2026-08-15 audit, P2-4).
+  #
+  # `-IncludeProcessRecords` restores them for coordinator use.
+  # This covers the required-attribution pass ONLY. The term scan below does not
+  # go through this function -- it shells out to `rg` against $roots directly --
+  # so it carries its own copy of the exclusion via $processRecordExcludeGlobs.
+  # Both are needed; fixing only this one changed nothing at all.
+  if (-not $IncludeProcessRecords) {
+    $files = @($files | Where-Object {
+      $_.FullName -notmatch '[\\/]audit_reports[\\/]' -and
+      $_.Name -notmatch 'WORKLOG\.md$'
+    })
+  }
   return @($files | Sort-Object FullName -Unique)
 }
 
@@ -147,12 +249,27 @@ function Get-MatchLineNumber {
   return 1 + ([regex]::Matches($Content.Substring(0, $Index), "`n")).Count
 }
 
+# Process-record exclusion for the TERM SCAN.
+#
+# The term scan does not enumerate files in PowerShell; it hands $roots to `rg`,
+# which recurses them itself. So the exclusion has to be expressed as rg globs
+# here, in addition to the PowerShell filter in Get-ScanFiles that covers the
+# required-attribution pass. Two independent enumerations, two exclusions.
+$processRecordExcludeGlobs = @()
+if (-not $IncludeProcessRecords) {
+  $processRecordExcludeGlobs = @(
+    "--glob", "!**/audit_reports/**",
+    "--glob", "!**/*WORKLOG.md"
+  )
+}
+
 foreach ($term in $policy.terms) {
   $pattern = [string]$term.pattern
   $rgArguments = @("--json", "--pcre2")
   if ($term.multiline -eq $true) {
     $rgArguments += "--multiline"
   }
+  $rgArguments += $processRecordExcludeGlobs
   $rgArguments += @("--", $pattern)
   $rgArguments += @($roots)
   $matches = @(& rg @rgArguments 2>$null)

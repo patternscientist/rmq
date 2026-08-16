@@ -9621,3 +9621,60 @@ defect it should catch. Zero is now the healthy state; more than one still fails
 
 Verified: both new `check_paper` assertions fail closed under injection (stale
 count -> exit 1; two markers -> exit 1; restored -> exit 0).
+
+## WDD-20260816-033 -- amendment to WDD-20260816-032: the scanner leak took three attempts
+
+The `P2-4` subsection above states the strict scanner no longer leaks prior
+audits. **That was false when written**, and the two ways it was false are worth
+more than the fix.
+
+**Attempt one** suppressed `allowed`-labelled output. Printed lines fell from
+~1,579 to 1,257 and the run exited 0. But the leaking hits are labelled
+`review`, not `allowed`: 104 lines of `docs/internal/audit_reports/` still
+printed. The label was never the property -- the *path* is.
+
+**Attempt two** filtered `Get-ScanFiles` with `-like "*\audit_reports\*"`.
+Two independent defects, either alone fatal:
+
+1. In a `-like` wildcard pattern the backslash is **not** an escape character,
+   so the pattern searched for two consecutive literal backslashes and matched
+   nothing.
+2. `Get-ScanFiles` feeds the required-attribution pass only. The term scan --
+   which produces the leak -- hands the roots to `rg` and never calls that
+   function. Even a correct filter there would have changed nothing.
+
+The measurement after attempt two was identical to before it: 1,579 hits, 339
+matching lines, exit 0. **A filter that matches nothing is indistinguishable
+from a filter that works, by every signal except a count.**
+
+The fix is in both enumerations: `rg --glob '!**/audit_reports/**' --glob
+'!**/*WORKLOG.md'` for the term scan, and the PowerShell predicate for the
+attribution pass. Hits: 1,579 -> 1,160; process-record citations: 339 -> 0.
+`-IncludeProcessRecords` restores the coordinator view and reproduces 1,579
+exactly.
+
+### The exclusion is now asserted, not assumed
+
+`claim_drift_scan.ps1 -SelfTest` runs both configurations and checks two things:
+
+- no emitted line's **path field** cites a process record (the whole-line grep
+  used during repair reports a false positive on
+  `E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md:55`, which merely mentions
+  `E1_WORKLOG.md` in its prose);
+- the exclusion removes a **nonzero** number of hits.
+
+The second assertion is the one that matters: it is the only signal that
+distinguishes attempt two from the fix. Verified by injection -- neutering the
+`rg` glob makes the self-test report `FAIL -- 104 emitted line(s) cite process
+records` and exit 1.
+
+`scripts/gate.ps1` runs the self-test *before* the strict scan, because this
+gate's own output is the contamination channel and a fresh-blind auditor is
+required to run it.
+
+### The standing lesson
+
+Round P2-4 recorded "a known leak left open for one round is a leak chosen".
+This round adds the sharper one: **a repair reported without a measurement that
+could have failed is not a repair.** Both failed attempts produced exit code 0
+and a plausible narrative. Only counting the leaked lines separated them.
