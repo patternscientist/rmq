@@ -236,6 +236,13 @@ if ($LASTEXITCODE -ne 0) { SoftFail "claim_drift_scan.ps1 self-test failed" }
 & "$PSScriptRoot\claim_drift_scan.ps1" -Strict
 if ($LASTEXITCODE -ne 0) { SoftFail "claim_drift_scan.ps1 found strict violations" }
 
+# 7a. An audit tag's annotation must not hand the next blind auditor the last
+# round's verdict. The `audit-v1-rc-3` annotation carried the prior
+# NOT_ACCEPTABLE, its finding IDs, and the assurance that every prior finding
+# was correct -- and the prompt tells auditors to check the tag out by name.
+& "$PSScriptRoot\tag_annotation_check.ps1" -SelfTest
+if ($LASTEXITCODE -ne 0) { SoftFail "tag_annotation_check.ps1 found issues" }
+
 # 7b. Current-constant synchronization. The claim-drift policy guards every
 # RETIRED constant and neither current one, so a moved bound would leave public
 # surfaces asserting a stale numeral with the scan still reporting zero strict

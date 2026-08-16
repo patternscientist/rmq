@@ -9757,3 +9757,45 @@ while wrong:
 4. That same case yields NO count or anchor failure, proving the new condition
    is doing the work rather than riding along with an older one.
 5. A historical restatement is not reported as a conflict.
+
+## WDD-20260816-036 -- audit-tag annotations are identity and scope only
+
+The `audit-v1-rc-3` annotation was a round summary: the prior `NOT_ACCEPTABLE`
+verdict, finding IDs `P1-01`..`P1-03`, which `RC-` requirements were
+discharged, and the sentence "Every finding was independently reproduced before
+being fixed; none were wrong."
+
+That is a briefing for the next auditor, delivered without anyone deciding to
+deliver it. The prompt has them `git checkout audit-v1-rc-3` and confirm
+`git tag --points-at HEAD`; `git show` does the rest. **This was predicted
+before RC-3 was commissioned and it happened anyway** -- the same shape as the
+scanner leak: a channel identified, left open, and then used.
+
+Being told which findings the previous auditor raised is bad. Being told they
+were all correct is worse: it converts an independent search into a
+verification of someone else's list, and the cheapest path through the task is
+now marked.
+
+`scripts/tag_annotation_check.ps1` rejects verdict tokens, finding IDs,
+requirement IDs and outcome prose in any annotated `audit-*` tag. In the gate,
+with `-SelfTest`.
+
+### The already-published tags are not rewritten
+
+`audit-v1-rc-2` and `audit-v1-rc-3` are on `origin` and were handed to
+auditors. Rewriting a published tag breaks a reference someone may hold and
+undoes no contamination that has not already occurred. They are listed as
+known-contaminated, reported loudly on every run, and barred from reuse in
+commissioning. The list is pinned by count, so it cannot quietly grow to
+accommodate a new violation -- the failure mode of every exception clause,
+and one this project has already been bitten by (`210` guarded only inside an
+`allowedLineRegex` exception).
+
+### The positive fixture is the real annotation
+
+The self-test runs the detector against the actual `audit-v1-rc-3` annotation
+rather than a synthetic string. A detector that cannot catch the annotation
+that actually leaked is not a detector for this problem. It also asserts the
+catch is for a *verdict* specifically, not an incidental word match, and that a
+clean identity/scope annotation stays silent -- a rule that flags compliant
+annotations gets switched off within a round.
