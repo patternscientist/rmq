@@ -621,3 +621,123 @@ example {shape : RMQ.Cartesian.CartesianShape} {left right : Nat}
   h.requires_certificate_weight_le_210
 
 end M1CertificateAntiBypassCheck
+
+/-!
+Expected-type pins for the three remaining standalone headline aliases.
+
+RC-3 `P2-3`'s disposition names four aliases: the standalone lower bound, the
+List-Int store, the reviewer readWord bound, and the packed architecture. Only
+the packed one existed (`PackedCellProbePublicExpectedTypeCheck` above,
+DD-20260816-108); this file recorded that item as complete while three quarters
+of it was unwritten.
+
+Each `Prop` below is written from the paper's wording, WITHOUT naming the alias
+or the theorem it abbreviates, so a weakening of the underlying statement stops
+this file elaborating rather than silently retargeting the alias. Each is
+inhabited from the alias alone.
+
+Each pin also says what it does NOT pin. A pin over a conjunction that quietly
+drops conjuncts is the same defect as a green check standing in for an
+unestablished property, one level down.
+-/
+
+namespace ExactRMQLowerBoundPublicExpectedTypeCheck
+
+/-!
+`RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`.
+
+Pinned: the doubled lower bound on any exact fixed-length state encoding, and
+the matching `2*n` witness -- together these are what makes the bound TIGHT, and
+either alone is weak enough to be uninteresting.
+
+NOT pinned: the uniform-budget conjunct (the middle one). It generalises the
+first rather than adding a public claim, and pinning it would fix a quantifier
+shape the paper does not commit to.
+-/
+
+-- EG-P2-3-LOWER-BOUND-TYPE-PIN-ANCHOR
+def ExactRMQLowerBoundExpectedPaperType : Prop :=
+  forall n : Nat,
+    (forall {bits : Nat},
+      RMQ.EncodingLowerBound.ExactRMQStateEncoding n bits ->
+        RMQ.EncodingLowerBound.doubledLogSlackLower n <= 2 * bits) /\
+      (exists encoding : RMQ.EncodingLowerBound.ExactRMQStateEncoding n (2 * n),
+        forall {shape : RMQ.Cartesian.CartesianShape},
+          List.Mem shape (RMQ.Cartesian.shapesOfSize n) ->
+            (encoding.payloadView).payloadBitCount (encoding.buildState shape) =
+              2 * n)
+
+example : ExactRMQLowerBoundExpectedPaperType :=
+  fun n =>
+    ⟨(RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack n).1,
+     match (RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack n).2.2 with
+     | ⟨encoding, h⟩ => ⟨encoding, fun hmem => (h hmem).1⟩⟩
+
+end ExactRMQLowerBoundPublicExpectedTypeCheck
+
+namespace ListIntSuccinctStorePublicExpectedTypeCheck
+
+/-!
+`RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`.
+
+Pinned: the little-o overhead, the `2n + o(n)` payload length, and the constant
+query-cost cap -- the space half and the time half of the manuscript sentence.
+
+NOT pinned: the invalid-range, scan-window, leftmost-argmin and
+no-synthetic-execution conjuncts. Each has its own headline alias and its own
+ledger row; pinning them here would duplicate those rows rather than guard this
+one.
+-/
+
+-- EG-P2-3-LIST-INT-TYPE-PIN-ANCHOR
+def ListIntSuccinctStoreExpectedPaperType : Prop :=
+  RMQ.SuccinctSpace.LittleOLinear RMQ.SuccinctClassic.overhead /\
+    forall xs : List Int,
+      ((RMQ.SuccinctClassic.buildPayload xs).length <=
+          2 * xs.length + RMQ.SuccinctClassic.overhead xs.length) /\
+        (forall left right : Nat,
+          (RMQ.SuccinctClassic.queryCosted xs left right).cost <=
+            RMQ.SuccinctClassic.queryCost)
+
+example : ListIntSuccinctStoreExpectedPaperType :=
+  ⟨RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory.1,
+   fun xs =>
+     ⟨(RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory.2
+         xs).1,
+      (RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory.2
+         xs).2.1⟩⟩
+
+end ListIntSuccinctStorePublicExpectedTypeCheck
+
+namespace ReviewerReadWordPublicExpectedTypeCheck
+
+/-!
+`RMQ.Headlines.succinctRMQReviewerSuccessfulReadWordFits`.
+
+Pinned: every SUCCESSFUL logical read of the canonical global read store returns
+a word no wider than the declared reviewer word width. The whole statement; it
+has no conjuncts to drop.
+
+The hypothesis is the point. A version quantified over all reads rather than
+successful ones would be false, and a version with a vacuous hypothesis would be
+useless -- so the `= some word` premise is written out here rather than inherited
+from the alias.
+-/
+
+-- EG-P2-3-READWORD-TYPE-PIN-ANCHOR
+def ReviewerReadWordExpectedPaperType : Prop :=
+  forall (shape : RMQ.Cartesian.CartesianShape) {segment index : Nat}
+      {word : List Bool},
+    (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        segment index = some word ->
+      word.length <=
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerWordBits shape.size
+
+-- The three implicit binders are named rather than left to inference: with
+-- `fun shape hread`, Lean binds `hread` to `segment` and reports a Nat/Prop
+-- mismatch that reads like a statement error rather than a binder one.
+example : ReviewerReadWordExpectedPaperType :=
+  fun shape {_segment _index _word} hread =>
+    RMQ.Headlines.succinctRMQReviewerSuccessfulReadWordFits shape hread
+
+end ReviewerReadWordPublicExpectedTypeCheck

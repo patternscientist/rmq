@@ -10423,3 +10423,30 @@ One limit is now STATED rather than implied, in the checker itself: a
 Distinguishing it needs the enclosing declaration, which a line-local matcher
 does not have. No row in this ledger has that shape, and saying so is better than
 a comment that implies the case was handled.
+
+## WDD-20260816-053 -- A pin is not landed until a mutant has been rejected
+
+`scripts/headline_axiom_check.lean` gains three expected-type pins (DD-20260816-117).
+The process point is separate from the mathematics.
+
+An expected-type pin is a `Prop` written independently of the alias it guards,
+inhabited by that alias alone. Its whole value is that a WEAKENED theorem stops
+inhabiting it. A pin that compiles proves nothing about that on its own: a pin
+whose `Prop` is `True`, or which accidentally restates the alias, compiles just
+as happily.
+
+So the landing rule for this file, applied here and stated for the next one:
+**a pin is not landed until at least one deliberately weakened variant has been
+built and observed to REJECT.** Four were, each changing exactly one thing, each
+run through `lake env lean` from a copy outside the source tree so the landed
+file was never edited to test it.
+
+This is the same rule the packed pin followed (DD-20260816-108, "verified to fail
+closed: changing the cap to `428` ... stops this file compiling"). Recorded here
+so it is a convention rather than a habit that happened twice.
+
+One incidental: the readWord pin needs its three implicit binders NAMED in the
+`fun`. Left to inference, Lean binds the hypothesis to `segment` and reports a
+`Nat`/`Prop` mismatch that reads like a statement error rather than a binder one.
+The comment above it says so, because the next person to widen that pin will hit
+it.

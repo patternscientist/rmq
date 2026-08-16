@@ -11891,3 +11891,37 @@ that number. It is not a defect in the ledger; it is the size of what a green
 decl-check does not establish, and it was previously invisible to a reader of
 `paper/README.md`, which said the script confirmed **all** the names those rows
 cite.
+
+## DD-20260816-117 -- The three expected-type pins RC-3 `P2-3` required and did not have
+
+`P2-3`'s disposition names four aliases needing independent expected-type
+consumers: the standalone lower bound, the List-Int store, the reviewer readWord
+bound, and the packed architecture. Only the packed one landed
+(DD-20260816-108). The item was recorded as addressed with three quarters of it
+unwritten.
+
+The three are now in `scripts/headline_axiom_check.lean`. Each `Prop` is written
+from the paper's wording without naming the alias or the theorem it abbreviates,
+and inhabited from the alias alone, so weakening the underlying statement stops
+the file elaborating rather than silently retargeting the alias.
+
+**Verified to fail closed, not assumed to.** Four mutants, each built from the
+landed file by changing one thing in the pinned `Prop`, each run through
+`lake env lean`:
+
+| mutant | change | result |
+|---|---|---|
+| LB-slack | `doubledLogSlackLower n <= 2 * bits` -> `3 * bits` | REJECT, exit 1 |
+| LB-witness | the `2 * n` witness -> `3 * n` | REJECT, exit 1 |
+| LI-space | `2 * xs.length + overhead` -> `3 * xs.length + overhead` | REJECT, exit 1 |
+| RW-strict | `word.length <= wordBits` -> `word.length < wordBits` | REJECT, exit 1 |
+
+Each pin also records what it does NOT pin, and why. The lower bound's
+uniform-budget conjunct is excluded because it generalises the first rather than
+adding a public claim; the List-Int store's invalid-range, scan-window,
+leftmost-argmin and no-synthetic conjuncts are excluded because each has its own
+alias and its own ledger row. A pin over a conjunction that quietly drops
+conjuncts is the same defect as a green check standing in for an unestablished
+property, one level down.
+
+`P2-3` is now complete for all four aliases.
