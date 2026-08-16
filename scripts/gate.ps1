@@ -90,9 +90,25 @@ function RunAxiomCheck($script, $label) {
   # `#print axioms` directive emits exactly one line, either `depends on axioms:`
   # or `does not depend on any axioms`. Fewer records than directives means some
   # directive did not run.
-  $directiveCount = ([regex]::Matches([IO.File]::ReadAllText($script), '(?m)^\s*#print axioms\b')).Count
+  # `[IO.File]` resolves a relative path against .NET's CurrentDirectory, which
+  # `Set-Location` does not update: measured, this read `scripts/gate.ps1` out of a
+  # DIFFERENT worktree. When the path does not resolve at all it throws,
+  # `$directiveCount` stays `$null`, and BOTH guards below evaluate false -- the
+  # floor becomes a silent no-op while AXIOM CHECK PASS prints. `-1` makes an
+  # unreadable source fail closed instead.
+  #
+  # Block comments are stripped first: a directive inside `/- ... -/` emits no
+  # record, so counting it would false-fail. No such block exists in the eight
+  # inventories today; the strip is here so that adding one is not a gate failure.
+  $directiveCount = -1
+  $sourceText = $null
+  try { $sourceText = Get-Content -Raw -LiteralPath $script -ErrorAction Stop } catch { }
+  if ($null -ne $sourceText) {
+    $liveSource = [regex]::Replace($sourceText, '(?s)/-.*?-/', '')
+    $directiveCount = ([regex]::Matches($liveSource, '(?m)^\s*#print axioms\b')).Count
+  }
   $recordCount = $declared + ([regex]::Matches($axiomText, "does not depend on any axioms")).Count
-  if ($directiveCount -eq 0) {
+  if ($directiveCount -lt 1) {
     Remove-Item $tmp -ErrorAction SilentlyContinue
     SoftFail ("${label} contains no ``#print axioms`` directive; it is not an axiom inventory and a clean run means nothing")
     return
@@ -151,8 +167,18 @@ function Invoke-Checker {
   # 17 of 17, raw call sites at 0, and that stage incapable of failing:
   # measured, the same scan exits 1 with -Strict and 0 without. Coverage that
   # cannot see the mode is not coverage.
-  $paramKeys = @($CheckerParams.Keys | Sort-Object)
-  $script:checkersRun += ($Label + $(if ($paramKeys.Count) { ' [' + ($paramKeys -join ',') + ']' } else { '' }))
+  # Path AND key=VALUE. Recording key names alone was not mode-awareness:
+  # `@{ Strict = $true }` and `@{ Strict = $false }` produced the IDENTICAL roster
+  # entry, so a one-token change disarmed the claim-policy stage at full coverage
+  # -- the exact defect the previous version was written to close, which it caught
+  # only for `@{}`, the one mutation it was tested against.
+  #
+  # The resolved script name is recorded too, because `-Label` is a free string: a
+  # stage could otherwise run against a different script and still match its entry.
+  $paramSig = @($CheckerParams.GetEnumerator() | Sort-Object Key |
+    ForEach-Object { "$($_.Key)=$($_.Value)" })
+  $script:checkersRun += ($Label + ' {' + (Split-Path $Path -Leaf) + '}' +
+    $(if ($paramSig.Count) { ' [' + ($paramSig -join ',') + ']' } else { '' }))
 
   if (-not (Test-Path -LiteralPath $Path)) {
     $m = "$Label DID NOT RUN: no such file ($Path). A missing checker is not a passing checker."
@@ -413,23 +439,23 @@ if ($LASTEXITCODE -ne 0) { SoftFail "git diff --check found issues" }
 # shorter green run. The list is the gate's advertised coverage, so it is
 # written out rather than derived from the calls it is checking.
 $expectedCheckers = @(
-  'm1_certificate_mutation_regression.ps1',
-  'eg_cp_stagea_replay.ps1',
-  'eg_cp_final_falsification_replay.ps1',
-  'project_skill_preflight_regression.ps1',
-  'worker_prompt_preflight_regression.ps1',
-  'design_decision_check_regression.ps1',
-  'succinct_cost_lint.ps1',
-  'shim_lint.ps1',
-  'hub_closure_lint.ps1 [SelfTest]',
-  'claim_drift_policy_regression.ps1',
-  'claim_drift_scan.ps1 -SelfTest [SelfTest]',
-  'claim_drift_scan.ps1 -Strict [Strict]',
-  'tag_annotation_check.ps1 [SelfTest]',
-  'constant_sync_check.ps1 [SelfTest]',
-  'paper_topology_lint.ps1',
-  'paper_topology_lint_regression.ps1',
-  'paper/check_paper.ps1 [SelfTest]'
+  'm1_certificate_mutation_regression.ps1 {m1_certificate_mutation_regression.ps1}',
+  'eg_cp_stagea_replay.ps1 {eg_cp_stagea_replay.ps1}',
+  'eg_cp_final_falsification_replay.ps1 {eg_cp_final_falsification_replay.ps1}',
+  'project_skill_preflight_regression.ps1 {project_skill_preflight_regression.ps1}',
+  'worker_prompt_preflight_regression.ps1 {worker_prompt_preflight_regression.ps1}',
+  'design_decision_check_regression.ps1 {design_decision_check_regression.ps1}',
+  'succinct_cost_lint.ps1 {succinct_cost_lint.ps1}',
+  'shim_lint.ps1 {shim_lint.ps1}',
+  'hub_closure_lint.ps1 {hub_closure_lint.ps1} [SelfTest=True]',
+  'claim_drift_policy_regression.ps1 {claim_drift_policy_regression.ps1}',
+  'claim_drift_scan.ps1 -SelfTest {claim_drift_scan.ps1} [SelfTest=True]',
+  'claim_drift_scan.ps1 -Strict {claim_drift_scan.ps1} [Strict=True]',
+  'tag_annotation_check.ps1 {tag_annotation_check.ps1} [SelfTest=True]',
+  'constant_sync_check.ps1 {constant_sync_check.ps1} [SelfTest=True]',
+  'paper_topology_lint.ps1 {paper_topology_lint.ps1}',
+  'paper_topology_lint_regression.ps1 {paper_topology_lint_regression.ps1}',
+  'paper/check_paper.ps1 {check_paper.ps1} [SelfTest=True]'
 )
 $notReached = @($expectedCheckers | Where-Object { $script:checkersRun -cnotcontains $_ })
 if ($notReached.Count -gt 0) {
@@ -457,10 +483,23 @@ $gateSource = Get-Content -Raw -LiteralPath $PSCommandPath
 # So the lint now carries a NEGATIVE CONTROL. A detector that matches nothing
 # and a detector that works produce the same output on a clean tree, and this
 # tree is clean -- only the control distinguishes them.
-$rawCallPattern = '(?m)^&\s*"\$PSScriptRoot\\[^"]+\.ps1"'
-$rawCallControl = '& "$PSScriptRoot\raw_call_negative_control.ps1"'
-if ([regex]::Matches($rawCallControl, $rawCallPattern).Count -ne 1) {
-  SoftFail 'the raw-call-site lint does not match a known raw call site; it is inert and cannot detect one'
+$rawCallPattern = '(?m)^[^\S\r\n]*[&.]\s*"\$PSScriptRoot[\\/][^"]+\.ps1"'
+# The control is an ARRAY of shapes. The previous one was a single column-0 call
+# and the pattern was anchored at `^`, so an INDENTED raw call was invisible to
+# both -- and indented is precisely the shape this whole check is about: at
+# `03d8a71`, `check_paper.ps1` sat at `gate.ps1:275` inside `if (Test-Path ...) {`
+# with no `else`, the case WDD-20260816-046 calls "an absent manuscript checker
+# was silently skipped". The lint would not have caught the defect it exists for.
+$rawCallControls = @(
+  '& "$PSScriptRoot\control_plain.ps1"',
+  '  & "$PSScriptRoot\control_indented.ps1"',
+  '. "$PSScriptRoot\control_dotsourced.ps1"',
+  '& "$PSScriptRoot/control_forwardslash.ps1"'
+)
+foreach ($ctl in $rawCallControls) {
+  if ([regex]::Matches($ctl, $rawCallPattern).Count -ne 1) {
+    SoftFail ("the raw-call-site lint does not match the known raw call site [$ctl]; it is inert for that shape")
+  }
 }
 $rawCallSites = @([regex]::Matches($gateSource, $rawCallPattern))
 if ($rawCallSites.Count -gt 0) {

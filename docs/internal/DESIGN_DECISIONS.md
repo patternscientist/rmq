@@ -12031,3 +12031,45 @@ half, is unchanged and still rejects a moved citation.
 
 None of the three changes what any checker does. They are here because a design
 log that says a false thing is a defect in the log.
+
+## DD-20260816-121 -- The per-commit CI fix certified one commit, and its pull-request path was invalid git
+
+`DD-20260816-119` said "CI now enforces the invariant the repository states ...
+certifies each commit". A fresh audit measured both branches of the step it added.
+
+**The push path certified only the tip.** `$range = "HEAD~1..HEAD"` is a fixed
+one-commit window. On a push of three commits -- the fixture that entry
+describes, with the breach at `c1` -- the step reported
+`all 1 commit(s) certified individually`, exit 0. The breach was inside the
+pushed range and CI still could not see it: the identical outcome
+`WDD-20260816-043` records for `c9ca9ff`, which is the defect the fix exists to
+close. `fetch-depth: 2` made anything past `HEAD~1` unresolvable regardless.
+
+**The pull-request path never ran.** `git fetch --depth=0` is rejected outright:
+`fatal: depth 0 is not a positive number`. That leg fails closed, so it was not a
+false pass -- but the shipped fix had never executed on the path it was written
+for.
+
+Repaired: `fetch-depth: 0` on the checkout, the push range taken from
+`github.event.before` (guarding the all-zeros SHA git uses for a new branch, with
+`HEAD~1..HEAD` as the fallback), and `--depth=0` dropped.
+
+**The regression gains the leg that would have caught this.** It now walks the
+pushed range with the breach behind the tip, and asserts both that two commits
+are walked and that exactly one is rejected. The previous four legs all tested a
+single commit at a time, which is why none of them saw a one-commit window.
+
+The wiring case was also two substring greps, and the audit showed it PASSING on
+a `ci.yml` whose push branch had been reverted to one aggregate call -- the loop
+text still sat above it. It now requires `github.event.before` and
+`fetch-depth: 0` as well, and rejects a `git fetch ... --depth=0` command.
+Mutation-verified against three reverts: removing the event-based branch,
+restoring `--depth=0`, and dropping `--reverse` are each rejected.
+
+One pin had to be scoped rather than added: matching the bare string `--depth=0`
+fired on the workflow's own comment explaining why it was removed. A pin over a
+file that documents itself has to say which occurrence it means.
+
+`.github/workflows/release-artifact.yml` also runs the gate, through
+`scripts/reproduce_artifact.sh`, and did not get `fetch-tags` when the other two
+did -- `WDD-20260816-057` said "every workflow" and fixed two. Corrected.

@@ -10593,7 +10593,12 @@ that shipped. The number was true of the tree and false of the checker.
 The tree is currently clean, so this was a dead detector rather than a masked
 breach. It is the third time in two days that a doubled backslash collapsed to a
 single one while being written through a layer that processes escapes; the
-pattern is now assembled from `chr(92)` rather than typed.
+pattern was written through a generator that emits the backslash from `chr(92)`,
+so no escape is typed at any layer of the tooling. **The shipped file contains a
+typed doubled backslash inside a single-quoted string** -- this entry first said
+the code assembles it from `chr(92)`, which is a claim about code that does not
+exist. What defends the property is the control below, not how the literal was
+produced.
 
 **And it carries a negative control.** A detector that matches nothing and a
 detector that works produce identical output on a clean tree, and this tree is
@@ -10687,11 +10692,23 @@ The scan already has the scoped mechanism: `allowedPathLinePathRegex` and
 `allowedPathLineRegex`, which are AND'd. Policy **v25** moves the prohibiting-
 language tokens out of `allowedLineRegex` and the two `paper/` paths out of
 `allowedPathRegex`, into that pair, for both terms touched in v24. The allowance
-is now what the entry said it was.
+is now what the entry said it was, **for the tokens v24 added.**
 
-After: strict scan clean with `paper/` in scope (1192 hits, 0 strict failures,
-all 23 `paper/` lines classified `review`), and the `retired` injection into
-`README.md` is rejected again.
+**Both terms still carry pre-v24 repo-wide `allowedLineRegex` tokens, and this
+change does not close them.** Measured at v25, each of these one-word injections
+into a governed current-fact surface still passes the strict scan: `novelty`,
+`policy`, `search` on the novelty term (into `README.md`); `previously`,
+`historical` on the cap term (into `docs/WHAT_IS_PROVED.md`). A wholesale path
+allowance for `paper/NOVELTY_LOG.md` also remains on the cap term. These predate
+this round and are recorded as open, not folded into a claim that the term is
+now tight.
+
+After: strict scan clean with `paper/` in scope (0 strict failures, all 23
+`paper/` lines classified `review`), and the `retired` injection into
+`README.md` is rejected again. **No hit total is recorded here**: the scan counts
+files this entry lives in, so writing the number down changes it. At the commit
+that ships v25 it is 1193, and this entry first recorded 1192 -- the value from
+before its own text existed.
 
 This is also the species WDD-20260816-049 fixed in `constant_sync_check.ps1` the
 same day, by requiring a historical marker within 120 characters of the numeral
@@ -10774,3 +10791,54 @@ workflow-classified: the per-commit governance check added this round
 (DD-20260816-119) rejected the commit that carried only the `DESIGN_DECISIONS.md`
 half. The aggregate check would have accepted it, since the same commit touched
 that log for other reasons -- the blind spot, caught on the round that closed it.
+
+## WDD-20260816-062 -- Three fixes from the last round that did not do what they said
+
+A fresh blind audit of `614923a..2bd35b1` -- the commits that fixed the previous
+round's findings. **P1 empty.** All three P2s are in those fixes.
+
+### The mode-aware roster recorded parameter NAMES, not the mode
+
+`WDD-20260816-059` said "the mode is part of the identity". It recorded
+`$CheckerParams.Keys`, so `@{ Strict = $true }` and `@{ Strict = $false }`
+produced the **identical** roster entry. A one-token change disarms the
+claim-policy stage at full coverage -- the same defect that entry exists to close.
+It caught `@{}`, the one mutation it was tested against, and nothing else.
+
+`-Label` is also a free string with no relation to `-Path`, so a stage could run
+against a different script and still match its roster entry.
+
+The entry is now `label {script} [key=value]`. Verified by mutation:
+`Strict=True` and `Strict=False` now differ, and a wrong `-Path` shows
+`{decoy.ps1}`.
+
+### The raw-call-site lint could not see an indented call site
+
+`^&` anchored at column 0. Measured against the shipped pattern: an indented
+call, a dot-sourced call and a forward-slash path all matched **0** times.
+
+The indented shape is not hypothetical. At `03d8a71`, `check_paper.ps1` sat at
+`gate.ps1:275` inside `if (Test-Path ...) {` with no `else` -- the case
+`WDD-20260816-046` calls "an absent manuscript checker was silently skipped".
+**The lint would not have caught the defect it was written for.**
+
+The control could not detect this, because it was a single column-0 string: it
+tested the pattern against exactly the shape the pattern handled. The control is
+now an array -- plain, indented, dot-sourced, forward-slash -- each asserted to
+match exactly once, and the pattern accepts leading horizontal space, `&` or `.`,
+and either separator. Verified: all four controls match once;
+`Invoke-Checker -Path "..."` and a commented-out call still match zero times.
+
+### The axiom directive floor read a file from a different worktree
+
+`[IO.File]::ReadAllText($script)` resolves a relative path against .NET's
+`CurrentDirectory`, which `Set-Location` does not update. Measured: it read
+`scripts/gate.ps1` out of a **different worktree** of the same repository. When
+the path does not resolve at all it throws, `$directiveCount` stays `$null`, and
+`$null -eq 0` and `2 -lt $null` are both false -- so **neither guard fires** and
+the floor is a silent no-op while `AXIOM CHECK PASS` prints.
+
+Now `Get-Content -Raw -LiteralPath`, with `$directiveCount` initialised to `-1`
+and the guard `-lt 1`, so an unreadable source fails closed. Block comments are
+stripped before counting, since a directive inside `/- ... -/` emits no record
+and would false-fail; no such block exists in the eight inventories today.

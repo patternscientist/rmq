@@ -531,6 +531,16 @@ try {
     $perCommitBreach = Invoke-PcCheck @('-Base', ($c1 + '~1'), '-Head', $c1, '-Strict')
     $perCommitClean = Invoke-PcCheck @('-Base', ($c2 + '~1'), '-Head', $c2, '-Strict')
 
+    # A PUSH RANGE, not a single commit. ci.yml used `HEAD~1..HEAD`, a fixed
+    # one-commit window, so a push of three commits certified only the tip and
+    # the breach at c1 went through -- the same blind spot, one level up. This
+    # walks the range the way the workflow now does.
+    $pushRange = @(& git rev-list --reverse ($c0 + '..' + $c2))
+    $pushBad = 0
+    foreach ($rc in $pushRange) {
+      if ((Invoke-PcCheck @('-Base', ($rc + '~1'), '-Head', $rc, '-Strict')) -ne 0) { $pushBad += 1 }
+    }
+
     if ($aggregate -ne 0) {
       Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-blind-spot] the aggregate run rejected the fixture (exit $aggregate); it is supposed to MISS this, and legs 2-3 prove nothing if it does not"
       $failures += 1
@@ -549,6 +559,15 @@ try {
     } else {
       Write-Host 'DESIGN-CHECK-REGRESSION: PASS [per-commit-control] ACCEPT a compliant commit'
     }
+    if ($pushRange.Count -ne 2) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-push-range] expected 2 commits in the pushed range, walked $($pushRange.Count)"
+      $failures += 1
+    } elseif ($pushBad -ne 1) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-push-range] walking a 2-commit push found $pushBad breach(es); the uncertified commit is not the tip and must still be caught"
+      $failures += 1
+    } else {
+      Write-Host 'DESIGN-CHECK-REGRESSION: PASS [per-commit-push-range] a breach behind the tip of a pushed range is caught'
+    }
   } finally {
     Pop-Location
   }
@@ -564,7 +583,29 @@ if (-not (Test-Path -LiteralPath $ciPath)) {
   $failures += 1
 } else {
   $ciText = [IO.File]::ReadAllText($ciPath)
-  $wired = ($ciText -match 'git rev-list --reverse') -and ($ciText -match '-Head \$c')
+  # Presence AND absence. Presence alone passed on a ci.yml whose push branch
+  # had been reverted to one aggregate call, because the loop text still sat
+  # above it -- the pin did not pin the wiring.
+  $wired = ($ciText -match 'git rev-list --reverse') -and ($ciText -match '-Head \$c') -and
+           ($ciText -match 'github\.event\.before') -and ($ciText -match '(?m)^\s*fetch-depth: 0\s*$')
+  # Matched against the COMMAND, not the prose: the workflow's own comment
+  # explains why `--depth=0` was removed, and a bare substring test fired on
+  # that explanation. A pin over a file that documents itself has to say which
+  # occurrence it means.
+  # Matched against the COMMAND, not the prose: the workflow's own comment
+  # explains why `--depth=0` was removed, and a bare substring test fired on that
+  # explanation. A pin over a file that documents itself must say which
+  # occurrence it means.
+  #
+  # Only ONE reverted shape is testable by text here. A push branch that is only
+  # `HEAD~1..HEAD` is the revert -- but that same line is also the legitimate
+  # fallback for a new branch, where `github.event.before` is all zeros. What
+  # distinguishes them is the event-based branch above it, which the presence
+  # test already requires; pinning the line itself flagged the fallback.
+  $revertedShapes = @(
+    'git fetch[^\r\n]*--depth=0'
+  )
+  foreach ($rs in $revertedShapes) { if ($ciText -match $rs) { $wired = $false } }
   $stillAggregate = $ciText -match 'design_decision_check\.ps1 -Base "origin/\$\{\{ github\.base_ref \}\}" -Strict'
   if (-not $wired -or $stillAggregate) {
     Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml does not iterate the range with -Head'

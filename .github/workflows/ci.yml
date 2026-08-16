@@ -14,7 +14,9 @@ jobs:
         with:
           # The strict design-decision scan diffs against HEAD~1 on push
           # events; the default depth-1 checkout cannot resolve that base.
-          fetch-depth: 2
+          # 0, not 2: per-commit certification below walks the pushed range,
+          # and depth 2 makes anything past HEAD~1 unresolvable.
+          fetch-depth: 0
           # Annotated tags, explicitly. actions/checkout fetches with
           # --no-tags when fetch-depth > 0 and fetch-tags is unset, so
           # tag_annotation_check.ps1 found no annotated tags and failed
@@ -55,9 +57,18 @@ jobs:
           # DESIGN_DECISIONS.md satisfies the membership test for every
           # code-sensitive file in the range. WDD-20260816-043 records a commit
           # that breached the invariant and passed CI for exactly this reason.
+          # `--depth=0` is not valid git ("depth 0 is not a positive number"), so
+          # the pull-request branch never ran. And `HEAD~1..HEAD` is a fixed
+          # ONE-COMMIT window: a push of three commits certified only the tip, which
+          # is the same blind spot this step was added to close. `fetch-depth: 0`
+          # above makes the full history available; the push range comes from the
+          # event, guarding the all-zeros SHA git uses for a new branch.
           if ("${{ github.event_name }}" -eq "pull_request") {
-            git fetch origin "${{ github.base_ref }}" --depth=0
+            git fetch origin "${{ github.base_ref }}"
             $range = "origin/${{ github.base_ref }}..HEAD"
+          } elseif ("${{ github.event.before }}" -and
+                    "${{ github.event.before }}" -notmatch '^0{40}$') {
+            $range = "${{ github.event.before }}..HEAD"
           } else {
             $range = "HEAD~1..HEAD"
           }
