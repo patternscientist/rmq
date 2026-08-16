@@ -6,9 +6,11 @@ commit `0665b494707695a70675fef0e5c8682f4d80fe0c`, authored on branch
 `f0c7232a8a52b8d61ead5e96d72a8a849bc094b5`. This directory is a manuscript
 substrate only: it records no architecture acceptance, no coordinator
 acceptance, and no roadmap closure, and it is not one of the repository's
-registered public claim surfaces (the claim-drift policy scans `README.md`,
-`artifact/`, and `docs/`; `paper/` is deliberately outside that registry
-until a release-synchronization task admits it).
+registered current-fact surfaces. **The claim-drift scan does read `paper/` as
+of 2026-08-16** (WDD-20260816-048); what still excludes this substrate is the
+narrower `currentFactSurfacePathRegex`, which governs required attribution.
+This paragraph said `paper/` was outside the scan entirely, and was made false
+by the commit that added the scan root without updating it.
 
 ### What the base pin asserts, and what verified it
 

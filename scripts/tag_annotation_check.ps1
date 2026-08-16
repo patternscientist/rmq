@@ -37,9 +37,10 @@ param(
   # Every ANNOTATED tag, not `audit-*`. The convention is about what a tag
   # hands the next blind auditor, and a tag does not stop doing that by being
   # named differently: `v1-rc-7-external-audit` is an audit tag and was never
-  # enumerated. The two non-audit annotated tags in this repository
-  # (`v2026.07.06`, and `audit-v1-rc-1`) are clean under these rules, so
-  # widening the default costs nothing and closes the naming hole.
+  # enumerated -- that name is from the scratch repository used to demonstrate
+  # the hole, not from this one. The single non-`audit-*` annotated tag here
+  # (`v2026.07.06`) is clean under these rules, as are all three `audit-*`
+  # tags, so widening the default costs nothing and closes the naming hole.
   [string]$Pattern = "*"
 )
 

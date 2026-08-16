@@ -10635,3 +10635,77 @@ is what a hand-maintained number would be.
   `audit-v1-rc-1` matches `audit-*`. There is **one**. The same paragraph cites
   `v1-rc-7-external-audit`, which exists only in the scratch repository used to
   demonstrate the hole, and is now labelled as such.
+
+## WDD-20260816-057 -- The repository gate would have failed in the repository's own CI
+
+From the same audit.
+
+`6541233` made `tag_annotation_check.ps1` fail when no annotated tag is present,
+which is right: "nothing was checked" is not a pass, and the script's header says
+so -- *"CI must not pass `-AllowNoTags`"*.
+
+Every workflow checks out with `fetch-depth: 2` and no `fetch-tags`.
+`actions/checkout` fetches with `--no-tags` in that configuration, so the runner
+has no tags, so the checker finds none, so it fails. The gate invokes it `-Soft`,
+which turns that into a `GATE ISSUE` and a `GATE FAIL` -- in the "Lean gate" job
+and in `artifact-repro.yml`, which runs the gate through `reproduce_artifact.sh`.
+
+Reproduced locally by deleting the tags: `RESULT: FAIL (nothing was checked ...)`,
+exit 1. **Not reproduced on a runner** -- I cannot run GitHub Actions, so the
+`--no-tags` behaviour is taken from the action's documentation plus that local
+reproduction, and the finding is recorded at that strength. `fetch-tags: true`
+costs nothing if the premise is wrong.
+
+The repair belongs in the workflow, not the checker: an external auditor's plain
+`git clone` does fetch tags, so the auditor path was never affected and softening
+the checker would have hidden a CI-only defect behind a weaker check everywhere.
+
+## WDD-20260816-058 -- The policy widening was repo-wide, and the entry describing it said the opposite
+
+WDD-20260816-048 justified the v24 widening as *"keyed to the prohibiting
+language ... rather than granted to the path wholesale. A path allowance would
+have exempted future prose in those files; a language allowance exempts the
+sentence shape that is actually safe."*
+
+`claim_drift_scan.ps1` evaluates `allowedPathRegex` and `allowedLineRegex` as
+**independent OR'd conditions**. A language allowance is therefore repo-wide --
+strictly broader than the path allowance it was chosen over. And the same change
+did add two wholesale path allowances anyway. The entry describes a design that
+was not shipped.
+
+Measured, by injecting a novelty claim into `README.md`, a governed current-fact
+surface:
+
+| injection | v24 |
+|---|---|
+| bare claim (control) | rejected |
+| same claim + the word `retired` | **allowed** |
+| same claim + the word `restriction` | **allowed** |
+| same line beginning with a quote | **allowed** |
+
+The scan already has the scoped mechanism: `allowedPathLinePathRegex` and
+`allowedPathLineRegex`, which are AND'd. Policy **v25** moves the prohibiting-
+language tokens out of `allowedLineRegex` and the two `paper/` paths out of
+`allowedPathRegex`, into that pair, for both terms touched in v24. The allowance
+is now what the entry said it was.
+
+After: strict scan clean with `paper/` in scope (1192 hits, 0 strict failures,
+all 23 `paper/` lines classified `review`), and the `retired` injection into
+`README.md` is rejected again.
+
+This is also the species WDD-20260816-049 fixed in `constant_sync_check.ps1` the
+same day, by requiring a historical marker within 120 characters of the numeral
+it excuses -- while the unbounded whole-line form went into the claim-drift
+policy in the next commit.
+
+`paper/README.md` carried the matching stale sentence: it said the claim-drift
+policy scans `README.md`, `artifact/` and `docs/`, and that `paper/` "is
+deliberately outside that registry". The commit that added the scan root did not
+update the file the scan now reads. Corrected, and the narrower exclusion that
+does still apply -- `currentFactSurfacePathRegex` -- is named instead.
+
+WDD-20260816-048 also says the widened run produced "eight strict failures". A
+faithful replay reports **seven**, in `check_paper.ps1` (2), `NOVELTY_LOG.md` (4)
+and `THEOREM_LEDGER.md` (1) -- the scanner's own summary line, not a count of
+grep hits. The qualitative claim, that every one of them is a line prohibiting
+the phrase it contains, holds for all seven.

@@ -1,5 +1,5 @@
 {
-  "version": 24,
+  "version": 25,
   "updated": "2026-08-16",
   "currentFactSurfacePathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\\.md|RMQ_FINAL_ROADMAP\\.md))$",
   "terms": [
@@ -8,8 +8,10 @@
       "pattern": "first mechanized|first-ever|apparently not previously",
       "status": "qualified-only",
       "strict": true,
-      "allowedPathRegex": "^docs/internal/|^docs/PAPER_RELATED_WORK\\.md$|^docs/RELATED_WORK_AND_LIMITATIONS\\.md$|^paper/NOVELTY_LOG\\.md$|^paper/check_paper\\.ps1$",
-      "allowedLineRegex": "qualified|pending|referee|novelty|search|not claim|not claimed|avoid|policy|scan|(?i)\\brestriction\\b|(?i)\\bretire(?:d|s)?\\b|(?i)\\bkilled by\\b|(?i)\\bno claim\\b|(?i)^\\s*'"
+      "allowedPathRegex": "^docs/internal/|^docs/PAPER_RELATED_WORK\\.md$|^docs/RELATED_WORK_AND_LIMITATIONS\\.md$",
+      "allowedLineRegex": "qualified|pending|referee|novelty|search|not claim|not claimed|avoid|policy|scan",
+      "allowedPathLinePathRegex": "^paper/(?:NOVELTY_LOG\\.md|check_paper\\.ps1)$",
+      "allowedPathLineRegex": "(?i)\\brestriction\\b|(?i)\\bretire(?:d|s)?\\b|(?i)\\bkilled by\\b|(?i)\\bno claim\\b|(?i)^\\s*'"
     },
     {
       "id": "forgeability",
@@ -275,8 +277,10 @@
       "pattern": "exactly\\s+`?(?:210|427)`?|(?:210|427)`?\\s+is\\s+(?:exact|tight|attained)|tight\\s+(?:component-wise|operation-wise|per-component|whole-query)[a-z -]*cap",
       "status": "forbidden-exact-or-tight-formulation-for-a-cap-that-is-an-upper-bound",
       "strict": true,
-      "allowedPathRegex": "^docs/internal/|^paper/NOVELTY_LOG\\.md$|^paper/THEOREM_LEDGER\\.md$",
-      "allowedLineRegex": "not attained|no attainment|attainment witness|upper bound|until 2026|previously|corrected|retract|is not tight|never .*tight|policy|scan|historical|counterexample|(?i)\\bamended\\b|(?i)this row said"
+      "allowedPathRegex": "^docs/internal/|^paper/NOVELTY_LOG\\.md$",
+      "allowedLineRegex": "not attained|no attainment|attainment witness|upper bound|until 2026|previously|corrected|retract|is not tight|never .*tight|policy|scan|historical|counterexample",
+      "allowedPathLinePathRegex": "^paper/THEOREM_LEDGER\\.md$",
+      "allowedPathLineRegex": "(?i)\\bamended\\b|(?i)this row said"
     }
   ],
   "requiredAttributions": [

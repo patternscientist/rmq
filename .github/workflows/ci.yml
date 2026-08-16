@@ -15,6 +15,13 @@ jobs:
           # The strict design-decision scan diffs against HEAD~1 on push
           # events; the default depth-1 checkout cannot resolve that base.
           fetch-depth: 2
+          # Annotated tags, explicitly. actions/checkout fetches with
+          # --no-tags when fetch-depth > 0 and fetch-tags is unset, so
+          # tag_annotation_check.ps1 found no annotated tags and failed
+          # -- correctly, since 'nothing was checked' is not a pass. The
+          # repair belongs here, not in the checker: its header says CI
+          # must not pass -AllowNoTags.
+          fetch-tags: true
 
       - name: Install tools
         run: |

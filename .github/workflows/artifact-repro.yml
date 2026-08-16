@@ -16,6 +16,13 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 2
+          # Annotated tags, explicitly. actions/checkout fetches with
+          # --no-tags when fetch-depth > 0 and fetch-tags is unset, so
+          # tag_annotation_check.ps1 found no annotated tags and failed
+          # -- correctly, since 'nothing was checked' is not a pass. The
+          # repair belongs here, not in the checker: its header says CI
+          # must not pass -AllowNoTags.
+          fetch-tags: true
 
       - name: Install tools
         run: |

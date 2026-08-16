@@ -11925,3 +11925,22 @@ conjuncts is the same defect as a green check standing in for an unestablished
 property, one level down.
 
 `P2-3` is now complete for all four aliases.
+
+## DD-20260816-118 -- `paper/README.md` described a claim-drift scope that had changed underneath it
+
+`paper/README.md` told a reader that the substrate "is not one of the
+repository's registered public claim surfaces (the claim-drift policy scans
+`README.md`, `artifact/`, and `docs/`; `paper/` is deliberately outside that
+registry until a release-synchronization task admits it)."
+
+`e2a3647` admitted it, on the same day, and did not update this sentence. The
+most public file in `paper/` then described a policy the code contradicted -- and
+the scan reads this very file.
+
+Corrected to state that the scan does read `paper/` as of 2026-08-16, and that
+what still excludes the substrate is the narrower `currentFactSurfacePathRegex`
+governing required attribution. Both halves are true at this commit and the
+distinction is the one that matters to a reader deciding whether a claim here is
+governed.
+
+The policy scoping that accompanies this correction is WDD-20260816-058.
