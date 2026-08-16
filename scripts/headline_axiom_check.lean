@@ -395,6 +395,88 @@ example : PackedCellProbeExpectedPaperType :=
 end PackedCellProbePublicExpectedTypeCheck
 
 /-!
+Persistent counterfactuals for the encoding lower bound's `query_exact`.
+
+The lower bound reads "any encoding answering RMQ exactly needs at least this
+many bits". Its force rests entirely on `query_exact` describing a decoder that
+really answers RMQ. If that field were satisfiable by something trivial, the
+theorem would still be true and would still be about nothing.
+
+Two directions are needed and only one was covered. Non-vacuity of the
+HYPOTHESIS is already established inside the theorem itself: the third conjunct
+of `exactRMQ_tight_fixed_length_payload_space_bound` exhibits an encoding at
+`2 * n` bits, so the quantifier ranges over something. What was missing is the
+other direction -- that the hypothesis is not trivially satisfiable.
+
+`null_decoder_impossible` and `wrong_answer_impossible` supply it: a decoder
+that answers nothing, and a decoder that answers something wrong, each
+contradict `query_exact`. Together with the existing witness they bracket the
+hypothesis: inhabited, and not cheaply inhabited.
+
+The final `example` matters as much as the theorems. It discharges every
+premise of `null_decoder_impossible` concretely at `n = 1` -- including shape
+membership, which is proved, not assumed -- leaving the null decoder as the
+only unmet premise. A counterfactual whose premises were jointly unsatisfiable
+would prove nothing while looking like a proof.
+
+Verified to fail closed: weakening `wrong_answer_impossible`'s wrong answer
+from `+ 1` to `+ 0` stops this file compiling.
+-/
+namespace ExactRMQQueryExactNonTriviality
+
+-- EG-LB-QUERY-EXACT-COUNTERFACTUAL-ANCHOR
+
+/-- The `n = 1` shape family is inhabited. -/
+theorem singleton_mem_shapesOfSize_one :
+    RMQ.Cartesian.CartesianShape.node .empty .empty ∈ RMQ.Cartesian.shapesOfSize 1 :=
+  RMQ.Cartesian.shapeOfSize_mem_shapesOfSize
+    (show RMQ.Cartesian.ShapeOfSize 1
+        (RMQ.Cartesian.CartesianShape.node .empty .empty) from
+      .node .empty .empty)
+
+/-- `query_exact` forces an answer on every valid window. -/
+theorem query_ne_none
+    {n bits : Nat} (encoding : RMQ.EncodingLowerBound.ExactRMQShapeEncoding n bits)
+    {shape : RMQ.Cartesian.CartesianShape}
+    (hmem : List.Mem shape (RMQ.Cartesian.shapesOfSize n))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
+    encoding.query (encoding.encode shape) left (left + len) = none -> False := by
+  rw [encoding.query_exact hmem hlen hbound]
+  exact fun h => Option.noConfusion h
+
+/-- A decoder that answers nothing cannot inhabit the structure. -/
+theorem null_decoder_impossible
+    {n bits : Nat} (encoding : RMQ.EncodingLowerBound.ExactRMQShapeEncoding n bits)
+    (hnull : forall bs l r, encoding.query bs l r = none)
+    {shape : RMQ.Cartesian.CartesianShape}
+    (hmem : List.Mem shape (RMQ.Cartesian.shapesOfSize n))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) : False :=
+  query_ne_none encoding hmem hlen hbound (hnull _ _ _)
+
+/-- A decoder that returns a WRONG answer cannot inhabit the structure either:
+`query_exact` pins the value, not merely the presence of one. -/
+theorem wrong_answer_impossible
+    {n bits : Nat} (encoding : RMQ.EncodingLowerBound.ExactRMQShapeEncoding n bits)
+    {shape : RMQ.Cartesian.CartesianShape}
+    (hmem : List.Mem shape (RMQ.Cartesian.shapesOfSize n))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n)
+    (hwrong :
+      encoding.query (encoding.encode shape) left (left + len) =
+        some (RMQ.scanWindow (encoding.sample shape) left len + 1)) : False := by
+  rw [encoding.query_exact hmem hlen hbound] at hwrong
+  have hvalue := Option.some.inj hwrong
+  omega
+
+/-- Non-vacuity, checked rather than argued: every premise of
+`null_decoder_impossible` except `hnull` is discharged concretely at `n = 1`. -/
+example {bits : Nat} (encoding : RMQ.EncodingLowerBound.ExactRMQShapeEncoding 1 bits)
+    (hnull : forall bs l r, encoding.query bs l r = none) : False :=
+  null_decoder_impossible encoding hnull singleton_mem_shapesOfSize_one
+    (show 0 < 1 by omega) (show 0 + 1 <= 1 by omega)
+
+end ExactRMQQueryExactNonTriviality
+
+/-!
 Typed M1 anti-bypass checks.  The positive examples ascribe the exact guarded,
 complete-result, value-projection, and canonical-object propositions used by
 the paper surface.  The `fail_if_success` examples mechanically reject the

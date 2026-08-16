@@ -9818,3 +9818,19 @@ Its self-evidence is the mutation record in DD-20260816-108: the pin was shown
 to stop the file compiling under two independent weakenings before it was
 committed. An expected-type pin that has never been observed to fail is in
 exactly the position of the axiom check it supplements -- green, and unproven.
+
+## WDD-20260816-038 -- counterfactuals live beside the claims they guard
+
+Companion to DD-20260816-109.
+
+The lower-bound counterfactuals are in `scripts/headline_axiom_check.lean`
+rather than in a separate probe file, for the same reason the expected-type
+pins are (WDD-20260816-037): this file is the single command a reviewer runs
+over the public surface, and a guard in a file nobody runs is a guard in name
+only.
+
+The file now answers three questions about each headline rather than one:
+what does it rest on (`#print axioms`), what does it say (expected-type pins),
+and is what it says cheap to satisfy (counterfactuals). The third question is
+the one that had no mechanical answer, and it is the question a vacuous theorem
+passes silently.

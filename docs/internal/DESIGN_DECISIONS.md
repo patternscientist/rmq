@@ -11527,3 +11527,44 @@ the 104 axiom lines still reports only `propext`, `Classical.choice`,
 Scope: the pin covers the three readings the manuscript publishes. It does not
 pin the other 36 fields, and does not claim to. A reviewer reading the pin
 learns exactly which three statements are mechanically tied to the headline.
+
+## DD-20260816-109 -- persistent counterfactuals for the lower bound's `query_exact`
+
+Status: Accepted. Date: 2026-08-16. Discharges RC-3 audit item 8.
+
+`exactRMQ_tight_fixed_length_payload_space_bound` reads "any encoding that
+answers RMQ exactly needs at least this many bits". All of its force is in
+`ExactRMQShapeEncoding.query_exact` describing a decoder that really answers
+RMQ. If that field were satisfiable by something trivial, the theorem would
+remain true and would be about nothing.
+
+**One direction was already covered.** The theorem's own third conjunct
+exhibits an encoding at `2 * n` bits, so the quantifier is not empty. Recording
+that plainly matters: the audit item is discharged by adding the *missing*
+direction, not by re-establishing one that was already there.
+
+**The missing direction** is that the hypothesis is not CHEAPLY inhabited.
+`scripts/headline_axiom_check.lean` (anchor
+`EG-LB-QUERY-EXACT-COUNTERFACTUAL-ANCHOR`) adds:
+
+- `query_ne_none` -- `query_exact` forces an answer on every valid window;
+- `null_decoder_impossible` -- a decoder answering nothing contradicts it;
+- `wrong_answer_impossible` -- a decoder answering something *wrong*
+  contradicts it too, so the field pins the value and not merely the presence
+  of one.
+
+With the existing witness these bracket the hypothesis from both sides:
+inhabited, and not cheaply inhabited.
+
+The trailing `example` is not decoration. It discharges every premise of
+`null_decoder_impossible` except `hnull` concretely at `n = 1` -- including
+shape membership, proved via `singleton_mem_shapesOfSize_one` rather than
+assumed -- so the null decoder is demonstrably the only unmet premise. Without
+it, a counterfactual with jointly unsatisfiable premises would prove nothing
+while reading exactly like a proof, which is this project's recurring defect in
+its purest form.
+
+Verified to fail closed rather than assumed to: weakening
+`wrong_answer_impossible`'s wrong answer from `+ 1` to `+ 0` makes `omega`
+fail and the file stops compiling. Unmutated, `lake env lean` exits 0 and all
+104 axiom lines still report only the three standard axioms.
