@@ -11569,6 +11569,22 @@ Verified to fail closed rather than assumed to: weakening
 fail and the file stops compiling. Unmutated, `lake env lean` exits 0 and all
 104 axiom lines still report only the three standard axioms.
 
+## DD-20260816-109b -- keep the unused Target Statement environment
+
+Status: Accepted. Date: 2026-08-16.
+
+`
+ewtheorem{targetstmt}` quoted the packed architecture result as a provisional
+target. Section 9 now states it as a theorem, so the environment has no uses.
+Kept defined rather than deleted, with a comment saying why, so a future
+provisional target gets the same presentation instead of a reinvented one.
+
+This is a manuscript-source change and therefore needs a design-log entry. The
+commit that first made it carried none and failed
+`design_decision_check.ps1 -Base HEAD~1 -Strict`, while the aggregate-diff mode
+CI actually runs reported clean -- the stated per-commit invariant and the
+enforced one differ. See WDD-20260816-042.
+
 ## DD-20260816-110 -- substrate state-claims corrected after an agent audit
 
 Status: Accepted. Date: 2026-08-16. Companion to WDD-20260816-040, which records
