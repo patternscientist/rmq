@@ -10298,3 +10298,33 @@ Two changes:
 The behaviour was established by probe before either change: five scripts (`exit 0`,
 `exit 3`, no-exit, parse error, `throw`) plus a missing path, each invoked with
 `$LASTEXITCODE` poisoned to `7` beforehand. Four of the six returned `7`.
+
+## WDD-20260816-047 -- The tag-annotation guard missed a lowercase verdict, and the tag it is about to be pointed at
+
+`scripts/tag_annotation_check.ps1` exists so an audit tag's annotation cannot
+hand the next blind auditor the last round's verdict. Two holes, both live, both
+demonstrated on a scratch repository before being fixed:
+
+**Case.** `[regex]::Match($Text, $rule.pattern)` -- .NET regex is case-SENSITIVE
+by default and every pattern was uppercase. An annotation reading
+
+> `V1 rc8. Result: accepted, merge ready.`
+
+was reported as `identity/scope only`. A complete verdict, clean. `NOT_ACCEPTABLE`
+also failed to match the spaced form `not acceptable`.
+
+**Scope.** `$Pattern = "audit-*"` enumerates by name. `v1-rc-7-external-audit` is
+an audit tag and was never examined; under `-Pattern *` the same annotation
+produced four violations. The default is now `*`. The two non-`audit-*` annotated
+tags in this repository are clean under the widened rules, so the change costs
+nothing here and closes the naming hole.
+
+Also added: the worker verdict vocabulary of the proof-sprint skill
+(`CANDIDATE_COMPLETE`, `INCOMPLETE`, `OBSTRUCTED`, `BLOCKED`, `FEASIBILITY_PASS`),
+which is exactly as contaminating as an audit verdict and was not listed.
+
+The self-test gains all four cases as fixtures, using the exact text that got
+through.
+
+This mattered now rather than later: the next action on this branch is to create
+`audit-v1-rc-4` and hand it to an outside auditor.

@@ -34,7 +34,13 @@ param(
   # Accept a run in which no annotated tag matched. For clones that cannot fetch
   # tags; CI must not pass it.
   [switch]$AllowNoTags,
-  [string]$Pattern = "audit-*"
+  # Every ANNOTATED tag, not `audit-*`. The convention is about what a tag
+  # hands the next blind auditor, and a tag does not stop doing that by being
+  # named differently: `v1-rc-7-external-audit` is an audit tag and was never
+  # enumerated. The two non-audit annotated tags in this repository
+  # (`v2026.07.06`, and `audit-v1-rc-1`) are clean under these rules, so
+  # widening the default costs nothing and closes the naming hole.
+  [string]$Pattern = "*"
 )
 
 $ErrorActionPreference = "Stop"
@@ -48,7 +54,10 @@ function Info([string]$m) { Write-Host "TAG-ANNOTATION: $m" }
 # is in scope ("V1 release candidate 4, for fresh-blind external audit")
 # without tripping any of these.
 $forbidden = @(
-  @{ id = 'verdict';      pattern = 'NOT_ACCEPTABLE|\bACCEPTABLE\b|MERGE[ _-]?READY|\bACCEPTED\b|\bREJECTED\b' },
+  @{ id = 'verdict';      pattern = 'NOT[ _-]?ACCEPTABLE|\bACCEPTABLE\b|MERGE[ _-]?READY|\bACCEPTED\b|\bREJECTED\b' },
+  # The worker verdict vocabulary of .agents/skills/rmq-proof-sprint. These
+  # are exactly as contaminating as an audit verdict and were not listed.
+  @{ id = 'worker-verdict'; pattern = 'CANDIDATE[ _-]?COMPLETE|\bINCOMPLETE\b|\bOBSTRUCTED\b|\bBLOCKED\b|FEASIBILITY[ _-]?PASS' },
   @{ id = 'finding-id';   pattern = '\bP[1-3]-\d' },
   @{ id = 'requirement';  pattern = '\bRC-\d' },
   @{ id = 'audit-round';  pattern = '\bAUD\d' },
@@ -76,7 +85,11 @@ function Get-AnnotationViolations {
   param([string]$Text)
   $hits = @()
   foreach ($rule in $forbidden) {
-    $m = [regex]::Match($Text, $rule.pattern)
+    # IgnoreCase. .NET regex is case-SENSITIVE by default, so the uppercase
+    # patterns below passed "Result: accepted, merge ready." as identity/scope
+    # only -- a full verdict, clean. Demonstrated on a scratch repository
+    # before this line changed.
+    $m = [regex]::Match($Text, $rule.pattern, [Text.RegularExpressions.RegexOptions]::IgnoreCase)
     if ($m.Success) { $hits += ("{0} ('{1}')" -f $rule.id, $m.Value) }
   }
   return $hits
@@ -115,6 +128,25 @@ the paper/ substrate. Build with `lake build RMQ`. The audit prompt is
 docs/internal/V1_RELEASE_CANDIDATE_AUDIT_PROMPT.md.
 "@
   ST 'a clean identity/scope annotation is not flagged' ((Get-AnnotationViolations $clean).Count -eq 0)
+
+  # Both holes below were live until 2026-08-16 and both are demonstrated
+  # rather than asserted: each fixture is the exact text that got through.
+  $lowercaseVerdict = 'V1 rc8. Result: accepted, merge ready.'
+  $lcHits = @(Get-AnnotationViolations $lowercaseVerdict)
+  ST 'a LOWERCASE verdict is caught (case-sensitivity hole)' ($lcHits.Count -gt 0)
+  ST '  ...and is caught as a verdict, not incidentally' `
+    (($lcHits | Where-Object { $_ -like 'verdict*' }).Count -gt 0)
+
+  $spacedVerdict = 'Audit returned not acceptable.'
+  ST 'a SPACE-separated NOT ACCEPTABLE is caught' `
+    ((@(Get-AnnotationViolations $spacedVerdict) | Where-Object { $_ -like 'verdict*' }).Count -gt 0)
+
+  $workerVerdict = 'Stage F worker reported CANDIDATE_COMPLETE.'
+  ST 'a worker verdict token is caught' ((Get-AnnotationViolations $workerVerdict).Count -gt 0)
+
+  # The naming hole: a tag that is an audit tag without being named `audit-*`.
+  # Checked against the DEFAULT pattern, because the default is what CI runs.
+  ST 'the default tag pattern is not restricted to audit-*' ($Pattern -eq '*')
 
   # The exception list must not be able to grow silently.
   ST 'the published-contaminated list matches its pinned count' `
