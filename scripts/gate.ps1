@@ -91,17 +91,84 @@ function RunAxiomCheck($script, $label) {
   Write-Host "AXIOM CHECK PASS: $label (standard axioms only)"
 }
 
-# 0. Project-skill startup policy must reject stale checkout/runtime catalogs.
-& "$PSScriptRoot\project_skill_preflight_regression.ps1"
-if ($LASTEXITCODE -ne 0) { SoftFail "project_skill_preflight_regression.ps1 found issues" }
 
-& "$PSScriptRoot\worker_prompt_preflight_regression.ps1"
-if ($LASTEXITCODE -ne 0) { SoftFail "worker_prompt_preflight_regression.ps1 found issues" }
+# --- How a sub-checker fails to run, and why that used to be a PASS ---------
+#
+# The pattern below was `& "$PSScriptRoot\x.ps1"` followed by
+# `if ($LASTEXITCODE -ne 0) { SoftFail ... }`. That reports PASS when the
+# checker did not run at all. Measured on this runtime (PowerShell 5.1), FOUR
+# distinct failures leave $LASTEXITCODE at its PREVIOUS value:
+#
+#   missing file  -> CommandNotFoundException
+#   parse error   -> ParseException
+#   `throw`       -> RuntimeException
+#   no `exit`     -> the variable is simply never assigned
+#
+# In this script the previous value is the previous checker's 0. So deleting a
+# checker from disk, or breaking its syntax, turned its stage green. Every
+# `.ps1` stage had this shape, and step 7c made it explicit: `check_paper.ps1`
+# sat behind a bare `Test-Path` with no `else`, so an absent manuscript checker
+# was silently skipped.
+#
+# Invoke-Checker removes $LASTEXITCODE before the call, so "still undefined
+# afterwards" is decidable, and catches the exception so a throw is
+# distinguishable from a clean run that never called `exit`.
+$script:checkersRun = @()
+
+function Invoke-Checker {
+  param(
+    [Parameter(Mandatory)][string]$Path,
+    [string[]]$CheckerArgs = @(),
+    [switch]$Soft,
+    [string]$Label
+  )
+  if (-not $Label) { $Label = Split-Path $Path -Leaf }
+  $script:checkersRun += $Label
+
+  if (-not (Test-Path -LiteralPath $Path)) {
+    $m = "$Label DID NOT RUN: no such file ($Path). A missing checker is not a passing checker."
+    if ($Soft) { SoftFail $m; return }
+    Fail $m
+  }
+
+  Remove-Variable -Name LASTEXITCODE -Scope Global -ErrorAction SilentlyContinue
+  $threw = $null
+  try { & $Path @CheckerArgs } catch { $threw = $_ }
+
+  if ($null -ne $threw) {
+    $m = "$Label DID NOT RUN: {0}: {1}" -f $threw.Exception.GetType().Name, $threw.Exception.Message
+    if ($Soft) { SoftFail $m; return }
+    Fail $m
+  }
+
+  $lec = Get-Variable -Name LASTEXITCODE -Scope Global -ErrorAction SilentlyContinue
+  if ($null -eq $lec) {
+    # Ran, raised nothing, and never called `exit`. That is a pass, but it is a
+    # different thing from `exit 0`, so it is named rather than conflated.
+    Write-Host "GATE NOTE: $Label completed without an explicit exit code (treated as 0)"
+    return
+  }
+  $code = [int]$lec.Value
+  if ($code -ne 0) {
+    $m = "$Label found issues (exit $code)"
+    if ($Soft) { SoftFail $m; return }
+    Fail $m
+  }
+}
+
+# The builds below call `lake` directly, and a missing `lake` fails the same
+# way for the same reason. One assertion covers every one of them.
+if (-not (Get-Command lake -ErrorAction SilentlyContinue)) {
+  Fail "lake is not on PATH; every build stage below would inherit the previous exit code instead of running"
+}
+# 0. Project-skill startup policy must reject stale checkout/runtime catalogs.
+Invoke-Checker -Path "$PSScriptRoot\project_skill_preflight_regression.ps1" -Soft
+
+Invoke-Checker -Path "$PSScriptRoot\worker_prompt_preflight_regression.ps1" -Soft
 
 # Default-sensitive design classification and strict-base behavior must be
 # exercised through the production checker before broad repository work.
-& "$PSScriptRoot\design_decision_check_regression.ps1"
-if ($LASTEXITCODE -ne 0) { Fail "design_decision_check_regression.ps1 found issues" }
+Invoke-Checker -Path "$PSScriptRoot\design_decision_check_regression.ps1"
 
 # 1. Build must be green.
 lake build
@@ -220,24 +287,20 @@ if ($LASTEXITCODE -ne 0) { Fail "ledger_decl_check.lean failed (see output above
 Write-Host "LEDGER DECL CHECK: PASS"
 
 # 4. Succinct frontier cost/space lints.
-& "$PSScriptRoot\succinct_cost_lint.ps1"
-if ($LASTEXITCODE -ne 0) { SoftFail "succinct_cost_lint.ps1 found issues" }
+Invoke-Checker -Path "$PSScriptRoot\succinct_cost_lint.ps1" -Soft
 
 # 5. Compatibility-shim import boundary.
-& "$PSScriptRoot\shim_lint.ps1"
-if ($LASTEXITCODE -ne 0) { SoftFail "shim_lint.ps1 found issues" }
+Invoke-Checker -Path "$PSScriptRoot\shim_lint.ps1" -Soft
 
 # 5b. Hub import-closure boundary. RMQHub.lean's docstring claims the hub layer
 # depends on nothing RMQ-specific. That was true but enforced by nothing: both
 # `lake build RMQHub` and hub_axiom_check.lean would still pass with
 # `import RMQ.Core.Spec` added to ModelHub.lean. This makes the claim checked.
-& "$PSScriptRoot\hub_closure_lint.ps1" -SelfTest
-if ($LASTEXITCODE -ne 0) { SoftFail "hub_closure_lint.ps1 found issues" }
+Invoke-Checker -Path "$PSScriptRoot\hub_closure_lint.ps1" -CheckerArgs @('-SelfTest') -Soft
 
 # 6. Claim-drift policy mutations must enforce the full canonical-role/exponent
 # category, contextual allowances, parser shapes, and allowance bypasses.
-& "$PSScriptRoot\claim_drift_policy_regression.ps1"
-if ($LASTEXITCODE -ne 0) { SoftFail "claim_drift_policy_regression.ps1 found issues" }
+Invoke-Checker -Path "$PSScriptRoot\claim_drift_policy_regression.ps1" -Soft
 
 # 7. Strict claim-policy violations block the aggregate gate.
 #
@@ -246,49 +309,73 @@ if ($LASTEXITCODE -ne 0) { SoftFail "claim_drift_policy_regression.ps1 found iss
 # 2026-08-16 the strict run printed 104 lines of PRIOR AUDIT REPORTS at them. The
 # exclusion that closed it is unobservable from the exit code -- two earlier
 # attempts were no-ops and both exited 0 -- so it is asserted, not assumed.
-& "$PSScriptRoot\claim_drift_scan.ps1" -SelfTest
-if ($LASTEXITCODE -ne 0) { SoftFail "claim_drift_scan.ps1 self-test failed" }
+Invoke-Checker -Path "$PSScriptRoot\claim_drift_scan.ps1" -CheckerArgs @('-SelfTest') -Soft -Label 'claim_drift_scan.ps1 -SelfTest'
 
-& "$PSScriptRoot\claim_drift_scan.ps1" -Strict
-if ($LASTEXITCODE -ne 0) { SoftFail "claim_drift_scan.ps1 found strict violations" }
+Invoke-Checker -Path "$PSScriptRoot\claim_drift_scan.ps1" -CheckerArgs @('-Strict') -Soft -Label 'claim_drift_scan.ps1 -Strict'
 
 # 7a. An audit tag's annotation must not hand the next blind auditor the last
 # round's verdict. The `audit-v1-rc-3` annotation carried the prior
 # NOT_ACCEPTABLE, its finding IDs, and the assurance that every prior finding
 # was correct -- and the prompt tells auditors to check the tag out by name.
-& "$PSScriptRoot\tag_annotation_check.ps1" -SelfTest
-if ($LASTEXITCODE -ne 0) { SoftFail "tag_annotation_check.ps1 found issues" }
+Invoke-Checker -Path "$PSScriptRoot\tag_annotation_check.ps1" -CheckerArgs @('-SelfTest') -Soft
 
 # 7b. Current-constant synchronization. The claim-drift policy guards every
 # RETIRED constant and neither current one, so a moved bound would leave public
 # surfaces asserting a stale numeral with the scan still reporting zero strict
 # failures -- demonstrated by moving 210 to 214, where the scan exits 0 and this
 # check exits 1. Lean is the source of truth here.
-& "$PSScriptRoot\constant_sync_check.ps1" -SelfTest
-if ($LASTEXITCODE -ne 0) { SoftFail "constant_sync_check.ps1 found constant drift" }
+Invoke-Checker -Path "$PSScriptRoot\constant_sync_check.ps1" -CheckerArgs @('-SelfTest') -Soft
 
 # 7c. Manuscript checker. `paper/` is part of the release candidate, but the
 # aggregate gate never invoked its checker, so a citation, ledger-coverage,
 # insertion-marker or claim-language failure in the manuscript could pass the
 # advertised aggregate. Found by external audit 2026-08-09.
-if (Test-Path "$PSScriptRoot\..\paper\check_paper.ps1") {
-  & "$PSScriptRoot\..\paper\check_paper.ps1" -SelfTest
-  if ($LASTEXITCODE -ne 0) { SoftFail "paper/check_paper.ps1 found issues" }
-}
+Invoke-Checker -Path "$PSScriptRoot\..\paper\check_paper.ps1" -CheckerArgs @('-SelfTest') -Soft -Label 'paper/check_paper.ps1'
 
 # 8. The paper root must expose only the canonical reviewer-payload,
 # readWord-only, derived-210 query topology; historical profiles remain in the
 # explicit compatibility module.
-& "$PSScriptRoot\paper_topology_lint.ps1"
-if ($LASTEXITCODE -ne 0) { SoftFail "paper_topology_lint.ps1 found issues" }
+Invoke-Checker -Path "$PSScriptRoot\paper_topology_lint.ps1" -Soft
 
-& "$PSScriptRoot\paper_topology_lint_regression.ps1"
-if ($LASTEXITCODE -ne 0) { SoftFail "paper_topology_lint_regression.ps1 found issues" }
+Invoke-Checker -Path "$PSScriptRoot\paper_topology_lint_regression.ps1" -Soft
 
 # 9. Whitespace / leftover merge markers.
 git diff --check
 if ($LASTEXITCODE -ne 0) { SoftFail "git diff --check found issues" }
 
+
+# 9b. Every checker this gate advertises must have been reached.
+#
+# Invoke-Checker turns "the checker is gone" into a failure. This turns "the
+# CALL to the checker is gone" into one too: an edit that deletes a stage, or
+# hides one behind a condition that is false in CI, no longer shows up as a
+# shorter green run. The list is the gate's advertised coverage, so it is
+# written out rather than derived from the calls it is checking.
+$expectedCheckers = @(
+  'project_skill_preflight_regression.ps1',
+  'worker_prompt_preflight_regression.ps1',
+  'design_decision_check_regression.ps1',
+  'succinct_cost_lint.ps1',
+  'shim_lint.ps1',
+  'hub_closure_lint.ps1',
+  'claim_drift_policy_regression.ps1',
+  'claim_drift_scan.ps1 -SelfTest',
+  'claim_drift_scan.ps1 -Strict',
+  'tag_annotation_check.ps1',
+  'constant_sync_check.ps1',
+  'paper_topology_lint.ps1',
+  'paper_topology_lint_regression.ps1',
+  'paper/check_paper.ps1'
+)
+$notReached = @($expectedCheckers | Where-Object { $script:checkersRun -cnotcontains $_ })
+if ($notReached.Count -gt 0) {
+  SoftFail ("{0} advertised checker(s) were never invoked: {1}" -f $notReached.Count, ($notReached -join ', '))
+}
+$unadvertised = @($script:checkersRun | Where-Object { $expectedCheckers -cnotcontains $_ })
+if ($unadvertised.Count -gt 0) {
+  SoftFail ("{0} checker(s) ran that the roster does not list: {1}" -f $unadvertised.Count, ($unadvertised -join ', '))
+}
+Write-Host ("GATE COVERAGE: {0} of {1} advertised checkers invoked" -f ($script:checkersRun.Count), ($expectedCheckers.Count))
 if ($script:issues.Count -gt 0) {
   Write-Host ""
   Write-Host "GATE FAIL: $($script:issues.Count) check(s) failed. ALL of them:"

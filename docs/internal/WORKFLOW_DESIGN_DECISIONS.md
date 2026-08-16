@@ -10248,3 +10248,53 @@ WDD-20260816-042's progression line and the program plan's §J item 1 / lineage
 species 1, which quoted this table faithfully -- which is the failure mode
 `§A.2b` names, committed inside the rule item titled "A checker is worth exactly
 what it measures".
+
+## WDD-20260816-046 -- Four ways a sub-checker fails to run, all of which the gate scored as PASS
+
+`scripts/gate.ps1` invoked every `.ps1` sub-checker as
+
+```
+& "$PSScriptRoot\x.ps1"
+if ($LASTEXITCODE -ne 0) { SoftFail "x.ps1 found issues" }
+```
+
+`$LASTEXITCODE` is only assigned by a process or script that actually exits.
+Measured on this runtime (PowerShell 5.1), FOUR distinct failures leave it at its
+previous value:
+
+| failure | exception | `$LASTEXITCODE` |
+|---|---|---|
+| file missing | `CommandNotFoundException` | unchanged |
+| syntax error | `ParseException` | unchanged |
+| `throw` | `RuntimeException` | unchanged |
+| returns without `exit` | none | unchanged |
+
+The previous value in this script is the previous checker's `0`. So **deleting a
+checker from disk, or breaking its syntax, turned its stage green** -- across all
+sixteen `.ps1` stages. Step 7c made it explicit rather than implicit:
+`paper/check_paper.ps1` sat behind a bare `Test-Path` with no `else`, so an
+absent manuscript checker was skipped in silence.
+
+This is the defect class this project keeps re-encountering, in the artifact
+whose entire job is to detect it: a green result standing in for a property
+nobody established.
+
+Two changes:
+
+1. `Invoke-Checker` removes `$LASTEXITCODE` before the call, so "still undefined
+   afterwards" is decidable, and catches the exception so a throw is
+   distinguishable from a clean run that never called `exit`. A missing file is
+   named as a missing file, not reported as a pass. All sixteen call sites and
+   step 7c now go through it. `lake` gets a single `Get-Command` assertion for
+   the same reason, since the build stages have the same shape.
+
+2. A **roster pin**. `Invoke-Checker` turns "the checker is gone" into a failure;
+   the roster turns "the CALL to the checker is gone" into one too. An edit that
+   drops a stage, or hides one behind a condition false in CI, no longer shows up
+   as a shorter green run. The roster is written out rather than derived from the
+   calls it checks -- deriving it from them would make it agree with them by
+   construction.
+
+The behaviour was established by probe before either change: five scripts (`exit 0`,
+`exit 3`, no-exit, parse error, `throw`) plus a missing path, each invoked with
+`$LASTEXITCODE` poisoned to `7` beforehand. Four of the six returned `7`.
