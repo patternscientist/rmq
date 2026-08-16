@@ -144,7 +144,15 @@ function Invoke-Checker {
     [string]$Label
   )
   if (-not $Label) { $Label = Split-Path $Path -Leaf }
-  $script:checkersRun += $Label
+
+  # The roster records path AND arguments. It recorded the LABEL alone -- a
+  # hand-written string with no relation to $CheckerParams -- so changing
+  # `@{ Strict = $true }` to `@{}` on the claim-policy stage left coverage at
+  # 17 of 17, raw call sites at 0, and that stage incapable of failing:
+  # measured, the same scan exits 1 with -Strict and 0 without. Coverage that
+  # cannot see the mode is not coverage.
+  $paramKeys = @($CheckerParams.Keys | Sort-Object)
+  $script:checkersRun += ($Label + $(if ($paramKeys.Count) { ' [' + ($paramKeys -join ',') + ']' } else { '' }))
 
   if (-not (Test-Path -LiteralPath $Path)) {
     $m = "$Label DID NOT RUN: no such file ($Path). A missing checker is not a passing checker."
@@ -413,15 +421,15 @@ $expectedCheckers = @(
   'design_decision_check_regression.ps1',
   'succinct_cost_lint.ps1',
   'shim_lint.ps1',
-  'hub_closure_lint.ps1',
+  'hub_closure_lint.ps1 [SelfTest]',
   'claim_drift_policy_regression.ps1',
-  'claim_drift_scan.ps1 -SelfTest',
-  'claim_drift_scan.ps1 -Strict',
-  'tag_annotation_check.ps1',
-  'constant_sync_check.ps1',
+  'claim_drift_scan.ps1 -SelfTest [SelfTest]',
+  'claim_drift_scan.ps1 -Strict [Strict]',
+  'tag_annotation_check.ps1 [SelfTest]',
+  'constant_sync_check.ps1 [SelfTest]',
   'paper_topology_lint.ps1',
   'paper_topology_lint_regression.ps1',
-  'paper/check_paper.ps1'
+  'paper/check_paper.ps1 [SelfTest]'
 )
 $notReached = @($expectedCheckers | Where-Object { $script:checkersRun -cnotcontains $_ })
 if ($notReached.Count -gt 0) {

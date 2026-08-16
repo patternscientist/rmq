@@ -10709,3 +10709,32 @@ faithful replay reports **seven**, in `check_paper.ps1` (2), `NOVELTY_LOG.md` (4
 and `THEOREM_LEDGER.md` (1) -- the scanner's own summary line, not a count of
 grep hits. The qualitative claim, that every one of them is a line prohibiting
 the phrase it contains, holds for all seven.
+
+## WDD-20260816-059 -- Coverage that cannot see the mode is not coverage
+
+From the same audit, as a `P3`; it is recorded here as the third distinct way the
+roster pin failed to mean what it says.
+
+`Invoke-Checker` recorded `$Label` in the roster -- a hand-written string with no
+relation to `$CheckerParams`. So a stage could be silently downgraded to a weaker
+mode while still counting as covered. Changing the claim-policy stage's
+`@{ Strict = $true }` to `@{}` left `GATE COVERAGE: 17 of 17`, `0 raw call
+site(s)`, and that stage unable to fail: measured, the same scan exits **1** with
+`-Strict` and **0** without.
+
+The roster entry is now `label [SortedParamKeys]`, so the mode is part of the
+identity. Verified by mutation: with `-Strict` removed, the roster reports
+`claim_drift_scan.ps1 -Strict [Strict]` as never invoked.
+
+**Two related gaps stay open and are stated rather than closed.** The roster
+covers `.ps1` stages only: the eight `RunAxiomCheck` inventories (including
+`headline_axiom_check.lean`, which carries every expected-type pin),
+`independence_check.lean`, `ledger_decl_check.lean`, the twelve `lake build`
+targets and steps 2/9 are outside both `Invoke-Checker` and `$expectedCheckers`.
+Deleting `RunAxiomCheck "scripts/headline_axiom_check.lean"` leaves coverage at
+17 of 17. WDD-20260816-056's directive floor closes the *other* route into that
+inventory becoming a no-op, but not this one.
+
+Naming the limit is not fixing it. It is stated because a reader of
+`GATE COVERAGE: 17 of 17` would otherwise take it for the whole gate, and the
+number covers rather less than half the stages.
