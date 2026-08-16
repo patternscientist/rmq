@@ -10187,3 +10187,31 @@ held; only a third of it was being checked.**
   declaration". Ranges are now capped at 12 lines; real ones here are 3.
 
 Both verified closed by fixture.
+
+## WDD-20260816-044 -- round 5: two published figures stopped being true when the code changed
+
+Companion to DD-20260816-114.
+
+`paper/check_citations.ps1`'s header table and WDD-20260816-041 both published:
+
+| rule | worst case |
+|---|---|
+| a declaration site (current) | 2 of **861** lines |
+
+and "**24** of the 26 cited names have exactly one satisfying line".
+
+Both were correct when written in round 2. Round 3 tightened `$fieldSite` from
+`\s*:` to `\s*:(?!=)` -- the repair that stopped field *assignments* counting as
+declaration sites -- and that removed exactly the two exceptions behind "24 of
+26". The figures were not re-derived. Current, measured by replaying the
+checker's own regexes and comment mask over all 27 citations: **26 of 26**, and
+the worst case is 2 landing lines realised in a **209**-line file. No tracked
+file has 861 lines.
+
+**A figure attached to a rule dies when the rule changes.** The table's purpose
+is to show the rule got stronger; leaving stale numbers in it inverts that.
+
+Note also how the error survived review: a later auditor confirmed "24 of 26"
+and reported it VERIFIED. That measurement was taken against the pre-round-3
+predicate, and was correct about a rule the code no longer had. An independent
+confirmation is only as current as the code it was run against.

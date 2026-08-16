@@ -44,9 +44,9 @@
 #
 #   any backticked identifier in the row    worst case 570 of 1,617 lines
 #   only `- Declaration:` names             worst case  35 of   746 lines
-#   a declaration SITE (current)            worst case   2 of   861 lines
+#   a declaration SITE (current)            worst case   2 of   209 lines
 #
-# 24 of the 26 cited names have exactly one satisfying line in their file, so a
+# 26 of the 26 cited names have exactly one satisfying line in their file, so a
 # rotted citation has almost nowhere to land. The middle row was reported as a
 # fix; it left five real rots passing, including a `rw [...]` proof step 1,274
 # lines from its theorem.

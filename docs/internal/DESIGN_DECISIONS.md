@@ -11778,3 +11778,52 @@ this file has done.
 Also corrected: `paper/THEOREM_LEDGER.md` cited label `tgt:packed`, which exists
 nowhere; the real label is `thm:packed` at `rmq.tex:717`, which the same row's
 corrected block already stated.
+
+## DD-20260816-114 -- round 5: a recorded correction that was never made
+
+Status: Accepted. Date: 2026-08-16. Corrects DD-20260816-113.
+
+DD-113 closes with: "Also corrected: `paper/THEOREM_LEDGER.md` cited label
+`tgt:packed`, which exists nowhere; the real label is `thm:packed`."
+
+**It was not corrected.** `tgt:packed` was still at `THEOREM_LEDGER.md:559` at
+`d31064c`, and `git log --all -S'tgt:packed'` shows the string was never removed
+on any ref. The other two corrections that entry claims were real; this one was
+fiction.
+
+The cause is mechanical and is the same one that produced DD-113's sibling
+defect: the edit batch containing it aborted on an unrelated assertion, rolled
+back, and the write-up was published anyway. **A design-log entry is a claim,
+and a claim is worth what was measured.** The entry recording that lesson
+violated it in its own closing sentence, in the row that says "neither
+correction commit touched this file. That is the same defect the round exists to
+answer."
+
+Fixed now, and verified at byte level: `tgt:packed` is gone; the row states the
+real label `thm:packed`; and the `Theorem~\ref{thm:packed}` reference two lines
+above -- which DD-113 pointed at as the correct statement -- contained a **bare
+carriage return where its backslash belonged**, an artifact of an earlier Python
+`\r` escape. It read `Theorem~<CR>ef{...}`. Three successive repairs missed it
+because each searched for a backslash that was not in the file.
+
+Also corrected in this round, each measured rather than assumed:
+
+- `paper/check_citations.ps1` and `WDD-20260816-041` published "worst case 2 of
+  **861** lines". No tracked file has 861 lines; the packed capstone has 860 and
+  the actual worst case is realised in a **209**-line file.
+- The same two surfaces published "**24** of the 26 cited names have exactly one
+  satisfying line". That was true when written; the round-3 tightening of
+  `$fieldSite` to `\s*:(?!=)` removed both exceptions, and the figure is now
+  **26 of 26**. A second auditor had confirmed "24 of 26" against the
+  pre-round-3 rule -- a measurement correct against a predicate the code no
+  longer had.
+- `paper/EVIDENCE_MATRIX.md` (EV-03, `CLOSED`) and `paper/NOVELTY_LOG.md`
+  published "all **23** bib entries". `references.bib` holds **27**. The
+  evidence is sound -- all 27 carry receipts -- only the published count was
+  stale, the same class as the 27/1/6-vs-29/0/5 defect repaired for EV-02 four
+  rows above.
+
+Manuscript line numbers are deliberately not cited in the ledger row: every
+`:NNN` in that file is parsed as a Lean source pointer by
+`check_citations.ps1`, so an `rmq.tex:717` would be checked as one and fail.
+Adding two such references is what turned the checker red mid-repair.

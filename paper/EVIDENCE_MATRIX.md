@@ -71,7 +71,7 @@ closes no roadmap node.
   source/date/result receipt; every bibliography field is verified or
   omitted; no absence-of-prior-work inference is drawn from a narrow
   search.
-- Evidence: `RELATED_WORK_LEDGER.md` (receipts for all 23 bib entries with
+- Evidence: `RELATED_WORK_LEDGER.md` (receipts for all 27 bib entries with
   per-entry verification method; explicit field-omission policy; explicit
   search-limitations section forbidding absence inferences);
   `references.bib` header states the same field policy.

@@ -250,7 +250,7 @@ T1 fetches: the CSLib PDF (pp. 1–16); the calf POPL 2022 PDF; the ITP 2019 LIP
 
 ### 1.6 Modality F — bibliographic integrity of `references.bib` and `rmq.tex`
 
-**Scope.** Independent field-by-field verification of all 23 `references.bib` entries, plus verification of the three specific manuscript defects the audit brief named.
+**Scope.** Independent field-by-field verification of all 27 `references.bib` entries, plus verification of the three specific manuscript defects the audit brief named.
 
 **Queries run.** 20 dblp API queries (one per entry, plus reformulations after two HTTP 500s), plus direct fetches of the ICFEM 2016 author preprint, the ITP 2019 LIPIcs PDF, the ITP 2019 dblp record, the FSCD 2016 DROPS entity and opus pages, arXiv:1802.01336, and four general web searches for Clark 1996, Navarro 2016, and AFP coverage.
 

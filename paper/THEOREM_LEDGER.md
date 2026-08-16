@@ -517,7 +517,7 @@ references are at the base commit.
   fresh-blind audit of `audit-v1-rc-1` is what stands behind the proposition.
 - Manuscript status (corrected 2026-08-16, RC-4): the accepted statement **is
   absorbed**. `rmq.tex` Section 9 states it as a theorem with the constant
-  `427` (`Theorem~ef{thm:packed}`), there is no
+  `427` (`Theorem~\ref{thm:packed}`), there is no
   `ARCHITECTURE_RESULT_PENDING` marker anywhere in the manuscript, and
   `check_paper.ps1` permits at most one rather than requiring exactly one.
   The result appears in exactly two places -- the allocated-bits entry of
@@ -556,7 +556,13 @@ references are at the base commit.
   independence claim is about declarations and proof terms, not module
   closures -- the packed module's compilation closure does transitively reach
   the charged declaration.
-- Manuscript location: Section 9, Statement 9.1 (`tgt:packed`) and the
+- Manuscript location: Section 9, stated as a theorem with label
+  `thm:packed`. The Section 9.1 insertion point is gone: the block labelled
+  `sec:insertion` now records only that the pending marker previously standing
+  there has been removed, and the `ARCHITECTURE_RESULT_PENDING` count in
+  `rmq.tex` is zero. No line numbers are given here: this file's `:NNN`
+  citations are Lean source pointers, checked by `check_citations.ps1`, and a
+  manuscript line number would be parsed as one.
   Section 9.1 insertion point.
 
 #### L-PACK-01
