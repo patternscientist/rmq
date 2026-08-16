@@ -6,7 +6,7 @@ source, date, the result actually attributed to it in the manuscript, and
 how the attribution was verified in this session. Verification methods:
 
 - **repo-doc**: pinned by an accepted repository claim map at base commit
-  `688c54a39d9a2410d281f1ded9b70937908beb4a`
+  `0665b494707695a70675fef0e5c8682f4d80fe0c`
   (`docs/PAPER_RELATED_WORK.md`, `docs/RELATED_WORK_AND_LIMITATIONS.md`,
   `docs/internal/RMQ_ENDGAME_ROADMAP.md` primary-precedent list).
 - **web**: verified against the open web during this session (2026-08-05);

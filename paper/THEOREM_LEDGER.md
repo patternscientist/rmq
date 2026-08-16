@@ -9,7 +9,7 @@ coverage between the manuscript anchors and the IDs below.
 Status vocabulary (fixed):
 
 - **ACCEPTED_BASE** -- kernel-checked declaration present on the base commit
-  `688c54a39d9a2410d281f1ded9b70937908beb4a` and part of the integrated
+  `0665b494707695a70675fef0e5c8682f4d80fe0c` and part of the integrated
   mainline theorem surface. Where the project's internal acceptance process
   has a finer status (for example a still-open fresh-blind audit), the row
   says so in its notes; that is a process status, not a kernel status.
@@ -30,7 +30,7 @@ references are at the base commit.
 
 #### L-REF-01
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration: `RMQ.leftmostArgMin_unique`
 - File: `RMQ/Core/Spec.lean` (definition of `LeftmostArgMin` at :34,
   uniqueness at :48)
@@ -45,7 +45,7 @@ references are at the base commit.
 
 #### L-REF-02
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration: `RMQ.SuccinctClassic.scanWindow_cartesianShape_representative_eq`
 - File: `RMQ/Core/SuccinctRMQClassic.lean` (:1198); supporting reduction
   layers in `RMQ/Core/Cartesian.lean`, `RMQ/Core/LCA.lean`,
@@ -62,7 +62,7 @@ references are at the base commit.
 
 #### L-UB-01
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration: `RMQ.SuccinctClassic.buildPayload_length`; public aliases
   `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery`,
   `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`
@@ -77,7 +77,7 @@ references are at the base commit.
 
 #### L-UB-02
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration: `RMQ.SuccinctClassic.overhead_littleO`; predicate
   `RMQ.SuccinctSpace.LittleOLinear`
 - File: `RMQ/Core/SuccinctRMQClassic.lean` (:1233);
@@ -92,7 +92,7 @@ references are at the base commit.
 
 #### L-UB-03
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.SuccinctClassic.listIntFinalFullModelSoundnessExactOfFootprintGlobal`;
   packaged by `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`
@@ -108,7 +108,7 @@ references are at the base commit.
 
 #### L-UB-04
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration: `RMQ.SuccinctClassic.queryCosted_invalid` (:256),
   `queryCosted_empty_range` (:369), `queryCosted_reversed_range` (:376),
   `queryCosted_out_of_bounds` (:385); plus the corresponding
@@ -124,7 +124,7 @@ references are at the base commit.
 
 #### L-UB-05
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration: `RMQ.SuccinctClassic.queryCosted_cost_le` (:1282),
   `RMQ.SuccinctClassic.queryCost_eq : queryCost = 210` (:114);
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`
@@ -138,7 +138,7 @@ references are at the base commit.
 
 #### L-UB-06
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration: `RMQ.SuccinctClassic.chargedTraceCostAlgebra` (abbrev of
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra`);
   frozen historical identity
@@ -157,7 +157,7 @@ references are at the base commit.
 
 #### L-UB-07
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only`;
   alias `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`
@@ -170,7 +170,7 @@ references are at the base commit.
 
 #### L-UB-08
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_noSynthetic_execution_story`;
   flat-payload strengthening
@@ -185,7 +185,7 @@ references are at the base commit.
 
 #### L-UB-09
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_210`
   with the sum-equals-length and sum-equals-cost companions; counterfactual
@@ -201,7 +201,7 @@ references are at the base commit.
 
 #### L-UB-19
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `bpChunkedSameBlockCloseSeededCosted_cost_le : cost <= 37`
   (`RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockChunks.lean`);
@@ -224,7 +224,7 @@ references are at the base commit.
 
 #### L-UB-10
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases`;
   alias `RMQ.Headlines.succinctRMQReviewerPhysicalWordsErasePublicPayload`
@@ -239,7 +239,7 @@ references are at the base commit.
 
 #### L-UB-11
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical`;
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter`;
@@ -256,7 +256,7 @@ references are at the base commit.
 
 #### L-UB-12
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_eq_of_orderedFootprint`;
   list-facing
@@ -273,7 +273,7 @@ references are at the base commit.
 
 #### L-UB-18
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.SuccinctClassic.listIntFinalFullModelCostLeOfFootprintGlobal`;
   `RMQ.SuccinctClassic.listIntFinalFullModelSoundnessExactOfFootprintGlobal`;
@@ -290,7 +290,7 @@ references are at the base commit.
 
 #### L-UB-13
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne`
   with `..._value_eq_suppliedStoreEvaluator`; the six validation guards
@@ -307,7 +307,7 @@ references are at the base commit.
 
 #### L-UB-14
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_successful_reads_backed_by_counted_flat_payload_of_footprint_global`;
   alias
@@ -323,7 +323,7 @@ references are at the base commit.
 
 #### L-UB-17
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace_getElem?_producer`,
   `...evalGlobalWordTrace_getElem?_read_invocation`,
@@ -340,7 +340,7 @@ references are at the base commit.
 
 #### L-UB-15
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy`
   with `...ReviewerSource_counted_successful_closed_valid_occurrence`,
@@ -363,7 +363,7 @@ references are at the base commit.
 
 #### L-UB-16
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration: `concreteBPNativeSuccinctRMQReviewerWordBits` (definition,
   `RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean` :1474) with the
   bound theorems behind aliases
@@ -383,7 +383,7 @@ references are at the base commit.
 
 #### L-UB-20
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed`
   (24-field certificate),
@@ -408,7 +408,7 @@ references are at the base commit.
 
 #### L-LB-01
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack`
   (:1878); `doubledLogSlackLower` (:1654); alias
@@ -429,7 +429,7 @@ references are at the base commit.
 
 #### L-LB-02
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound`
   (:1840); `logSlackLower` (:1650)
@@ -446,7 +446,7 @@ references are at the base commit.
 
 #### L-RS-01
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration: `RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery` (:244);
   headline alias `RMQ.Headlines.rankSelectNPlusOConstantQuery`
 - File: `RMQ/Core/RankSelectPublic/Capstones.lean`
@@ -458,7 +458,7 @@ references are at the base commit.
 
 #### L-RS-02
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration: `RMQ.RankSelect.compressedFIDFixedWeightFamilyProfile`;
   interpreted replay
   `RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile`
@@ -474,7 +474,7 @@ references are at the base commit.
 
 #### L-BP-01
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration: `RMQ.BPNavigation.concreteBPCloseNavigationFamily_profile`
   (:1666); headline alias `RMQ.Headlines.concreteBPCloseNavigationProfile`
 - File: `RMQ/Core/BPNavigationPublic.lean`
@@ -490,7 +490,7 @@ references are at the base commit.
 
 #### L-ARCH-01
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration:
   `RMQ.SuccinctFinal.PackedCellProbe.PackedReviewerArchitectureCapstone`
   (39-field structure), discharged for every input list and endpoint pair by
@@ -548,7 +548,7 @@ references are at the base commit.
 
 #### L-PACK-01
 - Status: ACCEPTED_BASE
-- Commit: `688c54a39d9a2410d281f1ded9b70937908beb4a`
+- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
 - Declaration: field 8 `allocation_two_n_plus_rho` of
   `RMQ.SuccinctFinal.PackedCellProbe.PackedReviewerArchitectureCapstone`,
   with field 9 `rho_little_o`; inhabited by

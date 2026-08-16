@@ -1,7 +1,7 @@
 # paper/ -- RMQ manuscript and evidence substrate
 
 Private working draft of the RMQ manuscript, pinned to repository base
-commit `688c54a39d9a2410d281f1ded9b70937908beb4a`, authored on branch
+commit `0665b494707695a70675fef0e5c8682f4d80fe0c`, authored on branch
 `codex/eg-cp-paper-evidence-r1` under governance
 `f0c7232a8a52b8d61ead5e96d72a8a849bc094b5`. This directory is a manuscript
 substrate only: it records no architecture acceptance, no coordinator
@@ -29,9 +29,36 @@ Because moving them restates a claim, they were not restamped on faith. At
 their row names, after three were corrected (see `EVIDENCE_MATRIX.md`). Both CI
 workflows are green on `688c54a3`.
 
-The commit carrying this repin adds only these substrate edits and
-`scripts/ledger_decl_check.lean`; it changes no Lean library code, so the pinned
-tree and the substrate commit differ by documentation and one checker.
+The commit carrying that repin added only substrate edits and
+`scripts/ledger_decl_check.lean`; it changed no Lean library code, so the pinned
+tree and the substrate commit differed by documentation and one checker.
+
+### Repin of 2026-08-16 (RC-4)
+
+The pin moved again, from `688c54a3...` to `0665b494...`, as part of the RC-4
+correction round. The 2026-08-15 fresh-blind audit failed `RC-10` because this
+substrate was pinned to an ancestor of the release tag *and* still presented the
+already-accepted packed architecture as a provisional target: at the release
+commit, `import RMQPaper` supplied the 427-probe capstone while this manuscript
+called it a future editorial insertion. The paper and the artifact did not
+identify the same claim.
+
+Both halves are repaired in one change. The theorem is absorbed --
+Section 9 states it as a theorem with the actual constant `427` and the
+`ARCHITECTURE_RESULT_PENDING` marker is gone -- and all 38 full-SHA pins across
+this substrate move together. Mentions of `688c54a3` that survive below are
+deliberate: they record what was true at the previous pin.
+
+Verified at the new pin before the move: `lake build RMQ` and
+`lake build RMQPaper` exit 0; `scripts/independence_check.lean` passes on all
+**three** cap-supplying theorems (1,855 / 1,856 / 2,074 constants, none touching
+the eight charged declarations); `paper/check_paper.ps1 -SelfTest` passes,
+including two new assertions -- the ledger status counts are now *derived* from
+`THEOREM_LEDGER.md` rather than restated here, and the pending marker is
+permitted rather than required.
+
+The same standing caveat applies: the commit carrying this repin is the child of
+the verified tree, differing by the substrate edits themselves.
 
 Historical mentions of `e3362d4` elsewhere in this directory are deliberate and
 were not rewritten: they record what was true at the previous pin.

@@ -11422,3 +11422,29 @@ This item was on the coordinator's own known-open list for the RC-3 round,
 rated an editorial gap. That rating was wrong: at a release candidate, a
 manuscript that pins to an ancestor and calls the shipped theorem pending is a
 release-blocking mismatch, which is exactly what `RC-10` exists to catch.
+
+## DD-20260816-106 -- repin the manuscript substrate to the release tree
+
+Status: Accepted. Date: 2026-08-16. Second half of `P1-1` / `RC-10` of the
+2026-08-15 fresh-blind audit; DD-20260816-105 absorbed the theorem, this moves
+the pin.
+
+`paper/` was pinned to `688c54a3...`, an ancestor of the release tag. The 29
+`ACCEPTED_BASE` rows in `THEOREM_LEDGER.md` are not decoration: that status is
+DEFINED in the ledger header as *kernel-checked declaration present on the base
+commit*. Every one of them therefore asserted something about a tree that was
+not the release tree.
+
+All 38 full-SHA pins across the substrate move together to
+`0665b494707695a70675fef0e5c8682f4d80fe0c`. Mentions of `688c54a3` and
+`e3362d4` that survive are deliberate and record what was true at earlier pins;
+they are not stragglers.
+
+Verified at the new pin before the move: `lake build RMQ` and
+`lake build RMQPaper` exit 0; `scripts/independence_check.lean` passes on all
+three cap-supplying theorems; `check_paper.ps1 -SelfTest` passes.
+
+The standing caveat is unchanged and is stated in `paper/README.md`: the commit
+carrying a repin is the child of the tree it verifies, differing by the
+substrate edits themselves. That is unavoidable for a self-describing
+substrate; it is disclosed rather than hidden.

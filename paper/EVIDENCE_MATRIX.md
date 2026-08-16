@@ -2,7 +2,7 @@
 
 Frozen acceptance rows for the manuscript/evidence substrate on branch
 `codex/eg-cp-paper-evidence-r1`, base commit
-`688c54a39d9a2410d281f1ded9b70937908beb4a`. Row IDs and requirement text
+`0665b494707695a70675fef0e5c8682f4d80fe0c`. Row IDs and requirement text
 are frozen as of 2026-08-05; evidence and status fields are append-only.
 Statuses: **CLOSED** (evidence in place at this commit) or
 **BLOCKED_ONLY_ON: ARCHITECTURE_RESULT_PENDING** (nothing remains except
