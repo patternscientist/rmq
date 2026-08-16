@@ -9834,3 +9834,54 @@ what does it rest on (`#print axioms`), what does it say (expected-type pins),
 and is what it says cheap to satisfy (counterfactuals). The third question is
 the one that had no mechanical answer, and it is the question a vacuous theorem
 passes silently.
+
+## WDD-20260816-039 -- the POSIX barrier cannot contain a `setsid` descendant
+
+RC-3 audit item 10 asked for a self-test covering a descendant that escapes the
+owned process group on Linux. Writing it surfaced a structural finding that
+matters more than the test.
+
+`Stop-RMQPosixOwnedProcessGroup` is `kill(-groupId, signal)` -- a process-GROUP
+signal, and it is the ONLY containment mechanism on POSIX in this file. There is
+no descendant enumeration on that path. A descendant that calls `setsid` becomes
+a session leader in a new group and is therefore outside the signalled group **by
+construction**. It is not a race, not a timing window: the mechanism cannot reach
+it.
+
+Windows does not share the weakness. A kill-on-close job object owns descendants
+regardless of what they do to their process group, so the two platforms have
+genuinely different containment guarantees. The existing barrier self-test does
+not distinguish them because its grandchild is spawned with `Start-Process` and
+inherits the group, which the group signal does reach.
+
+### What was added, and what was deliberately NOT added
+
+`Invoke-RMQOwnedProcessEscapeProbe` (`-EscapeProbe`) launches the grandchild
+THROUGH `setsid` and reports `CONTAINED` or `ESCAPED`. It skips on Windows and
+reports INCONCLUSIVE rather than PASS when it cannot create the condition, in
+line with the existing barrier self-test.
+
+**It is not wired into the aggregate gate, and it has never been executed.** It
+was written on a Windows host where it cannot run. Its expected outcome on Linux
+is `ESCAPED` -- that is, it should fail.
+
+Wiring an unexecuted probe into a required gate would place an unverified
+assertion behind a green check, which is precisely the defect class this project
+keeps finding in its own work. Equally, silently omitting the probe would leave
+a known containment hole undocumented. So it is committed, runnable, and
+explicitly labelled as unrun.
+
+### Open, and needs an owner decision
+
+Two things remain and neither should be decided by inference from a Windows host:
+
+1. Run `pwsh -File scripts/owned_process_tree.ps1 -EscapeProbe` on Linux and
+   record the result. If it reports `ESCAPED`, the finding above is confirmed
+   empirically rather than by reading the source.
+2. Decide whether to close the hole before V1. Closing it means adding POSIX
+   descendant enumeration (walking `/proc` for the session/parent chain) rather
+   than relying on the group signal. That is a real change to the containment
+   path and must be developed against a Linux host, not written blind here.
+
+Until then the honest statement is: **owned-tree containment is demonstrated on
+Windows and demonstrated only for group-resident descendants on POSIX.**

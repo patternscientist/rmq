@@ -908,6 +908,101 @@ Start-Sleep -Seconds 120
   }
 }
 
+# POSIX descendant that ESCAPES the owned process group.
+#
+# The barrier self-test above spawns a grandchild with `Start-Process`, which on
+# POSIX inherits the process group. `Stop-RMQPosixOwnedProcessGroup` then reaches
+# it, because that function is `kill(-groupId, signal)` -- a process-GROUP kill.
+#
+# A descendant that calls `setsid` itself leaves the group. `kill(-groupId, ...)`
+# cannot reach it by construction: there is no code path in this file that
+# enumerates descendants on POSIX, only the group signal. The Windows path does
+# not share the weakness -- a kill-on-close job object owns descendants
+# regardless of what they do to their process group -- so the two platforms have
+# genuinely different containment, which the RC-3 audit (item 10) asked to have
+# demonstrated rather than argued.
+#
+# STATUS: THIS PROBE HAS NEVER BEEN EXECUTED. It is written on a Windows host,
+# where it cannot run, and it is deliberately NOT wired into the aggregate gate.
+# Running it is a Linux task, and its expected outcome is FAILURE -- the escaping
+# descendant should survive. Wiring an unexecuted probe into a required gate
+# would put an unverified assertion behind a green check, which is the defect
+# this project keeps finding in its own work.
+#
+# Invoke explicitly: `pwsh -File scripts/owned_process_tree.ps1 -EscapeProbe`
+function Invoke-RMQOwnedProcessEscapeProbe([int]$DeadlineSeconds = 6) {
+  if (Test-RMQOwnedProcessWindows) {
+    Write-Host (
+      'OWNED-PROCESS ESCAPE PROBE SKIPPED ' +
+      '(Windows: job-object ownership does not depend on the process group)')
+    return $null
+  }
+  $setsid = Get-Command setsid -CommandType Application -ErrorAction SilentlyContinue
+  if (-not $setsid) {
+    Write-Host 'OWNED-PROCESS ESCAPE PROBE INCONCLUSIVE (no setsid on PATH)'
+    return $null
+  }
+
+  $encoding = New-Object System.Text.UTF8Encoding $false
+  $root = Join-Path ([IO.Path]::GetTempPath()) ("rmq-escape-" + [Guid]::NewGuid().ToString('N'))
+  New-Item -ItemType Directory -Force -Path $root | Out-Null
+  try {
+    $shellPath = (Get-Process -Id $PID).Path
+    $escapedPidPath = Join-Path $root 'escapee.pid'
+    $scriptPath = Join-Path $root 'escaper.ps1'
+    $quotedShell = $shellPath.Replace("'", "''")
+    $quotedPid = $escapedPidPath.Replace("'", "''")
+    $quotedSetsid = $setsid.Source.Replace("'", "''")
+    # The grandchild is launched THROUGH setsid, so it becomes a session leader
+    # in a new process group and is no longer a member of the owned group.
+    $text = @"
+`$child = Start-Process -FilePath '$quotedSetsid' -ArgumentList @(
+  '$quotedShell', '-NoLogo', '-NoProfile', '-Command',
+  'Start-Sleep -Seconds 120') -PassThru
+[IO.File]::WriteAllText('$quotedPid', [string]`$child.Id)
+Start-Sleep -Seconds 120
+"@
+    [IO.File]::WriteAllText($scriptPath, $text, $encoding)
+    $result = Invoke-RMQOwnedBoundedProcess `
+      -FilePath $shellPath `
+      -Arguments @('-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass',
+        '-File', $scriptPath) `
+      -WorkingDirectory $root `
+      -Stage 'escape-probe' `
+      -DeadlineSeconds $DeadlineSeconds `
+      -OutputLimitBytes 1000000 `
+      -TempRoot $root
+    if (-not $result.TimedOut) {
+      Write-Host 'OWNED-PROCESS ESCAPE PROBE INCONCLUSIVE (deadline not classified as a timeout)'
+      return $null
+    }
+    if (-not (Test-Path -LiteralPath $escapedPidPath -PathType Leaf)) {
+      Write-Host (
+        'OWNED-PROCESS ESCAPE PROBE INCONCLUSIVE ' +
+        '(the escaping descendant never started; nothing escaped, so nothing was shown)')
+      return $null
+    }
+    $escapedId = [int]([IO.File]::ReadAllText($escapedPidPath).Trim())
+    $alive = $null -ne (Get-Process -Id $escapedId -ErrorAction SilentlyContinue)
+    # Always reap it: a probe that leaks a 120-second sleeper on every run is a
+    # worse problem than the one it measures.
+    if ($alive) { try { Stop-Process -Id $escapedId -Force -ErrorAction SilentlyContinue } catch { } }
+    if ($alive) {
+      Write-Host (
+        'OWNED-PROCESS ESCAPE PROBE: ESCAPED ' +
+        "(pid=$escapedId outlived the barrier; the POSIX path signals the process " +
+        'group only, so a setsid descendant is outside it)')
+      return $false
+    }
+    Write-Host (
+      'OWNED-PROCESS ESCAPE PROBE: CONTAINED ' +
+      "(pid=$escapedId absent after the barrier)")
+    return $true
+  } finally {
+    Remove-Item -LiteralPath $root -Recurse -Force -ErrorAction SilentlyContinue
+  }
+}
+
 # Edge cases that broke this file twice on 2026-08-12/13, pinned so they cannot
 # break it a third time.  Both were empty-collection defects: a PowerShell
 # pipeline matching nothing becomes `$null`, not an empty array, and `.Count` on
@@ -943,6 +1038,16 @@ function Invoke-RMQOwnedProcessCollectionSelfTest {
   Write-Host (
     'OWNED-PROCESS COLLECTION SELF-TEST PASS ' +
     "($($cases.Count) alive-query cases; zero-handle and empty-job barriers)")
+}
+
+if ($MyInvocation.InvocationName -ne '.' -and $args -contains '-EscapeProbe') {
+  $ErrorActionPreference = 'Stop'
+  # Reports; does not gate. See Invoke-RMQOwnedProcessEscapeProbe for why.
+  $contained = Invoke-RMQOwnedProcessEscapeProbe
+  if ($null -eq $contained) { exit 0 }
+  if ($contained) { Write-Host 'OWNED-PROCESS ESCAPE PROBE: RESULT: CONTAINED'; exit 0 }
+  Write-Host 'OWNED-PROCESS ESCAPE PROBE: RESULT: ESCAPED'
+  exit 2
 }
 
 if ($MyInvocation.InvocationName -ne '.' -and $args -contains '-SelfTest') {
