@@ -36,11 +36,20 @@
 #             file is pinned exactly; the name must be one on `- Declaration:`.
 #   row    -- context named none; any name on `- Declaration:` was accepted.
 #
-# All three admit ONLY names the row declares. An earlier version let the two
-# weaker bindings accept any backticked identifier anywhere in the row, which
-# included prose metavariables from the `Proposition:` text (`xs`, `v`, `idx`).
-# `xs` appears on about a third of the lines of the cited sources, so those
-# citations were satisfied by almost any line. See `Get-RowDeclarationNames`.
+# All three admit ONLY names on the row's `- Declaration:` line, and the cited
+# line must DECLARE that name -- a `theorem`/`def`/`structure`/... keyword, or a
+# structure field `name :` -- rather than merely mention it.
+#
+# Both restrictions were forced by audit, and the measured strength is the point:
+#
+#   any backticked identifier in the row    worst case 570 of 1,617 lines
+#   only `- Declaration:` names             worst case  35 of   746 lines
+#   a declaration SITE (current)            worst case   2 of   861 lines
+#
+# 24 of the 26 cited names have exactly one satisfying line in their file, so a
+# rotted citation has almost nowhere to land. The middle row was reported as a
+# fix; it left five real rots passing, including a `rw [...]` proof step 1,274
+# lines from its theorem.
 #
 # What this does NOT check: that the declaration is true, that it is the right
 # declaration for the claim, or that it kernel-checks. This is a pointer
@@ -210,7 +219,7 @@ function Get-CitationBinding {
   # Only the tail of the preceding text is context; anything further back
   # belongs to a different citation. Cut at the previous citation if present.
   $segment = $Preceding
-  $previous = [regex]::Matches($segment, ':\d{2,}')
+  $previous = [regex]::Matches($segment, ':\d+')
   if ($previous.Count -gt 0) {
     $last = $previous[$previous.Count - 1]
     $segment = $segment.Substring($last.Index + $last.Length)
@@ -289,18 +298,17 @@ function Test-CitationResolves {
     $upper = [Math]::Min($End, $content.Count)
 
     # A citation may land on the declaration's doc-comment rather than its
-    # `theorem` line -- the ledger does both, e.g. L-UB-01 cites the theorem
-    # line and L-UB-02 cites the docstring one line above it. Both point at the
-    # declaration, so extend the window across a doc-comment block and the
-    # blank lines after it. Nothing else is tolerated: the extension stops at
-    # the first line that is not a comment or blank, so genuine rot (a citation
-    # 29 or 1,090 lines away) still fails.
-    # Hard-bounded. The terminator search looks for `-/` at END OF LINE, but
-    # `/-- One line. -/ def width := 3` is legal Lean and terminates inline. On
-    # such a line the search would never match, run past the end of the file,
-    # and set the window to the whole file -- so the citation would resolve
-    # against any line anywhere. No cited file contains that shape today; one
-    # reformat would have introduced it silently.
+    # `theorem` line -- the ledger does both: L-UB-01 cites the theorem line,
+    # L-UB-02 cites the docstring one line above it. So the window extends
+    # across a doc-comment block and the blank lines after it, hard-bounded.
+    #
+    # The bound is not decoration. `/-- One line. -/ def width := 3` terminates
+    # inline, and an unbounded scan for the terminator would run past EOF and
+    # open the window to the whole file. That shape is COMMON here -- 65
+    # occurrences in `SuccinctRMQClassic.lean` alone, including line 1233, which
+    # L-UB-02 cites. An earlier comment claimed no cited file contained it; that
+    # was false, and the same commit removed the `\s*$` anchor its own comment
+    # blamed. The budget is what makes this safe, not the anchor.
     $docCommentWindowLimit = 6
     if ($content[$Start - 1] -match '^\s*/--') {
       $scan = $Start
@@ -314,10 +322,27 @@ function Test-CitationResolves {
       if ($capped -gt $upper) { $upper = [Math]::Min($capped, $content.Count) }
     }
 
-    for ($lineNo = $Start; $lineNo -le $upper; $lineNo++) {
-      $text = $content[$lineNo - 1]
-      foreach ($leaf in $leaves) {
-        if ($text -match ("(?<![A-Za-z0-9_'.])" + [regex]::Escape($leaf) + "(?![A-Za-z0-9_'])")) {
+    # The cited line must DECLARE the name, not merely mention it.
+    #
+    # Requiring only a mention made the check far weaker than its own wording.
+    # Restricting the acceptable names to the `- Declaration:` line helped a
+    # great deal (worst case 570 of 1,617 lines down to 35 of 746) but did not
+    # fix the kind: a proof step `rw [queryCosted_invalid xs left right hbad]`
+    # 1,274 lines from the theorem still satisfied L-UB-04, and four more rots
+    # like it passed. "Mentions the name somewhere" is not "is the declaration".
+    #
+    # Accepted shapes: a Lean declaration keyword followed by the name, or a
+    # structure field / anonymous-constructor field `name :`. Everything else --
+    # proof steps, hypothesis lines, imports, prose -- is rejected.
+    foreach ($leaf in $leaves) {
+      $escaped = [regex]::Escape($leaf)
+      $declarationSite =
+        '(^|\s)(theorem|lemma|def|abbrev|structure|inductive|instance|axiom|opaque|example)\s+' +
+        $escaped + "(?![A-Za-z0-9_'.])"
+      $fieldSite = '^\s*' + $escaped + "(?![A-Za-z0-9_'.])\s*:"
+      for ($lineNo = $Start; $lineNo -le $upper; $lineNo++) {
+        $text = $content[$lineNo - 1]
+        if ($text -match $declarationSite -or $text -match $fieldSite) {
           return @{ Ok = $true; File = $relative; Line = $lineNo; Name = $leaf; MissingFiles = $missingFiles }
         }
       }
@@ -417,7 +442,7 @@ if ($SelfTest) {
     # self-test reported 27 failures and looked like it passed -- but a checker
     # that only ever examined the first row would have passed it too. Mutating
     # one and demanding one is the assertion that has teeth.
-    $mutated = [regex]::new(':(\d{2,})').Replace($originalText, ':999901', 1)
+    $mutated = [regex]::new(':(\d+)').Replace($originalText, ':999901', 1)
     if ($mutated -eq $originalText) {
       Write-Host "CITATIONS SELFTEST: RESULT: FAIL (could not mutate any citation)"
       exit 1
@@ -454,7 +479,24 @@ if ($SelfTest) {
       $metavarLedger = Join-Path $fixtureRoot "meta.md"
       [IO.File]::WriteAllText($metavarLedger,
         "#### L-FX-01`n- Declaration: ``real_decl```n- File: ``Fake/M.lean`` (:5)`n- Proposition: for all ``xs``, with ``v`` and ``idx``.`n")
+      # And that the fixture SOURCE exists. Deleting the fixture .lean makes the
+      # citation unresolvable, so Total and Failures come out identical to the
+      # healthy run -- "failed because the source is missing" and "failed for the
+      # reason under test" are otherwise the same observation.
+      if (-not (Test-Path -LiteralPath (Join-Path $fixtureRoot "Fake\M.lean"))) {
+        Write-Host "CITATIONS SELFTEST: RESULT: FAIL (metavariable fixture source was not written)"
+        exit 1
+      }
       $metavarResult = Invoke-CitationCheck -LedgerPath $metavarLedger -Root $fixtureRoot
+      # Assert the fixture was EXAMINED, not merely that it did not pass. A
+      # fixture parsing to zero citations yields zero failures, which is
+      # indistinguishable from one the checker handled. An earlier round claimed
+      # this guard was added; it was not -- the patch matched nothing (CRLF vs
+      # LF) and reported success anyway.
+      if ($metavarResult.Total -lt 1) {
+        Write-Host "CITATIONS SELFTEST: RESULT: FAIL (metavariable fixture parsed 0 citations; it tested nothing)"
+        exit 1
+      }
       if ($metavarResult.Failures -lt 1) {
         Write-Host "CITATIONS SELFTEST: RESULT: FAIL (a citation drifted onto a line mentioning only a prose metavariable still passed)"
         exit 1
@@ -472,7 +514,15 @@ if ($SelfTest) {
       $windowLedger = Join-Path $fixtureRoot "window.md"
       [IO.File]::WriteAllText($windowLedger,
         "#### L-FX-02`n- Declaration: ``far_away```n- File: ``Fake/W.lean`` (:10)`n- Proposition: x`n")
+      if (-not (Test-Path -LiteralPath (Join-Path $fixtureRoot "Fake\W.lean"))) {
+        Write-Host "CITATIONS SELFTEST: RESULT: FAIL (doc-comment fixture source was not written)"
+        exit 1
+      }
       $windowResult = Invoke-CitationCheck -LedgerPath $windowLedger -Root $fixtureRoot
+      if ($windowResult.Total -lt 1) {
+        Write-Host "CITATIONS SELFTEST: RESULT: FAIL (doc-comment fixture parsed 0 citations; it tested nothing)"
+        exit 1
+      }
       if ($windowResult.Failures -lt 1) {
         Write-Host "CITATIONS SELFTEST: RESULT: FAIL (an inline-terminated doc comment opened a whole-file resolution window)"
         exit 1

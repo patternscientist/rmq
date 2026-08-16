@@ -15,6 +15,12 @@ aggregate gate runs while `EG-CP-ALLSIZE-R1` is active. No architecture choice
 is made here; the packed all-size result stays provisional and appears only at
 one marked insertion point.
 
+**HISTORICAL (annotated 2026-08-16).** That sentence describes the session this
+log records, not the current tree. The result was accepted (Stage A, 2026-08-07)
+and absorbed into `rmq.tex` Section 9 as a theorem in the RC-4 round; there is
+no marked insertion point left. Like the `Base:` SHA above, it is left standing
+as a record rather than rewritten.
+
 ## 2026-08-05 Session start: governance, preflight, reading
 
 - Verified working tree clean at exactly `1490c97b...`; created branch

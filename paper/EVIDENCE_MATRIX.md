@@ -4,11 +4,25 @@ Frozen acceptance rows for the manuscript/evidence substrate on branch
 `codex/eg-cp-paper-evidence-r1`, base commit
 `0665b494707695a70675fef0e5c8682f4d80fe0c`. Row IDs and requirement text
 are frozen as of 2026-08-05; evidence and status fields are append-only.
-Statuses: **CLOSED** (evidence in place at this commit) or
+Statuses: **CLOSED** (evidence in place at this commit),
 **BLOCKED_ONLY_ON: ARCHITECTURE_RESULT_PENDING** (nothing remains except
-the independently accepted packed all-size result). No other status is
-permitted for this substrate; a row that could not reach one of these two
-states would mean the substrate is incomplete.
+the independently accepted packed all-size result), or
+**BLOCKED_ONLY_ON: EDITORIAL_INSERTION** (used by the 2026-08-07 status entry:
+the result was accepted and only its insertion into the manuscript remained), or
+**BLOCKED_ONLY_ON: FRESH_BLIND_ACCEPTANCE** (added 2026-08-16: nothing
+remains except an external audit verdict). No other status is permitted for
+this substrate; a row that could not reach one of these states would mean the
+substrate is incomplete.
+
+`EDITORIAL_INSERTION` had been in use since 2026-08-07 without ever being
+listed here, and `FRESH_BLIND_ACCEPTANCE` was added by the RC-4 round the same
+way. Both were found only when the enforcement below was written -- the rule
+"no other status is permitted" had been violated twice while stated.
+
+The RC-4 round appended its status to `EV-07`
+without amending this list, leaving the file asserting a vocabulary it
+violated one screen later. `paper/check_paper.ps1` now enforces the list, so a
+status outside it fails rather than merely contradicting this paragraph.
 
 This matrix records manuscript-substrate evidence only. It is not an
 architecture acceptance record, records no coordinator acceptance, and
@@ -132,6 +146,11 @@ closes no roadmap node.
   superseded by this entry rather than edited. The containment half of the
   requirement still holds and is still enforced: exactly one marker, and no
   section outside Section 9 states, assumes, or paraphrases the result.
+  **Superseded 2026-08-16:** "exactly one marker" is false at this commit --
+  there are zero, and the checker permits at most one. This sentence was missed
+  by the RC-4 amendment below, whose enumeration named three stale statements
+  and not this fourth one. An enumeration of one's own errors is itself a claim
+  and can be incomplete.
 - Evidence (appended 2026-08-09, after external audit): the frozen requirement
   above says the packed result appears **only** as the quoted target and the
   single marker. **That is false at this commit, and was false when written.**

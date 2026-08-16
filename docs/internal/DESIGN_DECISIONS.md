@@ -11636,3 +11636,43 @@ Also annotated: `paper/WORKLOG.md`'s `Base: 1490c97b…`, the one full-SHA base 
 records its own session -- but it was not covered by the README's
 deliberate-historical carve-out, so it read as a straggler from the 38-SHA
 repin. Both the log and the carve-out now say so.
+
+## DD-20260816-111 -- round 2: three more stale substrate claims, and a rule nobody enforced
+
+Status: Accepted. Date: 2026-08-16. Companion to WDD-20260816-041.
+
+### `THEOREM_LEDGER.md` L-ARCH-01 still described the pre-absorption manuscript
+
+The row read: the statement is "**not yet absorbed** into a theorem
+environment", "the single marked insertion point still holds the
+`ARCHITECTURE_RESULT_PENDING` marker", and "that is an editorial gap". All three
+false at this commit; `grep -c ARCHITECTURE_RESULT_PENDING paper/rmq.tex` is 0.
+
+**Neither RC-4 correction commit touched this file.** The round repaired
+`README.md` and `EVIDENCE_MATRIX.md` and left the ledger -- the artifact whose
+entire job is binding manuscript claims to Lean declarations -- describing a
+manuscript that no longer exists.
+
+### A fourth stale statement the round-1 amendment's own enumeration missed
+
+`EVIDENCE_MATRIX.md:140` asserts "exactly one marker, and no section outside
+Section 9 ...". The RC-4 amendment enumerated three false statements and named
+lines 128, 129-130 and 149. It did not name this one. An enumeration of one's own
+errors is itself a claim, and it can be incomplete.
+
+### The permitted-status rule was violated twice while being stated
+
+The matrix header says "No other status is permitted for this substrate" and
+listed two statuses. The file used four: `EDITORIAL_INSERTION` since 2026-08-07,
+and `FRESH_BLIND_ACCEPTANCE` added by the RC-4 round itself. Nothing checked it,
+so the file asserted a vocabulary it violated one screen later, for nine days.
+
+`check_paper.ps1` now parses the permitted set **from the header** and fails on
+any status outside it. Parsing rather than restating means adding a status
+requires amending the header, which is the property the header claims. It caught
+`EDITORIAL_INSERTION` on its first run -- a violation older than this round.
+
+Also corrected: `paper/WORKLOG.md`'s undated scope preamble ("stays provisional
+... one marked insertion point"), annotated historical like its `Base:` line; and
+the ledger header's `PROVISIONAL_ARCHITECTURE` definition, which described a
+marked insertion point that no longer exists and which no row now holds.

@@ -9985,3 +9985,65 @@ that could have failed is not a repair". It needs a second clause: **the
 measurement has to be of the right quantity, and the report has to quote what
 the measurement actually said.** The self-test itself was sound throughout; only
 the numbers written down were wrong.
+
+## WDD-20260816-041 -- round 2: the citation checker was still defeatable
+
+A second agent audit of the round-1 corrections. Six of eight claims held; two
+were overstated and one was refuted. Every finding reproduced.
+
+### "Resolves to the declaration" now means a declaration SITE
+
+Round 1 restricted the acceptable names to the `- Declaration:` line. That was a
+large real improvement and it did not fix the KIND of defect. A citation still
+only had to MENTION the name. Five rots passed, including L-UB-04's `:256` moved
+to `:1530` -- a `rw [queryCosted_invalid xs left right hbad]` proof step **1,274
+lines from the theorem**.
+
+The cited line must now DECLARE the name: a `theorem`/`lemma`/`def`/`abbrev`/
+`structure`/`inductive`/`instance`/`axiom`/`opaque`/`example` keyword followed by
+it, or a structure field `name :`. The exact name, not a namespace prefix --
+`theorem LittleOLinear.const_add` no longer satisfies a citation to
+`LittleOLinear`.
+
+Measured strength, which is the only honest way to state this:
+
+| rule | worst case |
+|---|---|
+| any backticked identifier in the row | 570 of 1,617 lines |
+| only `- Declaration:` names | 35 of 746 lines |
+| a declaration site (current) | **2 of 861 lines** |
+
+24 of the 26 cited names have exactly one satisfying line in their file. All
+seven known rots now fail; all 27 real citations still resolve.
+
+**Round 1's comment claimed "genuine rot (a citation 29 or 1,090 lines away)
+still fails". That was false when written**, and it was written in the commit
+that reported the fix. The pattern is now three rounds old: the repair is real,
+the sentence describing it overshoots, and only an adversary measures the gap.
+
+### Two false statements in the round-1 justification
+
+- "The terminator search looks for `-/` at END OF LINE" -- the code is
+  `-notmatch '-/'`, unanchored. **The same commit removed the `\s*$` anchor its
+  own comment blamed for the bug.**
+- "No cited file contains that shape today" -- every cited file does: 65
+  occurrences in `SuccinctRMQClassic.lean`, 66 in `SuccinctFinalRAM.lean`, 47 in
+  `WordRAM.lean`. The cited line `:1233` itself is one.
+
+The window bound is genuinely load-bearing (offsets +1..+6 resolve, +7 blocked);
+the reasoning offered for it was not.
+
+### The `Total >= 1` guard did not exist
+
+Round 1 stated it had been added. It had not: the patch matched nothing because
+the file is CRLF and the search text was LF, and the patch script printed
+"patched" regardless. **This is the third no-op edit in this round that reported
+success** -- after the `-like` backslash filter and the `Get-ScanFiles` filter
+that governed the wrong enumeration.
+
+The guard now exists, and so does a check that the fixture SOURCE was written:
+deleting the fixture `.lean` makes the citation unresolvable, so `Total=1,
+Failures=1` comes out identical to a healthy run and "failed for the reason under
+test" is otherwise indistinguishable from "fixture never got written".
+
+Every patch in this round asserts its search text is present before writing.

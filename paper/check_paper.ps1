@@ -376,6 +376,39 @@ $before = $failures
 $ledgerAccepted = ([regex]::Matches($ledger, '(?m)^- Status: ACCEPTED_BASE\s*$')).Count
 $ledgerProvisional = ([regex]::Matches($ledger, '(?m)^- Status: PROVISIONAL_ARCHITECTURE\s*$')).Count
 $ledgerOpen = ([regex]::Matches($ledger, '(?m)^- Status: OPEN\s*$')).Count
+# EVIDENCE_MATRIX statuses must come from the vocabulary its own header declares.
+#
+# The header says "No other status is permitted for this substrate", and nothing
+# checked it: the RC-4 round appended `BLOCKED_ONLY_ON: FRESH_BLIND_ACCEPTANCE`
+# to EV-07 while the header listed only two statuses, so the file asserted a rule
+# it violated one screen later. Parsing the permitted set FROM the header rather
+# than restating it here means adding a status requires amending the header,
+# which is the property the header claims to have.
+$before = $failures
+$matrixPathForStatus = Join-Path $PSScriptRoot 'EVIDENCE_MATRIX.md'
+if (Test-Path -LiteralPath $matrixPathForStatus) {
+  $matrixText = [IO.File]::ReadAllText($matrixPathForStatus)
+  $permitted = @()
+  foreach ($m in [regex]::Matches($matrixText, '\*\*(CLOSED|BLOCKED_ONLY_ON:\s*[A-Z_]+)\*\*')) {
+    $permitted += ($m.Groups[1].Value -replace '\s+', ' ')
+  }
+  $permitted = @($permitted | Sort-Object -Unique)
+  if ($permitted.Count -eq 0) {
+    Fail "EVIDENCE_MATRIX.md declares no permitted status vocabulary; the status check cannot run"
+  } else {
+    foreach ($m in [regex]::Matches($matrixText, '(?m)^- Status[^:]*:\s*(.+?)\s*$')) {
+      $used = ($m.Groups[1].Value -replace '\s+', ' ').Trim().TrimEnd('.')
+      # Statuses carry trailing prose; compare on the leading token.
+      $head = if ($used -match '^(BLOCKED_ONLY_ON:\s*[A-Z_]+)') { $Matches[1] -replace '\s+', ' ' }
+              elseif ($used -match '^(CLOSED)') { $Matches[1] } else { $used }
+      if ($permitted -cnotcontains $head) {
+        Fail ("EVIDENCE_MATRIX.md uses status '{0}', which its own header does not permit (permitted: {1})" -f $head, ($permitted -join ', '))
+      }
+    }
+  }
+}
+InfoIfClean $before "evidence-matrix statuses all come from the vocabulary the header declares"
+
 $matrixPath = Join-Path $PSScriptRoot 'EVIDENCE_MATRIX.md'
 if (Test-Path -LiteralPath $matrixPath) {
   $matrix = [IO.File]::ReadAllText($matrixPath)

@@ -14,9 +14,13 @@ Status vocabulary (fixed):
   has a finer status (for example a still-open fresh-blind audit), the row
   says so in its notes; that is a process status, not a kernel status.
 - **PROVISIONAL_ARCHITECTURE** -- a frozen target statement under an active
-  feasibility gate. Not a theorem. May appear in the manuscript only at the
-  single marked insertion point and in the target-statement environment
-  that quotes it as a target.
+  feasibility gate. Not a theorem. May appear in the manuscript only at a
+  marked insertion point and in the target-statement environment that quotes
+  it as a target. **No row currently holds this status** (the architecture row
+  moved to ACCEPTED_BASE on Stage-A acceptance and was absorbed as a theorem in
+  the RC-4 round), so this clause describes a shape available to a future
+  target rather than anything in the manuscript now; there is no marked
+  insertion point at this commit.
 - **OPEN** -- a statement the repository does not prove and the manuscript
   asserts only as unproved/unclaimed.
 
@@ -511,11 +515,20 @@ references are at the base commit.
   (`scripts/independence_check.lean`, gate step 3b). The amendment corrects a
   gloss, not the proposition, and the row was **not** re-audited -- the
   fresh-blind audit of `audit-v1-rc-1` is what stands behind the proposition.
-- Manuscript status: the accepted statement is **not yet absorbed** into a
-  theorem environment. Section 9 quotes it and the single marked insertion
-  point still holds the `ARCHITECTURE_RESULT_PENDING` marker. That is an
-  editorial gap, not a kernel gap. No section other than Section 9 states,
-  assumes, or paraphrases the result.
+- Manuscript status (corrected 2026-08-16, RC-4): the accepted statement **is
+  absorbed**. `rmq.tex` Section 9 states it as a theorem with the constant
+  `427` (`Theorem~ef{thm:packed}`), there is no
+  `ARCHITECTURE_RESULT_PENDING` marker anywhere in the manuscript, and
+  `check_paper.ps1` permits at most one rather than requiring exactly one.
+  The result appears in exactly two places -- the allocated-bits entry of
+  Section 3 and Section 9 -- and nowhere else.
+
+  The previous wording ("not yet absorbed", "the single marked insertion point
+  still holds the marker", "an editorial gap") was false at this commit and
+  survived the round that performed the absorption: neither correction commit
+  touched this file. That is the same defect the round exists to answer,
+  standing in the ledger whose job is to bind manuscript claims to Lean
+  declarations. Found by audit, not by the round.
 - Proposition: for every input list of
   length `n`, preprocessing constructs one read-only array of exact-width
   `w(n)`-bit cells with checked all-size width bounds; the complete
