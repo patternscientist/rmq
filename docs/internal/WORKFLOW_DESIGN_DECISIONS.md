@@ -10349,3 +10349,21 @@ prohibiting language (`restriction`, `retire`, `killed by`, `no claim`,
 `amended`, `this row said`) rather than granted to the path wholesale. A path
 allowance would have exempted future prose in those files; a language allowance
 exempts the sentence shape that is actually safe.
+
+## WDD-20260816-049 -- A historical marker anywhere on the line excused every numeral on it
+
+`scripts/constant_sync_check.ps1` skipped a conflicting numeral when
+`$line -match $historicalMarker`, where the marker set is
+`historical|retired|superseded|formerly|previously|CLAIM-HISTORY`.
+
+Those are common prose words and the test is whole-line. One `previously`
+anywhere in a row excused every conflicting numeral in that row -- including one
+asserted as current fact hundreds of characters away. The rows in these surfaces
+are routinely that wide: single lines in the acceptance matrices run past 1000
+characters.
+
+The marker must now fall within 120 characters of the numeral it excuses, on both
+the conflict-shape scan and the retired-value scan, which had the same whole-line
+test. Three fixtures: a far marker must NOT excuse, a near marker must STILL
+excuse (so the rule is proximity and not a blanket removal), and the same pair on
+the retired-value path.

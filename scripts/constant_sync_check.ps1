@@ -107,6 +107,29 @@ $constants = @(
 # the guarded surfaces relies on bare "was" to mark a retired value.
 $historicalMarker = 'historical|Historical|retired|Retired|superseded|Superseded|formerly|previously|CLAIM-HISTORY'
 
+# A historical marker excuses a numeral only when it is ATTACHED to it.
+#
+# The two tests below were `$line -match $historicalMarker`, which exempts the
+# WHOLE LINE. These are common prose words, not annotations: one `previously`
+# anywhere in a wide table row excused every conflicting numeral in that row,
+# including one stated as current fact hundreds of characters away. The rows in
+# these surfaces are routinely that wide -- see the acceptance matrices, whose
+# single lines run past 1000 characters.
+#
+# Proximity is the fix. The marker must fall within reach of the numeral it
+# excuses. The reach is deliberately generous: the point is to stop an
+# unrelated clause from granting the exemption, not to demand a fixed phrasing.
+$historicalMarkerReach = 120
+
+function Test-HistoricalContext {
+  param([string]$Line, [int]$At, [int]$Length)
+  if ($Line.Length -eq 0) { return $false }
+  $from = [Math]::Max(0, $At - $historicalMarkerReach)
+  $to = [Math]::Min($Line.Length, $At + $Length + $historicalMarkerReach)
+  if ($to -le $from) { return $false }
+  return ($Line.Substring($from, $to - $from) -match $historicalMarker)
+}
+
 # An anchor doubles as a CLAIM SHAPE when it carries enough literal text to
 # identify a claim on its own. `at most** `{VALUE}`` does; a bare `` `{VALUE}` ``
 # does not -- as a shape it would match every backticked numeral in the file,
@@ -188,7 +211,7 @@ function Get-SurfaceFailures {
       $lineEnd = $Text.IndexOf("`n", $hit.Index)
       if ($lineEnd -lt 0) { $lineEnd = $Text.Length }
       $line = $Text.Substring($lineStart, $lineEnd - $lineStart)
-      if ($line -match $historicalMarker) { continue }
+      if (Test-HistoricalContext -Line $line -At ($hit.Index - $lineStart) -Length $hit.Length) { continue }
       $out += ("{0}: {1} states a CONFLICTING value {2} in a current claim (shape /{3}/); the proved value is {4}: {5}" -f `
         $ConstantName, $SurfacePath, $hit.Groups[1].Value, $shapeSpec, $Actual, $line.Trim())
     }
@@ -201,8 +224,10 @@ function Get-SurfaceFailures {
 
   foreach ($r in $Retired) {
     foreach ($line in ($Text -split "`r?`n")) {
-      if ($line -match ('\b' + [regex]::Escape($r) + '\b') -and $line -notmatch $historicalMarker) {
+      foreach ($rm in [regex]::Matches($line, '\b' + [regex]::Escape($r) + '\b')) {
+        if (Test-HistoricalContext -Line $line -At $rm.Index -Length $rm.Length) { continue }
         $out += ("{0}: {1} states superseded value {2} without a historical marker: {3}" -f $ConstantName, $SurfacePath, $r, $line.Trim().Substring(0, [Math]::Min(90, $line.Trim().Length)))
+        break
       }
     }
   }
@@ -321,6 +346,26 @@ if ($SelfTest) {
   $historical = "The bound is at most** ``210``.`nFormerly the cap was at most** ``207``.`nAlso ``210``.`nAnd ``210``.`n"
   ST 'a historical restatement is not reported as a conflict' `
     ((FixtureFailures $historical $fixtureEntry | Where-Object { $_ -match 'CONFLICTING' }).Count -eq 0)
+  # (4) The marker must be ATTACHED to the numeral it excuses. `$pad` puts the
+  #     word `previously` well outside reach of the conflicting `214`, on the
+  #     same line -- the shape of a wide acceptance-matrix row. Before the
+  #     proximity rule this fixture produced no CONFLICTING failure at all.
+  $pad = ' filler' * 40
+  $farMarker = "The bound is at most** ``210``.`nRevised: at most** ``214``.$pad previously discussed.`nAlso ``210``.`nAnd ``210``.`n"
+  ST 'a marker far from the numeral does NOT excuse it' `
+    ((FixtureFailures $farMarker $fixtureEntry | Where-Object { $_ -match 'CONFLICTING' }).Count -gt 0)
+
+  # ...and the near case still passes, so (4) is proximity and not a blanket
+  #    removal of the exemption. Same word, same numeral, same line.
+  $nearMarker = "The bound is at most** ``210``.`nPreviously: at most** ``214``.$pad`nAlso ``210``.`nAnd ``210``.`n"
+  ST 'a marker beside the numeral still excuses it' `
+    ((FixtureFailures $nearMarker $fixtureEntry | Where-Object { $_ -match 'CONFLICTING' }).Count -eq 0)
+
+  # (5) Same rule on the retired-value scan, which had the same whole-line test.
+  $farRetired = "The bound is at most** ``210``.`nThe cap is 207.$pad previously.`nAlso ``210``.`nAnd ``210``.`n"
+  ST 'a far marker does NOT excuse a superseded value either' `
+    ((FixtureFailures $farRetired $fixtureEntry | Where-Object { $_ -match 'superseded value' }).Count -gt 0)
+
   if ($stf -gt 0) { $failures = $failures + $stf }
   else { Info 'self-test: all cases pass' }
 }
