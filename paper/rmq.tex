@@ -2,8 +2,8 @@
 % Branch codex/eg-cp-paper-evidence-r1, base commit
 % 688c54a39d9a2410d281f1ded9b70937908beb4a.
 % This draft asserts only theorem surfaces present at that base commit.
-% The packed all-size architecture result is provisional and appears only at
-% the single marked insertion point in Section 9.
+% The packed all-size architecture result is stated as a theorem in Section 9,
+% and as a capacity bound with a ledger citation in the allocated-bits entry.
 \documentclass[11pt]{article}
 
 \usepackage[T1]{fontenc}
@@ -71,10 +71,9 @@ charged, keep payload bits, allocated bits, charged probes, model ticks, and
 Lean wall-clock time distinct, and document the trust base (Lean kernel
 checking under a pinned toolchain, standard axioms only). A packed
 cell-probe strengthening, bounding the allocated capacity of one packed
-object and the probes into it, has been accepted in the repository but is
-not yet absorbed into this draft; we reserve one marked insertion point for
-it, and state it only there and in the allocated-bits entry of
-Section~\ref{sec:quantities}. Novelty statements are deliberately
+object and the attempted probes into it, is stated as a theorem in
+Section~\ref{sec:pending} and, as a capacity bound, in the allocated-bits
+entry of Section~\ref{sec:quantities}. It appears nowhere else. Novelty statements are deliberately
 conditional pending a completed search log.
 \end{abstract}
 
@@ -161,8 +160,8 @@ Kazunari Tanaka~\cite{AGQT19}, and the search log
 This is a private working draft assembled from the repository's accepted
 claim maps at one exact commit. One result family --- a packed
 counted-header cell-probe refinement --- has been \emph{accepted} in the
-repository at the base commit, but is not yet absorbed into a theorem
-environment here. This draft states it in exactly two places: the
+repository and is stated as a theorem here. This draft states it in
+exactly two places: the
 allocated-bits entry of Section~\ref{sec:quantities}, which cites its ledger
 row, and Section~\ref{sec:pending}. It asserts it nowhere else.
 
@@ -698,7 +697,7 @@ separate columns, maintaining the quantity separation of
 Section~\ref{sec:quantities} in the measurements as well as in the
 theorems. Measurements never substitute for the space or cost theorems.
 
-\section{Toward a packed cell-probe theorem (provisional)}
+\section{A packed cell-probe architecture}
 \label{sec:pending}
 
 The strongest form of the succinct story packages the entire structure as
@@ -708,8 +707,8 @@ standard convention in which succinct RMQ upper and lower bounds are
 usually read~\cite{GalMiltersen07,LiuYu20}. The repository's endgame roadmap
 freezes such a target:
 
-\begin{targetstmt}[Accepted in the repository; not yet absorbed into this draft]
-\label{tgt:packed}
+\begin{theorem}[Packed cell-probe architecture]
+\label{thm:packed}
 For every input list of length $n$, preprocessing constructs one read-only
 array of exact-width $w(n)$-bit cells, with checked all-size bounds on $w$
 yielding the conventional logarithmic-width corollary. Its complete
@@ -718,9 +717,28 @@ padding --- is at most $2n + \rho(n)$ bits for a checked little-$o$-linear
 $\rho$. For every valid half-open query, a closed uniform controller, whose
 dynamic inputs are exactly $n$, the endpoints, and the words returned by
 its previous probes into that same array, returns the leftmost minimum
-index after at most $C$ adaptive probes, for one exact constant $C$
-independent of $n$.\ledger{L-ARCH-01}
-\end{targetstmt}
+index after at most $427$ \emph{attempted} adaptive probes into that same
+array.\ledger{L-ARCH-01}
+\end{theorem}
+
+\noindent The statement is machine-checked as a $39$-field certificate,
+inhabited for every input list and every endpoint pair; one import of the
+paper root supplies it. Three readings it does \emph{not} license, each of
+which the repository states explicitly:
+
+\begin{itemize}
+\item $427$ bounds \emph{attempted} probes and is an upper bound, not an
+      attainment claim. No execution is known to reach it; the pinned
+      fixture issues $68$.
+\item The model is cell-probe, so this is not word-RAM instruction time, not
+      preprocessing time, and not measured runtime. Computation between
+      probes is free.
+\item The $210$ inside $427 = 1 + 2\cdot 3 + 2\cdot 210$ is the packed
+      controller's own structural countdown. It is \emph{not} the
+      charged-trace budget of Section~\ref{sec:cost}, and the two are
+      independent at declaration and proof-term level --- a property the
+      repository checks rather than asserts.
+\end{itemize}
 
 At the base commit this statement is no longer a target: the feasibility
 gate closed and the repository recorded a positive architecture acceptance,
@@ -729,38 +747,25 @@ candidate lineage together with a fresh-blind exact-commit audit and a
 coordinator reconstruction. The theorem ledger reproduces the repository's
 status label accordingly.
 
-What has \emph{not} happened is editorial: this draft has not yet absorbed
-the accepted statement into a theorem environment with its proof obligations
-spelled out at the level the rest of the manuscript uses. Until it does, the
-marked insertion point below remains the only location licensed to carry the
-result \emph{as a theorem of this draft}. The allocated-bits entry of
-Section~\ref{sec:quantities} also states the capacity bound, with an explicit
-ledger citation rather than as a theorem here; no section other than that
-entry and this one states, assumes, or paraphrases the result. Two consequences of the acceptance are already reflected
-above, because leaving them out would have made the draft assert falsehoods:
-the allocated-bits entry of Section~\ref{sec:quantities} now points here
-rather than denying that any theorem bounds capacity, and the corresponding
-limitation has been withdrawn.
+The editorial step has now been taken: Theorem~\ref{thm:packed} above states
+the accepted result as a theorem of this draft, at the level the rest of the
+manuscript uses. The allocated-bits entry of Section~\ref{sec:quantities}
+also states the capacity bound, with an explicit ledger citation; no section
+other than that entry and this one states, assumes, or paraphrases the
+result.
 
-\subsection{Result insertion point}\label{sec:insertion}
+\subsection{Result location}\label{sec:insertion}
 
-Exactly one location in this manuscript may carry the packed all-size
-result. The acceptance condition has been met; the remaining step is
-editorial, and until it is taken the marker below is the entire content of
-that location. Outside it, only the allocated-bits entry of
-Section~\ref{sec:quantities} states the capacity bound, and it does so with an
-explicit ledger citation rather than as a theorem of this draft.
+Exactly one location in this manuscript carries the packed all-size result,
+and it is Theorem~\ref{thm:packed} above. Outside it, only the allocated-bits
+entry of Section~\ref{sec:quantities} states the capacity bound, and it does
+so with an explicit ledger citation rather than as a theorem of this draft.
 
-\medskip
-\noindent\verb|ARCHITECTURE_RESULT_PENDING|
-\medskip
-
-\noindent The marker is retained deliberately rather than deleted: it is
-what the manuscript checker keys on to confirm that the result appears in
-exactly one place, and it will be replaced by the theorem statement and its
-proof obligations in the same edit that removes this paragraph. Every
-theorem above is already checked at the base commit and none depends on the
-result carried here, so that edit is additive.
+The pending marker that previously stood here has been removed, because the
+result it reserved space for is now stated. It was retained through earlier
+drafts so the manuscript checker could confirm the result appeared in exactly
+one place; that check now permits zero markers and fails only on more than
+one, so an absorbed result no longer has to advertise itself as unabsorbed.
 
 \section{Related work}\label{sec:related}
 
@@ -885,8 +890,8 @@ execution model with erasure, footprint-determinacy, payload-backing,
 provenance, and mutation-rejection theorems; and an information-theoretic
 lower bound in matching integer arithmetic. The one result held apart ---
 an allocated-capacity theorem over a single packed object queried by a
-closed controller --- has since been accepted in the repository, and this
-draft will absorb it at the marked insertion point, and only there. What
+closed controller --- has since been accepted in the repository and is
+stated as Theorem~\ref{thm:packed}, and only there. What
 remains genuinely open is listed in Section~\ref{sec:limitations}: the
 controller's uncharged steps, preprocessing complexity, tightness of both
 the constant and the overhead envelope, and mechanized cell-probe

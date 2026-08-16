@@ -11385,3 +11385,40 @@ checked against a theorem that does not populate the public field.
 None of these changes a proposition. All three are cases of a published
 statement drifting from the source it describes, which is the failure mode this
 project has now seen in three consecutive external audits.
+
+## DD-20260816-105 -- absorb the packed cell-probe theorem into the manuscript
+
+Status: Accepted. Date: 2026-08-16. Answers `P1-1` of the 2026-08-15
+fresh-blind audit, which failed `RC-10` and drove the `NOT_ACCEPTABLE` verdict.
+
+At the release tag, `import RMQPaper` supplied a kernel-exported 427-probe
+capstone while `paper/rmq.tex` pinned to an ancestor commit, titled its
+Section 9 "provisional", stated only an unspecified constant `C`, and carried
+an `ARCHITECTURE_RESULT_PENDING` marker. The paper and the artifact did not
+identify the same release claim.
+
+Absorbed. Section 9 is now "A packed cell-probe architecture"; a `theorem`
+environment states the result with the actual constant `427`, replacing the
+`targetstmt`. Four further places asserting the result was *unabsorbed* became
+false the moment the theorem landed and are corrected: the file header comment,
+the abstract, the contributions paragraph, and the conclusion.
+
+The theorem carries the three readings it does **not** license, inline, because
+this result has been over-read at every prior opportunity: `427` bounds
+**attempted** probes and is an upper bound with no attainment witness (the
+pinned fixture issues 68); the model is cell-probe, so not word-RAM time, not
+preprocessing time, not measured runtime; and the `210` inside
+`427 = 1 + 2*3 + 2*210` is the controller's structural countdown, independent
+of the charged-trace budget -- a property the repository checks rather than
+asserts.
+
+**The checker was part of the defect.** `paper/check_paper.ps1` *required*
+exactly one pending marker, so while the manuscript presented an accepted
+theorem as a future insertion, the checker reported success. It now permits
+zero and fails only on more than one (WDD-20260816-032). A gate that requires
+the presence of a defect cannot detect it.
+
+This item was on the coordinator's own known-open list for the RC-3 round,
+rated an editorial gap. That rating was wrong: at a release candidate, a
+manuscript that pins to an ancestor and calls the shipped theorem pending is a
+release-blocking mismatch, which is exactly what `RC-10` exists to catch.
