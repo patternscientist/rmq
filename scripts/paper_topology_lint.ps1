@@ -178,7 +178,7 @@ function Read-Text([string]$Path) {
       $text = Remove-ExactVirtualBlock `
         $text `
         '# M1R3-MUTATION-RUNNER-GATE-ANCHOR' `
-        'if ($LASTEXITCODE -ne 0) { Fail "m1_certificate_mutation_regression.ps1 found issues" }' `
+        'Invoke-Checker -Path "$PSScriptRoot\m1_certificate_mutation_regression.ps1"' `
         'A02'
     } elseif ($MutationCase -ceq 'R1LEGACY') {
       $modelLineBreak = if ($text.Contains("`r`n")) { "`r`n" } else { "`n" }
@@ -507,8 +507,15 @@ if ($headlineInventoryText -notmatch
 if (-not $gateScriptText.Contains($m1GateAnchor)) {
   Fail '[m1-mutation-gate] aggregate gate is missing the literal M1 R3 runner anchor'
 }
+# Wiring shape changed with WDD-20260816-046: the raw `& script` call became
+# Invoke-Checker, because the raw form scored a checker that never ran as a
+# PASS. What this pin defends is unchanged -- the M1 runner is invoked from the
+# aggregate gate, and HARD, so its failure stops the gate. Under Invoke-Checker
+# that is the absence of -Soft, which is what the lookahead asserts. The tail is
+# `\s*$` and not `$` because these files are CRLF and .NET's multiline `$`
+# will not match across the `\r`.
 if ($gateScriptText -notmatch
-    '(?m)^& "\$PSScriptRoot\\m1_certificate_mutation_regression\.ps1"\s*$') {
+    '(?m)^Invoke-Checker -Path "\$PSScriptRoot\\m1_certificate_mutation_regression\.ps1"(?![^\r\n]*-Soft)[^\r\n]*\s*$') {
   Fail '[m1-mutation-gate] aggregate gate does not invoke the committed M1 mutation runner'
 }
 foreach ($anchor in @(

@@ -10502,3 +10502,66 @@ One trap worth recording. The new patterns first ended `[^\r\n]*$` and matched
 patterns ended `\s*$` for exactly this reason. A pattern that matches nothing and
 a pattern that matches correctly produce the same exit code on a well-formed
 file, so only the negative control distinguishes them.
+
+## WDD-20260816-055 -- The helper from WDD-046 changed how six checkers were invoked, and broke two wiring pins
+
+The aggregate gate at `7352d71` returned **GATE FAIL, 8 issues**. Every one traces
+to `Invoke-Checker`, the helper introduced to stop the gate scoring a
+non-running checker as a PASS. It is worth stating plainly: **the entry that
+announced that fix shipped a regression in the same change, and the aggregate
+gate is what caught it.** Per-checker runs did not, because each checker passes
+when invoked correctly by hand.
+
+### 1. Array splatting passes a switch as a positional VALUE
+
+`& $Path @CheckerArgs` with `$CheckerArgs = @('-SelfTest')` does not pass a named
+switch. Measured on a two-parameter probe script:
+
+```
+array splat @('-SelfTest')      -> SelfTest=False  PolicyPath=-SelfTest
+hashtable splat @{SelfTest=$true} -> SelfTest=True   PolicyPath=default
+```
+
+So `-SelfTest` bound to whatever each target declares first positionally:
+
+| checker | outcome |
+|---|---|
+| `hub_closure_lint.ps1` | threw -- no positional to absorb it |
+| `constant_sync_check.ps1` | threw |
+| `paper/check_paper.ps1` | threw |
+| `claim_drift_scan.ps1` | `-SelfTest` became `$PolicyPath`; ran against a policy file that does not exist |
+| `tag_annotation_check.ps1` | `-SelfTest` became `$Pattern`; matched no tags, so it checked nothing |
+
+The three that threw are the interesting ones: under the OLD `& script; if
+($LASTEXITCODE -ne 0)` shape they would have inherited the previous checker's `0`
+and reported PASS. The new helper reported them as `DID NOT RUN`. That is the
+helper working -- on a defect the helper itself introduced.
+
+The literal `-SelfTest` written at each old call site was correct. Converting it
+to array splatting is what broke it. Now a hashtable, which binds switches
+properly.
+
+A hashtable has its own quiet failure: a key the target does not declare is
+**dropped in silence**, so the checker runs in the wrong mode with no error. The
+helper now reads the target's own parameter list via `Get-Command` and fails on
+any key the target does not declare.
+
+### 2. Two checkers pin the gate's wiring by literal text
+
+`design_decision_check_regression.ps1` (WDD-20260816-054) and
+`paper_topology_lint.ps1` both assert that `gate.ps1` contains a specific
+invocation, character for character. Removing the raw `& script` form broke both
+-- correctly, in the sense that the property they defend really did change shape.
+
+`paper_topology_lint.ps1`'s M1 pin now matches the `Invoke-Checker` form and
+still requires the call to be HARD (absence of `-Soft`). Its `A02` mutation
+fixture, which deletes the block between the anchor comment and the invocation to
+prove the pin fires, has its end marker updated to the line that now exists --
+without which the fixture deletes nothing and `A02` passes vacuously.
+
+**The general point.** A wiring pin written as literal text is a coupling between
+two files that nothing declares. There were three of them and no list; each was
+found by a different failure, one of them only because a program-plan citation
+had to be re-derived. `gate.ps1` now carries a check for raw call sites, which
+catches the reverse direction, but the pins themselves remain a hand-maintained
+coupling -- `PLAN_LINEAGE.md` species 3, at the scale of files rather than lines.

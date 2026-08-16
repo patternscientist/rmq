@@ -118,7 +118,7 @@ $script:checkersRun = @()
 function Invoke-Checker {
   param(
     [Parameter(Mandatory)][string]$Path,
-    [string[]]$CheckerArgs = @(),
+    [hashtable]$CheckerParams = @{},
     [switch]$Soft,
     [string]$Label
   )
@@ -131,9 +131,34 @@ function Invoke-Checker {
     Fail $m
   }
 
+  # Hashtable splatting, NOT array splatting. Measured: `& $Path @('-SelfTest')`
+  # passes the string as a POSITIONAL value, so it bound to each target's first
+  # positional parameter -- `-SelfTest` became `claim_drift_scan`'s $PolicyPath
+  # and `tag_annotation_check`'s $Pattern, and threw outright on the scripts with
+  # no positional to absorb it. The literal `-SelfTest` in the old call sites was
+  # correct; the conversion to array splatting is what broke it.
+  #
+  # A hashtable binds switches correctly -- and silently DROPS a key the target
+  # does not declare, which is the same failure one level quieter. So the keys
+  # are checked against the target's own parameter list first.
+  $declared = $null
+  try { $declared = (Get-Command -Name $Path -CommandType ExternalScript -ErrorAction Stop).Parameters } catch { }
+  if ($null -eq $declared) {
+    $m = "$Label DID NOT RUN: its parameters could not be read, so arguments cannot be checked"
+    if ($Soft) { SoftFail $m; return }
+    Fail $m
+  }
+  foreach ($k in $CheckerParams.Keys) {
+    if (-not $declared.ContainsKey($k)) {
+      $m = "$Label does not declare -$k; splatting would drop it silently and the check would run in the wrong mode"
+      if ($Soft) { SoftFail $m; return }
+      Fail $m
+    }
+  }
+
   Remove-Variable -Name LASTEXITCODE -Scope Global -ErrorAction SilentlyContinue
   $threw = $null
-  try { & $Path @CheckerArgs } catch { $threw = $_ }
+  try { & $Path @CheckerParams } catch { $threw = $_ }
 
   if ($null -ne $threw) {
     $m = "$Label DID NOT RUN: {0}: {1}" -f $threw.Exception.GetType().Name, $threw.Exception.Message
@@ -293,7 +318,7 @@ Invoke-Checker -Path "$PSScriptRoot\shim_lint.ps1" -Soft
 # depends on nothing RMQ-specific. That was true but enforced by nothing: both
 # `lake build RMQHub` and hub_axiom_check.lean would still pass with
 # `import RMQ.Core.Spec` added to ModelHub.lean. This makes the claim checked.
-Invoke-Checker -Path "$PSScriptRoot\hub_closure_lint.ps1" -CheckerArgs @('-SelfTest') -Soft
+Invoke-Checker -Path "$PSScriptRoot\hub_closure_lint.ps1" -CheckerParams @{ SelfTest = $true } -Soft
 
 # 6. Claim-drift policy mutations must enforce the full canonical-role/exponent
 # category, contextual allowances, parser shapes, and allowance bypasses.
@@ -306,28 +331,28 @@ Invoke-Checker -Path "$PSScriptRoot\claim_drift_policy_regression.ps1" -Soft
 # 2026-08-16 the strict run printed 104 lines of PRIOR AUDIT REPORTS at them. The
 # exclusion that closed it is unobservable from the exit code -- two earlier
 # attempts were no-ops and both exited 0 -- so it is asserted, not assumed.
-Invoke-Checker -Path "$PSScriptRoot\claim_drift_scan.ps1" -CheckerArgs @('-SelfTest') -Soft -Label 'claim_drift_scan.ps1 -SelfTest'
+Invoke-Checker -Path "$PSScriptRoot\claim_drift_scan.ps1" -CheckerParams @{ SelfTest = $true } -Soft -Label 'claim_drift_scan.ps1 -SelfTest'
 
-Invoke-Checker -Path "$PSScriptRoot\claim_drift_scan.ps1" -CheckerArgs @('-Strict') -Soft -Label 'claim_drift_scan.ps1 -Strict'
+Invoke-Checker -Path "$PSScriptRoot\claim_drift_scan.ps1" -CheckerParams @{ Strict = $true } -Soft -Label 'claim_drift_scan.ps1 -Strict'
 
 # 7a. An audit tag's annotation must not hand the next blind auditor the last
 # round's verdict. The `audit-v1-rc-3` annotation carried the prior
 # NOT_ACCEPTABLE, its finding IDs, and the assurance that every prior finding
 # was correct -- and the prompt tells auditors to check the tag out by name.
-Invoke-Checker -Path "$PSScriptRoot\tag_annotation_check.ps1" -CheckerArgs @('-SelfTest') -Soft
+Invoke-Checker -Path "$PSScriptRoot\tag_annotation_check.ps1" -CheckerParams @{ SelfTest = $true } -Soft
 
 # 7b. Current-constant synchronization. The claim-drift policy guards every
 # RETIRED constant and neither current one, so a moved bound would leave public
 # surfaces asserting a stale numeral with the scan still reporting zero strict
 # failures -- demonstrated by moving 210 to 214, where the scan exits 0 and this
 # check exits 1. Lean is the source of truth here.
-Invoke-Checker -Path "$PSScriptRoot\constant_sync_check.ps1" -CheckerArgs @('-SelfTest') -Soft
+Invoke-Checker -Path "$PSScriptRoot\constant_sync_check.ps1" -CheckerParams @{ SelfTest = $true } -Soft
 
 # 7c. Manuscript checker. `paper/` is part of the release candidate, but the
 # aggregate gate never invoked its checker, so a citation, ledger-coverage,
 # insertion-marker or claim-language failure in the manuscript could pass the
 # advertised aggregate. Found by external audit 2026-08-09.
-Invoke-Checker -Path "$PSScriptRoot\..\paper\check_paper.ps1" -CheckerArgs @('-SelfTest') -Soft -Label 'paper/check_paper.ps1'
+Invoke-Checker -Path "$PSScriptRoot\..\paper\check_paper.ps1" -CheckerParams @{ SelfTest = $true } -Soft -Label 'paper/check_paper.ps1'
 
 # 8. The paper root must expose only the canonical reviewer-payload,
 # readWord-only, derived-210 query topology; historical profiles remain in the
