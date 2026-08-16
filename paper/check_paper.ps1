@@ -394,6 +394,35 @@ if (Test-Path -LiteralPath $matrixPath) {
 }
 InfoIfClean $before ("ledger status counts: {0} rows, {1}/{2}/{3} accepted/provisional/open, matching EVIDENCE_MATRIX.md" -f $ledgerIds.Count, $ledgerAccepted, $ledgerProvisional, $ledgerOpen)
 
+# ----------------------------------------- 5c. `:NNN` source citations resolve
+#
+# Scheduled since the RC-1 correction handoff and deferred through two rounds.
+# Line numbers rot silently: the `:723` producer pointer in L-ARCH-01/L-PACK-01
+# was corrected from `:702` in August and had drifted again to `:752` by this
+# round -- wrong three times -- and L-UB-12's `:1324` pointed at
+# `queryCostedWithStore_...` while naming `queryTraceResultWithStore_...`, a
+# different theorem with a near-identical name. A reviewer following either one
+# lands somewhere plausible and wrong, which is worse than a dangling pointer.
+#
+# `check_citations.ps1` carries the reasoning and its own -SelfTest.
+$before = $failures
+$citationScript = Join-Path $PSScriptRoot 'check_citations.ps1'
+if (-not (Test-Path -LiteralPath $citationScript)) {
+  Fail "check_citations.ps1 is missing; source citations are unverified"
+} else {
+  # `*>&1`, not `2>&1`: the sub-checker reports through Write-Host, which writes
+  # to the information stream (6). Redirecting only stderr captured nothing, so
+  # a real citation failure surfaced as "exited 1 without naming a failure".
+  $citationOutput = @(& $citationScript *>&1 | ForEach-Object { [string]$_ })
+  if ($LASTEXITCODE -ne 0) {
+    foreach ($citationLine in $citationOutput) {
+      if ($citationLine -match 'FAIL') { Fail $citationLine }
+    }
+    if ($failures -eq $before) { Fail "check_citations.ps1 exited $LASTEXITCODE without naming a failure" }
+  }
+}
+InfoIfClean $before "source citations: every :NNN in THEOREM_LEDGER.md resolves to the declaration its row names"
+
 # ------------------------------------------------------------------ selftest
 if ($SelfTest) {
   Info "--- self-test: do the detectors actually fire? ---"
@@ -498,6 +527,16 @@ if ($SelfTest) {
     if ($cnt -ne 1) { $caught = $true }
   }
   STCase "per-row status detects a moved status (total preserved)" $caught
+
+  # The citation checker owns the harder self-test (mutate exactly one citation,
+  # demand exactly one failure). Delegate rather than restate it, but require it
+  # to actually run: a missing sub-checker must not read as a silent pass.
+  $citationSelfTestOk = $false
+  if (Test-Path -LiteralPath $citationScript) {
+    $null = & $citationScript -SelfTest 2>&1
+    $citationSelfTestOk = ($LASTEXITCODE -eq 0)
+  }
+  STCase "check_citations.ps1 self-test passes (fails closed on a moved citation)" $citationSelfTestOk
 
   # Status comparison must be case-sensitive.
   STCase "status check is case-sensitive" (@('ACCEPTED_BASE','PROVISIONAL_ARCHITECTURE','OPEN') -cnotcontains 'open')

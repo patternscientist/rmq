@@ -193,3 +193,40 @@ Two lessons, recorded because they are more useful than the corrections:
    `docs/internal/RC1_CORRECTION_HANDOFF.md`, or better, citing declaration
    names -- which are stable, greppable, and cannot silently rot -- and keeping
    line numbers only where a checker verifies them.
+
+## 2026-08-16 -- the citation checker exists; three more citations were wrong
+
+The 2026-08-09 entry above ends by saying the durable fix is "a checker over
+`row -> file -> line -> expected declaration`", deferred to
+`docs/internal/RC1_CORRECTION_HANDOFF.md`. It stayed deferred through two
+correction rounds. It is now built: `paper/check_citations.ps1`, run by
+`check_paper.ps1` section 5c.
+
+Its first run found **three more defective citations out of 27** -- on a tree
+whose citations had already been corrected once and had since passed a
+fresh-blind audit:
+
+- `L-ARCH-01` and `L-PACK-01`, `producer at :723` -> `:752`. **This pointer has
+  now been wrong three times**: `:702` originally, corrected to `:723` on
+  2026-08-09, and drifted 29 lines by this round. Each correction was accurate
+  when made. Nothing kept it accurate.
+- `L-UB-12`, `queryTraceResultWithStore_eq_of_orderedReadFootprint` `:1324` ->
+  `:1298`. Line 1324 holds `queryCostedWithStore_eq_of_orderedReadFootprint` --
+  a **different theorem with a near-identical name**. A reviewer following the
+  citation lands on something plausible and wrong, which is worse than landing
+  on nothing: a dangling pointer announces itself, a plausible one does not.
+
+Three of the six initial failures were checker defects, not ledger defects, and
+were fixed before any ledger edit: a citation following a `.lean` path binds to
+that file rather than to the nearest identifier; backticked `name : statement`
+still names an identifier; and a citation may point at a declaration's
+doc-comment line. **Reporting those three as ledger errors would have "corrected"
+three correct citations.** Each failure was checked against the source before
+being believed.
+
+The checker reports how strongly each citation is pinned -- 19 to a named
+declaration, 7 to a named file, 1 row-wide -- because a check is only worth what
+it pinned, and a single aggregate would hide that one citation is barely
+constrained at all.
+
+Status: this entry records a correction and a new check. It closes no row.

@@ -11448,3 +11448,49 @@ The standing caveat is unchanged and is stated in `paper/README.md`: the commit
 carrying a repin is the child of the tree it verifies, differing by the
 substrate edits themselves. That is unavoidable for a self-describing
 substrate; it is disclosed rather than hidden.
+
+## DD-20260816-107 -- ledger line citations are checked, and three more were wrong
+
+Status: Accepted. Date: 2026-08-16. Discharges the citation-checker item
+deferred in `docs/internal/RC1_CORRECTION_HANDOFF.md` through two correction
+rounds.
+
+`paper/THEOREM_LEDGER.md` cites source lines as `:NNN`. Line numbers rot
+silently, and nothing read them. On 2026-08-09 three of 27 were found wrong --
+only on the third sweep, after two earlier sweeps returned confidently wrong
+answers (one undercounting 9 of 27, one mis-attributing citations to the wrong
+file and inventing three defects). One of the three, `L-UB-06`, was already
+wrong AT THE PINNED BASE COMMIT and pointed about 1,090 lines from its theorem.
+
+`paper/check_citations.ps1` replaces greps with a parser: rows are parsed as
+units, each citation is bound to the most specific declaration its context
+names, and that declaration must appear at the cited line. `check_paper.ps1`
+runs it as section 5c.
+
+Its first run found **three more defective citations**, on a tree already
+corrected once and since passed by a fresh-blind audit:
+
+- `L-ARCH-01` / `L-PACK-01`, `producer at :723` -> `:752`. Wrong three times
+  now: `:702`, corrected to `:723`, drifted 29 lines since. Every correction
+  was accurate when made. Nothing kept it accurate, which is the argument for
+  a checker rather than another careful pass.
+- `L-UB-12`, `:1324` -> `:1298`. Line 1324 holds
+  `queryCostedWithStore_eq_of_orderedReadFootprint` while the row names
+  `queryTraceResultWithStore_eq_of_orderedReadFootprint`. A citation that lands
+  on a different theorem with a near-identical name is worse than one that
+  lands nowhere: a dangling pointer announces itself.
+
+Three of the six initial failures were defects in the CHECKER and were fixed
+before any ledger edit. Reporting them would have "corrected" three correct
+citations -- the same over-correction that produced the phantom defects in the
+2026-08-09 second sweep. Each failure was read against the source before it was
+believed.
+
+The checker reports binding strength per run (19 pinned to a named declaration,
+7 to a named file, 1 row-wide). A single aggregate would hide that one citation
+is barely constrained.
+
+Also corrected here: two `paper/README.md` passages still describing the
+pre-absorption manuscript ("exactly one `ARCHITECTURE_RESULT_PENDING` marker",
+"appears only as a quoted provisional target"). Same staleness class as
+`RC-10`, introduced by the fix for it.

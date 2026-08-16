@@ -66,9 +66,10 @@ were not rewritten: they record what was true at the previous pin.
 ## Contents
 
 - `rmq.tex` -- the manuscript. Every mathematical claim carries an
-  invisible `\ledger{ID}` anchor; the packed all-size architecture result
-  appears only as a quoted provisional target plus exactly one literal
-  `ARCHITECTURE_RESULT_PENDING` insertion point (Section 9.1).
+  invisible `\ledger{ID}` anchor. The packed all-size architecture result is
+  stated as a theorem in Section 9 (RC-4, 2026-08-16); it was previously a
+  quoted provisional target plus one `ARCHITECTURE_RESULT_PENDING` marker,
+  and there are now zero such markers.
 - `references.bib` -- primary-source bibliography. Unverified fields are
   omitted, never guessed; see the field policy in
   `RELATED_WORK_LEDGER.md`.
@@ -116,8 +117,20 @@ in both directions (every `\cite` resolves, every bib entry is cited);
 duplicate `\label`/bib keys and unresolved `\ref` targets; forbidden
 tokens and overclaim phrasings across all substrate files; bidirectional
 coverage between the manuscript's `\ledger` anchors and the theorem-ledger
-rows, with only the three legal statuses; and that `rmq.tex` contains
-exactly one `ARCHITECTURE_RESULT_PENDING` marker.
+rows, with only the three legal statuses; that the status breakdown
+published in `EVIDENCE_MATRIX.md` matches the one derived from
+`THEOREM_LEDGER.md`; that every `:NNN` source citation in the ledger
+resolves to the declaration its row names (`check_citations.ps1`); and that
+`rmq.tex` contains **at most one** `ARCHITECTURE_RESULT_PENDING` marker.
+
+That last check used to demand *exactly* one. It therefore reported success
+while the manuscript presented an already-accepted theorem as a future
+insertion, and would have failed the corrected manuscript -- a gate
+enforcing the presence of the defect it was meant to catch. Zero is the
+healthy state.
+
+`check_paper.ps1 -SelfTest` additionally verifies that each detector fires
+on a planted defect, rather than passing because nothing triggered it.
 
 The checker is textual and needs no Lean, Lake, or TeX toolchain. Theorem
 truth is not established here: it rests on Lean kernel checking at the

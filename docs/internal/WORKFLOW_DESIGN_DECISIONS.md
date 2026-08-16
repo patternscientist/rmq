@@ -9678,3 +9678,37 @@ Round P2-4 recorded "a known leak left open for one round is a leak chosen".
 This round adds the sharper one: **a repair reported without a measurement that
 could have failed is not a repair.** Both failed attempts produced exit code 0
 and a plausible narrative. Only counting the leaked lines separated them.
+
+## WDD-20260816-034 -- the ledger's line citations became a checked property
+
+Companion to DD-20260816-107, which records the three citations this found
+wrong. This entry records the checking discipline.
+
+`paper/check_citations.ps1` reports how strongly each citation is pinned --
+`exact` (context named one declaration), `file` (the citation follows a `.lean`
+path, so the file is pinned and the name must be one the row declares), or
+`row` (context named none). The run prints all three counts. A single "27
+citations verified" would be true and misleading: it would hide that one
+citation is constrained only to "some name this row mentions".
+
+### The self-test mutates exactly one citation
+
+The first version used `[regex]::Replace($text, $pattern, $replacement, 1)`
+intending to move one citation. The fourth argument of that static overload is
+`RegexOptions`, not a count, so `1` means `IgnoreCase` and all 27 were replaced.
+It reported 27 failures and read as a pass.
+
+It was not one. **A checker that only ever examined the first row would also
+have produced failures under that mutation.** The test now moves exactly one
+citation with `[regex]::new(pattern).Replace(text, replacement, 1)` and requires
+exactly one failure, plus an unchanged total citation count.
+
+### Sub-checker output needs `*>&1`
+
+`check_paper.ps1` first captured the sub-checker with `2>&1`. The sub-checker
+reports through `Write-Host`, which writes to the information stream (6), so
+nothing was captured and a genuine citation failure surfaced as
+"exited 1 without naming a failure" -- the right verdict with the wrong reason,
+which is how a real defect gets misdiagnosed as a harness bug. Now `*>&1`.
+
+A missing `check_citations.ps1` is a failure, not a skip.
