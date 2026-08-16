@@ -94,6 +94,81 @@ $constants = @(
 # inventing a second one.
 $historicalMarker = 'historical|Historical|retired|Retired|superseded|Superseded|formerly|previously|was\b|CLAIM-HISTORY'
 
+# An anchor doubles as a CLAIM SHAPE when it carries enough literal text to
+# identify a claim on its own. `at most** `{VALUE}`` does; a bare `` `{VALUE}` ``
+# does not -- as a shape it would match every backticked numeral in the file,
+# including historical ones, and report conflicts that are not conflicts.
+# Four letters is the threshold; it is arbitrary but it separates the two
+# shapes actually in use here, and a shape that falls below it simply keeps its
+# weaker anchor-only treatment rather than silently becoming a false alarm.
+function Test-IsClaimShape([string]$anchor) {
+  $literal = $anchor -replace '\{VALUE\}', ''
+  return (($literal -replace '[^A-Za-z_]', '').Length -ge 4)
+}
+
+# All surface conditions in one place, over TEXT rather than a path, so the
+# self-test exercises this exact code against fixtures instead of restating the
+# logic. A self-test that re-implements the check can pass while the check is
+# broken -- that is the failure mode this script was written to catch.
+function Get-SurfaceFailures {
+  param(
+    [string]$Text,
+    [hashtable]$Entry,
+    [string]$Actual,
+    [string[]]$Retired,
+    [string]$ConstantName,
+    [string]$SurfacePath
+  )
+
+  $out = @()
+
+  foreach ($anchor in $Entry.anchors) {
+    $pat = $anchor -replace '\{VALUE\}', [regex]::Escape($Actual)
+    if ($Text -notmatch $pat) {
+      $out += ("{0}: {1} anchor /{2}/ does not carry the current value {3}" -f $ConstantName, $SurfacePath, $anchor, $Actual)
+    }
+
+    # CONFLICTING NUMERALS. The anchor check asks whether the claim appears with
+    # the right value SOMEWHERE; the count check asks whether the right value
+    # appears the right number of times. Neither catches an ADDED claim carrying
+    # a different numeral: inserting "at most **`214`**" leaves every `210`
+    # intact and every anchor satisfied, so both conditions hold and the surface
+    # asserts two incompatible bounds with the guard green.
+    #
+    # So: every instantiation of a claim shape must carry the current value, not
+    # merely one of them.
+    if (Test-IsClaimShape $anchor) {
+      $shape = $anchor -replace '\{VALUE\}', '(\d+)'
+      foreach ($hit in [regex]::Matches($Text, $shape)) {
+        if ($hit.Groups[1].Value -eq $Actual) { continue }
+        # A historical line may legitimately restate a superseded value.
+        $lineStart = $Text.LastIndexOf("`n", [Math]::Max(0, [Math]::Min($hit.Index, $Text.Length - 1))) + 1
+        $lineEnd = $Text.IndexOf("`n", $hit.Index)
+        if ($lineEnd -lt 0) { $lineEnd = $Text.Length }
+        $line = $Text.Substring($lineStart, $lineEnd - $lineStart)
+        if ($line -match $historicalMarker) { continue }
+        $out += ("{0}: {1} states a CONFLICTING value {2} in a current claim (shape /{3}/); the proved value is {4}: {5}" -f `
+          $ConstantName, $SurfacePath, $hit.Groups[1].Value, $anchor, $Actual, $line.Trim())
+      }
+    }
+  }
+
+  $occ = ([regex]::Matches($Text, '(?<![0-9])' + [regex]::Escape($Actual) + '(?![0-9])')).Count
+  if ($occ -ne $Entry.count) {
+    $out += ("{0}: {1} states {2} {3} time(s), pinned at {4}. If the surface genuinely changed, update the pin in the same edit." -f $ConstantName, $SurfacePath, $Actual, $occ, $Entry.count)
+  }
+
+  foreach ($r in $Retired) {
+    foreach ($line in ($Text -split "`r?`n")) {
+      if ($line -match ('\b' + [regex]::Escape($r) + '\b') -and $line -notmatch $historicalMarker) {
+        $out += ("{0}: {1} states superseded value {2} without a historical marker: {3}" -f $ConstantName, $SurfacePath, $r, $line.Trim().Substring(0, [Math]::Min(90, $line.Trim().Length)))
+      }
+    }
+  }
+
+  return $out
+}
+
 function Get-LeanValue([string]$file, [string]$pat) {
   $p = Join-Path $repoRoot $file
   if (-not (Test-Path -LiteralPath $p)) { return $null }
@@ -133,24 +208,9 @@ foreach ($c in $constants) {
     if (-not (Test-Path -LiteralPath $p)) { Fail "surface missing: $s"; continue }
     $text = [System.IO.File]::ReadAllText($p)
 
-    foreach ($anchor in $entry.anchors) {
-      $pat = $anchor -replace '{VALUE}', [regex]::Escape($actual)
-      if ($text -notmatch $pat) {
-        Fail ("{0}: {1} anchor /{2}/ does not carry the current value {3}" -f $c.name, $s, $anchor, $actual)
-      }
-    }
-
-    $occ = ([regex]::Matches($text, '(?<![0-9])' + [regex]::Escape($actual) + '(?![0-9])')).Count
-    if ($occ -ne $entry.count) {
-      Fail ("{0}: {1} states {2} {3} time(s), pinned at {4}. If the surface genuinely changed, update the pin in the same edit." -f $c.name, $s, $actual, $occ, $entry.count)
-    }
-    # a superseded value in a current-claim context is drift
-    foreach ($r in $c.retired) {
-      foreach ($line in ($text -split "`r?`n")) {
-        if ($line -match ('\b' + [regex]::Escape($r) + '\b') -and $line -notmatch $historicalMarker) {
-          Fail ("{0}: {1} states superseded value {2} without a historical marker: {3}" -f $c.name, $s, $r, $line.Trim().Substring(0, [Math]::Min(90, $line.Trim().Length)))
-        }
-      }
+    foreach ($problem in @(Get-SurfaceFailures -Text $text -Entry $entry -Actual $actual `
+          -Retired $c.retired -ConstantName $c.name -SurfacePath $s)) {
+      Fail $problem
     }
   }
   if ($failures -eq 0) {
@@ -175,6 +235,51 @@ if ($SelfTest) {
   # retired value without a marker is drift; with a marker it is allowed
   ST 'retired value without a marker is drift' (('the current cap is 207' -notmatch $historicalMarker))
   ST 'retired value with a marker is allowed' (('Historical comparison: the retired cap is 207' -match $historicalMarker))
+
+  # ------------------------------------------------------------------------
+  # The three ways this guard has been, or could be, GREEN WHILE WRONG.
+  #
+  # These run fixtures through `Get-SurfaceFailures` -- the same function the
+  # real check calls -- rather than re-deriving the logic. A self-test that
+  # restates the check passes whenever its restatement is right, which is not
+  # the property anyone wants verified.
+  # ------------------------------------------------------------------------
+  $fixtureEntry = @{ path = 'FIXTURE.md'; count = 3; anchors = @('at most\*\* `{VALUE}`') }
+  function FixtureFailures([string]$text, [hashtable]$entry) {
+    return @(Get-SurfaceFailures -Text $text -Entry $entry -Actual '210' `
+        -Retired @('207') -ConstantName 'fixture' -SurfacePath 'FIXTURE.md')
+  }
+
+  # Control: a healthy surface must produce NO failures. Without this, a
+  # function that always reports a failure would pass every case below.
+  $healthy = "The bound is at most** ``210``.`nAlso ``210`` here.`nAnd ``210``.`n"
+  ST 'control: a healthy fixture produces no failures' ((FixtureFailures $healthy $fixtureEntry).Count -eq 0)
+
+  # (1) 2026-08-09 external audit: one of several occurrences corrupted, the
+  #     rest intact. A file-wide presence test passed. The count pin catches it.
+  $corrupted = "The bound is at most** ``210``.`nAlso ``210`` here.`nAnd ``999``.`n"
+  ST 'one corrupted occurrence among several is caught (count pin)' `
+    ((FixtureFailures $corrupted $fixtureEntry).Count -gt 0)
+
+  # (2) NEW this round: a conflicting claim ADDED alongside the correct ones.
+  #     Every `210` survives and the anchor is satisfied, so the anchor check
+  #     and the count check both pass -- the surface asserts two incompatible
+  #     bounds and the guard is green. Only the claim-shape scan catches it.
+  $conflicting = "The bound is at most** ``210``.`nRevised: at most** ``214``.`nAlso ``210``.`nAnd ``210``.`n"
+  $conflictEntry = @{ path = 'FIXTURE.md'; count = 3; anchors = @('at most\*\* `{VALUE}`') }
+  $conflictFailures = FixtureFailures $conflicting $conflictEntry
+  ST 'a conflicting numeral added alongside the correct one is caught' `
+    (($conflictFailures | Where-Object { $_ -match 'CONFLICTING' }).Count -gt 0)
+  # ...and specifically NOT because the count or anchor moved: prove the two
+  # older conditions are both satisfied, so the new one is doing the work.
+  ST 'the conflicting case defeats BOTH older conditions (count and anchor hold)' `
+    (($conflictFailures | Where-Object { $_ -notmatch 'CONFLICTING' }).Count -eq 0)
+
+  # (3) A historical restatement of a superseded value must still be allowed,
+  #     or the conflict scan would make every changelog entry a failure.
+  $historical = "The bound is at most** ``210``.`nFormerly the cap was at most** ``207``.`nAlso ``210``.`nAnd ``210``.`n"
+  ST 'a historical restatement is not reported as a conflict' `
+    ((FixtureFailures $historical $fixtureEntry | Where-Object { $_ -match 'CONFLICTING' }).Count -eq 0)
   if ($stf -gt 0) { $failures = $failures + $stf }
   else { Info 'self-test: all cases pass' }
 }

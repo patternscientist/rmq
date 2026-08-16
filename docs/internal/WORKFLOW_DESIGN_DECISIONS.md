@@ -9712,3 +9712,48 @@ nothing was captured and a genuine citation failure surfaced as
 which is how a real defect gets misdiagnosed as a harness bug. Now `*>&1`.
 
 A missing `check_citations.ps1` is a failure, not a skip.
+
+## WDD-20260816-035 -- the constant guard rejects a conflicting numeral
+
+`constant_sync_check.ps1` held two conditions per surface: named claim-shaped
+ANCHORS must carry the current value, and the total COUNT of that value must
+match a pin. Neither catches a claim ADDED with a different numeral.
+
+Inserting "revised: at most **`214`**" next to the existing text leaves every
+`210` intact, so the count is unchanged, and the anchor still matches its
+original occurrence, so the anchor holds. Both conditions pass while the
+surface asserts two incompatible bounds. Verified by injecting exactly that
+into `docs/PAPER_CLAIM_CORRESPONDENCE.md`: before this change the guard exited
+0.
+
+Added: every INSTANTIATION of a claim shape must carry the current value, not
+merely one of them. A line carrying a historical marker is exempt, reusing the
+same exculpating vocabulary as the retired-value scan rather than inventing a
+second one -- otherwise every changelog entry becomes a failure.
+
+An anchor is promoted to a claim shape only when it carries at least four
+letters of literal text. A bare `` `{VALUE}` `` anchor is not a claim shape: as
+a shape it matches every backticked numeral in the file, including historical
+ones, and would report conflicts that are not conflicts. Anchors below the
+threshold keep their weaker anchor-only treatment; the alternative was a
+detector that cried wolf and would be disabled within a round.
+
+### The self-test now runs the real code path
+
+The surface conditions moved into `Get-SurfaceFailures`, which takes TEXT
+rather than a path, so the self-test drives the same function the real check
+calls. Previously the cases re-derived the logic against string literals; such
+a test passes whenever its own restatement is correct, which is not the
+property in question.
+
+Five fixture cases, each naming a way this guard has been or could be green
+while wrong:
+
+1. **Control** -- a healthy fixture yields zero failures. Without it, a
+   function that always reported a failure would pass every case below.
+2. One corrupted occurrence among several (the 2026-08-09 external audit's
+   finding: four of five `427`s intact, check passed) -- caught by the count.
+3. A conflicting numeral added alongside correct ones -- caught by the new scan.
+4. That same case yields NO count or anchor failure, proving the new condition
+   is doing the work rather than riding along with an older one.
+5. A historical restatement is not reported as a conflict.
