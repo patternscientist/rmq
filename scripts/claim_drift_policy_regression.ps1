@@ -745,10 +745,23 @@ function Invoke-StrictClaimScan {
     [string]$WorkingDirectory = $repoRoot
   )
 
+  # `-ShowAllowed` is REQUIRED here; it is not a debugging convenience.
+  #
+  # On 2026-08-16 the scanner stopped printing `[allowed]` lines by default, to
+  # close a contamination channel: a required strict run was emitting prior audit
+  # reports at a fresh-blind auditor. That change is correct. But 23 fixtures in
+  # this file assert an `[allowed]` line to prove a policy ALLOWANCE fired -- the
+  # positive half of the regression -- so suppressing it turned them red, and the
+  # aggregate gate with them.
+  #
+  # The tempting repair is to drop `RequireAllowed` from those fixtures. That
+  # would be a silent downgrade: each would decay into "the scanner exited 0",
+  # which all 23 satisfy vacuously, and this file would go green having stopped
+  # testing the thing it exists to test.
   return Invoke-BoundedProcess -FilePath $shellPath `
     -Arguments @(
       "-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass",
-      "-File", $resolvedScannerPath, "-Strict",
+      "-File", $resolvedScannerPath, "-Strict", "-ShowAllowed",
       "-PolicyPath", $resolvedPolicyPath, "-Path", $Path
     ) -WorkingDirectory $WorkingDirectory -TimeoutMs $scannerStageTimeoutMs
 }

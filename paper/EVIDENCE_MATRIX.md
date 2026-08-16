@@ -162,6 +162,12 @@ closes no roadmap node.
   hold. The manuscript now states the accurate invariant -- the result appears
   in exactly two places, the allocated-bits entry and Section 9, and nowhere
   else -- and the marker count is still exactly one, which the checker enforces.
+  **Superseded 2026-08-16 (third occurrence):** the marker count is **zero** and
+  the checker permits at most one. The identical sentence 17 lines above was
+  annotated in the round-1 amendment; this one, and the round-2 enumeration that
+  claimed to list every stale statement, both missed it. Its own annotation reads
+  "An enumeration of one's own errors is itself a claim and can be incomplete" --
+  which it now demonstrates twice.
 - Status (appended 2026-08-07): BLOCKED_ONLY_ON: EDITORIAL_INSERTION. The
   prior status is retained below for lineage. What blocks closure is no
   longer acceptance but the single edit replacing the marker with the

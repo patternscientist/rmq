@@ -95,7 +95,17 @@ $constants = @(
 # A retired numeral is allowed on a line that marks itself historical. This
 # mirrors the claim-drift policy's own exculpating vocabulary rather than
 # inventing a second one.
-$historicalMarker = 'historical|Historical|retired|Retired|superseded|Superseded|formerly|previously|was\b|CLAIM-HISTORY'
+# `was` was REMOVED on 2026-08-16. It exempted any line containing the word
+# "was", so "The uniform canonical charged-trace constant `214` was adopted for
+# all sizes." -- a conflicting claim, phrased in the surface's OWN declared
+# shape -- passed with exit 0. Changing that one word to "is" made the same
+# line exit 1.
+#
+# Strictly worse than the shape-coverage residual WDD-20260816-042 records:
+# that one is about conflicts phrased OUTSIDE a declared shape. This conflict
+# was INSIDE the shape and still passed, on one common English verb. Nothing in
+# the guarded surfaces relies on bare "was" to mark a retired value.
+$historicalMarker = 'historical|Historical|retired|Retired|superseded|Superseded|formerly|previously|CLAIM-HISTORY'
 
 # An anchor doubles as a CLAIM SHAPE when it carries enough literal text to
 # identify a claim on its own. `at most** `{VALUE}`` does; a bare `` `{VALUE}` ``

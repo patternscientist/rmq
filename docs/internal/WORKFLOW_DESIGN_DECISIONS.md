@@ -10123,3 +10123,67 @@ invariant CI enforces, and this violation would never have surfaced.
 
 Repaired by rewriting the commit with its entry. The CI gap is recorded as a
 residual: making CI enforce per-commit would require iterating the range.
+
+## WDD-20260816-043 -- round 4: the candidate did not pass its own gate
+
+A fourth agent audit. The headline finding is not a documentation defect.
+
+### `scripts/gate.ps1` was RED for the whole round
+
+`claim_drift_policy_regression.ps1` exited 1 with **23 fixture failures**, broken
+by `804c58c` -- the FIRST of the round's commits -- and unnoticed through thirteen
+further commits and three audit rounds.
+
+Cause: the round-1 repair stopped the scanner printing `[allowed]` lines by
+default, correctly closing a contamination channel. Twenty-three fixtures in the
+policy regression assert an `[allowed]` line to prove a policy ALLOWANCE fired --
+the positive half of that file -- so they went red, and the aggregate with them.
+
+**Why it survived: nobody ran the aggregate.** Individual checkers were run
+constantly and `design_decision_check -Strict` was verified on all fourteen
+commits. A green per-commit governance check stood in for "the tree is
+releasable", which is this project's defect class exactly, committed at the top
+of the round that exists to answer it.
+
+Repaired by passing `-ShowAllowed` from the regression, not by dropping
+`RequireAllowed`. The audit named that trap and it is real: dropping the
+assertion degrades all 23 into "the scanner exited 0", which every one satisfies
+vacuously, and the file goes green having stopped testing anything. After the
+fix: 82 must-reject, 38 must-accept, 16 path/context verdicts, 0 failures.
+
+### One English verb defeated the constant guard
+
+`$historicalMarker` contained bare `was\b`, exempting any line containing the
+word. "The uniform canonical charged-trace constant `214` **was** adopted for all
+sizes." -- a conflict phrased in the surface's OWN declared shape -- exited 0.
+Changing that one word to "is" made the same line exit 1.
+
+Strictly worse than the shape-coverage residual WDD-20260816-042 records: that
+one is about conflicts phrased outside a declared shape. This was inside it.
+
+### The axiom whitelist inspected 36 of 104 records
+
+`depends on axioms:\s*\[(.*)\]` matched per line, and Lean **wraps** long
+dependency lists, so 68 of 104 records never had their contents read. They fell
+through to the two-name blacklist that WDD-20260816-032 calls "not that
+property" -- the check that entry replaced.
+
+Now matched across newlines, with a count assertion: if the number of records
+parsed differs from the number declared, the gate fails rather than reporting
+clean on a subset. Measured after the fix: 104 of 104, and across all of them
+the only axioms are `propext`, `Classical.choice`, `Quot.sound`. **The property
+held; only a third of it was being checked.**
+
+### Two more citation-checker holes
+
+- **Block-comment interiors.** The skip rule was `^\s*(--|/-|-/)` -- lines
+  *starting* with a marker -- so the interior of a `/- ... -/` block and the
+  continuation lines of a docstring were treated as code. "Prose, comments ...
+  rejected" was false for both, and the four self-test decoys were all
+  single-line shapes the rule already handled. Membership is now determined by
+  scanning from the top of the file.
+- **Unbounded ranges.** `:1--860` spanned an entire file, resolved, and was
+  reported identically to a one-line citation as "pinned to a named
+  declaration". Ranges are now capped at 12 lines; real ones here are 3.
+
+Both verified closed by fixture.

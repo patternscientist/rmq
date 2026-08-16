@@ -54,16 +54,32 @@ function RunAxiomCheck($script, $label) {
   # Found by the 2026-08-15 fresh-blind audit (P2-3).
   $allowed = @('propext', 'Classical.choice', 'Quot.sound')
   $unexpected = @()
-  foreach ($line in (Get-Content $tmp)) {
-    # `#print axioms` emits: 'X' depends on axioms: [a, b, c]
-    if ($line -match "depends on axioms:\s*\[(.*)\]") {
-      foreach ($name in ($Matches[1] -split ',')) {
-        $trimmed = $name.Trim(" ", "]", "[")
-        if ($trimmed -and ($allowed -cnotcontains $trimmed)) {
-          $unexpected += $trimmed
-        }
+  $examined = 0
+  # `#print axioms` emits: 'X' depends on axioms: [a, b, c]
+  #
+  # Lean WRAPS long dependency lists, so the closing `]` is often on a later
+  # line. Matching per-line with `\[(.*)\]` therefore saw only the records that
+  # happened to fit on one line -- 36 of 104 at this tree. The other 68 fell
+  # through to the two-name blacklist this whitelist replaced, which
+  # WDD-20260816-032 itself calls "not that property".
+  #
+  # Read the whole file and match across newlines instead, and count what was
+  # examined so a parse that silently stops finding records cannot pass as clean.
+  $axiomText = [IO.File]::ReadAllText($tmp)
+  foreach ($m in [regex]::Matches($axiomText, "depends on axioms:\s*\[([^\]]*)\]", 'Singleline')) {
+    $examined += 1
+    foreach ($name in ($m.Groups[1].Value -split ',')) {
+      $trimmed = $name.Trim() -replace '\s+', ''
+      if ($trimmed -and ($allowed -cnotcontains $trimmed)) {
+        $unexpected += $trimmed
       }
     }
+  }
+  $declared = ([regex]::Matches($axiomText, "depends on axioms:")).Count
+  if ($examined -ne $declared) {
+    Remove-Item $tmp -ErrorAction SilentlyContinue
+    SoftFail ("axiom parse in ${label} examined $examined of $declared dependency records; the rest were not inspected")
+    return
   }
   if ($unexpected.Count -gt 0) {
     Remove-Item $tmp -ErrorAction SilentlyContinue

@@ -278,6 +278,24 @@ function Get-CitationBinding {
   return @{ Names = $fallback; Strength = "row"; Why = "row-wide" }
 }
 
+# Is this line inside a `/- ... -/` or `/-- ... -/` block?
+#
+# Counts openers and closers from the top of the file. Cheap enough here (the
+# cited files are read once per citation) and correct for the shapes Lean uses,
+# including a docstring whose text spans several lines -- the case that made
+# "comments are rejected" false.
+function Test-InsideBlockComment {
+  param([string[]]$Lines, [int]$LineNumber)
+  $depth = 0
+  for ($i = 0; $i -lt $LineNumber - 1; $i++) {
+    $opens = ([regex]::Matches($Lines[$i], '/-')).Count
+    $closes = ([regex]::Matches($Lines[$i], '-/')).Count
+    $depth += $opens - $closes
+    if ($depth -lt 0) { $depth = 0 }
+  }
+  return ($depth -gt 0)
+}
+
 function Test-CitationResolves {
   param(
     [string]$Root,
@@ -295,6 +313,14 @@ function Test-CitationResolves {
     if (-not (Test-Path -LiteralPath $full)) { $missingFiles += $relative; continue }
     $content = Get-Content -LiteralPath $full
     if ($Start -lt 1 -or $Start -gt $content.Count) { continue }
+    # A cited RANGE is honoured, but bounded. `:1--860` spanned an entire file
+    # and resolved, reported identically to a one-line citation as "pinned to a
+    # named declaration". Real ranges in this ledger are a few lines
+    # (`:356--359`); anything wider is not a pointer.
+    $citationRangeLimit = 12
+    if ($End - $Start -gt $citationRangeLimit) {
+      continue
+    }
     $upper = [Math]::Min($End, $content.Count)
 
     # A citation may land on the declaration's doc-comment rather than its
@@ -354,8 +380,13 @@ function Test-CitationResolves {
       $fieldSite = '^\s*' + $escaped + "(?![A-Za-z0-9_'.])\s*:(?!=)"
       for ($lineNo = $Start; $lineNo -le $upper; $lineNo++) {
         $text = $content[$lineNo - 1]
-        # Drop comment text: a whole-line comment, and any `--` tail.
+        # Skip comment text. The earlier rule only skipped lines STARTING with a
+        # marker, so the interior of a block comment and the continuation lines
+        # of a docstring were still treated as code -- "prose, comments ...
+        # rejected" was false for both. Determine block-comment membership by
+        # scanning from the top of the file rather than by inspecting one line.
         if ($text -match '^\s*(--|/-|-/)') { continue }
+        if (Test-InsideBlockComment -Lines $content -LineNumber $lineNo) { continue }
         $code = ($text -split '--', 2)[0]
         if ($code -match $declarationSite -or $code -match $fieldSite) {
           return @{ Ok = $true; File = $relative; Line = $lineNo; Name = $leaf; MissingFiles = $missingFiles }

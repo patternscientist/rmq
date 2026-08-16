@@ -11743,3 +11743,38 @@ It asserts 18 line references were "verified by direct grep/read this session".
 `SuccinctRMQClassic.lean:1324` was wrong at `1490c97b`, the base that sentence
 names. The RC-4 round corrected the pointer in the ledger and left this sentence
 standing -- the same defect as DD-110's README finding, in a second file.
+
+## DD-20260816-113 -- round 4: a sixth and seventh stale marker statement
+
+Status: Accepted. Date: 2026-08-16. Companion to WDD-20260816-043.
+
+Two more live statements asserting the `ARCHITECTURE_RESULT_PENDING` marker
+exists, after three rounds of sweeps:
+
+- `paper/check_paper.ps1`'s own header: "Exactly one literal
+  ARCHITECTURE_RESULT_PENDING marker in rmq.tex" -- **a file documenting the
+  behaviour it was edited to stop having**, for the whole round.
+- `paper/EVIDENCE_MATRIX.md`: "the marker count is still exactly one, which the
+  checker enforces". The identical sentence seventeen lines above was annotated
+  by the round-1 amendment; the round-2 enumeration that claimed to list every
+  stale statement missed this one. Its own annotation reads "An enumeration of
+  one's own errors is itself a claim and can be incomplete." It has now
+  demonstrated that twice.
+
+The header comment is also brought up to date with the two checks added since
+(status vocabulary, source citations).
+
+### `headline_axiom_check.lean` still asserted what DD-112 declared false
+
+DD-20260816-112 records that DD-109's "the null decoder is demonstrably the only
+unmet premise" is false -- the encoding is assumed too. That sentence was live in
+the `.lean` file and was corrected in neither place. It is corrected now, with
+the scope stated precisely: the counterfactuals quantify over
+`ExactRMQShapeEncoding`, the cited lower bound quantifies over
+`ExactRMQStateEncoding`, and they connect only through
+`exactRMQShapeEncoding_of_stateEncoding`. Retargeting is open work, not something
+this file has done.
+
+Also corrected: `paper/THEOREM_LEDGER.md` cited label `tgt:packed`, which exists
+nowhere; the real label is `thm:packed` at `rmq.tex:717`, which the same row's
+corrected block already stated.

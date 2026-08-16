@@ -15,7 +15,15 @@
 #      rmq.tex and '#### <ID>' rows in THEOREM_LEDGER.md; every row carries
 #      exactly one status, associated with that row, drawn case-sensitively
 #      from ACCEPTED_BASE / PROVISIONAL_ARCHITECTURE / OPEN.
-#   5. Exactly one literal ARCHITECTURE_RESULT_PENDING marker in rmq.tex.
+#   5. AT MOST ONE literal ARCHITECTURE_RESULT_PENDING marker in rmq.tex. Zero
+#      is the healthy state: the result was absorbed into Section 9 on
+#      2026-08-16. This header read "Exactly one" for the whole RC-4 round
+#      AFTER the code was changed to `-gt 1` -- a file's own documentation
+#      describing the behaviour that file was edited to stop having.
+#   6. Evidence-matrix statuses come from the vocabulary EVIDENCE_MATRIX.md's
+#      own header declares.
+#   7. Every :NNN citation in THEOREM_LEDGER.md resolves to a declaration site
+#      (delegated to check_citations.ps1).
 #
 # Run with -SelfTest to additionally verify that the detectors above actually
 # fire. Every self-test case corresponds to a defect found by audit on

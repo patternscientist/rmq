@@ -413,10 +413,21 @@ that answers nothing, and a decoder that answers something wrong, each
 contradict `query_exact`. Together with the existing witness they bracket the
 hypothesis: inhabited, and not cheaply inhabited.
 
-The final `example` matters as much as the theorems. It discharges every
-premise of `null_decoder_impossible` concretely at `n = 1` -- including shape
-membership, which is proved, not assumed -- leaving the null decoder as the
-only unmet premise. A counterfactual whose premises were jointly unsatisfiable
+The final `example` discharges every premise of `null_decoder_impossible`
+concretely at `n = 1` except two: the null decoder itself, and **the existence
+of an `ExactRMQShapeEncoding`, which it assumes**. An earlier version of this
+comment said the null decoder was "the only unmet premise"; that is false, and
+DD-20260816-112 records it.
+
+**Scope, stated precisely.** These counterfactuals quantify over
+`ExactRMQShapeEncoding`. `exactRMQ_tight_fixed_length_payload_space_bound`
+quantifies over `ExactRMQStateEncoding` -- a different structure with its own
+`query_exact` field. They are connected only by
+`exactRMQShapeEncoding_of_stateEncoding`, whose `query_exact := encoding.query_exact`
+makes the coupling hold by construction. So these theorems establish that
+`ExactRMQShapeEncoding.query_exact` is not trivially satisfiable, and reach the
+cited lower bound only through that bridge. Retargeting them at
+`ExactRMQStateEncoding` is open work, not something this file has done. A counterfactual whose premises were jointly unsatisfiable
 would prove nothing while looking like a proof.
 
 Verified to fail closed: weakening `wrong_answer_impossible`'s wrong answer
