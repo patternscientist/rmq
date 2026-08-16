@@ -81,6 +81,27 @@ function RunAxiomCheck($script, $label) {
     SoftFail ("axiom parse in ${label} examined $examined of $declared dependency records; the rest were not inspected")
     return
   }
+
+  # Both quantities above come from the SAME output, so an inventory that emits
+  # no records at all satisfies `0 -eq 0` and reports PASS. Deleting every
+  # `#print axioms` line from a check file was a clean pass.
+  #
+  # The floor is derived from the source rather than pinned by hand: every
+  # `#print axioms` directive emits exactly one line, either `depends on axioms:`
+  # or `does not depend on any axioms`. Fewer records than directives means some
+  # directive did not run.
+  $directiveCount = ([regex]::Matches([IO.File]::ReadAllText($script), '(?m)^\s*#print axioms\b')).Count
+  $recordCount = $declared + ([regex]::Matches($axiomText, "does not depend on any axioms")).Count
+  if ($directiveCount -eq 0) {
+    Remove-Item $tmp -ErrorAction SilentlyContinue
+    SoftFail ("${label} contains no ``#print axioms`` directive; it is not an axiom inventory and a clean run means nothing")
+    return
+  }
+  if ($recordCount -lt $directiveCount) {
+    Remove-Item $tmp -ErrorAction SilentlyContinue
+    SoftFail ("${label} produced $recordCount axiom record(s) for $directiveCount ``#print axioms`` directive(s); some directive did not run")
+    return
+  }
   if ($unexpected.Count -gt 0) {
     Remove-Item $tmp -ErrorAction SilentlyContinue
     SoftFail ("axiom outside the standard three in ${label}: " +
@@ -181,10 +202,20 @@ function Invoke-Checker {
   }
 }
 
-# The builds below call `lake` directly, and a missing `lake` fails the same
-# way for the same reason. One assertion covers every one of them.
-if (-not (Get-Command lake -ErrorAction SilentlyContinue)) {
-  Fail "lake is not on PATH; every build stage below would inherit the previous exit code instead of running"
+# The stages below call `lake`, `rg` and `git` directly, and a missing external
+# tool fails the same way for the same reason -- CommandNotFoundException under
+# $ErrorActionPreference = 'Continue', with $LASTEXITCODE untouched.
+#
+# `rg` was omitted when this assertion was written, and steps 2 and 2b depend on
+# it entirely: with `rg` absent, `$hygiene` and `$nd` are simply never assigned,
+# `if ($hygiene)` is false, no SoftFail is recorded, and the proof-hygiene and
+# `native_decide` scans contribute nothing to the verdict while the gate walks on
+# toward GATE PASS. Measured on a probe of the two step-2 lines with `rg` removed
+# from PATH: issues recorded = 0, identical to the healthy run.
+foreach ($tool in @('lake', 'rg', 'git')) {
+  if (-not (Get-Command $tool -ErrorAction SilentlyContinue)) {
+    Fail ("$tool is not on PATH; the stages that depend on it would record nothing and the gate would proceed")
+  }
 }
 # 0. Project-skill startup policy must reject stale checkout/runtime catalogs.
 Invoke-Checker -Path "$PSScriptRoot\project_skill_preflight_regression.ps1" -Soft
@@ -408,7 +439,22 @@ if ($unadvertised.Count -gt 0) {
 # reads the gate's own source and fails on any surviving raw invocation, which
 # is the check the roster could not be.
 $gateSource = Get-Content -Raw -LiteralPath $PSCommandPath
-$rawCallSites = @([regex]::Matches($gateSource, '(?m)^&\s*"\$PSScriptRoot\[^"]+\.ps1"'))
+# The pattern is assembled below with a REAL doubled backslash. The version that
+# shipped had a single one -- `\[` -- which is an escaped literal `[`, so the
+# regex asked for a `[` immediately followed by a line start and could never
+# match. It answered 0 on the tree WDD-20260816-054 says it answers 3 on: the
+# number in that entry was measured with a shell grep, not with the code that
+# shipped, and nothing here would have noticed the difference.
+#
+# So the lint now carries a NEGATIVE CONTROL. A detector that matches nothing
+# and a detector that works produce the same output on a clean tree, and this
+# tree is clean -- only the control distinguishes them.
+$rawCallPattern = '(?m)^&\s*"\$PSScriptRoot\\[^"]+\.ps1"'
+$rawCallControl = '& "$PSScriptRoot\raw_call_negative_control.ps1"'
+if ([regex]::Matches($rawCallControl, $rawCallPattern).Count -ne 1) {
+  SoftFail 'the raw-call-site lint does not match a known raw call site; it is inert and cannot detect one'
+}
+$rawCallSites = @([regex]::Matches($gateSource, $rawCallPattern))
 if ($rawCallSites.Count -gt 0) {
   SoftFail ("{0} sub-checker call site(s) bypass Invoke-Checker and would score a non-running checker as PASS: {1}" -f `
     $rawCallSites.Count, (($rawCallSites | ForEach-Object { $_.Value }) -join '; '))

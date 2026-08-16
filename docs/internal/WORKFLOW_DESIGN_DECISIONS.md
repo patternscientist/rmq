@@ -10565,3 +10565,73 @@ found by a different failure, one of them only because a program-plan citation
 had to be re-derived. `gate.ps1` now carries a check for raw call sites, which
 catches the reverse direction, but the pins themselves remain a hand-maintained
 coupling -- `PLAN_LINEAGE.md` species 3, at the scale of files rather than lines.
+
+## WDD-20260816-056 -- The lint that was supposed to catch what the roster could not, caught nothing
+
+From a fresh blind audit of this round.
+
+### The raw-call-site lint was inert
+
+WDD-20260816-054 added a check that reads the gate's own source and fails on any
+surviving `& "$PSScriptRoot\...ps1"` invocation, and said of it: *"it asks a
+different question -- 'is there a call site that bypasses the helper?' -- and it
+answers `3` on the tree this entry corrects."*
+
+The shipped pattern was `'(?m)^&\s*"\$PSScriptRoot\[^"]+\.ps1"'`. That `\[` is an
+**escaped literal `[`**, not a character class, so the pattern asks for a `[`
+immediately followed by a line start. It is unsatisfiable. Measured against
+`15865e1`, the tree that entry corrects:
+
+| pattern | matches |
+|---|---|
+| as shipped (`\[`) | **0** |
+| with the doubled backslash (`\[`) | **3** |
+
+So the `3` was real -- and was measured with a shell `grep`, not with the code
+that shipped. The number was true of the tree and false of the checker.
+
+The tree is currently clean, so this was a dead detector rather than a masked
+breach. It is the third time in two days that a doubled backslash collapsed to a
+single one while being written through a layer that processes escapes; the
+pattern is now assembled from `chr(92)` rather than typed.
+
+**And it carries a negative control.** A detector that matches nothing and a
+detector that works produce identical output on a clean tree, and this tree is
+clean. The lint now asserts it matches a known raw call site before trusting its
+own count of zero. Verified: clean gate source -> 0, with one raw call injected -> 1.
+
+### `rg` was never asserted, and two stages depend on it entirely
+
+The same entry added `if (-not (Get-Command lake ...)) { Fail ... }` and said it
+was "for the same reason". `rg` got no such assertion, and steps 2 and 2b -- the
+proof-hygiene scan (`sorry|admit|axiom|unsafe|import Mathlib`) and the
+`native_decide` scan -- are nothing but `rg`. With `rg` absent, the
+CommandNotFoundException does not stop the run, `$hygiene` and `$nd` are never
+assigned, `if ($hygiene)` is false, and no failure is recorded. Measured on a
+probe of those two lines: issues recorded = **0**, identical to the healthy run.
+`lake`, `rg` and `git` are now asserted together.
+
+### An axiom inventory with no records reported PASS
+
+WDD-20260816-043 added `if ($examined -ne $declared)` so the parse "fails rather
+than reporting clean on a subset". Both numbers are derived from the same output,
+so an inventory emitting **no** records satisfies `0 -eq 0`. Deleting every
+`#print axioms` line from a check file was a clean pass, and nothing else pinned
+the count.
+
+The floor is now derived from the source rather than pinned by hand: every
+`#print axioms` directive emits exactly one record, either `depends on axioms:`
+or `does not depend on any axioms`, so fewer records than directives means a
+directive did not run. Not a hand-maintained number -- `PLAN_LINEAGE` species 3
+is what a hand-maintained number would be.
+
+### Corrections to earlier entries in this round
+
+- WDD-20260816-046 says the helper covers "all sixteen `.ps1` stages". Measured
+  at `03d8a71`, the tree it describes: **17**. Its own later correction
+  (`14 converted, 3 not`) already implies 17.
+- WDD-20260816-047 and `tag_annotation_check.ps1` say "the two non-`audit-*`
+  annotated tags in this repository (`v2026.07.06`, and `audit-v1-rc-1`)".
+  `audit-v1-rc-1` matches `audit-*`. There is **one**. The same paragraph cites
+  `v1-rc-7-external-audit`, which exists only in the scratch repository used to
+  demonstrate the hole, and is now labelled as such.
