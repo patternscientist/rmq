@@ -175,10 +175,6 @@ function Invoke-Checker {
   #
   # The resolved script name is recorded too, because `-Label` is a free string: a
   # stage could otherwise run against a different script and still match its entry.
-  $paramSig = @($CheckerParams.GetEnumerator() | Sort-Object Key |
-    ForEach-Object { "$($_.Key)=$($_.Value)" })
-  $script:checkersRun += ($Label + ' {' + (Split-Path $Path -Leaf) + '}' +
-    $(if ($paramSig.Count) { ' [' + ($paramSig -join ',') + ']' } else { '' }))
 
   if (-not (Test-Path -LiteralPath $Path)) {
     $m = "$Label DID NOT RUN: no such file ($Path). A missing checker is not a passing checker."
@@ -210,6 +206,16 @@ function Invoke-Checker {
       Fail $m
     }
   }
+
+  # Recorded AFTER the guards, not before. Appending on entry counted a checker
+  # that then failed Test-Path or the parameter check: `GATE COVERAGE: 1 of 17`
+  # printed alongside `DID NOT RUN: no such file`. The verdict was right -- the
+  # gate still exits 1 -- but the coverage sentence said a stage was invoked when
+  # it was not, which is the species this file keeps correcting elsewhere.
+  $paramSig = @($CheckerParams.GetEnumerator() | Sort-Object Key |
+    ForEach-Object { "$($_.Key)=$($_.Value)" })
+  $script:checkersRun += ($Label + ' {' + (Split-Path $Path -Leaf) + '}' +
+    $(if ($paramSig.Count) { ' [' + ($paramSig -join ',') + ']' } else { '' }))
 
   Remove-Variable -Name LASTEXITCODE -Scope Global -ErrorAction SilentlyContinue
   $threw = $null
@@ -483,25 +489,68 @@ $gateSource = Get-Content -Raw -LiteralPath $PSCommandPath
 # So the lint now carries a NEGATIVE CONTROL. A detector that matches nothing
 # and a detector that works produce the same output on a clean tree, and this
 # tree is clean -- only the control distinguishes them.
-$rawCallPattern = '(?m)^[^\S\r\n]*[&.]\s*"\$PSScriptRoot[\\/][^"]+\.ps1"'
-# The control is an ARRAY of shapes. The previous one was a single column-0 call
-# and the pattern was anchored at `^`, so an INDENTED raw call was invisible to
-# both -- and indented is precisely the shape this whole check is about: at
-# `03d8a71`, `check_paper.ps1` sat at `gate.ps1:275` inside `if (Test-Path ...) {`
-# with no `else`, the case WDD-20260816-046 calls "an absent manuscript checker
-# was silently skipped". The lint would not have caught the defect it exists for.
+$rawCallPattern = '(?im)(?:^|[;{}|]|\bthen\b|\belse\b)[^\S\r\n]*(?:\$\w+\s*=\s*)?[&.]\s*"\$\{?PSScriptRoot\}?[\\/][^"]+\.ps1"'
+# RAW-CALL-CONTROLS-BEGIN
+# NEGATIVE-SPACE controls. The previous four were exactly the pattern's own
+# capability envelope -- leading horizontal space, `&` or `.`, either separator --
+# so they tested the pattern against the shapes it already handled and could not
+# detect any shape it missed. A fresh audit found six such shapes, including the
+# ONE-LINE form of the very conditional skip this check exists for:
+# `if (Test-Path X) { & "$PSScriptRoot\y.ps1" }`.
+#
+# Each entry below is a raw invocation the lint MUST see. Adding a shape here
+# before widening the pattern is the point: the list is what the check claims to
+# cover, and it fails if the claim outruns the regex.
 $rawCallControls = @(
   '& "$PSScriptRoot\control_plain.ps1"',
   '  & "$PSScriptRoot\control_indented.ps1"',
   '. "$PSScriptRoot\control_dotsourced.ps1"',
-  '& "$PSScriptRoot/control_forwardslash.ps1"'
+  '& "$PSScriptRoot/control_forwardslash.ps1"',
+  'if (Test-Path X) { & "$PSScriptRoot\control_one_line_if.ps1" }',
+  '  if ($env:CI) { & "$PSScriptRoot\control_guarded.ps1" }',
+  '$out = & "$PSScriptRoot\control_assigned.ps1"',
+  'try { & "$PSScriptRoot\control_in_try.ps1" } catch {}',
+  '& "${PSScriptRoot}\control_braced.ps1"',
+  '& "$PSScriptRoot\control_upper.PS1"'
 )
+
+# And shapes the lint must NOT flag, asserted rather than assumed. Without these
+# a pattern that matches everything would satisfy every control above.
+$rawCallAntiControls = @(
+  'Invoke-Checker -Path "$PSScriptRoot\converted.ps1"',
+  '# & "$PSScriptRoot\commented_out.ps1"'
+)
+# RAW-CALL-CONTROLS-END
 foreach ($ctl in $rawCallControls) {
-  if ([regex]::Matches($ctl, $rawCallPattern).Count -ne 1) {
+  if ([regex]::Matches($ctl, $rawCallPattern).Count -lt 1) {
     SoftFail ("the raw-call-site lint does not match the known raw call site [$ctl]; it is inert for that shape")
   }
 }
-$rawCallSites = @([regex]::Matches($gateSource, $rawCallPattern))
+foreach ($anti in $rawCallAntiControls) {
+  if ([regex]::Matches($anti, $rawCallPattern).Count -ne 0) {
+    SoftFail ("the raw-call-site lint flags [$anti], which is not a raw call site; it would fire on converted or commented code")
+  }
+}
+# The controls above are literal raw-call text living in THIS file, so the scan
+# must not read its own fixtures as findings -- widening the pattern made it
+# report 4 sites, every one of them a control. The sentinel region is excluded.
+#
+# Both halves are asserted, because an exclusion that silently matched nothing
+# would hide real call sites, and one that matched everything would hide all of
+# them: the fixtures MUST be visible before the strip and absent after it.
+# The marker is assembled, not written out: a line containing the whole literal
+# `# RAW-CALL-CONTROLS-BEGIN` would itself be a sentinel, and the pattern
+# definition matched its own text -- two regions where there is one.
+$sentinelTag = 'RAW-CALL-CONTROLS'
+$sentinelPattern = '(?s)# ' + $sentinelTag + '-BEGIN.*?# ' + $sentinelTag + '-END'
+if ([regex]::Matches($gateSource, $sentinelPattern).Count -ne 1) {
+  SoftFail 'the raw-call control sentinels are missing or duplicated; the lint would read its own fixtures as findings'
+}
+if ([regex]::Matches($gateSource, $rawCallPattern).Count -lt 1) {
+  SoftFail 'the raw-call-site lint matches nothing even in the control region; it is inert'
+}
+$scanSource = [regex]::Replace($gateSource, $sentinelPattern, '')
+$rawCallSites = @([regex]::Matches($scanSource, $rawCallPattern))
 if ($rawCallSites.Count -gt 0) {
   SoftFail ("{0} sub-checker call site(s) bypass Invoke-Checker and would score a non-running checker as PASS: {1}" -f `
     $rawCallSites.Count, (($rawCallSites | ForEach-Object { $_.Value }) -join '; '))

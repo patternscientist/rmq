@@ -10866,3 +10866,68 @@ Worth recording for the shape of it: the check that caught this was one auditor
 applying to their own measurement the rule this project applies to received
 findings -- *a green result is worth what it distinguishes*. The suite was sound;
 the sentence it printed was not.
+
+## WDD-20260816-064 -- The controls tested the pattern's own envelope, again
+
+Round 9 of the fresh-blind audit. **P1 empty.** The findings are in round 8's fixes.
+
+### The lint missed six shapes, including the one-line form of its own motivating case
+
+WDD-20260816-062 widened the pattern and replaced one control with four, saying
+of the old one: "it tested the pattern against exactly the shape the pattern
+handled." The four replacements were **also** exactly the new pattern's envelope
+-- leading horizontal space, call or dot-source, either separator -- so they could
+not detect any shape it missed. Measured, all matching **0**:
+
+    if (Test-Path X) { & "$PSScriptRoot\one_line_if.ps1" }
+      if ($env:CI)  { & "$PSScriptRoot\ci_guarded.ps1" }
+    $out = & "$PSScriptRoot\assigned.ps1"
+    try { & "$PSScriptRoot\in_try.ps1" } catch {}
+    & "${PSScriptRoot}\braced.ps1"
+    & "$PSScriptRoot\upper.PS1"
+
+The first is the **one-line form of the exact conditional skip this check exists
+for**. Twice now the control set has been drawn from what the pattern already did.
+
+Ten positive controls now, chosen as negative space rather than confirmation, and
+**two anti-controls** -- a converted `Invoke-Checker` line and a commented-out
+call -- asserted to match zero, because a pattern matching everything would
+otherwise satisfy every positive control.
+
+### Widening it made the gate flag its own fixtures
+
+The controls are literal raw-call text in this file, so the widened pattern found
+**4 sites in `gate.ps1` itself**, every one a control. The scan now excludes a
+sentinel region -- and asserts **both directions**: the fixtures must be visible
+BEFORE the strip, proving the pattern is live, and absent after it. A strip that
+matched nothing would hide real call sites; one that matched everything would
+hide all of them.
+
+The sentinel markers are assembled from a tag rather than written out, because a
+line containing the whole literal is itself a sentinel: the pattern definition
+matched its own text and reported two regions where there is one.
+
+### Coverage counted checkers that did not run
+
+`$script:checkersRun` was appended on entry, before the `Test-Path` and parameter
+guards, so `GATE COVERAGE: 1 of 17` printed beside `DID NOT RUN: no such file`.
+The verdict was right -- the gate exits 1 -- but the sentence was not. Recorded
+after the guards now.
+
+### Residuals, measured and left open
+
+- **The directive floor is derived from the source it checks.** Deleting two of
+  three `#print axioms` directives moves both sides equally: directiveCount 1,
+  recordCount 1, clean pass. The `-lt 1` guard closes only total deletion. Being
+  derived rather than hand-pinned is what makes partial deletion invisible, and
+  the entry introducing it presented that as a virtue.
+- **The block-comment strip does not nest**, and Lean's block comments do. A
+  nested block gives directiveCount 2 against recordCount 1 and a false failure.
+  Fails closed; no such block exists in the eight inventories, verified.
+- **Roster identity records the leaf filename only**, so two same-named scripts in
+  different directories are indistinguishable. All 25 tracked script basenames
+  are unique today.
+- **WDD-20260816-063 over-generalises.** It says every REJECT case is vacuous when
+  the lint is red; A01 and A02 additionally assert ExpectedPatterns, so the
+  `PASS [A02]` line it quotes *is* evidence the mutation fired. The remedy is
+  still right; the diagnosis covered 12 of 14 cases, not all of them.

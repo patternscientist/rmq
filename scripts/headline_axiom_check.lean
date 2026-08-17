@@ -684,9 +684,14 @@ Pinned: the little-o overhead, the `2n + o(n)` payload length, and the constant
 query-cost cap -- the space half and the time half of the manuscript sentence.
 
 NOT pinned: the invalid-range, scan-window, leftmost-argmin and
-no-synthetic-execution conjuncts. Each has its own headline alias and its own
-ledger row; pinning them here would duplicate those rows rather than guard this
-one.
+no-synthetic-execution conjuncts. Their exactness content is already pinned at
+the same `queryCosted` level by `M1ReviewerNativeExpectedPaperType` above, so
+restating it here would duplicate that pin rather than guard this one.
+
+This comment read "Each has its own headline alias and its own ledger row" and
+that was measured false (DD-20260816-120): of the four, only invalid-range has
+its own `- Declaration:` name in the ledger. The exclusions were right; the
+reason was not, and the reason is what a reader checks.
 -/
 
 -- EG-P2-3-LIST-INT-TYPE-PIN-ANCHOR

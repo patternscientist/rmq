@@ -606,6 +606,26 @@ if (-not (Test-Path -LiteralPath $ciPath)) {
     'git fetch[^\r\n]*--depth=0'
   )
   foreach ($rs in $revertedShapes) { if ($ciText -match $rs) { $wired = $false } }
+  # Token presence is not wiring. An audit satisfied every presence test with a
+  # ci.yml that certified exactly ONE commit -- by appending a second
+  # `$range = "HEAD~1..HEAD"` after the chain, or by wrapping the loop in
+  # `if ($false)` and leaving one aggregate call to do the work. So the shape of
+  # the range derivation is pinned too: exactly three assignments (pull request,
+  # event-based push, new-branch fallback) and no assignment after the chain.
+  $rangeAssignments = ([regex]::Matches($ciText, '(?m)^\s*\$range = ')).Count
+  if ($rangeAssignments -ne 3) {
+    Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml makes $rangeAssignments range assignments; expected exactly 3 (PR, event-based push, new-branch fallback). A fourth outside the chain re-fixes the window."
+    $wired = $false
+  }
+  # The enumeration must not be filtered. `git rev-list --reverse $range |
+  # Select-Object -Last 1` satisfies every token test above and certifies one
+  # commit, so the assignment is pinned whole.
+  if ($ciText -notmatch '(?m)^\s*\$commits = @\(git rev-list --reverse \$range\)\s*$') {
+    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml does not enumerate the range unfiltered; a pipe or selector can reduce it to one commit'
+    $wired = $false
+  }
+  # And the certification call must not sit inside a disabled branch.
+  if ($ciText -match '(?s)if\s*\(\s*\$false\s*\)') { $wired = $false }
   $stillAggregate = $ciText -match 'design_decision_check\.ps1 -Base "origin/\$\{\{ github\.base_ref \}\}" -Strict'
   if (-not $wired -or $stillAggregate) {
     Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml does not iterate the range with -Head'

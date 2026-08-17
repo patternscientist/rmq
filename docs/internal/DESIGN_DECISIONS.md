@@ -11919,8 +11919,19 @@ landed file by changing one thing in the pinned `Prop`, each run through
 Each pin also records what it does NOT pin, and why. The lower bound's
 uniform-budget conjunct is excluded because it generalises the first rather than
 adding a public claim; the List-Int store's invalid-range, scan-window,
-leftmost-argmin and no-synthetic conjuncts are excluded because each has its own
-are already pinned at the same `queryCosted` level by
+leftmost-argmin and no-synthetic conjuncts are excluded because the exactness
+conjuncts are already pinned at the same `queryCosted` level by
+`M1ReviewerNativeExpectedPaperType`, in this file.
+
+**That reason is a correction.** This entry first said each excluded conjunct
+"has its own alias and its own ledger row". Measured against the ledger's
+`- Declaration:` fields, only invalid-range does (`queryCosted_invalid`); the
+scan-window and leftmost-argmin names there are a representative-equality lemma
+and a spec-uniqueness lemma, which are different statements; and the
+no-synthetic name there is the very alias this pin guards. The exclusions are
+still right -- the reason given for them was not.
+
+A pin over a conjunction that quietly drops
 conjuncts is the same defect as a green check standing in for an unestablished
 property, one level down.
 
@@ -11983,17 +11994,6 @@ still runs one aggregate invocation closes nothing.
 `-Head` deliberately skips the worktree and index passes: this mode asks what a
 COMMIT carried, and a dirty worktree is not part of that question.
 
-`M1ReviewerNativeExpectedPaperType`, in this file.
-
-**That reason is a correction.** This entry first said each excluded conjunct
-"has its own alias and its own ledger row". Measured against the ledger's
-`- Declaration:` fields, only invalid-range does (`queryCosted_invalid`); the
-scan-window and leftmost-argmin names there are a representative-equality
-lemma and a spec-uniqueness lemma, which are different statements; and the
-no-synthetic name there is the very alias this pin guards. The exclusions are
-still right -- the reason given for them was not.
-
-A pin over a conjunction that quietly drops
 ## DD-20260816-120 -- Three claims that were true when written and are not true now
 
 From the same fresh audit, all `P3`, all the same species: a record that reads as
@@ -12073,3 +12073,52 @@ file that documents itself has to say which occurrence it means.
 `.github/workflows/release-artifact.yml` also runs the gate, through
 `scripts/reproduce_artifact.sh`, and did not get `fetch-tags` when the other two
 did -- `WDD-20260816-057` said "every workflow" and fixed two. Corrected.
+
+## DD-20260816-122 -- A merge commit certified vacuously, and the wiring pin passed on a workflow that certified one commit
+
+### Merge commits cannot be certified per-commit, and are now refused
+
+`$Head~1` is the FIRST parent, so a merge's diff carries everything the merged
+branch changed -- including that branch's `DESIGN_DECISIONS.md`. That satisfies
+the membership test for anything the merge itself introduces.
+
+Demonstrated: a no-fast-forward merge whose conflict resolution wrote
+`paper/rmq.tex` content present in **neither** parent, with no new entry,
+certified **clean**. That is verbatim the blind spot WDD-20260816-043 records,
+reappearing one level up, and neither DD-119 nor DD-121 recorded it.
+
+`design_decision_check.ps1` now refuses a commit with more than one parent and
+says why. Refusing is the honest option: diffing against the merge base of all
+parents would judge the merge by the union of both branches, which is the same
+aggregate question under another name. Verified -- the fixture merge is refused,
+and all 33 linear commits in this round still certify.
+
+### The wiring pin passed on three workflows that certify one commit
+
+DD-20260816-121 claimed the pin now catches a reverted `ci.yml`. It caught the
+three mutations it was tested against, and passed on three it was not:
+
+| mutation | old pin | now |
+|---|---|---|
+| a second `$range = "HEAD~1..HEAD"` after the chain | PASS | rejected |
+| the loop wrapped in `if ($false)`, one aggregate call doing the work | PASS | rejected |
+| the enumeration piped through `Select-Object -Last 1` | PASS | rejected |
+
+The second is **verbatim the scenario DD-121 says the pin now catches**. Token
+presence is not wiring, so the range DERIVATION is pinned instead: exactly three
+`$range` assignments (pull request, event-based push, new-branch fallback), no
+disabled branch, and the enumeration assignment matched whole so a pipe cannot
+reduce it.
+
+Two claims in DD-121 were also wrong and are corrected here. The
+`[per-commit-push-range]` leg computes its range from the local fixture and never
+reads `ci.yml`, so it is arithmetically determined by the two legs beside it and
+cannot fail alone -- what would have caught the original defect is the
+`github.event.before` presence test, not that leg. And "the previous four legs all
+tested a single commit at a time" is false: leg 1 is an aggregate over two
+commits, and leg 4 reads no commits at all.
+
+**Still open, measured:** on a branch-creation push `github.event.before` is all
+zeros and the range falls back to `HEAD~1..HEAD` -- a one-commit window over an
+N-commit push, which is the defect DD-121 exists to close. DD-121 named the
+fallback without naming this consequence.
