@@ -12156,3 +12156,16 @@ re-derived at the new pin first, not only the header: all `file:line` citations
 resolve, all four `gate.ps1` **content anchors** hold (they are content anchors
 precisely because line pointers into that file went stale twice in two commits),
 and the three non-ancestor SHAs are the ones the header already declares.
+
+## DD-20260816-124 -- "At this pin" collapsed two different commits
+
+DD-20260816-123 wrote that the six artifacts are committed "at this pin". The
+pin is `17360d1`; at that commit none of them exist. They exist in the commit
+that introduces the revision saying so, which is necessarily later -- a file
+cannot name the commit containing it, because writing the SHA in changes it.
+
+That is the two-commits defect a previous plan round caught, reappearing through
+a phrase rather than a stale figure. The header now states what "at this pin"
+means, and the two claims about artifacts committed WITH this revision say that
+instead. The three remaining "at this pin" uses are about repository state
+verified at `17360d1` and are correct as written.

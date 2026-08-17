@@ -10954,3 +10954,16 @@ One consequence worth stating before it surprises someone: `paper/` and
 is now subject to the strict terms. It passed on the first scan after landing,
 and a future revision that phrases a novelty or cap claim carelessly will be
 rejected by a checker rather than by a reader.
+
+## WDD-20260816-066 -- The pin-semantics paragraph split the sentence it was clarifying
+
+Companion to DD-20260816-124. The paragraph explaining what "at this pin" means
+was inserted after the line beginning "**Verified at:**" and landed in the
+MIDDLE of that sentence, which continues "cited as a landing below is an
+ancestor of that tip". The header then read as two fragments with an explanation
+wedged between them.
+
+Caught by reading the result. Nothing measures prose continuity, and this is the
+fourth time in this effort that a scripted insertion has damaged a sentence --
+the species PLAN_LINEAGE records as 8. The rule that keeps working is the dull
+one: after a scripted edit to prose, read the region, not the diffstat.

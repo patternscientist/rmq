@@ -9,6 +9,13 @@ Two further SHAs, `543de42` and `b53c08d`, are orphans of a history rewrite —
 `git branch --contains` is empty for each — and are cited only here;
 their surviving counterparts are `acfb7ef` and `b0b83b9`.
 
+**"At this pin" means the repository state at that commit.** It does NOT mean the
+commit containing this file: a revision cannot name the commit that introduces
+it, because writing the SHA in changes it. Claims about artifacts committed
+*with* this revision say so explicitly and are true of that later commit, not of
+the pin -- the distinction exists because a previous revision collapsed the two
+and ended up speaking from two commits at once.
+
 **Supersedes v13.** Revision history: `PLAN_LINEAGE.md`.
 
 ## Method
@@ -418,7 +425,7 @@ No calendar governs until `DD-F`.
 4. Repair `RMQ_FINAL_ROADMAP.md:452` (§F).
 5. ~~Commit `wf3_attack.json` **and both dispositions** --
    `PLAN_AUDIT_DISPOSITION.md` and `RC3_DISPOSITION.md` -- under
-   `docs/internal/`.~~ **DONE at this pin**, together with this plan,
+   `docs/internal/`.~~ **DONE in the commit that introduces this revision**, together with this plan,
    `PLAN_LINEAGE.md` and `RMQ_PROGRAM_PLAN_2026-08-13.md`. The two dispositions
    supply every one of the 24 accepted findings in A.1 and A.2, plus
    `RC3_DISPOSITION.md` section 5 item 11, which A.2's second table carries as a
@@ -584,7 +591,7 @@ it will not maintain them. A count that nothing can check is a count that rots.
   `docs/internal/audit_reports/2026-07-25_A09_endgame_plan_audit.md`.
 - The plan audit in `PLAN_AUDIT_DISPOSITION.md` (2026-08-13, artifact
   `RMQ_PROGRAM_PLAN_2026-08-13.md`, verdict `NOT_SOUND`) — the source of §A.1's
-  fourteen accepted findings. Committed at this pin (H item 5).
+  fourteen accepted findings. Committed with this revision (H item 5).
 - Agent audits of this plan itself: **no committed record**, and no count is
   kept, and no claim about their number or severity is made.
 
