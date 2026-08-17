@@ -214,7 +214,21 @@ term; `previously`, `historical` on the cap term. `WDD-20260816-058`.
 
 **On a branch-creation push** `github.event.before` is all zeros and the
 certification range falls back to `HEAD~1..HEAD` — a one-commit window over an
-N-commit push. `DD-20260816-122`.
+N-commit push. `DD-20260816-122`. This is not abstract: see the entry below,
+which measures what that window is currently concealing.
+
+**13 of the 100 commits in this candidate's branch history fail the per-commit
+certification the candidate ships.** Measured by sweeping
+`design_decision_check.ps1 -Strict` over every non-merge commit in
+`$(git merge-base main HEAD)..HEAD` — the range a pull request uses. All 13 are
+ancestors of this tag. Two causes: an entry written into the wrong ledger
+(`3652d4b` logged a code change to the workflow book), and no entry at all
+(`c9cb19f`, `5c09c5a`, `2bd03d8`). The first push of this branch enumerates one
+commit and reports green; a pull request enumerates all 100 and goes red.
+Repair requires rewriting history, which would discard this tag and its GATE
+PASS, so it is recorded rather than performed. `WDD-20260817-075` carries the
+full table. **Reporting this is not a finding — reporting that the number or
+the causes are wrong is.**
 
 **Content introduced by a merge alone** — a conflict resolution present in
 neither parent — is certified by nothing, now that the enumeration excludes

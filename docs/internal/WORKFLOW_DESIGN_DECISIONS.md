@@ -11285,8 +11285,10 @@ their measurements, rather than being chased through another generation of pins.
 
 `docs/internal/V1_RELEASE_CANDIDATE_AUDIT_PROMPT.md` is retargeted from
 `audit-v1-rc-3` to `audit-v1-rc-4` (nine references) and gains a declared-open
-section listing eleven known limits with their measurements -- ten since
-`WDD-20260817-073` closed the three `ci.yml` evasions.
+section listing eleven known limits with their measurements. The count has
+moved twice since: `WDD-20260817-073` closed the three `ci.yml` evasions,
+taking it to ten, and `WDD-20260817-075` added the uncertifiable-history
+measurement, taking it back to eleven.
 
 The list exists because an auditor who does not have it spends budget
 rediscovering things the repository already records -- and because publishing
@@ -11438,3 +11440,79 @@ first thing to check if the gate is ever run under 7.
 This entry exists because the per-commit strict check refused the original
 commit: one workflow file changed, no design-log update. The check was right, and
 the amendment is the record it asked for.
+
+
+## WDD-20260817-075 -- The candidate's own history does not pass the check the candidate ships
+
+Sweeping `design_decision_check.ps1 -Strict` over every non-merge commit from
+`main`'s merge-base to the tip -- the range a pull request would use -- **13 of
+100 commits fail**. They are all ancestors of the `audit-v1-rc-4` tag. They were
+inside the candidate the entire time the internal loop was auditing it, and
+twelve rounds did not surface them, because nothing had ever run the check over
+the branch's own history.
+
+This was found only because a routine sweep was run before re-tagging. The
+single-commit invocation used after every commit in this session -- `-Base HEAD~1
+-Head HEAD` -- is green and always was. It certifies the commit in front of you
+and says nothing about the 99 behind it.
+
+### The measurement
+
+| commit | subject | ledger required | example path |
+|---|---|---|---|
+| `bb15006` | Land the paper substrate worklog, bibliography, manuscript | `DESIGN_DECISIONS.md` | `paper/references.bib` |
+| `ebdaf22` | Land the related-work ledger, evidence matrix, README | both | `paper/.gitignore` |
+| `29c688b` | Repin the paper substrate to current main | `DESIGN_DECISIONS.md` | `paper/EVIDENCE_MATRIX.md` |
+| `4c56e7e` | Harden the manuscript checker | both | `paper/EVIDENCE_MATRIX.md` |
+| `aa3d585` | Land the novelty log and split the checker surfaces | both | `paper/NOVELTY_LOG.md` |
+| `7655ee8` | Export the packed cell-probe result from RMQPaper | `WORKFLOW_DESIGN_DECISIONS.md` | `scripts/headline_axiom_check.lean` |
+| `c9cb19f` | Record the RMQPaper promotion in the handoff | `WORKFLOW_DESIGN_DECISIONS.md` | `docs/internal/RC1_CORRECTION_HANDOFF.md` |
+| `3652d4b` | Make the two-210 independence claim a checked property | `DESIGN_DECISIONS.md` | `scripts/independence_check.lean` |
+| `5c09c5a` | Mark the independence regression done in the handoff | `WORKFLOW_DESIGN_DECISIONS.md` | `docs/internal/RC1_CORRECTION_HANDOFF.md` |
+| `3265987` | Export the fixture probe count, clarify capstone field 32 | `WORKFLOW_DESIGN_DECISIONS.md` | `scripts/axiom_check.lean` |
+| `2bd03d8` | Mark P3-1 polish done in the handoff | `WORKFLOW_DESIGN_DECISIONS.md` | `docs/internal/RC1_CORRECTION_HANDOFF.md` |
+| `9389655` | Audit the ledger's line citations | both | `paper/EVIDENCE_MATRIX.md` |
+| `f8de800` | Correct the citation audit: 27 citations, 3 defective | `DESIGN_DECISIONS.md` | `paper/EVIDENCE_MATRIX.md` |
+
+Two distinct causes, and neither is "the rule did not exist yet" alone:
+
+- **Wrong ledger.** `3652d4b` changed `scripts/independence_check.lean`, which is
+  code-classified, and recorded the decision in `WORKFLOW_DESIGN_DECISIONS.md`.
+  A design entry was written; it went in the other book.
+- **No entry.** `c9cb19f`, `5c09c5a` and `2bd03d8` each change exactly one
+  workflow-classified file and add no workflow-log entry at all.
+
+### Why this matters more than its size suggests
+
+`DD-20260816-122` records that a branch-creation push falls back to
+`HEAD~1..HEAD`, a one-commit window, and the declared-open list carried that as a
+limitation. It is not a limitation in the abstract. **It is exactly what would
+hide these 13.** The first push of this branch enumerates one commit and reports
+green; a pull request enumerates `origin/main..HEAD` -- all 100 -- and goes red
+with 13 failures. The published limit and the live defect are the same fact seen
+from two sides, and the limit was published without anyone checking what it was
+currently concealing.
+
+The aggregate check accepted all 13 when they landed. That is the blind spot
+`WDD-20260816-043` documented and the per-commit check was built to close; what
+was never done was pointing the new check backwards at the history the old one
+had passed. A check that only ever runs forwards certifies the future and
+launders the past.
+
+### Disposition: recorded, not repaired
+
+Not fixed here. Repair means rewriting 13 commits to add or relocate design-log
+entries, which rewrites every SHA after the earliest of them -- discarding the
+`audit-v1-rc-4` tag, the GATE PASS the tag rests on, and the per-commit
+certification of the 87 commits that currently pass. That trade is the owner's
+call, not a cleanup to be performed while preparing an audit packet.
+
+The two honest options are to rewrite the branch and re-verify from scratch, or
+to merge with a recorded, measured exception. Both are owner decisions. What is
+not an option is adding a date-based or path-based exemption so the check reports
+green over history it does not actually certify -- that is the defect class this
+entire candidate exists to eliminate, and it would be committing it in the very
+mechanism built to detect it.
+
+Added to the declared-open list with this measurement so an external auditor
+starts from the number rather than rediscovering it.
