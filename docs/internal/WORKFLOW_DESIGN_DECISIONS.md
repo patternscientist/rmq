@@ -11446,7 +11446,7 @@ the amendment is the record it asked for.
 
 Sweeping `design_decision_check.ps1 -Strict` over every non-merge commit from
 `main`'s merge-base to the tip -- the range a pull request would use -- **13 of
-100 commits fail**. They are all ancestors of the `audit-v1-rc-4` tag. They were
+101 commits fail**. They are all ancestors of the `audit-v1-rc-4` tag. They were
 inside the candidate the entire time the internal loop was auditing it, and
 twelve rounds did not surface them, because nothing had ever run the check over
 the branch's own history.
@@ -11507,12 +11507,66 @@ entries, which rewrites every SHA after the earliest of them -- discarding the
 certification of the 87 commits that currently pass. That trade is the owner's
 call, not a cleanup to be performed while preparing an audit packet.
 
-The two honest options are to rewrite the branch and re-verify from scratch, or
-to merge with a recorded, measured exception. Both are owner decisions. What is
-not an option is adding a date-based or path-based exemption so the check reports
-green over history it does not actually certify -- that is the defect class this
-entire candidate exists to eliminate, and it would be committing it in the very
-mechanism built to detect it.
+**Corrected by `WDD-20260817-076`:** the paragraph that stood here called this a
+choice between rewriting the branch and merging with a recorded exception. That
+was wrong, and wrong in the direction that overstates severity. This repository
+integrates by squash-merge, and a squash of this branch certifies cleanly, so
+the ordinary integration path needs no exception at all. What remains true is
+that a pull request would go red, and that adding a date- or path-based
+exemption so the check reports green over history it does not certify is not an
+option -- that is the defect class this candidate exists to eliminate, and it
+would be committing it inside the mechanism built to detect it.
 
 Added to the declared-open list with this measurement so an external auditor
 starts from the number rather than rediscovering it.
+
+
+## WDD-20260817-076 -- What the 13 uncertifiable commits actually cost
+
+`WDD-20260817-075` measured the defect correctly and then overstated what it
+means, which is the more instructive half. It said the choice was to rewrite the
+branch or merge with a recorded exception. Neither is required, because it never
+asked how this repository integrates.
+
+### Measured
+
+- **Main integrates by squash.** Its last 200 commits hold **3** merge commits --
+  `b98ab1e`, `22ab357`, `615c9d3`, all 2026-07-24 -- against **197** non-merges.
+  The two most recent integrations, `a0402e1` (Stage A) and `0f38672`
+  (ALLSIZE-R1), each have exactly **one parent**.
+- **A squash of this branch certifies.** `git merge --squash` of
+  `codex/rc3-corrections` onto `main` in a scratch worktree applies with **zero
+  conflicts**, and `design_decision_check.ps1 -Strict` on the resulting commit
+  returns **exit 0** over 92 changed files (55 code, 40 workflow, 2 neutral).
+  A squash carries the whole branch's ledger updates, so the one commit satisfies
+  both ledgers by construction.
+
+So on the path this project actually uses, the 13 never reach main and nothing is
+blocked. They surface on exactly one path: `ci.yml` also triggers on
+`pull_request`, whose range is `origin/main..HEAD`, which enumerates all 101.
+
+### The correction, and why it happened
+
+Two numbers moved. The count is **13 of 101**, not 13 of 100 -- the sweep ran
+when the tip was `ddb5bad`, and `dc31337` landed after, certifying. And a
+measurement of main's merge shape was published from a malformed command:
+`git rev-list --count --merges -200 main` next to `--no-merges -200` returned "82
+merges, 200 non-merges", which cannot describe one 200-commit window. `-n` limits
+how many commits are *printed*, not which window is searched, so the two counts
+came from different sets. Counting parents per commit over one fixed window gives
+3 and 197.
+
+Both errors share a shape with the defect `WDD-20260817-075` describes: a number
+was produced by a command that answered a different question than the one asked,
+and it read as an answer because it was numeric. The rule that catches this is
+not "measure" -- both were measurements. It is **state what window a number
+covers, and check the parts sum**. 82 + 200 > 200 was visible on the page.
+
+### What stands
+
+The defect is real and unrepaired: 13 commits in the tagged candidate's ancestry
+do not satisfy the per-commit check the candidate ships, for the two causes
+`WDD-20260817-075` tabulates. Repair still means rewriting history and discarding
+this tag and its GATE PASS. What changed is only the consequence: it is a
+pull-request-path defect and a record of imperfect history, not an integration
+blocker.

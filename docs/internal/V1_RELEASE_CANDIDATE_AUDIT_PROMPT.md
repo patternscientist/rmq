@@ -217,18 +217,27 @@ certification range falls back to `HEAD~1..HEAD` — a one-commit window over an
 N-commit push. `DD-20260816-122`. This is not abstract: see the entry below,
 which measures what that window is currently concealing.
 
-**13 of the 100 commits in this candidate's branch history fail the per-commit
+**13 of the 101 commits in this candidate's branch history fail the per-commit
 certification the candidate ships.** Measured by sweeping
 `design_decision_check.ps1 -Strict` over every non-merge commit in
-`$(git merge-base main HEAD)..HEAD` — the range a pull request uses. All 13 are
-ancestors of this tag. Two causes: an entry written into the wrong ledger
-(`3652d4b` logged a code change to the workflow book), and no entry at all
-(`c9cb19f`, `5c09c5a`, `2bd03d8`). The first push of this branch enumerates one
-commit and reports green; a pull request enumerates all 100 and goes red.
-Repair requires rewriting history, which would discard this tag and its GATE
-PASS, so it is recorded rather than performed. `WDD-20260817-075` carries the
-full table. **Reporting this is not a finding — reporting that the number or
-the causes are wrong is.**
+`$(git merge-base main HEAD)..HEAD`. All 13 are ancestors of this tag. Two
+causes: an entry written into the wrong ledger (`3652d4b` logged a code change
+to the workflow book), and no entry at all (`c9cb19f`, `5c09c5a`, `2bd03d8`).
+
+This does **not** block integration, and the earlier draft of this entry was
+wrong to imply it did. This repository integrates by squash-merge — main's last
+200 commits hold 3 merges (all 2026-07-24) against 197 non-merges, and both
+recent integrations, `a0402e1` (Stage A) and `0f38672` (ALLSIZE-R1), are
+single-parent. Measured: squashing this branch onto `main` applies conflict-free
+and certifies — 92 files (55 code, 40 workflow, 2 neutral), strict exit 0. On
+that path the 13 never reach main.
+
+They surface on one path only: `ci.yml` also triggers on `pull_request`, whose
+range is `origin/main..HEAD`, so a PR from this branch enumerates all 101 and
+goes red. Repair means rewriting history, which would discard this tag and its
+GATE PASS, so it is recorded rather than performed. `WDD-20260817-075` carries
+the full table and `WDD-20260817-076` the integration measurement. **Reporting
+this is not a finding — reporting that the numbers or the causes are wrong is.**
 
 **Content introduced by a merge alone** — a conflict resolution present in
 neither parent — is certified by nothing, now that the enumeration excludes
