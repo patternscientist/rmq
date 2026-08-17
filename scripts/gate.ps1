@@ -461,7 +461,7 @@ if ($LASTEXITCODE -ne 0) { SoftFail "git diff --check found issues" }
 # not constrain the pattern, and stripping comments by hand cannot beat a parser
 # that already knows what a comment is. So this asks PowerShell.
 #
-# `ParseFile` gives the same tokenisation the shell uses. A commented-out call is
+# `ParseInput` gives the same tokenisation the shell uses. A commented-out call is
 # not a CommandAst. A path inside a string literal -- which is what the fixtures
 # below are -- is not a CommandAst either, so the fixtures need no exclusion
 # region: the previous version needed sentinels precisely because a regex cannot
@@ -487,7 +487,17 @@ $rawCallFixtures = @(
   '& "$PSScriptRoot\upper.PS1"',
   '& "$($PSScriptRoot)\interpolated.ps1"',
   '& (Join-Path $PSScriptRoot ''joined.ps1'')',
-  '$tag = ''issue #12''; & "$PSScriptRoot\after_hash_in_string.ps1"'
+  '$tag = ''issue #12''; & "$PSScriptRoot\after_hash_in_string.ps1"',
+  # These five carry NO `PSScriptRoot` literal, or use the BAREWORD form. The
+  # previous set was 21 for 21 on that string, so it could not detect that a
+  # substring test -- not the AST -- was what bounded coverage. The bareword
+  # shape is the one `ci.yml` itself uses.
+  '$repoRoot = $PSScriptRoot; & "$repoRoot\viarepo.ps1"',
+  './scripts/bareword.ps1',
+  './scripts/bareword.ps1 -Base "x" -Head y -Strict',
+  '& ".\scripts\relative.ps1"',
+  'pwsh -NoProfile -File "$PSScriptRoot\viashell.ps1"',
+  '& "$env:CHECKER_DIR\fromenv.ps1"'
 )
 
 # `@(1, & "x")` is NOT in this list: it is a parse error in PowerShell -- "Missing
@@ -517,18 +527,50 @@ function Get-RawCallSites {
     $Text, [ref]$null, [ref]$parseErrors)
   if (@($parseErrors).Count -gt 0) { return $null }
 
+  # What decides coverage is "does this command name a .ps1 file", NOT "does its
+  # text contain the string PSScriptRoot".
+  #
+  # The previous version tested `$text -match 'PSScriptRoot'`, and every one of
+  # its 21 fixtures contained that literal -- so the fixture set could not detect
+  # the restriction, which is the same defect three earlier rounds found in the
+  # regex. Measured, six working invocations were invisible: `& "$repoRoot\x.ps1"`
+  # after `$repoRoot = $PSScriptRoot`, a bareword `./scripts/x.ps1` (the form
+  # ci.yml itself uses), `& ($p)`, `& "$p"`, `& $arr[0]`, `& $h.Prop`, plus
+  # `pwsh -File "...ps1"` and `Invoke-Expression`.
+  $ps1Pattern = '\.ps1["'']?\s*$'
   $static = @()
   $dynamic = @()
   foreach ($cmd in $ast.FindAll({
       param($n) $n -is [System.Management.Automation.Language.CommandAst] }, $true)) {
-    # `Unknown` is a bare command name -- `Invoke-Checker -Path ...`. Only `&`
-    # and `.` invoke a path directly.
-    if ($cmd.InvocationOperator -eq 'Unknown') { continue }
-    $target = $cmd.CommandElements[0]
-    $text = $target.Extent.Text
-    if ($text -match 'PSScriptRoot') { $static += $text; continue }
-    if ($target -is [System.Management.Automation.Language.VariableExpressionAst]) {
-      $dynamic += $target.VariablePath.UserPath
+    $elements = @($cmd.CommandElements)
+    if ($elements.Count -eq 0) { continue }
+    $head = $elements[0].Extent.Text
+
+    # The sanctioned wrapper. Everything it dispatches goes through the guards.
+    if ($head -ceq 'Invoke-Checker') { continue }
+
+    # Any element naming a script -- catches the bareword form (operator
+    # `Unknown`, which the previous version skipped entirely), `& "$anything.ps1"`
+    # however the directory is spelled, and `pwsh -File "...ps1"`.
+    $named = @($elements | Where-Object { $_.Extent.Text -match $ps1Pattern })
+    if ($named.Count -gt 0) {
+      $static += ($named | ForEach-Object { $_.Extent.Text })
+      continue
+    }
+
+    # Unresolvable targets. `& $x`, `& $a[0]`, `& $h.P`, `& ($x)`, `& "$x"` and
+    # `Invoke-Expression` cannot be decided statically. They are recorded so a NEW
+    # one has to be looked at -- the previous version recorded only a bare
+    # VariableExpressionAst, so four of those shapes reached neither bucket and
+    # the "pinned rather than resolved" claim did not hold.
+    if ($head -imatch '^(Invoke-Expression|iex)$') { $dynamic += $head; continue }
+    # A BAREWORD target is a resolvable command name, not an unresolvable one:
+    # `& lake env lean ...` was landing in the dynamic bucket and reported for
+    # review, which is noise, not a finding. Only a non-literal target -- a
+    # variable, an index, a property, a subexpression -- is undecidable here.
+    if ($cmd.InvocationOperator -ne 'Unknown' -and
+        -not ($elements[0] -is [System.Management.Automation.Language.StringConstantExpressionAst])) {
+      $dynamic += $elements[0].Extent.Text
     }
   }
   return @{ Static = $static; Dynamic = $dynamic }
@@ -549,9 +591,18 @@ foreach ($nonFixture in $rawCallNonFixtures) {
     SoftFail "the raw-call walk reports [$nonFixture], which is not a call site"
   }
 }
-if ($rawCallFixtures.Count -lt 21 -or $rawCallNonFixtures.Count -lt 6) {
-  SoftFail ("the raw-call fixtures were reduced: {0} positive, {1} negative" -f `
-    $rawCallFixtures.Count, $rawCallNonFixtures.Count)
+# Distinctness and coverage, not just count. Twenty-one identical copies of one
+# fixture satisfied the old count pin -- structurally the same failure as
+# `nineteen controls collapsed to four`, which is the defect this check exists
+# to stop repeating. And at least four fixtures must be free of the
+# `PSScriptRoot` literal, so a substring test can never silently become the
+# bound again.
+$distinctFixtures = @($rawCallFixtures | Sort-Object -Unique).Count
+$withoutLiteral = @($rawCallFixtures | Where-Object { $_ -notmatch 'PSScriptRoot' }).Count
+if ($rawCallFixtures.Count -lt 26 -or $distinctFixtures -ne $rawCallFixtures.Count -or
+    $rawCallNonFixtures.Count -lt 6 -or $withoutLiteral -lt 4) {
+  SoftFail ("the raw-call fixtures were weakened: {0} positive ({1} distinct, {2} free of the PSScriptRoot literal), {3} negative" -f `
+    $rawCallFixtures.Count, $distinctFixtures, $withoutLiteral, $rawCallNonFixtures.Count)
 }
 
 $gateWalk = Get-RawCallSites -Text (Get-Content -Raw -LiteralPath $PSCommandPath)
@@ -566,12 +617,12 @@ if ($gateWalk.Static.Count -gt 0) {
 # Dynamic invocation is not statically decidable -- `& $someVariable` could be
 # anything. It is not treated as a finding; it is pinned, so a NEW one has to be
 # looked at. `$Path` is Invoke-Checker's own dispatch.
-$allowedDynamic = @('Path')
+$allowedDynamic = @('$Path')   # Invoke-Checker's own dispatch, recorded as its extent text
 $unexpectedDynamic = @($gateWalk.Dynamic | Sort-Object -Unique |
   Where-Object { $allowedDynamic -cnotcontains $_ })
 if ($unexpectedDynamic.Count -gt 0) {
   SoftFail ("{0} dynamic invocation(s) this check cannot resolve statically: {1}. Add to the allowed list only after confirming the target is not a sub-checker." -f `
-    $unexpectedDynamic.Count, (($unexpectedDynamic | ForEach-Object { '$' + $_ }) -join ', '))
+    $unexpectedDynamic.Count, ($unexpectedDynamic -join ', '))
 }
 
 #

@@ -12198,9 +12198,13 @@ code-classified.
 
 `scripts/gate.ps1`'s raw-call-site check is now an AST walk over `CommandAst`
 nodes with a non-`Unknown` invocation operator, replacing five generations of
-regex. Measured on a fixture holding every shape from rounds 7 through 11: **14
+regex. Measured on a fixture holding every shape from rounds 7 through 11: **21
 real invocations found, 0 false positives**, where the regex missed four and
 fired on prose.
+
+The count was first published as **14**, which came from an earlier 14-shape
+probe rather than from the shipped fixtures; the false-positive half was exact.
+See WDD-20260816-070.
 
 The sentinel exclusion region is deleted. It existed because a regex cannot
 distinguish a call from a quotation of one; a string literal is not a

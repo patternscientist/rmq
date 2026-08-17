@@ -11106,7 +11106,7 @@ for the previous round:
 | 8 | anchored at column 0, so an INDENTED call was invisible |
 | 9 | the four controls were exactly the pattern's own envelope |
 | 10 | ten more shapes missed incl. `$script:rc = & ...`; controls again the envelope; and it flagged its own fixtures and its own prose |
-| 11 | nineteen controls collapsed to **four** distinct consumed substrings -- a degenerate pattern dropping `$PSScriptRoot` missed 0 of 19 -- and the comment stripper written to keep prose out was cutting **seven lines of live code**, counting only double quotes |
+| 11 | nineteen controls collapsed to **four** distinct consumed substrings -- a degenerate pattern dropping `$PSScriptRoot` missed 0 of 19 -- and the comment stripper written to keep prose out was cutting **four lines of live code**, counting only double quotes |
 
 Round 11 is the one that settles it. A control set that does not constrain the
 pattern cannot be repaired by adding controls, and a hand-written comment
@@ -11116,7 +11116,7 @@ over-stripped lines included the stripper's own two implementation lines.**
 So the check asks PowerShell instead. `Parser::ParseInput` gives the same
 tokenisation the shell uses; the walk collects `CommandAst` nodes whose
 `InvocationOperator` is `Ampersand` or `Dot`. Measured against a fixture carrying
-every shape from all five rounds: **14 real invocations found, 0 false
+every shape from all five rounds: **21 real invocations found, 0 false
 positives.** `Invoke-Checker -Path ...` is excluded because its operator is
 `Unknown`; commented-out calls, here-string bodies and prose are excluded because
 the parser knows what they are.
@@ -11168,3 +11168,107 @@ typed had the wrong indentation. A mutation that does not apply and a pin that
 does not fire produce the same output, which is the whole subject of this entry.
 The rebuilt harness derives its anchors from the file's own lines and prints the
 diffstat beside each verdict.
+
+## WDD-20260816-070 -- Round 12, and the end of the internal loop
+
+Fresh-blind audit of `b84b9e4..b2e0ace`. **P1 empty**, three P2, seven P3. This is
+the last internal round; the reasoning for stopping is at the end.
+
+### The AST was never what bounded coverage
+
+`DD-20260816-126` described the new check as "an AST walk over `CommandAst` nodes
+with a non-`Unknown` invocation operator". It omitted the line that actually
+decided what got reported:
+
+```powershell
+if ($text -match 'PSScriptRoot') { $static += $text; continue }
+```
+
+A substring test. And **0 of 21 fixtures lacked that literal**, so the fixture set
+could not detect the restriction -- the identical defect rounds 9, 10 and 11 found
+in the regex, reproduced inside the commit whose stated reason for existing was
+that a control set which does not constrain the check cannot be repaired by adding
+controls.
+
+Six working invocations were invisible, each verified by the auditor to actually
+execute a marker script:
+
+    $repoRoot = $PSScriptRoot ; & "$repoRoot\x.ps1"
+    ./scripts/x.ps1                    <- the BAREWORD form ci.yml itself uses
+    & ($checkerPath) / & "$checkerPath" / & $checkers[0] / & $h.Checker
+    pwsh -NoProfile -File "$PSScriptRoot\x.ps1"
+    Invoke-Expression ("& '" + $PSScriptRoot + "\x.ps1'")
+
+`InvocationOperator -eq 'Unknown'` was excluding **bareword path invocation**, a
+first-class PowerShell call form -- not merely `Invoke-Checker -Path ...`.
+
+The predicate now asks *does this command name a `.ps1`*, which is the question.
+Verified on 21 shapes: 10 must-report, 7 must-be-dynamic, 4 must-be-silent, **0
+failures**. Fixtures are up to **27, all distinct, 4 of them free of the
+`PSScriptRoot` literal** -- pinned, so a substring test cannot silently become the
+bound again. Distinctness is pinned too: 21 identical copies satisfied the old
+count pin.
+
+Two things the probe caught that the audit did not, because they only appear once
+the predicate is broad:
+
+- **`& lake env lean ...` landed in the dynamic bucket.** A bareword target is a
+  resolvable command name, not an unresolvable one; only a variable, index,
+  property or subexpression is undecidable. Excluded, or the check reports noise
+  as findings.
+- **The allowlist compared `Path` while the walk records `$Path`.** Recording the
+  extent text rather than `VariablePath.UserPath` was the P2-2 fix; the allowlist
+  had to move with it, or Invoke-Checker's own dispatch reports forever.
+
+### Two published numbers were wrong
+
+- *"14 real invocations found, 0 false positives."* The false-positive half is
+  exact. The count is **21** -- 14 came from an earlier 14-shape probe, not from
+  the shipped fixtures. Corrected in `DD-20260816-126` and in the commit message's
+  successor entry here.
+- Round 11's *"cutting seven lines of live code, two of them its own
+  implementation."* The second half is exact. The count is **four** (three unique
+  texts). Corrected in `WDD-20260816-069`.
+
+`DD-20260816-126` also says it is recorded in `DESIGN_DECISIONS.md` "because
+`scripts/gate.ps1` is code-classified". The repository's own classifier says
+workflow -- `NeedsCode = $isProofCode` and `$proofCodePattern = '(?i)\.lean$'`.
+The entry is harmless where it sits; the premise was wrong.
+
+### Declared open, with measurements, rather than fixed
+
+Three `ci.yml` edits pass the whole regression suite while certifying fewer than
+all pushed commits. **None is live** -- `ci.yml` at this commit certifies every
+pushed non-merge commit; each requires someone deliberately editing the workflow
+to defeat its own check:
+
+| edit | certifies |
+|---|---|
+| `-notmatch '^0{40}$'` flipped to `-match` | 1 of 3 |
+| a fourth, single-quoted `$range = 'HEAD~1..HEAD'` after the chain | 1 of 3 |
+| `$bad = 0` **and** the loop wrapped in `if ($env:NEVER_SET) { ... }` | **0 of 3**, prints "all 3 commit(s) certified individually", exit 0 |
+
+The third is the strongest evasion found in twelve rounds. It survives because
+wrapping both statements keeps `$bad = 0` immediately before `foreach` and leaves
+the loop body byte-identical.
+
+Also open: the `&&` pipeline-chain shape was dropped from the fixtures without a
+note (it is a parse error under Windows PowerShell 5.1, which the fixture-parse
+assertion would trip, but that was never recorded).
+
+### Why this is the last internal round
+
+| round | P1 | P2 | where the findings lived |
+|---|---|---|---|
+| 7 | **1** | 5 | the candidate's checkers |
+| 8-12 | **0** | 3-5 each | the previous round's fixes |
+
+P1 has been zero for six consecutive rounds, and the subject migrated: rounds 7-9
+found defects in the release-facing artifact, rounds 10-12 almost entirely in the
+checking apparatus added during the loop. Round 12 states it directly -- *"nothing
+in scope is presently broken ... every finding is a property not established, not
+a live breakage."*
+
+A loop auditing its own auditing does not terminate on its own. The remaining
+gaps are recorded above and go to the external auditor as declared-open, with
+their measurements, rather than being chased through another generation of pins.

@@ -547,6 +547,7 @@ try {
     # rather than for being a merge, so this leg passed with the refusal deleted:
     # setting `$parents.Count -gt 2` to `-gt 99` left the whole suite at exit 0.
     # The branch still touches a file the trunk does not, so the merge is
+    # conflict-free: a conflicted merge leaves the index unresolved and the
     # fixture cannot continue.
     $trunk = (& git rev-parse --abbrev-ref HEAD)
     & git checkout -q -b mergefix $c2 2>&1 | Out-Null
