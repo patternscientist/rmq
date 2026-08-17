@@ -4,15 +4,15 @@
 
 ## THE COMMIT UNDER AUDIT
 
-> **Tag: `audit-v1-rc-3`** — in `github.com/patternscientist/rmq`.
-> Audit this commit and no other. Every `audit-v1-rc-3` below means this commit.
+> **Tag: `audit-v1-rc-4`** — in `github.com/patternscientist/rmq`.
+> Audit this commit and no other. Every `audit-v1-rc-4` below means this commit.
 
 Obtain and verify it:
 
 ```bash
 git fetch origin --tags
-git checkout audit-v1-rc-3          # detached HEAD is expected and correct
-git rev-list -n1 audit-v1-rc-3      # the SHA under audit; record it in your report
+git checkout audit-v1-rc-4          # detached HEAD is expected and correct
+git rev-list -n1 audit-v1-rc-4      # the SHA under audit; record it in your report
 git status --porcelain              # MUST be empty: a dirty tree is not the candidate
 ```
 
@@ -20,9 +20,9 @@ Confirm you have the right tree before starting. All four must hold:
 
 | check | expected |
 | --- | --- |
-| `git rev-parse HEAD` equals `git rev-list -n1 audit-v1-rc-3` | yes |
+| `git rev-parse HEAD` equals `git rev-list -n1 audit-v1-rc-4` | yes |
 | `git status --porcelain` | empty |
-| `git tag --points-at HEAD` | includes `audit-v1-rc-3` |
+| `git tag --points-at HEAD` | includes `audit-v1-rc-4` |
 | `paper/` exists at the root | yes — it is in scope (`RC-10`) |
 
 If any fails, stop and report it rather than auditing a tree you cannot
@@ -41,7 +41,7 @@ You are a **fresh-blind exact-commit auditor**. You have not seen this
 repository's chat history, worker verdicts, or working trees, and you must not
 seek them. You were given exactly two things -- this prompt and the audit packet
 -- and the prompt names the commit to fetch. Those, plus the tree at
-`audit-v1-rc-3`, are your only inputs.
+`audit-v1-rc-4`, are your only inputs.
 
 Follow `docs/internal/AUDIT_PROTOCOL.md`. Report findings at `P0`/`P1`/`P2`/`P3`.
 
@@ -103,7 +103,7 @@ dynamic inputs are exactly `n`, the endpoints, and prior probe replies.
 
 ## 3. Rows to discharge
 
-For each, reconstruct independently from source at `audit-v1-rc-3`. Do not accept a
+For each, reconstruct independently from source at `audit-v1-rc-4`. Do not accept a
 docstring, a report, or a ledger row as evidence for the proposition it
 describes.
 
@@ -118,7 +118,7 @@ describes.
 | `RC-07` | Trust base: `sorry`-free, standard axioms only, pinned toolchain; the axiom-check scripts genuinely cover the cited declarations rather than a subset. |
 | `RC-08` | **Anti-vacuity.** For each headline, check that hypotheses are satisfiable and the statement is not trivially true. Dropping a load-bearing hypothesis should break the proof; if it does not, the hypothesis was decorative. |
 | `RC-09` | **Claim honesty across public surfaces.** Every surface in `currentFactSurfacePathRegex` states only what §2 licenses. Report any word-RAM, preprocessing, runtime, or attainment implicature. |
-| `RC-10` | The manuscript in `paper/` and its ledgers describe the theorems that exist at `audit-v1-rc-3`, with no claim stronger than its cited declaration. |
+| `RC-10` | The manuscript in `paper/` and its ledgers describe the theorems that exist at `audit-v1-rc-4`, with no claim stronger than its cited declaration. |
 | `RC-11` | **Artifact-root correspondence.** Take the theorem `docs/PAPER_CLAIM_CORRESPONDENCE.md` names as the accepted claim and check that importing the paper artifact root actually gives you it. A reviewer asking "which single import yields the paper's theorem?" must get one answer, and the documented identity and the importable identity must be the same string. |
 
 ---
@@ -175,3 +175,87 @@ A report at `docs/internal/audit_reports/<date>_V1_RC_fresh_blind.md`:
 Do **not** state a verdict you cannot support from source you read yourself.
 
 ---
+
+## Declared open at this tag — do not report these unless the RECORD of them is wrong
+
+Every item below is known, measured, and recorded in the design logs. Report one
+only if what the repository *says* about it is inaccurate. Anything not on this
+list is fair game.
+
+**Never executed.** RC-3 `P2-5` asked for a POSIX `setsid` containment probe and
+a decision about descendant tracking. `Invoke-RMQOwnedProcessEscapeProbe` exists
+in `scripts/owned_process_tree.ps1`, is reachable only through an explicit
+`-EscapeProbe` argument, is deliberately **not** wired into the gate, and **has
+never been run**. Its expected Linux outcome is ESCAPED. `WDD-20260816-039`.
+
+**Shape-limited by construction.** `scripts/constant_sync_check.ps1`'s
+conflicting-numeral scan can only see conflicts matching a declared claim shape.
+`WDD-20260816-042` states that no shape-based detector closes the class.
+
+**The gate roster covers `.ps1` stages only.** `GATE COVERAGE: n of 17` excludes
+the eight `RunAxiomCheck` inventories, `independence_check.lean`,
+`ledger_decl_check.lean`, the twelve `lake build` targets and steps 2/9 —
+under half the gate's stages. `WDD-20260816-059`.
+
+**The axiom directive floor is derived from the source it checks.** Deleting two
+of three `#print axioms` directives moves both sides equally and passes; only
+total deletion is caught. And its block-comment strip does not nest, so a nested
+`/- ... -/` would false-fail (fails closed; no such block exists today).
+`WDD-20260816-064`.
+
+**Roster identity uses leaf filenames**, so two same-named scripts in different
+directories are indistinguishable. All 25 tracked `.ps1` basenames are unique
+today. `WDD-20260816-064`.
+
+**Both claim-drift terms retain pre-v24 repo-wide `allowedLineRegex` tokens.**
+Measured at policy v25, these one-word injections into a governed current-fact
+surface still pass the strict scan: `novelty`, `policy`, `search` on the novelty
+term; `previously`, `historical` on the cap term. `WDD-20260816-058`.
+
+**On a branch-creation push** `github.event.before` is all zeros and the
+certification range falls back to `HEAD~1..HEAD` — a one-commit window over an
+N-commit push. `DD-20260816-122`.
+
+**Content introduced by a merge alone** — a conflict resolution present in
+neither parent — is certified by nothing, now that the enumeration excludes
+merges. The alternative was judging a merge by the union of its parents, which is
+the aggregate question the per-commit check exists to replace.
+`DD-20260816-125`.
+
+**Dynamic invocation is pinned, not resolved.** `& $variable` cannot be decided
+statically. The raw-call walk records such targets and allows exactly one
+(`$Path`, `Invoke-Checker`'s own dispatch); a new one is reported for review
+rather than resolved. `WDD-20260816-069`.
+
+**Three `ci.yml` edits defeat the per-commit certification while the wiring pin
+passes.** None is live — at this tag `ci.yml` certifies every pushed non-merge
+commit — and each requires deliberately editing the workflow to defeat its own
+check. Measured on a 3-commit push whose breach is the middle commit:
+
+| edit | commits certified |
+|---|---|
+| `-notmatch '^0{40}$'` flipped to `-match` | 1 of 3 |
+| a fourth, single-quoted `$range = 'HEAD~1..HEAD'` after the chain | 1 of 3 |
+| `$bad = 0` **and** the loop wrapped in `if ($env:NEVER_SET) { … }` | **0 of 3**, prints "all 3 commit(s) certified individually", exit 0 |
+
+`WDD-20260816-070`.
+
+**`scripts/paper_root_measure.ps1` does not exist.** The program plan schedules it
+and says so.
+
+**The program plan's own audit is separate.** `docs/internal/RMQ_PROGRAM_PLAN.md`
+and `PLAN_LINEAGE.md` are tagged and commissioned independently as
+`audit-plan-v14`; they are not in scope here.
+
+### What twelve internal rounds did and did not establish
+
+Twelve fresh-blind agent audits preceded this tag. No round found a defect in a
+kernel-checked theorem. Rounds 7–9 found defects in the release-facing checkers;
+rounds 10–12 found them almost entirely in the fixes made during the loop, and
+the last six rounds returned **zero P1**. The loop was stopped when its subject
+had migrated from the artifact to the apparatus checking it — not because the
+apparatus is complete, which is why the list above exists.
+
+Three findings from those rounds were themselves wrong and were rejected on
+measurement rather than adopted. If you believe something here is wrong, measure
+it; a report that reproduces is worth more than one that is merely plausible.

@@ -11272,3 +11272,27 @@ a live breakage."*
 A loop auditing its own auditing does not terminate on its own. The remaining
 gaps are recorded above and go to the external auditor as declared-open, with
 their measurements, rather than being chased through another generation of pins.
+
+## WDD-20260816-071 -- The RC-4 commissioning prompt, and its declared-open list
+
+`docs/internal/V1_RELEASE_CANDIDATE_AUDIT_PROMPT.md` is retargeted from
+`audit-v1-rc-3` to `audit-v1-rc-4` (nine references) and gains a declared-open
+section listing eleven known limits with their measurements.
+
+The list exists because an auditor who does not have it spends budget
+rediscovering things the repository already records -- and because publishing
+the limits is the only way a reader can tell what a green gate does NOT
+establish. Every entry cites the design record that measured it.
+
+Three entries are the `ci.yml` evasions from round 12. They are stated with the
+measurement that makes them concrete -- one certifies **zero** commits while
+printing "all 3 commit(s) certified individually" and exiting 0 -- together with
+the fact that none is live at this tag. Declaring a gap is not the same as
+excusing it, and an auditor who finds a way to reach one of these WITHOUT
+deliberately editing the workflow has found something new.
+
+The section also states what twelve internal rounds did and did not establish:
+no round found a defect in a kernel-checked theorem; the last six returned zero
+P1; and three findings from those rounds were themselves wrong and were rejected
+on measurement. The last sentence asks the auditor to measure rather than
+assert, which is the rule this project paid the most to learn.
