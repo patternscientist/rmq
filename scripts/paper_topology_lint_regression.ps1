@@ -544,8 +544,29 @@ if ($executedCount -ne $selectedCases.Count -or
   exit 1
 }
 
+# A REJECT leg is only informative when the ACCEPT baseline holds.
+#
+# Every REJECT case asserts that the production lint exits non-zero on a mutated
+# tree. If that lint is red for an unrelated reason -- an unbuilt `.lake`, say,
+# where it reports `unknown module prefix 'RMQ'` -- every REJECT leg passes
+# without distinguishing THE MUTATION FIRED from EVERYTHING IS BROKEN. A fresh
+# audit hit exactly that in a `git archive` extraction and correctly declined to
+# treat its own `PASS [A02] REJECT` line as evidence.
+#
+# The suite fails closed in that state, because the ACCEPT cases fail loudly and
+# the run exits 1 above. What it did not do was SAY so, and a single
+# `PASS [...] REJECT` line quoted out of a red run reads like evidence. The
+# verdict now states the dependency.
+if ($acceptCount -lt 1) {
+  Write-Host (
+    'PAPER-TOPOLOGY-REGRESSION: FAIL [accept-baseline] no ACCEPT case executed, so ' +
+    'every REJECT result is uninformative -- a lint that is red for any reason ' +
+    'satisfies all of them')
+  exit 1
+}
+
 Write-Host (
   'PAPER-TOPOLOGY-REGRESSION PASS ' +
   "($executedCount executed; $rejectCount reject; $acceptCount accept; " +
-  'tracked/index/hashes unchanged; no owned process survives)')
+  'tracked/index/hashes unchanged; no owned process survives; REJECT legs are conditional on the ACCEPT baseline above)')
 exit 0

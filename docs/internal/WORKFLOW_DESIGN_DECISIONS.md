@@ -10842,3 +10842,27 @@ Now `Get-Content -Raw -LiteralPath`, with `$directiveCount` initialised to `-1`
 and the guard `-lt 1`, so an unreadable source fails closed. Block comments are
 stripped before counting, since a directive inside `/- ... -/` emits no record
 and would false-fail; no such block exists in the eight inventories today.
+
+## WDD-20260816-063 -- A REJECT leg is only evidence when the ACCEPT baseline holds
+
+Not a defect found in the repository; a reporting weakness the auditor of round 8
+found **in their own evidence**, and reported against themselves.
+
+They ran `paper_topology_lint_regression.ps1` in a `git archive` extraction with
+no built `.lake`. The production lint fails there for an unrelated reason
+(`unknown module prefix 'RMQ'`), so every REJECT case -- which asserts only that
+the lint exits non-zero on a mutated tree -- passed without distinguishing **the
+mutation fired** from **everything is broken**. They declined to upgrade their own
+`PASS [A02] REJECT` line to verified, and cited the durations as the tell: 3.6s
+for `A02` against 101s for a case that really ran.
+
+The suite already fails closed in that state, because the ACCEPT cases fail and
+the run exits 1. What it did not do was say so, and a single `PASS [...] REJECT`
+line quoted out of a red run reads like evidence. The verdict now states the
+dependency, and an explicit `[accept-baseline]` failure fires if no ACCEPT case
+executed at all.
+
+Worth recording for the shape of it: the check that caught this was one auditor
+applying to their own measurement the rule this project applies to received
+findings -- *a green result is worth what it distinguishes*. The suite was sound;
+the sentence it printed was not.
