@@ -10931,3 +10931,26 @@ after the guards now.
   the lint is red; A01 and A02 additionally assert ExpectedPatterns, so the
   `PASS [A02]` line it quotes *is* evidence the mutation fired. The remedy is
   still right; the diagnosis covered 12 of 14 cases, not all of them.
+
+## WDD-20260816-065 -- The plan artifacts are governed paths now, and that is the point
+
+Companion to DD-20260816-123. Recorded separately because
+`design_decision_check.ps1` classifies all six new paths as
+workflow/process-sensitive -- which is the property that was missing while they
+sat in a session directory.
+
+Before this commit the plan, its lineage, the fake-attack catalogue and both
+dispositions were subject to **no** governance at all: not the design-log
+membership test, not the claim-drift scan, not the per-commit certification.
+They could be edited without any record and no checker could tell. The documents
+themselves recorded that as their central epistemic limit.
+
+They are now inside the same machinery as everything else, which means a future
+edit to the plan requires a design-log entry in the same commit -- enforced
+per-commit by DD-20260816-119, not merely stated.
+
+One consequence worth stating before it surprises someone: `paper/` and
+`docs/internal/` are both scanned by the claim-drift policy, so the plan's prose
+is now subject to the strict terms. It passed on the first scan after landing,
+and a future revision that phrases a novelty or cap claim carelessly will be
+rejected by a checker rather than by a reader.

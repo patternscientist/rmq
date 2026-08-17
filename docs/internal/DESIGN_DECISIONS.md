@@ -12122,3 +12122,37 @@ commits, and leg 4 reads no commits at all.
 zeros and the range falls back to `HEAD~1..HEAD` -- a one-commit window over an
 N-commit push, which is the defect DD-121 exists to close. DD-121 named the
 fallback without naming this consequence.
+
+## DD-20260816-123 -- The program plan and the artifacts it rests on are on a ref
+
+H item 5 asked for `wf3_attack.json` and both dispositions to be committed under
+`docs/internal/`. Six artifacts are committed here: those three, plus the plan
+itself, `PLAN_LINEAGE.md`, and the audited predecessor
+`RMQ_PROGRAM_PLAN_2026-08-13.md`.
+
+Measured before: `git log --all` returned **zero** occurrences for every one of
+them. An outside auditor could not check the plan out, could not verify a SHA,
+and could not tell whether what they were handed was what was held. That is the
+defect K records for RC-1, RC-2 and RC-3 -- all three rested on uncommitted
+artifacts -- reproduced in the document that records it.
+
+**Committing them falsified eight statements in the plan and one in the lineage,**
+because those statements asserted the files were on no ref. Each was corrected
+rather than deleted, and two distinctions had to be kept:
+
+- Committing the current revision does **not** make v2-v13 checkable. They stay
+  uncommitted, so the lineage's central argument survives -- but its phrasing,
+  "no plan file exists on any ref", became false and is now scoped to v2-v13,
+  with the change stated as forward-only: a future claim about this revision is
+  checkable; every claim about the earlier ones is not.
+- The dispositions are committed; the audit REPORTS are not.
+  `2026-08-15_V1_RC_fresh_blind.md` and the RC-1/RC-2 material remain on no ref,
+  so K's sentence bundling "audit reports and dispositions" was split. What v7
+  claimed -- that the summary was verifiable for RC-3 -- is true now, by the
+  commit rather than by the argument v7 made for it.
+
+The header pin moves from `7352d71` to `17360d1`. Every repository claim was
+re-derived at the new pin first, not only the header: all `file:line` citations
+resolve, all four `gate.ps1` **content anchors** hold (they are content anchors
+precisely because line pointers into that file went stale twice in two commits),
+and the three non-ancestor SHAs are the ones the header already declares.
