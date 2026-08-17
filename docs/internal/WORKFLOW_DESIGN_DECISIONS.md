@@ -11160,7 +11160,10 @@ increment `$bad`.
 
 Now pinned: the loop body **whole**, `Set-Variable` rebinding of `$commits`, and
 the statement immediately before the loop -- a dead wrapper leaves the body
-byte-identical, so only its predecessor changes. All seven rejected.
+byte-identical, so only its predecessor changes. Each rejected -- five named
+above, plus `$c` rebound at position two, which an audit reproduced. The count
+was first published as "seven" against an enumeration of five; the enumeration
+was the accurate half.
 
 **A note on my own measurement.** The first mutation run reported all five still
 passing. They were not landing -- `git diff` was empty, because the anchors I
@@ -11296,3 +11299,26 @@ no round found a defect in a kernel-checked theorem; the last six returned zero
 P1; and three findings from those rounds were themselves wrong and were rejected
 on measurement. The last sentence asks the auditor to measure rather than
 assert, which is the rule this project paid the most to learn.
+
+## WDD-20260816-072 -- The last two wrong numbers, corrected before the tag ships
+
+Round 12 raised seven P3s. Five were fixed with the round; two were record
+accuracy and are corrected here, because a design log that ships a known-wrong
+figure to an external auditor is the defect this entire effort was about.
+
+**"Seven mutations rejected"** appears in WDD-20260816-069 and DD-20260816-125.
+Both then enumerate **five**, and the shipped comment in
+`design_decision_check_regression.ps1` says "five edits". An audit reproduced
+**six** -- the five named plus `/c/Users/poin/bash_completion.d/*.bash` rebound at position two. Seven was supported
+by no enumeration anywhere. Both entries now say what was actually verified.
+
+**DD-20260816-126 gave a false reason for its own placement**, opening "recorded
+here because `scripts/gate.ps1` is code-classified". It is not:
+`` is `(?i)\.lean$`, so a `.ps1` file is workflow-classified,
+and the production classifier reports `0 code` for the commit that introduced
+the entry. Harmless where it sits -- the extra entry costs nothing -- but the
+stated premise was wrong, which is the same species as an over-broad universal:
+a claim made in passing that nobody measured.
+
+That closes round 12 apart from the items published as declared-open in the
+commissioning prompt, each with its measurement. The internal loop is stopped.

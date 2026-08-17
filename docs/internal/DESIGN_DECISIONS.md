@@ -12193,8 +12193,12 @@ uses. Fails closed either way; the message was the defect.
 
 ## DD-20260816-126 -- The raw-call check parses instead of matching
 
-Companion to WDD-20260816-069, recorded here because `scripts/gate.ps1` is
-code-classified.
+Companion to WDD-20260816-069. It is recorded here as well as in the workflow
+log because both were touched, **not** because `scripts/gate.ps1` is
+code-classified -- it is not. The repository's classifier reports `0 code` for
+the commit that introduced this entry: `$proofCodePattern` is `(?i)\.lean$`, so
+a `.ps1` file is workflow-classified. The entry first gave that false premise
+for its own placement.
 
 `scripts/gate.ps1`'s raw-call-site check is now an AST walk over `CommandAst`
 nodes with a non-`Unknown` invocation operator, replacing five generations of
@@ -12215,5 +12219,5 @@ explanatory comment could satisfy.
 
 `scripts/design_decision_check_regression.ps1`'s wiring case additionally pins
 the loop body whole, `Set-Variable` rebinding of `$commits`, and the statement
-before the loop. Seven mutations that previously certified a single commit while
+before the loop. The mutations that previously certified a single commit while
 printing the green sentence are each rejected.
