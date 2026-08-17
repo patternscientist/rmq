@@ -217,8 +217,12 @@ certification range falls back to `HEAD~1..HEAD` — a one-commit window over an
 N-commit push. `DD-20260816-122`. This is not abstract: see the entry below,
 which measures what that window is currently concealing.
 
-**13 of the 101 commits in this candidate's branch history fail the per-commit
-certification the candidate ships.** Measured by sweeping
+**Thirteen commits in this candidate's branch history fail the per-commit
+certification the candidate ships.** They are `bb15006` `ebdaf22` `29c688b`
+`4c56e7e` `aa3d585` `7655ee8` `c9cb19f` `3652d4b` `5c09c5a` `3265987`
+`2bd03d8` `9389655` `f8de800` — a fixed set; the branch total was 103 non-merge
+commits when last swept and rises with every commit, so the ratio is not the
+claim. Measured by sweeping
 `design_decision_check.ps1 -Strict` over every non-merge commit in
 `$(git merge-base main HEAD)..HEAD`. All 13 are ancestors of this tag. Three
 causes, of which the largest is the checker's own: `paper/` matches no

@@ -11445,8 +11445,10 @@ the amendment is the record it asked for.
 ## WDD-20260817-075 -- The candidate's own history does not pass the check the candidate ships
 
 Sweeping `design_decision_check.ps1 -Strict` over every non-merge commit from
-`main`'s merge-base to the tip -- the range a pull request would use -- **13 of
-101 commits fail**. They are all ancestors of the `audit-v1-rc-4` tag. They were
+`main`'s merge-base to the tip -- the range a pull request would use --
+**thirteen named below fail** (103 non-merge commits at the latest sweep;
+the denominator moves, the set does not). They are all ancestors of the
+`audit-v1-rc-4` tag. They were
 inside the candidate the entire time the internal loop was auditing it, and
 twelve rounds did not surface them, because nothing had ever run the check over
 the branch's own history.
@@ -11663,4 +11665,31 @@ with scope beyond this candidate:
    `rmq.tex` ones are genuinely owed: the manuscript's claim changes have no
    design record.
 
-Until then the sweep stands at 13 of 101, and the reason is now written down.
+Until then the sweep stands at thirteen named commits -- see `WDD-20260817-078`
+for why that is not written as a ratio -- and the reason is now written down.
+
+## WDD-20260817-078 -- A count of commits cannot be stated as a ratio
+
+`13 of 100` became `13 of 101` became `13 of 103`, twice in one day, because
+every commit written to *record* the finding enlarges the set the finding counts
+over. This is the fixed-point problem for the third time in this repository --
+after the plan header that could not name the commit introducing it, and the
+commissioning prompt that could not carry its own tag's SHA -- and it was walked
+into anyway, because a ratio does not look self-referential the way a SHA does.
+
+The numerator is stable and the denominator is not. Those 13 SHAs are fixed
+facts about history: re-swept at 103 non-merge commits, the failing set is
+exactly `bb15006 ebdaf22 29c688b 4c56e7e aa3d585 7655ee8 c9cb19f 3652d4b
+5c09c5a 3265987 2bd03d8 9389655 f8de800` -- the same thirteen, unchanged, while
+the total moved twice.
+
+So the records now state the invariant and derive the rest: **thirteen named
+commits fail**, out of however many the sweep reports when it is run. The
+denominator is given as an observation at a stated tag, never as part of the
+claim.
+
+The general rule, which the plan header already got right by accident of careful
+phrasing -- it says an *ancestor of* the branch, not *the tip*, and so survived
+four candidate moves untouched: **state claims in terms of what does not move.**
+A set of SHAs does not move. A ratio whose denominator includes the document
+making the claim moves every time the document is saved.
