@@ -11403,3 +11403,38 @@ string.
 `WDD-20260816-070`'s declared-open table and the external packet's
 `declared open` list both carried these three as known limits. Both are
 corrected: the three are closed. What remains open there is unchanged.
+
+
+## WDD-20260817-074 -- Why `&&` is not a raw-call fixture, written down
+
+Round 12's last open item was small and entirely a record defect: the `&&`
+pipeline-chain shape had been dropped from the raw-call fixture set without a
+note, so its absence read as an oversight. A reader auditing fixture coverage had
+no way to tell a considered exclusion from a forgotten one, which is the whole
+reason the fixture set is pinned in the first place.
+
+Measured rather than asserted, on the runtime this gate actually uses:
+`[Parser]::ParseInput('./a.ps1 && ./b.ps1', ...)` returns **one** parse error
+under PowerShell **5.1.26100.9168** -- *"The token '&&' is not a valid statement
+separator in this version."* Two consequences, and the note states both:
+
+- It cannot be a fixture. `Get-RawCallSites` returns `$null` on parse errors, so
+  a `&&` fixture would exercise the predicate not at all -- it would sit in the
+  list looking like coverage while testing nothing. That is the failure mode this
+  check was rebuilt to stop, so adding it would have been worse than omitting it.
+- Its absence costs no coverage in the file actually walked. A `gate.ps1`
+  containing `&&` would not parse, and that branch is `Fail` (`exit 1`), not
+  `SoftFail` -- verified by reading the definition, not by assuming the name.
+
+### What the note does not establish
+
+Under PowerShell 7, `&&` parses into a pipeline chain, and whether the
+`CommandAst` walk descends into one is **untested**: there is no pwsh 7 on this
+machine to measure it on. Rather than assert the walk handles it -- which is
+plausible, since `FindAll` is recursive, and plausible is exactly the standard
+this project has repeatedly found insufficient -- the comment records it as the
+first thing to check if the gate is ever run under 7.
+
+This entry exists because the per-commit strict check refused the original
+commit: one workflow file changed, no design-log update. The check was right, and
+the amendment is the record it asked for.

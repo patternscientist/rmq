@@ -466,6 +466,20 @@ if ($LASTEXITCODE -ne 0) { SoftFail "git diff --check found issues" }
 # below are -- is not a CommandAst either, so the fixtures need no exclusion
 # region: the previous version needed sentinels precisely because a regex cannot
 # tell a call from a quotation of one.
+# The `&&` pipeline-chain shape is deliberately absent below. Round 12 flagged
+# its removal as undocumented, which it was; this is the missing note.
+#
+# Under the Windows PowerShell this gate runs on -- measured 5.1.26100.9168 --
+# `a.ps1 && b.ps1` is a PARSE ERROR, so it cannot serve as a fixture:
+# `Get-RawCallSites` returns $null on parse errors, and a fixture that parses to
+# nothing exercises the predicate not at all. The same fact is why its absence
+# costs no coverage in the file actually walked: a gate.ps1 containing `&&`
+# would not parse, and the `$null` branch below is a hard Fail, not a skip.
+#
+# NOT verified here: under PowerShell 7 `&&` parses into a pipeline chain, and
+# whether the CommandAst walk descends into one is untested -- there is no
+# pwsh 7 on this machine to measure it on. If this gate is ever run under 7,
+# that is the first thing to check.
 $rawCallFixtures = @(
   '& "$PSScriptRoot\plain.ps1"',
   '  & "$PSScriptRoot\indented.ps1"',
