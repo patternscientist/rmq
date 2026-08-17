@@ -535,6 +535,48 @@ try {
     # one-commit window, so a push of three commits certified only the tip and
     # the breach at c1 went through -- the same blind spot, one level up. This
     # walks the range the way the workflow now does.
+    # MERGE COMMITS. The checker refuses them (DD-20260816-122) because a merge's
+    # first-parent diff carries the merged branch's design log. That refusal had no
+    # regression coverage, and its consequence was unmeasured: `git rev-list`
+    # enumerates merges, so the CI step could never pass on a pull request --
+    # actions/checkout builds `refs/pull/N/merge`, so HEAD IS a merge commit.
+    #
+    # The branch touches files the trunk commits do not, so the merge is
+    # conflict-free: a conflicted merge leaves the index unresolved and the
+    # fixture cannot continue.
+    $trunk = (& git rev-parse --abbrev-ref HEAD)
+    & git checkout -q -b mergefix $c0 2>&1 | Out-Null
+    Write-FixtureFile -Root $pcRoot -RelativePath 'paper/branch_only.tex' -Content 'branch side'
+    Write-FixtureFile -Root $pcRoot -RelativePath 'docs/internal/WORKFLOW_DESIGN_DECISIONS.md' `
+      -Content '## WDD-20000101-002 -- branch' -Append
+    & git add -A 2>&1 | Out-Null
+    & git commit -qm 'branch commit with entry' 2>&1 | Out-Null
+    & git checkout -q $trunk 2>&1 | Out-Null
+    & git merge --no-ff -q mergefix -m 'merge' 2>&1 | Out-Null
+    $mergeSha = (& git rev-parse HEAD)
+    $mergeParents = @((& git rev-list --parents -n 1 $mergeSha) -split '\s+' | Where-Object { $_ })
+    $mergeRefused = Invoke-PcCheck @('-Base', ($mergeSha + '~1'), '-Head', $mergeSha, '-Strict')
+    $withMerges = @(& git rev-list --reverse ($c0 + '..' + $mergeSha)).Count
+    $noMerges = @(& git rev-list --reverse --no-merges ($c0 + '..' + $mergeSha)).Count
+    & git reset -q --hard $c2 2>&1 | Out-Null
+    & git branch -D mergefix 2>&1 | Out-Null
+
+    if ($mergeParents.Count -ne 3) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [merge-fixture] expected a 2-parent merge, built $($mergeParents.Count - 1)"
+      $failures += 1
+    } elseif ($mergeRefused -eq 0) {
+      Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [merge-refused] a merge commit was certified; its first-parent diff carries the merged branch design log'
+      $failures += 1
+    } else {
+      Write-Host 'DESIGN-CHECK-REGRESSION: PASS [merge-refused] a merge commit is refused, not certified'
+    }
+    if ($noMerges -ge $withMerges) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [merge-excluded] --no-merges enumerated $noMerges of $withMerges; the merge is still in the range and the step could never pass"
+      $failures += 1
+    } else {
+      Write-Host "DESIGN-CHECK-REGRESSION: PASS [merge-excluded] --no-merges drops the merge ($noMerges of $withMerges)"
+    }
+
     $pushRange = @(& git rev-list --reverse ($c0 + '..' + $c2))
     $pushBad = 0
     foreach ($rc in $pushRange) {
@@ -586,7 +628,7 @@ if (-not (Test-Path -LiteralPath $ciPath)) {
   # Presence AND absence. Presence alone passed on a ci.yml whose push branch
   # had been reverted to one aggregate call, because the loop text still sat
   # above it -- the pin did not pin the wiring.
-  $wired = ($ciText -match 'git rev-list --reverse') -and ($ciText -match '-Head \$c') -and
+  $wired = ($ciText -match 'git rev-list --reverse --no-merges') -and ($ciText -match '-Head \$c') -and
            ($ciText -match 'github\.event\.before') -and ($ciText -match '(?m)^\s*fetch-depth: 0\s*$')
   # Matched against the COMMAND, not the prose: the workflow's own comment
   # explains why `--depth=0` was removed, and a bare substring test fired on
@@ -612,15 +654,44 @@ if (-not (Test-Path -LiteralPath $ciPath)) {
   # `if ($false)` and leaving one aggregate call to do the work. So the shape of
   # the range derivation is pinned too: exactly three assignments (pull request,
   # event-based push, new-branch fallback) and no assignment after the chain.
-  $rangeAssignments = ([regex]::Matches($ciText, '(?m)^\s*\$range = ')).Count
-  if ($rangeAssignments -ne 3) {
-    Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml makes $rangeAssignments range assignments; expected exactly 3 (PR, event-based push, new-branch fallback). A fourth outside the chain re-fixes the window."
+  # Counting assignments is not pinning the derivation. An audit satisfied the
+  # count with a ci.yml that certified ONE commit: changing the event-based range
+  # to the constant `HEAD~1..HEAD` is a one-token edit that leaves the count at 3
+  # and reinstates the exact window DD-20260816-121 exists to close. So the three
+  # VALUES are pinned, in order, and $commits must be assigned exactly once.
+  $expectedRanges = @(
+    'origin/${{ github.base_ref }}..HEAD',
+    '${{ github.event.before }}..HEAD',
+    'HEAD~1..HEAD'
+  )
+  $actualRanges = @([regex]::Matches($ciText, '(?m)^\s*\$range = \"([^\"]+)\"') |
+    ForEach-Object { $_.Groups[1].Value })
+  if (($actualRanges -join '|') -cne ($expectedRanges -join '|')) {
+    Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] range derivation is [$($actualRanges -join ', ')]; expected [$($expectedRanges -join ', ')] -- a constant range certifies one commit"
+    $wired = $false
+  }
+  if (([regex]::Matches($ciText, '(?m)^\s*\$commits = ')).Count -ne 1) {
+    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml assigns $commits more than once; a later assignment can reduce the range'
+    $wired = $false
+  }
+  # The loop body must not filter either. A `continue` guard skipping all but the
+  # tip satisfies every test above -- it changes no assignment and no enumeration.
+  # So the first statement inside the loop is pinned.
+  if ($ciText -notmatch '(?ms)foreach \(\$c in \$commits\) \{\s*\r?\n\s*Write-Host ') {
+    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] the certification loop does not begin with its Write-Host; a guard there can skip commits silently'
+    $wired = $false
+  }
+  # And THIS step must be scheduled. Testing for `if: always()` anywhere in the
+  # file passed a ci.yml whose certification step was `if: false`, because other
+  # steps carry the condition -- so the test is anchored to the step name.
+  if ($ciText -notmatch '(?ms)name: Run strict design-decision scan\s*\r?\n\s*if: always\(\)') {
+    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] the design-decision step is not scheduled with if: always(); it can be disabled by its own condition'
     $wired = $false
   }
   # The enumeration must not be filtered. `git rev-list --reverse $range |
   # Select-Object -Last 1` satisfies every token test above and certifies one
   # commit, so the assignment is pinned whole.
-  if ($ciText -notmatch '(?m)^\s*\$commits = @\(git rev-list --reverse \$range\)\s*$') {
+  if ($ciText -notmatch '(?m)^\s*\$commits = @\(git rev-list --reverse --no-merges \$range\)\s*$') {
     Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml does not enumerate the range unfiltered; a pipe or selector can reduce it to one commit'
     $wired = $false
   }

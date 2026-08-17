@@ -70,6 +70,10 @@ function ConvertTo-RepositoryPath {
 function Resolve-BaseRef {
   param(
     [string]$BaseRef,
+    # Labelled, because this function resolves the HEAD too and hard-coding
+    # "base" made the head-specific message at the call site unreachable under
+    # -Strict -- the mode CI uses.
+    [string]$RefKind = 'base',
     [bool]$FailClosed
   )
 
@@ -83,9 +87,9 @@ function Resolve-BaseRef {
   $resolved = @(& git rev-parse --verify "$BaseRef^{commit}" 2>$null)
   if ($LASTEXITCODE -ne 0 -or $resolved.Count -ne 1) {
     if ($FailClosed) {
-      Stop-DesignCheck "strict certification could not resolve base '$BaseRef'"
+      Stop-DesignCheck "strict certification could not resolve $RefKind '$BaseRef'"
     }
-    Write-Host "DESIGN-CHECK: could not resolve base '$BaseRef'; using non-strict local-worktree mode"
+    Write-Host "DESIGN-CHECK: could not resolve $RefKind '$BaseRef'; using non-strict local-worktree mode"
     return ""
   }
   return [string]$resolved[0]
@@ -217,7 +221,7 @@ function Get-PathDisposition {
 $resolvedBase = Resolve-BaseRef -BaseRef $Base -FailClosed ([bool]$Strict)
 $resolvedHead = ""
 if ($Head) {
-  $resolvedHead = Resolve-BaseRef -BaseRef $Head -FailClosed ([bool]$Strict)
+  $resolvedHead = Resolve-BaseRef -BaseRef $Head -RefKind 'head' -FailClosed ([bool]$Strict)
   if (-not $resolvedHead) { Stop-DesignCheck "could not resolve head '$Head'" }
   if (-not $resolvedBase) { Stop-DesignCheck "-Head requires a resolvable -Base" }
 }

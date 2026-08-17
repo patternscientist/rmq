@@ -12169,3 +12169,24 @@ a phrase rather than a stale figure. The header now states what "at this pin"
 means, and the two claims about artifacts committed WITH this revision say that
 instead. The three remaining "at this pin" uses are about repository state
 verified at `17360d1` and are correct as written.
+
+## DD-20260816-125 -- --no-merges, and the range derivation pinned by value
+
+Companion to WDD-20260816-068, recorded here because `.github/workflows/ci.yml`
+and `scripts/design_decision_check.ps1` are code-classified.
+
+`ci.yml` enumerates with `--no-merges`. Without it the certification step could
+never pass on a pull request, because `actions/checkout` builds
+`refs/pull/N/merge` and the checker refuses merge commits. Measured: 3
+enumerated / 1 failed without the flag, 2 / 0 with it, on a fixture whose PR
+commits are both compliant.
+
+The residual is stated in the workflow rather than left implicit: content a merge
+introduces alone -- a conflict resolution present in neither parent -- is then
+certified by nothing. DD-20260816-122 already accepted that trade when it chose
+refusal over judging a merge by the union of its parents.
+
+`design_decision_check.ps1`'s `Resolve-BaseRef` takes a `-RefKind` label. It
+resolves the head as well as the base and hard-coded "base", so the
+head-specific failure message was unreachable under `-Strict` -- the mode CI
+uses. Fails closed either way; the message was the defect.

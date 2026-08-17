@@ -11008,3 +11008,84 @@ much before the cause was obvious.
 This is the fixed point DD-20260816-124 states for the plan header, hit again one
 commit later in a different file. The line is gone; the prompt tells the auditor
 to derive the SHA from the tag, which is the only formulation that can be true.
+
+## WDD-20260816-068 -- Round 10: the merge refusal would have kept CI red, and the controls matched the envelope a third time
+
+Fresh-blind audit of `77807b0..17360d1`. **P1 empty**; all four P2s are in round
+9's repairs.
+
+### The merge refusal made the certification step unpassable
+
+DD-20260816-122 made `design_decision_check.ps1` refuse a merge commit. Correct --
+a merge's first-parent diff carries the merged branch's design log. But
+`git rev-list` **enumerates** merges, and the CI loop had no way to skip one, so
+the step could never pass on a pull request: `actions/checkout` builds
+`refs/pull/N/merge`, and HEAD *is* a merge commit there.
+
+Measured on a fixture with two fully compliant PR commits:
+
+| enumeration | commits | failed | step |
+|---|---|---|---|
+| without `--no-merges` | 3 | 1 | **exits 1** |
+| with `--no-merges` | 2 | 0 | passes |
+
+The entry's green sentence -- "all 33 linear commits still certify" -- was true
+and said nothing about the property that mattered.
+
+`--no-merges` added, with the residual stated in the workflow: content a merge
+introduces alone is then certified by nothing. That is the same trade DD-122
+already took when it chose refusal over judging a merge by the union of its
+parents.
+
+**And the refusal had no regression coverage** -- `git grep -i merge` over the
+suite returned nothing, in a round where every other fix added a fixture. Two
+legs now: the checker refuses a 2-parent commit, and the enumeration drops it.
+The fixture branch touches files the trunk commits do not, because a conflicted
+merge leaves the index unresolved and the fixture cannot continue.
+
+### The wiring pin counted assignments, not derivation
+
+DD-20260816-122 said "the range DERIVATION is pinned instead". It pinned the
+*count* of `$range` assignments. Five one-line edits kept the count at three and
+certified one commit. Now pinned: the three range **values in order**, `$commits`
+assigned exactly once, the loop body's first statement, and `if: always()`
+**anchored to this step's name** -- testing for it anywhere in the file passed a
+workflow whose certification step was `if: false`, because other steps carry it.
+
+Verified against all five: constant range, `$commits` reassignment, in-loop
+`continue`, disabled step, and `Select-Object -Last 1`. Each rejected.
+
+### Third round, same control defect
+
+WDD-20260816-064 replaced four controls with ten, having written that the four
+"were also exactly the new pattern's envelope". The ten were too. Ten further
+shapes matched **0**, including `$script:rc = & "$PSScriptRoot\..."` -- the
+assignment idiom this file itself uses for `$script:checkersRun`.
+
+That one is not cosmetic: a new stage added that way is invisible to the lint
+**and** to the roster, which is the property the lint exists to establish. The
+gate said so itself and it was true.
+
+The anchor is gone. The pattern now matches anywhere in the **code portion** of a
+line, and comments are stripped first -- an anchor-free pattern matches prose,
+which is how "4 sites, every one a control" came to include this entry's own
+explanatory comment. Nineteen controls, added **before** the pattern was widened.
+
+### The sentinel exclusion was unbounded, and its liveness test was satisfied by prose
+
+Moving the `END` marker down swallowed a real call site with every assertion
+green. Emptying both control arrays also left it green: `foreach` over an empty
+array is a silent no-op, and the `-ge 1` liveness test ran over the whole file,
+where a comment satisfied it.
+
+Now: fixture counts pinned, liveness counted **inside the region only** and
+required to reach the control count, and the region's length bounded by what the
+fixtures occupy.
+
+### Two smaller ones
+
+`GATE COVERAGE` still counted a checker that threw -- a `#requires` mismatch
+executes nothing and was recorded as invoked. The append moved past the throw
+check. And `Resolve-BaseRef` hard-coded "base" while resolving the head too, so
+the head-specific message was unreachable under `-Strict`, the mode CI uses; it
+takes a `-RefKind` label now.

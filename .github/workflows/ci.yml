@@ -72,7 +72,20 @@ jobs:
           } else {
             $range = "HEAD~1..HEAD"
           }
-          $commits = @(git rev-list --reverse $range)
+          # --no-merges. `design_decision_check.ps1` REFUSES a merge commit, because
+          # a merge's first-parent diff carries the merged branch's design log and
+          # would certify anything the merge itself introduced. That refusal is
+          # right, but `git rev-list` enumerates merges -- so without this flag the
+          # step could never pass on a pull request, where actions/checkout builds
+          # `refs/pull/N/merge` and HEAD IS a merge commit, nor on any push
+          # containing one.
+          #
+          # Residual, stated because it is real: content introduced by a merge
+          # alone -- a conflict resolution present in neither parent -- is then
+          # never certified by anything. That is the same trade DD-20260816-122
+          # already accepted when it chose refusal over judging a merge by the
+          # union of its parents.
+          $commits = @(git rev-list --reverse --no-merges $range)
           if ($commits.Count -eq 0) {
             Write-Host "DESIGN-CHECK: no commits in $range; nothing to certify"
             exit 1

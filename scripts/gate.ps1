@@ -207,15 +207,6 @@ function Invoke-Checker {
     }
   }
 
-  # Recorded AFTER the guards, not before. Appending on entry counted a checker
-  # that then failed Test-Path or the parameter check: `GATE COVERAGE: 1 of 17`
-  # printed alongside `DID NOT RUN: no such file`. The verdict was right -- the
-  # gate still exits 1 -- but the coverage sentence said a stage was invoked when
-  # it was not, which is the species this file keeps correcting elsewhere.
-  $paramSig = @($CheckerParams.GetEnumerator() | Sort-Object Key |
-    ForEach-Object { "$($_.Key)=$($_.Value)" })
-  $script:checkersRun += ($Label + ' {' + (Split-Path $Path -Leaf) + '}' +
-    $(if ($paramSig.Count) { ' [' + ($paramSig -join ',') + ']' } else { '' }))
 
   Remove-Variable -Name LASTEXITCODE -Scope Global -ErrorAction SilentlyContinue
   $threw = $null
@@ -226,6 +217,19 @@ function Invoke-Checker {
     if ($Soft) { SoftFail $m; return }
     Fail $m
   }
+
+  # Recorded after the THROW check too. A `#requires` mismatch, a parse error or a
+  # thrown exception all reach this point having executed nothing of the body, and
+  # a checker counted there prints `GATE COVERAGE: n of 17` beside `DID NOT RUN`.
+  # Recorded AFTER the guards, not before. Appending on entry counted a checker
+  # that then failed Test-Path or the parameter check: `GATE COVERAGE: 1 of 17`
+  # printed alongside `DID NOT RUN: no such file`. The verdict was right -- the
+  # gate still exits 1 -- but the coverage sentence said a stage was invoked when
+  # it was not, which is the species this file keeps correcting elsewhere.
+  $paramSig = @($CheckerParams.GetEnumerator() | Sort-Object Key |
+    ForEach-Object { "$($_.Key)=$($_.Value)" })
+  $script:checkersRun += ($Label + ' {' + (Split-Path $Path -Leaf) + '}' +
+    $(if ($paramSig.Count) { ' [' + ($paramSig -join ',') + ']' } else { '' }))
 
   $lec = Get-Variable -Name LASTEXITCODE -Scope Global -ErrorAction SilentlyContinue
   if ($null -eq $lec) {
@@ -489,7 +493,13 @@ $gateSource = Get-Content -Raw -LiteralPath $PSCommandPath
 # So the lint now carries a NEGATIVE CONTROL. A detector that matches nothing
 # and a detector that works produce the same output on a clean tree, and this
 # tree is clean -- only the control distinguishes them.
-$rawCallPattern = '(?im)(?:^|[;{}|]|\bthen\b|\belse\b)[^\S\r\n]*(?:\$\w+\s*=\s*)?[&.]\s*"\$\{?PSScriptRoot\}?[\\/][^"]+\.ps1"'
+# Anchor-free, over the CODE portion of each line. Anchoring on the preceding
+# character missed ten further shapes -- `$script:rc = & ...` (the assignment
+# idiom this file itself uses), parenthesised and array subexpressions,
+# `$env:`/property/multi assignment, `&&` chains, `$( )` interpolation, and a
+# call after a comma. Three rounds running, the control set was drawn from what
+# the pattern already did; the shapes below were added as controls FIRST.
+$rawCallPattern = '(?i)[&.]\s*"\$\{?PSScriptRoot\}?[\\/][^"]+\.ps1"'
 # RAW-CALL-CONTROLS-BEGIN
 # NEGATIVE-SPACE controls. The previous four were exactly the pattern's own
 # capability envelope -- leading horizontal space, `&` or `.`, either separator --
@@ -511,14 +521,33 @@ $rawCallControls = @(
   '$out = & "$PSScriptRoot\control_assigned.ps1"',
   'try { & "$PSScriptRoot\control_in_try.ps1" } catch {}',
   '& "${PSScriptRoot}\control_braced.ps1"',
+  '$script:rc = & "$PSScriptRoot\control_scoped.ps1"',
+  'if (Test-Path X) { $script:rc = & "$PSScriptRoot\control_scoped_if.ps1" }',
+  '$rc = (& "$PSScriptRoot\control_paren.ps1")',
+  '$rc = @(& "$PSScriptRoot\control_arraysub.ps1")',
+  '$env:RC = & "$PSScriptRoot\control_envassign.ps1"',
+  '$h.Rc = & "$PSScriptRoot\control_prop.ps1"',
+  '$a, $b = & "$PSScriptRoot\control_multi.ps1"',
+  'Test-Path X && & "$PSScriptRoot\control_chain.ps1"',
+  '$all = @(1, & "$PSScriptRoot\control_comma.ps1")',
   '& "$PSScriptRoot\control_upper.PS1"'
 )
 
 # And shapes the lint must NOT flag, asserted rather than assumed. Without these
 # a pattern that matches everything would satisfy every control above.
+# Shapes the PATTERN must not flag. A pattern matching everything would satisfy
+# every positive control, so this is asserted rather than assumed.
 $rawCallAntiControls = @(
-  'Invoke-Checker -Path "$PSScriptRoot\converted.ps1"',
-  '# & "$PSScriptRoot\commented_out.ps1"'
+  'Invoke-Checker -Path "$PSScriptRoot\converted.ps1"'
+)
+
+# Shapes the STRIP must remove. A commented-out call is a raw call as far as the
+# pattern is concerned -- it is comment removal, not the regex, that must handle
+# it, so it is tested against the stripping and not against the pattern.
+$rawCallStripControls = @(
+  '# & "$PSScriptRoot\commented_out.ps1"',
+  '  # was: if (x) { & "$PSScriptRoot\old.ps1" }',
+  '$x = 1  # trailing; & "$PSScriptRoot\trailing.ps1"'
 )
 # RAW-CALL-CONTROLS-END
 foreach ($ctl in $rawCallControls) {
@@ -546,10 +575,65 @@ $sentinelPattern = '(?s)# ' + $sentinelTag + '-BEGIN.*?# ' + $sentinelTag + '-EN
 if ([regex]::Matches($gateSource, $sentinelPattern).Count -ne 1) {
   SoftFail 'the raw-call control sentinels are missing or duplicated; the lint would read its own fixtures as findings'
 }
-if ([regex]::Matches($gateSource, $rawCallPattern).Count -lt 1) {
-  SoftFail 'the raw-call-site lint matches nothing even in the control region; it is inert'
+# The fixture counts are pinned. Emptying both control arrays left the block
+# reporting live and clean: `foreach` over an empty array is a silent no-op, and
+# a `-ge 1` liveness test over the whole file was satisfied by an explanatory
+# COMMENT. Liveness is now measured inside the sentinel region only.
+if ($rawCallControls.Count -lt 19 -or $rawCallAntiControls.Count -lt 1 -or
+    $rawCallStripControls.Count -lt 3) {
+  SoftFail ("the raw-call fixtures were reduced: {0} controls, {1} anti-controls, {2} strip controls" -f `
+    $rawCallControls.Count, $rawCallAntiControls.Count, $rawCallStripControls.Count)
+}
+$sentinelRegion = [regex]::Match($gateSource, $sentinelPattern).Value
+if ([regex]::Matches($sentinelRegion, $rawCallPattern).Count -lt $rawCallControls.Count) {
+  SoftFail ("the raw-call-site lint matches {0} of {1} fixtures inside the control region; it is inert for the rest" -f `
+    ([regex]::Matches($sentinelRegion, $rawCallPattern).Count), $rawCallControls.Count)
+}
+# And the region must not be able to grow past its own fixtures. Moving the END
+# marker down swallowed a real call site with every assertion still green, so the
+# region's length is bounded by what the fixtures themselves occupy.
+$fixtureChars = ($rawCallControls + $rawCallAntiControls + $rawCallStripControls |
+  Measure-Object -Property Length -Sum).Sum
+if ($sentinelRegion.Length -gt ($fixtureChars * 3)) {
+  SoftFail ("the raw-call control region is {0} chars for {1} chars of fixtures; it may be swallowing real call sites" -f `
+    $sentinelRegion.Length, $fixtureChars)
 }
 $scanSource = [regex]::Replace($gateSource, $sentinelPattern, '')
+
+# Comments are stripped before matching. An anchor-free pattern matches prose,
+# and it did: the entry recording this check said it found "4 sites, every one a
+# control" when one of the four was that entry's own explanatory comment. A lint
+# that fires on a sentence about the lint creates pressure to widen the exclusion
+# region, which is how a real call site gets hidden.
+#
+# A `#` inside a string literal is not a comment, so only a `#` preceded by an
+# even number of double quotes on that line starts one.
+$codeOnly = New-Object System.Text.StringBuilder
+foreach ($srcLine in ($scanSource -split "`r?`n")) {
+  $cut = -1
+  $quotes = 0
+  for ($ci = 0; $ci -lt $srcLine.Length; $ci++) {
+    $ch = $srcLine[$ci]
+    if ($ch -eq '"') { $quotes++ }
+    elseif ($ch -eq '#' -and ($quotes % 2) -eq 0) { $cut = $ci; break }
+  }
+  $kept = if ($cut -ge 0) { $srcLine.Substring(0, $cut) } else { $srcLine }
+  [void]$codeOnly.AppendLine($kept)
+}
+$scanSource = $codeOnly.ToString()
+
+foreach ($sc in $rawCallStripControls) {
+  $cut = -1; $quotes = 0
+  for ($ci = 0; $ci -lt $sc.Length; $ci++) {
+    $ch = $sc[$ci]
+    if ($ch -eq '"') { $quotes++ }
+    elseif ($ch -eq '#' -and ($quotes % 2) -eq 0) { $cut = $ci; break }
+  }
+  $stripped = if ($cut -ge 0) { $sc.Substring(0, $cut) } else { $sc }
+  if ([regex]::Matches($stripped, $rawCallPattern).Count -ne 0) {
+    SoftFail ("comment stripping does not remove [$sc]; the lint would report a commented-out call as a finding")
+  }
+}
 $rawCallSites = @([regex]::Matches($scanSource, $rawCallPattern))
 if ($rawCallSites.Count -gt 0) {
   SoftFail ("{0} sub-checker call site(s) bypass Invoke-Checker and would score a non-running checker as PASS: {1}" -f `
