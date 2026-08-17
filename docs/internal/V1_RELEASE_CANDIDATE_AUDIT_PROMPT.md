@@ -217,23 +217,24 @@ certification range falls back to `HEAD~1..HEAD` — a one-commit window over an
 N-commit push. `DD-20260816-122`. This is not abstract: see the entry below,
 which measures what that window is currently concealing.
 
-**Thirteen commits in this candidate's branch history fail the per-commit
-certification the candidate ships.** They are `bb15006` `ebdaf22` `29c688b`
-`4c56e7e` `aa3d585` `7655ee8` `c9cb19f` `3652d4b` `5c09c5a` `3265987`
-`2bd03d8` `9389655` `f8de800` — a fixed set; the branch total was 103 non-merge
-commits when last swept and rises with every commit, so the ratio is not the
-claim. Measured by sweeping
-`design_decision_check.ps1 -Strict` over every non-merge commit in
-`$(git merge-base main HEAD)..HEAD`. All 13 are ancestors of this tag. Three
-causes, of which the largest is the checker's own: `paper/` matches no
-workflow root and the classifier reads `needsCode = -not needsWorkflow`, so a
-whole directory of prose defaulted into proof/code architecture (7 commits);
-`RC1_CORRECTION_HANDOFF.md` is absent from the neutral-evidence list, so ticking
-a checkbox demands a design decision (3); and `.lean` under `scripts/` requires
-both ledgers, one of which was written (3). Measured in a scratch worktree:
-correcting the classifier certifies **5** of the 13, not more — the remaining 8
-fail on `paper/rmq.tex`, `paper/references.bib`, `paper/check_paper.ps1` and
-`scripts/*.lean`, where the check is arguably right. `WDD-20260817-077`.
+**Eight pre-policy commits certify by retrospective record, not by their own
+content.** Every non-merge commit on this branch now passes
+`design_decision_check.ps1 -Strict` — 104 of 104 — but eight of them pass
+because `docs/internal/RETROSPECTIVE_CERTIFICATIONS.md` carries the design
+decision they failed to record, and the checker matches the commit AND its
+exact missing-path set against that file. They predate the per-commit rule
+(`DD-20260816-121`) and cannot carry the entry they owe, since rewriting them
+would discard this tag and its GATE PASS. Four of the eight changed
+`paper/rmq.tex`, the public claim surface, with no design record — that is a
+real gap in the history, now written down rather than repaired.
+
+The mechanism is pinned by `[retrospective-record]` in the regression: the
+table must be exactly those eight SHAs, each missing set is re-derived from the
+production checker rather than trusted, and a widened record is rejected
+in-suite. Nine mutations were run against it and all nine fail closed;
+`WDD-20260817-079` tabulates them. **Reporting that eight commits are excused
+is not a finding — finding a way to widen the record, or a ninth commit it
+silently covers, is.**
 
 This does **not** block integration, and the earlier draft of this entry was
 wrong to imply it did. This repository integrates by squash-merge — main's last

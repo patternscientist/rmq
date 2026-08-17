@@ -214,7 +214,7 @@ $cases = @(
   @{ Id = "new-validation-path"; Files = @{ "RMQ/Validation/NewPolicyProbe.lean" = "def newPolicyProbe := true" }; Reject = $true; Output = "code/public/repository-sensitive" },
   @{ Id = "new-workflow-script"; Files = @{ "scripts/new_workflow_probe.ps1" = "Write-Host probe" }; Reject = $true; Output = "workflow/process-sensitive" },
   @{ Id = "ordinary-public-doc"; Files = @{ "docs/NEW_PUBLIC_NOTE.md" = "# Public note" }; Reject = $true; Output = "code/public/repository-sensitive" },
-  @{ Id = "unknown-repository-path-default-sensitive"; Files = @{ "new-format/data.policy" = "policy" }; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "unknown-repository-path-is-unclassified"; Files = @{ "new-format/data.policy" = "policy" }; Reject = $true; Output = "match no classification rule" },
   @{ Id = "missing-code-decision"; Files = @{ "lakefile.toml" = "name = 'probe'" }; Reject = $true; Output = "update docs/internal/DESIGN_DECISIONS.md" },
   @{ Id = "missing-workflow-decision"; Files = @{ ".agents/new_policy/README.md" = "workflow" }; Reject = $true; Output = "update docs/internal/WORKFLOW_DESIGN_DECISIONS.md" },
   @{ Id = "p1-neutral-evidence-path-cannot-shadow-code-or-current-surface"; Files = @{ "docs/internal/audit_reports/P1NeutralBypass.lean" = "def p1NeutralBypass := true"; "docs/digests/PROJECT_DIGESTION_CURRENT_V2.md" = "# Unregistered current surface" }; Reject = $true; Output = "code/public/repository-sensitive" },
@@ -232,8 +232,28 @@ $cases = @(
   @{ Id = "p1-frozen-historical-digest-control"; Files = @{ "docs/digests/DEEP_PROJECT_DIGESTION_2026_07_19.md" = "# Frozen history" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
   @{ Id = "decision-logs-nonrecursive"; Files = @{}; CodeDecision = $true; WorkflowDecision = $true; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
   @{ Id = "nonstrict-local-worktree-mode"; Files = @{ "RMQ/New/LocalAdvisory.lean" = "def localAdvisory := true" }; NonStrict = $true; OmitBase = $true; Reject = $false; Output = "code/public/repository-sensitive" },
-  @{ Id = "absolute-windows-repository-root"; Files = @{ "another-new-root/path.data" = "data" }; Reject = $true; Output = "code/public/repository-sensitive"; RequireDriveRoot = $true },
-  @{ Id = "strict-unresolvable-base"; Files = @{ "RMQ/New/BadBase.lean" = "def badBase := true" }; BaseOverride = "not-a-real-base"; Reject = $true; Output = "could not resolve base" }
+  @{ Id = "absolute-windows-repository-root"; Files = @{ "RMQ/DriveRoot/Probe.lean" = "def driveRootProbe := true" }; Reject = $true; Output = "code/public/repository-sensitive"; RequireDriveRoot = $true },
+  @{ Id = "strict-unresolvable-base"; Files = @{ "RMQ/New/BadBase.lean" = "def badBase := true" }; BaseOverride = "not-a-real-base"; Reject = $true; Output = "could not resolve base" },
+  # An unclassified path means the checker cannot judge the commit, so it is a
+  # hard error in EVERY mode. Without this case, non-strict callers would get
+  # exit 0 on a path the classifier could not place -- a green result standing
+  # in for a judgment never made.
+  @{ Id = "unclassified-path-fails-even-nonstrict"; Files = @{ "yet-another-root/x.data" = "data" }; NonStrict = $true; Reject = $true; Output = "match no classification rule" },
+  # Root-agnostic neutral evidence. Anchoring these to `^docs/internal/` is how
+  # paper/WORKLOG.md came to be proof/code architecture while
+  # docs/internal/X_WORKLOG.md was exempt evidence. WDD-20260817-077.
+  @{ Id = "neutral-worklog-outside-docs-internal"; Files = @{ "paper/WORKLOG.md" = "# Evidence" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "neutral-theorem-ledger-outside-docs-internal"; Files = @{ "paper/THEOREM_LEDGER.md" = "# Ledger" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "neutral-handoff-tracker"; Files = @{ "docs/internal/PROBE_CORRECTION_HANDOFF.md" = "- [x] done" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "neutral-repository-plumbing"; Files = @{ "paper/.gitignore" = "*.aux" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  # The counterweight to the four above: exempting paper/ wholesale would make
+  # the manuscript -- the public claim surface -- ungoverned. It stays code.
+  @{ Id = "paper-manuscript-remains-code-sensitive"; Files = @{ "paper/rmq.tex" = "\\section{Probe}" }; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "paper-bibliography-remains-code-sensitive"; Files = @{ "paper/references.bib" = "@misc{probe}" }; Reject = $true; Output = "code/public/repository-sensitive" },
+  # Runtime skills are process definition. `.claude/` was absent from the
+  # workflow roots, so skill edits were classified as proof/code and
+  # DD-20260725 had to record a code decision to satisfy a misclassification.
+  @{ Id = "claude-runtime-skill-is-workflow"; Files = @{ ".claude/skills/probe/SKILL.md" = "# Probe" }; Reject = $true; Output = "workflow/process-sensitive" }
 )
 
 $expectedCaseIds = @(
@@ -242,7 +262,7 @@ $expectedCaseIds = @(
   "new-validation-path",
   "new-workflow-script",
   "ordinary-public-doc",
-  "unknown-repository-path-default-sensitive",
+  "unknown-repository-path-is-unclassified",
   "missing-code-decision",
   "missing-workflow-decision",
   "p1-neutral-evidence-path-cannot-shadow-code-or-current-surface",
@@ -261,7 +281,15 @@ $expectedCaseIds = @(
   "decision-logs-nonrecursive",
   "nonstrict-local-worktree-mode",
   "absolute-windows-repository-root",
-  "strict-unresolvable-base"
+  "strict-unresolvable-base",
+  "unclassified-path-fails-even-nonstrict",
+  "neutral-worklog-outside-docs-internal",
+  "neutral-theorem-ledger-outside-docs-internal",
+  "neutral-handoff-tracker",
+  "neutral-repository-plumbing",
+  "paper-manuscript-remains-code-sensitive",
+  "paper-bibliography-remains-code-sensitive",
+  "claude-runtime-skill-is-workflow"
 )
 
 $expectedRejectCaseIds = @(
@@ -270,7 +298,7 @@ $expectedRejectCaseIds = @(
   "new-validation-path",
   "new-workflow-script",
   "ordinary-public-doc",
-  "unknown-repository-path-default-sensitive",
+  "unknown-repository-path-is-unclassified",
   "missing-code-decision",
   "missing-workflow-decision",
   "p1-neutral-evidence-path-cannot-shadow-code-or-current-surface",
@@ -279,7 +307,11 @@ $expectedRejectCaseIds = @(
   "p1-current-looking-digest-heldout-rejected",
   "p1-registered-current-digest-remains-sensitive",
   "absolute-windows-repository-root",
-  "strict-unresolvable-base"
+  "strict-unresolvable-base",
+  "unclassified-path-fails-even-nonstrict",
+  "paper-manuscript-remains-code-sensitive",
+  "paper-bibliography-remains-code-sensitive",
+  "claude-runtime-skill-is-workflow"
 )
 
 function Test-CaseRegistry {
@@ -793,8 +825,106 @@ if (-not (Test-Path -LiteralPath $ciPath)) {
   }
 }
 
-if ($rejectCount -ne 15 -or $acceptCount -ne 10) {
-  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [final-verdict-counts] expected 15 reject and 10 accept; got $rejectCount reject and $acceptCount accept"
+# ---------------------------------------------------------------------------
+# Retrospective certifications must stay a RECORD, not an exemption.
+#
+# docs/internal/RETROSPECTIVE_CERTIFICATIONS.md lets eight pre-policy commits
+# certify. That is only honest while the table is exactly those eight and each
+# recorded missing-set is exactly what the production checker computes. Pin both,
+# and prove a tampered record rejects -- otherwise the file is a blanket pass
+# with a paragraph of prose in front of it. WDD-20260817-079.
+$retroPath = Join-Path $callerRoot "docs/internal/RETROSPECTIVE_CERTIFICATIONS.md"
+$expectedRetroShas = @(
+  "29c688bd88bc413ff3d960222e6d0a7db34b51f5",
+  "32659871aa55336a5155a00bf60b9a618c24b43f",
+  "3652d4b5bf5bb8a08efe1c6e6c0076de787f03a0",
+  "4c56e7ed09da4c96d550d831c9e9599275d019f6",
+  "7655ee8f2bad1cdd705061463453e5300acd1203",
+  "aa3d585887e5e475a1f5cd94a4ff4a8fef45c93e",
+  "bb15006b47449031af9eb432c5b8bb1ec30b41b3",
+  "ebdaf222d05a2e243fb15ad19a91ad62fd10f9ff"
+)
+if (-not (Test-Path -LiteralPath $retroPath -PathType Leaf)) {
+  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] the record file is missing"
+  $failures += 1
+} else {
+  $retroOriginal = [System.IO.File]::ReadAllText($retroPath)
+  $retroRows = @()
+  $inTable = $false
+  foreach ($line in ($retroOriginal -split "\r?\n")) {
+    if ($line -match '^```retrospective-certifications\s*$') { $inTable = $true; continue }
+    if ($inTable -and $line -match '^```') { break }
+    if ($inTable -and $line.Trim()) { $retroRows += $line }
+  }
+  $retroShas = @($retroRows | ForEach-Object { ($_ -split '\s*\|\s*', 2)[0].Trim() } | Sort-Object)
+  $retroOk = $true
+
+  if (($retroShas -join ',') -cne ($expectedRetroShas -join ',')) {
+    Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] the table is not the pinned eight commits; it is [$($retroShas -join ', ')]"
+    $retroOk = $false
+  }
+
+  # Each recorded set must equal what the production checker derives TODAY. A
+  # widened row would excuse paths the commit never had.
+  foreach ($row in $retroRows) {
+    $parts = $row -split '\s*\|\s*', 2
+    $sha = $parts[0].Trim()
+    $recorded = $parts[1].Trim()
+    $probe = Invoke-BoundedProcess -FilePath $shellPath -WorkingDirectory $callerRoot `
+      -TimeoutMs $productionTimeoutMs -Arguments @(
+        "-NoLogo", "-NoProfile", "-File", $productionPath,
+        "-Base", "$sha~1", "-Head", $sha, "-Strict")
+    $line = @($probe.Output | Where-Object { $_ -match 'missing set matches the record exactly:' })
+    if ($probe.Code -ne 0 -or $line.Count -ne 1) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] $sha does not certify retrospectively (exit $($probe.Code))"
+      $retroOk = $false
+      continue
+    }
+    $derived = ($line[0] -replace '^.*missing set matches the record exactly:\s*', '').Trim()
+    if ($derived -cne $recorded) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] $sha records [$recorded] but the checker derives [$derived]"
+      $retroOk = $false
+    }
+  }
+
+  # Tamper: widening one row must REJECT that commit. Restored in finally, and
+  # the restoration is verified rather than assumed.
+  try {
+    $victim = "3652d4b5bf5bb8a08efe1c6e6c0076de787f03a0"
+    $tampered = $retroOriginal.Replace(
+      "$victim | code: scripts/independence_check.lean",
+      "$victim | code: scripts/independence_check.lean;code: paper/rmq.tex")
+    if ($tampered -ceq $retroOriginal) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] the tamper fixture matched nothing; the row it targets has moved"
+      $retroOk = $false
+    } else {
+      [System.IO.File]::WriteAllText($retroPath, $tampered)
+      $probe = Invoke-BoundedProcess -FilePath $shellPath -WorkingDirectory $callerRoot `
+        -TimeoutMs $productionTimeoutMs -Arguments @(
+          "-NoLogo", "-NoProfile", "-File", $productionPath,
+          "-Base", "$victim~1", "-Head", $victim, "-Strict")
+      if ($probe.Code -eq 0) {
+        Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] a widened record still certified $victim; the match is not exact"
+        $retroOk = $false
+      }
+    }
+  } finally {
+    [System.IO.File]::WriteAllText($retroPath, $retroOriginal)
+  }
+  if ([System.IO.File]::ReadAllText($retroPath) -cne $retroOriginal) {
+    Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] the record file was not restored after the tamper case"
+    $retroOk = $false
+  }
+
+  if ($retroOk) {
+    Write-Host "DESIGN-CHECK-REGRESSION: PASS [retrospective-record] $($retroShas.Count) pinned commits, each set re-derived, tampering rejected"
+  } else {
+    $failures += 1
+  }
+}
+
+if ($rejectCount -ne 19 -or $acceptCount -ne 14) {
+  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [final-verdict-counts] expected 19 reject and 14 accept; got $rejectCount reject and $acceptCount accept"
   $failures += 1
 }
 
@@ -803,5 +933,8 @@ if ($failures -gt 0) {
   exit 1
 }
 
-Write-Host "DESIGN-CHECK-REGRESSION: PASS [final-verdict-counts] (15 reject, 10 accept, production classifier, isolated Git fixtures)"
+# Derived, not spelled. This line read "(15 reject, 10 accept)" while the
+# assertion above required 19 and 14: the success message was a literal nobody
+# updated, so it announced counts the run had not produced.
+Write-Host "DESIGN-CHECK-REGRESSION: PASS [final-verdict-counts] ($rejectCount reject, $acceptCount accept, production classifier, isolated Git fixtures)"
 exit 0

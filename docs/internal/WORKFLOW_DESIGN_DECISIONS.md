@@ -11693,3 +11693,101 @@ phrasing -- it says an *ancestor of* the branch, not *the tip*, and so survived
 four candidate moves untouched: **state claims in terms of what does not move.**
 A set of SHAs does not move. A ratio whose denominator includes the document
 making the claim moves every time the document is saved.
+
+
+## WDD-20260817-079 -- The classifier stops defaulting, and eight commits get the record they owed
+
+`WDD-20260817-077` decomposed the thirteen uncertifiable commits into three
+causes and recommended three changes. All three are made here, and the branch
+now certifies **104 of 104**.
+
+### 1. The default is gone
+
+The classifier ended `$needsCode = -not $needsWorkflow`: every path it did not
+recognise was declared proof/code architecture. `paper/` matched no workflow
+root, so a whole top-level directory of prose became proof-model design and
+seven commits became uncertifiable for a reason nobody chose.
+
+There are now two explicit lists -- `$workflowRootPatterns` and
+`$codeRootPatterns` -- and a path matching neither is **unclassified**, which is
+a hard error naming the path, in every mode including non-strict. A check that
+cannot place a file must not report PASS; that is the defect class this
+candidate exists to remove, and the old default was an instance of it sitting
+inside the governance mechanism itself.
+
+Measured before committing: all 873 tracked paths classify, so the change adds
+no obligation to any existing file. `.audit-packets/` is gitignored and never
+reaches the checker.
+
+### 2. Neutral evidence is root-agnostic, and two roots were misfiled
+
+The neutral patterns were anchored `^docs/internal/`, so
+`docs/internal/X_WORKLOG.md` was exempt evidence while `paper/WORKLOG.md` was
+proof/code -- the same document classified by which directory it sits in, which
+is exactly what the comment above those patterns says they do not do. They are
+now root-agnostic, and `_HANDOFF` joins them: `RC1_CORRECTION_HANDOFF.md` is a
+tracker, so ticking a checkbox in it was demanding a design decision that no one
+had made.
+
+`.claude/` moves to the workflow roots. It was absent, so runtime skills counted
+as proof/code -- and `DD-20260725` exists only because of that: it says outright
+that it was written "so the repository-sensitive classification has its required
+design record", while the substantive rationale sits in `WDD-20260725-001`, a
+workflow entry. That is a decision recorded to satisfy a misclassification, and
+it is now unnecessary.
+
+Repository plumbing -- `.gitignore`, `.gitattributes` -- is neutral in either
+ledger.
+
+### 3. Eight commits, recorded rather than excused
+
+Five of the thirteen were the classifier's fault. The other eight are real:
+four changed `paper/rmq.tex`, the public claim surface, with no design record;
+three changed `paper/check_paper.ps1`; three changed `scripts/*.lean`, which is
+both proof-code and automation, and wrote one ledger of the two.
+
+Their entries cannot be added where they belong, because a commit's content is
+fixed and rewriting them discards every descendant SHA -- the tag, its GATE
+PASS, and the certification of the ninety-six that pass.
+`docs/internal/RETROSPECTIVE_CERTIFICATIONS.md` writes the decision each one
+owed and ties it to the exact commit and the exact missing paths.
+
+**Why this is a record and not an exemption.** The checker accepts only when
+`-Head` names one of the eight *and* the missing set it computes equals the
+recorded set exactly. Nine mutations were run against it, each of which must
+turn a green commit red:
+
+| mutation | result |
+|---|---|
+| recorded set widened by one path | rejected (mismatch) |
+| recorded set emptied | rejected (mismatch) |
+| `*` written in place of the set | rejected -- it is not a pattern language |
+| the row removed | rejected |
+| the whole table emptied | rejected |
+| the record file deleted | rejected |
+| the SHA swapped for another failing commit | rejected |
+| control: record intact | certified |
+| control: restored after tampering | certified |
+
+`design_decision_check_regression.ps1` gains `[retrospective-record]`, which
+pins the table to exactly those eight SHAs, **re-derives each missing set from
+the production checker** rather than trusting the file, and runs the widening
+tamper in-suite with a verified restore. So a ninth entry, or a widened one,
+fails the suite.
+
+A date- or path-based exemption was refused. It would let the check report green
+over history it does not certify, inside the mechanism built to detect exactly
+that.
+
+### Also fixed in passing
+
+`design_decision_check_regression.ps1` printed
+`PASS [final-verdict-counts] (15 reject, 10 accept)` from a string literal while
+the assertion beside it required 19 and 14 -- a success message announcing counts
+the run had not produced. It is derived from the counters now. Two cases were
+corrected rather than deleted: `unknown-repository-path-default-sensitive` pinned
+the removed default and is now `unknown-repository-path-is-unclassified`, and
+`absolute-windows-repository-root` used an unknown root incidentally while
+testing path normalisation, so it now uses a classified path and tests what its
+name says. Eight cases were added for the new behaviour, including one proving
+the unclassified failure survives non-strict mode.
