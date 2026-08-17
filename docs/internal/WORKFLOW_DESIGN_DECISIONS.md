@@ -11474,7 +11474,9 @@ and says nothing about the 99 behind it.
 | `9389655` | Audit the ledger's line citations | both | `paper/EVIDENCE_MATRIX.md` |
 | `f8de800` | Correct the citation audit: 27 citations, 3 defective | `DESIGN_DECISIONS.md` | `paper/EVIDENCE_MATRIX.md` |
 
-Two distinct causes, and neither is "the rule did not exist yet" alone:
+Two distinct causes, and neither is "the rule did not exist yet" alone. **These
+cover 4 of the 13; `WDD-20260817-077` completes the decomposition and measures how
+much of the defect is the checker's own:**
 
 - **Wrong ledger.** `3652d4b` changed `scripts/independence_check.lean`, which is
   code-classified, and recorded the decision in `WORKFLOW_DESIGN_DECISIONS.md`.
@@ -11570,3 +11572,95 @@ do not satisfy the per-commit check the candidate ships, for the two causes
 this tag and its GATE PASS. What changed is only the consequence: it is a
 pull-request-path defect and a record of imperfect history, not an integration
 blocker.
+
+
+## WDD-20260817-077 -- The 13 decomposed, and how much of it is the checker's fault
+
+`WDD-20260817-075` named two causes covering four commits and left the other
+nine unexplained. The dominant cause was never recorded at all. This entry
+completes the analysis and measures, rather than estimates, how much of the
+defect belongs to the check itself.
+
+### The classifier's actual rule
+
+```powershell
+$workflowRootPatterns = @('^\.agents/', '^\.codex/', '^\.github/',
+                          '^scripts/', '^AGENTS\.md$', '^docs/internal/')
+$needsWorkflow = Test-AnyPattern -Path $Path -Patterns $workflowRootPatterns
+$needsCode     = -not $needsWorkflow
+```
+
+**Everything the checker does not recognise is proof/code architecture.** That is
+a default wearing a classification's clothes. `paper/` is on neither list, so an
+entire top-level directory of prose -- manuscript, bibliography, README, even
+`.gitignore` -- landed in the bucket reserved for proof-model and theorem-surface
+decisions, and every commit touching it demanded a `DESIGN_DECISIONS.md` entry.
+
+The neutral-evidence carve-outs cannot reach it either: they are anchored
+`^docs/internal/...`, so `docs/internal/X_WORKLOG.md` is exempt evidence while
+`paper/WORKLOG.md` is code. **The same document is exempt or not according to
+which directory it sits in**, which is not a distinction the rule's own comment
+claims to be drawing -- it says these are "semantic opt-outs, not a remembered
+list of sensitive paths."
+
+### Three causes, not two
+
+| cause | commits |
+|---|---|
+| `paper/` unclassified, defaulting into code; neutral patterns root-anchored | `bb15006` `ebdaf22` `29c688b` `4c56e7e` `aa3d585` `9389655` `f8de800` |
+| `RC1_CORRECTION_HANDOFF.md` absent from the neutral list, so ticking a checkbox demands a design decision | `c9cb19f` `5c09c5a` `2bd03d8` |
+| `.lean` under `scripts/` is both proof-code and workflow, so both ledgers are required; one was written | `7655ee8` `3652d4b` `3265987` |
+
+### Measured, not estimated
+
+The check evaluates historical commits against the **current** script, so a
+classifier correction moves the sweep without touching history. Run in a scratch
+worktree at `55ab1ba`, reverted after:
+
+| classifier | of 13 certify |
+|---|---|
+| as shipped | **0** |
+| root-agnostic neutral patterns, `_HANDOFF` added | **5** |
+| the same, plus `paper/README`, `.gitignore`, `NOVELTY_LOG` neutral | **5** |
+
+The second correction bought nothing: the root-agnostic rule already covered
+`paper/WORKLOG.md`, `THEOREM_LEDGER.md`, `EVIDENCE_MATRIX.md` and
+`RELATED_WORK_LEDGER.md`.
+
+**An earlier estimate put the checker's share at 10 of 13. Measured, it is 5.**
+The estimate was formed by counting commits that *mention* a misclassified path,
+which is not the same as commits that *fail only because of one*. Same error
+shape as the two numeric corrections in `WDD-20260817-076`: a plausible number,
+never run.
+
+### What survives the correction, and why the check is right about it
+
+| commits | fail on |
+|---|---|
+| `bb15006` `ebdaf22` `29c688b` `4c56e7e` | `paper/rmq.tex`, `paper/references.bib` |
+| `ebdaf22` `4c56e7e` `aa3d585` | `paper/check_paper.ps1` |
+| `7655ee8` `3652d4b` `3265987` | `scripts/*.lean` |
+
+Strip the misclassification away and these eight are not false positives.
+`rmq.tex` is the public claim surface -- the most claim-bearing file in the
+repository -- and four commits changed it with no design record. `check_paper.ps1`
+is automation. The three `.lean` files are proof-code. The honest split is
+**5 rule defect, 8 real gaps**, and the earlier framing had it the other way
+round, in the direction that flatters the history.
+
+### Recommended, not performed
+
+Three changes, none made here, because reclassifying governed paths is a decision
+with scope beyond this candidate:
+
+1. Make the neutral-evidence patterns root-agnostic and add `_HANDOFF`. Correct
+   on its own merits -- a worklog is a worklog wherever it lives -- and now
+   demonstrably not motivated by the count, since it moves only 5.
+2. Replace `$needsCode = -not $needsWorkflow` with an explicit disposition, so an
+   unrecognised root fails loudly instead of defaulting. This is the actual bug;
+   it will swallow the next new directory exactly as it swallowed `paper/`.
+3. Write the eight missing entries, or record them as a stated exception. The
+   `rmq.tex` ones are genuinely owed: the manuscript's claim changes have no
+   design record.
+
+Until then the sweep stands at 13 of 101, and the reason is now written down.

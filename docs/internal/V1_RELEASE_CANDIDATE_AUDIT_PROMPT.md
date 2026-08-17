@@ -220,9 +220,16 @@ which measures what that window is currently concealing.
 **13 of the 101 commits in this candidate's branch history fail the per-commit
 certification the candidate ships.** Measured by sweeping
 `design_decision_check.ps1 -Strict` over every non-merge commit in
-`$(git merge-base main HEAD)..HEAD`. All 13 are ancestors of this tag. Two
-causes: an entry written into the wrong ledger (`3652d4b` logged a code change
-to the workflow book), and no entry at all (`c9cb19f`, `5c09c5a`, `2bd03d8`).
+`$(git merge-base main HEAD)..HEAD`. All 13 are ancestors of this tag. Three
+causes, of which the largest is the checker's own: `paper/` matches no
+workflow root and the classifier reads `needsCode = -not needsWorkflow`, so a
+whole directory of prose defaulted into proof/code architecture (7 commits);
+`RC1_CORRECTION_HANDOFF.md` is absent from the neutral-evidence list, so ticking
+a checkbox demands a design decision (3); and `.lean` under `scripts/` requires
+both ledgers, one of which was written (3). Measured in a scratch worktree:
+correcting the classifier certifies **5** of the 13, not more — the remaining 8
+fail on `paper/rmq.tex`, `paper/references.bib`, `paper/check_paper.ps1` and
+`scripts/*.lean`, where the check is arguably right. `WDD-20260817-077`.
 
 This does **not** block integration, and the earlier draft of this entry was
 wrong to imply it did. This repository integrates by squash-merge — main's last
