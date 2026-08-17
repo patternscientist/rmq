@@ -227,19 +227,6 @@ statically. The raw-call walk records such targets and allows exactly one
 (`$Path`, `Invoke-Checker`'s own dispatch); a new one is reported for review
 rather than resolved. `WDD-20260816-069`.
 
-**Three `ci.yml` edits defeat the per-commit certification while the wiring pin
-passes.** None is live — at this tag `ci.yml` certifies every pushed non-merge
-commit — and each requires deliberately editing the workflow to defeat its own
-check. Measured on a 3-commit push whose breach is the middle commit:
-
-| edit | commits certified |
-|---|---|
-| `-notmatch '^0{40}$'` flipped to `-match` | 1 of 3 |
-| a fourth, single-quoted `$range = 'HEAD~1..HEAD'` after the chain | 1 of 3 |
-| `$bad = 0` **and** the loop wrapped in `if ($env:NEVER_SET) { … }` | **0 of 3**, prints "all 3 commit(s) certified individually", exit 0 |
-
-`WDD-20260816-070`.
-
 **`scripts/paper_root_measure.ps1` does not exist.** The program plan schedules it
 and says so.
 

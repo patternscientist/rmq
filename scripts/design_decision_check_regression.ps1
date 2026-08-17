@@ -659,6 +659,22 @@ if (-not (Test-Path -LiteralPath $ciPath)) {
   # `if ($false)` and leaving one aggregate call to do the work. So the shape of
   # the range derivation is pinned too: exactly three assignments (pull request,
   # event-based push, new-branch fallback) and no assignment after the chain.
+  # Pinning the three values fixes what each branch assigns and nothing about
+  # which branch RUNS. Flipping `-notmatch '^0{40}$'` to `-match` makes the
+  # event-based branch unreachable on an ordinary push -- every push then takes
+  # the one-commit fallback. Measured: 1 of 3 pushed commits certified, every
+  # other case in this suite green. So the CONDITIONS are pinned as well.
+  $expectedConditions = @(
+    '"${{ github.event_name }}" -eq "pull_request"',
+    '"${{ github.event.before }}" -and',
+    '"${{ github.event.before }}" -notmatch ''^0{40}$'''
+  )
+  foreach ($cond in $expectedConditions) {
+    if ($ciText -cnotmatch [regex]::Escape($cond)) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml no longer carries the branch condition [$cond]; a branch can be made unreachable without altering any range value"
+      $wired = $false
+    }
+  }
   # Counting assignments is not pinning the derivation. An audit satisfied the
   # count with a ci.yml that certified ONE commit: changing the event-based range
   # to the constant `HEAD~1..HEAD` is a one-token edit that leaves the count at 3
@@ -669,7 +685,7 @@ if (-not (Test-Path -LiteralPath $ciPath)) {
     '${{ github.event.before }}..HEAD',
     'HEAD~1..HEAD'
   )
-  $actualRanges = @([regex]::Matches($ciText, '(?m)^\s*\$range = \"([^\"]+)\"') |
+  $actualRanges = @([regex]::Matches($ciText, '(?m)^\s*\$range = ["'']([^"'']+)["'']') |
     ForEach-Object { $_.Groups[1].Value })
   if (($actualRanges -join '|') -cne ($expectedRanges -join '|')) {
     Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] range derivation is [$($actualRanges -join ', ')]; expected [$($expectedRanges -join ', ')] -- a constant range certifies one commit"
@@ -686,10 +702,41 @@ if (-not (Test-Path -LiteralPath $ciPath)) {
     $wired = $false
   }
   # And the loop must not be wrapped. A dead `if` around it leaves the body
-  # byte-identical, so the whole-body pin above cannot see it; what changes is
-  # the statement immediately before the loop.
+  # byte-identical, so the whole-body pin below cannot see it.
   if ($ciText -notmatch '(?m)^\s*\$bad = 0\s*\r?\n\s*foreach \(\$c in \$commits\)') {
     Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] the certification loop does not follow the counter reset; it may be wrapped in a branch that never runs'
+    $wired = $false
+  }
+  # That predecessor test is not enough on its own. Wrapping `$bad = 0` AND the
+  # loop together in a dead branch keeps `$bad = 0` immediately before
+  # `foreach` -- the `\s*` absorbs the extra indent -- and leaves the loop body
+  # byte-identical, so every pin here passed. Measured: ZERO commits certified,
+  # the green sentence still printed, step exit 0, suite exit 0. That was the
+  # strongest evasion twelve audit rounds produced. What a wrapper cannot hide
+  # is indentation: these statements are siblings in one flat block, so
+  # wrapping any proper subset of them indents that subset and nothing else.
+  $flatAnchors = @(
+    '(?m)^([ ]*)if \("\$\{\{ github\.event_name \}\}"',
+    '(?m)^([ ]*)\$commits = @\(git rev-list',
+    '(?m)^([ ]*)\$bad = 0',
+    '(?m)^([ ]*)foreach \(\$c in \$commits\)',
+    '(?m)^([ ]*)if \(\$bad -gt 0\)',
+    '(?m)^([ ]*)Write-Host "DESIGN-CHECK: all '
+  )
+  $indents = @()
+  foreach ($anchor in $flatAnchors) {
+    $hits = [regex]::Matches($ciText, $anchor)
+    # Exactly one, so a decoy at the sanctioned indent cannot supply the match
+    # while the live statement sits wrapped somewhere deeper.
+    if ($hits.Count -ne 1) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] the certification block has $($hits.Count) occurrence(s) of anchor [$anchor]; expected exactly 1"
+      $wired = $false
+    } else {
+      $indents += $hits[0].Groups[1].Value.Length
+    }
+  }
+  if ((@($indents | Sort-Object -Unique)).Count -gt 1) {
+    Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] the certification statements are not siblings in one block; indents are [$($indents -join ', ')] -- part of the block is wrapped in a conditional"
     $wired = $false
   }
   # The loop body is pinned WHOLE, not by its first statement. Pinning placement
@@ -732,7 +779,14 @@ if (-not (Test-Path -LiteralPath $ciPath)) {
   if ($ciText -match '(?s)if\s*\(\s*\$false\s*\)') { $wired = $false }
   $stillAggregate = $ciText -match 'design_decision_check\.ps1 -Base "origin/\$\{\{ github\.base_ref \}\}" -Strict'
   if (-not $wired -or $stillAggregate) {
-    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml does not iterate the range with -Head'
+    if ($stillAggregate) {
+      Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml still runs the aggregate base..HEAD scan that per-commit certification replaced'
+    }
+    # A case ROLLUP, not a finding. It used to assert one specific cause -- "does
+    # not iterate the range with -Head" -- whichever check had actually fired, so
+    # a wrapped-block failure was reported as a range-iteration defect. The cause
+    # is whichever check above set $wired false; those messages are the finding.
+    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] per-commit certification is not correctly wired; see the specific failure(s) above'
     $failures += 1
   } else {
     Write-Host 'DESIGN-CHECK-REGRESSION: PASS [per-commit-ci-wiring] ci.yml certifies each commit in the range'

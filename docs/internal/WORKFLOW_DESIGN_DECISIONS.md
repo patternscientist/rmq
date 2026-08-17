@@ -11240,6 +11240,11 @@ The entry is harmless where it sits; the premise was wrong.
 
 ### Declared open, with measurements, rather than fixed
 
+> **Superseded by `WDD-20260817-073`.** All three are now caught by the
+> wiring pin, each verified against a pre-patch control that does *not*
+> catch it. The table below is retained as the record of what round 12
+> measured, not as a statement about the current tree.
+
 Three `ci.yml` edits pass the whole regression suite while certifying fewer than
 all pushed commits. **None is live** -- `ci.yml` at this commit certifies every
 pushed non-merge commit; each requires someone deliberately editing the workflow
@@ -11280,7 +11285,8 @@ their measurements, rather than being chased through another generation of pins.
 
 `docs/internal/V1_RELEASE_CANDIDATE_AUDIT_PROMPT.md` is retargeted from
 `audit-v1-rc-3` to `audit-v1-rc-4` (nine references) and gains a declared-open
-section listing eleven known limits with their measurements.
+section listing eleven known limits with their measurements -- ten since
+`WDD-20260817-073` closed the three `ci.yml` evasions.
 
 The list exists because an auditor who does not have it spends budget
 rediscovering things the repository already records -- and because publishing
@@ -11292,7 +11298,7 @@ measurement that makes them concrete -- one certifies **zero** commits while
 printing "all 3 commit(s) certified individually" and exiting 0 -- together with
 the fact that none is live at this tag. Declaring a gap is not the same as
 excusing it, and an auditor who finds a way to reach one of these WITHOUT
-deliberately editing the workflow has found something new.
+deliberately editing the workflow has found something new. **Since superseded:** `WDD-20260817-073` closed all three, and they no longer appear in the prompt's declared-open list.
 
 The section also states what twelve internal rounds did and did not establish:
 no round found a defect in a kernel-checked theorem; the last six returned zero
@@ -11322,3 +11328,78 @@ a claim made in passing that nobody measured.
 
 That closes round 12 apart from the items published as declared-open in the
 commissioning prompt, each with its measurement. The internal loop is stopped.
+
+
+## WDD-20260817-073 -- The three declared-open CI evasions are closed, not declared
+
+Round 12 measured three edits to `.github/workflows/ci.yml` that certify fewer
+than all pushed commits while the whole regression suite stays green. They were
+written up as declared-open on the grounds that none is live and each needs
+someone deliberately editing the workflow to defeat its own check.
+
+That was the wrong disposition, and a fix for all three had already been drafted
+when the decision was made. A wiring pin exists for exactly one purpose: to
+notice when the workflow stops certifying what it says it certifies. A pin that
+passes while `ci.yml` certifies **zero** commits and prints *"all 3 commit(s)
+certified individually"* is this repository's signature defect -- a green
+artifact standing in for an unestablished property -- in its sharpest available
+form. Shipping it to an external auditor as a known limit would have been
+publishing the defect rather than fixing it.
+
+### What each pin now does
+
+**Quoting.** `$actualRanges` matched `\$range = "..."` only. A fourth,
+single-quoted `$range = 'HEAD~1..HEAD'` appended after the chain was invisible to
+a check whose entire job is counting range assignments. The pattern now accepts
+either quote character.
+
+**Conditions, not just values.** Pinning the three range *values* in order fixes
+what each branch assigns and says nothing about which branch *runs*. Flipping
+`-notmatch '^0{40}$'` to `-match` leaves all three values untouched and makes the
+event-based branch unreachable on an ordinary push, so every push falls through
+to the one-commit window `DD-20260816-121` exists to close. The three branch
+conditions are now pinned verbatim and case-sensitively.
+
+**Sibling indentation.** The predecessor test `^\s*\$bad = 0\s*\r?\n\s*foreach`
+was defeated by wrapping `$bad = 0` *and* the loop together: `$bad = 0` still
+sits immediately before `foreach`, `\s*` absorbs the added indent, and the loop
+body stays byte-identical, so the whole-body pin cannot see it either. What a
+wrapper cannot hide is indentation. The six certification statements are
+siblings in one flat block, so wrapping any proper subset indents that subset and
+nothing else; each anchor must also match exactly once, so a decoy at the
+sanctioned indent cannot supply the match while the live statement sits deeper.
+
+### Measured, against a control
+
+| | pre-patch | post-patch |
+|---|---|---|
+| unmutated baseline | green | green |
+| `-notmatch` -> `-match` | **not caught** | caught |
+| single-quoted 4th `$range` | **not caught** | caught |
+| `$bad = 0` + loop wrapped dead | **not caught** | caught |
+
+The pre-patch column is the control, and it is the reason this entry can claim
+the pins are load-bearing rather than decorative. It also cost one correction:
+the first run of the probe reported the wrapping evasion as *already caught* by
+the old script. That was a broken mutation, not a working pin -- the probe
+computed the loop's extent starting from the line *after* `foreach`, which is
+already at brace depth zero, so it wrapped a single line and spliced a `}` into
+the middle of the loop. The old whole-body pin then failed on a mangled loop, for
+the wrong reason. Corrected to start the walk at the `foreach` line itself, the
+old script does not catch it. **A control that fires for the wrong reason is
+worse than no control**, because it certifies the defect as absent.
+
+### One diagnostic corrected in passing
+
+`if (-not $wired -or $stillAggregate)` is the case rollup, and it printed
+*"ci.yml does not iterate the range with -Head"* no matter which check had
+fired -- so a wrapped-block failure was reported as a range-iteration defect. It
+now states that wiring failed and points at the specific messages above it, and
+the aggregate-scan condition prints its own line. Nothing consumes the old
+string.
+
+### Disposition
+
+`WDD-20260816-070`'s declared-open table and the external packet's
+`declared open` list both carried these three as known limits. Both are
+corrected: the three are closed. What remains open there is unchanged.
