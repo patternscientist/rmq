@@ -441,7 +441,139 @@ git diff --check
 if ($LASTEXITCODE -ne 0) { SoftFail "git diff --check found issues" }
 
 
-# 9b. Every checker this gate advertises must have been reached.
+# 9b. Every checker this gate advertises must have been reached, and no call site
+# may bypass Invoke-Checker.
+#
+# THIS CHECK IS AN AST WALK, NOT A REGEX. Five consecutive audit rounds found the
+# regex version inadequate, each time inside the fix for the previous round:
+#
+#   round  7  the pattern was `\[` -- an escaped literal -- and matched nothing
+#   round  8  anchored at column 0, so an INDENTED call was invisible
+#   round  9  the four controls were exactly the pattern's own envelope
+#   round 10  ten more shapes missed, incl. `$script:rc = & ...`; controls again
+#             the envelope; and it flagged its own fixtures and its own prose
+#   round 11  nineteen controls collapsed to FOUR distinct consumed substrings --
+#             a degenerate pattern dropping `$PSScriptRoot` missed 0 of 19 -- and
+#             the comment stripper written to keep prose out was cutting SEVEN
+#             lines of live code, counting only double quotes
+#
+# The last one is the tell. Adding controls cannot fix a control set that does
+# not constrain the pattern, and stripping comments by hand cannot beat a parser
+# that already knows what a comment is. So this asks PowerShell.
+#
+# `ParseFile` gives the same tokenisation the shell uses. A commented-out call is
+# not a CommandAst. A path inside a string literal -- which is what the fixtures
+# below are -- is not a CommandAst either, so the fixtures need no exclusion
+# region: the previous version needed sentinels precisely because a regex cannot
+# tell a call from a quotation of one.
+$rawCallFixtures = @(
+  '& "$PSScriptRoot\plain.ps1"',
+  '  & "$PSScriptRoot\indented.ps1"',
+  '. "$PSScriptRoot\dotsourced.ps1"',
+  '& "$PSScriptRoot/forwardslash.ps1"',
+  'if (Test-Path X) { & "$PSScriptRoot\one_line_if.ps1" }',
+  '  if ($env:CI) { & "$PSScriptRoot\guarded.ps1" }',
+  '$out = & "$PSScriptRoot\assigned.ps1"',
+  'try { & "$PSScriptRoot\in_try.ps1" } catch {}',
+  '& "${PSScriptRoot}\braced.ps1"',
+  '$script:rc = & "$PSScriptRoot\scoped.ps1"',
+  'if (Test-Path X) { $script:rc = & "$PSScriptRoot\scoped_if.ps1" }',
+  '$rc = (& "$PSScriptRoot\paren.ps1")',
+  '$rc = @(& "$PSScriptRoot\arraysub.ps1")',
+  '$env:RC = & "$PSScriptRoot\envassign.ps1"',
+  '$h.Rc = & "$PSScriptRoot\prop.ps1"',
+  '$a, $b = & "$PSScriptRoot\multi.ps1"',
+  '$all = @(1, (& "$PSScriptRoot\comma.ps1"))',
+  '& "$PSScriptRoot\upper.PS1"',
+  '& "$($PSScriptRoot)\interpolated.ps1"',
+  '& (Join-Path $PSScriptRoot ''joined.ps1'')',
+  '$tag = ''issue #12''; & "$PSScriptRoot\after_hash_in_string.ps1"'
+)
+
+# `@(1, & "x")` is NOT in this list: it is a parse error in PowerShell -- "Missing
+# expression after ','" -- so it cannot appear in a working script. A round-11
+# finding named it as a missed shape; the parenthesised form below is the real
+# one, and the fixture-parse assertion above is what surfaced the difference.
+
+# Shapes that must NOT be reported. The first is the converted form; the rest are
+# the prose and commented-out forms the regex version kept firing on, and the
+# reason it needed a stripper at all.
+$rawCallNonFixtures = @(
+  'Invoke-Checker -Path "$PSScriptRoot\converted.ps1"',
+  '# & "$PSScriptRoot\commented_out.ps1"',
+  '  # was: if (x) { & "$PSScriptRoot\old.ps1" }',
+  '$x = 1  # trailing; & "$PSScriptRoot\trailing.ps1"',
+  'Write-Host "a `" b"  # & "$PSScriptRoot\escaped_quote.ps1"',
+  '$doc = @"
+& "$PSScriptRoot\inside_a_herestring.ps1"
+"@'
+)
+
+function Get-RawCallSites {
+  param([string]$Text)
+
+  $parseErrors = $null
+  $ast = [System.Management.Automation.Language.Parser]::ParseInput(
+    $Text, [ref]$null, [ref]$parseErrors)
+  if (@($parseErrors).Count -gt 0) { return $null }
+
+  $static = @()
+  $dynamic = @()
+  foreach ($cmd in $ast.FindAll({
+      param($n) $n -is [System.Management.Automation.Language.CommandAst] }, $true)) {
+    # `Unknown` is a bare command name -- `Invoke-Checker -Path ...`. Only `&`
+    # and `.` invoke a path directly.
+    if ($cmd.InvocationOperator -eq 'Unknown') { continue }
+    $target = $cmd.CommandElements[0]
+    $text = $target.Extent.Text
+    if ($text -match 'PSScriptRoot') { $static += $text; continue }
+    if ($target -is [System.Management.Automation.Language.VariableExpressionAst]) {
+      $dynamic += $target.VariablePath.UserPath
+    }
+  }
+  return @{ Static = $static; Dynamic = $dynamic }
+}
+
+# The fixtures are asserted against the walk BEFORE it is trusted on real source.
+foreach ($fixture in $rawCallFixtures) {
+  $probe = Get-RawCallSites -Text $fixture
+  if ($null -eq $probe) {
+    SoftFail "the raw-call fixture [$fixture] does not parse; the walk cannot be exercised on it"
+  } elseif ($probe.Static.Count -lt 1) {
+    SoftFail "the raw-call walk does not see [$fixture]; it is blind to that shape"
+  }
+}
+foreach ($nonFixture in $rawCallNonFixtures) {
+  $probe = Get-RawCallSites -Text $nonFixture
+  if ($null -ne $probe -and $probe.Static.Count -ne 0) {
+    SoftFail "the raw-call walk reports [$nonFixture], which is not a call site"
+  }
+}
+if ($rawCallFixtures.Count -lt 21 -or $rawCallNonFixtures.Count -lt 6) {
+  SoftFail ("the raw-call fixtures were reduced: {0} positive, {1} negative" -f `
+    $rawCallFixtures.Count, $rawCallNonFixtures.Count)
+}
+
+$gateWalk = Get-RawCallSites -Text (Get-Content -Raw -LiteralPath $PSCommandPath)
+if ($null -eq $gateWalk) {
+  Fail "gate.ps1 does not parse; the raw-call walk cannot run"
+}
+if ($gateWalk.Static.Count -gt 0) {
+  SoftFail ("{0} sub-checker call site(s) bypass Invoke-Checker and would score a non-running checker as PASS: {1}" -f `
+    $gateWalk.Static.Count, ($gateWalk.Static -join '; '))
+}
+
+# Dynamic invocation is not statically decidable -- `& $someVariable` could be
+# anything. It is not treated as a finding; it is pinned, so a NEW one has to be
+# looked at. `$Path` is Invoke-Checker's own dispatch.
+$allowedDynamic = @('Path')
+$unexpectedDynamic = @($gateWalk.Dynamic | Sort-Object -Unique |
+  Where-Object { $allowedDynamic -cnotcontains $_ })
+if ($unexpectedDynamic.Count -gt 0) {
+  SoftFail ("{0} dynamic invocation(s) this check cannot resolve statically: {1}. Add to the allowed list only after confirming the target is not a sub-checker." -f `
+    $unexpectedDynamic.Count, (($unexpectedDynamic | ForEach-Object { '$' + $_ }) -join ', '))
+}
+
 #
 # Invoke-Checker turns "the checker is gone" into a failure. This turns "the
 # CALL to the checker is gone" into one too: an edit that deletes a stage, or
@@ -475,171 +607,9 @@ $unadvertised = @($script:checkersRun | Where-Object { $expectedCheckers -cnotco
 if ($unadvertised.Count -gt 0) {
   SoftFail ("{0} checker(s) ran that the roster does not list: {1}" -f $unadvertised.Count, ($unadvertised -join ', '))
 }
-# And no call site may bypass Invoke-Checker. The roster above is written by
-# hand, so it catches a checker dropped from the gate -- but it cannot catch a
-# checker that was never converted, because I would omit it from both. Three
-# were: the M1 mutation regression and both replays kept the raw pattern while
-# WDD-20260816-046 said "all sixteen call sites" go through the helper. This
-# reads the gate's own source and fails on any surviving raw invocation, which
-# is the check the roster could not be.
-$gateSource = Get-Content -Raw -LiteralPath $PSCommandPath
-# The pattern is assembled below with a REAL doubled backslash. The version that
-# shipped had a single one -- `\[` -- which is an escaped literal `[`, so the
-# regex asked for a `[` immediately followed by a line start and could never
-# match. It answered 0 on the tree WDD-20260816-054 says it answers 3 on: the
-# number in that entry was measured with a shell grep, not with the code that
-# shipped, and nothing here would have noticed the difference.
-#
-# So the lint now carries a NEGATIVE CONTROL. A detector that matches nothing
-# and a detector that works produce the same output on a clean tree, and this
-# tree is clean -- only the control distinguishes them.
-# Anchor-free, over the CODE portion of each line. Anchoring on the preceding
-# character missed ten further shapes -- `$script:rc = & ...` (the assignment
-# idiom this file itself uses), parenthesised and array subexpressions,
-# `$env:`/property/multi assignment, `&&` chains, `$( )` interpolation, and a
-# call after a comma. Three rounds running, the control set was drawn from what
-# the pattern already did; the shapes below were added as controls FIRST.
-$rawCallPattern = '(?i)[&.]\s*"\$\{?PSScriptRoot\}?[\\/][^"]+\.ps1"'
-# RAW-CALL-CONTROLS-BEGIN
-# NEGATIVE-SPACE controls. The previous four were exactly the pattern's own
-# capability envelope -- leading horizontal space, `&` or `.`, either separator --
-# so they tested the pattern against the shapes it already handled and could not
-# detect any shape it missed. A fresh audit found six such shapes, including the
-# ONE-LINE form of the very conditional skip this check exists for:
-# `if (Test-Path X) { & "$PSScriptRoot\y.ps1" }`.
-#
-# Each entry below is a raw invocation the lint MUST see. Adding a shape here
-# before widening the pattern is the point: the list is what the check claims to
-# cover, and it fails if the claim outruns the regex.
-$rawCallControls = @(
-  '& "$PSScriptRoot\control_plain.ps1"',
-  '  & "$PSScriptRoot\control_indented.ps1"',
-  '. "$PSScriptRoot\control_dotsourced.ps1"',
-  '& "$PSScriptRoot/control_forwardslash.ps1"',
-  'if (Test-Path X) { & "$PSScriptRoot\control_one_line_if.ps1" }',
-  '  if ($env:CI) { & "$PSScriptRoot\control_guarded.ps1" }',
-  '$out = & "$PSScriptRoot\control_assigned.ps1"',
-  'try { & "$PSScriptRoot\control_in_try.ps1" } catch {}',
-  '& "${PSScriptRoot}\control_braced.ps1"',
-  '$script:rc = & "$PSScriptRoot\control_scoped.ps1"',
-  'if (Test-Path X) { $script:rc = & "$PSScriptRoot\control_scoped_if.ps1" }',
-  '$rc = (& "$PSScriptRoot\control_paren.ps1")',
-  '$rc = @(& "$PSScriptRoot\control_arraysub.ps1")',
-  '$env:RC = & "$PSScriptRoot\control_envassign.ps1"',
-  '$h.Rc = & "$PSScriptRoot\control_prop.ps1"',
-  '$a, $b = & "$PSScriptRoot\control_multi.ps1"',
-  'Test-Path X && & "$PSScriptRoot\control_chain.ps1"',
-  '$all = @(1, & "$PSScriptRoot\control_comma.ps1")',
-  '& "$PSScriptRoot\control_upper.PS1"'
-)
 
-# And shapes the lint must NOT flag, asserted rather than assumed. Without these
-# a pattern that matches everything would satisfy every control above.
-# Shapes the PATTERN must not flag. A pattern matching everything would satisfy
-# every positive control, so this is asserted rather than assumed.
-$rawCallAntiControls = @(
-  'Invoke-Checker -Path "$PSScriptRoot\converted.ps1"'
-)
-
-# Shapes the STRIP must remove. A commented-out call is a raw call as far as the
-# pattern is concerned -- it is comment removal, not the regex, that must handle
-# it, so it is tested against the stripping and not against the pattern.
-$rawCallStripControls = @(
-  '# & "$PSScriptRoot\commented_out.ps1"',
-  '  # was: if (x) { & "$PSScriptRoot\old.ps1" }',
-  '$x = 1  # trailing; & "$PSScriptRoot\trailing.ps1"'
-)
-# RAW-CALL-CONTROLS-END
-foreach ($ctl in $rawCallControls) {
-  if ([regex]::Matches($ctl, $rawCallPattern).Count -lt 1) {
-    SoftFail ("the raw-call-site lint does not match the known raw call site [$ctl]; it is inert for that shape")
-  }
-}
-foreach ($anti in $rawCallAntiControls) {
-  if ([regex]::Matches($anti, $rawCallPattern).Count -ne 0) {
-    SoftFail ("the raw-call-site lint flags [$anti], which is not a raw call site; it would fire on converted or commented code")
-  }
-}
-# The controls above are literal raw-call text living in THIS file, so the scan
-# must not read its own fixtures as findings -- widening the pattern made it
-# report 4 sites, every one of them a control. The sentinel region is excluded.
-#
-# Both halves are asserted, because an exclusion that silently matched nothing
-# would hide real call sites, and one that matched everything would hide all of
-# them: the fixtures MUST be visible before the strip and absent after it.
-# The marker is assembled, not written out: a line containing the whole literal
-# `# RAW-CALL-CONTROLS-BEGIN` would itself be a sentinel, and the pattern
-# definition matched its own text -- two regions where there is one.
-$sentinelTag = 'RAW-CALL-CONTROLS'
-$sentinelPattern = '(?s)# ' + $sentinelTag + '-BEGIN.*?# ' + $sentinelTag + '-END'
-if ([regex]::Matches($gateSource, $sentinelPattern).Count -ne 1) {
-  SoftFail 'the raw-call control sentinels are missing or duplicated; the lint would read its own fixtures as findings'
-}
-# The fixture counts are pinned. Emptying both control arrays left the block
-# reporting live and clean: `foreach` over an empty array is a silent no-op, and
-# a `-ge 1` liveness test over the whole file was satisfied by an explanatory
-# COMMENT. Liveness is now measured inside the sentinel region only.
-if ($rawCallControls.Count -lt 19 -or $rawCallAntiControls.Count -lt 1 -or
-    $rawCallStripControls.Count -lt 3) {
-  SoftFail ("the raw-call fixtures were reduced: {0} controls, {1} anti-controls, {2} strip controls" -f `
-    $rawCallControls.Count, $rawCallAntiControls.Count, $rawCallStripControls.Count)
-}
-$sentinelRegion = [regex]::Match($gateSource, $sentinelPattern).Value
-if ([regex]::Matches($sentinelRegion, $rawCallPattern).Count -lt $rawCallControls.Count) {
-  SoftFail ("the raw-call-site lint matches {0} of {1} fixtures inside the control region; it is inert for the rest" -f `
-    ([regex]::Matches($sentinelRegion, $rawCallPattern).Count), $rawCallControls.Count)
-}
-# And the region must not be able to grow past its own fixtures. Moving the END
-# marker down swallowed a real call site with every assertion still green, so the
-# region's length is bounded by what the fixtures themselves occupy.
-$fixtureChars = ($rawCallControls + $rawCallAntiControls + $rawCallStripControls |
-  Measure-Object -Property Length -Sum).Sum
-if ($sentinelRegion.Length -gt ($fixtureChars * 3)) {
-  SoftFail ("the raw-call control region is {0} chars for {1} chars of fixtures; it may be swallowing real call sites" -f `
-    $sentinelRegion.Length, $fixtureChars)
-}
-$scanSource = [regex]::Replace($gateSource, $sentinelPattern, '')
-
-# Comments are stripped before matching. An anchor-free pattern matches prose,
-# and it did: the entry recording this check said it found "4 sites, every one a
-# control" when one of the four was that entry's own explanatory comment. A lint
-# that fires on a sentence about the lint creates pressure to widen the exclusion
-# region, which is how a real call site gets hidden.
-#
-# A `#` inside a string literal is not a comment, so only a `#` preceded by an
-# even number of double quotes on that line starts one.
-$codeOnly = New-Object System.Text.StringBuilder
-foreach ($srcLine in ($scanSource -split "`r?`n")) {
-  $cut = -1
-  $quotes = 0
-  for ($ci = 0; $ci -lt $srcLine.Length; $ci++) {
-    $ch = $srcLine[$ci]
-    if ($ch -eq '"') { $quotes++ }
-    elseif ($ch -eq '#' -and ($quotes % 2) -eq 0) { $cut = $ci; break }
-  }
-  $kept = if ($cut -ge 0) { $srcLine.Substring(0, $cut) } else { $srcLine }
-  [void]$codeOnly.AppendLine($kept)
-}
-$scanSource = $codeOnly.ToString()
-
-foreach ($sc in $rawCallStripControls) {
-  $cut = -1; $quotes = 0
-  for ($ci = 0; $ci -lt $sc.Length; $ci++) {
-    $ch = $sc[$ci]
-    if ($ch -eq '"') { $quotes++ }
-    elseif ($ch -eq '#' -and ($quotes % 2) -eq 0) { $cut = $ci; break }
-  }
-  $stripped = if ($cut -ge 0) { $sc.Substring(0, $cut) } else { $sc }
-  if ([regex]::Matches($stripped, $rawCallPattern).Count -ne 0) {
-    SoftFail ("comment stripping does not remove [$sc]; the lint would report a commented-out call as a finding")
-  }
-}
-$rawCallSites = @([regex]::Matches($scanSource, $rawCallPattern))
-if ($rawCallSites.Count -gt 0) {
-  SoftFail ("{0} sub-checker call site(s) bypass Invoke-Checker and would score a non-running checker as PASS: {1}" -f `
-    $rawCallSites.Count, (($rawCallSites | ForEach-Object { $_.Value }) -join '; '))
-}
-Write-Host ("GATE COVERAGE: {0} of {1} advertised checkers invoked; {2} raw call site(s)" -f ($script:checkersRun.Count), ($expectedCheckers.Count), $rawCallSites.Count)
+Write-Host ("GATE COVERAGE: {0} of {1} advertised checkers invoked; {2} raw call site(s), {3} dynamic invocation(s)" -f `
+  ($script:checkersRun.Count), ($expectedCheckers.Count), $gateWalk.Static.Count, $gateWalk.Dynamic.Count)
 if ($script:issues.Count -gt 0) {
   Write-Host ""
   Write-Host "GATE FAIL: $($script:issues.Count) check(s) failed. ALL of them:"

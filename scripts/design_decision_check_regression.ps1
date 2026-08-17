@@ -541,14 +541,18 @@ try {
     # enumerates merges, so the CI step could never pass on a pull request --
     # actions/checkout builds `refs/pull/N/merge`, so HEAD IS a merge commit.
     #
-    # The branch touches files the trunk commits do not, so the merge is
-    # conflict-free: a conflicted merge leaves the index unresolved and the
+    # Branched from c2 -- not c0 -- and the entry goes in DESIGN_DECISIONS.md,
+    # the log that a CODE-classified path requires. Branching from c0 and
+    # logging to the WORKFLOW file made the merge fail for a MISSING CODE ENTRY
+    # rather than for being a merge, so this leg passed with the refusal deleted:
+    # setting `$parents.Count -gt 2` to `-gt 99` left the whole suite at exit 0.
+    # The branch still touches a file the trunk does not, so the merge is
     # fixture cannot continue.
     $trunk = (& git rev-parse --abbrev-ref HEAD)
-    & git checkout -q -b mergefix $c0 2>&1 | Out-Null
+    & git checkout -q -b mergefix $c2 2>&1 | Out-Null
     Write-FixtureFile -Root $pcRoot -RelativePath 'paper/branch_only.tex' -Content 'branch side'
-    Write-FixtureFile -Root $pcRoot -RelativePath 'docs/internal/WORKFLOW_DESIGN_DECISIONS.md' `
-      -Content '## WDD-20000101-002 -- branch' -Append
+    Write-FixtureFile -Root $pcRoot -RelativePath 'docs/internal/DESIGN_DECISIONS.md' `
+      -Content '## DD-20000101-003 -- branch' -Append
     & git add -A 2>&1 | Out-Null
     & git commit -qm 'branch commit with entry' 2>&1 | Out-Null
     & git checkout -q $trunk 2>&1 | Out-Null
@@ -674,11 +678,39 @@ if (-not (Test-Path -LiteralPath $ciPath)) {
     Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml assigns $commits more than once; a later assignment can reduce the range'
     $wired = $false
   }
-  # The loop body must not filter either. A `continue` guard skipping all but the
-  # tip satisfies every test above -- it changes no assignment and no enumeration.
-  # So the first statement inside the loop is pinned.
-  if ($ciText -notmatch '(?ms)foreach \(\$c in \$commits\) \{\s*\r?\n\s*Write-Host ') {
-    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] the certification loop does not begin with its Write-Host; a guard there can skip commits silently'
+  # `$commits = ` is not the only way to rebind it. `Set-Variable -Name commits`
+  # reaches the same variable and passed every other test here.
+  if ($ciText -match 'Set-Variable[^\r\n]*-Name[^\r\n]*commits') {
+    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml rebinds \$commits through Set-Variable; the range can be reduced without an assignment'
+    $wired = $false
+  }
+  # And the loop must not be wrapped. A dead `if` around it leaves the body
+  # byte-identical, so the whole-body pin above cannot see it; what changes is
+  # the statement immediately before the loop.
+  if ($ciText -notmatch '(?m)^\s*\$bad = 0\s*\r?\n\s*foreach \(\$c in \$commits\)') {
+    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] the certification loop does not follow the counter reset; it may be wrapped in a branch that never runs'
+    $wired = $false
+  }
+  # The loop body is pinned WHOLE, not by its first statement. Pinning placement
+  # only stopped a `continue` in position 1; five edits still certified one
+  # commit while printing the green sentence and passing this case -- `break` at
+  # the end, the same `continue` moved to position 2, `Set-Variable` on
+  # $commits, a dead-branch wrapper, and an $LASTEXITCODE test that can never
+  # increment $bad. A text pin over a body cannot be complete; what it can do is
+  # stop being weaker than the pin one line above it.
+  $expectedLoop = @(
+    'foreach ($c in $commits) {',
+    'Write-Host "--- $c $(git log -1 --format=%s $c)"',
+    './scripts/design_decision_check.ps1 -Base "$c~1" -Head $c -Strict',
+    'if ($LASTEXITCODE -ne 0) { $bad++ }',
+    '}'
+  ) -join ' '
+  $actualLoop = [regex]::Match($ciText,
+    '(?s)foreach \(\$c in \$commits\) \{.*?\r?\n\s*\}').Value
+  $actualLoop = (($actualLoop -split "`r?`n" | ForEach-Object { $_.Trim() } |
+    Where-Object { $_ }) -join ' ')
+  if ($actualLoop -cne $expectedLoop) {
+    Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] the certification loop body is not the pinned four statements; it reads [$actualLoop]"
     $wired = $false
   }
   # And THIS step must be scheduled. Testing for `if: always()` anywhere in the

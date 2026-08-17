@@ -11089,3 +11089,82 @@ executes nothing and was recorded as invoked. The append moved past the throw
 check. And `Resolve-BaseRef` hard-coded "base" while resolving the head too, so
 the head-specific message was unreachable under `-Strict`, the mode CI uses; it
 takes a `-RefKind` label now.
+
+## WDD-20260816-069 -- Round 11: the raw-call lint is now an AST walk, because five rounds of regex failed
+
+Fresh-blind audit of `17360d1..b84b9e4`. **P1 empty**; five P2s, all in round 10's
+repairs. The pattern held a fifth time.
+
+### The regex is gone
+
+Five consecutive rounds found this one check inadequate, each time inside the fix
+for the previous round:
+
+| round | what was wrong |
+|---|---|
+| 7 | the pattern was `\[` -- an escaped literal -- and matched **nothing** |
+| 8 | anchored at column 0, so an INDENTED call was invisible |
+| 9 | the four controls were exactly the pattern's own envelope |
+| 10 | ten more shapes missed incl. `$script:rc = & ...`; controls again the envelope; and it flagged its own fixtures and its own prose |
+| 11 | nineteen controls collapsed to **four** distinct consumed substrings -- a degenerate pattern dropping `$PSScriptRoot` missed 0 of 19 -- and the comment stripper written to keep prose out was cutting **seven lines of live code**, counting only double quotes |
+
+Round 11 is the one that settles it. A control set that does not constrain the
+pattern cannot be repaired by adding controls, and a hand-written comment
+stripper cannot beat a parser that already knows what a comment is. **The seven
+over-stripped lines included the stripper's own two implementation lines.**
+
+So the check asks PowerShell instead. `Parser::ParseInput` gives the same
+tokenisation the shell uses; the walk collects `CommandAst` nodes whose
+`InvocationOperator` is `Ampersand` or `Dot`. Measured against a fixture carrying
+every shape from all five rounds: **14 real invocations found, 0 false
+positives.** `Invoke-Checker -Path ...` is excluded because its operator is
+`Unknown`; commented-out calls, here-string bodies and prose are excluded because
+the parser knows what they are.
+
+**The sentinel region is gone too.** It existed only because a regex cannot tell a
+call from a quotation of one; a string literal is not a `CommandAst`, so the 21
+fixtures need no exclusion. That deletes the region-length bound, the
+`fixtureChars * 3` headroom that hid twenty raw calls, and the liveness test a
+comment could satisfy -- four round-11 findings closed by one change.
+
+Dynamic invocation (`& $someVariable`) is not statically decidable. It is not
+treated as a finding; it is **pinned** -- `$Path`, Invoke-Checker's own dispatch,
+is the only one, and a new one is reported for review.
+
+### A finding that was not a finding
+
+Round 11 listed `$all = @(1, & "$PSScriptRoot\x.ps1")` among the missed shapes.
+It is a **parse error** in PowerShell -- "Missing expression after ','" -- so it
+cannot appear in a working script. The fixture-parse assertion added here is what
+surfaced that: a control catching a defect in the finding that motivated it. The
+parenthesised form is real and is a fixture.
+
+### The merge fixture passed with the refusal deleted
+
+The `[merge-refused]` leg added last round wrote a **code**-classified file while
+recording its entry in the **workflow** log, so the merge was rejected for a
+missing code entry rather than for being a merge. Setting `$parents.Count -gt 2`
+to `-gt 99` left the whole suite at exit 0.
+
+Rebased onto `$c2` with the entry in `DESIGN_DECISIONS.md` -- the log that a
+code-classified path requires. Verified: with the refusal deleted the leg now
+**fails**.
+
+### The loop pin tested placement, not filtering
+
+It pinned the loop body's first statement. Seven edits certified one commit while
+printing "all N commit(s) certified individually" and passing the pin: `break` at
+the end, the same `continue` moved to position two, `Set-Variable -Name commits`,
+a dead branch wrapping the loop, and an `$LASTEXITCODE` test that can never
+increment `$bad`.
+
+Now pinned: the loop body **whole**, `Set-Variable` rebinding of `$commits`, and
+the statement immediately before the loop -- a dead wrapper leaves the body
+byte-identical, so only its predecessor changes. All seven rejected.
+
+**A note on my own measurement.** The first mutation run reported all five still
+passing. They were not landing -- `git diff` was empty, because the anchors I
+typed had the wrong indentation. A mutation that does not apply and a pin that
+does not fire produce the same output, which is the whole subject of this entry.
+The rebuilt harness derives its anchors from the file's own lines and prints the
+diffstat beside each verdict.
