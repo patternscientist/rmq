@@ -10967,3 +10967,44 @@ Caught by reading the result. Nothing measures prose continuity, and this is the
 fourth time in this effort that a scripted insertion has damaged a sentence --
 the species PLAN_LINEAGE records as 8. The rule that keeps working is the dull
 one: after a scripted edit to prose, read the region, not the diffstat.
+
+## WDD-20260816-067 -- The commissioning prompt for the outside plan audit
+
+`docs/internal/PLAN_AUDIT_PROMPT.md` is the outside auditor's only input besides
+the tag. It follows the RC-3/RC-4 candidate-prompt convention: name the tag, name
+the artifacts, state the method rules, and list what is DECLARED OPEN so the
+auditor does not spend budget rediscovering a known limit.
+
+The declared-open list matters more here than for a candidate audit, because the
+plan rests on things that are deliberately not checkable: revisions v2-v13 are on
+no ref, the RC-1/RC-2 material and the 2026-08-15 report are on no ref, the agent
+audits of the plan have no committed record, and two H items are genuinely
+undone. An auditor who does not know that will report all four as findings, and
+the report will be four fifths noise.
+
+The tag was created before this file existed and its annotation cites it, so the
+tag is moved rather than left pointing at a commit where the prompt is absent --
+the same two-commits error DD-20260816-124 corrects one entry earlier, caught
+here before publication instead of after.
+
+Three method rules in the prompt are carried over from what this project learned
+the hard way rather than from any template:
+
+- **Check the referent, not just the citation.** A round reported a claim about
+  revision v3 as contradicted, citing a sentence in v4; the citation was real and
+  v4 was simply wrong about v3.
+- **Measure before reporting.** Two rounds produced findings whose numbers came
+  from a looser regex than the one that shipped.
+- **A clean verdict is a real possible outcome.** Manufacturing findings to look
+  thorough is itself a defect, and the prompt says so.
+
+### Addendum to WDD-20260816-067 -- the prompt cannot state its own SHA
+
+The prompt first carried a line reading `Commit under audit: <40-hex>`. Every
+attempt to make it accurate failed by construction: writing the SHA in produces a
+new commit with a new SHA. Two amend-and-retag cycles disagreed by exactly that
+much before the cause was obvious.
+
+This is the fixed point DD-20260816-124 states for the plan header, hit again one
+commit later in a different file. The line is gone; the prompt tells the auditor
+to derive the SHA from the tag, which is the only formulation that can be true.
