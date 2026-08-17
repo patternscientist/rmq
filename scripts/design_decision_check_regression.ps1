@@ -870,6 +870,16 @@ if (-not (Test-Path -LiteralPath $retroPath -PathType Leaf)) {
     $parts = $row -split '\s*\|\s*', 2
     $sha = $parts[0].Trim()
     $recorded = $parts[1].Trim()
+    # "the commit is not in this clone" is not "the commit failed to certify".
+    # A shallow checkout made all eight unresolvable and the leg reported eight
+    # certification failures, which named the wrong defect entirely.
+    $present = Invoke-BoundedProcess -FilePath "git" -WorkingDirectory $callerRoot `
+      -TimeoutMs $gitTimeoutMs -Arguments @("cat-file", "-e", "$sha^{commit}")
+    if ($present.Code -ne 0) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] $sha is absent from this clone, so its record cannot be re-derived; run with full history (git fetch --unshallow)"
+      $retroOk = $false
+      continue
+    }
     $probe = Invoke-BoundedProcess -FilePath $shellPath -WorkingDirectory $callerRoot `
       -TimeoutMs $productionTimeoutMs -Arguments @(
         "-NoLogo", "-NoProfile", "-File", $productionPath,

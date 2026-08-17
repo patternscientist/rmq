@@ -11791,3 +11791,33 @@ the removed default and is now `unknown-repository-path-is-unclassified`, and
 testing path normalisation, so it now uses a classified path and tests what its
 name says. Eight cases were added for the new behaviour, including one proving
 the unclassified failure survives non-strict mode.
+
+## WDD-20260817-080 -- The reproducibility job could not see the history it was asked to check
+
+`WDD-20260817-079` added `[retrospective-record]`, which re-derives each
+pre-policy commit's missing-path set by running the production checker over
+`<sha>~1..<sha>`. The `CI` workflow passed it. `Artifact Reproducibility` failed
+it eight times over, once per commit.
+
+The cause was not certification. `artifact-repro.yml` checked out with
+`fetch-depth: 2`, and the eight commits sit far behind the tip, so they were
+simply **not in the clone**. `<sha>~1` could not resolve, the production checker
+exited 1, and the leg reported "does not certify retrospectively" -- naming a
+governance failure where the real fault was a missing object.
+
+Two repairs, because there were two faults:
+
+- **The workflow.** `fetch-depth: 0`, matching `ci.yml`, which already fetches
+  full history for the per-commit certification loop. A job that reproduces the
+  artifact from this repository needs the repository, not its last two commits.
+- **The diagnostic.** The leg now asks `git cat-file -e <sha>^{commit}` first and,
+  when the object is absent, says so and names the remedy
+  (`git fetch --unshallow`) instead of blaming the commit. Verified by cloning
+  this branch at `--depth 2` and running the suite there: all eight lines now
+  report absence rather than failure.
+
+This is the same defect as the CI rollup corrected in `WDD-20260817-073` -- a
+check reporting one specific cause regardless of which condition actually fired.
+Twice in two days, in two different checkers, which suggests the rule is worth
+stating plainly: **a check that cannot run and a check that failed are different
+outcomes, and a message that conflates them sends the reader to the wrong place.**

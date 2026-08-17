@@ -15,7 +15,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          fetch-depth: 2
+          # 0, not 2: the gate's [retrospective-record] leg re-derives each
+          # pre-policy commit's missing-path set by running the production
+          # checker over `<sha>~1..<sha>`, and those commits sit far behind the
+          # tip. At depth 2 they are simply absent from the clone, and every one
+          # of them failed to resolve. ci.yml already fetches full history.
+          # WDD-20260817-080.
+          fetch-depth: 0
           # Annotated tags, explicitly. actions/checkout fetches with
           # --no-tags when fetch-depth > 0 and fetch-tags is unset, so
           # tag_annotation_check.ps1 found no annotated tags and failed
