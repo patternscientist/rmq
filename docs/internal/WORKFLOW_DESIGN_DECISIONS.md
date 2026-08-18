@@ -11699,7 +11699,10 @@ making the claim moves every time the document is saved.
 
 `WDD-20260817-077` decomposed the thirteen uncertifiable commits into three
 causes and recommended three changes. All three are made here, and the branch
-now certifies **104 of 104**.
+now certifies **every non-merge commit**, eight of them by retrospective
+record. (Written as a count it was "104 of 104", which `WDD-20260817-078` had
+already ruled out one commit earlier: the two commits recording this fix moved
+the total to 106 and falsified it immediately.)
 
 ### 1. The default is gone
 
@@ -11821,3 +11824,27 @@ check reporting one specific cause regardless of which condition actually fired.
 Twice in two days, in two different checkers, which suggests the rule is worth
 stating plainly: **a check that cannot run and a check that failed are different
 outcomes, and a message that conflates them sends the reader to the wrong place.**
+
+## WDD-20260817-081 -- The rule from 078, broken one commit after writing it
+
+`WDD-20260817-078` concluded that a claim must be stated in terms of what does
+not move, because `13 of 100` had become `13 of 101` had become `13 of 103` --
+every commit recording the finding enlarging the set it counted over.
+
+The next two entries wrote **"the branch now certifies 104 of 104"** into
+`WDD-20260817-079` and into the commissioning packet. The two commits that
+carried those words took the total to 106 and falsified them on arrival. The
+rule was one entry old.
+
+Both sites now state the invariant: **every** non-merge commit certifies, eight
+of them by retrospective record. "Every" does not drift, and eight is a property
+of history rather than of how many times this file has been saved. The branch
+total appears nowhere as part of a claim.
+
+Worth recording rather than quietly correcting, because the failure is not
+ignorance of the rule -- the rule was written, in this file, deliberately, one
+commit earlier. Knowing a rule and applying it at the moment of writing are
+different acts, and a ratio still reads as a fact rather than as a claim with a
+moving part. The durable defence is not vigilance; it is that a numerator tied
+to named objects cannot go stale, so **prefer the form that cannot be wrong over
+the form you intend to keep correct.**

@@ -219,7 +219,7 @@ which measures what that window is currently concealing.
 
 **Eight pre-policy commits certify by retrospective record, not by their own
 content.** Every non-merge commit on this branch now passes
-`design_decision_check.ps1 -Strict` — 104 of 104 — but eight of them pass
+`design_decision_check.ps1 -Strict`, but eight of them pass
 because `docs/internal/RETROSPECTIVE_CERTIFICATIONS.md` carries the design
 decision they failed to record, and the checker matches the commit AND its
 exact missing-path set against that file. They predate the per-commit rule
