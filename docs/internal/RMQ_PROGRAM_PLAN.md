@@ -1,10 +1,11 @@
-# RMQ program plan v14
+# RMQ program plan v15
 
 **Date:** 2026-08-16.
 **Verified at:** `17360d1`, an ancestor of `codex/rc3-corrections`. Every SHA
 cited as a **landing** below is an ancestor of that tip, checked. One SHA
 deliberately is not: `648e512`, the tip of
-`claude/b1-b2-charged-fringe-tables`, which §E and §0 cite as a separate branch.
+`claude/b1-b2-charged-fringe-tables`, which §E cites and §0 identifies as the
+tip of a separate branch.
 Two further SHAs, `543de42` and `b53c08d`, are orphans of a history rewrite —
 `git branch --contains` is empty for each — and are cited only here;
 their surviving counterparts are `acfb7ef` and `b0b83b9`.
@@ -16,7 +17,8 @@ it, because writing the SHA in changes it. Claims about artifacts committed
 the pin -- the distinction exists because a previous revision collapsed the two
 and ended up speaking from two commits at once.
 
-**Supersedes v13.** Revision history: `PLAN_LINEAGE.md`.
+**Supersedes v14.** Defect-species record: `PLAN_LINEAGE.md`, which carries
+no per-revision attribution table, deliberately.
 
 ## Method
 
@@ -114,7 +116,7 @@ That is §J item 6, learned from experience rather than asserted as principle.
 | `P1-2` the required aggregate omits both architecture replays | the two `Invoke-Checker` calls in `scripts/gate.ps1` for `eg_cp_stagea_replay.ps1` and `eg_cp_final_falsification_replay.ps1`, both hard — neither carries `-Soft` |
 | `P1-3` the required full aggregate exceeded its own topology deadlines | `scripts/paper_topology_lint.ps1:12,21` (300 → 900) — **tail not done, §H item 3** |
 | `P2-1` the independence checker watches the wrong terminal theorem | `scripts/independence_check.lean:84-88`, all three |
-| `P2-2` three advertised checkers have direct false-success inputs | `4549cb2`, hardened `b0b83b9`. **Two scope caveats.** (i) WDD-20260816-042 records the conflict scan as **shape-limited by construction** — "no shape-based detector can close it" — and records that WDD-035's injection verification could not match its own shape. (ii) A second, concrete false-success input was live until `d31064c`: `$historicalMarker` contained bare `was`, so ``constant `214` was adopted`` — a conflict **inside** the declared shape — exited 0. That is `P2-2`'s own subject, undischarged at `b0b83b9` |
+| `P2-2` three advertised checkers have direct false-success inputs | `4549cb2`, hardened `b0b83b9`; the two remaining classes closed `WDD-20260818-081`. **An outside plan audit on 2026-08-19 found this row asserting a closure that had not happened**: the disposition required all three exact classes to become persistent self-tests, and two never did -- `check_paper` still accepted `a fixed number of word-RAM steps`, `claim_drift -Strict` still accepted `executes in 210 word-RAM instructions`, and no `.ps1` in the repository held either probe string. Reproduced at `27c5641` and fixed. **Two scope caveats.** (i) WDD-20260816-042 records the conflict scan as **shape-limited by construction** — "no shape-based detector can close it" — and records that WDD-035's injection verification could not match its own shape. (ii) A second, concrete false-success input was live until `d31064c`: `$historicalMarker` contained bare `was`, so ``constant `214` was adopted`` — a conflict **inside** the declared shape — exited 0. That is `P2-2`'s own subject, undischarged at `b0b83b9` |
 | `P2-3` trust and headline gates check a curated subset | yes. The axiom whitelist landed (`$allowed = @('propext', 'Classical.choice', 'Quot.sound')` in `scripts/gate.ps1`); round 4 (`d31064c`, WDD-20260816-043) widened its parse from 36 of 104 records to 104 of 104, after finding that Lean wraps long dependency lists and 68 records were never read. The disposition also requires "independent expected-type consumers for the standalone lower-bound, List-Int, readWord **and** packed aliases" — four. Only the packed one existed (`51a0a43`) until `15865e1`, where the other three landed (DD-20260816-117) and are present at the pin, each verified to fail closed by a mutant that stops the file elaborating |
 | `P2-4` the strict claim scan breaks the fresh-blind boundary | `c04c101` |
 | `P2-5` only the Windows ownership implementation was exercised | **NOT DISCHARGED** — probe only (`790f20b`); §I |
@@ -213,7 +215,7 @@ Identifiers are v2's. New entries take fresh letters; none is ever reassigned.
 | id | decision | status |
 |---|---|---|
 | `DD-A` | Retire the minimal-root goal | Open — **conditional on the capstone-seam feasibility probe**, which has not run. May not record "minimization exhausted" before it does |
-| `DD-B` | Spoke claims: manuscript claims them, correspondence disclaims them; 6 of 53 checked names not importable from `RMQPaper` | Open — re-scope as a repository-surface question |
+| `DD-B` | Spoke claims: manuscript claims them, correspondence disclaims them; 6 of 54 checked names not importable from `RMQPaper` | Open — re-scope as a repository-surface question |
 | `DD-C` | E1 disposition: banked non-public strengthening, **or** public landing as a full release candidate requiring the full release audit (accepted `P1-4`) | Open |
 | `DD-D` | PRE rung + charge policy + **the fallback, decided in advance**: "the payload is built by a closed program over a pointwise-encoded input, whose emitted writes reproduce the canonical payload words in order" — a **provenance** claim with no cost claim. Deciding it in advance removes the incentive to weaken `O-WORKCAP` later, which is exactly what v5's drop of that obligation illustrates | Open — adopt only with C1–C4 frozen first |
 | `DD-E` | Workspace measure: representation, encoding, **peak-live-state measure, and a proved encoding bound**. Until all four, the `2n` forecast is removed, not restated | Open — DD'd before any lane work |
@@ -279,13 +281,14 @@ contract cannot be frozen while any fake lacks a verdict.
 | O-WRITE | One shared payload sub-builder. Physical-store emission **and packed memory construction** separately costed **and joined**, with **write units stated**: bits counted in bits, or words counted in words with an exact concatenated-bit-length and an address/value replay. The units clause IS the repair — "charged writes = payload bit length" is dimensionally wrong. | — | accepted `P2-2` |
 | O-COUNT | Report **five wrappers / eight encoded tables**; no `2n` forecast until DD-E | — | accepted `P2-3` |
 
-The catalogue **is** a governed artifact as of this pin:
+The catalogue **is** a governed artifact committed *with* this revision --
+not at the verification pin, per the header rule:
 `docs/internal/wf3_attack.json` is committed, so every `FK-` and `R` claim in
 C.1 and C.2 is checkable against a SHA rather than against a file in a session
 directory. It was on no ref through v2-v13, and v4 asserted it was "committed
 under `docs/internal/`" while contradicting that in the next sentence -- which is
-why H item 5 existed. That item is now done and the contract-freeze precondition
-it named is met.
+why H item 5 existed. That item is now done at the revision-introducing commit, and the
+contract-freeze precondition it named is met there.
 
 ### C.2b What C1–C4 are
 
@@ -334,8 +337,11 @@ self-check would be a regression.
 8. Touching frozen requirement wording — appended amendments only.
 9. **Advertising replay as the anti-oracle.**
 10. Any preprocessing claim that outruns C1–C4.
-11. **Charging the existing shape builder.** `RMQ/Core/Shape.lean:675-677`
-    `insertRightStack` is the quadratic construction; accepted `P1-5` found the
+11. **Charging the existing shape builder.** `RMQ/Core/Shape.lean:654-677,892-901`
+    with the analysis at `PLAN_AUDIT_DISPOSITION.md:170-185`: `insertRightStack`
+    is the quadratic construction -- `:675-677` alone is only the wrapper, and the
+    cost comes from the spine walk, `plugRight`'s rebuild, and `buildTreeAux`
+    calling it per element; accepted `P1-5` found the
     linear proof **impossible** for it. The lane is a persistent monotone-stack
     scan or a direct shape emitter, **and must prove value agreement with the
     canonical shape**.
@@ -398,7 +404,8 @@ been discharged by editing a numeral. Owner: coordinator, §H item 4.
 Session figures are **planning hypotheses, relabelled not deleted**: `~9–13
 sessions` (`docs/internal/RMQ_PROGRAM_PLAN_2026-08-13.md:269`), `9–13 worker + coord +
 external audit` (`:363`). **Gates use the upper estimate plus an audit buffer.**
-No calendar governs until `DD-F`.
+No calendar governs until `DD-F`. Calendar gates update only from an official
+2027 CFP -- accepted `P2-4`, the rule §A.1 maps to this section.
 
 ---
 
@@ -598,8 +605,8 @@ it will not maintain them. A count that nothing can check is a count that rots.
 **Across the three V1 candidate audits, every finding was a claim, a checker, or a
 process defect -- none was a defect in a kernel-checked theorem.**
 
-**The dispositions behind that summary are committed as of this pin; the audit
-REPORTS are not.** So the summary is now checkable for RC-3 against
+**The RC-3 disposition behind that summary is committed *with* this revision,
+not at the verification pin; the audit REPORTS are not.** So the summary is now checkable for RC-3 against
 `docs/internal/RC3_DISPOSITION.md`, and remains uncheckable for RC-1 and RC-2,
 whose material exists on no ref. v7 claimed the summary was "verifiable for
 RC-3" via that file when the file was itself uncommitted -- the contrast it drew

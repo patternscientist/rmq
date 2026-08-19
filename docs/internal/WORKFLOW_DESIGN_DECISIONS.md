@@ -11898,3 +11898,39 @@ One defect introduced and repaired in passing: the first write of these patterns
 put literal `0x08` bytes in the file where `\b` was intended, which rendered as
 a missing character rather than an error. Found by hexdump, not by reading --
 the terminal hides a backspace. Byte-verified 0 afterwards.
+
+## WDD-20260819-082 -- Plan v15, and what an outside audit caught that twelve inside rounds did not
+
+The outside audit of `audit-plan-v14` returned ten findings. **All ten
+reproduced**; none was rejected on measurement. Across twelve internal candidate
+rounds roughly a quarter of findings were wrong about their own referent, so this
+is worth recording as a data point about where audit value comes from: the
+auditor had the tag and the prompt and nothing else, and that constraint is the
+thing that made the findings land.
+
+`AUD-01`, `AUD-02` and `AUD-03` are one defect at three sites, and the sharpest
+kind: the plan's header states the rule -- claims about artifacts committed
+*with* a revision "say so explicitly and are true of that later commit, not of
+the pin" -- and explains that the rule exists because an earlier revision
+collapsed the two. Then three sentences collapse them again. **A rule written
+down is not a rule followed**, and the document that documents the defect is not
+immune to it.
+
+`AUD-04` was not a plan defect at all. It read a plan row asserting that RC-3
+`P2-2` had landed, went and checked, and found two of the three accepted
+false-success classes still passing on the exact inputs the disposition named.
+Closed in `WDD-20260818-081`. The transferable lesson is in the disposition
+record: **an accepted disposition is not an implemented one**, and where the
+disposition names a probe string, grepping for that string is the whole test.
+Twelve rounds read that row; none ran the grep.
+
+The remaining six are ordinary claim defects -- a rule mapped to a section that
+does not carry it, a companion filename that does not exist, a three-line
+citation standing in for a nine-line argument, `53` where the checker declares
+`54`, a defect-species record called a revision history, and a cross-reference
+attributing to §E something only §0 says.
+
+`audit-plan-v14` is not moved. It is the artifact the audit was performed
+against; moving it would destroy the referent the report cites. v15 gets its own
+tag, and the disposition in `PLAN_AUDIT_DISPOSITION_v14.md` names the audited SHA
+so the two can be read against each other.

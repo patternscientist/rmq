@@ -1,6 +1,6 @@
 # RMQ program plan — defect species record
 
-Companion to `RMQ_PROGRAM_PLAN_v14.md`.
+Companion to `RMQ_PROGRAM_PLAN.md`.
 
 ## What this file does and does not contain
 
@@ -20,7 +20,8 @@ given, per species 3 below.
 The conclusion is structural, not motivational: **claims about which revision of this plan
 said what cannot be checked against any committed artifact** -- the revisions
 v2 through v13 exist on no ref, so the only witnesses are other uncommitted
-files. **The revision at the current pin IS committed** (`RMQ_PROGRAM_PLAN.md`,
+files. **The v15 revision IS committed** at the commit that introduces it -- not at
+the plan's verification pin (`RMQ_PROGRAM_PLAN.md`,
 H item 5), which changes this going forward and not backward: a future claim
 about what this revision said is checkable; every claim about v2-v13 is not.
 Some are checkable against the uncommitted files themselves -- A.3's ten
