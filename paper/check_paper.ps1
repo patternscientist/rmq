@@ -205,7 +205,29 @@ $forbiddenClaims = @(
   'RAM\s+model[^.]{0,40}constant',
   'constant[^.]{0,40}\bRAM\s+model',
   'constant\s+query\s+time',
-  'queries?\s+in\s+constant\s+time'
+  'queries?\s+in\s+constant\s+time',
+  # RC-3 `P2-2` accepted that this exact class becomes a persistent self-test:
+  # an external auditor passed `the query executes in a fixed number of
+  # word-RAM steps`, which asserts a word-RAM instruction count for a
+  # cost the repository charges in the CELL-PROBE model. The manuscript says so
+  # itself at the `not word-RAM instruction time` line, so the claim is not
+  # merely unqualified, it contradicts the paper. `word[-\s]RAM\s+time` above
+  # missed it because the sentence says `steps`, not `time`.
+  #
+  # Negation handling, stated exactly. Each pattern refuses a directly
+  # preceding `not`, `not a`, or `not the`, so the manuscript's own
+  # `this is not word-RAM instruction time` and `not a fixed number of
+  # word-RAM steps` both pass. A negation FURTHER away still trips them --
+  # `we do not claim a constant number of word-RAM instructions` fails,
+  # measured. That is deliberate: widening the lookbehind to span arbitrary
+  # words would admit `this is not trivial: the query executes in a fixed
+  # number of word-RAM steps`, letting a real claim through. Failing closed
+  # costs a rephrase; failing open is the defect class this repository
+  # exists to remove.
+  '(?<!\bnot\s)(?<!\bnot\sa\s)(?<!\bnot\sthe\s)fixed\s+number\s+of\s+word[-\s]RAM\s+(?:step|instruction)',
+  '(?<!\bnot\s)(?<!\bnot\sa\s)(?<!\bnot\sthe\s)constant\s+number\s+of\s+word[-\s]RAM\s+(?:step|instruction)',
+  '(?<!not\s)(?<!not\sin\s)\bin\s+\d+\s+word[-\s]RAM\s+(?:step|instruction)',
+  '\bexecutes?\s+in\s+(?:a\s+)?(?:fixed|constant|\d+)[^.]{0,30}word[-\s]RAM'
 )
 
 $allForbidden = $forbidden + $forbiddenClaims
@@ -567,6 +589,10 @@ if ($SelfTest) {
     'constant[^.]{0,40}\bRAM\s+model'      = 'constant query time in a RAM model'
     'constant\s+query\s+time'              = 'the structure has constant query time'
     'queries?\s+in\s+constant\s+time'      = 'answers queries in constant time'
+      '(?<!\bnot\s)(?<!\bnot\sa\s)(?<!\bnot\sthe\s)fixed\s+number\s+of\s+word[-\s]RAM\s+(?:step|instruction)' = 'the query executes in a fixed number of word-RAM steps'
+      '(?<!\bnot\s)(?<!\bnot\sa\s)(?<!\bnot\sthe\s)constant\s+number\s+of\s+word[-\s]RAM\s+(?:step|instruction)' = 'a constant number of word-RAM instructions'
+      '(?<!not\s)(?<!not\sin\s)\bin\s+\d+\s+word[-\s]RAM\s+(?:step|instruction)' = 'the canonical query runs in 210 word-RAM steps'
+      '\bexecutes?\s+in\s+(?:a\s+)?(?:fixed|constant|\d+)[^.]{0,30}word[-\s]RAM' = 'it executes in a fixed 210 word-RAM operations'
   }
   foreach ($pat in $forbiddenClaims) {
     if ($positives.ContainsKey($pat)) {

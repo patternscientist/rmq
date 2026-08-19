@@ -1,5 +1,5 @@
 {
-  "version": 25,
+  "version": 26,
   "updated": "2026-08-16",
   "currentFactSurfacePathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\\.md|RMQ_FINAL_ROADMAP\\.md))$",
   "terms": [
@@ -281,6 +281,14 @@
       "allowedLineRegex": "not attained|no attainment|attainment witness|upper bound|until 2026|previously|corrected|retract|is not tight|never .*tight|policy|scan|historical|counterexample",
       "allowedPathLinePathRegex": "^paper/THEOREM_LEDGER\\.md$",
       "allowedPathLineRegex": "(?i)\\bamended\\b|(?i)this row said"
+    },
+    {
+      "id": "forbidden-wordram-instruction-count",
+      "pattern": "(?i)\\b(?:execute|run|complete|perform|finish)(?:e?s|ing)?\\s+in\\s+(?:a\\s+|about\\s+|exactly\\s+)?(?:\\d+|a\\s+fixed\\s+number\\s+of|a\\s+constant\\s+number\\s+of)\\s+word[-\\s]?RAM\\s+(?:instruction|step|operation)",
+      "status": "cell-probe-cost-is-not-a-word-ram-instruction-count",
+      "strict": true,
+      "allowedPathRegex": "^docs/internal/|^paper/check_paper\\.ps1$",
+      "allowedLineRegex": "\\bnot\\b|\\bnever\\b|\\bdoes not\\b|conflate|distinguish|policy|scan"
     }
   ],
   "requiredAttributions": [

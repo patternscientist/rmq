@@ -11848,3 +11848,53 @@ different acts, and a ratio still reads as a fact rather than as a claim with a
 moving part. The durable defence is not vigilance; it is that a numerator tied
 to named objects cannot go stale, so **prefer the form that cannot be wrong over
 the form you intend to keep correct.**
+
+## WDD-20260818-081 -- RC-3 `P2-2`: the two self-tests that were accepted and never written
+
+An outside audit of the program plan found that `P2-2` is marked landed
+(`yes`, §A.2 "all landed except two") while two of the three false-success
+classes its accepted disposition named still pass. Reproduced here at `27c5641`,
+the tagged candidate:
+
+    claim_drift MUTATED exit=0   scan complete (1206 hits, 0 strict failures)
+    check_paper MUTATED exit=0   CHECK-PAPER: RESULT: PASS
+
+on the exact accepted inputs -- `the query executes in a fixed number of
+word-RAM steps` in `rmq.tex`, and `the canonical query executes in 210 word-RAM
+instructions` in `README.md`. Corroboration: **no `.ps1` in the repository
+contained either probe string**, so the "persistent self-tests" the disposition
+required were never written. `RC3_DISPOSITION.md:151-153` is explicit: "These
+exact mutation classes become persistent self-tests."
+
+The claim is not merely unqualified, it contradicts the manuscript, which says
+at `rmq.tex:739` that the model is cell-probe and "this is not word-RAM
+instruction time". The charged cap is a cell-probe quantity; stating it as a
+word-RAM instruction count is the conflation the repository retired.
+
+**`check_paper.ps1`** gains four claim-shaped patterns. `word[-\s]RAM\s+time`
+missed the sentence because it says *steps*, not *time*. Each new pattern
+refuses a directly preceding `not`, `not a`, or `not the`, so the manuscript's
+own negation passes. A negation further away still trips them -- `we do not
+claim a constant number of word-RAM instructions` fails, measured -- and that is
+deliberate: widening the lookbehind to span arbitrary words would admit `this is
+not trivial: the query executes in a fixed number of word-RAM steps`. Failing
+closed costs a rephrase; failing open is the defect this exists to remove.
+
+**`CLAIM_DRIFT_POLICY.json` v26** gains `forbidden-wordram-instruction-count`.
+Its `allowedPathRegex` admits `paper/check_paper.ps1`, because a checker's
+fixture table must contain the forbidden shapes by construction -- that is what
+makes it a test, not a claim surface. Without that, the new term fired on the
+fixtures added above and broke `claim_drift_scan -SelfTest`, which was caught by
+a control run: exit 0 without the term, exit 1 with it.
+
+**Persistent, not one-shot.** `check_paper`'s `$positives` table requires every
+claim pattern to match a concrete positive; adding the four patterns without
+fixtures failed the self-test with four cases, which is the mechanism working.
+Measured after: `check_paper -SelfTest` 0, `claim_drift_scan -Strict` 0,
+`-SelfTest` 0, `claim_drift_policy_regression` 0, and both README and rmq.tex
+mutations rejected with exit 1.
+
+One defect introduced and repaired in passing: the first write of these patterns
+put literal `0x08` bytes in the file where `\b` was intended, which rendered as
+a missing character rather than an error. Found by hexdump, not by reading --
+the terminal hides a backspace. Byte-verified 0 afterwards.
