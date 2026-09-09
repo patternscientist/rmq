@@ -12116,3 +12116,35 @@ add a candidate module, never hide one, and an unresolvable candidate is dropped
 
 Both shapes are fixtures in `-SelfTest` now. Measured after: each exits 1 where it
 exited 0, an ordinary import is still caught, and the unmutated baseline is green.
+
+## WDD-20260909-088 -- The RC-6 commissioning prompt
+
+Retargeted from `audit-v1-rc-4` to `audit-v1-rc-6` (nine references, including
+the four identity checks -- an errata note could not have covered those without
+telling the auditor to check out the wrong tree).
+
+Three declared-open entries had gone stale against their own measurements and are
+corrected: the tracked `.ps1` count is 26, not 25 (`host_shell_path.ps1` was
+added by `WDD-20260908-083`); the claim-drift policy is v27, not v25, and the
+two named terms were re-measured at v27 rather than assumed; and the program plan
+is tagged `audit-plan-v15`, with v14 kept unmoved as the referent of the audit
+that produced v15.
+
+A new section states what the previous outside audit found and what was done
+about it, finding by finding, with the before/after measurement for each. An
+auditor who is not told this re-derives it at the owner's expense, and one who is
+told it can check the repairs instead. It says plainly that two of the nine were
+undercounted in that report -- the cross-references were eight, not five, and the
+malformed expression appeared twice -- so the counts are worth redoing.
+
+It also records that the repairs broke three things, each caught by the gate
+rather than by the author. A packet that lists only successes invites the reader
+to trust the process rather than check it.
+
+**Corrupted in the writing, caught before commit.** The table row quoting
+`\log\binom{...}` was written through a Python string where `\b` became a literal
+backspace byte, so the file contained `\log<BS>inom`. The first check for this
+missed it, because it scanned a hand-picked set of control characters that did
+not include 0x08. The sweep is now over all of 0-31 except tab, CR and LF. A
+verification that enumerates what it expects to find cannot see what it did not
+think of.

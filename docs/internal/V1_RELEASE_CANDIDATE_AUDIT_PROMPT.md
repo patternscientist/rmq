@@ -4,15 +4,15 @@
 
 ## THE COMMIT UNDER AUDIT
 
-> **Tag: `audit-v1-rc-4`** — in `github.com/patternscientist/rmq`.
-> Audit this commit and no other. Every `audit-v1-rc-4` below means this commit.
+> **Tag: `audit-v1-rc-6`** — in `github.com/patternscientist/rmq`.
+> Audit this commit and no other. Every `audit-v1-rc-6` below means this commit.
 
 Obtain and verify it:
 
 ```bash
 git fetch origin --tags
-git checkout audit-v1-rc-4          # detached HEAD is expected and correct
-git rev-list -n1 audit-v1-rc-4      # the SHA under audit; record it in your report
+git checkout audit-v1-rc-6          # detached HEAD is expected and correct
+git rev-list -n1 audit-v1-rc-6      # the SHA under audit; record it in your report
 git status --porcelain              # MUST be empty: a dirty tree is not the candidate
 ```
 
@@ -20,9 +20,9 @@ Confirm you have the right tree before starting. All four must hold:
 
 | check | expected |
 | --- | --- |
-| `git rev-parse HEAD` equals `git rev-list -n1 audit-v1-rc-4` | yes |
+| `git rev-parse HEAD` equals `git rev-list -n1 audit-v1-rc-6` | yes |
 | `git status --porcelain` | empty |
-| `git tag --points-at HEAD` | includes `audit-v1-rc-4` |
+| `git tag --points-at HEAD` | includes `audit-v1-rc-6` |
 | `paper/` exists at the root | yes — it is in scope (`RC-10`) |
 
 If any fails, stop and report it rather than auditing a tree you cannot
@@ -41,7 +41,7 @@ You are a **fresh-blind exact-commit auditor**. You have not seen this
 repository's chat history, worker verdicts, or working trees, and you must not
 seek them. You were given exactly two things -- this prompt and the audit packet
 -- and the prompt names the commit to fetch. Those, plus the tree at
-`audit-v1-rc-4`, are your only inputs.
+`audit-v1-rc-6`, are your only inputs.
 
 Follow `docs/internal/AUDIT_PROTOCOL.md`. Report findings at `P0`/`P1`/`P2`/`P3`.
 
@@ -103,7 +103,7 @@ dynamic inputs are exactly `n`, the endpoints, and prior probe replies.
 
 ## 3. Rows to discharge
 
-For each, reconstruct independently from source at `audit-v1-rc-4`. Do not accept a
+For each, reconstruct independently from source at `audit-v1-rc-6`. Do not accept a
 docstring, a report, or a ledger row as evidence for the proposition it
 describes.
 
@@ -118,7 +118,7 @@ describes.
 | `RC-07` | Trust base: `sorry`-free, standard axioms only, pinned toolchain; the axiom-check scripts genuinely cover the cited declarations rather than a subset. |
 | `RC-08` | **Anti-vacuity.** For each headline, check that hypotheses are satisfiable and the statement is not trivially true. Dropping a load-bearing hypothesis should break the proof; if it does not, the hypothesis was decorative. |
 | `RC-09` | **Claim honesty across public surfaces.** Every surface in `currentFactSurfacePathRegex` states only what §2 licenses. Report any word-RAM, preprocessing, runtime, or attainment implicature. |
-| `RC-10` | The manuscript in `paper/` and its ledgers describe the theorems that exist at `audit-v1-rc-4`, with no claim stronger than its cited declaration. |
+| `RC-10` | The manuscript in `paper/` and its ledgers describe the theorems that exist at `audit-v1-rc-6`, with no claim stronger than its cited declaration. |
 | `RC-11` | **Artifact-root correspondence.** Take the theorem `docs/PAPER_CLAIM_CORRESPONDENCE.md` names as the accepted claim and check that importing the paper artifact root actually gives you it. A reviewer asking "which single import yields the paper's theorem?" must get one answer, and the documented identity and the importable identity must be the same string. |
 
 ---
@@ -204,11 +204,11 @@ total deletion is caught. And its block-comment strip does not nest, so a nested
 `WDD-20260816-064`.
 
 **Roster identity uses leaf filenames**, so two same-named scripts in different
-directories are indistinguishable. All 25 tracked `.ps1` basenames are unique
+directories are indistinguishable. All 26 tracked `.ps1` basenames are unique
 today. `WDD-20260816-064`.
 
 **Both claim-drift terms retain pre-v24 repo-wide `allowedLineRegex` tokens.**
-Measured at policy v25, these one-word injections into a governed current-fact
+Measured again at policy v27, these one-word injections into a governed current-fact
 surface still pass the strict scan: `novelty`, `policy`, `search` on the novelty
 term; `previously`, `historical` on the cap term. `WDD-20260816-058`.
 
@@ -267,7 +267,39 @@ and says so.
 
 **The program plan's own audit is separate.** `docs/internal/RMQ_PROGRAM_PLAN.md`
 and `PLAN_LINEAGE.md` are tagged and commissioned independently as
-`audit-plan-v14`; they are not in scope here.
+`audit-plan-v15`; they are not in scope here. (`audit-plan-v14` is kept
+unmoved as the referent of the outside plan audit that produced v15.)
+
+### What the previous outside audit found, and what was done
+
+`audit-v1-rc-4` (`9b8f193`) went to an outside auditor on 2026-09-08 and came
+back **NOT_ACCEPTABLE**: one P1, six P2, two P3. That tag is deliberately left
+where it is, so their report's citations still resolve. This commit is the
+repaired candidate. All nine findings are closed, each with a before/after
+measurement:
+
+| finding | what it was | now |
+|---|---|---|
+| P1 | the aggregate FAILED under `pwsh` on Windows: both replay harnesses picked the shell to spawn from the OS (`$IsWindows`), so `Join-Path $PSHOME 'powershell.exe'` named a path that cannot exist under Core | the shell is measured from the running process; full aggregate GATE PASS under **both** hosts |
+| P2 | the two RC-3 `P2-2` protections were driven FROM the lists they protected, so deleting a pattern deleted its own test | the self-tests assert the production decision on fixed probe text; deletion now fails |
+| P2 | an unrelated `not` anywhere on the line excused a forbidden claim | the negation must attach to the claim |
+| P2 | a citation within 220 characters excused a first-person claim | a first-person sentence is never excused by adjacency |
+| P2 | legal Lean import syntax evaded the hub-closure walker | the walker parses whole files with comments stripped |
+| P2 | a historical marker within 120 characters excused a conflicting current numeral | the marker must sit in the numeral's own sentence |
+| P2 | `\log\binom{2n-1}{n-1}/(2n-1)` divides the logarithm instead of taking the log of the quotient | corrected in both places it appeared |
+| P3 | field 32's eta equation pinned no arity despite claiming to | the type is ascribed; a four-input controller is now rejected |
+| P3 | five Section 11 cross-references off by one | eight were, and all eight are corrected |
+
+**Do not re-report these as findings.** Report them only if what is written here
+is inaccurate, or if a fix does not hold. Two of the nine were undercounted by
+that report — the cross-references were eight, not five, and the malformed
+expression appeared twice — so counting them yourself is worthwhile.
+
+The repairs themselves broke three things, each caught by the gate rather than by
+the author: a doc comment used a word the proof-hygiene scan forbids outright; the
+same comment shifted a line-pinned citation, which has now been wrong four times
+in its history; and stopping a gate mid-run stranded a mutation in the tree. All
+three are repaired and recorded.
 
 ### What twelve internal rounds did and did not establish
 
