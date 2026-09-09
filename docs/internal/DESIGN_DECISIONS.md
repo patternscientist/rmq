@@ -12295,3 +12295,33 @@ measurements.
 This changes no semantic content. Field 32 was and remains a static interface
 statement, not the no-hidden-input theorem -- fields 33 and 34 carry that, as the
 comment already said.
+
+## DD-20260909-129 -- A line-pinned citation drifts for the fourth time
+
+Date: 2026-09-09
+
+Context:
+
+`DD-20260909-128` ascribed a type in capstone field 32 and rewrote its doc
+comment. The comment grew by six lines, which moved
+`packedReviewerArchitectureCapstone_holds` from `:752` to `:760` and broke the
+line-pinned citation in `paper/THEOREM_LEDGER.md`. The aggregate also failed the
+proof-hygiene scan, because the new comment explained eta "by partial
+application" and that scan forbids the bare word `partial` anywhere under `RMQ/`.
+
+Decision:
+
+The prose changes, not the scan. A blunt scan that fails on any occurrence is
+worth more than one carrying exceptions for comments, and rewording costs
+nothing. The citation is repointed to `:760`, and `paper/EVIDENCE_MATRIX.md`'s
+record of this pointer is extended rather than merely renumbered: it had already
+been wrong three times (`:702` -> `:723` -> `:752`), and this is the fourth --
+caused by the round that was repairing an audit.
+
+The general fact, now written where the next person will meet it: an edit
+anywhere ABOVE a line-pinned citation moves it, so any change to a file with
+pinned lines must re-derive them. `check_paper.ps1`'s citation check caught this
+drift and the previous one; nothing else did, and nothing prevents the next one.
+
+Verified: hygiene scan no hits, `check_paper.ps1` exit 0, `lake build
+RMQ.Validation.EGCPStageA` exit 0.

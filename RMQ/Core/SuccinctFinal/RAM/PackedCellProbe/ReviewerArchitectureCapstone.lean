@@ -591,10 +591,12 @@ structure PackedReviewerArchitectureCapstone
   it cannot take `xs`, a shape, an oracle, or any further argument, because such
   a controller would not elaborate here. The ASCRIPTION is what does that:
   without it the statement is a bare eta equation, and eta holds for a controller
-  of any larger arity by partial application. Measured 2026-09-08 on a four-input
-  controller whose fourth argument changes the result: the unascribed form
-  accepted it (`lake env lean` exit 0, no errors) and the ascribed form rejects
-  it. An external audit found the field claiming an arity it did not pin.
+  of any larger arity: eta holds at every prefix of the arguments too. Measured
+  2026-09-08 on a four-input controller whose fourth argument changes the result:
+  the unascribed form accepted it (`lake env lean` exit 0, no errors) and the
+  ascribed form rejects it. An external audit found the field claiming an arity
+  it did not pin. (The wording avoids one word the proof-hygiene scan forbids
+  outright; that scan is deliberately blunt and prose is not worth loosening it.)
 
   It is **not** the semantic no-hidden-input theorem, and it should not be cited
   as one. It says nothing about the controller's behaviour; a controller of the

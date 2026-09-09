@@ -256,10 +256,14 @@ Its first run found **three more defective citations out of 27** -- on a tree
 whose citations had already been corrected once and had since passed a
 fresh-blind audit:
 
-- `L-ARCH-01` and `L-PACK-01`, `producer at :723` -> `:752`. **This pointer has
-  now been wrong three times**: `:702` originally, corrected to `:723` on
-  2026-08-09, and drifted 29 lines by this round. Each correction was accurate
-  when made. Nothing kept it accurate.
+- `L-ARCH-01` and `L-PACK-01`, `producer at :723` -> `:752` -> `:760`. **This
+  pointer has now been wrong four times**: `:702` originally, corrected to
+  `:723` on 2026-08-09, drifted 29 lines to `:752`, and drifted 8 more on
+  2026-09-09 when a doc comment above it grew while fixing the field-32 arity
+  claim (`DD-20260909-128`). Each correction was accurate when made. Nothing
+  kept it accurate, and the fourth drift was caused by the very round that was
+  repairing an audit -- an edit anywhere above a line-pinned citation moves it.
+  `check_paper.ps1`'s citation check is what caught it, both times.
 - `L-UB-12`, `queryTraceResultWithStore_eq_of_orderedReadFootprint` `:1324` ->
   `:1298`. Line 1324 holds `queryCostedWithStore_eq_of_orderedReadFootprint` --
   a **different theorem with a near-identical name**. A reviewer following the
