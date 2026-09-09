@@ -1,5 +1,5 @@
 {
-  "version": 26,
+  "version": 27,
   "updated": "2026-08-16",
   "currentFactSurfacePathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\\.md|RMQ_FINAL_ROADMAP\\.md))$",
   "terms": [
@@ -288,7 +288,7 @@
       "status": "cell-probe-cost-is-not-a-word-ram-instruction-count",
       "strict": true,
       "allowedPathRegex": "^docs/internal/|^paper/check_paper\\.ps1$",
-      "allowedLineRegex": "\\bnot\\b|\\bnever\\b|\\bdoes not\\b|conflate|distinguish|policy|scan"
+      "allowedLineRegex": "\\b(?:does|do|did)\\s+not\\s+(?:execute|run|complete|perform|finish)|\\bnever\\s+(?:executes?|runs?|completes?|performs?|finishes?)|\\bis\\s+not\\s+(?:a\\s+)?word[-\\s]RAM\\s+instruction\\s+count|conflate|distinguish"
     }
   ],
   "requiredAttributions": [

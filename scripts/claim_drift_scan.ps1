@@ -50,6 +50,39 @@ if ($SelfTest) {
   $recordRun = @(& $hostExe -NoProfile -ExecutionPolicy Bypass -File $selfPath -Strict -IncludeProcessRecords 2>&1 |
     ForEach-Object { [string]$_ })
 
+  # (0) BEHAVIOURAL pin on the protected claim classes.
+  #
+  # The policy-term regression drives its cases from the policy file, so DELETING
+  # a term deletes its own coverage -- measured 2026-09-08: removing
+  # `forbidden-wordram-instruction-count` left the regression and this self-test
+  # at exit 0, and the bare README claim then passed -Strict with 0 strict
+  # failures. These probes assert the production DECISION on fixed text instead:
+  # some strict term must match, and no allowance may excuse it. A deleted term,
+  # a weakened pattern, or a widened allowance each make a probe stop being
+  # rejected, and that fails here.
+  $protectedClaimProbes = @(
+    'The canonical query executes in 210 word-RAM instructions.',
+    'The canonical query runs in a fixed number of word-RAM instructions.',
+    'This is not merely a modeled bound: the canonical query executes in 210 word-RAM instructions.'
+  )
+  $probePolicy = Get-Content -Raw -Path $PolicyPath | ConvertFrom-Json
+  foreach ($probeText in $protectedClaimProbes) {
+    $rejected = $false
+    foreach ($t in $probePolicy.terms) {
+      if (-not $t.strict) { continue }
+      if ([string]$t.pattern -eq '') { continue }
+      if ($probeText -notmatch [string]$t.pattern) { continue }
+      # README.md is a governed current-fact surface and matches no allowedPathRegex
+      # of this term, so only the LINE allowance can excuse the probe.
+      if ($t.allowedLineRegex -and $probeText -match [string]$t.allowedLineRegex) { continue }
+      $rejected = $true
+    }
+    if (-not $rejected) {
+      Write-Host ("CLAIM-DRIFT SELFTEST: FAIL -- protected claim class is no longer rejected: {0}" -f $probeText)
+      $selfTestFailures += 1
+    }
+  }
+
   # (1) No emitted finding may CITE a process-record path.
   #
   # Match the path field specifically, not the whole line: governed documents

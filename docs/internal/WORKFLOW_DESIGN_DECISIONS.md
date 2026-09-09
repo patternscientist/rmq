@@ -11983,3 +11983,46 @@ and recorded, but the pin's condition still applies: it says the inherited
 registry reruns if the file changes, so it reruns. The row is marked superseded
 and the acceptance record annotated -- a pin that would otherwise have frozen a
 P1 defect in place because the artifact holding it was immutable.
+
+## WDD-20260908-084 -- Pins that test behaviour, and an exemption that must apply
+
+Two RC-4 audit findings, one root cause each.
+
+**F1: a test driven by the production list cannot survive that list.** Both
+protections added for RC-3 `P2-2` were iterated FROM the thing they protected.
+`check_paper.ps1`'s fixture loop walks `$forbiddenClaims`, so deleting a pattern
+deletes its own test and orphans its positive fixture; the policy regression
+drives its cases from the policy file, so deleting a term deletes its coverage.
+Measured at the tag: both deletions left their suites at exit 0, and the bare
+README claim then passed `-Strict` with 0 strict failures. I had told the
+external auditor these were "pinned so the patterns cannot be dropped silently".
+They were not. Asserting a pin without running the deletion is the same error as
+accepting a disposition without grepping for the probe string.
+
+The fix is behavioural, not structural. Both self-tests now assert the
+production DECISION on fixed probe text, using the production pattern array, the
+production allowance helper and the production window. A deleted pattern, a
+weakened pattern, or a widened allowance each stop a probe being rejected.
+Measured: deleting the four `check_paper` patterns now exits 1 (was 0); deleting
+the policy term now exits 1 (was 0).
+
+A structural fixture/pattern set-equality pin was considered and rejected as
+insufficient: an audit showed that WIDENING `$retirementMarker`, `$quoteWindow`
+or `$recordSurfaces` leaves every pattern in place and stops it firing. Only a
+behavioural probe sees that.
+
+**F2: an exemption keyed on the line, not on the claim.** The term added for
+`P2-2` carried `allowedLineRegex = not|never|...|policy|scan` -- a
+line-wide bare token. So "This is not merely a modeled bound: the canonical query
+executes in 210 word-RAM instructions" passed while the bare sentence failed. The
+`not` does not negate the claim; the sentence strengthens it. Worse, this is the
+same repo-wide-token shape already published as declared-open for two OTHER
+terms: the fix for one finding reproduced a known defect in a new term.
+
+The allowance now requires the negation to attach to the claim -- `does not
+execute`, `never runs`, `is not a word-RAM instruction count` -- rather than to
+share a line with it. Before narrowing, exactly ONE line in the repository relied
+on the old allowance, and it was a probe added minutes earlier by this same
+change; nothing legitimate depended on it. Measured after: the audited bypass
+exits 1, a genuine negation still exits 0, and the strict baseline is unchanged
+at 0 strict failures. Policy -> v27.

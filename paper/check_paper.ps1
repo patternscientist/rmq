@@ -594,6 +594,38 @@ if ($SelfTest) {
       '(?<!not\s)(?<!not\sin\s)\bin\s+\d+\s+word[-\s]RAM\s+(?:step|instruction)' = 'the canonical query runs in 210 word-RAM steps'
       '\bexecutes?\s+in\s+(?:a\s+)?(?:fixed|constant|\d+)[^.]{0,30}word[-\s]RAM' = 'it executes in a fixed 210 word-RAM operations'
   }
+  # ---------------------------------------------------------------------------
+  # BEHAVIOURAL pin, not a structural one. The loop below iterates the PRODUCTION
+  # array, so deleting a pattern deletes its own test and orphans its fixture --
+  # measured 2026-09-08: removing the four word-RAM patterns left this self-test
+  # at exit 0, "RESULT: PASS". A structural fixture/pattern set-equality pin
+  # would close deletion and nothing else: an audit then showed that WIDENING
+  # $retirementMarker, $quoteWindow or $recordSurfaces alone leaves every pattern
+  # in place and stops them firing, still exit 0.
+  #
+  # So these probes assert the production DECISION on fixed text, using the
+  # production array, the production allowance helper and the production window.
+  # A deleted pattern, a weakened pattern, or a widened citation window each make
+  # a probe stop being rejected, and this fails.
+  $protectedProbes = @(
+    @{ name = 'RC-3 P2-2 fixed-step class';
+       text = 'Our canonical query executes in a fixed number of word-RAM steps.' },
+    @{ name = 'constant-count variant';
+       text = 'The query completes in a constant number of word-RAM instructions.' },
+    @{ name = 'literal-count variant';
+       text = 'The canonical query executes in 210 word-RAM instructions.' }
+  )
+  foreach ($probe in $protectedProbes) {
+    $pnorm = ($probe.text -replace '\s+', ' ')
+    $rejected = $false
+    foreach ($pat in $forbiddenClaims) {
+      foreach ($m in [regex]::Matches($pnorm, $pat, 'IgnoreCase')) {
+        if (-not (HasNearbyCite $pnorm $m.Index $m.Length $citeWindow)) { $rejected = $true }
+      }
+    }
+    STCase "protected claim class is rejected: $($probe.name)" $rejected
+  }
+
   foreach ($pat in $forbiddenClaims) {
     if ($positives.ContainsKey($pat)) {
       STCase "detects '$pat'" ([regex]::IsMatch($positives[$pat], $pat, 'IgnoreCase'))
