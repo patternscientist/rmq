@@ -11934,3 +11934,52 @@ attributing to §E something only §0 says.
 against; moving it would destroy the referent the report cites. v15 gets its own
 tag, and the disposition in `PLAN_AUDIT_DISPOSITION_v14.md` names the audited SHA
 so the two can be read against each other.
+
+## WDD-20260908-083 -- The gate had a documented route nobody had ever run
+
+An external RC-4 audit returned NOT_ACCEPTABLE on one P1: the aggregate fails
+under PowerShell Core on Windows. Reproduced here end-to-end before touching
+anything -- `pwsh -File scripts/eg_cp_stagea_replay.ps1` at the tag exits 1 at
+`REPLAY: descendant-termination self-test`, unable to start
+`...\WindowsApps\Microsoft.PowerShell_7.6.5.0_x64__8wekyb3d8bbwe\powershell.exe`.
+
+Both replay harnesses chose the shell to spawn with
+
+    $shellExe = if ($onWindows) { Join-Path $PSHOME 'powershell.exe' }
+      else { Join-Path $PSHOME 'pwsh' }
+
+`Test-OnWindows` keys on `$IsWindows` -- the **operating system**. That is the
+right question for taskkill-versus-setsid and the wrong one here, because
+`$PSHOME` is the **running host's** own directory. Measured on this machine:
+under 5.1 `$PSHOME` holds `powershell.exe` and no `pwsh.exe`; under pwsh 7.6.5 it
+holds `pwsh.exe` and no `powershell.exe`. So the Windows branch built a path that
+cannot exist under Core.
+
+`scripts/host_shell_path.ps1` now answers the question by **measuring** the
+running process's own image, with an edition-then-`$PSHOME` fallback and a named
+failure rather than a third guess. On POSIX the fallback lands on `$PSHOME/pwsh`,
+byte-for-byte what the old else-branch produced, so the ubuntu leg cannot regress.
+Verified under both hosts: each selects its own executable, and the selection
+equals `(Get-Process -Id $PID).Path` in both.
+
+**Why it survived for the life of the project.** Every recorded local GATE PASS
+ran under Windows PowerShell 5.1, where the wrong branch happens to be right, and
+CI's gate leg is ubuntu, where the else-branch is taken. `artifact/README.md:16`
+advertises `pwsh` as a permitted route. **No one had ever run it.** A documented
+route that is never exercised is not a tested route, and the twelve internal
+rounds could not have found this: they all ran the shell that masks it.
+
+**The control.** The mandatory self-test now refuses to spawn a shell that is not
+the running host, rather than merely one that exists. Existence alone is not
+enough: on a machine with both hosts installed, reintroducing the OS-keyed choice
+would still find a real `powershell.exe` and pass. The configuration that catches
+it is the one lacking the other shell -- which is exactly the configuration
+nobody ran. So the control tests identity, not existence.
+
+**SA-CHK-12 is superseded, not quietly broken.** That row pinned byte-identity of
+`eg_cp_final_falsification_replay.ps1` against `3420c76c`, guarding against
+"accidental edit of the inherited frozen campaign". The edit here is deliberate
+and recorded, but the pin's condition still applies: it says the inherited
+registry reruns if the file changes, so it reruns. The row is marked superseded
+and the acceptance record annotated -- a pin that would otherwise have frozen a
+P1 defect in place because the artifact holding it was immutable.
