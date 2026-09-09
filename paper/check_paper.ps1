@@ -262,6 +262,23 @@ function HasNearbyCite([string]$norm, [int]$at, [int]$len, [int]$window) {
   $lo = [Math]::Max(0, $at - $window)
   $hi = [Math]::Min($norm.Length, $at + $len + $window)
   $slice = $norm.Substring($lo, $hi - $lo)
+
+  # A citation excuses a claim only when the claim is ATTRIBUTED, not merely
+  # adjacent to a reference. Measured 2026-09-08: appending a \cite to
+  # 'Our canonical query executes in a fixed number of word-RAM steps.' flipped
+  # this checker from exit 1 to exit 0. That sentence asserts OUR result and the
+  # citation attributes nothing, so a first-person sentence is never excused:
+  # what we claim about this development stands on this development's proofs.
+  $sLo = $norm.LastIndexOfAny([char[]]@('.', ';', ':'), [Math]::Max(0, $at - 1))
+  if ($sLo -lt 0) { $sLo = 0 } else { $sLo += 1 }
+  $sHi = $norm.IndexOfAny([char[]]@('.', ';'), [Math]::Min($norm.Length - 1, $at + $len))
+  if ($sHi -lt 0) { $sHi = $norm.Length }
+  if ($sHi -gt $sLo) {
+    $sent = $norm.Substring($sLo, $sHi - $sLo)
+    if ($sent -match '(?i)\b(?:we|our|ours|this\s+paper|this\s+work|this\s+development)\b') {
+      return $false
+    }
+  }
   if ([regex]::IsMatch($slice, '\\cite[tp]?\*?(?:\[[^\]]*\])*\{')) { return $true }
   foreach ($k in $bibKeySet) {
     if ($slice -match ('`' + [regex]::Escape($k) + '`')) { return $true }
@@ -613,7 +630,16 @@ if ($SelfTest) {
     @{ name = 'constant-count variant';
        text = 'The query completes in a constant number of word-RAM instructions.' },
     @{ name = 'literal-count variant';
-       text = 'The canonical query executes in 210 word-RAM instructions.' }
+       text = 'The canonical query executes in 210 word-RAM instructions.' },
+    @{ name = 'irrelevant citation must not excuse an own claim';
+       text = 'Our canonical query executes in a fixed number of word-RAM steps~\cite{FischerHeun11}.' },
+    # This probe's verdict DEPENDS ON $citeWindow: a third-person claim with a
+    # citation ~350 characters away is rejected at 220 and excused at 100000.
+    # Without it, widening the window silently disarms the citation rule --
+    # measured: the first-person probe above cannot see that, because the
+    # ownership guard rejects it at any window.
+    @{ name = 'distant citation must not excuse (pins $citeWindow)';
+       text = 'The structure answers every query in a fixed number of word-RAM steps. padding text that carries no attribution whatsoever padding text that carries no attribution whatsoever padding text that carries no attribution whatsoever padding text that carries no attribution whatsoever padding text that carries no attribution whatsoever padding text that carries no attribution whatsoever padding text that carries no attribution whatsoever ~\cite{FischerHeun11}' }
   )
   foreach ($probe in $protectedProbes) {
     $pnorm = ($probe.text -replace '\s+', ' ')

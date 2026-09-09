@@ -124,10 +124,20 @@ $historicalMarkerReach = 120
 function Test-HistoricalContext {
   param([string]$Line, [int]$At, [int]$Length)
   if ($Line.Length -eq 0) { return $false }
-  $from = [Math]::Max(0, $At - $historicalMarkerReach)
-  $to = [Math]::Min($Line.Length, $At + $Length + $historicalMarkerReach)
-  if ($to -le $from) { return $false }
-  return ($Line.Substring($from, $to - $from) -match $historicalMarker)
+    # The marker must mark THIS numeral, not merely share a line with it.
+    # Measured 2026-09-08: prefixing 'Historical background is elsewhere.' to
+    # 'The current charged-trace constant `214` applies to every query.' flipped
+    # this checker from exit 1 to exit 0 while the false current-fact assertion
+    # stood. So the window is the SENTENCE holding the numeral, and a sentence
+    # asserting a current fact is never historical.
+    $sentenceLo = $Line.LastIndexOfAny([char[]]@('.', ';'), [Math]::Max(0, $At - 1))
+    if ($sentenceLo -lt 0) { $sentenceLo = 0 } else { $sentenceLo += 1 }
+    $sentenceHi = $Line.IndexOfAny([char[]]@('.', ';'), [Math]::Min($Line.Length - 1, $At + $Length))
+    if ($sentenceHi -lt 0) { $sentenceHi = $Line.Length }
+    if ($sentenceHi -le $sentenceLo) { return $false }
+    $sentence = $Line.Substring($sentenceLo, $sentenceHi - $sentenceLo)
+    if ($sentence -match '(?i)\b(?:current|currently|now|today|applies\s+to\s+every)\b') { return $false }
+    return ($sentence -match $historicalMarker)
 }
 
 # An anchor doubles as a CLAIM SHAPE when it carries enough literal text to

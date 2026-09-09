@@ -12026,3 +12026,39 @@ on the old allowance, and it was a probe added minutes earlier by this same
 change; nothing legitimate depended on it. Measured after: the audited bypass
 exits 1, a genuine negation still exits 0, and the strict baseline is unchanged
 at 0 strict failures. Policy -> v27.
+
+## WDD-20260908-085 -- An exemption must apply, not merely be nearby
+
+F3 and F5 are one defect in two checkers: an allowance keyed on PROXIMITY rather
+than on whether the allowance actually applies.
+
+**F3.** `HasNearbyCite` excused any forbidden model-vocabulary match with a
+citation within 220 normalised characters. Measured at the tag: "Our canonical
+query executes in a fixed number of word-RAM steps." exits 1; append
+`~\cite{FischerHeun11}` to the identical sentence and it exits 0. That sentence
+asserts OUR result and the citation attributes nothing. A first-person sentence
+is now never excused -- what we claim about this development stands on this
+development's proofs, not on someone else's paper being mentioned nearby.
+
+**F5.** `Test-HistoricalContext` accepted a historical marker within 120
+characters. Measured: "The current charged-trace constant `214` applies to every
+query." exits 1; prefix "Historical background is elsewhere." and it exits 0,
+with the false current-fact assertion untouched. The window is now the SENTENCE
+holding the numeral, and a sentence asserting a current fact is never historical.
+
+Both keep the exemption working where it genuinely applies, which is the point --
+removing an exemption is easy and wrong. Measured after the fix: prior-work
+attribution with a citation still exits 0; a same-sentence historical statement
+still exits 0.
+
+**A control that could not see its own subject.** Restoring the citation probe to
+the `check_paper` self-test did NOT re-close the `$citeWindow` widening the
+earlier audit found, because the new ownership guard rejects that probe at ANY
+window -- the probe had become insensitive to the thing it was meant to pin. A
+second probe was added whose verdict genuinely depends on the window: a
+third-person claim with a citation ~350 characters away, rejected at 220 and
+excused at 100000. Measured: widening the window now exits 1.
+
+Still open and stated rather than implied: widening `$retirementMarker` alone
+still leaves the suite green, because no probe here sits on a record surface
+(`WORKLOG.md`, `NOVELTY_LOG.md`) where that allowance applies.
