@@ -12062,3 +12062,30 @@ excused at 100000. Measured: widening the window now exits 1.
 Still open and stated rather than implied: widening `$retirementMarker` alone
 still leaves the suite green, because no probe here sits on a record surface
 (`WORKLOG.md`, `NOVELTY_LOG.md`) where that allowance applies.
+
+## WDD-20260908-086 -- One expression and eight cross-references
+
+**F6.** `paper/rmq.tex:808` typeset `\log\binom{2n-1}{n-1}/(2n-1) = 2n -
+\Theta(\log n)`. Under the base-two convention the binomial is at most
+`2^(2n-1)`, so its logarithm is at most `2n-1` and the quotient at most 1, while
+the right-hand side grows linearly. The quotient belongs inside the logarithm;
+it now is. `paper/NOVELTY_LOG.md:622` quoted the same wrong form and is corrected
+with it -- the audit found that occurrence, the original report did not.
+
+**F8.** Section 11's enumeration is Controller charging (1), Preprocessing (2),
+Tightness of the constant (3), Tightness of the overhead envelope (4),
+Cell-probe lower bounds (5), Internal audit status (6). An older item was removed
+without renumbering the citations, so every reference was one too high. Eight, not
+five: `THEOREM_LEDGER.md` 599, 616, 623, 632 and 642 (the fifth wraps across two
+lines and a single-line grep misses it), plus `EVIDENCE_MATRIX.md` 42, 43 and 106,
+which the original report did not list.
+
+Applied by descending line index. An adversarial review measured that applying
+the item-4 correction before the item-3 one makes `Section 11, item 3` occur
+twice, so an ascending applier would have edited the wrong row -- the same
+index-invalidation this project has hit before.
+
+Verified after: each row's subject matches its cited ordinal (`L-OPEN-01`
+preprocessing -> 2, `L-OPEN-04` overhead -> 4, `L-OPEN-05` cell-probe -> 5,
+`L-OPEN-06` controller charging -> 1), and `check_paper.ps1`, its self-test,
+`claim_drift_scan.ps1 -Strict` and `constant_sync_check.ps1` all exit 0.

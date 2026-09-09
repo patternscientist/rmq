@@ -619,7 +619,7 @@ GBT84 introduces the Cartesian tree and the RMQ↔LCA route; the **counting** ar
 > `The information-theoretic bound mechanized here`
 > `(Section~\ref{sec:lower}) is the classical counting bound, stated`
 > `explicitly by Fischer~\cite[\S1.1]{Fischer10} as`
-> `$\log\binom{2n-1}{n-1}/(2n-1) = 2n - \Theta(\log n)$ and sharpened with`
+> `$\log\left(\binom{2n-1}{n-1}/(2n-1)\right) = 2n - \Theta(\log n)$ and sharpened with`
 > `its exact leading constants by Liu~\cite{Liu21}; what is new here is its`
 > `mechanization in integer arithmetic together with a concrete $2n$-bit`
 > `attaining decoder.`

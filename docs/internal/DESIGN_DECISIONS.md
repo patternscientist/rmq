@@ -12221,3 +12221,36 @@ explanatory comment could satisfy.
 the loop body whole, `Set-Variable` rebinding of `$commits`, and the statement
 before the loop. The mutations that previously certified a single commit while
 printing the green sentence are each rejected.
+
+## DD-20260908-127 -- The counting bound divides the logarithm
+
+Date: 2026-09-08
+
+Context:
+
+An external RC-4 audit found that `paper/rmq.tex:808` typeset the classical
+counting bound as
+
+    $\log\binom{2n-1}{n-1}/(2n-1) = 2n - \Theta(\log n)$
+
+Under the paper's base-two convention `\binom{2n-1}{n-1}` is at most `2^(2n-1)`,
+so its logarithm is at most `2n-1` and the whole typeset left-hand side is at
+most 1, while the right-hand side grows linearly. As printed the identity is
+false for every large `n`. `paper/NOVELTY_LOG.md:622` quotes the same expression;
+this audit found that second occurrence, the report named only the first.
+
+Decision:
+
+The quotient goes inside the logarithm --
+`$\log\left(\binom{2n-1}{n-1}/(2n-1)\right)$` -- at both sites. This is a
+typesetting correction to a related-work paragraph, not a change to any claim
+this development makes: the machine-checked lower bound is
+`EncodingLowerBound.lean:1878` with the `4n - (3 log2(2n+1) + 3) <= 2 * bits`
+derivation at `LowerBound.lean:303-361`, and the external auditor independently
+reconstructed that chain and found it correct. Nothing downstream cites the
+malformed form.
+
+The paper is a public claim surface, so the correction is recorded here rather
+than only in the workflow ledger -- `paper/rmq.tex` is code-classified by
+`design_decision_check.ps1`, which refused the first attempt at this commit for
+exactly that reason.

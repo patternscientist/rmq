@@ -39,8 +39,8 @@ closes no roadmap node.
   time; and states construction/preprocessing complexity as open.
 - Evidence: `rmq.tex` Section 3 defines the five quantities separately and
   reproduces the charged/uncharged policy from
-  `docs/PAPER_MODEL_ADEQUACY.md`; Section 3 and Section 11 item 2 disclaim
-  conventional word-RAM running time (ledger L-OPEN-06); Section 11 item 3
+  `docs/PAPER_MODEL_ADEQUACY.md`; Section 3 and Section 11 item 1 disclaim
+  conventional word-RAM running time (ledger L-OPEN-06); Section 11 item 2
   states preprocessing open (L-OPEN-01); Section 8 keeps measurements in
   separate columns from theorems. `check_paper.ps1` forbids the phrase
   pattern the roadmap bans for cell-probe/charged-trace claims.
@@ -103,7 +103,7 @@ closes no roadmap node.
   fresh-blind audit of the `210` release lineage) are disclosed, not
   hidden.
 - Evidence: `rmq.tex` Section 7 (all four paragraphs) and Section 11 item
-  7 (audit-status candor); Section 6.4 flags the mutation replay as
+  6 (audit-status candor); Section 6.4 flags the mutation replay as
   reproducible-artifact-tier evidence below kernel theorems, matching the
   evidence-tier discipline of `docs/internal/AUDIT_PROTOCOL.md`.
 - Status: CLOSED

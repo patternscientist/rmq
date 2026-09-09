@@ -596,7 +596,7 @@ references are at the base commit.
 - Statement: the construction's preprocessing complexity -- time and
   workspace, in any model -- is unproved; no theorem bounds it and the
   manuscript claims nothing about it.
-- Manuscript location: Section 11, item 3.
+- Manuscript location: Section 11, item 2.
 
 #### L-OPEN-02
 - Status: OPEN
@@ -613,14 +613,14 @@ references are at the base commit.
   was corrected on 2026-08-09 without syncing this row or the other two
   surfaces repeating it; the fresh-blind audit of `audit-v1-rc-2` caught
   the gap. The row's OPEN status and proposition are otherwise unchanged.
-- Manuscript location: Section 11, item 4.
+- Manuscript location: Section 11, item 3.
 
 #### L-OPEN-04
 - Status: OPEN
 - Statement: the `overhead` envelope of L-UB-01/L-UB-02 is proved
   little-o-linear but not proved tight; no reachable input family is shown
   to attain it, and no comparison with Fischer-Heun redundancy is claimed.
-- Manuscript location: Section 5.2 (closing paragraph); Section 11, item 5.
+- Manuscript location: Section 5.2 (closing paragraph); Section 11, item 4.
 
 #### L-OPEN-05
 - Status: OPEN
@@ -629,7 +629,7 @@ references are at the base commit.
   mechanized lower bound is the information-theoretic counting bound
   L-LB-01, and the manuscript cites the cell-probe bounds as related work
   only.
-- Manuscript location: Section 4 (scope paragraph); Section 11, item 6.
+- Manuscript location: Section 4 (scope paragraph); Section 11, item 5.
 
 #### L-OPEN-06
 - Status: OPEN
@@ -639,4 +639,4 @@ references are at the base commit.
   word-RAM model is made, and the `210` bound is a charged-trace bound
   only.
 - Manuscript location: Section 3 (model non-claims paragraph); Section 11,
-  item 2.
+  item 1.
