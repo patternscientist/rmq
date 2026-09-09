@@ -581,7 +581,7 @@ structure PackedReviewerArchitectureCapstone
     ¬ (left < right ∧ right <= shape.size) ->
       (SuccinctClassic.queryTraceResult xs left right).value = none
   /-- Field 32 (`EG-CP-A09`): the exact-type controller input boundary --
-  this equation elaborates only at
+  the ascription on this equation elaborates only at
   `Nat -> Nat -> Nat -> PackedReviewerControllerState`.
 
   **Read this field precisely.** It is an eta equation, closed by `rfl`. All of
@@ -589,7 +589,12 @@ structure PackedReviewerArchitectureCapstone
   only if `packedReviewerController` has exactly that arity and those argument
   types, which is what pins the controller's static interface -- in particular
   it cannot take `xs`, a shape, an oracle, or any further argument, because such
-  a controller would not elaborate here.
+  a controller would not elaborate here. The ASCRIPTION is what does that:
+  without it the statement is a bare eta equation, and eta holds for a controller
+  of any larger arity by partial application. Measured 2026-09-08 on a four-input
+  controller whose fourth argument changes the result: the unascribed form
+  accepted it (`lake env lean` exit 0, no errors) and the ascribed form rejects
+  it. An external audit found the field claiming an arity it did not pin.
 
   It is **not** the semantic no-hidden-input theorem, and it should not be cited
   as one. It says nothing about the controller's behaviour; a controller of the
@@ -605,7 +610,8 @@ structure PackedReviewerArchitectureCapstone
   like the no-hidden-input result. The field is sound; the way it invited being
   cited was not. -/
   controller_exact_input_boundary :
-    @packedReviewerController =
+    (packedReviewerController :
+        Nat -> Nat -> Nat -> PackedReviewerControllerState) =
       (fun (n left right : Nat) => packedReviewerController n left right)
   /-- Field 33 (`EG-CP-A09`): the controller entry is one guard and one
   uniform state at every size -- no readiness or compatibility dispatch. -/

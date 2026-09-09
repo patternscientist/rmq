@@ -12254,3 +12254,44 @@ The paper is a public claim surface, so the correction is recorded here rather
 than only in the workflow ledger -- `paper/rmq.tex` is code-classified by
 `design_decision_check.ps1`, which refused the first attempt at this commit for
 exactly that reason.
+
+## DD-20260909-128 -- Field 32 claimed an arity its equation did not pin
+
+Date: 2026-09-09
+
+Context:
+
+Capstone field 32 read
+
+    controller_exact_input_boundary :
+      @packedReviewerController =
+        (fun (n left right : Nat) => packedReviewerController n left right)
+
+and its doc comment said the equation "elaborates only at
+`Nat -> Nat -> Nat -> PackedReviewerControllerState`" and that the controller
+"cannot take `xs`, a shape, an oracle, or any further argument". An external
+audit observed that this is false: the statement is a bare eta equation, and eta
+holds for a controller of any larger arity by partial application.
+
+Measured on a four-input controller whose fourth argument genuinely changes the
+result: the unascribed form accepts it, `lake env lean` exit 0 with no errors.
+The field pinned nothing it claimed to pin.
+
+Decision:
+
+Ascribe the type in the statement itself, in both places it appears -- the
+capstone field and its mirror in `RMQ/Validation/EGCPStageA.lean`:
+
+    (packedReviewerController :
+        Nat -> Nat -> Nat -> PackedReviewerControllerState) = ...
+
+The claim is made true rather than the prose weakened, because the property is
+the one the field exists to carry. `rfl` still closes it: `lake build
+RMQ.Validation.EGCPStageA` exits 0 over 198 modules. Anti-vacuity measured: the
+same four-input controller is now REJECTED, `lake env lean` exit 1. The doc
+comment records that the ascription is what does the pinning, with both
+measurements.
+
+This changes no semantic content. Field 32 was and remains a static interface
+statement, not the no-hidden-input theorem -- fields 33 and 34 carry that, as the
+comment already said.

@@ -73,17 +73,31 @@ function Get-Closure([string]$root, [string]$entryFile) {
     $f = $stack.Pop()
     if ($seen.Contains($f)) { continue }
     $seen[$f] = $true
-    foreach ($line in (Get-Content -LiteralPath $f)) {
-      # Leading whitespace is legal before `import` in Lean 4, so anchoring at
-      # column zero let an indented RMQ-specific import evade this guard while
-      # Lean still accepted it. Found by external audit 2026-08-09.
-      if ($line -match '^\s*import\s+(.+?)\s*$') {
-        foreach ($mod in ($Matches[1].Trim() -split '\s+')) {
-          if ($mod -eq '') { continue }
-          $p = ModuleToPath $root $mod
-          if ($p -and -not $seen.Contains($p)) { $stack.Push($p) }
-        }
-      }
+    # Parse the FILE, not each line. Lean puts no such constraint on a header:
+    # `import` and its module may be separated by any whitespace including a
+    # newline, and a block comment may follow the module on the same line.
+    # Both compile and both were invisible here -- measured 2026-09-08, each
+    # made this lint report the closure as exactly the pinned modules while
+    # Lean actually consumed the extra import:
+    #     import\nRMQ.Core.Spec
+    #     import RMQ.Core.Spec/- probe -/
+    # The old regex `^\s*import\s+(.+?)\s*$` required the module on the import's
+    # own line and then split the remainder on whitespace, so the first shape
+    # matched nothing and the second yielded `RMQ.Core.Spec/-`, which resolves
+    # to no file. A walker that cannot see an import cannot bound a closure.
+    $text = Get-Content -Raw -LiteralPath $f
+    if ($null -eq $text) { $text = '' }
+    # Strip comments first: one can sit between `import` and its module.
+    # Non-nesting is deliberate and fails SAFE -- a nested `/- -/` leaves
+    # trailing text visible, which can only add a candidate module, never hide
+    # one, and an unresolvable candidate is dropped below.
+    $text = [regex]::Replace($text, '(?s)/-.*?-/', ' ')
+    $text = [regex]::Replace($text, '(?m)--[^\r\n]*', ' ')
+    foreach ($m in [regex]::Matches($text, '\bimport\b\s+([A-Za-z_][A-Za-z0-9_.]*)')) {
+      $mod = $m.Groups[1].Value
+      if ($mod -eq '') { continue }
+      $p = ModuleToPath $root $mod
+      if ($p -and -not $seen.Contains($p)) { $stack.Push($p) }
     }
   }
   return @($seen.Keys | ForEach-Object {
@@ -136,6 +150,26 @@ if ($SelfTest) {
     # And that such a module is classified as tainting, not merely unexpected.
     if ($rmqSpecific -contains 'RMQ.Core.Spec') { Info '  SELFTEST PASS RMQ.Core.Spec is classified RMQ-specific' }
     else { Write-Host 'HUB-CLOSURE: SELFTEST FAIL RMQ.Core.Spec not in the RMQ-specific list'; $failures = $failures + 1 }
+
+    # Two shapes Lean accepts that the previous line-anchored parser could not
+    # see. Both were measured 2026-09-08 to leave this lint at exit 0 while the
+    # import was real. They are fixtures now, so a parser that regresses to
+    # per-line matching fails here rather than silently under-reporting a
+    # closure it claims to bound.
+    $evasions = @{
+      'newline-separated module' = "import`nRMQ.Core.Spec";
+      'trailing block comment'    = 'import RMQ.Core.Spec/- probe -/'
+    }
+    foreach ($shape in $evasions.Keys) {
+      Set-Content -LiteralPath (Join-Path $core 'ModelHub.lean') -Value $evasions[$shape] -Encoding utf8
+      $cE = Get-Closure $tmp (Join-Path $core 'ModelHub.lean')
+      if ($cE -contains 'RMQ.Core.Spec') {
+        Info ('  SELFTEST PASS walker reaches an import written as: ' + $shape)
+      } else {
+        Write-Host ('HUB-CLOSURE: SELFTEST FAIL walker missed an import written as: ' + $shape)
+        $failures = $failures + 1
+      }
+    }
   }
   finally {
     if (Test-Path -LiteralPath $tmp) { Remove-Item -Recurse -Force -LiteralPath $tmp -ErrorAction SilentlyContinue }

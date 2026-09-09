@@ -12089,3 +12089,30 @@ Verified after: each row's subject matches its cited ordinal (`L-OPEN-01`
 preprocessing -> 2, `L-OPEN-04` overhead -> 4, `L-OPEN-05` cell-probe -> 5,
 `L-OPEN-06` controller charging -> 1), and `check_paper.ps1`, its self-test,
 `claim_drift_scan.ps1 -Strict` and `constant_sync_check.ps1` all exit 0.
+
+## WDD-20260909-087 -- A closure walker that could not see two legal imports
+
+`hub_closure_lint.ps1` matched `^\s*import\s+(.+?)\s*$` per LINE and then split
+the remainder on whitespace. Lean puts no such constraint on a header. Measured
+2026-09-09, both of these compile and both left the lint at exit 0 while claiming
+the closure was exactly the eleven pinned modules:
+
+    import
+    RMQ.Core.Spec
+
+    import RMQ.Core.Spec/- probe -/
+
+The first never matched, because the module is not on the `import` line. The
+second matched and then split into `RMQ.Core.Spec/-`, `audit`, `probe`, `-/`,
+none of which resolves to a file. A walker that cannot see an import cannot bound
+the closure it reports, so the lint was asserting a property it had not checked --
+the same shape as every other finding in this round.
+
+It now reads the whole file, strips `/- -/` and `--` comments first (a comment can
+sit between `import` and its module), and matches `\bimport\b\s+([A-Za-z_][\w.]*)`
+with whitespace spanning newlines. The strip is deliberately NON-nesting and that
+fails safe: a nested block comment leaves trailing text visible, which can only
+add a candidate module, never hide one, and an unresolvable candidate is dropped.
+
+Both shapes are fixtures in `-SelfTest` now. Measured after: each exits 1 where it
+exited 0, an ordinary import is still caught, and the unmutated baseline is green.
