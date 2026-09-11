@@ -12335,3 +12335,13 @@ Decision: add explicit AllowNoRequiredSkills mode for READ_ONLY prompts. Omissio
 Rejected alternatives: assigning the coordinator or proof role just to satisfy a checker would contradict the auditor's contract; bypassing structural preflight would discard independent launch protections; inferring no-role mode from an empty argument would turn a missing requirement into silent permission.
 
 Consequences: read-only audit dispatch can satisfy both existing protocols without a fake role. This is a launch-tooling change and makes no theorem or milestone-acceptance claim. The new regression cases cover valid no-role launch, absent opt-in, conflicting role, WRITE mode, and each missing declaration; existing role cases remain in the same suite. Both PowerShell hosts must pass the suite before final gate certification.
+
+## WDD-20260911-PQ1-014: remove the runtime selector entry rather than assigning null
+
+Context: the PowerShell 7 aggregate at 4c89378 passed all 38 mutation cases, then runtime-full rejected a malformed selector channel. The startup call to SetEnvironmentVariable with a PowerShell null left an existing empty variable on host 7.6.5. A direct probe confirmed Test-Path remained true after that call and false after Remove-Item. Lean distinguishes absent selection (full registry) from a present malformed empty value correctly.
+
+Decision: remove the environment entry through the PowerShell environment provider. Seed every existing bounded selector-boundary child with a stale selection, then require the entry to be absent after the real runner returns, including rejected selectors. A surviving entry exits 99 and fails the expected-exit check. Full runtime tests retain their independent exact registry, explicit-empty, whitespace, unknown, malformed and valid-selector controls.
+
+Rejected alternatives: accepting an empty channel as full selection would weaken explicit-input rejection; sending a special full-run selector would leave the stale-channel reset defect in place; changing Lean semantics or the shared child launcher is unnecessary. The narrow fix preserves the distinction between omitted selection and malformed supplied selection.
+
+Consequences: both hosts must pass the seeded boundary regression and runtime-only stage before another aggregate certification attempt. The first aggregate is failed evidence, not a partial gate pass; its completed 38-case replay remains independently recorded. This changes launch behavior only, with no Lean library or public theorem change. The validation plan records the strengthened startup boundary obligation.

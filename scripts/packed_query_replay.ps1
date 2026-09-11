@@ -32,7 +32,9 @@ $experimentPath = 'docs/internal/packed_query/experiment-rc6'
 $runtimeSelectorVariable = 'PQ1_RUNTIME_SELECTOR'
 # The runtime selector channel is inherited by every Lean child, so a stale
 # value in the caller's environment must never turn a full run into a focused one.
-[Environment]::SetEnvironmentVariable($runtimeSelectorVariable, $null, 'Process')
+# On PowerShell 7, the .NET string argument can turn $null into an empty value,
+# which Lean correctly treats as a malformed channel. Remove the entry itself.
+Remove-Item -LiteralPath "Env:$runtimeSelectorVariable" -ErrorAction SilentlyContinue
 
 # This literal registry is checked against the separately frozen Markdown
 # contract, the complete source inventory, and the independently typed client.
@@ -476,6 +478,7 @@ function Invoke-SelectorBoundaryTests {
   $wrapper = @'
 param([string]$Target, [string]$Mode)
 $ErrorActionPreference = 'Continue'
+$env:PQ1_RUNTIME_SELECTOR = 'id:STALE-INHERITED-SELECTOR'
 switch ($Mode) {
   'omitted' { & $Target -SelectorProbeOnly }
   'empty' { & $Target -SelectorProbeOnly -OnlyCase '' }
@@ -485,7 +488,12 @@ switch ($Mode) {
   'empty-runtime' { & $Target -RuntimeOnly -OnlyCase '' }
   default { throw "unknown boundary wrapper mode $Mode" }
 }
-exit ([int]$LASTEXITCODE)
+$caseExit = [int]$LASTEXITCODE
+if (Test-Path -LiteralPath 'Env:PQ1_RUNTIME_SELECTOR') {
+  Write-Host 'PQ1-BOUNDARY: inherited runtime selector survived startup'
+  exit 99
+}
+exit $caseExit
 '@
   [IO.File]::WriteAllText($wrapperPath, $wrapper, $utf8)
   $cases = @(
@@ -518,7 +526,7 @@ exit ([int]$LASTEXITCODE)
     Remove-Item -LiteralPath $boundaryRoot -Recurse -Force -ErrorAction SilentlyContinue
   }
   $edition = $PSVersionTable.PSEdition
-  Write-Host "PQ1-BOUNDARY SELF-TEST PASS host=$edition/$($PSVersionTable.PSVersion) omitted/valid/empty/whitespace/unknown/empty-runtime"
+  Write-Host "PQ1-BOUNDARY SELF-TEST PASS host=$edition/$($PSVersionTable.PSVersion) omitted/valid/empty/whitespace/unknown/empty-runtime; inherited runtime selector removed"
 }
 
 function Get-Sha256Hex([byte[]]$Bytes) {

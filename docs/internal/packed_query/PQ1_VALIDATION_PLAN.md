@@ -139,6 +139,9 @@ PQ1-SELECTOR diagnostic before any stage; a valid ID must select exactly that
 case; omission must select every case. These controls, the registry self-test,
 the probe, the deadline self-test and the provenance self-test are Lean-free
 and must pass under both Windows PowerShell 5.1 and PowerShell 7.
+Every boundary child starts with a stale runtime selector and must prove the
+environment entry is absent after startup, including when selection rejects.
+An empty environment value is not absence: Lean rejects it as malformed.
 
 ## Definitional pins
 
@@ -227,7 +230,9 @@ A runtime selector reaches the Lean program either as its only argument or
 through the PQ1_RUNTIME_SELECTOR environment variable spelled id:<ID>. The
 runner uses only the environment channel, because Windows PowerShell 5.1 drops
 an empty native argument and would turn the empty-selector control into a full
-run. The runner clears the variable for itself before any child starts.
+run. The runner removes the environment entry for itself before any child
+starts. It uses the environment provider's removal operation because a .NET
+string argument can coerce null to an empty value under PowerShell 7.
 
 Three fixture families are out of reach of the Lean interpreter, where
 buildMemory alone took 60 to 169 seconds for one 24-element list. A cross-macro
