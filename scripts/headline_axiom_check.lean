@@ -9,6 +9,13 @@ import RMQ.Validation.PackedQueryContract
 #print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.publicContract
 #print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.checkC24
 #print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.checkC30
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.checkC31
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.checkC32
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.checkC33
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.pinInstructionCategory
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.pinQueryNat
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.fitsRejectsOversizedRegister
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.fitsAcceptsLargestImmediate
 
 /-!
 Concise trust-base check for the public headline path.

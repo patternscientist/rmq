@@ -67,6 +67,8 @@ import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ExecutedUniverse
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.Boundaries
 import RMQ.Validation.EGCPFinalFalsification
 import RMQ.Validation.EGCPStageA
+import RMQ.Validation.PackedQueryContract
+import RMQ.Core.WordRAM.Packed.ArrayRun
 import RMQ.Core.SuccinctFinalModelAdequacy
 import RMQ.Core.SuccinctRankSelect
 import RMQ.Core.BPCloseNavigation

@@ -281,9 +281,11 @@ lake build RMQPaper
 if ($LASTEXITCODE -ne 0) { Fail "lake build RMQPaper failed" }
 
 # PQ1-PACKED-QUERY-REPLAY-GATE-ANCHOR
-# This checks all thirty exact public certificate fields, the public proof
-# dependency, restoration, selector/registry/deadline controls and the actual
-# numeric-memory runtime fixtures. Run once on the clean final candidate.
+# This checks every exact public certificate field, the definitional pins by a
+# definition collapse, a producer-side projection mutation, the public proof
+# dependency, restoration, selector/registry/boundary/deadline/provenance
+# controls and the actual numeric-memory runtime fixtures, including a negative
+# runtime control. Run once on the clean final candidate.
 Invoke-Checker -Path "$PSScriptRoot\packed_query_replay.ps1"
 
 # M1R3-MUTATION-RUNNER-GATE-ANCHOR

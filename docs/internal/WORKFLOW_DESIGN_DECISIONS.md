@@ -12176,3 +12176,67 @@ The PQ-1 worker stopped on a usage limit with its unconditional capstone, safety
 CI certifies design-ledger coverage per commit (`design_decision_check.ps1 -Base "$c~1" -Head $c -Strict`). Five of the six worker commits changed workflow-classified prompt, matrix, report or experiment paths without a same-commit WORKFLOW_DESIGN_DECISIONS.md companion, because the worker prompts required only the aggregate form. No commit had been pushed. The six commits are therefore squashed into one commit whose tree is byte-identical to c869608, followed by one commit holding the worker's uncommitted final state; both certify. The original history remains unchanged on the local branch codex/fully-charged-packed-query-v1-worker-history. Rewriting each commit with a synthetic companion would invent per-commit rationale after the fact, and a retrospective-certification record is reserved for published history that cannot be rewritten; both were rejected. Future PQ1 worker prompts should name the per-commit form, not only the aggregate one.
 
 The experiment directory's attributes disable newline rewriting, but 15 of its 45 manifest entries and manifest.json itself were committed LF-normalized while the working tree kept the original CRLF bytes. Git's stat cache reported the files clean, so the worktree manifest check passed while the committed blobs failed it (30/45). The blobs are re-staged with `git add --renormalize`; the index now passes all 45 manifest entries and stores manifest.json byte-identically to the original directory, whose archive digest remains f108739ea4029fc94fbc2a6c5e4b6c8e420c3fad5553f42a02689b57ba8c802e. Provenance verification must read committed or indexed blobs (`git show <rev>:<path>`), not the working copy. A worktree-only check, or normalizing the originals and regenerating the manifest, would have hidden or rewritten the archived evidence and was rejected.
+
+## WDD-20260911-PQ1-004: extend the PQ1 replay to new fields, pins, a producer projection and a runtime negative control
+
+The literal registry now has 38 cases:
+- C01-C33, one per certificate field;
+- P01 and A01;
+- D01, which collapses Instruction.category's non-load arms to control, rebuilds the producer through lake build RMQPaper under ProducerRebuildDeadlineSeconds (default 2400), and requires rejection only at pinInstructionCategory;
+- R01, which changes the specResult statement from + 1 to + 2 and requires the producer to reject it, only inside the specResult initializer of the composition theorem;
+- N01, a runtime fixture with a wrong answer that must fail its result check.
+Registry rows now name the rejecting surface. The plan table, the runner registry, the complete field and initializer inventory, the consumer's checkCNN inventory and a literal 38-name pin inventory must agree exactly. Collapse and projection excerpts must occur exactly once and are matched in either checkout newline style. Restoration covers every file a case can touch, including Primitive.lean; a collapse case is restored by another lake build RMQPaper.
+
+The diagnostic whitelist now accepts Lean's "Not a definitional equality" message. The D01 spot check showed that this is how a theorem proved by rfl reports a failed pin.
+
+Self-tests inject:
+- missing, duplicate, extra, reordered and resurfaced rows;
+- a renamed check, and an extra or a missing pin;
+- a moved projection excerpt;
+- producer-span diagnostics inside and outside the target initializer;
+- the recorded D01 diagnostics at their own pin and at another pin;
+- missing and duplicated excerpts.
+
+Alternatives rejected: recompiling only three files after an upstream definition change, which would leave stale dependents; counting any producer failure as R01's verdict; deriving the pin list from the consumer. The full replay still requires a clean committed tree and was not run by this lane.
+
+## WDD-20260911-PQ1-005: script-boundary selector tests and a PowerShell 5.1-safe runtime selector channel
+
+Audit L8-F4: selector rejection was tested only in a helper with a hard-coded bound flag. Audit L8-F5: the runtime empty-selector control silently became a full run under Windows PowerShell 5.1, which drops empty native arguments.
+
+The runner now launches itself in a bounded child of the same shell, through a wrapper that binds -OnlyCase at the PowerShell level:
+- an explicitly bound empty, whitespace or unknown selector, and an empty selector with -RuntimeOnly, must fail with the PQ1-SELECTOR diagnostic and print no stage marker;
+- a valid ID in the Lean-free -SelectorProbeOnly mode must select exactly that case;
+- omission selects all 38.
+
+The Lean runtime accepts a selector through PQ1_RUNTIME_SELECTOR spelled id:<ID>, which is never an empty native argument. The runner uses only that channel for its runtime controls (empty, whitespace, unknown, malformed, one valid fixture, N01) and first clears the variable in its own process.
+
+Observed: every Lean-free mode passes under PowerShell 7.6.6 and Windows PowerShell 5.1.26100.9168. Through the owned launcher under 5.1, id: and id: followed by a space are rejected as explicitly empty and id:UNKNOWN as unknown. Requiring pwsh 7.3 or later was rejected because gate and audit hosts may run 5.1. This applies M1R5-BOUND-EMPTY-SELECTOR-IS-NOT-OMISSION at the real script boundary.
+
+## WDD-20260911-PQ1-006: runtime and rebuild deadlines from measured PQ1 timings
+
+The runtime stage now has its own deadline, RuntimeDeadlineSeconds, default 1200. Lean compile stages keep StageDeadlineSeconds 600, and Lake closure rebuilds for definition collapses use ProducerRebuildDeadlineSeconds 2400.
+
+Measurements on this Windows host, with one Lean process at a time and other applications using about half of the 14 logical processors:
+- HEAD bfffa95 registry (11 fixtures, list evaluator): 520.4 s;
+- revised 15-fixture registry: 293.7 s, and 292.4 s on the final tree;
+- an intermediate variant with two 24-element lists: 474.8 s;
+- buildMemory for one 24-element list: 60 s in one run and 169 s in another;
+- lake build RMQPaper after a definition collapse: 254-268 s in each direction.
+1200 s is about four times the measured registry, above the required three-times margin, because identical preprocessing varied by almost a factor of three on this host.
+
+Environment note: this worktree's .lake/build had no Lake trace files. The traced cache from the lead's snapshot worktree (same sources apart from line endings) was copied in, and lake build --no-build confirmed it up to date before any edit.
+
+## WDD-20260911-PQ1-007: provenance self-test against committed experiment blobs
+
+WDD-20260911-PQ1-003 required provenance checks to read committed blobs, not the working copy. The runner's -ProvenanceSelfTestOnly mode, also run in full replay mode:
+- reads manifest.json and all 45 listed files with git cat-file, copying standard output as raw bytes;
+- requires the committed directory to contain exactly those files plus manifest.json and .gitattributes;
+- compares each byte count and SHA-256;
+- requires a flipped byte and an appended byte to fail the same comparison.
+HEAD bfffa95 passes 45/45 under both hosts. The optional -ProvenanceRevision 8910d53 fails with exactly the 15 LF-normalized blobs the audit reported. The check therefore detects the committed-blob defect that the working-copy check missed. Rejected alternatives: hashing the working copy, which checkout normalization can mask; decoding git output through the shell, which re-encodes bytes.
+
+## WDD-20260911-PQ1-008: default build reach for the typed PQ1 consumer
+
+Audit L7-03 and L8-F3: no Lake target built RMQ.Validation.PackedQueryContract. scripts/headline_axiom_check.lean imported it, so a fresh clone's reproduce_artifact.sh and headline_check.ps1 failed, and inside the gate it passed only as a side effect of the replay's direct compilation.
+
+RMQ.lean now imports the consumer and RMQ.Core.WordRAM.Packed.ArrayRun, following its existing EG-CP validation imports. The default lake build elaborates every field check, pin and fit control and the array-evaluator equality, and the headline axiom check works after lake build and lake build RMQPaper. hub_closure_lint -SelfTest and shim_lint pass. The gate's replay comment no longer states a certificate field count. The headline and word-RAM axiom inventories add checkC31-C33, two pins, two fit controls, the new certificate theorems and runArray_toArray. A separate lean_exe target was rejected, because the gate builds every executable and would compile the whole closure to C.

@@ -1,13 +1,14 @@
 import RMQ.Core.WordRAM.Packed.QueryObservations
 import RMQ.Core.WordRAM.Packed.QuerySafety
+import RMQ.Core.WordRAM.Packed.QueryCertificate
 
 /-! # Complete contract for the fully charged packed query
 
-The canonical theorem joins correctness, all-size primitive safety, exact
-instruction charging and complete data/code/scratch capacity on one allocation
-and run. The word-RAM model treats word multiplication, division, remainder,
-shifts and bitwise operations as constant-time primitives. Preprocessing and
-Lean execution time are separate from this query-model theorem.
+The canonical theorem joins correctness, all-size primitive safety, charging of
+every executed instruction and complete data/code/scratch capacity on one
+allocation and run, in a word-RAM model with unit-cost multiplication, division,
+remainder, shifts and bitwise operations on logarithmic-width words.
+Preprocessing and Lean execution time are separate from this query-model theorem.
 -/
 
 namespace RMQ.SuccinctFinal.PackedWordRAM
@@ -107,6 +108,14 @@ structure FullyChargedPackedQueryCapstone : Prop where
       memory[receipt.address]? = (buildMemory xs)[receipt.address]?) →
     run memory queryProgram queryBudget (initialState xs.length left right) =
       run (buildMemory xs) queryProgram queryBudget (initialState xs.length left right)
+  specResult : ∀ (xs : List Int) left right, ValidRange xs left right →
+    (run (buildMemory xs) queryProgram queryBudget (initialState xs.length left right)).result =
+      some (scanWindow xs left (right - left) + 1)
+  noFailedLoads : ∀ (xs : List Int) left right, ValidRange xs left right →
+    ∀ receipt ∈ (run (buildMemory xs) queryProgram queryBudget (initialState xs.length left right)).reads,
+      ∃ value, receipt.reply = some value
+  invalidGuardSteps : ∀ (xs : List Int) left right, ¬ ValidRange xs left right →
+    (run (buildMemory xs) queryProgram queryBudget (initialState xs.length left right)).steps ≤ 6
   -- PQ1-REPLAY-FIELDS-END
 
 set_option maxRecDepth 3000 in
@@ -150,6 +159,13 @@ theorem fullyChargedPackedQueryCapstone_of_runtime_safety
   orderedLogicalRefinement := queryRun_reference_reads
   logicalReadOnly := queryTraceResult_readOnly
   suppliedMemoryAgreement := queryRun_agreement
+  specResult xs left right hv := queryRun_scanWindow xs left right hv
+  noFailedLoads xs left right _ := queryRun_reads_reply xs left right
+  invalidGuardSteps xs left right hi := by
+    have h := queryRun_invalid_steps (buildMemory xs) xs.length left right hi
+    unfold queryRun at h
+    rw [h]
+    split <;> decide
   -- PQ1-REPLAY-INITIALIZERS-END
 
 /-- Ordinary-list fully charged packed RMQ, with no supplied correctness,

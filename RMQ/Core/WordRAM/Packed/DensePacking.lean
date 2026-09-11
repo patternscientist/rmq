@@ -80,7 +80,7 @@ theorem chunks_flatten (width : Nat) :
       rw [List.range_succ_eq_map]
       simp only [List.map_cons, List.map_map, List.flatten_cons, Function.comp_def]
       rw [htail, ih (bits.drop width) hdrop]
-      simpa [cellAt] using List.take_append_drop width bits
+      simp [cellAt]
 
 theorem denseCells_flatten (width : Nat) (bits : List Bool) (hw : 0 < width) :
     (denseCells width bits).flatten = densePad width bits :=

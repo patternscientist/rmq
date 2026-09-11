@@ -35,8 +35,14 @@ def ReaderFrame (before after : Registers) : Prop :=
 def ReaderWrites (reader : Block) : Prop :=
   reader.WritesOnly (fun r => 8194 ≤ r ∧ r < 8271)
 
-/-- Ordered raw attempts for one logical request, including failed attempts.
-This is a specification of the physical reader's output, not executable code. -/
+/-- Ordered raw attempts for one logical request. A request with no numeric span
+(a logically absent word, or a segment or index outside the layout) and a span
+of length zero make no physical load at all; this is a choice of the reader
+model, not a suppressed failure. Otherwise every primitive load the reader
+issues is listed, in order. A primitive load whose address is outside the
+allocation faults the machine and is still logged, with no reply; the canonical
+query run performs no such load. This is a specification of the physical
+reader's output, not executable code. -/
 def readerReceipts (shape : CartesianShape) (memory : Memory)
     (segment index : Nat) : List Receipt :=
   match reviewerLogicalSpan shape.size (longCount shape)
