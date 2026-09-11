@@ -25,8 +25,9 @@ performs no failing load (certificate field `noFailedLoads`). Every
 representable invalid input is rejected within six guard steps
 (`invalidGuardSteps`). On a valid range its ordered load receipts are
 exactly 174 metadata loads followed by the physical expansion of the canonical
-logical trace: one load per present logical read, two when the cell crosses a
-word boundary, and none for a logically absent or dead read. Agreement of any
+logical trace: one load per present logical read, two when its stored bit span
+crosses a word boundary, and none for a logically absent or dead read or a
+zero-length span. Agreement of any
 supplied memory with `buildMemory xs` at the read addresses determines the
 entire run. The program of `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`
 is one fixed straight-line program of 837,572 instructions for every input;

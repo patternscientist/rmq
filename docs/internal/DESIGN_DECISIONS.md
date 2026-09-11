@@ -12614,3 +12614,9 @@ On the substrate, all exit 0:
 - `git diff --check`.
 
 `git grep` finds 0 occurrences of the old SHA and 39 of the new one in paper/. latexmk in a scratch copy produced 20 pages with no undefined references or citations.
+
+## DD-20260911-PQ1-021: describe each logical read's physical expansion by its stored bit span
+
+Context: the manuscript (DD-20260911-PQ1-020) describes the expansion of a logical read into physical loads by the read's stored bit span, because `readerReceipts` expands `reviewerLogicalSpan`, a bit span that for strided sources can be a field narrower than a packed cell, and `spanAttemptReceipts` makes no load for a zero-length span. The review packet and the model-adequacy note, synchronized earlier under DD-20260911-PQ1-019, still said two loads when the read's cell crosses a word boundary.
+
+Decision: both surfaces now say one load for each present logical read, two when its stored bit span crosses a word boundary, and none for a logically absent or dead read or a zero-length span, matching the manuscript and the ReadInterface docstring. No theorem, count or pin changes; the claim-drift and constant-sync pins are unaffected. Alternative rejected: leaving the cell wording, which is exact for the packed cell reads but not for sub-cell strided spans. Evidence: strict claim drift, constant sync and git diff --check pass on the edited tree.

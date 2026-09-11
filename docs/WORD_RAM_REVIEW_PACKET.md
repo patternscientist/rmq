@@ -99,7 +99,8 @@ unbounded integers.
 For a valid range, the ordered load receipts of the run are exactly the 174
 metadata loads followed by the physical expansion of the canonical logical
 trace of the same query: one load for each present logical read, two when its
-cell crosses a word boundary, and none for a logically absent or dead read.
+stored bit span crosses a word boundary, and none for a logically absent or
+dead read or a zero-length span.
 Repeated logical reads repeat their loads. A representable invalid range makes
 no load at all. Each receipt is positionally backed: its transition's
 pre-state is the run's state at that index, the instruction is the program's
