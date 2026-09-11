@@ -3,8 +3,8 @@ Existence check for every declaration named by an `ACCEPTED_BASE` row of
 `paper/THEOREM_LEDGER.md`.
 
 That status is defined in the ledger header as "kernel-checked declaration
-present on the base commit". When the substrate is repinned, all 29 such rows
-move to the new commit, and each move **restates** that claim about a new tree.
+present on the base commit". When the substrate is repinned, every such row
+moves to the new commit, and each move **restates** that claim about a new tree.
 This script is what makes the restatement checkable instead of assumed: if a
 named declaration has been renamed, moved behind a `private`, or deleted, the
 repin would silently assert something false.
@@ -50,6 +50,7 @@ def ledgerNames : List Lean.Name :=
   `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem,
   `RMQ.Headlines.listIntSuccinctRMQReviewerNativeMachineAdequacy,
   `RMQ.Headlines.rankSelectNPlusOConstantQuery,
+  `RMQ.Headlines.succinctRMQFullyChargedPackedQuery,
   `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery,
   `RMQ.Headlines.succinctRMQReviewerEveryReadOccurrenceProvenance,
   `RMQ.Headlines.succinctRMQReviewerMachineWellFormed,
@@ -77,6 +78,8 @@ def ledgerNames : List Lean.Name :=
   `RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy,
   `RMQ.SuccinctFinal.PackedCellProbe.PackedReviewerArchitectureCapstone,
   `RMQ.SuccinctFinal.PackedCellProbe.packedReviewerArchitectureCapstone_holds,
+  `RMQ.SuccinctFinal.PackedWordRAM.FullyChargedPackedQueryCapstone,
+  `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds,
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra,
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq,
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter,
@@ -97,15 +100,17 @@ def ledgerNames : List Lean.Name :=
 
 /-- Floor on the transcribed list, so silently emptying it cannot pass.
 
-`54` since 2026-08-16. The list is TRANSCRIBED from the ledger by hand, and a
-hand-maintained list beside the thing it tracks drifts: it sat at 53 while the
+`57` since 2026-09-11, when row `L-PQ-01` added the capstone structure, its
+producer and the public alias; `54` from 2026-08-16. The list is TRANSCRIBED
+from the ledger by hand, and a hand-maintained list beside the thing it tracks
+drifts: it sat at 53 while the
 `ACCEPTED_BASE` `Declaration:` fields named 54 fully-qualified declarations, so
 `RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace_getElem?_producer` was
 cited by a row and checked by nothing. The count pin below cannot catch that --
 it only catches the list SHRINKING. What catches it is the set-equality check in
 `paper/check_paper.ps1` step 5c, which derives the expected set from the ledger
 and compares. -/
-def expectedCount : Nat := 54
+def expectedCount : Nat := 57
 
 /-- A name that must NOT resolve. Guards against an `env.find?` that always
 succeeds -- a check that finds everything is as useless as one that finds

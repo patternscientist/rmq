@@ -12283,3 +12283,33 @@ Evidence:
 - The ten fixtures pass via -OnlyCase and in full runs.
 - Scratch-policy mutations: deleting term 1 makes the self-test exit 1 (2 probes) and the regression fail at [pq1-attribution-config]. Deleting term 2 fails both ([pq1-attachment-config]). Widening term 1's allowance to '.' fails both ([pq1-attribution-config]). Deleting the word-RAM count term fails both (3 probes; [pq1-wordram-count-scope-config]). Reverting its status fails the regression.
 - Full regression runs in the shared worktree passed all 130 fixture and 16 context verdicts, but exited 1 on tracked-state assertions caused by concurrent Lean-lane edits. A rerun on a quiescent tree is required.
+
+## WDD-20260911-PQ1-011: ledger_decl_check.lean extended to 57 names; the paper commit is a single child of 3849ecbb with no Lean change
+
+Context: scripts/ledger_decl_check.lean makes the ACCEPTED_BASE restatement at each repin checkable. It resolves every fully-qualified name that the ACCEPTED_BASE rows of paper/THEOREM_LEDGER.md cite, pins the list length with expectedCount, and checks a negative control. paper/check_paper.ps1 step 5c derives the cited set from the ledger and fails unless it equals the script's list in both directions. The repin to 3849ecbb adds ACCEPTED_BASE row L-PQ-01, whose Declaration field cites three new fully-qualified names.
+
+Decision: The script gains exactly those three names, in sorted position: RMQ.Headlines.succinctRMQFullyChargedPackedQuery, RMQ.SuccinctFinal.PackedWordRAM.FullyChargedPackedQueryCapstone and RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds. expectedCount moves from 54 to 57, with a docstring naming the date and the row. The header comment's "all 29 such rows" becomes "every such row", so the comment no longer carries a count that the next repin would falsify. No import changes. The script is in no Lake library root, so the change touches no Lean library file.
+
+The paper commit is one commit whose parent is 3849ecbb. It changes only the eight paper/ files, this script and the two design-ledger entries. It touches no Lean library file, lakefile.toml, lake-manifest.json or lean-toolchain.
+
+The reasons for a single child with no Lean change:
+- The substrate claims to describe the pinned tree, and every ACCEPTED_BASE row restates "present on the base commit" at 3849ecbb. The Lean checks that make those claims true (both builds, the three axiom inventories, the independence check and the decl check) were run on a tree identical to 3849ecbb. They carry over to the paper commit without a rerun only if its Lean library is byte-identical to its parent, which one `git diff --quiet 3849ecbb -- RMQ *.lean lakefile.toml lake-manifest.json lean-toolchain` checks. Any Lean change would void those checks and make the pin describe a different tree, which is the RC-10 class.
+- With a single child, the README's standing caveat can be checked with one `git diff --name-only`.
+- The ledger rows and the script must land together. Step 5c fails if either lists a name the other lacks, and the script's own count pin throws if the list and expectedCount disagree. Any split leaves a red intermediate commit.
+- The paper lane does not own Lean, and another process may run Lean in this worktree.
+
+Alternatives rejected:
+- Reading the ledger from the Lean script. That puts a markdown parser in the check path and duplicates step 5c, which already derives the set from the ledger.
+- Listing only the public alias. Step 5c would fail on the two capstone names the row cites, and the alias resolving does not show that they resolve.
+- Dropping the count pin or setting it below 57. The pin catches a list that shrinks, and step 5c catches one that never grew; neither covers the other's case.
+- Committing on codex/eg-cp-paper-evidence-r1 or rebasing elsewhere. The parent would no longer be the pinned tree, so the checks and the caveat would not carry over.
+- Splitting the ledger and the script into separate commits. That leaves a red intermediate state.
+- Allowing Lean edits and rerunning the checks. The pin must still equal the tree, and forbidding Lean edits makes the carry-over exact.
+
+Consequences: Any later repin that adds or removes an ACCEPTED_BASE citation must move the list and expectedCount in the same commit. The paper commit's Lean evidence is the lead's run at P, recorded in README.md and WORKLOG.md. scripts/paper_topology_lint.ps1 refuses a dirty tree, so it runs after the commit. Any later Lean change on this branch requires a new repin with the checks rerun.
+
+Evidence:
+- Lead, at P: `lake env lean scripts/ledger_decl_check.lean` reported LEDGER-DECLS: RESULT: PASS (57 names present, negative control absent).
+- `check_paper.ps1 -SelfTest` exit 0, reporting "57 fully-qualified name(s) checked" and "the decl-check list is exactly the set the ACCEPTED_BASE rows cite".
+- `git diff --name-only` shows the nine files, with no untracked files.
+- `git diff --quiet 3849ecbb` over RMQ/, the root .lean files, lakefile.toml, lake-manifest.json and lean-toolchain: exit 0.

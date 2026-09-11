@@ -1,8 +1,9 @@
 # Evidence Matrix (frozen)
 
-Frozen acceptance rows for the manuscript/evidence substrate on branch
-`codex/eg-cp-paper-evidence-r1`, base commit
-`0665b494707695a70675fef0e5c8682f4d80fe0c`. Row IDs and requirement text
+Frozen acceptance rows for the manuscript/evidence substrate authored on
+branch `codex/eg-cp-paper-evidence-r1`; base commit
+`3849ecbb53bbedfcd679352cc68d095fa5a304c2` (branch
+`codex/fully-charged-packed-query-v1`). Row IDs and requirement text
 are frozen as of 2026-08-05; evidence and status fields are append-only.
 Statuses: **CLOSED** (evidence in place at this commit),
 **BLOCKED_ONLY_ON: ARCHITECTURE_RESULT_PENDING** (nothing remains except
@@ -45,6 +46,16 @@ closes no roadmap node.
   separate columns from theorems. `check_paper.ps1` forbids the phrase
   pattern the roadmap bans for cell-probe/charged-trace claims.
 - Status: CLOSED
+- Evidence (appended 2026-09-11, repin to `3849ecbb`): Section 3 now keeps six
+  quantities apart. The sixth, executed instructions, belongs only to the
+  candidate theorem of Section 9.2 (`L-PQ-01`) and is never attached to the
+  `210` or `427` bounds. `L-OPEN-06`, cited above for the word-RAM
+  disclaimer, is amended rather than retired: `L-PQ-01` falsifies its first
+  clause, and the row now states only that neither the charged-trace bound
+  nor the cell-probe bound counts controller steps or is claimed as
+  conventional word-RAM running time. Its anchors in Section 3 and Section 11
+  item 1 stay. The charge-policy paragraph is scoped to the charged-trace
+  model. Preprocessing remains open (`L-OPEN-01`).
 
 ## EV-02-THEOREM-IDENTITY
 
@@ -53,8 +64,10 @@ closes no roadmap node.
   declaration and file at the base commit, with proposition-level
   hypotheses and conclusion recorded; the provisional target maps to a
   PROVISIONAL_ARCHITECTURE row; unproved statements map to OPEN rows.
-- Evidence: `THEOREM_LEDGER.md` (34 rows: 29 ACCEPTED_BASE, 0
-  PROVISIONAL_ARCHITECTURE, 5 OPEN -- corrected 2026-08-16 from a stale
+- Evidence: `THEOREM_LEDGER.md` (36 rows: 30 ACCEPTED_BASE, 0
+  PROVISIONAL_ARCHITECTURE, 6 OPEN -- updated 2026-09-11 from 34/29/0/5, when
+  `L-PQ-01` and `L-OPEN-07` were added at the repin to `3849ecbb`; corrected
+  2026-08-16 from a stale
   27/1/6 that predated the Stage-A acceptance moving the architecture row out
   of PROVISIONAL; found by the 2026-08-15 fresh-blind audit, P3-1. These
   counts are now checked, not stated: see the ledger-count assertion in
@@ -64,6 +77,18 @@ closes no roadmap node.
   `check_paper.ps1` enforces bidirectional anchor coverage between
   `rmq.tex` and the ledger.
 - Status: CLOSED
+- Evidence (appended 2026-09-11, repin to `3849ecbb`): rows `L-PQ-01`
+  (`ACCEPTED_BASE` as a kernel status, with a `Process status: CANDIDATE`
+  line) and `L-OPEN-07` added, `L-OPEN-06` amended;
+  `scripts/ledger_decl_check.lean` lists the 57 fully-qualified names the
+  `ACCEPTED_BASE` rows now cite, which `check_paper.ps1` step 5c derives and
+  compares; every `:NNN` citation resolves at the new base. The repin also
+  repaired a pointer that was wrong at the old base: `L-ARCH-01` and
+  `L-PACK-01` cite `producer at :760`, correct at the new base and not at
+  `0665b494`, where that line holds a field assignment and the producer is
+  at `:752`. The ledger header says line references are at the base commit;
+  for these two citations that was false from `DD-20260909-129` until this
+  repin.
 
 ## EV-03-PRIMARY-SOURCE
 
@@ -76,6 +101,16 @@ closes no roadmap node.
   search-limitations section forbidding absence inferences);
   `references.bib` header states the same field policy.
 - Status: CLOSED
+- Evidence (appended 2026-09-11, repin to `3849ecbb`): eight entries were added
+  as authority for the machine model of Section 9.2 (`CookReckhow73`,
+  `FredmanWillard93`, `BMM97`, `AHNR98`, `HMP01`, `PatrascuThorup14`,
+  `MehlhornSanders08`, `AMT99`), each with a receipt in the new
+  `RELATED_WORK_LEDGER.md` section on word-RAM instruction-set authority that
+  names the text read and the tier of every field. The bibliography now
+  holds 35 entries, so "all 27 bib entries" above describes the bibliography
+  before this date and is superseded here rather than edited. No new receipt
+  supports an absence inference; the added search-limitations item says the
+  instruction-level result was not covered by the novelty search.
 
 ## EV-04-NOVELTY-RESTRAINT
 
@@ -90,6 +125,11 @@ closes no roadmap node.
   `check_paper.ps1` forbidden-token scan rejects unconditional priority
   phrasings.
 - Status: CLOSED
+- Evidence (appended 2026-09-11): the manuscript makes no novelty statement
+  about the fully charged packed query (Section 9.2; Section 10, mechanized
+  cost analysis paragraph). `NOVELTY_LOG.md` section 7 records that the
+  2026-08-07 search predates it and did not sweep instruction-level cost
+  mechanizations, so no "we did not find" wording is licensed for it.
 
 ## EV-05-TRUST
 
@@ -107,6 +147,11 @@ closes no roadmap node.
   reproducible-artifact-tier evidence below kernel theorems, matching the
   evidence-tier discipline of `docs/internal/AUDIT_PROTOCOL.md`.
 - Status: CLOSED
+- Evidence (appended 2026-09-11): the candidate status of `L-PQ-01` is
+  disclosed where the result is stated (Section 9.2, status paragraph) and in
+  Section 1.3, Section 11 item 6 and the conclusion. Its axiom inventory is
+  printed by `scripts/headline_axiom_check.lean`; its replay runner and typed
+  consumer are validation-tier evidence, below the kernel theorem.
 
 ## EV-06-REPRODUCIBILITY
 
@@ -121,6 +166,8 @@ closes no roadmap node.
   build and checker commands, and expected outputs; `check_paper.ps1` runs
   deterministically with exit 0 recorded in `WORKLOG.md`.
 - Status: CLOSED
+- Evidence (appended 2026-09-11): Section 8 names the new base `3849ecbb` and
+  the committed replay of the typed client of Theorem 9.2.
 
 ## EV-07-FINAL-RESULT-INSERTION
 
@@ -198,6 +245,32 @@ closes no roadmap node.
   Nothing editorial remains. What the row now turns on is the pending fresh-blind
   audit of the RC-4 candidate; no earlier status is retracted, they are lineage.
 - Status (superseded): BLOCKED_ONLY_ON: ARCHITECTURE_RESULT_PENDING
+- Evidence (appended 2026-09-11): containment re-checked after inserting the
+  fully charged packed query, against the rule as `rmq.tex` states it: the
+  packed result (Theorem 9.1) is stated in Section 9 and, as a capacity
+  bound, in the allocated-bits entry of Section 3, and no other section
+  states, assumes or paraphrases it. Subsection 9.2 lies inside Section 9.
+  The allocated-bits entry gained one sentence, which names the candidate's
+  allocation as a repacking of that packed array. Outside those two places
+  the passages added at this repin name Theorem 9.1 by label only, with
+  neither its constant `427` nor its model nor its content: the
+  executed-instructions item of Section 3 (neither the constant of Section
+  5.3 nor Theorem 9.1 bounds executed instructions), Section 1.3 (one of the
+  places that summarize the candidate is a reading of Theorem 9.1), Section
+  11 item 1 (Theorem 9.1 states its own disclaimers in Section 9, and the
+  candidate transfers no instruction count to it) and the conclusion (an
+  instruction count for the executions the charged-trace bound and Theorem
+  9.1 describe is open). Section 1.2 does not name it: it calls the
+  candidate's allocation a third one, after the two objects its preceding
+  sentence, unchanged from the previous pin, already names. Three phrasings
+  in the uncommitted draft of this repin described Theorem 9.1 by its model
+  instead: "the charged-trace and cell-probe theorems" in the Section 10 cost
+  paragraph, "the charged-trace and cell-probe bounds" in the conclusion, and
+  "its own cell-probe disclaimer" in Section 11 item 1. Review found the
+  first two before commit; all three were replaced by the wording above
+  ("the charged-trace theorems" in Section 10). This entry covers only the
+  passages added at this repin; text carried over unchanged from `0665b494`
+  was not re-examined. It changes no status.
 
 ## 2026-08-09 -- line-number citations audited (corrected: 27 citations, 3 defective)
 
@@ -284,3 +357,17 @@ it pinned, and a single aggregate would hide that one citation is barely
 constrained at all.
 
 Status: this entry records a correction and a new check. It closes no row.
+
+## 2026-09-11 -- repin to `3849ecbb`; the fully charged packed query enters as a candidate
+
+At `3849ecbb`, `import RMQPaper` supplies
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, a kernel-checked theorem
+that charges every executed instruction of one fixed program, while
+`rmq.tex`, pinned to `0665b494`, called instruction-level charging future
+work in three places. That is the `RC-10` mismatch in a new place. This repin
+states the theorem in Section 9.2 as a candidate, rescopes those passages to
+the charged-trace bound and Theorem 9.1, adds `L-PQ-01` and `L-OPEN-07`,
+amends `L-OPEN-06`, and cites primary sources for the machine model, with
+division and remainder stated as an explicit assumption.
+
+Status: this entry records a repin and new rows. It closes no row.

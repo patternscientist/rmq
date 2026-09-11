@@ -9,10 +9,20 @@ coverage between the manuscript anchors and the IDs below.
 Status vocabulary (fixed):
 
 - **ACCEPTED_BASE** -- kernel-checked declaration present on the base commit
-  `0665b494707695a70675fef0e5c8682f4d80fe0c` and part of the integrated
+  `3849ecbb53bbedfcd679352cc68d095fa5a304c2` and part of the integrated
   mainline theorem surface. Where the project's internal acceptance process
   has a finer status (for example a still-open fresh-blind audit), the row
   says so in its notes; that is a process status, not a kernel status.
+  Row `L-PQ-01` is the case in point: its theorem is kernel-checked at the
+  base and is a candidate in that process, which its `Process status` line
+  states. For that row the label asserts only the first clause of this
+  definition. At this writing (2026-09-11) the base commit is contained in no
+  branch other than `codex/fully-charged-packed-query-v1` and in neither
+  `main` nor any release tag, and the public alias the row cites occurs on no
+  other branch. The
+  theorem is exported by `RMQPaper` at the base commit, and it has been
+  neither accepted nor integrated, so it is not part of the integrated
+  mainline theorem surface. The label records no acceptance.
 - **PROVISIONAL_ARCHITECTURE** -- a frozen target statement under an active
   feasibility gate. Not a theorem. May appear in the manuscript only at a
   marked insertion point and in the target-statement environment that quotes
@@ -34,7 +44,7 @@ references are at the base commit.
 
 #### L-REF-01
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration: `RMQ.leftmostArgMin_unique`
 - File: `RMQ/Core/Spec.lean` (definition of `LeftmostArgMin` at :34,
   uniqueness at :48)
@@ -49,7 +59,7 @@ references are at the base commit.
 
 #### L-REF-02
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration: `RMQ.SuccinctClassic.scanWindow_cartesianShape_representative_eq`
 - File: `RMQ/Core/SuccinctRMQClassic.lean` (:1198); supporting reduction
   layers in `RMQ/Core/Cartesian.lean`, `RMQ/Core/LCA.lean`,
@@ -66,7 +76,7 @@ references are at the base commit.
 
 #### L-UB-01
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration: `RMQ.SuccinctClassic.buildPayload_length`; public aliases
   `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery`,
   `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`
@@ -81,7 +91,7 @@ references are at the base commit.
 
 #### L-UB-02
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration: `RMQ.SuccinctClassic.overhead_littleO`; predicate
   `RMQ.SuccinctSpace.LittleOLinear`
 - File: `RMQ/Core/SuccinctRMQClassic.lean` (:1233);
@@ -96,7 +106,7 @@ references are at the base commit.
 
 #### L-UB-03
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.SuccinctClassic.listIntFinalFullModelSoundnessExactOfFootprintGlobal`;
   packaged by `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`
@@ -112,7 +122,7 @@ references are at the base commit.
 
 #### L-UB-04
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration: `RMQ.SuccinctClassic.queryCosted_invalid` (:256),
   `queryCosted_empty_range` (:369), `queryCosted_reversed_range` (:376),
   `queryCosted_out_of_bounds` (:385); plus the corresponding
@@ -128,7 +138,7 @@ references are at the base commit.
 
 #### L-UB-05
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration: `RMQ.SuccinctClassic.queryCosted_cost_le` (:1282),
   `RMQ.SuccinctClassic.queryCost_eq : queryCost = 210` (:114);
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`
@@ -142,7 +152,7 @@ references are at the base commit.
 
 #### L-UB-06
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration: `RMQ.SuccinctClassic.chargedTraceCostAlgebra` (abbrev of
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra`);
   frozen historical identity
@@ -161,7 +171,7 @@ references are at the base commit.
 
 #### L-UB-07
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only`;
   alias `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`
@@ -174,7 +184,7 @@ references are at the base commit.
 
 #### L-UB-08
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_noSynthetic_execution_story`;
   flat-payload strengthening
@@ -189,7 +199,7 @@ references are at the base commit.
 
 #### L-UB-09
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_210`
   with the sum-equals-length and sum-equals-cost companions; counterfactual
@@ -205,7 +215,7 @@ references are at the base commit.
 
 #### L-UB-19
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `bpChunkedSameBlockCloseSeededCosted_cost_le : cost <= 37`
   (`RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockChunks.lean`);
@@ -228,7 +238,7 @@ references are at the base commit.
 
 #### L-UB-10
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases`;
   alias `RMQ.Headlines.succinctRMQReviewerPhysicalWordsErasePublicPayload`
@@ -243,7 +253,7 @@ references are at the base commit.
 
 #### L-UB-11
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical`;
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter`;
@@ -260,7 +270,7 @@ references are at the base commit.
 
 #### L-UB-12
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_eq_of_orderedFootprint`;
   list-facing
@@ -277,7 +287,7 @@ references are at the base commit.
 
 #### L-UB-18
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.SuccinctClassic.listIntFinalFullModelCostLeOfFootprintGlobal`;
   `RMQ.SuccinctClassic.listIntFinalFullModelSoundnessExactOfFootprintGlobal`;
@@ -294,7 +304,7 @@ references are at the base commit.
 
 #### L-UB-13
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne`
   with `..._value_eq_suppliedStoreEvaluator`; the six validation guards
@@ -311,7 +321,7 @@ references are at the base commit.
 
 #### L-UB-14
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_successful_reads_backed_by_counted_flat_payload_of_footprint_global`;
   alias
@@ -327,7 +337,7 @@ references are at the base commit.
 
 #### L-UB-17
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace_getElem?_producer`,
   `...evalGlobalWordTrace_getElem?_read_invocation`,
@@ -344,7 +354,7 @@ references are at the base commit.
 
 #### L-UB-15
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy`
   with `...ReviewerSource_counted_successful_closed_valid_occurrence`,
@@ -367,7 +377,7 @@ references are at the base commit.
 
 #### L-UB-16
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration: `concreteBPNativeSuccinctRMQReviewerWordBits` (definition,
   `RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean` :1474) with the
   bound theorems behind aliases
@@ -387,7 +397,7 @@ references are at the base commit.
 
 #### L-UB-20
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerMachineWellFormed`
   (24-field certificate),
@@ -412,7 +422,7 @@ references are at the base commit.
 
 #### L-LB-01
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack`
   (:1878); `doubledLogSlackLower` (:1654); alias
@@ -433,7 +443,7 @@ references are at the base commit.
 
 #### L-LB-02
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound`
   (:1840); `logSlackLower` (:1650)
@@ -450,7 +460,7 @@ references are at the base commit.
 
 #### L-RS-01
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration: `RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery` (:244);
   headline alias `RMQ.Headlines.rankSelectNPlusOConstantQuery`
 - File: `RMQ/Core/RankSelectPublic/Capstones.lean`
@@ -462,7 +472,7 @@ references are at the base commit.
 
 #### L-RS-02
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration: `RMQ.RankSelect.compressedFIDFixedWeightFamilyProfile`;
   interpreted replay
   `RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile`
@@ -478,7 +488,7 @@ references are at the base commit.
 
 #### L-BP-01
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration: `RMQ.BPNavigation.concreteBPCloseNavigationFamily_profile`
   (:1666); headline alias `RMQ.Headlines.concreteBPCloseNavigationProfile`
 - File: `RMQ/Core/BPNavigationPublic.lean`
@@ -494,7 +504,7 @@ references are at the base commit.
 
 #### L-ARCH-01
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.SuccinctFinal.PackedCellProbe.PackedReviewerArchitectureCapstone`
   (39-field structure), discharged for every input list and endpoint pair by
@@ -563,11 +573,10 @@ references are at the base commit.
   `rmq.tex` is zero. No line numbers are given here: this file's `:NNN`
   citations are Lean source pointers, checked by `check_citations.ps1`, and a
   manuscript line number would be parsed as one.
-  Section 9.1 insertion point.
 
 #### L-PACK-01
 - Status: ACCEPTED_BASE
-- Commit: `0665b494707695a70675fef0e5c8682f4d80fe0c`
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration: field 8 `allocation_two_n_plus_rho` of
   `RMQ.SuccinctFinal.PackedCellProbe.PackedReviewerArchitectureCapstone`,
   with field 9 `rho_little_o`; inhabited by
@@ -588,6 +597,125 @@ references are at the base commit.
   entry of Section 3 and limitation 1 of Section 11) were repaired in the
   same edit; the limitation was withdrawn outright.
 - Manuscript location: Section 3, allocated-bits item.
+
+## Fully charged packed query
+
+#### L-PQ-01
+- Status: ACCEPTED_BASE
+- Process status: CANDIDATE. Kernel-checked at the base commit and exported
+  through the paper root, but the project's acceptance process also requires
+  a full replay of the committed validation cases, the aggregate gate and a
+  fresh blind exact-commit audit, and it has recorded no acceptance. The
+  status label above is the kernel status this file's header defines, and
+  for this row it asserts only the first clause of that definition: the base
+  commit and the public alias are on branch
+  `codex/fully-charged-packed-query-v1` only, the theorem is exported by
+  `RMQPaper` at the base commit, and it has been neither accepted nor
+  integrated into the mainline theorem surface. The label records no
+  acceptance. `paper/README.md` editing rule 5 lists every place this
+  process status is stated; they change together.
+- Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
+- Declaration: structure
+  `RMQ.SuccinctFinal.PackedWordRAM.FullyChargedPackedQueryCapstone`,
+  discharged with no premise by
+  `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`;
+  public alias `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`
+- File: `RMQ/Core/WordRAM/Packed/Capstone.lean`; `RMQ/Headlines/RMQ.lean`;
+  typed client `RMQ/Validation/PackedQueryContract.lean`. No line numbers are
+  given: the declaration names are the stable pointer, and the capstone was
+  still gaining fields when this row was written, so a line pointer into it
+  would rot on the next edit above it.
+- Proposition: fix `xs : List Int`, `n = xs.length`,
+  `w = wordWidth n = 32 + 8 * packedReviewerCellWidth n`, the allocation
+  `buildMemory xs` (174 metadata words followed by the packed reviewer memory
+  of L-ARCH-01, header and padding included, densely repacked into `w`-bit
+  words) and the closed program `queryProgram`, which takes no argument.
+  (width) `Nat.log2 (n + 2) + 1 <= w <= 192 * (Nat.log2 (n + 2) + 1)`; every
+  word of `buildMemory xs` and every address up to its length is below
+  `2 ^ w`; every encoded field of every instruction of `queryProgram`,
+  dormant ones included, is below `2 ^ wordWidth m` for every `m`.
+  (space) `(buildMemory xs).length * w <= 2 * n + allocationRho n` and
+  `((buildMemory xs).length + (queryProgram.map Instruction.encoding).flatten.length + (queryRegisterCount + 3)) * w <= 2 * n + queryCompleteRho n`,
+  with `LittleOLinear allocationRho` and `LittleOLinear queryCompleteRho`.
+  (program) `queryBudget = 837572` and `queryProgram.length = queryBudget`;
+  the encoded program has at most `5 * queryBudget` words;
+  `queryRegisterCount = 8271` and `queryScratchWords = 8274`; every register
+  at index `>= 8271` is `0` after any fuel.
+  (inputs) every `ValidRange xs left right` pair is below `2 ^ w` and is
+  accepted by `encodeInputs`; the total wrapper satisfies
+  `queryNat (buildMemory xs) n left right = if ValidRange xs left right then some (scanWindow xs left (right - left)) else none`,
+  and each of its `some` results is a `LeftmostArgMin` index. Endpoints at or
+  above `2 ^ w` are rejected by `encodeInputs`, a value-level test with no
+  instruction cost.
+  (run) for `left` and `right` below `2 ^ w`, the run with fuel `queryBudget`
+  from `initialState n left right` halts with value
+  `optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value`.
+  On every valid range its result is
+  `some (scanWindow xs left (right - left) + 1)`, stated on the run itself
+  (field `specResult`); on a representable invalid range its result is
+  `some 0` and it performs no load; on every invalid range it takes at most
+  6 steps (field `invalidGuardSteps`, which has no representability
+  premise; for endpoints at or above `2 ^ w` it is a fact about the
+  unbounded evaluator, since `encodeInputs` rejects them before the machine
+  starts). Its step count is at most `queryBudget` and equals the sum of its
+  six category counts; both facts hold for every fuel-bounded run, so the
+  budget's content is the halting clause. For representable endpoints every prefix state, every executed
+  transition (`Instruction.Safe`: result below `2 ^ w`, no subtraction
+  underflow, no zero divisor, no shift amount of `w` or more) and every
+  receipt address and reply fits `w`.
+  (reads) every receipt comes from a `load` at the actual prefix state whose
+  address register holds the receipt address, and its reply is
+  `(buildMemory xs)[address]?`; the ordered receipts are the 174 metadata
+  reads followed by `logicalTraceReads` of the canonical trace
+  `(SuccinctClassic.queryTraceResult xs left right).trace` on valid ranges,
+  and empty otherwise; that trace is read-only (`ReadOnlyTrace`); by the
+  definitions of `readerReceipts` and `spanAttemptReceipts`, a logical read
+  with no stored span or a zero-length one makes no load, and any other
+  makes one load, or two when its span crosses a `w`-bit word boundary and
+  the first load has a reply; on every valid range every receipt has a
+  reply (field `noFailedLoads`); any memory agreeing with `buildMemory xs`
+  at every receipt address yields the identical `Run`.
+- Model: numeric memory and a register machine with nine instruction
+  constructors (`load`, `constant`, `move`, `arithmetic` over
+  add/sub/mul/div/mod/shl/shr/and/or/xor, `comparison` over lt/le/eq, `jump`,
+  `jumpRegister`, `branchZero`, `halt`) and no store; one step per executed
+  instruction; a failed load faults and is logged. Unit-cost multiplication,
+  division, remainder, variable shifts and bitwise operations are
+  assumptions of the model. Division and remainder go beyond the
+  multiplication model of the cited word-RAM literature and are stated as an
+  explicit assumption; the span decoder needs them. Sources are in the
+  manuscript's Section 9.2 and their receipts in `RELATED_WORK_LEDGER.md`
+  (word-RAM instruction-set authority).
+- Scope discipline: `837572` is an input-independent upper bound equal to the
+  program's length and the run's fuel; it is not an optimized constant and
+  not claimed attained (L-OPEN-07). It is a primitive-instruction bound for
+  this execution only and must never be attached to the charged-trace bound
+  of L-UB-05 or the probe cap of L-ARCH-01, which keep their models. The
+  program and register-bank share of the complete capacity is lower order
+  only asymptotically: the encoding has at least two words per instruction (a
+  tag and an operand, by the definition of `Instruction.encoding`), so that
+  share exceeds `n` for every `n` below `2 ^ 28`. That threshold is
+  arithmetic from the definitions, not a Lean theorem: `wordWidth n` is at
+  least `48 + 8 * Nat.log2 (n + 1)` because `packedReviewerCellWidth n` is
+  `machineWordBits` of a bound at least `2 * n + 2`. Preprocessing is
+  unbounded and unclaimed (L-OPEN-01). Nothing is claimed about compiled
+  code, hardware or the Lean evaluator's wall-clock time.
+- Relation to other rows: not independent of them at proof level. The run's
+  loads expand the reads of the canonical trace of L-UB-07 and L-UB-09, and
+  its allocation repacks the memory of L-ARCH-01; it restates neither. It
+  falsifies the first clause of L-OPEN-06 as worded before 2026-09-11; that
+  row is amended, not retired, because its remaining clause is still an
+  unclaimed statement.
+- Manuscript location: Section 1.1, item 6; Section 1.2; Section 3
+  (allocated-bits entry, executed-instructions item, model non-claims
+  paragraph); Section 9.2, Theorem 9.2 (`thm:fullycharged`) and the fourth
+  reading it does not license (the `2 ^ 28` threshold); Section 11, item 1.
+  Also summarized without an anchor in the abstract, Section 1.1 (lead-in),
+  Section 1.3, Section 7 (import discipline), Section 8, the second reading
+  of Theorem 9.1 in Section 9, the rest of Section 9.2 (machine, model
+  sources, the other readings and the status paragraph), Section 10
+  (mechanized cost analysis paragraph), Section 11 items 3 and 6 and
+  Section 12.
 
 ## Open statements (asserted only as unproved)
 
@@ -633,10 +761,34 @@ references are at the base commit.
 
 #### L-OPEN-06
 - Status: OPEN
-- Statement: no instruction-level machine charges controller dispatch,
-  decoding, arithmetic, comparison, and branching steps and simulates the
-  same execution; consequently no running-time claim in the conventional
-  word-RAM model is made, and the `210` bound is a charged-trace bound
-  only.
+- Statement: the charged-trace bound of L-UB-05 and the cell-probe bound of
+  L-ARCH-01 charge only attempted reads and attempted probes. Neither counts
+  controller dispatch, decoding, arithmetic, comparison or branching steps,
+  and neither is claimed as running time in the conventional word-RAM model;
+  the `210` bound is a charged-trace bound only. L-PQ-01 counts such steps
+  for a different program on a different allocation; it bounds its own run
+  and converts neither bound into an instruction count.
+- Amended 2026-09-11 (repin to `3849ecbb`): this row said that no
+  instruction-level machine charges those steps and simulates the same
+  execution, and that consequently no word-RAM running-time claim is made.
+  At this base L-PQ-01 is such a machine, for a different program and
+  allocation whose loads expand the canonical trace's reads, so that first
+  clause is false. The row now states only what remains unclaimed. Its OPEN
+  status and its two manuscript anchors are unchanged.
 - Manuscript location: Section 3 (model non-claims paragraph); Section 11,
   item 1.
+
+#### L-OPEN-07
+- Status: OPEN
+- Statement: optimality and attainment of the instruction budget of L-PQ-01
+  are unproved. `queryBudget = 837572` is the length of `queryProgram` and
+  the fuel of the run; the capstone proves that the run halts within that
+  fuel for endpoints below `2 ^ wordWidth n`, `n` the input length (fields
+  `halt` and `result`; every valid query's endpoints are below it), but no
+  theorem shows that any
+  run takes 837572 steps, that a smaller
+  uniform budget holds, or that the program is minimal. The program was not
+  optimized, and the manuscript claims nothing about the budget beyond the
+  upper bound.
+- Manuscript location: Section 9.2 (first reading the theorem does not
+  license); Section 11, item 3.

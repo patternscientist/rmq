@@ -12544,3 +12544,73 @@ Consequences:
 - Once the Lean lane's rejected-input step bound lands, surfaces can replace 'a few guard steps' with the proved bound.
 
 Evidence: diffs on the 18 current-fact surfaces plus DIGESTION_LOG and ARTIFACT_REPRODUCIBILITY; strict claim scan exit 0; constant_sync_check -SelfTest PASS; the static topology-lint replica found 0 problems (the Lean-resolution half was not run in this lane).
+
+## DD-20260911-PQ1-020: the fully charged packed query enters the manuscript as a candidate; paper/ repinned to 3849ecbb
+
+Context: At 3849ecbb (branch codex/fully-charged-packed-query-v1), `import RMQPaper` supplies RMQ.Headlines.succinctRMQFullyChargedPackedQuery, the public alias of RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds. Meanwhile paper/rmq.tex, pinned to 0665b494, called instruction-level charging future work in Section 3, Section 11 item 1 and the conclusion, and ledger row L-OPEN-06 said that no instruction-level machine charges controller steps. This is the RC-10 defect class a second time: the paper and the artifact do not identify the same claim. The owner decided that the manuscript covers the PQ1 candidate in this task. The theorem is kernel-checked. It remains a candidate because the replay, the aggregate gate and a fresh blind exact-commit audit have not accepted it (DD-20260911-PQ1-019).
+
+Decision: The result is stated as candidate Theorem 9.2 (thm:fullycharged) in a new subsection 9.2, "A fully charged query on a repacked allocation" (sec:fullycharged). The subsection sits inside Section 9 for two reasons. Sections 10 to 12 keep the numbers the ledger and evidence matrix cite. Its dependence on Theorem 9.1 (the packed array it repacks, and the cell width w(n) that defines W(n) = 32 + 8w(n)) stays inside the region EV-07 permits.
+
+Each theorem clause maps to capstone fields as follows.
+- Width (item 1): widthBounds, memoryWordsFit, allocationAddressesFit, programFieldsFit.
+- Space (item 2): dataCapacity, completeCapacity, allocationResidualLittleO, completeResidualLittleO, encodedProgramBound, registerCount, scratchCount, unusedRegisters. The program length 837,572 comes from budgetExact and programLength.
+- Exact answers (item 3): validInputs; halt and result (halting with the packet of the canonical value, for endpoints below 2^W(n)); specResult (i + 1 on valid ranges, stated on the run); invalidGuard (0 and no load on representable invalid ranges); invalidGuardSteps (at most 6 steps on every invalid range, with no representability premise); natContract and leftmost (the total wrapper).
+- Charging (item 4): stepBound and categoryPartition, which hold for every fuel-bounded run, together with halt.
+- Safety (item 5): prefixSafety, transitionSafety, finalStateFit, readWidth.
+- Reads (item 6): positionalReadBacking, orderedLogicalRefinement, logicalReadOnly, noFailedLoads, suppliedMemoryAgreement. The zero, one or two loads per logical read follow from the definitions of logicalTraceReads, readerReceipts and spanAttemptReceipts, not from a separate field.
+
+The 2^28 threshold in the fourth reading is arithmetic from the definitions, using W(n) >= 48 + 8 floor(log2(n+1)); it is not a kernel-checked statement. Integer division and remainder are stated as an explicit assumption beyond the multiplication model, with primary sources for every other operation.
+
+In the ledger, L-PQ-01 has Status ACCEPTED_BASE (the kernel status) and a separate "Process status: CANDIDATE" line. Both that line and the ledger header say that for this row the label asserts only the first clause of the ACCEPTED_BASE definition. At this writing, 3849ecbb is contained in no branch other than codex/fully-charged-packed-query-v1 and in neither main nor any release tag. The public alias occurs on no other branch. The theorem is exported by RMQPaper at the base, and it has been neither accepted nor integrated, so the label records no acceptance.
+
+L-OPEN-06 is amended, not retired. L-PQ-01 falsifies its first clause ("no instruction-level machine charges those steps and simulates the same execution"). It now states only that neither the charged-trace bound of L-UB-05 nor the cell-probe bound of L-ARCH-01 counts controller steps or is claimed as conventional word-RAM running time. Its OPEN status and two anchors are unchanged.
+
+New OPEN row L-OPEN-07 records that optimality and attainment of the 837,572 budget are unproved, and that the capstone proves halting within that fuel only for endpoints below 2^W(n). The ledger moves from 34 rows (29/0/5) to 36 rows (30/0/6).
+
+Eight primary-source bibliography entries are added. They are cited only in Section 9.2, as authority for the machine model, and each has a receipt in RELATED_WORK_LEDGER.md. Tiers as recorded there:
+- CookReckhow73: source (publisher scan); issue and DOI from the web.
+- FredmanWillard93: source (publisher scan); issue and DOI from the web.
+- BMM97: web. BRICS RS-97-12 was read; the LNCS text was not. Volume, pages and DOI come from Springer's chapter page and Crossref. The booktitle is Crossref's container title.
+- AHNR98: web (author preprint read).
+- HMP01: web (authors' accepted manuscript read).
+- PatrascuThorup14: web (arXiv v2 read).
+- MehlhornSanders08: source (authors' copy of Chapter 2); publisher, year and DOI from the web.
+- AMT99: web (BRICS RS-96-30 read).
+
+Fields not named in a receipt come from Crossref (web). No field rests on a T3 or T4 source. BMM97's workshop ordinal came from HMP01's reference list (T3). It was removed before commit, together with the workshop name and acronym, which Crossref's record does not carry. The bibliography grows from 27 to 35 entries, and Patrascu08 is still absent. These entries are not novelty-search results and license no absence or priority statement (NOVELTY_LOG section 7; RELATED_WORK_LEDGER limitation 5).
+
+EV-07 containment: Theorem 9.1 remains stated only in Section 9 and, as a capacity bound, in the allocated-bits entry of Section 3. Every passage added outside those places names Theorem 9.1 by label only, without its constant, model or content: Section 1.3, the Section 3 executed-instructions item, Section 11 item 1 and the conclusion. Three draft phrasings described it by its model and were replaced before commit: "charged-trace and cell-probe theorems", "charged-trace and cell-probe bounds" and "its own cell-probe disclaimer". The appended EV-07 entry lists every added reference and covers only added text. The row's status is unchanged.
+
+Repin: all 38 full-SHA pins in paper/ move from 0665b494 to 3849ecbb, and L-PQ-01's Commit line adds a 39th. The move also makes the `producer at :760` pointer of L-ARCH-01 and L-PACK-01 correct at the base, which it was not at 0665b494.
+
+CORRECTION of DD-20260911-PQ1-018. That entry says the program needs division "because the span decoder divides a bit position by a cell width held in a register (SpanAssembly.lean)". The divisor is the machine word width W(n) = wordWidth n = 32 + 8w(n), not a cell width. Metadata word 6 holds wordWidth n. The setup loads it into register 22 (16 + 6), and it is moved to the span block's base register 8256. spanBlock (SpanAssembly.lean lines 36-37) takes div and mod of the bit position by that register, giving the word index and the bit offset. The conclusion of DD-018 stands: the program needs division and remainder. Because W(n) = 32 + 8w(n) is a power of two only for particular values of w(n), no fixed shift replaces them. DD-018's text is left as written and superseded by this correction. The manuscript (Section 9.2) and the WORKLOG now state the word width.
+
+Alternatives rejected:
+- Placing the theorem in a new top-level section. That renumbers the Sections 10 to 12 cited by the ledger and evidence matrix, and moves its reliance on Theorem 9.1 outside the region EV-07 permits.
+- Giving L-PQ-01 a new status such as CANDIDATE. The status vocabulary is fixed and enforced case-sensitively by check_paper.ps1.
+- Marking L-PQ-01 OPEN. That would present a kernel-checked theorem as unproved.
+- Leaving L-PQ-01 as ACCEPTED_BASE without the first-clause note. The definition's second clause (part of the integrated mainline surface) is false for this row.
+- Retiring L-OPEN-06. Its remaining clause is still an unclaimed statement about the 210 and 427 bounds.
+- Deferring the paper until acceptance, or keeping the 0665b494 pin with a note. Either leaves the RC-10 mismatch in place.
+- Describing Theorem 9.1 by its model in passages outside Section 9. That paraphrases it, against EV-07.
+- Keeping the BMM97 ordinal on the strength of a citing paper's reference list. That is tier T3, which may not enter references.bib.
+- Stating the 2^28 threshold as a theorem. No Lean statement of it exists.
+- Citing DD-012 and DD-013 for the Lean evidence. The checks were rerun at P and are recorded directly.
+
+Consequences: README editing rule 5 lists every place the candidate status is stated. `grep -n -i candidate rmq.tex` finds them all, plus two unrelated uses. On acceptance or rejection they change together, as do L-PQ-01's Process status line and first-clause note. EV-07 gets a new appended entry rather than an edit. No novelty wording about PQ1 is licensed until NOVELTY_LOG is extended with receipts. The manuscript describes each read's expansion by its stored bit span; the public surfaces from DD-019 were not changed. Text carried over from 0665b494 was not re-examined under EV-07.
+
+Evidence: On a tree whose Lean library files are identical to 3849ecbb, the lead ran the following, all exit 0:
+- `lake build` and `lake build RMQPaper` (up to date);
+- `lake env lean scripts/axiom_check.lean` (1,163 records, 30 axiom-free);
+- `scripts/headline_axiom_check.lean` (114 records; the alias depends on propext, Classical.choice and Quot.sound);
+- `scripts/wordram_axiom_check.lean` (348 records).
+
+No record in these inventories names any axiom other than those three. `scripts/independence_check.lean` passed (3 cap-supplying theorems checked against 8 charged declarations). `scripts/ledger_decl_check.lean` passed (57 names present, negative control absent).
+
+On the substrate, all exit 0:
+- `paper/check_paper.ps1 -SelfTest` (35/35 cites; 41 labels, 87 cross-references; 36 anchors and 36 rows; 30/0/6; 57 declaration names; 27 source citations resolve);
+- `check_citations.ps1` and its `-SelfTest`;
+- `claim_drift_scan.ps1 -Strict` (0 strict failures);
+- `git diff --check`.
+
+`git grep` finds 0 occurrences of the old SHA and 39 of the new one in paper/. latexmk in a scratch copy produced 20 pages with no undefined references or citations.

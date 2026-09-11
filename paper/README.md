@@ -1,7 +1,7 @@
 # paper/ -- RMQ manuscript and evidence substrate
 
 Private working draft of the RMQ manuscript, pinned to repository base
-commit `0665b494707695a70675fef0e5c8682f4d80fe0c`, authored on branch
+commit `3849ecbb53bbedfcd679352cc68d095fa5a304c2`, authored on branch
 `codex/eg-cp-paper-evidence-r1` under governance
 `f0c7232a8a52b8d61ead5e96d72a8a849bc094b5`. This directory is a manuscript
 substrate only: it records no architecture acceptance, no coordinator
@@ -18,7 +18,9 @@ The pin was moved from `e3362d4f...` to `688c54a3...` on 2026-08-09. Two roles
 depend on it and they are not the same claim:
 
 - **This substrate statement** -- "the manuscript describes that tree".
-- **The 29 `ACCEPTED_BASE` rows** in `THEOREM_LEDGER.md`. That status is defined
+- **The `ACCEPTED_BASE` rows** in `THEOREM_LEDGER.md` (29 at the repins of
+  2026-08-09 and 2026-08-16, 30 since the repin of 2026-09-11;
+  `check_paper.ps1` derives the current count). That status is defined
   in the ledger header as *kernel-checked declaration present on the base
   commit*, so those rows move with the pin and each restates a claim about the
   new tree.
@@ -26,8 +28,9 @@ depend on it and they are not the same claim:
 Because moving them restates a claim, they were not restamped on faith. At
 `688c54a3`: `lake build RMQ` exit 0; `scripts/axiom_check.lean` exit 0 with no
 `sorryAx` and no `ofReduceBool`; `scripts/ledger_decl_check.lean` confirms the
-**54** fully-qualified declaration names those rows cite are present in the
-environment. Those rows also refer to further declarations in elided
+fully-qualified declaration names those rows cite are present in the
+environment -- **54** of them from 2026-08-16, and **57** since the repin of
+2026-09-11, checked at that pin as recorded below. Those rows also refer to further declarations in elided
 (`...ReviewerSuccessfulReadWordFits`), short and type-annotated forms, which
 that script cannot resolve as written and does not check; `paper/check_paper.ps1`
 step 5c reports how many, and fails if the checked set and the cited set differ.
@@ -82,6 +85,65 @@ permitted rather than required.
 The same standing caveat applies: the commit carrying this repin is the child of
 the verified tree, differing by the substrate edits themselves.
 
+### Repin of 2026-09-11 (fully charged packed query)
+
+The pin moved from `0665b494...` to `3849ecbb...`, on branch
+`codex/fully-charged-packed-query-v1` under governance
+`4639223bc8130b0ef752270b5cbdd74325abcd60` (`audit-v1-rc-6`). At the new base
+`import RMQPaper` supplies `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`,
+a theorem that charges every executed instruction of one fixed program, while
+the manuscript pinned at `0665b494` called instruction-level charging future
+work in Section 3, Section 11 item 1 and the conclusion. That is the `RC-10`
+class described above, arriving a second time.
+
+The theorem is stated in Section 9.2 as a **candidate**: it is kernel-checked
+at the new base, but the project's acceptance process -- a full replay, the
+aggregate gate and a fresh blind exact-commit audit -- has not accepted it.
+The passages that called instruction-level charging future work now speak
+only of the charged-trace bound and Theorem 9.1, which are unchanged. In the
+ledger, `L-PQ-01` records the theorem with `ACCEPTED_BASE` as its kernel
+status and `CANDIDATE` as its process status, `L-OPEN-07` records that the
+budget's optimality and attainment are unproved, and `L-OPEN-06` is amended
+because `L-PQ-01` falsifies its first clause. The theorem sits in subsection
+9.2 so that Sections 10 to 12 keep the numbers the ledger and the evidence
+matrix cite. Section 9.2 also cites primary sources for the machine model and
+states integer division and remainder as an explicit assumption beyond the
+multiplication model of the cited research papers; the eight new
+bibliography entries have receipts in `RELATED_WORK_LEDGER.md`.
+
+All 38 full-SHA pins move together, and the `Commit:` line of `L-PQ-01` adds
+a 39th. Mentions of `0665b494` that survive are deliberate records of the
+previous pin.
+
+Checked for this move, on a tree whose Lean library files are byte-identical
+to `3849ecbb`: `lake build` and `lake build RMQPaper` exit 0 (up to date);
+`lake env lean scripts/axiom_check.lean` exit 0 (1,163 axiom records, 30 of
+them axiom-free); `scripts/headline_axiom_check.lean` exit 0 (114 records;
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` depends on `propext`,
+`Classical.choice` and `Quot.sound`); `scripts/wordram_axiom_check.lean` exit
+0 (348 records); no record in the three inventories names any axiom other
+than `propext`, `Classical.choice` and `Quot.sound`;
+`scripts/independence_check.lean` passes (three cap-supplying theorems
+checked against the eight charged declarations);
+`scripts/ledger_decl_check.lean` passes with 57 names present and the
+negative control absent. On the substrate itself:
+`paper/check_paper.ps1 -SelfTest` passes (36 anchors and rows, 30/0/6, 57
+declaration names equal to the decl-check list, 35 bibliography entries all
+cited, 27 `:NNN` citations resolving); `scripts/claim_drift_scan.ps1 -Strict`
+reports no strict failure.
+
+The move also makes one pair of citations true at the base again.
+`L-ARCH-01` and `L-PACK-01` cite `producer at :760`. Since `DD-20260909-129`
+that was right at the working tree and wrong at `0665b494`, where the producer
+sits at `:752` and `:760` holds a field assignment, although the ledger header
+says its line references are at the base commit. The new base contains the
+field-32 change, so the pointer and the base agree.
+
+The standing caveat applies: the commit carrying this repin is a descendant of
+the verified tree and differs from it only by the substrate edits,
+`scripts/ledger_decl_check.lean` and the two design ledgers; no Lean library
+file differs between them.
+
 Historical mentions of `e3362d4` elsewhere in this directory are deliberate and
 were not rewritten: they record what was true at the previous pin.
 
@@ -96,7 +158,9 @@ mistaken for a straggler.
   invisible `\ledger{ID}` anchor. The packed all-size architecture result is
   stated as a theorem in Section 9 (RC-4, 2026-08-16); it was previously a
   quoted provisional target plus one `ARCHITECTURE_RESULT_PENDING` marker,
-  and there are now zero such markers.
+  and there are now zero such markers. The fully charged packed query is
+  stated in Section 9.2 as a candidate theorem (2026-09-11); see editing
+  rule 5.
 - `references.bib` -- primary-source bibliography. Unverified fields are
   omitted, never guessed; see the field policy in
   `RELATED_WORK_LEDGER.md`.
@@ -189,3 +253,17 @@ while another build task owns the tree.
    `RC-10` finding the RC-4 round exists to answer.
 4. Evidence-matrix requirement text is frozen; evidence/status fields are
    append-only.
+5. The fully charged packed query (`L-PQ-01`) is a **candidate**. Its status
+   is stated in these places, which must change together when the project
+   accepts or rejects it. In `rmq.tex`: the header comment, the abstract,
+   Section 1.1 (lead-in and item 6), Sections 1.2 and 1.3, Section 3 (the
+   allocated-bits and executed-instructions items and the model paragraph),
+   the second reading of Theorem 9.1, Section 9.2 (theorem title and status
+   paragraph), the Section 10 cost paragraph, Section 11 items 1, 3 and 6,
+   and Section 12. `grep -n -i candidate rmq.tex` finds every one of them, plus
+   two unrelated uses ("candidate merging" in the charge policy and the
+   "candidate lineage" behind Theorem 9.1's acceptance). In
+   `THEOREM_LEDGER.md`: the header sentence on `L-PQ-01` and that row's
+   `Process status` line. In `NOVELTY_LOG.md`: sections 0.3 and 7. In this
+   file: the Contents bullet for `rmq.tex` and this rule. The dated
+   `EVIDENCE_MATRIX.md` entries are append-only and get a new entry instead.
