@@ -31,7 +31,7 @@ def fixtures : List Fixture := [
   ⟨"S08-OUTER-CAPACITY", [4, -3, -3, 8], 2 ^ wordWidth 4, 2 ^ wordWidth 4, none, .outer⟩,
   ⟨"S09-LONG-INTERVAL", (List.range 24).map Int.ofNat, 0, 24, some 0, .machine⟩,
   ⟨"S10-CORRUPT-METADATA", [7], 0, 1, some 0, .corruptMetadata⟩,
-  ⟨"S11-UNREAD-REPLACEMENT", [7], 0, 1, some 0, .unreadReplacement⟩]
+  ⟨"S11-UNREAD-REPLACEMENT", (List.range 24).map Int.ofNat, 0, 1, some 0, .unreadReplacement⟩]
 
 def requiredIDs : List String := [
   "S01-EMPTY", "S02-SINGLE", "S03-LEFTMOST-TIE", "S04-SLICE", "S05-REVERSED",

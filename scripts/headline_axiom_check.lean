@@ -3,6 +3,12 @@ import RMQ
 import RMQ.Core.EncodingLowerBound
 import RMQ.Headlines
 import RMQ.Core.SuccinctFinal
+import RMQ.Validation.PackedQueryContract
+
+#print axioms RMQ.Headlines.succinctRMQFullyChargedPackedQuery
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.publicContract
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.checkC24
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.checkC30
 
 /-!
 Concise trust-base check for the public headline path.

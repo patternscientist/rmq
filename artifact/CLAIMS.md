@@ -1,5 +1,18 @@
 # Claims Packet
 
+## Fully charged packed primitive query
+
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` exports
+`PackedWordRAM.fullyChargedPackedQueryCapstone_holds` through `RMQPaper`.
+The same numeric allocation and primitive run give all-size exact leftmost
+answers, representable invalid rejection, logarithmic words, complete
+data/code/scratch capacity `2n+o(n)` and at most837572 instructions.
+Unit-cost word multiplication, division, remainder, shifts and bitwise
+operations are model assumptions. The30-field public client checks; the
+committed replay and aggregate/blind-audit certification are tracked by PQ1.
+See `docs/WORD_RAM_REVIEW_PACKET.md`. The210 trace and427 probe claims retain
+their original, narrower charge policies.
+
 ## Canonical Reviewer Payload And Trace
 
 The occurrence-provenance layer preserves the exhaustive typed

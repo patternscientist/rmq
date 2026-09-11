@@ -12,8 +12,9 @@ and every varying geometry/count field is loaded by metadataSetupBlock. In
 particular there is no sparse-count scan or size-specialized code prelude.
 
 This module defines the actual entry point and elementary budget/rejection
-facts. Canonical valid-query semantics and every reachable word bound must
-still be joined before the fully charged capstone can be stated as proved.
+facts. QueryCorrect proves canonical semantics, QuerySafety proves every
+reachable word bound, and Capstone joins them with complete allocation,
+program and finite-register accounting.
 -/
 
 namespace RMQ.SuccinctFinal.PackedWordRAM

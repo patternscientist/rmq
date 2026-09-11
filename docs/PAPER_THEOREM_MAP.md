@@ -1,5 +1,17 @@
 # Paper Theorem Map
 
+## Packed primitive query
+
+`RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`
+in `RMQ/Core/WordRAM/Packed/Capstone.lean` is exported as
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` from `RMQPaper`.
+It fixes one `buildMemory`/`wordWidth`/`queryProgram`/`initialState`/`run`
+chain for complete `2n+o(n)` data/code/scratch capacity, exact answers and
+invalid rejection, fitting words at every prefix and a837572 primitive budget.
+All30 fields have independently checked public expected-type consumers.
+The arithmetic word model and remaining certification status are stated in
+`docs/WORD_RAM_REVIEW_PACKET.md`; the earlier210 and427 models remain separate.
+
 ## Canonical Reviewer Route
 
 The current paper route is uniform for every size. Its primary anchors are:

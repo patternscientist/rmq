@@ -1,10 +1,13 @@
 import RMQ.Core.WordRAM.Packed.QueryObservations
-import RMQ.Core.WordRAM.Packed.RankSafety
+import RMQ.Core.WordRAM.Packed.QuerySafety
 
 /-! # Complete contract for the fully charged packed query
 
-The composition theorem below has an explicit remaining runtime-safety
-premise. The canonical theorem must discharge it before public export.
+The canonical theorem joins correctness, all-size primitive safety, exact
+instruction charging and complete data/code/scratch capacity on one allocation
+and run. The word-RAM model treats word multiplication, division, remainder,
+shifts and bitwise operations as constant-time primitives. Preprocessing and
+Lean execution time are separate from this query-model theorem.
 -/
 
 namespace RMQ.SuccinctFinal.PackedWordRAM
@@ -14,6 +17,7 @@ open Cartesian Structured SuccinctSpace PackedCellProbe
 /-- Every field fixes the same builder, width, fixed code, initial state and
 primitive run. Logged observations are proof data, not machine scratch. -/
 structure FullyChargedPackedQueryCapstone : Prop where
+  -- PQ1-REPLAY-FIELDS-BEGIN
   allocationResidualLittleO : LittleOLinear allocationRho
   completeResidualLittleO : LittleOLinear queryCompleteRho
   widthBounds : ∀ n, Nat.log2 (n + 2) + 1 ≤ wordWidth n ∧
@@ -103,15 +107,17 @@ structure FullyChargedPackedQueryCapstone : Prop where
       memory[receipt.address]? = (buildMemory xs)[receipt.address]?) →
     run memory queryProgram queryBudget (initialState xs.length left right) =
       run (buildMemory xs) queryProgram queryBudget (initialState xs.length left right)
+  -- PQ1-REPLAY-FIELDS-END
 
 set_option maxRecDepth 3000 in
-/-- The only open producer at this composition boundary is canonical runtime
-safety. This theorem is not the unconditional public milestone. -/
+/-- General composition boundary; the canonical theorem below supplies the
+complete runtime-safety producer on the same memory, program and input state. -/
 theorem fullyChargedPackedQueryCapstone_of_runtime_safety
     (hsafe : ∀ (xs : List Int) left right,
       left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length →
       RankExecutionSafety (buildMemory xs) (wordWidth xs.length) queryProgram queryBudget
         (initialState xs.length left right)) : FullyChargedPackedQueryCapstone where
+  -- PQ1-REPLAY-INITIALIZERS-BEGIN
   allocationResidualLittleO := allocationRho_littleO
   completeResidualLittleO := queryCompleteRho_littleO
   widthBounds n := ⟨wordWidth_log_lower n, wordWidth_le_log n⟩
@@ -144,5 +150,11 @@ theorem fullyChargedPackedQueryCapstone_of_runtime_safety
   orderedLogicalRefinement := queryRun_reference_reads
   logicalReadOnly := queryTraceResult_readOnly
   suppliedMemoryAgreement := queryRun_agreement
+  -- PQ1-REPLAY-INITIALIZERS-END
+
+/-- Ordinary-list fully charged packed RMQ, with no supplied correctness,
+safety, readiness or successful-read premise. -/
+theorem fullyChargedPackedQueryCapstone_holds : FullyChargedPackedQueryCapstone :=
+  fullyChargedPackedQueryCapstone_of_runtime_safety queryRun_execution_safe
 
 end RMQ.SuccinctFinal.PackedWordRAM

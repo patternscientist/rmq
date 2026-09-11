@@ -1,5 +1,17 @@
 # Paper Main Theorem
 
+## Primitive-query strengthening
+
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` now exports the complete
+packed primitive theorem through `RMQPaper`. The same allocation and run have
+total data/code/scratch capacity `2n+o(n)`, logarithmic word width, exact
+half-open leftmost answers, representable invalid rejection and at most837572
+primitive instructions. Its arithmetic word model explicitly includes
+unit-cost multiplication, division, remainder, shifts and bitwise operations.
+The theorem and all30 independent public consumers check; final certification
+is tracked by PQ1. See `docs/WORD_RAM_REVIEW_PACKET.md` for exact objects and
+assumptions. The following statement preserves the earlier210 trace theorem.
+
 ## English Statement
 
 For every ordinary input list `xs : List Int`, the verified succinct RMQ

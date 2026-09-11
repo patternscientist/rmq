@@ -53,6 +53,29 @@ recorded in `PQ1_MODEL_AND_PROOF_DAG.md` and are not evidence.
 
 ## Verification coverage ledger
 
+### Primitive execution fixtures and final-client replay preparation
+
+The actual numeric run passed S01–S10 in the first full runtime attempt
+(171.989 seconds), covering empty/singleton/ties/slice, reversed/out-of-range,
+maximum representable endpoints, the outer capacity rejection, a24-element
+query and a changed loaded size word that changed the returned result. S11's
+singleton had no unread allocated cell, so the fixture checker rejected that
+attempt. Replacing its input with24 increasing values and query[0,1) produced
+a passing actual unread-cell replacement (123.506 seconds): result some0,
+7641 instructions,228 receipts, and identical result/steps/categories/receipts
+after changing the unread allocated cell. These finite executions do not
+substitute for universal route or arithmetic safety proofs.
+
+PackedQueryContract now contains30 independent expected-type public field
+consumers, plus exact proof/proposition alias consumers. It awaits the
+unconditional export before elaboration. The fixed replay registry is checked
+against the frozen validation plan, complete source declarations and client
+names. Registry/selector, outside-marker field, exact runtime-ID and
+type-versus-resource-diagnostic controls pass. The Windows owned-descendant
+deadline test passed with a real launched descendant absent after termination.
+The complete mutation campaign, restored public builds, full final runtime,
+production gate and fresh blind exact-commit audit remain open.
+
 ### Canonical query semantics and complete LCA safety composition
 
 QueryCorrect discharges every canonical semantic interface. The exact

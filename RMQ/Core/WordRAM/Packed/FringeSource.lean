@@ -93,15 +93,19 @@ def fringeSeedDecodeBlock : Block := Block.sequence [
   .action (.arithmetic .mul 1108 360 1131), natSubBlock 1108 1107 1108 1132,
   .action (.move 1024 1104)]
 
-def fringeFoldInit : Block := Block.sequence [
+def fringeFoldRangeInit : Block := Block.sequence [
   natSubBlock 1109 1105 1107 1132,
   .action (.arithmetic .add 1110 1105 1106), natSubBlock 1110 1110 1127 1132,
   natSubBlock 1110 1110 1107 1132,
   .action (.arithmetic .div 1111 1110 34), .action (.arithmetic .add 1111 1111 1127),
-  .action (.constant 1130 33), minBlock 1111 1111 1130 1132,
+  .action (.constant 1130 33), minBlock 1111 1111 1130 1132]
+
+def fringeFoldStateInit : Block := Block.sequence [
   .action (.move 1112 1108), .action (.constant 1113 0),
   .action (.constant 1114 0), .action (.constant 1115 0), .action (.constant 1116 0),
   .action (.arithmetic .add 1128 34 1127), .action (.arithmetic .mul 1129 1131 1128)]
+
+def fringeFoldInit : Block := .seq fringeFoldRangeInit fringeFoldStateInit
 
 def fringeFinishBlock : Block := Block.sequence [
   .action (.constant 7000 1),

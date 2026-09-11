@@ -1,5 +1,15 @@
 # Paper Claim Correspondence
 
+## Fully charged packed query
+
+| Claim | Public alias | Source theorem and file | Check |
+| --- | --- | --- | --- |
+| All ordinary lists have one query-independent numeric allocation and fixed primitive program; exact leftmost half-open queries and representable invalid rejection use at most837572 instructions, with logarithmic words and complete data/code/scratch capacity `2n+o(n)`. The arithmetic word model includes unit-cost multiplication, division, remainder, shifts and bitwise operations. | `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`; proposition `SuccinctRMQFullyChargedPackedQuery`, via `RMQPaper` | `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`, `RMQ/Core/WordRAM/Packed/Capstone.lean` | Independent30-field `RMQ/Validation/PackedQueryContract.lean`; `scripts/packed_query_replay.ps1`; aggregate gate and fresh blind audit |
+
+All30 independently stated public consumers elaborate. Final certification is
+tracked in the PQ1 acceptance matrix. The210 trace and427 probe rows below
+keep their original execution objects and charge policies.
+
 ## Canonical Claim Rows
 
 | Paper claim | Public alias | Source theorem | Source file | Check |

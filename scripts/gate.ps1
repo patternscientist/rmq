@@ -280,6 +280,12 @@ if ($LASTEXITCODE -ne 0) { Fail "lake build failed" }
 lake build RMQPaper
 if ($LASTEXITCODE -ne 0) { Fail "lake build RMQPaper failed" }
 
+# PQ1-PACKED-QUERY-REPLAY-GATE-ANCHOR
+# This checks all thirty exact public certificate fields, the public proof
+# dependency, restoration, selector/registry/deadline controls and the actual
+# numeric-memory runtime fixtures. Run once on the clean final candidate.
+Invoke-Checker -Path "$PSScriptRoot\packed_query_replay.ps1"
+
 # M1R3-MUTATION-RUNNER-GATE-ANCHOR
 # The exact 41-case M1 certificate/public-dependency replay runs once in the
 # aggregate gate. Its exit code is propagated before later certification.
@@ -646,6 +652,7 @@ if ($unexpectedDynamic.Count -gt 0) {
 # shorter green run. The list is the gate's advertised coverage, so it is
 # written out rather than derived from the calls it is checking.
 $expectedCheckers = @(
+  'packed_query_replay.ps1 {packed_query_replay.ps1}',
   'm1_certificate_mutation_regression.ps1 {m1_certificate_mutation_regression.ps1}',
   'eg_cp_stagea_replay.ps1 {eg_cp_stagea_replay.ps1}',
   'eg_cp_final_falsification_replay.ps1 {eg_cp_final_falsification_replay.ps1}',

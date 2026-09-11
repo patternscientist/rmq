@@ -7,13 +7,24 @@ story: exact range-minimum queries can be answered at constant modeled query
 cost from a Cartesian-shape payload of at most
 `2*n + o(n)` bits,
 and any fixed-length payload-only exact RMQ encoding needs
-`2n - 1.5 log n - O(1)` bits. "Modeled cost" counts charged probes into that
-payload, not machine instructions or wall-clock time. The cost of building the
+`2n - 1.5 log n - O(1)` bits. The public primitive-query theorem now also
+charges the complete query: at most **837572 instructions**, with total
+allocated data, literal program encoding and finite scratch occupying
+`2n + o(n)` bits. Its logarithmic word model assumes unit-cost multiplication,
+division, remainder, shifts and bitwise operations. The earlier **210** trace
+and **427** probe bounds retain their separate charge policies; none is a
+Lean wall-clock bound. The cost of building the
 payload -- preprocessing time and workspace, in any model -- is **unproved and
 excluded from this bound**: no theorem here bounds it, and none is claimed.
 The same code base is now growing into a
 verified advanced-data-structures testbed, with standalone rank/select,
 balanced-parentheses navigation, and union-find spokes.
+
+Import `RMQPaper` and use
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`. The
+[machine review packet](docs/WORD_RAM_REVIEW_PACKET.md) states the full model,
+allocation/run identity and independent validation contract. Final PQ1 replay
+and blind-audit certification are tracked in the internal acceptance matrix.
 
 Range-minimum query (RMQ) asks for the leftmost position of the smallest value
 in a subarray. The surprising theorem is not that RMQ can be solved, but that
@@ -364,11 +375,9 @@ package, calibrate, and reuse the infrastructure:
    stories where that materially clarifies theorem surfaces;
 2. push the union-find spoke from the current sequence/event scorecard toward a
    true inverse-Ackermann amortized theorem over strict residual events; and
-3. have E1 define a richer instruction semantics and prove that it simulates
-   the same canonical execution while charging controller work; the current theorem deliberately
-   provides no parallel controller-operation vocabulary; the M1 reviewer-native
-   adequacy candidate remains word-addressed over the supplied store, while S1
-   serialized-payload querying and complete preprocessing remain separate; and
+3. harden extraction and preprocessing around the proved PQ1 primitive query;
+   the packed numeric-memory theorem supplies controller charging, while
+   complete preprocessing and production serialization remain separate; and
 4. promote shared cost, refinement, lower-bound, and amortized-analysis pieces
    into a more neutral library surface only when concrete reuse demands it.
 

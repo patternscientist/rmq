@@ -428,7 +428,8 @@ theorem fringeSeedDecodeBlock_source (memory : Memory) (regs : Registers) (htwo 
 
 theorem fringeFoldInit_writes : fringeFoldInit.WritesOnly
     (fun r => (1109 ≤ r ∧ r < 1117) ∨ r = 1128 ∨ r = 1129 ∨ r = 1130 ∨ r = 1132) := by
-  simp [fringeFoldInit, Block.sequence, Block.WritesOnly, Action.destination, natSubBlock, minBlock]
+  simp [fringeFoldInit, fringeFoldRangeInit, fringeFoldStateInit, Block.sequence,
+    Block.WritesOnly, Action.destination, natSubBlock, minBlock]
 
 theorem fringeFoldInit_source (memory : Memory) (regs : Registers)
     (hone : regs 1127 = 1) (htwo : regs 1131 = 2) :
@@ -445,7 +446,8 @@ theorem fringeFoldInit_source (memory : Memory) (regs : Registers)
   have hsub2 (r : Registers) := natSubBlock_source 1110 1110 1127 1132 memory r (by decide) (by decide)
   have hsub3 (r : Registers) := natSubBlock_source 1110 1110 1107 1132 memory r (by decide) (by decide)
   have hmin (r : Registers) := minBlock_source 1111 1111 1130 1132 memory r (by decide) (by decide)
-  simp [fringeFoldInit, Block.sequence, Block.eval_seq, Evaluation.bind, eval_constant,
+  simp [fringeFoldInit, fringeFoldRangeInit, fringeFoldStateInit, Block.sequence,
+    Block.eval_seq, Evaluation.bind, eval_constant,
     eval_arithmetic, eval_move, eval_skip, Arithmetic.eval, Registers.write,
     hsub1, hsub2, hsub3, hmin, hone, htwo, candidateOfRegs, Nat.mul_add]
 

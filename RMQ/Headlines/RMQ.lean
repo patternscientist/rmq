@@ -2,6 +2,7 @@ import RMQ.Core.EncodingLowerBound
 import RMQ.Core.SuccinctFinalModelAdequacy
 import RMQ.Core.SuccinctRMQClassicProvenance
 import RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerArchitectureCapstone
+import RMQ.Core.WordRAM.Packed.Capstone
 
 /-!
 RMQ-only public headline aliases for the paper artifact.
@@ -10,11 +11,28 @@ This module is the narrow theorem-import surface for the RMQ paper claims. It
 exposes one canonical physical-payload/global-trace upper-bound topology, the
 list-facing main theorem, the lower-bound surface, final WordRAM/model-adequacy
 packets, concrete current cost equalities, and supplied-store/footprint
-theorems. Historical query profiles live in `RMQ.Headlines.RMQCompatibility`,
+theorems. It also exports the fully charged numeric-memory primitive query,
+with complete data/code/scratch capacity and its separate 837572-instruction
+budget. Historical query profiles live in `RMQ.Headlines.RMQCompatibility`,
 which is deliberately outside the `RMQPaper` import closure.
 -/
 
 namespace RMQ.Headlines
+
+/-- The complete primitive word-RAM contract on one counted numeric allocation.
+Its logarithmic word model assumes unit-cost multiplication, division,
+remainder, shifts and bitwise operations. -/
+abbrev SuccinctRMQFullyChargedPackedQuery :=
+  RMQ.SuccinctFinal.PackedWordRAM.FullyChargedPackedQueryCapstone
+
+-- PQ1-REPLAY-PUBLIC-BEGIN
+/-- All ordinary lists: complete 2n+o(n) data/code/scratch capacity, exact
+half-open leftmost answers, representable invalid rejection, logarithmic word
+width and at most 837572 actual primitive instructions. The 210 trace weight
+and 427 packed-probe bounds remain distinct model statements. -/
+abbrev succinctRMQFullyChargedPackedQuery : SuccinctRMQFullyChargedPackedQuery :=
+  RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds
+-- PQ1-REPLAY-PUBLIC-END
 
 /-- Tight fixed-length RMQ lower bound with the doubled Catalan slack form. -/
 abbrev exactRMQLowerBoundDoubledCatalanSlack :=
