@@ -17,8 +17,9 @@ param(
   [Parameter(Mandatory = $true)]
   [string]$RequestedTitle,
 
-  [Parameter(Mandatory = $true)]
-  [string]$RequiredSkill,
+  [string]$RequiredSkill = "",
+
+  [switch]$AllowNoRequiredSkills,
 
   [Parameter(Mandatory = $true)]
   [ValidateSet("READY_TO_SEND", "DRAFT_DO_NOT_SEND")]
@@ -66,6 +67,16 @@ function Invoke-Git([string[]]$Arguments) {
 }
 
 try {
+  if ($AllowNoRequiredSkills) {
+    if (-not [string]::IsNullOrWhiteSpace($RequiredSkill)) {
+      Stop-Preflight "no-role mode conflicts with an explicit required skill"
+    }
+    if ($TaskMode -ne "READ_ONLY") {
+      Stop-Preflight "no-role mode requires READ_ONLY task mode"
+    }
+  } elseif ([string]::IsNullOrWhiteSpace($RequiredSkill)) {
+    Stop-Preflight "required skill omitted without explicit AllowNoRequiredSkills"
+  }
   if (-not $RepositoryRoot) {
     $RepositoryRoot = (& git rev-parse --show-toplevel 2>&1).Trim()
     if ($LASTEXITCODE -ne 0) { Stop-Preflight "not inside a Git repository" }
@@ -106,7 +117,17 @@ try {
   }
 
   $promptText = $lines -join [Environment]::NewLine
-  foreach ($requiredLiteral in @($governanceSha, $workerBaseSha, "Use `$$RequiredSkill")) {
+  $requiredLiterals = @($governanceSha, $workerBaseSha)
+  if ($AllowNoRequiredSkills) {
+    $requiredLiterals += @(
+      '- Applicable audit-worker role skills: NONE.'
+      '-AllowNoRequiredSkills'
+      '- Runtime RMQ catalog: supply the actual non-empty runtime catalog to project_skill_preflight.ps1.'
+    )
+  } else {
+    $requiredLiterals += "Use `$$RequiredSkill"
+  }
+  foreach ($requiredLiteral in $requiredLiterals) {
     if (-not $promptText.Contains($requiredLiteral)) {
       Stop-Preflight "prompt does not contain required literal '$requiredLiteral'"
     }

@@ -12325,3 +12325,13 @@ Decision: keep the replay's textual field/initializer mapping as an early diagno
 Rejected alternatives: suppressing all stderr or recognizing particular warning strings in the observer, which hides diagnostics and conflates channels; overriding autocrlf, which changes the repository semantics; extending an ASCII regex alone or treating all deep indentation as continuation, which cannot establish a Lean structure inventory. The only textual warning match is the regression's required real warning, never a production verdict filter.
 
 Evidence: the original in-memory production registry accepted an extra unregistered_field plus initializer. The original complete replay recorded Completed=false after restoring C01. The revised real-Git fixture, registry/diagnostic self-tests, Windows owned-process barrier, and Lean metadata controls passed. Full committed replay evidence and follow-up review are recorded in docs/internal/packed_query/PQ1_CONTINUATION_AUDIT_20260911.md. This fixes a validation boundary; PQ1 milestone acceptance still requires its aggregate gate and fresh blind audit.
+
+## WDD-20260911-PQ1-013: explicit no-role audit prompt preflight
+
+Context: the audit protocol and canonical audit-prompt skill permit a read-only auditor with no applicable project role, but worker_prompt_preflight.ps1 required a role literal unconditionally. A correctly scoped fresh audit could not pass launch preflight without claiming an unrelated role.
+
+Decision: add explicit AllowNoRequiredSkills mode for READ_ONLY prompts. Omission without the switch, a simultaneous required role, and WRITE mode fail closed. The prompt must declare applicable audit-worker roles NONE, instruct the startup no-role switch, and require the actual non-empty runtime RMQ catalog. Project skill preflight remains responsible for checking that catalog, canonical checkout and governance ancestry. All other structural and semantic launch requirements remain unchanged.
+
+Rejected alternatives: assigning the coordinator or proof role just to satisfy a checker would contradict the auditor's contract; bypassing structural preflight would discard independent launch protections; inferring no-role mode from an empty argument would turn a missing requirement into silent permission.
+
+Consequences: read-only audit dispatch can satisfy both existing protocols without a fake role. This is a launch-tooling change and makes no theorem or milestone-acceptance claim. The new regression cases cover valid no-role launch, absent opt-in, conflicting role, WRITE mode, and each missing declaration; existing role cases remain in the same suite. Both PowerShell hosts must pass the suite before final gate certification.

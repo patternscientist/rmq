@@ -87,7 +87,9 @@ function Invoke-Case(
   [string]$DestinationTaskKind = "RETURNING_TASK",
   [string]$DestinationRuntimeEvidence = "VERIFIED_CURRENT",
   [string]$TaskMode = "WRITE",
-  [bool]$AutomatedCompletionLoop = $false
+  [bool]$AutomatedCompletionLoop = $false,
+  [string]$RequiredSkill = "rmq-proof-sprint",
+  [bool]$AllowNoRequiredSkills = $false
 ) {
   $arguments = @(
     "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $preflight,
@@ -97,7 +99,6 @@ function Invoke-Case(
     "-WorkerBase", $Base,
     "-WorkerHandle", "E1-01R1",
     "-RequestedTitle", "(E1-01R1) Repair the machine",
-    "-RequiredSkill", "rmq-proof-sprint",
     "-PromptStatus", $Status,
     "-FailureModeFeedbackStatus", $Feedback,
     "-SemanticContractReviewStatus", $SemanticReview,
@@ -105,6 +106,12 @@ function Invoke-Case(
     "-DestinationRuntimeEvidence", $DestinationRuntimeEvidence,
     "-TaskMode", $TaskMode
   )
+  if (-not [string]::IsNullOrWhiteSpace($RequiredSkill)) {
+    $arguments += @("-RequiredSkill", $RequiredSkill)
+  }
+  if ($AllowNoRequiredSkills) {
+    $arguments += "-AllowNoRequiredSkills"
+  }
   if ($TaskMode -eq "WRITE") {
     $arguments += @("-WorkerBranch", "codex/e1-repair")
   }
@@ -224,6 +231,44 @@ try {
     $governanceRef $workerBase "codex/e1-repair"
   Invoke-Case "ready-governed" 0 $validPrompt $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
+
+  $noRolePrompt = Join-Path $tempRoot "no-role-prompt.txt"
+  $noRoleLines = @(Get-Content -LiteralPath $validPrompt) | ForEach-Object {
+    $_ -replace '^- Task mode: WRITE\.', '- Task mode: READ_ONLY.' `
+       -replace '^Use \$rmq-proof-sprint before starting\.', '- Applicable audit-worker role skills: NONE.'
+  }
+  $noRoleLines += @(
+    '- Run project_skill_preflight.ps1 -AllowNoRequiredSkills; omit RequiredSkills.'
+    '- Runtime RMQ catalog: supply the actual non-empty runtime catalog to project_skill_preflight.ps1.'
+    '- Durable completion artifact: mode=COORDINATOR_SYNTHESIS; path=docs/internal/audit_reports/NO_ROLE.md'
+  )
+  $noRoleLines | Set-Content -LiteralPath $noRolePrompt -Encoding utf8
+  $noRoleArgs = @{
+    PromptPath = $noRolePrompt; Governance = $governanceRef; Base = $workerBase
+    Status = 'READY_TO_SEND'; Feedback = 'COMPLETE'; TaskMode = 'READ_ONLY'
+    RequiredSkill = ''; AllowNoRequiredSkills = $true
+  }
+  Invoke-Case -Name 'explicit-no-role-auditor-accepted' -ExpectedExit 0 @noRoleArgs `
+    -RequiredOutput @('WORKER-PROMPT-PREFLIGHT: PASS')
+  $noRoleArgs.AllowNoRequiredSkills = $false
+  Invoke-Case -Name 'omitted-role-without-opt-in-rejected' -ExpectedExit 2 @noRoleArgs `
+    -RequiredOutput @('required skill omitted')
+  $noRoleArgs.AllowNoRequiredSkills = $true
+  $noRoleArgs.RequiredSkill = 'rmq-proof-sprint'
+  Invoke-Case -Name 'no-role-with-explicit-role-rejected' -ExpectedExit 2 @noRoleArgs `
+    -RequiredOutput @('conflicts with an explicit required skill')
+  $noRoleArgs.RequiredSkill = ''
+  $noRoleArgs.TaskMode = 'WRITE'
+  Invoke-Case -Name 'no-role-write-rejected' -ExpectedExit 2 @noRoleArgs `
+    -RequiredOutput @('requires READ_ONLY')
+  $noRoleArgs.TaskMode = 'READ_ONLY'
+  foreach ($missing in @('Applicable audit-worker role skills', 'AllowNoRequiredSkills', 'Runtime RMQ catalog')) {
+    $noRoleLines | Where-Object { -not $_.Contains($missing) } |
+      Set-Content -LiteralPath $noRolePrompt -Encoding utf8
+    Invoke-Case -Name "no-role-missing-$missing-rejected" -ExpectedExit 2 @noRoleArgs `
+      -RequiredOutput @('prompt does not contain required literal')
+  }
+  $noRoleLines | Set-Content -LiteralPath $noRolePrompt -Encoding utf8
 
   $autoReadOnlyMissingArtifact = Join-Path $tempRoot "auto-read-only-missing-artifact.txt"
   @(Get-Content -LiteralPath $validPrompt) | ForEach-Object {
