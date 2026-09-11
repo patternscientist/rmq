@@ -1,0 +1,332 @@
+{
+  "queryChecks": [
+    {
+      "fixture": "fixture-n15-comb.json",
+      "n": 15,
+      "width": 18,
+      "valid": 120,
+      "invalid": 169,
+      "maxSteps": 64775,
+      "maxReads": 123,
+      "maxRegisterValue": 169125,
+      "programHash": "a9b37523e9f9886b120ae9a0eeced7e134e10bd38468fe2021539e303529d851"
+    },
+    {
+      "fixture": "fixture-n15-zigzag.json",
+      "n": 15,
+      "width": 18,
+      "valid": 120,
+      "invalid": 169,
+      "maxSteps": 71492,
+      "maxReads": 132,
+      "maxRegisterValue": 198662,
+      "programHash": "a9b37523e9f9886b120ae9a0eeced7e134e10bd38468fe2021539e303529d851"
+    },
+    {
+      "fixture": "fixture-n16-balanced.json",
+      "n": 16,
+      "width": 18,
+      "valid": 136,
+      "invalid": 188,
+      "maxSteps": 76346,
+      "maxReads": 182,
+      "maxRegisterValue": 232224,
+      "programHash": "6c1a960857837ce6588c3241083505f7176bcab709b8cde1986b2cf6353f4313"
+    },
+    {
+      "fixture": "fixture-n29-zigzag.json",
+      "n": 29,
+      "width": 19,
+      "valid": 120,
+      "invalid": 78,
+      "maxSteps": 77532,
+      "maxReads": 171,
+      "maxRegisterValue": 473299,
+      "programHash": "c91a6d183c623616c66c20201655583573a70e1e48070bef04e498cea5b80037"
+    },
+    {
+      "fixture": "fixture-n9-ascending.json",
+      "n": 9,
+      "width": 17,
+      "valid": 45,
+      "invalid": 76,
+      "maxSteps": 57839,
+      "maxReads": 108,
+      "maxRegisterValue": 87381,
+      "programHash": "e8ee618fbb04b18b1772cdbae2e3dd8a8e4508208bc50299fe912db47bd2ff73"
+    },
+    {
+      "fixture": "fixture-n9-balanced.json",
+      "n": 9,
+      "width": 17,
+      "valid": 45,
+      "invalid": 76,
+      "maxSteps": 57223,
+      "maxReads": 107,
+      "maxRegisterValue": 84001,
+      "programHash": "e8ee618fbb04b18b1772cdbae2e3dd8a8e4508208bc50299fe912db47bd2ff73"
+    },
+    {
+      "fixture": "fixture-n9-descending.json",
+      "n": 9,
+      "width": 17,
+      "valid": 45,
+      "invalid": 76,
+      "maxSteps": 42590,
+      "maxReads": 90,
+      "maxRegisterValue": 84001,
+      "programHash": "e8ee618fbb04b18b1772cdbae2e3dd8a8e4508208bc50299fe912db47bd2ff73"
+    },
+    {
+      "fixture": "fixture-n9-invalid.json",
+      "n": 9,
+      "width": 17,
+      "valid": 45,
+      "invalid": 76,
+      "maxSteps": 57223,
+      "maxReads": 107,
+      "maxRegisterValue": 84001,
+      "programHash": "e8ee618fbb04b18b1772cdbae2e3dd8a8e4508208bc50299fe912db47bd2ff73"
+    },
+    {
+      "fixture": "fixture-n9-ties.json",
+      "n": 9,
+      "width": 17,
+      "valid": 45,
+      "invalid": 76,
+      "maxSteps": 57839,
+      "maxReads": 108,
+      "maxRegisterValue": 87381,
+      "programHash": "e8ee618fbb04b18b1772cdbae2e3dd8a8e4508208bc50299fe912db47bd2ff73"
+    }
+  ],
+  "totalQueries": 1705,
+  "sameNProgramIdentity": true,
+  "missingHeader": {
+    "resultTag": null,
+    "failure": "missing-cell",
+    "steps": 20,
+    "categories": {
+      "memoryRead": 1,
+      "registerWrite": 12,
+      "arithmetic": 0,
+      "comparison": 3,
+      "branch": 4,
+      "control": 0
+    },
+    "maxRegisterValue": 9,
+    "staticMax": 4444,
+    "registerWidth": 17
+  },
+  "cellMutations": [
+    {
+      "address": 0,
+      "resultTag": null,
+      "failure": "missing-cell",
+      "answerChanged": true,
+      "steps": 4414,
+      "reads": 17
+    },
+    {
+      "address": 1,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57222,
+      "reads": 107
+    },
+    {
+      "address": 2,
+      "resultTag": 0,
+      "failure": null,
+      "answerChanged": true,
+      "steps": 18604,
+      "reads": 48
+    },
+    {
+      "address": 3,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 4,
+      "resultTag": 0,
+      "failure": null,
+      "answerChanged": true,
+      "steps": 6027,
+      "reads": 25
+    },
+    {
+      "address": 7,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 12,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 14,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 19,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 21,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 22,
+      "resultTag": 0,
+      "failure": null,
+      "answerChanged": true,
+      "steps": 17991,
+      "reads": 46
+    },
+    {
+      "address": 26,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 27,
+      "resultTag": 0,
+      "failure": null,
+      "answerChanged": true,
+      "steps": 11687,
+      "reads": 36
+    },
+    {
+      "address": 29,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 34,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 35,
+      "resultTag": null,
+      "failure": "missing-cell",
+      "answerChanged": true,
+      "steps": 11251,
+      "reads": 29
+    },
+    {
+      "address": 36,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 37,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 38,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 39,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 40,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 63,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 64,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57308,
+      "reads": 110
+    },
+    {
+      "address": 71,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 72,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57223,
+      "reads": 107
+    },
+    {
+      "address": 73,
+      "resultTag": 8,
+      "failure": null,
+      "answerChanged": false,
+      "steps": 57233,
+      "reads": 107
+    }
+  ],
+  "scope": "finite experiments, not a universal theorem"
+}

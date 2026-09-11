@@ -1,0 +1,35 @@
+{
+  "resultTag": 0,
+  "failure": null,
+  "steps": 19,
+  "categories": {
+    "memoryRead": 0,
+    "registerWrite": 11,
+    "arithmetic": 0,
+    "comparison": 2,
+    "branch": 5,
+    "control": 1
+  },
+  "maxRegisterValue": 4,
+  "staticMax": 4444,
+  "registerWidth": 17,
+  "reads": [],
+  "logical": [],
+  "phases": {
+    "": 6,
+    "query": 13
+  },
+  "execution": [],
+  "programHash": "e8ee618fbb04b18b1772cdbae2e3dd8a8e4508208bc50299fe912db47bd2ff73",
+  "memoryHash": "31fceaa9b05b2a15ab7371f804647e8ddc69a9aa58f573e72ccc22b41b54beae",
+  "fixture": "fixture-n9-invalid.json",
+  "instructionCount": 4444,
+  "registerCount": 2939,
+  "checks": {
+    "physicalReceipts": true,
+    "logicalReceipts": true,
+    "perLogicalPlans": true,
+    "independentAnswer": true,
+    "wholePathCoverage": false
+  }
+}

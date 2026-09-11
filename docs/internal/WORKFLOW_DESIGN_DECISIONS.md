@@ -12148,3 +12148,11 @@ missed it, because it scanned a hand-picked set of control characters that did
 not include 0x08. The sweep is now over all of 0-31 except tab, CR and LF. A
 verification that enumerates what it expects to find cannot see what it did not
 think of.
+
+## WDD-20260910-PQ1-001: preserve experiment bytes and serialize proof builds
+
+PQ1 imports the prior isolated RC6 experiment with its original 45-entry manifest after checking every entry length/SHA256 and the commissioned archive digest. Several original files use CRLF and one frozen specification ends with an additional blank line. The evidence-local .gitattributes disables newline rewriting, recognizes CR at end of line, and preserves that one original blank-at-EOF occurrence. It does not disable source diffs or general trailing-whitespace checks. This avoids silently changing archived executable evidence while retaining the exact manifest. New proof/code outside that frozen directory has normal whitespace checks.
+
+The first Git check exposed the original blank line; preserving raw bytes then exposed CR-as-whitespace reporting. The scoped attributes resolve both representation issues. Source/candidate manifest verification and the committed-range whitespace check remain required. Broad attributes or normalizing the old files without provenance were rejected. No public claim or production gate exemption is granted to the evidence directory.
+
+Proof workers share the authorized feature worktree with disjoint module ownership. The lead serializes narrow Lean checks via an explicit build slot and owns staging/commits and shared ledger appends. RC6 .olean/.ilean dependencies were copied into private local build output because Lean's first RMQ search root shadows later roots; no mutable output is shared with the read-only audit cache. Failed initial import resolution is an environment failure, not a semantic failure. Rechecks occurred only after the private dependency copy and narrow proof fixes.

@@ -1,0 +1,1717 @@
+{
+  "resultTag": 8,
+  "failure": null,
+  "steps": 59611,
+  "categories": {
+    "memoryRead": 136,
+    "registerWrite": 35623,
+    "arithmetic": 12187,
+    "comparison": 4386,
+    "branch": 7278,
+    "control": 1
+  },
+  "maxRegisterValue": 232224,
+  "staticMax": 4444,
+  "registerWidth": 18,
+  "reads": [
+    {
+      "pc": 162,
+      "address": 0,
+      "reply": 0,
+      "phase": "query"
+    },
+    {
+      "pc": 39,
+      "address": 55,
+      "reply": 0,
+      "phase": "query/read"
+    },
+    {
+      "pc": 39,
+      "address": 56,
+      "reply": 0,
+      "phase": "query/read"
+    },
+    {
+      "pc": 39,
+      "address": 57,
+      "reply": 0,
+      "phase": "query/read"
+    },
+    {
+      "pc": 39,
+      "address": 5,
+      "reply": 0,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 5,
+      "reply": 0,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 5,
+      "reply": 0,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 85,
+      "address": 6,
+      "reply": 16400,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 6,
+      "reply": 16400,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 6,
+      "reply": 16400,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 18,
+      "reply": 0,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 30,
+      "reply": 0,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 42,
+      "reply": 82944,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 1,
+      "reply": 206415,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 85,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 39,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 39,
+      "address": 5,
+      "reply": 0,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 5,
+      "reply": 0,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 5,
+      "reply": 0,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 85,
+      "address": 6,
+      "reply": 16400,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 6,
+      "reply": 16400,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 11,
+      "reply": 3896,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 23,
+      "reply": 1300,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 35,
+      "reply": 0,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 47,
+      "reply": 256,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 2,
+      "reply": 2451,
+      "phase": "query/select_close/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 85,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 85,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 39,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/select_close/select_word_false/read"
+    },
+    {
+      "pc": 39,
+      "address": 2,
+      "reply": 2451,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read"
+    },
+    {
+      "pc": 85,
+      "address": 3,
+      "reply": 82432,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read"
+    },
+    {
+      "pc": 39,
+      "address": 3,
+      "reply": 82432,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read"
+    },
+    {
+      "pc": 39,
+      "address": 1,
+      "reply": 206415,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/lca/fringe/rank_close/rs_rank/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 1,
+      "reply": 206415,
+      "phase": "query/lca/fringe/load_window/read"
+    },
+    {
+      "pc": 39,
+      "address": 1,
+      "reply": 206415,
+      "phase": "query/lca/fringe/load_window/read"
+    },
+    {
+      "pc": 39,
+      "address": 1,
+      "reply": 206415,
+      "phase": "query/lca/fringe/load_window/read"
+    },
+    {
+      "pc": 39,
+      "address": 2,
+      "reply": 2451,
+      "phase": "query/lca/fringe/load_window/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 85,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 39,
+      "address": 98,
+      "reply": 167552,
+      "phase": "query/lca/interior_range/interior_local_two/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 98,
+      "reply": 167552,
+      "phase": "query/lca/interior_range/interior_local_two/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 69,
+      "reply": 65536,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_read/read"
+    },
+    {
+      "pc": 85,
+      "address": 70,
+      "reply": 0,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 57,
+      "reply": 0,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 85,
+      "address": 58,
+      "reply": 205200,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 58,
+      "reply": 205200,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 59,
+      "reply": 221592,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 60,
+      "reply": 221616,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 60,
+      "reply": 221616,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 61,
+      "reply": 24576,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 62,
+      "reply": 131112,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 69,
+      "reply": 65536,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_read/read"
+    },
+    {
+      "pc": 85,
+      "address": 70,
+      "reply": 0,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 57,
+      "reply": 0,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 85,
+      "address": 58,
+      "reply": 205200,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 58,
+      "reply": 205200,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 59,
+      "reply": 221592,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 60,
+      "reply": 221616,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 60,
+      "reply": 221616,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 61,
+      "reply": 24576,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 62,
+      "reply": 131112,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read"
+    },
+    {
+      "pc": 39,
+      "address": 2,
+      "reply": 2451,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read"
+    },
+    {
+      "pc": 85,
+      "address": 3,
+      "reply": 82432,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read"
+    },
+    {
+      "pc": 39,
+      "address": 4,
+      "reply": 232224,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read"
+    },
+    {
+      "pc": 85,
+      "address": 5,
+      "reply": 0,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read"
+    },
+    {
+      "pc": 39,
+      "address": 2,
+      "reply": 2451,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/lca/fringe/rank_close/rs_rank/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 2,
+      "reply": 2451,
+      "phase": "query/lca/fringe/load_window/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/lca/fringe/read"
+    },
+    {
+      "pc": 39,
+      "address": 2,
+      "reply": 2451,
+      "phase": "query/rank_close/rs_rank/read"
+    },
+    {
+      "pc": 85,
+      "address": 3,
+      "reply": 82432,
+      "phase": "query/rank_close/rs_rank/read"
+    },
+    {
+      "pc": 39,
+      "address": 3,
+      "reply": 82432,
+      "phase": "query/rank_close/rs_rank/read"
+    },
+    {
+      "pc": 85,
+      "address": 4,
+      "reply": 232224,
+      "phase": "query/rank_close/rs_rank/read"
+    },
+    {
+      "pc": 39,
+      "address": 1,
+      "reply": 206415,
+      "phase": "query/rank_close/rs_rank/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/rank_close/rs_rank/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/rank_close/rs_rank/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/rank_close/rs_rank/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 112,
+      "reply": 1354,
+      "phase": "query/rank_close/rs_rank/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/rank_close/rs_rank/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/rank_close/rs_rank/rank_word/read"
+    },
+    {
+      "pc": 39,
+      "address": 110,
+      "reply": 33858,
+      "phase": "query/rank_close/rs_rank/rank_word/read"
+    },
+    {
+      "pc": 85,
+      "address": 111,
+      "reply": 219464,
+      "phase": "query/rank_close/rs_rank/rank_word/read"
+    }
+  ],
+  "logical": [
+    {
+      "segment": 13,
+      "index": 3,
+      "readStart": 1,
+      "phase": "query/read",
+      "valueTag": 1,
+      "readEnd": 2
+    },
+    {
+      "segment": 14,
+      "index": 3,
+      "readStart": 2,
+      "phase": "query/read",
+      "valueTag": 1,
+      "readEnd": 3
+    },
+    {
+      "segment": 15,
+      "index": 3,
+      "readStart": 3,
+      "phase": "query/read",
+      "valueTag": 1,
+      "readEnd": 4
+    },
+    {
+      "segment": 1,
+      "index": 0,
+      "readStart": 4,
+      "phase": "query/select_close/read",
+      "valueTag": 1,
+      "readEnd": 5
+    },
+    {
+      "segment": 2,
+      "index": 0,
+      "readStart": 5,
+      "phase": "query/select_close/read",
+      "valueTag": 1,
+      "readEnd": 6
+    },
+    {
+      "segment": 3,
+      "index": 0,
+      "readStart": 6,
+      "phase": "query/select_close/read",
+      "valueTag": 1,
+      "readEnd": 8
+    },
+    {
+      "segment": 4,
+      "index": 0,
+      "readStart": 8,
+      "phase": "query/select_close/read",
+      "valueTag": 5,
+      "readEnd": 9
+    },
+    {
+      "segment": 5,
+      "index": 0,
+      "readStart": 9,
+      "phase": "query/select_close/read",
+      "valueTag": 1,
+      "readEnd": 10
+    },
+    {
+      "segment": 6,
+      "index": 0,
+      "readStart": 10,
+      "phase": "query/select_close/read",
+      "valueTag": 1,
+      "readEnd": 11
+    },
+    {
+      "segment": 7,
+      "index": 0,
+      "readStart": 11,
+      "phase": "query/select_close/read",
+      "valueTag": 1,
+      "readEnd": 12
+    },
+    {
+      "segment": 8,
+      "index": 0,
+      "readStart": 12,
+      "phase": "query/select_close/read",
+      "valueTag": 5,
+      "readEnd": 13
+    },
+    {
+      "segment": 0,
+      "index": 0,
+      "readStart": 13,
+      "phase": "query/select_close/read",
+      "valueTag": 16,
+      "readEnd": 14
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 14,
+      "phase": "query/select_close/rank_word/read",
+      "valueTag": 22,
+      "readEnd": 16
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 16,
+      "phase": "query/select_close/rank_word/read",
+      "valueTag": 22,
+      "readEnd": 18
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 18,
+      "phase": "query/select_close/rank_word/read",
+      "valueTag": 22,
+      "readEnd": 20
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 20,
+      "phase": "query/select_close/rank_word/read",
+      "valueTag": 22,
+      "readEnd": 22
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 22,
+      "phase": "query/select_close/rank_word/read",
+      "valueTag": 22,
+      "readEnd": 24
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 24,
+      "phase": "query/select_close/rank_word/read",
+      "valueTag": 22,
+      "readEnd": 26
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 26,
+      "phase": "query/select_close/rank_word/read",
+      "valueTag": 22,
+      "readEnd": 28
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 28,
+      "phase": "query/select_close/rank_word/read",
+      "valueTag": 22,
+      "readEnd": 30
+    },
+    {
+      "segment": 21,
+      "index": 3,
+      "readStart": 30,
+      "phase": "query/select_close/rank_word/read",
+      "valueTag": 2,
+      "readEnd": 32
+    },
+    {
+      "segment": 21,
+      "index": 3,
+      "readStart": 32,
+      "phase": "query/select_close/rank_word/read",
+      "valueTag": 2,
+      "readEnd": 34
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 34,
+      "phase": "query/select_close/select_word_false/read",
+      "valueTag": 22,
+      "readEnd": 36
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 36,
+      "phase": "query/select_close/select_word_false/read",
+      "valueTag": 22,
+      "readEnd": 38
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 38,
+      "phase": "query/select_close/select_word_false/read",
+      "valueTag": 22,
+      "readEnd": 40
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 40,
+      "phase": "query/select_close/select_word_false/read",
+      "valueTag": 22,
+      "readEnd": 42
+    },
+    {
+      "segment": 21,
+      "index": 3,
+      "readStart": 42,
+      "phase": "query/select_close/select_word_false/read",
+      "valueTag": 2,
+      "readEnd": 44
+    },
+    {
+      "segment": 22,
+      "index": 0,
+      "readStart": 44,
+      "phase": "query/select_close/select_word_false/read",
+      "valueTag": 1,
+      "readEnd": 45
+    },
+    {
+      "segment": 1,
+      "index": 0,
+      "readStart": 45,
+      "phase": "query/select_close/read",
+      "valueTag": 1,
+      "readEnd": 46
+    },
+    {
+      "segment": 2,
+      "index": 0,
+      "readStart": 46,
+      "phase": "query/select_close/read",
+      "valueTag": 1,
+      "readEnd": 47
+    },
+    {
+      "segment": 3,
+      "index": 0,
+      "readStart": 47,
+      "phase": "query/select_close/read",
+      "valueTag": 1,
+      "readEnd": 49
+    },
+    {
+      "segment": 4,
+      "index": 0,
+      "readStart": 49,
+      "phase": "query/select_close/read",
+      "valueTag": 5,
+      "readEnd": 50
+    },
+    {
+      "segment": 5,
+      "index": 15,
+      "readStart": 50,
+      "phase": "query/select_close/read",
+      "valueTag": 16,
+      "readEnd": 51
+    },
+    {
+      "segment": 6,
+      "index": 15,
+      "readStart": 51,
+      "phase": "query/select_close/read",
+      "valueTag": 6,
+      "readEnd": 52
+    },
+    {
+      "segment": 7,
+      "index": 15,
+      "readStart": 52,
+      "phase": "query/select_close/read",
+      "valueTag": 1,
+      "readEnd": 53
+    },
+    {
+      "segment": 8,
+      "index": 15,
+      "readStart": 53,
+      "phase": "query/select_close/read",
+      "valueTag": 2,
+      "readEnd": 54
+    },
+    {
+      "segment": 0,
+      "index": 5,
+      "readStart": 54,
+      "phase": "query/select_close/read",
+      "valueTag": 1,
+      "readEnd": 55
+    },
+    {
+      "segment": 21,
+      "index": 3,
+      "readStart": 55,
+      "phase": "query/select_close/rank_word/read",
+      "valueTag": 2,
+      "readEnd": 57
+    },
+    {
+      "segment": 21,
+      "index": 3,
+      "readStart": 57,
+      "phase": "query/select_close/rank_word/read",
+      "valueTag": 2,
+      "readEnd": 59
+    },
+    {
+      "segment": 21,
+      "index": 3,
+      "readStart": 59,
+      "phase": "query/select_close/rank_word/read",
+      "valueTag": 2,
+      "readEnd": 61
+    },
+    {
+      "segment": 21,
+      "index": 3,
+      "readStart": 61,
+      "phase": "query/select_close/select_word_false/read",
+      "valueTag": 2,
+      "readEnd": 63
+    },
+    {
+      "segment": 21,
+      "index": 3,
+      "readStart": 63,
+      "phase": "query/select_close/select_word_false/read",
+      "valueTag": 2,
+      "readEnd": 65
+    },
+    {
+      "segment": 22,
+      "index": 0,
+      "readStart": 65,
+      "phase": "query/select_close/select_word_false/read",
+      "valueTag": 1,
+      "readEnd": 66
+    },
+    {
+      "segment": 17,
+      "index": 0,
+      "readStart": 66,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read",
+      "valueTag": 1,
+      "readEnd": 68
+    },
+    {
+      "segment": 18,
+      "index": 0,
+      "readStart": 68,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read",
+      "valueTag": 1,
+      "readEnd": 69
+    },
+    {
+      "segment": 19,
+      "index": 0,
+      "readStart": 69,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read",
+      "valueTag": 16,
+      "readEnd": 70
+    },
+    {
+      "segment": 21,
+      "index": 4,
+      "readStart": 70,
+      "phase": "query/lca/fringe/rank_close/rs_rank/rank_word/read",
+      "valueTag": 19,
+      "readEnd": 71
+    },
+    {
+      "segment": 0,
+      "index": 0,
+      "readStart": 71,
+      "phase": "query/lca/fringe/load_window/read",
+      "valueTag": 16,
+      "readEnd": 72
+    },
+    {
+      "segment": 0,
+      "index": 1,
+      "readStart": 72,
+      "phase": "query/lca/fringe/load_window/read",
+      "valueTag": 26,
+      "readEnd": 73
+    },
+    {
+      "segment": 0,
+      "index": 2,
+      "readStart": 73,
+      "phase": "query/lca/fringe/load_window/read",
+      "valueTag": 51,
+      "readEnd": 74
+    },
+    {
+      "segment": 0,
+      "index": 3,
+      "readStart": 74,
+      "phase": "query/lca/fringe/load_window/read",
+      "valueTag": 20,
+      "readEnd": 75
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 75,
+      "phase": "query/lca/fringe/read",
+      "valueTag": 22,
+      "readEnd": 77
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 77,
+      "phase": "query/lca/fringe/read",
+      "valueTag": 22,
+      "readEnd": 79
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 79,
+      "phase": "query/lca/fringe/read",
+      "valueTag": 22,
+      "readEnd": 81
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 81,
+      "phase": "query/lca/fringe/read",
+      "valueTag": 22,
+      "readEnd": 83
+    },
+    {
+      "segment": 21,
+      "index": 3,
+      "readStart": 83,
+      "phase": "query/lca/fringe/read",
+      "valueTag": 2,
+      "readEnd": 85
+    },
+    {
+      "segment": 21,
+      "index": 1,
+      "readStart": 85,
+      "phase": "query/lca/fringe/read",
+      "valueTag": 3,
+      "readEnd": 86
+    },
+    {
+      "segment": 21,
+      "index": 5,
+      "readStart": 86,
+      "phase": "query/lca/fringe/read",
+      "valueTag": 19,
+      "readEnd": 87
+    },
+    {
+      "segment": 21,
+      "index": 1,
+      "readStart": 87,
+      "phase": "query/lca/fringe/read",
+      "valueTag": 3,
+      "readEnd": 88
+    },
+    {
+      "segment": 21,
+      "index": 1,
+      "readStart": 88,
+      "phase": "query/lca/fringe/read",
+      "valueTag": 3,
+      "readEnd": 89
+    },
+    {
+      "segment": 21,
+      "index": 5,
+      "readStart": 89,
+      "phase": "query/lca/fringe/read",
+      "valueTag": 19,
+      "readEnd": 90
+    },
+    {
+      "segment": 21,
+      "index": 5,
+      "readStart": 90,
+      "phase": "query/lca/fringe/read",
+      "valueTag": 19,
+      "readEnd": 91
+    },
+    {
+      "segment": 20,
+      "index": 149,
+      "readStart": 91,
+      "phase": "query/lca/interior_range/interior_local_two/interior_read/read",
+      "valueTag": 30,
+      "readEnd": 92
+    },
+    {
+      "segment": 20,
+      "index": 150,
+      "readStart": 92,
+      "phase": "query/lca/interior_range/interior_local_two/interior_read/read",
+      "valueTag": 1,
+      "readEnd": 93
+    },
+    {
+      "segment": 20,
+      "index": 45,
+      "readStart": 93,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_read/read",
+      "valueTag": 2,
+      "readEnd": 95
+    },
+    {
+      "segment": 20,
+      "index": 0,
+      "readStart": 95,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read",
+      "valueTag": 1,
+      "readEnd": 97
+    },
+    {
+      "segment": 20,
+      "index": 3,
+      "readStart": 97,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read",
+      "valueTag": 51,
+      "readEnd": 98
+    },
+    {
+      "segment": 20,
+      "index": 4,
+      "readStart": 98,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read",
+      "valueTag": 1,
+      "readEnd": 99
+    },
+    {
+      "segment": 20,
+      "index": 9,
+      "readStart": 99,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read",
+      "valueTag": 55,
+      "readEnd": 100
+    },
+    {
+      "segment": 20,
+      "index": 10,
+      "readStart": 100,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read",
+      "valueTag": 1,
+      "readEnd": 101
+    },
+    {
+      "segment": 20,
+      "index": 15,
+      "readStart": 101,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read",
+      "valueTag": 7,
+      "readEnd": 102
+    },
+    {
+      "segment": 20,
+      "index": 16,
+      "readStart": 102,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read",
+      "valueTag": 1,
+      "readEnd": 103
+    },
+    {
+      "segment": 20,
+      "index": 45,
+      "readStart": 103,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_read/read",
+      "valueTag": 2,
+      "readEnd": 105
+    },
+    {
+      "segment": 20,
+      "index": 0,
+      "readStart": 105,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read",
+      "valueTag": 1,
+      "readEnd": 107
+    },
+    {
+      "segment": 20,
+      "index": 3,
+      "readStart": 107,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read",
+      "valueTag": 51,
+      "readEnd": 108
+    },
+    {
+      "segment": 20,
+      "index": 4,
+      "readStart": 108,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read",
+      "valueTag": 1,
+      "readEnd": 109
+    },
+    {
+      "segment": 20,
+      "index": 9,
+      "readStart": 109,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read",
+      "valueTag": 55,
+      "readEnd": 110
+    },
+    {
+      "segment": 20,
+      "index": 10,
+      "readStart": 110,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read",
+      "valueTag": 1,
+      "readEnd": 111
+    },
+    {
+      "segment": 20,
+      "index": 15,
+      "readStart": 111,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read",
+      "valueTag": 7,
+      "readEnd": 112
+    },
+    {
+      "segment": 20,
+      "index": 16,
+      "readStart": 112,
+      "phase": "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read",
+      "valueTag": 1,
+      "readEnd": 113
+    },
+    {
+      "segment": 17,
+      "index": 0,
+      "readStart": 113,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read",
+      "valueTag": 1,
+      "readEnd": 115
+    },
+    {
+      "segment": 18,
+      "index": 5,
+      "readStart": 115,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read",
+      "valueTag": 15,
+      "readEnd": 117
+    },
+    {
+      "segment": 19,
+      "index": 5,
+      "readStart": 117,
+      "phase": "query/lca/fringe/rank_close/rs_rank/read",
+      "valueTag": 1,
+      "readEnd": 118
+    },
+    {
+      "segment": 21,
+      "index": 0,
+      "readStart": 118,
+      "phase": "query/lca/fringe/rank_close/rs_rank/rank_word/read",
+      "valueTag": 3,
+      "readEnd": 119
+    },
+    {
+      "segment": 0,
+      "index": 5,
+      "readStart": 119,
+      "phase": "query/lca/fringe/load_window/read",
+      "valueTag": 1,
+      "readEnd": 120
+    },
+    {
+      "segment": 0,
+      "index": 6,
+      "readStart": 120,
+      "phase": "query/lca/fringe/load_window/read",
+      "valueTag": 0,
+      "readEnd": 120
+    },
+    {
+      "segment": 0,
+      "index": 7,
+      "readStart": 120,
+      "phase": "query/lca/fringe/load_window/read",
+      "valueTag": 0,
+      "readEnd": 120
+    },
+    {
+      "segment": 0,
+      "index": 8,
+      "readStart": 120,
+      "phase": "query/lca/fringe/load_window/read",
+      "valueTag": 0,
+      "readEnd": 120
+    },
+    {
+      "segment": 21,
+      "index": 1,
+      "readStart": 120,
+      "phase": "query/lca/fringe/read",
+      "valueTag": 3,
+      "readEnd": 121
+    },
+    {
+      "segment": 21,
+      "index": 1,
+      "readStart": 121,
+      "phase": "query/lca/fringe/read",
+      "valueTag": 3,
+      "readEnd": 122
+    },
+    {
+      "segment": 21,
+      "index": 1,
+      "readStart": 122,
+      "phase": "query/lca/fringe/read",
+      "valueTag": 3,
+      "readEnd": 123
+    },
+    {
+      "segment": 17,
+      "index": 0,
+      "readStart": 123,
+      "phase": "query/rank_close/rs_rank/read",
+      "valueTag": 1,
+      "readEnd": 125
+    },
+    {
+      "segment": 18,
+      "index": 2,
+      "readStart": 125,
+      "phase": "query/rank_close/rs_rank/read",
+      "valueTag": 6,
+      "readEnd": 127
+    },
+    {
+      "segment": 19,
+      "index": 2,
+      "readStart": 127,
+      "phase": "query/rank_close/rs_rank/read",
+      "valueTag": 51,
+      "readEnd": 128
+    },
+    {
+      "segment": 21,
+      "index": 3,
+      "readStart": 128,
+      "phase": "query/rank_close/rs_rank/rank_word/read",
+      "valueTag": 2,
+      "readEnd": 130
+    },
+    {
+      "segment": 21,
+      "index": 7,
+      "readStart": 130,
+      "phase": "query/rank_close/rs_rank/rank_word/read",
+      "valueTag": 22,
+      "readEnd": 132
+    },
+    {
+      "segment": 21,
+      "index": 3,
+      "readStart": 132,
+      "phase": "query/rank_close/rs_rank/rank_word/read",
+      "valueTag": 2,
+      "readEnd": 134
+    },
+    {
+      "segment": 21,
+      "index": 3,
+      "readStart": 134,
+      "phase": "query/rank_close/rs_rank/rank_word/read",
+      "valueTag": 2,
+      "readEnd": 136
+    }
+  ],
+  "phases": {
+    "": 6,
+    "query": 184,
+    "query/read": 213,
+    "query/read/locate": 1038,
+    "query/select_close": 616,
+    "query/select_close/read": 1336,
+    "query/select_close/read/locate": 2933,
+    "query/select_close/read_len": 22,
+    "query/select_close/read_len/word_len": 24,
+    "query/select_close/read_len/word_len/locate": 125,
+    "query/select_close/rank_word": 1179,
+    "query/select_close/rank_word/rs_min": 189,
+    "query/select_close/rank_word/read": 1300,
+    "query/select_close/rank_word/read/locate": 4927,
+    "query/select_close/rank_word/rs_decode_default": 182,
+    "query/select_close/rank_word/rs_chunk_rank": 481,
+    "query/select_close/select_word_false": 696,
+    "query/select_close/select_word_false/rs_min": 81,
+    "query/select_close/select_word_false/read": 842,
+    "query/select_close/select_word_false/read/locate": 3429,
+    "query/select_close/select_word_false/rs_decode_default": 126,
+    "query/select_close/select_word_false/rs_chunk_rank": 259,
+    "query/lca": 133,
+    "query/lca/fringe": 2056,
+    "query/lca/fringe/rank_close": 50,
+    "query/lca/fringe/rank_close/rs_rank": 202,
+    "query/lca/fringe/rank_close/rs_rank/rs_min": 18,
+    "query/lca/fringe/rank_close/rs_rank/read": 513,
+    "query/lca/fringe/rank_close/rs_rank/read/locate": 494,
+    "query/lca/fringe/rank_close/rs_rank/read_len": 22,
+    "query/lca/fringe/rank_close/rs_rank/read_len/word_len": 24,
+    "query/lca/fringe/rank_close/rs_rank/read_len/word_len/locate": 153,
+    "query/lca/fringe/rank_close/rs_rank/rank_word": 232,
+    "query/lca/fringe/rank_close/rs_rank/rank_word/rs_min": 54,
+    "query/lca/fringe/rank_close/rs_rank/rank_word/read": 142,
+    "query/lca/fringe/rank_close/rs_rank/rank_word/read/locate": 758,
+    "query/lca/fringe/rank_close/rs_rank/rank_word/rs_decode_default": 28,
+    "query/lca/fringe/rank_close/rs_rank/rank_word/rs_chunk_rank": 74,
+    "query/lca/fringe/load_window": 254,
+    "query/lca/fringe/load_window/read": 402,
+    "query/lca/fringe/load_window/read/locate": 428,
+    "query/lca/fringe/load_window/word_len": 60,
+    "query/lca/fringe/load_window/word_len/locate": 314,
+    "query/lca/fringe/window_chunk": 4951,
+    "query/lca/fringe/read": 1139,
+    "query/lca/fringe/read/locate": 5306,
+    "query/lca/interior_range": 39,
+    "query/lca/interior_range/interior_local_two": 79,
+    "query/lca/interior_range/interior_local_two/interior_read": 142,
+    "query/lca/interior_range/interior_local_two/interior_read/read": 142,
+    "query/lca/interior_range/interior_local_two/interior_read/read/locate": 853,
+    "query/lca/interior_range/interior_local_two/interior_read/word_len": 24,
+    "query/lca/interior_range/interior_local_two/interior_read/word_len/locate": 853,
+    "query/lca/interior_range/interior_local_two/interior_local_span": 104,
+    "query/lca/interior_range/interior_local_two/interior_local_span/interior_read": 184,
+    "query/lca/interior_range/interior_local_two/interior_local_span/interior_read/read": 200,
+    "query/lca/interior_range/interior_local_two/interior_local_span/interior_read/read/locate": 836,
+    "query/lca/interior_range/interior_local_two/interior_local_span/interior_read/word_len": 24,
+    "query/lca/interior_range/interior_local_two/interior_local_span/interior_read/word_len/locate": 836,
+    "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate": 226,
+    "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read": 1026,
+    "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read": 1048,
+    "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/read/locate": 5730,
+    "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/word_len": 168,
+    "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/interior_read/word_len/locate": 5730,
+    "query/lca/interior_range/interior_local_two/interior_local_span/interior_min_candidate/cand_none": 22,
+    "query/lca/interior_range/interior_local_two/cand_merge_left": 24,
+    "query/lca/cand_merge_left": 45,
+    "query/rank_close": 25,
+    "query/rank_close/rs_rank": 101,
+    "query/rank_close/rs_rank/rs_min": 9,
+    "query/rank_close/rs_rank/read": 270,
+    "query/rank_close/rs_rank/read/locate": 248,
+    "query/rank_close/rs_rank/read_len": 11,
+    "query/rank_close/rs_rank/read_len/word_len": 12,
+    "query/rank_close/rs_rank/read_len/word_len/locate": 77,
+    "query/rank_close/rs_rank/rank_word": 354,
+    "query/rank_close/rs_rank/rank_word/rs_min": 54,
+    "query/rank_close/rs_rank/rank_word/read": 400,
+    "query/rank_close/rs_rank/rank_word/read/locate": 1516,
+    "query/rank_close/rs_rank/rank_word/rs_decode_default": 56,
+    "query/rank_close/rs_rank/rank_word/rs_chunk_rank": 148
+  },
+  "execution": [],
+  "programHash": "6c1a960857837ce6588c3241083505f7176bcab709b8cde1986b2cf6353f4313",
+  "memoryHash": "fe067e49fe2475bf9e4c399c3947e87debd73fbce0ad3fe8ae9dbc68db27d0b4",
+  "fixture": "fixture-n16-balanced.json",
+  "instructionCount": 4444,
+  "registerCount": 2939,
+  "checks": {
+    "physicalReceipts": true,
+    "logicalReceipts": true,
+    "perLogicalPlans": true,
+    "independentAnswer": true,
+    "wholePathCoverage": true
+  }
+}
