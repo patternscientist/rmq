@@ -170,6 +170,21 @@ function Get-CaseParts([string]$Entry) {
   return [pscustomobject]@{ Id=$parts[0]; Target=$parts[1]; Verdict=$parts[2]; Surface=$parts[3] }
 }
 
+function Get-CertificateMemberNames([string]$Body) {
+  # This early source-format check puts every known member at two spaces and every
+  # continuation at four or more. Inventory every member-leading token, not
+  # merely tokens matching an ASCII Lean-name subset. Unknown spelling then
+  # fails the literal registry comparison; unsupported layout fails here.
+  # Lean also admits more-indented fields: the elaborated metadata check after
+  # baseline compilation is the authoritative complete field inventory.
+  foreach ($line in [regex]::Split($Body, '\r?\n')) {
+    if ($line -match '^\s*$' -or $line -match '^  --') { continue }
+    if ($line -match '^  (\S+)') { $Matches[1]; continue }
+    if ($line -match '^ {4,}\S') { continue }
+    throw 'PQ1-REGISTRY: unsupported certificate member layout'
+  }
+}
+
 function Assert-Registry([string[]]$Cases, [string]$CoreOverride = '', [string]$ConsumerOverride = '') {
   $planRows = @([regex]::Matches((Read-Source $planPath),
     '(?m)^\| ((?:C[0-9]{2}|P01|A01|D[0-9]{2}|R[0-9]{2}|N[0-9]{2})-[^|]+?) \| ([^|]+?) \| (REJECT|ACCEPT) / ([A-Za-z]+\.lean) \|\r?$') |
@@ -191,15 +206,11 @@ function Assert-Registry([string[]]$Cases, [string]$CoreOverride = '', [string]$
   if ($completeFields.Count -ne 1 -or $completeInitializers.Count -ne 1) {
     throw 'PQ1-REGISTRY: complete producer declarations could not be uniquely bounded'
   }
-  $fieldNames = @([regex]::Matches((Get-MarkedRegion $core 'FIELDS').Text,
-    '(?m)^  ([A-Za-z][A-Za-z0-9]*) :') | ForEach-Object { $_.Groups[1].Value })
-  $initializerNames = @([regex]::Matches((Get-MarkedRegion $core 'INITIALIZERS').Text,
-    '(?m)^  ([A-Za-z][A-Za-z0-9]*)(?: [^\r\n]*?)? :=') | ForEach-Object { $_.Groups[1].Value })
+  $fieldNames = @(Get-CertificateMemberNames (Get-MarkedRegion $core 'FIELDS').Text)
+  $initializerNames = @(Get-CertificateMemberNames (Get-MarkedRegion $core 'INITIALIZERS').Text)
   $expectedFields = @($fieldCases | ForEach-Object { (Get-CaseParts $_).Target })
-  $allFields = @([regex]::Matches($completeFields[0].Groups[1].Value,
-    '(?m)^  ([A-Za-z][A-Za-z0-9]*) :') | ForEach-Object { $_.Groups[1].Value })
-  $allInitializers = @([regex]::Matches($completeInitializers[0].Groups[1].Value,
-    '(?m)^  ([A-Za-z][A-Za-z0-9]*)(?: [^\r\n]*?)? :=') | ForEach-Object { $_.Groups[1].Value })
+  $allFields = @(Get-CertificateMemberNames $completeFields[0].Groups[1].Value)
+  $allInitializers = @(Get-CertificateMemberNames $completeInitializers[0].Groups[1].Value)
   if ($fieldNames.Count -ne $fieldCaseCount -or $initializerNames.Count -ne $fieldCaseCount -or
       ($fieldNames -join '|') -cne ($expectedFields -join '|') -or
       ($initializerNames -join '|') -cne ($expectedFields -join '|') -or
@@ -372,6 +383,23 @@ function Invoke-RegistryTests {
   $extraInitializer = (Read-Source $corePath).Replace('  -- PQ1-REPLAY-INITIALIZERS-END',
     "  -- PQ1-REPLAY-INITIALIZERS-END`n  unregisteredField := True.intro")
   Expect-Rejection { Assert-Registry $registry $extraInitializer } 'PQ1-REGISTRY:'
+  # Legal Lean names outside the former ASCII-only subset, both inside and
+  # outside each marked inventory. Escaped names can contain whitespace.
+  $extraNames = @('unregistered_field', "unregisteredField'",
+    ([string][char]0x03B1), ([string][char]0x00AB + 'extra field' + [char]0x00BB))
+  foreach ($name in $extraNames) {
+    foreach ($kind in @('FIELDS', 'INITIALIZERS')) {
+      $marker = "  -- PQ1-REPLAY-$kind-END"
+      $member = if ($kind -ceq 'FIELDS') { "  $name : True" } else { "  $name := True.intro" }
+      foreach ($replacement in @("$member`n$marker", "$marker`n$member")) {
+        $extra = (Read-Source $corePath).Replace($marker, $replacement)
+        Expect-Rejection { Assert-Registry $registry $extra } 'PQ1-REGISTRY:'
+      }
+    }
+  }
+  $unsupportedLayout = (Read-Source $corePath).Replace(
+    '  allocationResidualLittleO :', '   allocationResidualLittleO :')
+  Expect-Rejection { Assert-Registry $registry $unsupportedLayout } 'PQ1-REGISTRY:'
   $missingPin = (Read-Source $consumerPath).Replace('theorem pinIsReadWord', 'theorem unpinnedIsReadWord')
   Expect-Rejection { Assert-Registry $registry '' $missingPin } 'PQ1-REGISTRY:'
   $extraPin = (Read-Source $consumerPath) + "`ntheorem pinExtra : True := trivial`n"
@@ -755,7 +783,7 @@ $commit = @(Invoke-RMQCheckedGit $gitPath $repoRoot @('rev-parse','HEAD') 'sourc
 $mutableFiles = @($corePath, $headlinePath) + @($definitionCollapses.Values | ForEach-Object { $_.File } | Sort-Object -Unique)
 $saved = @{}
 foreach ($path in @($mutableFiles + @($consumerPath, 'RMQPaper.lean', $planPath, $runtimePath,
-    'scripts/packed_query_replay.ps1') | Sort-Object -Unique)) {
+    'scripts/packed_query_replay.ps1', 'scripts/packed_query_inventory_check.lean') | Sort-Object -Unique)) {
   $saved[$path] = [IO.File]::ReadAllBytes((Join-Path $repoRoot $path))
 }
 $caseResults = [Collections.Generic.List[object]]::new()
@@ -769,6 +797,7 @@ try {
       Invoke-DeadlineTest
     }
     Build-Public 'baseline'
+    Require-Pass (Invoke-Lean 'scripts/packed_query_inventory_check.lean' 'baseline-field-inventory')
     Require-Pass (Invoke-Lean $consumerPath 'baseline-consumer')
     foreach ($entry in $selectedCases) {
       $case = Get-CaseParts $entry

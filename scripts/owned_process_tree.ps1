@@ -225,6 +225,7 @@ function Read-RMQBoundedProcessOutput(
     [string]$StderrPath) {
   $lines = [Collections.Generic.List[string]]::new()
   foreach ($path in @($StdoutPath, $StderrPath)) {
+    if ([string]::IsNullOrEmpty($path)) { continue }
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
       continue
     }
@@ -487,10 +488,14 @@ exit ([int]$LASTEXITCODE)
     if ($finalBytes -gt $OutputLimitBytes) {
       $outputLimitExceeded = $true
     }
-    $output = if ($outputLimitExceeded) {
-      @("redirected output exceeded $OutputLimitBytes bytes")
+    $standardOutput = @()
+    $standardError = @()
+    if ($outputLimitExceeded) {
+      $output = @("redirected output exceeded $OutputLimitBytes bytes")
     } else {
-      @(Read-RMQBoundedProcessOutput $stdoutPath $stderrPath)
+      $standardOutput = @(Read-RMQBoundedProcessOutput $stdoutPath '')
+      $standardError = @(Read-RMQBoundedProcessOutput $stderrPath '')
+      $output = @($standardOutput) + @($standardError)
     }
   } finally {
     $stopwatch.Stop()
@@ -524,6 +529,8 @@ exit ([int]$LASTEXITCODE)
     Stage = $Stage
     ExitCode = $exitCode
     Output = @($output)
+    StandardOutput = @($standardOutput)
+    StandardError = @($standardError)
     TimedOut = $timedOut
     OutputLimitExceeded = $outputLimitExceeded
     TerminatedIds = @($terminatedIds)
@@ -638,7 +645,13 @@ function Invoke-RMQCheckedGit(
   if ($result.ExitCode -ne 0) {
     throw "$Stage exited $($result.ExitCode): $($result.Output -join ' | ')"
   }
-  return @($result.Output)
+  # Git's machine-readable state is stdout. Diagnostics (for example an
+  # autocrlf conversion warning) are not dirty paths. Preserve them on the
+  # warning stream, after checking exit/deadline/output-limit failures above.
+  foreach ($diagnostic in $result.StandardError) {
+    Write-Warning "$Stage`: $diagnostic"
+  }
+  return @($result.StandardOutput)
 }
 
 function Get-RMQRepositoryStateBoundedCore(
@@ -743,11 +756,38 @@ function Invoke-RMQNormalizationSafeCleanBaselineFixtureTests(
     # repository's explicit core.autocrlf=true setting. The resulting CRLF
     # worktree is semantically clean only when state queries honor that setting.
     [IO.File]::WriteAllText($trackedPath, "base`nsecond line`n", $utf8)
-    [void](Invoke-RMQCheckedGit $GitPath $fixtureRoot @('add', 'tracked.txt') `
-      'fixture-git-add-initial' $DeadlineSeconds $OutputLimitBytes $fullTempRoot)
+    $addOutput = @(Invoke-RMQCheckedGit $GitPath $fixtureRoot @('add', 'tracked.txt') `
+      'fixture-git-add-initial' $DeadlineSeconds $OutputLimitBytes $fullTempRoot 3>&1)
+    $addWarnings = @($addOutput | Where-Object { $_ -is [Management.Automation.WarningRecord] })
+    if (@($addWarnings | Where-Object { "$_" -match 'LF will be replaced by CRLF' }).Count -eq 0 -or
+        @($addOutput | Where-Object { $_ -isnot [Management.Automation.WarningRecord] }).Count -ne 0) {
+      throw 'Git conversion warning must be preserved separately from empty stdout'
+    }
     [void](Invoke-RMQCheckedGit $GitPath $fixtureRoot `
       @('commit', '--quiet', '-m', 'baseline') 'fixture-git-commit' `
       $DeadlineSeconds $OutputLimitBytes $fullTempRoot)
+    # Exact byte restoration may put LF text back under autocrlf=true. Git
+    # correctly considers it clean. The initial add above requires a real
+    # conversion warning through the same checked Git helper; later warnings
+    # depend on Git's stat cache, so do not require them on every state query.
+    [IO.File]::WriteAllText($trackedPath, "base`nsecond line`n", $utf8)
+    [IO.File]::SetLastWriteTimeUtc($trackedPath, [DateTime]::UtcNow.AddSeconds(4))
+    $lfOutput = @(Get-RMQRepositoryStateBounded $fixtureRoot $GitPath `
+      $DeadlineSeconds $OutputLimitBytes $fullTempRoot 'fixture-clean-lf' 3>&1)
+    $lfState = @($lfOutput | Where-Object { $_ -isnot [Management.Automation.WarningRecord] }) -join "`n"
+    Assert-RMQCleanRepositoryStateText $lfState 'LF restored under autocrlf=true'
+    $gitFailure = $false
+    try {
+      [void](Invoke-RMQCheckedGit $GitPath $fixtureRoot `
+        @('rev-parse', '--verify', 'refs/heads/definitely-absent') `
+        'fixture-git-failure' $DeadlineSeconds $OutputLimitBytes $fullTempRoot)
+    } catch {
+      if ($_.Exception.Message -notmatch 'fixture-git-failure exited [1-9]') { throw }
+      $gitFailure = $true
+    }
+    if (-not $gitFailure) { throw 'nonzero Git fixture unexpectedly passed' }
+    Write-Host 'CLEAN-BASELINE fixture PASS [PQ1-LF-WARNING-AND-GIT-FAILURE]'
+
     Remove-Item -LiteralPath $trackedPath -Force
     [void](Invoke-RMQCheckedGit $GitPath $fixtureRoot `
       @('checkout', '--', 'tracked.txt') 'fixture-git-crlf-checkout' `

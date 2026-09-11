@@ -254,6 +254,20 @@ seconds, about four times the measured registry.
 
 ## Process and restoration contract
 
+The early textual certificate inventory uses a frozen layout: known members start at
+two spaces, continuation lines at four or more, and member-level comments use
+`--`. Every member-leading token is inventoried, including unfamiliar Lean
+identifier spelling; unsupported layout is rejected rather than ignored.
+Registry self-tests inject underscore, apostrophe, Unicode and escaped names
+inside and outside both marker regions, as well as unsupported indentation.
+This text check is a lower bound: Lean admits more-indented and defaulted fields.
+After rebuilding the baseline producer, `scripts/packed_query_inventory_check.lean`
+compares Lean's actual structure metadata with an independent literal 33-field
+inventory. Its parsed extra-field controls include a defaulted, more-indented
+field, apostrophe, Unicode and escaped names; unchanged and absent-structure
+controls exercise the same predicate. Every replay mode that mutates the
+certificate must pass this authoritative inventory check first.
+
 Reuse scripts/owned_process_tree.ps1 to bound owned root and descendant
 processes; retain each stage's diagnostic output under .lake/pq1-replay.
 Use observed narrow runtimes with cold-cache margin. Missing targets,
@@ -270,6 +284,12 @@ rebuilt and restored through lake build RMQPaper under its own deadline
 touches no file. Final report records the exact source commit, complete case
 registry, stage outcomes, restoration and clean-tree checks. This file alone is
 not replay evidence.
+
+The shared Git observer checks exit status, deadline and output limits before
+using stdout for repository state. Stderr diagnostics remain visible warnings;
+they are not parsed as changed paths. Its clean-baseline fixture includes LF
+restoration under `core.autocrlf=true` with a required real conversion warning,
+plus actual tracked, staged and untracked changes and a failed Git command.
 
 The provenance self-test reads every file listed in
 docs/internal/packed_query/experiment-rc6/manifest.json from the committed

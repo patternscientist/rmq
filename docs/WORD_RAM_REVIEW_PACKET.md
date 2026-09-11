@@ -73,8 +73,8 @@ every list and every representable endpoint pair the run halts within at most
 rather than a measured cost: the committed valid-query fixtures observe 6,003
 steps (`n = 1`) to 16,358 steps (`n = 24`), and every representable invalid
 input stops within six guard steps (certificate field `invalidGuardSteps`;
-`queryRun_invalid_steps` gives exactly four when `left >= right` and six when
-`right > n`). The budget is not claimed tight. Every encoded
+`queryRun_invalid_steps` gives exactly four when `left >= right`, otherwise
+six (when `right > n`)). The budget is not claimed tight. Every encoded
 field of every instruction, including dormant branch arms and the appended
 halt, fits `wordWidth n` for every `n`. Every stored word, allocated or
 first-missing address, executed operand, arithmetic result, receipt address
