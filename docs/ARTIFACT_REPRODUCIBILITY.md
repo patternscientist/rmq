@@ -61,7 +61,14 @@ powershell -ExecutionPolicy Bypass -File scripts\gate.ps1
 
 That gate builds the public roots, runs broader hygiene scans, checks the
 curated spoke axiom scripts, runs succinct cost/space lints, checks shim-import
-boundaries, and performs `git diff --check`.
+boundaries, and performs `git diff --check`. It also runs
+`scripts/packed_query_replay.ps1`, the committed replay campaign for the
+candidate primitive-machine query
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`: each certificate field is
+weakened in turn and must break its typed consumer, and the numeric-memory
+runtime fixtures run on the actual program. The replay requires a clean
+committed tree. Until that campaign, the aggregate gate and a fresh blind
+audit pass on an exact commit, the candidate is not accepted.
 
 ## GitHub Actions
 

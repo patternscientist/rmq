@@ -80,9 +80,12 @@ has the checked charged-trace algebra
 `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`, exclude
 the synthetic fallback, and have direct weight
 sum equal to both trace length and the `Costed` cost of the same execution.
-This does not close the later E1 fully charged small-step machine, deferred S1
-bit-addressed serialized-payload query, preprocessing, or conventional
-word-RAM obligations.
+This does not close the deferred S1 bit-addressed serialized-payload query or
+preprocessing. The later E1 small-step machine plan is superseded by the
+candidate `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, which charges
+every primitive instruction of a distinct numeric-memory execution within a
+fixed straight-line budget. That candidate is pending its replay campaign,
+aggregate gate and blind audit, so no acceptance is recorded here.
 
 Dependency order: A -> B -> (C, D). C can progress in parallel with A/B when it
 is pure extraction/generalization. D-LCA depends on the A/B cost/refinement

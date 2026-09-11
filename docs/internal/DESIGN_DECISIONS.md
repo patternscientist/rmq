@@ -12518,3 +12518,29 @@ Sources, read in full text unless noted:
 Decision: the model is a conservative unit-cost word RAM with w = Theta(log n). Instruction.Safe proves every executed result below 2^w, as in the conservative rule of Andersson et al. and the caution of Fredman and Willard. Addition, subtraction, multiplication, Boolean operations, variable shifts, indirect load, jumps and comparisons have primary backing. Integer division and remainder are an additional assumption. No verified research paper includes them in its standard word-RAM instruction set; the C-oriented word RAM of Patrascu and Thorup supports them by implication, and Mehlhorn and Sanders list them explicitly. The program needs division, because the span decoder divides a bit position by a cell width held in a register (SpanAssembly.lean). Multiplication returns no high product word. No claim is made for AC0-only instruction sets or the Practical RAM.
 
 Alternatives rejected: presenting division as uncontroversially standard, which the verified sources do not support; attributing an instruction list to Hagerup's 1998 survey, whose text was not read; and removing division now, which would change the frozen program and would need either multiplication by a reciprocal with a high product word the ISA lacks or size-specialized shifts. A division-free variant remains a possible later strengthening. Consequences: public surfaces and the paper state division and remainder as an explicit model assumption.
+
+## DD-20260911-PQ1-019: present the packed primitive query as a separate candidate theorem
+
+Context: the PQ1 export put the alias on six surfaces with wording that overstated or blurred it: 'charges the complete query', 'preserving repetitions and missing replies', glued numerals and a certificate field count. Twelve other current-fact surfaces still said that instruction-level charging was future E1 work, contradicting the export. What matters to a reader is that PQ1 is a distinct execution (numeric memory, straight-line program, primitive run) with its own model assumptions, that it does not reinterpret the 210 or 427 theorems, and that it is not yet accepted.
+
+Decision:
+- Every registered current-fact surface names RMQ.Headlines.succinctRMQFullyChargedPackedQuery as a CANDIDATE: kernel checked with propext, Classical.choice and Quot.sound, with the committed replay campaign, the aggregate gate and a fresh blind exact-commit audit pending.
+- Each surface says it charges every primitive instruction of its own distinct execution and carries its caveats: unit-cost multiplication, division, remainder, shifts and bitwise operations; every executed operation proved free of overflow, underflow, zero division and oversized shifts; an uncharged outer word-domain check with no parsing-cost claim; code and scratch storage absorbed into o(n) only asymptotically (it exceeds n below about 2^28); a budget equal to the straight-line program length, far above the 6,003 to 16,358 observed steps and not claimed tight; preprocessing unbounded and unclaimed; Lean runtime separate.
+- Each 'controller uncharged', 'not proved' or 'E1 remains' statement is rescoped to the 210 and 427 theorems, where it remains true.
+- Reads are described exactly: on valid ranges, 174 metadata loads followed by the physical expansion of the logical trace, two loads for a crossing cell and none for an absent or dead logical read. A failed load faults, and the canonical run halts, so it performs none.
+- The roadmaps mark E1 superseded by the candidate, not closed.
+- No surface states the certificate's field count.
+
+Alternatives rejected:
+- Presenting PQ1 as a strengthening of the 210 theorem ('the complete query is charged'): it is a different memory, program and run, and the 210 charge policy is unchanged.
+- Deleting the old uncharged-controller statements: they remain true of, and part of the honest scope of, the 210 and 427 theorems.
+- Marking E1 closed: that needs acceptance after the replay, the gate and the blind audit.
+- Stating the field count: it is changing under the Lean lane (specResult, noFailedLoads, invalidGuardSteps).
+
+Consequences:
+- Public prose repeats the caveats per surface, and claim-drift v28 (WDD-20260911-PQ1-010) enforces attribution and separation.
+- If the candidate is accepted, the CANDIDATE wording and the E1 status must change in one edit.
+- The observed step range must be rechecked against the final runtime fixtures.
+- Once the Lean lane's rejected-input step bound lands, surfaces can replace 'a few guard steps' with the proved bound.
+
+Evidence: diffs on the 18 current-fact surfaces plus DIGESTION_LOG and ARTIFACT_REPRODUCIBILITY; strict claim scan exit 0; constant_sync_check -SelfTest PASS; the static topology-lint replica found 0 problems (the Lean-resolution half was not run in this lane).

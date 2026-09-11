@@ -117,10 +117,39 @@ The current component derivation is:
 The canonical trace proves that every emitted event is `readWord` and no marker is
 present, so certificate weight equals both trace length and modeled cost.
 
-The theorem does not charge controller dispatch, input/register access, option
+This theorem does not charge controller dispatch, input/register access, option
 tests, arithmetic, branching, decoding, local scanning, candidate merging,
 trace assembly, or the public validity guard. Consequently `210` is an explicit
 charged-trace bound, not conventional word-RAM time or compiled Lean runtime.
+The separate candidate in the next section charges every primitive
+instruction of its own, different execution.
+
+## Separate Primitive-Machine Candidate
+
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` (producer
+`RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`) is a
+different proposition about a different execution, and it is a CANDIDATE: it
+is kernel checked with the same three standard axioms and consumed by an
+independent typed client, but its committed replay campaign, the aggregate
+gate and a fresh blind exact-commit audit are pending. For every
+`xs : List Int` it fixes one numeric memory `buildMemory xs` and one closed
+straight-line program of 837,572 primitive instructions. For every
+representable endpoint pair the run halts within at most 837,572 steps, every
+executed instruction counts, and every word, operand and prefix state fits one
+logarithmic width. Valid ranges return the leftmost minimum, and
+representable invalid ranges return packet `0` with no memory reads. Memory,
+literal program encoding and registers occupy `2n + o(n)` bits.
+
+The live assumptions a reviewer should check are unit-cost multiplication,
+division, remainder, variable shifts and bitwise operations (division and
+remainder go beyond the multiplication model of the word-RAM literature and
+are an explicit additional assumption); an uncharged
+value-level check that rejects endpoints outside the word domain; absorption
+of the code and scratch storage into `o(n)` only asymptotically (that storage
+exceeds `n` for every `n` below about `2^28`); and a step budget equal to the
+straight-line program length, far above the 6,003 to 16,358 steps observed on
+the committed valid-query fixtures. Full details are in
+[`WORD_RAM_REVIEW_PACKET.md`](WORD_RAM_REVIEW_PACKET.md).
 
 ## Compatibility Boundary
 
@@ -139,8 +168,12 @@ lake env lean scripts/headline_axiom_check.lean
 lake env lean scripts/wordram_axiom_check.lean
 lake exe rmq_succinct_classic_validate
 lake exe rmq_succinct_classic_cost_harness
+pwsh -NoProfile -File scripts/packed_query_replay.ps1
 powershell -ExecutionPolicy Bypass -File scripts/gate.ps1
 ```
+
+The packed-query replay requires a clean committed tree; the aggregate gate
+also runs it.
 
 The curated axiom inventories should report only the repository's accepted Lean
 foundations, such as propositional extensionality, classical choice, and
@@ -149,13 +182,20 @@ do not replace the universal theorems.
 
 ## Non-Claims
 
-The current theorem does not establish:
+The canonical charged-trace theorem does not establish:
 
 - compiled Lean wall-clock performance;
-- a fully charged small-step controller;
+- a fully charged small-step controller for its own execution (the separate
+  candidate `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` charges every
+  primitive instruction of a distinct execution instead);
 - end-to-end preprocessing complexity in the same machine;
 - a serialized-payload query API with conventional word-RAM cost; or
 - global minimality of the numerical constant `210`.
+
+The candidate `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` does not
+establish preprocessing time or space, compiled Lean wall-clock performance,
+attainment of its 837,572-step budget, or a machine-instruction bound for
+parsing endpoints outside the word domain.
 
 ## Reviewer Reading Order
 
@@ -166,3 +206,6 @@ The current theorem does not establish:
 5. `RMQ/Core/SuccinctRMQClassic.lean`
 6. `docs/PAPER_CLAIM_CORRESPONDENCE.md`
 7. `docs/PAPER_MODEL_ADEQUACY.md`
+8. for the separate candidate: `RMQ/Core/WordRAM/Packed/Capstone.lean`,
+   `RMQ/Validation/PackedQueryContract.lean` and
+   `docs/WORD_RAM_REVIEW_PACKET.md`

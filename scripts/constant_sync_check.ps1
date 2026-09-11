@@ -55,10 +55,22 @@ $constants = @(
     # `{VALUE}` is substituted with the Lean-derived value. `count` pins the
     # total occurrences so corrupting ANY of them fails, including ones no
     # anchor names. A count of 0 disables the count check for that surface.
+    # 2026-09-11 (PQ1 public-surface synchronization): every move below is a
+    # deliberate restatement of the SAME `210`, added to keep the separate
+    # 837,572 primitive-instruction candidate from being read as a change to
+    # it -- either "the 210 trace bound is separate" or "the 210 theorem leaves
+    # the controller uncharged". No sentence restates a different value, and
+    # the anchors and claim shapes are unchanged. The PQ1 worker's own export
+    # commit had already added one such restatement to README, CLAIMS,
+    # PAPER_THEOREM_MAP and PAPER_CLAIM_CORRESPONDENCE without moving these
+    # pins, which is why the gate stage failed before this change.
     surfaces = @(
-      @{ path = 'README.md';                          count = 9;  anchors = @('charged-trace cap is `{VALUE}`') },
-      @{ path = 'artifact/CLAIMS.md';                 count = 10; anchors = @('at most\*\* `{VALUE}`') },
-      @{ path = 'docs/WHAT_IS_PROVED.md';             count = 9;  anchors = @('charged-trace bound is `{VALUE}`') },
+      # 9 -> 11: TL;DR contrast sentence (PQ1 export) and Model Scope sentence.
+      @{ path = 'README.md';                          count = 11; anchors = @('charged-trace cap is `{VALUE}`') },
+      # 10 -> 13: PQ1 section contrast, Scope bullet and Non-Claims bullet.
+      @{ path = 'artifact/CLAIMS.md';                 count = 13; anchors = @('at most\*\* `{VALUE}`') },
+      # 9 -> 10: Cost Model bullet scoping the uncharged controller to `210`.
+      @{ path = 'docs/WHAT_IS_PROVED.md';             count = 10; anchors = @('charged-trace bound is `{VALUE}`') },
       # 11 -> 13 on 2026-08-12: the execution-cost sentence was corrected from
       # "is exactly `210`" to a budget-plus-inequality statement, which names
       # the constant twice more.  The pin moved in the same edit, as this check
@@ -66,12 +78,16 @@ $constants = @(
       # proves the change was deliberate, not that the new wording is right.
       # This check reads numerals, never the relation around them, so it would
       # have passed "exactly 210" forever.
-      @{ path = 'docs/PAPER_THEOREM_MAP.md';          count = 13; anchors = @('`{VALUE}`');
+      # 13 -> 16 on 2026-09-11: PQ1 section contrast, the E1-supersession
+      # sentence ("does not reinterpret `210`") and the rescoped Non-Claims.
+      @{ path = 'docs/PAPER_THEOREM_MAP.md';          count = 16; anchors = @('`{VALUE}`');
          claimShapes = @('charged-trace \*\*budget\*\* is `{VALUE}`', 'literal bound `{VALUE}`') },
-      @{ path = 'docs/PAPER_CLAIM_CORRESPONDENCE.md'; count = 11; anchors = @('at most\*\* `{VALUE}`') },
+      # 11 -> 12: PQ1 status paragraph contrast (PQ1 export, restated).
+      @{ path = 'docs/PAPER_CLAIM_CORRESPONDENCE.md'; count = 12; anchors = @('at most\*\* `{VALUE}`') },
       @{ path = 'docs/TRUST_AUDIT_PACKET.md';         count = 7;  anchors = @('`{VALUE}`');
          claimShapes = @('charged-trace cost at most `{VALUE}`') },
-      @{ path = 'docs/FAMILY_SUMMARY.md';             count = 7;  anchors = @('`{VALUE}`');
+      # 7 -> 8: PQ1 scope paragraph ("the `210` trace and `427` probe bounds").
+      @{ path = 'docs/FAMILY_SUMMARY.md';             count = 8;  anchors = @('`{VALUE}`');
          claimShapes = @('charged-trace constant `{VALUE}`') }
     )
   },
@@ -81,11 +97,15 @@ $constants = @(
     leanFile = 'RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerArchitectureCapstone.lean'
     leanPat  = 'derived_cap_le_(\d+)'
     retired  = @()
+    # 2026-09-11 (PQ1): both moves restate the same `427` as a quantity the
+    # separate primitive-instruction candidate does not reinterpret.
     surfaces = @(
-      @{ path = 'docs/PAPER_THEOREM_MAP.md';          count = 5;
+      # 5 -> 7: PQ1 section contrast (PQ1 export) and rescoped Non-Claims.
+      @{ path = 'docs/PAPER_THEOREM_MAP.md';          count = 7;
          anchors = @('at most `{VALUE}` attempted aligned', 'derived_cap_le_{VALUE}',
                      '`{VALUE}` is an \*\*upper bound') },
-      @{ path = 'docs/PAPER_CLAIM_CORRESPONDENCE.md'; count = 5;
+      # 5 -> 6: PQ1 status paragraph contrast (PQ1 export, restated).
+      @{ path = 'docs/PAPER_CLAIM_CORRESPONDENCE.md'; count = 6;
          anchors = @('at most `{VALUE}` attempted aligned', 'derived numeral `{VALUE}`',
                      '`{VALUE}` is an upper bound') }
     )

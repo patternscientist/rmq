@@ -7,24 +7,41 @@ story: exact range-minimum queries can be answered at constant modeled query
 cost from a Cartesian-shape payload of at most
 `2*n + o(n)` bits,
 and any fixed-length payload-only exact RMQ encoding needs
-`2n - 1.5 log n - O(1)` bits. The public primitive-query theorem now also
-charges the complete query: at most **837572 instructions**, with total
-allocated data, literal program encoding and finite scratch occupying
-`2n + o(n)` bits. Its logarithmic word model assumes unit-cost multiplication,
-division, remainder, shifts and bitwise operations. The earlier **210** trace
-and **427** probe bounds retain their separate charge policies; none is a
-Lean wall-clock bound. The cost of building the
-payload -- preprocessing time and workspace, in any model -- is **unproved and
-excluded from this bound**: no theorem here bounds it, and none is claimed.
+`2n - 1.5 log n - O(1)` bits. "Modeled cost" there counts charged probes into
+that payload, not machine instructions or wall-clock time. A separate
+candidate theorem, `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`,
+charges every primitive instruction of its own machine query; it is
+summarized in the next paragraph. The earlier **210** trace and **427** probe
+bounds keep their separate charge policies, and none of these bounds is a Lean
+wall-clock bound. The cost of building the payload -- preprocessing time and
+workspace, in any model -- is **unproved and excluded from every query
+bound**: no theorem here bounds it, and none is claimed.
 The same code base is now growing into a
 verified advanced-data-structures testbed, with standalone rank/select,
 balanced-parentheses navigation, and union-find spokes.
 
-Import `RMQPaper` and use
-`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`. The
+**Fully charged packed query (candidate).** Import `RMQPaper` and use
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`. For every `xs : List Int`
+it fixes one numeric memory -- 174 counted metadata words followed by the
+existing packed allocation of the payload, densely repacked into `w(n)`-bit
+words with `log2(n+2)+1 <= w(n) <= 192*(log2(n+2)+1)` -- and one closed
+straight-line program of **837,572** primitive instructions that does not
+depend on `xs` or `n`. Each executed instruction is one step. Every valid
+half-open range returns its leftmost minimum, and for every representable
+endpoint pair the run halts within at most 837,572 steps, which is simply the
+program length; the committed valid-query fixtures observe 6,003 to 16,358
+steps. The memory, the literal program encoding and 8,271 registers plus three
+control words fit in `2n + o(n)` bits, but the code and scratch term exceeds
+`n` for every `n` below about `2^28`, so it is lower order only asymptotically.
+The word model assumes unit-cost multiplication, division, remainder, variable
+shifts and bitwise operations, and every executed operation is proved free of
+overflow, underflow, zero division and oversized shifts. Endpoints outside the
+word domain are rejected by an uncharged value-level check. Preprocessing is
+unbounded and unclaimed, and Lean runtime is a separate, unmeasured quantity.
+Status: **CANDIDATE**, pending the committed replay campaign, the aggregate
+gate and a fresh blind exact-commit audit. The
 [machine review packet](docs/WORD_RAM_REVIEW_PACKET.md) states the full model,
-allocation/run identity and independent validation contract. Final PQ1 replay
-and blind-audit certification are tracked in the internal acceptance matrix.
+allocation/run identity and validation contract.
 
 Range-minimum query (RMQ) asks for the leftmost position of the smallest value
 in a subarray. The surprising theorem is not that RMQ can be solved, but that
@@ -76,6 +93,7 @@ for checked historical profiles under `Legacy`/`Compatibility` names.
 
 | Alias | Meaning |
 | --- | --- |
+| `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` | Candidate primitive-machine theorem over ordinary `xs : List Int`, pending the replay campaign, aggregate gate and blind audit: one numeric memory and one closed straight-line program; exact leftmost answers for valid half-open ranges; the rejection packet `0` with no memory reads for representable invalid ranges; halting within at most 837,572 primitive instructions; every stored word, operand and prefix state within one logarithmic word width; and memory, literal program encoding and registers within `2n + o(n)` bits. Unit-cost multiplication, division, remainder, shifts and bitwise operations are model assumptions; preprocessing is unclaimed. |
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Reader-facing theorem over ordinary `xs : List Int`: `buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`; valid half-open queries return the exact leftmost RMQ answer, invalid or empty ranges return `none`, and modeled query cost is constant. |
 | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Reader-facing no-synthetic execution story over ordinary `xs : List Int`, including the same public space inequality and range contract. Exact physical-word erasure is also conjoined directly in the paper main theorem; the construction is not padded to manufacture a size equality. |
 | `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing theorem consuming the manifest packet, guarded reviewer-native certificate and independent 24-field required-facts projection, guarded list packet, literal same-execution `nonSyntheticWeight <= 210`, and complete supplied-store `TraceResult` equality under exact ordered dynamic-read agreement, together with the existing payload, answer, invalid-range, provenance, and no-synthetic clauses. |
@@ -221,6 +239,12 @@ At a high level, the repository currently includes:
   Catalan slack equivalent to `2n - 1.5 log n - O(1)`;
 - a payload-accounted BP-native succinct RMQ upper bound with payload length at
   most `2*n + o(n)` and constant modeled query cost;
+- a candidate primitive-machine query,
+  `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, whose numeric memory,
+  literal program and finite register bank occupy `2n + o(n)` bits and whose
+  run charges every executed primitive instruction, within a fixed budget
+  equal to its straight-line program length (pending replay, aggregate gate
+  and blind audit);
 - an interpreter-backed final succinct RMQ query surface whose all-size
   execution story emits one global `WordRAM.TraceEvent` stream; every event is
   a payload `readWord`, as checked by
@@ -238,7 +262,14 @@ At a high level, the repository currently includes:
 The cost statements are model-relative. They use a small `Costed` layer and a
 traced RAM substrate with unit-cost indexed reads, word operations, branches,
 comparisons, and table accesses where explicitly modeled. They are not claims
-about Lean's executable `List` runtime.
+about Lean's executable `List` runtime. The `210` charged-trace and `427`
+packed-probe theorems leave controller dispatch, decoding, arithmetic and
+branching uncharged. The separate candidate
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` uses a different execution:
+a register machine over numeric memory whose nine instruction forms (load,
+constant, move, arithmetic, comparison, jump, register jump, branch-if-zero,
+halt) each cost one step, with unit-cost multiplication, division, remainder,
+variable shifts and bitwise operations on `w(n)`-bit words.
 
 The space statements count payload bits separately from proof-only fields and
 certificates. The succinct RMQ theorem counts the balanced-parentheses shape
@@ -347,7 +378,8 @@ imports, this material):
 - [`docs/TRUST_AUDIT_PACKET.md`](docs/TRUST_AUDIT_PACKET.md): skeptical-review
   packet for the headline theorem.
 - [`docs/WORD_RAM_REVIEW_PACKET.md`](docs/WORD_RAM_REVIEW_PACKET.md): focused
-  review packet for the first-order Word-RAM anti-oracle boundary.
+  review packet for the candidate primitive-machine query and for the
+  first-order Word-RAM anti-oracle boundary of the charged-trace theorem.
 - [`docs/TRUST_BASE.md`](docs/TRUST_BASE.md): dependency policy, model
   glossary, and verification commands.
 - [`docs/FAMILY_SUMMARY.md`](docs/FAMILY_SUMMARY.md): full theorem inventory,
@@ -375,9 +407,12 @@ package, calibrate, and reuse the infrastructure:
    stories where that materially clarifies theorem surfaces;
 2. push the union-find spoke from the current sequence/event scorecard toward a
    true inverse-Ackermann amortized theorem over strict residual events; and
-3. harden extraction and preprocessing around the proved PQ1 primitive query;
-   the packed numeric-memory theorem supplies controller charging, while
-   complete preprocessing and production serialization remain separate; and
+3. take the candidate primitive-machine query
+   `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` through its committed
+   replay campaign, aggregate gate and fresh blind audit; it charges every
+   primitive instruction of its own numeric-memory execution, while
+   preprocessing cost, extraction and production serialization remain
+   separate; and
 4. promote shared cost, refinement, lower-bound, and amortized-analysis pieces
    into a more neutral library surface only when concrete reuse demands it.
 

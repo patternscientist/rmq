@@ -15,7 +15,10 @@ uniform charged-trace bound `210`. Controller operations remain outside the
 charged event model, so this is not a conventional word-RAM or Lean runtime
 bound. On the exact same canonical trace, the separate strong theorem
 `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` proves
-that every emitted event is a payload-word read.
+that every emitted event is a payload-word read. A separate candidate theorem,
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, charges every primitive
+instruction of a different, numeric-memory execution; it is explained in its
+own section below and is still pending audit.
 
 ## What The Main Theorem Says
 
@@ -102,25 +105,107 @@ payload and do not make every source active on every query.
 ## The Cost-Model Boundary
 
 The charged events on the accepted route are attempted payload-word reads. The
-theorem does not charge instruction dispatch, input or register
+charged-trace theorem does not charge instruction dispatch, input or register
 access, option tests, branching, arithmetic, decoding, local scanning,
-candidate merging, trace assembly, or the public validity guard. The current
-Lean theorem also does not prove:
+candidate merging, trace assembly, or the public validity guard. That theorem
+also does not prove:
 
 - compiled Lean wall-clock performance;
-- a serialized-payload API with a fully charged controller;
+- a serialized-payload API with a controller whose every step is charged;
 - preprocessing time inside the same machine;
-- conventional word-RAM complexity for every controller operation; or
+- conventional word-RAM complexity for every controller operation of its own
+  execution; or
 - global minimality of the constant `210`.
 
-Those are downstream machine-model or engineering obligations. They do not
-weaken the checked statement inside the explicit charged-trace model.
+Those remain true of the charged-trace theorem, and they do not weaken the
+checked statement inside its explicit model. Charging every controller
+operation is now addressed separately, for a different execution, by the
+candidate in the next section; serialized-payload querying and preprocessing
+remain open for both.
+
+## The Separate Primitive-Machine Candidate
+
+**What changed conceptually.** The theorems above count charged payload reads
+on a logical trace and leave the controller's own work free. The candidate
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` counts that work too, for a
+different execution. Preprocessing builds one numeric memory, `buildMemory xs`:
+174 metadata words that serialize the sizes, widths and layout descriptors of
+the shape, followed by the existing packed allocation of the payload, densely
+repacked into words of `w(n)` bits with
+`log2(n+2)+1 <= w(n) <= 192*(log2(n+2)+1)`. One closed program of 837,572
+primitive instructions, the same for every list and every size, answers
+queries on that memory. Its instructions are ordinary register-machine steps
+(load, constant, move, arithmetic, comparison, jump, register jump,
+branch-if-zero and halt), and each executed instruction costs one step.
+
+**What it means in plain English.** For every list and every pair of
+endpoints that fit in a machine word, running that fixed program on that
+memory halts within at most 837,572 steps and returns the leftmost minimum of
+every valid range, as proved by
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`; invalid ranges are
+rejected before any memory read. The memory, the program text and the
+registers together take `2n + o(n)` bits. The number 837,572 is simply the
+length of the program: the program is straight-line, so no run can take more
+steps than it has instructions, and the committed valid-query fixtures take
+6,003 to 16,358 steps. On a valid range the loads the machine performs are
+exactly the metadata loads followed by the logical reads of the charged-trace
+execution, each turned into one or two physical loads, so the new machine
+reads what the logical analysis says it reads.
+
+**Live assumptions.** Multiplication, division, remainder, variable shifts
+and bitwise operations cost one step each, an arithmetic word-RAM convention.
+Every executed operation is proved not to overflow, underflow, divide by zero
+or shift by the word width or more, so the natural-number evaluator agrees
+with `w(n)`-bit arithmetic. Endpoints outside the word domain are rejected by
+an uncharged value-level check, and no instruction bound is claimed for
+parsing them. The code and scratch storage is roughly 1.68 to 4.2 million
+words; it exceeds `n` for every `n` below about `2^28`, so the `2n + o(n)`
+statement absorbs it only asymptotically. Preprocessing time and space are
+unbounded and unclaimed, and Lean runtime is separate from the model. The
+status is CANDIDATE: the theorem is kernel checked and consumed by an
+independent typed client, but the committed replay campaign, the aggregate
+gate and a fresh blind exact-commit audit are pending.
+
+**Reusable proof ideas.**
+
+- Straight-line compilation. Structured source with statically expanded,
+  proved-bounded repetition compiles to forward-jump code, so the step budget
+  is the program length and needs no loop analysis.
+- Serialized geometry. Size and shape parameters live in a counted metadata
+  prefix that the program loads, instead of in code specialized to `n`; the
+  code stays uniform and the metadata is charged as data.
+- Dense repacking at a wider word. The existing cells are re-chunked into
+  wider words, so only a lower-order header and rounding are added and the
+  leading `2n` coefficient survives.
+- Generic evaluation boundaries and register write frames. Proofs compose
+  hundreds of thousands of instructions through block-level lemmas, so the
+  kernel never unfolds the whole program.
+- Constructor-complete static field maxima. One maximum over every encoded
+  field of every instruction, dormant branch arms included, bounds all
+  operands without enumerating executions.
+- Proved absence of overflow. Excluding overflow, underflow, zero division
+  and oversized shifts on every executed transition makes natural-number
+  arithmetic equal to `w(n)`-bit arithmetic, so no wraparound convention is
+  left unstated.
+
+**What a skeptical graduate student should inspect next.** Whether the
+837,572 budget of `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` is a
+meaningful constant or only the program length (it is only the length, far
+above observed runs, and no path-sensitive bound is proved); whether the
+unit-cost multiplication, division and shift convention matches the word-RAM
+they have in mind; whether the uncharged outer word-domain check hides work
+(it compares the two endpoints with `2^w(n)`, and that comparison is not
+charged); how large `n` must be before the code and scratch term is genuinely
+lower order; whether the typed client really fails when any certificate field
+is weakened, which the committed replay campaign is meant to show; and
+whether preprocessing, unbounded here, can be brought into the same machine.
 
 ## Publication Topology
 
 `RMQPaper.lean` imports only `RMQ.Headlines.RMQ`. The canonical headline module
 contains the current construction, list, adequacy, store, provenance, and cost
-aliases. Historical query profiles and old cost/regime companions remain
+aliases, and also the candidate primitive-machine alias described above.
+Historical query profiles and old cost/regime companions remain
 checked through the separately named `RMQ.Headlines.RMQCompatibility` module,
 which is available from the broad `RMQ.Headlines` barrel but is not imported by
 the paper root.
@@ -148,6 +233,9 @@ The full repository acceptance command is:
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/gate.ps1
 ```
+
+The gate includes the committed packed-query replay,
+`scripts/packed_query_replay.ps1`, which needs a clean committed tree.
 
 The topology and claim checks are tripwires for stale names and known wording
 hazards. They do not establish the meaning of surrounding English; that still

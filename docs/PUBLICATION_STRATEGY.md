@@ -73,8 +73,10 @@ candidates, subject to the novelty search described below — are:
    accounting for the canonical no-synthetic trace.
    Earlier checked cost and dispatch declarations live in the explicit
    [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md)
-   and are not part of the paper surface. E1 still owns fully charged
-   controller simulation.
+   and are not part of the paper surface. Instruction-level charging of the
+   controller, once assigned to an E1 simulation, is now the separate
+   candidate `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` (section 4b),
+   pending its replay campaign, aggregate gate and blind audit.
 
 Two items that were previously P0 are no longer proof blockers on the Lean/docs
 side:
@@ -155,10 +157,35 @@ Landed on `main` since this document was written (through `3f6f1e3`):
 - **Historical cost-regime split:** detailed earlier cost and dispatch
   chronology is quarantined in the explicit compatibility history. The
   canonical reviewer route is uniform; the current theorem gives the checked charged-trace cap
-  `210`, while E1 fully charged controller simulation remains.
+  `210`, while E1 fully charged controller simulation remained open at that
+  date (section 4b: now the candidate
+  `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`).
 
-Remaining, in priority order: **paper/artifact packaging; novelty search;
-extraction + benchmarks; E1 fully charged simulation.**
+Remaining at that date, in priority order: **paper/artifact packaging; novelty
+search; extraction + benchmarks; E1 fully charged simulation** (the last item
+is superseded by the candidate
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`; see section 4b).
+
+## 4b. Status update (2026-09-11)
+
+The instruction-level charging gap now has a candidate theorem,
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`. It charges every
+primitive instruction of a separate numeric-memory execution: one closed
+straight-line program of 837,572 instructions whose run halts within at most
+that many steps, with memory, program encoding and registers in `2n + o(n)`
+bits, under unit-cost multiplication, division, remainder, shifts and bitwise
+operations. It is a CANDIDATE, pending the committed replay campaign, the
+aggregate gate and a fresh blind exact-commit audit; the E1 simulation plan is
+superseded by this route, and no acceptance is recorded here.
+
+For the paper this adds a second model theorem, with a stricter charge policy
+and a different execution, beside the `210` charged-trace result rather than
+replacing it. The step budget is the program
+length, not a tight constant; the code and scratch term is lower order only
+asymptotically; endpoints outside the word domain are rejected by an
+uncharged check; and preprocessing remains unclaimed. Remaining, in priority
+order: **certify the candidate; paper/artifact packaging with both cost models
+stated separately; novelty search; extraction + benchmarks.**
 
 ## 5. Recommended target
 

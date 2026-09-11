@@ -60,27 +60,57 @@ if ($SelfTest) {
   # some strict term must match, and no allowance may excuse it. A deleted term,
   # a weakened pattern, or a widened allowance each make a probe stop being
   # rejected, and that fails here.
+  #
+  # Policy v28 adds the PQ1 primitive-instruction classes. An 837,572 or
+  # "fully charged" paragraph that names no PQ1 theorem must be rejected, and
+  # so must the same words attached to a 210 trace or 427 probe theorem name
+  # even when the PQ1 alias is present -- the fifth probe below is excused by
+  # the attribution term and can only be rejected by the attachment term.
   $protectedClaimProbes = @(
     'The canonical query executes in 210 word-RAM instructions.',
     'The canonical query runs in a fixed number of word-RAM instructions.',
-    'This is not merely a modeled bound: the canonical query executes in 210 word-RAM instructions.'
+    'This is not merely a modeled bound: the canonical query executes in 210 word-RAM instructions.',
+    'The packed primitive query halts within at most 837,572 instructions.',
+    'RMQ.Headlines.succinctRMQPackedCellProbeArchitecture is fully charged; see RMQ.Headlines.succinctRMQFullyChargedPackedQuery.',
+    'The canonical reviewer route is fully charged.'
+  )
+  # The other half of the same decision: attributed PQ1 sentences, including
+  # one that contrasts the 210 and 427 numerals, must stay accepted. A term
+  # widened to reject them, or an attribution allowance that stopped firing,
+  # makes one of these fail.
+  $acceptedClaimProbes = @(
+    'RMQ.Headlines.succinctRMQFullyChargedPackedQuery proves that the packed primitive run halts within at most 837,572 instructions.',
+    'RMQ.Headlines.succinctRMQFullyChargedPackedQuery bounds its own packed run by at most 837,572 primitive instructions; the 210 trace and 427 probe bounds are separate quantities.'
   )
   $probePolicy = Get-Content -Raw -Path $PolicyPath | ConvertFrom-Json
-  foreach ($probeText in $protectedClaimProbes) {
+  function Test-ProbeRejected([string]$ProbeText) {
     $rejected = $false
     foreach ($t in $probePolicy.terms) {
       if (-not $t.strict) { continue }
       if ([string]$t.pattern -eq '') { continue }
-      if ($probeText -notmatch [string]$t.pattern) { continue }
+      if ($ProbeText -notmatch [string]$t.pattern) { continue }
       # README.md is a governed current-fact surface and matches no allowedPathRegex
       # of this term, so only the LINE allowance can excuse the probe.
-      if ($t.allowedLineRegex -and $probeText -match [string]$t.allowedLineRegex) { continue }
+      if ($t.allowedLineRegex -and $ProbeText -match [string]$t.allowedLineRegex) { continue }
       $rejected = $true
     }
-    if (-not $rejected) {
+    return $rejected
+  }
+  foreach ($probeText in $protectedClaimProbes) {
+    if (-not (Test-ProbeRejected $probeText)) {
       Write-Host ("CLAIM-DRIFT SELFTEST: FAIL -- protected claim class is no longer rejected: {0}" -f $probeText)
       $selfTestFailures += 1
     }
+  }
+  foreach ($probeText in $acceptedClaimProbes) {
+    if (Test-ProbeRejected $probeText) {
+      Write-Host ("CLAIM-DRIFT SELFTEST: FAIL -- accurate attributed claim is now rejected: {0}" -f $probeText)
+      $selfTestFailures += 1
+    }
+  }
+  if ($selfTestFailures -eq 0) {
+    Write-Host ("CLAIM-DRIFT SELFTEST: ok -- {0} protected probes rejected and {1} attributed probes accepted" -f `
+        $protectedClaimProbes.Count, $acceptedClaimProbes.Count)
   }
 
   # (1) No emitted finding may CITE a process-record path.

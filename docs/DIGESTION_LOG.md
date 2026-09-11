@@ -1649,3 +1649,80 @@ any reviewer-facing property of the packed machine is missing from the
 combined proposition -- and whether the loose `o(n)` envelope and the `427`
 constant survive comparison against Fischer-style constants once `S1` fixes
 bit-level probe accounting.
+
+## 2026-09-11 -- PQ1 candidate: fully charged packed primitive query (not accepted)
+
+Theorem: `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`
+in `RMQ/Core/WordRAM/Packed/Capstone.lean`, exported through `RMQPaper` as
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` and consumed field by field
+by `RMQ/Validation/PackedQueryContract.lean`. Branch
+`codex/fully-charged-packed-query-v1` over governance base
+`4639223bc8130b0ef752270b5cbdd74325abcd60` (`audit-v1-rc-6`). Status:
+CANDIDATE. The theorem is kernel checked with axioms `propext`,
+`Classical.choice` and `Quot.sound`; the committed replay campaign, the
+aggregate gate and a fresh blind exact-commit audit are pending, and this
+entry records no acceptance.
+
+Conceptually, PQ1 changes what is counted. The earlier canonical theorems
+count charged payload reads on a logical trace (the `210` certificate) or
+structural probes into a packed allocation with free computation between them
+(the `427` bound); controller work is uncharged in both. PQ1 introduces a
+separate primitive machine -- a register machine over numeric memory with
+nine instruction forms, each executed instruction one step -- and a separate
+execution: preprocessing builds `buildMemory xs`, 174 counted metadata words
+followed by the existing packed allocation densely repacked into
+`wordWidth n`-bit words, and one closed straight-line `queryProgram` of
+837,572 instructions, independent of `xs` and `n`, answers every query. The
+certificate ties space, width, correctness, halting, safety, read provenance
+and memory agreement to that one memory, program and run. The former E1 plan,
+to simulate the charged-trace execution on a richer machine, is superseded by
+this route, pending the audit.
+
+In plain English: for every list and every endpoint pair that fits in a
+machine word, running one fixed program on one `2n + o(n)`-bit memory halts
+within at most 837,572 steps and returns the leftmost minimum of every valid
+range, and every step is an ordinary register-machine instruction. The number
+is the length of the straight-line program, not a tight cost; the committed
+valid-query fixtures take 6,003 to 16,358 steps. On a valid range the loads
+are exactly the metadata loads followed by the physical expansion of the same
+logical trace the charged-trace theorem analyses, so the two accounts agree
+about what is read.
+
+Live assumptions: unit-cost multiplication, division, remainder, variable
+shifts and bitwise operations (an arithmetic word-RAM); every executed
+operation proved free of overflow, underflow, zero division and oversized
+shifts, so natural-number arithmetic equals `w(n)`-bit arithmetic; an
+uncharged value-level check rejecting endpoints outside the word domain, with
+no instruction bound for parsing them; code and scratch storage of roughly
+1.68 to 4.2 million words that exceeds `n` for every `n` below about `2^28`,
+so its absorption into `o(n)` is asymptotic only; preprocessing unbounded and
+unclaimed; Lean runtime separate and unmeasured; and the Mathlib-free Lean/Std
+plus `omega` trust base.
+
+Reusable proof ideas: straight-line compilation of statically expanded,
+proved-bounded repetition, so the budget is the program length and needs no
+loop analysis; serializing size and shape geometry into a counted metadata
+prefix instead of code specialized to `n`; dense repacking at a wider word to
+keep the leading `2n` coefficient; generic evaluation boundaries and register
+write frames, so the kernel never unfolds the whole program;
+constructor-complete static maxima over every encoded field, dormant branch
+arms included; and proving the absence of overflow so the word model is not
+an unstated wraparound convention.
+
+Public surfaces synchronized in the same change: every registered current
+surface now names `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` with its
+caveats and CANDIDATE status, and every earlier "controller uncharged", "not
+proved" or "E1 remains" statement is rescoped to the `210` and `427`
+theorems, where it stays true. Claim-drift policy v28 requires the alias in
+any current-surface paragraph that states the budget or the words "fully
+charged", and forbids attaching them to a charged-trace or packed-probe
+theorem name.
+
+A skeptical graduate student should next ask whether 837,572 means anything
+beyond the program length (no path-sensitive bound is proved); whether the
+unit-cost division and shift convention matches their word-RAM; whether the
+uncharged outer word-domain check hides work; how large `n` must be before the
+code and scratch term is genuinely lower order; whether weakening any
+certificate field really breaks the typed client, which the committed replay
+campaign is meant to show; and whether preprocessing can be brought into the
+same machine.

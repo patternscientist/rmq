@@ -12240,3 +12240,46 @@ HEAD bfffa95 passes 45/45 under both hosts. The optional -ProvenanceRevision 891
 Audit L7-03 and L8-F3: no Lake target built RMQ.Validation.PackedQueryContract. scripts/headline_axiom_check.lean imported it, so a fresh clone's reproduce_artifact.sh and headline_check.ps1 failed, and inside the gate it passed only as a side effect of the replay's direct compilation.
 
 RMQ.lean now imports the consumer and RMQ.Core.WordRAM.Packed.ArrayRun, following its existing EG-CP validation imports. The default lake build elaborates every field check, pin and fit control and the array-evaluator equality, and the headline axiom check works after lake build and lake build RMQPaper. hub_closure_lint -SelfTest and shim_lint pass. The gate's replay comment no longer states a certificate field count. The headline and word-RAM axiom inventories add checkC31-C33, two pins, two fit controls, the new certificate theorems and runArray_toArray. A separate lean_exe target was rejected, because the gate builds every executable and would compile the whole closure to C.
+
+## WDD-20260911-PQ1-009: move the 210/427 occurrence pins for the PQ1 contrast sentences
+
+Context: scripts/constant_sync_check.ps1 pins the total occurrences of each current constant on each listed surface, so that corrupting any single occurrence fails (the 2026-08-09 audit corrupted one of five `427`s and a presence check passed). The PQ1 export commit added one contrast sentence (the 210 trace and 427 probe bounds keep their charge policies) to README, artifact/CLAIMS, PAPER_THEOREM_MAP and PAPER_CLAIM_CORRESPONDENCE without moving the pins. That gate stage therefore failed with six count failures: README 210 10/9, CLAIMS 11/10, THEOREM_MAP 210 14/13 and 427 6/5, CORRESPONDENCE 210 12/11 and 427 6/5. The PQ1 public-surface synchronization then added further sentences that scope uncharged-controller and non-claim statements explicitly to the 210 and 427 theorems.
+
+Decision: move each pin to the measured count in the same change, with an inline comment naming the added sentences: README 9 -> 11, artifact/CLAIMS 10 -> 13, WHAT_IS_PROVED 9 -> 10, PAPER_THEOREM_MAP 210 13 -> 16 and 427 5 -> 7, PAPER_CLAIM_CORRESPONDENCE 210 11 -> 12 and 427 5 -> 6, FAMILY_SUMMARY 7 -> 8. TRUST_AUDIT_PACKET stays at 7. Anchors and claim shapes are unchanged, and every added occurrence restates the same proved value.
+
+Alternatives rejected. Paraphrasing the numerals away ("the trace bound" instead of "the 210 trace bound") would keep the pins but delete exactly the words a reader needs to see that 837,572 replaces neither 210 nor 427. Excluding contrast sentences from the count, or dropping count pins in favour of anchors, would widen the checker to fit our own prose and reopen the corrupted-occurrence class the count exists to catch. Moving the pins in a later commit would leave a failing gate stage in between.
+
+Consequences: the count still cannot tell a contrast from a claim. A moved pin only shows that each added occurrence was deliberate, as recorded for the 2026-08-12 move; theorem-directed review still owns the wording. Any later edit that adds or removes one of these contrast sentences must move the pin in the same change.
+
+Evidence: `pwsh -NoProfile -File scripts/constant_sync_check.ps1 -SelfTest` exited 1 with 6 failures before the change and exits 0 after it (7 charged-trace surfaces and 2 probe surfaces agree; 15/15 self-test cases pass). Counts were measured with the script's own (?<![0-9])210(?![0-9]) rule.
+
+## WDD-20260911-PQ1-010: claim-drift policy v28 for the primitive-instruction budget
+
+Context: PQ1 exports RMQ.Headlines.succinctRMQFullyChargedPackedQuery, a separate candidate whose run charges every primitive instruction within 837,572 steps. The coordinator audit (L7-07/L7-08) found no policy term for 837572. The existing forbidden-wordram-instruction-count status text (cell-probe-cost-is-not-a-word-ram-instruction-count) would mislabel an accurate PQ1 sentence. Frozen row REQ-PQ9-PUBLIC requires the 210 trace and 427 probe bounds to stay distinct from the new budget and forbids labelling a prior theorem fully charged by prose.
+
+Decision: policy version 27 -> 28 adds two strict, current-fact-surface, multiline terms and rescopes one status.
+(1) required-pq1-fully-charged-attribution. Its pattern spans the maximal paragraph (run of non-blank lines) that contains 837,?572 or fully[- ]charged. The line allowance, which the scanner applies to the whole matched paragraph, requires RMQ.Headlines.succinctRMQFullyChargedPackedQuery or fullyChargedPackedQueryCapstone_holds.
+(2) forbidden-pq1-charge-on-trace-or-probe-theorem. It forbids 837,?572 or fully[- ]charged within one line or one continuation line (160 characters each way, either order) of a charged-trace or packed-probe theorem name or alias, with no path or line allowance. The names cover: costed-cost-le and its supplied-store transfer, weight-sum-le-210, query-cost-eq, the charged-trace algebra, the principled all-size charged trace, the two-sided profile, the paper main theorem, the reviewer-machine certificate with its required-facts consumer and guarded list packet, the list supplied-store cost transfer, the packed cell-probe architecture and its derived cap.
+(3) forbidden-wordram-instruction-count keeps its pattern and allowances. Its status now says that the 210 charged-trace and 427 packed-probe bounds are not word-RAM instruction counts and that the separate PQ1 bound is stated as an attributed at-most 837572 bound.
+Tests. claim_drift_scan.ps1 -SelfTest gains three must-reject probes: an unattributed budget sentence, unattributed 'fully charged', and a probe-alias attachment that the attribution term excuses, so only the attachment term can reject it. It also gains a new must-accept probe list: two attributed sentences, one contrasting the 210 and 427 numerals. claim_drift_policy_regression.ps1 gains config pins for all three terms and ten production-verdict fixtures (six reject, four accept; counts 82/38 -> 88/42). They cover: an alias in a different paragraph (reject); the core theorem name in the same paragraph across a line break (accept); a cross-line trace-alias attachment (reject); and a direct regression for the word-RAM count term, which until now had only self-test probes.
+
+Alternatives rejected:
+- A file-level requiredAttributions entry (the existing mechanism): one alias anywhere in a file would excuse every paragraph, including one that attaches the words to another theorem.
+- Line-level attribution: wrapped prose would need the alias on every line, or would invite rewrapping to evade it.
+- Covering numerals in term 2: that would reject accurate contrasts such as 'the 210 trace and 427 probe bounds are separate quantities'.
+- A negation allowance on term 2: that is the WDD-20260908-084 bypass class.
+- A PQ1 allowance on the word-RAM count term: it widens an allowlist, and 'executes in 837572 word-RAM instructions' asserts an exact count nobody proved.
+- Changing scanner logic: outside this lane and unnecessary, because multiline matches already hand the whole paragraph to the line allowance.
+
+Consequences:
+- Every current-surface paragraph that states the budget or says 'fully charged' names the alias, headings included; three headings became 'Packed primitive query (candidate)'.
+- The old E1 'fully charged' phrases on roadmaps and strategy were rewritten to point at the candidate.
+- Residual: a paragraph that names the alias and then says, in numerals only, that the 210 or 427 bound is fully charged passes both terms.
+- paper/** and DIGESTION_LOG are not current-fact surfaces and are not governed; paper/rmq.tex still calls instruction-level charging future work (audit L7-05).
+
+Evidence:
+- The strict scan went from 17 strict failures before the surface edits to exit 0 (1510 hits, 0 failures).
+- -SelfTest PASS.
+- The ten fixtures pass via -OnlyCase and in full runs.
+- Scratch-policy mutations: deleting term 1 makes the self-test exit 1 (2 probes) and the regression fail at [pq1-attribution-config]. Deleting term 2 fails both ([pq1-attachment-config]). Widening term 1's allowance to '.' fails both ([pq1-attribution-config]). Deleting the word-RAM count term fails both (3 probes; [pq1-wordram-count-scope-config]). Reverting its status fails the regression.
+- Full regression runs in the shared worktree passed all 130 fixture and 16 context verdicts, but exited 1 on tracked-state assertions caused by concurrent Lean-lane edits. A rerun on a quiescent tree is required.

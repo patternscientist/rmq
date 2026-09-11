@@ -53,6 +53,7 @@ aliases.
 
 | Alias | Meaning |
 | --- | --- |
+| `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` | Candidate, pending the committed replay campaign, aggregate gate and blind audit: one numeric memory and one closed straight-line primitive program answer every valid half-open list query with the leftmost minimum, reject representable invalid ranges with no memory reads, halt within at most 837,572 primitive instructions, keep every word, operand and prefix state within one logarithmic width, and fit memory, literal program encoding and registers in `2n + o(n)` bits. Unit-cost multiplication, division, remainder, shifts and bitwise operations are model assumptions. |
 | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | Tight fixed-length RMQ payload lower bound with doubled Catalan slack. |
 | `RMQ.Headlines.rankSelectNPlusOConstantQuery` | Standalone plain-bitvector Jacobson/Clark rank/select family with `n + o(n)` payload and constant modeled query cost. |
 | `RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery` | The same public rank/select family, strengthened with machine-word-bounded concrete payload reads. |
@@ -222,6 +223,26 @@ footprint agreement with the canonical global store, and no synthetic cost-only
 events. A leaf-level supplied-store compatibility guard and its nonclaims are
 documented only in the explicit compatibility history; the uniform reviewer
 execution does not dispatch through that leaf.
+
+A separate candidate theorem,
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, charges the query at the
+level of primitive instructions rather than payload reads. Preprocessing
+builds one numeric memory, `buildMemory xs`: 174 metadata words followed by
+the existing packed allocation of the payload, densely repacked into words of
+`log2(n+2)+1` to `192*(log2(n+2)+1)` bits. One closed straight-line program of
+837,572 instructions, the same for every list and size, runs on it; each
+executed instruction is one step, with unit-cost multiplication, division,
+remainder, variable shifts and bitwise operations, and every executed
+operation is proved free of overflow, underflow, zero division and oversized
+shifts. For every representable endpoint pair the run halts within at most
+837,572 steps, the program length, and every valid range returns its leftmost
+minimum. Memory, literal program encoding and registers fit in `2n + o(n)`
+bits, although the code and scratch term exceeds `n` for every `n` below
+about `2^28`. Endpoints outside the word domain are rejected by an uncharged
+value-level check, and preprocessing is unclaimed. The candidate is pending
+its committed replay campaign, the aggregate gate and a fresh blind
+exact-commit audit; details are in
+[`docs/WORD_RAM_REVIEW_PACKET.md`](WORD_RAM_REVIEW_PACKET.md).
 
 The global-store execution story now has a flat-payload no-synthetic backing
 theorem, `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory`.
@@ -668,6 +689,12 @@ They are theorems inside a simple model:
   `Costed`.
 - Indexed table reads and bounded word primitives are charged as unit-cost
   operations under the documented RAM/indexed-access model.
+- The charged-trace theorem behind the `210` bound leaves controller dispatch,
+  decoding, arithmetic and branching uncharged. The separate candidate
+  `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` instead charges every
+  executed instruction of a small register machine over numeric memory, with
+  unit-cost multiplication, division, remainder, shifts and bitwise
+  operations; it is still a model count, not Lean execution time.
 
 This is the standard model used to state succinct-data-structure results, but
 it is deliberately named so the theorem surface does not confuse model cost

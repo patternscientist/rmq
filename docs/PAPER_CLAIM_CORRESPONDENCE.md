@@ -1,14 +1,19 @@
 # Paper Claim Correspondence
 
-## Fully charged packed query
+## Packed primitive query (candidate)
 
 | Claim | Public alias | Source theorem and file | Check |
 | --- | --- | --- | --- |
-| All ordinary lists have one query-independent numeric allocation and fixed primitive program; exact leftmost half-open queries and representable invalid rejection use at most837572 instructions, with logarithmic words and complete data/code/scratch capacity `2n+o(n)`. The arithmetic word model includes unit-cost multiplication, division, remainder, shifts and bitwise operations. | `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`; proposition `SuccinctRMQFullyChargedPackedQuery`, via `RMQPaper` | `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`, `RMQ/Core/WordRAM/Packed/Capstone.lean` | Independent30-field `RMQ/Validation/PackedQueryContract.lean`; `scripts/packed_query_replay.ps1`; aggregate gate and fresh blind audit |
+| For every ordinary list, one query-independent numeric allocation and one closed straight-line primitive program of 837,572 instructions answer every valid half-open query with the leftmost minimum and reject representable invalid ranges with the packet `0` and no memory reads. For every representable endpoint pair the run halts within at most 837,572 steps, the program length; every stored word, operand and prefix state fits one logarithmic width; and memory, literal program encoding and registers occupy `2n + o(n)` bits. The word model assumes unit-cost multiplication, division, remainder, variable shifts and bitwise operations. | `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`; proposition `RMQ.Headlines.SuccinctRMQFullyChargedPackedQuery`, via `RMQPaper` | `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`, `RMQ/Core/WordRAM/Packed/Capstone.lean` | Independent typed client `RMQ/Validation/PackedQueryContract.lean`; `lake env lean scripts/headline_axiom_check.lean`; committed replay `scripts/packed_query_replay.ps1`, aggregate gate and fresh blind audit (all pending) |
 
-All30 independently stated public consumers elaborate. Final certification is
-tracked in the PQ1 acceptance matrix. The210 trace and427 probe rows below
-keep their original execution objects and charge policies.
+Status: CANDIDATE. The theorem is kernel checked and every certificate field
+has an independently stated public consumer; the committed replay campaign,
+the aggregate gate and a fresh blind exact-commit audit are pending. Endpoints
+outside the word domain are rejected by an uncharged value-level check, the
+code and scratch term is lower order only asymptotically, and preprocessing is
+unclaimed. The 210 trace and 427 probe rows below keep their original
+execution objects and charge policies, and the 837,572-step budget of
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` reinterprets neither.
 
 ## Canonical Claim Rows
 
@@ -130,7 +135,9 @@ Reading rules for this block, each of which a reader will otherwise get wrong:
   attainment claim; the pinned fixture issues 68 probes.
 - The result is **cell-probe**: computation between probes is free and
   controller steps are uncharged. It is not word-RAM time, not preprocessing
-  time, not measured runtime.
+  time, not measured runtime. The candidate in the first table,
+  `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, charges every primitive
+  instruction of its own, different execution; it does not change this row.
 - The `210` in `427 = 1 + 2*3 + 2*210` is the packed controller's structural
   fuel and is **a different quantity** from the canonical route's charged-trace
   `210` in the table above, despite being the same numeral. They are provably

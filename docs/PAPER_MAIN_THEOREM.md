@@ -1,16 +1,25 @@
 # Paper Main Theorem
 
-## Primitive-query strengthening
+## Primitive-query strengthening (candidate)
 
-`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` now exports the complete
-packed primitive theorem through `RMQPaper`. The same allocation and run have
-total data/code/scratch capacity `2n+o(n)`, logarithmic word width, exact
-half-open leftmost answers, representable invalid rejection and at most837572
-primitive instructions. Its arithmetic word model explicitly includes
-unit-cost multiplication, division, remainder, shifts and bitwise operations.
-The theorem and all30 independent public consumers check; final certification
-is tracked by PQ1. See `docs/WORD_RAM_REVIEW_PACKET.md` for exact objects and
-assumptions. The following statement preserves the earlier210 trace theorem.
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` exports a separate
+candidate theorem through `RMQPaper`,
+`RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`. It
+concerns a different execution from the statement below: one numeric memory
+and one closed straight-line program of 837,572 primitive instructions, with
+total data/code/scratch capacity `2n + o(n)`, logarithmic word width, exact
+half-open leftmost answers, rejection of representable invalid ranges, and
+halting within at most 837,572 steps for every representable endpoint pair.
+Every executed primitive instruction is charged, under a word model with
+unit-cost multiplication, division, remainder, variable shifts and bitwise
+operations. The budget is the program length, far above the 6,003 to 16,358
+steps observed on the committed valid-query fixtures. The code and scratch term
+is lower order only asymptotically, endpoints outside the word domain are
+rejected by an uncharged value-level check, and preprocessing is unclaimed.
+Status: CANDIDATE, pending the committed replay campaign, the aggregate gate
+and a fresh blind exact-commit audit. See `docs/WORD_RAM_REVIEW_PACKET.md` for
+exact objects and assumptions. The statement below is the paper main theorem
+with its own 210 charged-trace bound, which this candidate does not change.
 
 ## English Statement
 
@@ -104,6 +113,9 @@ not restate a numeral beside the packet.
   canonical global trace is `readWord`.
 - `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`: entropy/Catalan
   lower-bound surface used for the matching information-theoretic story.
+- `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`: the separate candidate
+  primitive-machine theorem described at the top of this file. Its numeric
+  memory, program and run are distinct objects from the execution above.
 
 ## Lower-Bound Scope
 
@@ -133,6 +145,10 @@ The `210` result is scoped to the explicit charged-trace model. It
 charges payload reads, not controller
 arithmetic, branching, decoding, local scanning, or preprocessing. It is not a
 serialized-payload query theorem or conventional word-RAM complexity theorem.
+The candidate at the top of this file,
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, charges every primitive
+instruction of its own distinct execution; it does not turn this `210` result
+into an instruction count.
 
 For history, `RMQ.SuccinctClassic.canonicalTransitionalQueryCost_eq` is
 literal-pinned at `328`. The current raw select/close expression is not that

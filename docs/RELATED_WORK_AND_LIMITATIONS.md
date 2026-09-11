@@ -53,10 +53,17 @@ remains a safe overapproximation.
 - No CPU, compiler, extraction, cache, or benchmarking claim is made.
 - The cost model is the repository's explicit modeled WordRAM/query-cost layer.
 - The current public all-size RMQ bound is the uniform canonical checked
-  charged-trace value `210`. Controller operations remain uncharged, so it is
-  not a conventional word-RAM result. Earlier checked cost and dispatch
-  surfaces are documented in the explicit
+  charged-trace value `210`. Controller operations remain uncharged in that
+  theorem, so it is not a conventional word-RAM result. Earlier checked cost
+  and dispatch surfaces are documented in the explicit
   [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
+- The separate candidate `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`
+  charges every primitive instruction of a distinct numeric-memory execution.
+  Its fixed budget is the length of its straight-line program, its word model
+  assumes unit-cost multiplication, division, remainder, shifts and bitwise
+  operations, its outer word-domain check is uncharged, and its code and
+  scratch storage is absorbed into `o(n)` only asymptotically. It is pending
+  audit and does not bound preprocessing.
 - The auxiliary logical layout footprint is not claimed minimal; the reviewer
   flat-physical footprint is execution-derived and recorded exactly.
 - The current theorem gives component-wise **upper** caps and one exact

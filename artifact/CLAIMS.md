@@ -1,17 +1,27 @@
 # Claims Packet
 
-## Fully charged packed primitive query
+## Packed primitive query (candidate)
 
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` exports
-`PackedWordRAM.fullyChargedPackedQueryCapstone_holds` through `RMQPaper`.
-The same numeric allocation and primitive run give all-size exact leftmost
-answers, representable invalid rejection, logarithmic words, complete
-data/code/scratch capacity `2n+o(n)` and at most837572 instructions.
-Unit-cost word multiplication, division, remainder, shifts and bitwise
-operations are model assumptions. The30-field public client checks; the
-committed replay and aggregate/blind-audit certification are tracked by PQ1.
-See `docs/WORD_RAM_REVIEW_PACKET.md`. The210 trace and427 probe claims retain
-their original, narrower charge policies.
+`RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds` through
+`RMQPaper`. For every ordinary list, one numeric allocation (`buildMemory`) and
+one closed straight-line program of 837,572 primitive instructions give exact
+leftmost answers for every valid half-open range, the rejection packet `0`
+with no memory reads for representable invalid ranges, one logarithmic word
+width for every stored word, operand and prefix state, and complete
+data/code/scratch capacity `2n + o(n)`. For every representable endpoint pair
+the run halts within at most 837,572 steps, which is the program length; the
+committed valid-query fixtures observe 6,003 to 16,358 steps, and no tightness
+is claimed. Unit-cost word multiplication, division, remainder, variable shifts
+and bitwise operations are model assumptions. The code and scratch term is
+lower order only asymptotically, and endpoints outside the word domain are
+rejected by an uncharged value-level check. Preprocessing time and space are
+unbounded and unclaimed, and Lean runtime is a separate quantity.
+Status: CANDIDATE. The theorem is kernel checked and consumed by an
+independent typed client; the committed replay campaign, the aggregate gate
+and a fresh blind exact-commit audit are still pending. See
+`docs/WORD_RAM_REVIEW_PACKET.md`. The 210 trace claims below and the separate
+427 packed-probe theorem retain their original, narrower charge policies.
 
 ## Canonical Reviewer Payload And Trace
 
@@ -57,7 +67,9 @@ cap `210 = 2*35 + (2*11 + 2*37 + 33) + 11`, and modeled cost is exactly emitted
 trace length. Payload-word reads and word-rank/select primitives are charged;
 controller dispatch, input/register access, arithmetic, branching, decoding,
 local scanning, candidate merging, trace assembly, and the validity guard are
-currently uncharged. Earlier cost and dispatch theorems are documented only in
+uncharged in this charged-trace theorem. The separate candidate in the first
+section charges every primitive instruction of its own distinct execution
+instead. Earlier cost and dispatch theorems are documented only in
 the explicit
 [`compatibility history`](../docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
 This file is a compact public-facing map from headline claims to the exact
@@ -80,12 +92,16 @@ commands, see `../docs/PAPER_CLAIM_CORRESPONDENCE.md`.
 - Cost statements are model-level statements, not compiled Lean execution
   benchmarks.
 - Payload-space statements count modeled stored bits, not proof-only fields.
-- Word-RAM statements concern the explicit `WordRAM` model and trace events.
+- Word-RAM statements about the `210` theorem concern the explicit `WordRAM`
+  model and trace events. The candidate primitive-machine query uses its own
+  numeric-memory register machine, defined in
+  `RMQ/Core/WordRAM/Packed/Primitive.lean`.
 
 ## Headline RMQ Claims
 
 | Claim | Public theorem alias | Source theorem | Check command |
 | --- | --- | --- | --- |
+| Candidate, pending replay, aggregate gate and blind audit: one numeric memory and one closed straight-line primitive program answer every valid half-open query with the leftmost minimum, reject representable invalid ranges with no memory reads, halt within at most 837,572 primitive instructions, keep every word, operand and prefix state within one logarithmic width, and fit memory, literal program encoding and registers in `2n + o(n)` bits. | `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` via `RMQ.Headlines.RMQ` | `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds` | `lake build RMQPaper`, `lake env lean scripts/headline_axiom_check.lean`, and the committed replay `scripts/packed_query_replay.ps1` |
 | Exact RMQ requires essentially `2*n` bits in the fixed-length payload model, with doubled Catalan slack. | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` via `RMQ.Headlines.RMQ` | `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack` | `lake build RMQPaper` and `lake env lean scripts/headline_axiom_check.lean` |
 | The canonical reviewer payload and canonical global trace form one construction-facing profile: doubled-Catalan envelopes, `2*n + o(n)` payload, exact physical erasure, direct positional physical backing for every successful read, exact RMQ answers, non-synthetic certificate weight equal to trace length and the same `Costed.cost`, and the uniform bound `210`. | `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile` via `RMQ.Headlines.RMQ` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile` | `lake build RMQPaper` and `lake env lean scripts/headline_axiom_check.lean` |
 | The ordinary `List Int` succinct RMQ surface proves `buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`, rejects invalid or empty ranges, preserves the classic valid half-open leftmost contract, and supplies the final no-synthetic execution story. Exact physical erasure is separate and no padding is used. | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`, `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | `RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story`, `RMQ.SuccinctClassic.queryCosted_invalid` | `lake env lean scripts/headline_axiom_check.lean` and `lake env lean scripts/wordram_axiom_check.lean` |
@@ -137,12 +153,19 @@ These are checked repository spokes and remain in the aggregate
   It does not charge controller operations and is not a conventional word-RAM
   theorem. Earlier checked cost and dispatch surfaces are indexed in the
   explicit compatibility history rather than repeated here.
+- The candidate `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` does not
+  bound preprocessing time or space. It does not bound Lean runtime or measured
+  performance, and does not claim that its 837,572-step budget is attained;
+  that budget is the straight-line program length. Its space bound absorbs the
+  program and scratch storage only asymptotically.
 - The bounded execution-story theorem supplies a trace-local finite bit width
   for exposed addresses and primitive operands. It is not yet a tight
   asymptotic machine-word side-condition for every component.
 - Proof-only fields and certificates are not counted as payload bits.
-- Register arithmetic and branching are model-control operations, not charged
-  machine instructions in the current model.
+- In the `WordRAM` trace model behind the `210` theorem, register arithmetic
+  and branching are model-control operations, not charged machine
+  instructions. The separate primitive machine of the candidate above charges
+  each executed arithmetic, comparison and branch instruction as one step.
 - The BP close-navigation headline is a conditional component theorem; the repo
   does not yet expose a concrete witness inhabiting
   `WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily`.
@@ -152,13 +175,17 @@ These are checked repository spokes and remain in the aggregate
 The canonical segment-`20` component-store route, supplied-store
 parametricity, counted-payload backing, total reviewer width, edge-case
 evidence, and principled `210` charged-trace cap are consumed by
-the public all-size path. The next cost-model consumer is E1: define richer
-controller-instruction semantics and prove a fully charged small-step
-simulation of this same execution. The current theorem exposes only the actual emitted
-`WordRAM.TraceEvent` stream and its direct weights; controller dispatch,
-arithmetic, branching, decoding, local scanning, and merging remain
-documentary uncharged omissions rather than a checked substitute machine.
-Bit-addressed serialized-payload querying is deferred to S1. Complete
-preprocessing and conventional word-RAM claims remain separate downstream
-construction/machine obligations. Rank/select and BP-navigation retain their
-own separate hardening frontiers.
+the public all-size path. The charged-trace theorem exposes only the actual
+emitted `WordRAM.TraceEvent` stream and its direct weights; controller
+dispatch, arithmetic, branching, decoding, local scanning, and merging remain
+documentary uncharged omissions there rather than a checked substitute
+machine, and it makes no conventional word-RAM claim. The former E1 plan, to
+simulate that same execution with a richer instruction semantics, is
+superseded by the candidate `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`.
+That candidate compiles a distinct straight-line primitive program over a
+densely repacked allocation, charges every executed instruction, and proves
+that its ordered loads are the physical expansion of the same logical trace.
+It is not yet accepted. Bit-addressed serialized-payload querying is deferred
+to S1, and complete preprocessing remains a separate downstream construction
+obligation. Rank/select and BP-navigation retain their own separate hardening
+frontiers.
