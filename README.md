@@ -289,17 +289,6 @@ For the trust base, non-claims, and exact verification commands, see
 [`docs/TRUST_BASE.md`](docs/TRUST_BASE.md) and
 [`docs/TRUST_AUDIT_PACKET.md`](docs/TRUST_AUDIT_PACKET.md).
 
-## Native Execution Extension
-
-`RMQ.SuccinctFinal.PackedNative.nativeExecutionCapstone_holds` connects the
-canonical counted PQ1 image to a checked byte-limb executor and binary loader.
-Its 42 explicit field consumers pass. The Lean-to-C DLL and Rust/C++ startup
-checks pass; the expanded native replay and independent acceptance remain in
-progress. The source theorem separates modeled word operations and numeric
-payload bits from host allocation, multiprecision runtime and compiler/FFI
-assumptions. See the [native API](native/packed-rmq/README.md) for its finite
-host limits and reproduction commands.
-
 ## Build And Verify
 
 The project is pinned to Lean `leanprover/lean4:v4.22.0`.

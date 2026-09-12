@@ -1,0 +1,43 @@
+{
+  "startedUtc": "2026-09-12T10:56:14.2876404Z",
+  "completedUtc": "2026-09-12T10:56:17.1153151Z",
+  "pass": true,
+  "process": {
+    "Stage": "binary-empty-argument-byte-capture",
+    "ExitCode": 0,
+    "Output": [
+      "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T10:56:16.613047+00:00\",\"completedUtc\":\"2026-09-12T10:56:16.791704+00:00\",\"durationSeconds\":0.1786485999909928,\"deadlineSeconds\":10.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Python314\\\\python.exe\",\"arguments\":[\"-c\",\"import json,sys;sys.stdout.buffer.write(json.dumps(sys.argv[1:],separators=(chr(44),chr(58))).encode()+bytes([10]))\",\"\",\" \"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"WyIiLCIgIl0K\",\"stderrBase64\":\"\"}"
+    ],
+    "StandardOutput": [
+      "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T10:56:16.613047+00:00\",\"completedUtc\":\"2026-09-12T10:56:16.791704+00:00\",\"durationSeconds\":0.1786485999909928,\"deadlineSeconds\":10.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Python314\\\\python.exe\",\"arguments\":[\"-c\",\"import json,sys;sys.stdout.buffer.write(json.dumps(sys.argv[1:],separators=(chr(44),chr(58))).encode()+bytes([10]))\",\"\",\" \"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"WyIiLCIgIl0K\",\"stderrBase64\":\"\"}"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 2.504,
+    "DeadlineSeconds": 40,
+    "Ownership": "kill-on-close-job"
+  },
+  "raw": {
+    "schema": "native1-raw-process-v1",
+    "startedUtc": "2026-09-12T10:56:16.613047+00:00",
+    "completedUtc": "2026-09-12T10:56:16.791704+00:00",
+    "durationSeconds": 0.1786485999909928,
+    "deadlineSeconds": 10.0,
+    "outputLimitBytes": 4194304,
+    "executable": "C:\\Python314\\python.exe",
+    "arguments": [
+      "-c",
+      "import json,sys;sys.stdout.buffer.write(json.dumps(sys.argv[1:],separators=(chr(44),chr(58))).encode()+bytes([10]))",
+      "",
+      " "
+    ],
+    "exitCode": 0,
+    "timedOut": false,
+    "outputLimitExceeded": false,
+    "stdoutBase64": "WyIiLCIgIl0K",
+    "stderrBase64": ""
+  },
+  "observed": "[\"\",\" \"]\n"
+}

@@ -1,0 +1,52 @@
+{
+    "stage":  "witness-export-check-03",
+    "platform":  "Microsoft Windows NT 10.0.26200.0",
+    "head":  "fbd5a44f4f68c0ab1ad54fbff0cc9169000c8949",
+    "pins":  [
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Limbs.lean",
+                     "sha256":  "06D057D0DE50E263E701D2D5FEA1A4B0E1F6C3DD9A6BFDB6F2F9EDE71A7803F1"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Machine.lean",
+                     "sha256":  "F5286E6B52A5C5A73571BBF831E7CA9C5D731F7F5998F3ABA724E17F7AB94B3D"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary/Codec.lean",
+                     "sha256":  "E46F05148BB2F4D1D25C848EC804B0E2E0881EFB536F988A90AB9CB7371C11F7"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary.lean",
+                     "sha256":  "C50741D0A9AED1797919F405E8F7440410C0CD13DD2B9F299D0E6AB5E959AE16"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary/Bounds.lean",
+                     "sha256":  "1ADF9BE737AD6C86AAC6E5FBA75ED3384876AA029CCEFBBD76CDA03DF70C339E"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/WitnessExport.lean",
+                     "sha256":  "4CF5C928FCD784DF112115A8BDFF87A8CA3FFC85AF04B679E320402106466F70"
+                 }
+             ],
+    "result":  {
+                   "Stage":  "witness-export-check-03",
+                   "ExitCode":  0,
+                   "Output":  [
+
+                              ],
+                   "StandardOutput":  [
+
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  8.475,
+                   "DeadlineSeconds":  120,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

@@ -1,0 +1,457 @@
+{
+  "schema": "native1-witness-artifacts-v1",
+  "status": "PASS",
+  "runtimeReceipt": ".lake/native1/binary/witness-export-01.json",
+  "runtimeReceiptSha256": "007A3B6070D8FBA5BE4A043C3715CBAA58F7070AA1F6C8B2CFE53AA7B1745506",
+  "sources": {
+    "RMQ/Core/WordRAM/Native/Witnesses.lean": "8E732E615A9E69646AD6B6D2FDA5F632DF9826D2A22CA1B2DD71C98FF016B642",
+    "RMQ/Core/WordRAM/Native/WitnessExport.lean": "4CF5C928FCD784DF112115A8BDFF87A8CA3FFC85AF04B679E320402106466F70"
+  },
+  "program": {
+    "scratch": ".lake/native1/binary/witness-export-01/canonical-program.txt",
+    "bytes": 10848489,
+    "sha256": "2D978D9D81CC3326F623F3A21AFCDA9FE3329E6F1DB60B2000425C4EF0A0D875",
+    "gzipPath": "native/packed-rmq/fixtures/program.txt.gz",
+    "gzipSha256": "13EE9E81E17DD25D5F25546B72762A038886AE7545031FAF51DC2757E666C011",
+    "exactDecompressedByteEquality": true
+  },
+  "fixtures": [
+    {
+      "path": "native/packed-rmq/fixtures/canonical-select-left.fixture",
+      "bytes": 13211,
+      "sha256": "03DDD5A11F37D1DB2A1562FB03CB2DF8DD7CB392654E01CD3F4839A15090FE6F",
+      "candidate": "cross-block",
+      "width": 176,
+      "inputLength": "12",
+      "left": "1",
+      "right": "11",
+      "expected": "halted 6",
+      "steps": 13231,
+      "categories": [
+        263,
+        4470,
+        2401,
+        2254,
+        3842,
+        1
+      ],
+      "reads": 263,
+      "occurrence": {
+        "stage": "select-left",
+        "logicalOrdinal": 0,
+        "logicalInStage": 0,
+        "physicalOrdinal": 174,
+        "segment": 1,
+        "index": "0",
+        "logicalReply": {
+          "bitLength": 5,
+          "value": "0"
+        },
+        "span": {
+          "position": "72",
+          "absolutePosition": "30696",
+          "length": "5",
+          "width": 176,
+          "offset": 72
+        },
+        "crossCell": false,
+        "physical": [
+          {
+            "physicalOrdinal": 174,
+            "transitionIndex": 408,
+            "pc": "1408",
+            "loadRegisters": {
+              "destination": 8259,
+              "address": 8261
+            },
+            "prestate": {
+              "pc": "1408",
+              "status": "running",
+              "addressValue": "174",
+              "destinationValue": "0"
+            },
+            "address": "174",
+            "reply": "2019830241498548843286026962564588300010258432"
+          }
+        ]
+      }
+    },
+    {
+      "path": "native/packed-rmq/fixtures/canonical-select-right.fixture",
+      "bytes": 13217,
+      "sha256": "9A518E610469A3B05BE1D91D628EC64E8553692C070BDA77283137B96346208E",
+      "candidate": "cross-block",
+      "width": 176,
+      "inputLength": "12",
+      "left": "1",
+      "right": "11",
+      "expected": "halted 6",
+      "steps": 13231,
+      "categories": [
+        263,
+        4470,
+        2401,
+        2254,
+        3842,
+        1
+      ],
+      "reads": 263,
+      "occurrence": {
+        "stage": "select-right",
+        "logicalOrdinal": 18,
+        "logicalInStage": 0,
+        "physicalOrdinal": 192,
+        "segment": 1,
+        "index": "0",
+        "logicalReply": {
+          "bitLength": 5,
+          "value": "0"
+        },
+        "span": {
+          "position": "72",
+          "absolutePosition": "30696",
+          "length": "5",
+          "width": 176,
+          "offset": 72
+        },
+        "crossCell": false,
+        "physical": [
+          {
+            "physicalOrdinal": 192,
+            "transitionIndex": 2762,
+            "pc": "92656",
+            "loadRegisters": {
+              "destination": 8259,
+              "address": 8261
+            },
+            "prestate": {
+              "pc": "92656",
+              "status": "running",
+              "addressValue": "174",
+              "destinationValue": "0"
+            },
+            "address": "174",
+            "reply": "2019830241498548843286026962564588300010258432"
+          }
+        ]
+      }
+    },
+    {
+      "path": "native/packed-rmq/fixtures/canonical-left-fringe.fixture",
+      "bytes": 13226,
+      "sha256": "E947CA28C98A87953B31E7D1F95DD8A1808BE1BAE2EA7AA67CD7186266D1D7ED",
+      "candidate": "cross-block",
+      "width": 176,
+      "inputLength": "12",
+      "left": "1",
+      "right": "11",
+      "expected": "halted 6",
+      "steps": 13231,
+      "categories": [
+        263,
+        4470,
+        2401,
+        2254,
+        3842,
+        1
+      ],
+      "reads": 263,
+      "occurrence": {
+        "stage": "left-fringe-window",
+        "logicalOrdinal": 39,
+        "logicalInStage": 0,
+        "physicalOrdinal": 213,
+        "segment": 0,
+        "index": "0",
+        "logicalReply": {
+          "bitLength": 5,
+          "value": "31"
+        },
+        "span": {
+          "position": "18",
+          "absolutePosition": "30642",
+          "length": "5",
+          "width": 176,
+          "offset": 18
+        },
+        "crossCell": false,
+        "physical": [
+          {
+            "physicalOrdinal": 213,
+            "transitionIndex": 5556,
+            "pc": "250552",
+            "loadRegisters": {
+              "destination": 8259,
+              "address": 8261
+            },
+            "prestate": {
+              "pc": "250552",
+              "status": "running",
+              "addressValue": "174",
+              "destinationValue": "18"
+            },
+            "address": "174",
+            "reply": "2019830241498548843286026962564588300010258432"
+          }
+        ]
+      }
+    },
+    {
+      "path": "native/packed-rmq/fixtures/canonical-right-fringe.fixture",
+      "bytes": 13228,
+      "sha256": "A30BB0C905F87D3BB4FB0008B4BC894358F4782023D412DB24ABBD16FA87937A",
+      "candidate": "cross-block",
+      "width": 176,
+      "inputLength": "12",
+      "left": "1",
+      "right": "11",
+      "expected": "halted 6",
+      "steps": 13231,
+      "categories": [
+        263,
+        4470,
+        2401,
+        2254,
+        3842,
+        1
+      ],
+      "reads": 263,
+      "occurrence": {
+        "stage": "right-fringe-window",
+        "logicalOrdinal": 74,
+        "logicalInStage": 0,
+        "physicalOrdinal": 248,
+        "segment": 0,
+        "index": "3",
+        "logicalReply": {
+          "bitLength": 5,
+          "value": "1"
+        },
+        "span": {
+          "position": "33",
+          "absolutePosition": "30657",
+          "length": "5",
+          "width": 176,
+          "offset": 33
+        },
+        "crossCell": false,
+        "physical": [
+          {
+            "physicalOrdinal": 248,
+            "transitionIndex": 10823,
+            "pc": "784304",
+            "loadRegisters": {
+              "destination": 8259,
+              "address": 8261
+            },
+            "prestate": {
+              "pc": "784304",
+              "status": "running",
+              "addressValue": "174",
+              "destinationValue": "18"
+            },
+            "address": "174",
+            "reply": "2019830241498548843286026962564588300010258432"
+          }
+        ]
+      }
+    },
+    {
+      "path": "native/packed-rmq/fixtures/canonical-interior.fixture",
+      "bytes": 13223,
+      "sha256": "4DA0FC04DFA2E12C70D109BEF89B973F2D82225B1CAAC01F47FE969D5F3EEB66",
+      "candidate": "cross-block",
+      "width": 176,
+      "inputLength": "12",
+      "left": "1",
+      "right": "11",
+      "expected": "halted 6",
+      "steps": 13231,
+      "categories": [
+        263,
+        4470,
+        2401,
+        2254,
+        3842,
+        1
+      ],
+      "reads": 263,
+      "occurrence": {
+        "stage": "interior",
+        "logicalOrdinal": 52,
+        "logicalInStage": 0,
+        "physicalOrdinal": 226,
+        "segment": 20,
+        "index": "102",
+        "logicalReply": {
+          "bitLength": 5,
+          "value": "1"
+        },
+        "span": {
+          "position": "1136",
+          "absolutePosition": "31760",
+          "length": "5",
+          "width": 176,
+          "offset": 80
+        },
+        "crossCell": false,
+        "physical": [
+          {
+            "physicalOrdinal": 226,
+            "transitionIndex": 7549,
+            "pc": "292574",
+            "loadRegisters": {
+              "destination": 8259,
+              "address": 8261
+            },
+            "prestate": {
+              "pc": "292574",
+              "status": "running",
+              "addressValue": "180",
+              "destinationValue": "2"
+            },
+            "address": "180",
+            "reply": "91255886045655665503234678445414918467891211444158464"
+          }
+        ]
+      }
+    },
+    {
+      "path": "native/packed-rmq/fixtures/canonical-rank-final.fixture",
+      "bytes": 13218,
+      "sha256": "53781774F1B5438C2593FA960858197927AB746C137F672DE972C96DAE916CF9",
+      "candidate": "cross-block",
+      "width": 176,
+      "inputLength": "12",
+      "left": "1",
+      "right": "11",
+      "expected": "halted 6",
+      "steps": 13231,
+      "categories": [
+        263,
+        4470,
+        2401,
+        2254,
+        3842,
+        1
+      ],
+      "reads": 263,
+      "occurrence": {
+        "stage": "final-rank",
+        "logicalOrdinal": 86,
+        "logicalInStage": 0,
+        "physicalOrdinal": 258,
+        "segment": 17,
+        "index": "0",
+        "logicalReply": {
+          "bitLength": 5,
+          "value": "0"
+        },
+        "span": {
+          "position": "42",
+          "absolutePosition": "30666",
+          "length": "5",
+          "width": 176,
+          "offset": 42
+        },
+        "crossCell": false,
+        "physical": [
+          {
+            "physicalOrdinal": 258,
+            "transitionIndex": 12579,
+            "pc": "826315",
+            "loadRegisters": {
+              "destination": 8259,
+              "address": 8261
+            },
+            "prestate": {
+              "pc": "826315",
+              "status": "running",
+              "addressValue": "174",
+              "destinationValue": "18"
+            },
+            "address": "174",
+            "reply": "2019830241498548843286026962564588300010258432"
+          }
+        ]
+      }
+    },
+    {
+      "path": "native/packed-rmq/fixtures/canonical-cross-cell.fixture",
+      "bytes": 14859,
+      "sha256": "DE8CB638266AD0D5FDF3F62F511990E9D4A4D6C5311E10A79BD70F1A949A960A",
+      "candidate": "monotone-24",
+      "width": 184,
+      "inputLength": "24",
+      "left": "0",
+      "right": "24",
+      "expected": "halted 1",
+      "steps": 16358,
+      "categories": [
+        283,
+        5395,
+        3037,
+        2874,
+        4768,
+        1
+      ],
+      "reads": 283,
+      "occurrence": {
+        "stage": "interior",
+        "logicalOrdinal": 68,
+        "logicalInStage": 3,
+        "physicalOrdinal": 242,
+        "segment": 20,
+        "index": "0",
+        "logicalReply": {
+          "bitLength": 6,
+          "value": "0"
+        },
+        "span": {
+          "position": "1100",
+          "absolutePosition": "33116",
+          "length": "6",
+          "width": 184,
+          "offset": 180
+        },
+        "crossCell": true,
+        "physical": [
+          {
+            "physicalOrdinal": 242,
+            "transitionIndex": 10378,
+            "pc": "310002",
+            "loadRegisters": {
+              "destination": 8259,
+              "address": 8261
+            },
+            "prestate": {
+              "pc": "310002",
+              "status": "running",
+              "addressValue": "179",
+              "destinationValue": "1"
+            },
+            "address": "179",
+            "reply": "42338465"
+          },
+          {
+            "physicalOrdinal": 243,
+            "transitionIndex": 10384,
+            "pc": "310011",
+            "loadRegisters": {
+              "destination": 8266,
+              "address": 8261
+            },
+            "prestate": {
+              "pc": "310011",
+              "status": "running",
+              "addressValue": "180",
+              "destinationValue": "0"
+            },
+            "address": "180",
+            "reply": "130305881961790036050851360349991571656"
+          }
+        ]
+      }
+    }
+  ]
+}

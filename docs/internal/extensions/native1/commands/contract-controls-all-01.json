@@ -1,0 +1,51 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "fa79233f77acbfa0470ef6203131e66784c7b014",
+  "command": {
+    "arguments": [
+      "-NoLogo",
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "scripts/packed_native_contract_replay.ps1",
+      "-Controls"
+    ],
+    "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe"
+  },
+  "result": {
+    "Stage": "contract-controls-all-01",
+    "ExitCode": 0,
+    "Output": [
+      "NATIVE1-CONTRACT-CONTROL PASS empty",
+      "NATIVE1-CONTRACT-CONTROL PASS whitespace",
+      "NATIVE1-CONTRACT-CONTROL PASS malformed",
+      "NATIVE1-CONTRACT-CONTROL PASS unknown",
+      "NATIVE1-CONTRACT-CONTROL PASS valid-baseline",
+      "NATIVE1-CONTRACT-CONTROL PASS omitted-full",
+      "NATIVE1-CONTRACT-CONTROL PASS registry-missing-case",
+      "NATIVE1-CONTRACT-CONTROL PASS registry-kind-downgrade",
+      "NATIVE1-CONTRACT-CONTROL PASS registry-consumer-change"
+    ],
+    "StandardOutput": [
+      "NATIVE1-CONTRACT-CONTROL PASS empty",
+      "NATIVE1-CONTRACT-CONTROL PASS whitespace",
+      "NATIVE1-CONTRACT-CONTROL PASS malformed",
+      "NATIVE1-CONTRACT-CONTROL PASS unknown",
+      "NATIVE1-CONTRACT-CONTROL PASS valid-baseline",
+      "NATIVE1-CONTRACT-CONTROL PASS omitted-full",
+      "NATIVE1-CONTRACT-CONTROL PASS registry-missing-case",
+      "NATIVE1-CONTRACT-CONTROL PASS registry-kind-downgrade",
+      "NATIVE1-CONTRACT-CONTROL PASS registry-consumer-change"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 816.151,
+    "DeadlineSeconds": 2100,
+    "Ownership": "kill-on-close-job"
+  }
+}

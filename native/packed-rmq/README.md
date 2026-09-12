@@ -55,7 +55,7 @@ stderr. An executed machine fault is a successful observation with status
 A loaded image owns its load result and borrows its initializing runtime.
 Caller input bytes may be released after loading. Query text is copied before
 its result handle is released. The runtime and image cannot cross threads;
-one Lean runtime is initialized per process.
+one Lean runtime is initialized per process, separately from modeled query costs.
 
 `include/packed_rmq.h` defines ABI 1. Callers initialize once and perform every
 call and destruction on that same OS thread. Input spans must be readable for
@@ -115,7 +115,11 @@ The executable source validator is `RMQ/Validation/PackedNative.lean`, built as
 `rmq_packed_native_validate`. The final native and certificate replay scripts
 are `scripts/packed_native_binary_replay.ps1`,
 `scripts/packed_native_binary_controls.ps1`, and
-`scripts/packed_native_contract_replay.ps1`. Their final frozen campaigns are
-still pending. Development evidence, exact types, assumptions and retained
+`scripts/packed_native_contract_replay.ps1`. The final frozen campaigns passed:
+109 native cases expand to 214 client/source
+checks inside 128 controls, and 44 certificate cases run inside nine controls.
+The source validator also passed all 24 process and byte-format controls.
+Fresh independent acceptance and aggregate certification are coordinator-scheduled.
+Development evidence, exact types, assumptions and retained
 failures are in `docs/internal/extensions/native1`. The earlier textual route
 experiment and its receipts remain available there as historical evidence.

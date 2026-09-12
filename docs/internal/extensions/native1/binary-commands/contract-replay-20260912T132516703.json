@@ -1,0 +1,986 @@
+{
+  "schema": "native1-contract-replay-v1",
+  "startedUtc": "2026-09-12T13:25:16.7175665Z",
+  "completedUtc": "2026-09-12T13:38:48.3130922Z",
+  "pass": true,
+  "failure": null,
+  "controls": true,
+  "selectorBound": false,
+  "selector": "",
+  "registrySha256": "6E0C8E5A73F7DE47D14F7298435E7F72F2AC82A5881AEBF3EFFE0388CBF48E2C",
+  "runnerSha256": "AE8BC171667857E693D58E74626D425AB5C7F8AB43BDA4D6996A6FF92C8C3687",
+  "sources": [
+    {
+      "path": "RMQ/Core/WordRAM/Native/Capstone.lean",
+      "sha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Native/Contract.lean",
+      "sha256": "A8DB1EAAC6445F2F8490A6C344A3F573FD169D3FD7B82E6637C4947159E306AE"
+    }
+  ],
+  "compiler": null,
+  "dependencyCopy": null,
+  "expected": [
+    "empty",
+    "whitespace",
+    "malformed",
+    "unknown",
+    "valid-baseline",
+    "omitted-full",
+    "registry-missing-case",
+    "registry-kind-downgrade",
+    "registry-consumer-change"
+  ],
+  "executed": [
+    "empty",
+    "whitespace",
+    "malformed",
+    "unknown",
+    "valid-baseline",
+    "omitted-full",
+    "registry-missing-case",
+    "registry-kind-downgrade",
+    "registry-consumer-change"
+  ],
+  "results": [
+    {
+      "details": {
+        "process": {
+          "Stage": "empty",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+            "Line |",
+            "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+            "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact contract selector"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+            "Line |",
+            "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+            "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact contract selector"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 5.241,
+          "DeadlineSeconds": 60,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T13:25:16.7446207Z",
+          "CompletedUtc": "2026-09-12T13:25:22.1343916Z",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+            "-Case",
+            ""
+          ]
+        },
+        "executed": []
+      },
+      "id": "empty",
+      "pass": true
+    },
+    {
+      "details": {
+        "process": {
+          "Stage": "whitespace",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+            "Line |",
+            "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+            "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact contract selector"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+            "Line |",
+            "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+            "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact contract selector"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 5.844,
+          "DeadlineSeconds": 60,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T13:25:22.1892760Z",
+          "CompletedUtc": "2026-09-12T13:25:28.0593910Z",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+            "-Case",
+            " "
+          ]
+        },
+        "executed": []
+      },
+      "id": "whitespace",
+      "pass": true
+    },
+    {
+      "details": {
+        "process": {
+          "Stage": "malformed",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+            "Line |",
+            "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+            "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact contract selector"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+            "Line |",
+            "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+            "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact contract selector"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 5.305,
+          "DeadlineSeconds": 60,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T13:25:28.0668932Z",
+          "CompletedUtc": "2026-09-12T13:25:33.3922867Z",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+            "-Case",
+            "baseline,"
+          ]
+        },
+        "executed": []
+      },
+      "id": "malformed",
+      "pass": true
+    },
+    {
+      "details": {
+        "process": {
+          "Stage": "unknown",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+            "Line |",
+            "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+            "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact contract selector"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+            "Line |",
+            "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+            "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact contract selector"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 4.634,
+          "DeadlineSeconds": 60,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T13:25:33.3970043Z",
+          "CompletedUtc": "2026-09-12T13:25:38.0473576Z",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+            "-Case",
+            "not-a-contract-case"
+          ]
+        },
+        "executed": []
+      },
+      "id": "unknown",
+      "pass": true
+    },
+    {
+      "details": {
+        "process": {
+          "Stage": "valid-baseline",
+          "ExitCode": 0,
+          "Output": [
+            "NATIVE1-CONTRACT PASS baseline"
+          ],
+          "StandardOutput": [
+            "NATIVE1-CONTRACT PASS baseline"
+          ],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 27.33,
+          "DeadlineSeconds": 300,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T13:25:38.0512687Z",
+          "CompletedUtc": "2026-09-12T13:26:05.4044503Z",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+            "-Case",
+            "baseline"
+          ]
+        },
+        "executed": [
+          "baseline"
+        ]
+      },
+      "id": "valid-baseline",
+      "pass": true
+    },
+    {
+      "details": {
+        "process": {
+          "Stage": "omitted-full",
+          "ExitCode": 0,
+          "Output": [
+            "NATIVE1-CONTRACT PASS baseline",
+            "NATIVE1-CONTRACT PASS field-n01",
+            "NATIVE1-CONTRACT PASS field-n02",
+            "NATIVE1-CONTRACT PASS field-n03",
+            "NATIVE1-CONTRACT PASS field-n04",
+            "NATIVE1-CONTRACT PASS field-n05",
+            "NATIVE1-CONTRACT PASS field-n06",
+            "NATIVE1-CONTRACT PASS field-n07",
+            "NATIVE1-CONTRACT PASS field-n08",
+            "NATIVE1-CONTRACT PASS field-n09",
+            "NATIVE1-CONTRACT PASS field-n10",
+            "NATIVE1-CONTRACT PASS field-n11",
+            "NATIVE1-CONTRACT PASS field-n12",
+            "NATIVE1-CONTRACT PASS field-n13",
+            "NATIVE1-CONTRACT PASS field-n14",
+            "NATIVE1-CONTRACT PASS field-n15",
+            "NATIVE1-CONTRACT PASS field-n16",
+            "NATIVE1-CONTRACT PASS field-n17",
+            "NATIVE1-CONTRACT PASS field-n18",
+            "NATIVE1-CONTRACT PASS field-n19",
+            "NATIVE1-CONTRACT PASS field-n20",
+            "NATIVE1-CONTRACT PASS field-n21",
+            "NATIVE1-CONTRACT PASS field-n22",
+            "NATIVE1-CONTRACT PASS field-n23",
+            "NATIVE1-CONTRACT PASS field-n24",
+            "NATIVE1-CONTRACT PASS field-n25",
+            "NATIVE1-CONTRACT PASS field-n26",
+            "NATIVE1-CONTRACT PASS field-n27",
+            "NATIVE1-CONTRACT PASS field-n28",
+            "NATIVE1-CONTRACT PASS field-n29",
+            "NATIVE1-CONTRACT PASS field-n30",
+            "NATIVE1-CONTRACT PASS field-n31",
+            "NATIVE1-CONTRACT PASS field-n32",
+            "NATIVE1-CONTRACT PASS field-n33",
+            "NATIVE1-CONTRACT PASS field-n34",
+            "NATIVE1-CONTRACT PASS field-n35",
+            "NATIVE1-CONTRACT PASS field-n36",
+            "NATIVE1-CONTRACT PASS field-n37",
+            "NATIVE1-CONTRACT PASS field-n38",
+            "NATIVE1-CONTRACT PASS field-n39",
+            "NATIVE1-CONTRACT PASS field-n40",
+            "NATIVE1-CONTRACT PASS field-n41",
+            "NATIVE1-CONTRACT PASS field-n42",
+            "NATIVE1-CONTRACT PASS public-type-collapse"
+          ],
+          "StandardOutput": [
+            "NATIVE1-CONTRACT PASS baseline",
+            "NATIVE1-CONTRACT PASS field-n01",
+            "NATIVE1-CONTRACT PASS field-n02",
+            "NATIVE1-CONTRACT PASS field-n03",
+            "NATIVE1-CONTRACT PASS field-n04",
+            "NATIVE1-CONTRACT PASS field-n05",
+            "NATIVE1-CONTRACT PASS field-n06",
+            "NATIVE1-CONTRACT PASS field-n07",
+            "NATIVE1-CONTRACT PASS field-n08",
+            "NATIVE1-CONTRACT PASS field-n09",
+            "NATIVE1-CONTRACT PASS field-n10",
+            "NATIVE1-CONTRACT PASS field-n11",
+            "NATIVE1-CONTRACT PASS field-n12",
+            "NATIVE1-CONTRACT PASS field-n13",
+            "NATIVE1-CONTRACT PASS field-n14",
+            "NATIVE1-CONTRACT PASS field-n15",
+            "NATIVE1-CONTRACT PASS field-n16",
+            "NATIVE1-CONTRACT PASS field-n17",
+            "NATIVE1-CONTRACT PASS field-n18",
+            "NATIVE1-CONTRACT PASS field-n19",
+            "NATIVE1-CONTRACT PASS field-n20",
+            "NATIVE1-CONTRACT PASS field-n21",
+            "NATIVE1-CONTRACT PASS field-n22",
+            "NATIVE1-CONTRACT PASS field-n23",
+            "NATIVE1-CONTRACT PASS field-n24",
+            "NATIVE1-CONTRACT PASS field-n25",
+            "NATIVE1-CONTRACT PASS field-n26",
+            "NATIVE1-CONTRACT PASS field-n27",
+            "NATIVE1-CONTRACT PASS field-n28",
+            "NATIVE1-CONTRACT PASS field-n29",
+            "NATIVE1-CONTRACT PASS field-n30",
+            "NATIVE1-CONTRACT PASS field-n31",
+            "NATIVE1-CONTRACT PASS field-n32",
+            "NATIVE1-CONTRACT PASS field-n33",
+            "NATIVE1-CONTRACT PASS field-n34",
+            "NATIVE1-CONTRACT PASS field-n35",
+            "NATIVE1-CONTRACT PASS field-n36",
+            "NATIVE1-CONTRACT PASS field-n37",
+            "NATIVE1-CONTRACT PASS field-n38",
+            "NATIVE1-CONTRACT PASS field-n39",
+            "NATIVE1-CONTRACT PASS field-n40",
+            "NATIVE1-CONTRACT PASS field-n41",
+            "NATIVE1-CONTRACT PASS field-n42",
+            "NATIVE1-CONTRACT PASS public-type-collapse"
+          ],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 736.532,
+          "DeadlineSeconds": 1800,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T13:26:05.4699875Z",
+          "CompletedUtc": "2026-09-12T13:38:22.0317415Z",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1"
+          ]
+        },
+        "executed": [
+          "baseline",
+          "field-n01",
+          "field-n02",
+          "field-n03",
+          "field-n04",
+          "field-n05",
+          "field-n06",
+          "field-n07",
+          "field-n08",
+          "field-n09",
+          "field-n10",
+          "field-n11",
+          "field-n12",
+          "field-n13",
+          "field-n14",
+          "field-n15",
+          "field-n16",
+          "field-n17",
+          "field-n18",
+          "field-n19",
+          "field-n20",
+          "field-n21",
+          "field-n22",
+          "field-n23",
+          "field-n24",
+          "field-n25",
+          "field-n26",
+          "field-n27",
+          "field-n28",
+          "field-n29",
+          "field-n30",
+          "field-n31",
+          "field-n32",
+          "field-n33",
+          "field-n34",
+          "field-n35",
+          "field-n36",
+          "field-n37",
+          "field-n38",
+          "field-n39",
+          "field-n40",
+          "field-n41",
+          "field-n42",
+          "public-type-collapse"
+        ]
+      },
+      "id": "omitted-full",
+      "pass": true
+    },
+    {
+      "details": {
+        "exactGitRestoration": true,
+        "mutatedRegistrySha256": "2131F9CA6610216600DAD2220F5AE266A52A648FC13EB948453FAFD6718793E6",
+        "process": {
+          "Stage": "registry-missing-case",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:7",
+            "Line |",
+            "   7 |  … tractRegistryHash){throw 'exact contract semantic registry mismatch'}",
+            "     |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact contract semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:7",
+            "Line |",
+            "   7 |  … tractRegistryHash){throw 'exact contract semantic registry mismatch'}",
+            "     |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact contract semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 9.13,
+          "DeadlineSeconds": 60,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T13:38:22.3472462Z",
+          "CompletedUtc": "2026-09-12T13:38:31.5034625Z",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+            "-Case",
+            "field-n01"
+          ]
+        },
+        "restoredRegistrySha256": "6E0C8E5A73F7DE47D14F7298435E7F72F2AC82A5881AEBF3EFFE0388CBF48E2C"
+      },
+      "id": "registry-missing-case",
+      "pass": true
+    },
+    {
+      "details": {
+        "exactGitRestoration": true,
+        "mutatedRegistrySha256": "36EE9AF8558FAC6F191FCB6C24571ED8027631831C4FD5D61211E91648FD5E81",
+        "process": {
+          "Stage": "registry-kind-downgrade",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:7",
+            "Line |",
+            "   7 |  … tractRegistryHash){throw 'exact contract semantic registry mismatch'}",
+            "     |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact contract semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:7",
+            "Line |",
+            "   7 |  … tractRegistryHash){throw 'exact contract semantic registry mismatch'}",
+            "     |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact contract semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 8.841,
+          "DeadlineSeconds": 60,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T13:38:32.0533495Z",
+          "CompletedUtc": "2026-09-12T13:38:40.9198536Z",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+            "-Case",
+            "field-n01"
+          ]
+        },
+        "restoredRegistrySha256": "6E0C8E5A73F7DE47D14F7298435E7F72F2AC82A5881AEBF3EFFE0388CBF48E2C"
+      },
+      "id": "registry-kind-downgrade",
+      "pass": true
+    },
+    {
+      "details": {
+        "exactGitRestoration": true,
+        "mutatedRegistrySha256": "C459FC76513519B7CC392BC429C005B53D7B6FCB11751636E55054918E28D4A0",
+        "process": {
+          "Stage": "registry-consumer-change",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:7",
+            "Line |",
+            "   7 |  … tractRegistryHash){throw 'exact contract semantic registry mismatch'}",
+            "     |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact contract semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:7",
+            "Line |",
+            "   7 |  … tractRegistryHash){throw 'exact contract semantic registry mismatch'}",
+            "     |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact contract semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.54,
+          "DeadlineSeconds": 60,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T13:38:41.6020146Z",
+          "CompletedUtc": "2026-09-12T13:38:48.1654796Z",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+            "-Case",
+            "field-n01"
+          ]
+        },
+        "restoredRegistrySha256": "6E0C8E5A73F7DE47D14F7298435E7F72F2AC82A5881AEBF3EFFE0388CBF48E2C"
+      },
+      "id": "registry-consumer-change",
+      "pass": true
+    }
+  ],
+  "commands": [
+    {
+      "Stage": "empty",
+      "ExitCode": 1,
+      "Output": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+        "Line |",
+        "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+        "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact contract selector"
+      ],
+      "StandardOutput": [],
+      "StandardError": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+        "Line |",
+        "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+        "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact contract selector"
+      ],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 5.241,
+      "DeadlineSeconds": 60,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:25:16.7446207Z",
+      "CompletedUtc": "2026-09-12T13:25:22.1343916Z",
+      "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+        "-Case",
+        ""
+      ]
+    },
+    {
+      "Stage": "whitespace",
+      "ExitCode": 1,
+      "Output": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+        "Line |",
+        "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+        "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact contract selector"
+      ],
+      "StandardOutput": [],
+      "StandardError": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+        "Line |",
+        "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+        "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact contract selector"
+      ],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 5.844,
+      "DeadlineSeconds": 60,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:25:22.1892760Z",
+      "CompletedUtc": "2026-09-12T13:25:28.0593910Z",
+      "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+        "-Case",
+        " "
+      ]
+    },
+    {
+      "Stage": "malformed",
+      "ExitCode": 1,
+      "Output": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+        "Line |",
+        "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+        "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact contract selector"
+      ],
+      "StandardOutput": [],
+      "StandardError": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+        "Line |",
+        "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+        "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact contract selector"
+      ],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 5.305,
+      "DeadlineSeconds": 60,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:25:28.0668932Z",
+      "CompletedUtc": "2026-09-12T13:25:33.3922867Z",
+      "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+        "-Case",
+        "baseline,"
+      ]
+    },
+    {
+      "Stage": "unknown",
+      "ExitCode": 1,
+      "Output": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+        "Line |",
+        "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+        "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact contract selector"
+      ],
+      "StandardOutput": [],
+      "StandardError": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:17",
+        "Line |",
+        "  17 |  … ster.id -cnotcontains $Case){throw 'invalid exact contract selector'}",
+        "     |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact contract selector"
+      ],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 4.634,
+      "DeadlineSeconds": 60,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:25:33.3970043Z",
+      "CompletedUtc": "2026-09-12T13:25:38.0473576Z",
+      "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+        "-Case",
+        "not-a-contract-case"
+      ]
+    },
+    {
+      "Stage": "valid-baseline",
+      "ExitCode": 0,
+      "Output": [
+        "NATIVE1-CONTRACT PASS baseline"
+      ],
+      "StandardOutput": [
+        "NATIVE1-CONTRACT PASS baseline"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 27.33,
+      "DeadlineSeconds": 300,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:25:38.0512687Z",
+      "CompletedUtc": "2026-09-12T13:26:05.4044503Z",
+      "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+        "-Case",
+        "baseline"
+      ]
+    },
+    {
+      "Stage": "omitted-full",
+      "ExitCode": 0,
+      "Output": [
+        "NATIVE1-CONTRACT PASS baseline",
+        "NATIVE1-CONTRACT PASS field-n01",
+        "NATIVE1-CONTRACT PASS field-n02",
+        "NATIVE1-CONTRACT PASS field-n03",
+        "NATIVE1-CONTRACT PASS field-n04",
+        "NATIVE1-CONTRACT PASS field-n05",
+        "NATIVE1-CONTRACT PASS field-n06",
+        "NATIVE1-CONTRACT PASS field-n07",
+        "NATIVE1-CONTRACT PASS field-n08",
+        "NATIVE1-CONTRACT PASS field-n09",
+        "NATIVE1-CONTRACT PASS field-n10",
+        "NATIVE1-CONTRACT PASS field-n11",
+        "NATIVE1-CONTRACT PASS field-n12",
+        "NATIVE1-CONTRACT PASS field-n13",
+        "NATIVE1-CONTRACT PASS field-n14",
+        "NATIVE1-CONTRACT PASS field-n15",
+        "NATIVE1-CONTRACT PASS field-n16",
+        "NATIVE1-CONTRACT PASS field-n17",
+        "NATIVE1-CONTRACT PASS field-n18",
+        "NATIVE1-CONTRACT PASS field-n19",
+        "NATIVE1-CONTRACT PASS field-n20",
+        "NATIVE1-CONTRACT PASS field-n21",
+        "NATIVE1-CONTRACT PASS field-n22",
+        "NATIVE1-CONTRACT PASS field-n23",
+        "NATIVE1-CONTRACT PASS field-n24",
+        "NATIVE1-CONTRACT PASS field-n25",
+        "NATIVE1-CONTRACT PASS field-n26",
+        "NATIVE1-CONTRACT PASS field-n27",
+        "NATIVE1-CONTRACT PASS field-n28",
+        "NATIVE1-CONTRACT PASS field-n29",
+        "NATIVE1-CONTRACT PASS field-n30",
+        "NATIVE1-CONTRACT PASS field-n31",
+        "NATIVE1-CONTRACT PASS field-n32",
+        "NATIVE1-CONTRACT PASS field-n33",
+        "NATIVE1-CONTRACT PASS field-n34",
+        "NATIVE1-CONTRACT PASS field-n35",
+        "NATIVE1-CONTRACT PASS field-n36",
+        "NATIVE1-CONTRACT PASS field-n37",
+        "NATIVE1-CONTRACT PASS field-n38",
+        "NATIVE1-CONTRACT PASS field-n39",
+        "NATIVE1-CONTRACT PASS field-n40",
+        "NATIVE1-CONTRACT PASS field-n41",
+        "NATIVE1-CONTRACT PASS field-n42",
+        "NATIVE1-CONTRACT PASS public-type-collapse"
+      ],
+      "StandardOutput": [
+        "NATIVE1-CONTRACT PASS baseline",
+        "NATIVE1-CONTRACT PASS field-n01",
+        "NATIVE1-CONTRACT PASS field-n02",
+        "NATIVE1-CONTRACT PASS field-n03",
+        "NATIVE1-CONTRACT PASS field-n04",
+        "NATIVE1-CONTRACT PASS field-n05",
+        "NATIVE1-CONTRACT PASS field-n06",
+        "NATIVE1-CONTRACT PASS field-n07",
+        "NATIVE1-CONTRACT PASS field-n08",
+        "NATIVE1-CONTRACT PASS field-n09",
+        "NATIVE1-CONTRACT PASS field-n10",
+        "NATIVE1-CONTRACT PASS field-n11",
+        "NATIVE1-CONTRACT PASS field-n12",
+        "NATIVE1-CONTRACT PASS field-n13",
+        "NATIVE1-CONTRACT PASS field-n14",
+        "NATIVE1-CONTRACT PASS field-n15",
+        "NATIVE1-CONTRACT PASS field-n16",
+        "NATIVE1-CONTRACT PASS field-n17",
+        "NATIVE1-CONTRACT PASS field-n18",
+        "NATIVE1-CONTRACT PASS field-n19",
+        "NATIVE1-CONTRACT PASS field-n20",
+        "NATIVE1-CONTRACT PASS field-n21",
+        "NATIVE1-CONTRACT PASS field-n22",
+        "NATIVE1-CONTRACT PASS field-n23",
+        "NATIVE1-CONTRACT PASS field-n24",
+        "NATIVE1-CONTRACT PASS field-n25",
+        "NATIVE1-CONTRACT PASS field-n26",
+        "NATIVE1-CONTRACT PASS field-n27",
+        "NATIVE1-CONTRACT PASS field-n28",
+        "NATIVE1-CONTRACT PASS field-n29",
+        "NATIVE1-CONTRACT PASS field-n30",
+        "NATIVE1-CONTRACT PASS field-n31",
+        "NATIVE1-CONTRACT PASS field-n32",
+        "NATIVE1-CONTRACT PASS field-n33",
+        "NATIVE1-CONTRACT PASS field-n34",
+        "NATIVE1-CONTRACT PASS field-n35",
+        "NATIVE1-CONTRACT PASS field-n36",
+        "NATIVE1-CONTRACT PASS field-n37",
+        "NATIVE1-CONTRACT PASS field-n38",
+        "NATIVE1-CONTRACT PASS field-n39",
+        "NATIVE1-CONTRACT PASS field-n40",
+        "NATIVE1-CONTRACT PASS field-n41",
+        "NATIVE1-CONTRACT PASS field-n42",
+        "NATIVE1-CONTRACT PASS public-type-collapse"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 736.532,
+      "DeadlineSeconds": 1800,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:26:05.4699875Z",
+      "CompletedUtc": "2026-09-12T13:38:22.0317415Z",
+      "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1"
+      ]
+    },
+    {
+      "Stage": "registry-missing-case",
+      "ExitCode": 1,
+      "Output": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:7",
+        "Line |",
+        "   7 |  … tractRegistryHash){throw 'exact contract semantic registry mismatch'}",
+        "     |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | exact contract semantic registry mismatch"
+      ],
+      "StandardOutput": [],
+      "StandardError": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:7",
+        "Line |",
+        "   7 |  … tractRegistryHash){throw 'exact contract semantic registry mismatch'}",
+        "     |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | exact contract semantic registry mismatch"
+      ],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 9.13,
+      "DeadlineSeconds": 60,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:38:22.3472462Z",
+      "CompletedUtc": "2026-09-12T13:38:31.5034625Z",
+      "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+        "-Case",
+        "field-n01"
+      ]
+    },
+    {
+      "Stage": "registry-kind-downgrade",
+      "ExitCode": 1,
+      "Output": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:7",
+        "Line |",
+        "   7 |  … tractRegistryHash){throw 'exact contract semantic registry mismatch'}",
+        "     |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | exact contract semantic registry mismatch"
+      ],
+      "StandardOutput": [],
+      "StandardError": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:7",
+        "Line |",
+        "   7 |  … tractRegistryHash){throw 'exact contract semantic registry mismatch'}",
+        "     |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | exact contract semantic registry mismatch"
+      ],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 8.841,
+      "DeadlineSeconds": 60,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:38:32.0533495Z",
+      "CompletedUtc": "2026-09-12T13:38:40.9198536Z",
+      "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+        "-Case",
+        "field-n01"
+      ]
+    },
+    {
+      "Stage": "registry-consumer-change",
+      "ExitCode": 1,
+      "Output": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:7",
+        "Line |",
+        "   7 |  … tractRegistryHash){throw 'exact contract semantic registry mismatch'}",
+        "     |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | exact contract semantic registry mismatch"
+      ],
+      "StandardOutput": [],
+      "StandardError": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1:7",
+        "Line |",
+        "   7 |  … tractRegistryHash){throw 'exact contract semantic registry mismatch'}",
+        "     |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | exact contract semantic registry mismatch"
+      ],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 6.54,
+      "DeadlineSeconds": 60,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:38:41.6020146Z",
+      "CompletedUtc": "2026-09-12T13:38:48.1654796Z",
+      "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_contract_replay.ps1",
+        "-Case",
+        "field-n01"
+      ]
+    }
+  ]
+}

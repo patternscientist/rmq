@@ -1,0 +1,46 @@
+[
+  {
+    "shell": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+    "startedUTC": "2026-09-12T12:49:26.9754982Z",
+    "completedUTC": "2026-09-12T12:49:35.8109292Z",
+    "result": {
+      "Stage": "hash-small-file",
+      "ExitCode": 0,
+      "Output": [
+        "{\"schema\":\"native1-small-file-benchmark-v1\",\"shell\":\"5.1.26100.9444\",\"startedUTC\":\"2026-09-12T12:49:33.0040101Z\",\"completedUTC\":\"2026-09-12T12:49:34.7159548Z\",\"seconds\":1.4194959999999999,\"pid\":30096,\"files\":100,\"bytes\":2136064,\"pass\":true,\"helperSHA256\":\"A21F67E2EDF49C8E218C657E73967E920EFB85FF025476E01BD04A83CA50B17A\"}"
+      ],
+      "StandardOutput": [
+        "{\"schema\":\"native1-small-file-benchmark-v1\",\"shell\":\"5.1.26100.9444\",\"startedUTC\":\"2026-09-12T12:49:33.0040101Z\",\"completedUTC\":\"2026-09-12T12:49:34.7159548Z\",\"seconds\":1.4194959999999999,\"pid\":30096,\"files\":100,\"bytes\":2136064,\"pass\":true,\"helperSHA256\":\"A21F67E2EDF49C8E218C657E73967E920EFB85FF025476E01BD04A83CA50B17A\"}"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 8.437,
+      "DeadlineSeconds": 120,
+      "Ownership": "kill-on-close-job"
+    }
+  },
+  {
+    "shell": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+    "startedUTC": "2026-09-12T12:49:35.8872204Z",
+    "completedUTC": "2026-09-12T12:49:48.3426768Z",
+    "result": {
+      "Stage": "hash-small-file",
+      "ExitCode": 0,
+      "Output": [
+        "{\"schema\":\"native1-small-file-benchmark-v1\",\"shell\":\"7.6.5\",\"startedUTC\":\"2026-09-12T12:49:45.7283081Z\",\"completedUTC\":\"2026-09-12T12:49:47.2561369Z\",\"seconds\":0.8605977,\"pid\":33592,\"files\":100,\"bytes\":2136064,\"pass\":true,\"helperSHA256\":\"A21F67E2EDF49C8E218C657E73967E920EFB85FF025476E01BD04A83CA50B17A\"}"
+      ],
+      "StandardOutput": [
+        "{\"schema\":\"native1-small-file-benchmark-v1\",\"shell\":\"7.6.5\",\"startedUTC\":\"2026-09-12T12:49:45.7283081Z\",\"completedUTC\":\"2026-09-12T12:49:47.2561369Z\",\"seconds\":0.8605977,\"pid\":33592,\"files\":100,\"bytes\":2136064,\"pass\":true,\"helperSHA256\":\"A21F67E2EDF49C8E218C657E73967E920EFB85FF025476E01BD04A83CA50B17A\"}"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 12.41,
+      "DeadlineSeconds": 120,
+      "Ownership": "kill-on-close-job"
+    }
+  }
+]

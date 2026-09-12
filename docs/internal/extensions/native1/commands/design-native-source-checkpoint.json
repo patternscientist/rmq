@@ -1,0 +1,36 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "fa79233f77acbfa0470ef6203131e66784c7b014",
+  "command": {
+    "arguments": [
+      "-NoProfile",
+      "-File",
+      "scripts/design_decision_check.ps1",
+      "-Strict",
+      "-Base",
+      "fbd5a44f4f68c0ab1ad54fbff0cc9169000c8949",
+      "-Head",
+      "HEAD"
+    ],
+    "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+  },
+  "result": {
+    "Stage": "design-native-source-checkpoint",
+    "ExitCode": 0,
+    "Output": [
+      "DESIGN-CHECK: checked 115 changed files (33 code, 76 workflow, 6 neutral)"
+    ],
+    "StandardOutput": [
+      "DESIGN-CHECK: checked 115 changed files (33 code, 76 workflow, 6 neutral)"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 5.444,
+    "DeadlineSeconds": 150,
+    "Ownership": "kill-on-close-job"
+  }
+}

@@ -12566,3 +12566,227 @@ invalidation and the native binary build remain next-stage evidence. Historical
 version-1 repair receipts retain their original limited inventory and are not
 retroactively promoted to version 2. OS system-library behavior remains within
 the explicit host/runtime assumption, separate from recorded tool inputs.
+
+## WDD-20260912-NATIVE1-007: freeze binary and public-contract replay obligations
+
+The binary replay extends the repaired registry principle to the final loaded-
+limb implementation. Whole registry bytes, nested semantic fields, the fixture
+producer and encoder, exact ordered source/generated-C/artifact rosters, and the
+versioned effective toolchain identity are checked before dispatch. The final
+roster has 109 logical cases expanding to 214 consumer executions. Operational
+witness files are pinned separately and checked through the same input checker
+used by execution. One-field semantic corruptions must reject at a specified
+surface after the unchanged input passes that checker. Native stdout/stderr are
+captured as raw bytes, preserving blank lines that the shared line-oriented
+process helper would otherwise erase. Actual Python executable/version/runtime
+DLL identity is recorded, and subprocess ownership still uses the shared tool.
+
+The public record has 42 mandatory fields, each consumed at a separately written
+literal proposition and identical object arguments. Its replay freezes one
+baseline, 42 field weakenings and one public-proposition collapse. For a field
+weakening, the edited producer must elaborate while the untouched independent
+consumer fails at the designated theorem and diagnostic location. Per-case
+module overlays prevent replacing the shared baseline proof artifacts. Source
+hashes and Git diffs must be restored. A failed producer alone is not evidence
+that the public consumer protects the requirement.
+
+The ABI control changes the real endpoint argument order in the C shim,
+rebuilds an isolated DLL from the exact generated C, and runs both unchanged
+clients against it. Both baseline clients must first accept the same asymmetric
+input. The mutated observation must differ from that baseline and equal the
+independently expected fault; stale-source rejection cannot stand in for this
+executed marshaling challenge. Every mutation restores exact source bytes and
+checks artifact integrity. Full omitted-selector replay is run once inside the
+control campaign; a redundant separate full replay on unchanged content adds
+no coverage.
+
+Version-2 toolchain hashing and the first binary build now passed, including
+all effective C++ dependency roots recorded in WDD-20260912-NATIVE1-006. Source
+files whose replay uses literal byte pins have explicit LF checkout attributes;
+receipts and manifests remain non-normalizing exact evidence. These workflow
+choices make the claims replayable. They do not grant acceptance before the
+campaigns, blind exact-commit audit and scheduled aggregate checks finish.
+## WDD-20260912-NATIVE1-008: make tool inventory ordering shell-independent
+
+The first production binary selector rejected the version-2 toolchain digest
+before dispatch. Comparing a fresh PowerShell 7 inventory with the build's
+PowerShell 5 inventory showed identical path-to-full-row/hash maps for 4856 Lean,
+48 Rust, 6545 C++ dependency, 145 adjacent DLL and four executable entries. Version
+text, dependency roots and optional-directory presence also matched. Only array
+order differed: the shells' culture-sensitive sorting reordered 11 Lean, 19 Rust,
+366 C++ and 23 DLL positions. The failed selector and exact delta are retained;
+there was no native result, timeout, compiler update or source mutation.
+
+The production identity moves to version 3 and declares
+`sortPolicy = ordinal-case-sensitive-utf16`. Unordered path inventories and
+unique path sets use `StringComparer.Ordinal`; property-name comparisons use
+the same ordering. Semantically ordered include and library searches retain
+their discovered order. Each byte hash, version pin, expected inventory row,
+optional-path state and strict equality check remains required. Accepting set
+equality at the replay boundary or ignoring a digest mismatch was rejected:
+that would weaken a provenance invariant to hide a serialization defect.
+
+Captured inventories provide a replayable cross-shell control for the actual
+canonicalization helper. Both shells must produce the same canonical inventory
+and digest while preserving every original map entry and search sequence.
+The changed identity invalidates the prior module cache and requires a new
+native build and known-selector comparison before the final full replay.
+Historical version-2 manifests remain exact evidence of their original build;
+they are not rewritten to claim a successful cross-shell replay.
+Source review during that repair also found that retained version-command
+metadata was not fully compared: a changed manifest command text could retain
+an unchanged digest, although the fresh actual command text still entered the
+reconstructed digest. Version 3 checks each stable command path, argument list
+and output text as well as the full C++ dependency key shape. Paths are
+normalized at capture; process timings and IDs remain historical receipt data.
+Changed recorded version/argument metadata must reject beside the unchanged
+positive control. This is a source-derived provenance correction, distinct from
+the measured order-only mismatch; no false compiler result was observed.
+
+## WDD-20260912-NATIVE1-009: validate isolated default-library cache preparation
+
+The required default library build and the explicit Native imports cover
+different closures. The default `RMQ` root reaches 372 local modules and no
+Native module; the two explicit Native import checks together reach all 28
+Native modules and the executable validator. The witness exporter and validator
+must be imported separately because each declares a global `main`. Importing
+the already checked axiom inventory preserves its 86-declaration evidence
+without needlessly repeating its print commands.
+
+An optional `-DefaultRMQ` mode in `packed_native_hydrate.ps1` prepares missing
+default-library artifacts from the registered `2fb8` checkout. The existing
+249-module canonical mode remains unchanged. The new mode derives actual import
+headers, checks all source/toolchain bytes and compiler trace markers, freezes
+the missing paths, and copies only into this task's build directory. It refuses
+existing destinations and links. Before/after hashes of foreign artifacts,
+destination hashes and final source hashes prevent a changing source checkout
+from silently supplying mixed evidence. A bounded stream buffer changes only
+how SHA256 reads bytes, not which bytes or hashes are required.
+
+The initial whole-file import regex misread a documentation sentence; the
+replacement skips line and nested block comments and stops after the header.
+An independent progress-formatting failure under PowerShell 5 also stopped
+before copying. Both zero-copy failures remain recorded. The final preparation
+copied exactly 491 files (133,498,087 bytes), preserving 997 existing artifacts,
+and verified all 372 matching source modules. It created no shared mutable
+cache and wrote nothing in the source checkout.
+
+Copying is preparation, not proof that foreign objects were compiled against
+the present imported objects. Lake must next validate dependency/output hashes
+with `--no-build`; any demonstrated stale component must be rebuilt, and the
+required ordinary default build still runs. Rebuilding hundreds of unchanged
+dependencies before checking reusable artifacts was rejected as avoidable work.
+Treating source equality alone as cache certification was also rejected.
+
+The production replay now performs pure registry, selector, source and manifest
+shape rejection before initializing process ownership. Every dispatched child
+still uses the same bounded ownership helper. Five actual rejection boundaries
+passed after that ordering change, but their measured timings did not establish
+a wall-clock speedup, so none is claimed. Similarly, large-file and 100-file
+hashing comparisons preserved exact hashes without isolating the cause of a
+slow initial toolchain collection. The validated identity implementation was
+left unchanged. The build subsequently advanced and passed; an attempted stop
+guard refused its active compiler child and did not interrupt it. These
+diagnostics remain separate from native or mutation verdicts.
+
+Lake subsequently validated the prepared dependency/output hashes with
+`--no-build build RMQ` in 20.956 seconds. The required ordinary default build
+passed in 3.980 seconds. Separate explicit imports of the Native inventory and
+the executable validator passed in 7.734 and 6.128 seconds. These receipts close
+the cache preparation's validation condition without extending the default
+root's import coverage or replacing the scheduled aggregate certification.
+
+## WDD-20260912-NATIVE1-010: bind fresh contract producers into a complete private package
+
+The first final certificate baseline failed before any consumer ran. Lean's
+`SearchPath.findWithExt` selects the first directory containing the root package
+`RMQ`; it does not search later directories separately for a missing module.
+A partial overlay containing the fresh Capstone output therefore hid the shared
+Execution dependency. This was a harness import failure, not a rejected public
+proposition. Its nonzero producer exit and complete restoration remain recorded
+in `contract-replay-20260912T131025801.json`.
+
+The repair makes one physical copy of the checked local `.olean` tree per run.
+The private package contains every required local dependency, while each case
+still has fresh producer and consumer output paths. After the producer compiles
+successfully, its exact output bytes replace only the private Capstone object.
+The runner compares the fresh output hash with that bound object before and
+after compiling the unchanged, independently typed consumer. A negative case
+also requires the fresh artifact to differ from the unchanged shared producer.
+The shared producer and consumer objects, tracked source bytes and Git diffs
+must remain unchanged after every case, including failures.
+
+This resolves the package-level lookup rule without writing mutation outputs
+into the shared build tree. A symlink or shared mutable cache would weaken the
+isolation guarantee; making 44 full dependency copies would add hundreds of
+megabytes per case without strengthening producer binding. Both alternatives
+were rejected. The frozen 44 cases, nine controls, literal propositions and
+expected rejection surfaces are unchanged. The repaired unchanged baseline
+passed with an exact 410-file physical copy (396,755,200 bytes), a fresh producer
+and a successful consumer. The field and full replay receipts separately decide
+whether the anti-bypass requirements hold; a successful baseline alone does
+not establish those negative controls.
+
+## WDD-20260912-NATIVE1-011: freeze auditable text bytes and separate candidate evidence
+
+The final packet identifies the original requirement prefix, extracted verbatim
+requirements, exact public-type digest, source reconstruction and report by
+byte hash. All six files currently contain LF bytes, but the checkout's
+`core.autocrlf=true` could convert their later checkout copies to CRLF. Specific
+`text eol=lf` attributes preserve the existing bytes and cited identities across
+fresh checkouts. They do not normalize or rewrite the frozen requirement prefix.
+Receipts and build manifests retain their existing non-normalizing attributes;
+the final packet index likewise preserves exact JSON bytes. A repository-wide
+text-policy change was unnecessary and was rejected.
+
+The final report separates current construction/verification from the earlier
+route phase, whose exact prior report bytes are retained in
+`REPORT_ROUTE_HISTORY.md`. The fresh audit receives only verbatim requirements,
+exact source/public surfaces, raw evidence and commands, with worker verdicts
+and reconstruction narratives withheld. Its prerequisite plan explicitly
+materializes Native imports in an isolated build tree because the ordinary RMQ
+root does not import them. The 86-declaration source inventory is scheduled once
+there; subsequent cached imports do not invent another inventory run. The audit
+reconstructs mathematical propositions and executable/process invariants at
+their respective evidence tiers. Candidate evidence, fresh audit, aggregate
+certification and coordinator acceptance remain distinct dispositions.
+
+The same specific LF policy covers the new executable validator, its two direct
+import-check scripts and the cited hydration helper. Staging exposed their
+otherwise implicit checkout conversion. No current source bytes changed; these
+attributes preserve the source identities already compiled and measured.
+
+## WDD-20260912-NATIVE1-012: scan maintained claims without recursively rescanning receipts
+
+The final default claim scan exceeded its owned 300-second deadline at
+302.574 seconds. It had passed both trust hygiene scans, then emitted about
+3.7 MB of review matches from archived command JSON, including earlier copies
+of the scanner's own output. The complete failed receipt is retained as
+`commands/final-static-command.json`; the owned descendants were terminated
+and their absence checked. No timeout was treated as a successful claim check.
+
+Source diagnosis found 35 `rg --json` term passes over the default roots, with
+only audit-report directories and WORKLOG files excluded. The current roots
+contained 873 files / 65,844,694 bytes, including 284 JSON files / 55,598,631
+bytes. Each matched JSON line is parsed and its full matched text is emitted.
+That mechanically repeats historical scan output and would also rescan the
+new failed receipt on an unchanged retry. The required-attribution pass had
+not yet been reached, so it was not identified as this timeout's cause.
+
+The task therefore uses the production scanner's existing `-Strict -Path`
+interface over an explicit, recorded corpus of maintained claim text, including
+current public surfaces, applicable attribution files and owned process prose.
+The rule set and allowlists remain unchanged. Byte-pinned raw receipts retain
+their role as exact execution evidence and are checked by the separate source,
+artifact, roster, byte-observation and restoration controls. Their historical
+quoted output is not reinterpreted as newly authored current claims. The corpus
+and actual results must be recorded before this verification condition is met.
+Silently dropping a live claim, broadening a policy exception, editing a failed
+receipt or repeating the same expanding default scan was rejected.
+
+The audit packet must likewise distinguish public claim checking from retained
+worker narratives: a fresh auditor is not given prior dispositions by printing
+an unfiltered scan of those process records. The coordinator separately owns
+aggregate certification and its host/output planning. This evidence-scope
+choice changes no source theorem, acceptance requirement or policy rule, and
+is not a claim that the unfinished default-root scan passed.

@@ -1,0 +1,40 @@
+{
+  "startedUtc": "2026-09-12T10:47:12.8557566Z",
+  "completedUtc": "2026-09-12T10:47:16.4213842Z",
+  "pass": true,
+  "process": {
+    "Stage": "binary-raw-byte-capture-control",
+    "ExitCode": 0,
+    "Output": [
+      "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T10:47:15.895332+00:00\",\"completedUtc\":\"2026-09-12T10:47:16.025868+00:00\",\"durationSeconds\":0.13053589999617543,\"deadlineSeconds\":10.0,\"outputLimitBytes\":1048576,\"executable\":\"C:\\\\Python314\\\\python.exe\",\"arguments\":[\"-c\",\"import sys;sys.stdout.buffer.write(bytes([10,88,10,10]));sys.stderr.buffer.write(bytes([69,10]))\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"ClgKCg==\",\"stderrBase64\":\"RQo=\"}"
+    ],
+    "StandardOutput": [
+      "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T10:47:15.895332+00:00\",\"completedUtc\":\"2026-09-12T10:47:16.025868+00:00\",\"durationSeconds\":0.13053589999617543,\"deadlineSeconds\":10.0,\"outputLimitBytes\":1048576,\"executable\":\"C:\\\\Python314\\\\python.exe\",\"arguments\":[\"-c\",\"import sys;sys.stdout.buffer.write(bytes([10,88,10,10]));sys.stderr.buffer.write(bytes([69,10]))\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"ClgKCg==\",\"stderrBase64\":\"RQo=\"}"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 3.27,
+    "DeadlineSeconds": 40,
+    "Ownership": "kill-on-close-job"
+  },
+  "raw": {
+    "schema": "native1-raw-process-v1",
+    "startedUtc": "2026-09-12T03:47:15.895332-07:00",
+    "completedUtc": "2026-09-12T03:47:16.025868-07:00",
+    "durationSeconds": 0.13053589999617543,
+    "deadlineSeconds": 10.0,
+    "outputLimitBytes": 1048576,
+    "executable": "C:\\Python314\\python.exe",
+    "arguments": [
+      "-c",
+      "import sys;sys.stdout.buffer.write(bytes([10,88,10,10]));sys.stderr.buffer.write(bytes([69,10]))"
+    ],
+    "exitCode": 0,
+    "timedOut": false,
+    "outputLimitExceeded": false,
+    "stdoutBase64": "ClgKCg==",
+    "stderrBase64": "RQo="
+  }
+}

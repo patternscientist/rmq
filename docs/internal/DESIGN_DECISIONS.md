@@ -12765,3 +12765,53 @@ execution. Independent literal consumer types cover every public field. Checks
 of Canonical, CanonicalImage, Entry, Execution and the initial 34-field
 certificate/consumer set passed; further host/program additions and the final
 compiled/replay/audit campaign remain separately required.
+
+## DD-20260912-NATIVE1-005: derive replay witnesses from actual occurrences
+
+The seven native coverage fixtures use the accepted canonical query's actual
+semantic stages: left select, right select, the two fringe folds, interior
+minimum, final rank, and a logical read whose bit span crosses two physical
+cells. The stage decomposition is derived from the same select/LCA/rank calls
+that construct the reference trace. Its concatenation is proved equal to that
+trace for every valid range. Each logical occurrence expands through the actual
+reader receipts, preserving repetitions and order after the 174 metadata reads.
+A physical occurrence records the raw read ordinal and actual transition index,
+prestate, source load instruction, address register and memory reply.
+
+Labels or membership in a seven-name roster were rejected as evidence of
+execution. The exporter searches actual stage occurrences and fails unless all
+seven kinds exist. The cross-cell witness additionally satisfies the explicit
+bit-position/length crossing inequality and selects two consecutive physical
+cells at the corresponding execution occurrences. The successful baseline
+inspected four candidates and emitted six n12 witnesses and one n24 crossing
+witness. It checks the independent List Int/leftmost-scan oracle and exports
+status, step count, all six categories and every ordered read/reply from the
+already connected reference execution, never from the limb or native result.
+
+Durable inputs comprise the seven small operational fixtures and the existing
+committed gzip of the fixed program. The baseline exporter produced 10,848,489
+program bytes, checked equal to the gzip's exact decompression. Keeping another
+large plaintext copy or recomputing the expensive exporter for each focused
+selector was unnecessary: the same exact bytes and hash are already durable.
+The replay separately checks those bytes, memory, instruction/address/reply
+positions, span arithmetic and the literal input oracle. Full prestate and
+stage composition still rely on the checked reference/source chain; the Python
+checker does not claim to independently derive the entire execution semantics.
+
+The executable Lean validator imports the independent public-contract consumers
+and runs the delivered loader and source entry on independently expected cases.
+A separately pinned nonempty roster and strict selector/compare modes prevent
+zero-case success. Its 16 default cases passed; selector and comparison controls,
+actual native 109-case replay and final independent acceptance remain distinct
+obligations. No preprocessing speed or physical constant-time limb cost is
+claimed by these witnesses.
+The final evidence now includes all seven witnesses in both unchanged clients,
+all 109 native cases expanded to 214 observations/source checks, 128 production
+replay controls, all 44 public-contract cases inside nine controls and 24 source
+validator controls. The isolated shim argument-order mutation is executed and
+produces the independently expected fault in both clients. Fresh producer hashes
+are bound to literal consumers for all field/public-proposition weakenings.
+Source, generated C and native artifact identities are restored and rechecked.
+These results support the existing design choice and its stated trust boundary;
+no new primitive, representation or compiler assumption was introduced by the
+final campaigns. Fresh blind audit and aggregate certification remain separate.

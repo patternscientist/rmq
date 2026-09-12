@@ -1,0 +1,2402 @@
+{
+  "schema": "native1-contract-digestion-v1",
+  "scope": "checked frozen operational replay; no global acceptance",
+  "registryPath": "scripts/packed_native_contract_cases.json",
+  "registrySha256": "6E0C8E5A73F7DE47D14F7298435E7F72F2AC82A5881AEBF3EFFE0388CBF48E2C",
+  "runnerSha256": "AE8BC171667857E693D58E74626D425AB5C7F8AB43BDA4D6996A6FF92C8C3687",
+  "outerReceipt": "docs/internal/extensions/native1/binary-commands/contract-replay-20260912T132516703.json",
+  "full44Receipt": "docs/internal/extensions/native1/binary-commands/contract-replay-20260912T132610808.json",
+  "controls": [
+    "empty",
+    "whitespace",
+    "malformed",
+    "unknown",
+    "valid-baseline",
+    "omitted-full",
+    "registry-missing-case",
+    "registry-kind-downgrade",
+    "registry-consumer-change"
+  ],
+  "cases": [
+    {
+      "id": "baseline",
+      "kind": "expected-accept",
+      "literalConsumer": null,
+      "replacementDeclaration": null,
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 0,
+      "expectedProofLine": null,
+      "actualSourceLine": null,
+      "matchedDiagnostics": [],
+      "consumerOutput": [],
+      "producerBinding": {
+        "freshOutputSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-baseline\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07",
+        "afterConsumerSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n01",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN01 : ∀ width value, value < 2 ^ width → LimbWord.decode (LimbWord.encode width value) = value :=\n  nativeExecutionCapstone_holds.wordRoundtrip",
+      "replacementDeclaration": "  wordRoundtrip : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.wordRoundtrip",
+      "actualSourceLine": 12,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:12:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:12:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.wordRoundtrip",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (width value : Nat), value < 2 ^ width → LimbWord.decode (LimbWord.encode width value) = value : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "614863A86EE55C6F54ED6EC2FE4D01BBDC3813F2D3F29EBD49214292ED4EA59F",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n01\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07",
+        "afterConsumerSha256": "614863A86EE55C6F54ED6EC2FE4D01BBDC3813F2D3F29EBD49214292ED4EA59F",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "614863A86EE55C6F54ED6EC2FE4D01BBDC3813F2D3F29EBD49214292ED4EA59F",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "1EBFCF7DF583CFA11ACE7F38A589AF106AE817A89B8B14284C123001572C7A62",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n02",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN02 : ∀ width word, LimbWord.Canonical width word → LimbWord.encode width (LimbWord.decode word) = word :=\n  nativeExecutionCapstone_holds.wordCanonicalInverse",
+      "replacementDeclaration": "  wordCanonicalInverse : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.wordCanonicalInverse",
+      "actualSourceLine": 15,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:15:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:15:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.wordCanonicalInverse",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (width : Nat) (word : LimbWord.Word),",
+        "    LimbWord.Canonical width word → LimbWord.encode width (LimbWord.decode word) = word : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "6B83D9BD4E9C892492DF222624070E05AD4A37B88D0A3FB9FA32C9D3264DC538",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n02\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "614863A86EE55C6F54ED6EC2FE4D01BBDC3813F2D3F29EBD49214292ED4EA59F",
+        "afterConsumerSha256": "6B83D9BD4E9C892492DF222624070E05AD4A37B88D0A3FB9FA32C9D3264DC538",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "6B83D9BD4E9C892492DF222624070E05AD4A37B88D0A3FB9FA32C9D3264DC538",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "C06A89F09A8DD97236CD2035E9562D501EB939F01FD5A59A04E61A2D02305BA1",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n03",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN03 : ∀ width op x y,\n    (∃ result, LimbWord.checkedArithmetic width op x y = .ok result) ↔\n      LimbWord.Canonical width x ∧ LimbWord.Canonical width y ∧\n      LimbWord.ArithmeticSafe width op (LimbWord.decode x) (LimbWord.decode y) :=\n  nativeExecutionCapstone_holds.checkedArithmetic",
+      "replacementDeclaration": "  checkedArithmetic : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.checkedArithmetic",
+      "actualSourceLine": 21,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:21:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:21:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.checkedArithmetic",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (width : Nat) (op : Arithmetic) (x y : LimbWord.Word),",
+        "    (∃ result, LimbWord.checkedArithmetic width op x y = Except.ok result) ↔",
+        "      LimbWord.Canonical width x ∧",
+        "        LimbWord.Canonical width y ∧ LimbWord.ArithmeticSafe width op (LimbWord.decode x) (LimbWord.decode y) : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "CA3348B016DB8CFB0A497960B4E33E394BA3F2A30884FC8120B3D418520F41F0",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n03\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "6B83D9BD4E9C892492DF222624070E05AD4A37B88D0A3FB9FA32C9D3264DC538",
+        "afterConsumerSha256": "CA3348B016DB8CFB0A497960B4E33E394BA3F2A30884FC8120B3D418520F41F0",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "CA3348B016DB8CFB0A497960B4E33E394BA3F2A30884FC8120B3D418520F41F0",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "F75DBB95E659D4102C49EB7DB44C9ECF4818B5A8F8550C92A42E26CBBF6B094F",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n04",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN04 : ∀ image : StorageImage, image.Valid →\n    StorageImage.decode image.encode = some image :=\n  nativeExecutionCapstone_holds.serializedRoundtrip",
+      "replacementDeclaration": "  serializedRoundtrip : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.serializedRoundtrip",
+      "actualSourceLine": 25,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:25:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:25:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.serializedRoundtrip",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (image : StorageImage), image.Valid → StorageImage.decode image.encode = some image : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "82C162A96405E8208C5735B5645D5DDFCD06FEFC8E861CA58C52489BF350642F",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n04\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "CA3348B016DB8CFB0A497960B4E33E394BA3F2A30884FC8120B3D418520F41F0",
+        "afterConsumerSha256": "82C162A96405E8208C5735B5645D5DDFCD06FEFC8E861CA58C52489BF350642F",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "82C162A96405E8208C5735B5645D5DDFCD06FEFC8E861CA58C52489BF350642F",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "B7A070FA5C72435CFE3FB1CFB24CE30BEC2EA264FE567D3F816F7F664AA70E25",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n05",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN05 : ∀ x y : StorageImage, x.encode = y.encode → x = y :=\n  nativeExecutionCapstone_holds.serializedInjective",
+      "replacementDeclaration": "  serializedInjective : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.serializedInjective",
+      "actualSourceLine": 28,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:28:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:28:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.serializedInjective",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (x y : StorageImage), x.encode = y.encode → x = y : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "B2C58FE402F501B58989B13DC25C18C7588002466127AF6771775B8202FF9F33",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n05\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "82C162A96405E8208C5735B5645D5DDFCD06FEFC8E861CA58C52489BF350642F",
+        "afterConsumerSha256": "B2C58FE402F501B58989B13DC25C18C7588002466127AF6771775B8202FF9F33",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "B2C58FE402F501B58989B13DC25C18C7588002466127AF6771775B8202FF9F33",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "A7E9112B2264F2DEA1208D1F8E70B0627866513F2889CCBCB8583EDF351971D8",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n06",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN06 : ∀ bytes, nativeLoadEntry bytes =\n    match StorageImage.decodeSupported nativeLimits bytes with\n    | some image => .ok image\n    | none => .error \"invalid or unsupported binary image\" :=\n  nativeExecutionCapstone_holds.loaderSource",
+      "replacementDeclaration": "  loaderSource : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.loaderSource",
+      "actualSourceLine": 34,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:34:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:34:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.loaderSource",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (bytes : ByteArray),",
+        "    nativeLoadEntry bytes =",
+        "      match StorageImage.decodeSupported nativeLimits bytes with",
+        "      | some image => Except.ok image",
+        "      | none => Except.error \"invalid or unsupported binary image\" : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "E9CEEE7FA5DEE4160782A42CC79918F542AD54B7991215FCF630B483606FAF90",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n06\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "B2C58FE402F501B58989B13DC25C18C7588002466127AF6771775B8202FF9F33",
+        "afterConsumerSha256": "E9CEEE7FA5DEE4160782A42CC79918F542AD54B7991215FCF630B483606FAF90",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "E9CEEE7FA5DEE4160782A42CC79918F542AD54B7991215FCF630B483606FAF90",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "0E7938988976A6E354724769E0ED554241394726B8852BB0941F431534532EA5",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n07",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN07 : ∀ image left right fuel reads, NativeQuerySupported image left right fuel →\n    nativeQueryEntry image left right fuel reads =\n      .ok (nativeObservationText (nativeCore image left.data right.data fuel reads)) :=\n  nativeExecutionCapstone_holds.querySource",
+      "replacementDeclaration": "  querySource : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.querySource",
+      "actualSourceLine": 39,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:39:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:39:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.querySource",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (image : StorageImage) (left right : ByteArray) (fuel : Nat) (reads : Bool),",
+        "    NativeQuerySupported image left right fuel →",
+        "      nativeQueryEntry image left right fuel reads =",
+        "        Except.ok (nativeObservationText (nativeCore image left.data right.data fuel reads)) : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "3AA1DDEA79593E8B4FD88C7E4DC226295EA8437615D88434F8C9A5C1B4B3C900",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n07\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "E9CEEE7FA5DEE4160782A42CC79918F542AD54B7991215FCF630B483606FAF90",
+        "afterConsumerSha256": "3AA1DDEA79593E8B4FD88C7E4DC226295EA8437615D88434F8C9A5C1B4B3C900",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "3AA1DDEA79593E8B4FD88C7E4DC226295EA8437615D88434F8C9A5C1B4B3C900",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "833A3295531DD811287806438C98F78D499B12B0A10ABE12A59EECD859E21A86",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n08",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN08 : ∀ image left right fuel reads,\n    nativeCore image left right fuel reads =\n      ((LimbMachine.run image.width image.memory image.code fuel\n        (nativeInitialState image left right)).final,\n       (LimbMachine.run image.width image.memory image.code fuel\n        (nativeInitialState image left right)).transitions.foldl\n          (LimbMachine.recordTransition reads) {}) :=\n  nativeExecutionCapstone_holds.coreProjection",
+      "replacementDeclaration": "  coreProjection : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.coreProjection",
+      "actualSourceLine": 48,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:48:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:48:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.coreProjection",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (image : StorageImage) (left right : LimbWord.Word) (fuel : Nat) (reads : Bool),",
+        "    nativeCore image left right fuel reads =",
+        "      ((LimbMachine.run image.width image.memory image.code fuel (nativeInitialState image left right)).final,",
+        "        List.foldl (LimbMachine.recordTransition reads) { }",
+        "          (LimbMachine.run image.width image.memory image.code fuel",
+        "              (nativeInitialState image left right)).transitions) : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "DB67FBC53A06E31333EC935BDF05E142172610DB03F2E90C09A0EB79D7A0A06E",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n08\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "3AA1DDEA79593E8B4FD88C7E4DC226295EA8437615D88434F8C9A5C1B4B3C900",
+        "afterConsumerSha256": "DB67FBC53A06E31333EC935BDF05E142172610DB03F2E90C09A0EB79D7A0A06E",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "DB67FBC53A06E31333EC935BDF05E142172610DB03F2E90C09A0EB79D7A0A06E",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "06F7FA49027854FC85B80651B1E313C56303E3B272A6A90E3333CD8C1DD6FD8E",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n09",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN09 : ∀ image left right fuel, (nativeCore image left right fuel false).2.readsRev = [] :=\n  nativeExecutionCapstone_holds.defaultNoReads",
+      "replacementDeclaration": "  defaultNoReads : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.defaultNoReads",
+      "actualSourceLine": 51,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:51:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:51:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.defaultNoReads",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (image : StorageImage) (left right : LimbWord.Word) (fuel : Nat),",
+        "    (nativeCore image left right fuel false).snd.readsRev = [] : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "D645B9A2A87C27A744AE2EDB0FF97A2680A86D082022672A6BF9192CAFEF8FD1",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n09\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "DB67FBC53A06E31333EC935BDF05E142172610DB03F2E90C09A0EB79D7A0A06E",
+        "afterConsumerSha256": "D645B9A2A87C27A744AE2EDB0FF97A2680A86D082022672A6BF9192CAFEF8FD1",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "D645B9A2A87C27A744AE2EDB0FF97A2680A86D082022672A6BF9192CAFEF8FD1",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "2C47A4F9B6E9AEC4070441D5E6713512C72E12D76D80440A5606F984C30019BF",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n10",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN10 : ∀ image : StorageImage, image.width ≤ nativeLimits.maxWidth →\n    (nativeWordBytes image).toNat = LimbWord.limbCount image.width ∧\n      (nativeWordBytes image).toNat ≤ 512 :=\n  nativeExecutionCapstone_holds.hostWordBytes",
+      "replacementDeclaration": "  hostWordBytes : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.hostWordBytes",
+      "actualSourceLine": 56,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:56:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:56:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.hostWordBytes",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (image : StorageImage),",
+        "    image.width ≤ nativeLimits.maxWidth →",
+        "      (nativeWordBytes image).toNat = LimbWord.limbCount image.width ∧ (nativeWordBytes image).toNat ≤ 512 : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "F2466F1F9FE13DE2594144B58DF475DBA59358F668BB6753482FA6A0E5BE5A7E",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n10\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "D645B9A2A87C27A744AE2EDB0FF97A2680A86D082022672A6BF9192CAFEF8FD1",
+        "afterConsumerSha256": "F2466F1F9FE13DE2594144B58DF475DBA59358F668BB6753482FA6A0E5BE5A7E",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "F2466F1F9FE13DE2594144B58DF475DBA59358F668BB6753482FA6A0E5BE5A7E",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "D53FF564C154481AF01A748BC93D45E5C0A6A9CAC9813A553D9DD0FB8E9C654B",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n11",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN11 : ∀ xs : List Int, (canonicalImage xs).Valid :=\n  nativeExecutionCapstone_holds.canonicalValid",
+      "replacementDeclaration": "  canonicalValid : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.canonicalValid",
+      "actualSourceLine": 59,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:59:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:59:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.canonicalValid",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int), (canonicalImage xs).Valid : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "9BF3A2533ADBF3DE0F3521D9148A9B05A60FC2987352ECE5DFAB34E6AB2C8FF2",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n11\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "F2466F1F9FE13DE2594144B58DF475DBA59358F668BB6753482FA6A0E5BE5A7E",
+        "afterConsumerSha256": "9BF3A2533ADBF3DE0F3521D9148A9B05A60FC2987352ECE5DFAB34E6AB2C8FF2",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "9BF3A2533ADBF3DE0F3521D9148A9B05A60FC2987352ECE5DFAB34E6AB2C8FF2",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "FA5024E222A00909618BC2A04BAE7B8012B0451CCD5012E8BA89F34EAFD7BFA1",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n12",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN12 : ∀ xs : List Int, (canonicalImage xs).Supported nativeLimits →\n    nativeLoadEntry (canonicalImage xs).encode = .ok (canonicalImage xs) :=\n  nativeExecutionCapstone_holds.canonicalLoad",
+      "replacementDeclaration": "  canonicalLoad : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.canonicalLoad",
+      "actualSourceLine": 63,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:63:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:63:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.canonicalLoad",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int),",
+        "    StorageImage.Supported nativeLimits (canonicalImage xs) →",
+        "      nativeLoadEntry (canonicalImage xs).encode = Except.ok (canonicalImage xs) : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "178A64C497B5D4085F250B54FF8E829700D52FC444046EB2B58BE142384111C7",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n12\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "9BF3A2533ADBF3DE0F3521D9148A9B05A60FC2987352ECE5DFAB34E6AB2C8FF2",
+        "afterConsumerSha256": "178A64C497B5D4085F250B54FF8E829700D52FC444046EB2B58BE142384111C7",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "178A64C497B5D4085F250B54FF8E829700D52FC444046EB2B58BE142384111C7",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "741738786700AF258D0223D806F2AAA81485BE01D8DD8DB75E9BB6990D0E59CF",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n13",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN13 : ∀ xs : List Int,\n    (StorageImage.decode (canonicalImage xs).encode).map StorageImage.memory =\n      some (LimbMachine.encodeMemory (wordWidth xs.length) (buildMemory xs)) ∧\n    (StorageImage.decode (canonicalImage xs).encode).map StorageImage.code =\n      some (LimbMachine.encodeCode (wordWidth xs.length) queryProgram) :=\n  nativeExecutionCapstone_holds.loadedAllocation",
+      "replacementDeclaration": "  loadedAllocation : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.loadedAllocation",
+      "actualSourceLine": 70,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:70:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:70:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.loadedAllocation",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int),",
+        "    Option.map StorageImage.memory (StorageImage.decode (canonicalImage xs).encode) =",
+        "        some (LimbMachine.encodeMemory (wordWidth xs.length) (buildMemory xs)) ∧",
+        "      Option.map StorageImage.code (StorageImage.decode (canonicalImage xs).encode) =",
+        "        some (LimbMachine.encodeCode (wordWidth xs.length) queryProgram) : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "608D1CE5A404E3953D57C2BC391AF61A417EFD1447A58AD96FD7D5BAA7A2061C",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n13\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "178A64C497B5D4085F250B54FF8E829700D52FC444046EB2B58BE142384111C7",
+        "afterConsumerSha256": "608D1CE5A404E3953D57C2BC391AF61A417EFD1447A58AD96FD7D5BAA7A2061C",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "608D1CE5A404E3953D57C2BC391AF61A417EFD1447A58AD96FD7D5BAA7A2061C",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "A33A7769177D3A8C722CDB19B7785C8C25CFA9DD248740502E10C4E9D05F1F39",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n14",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN14 : ∀ (xs : List Int) left right fuel,\n    left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length →\n    (canonicalExecution xs left right fuel).decode =\n      run (buildMemory xs) queryProgram fuel (initialState xs.length left right) :=\n  nativeExecutionCapstone_holds.allFuelExecution",
+      "replacementDeclaration": "  allFuelExecution : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.allFuelExecution",
+      "actualSourceLine": 76,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:76:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:76:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.allFuelExecution",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right fuel : Nat),",
+        "    left < 2 ^ wordWidth xs.length →",
+        "      right < 2 ^ wordWidth xs.length →",
+        "        (canonicalExecution xs left right fuel).decode =",
+        "          run (buildMemory xs) queryProgram fuel (initialState xs.length left right) : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "5AA5BE0C9987EF6197890DD8DDAB7D83421A704B1031FB1968F56929FDEAA810",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n14\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "608D1CE5A404E3953D57C2BC391AF61A417EFD1447A58AD96FD7D5BAA7A2061C",
+        "afterConsumerSha256": "5AA5BE0C9987EF6197890DD8DDAB7D83421A704B1031FB1968F56929FDEAA810",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "5AA5BE0C9987EF6197890DD8DDAB7D83421A704B1031FB1968F56929FDEAA810",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "4477514D69D4F9829F681CC4AA548BCAA431B5C657B96304B4ABCE514915B7B5",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n15",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN15 : ∀ (xs : List Int) left right fuel reads,\n    left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length →\n    ((canonicalObservation xs left right fuel reads).1.decode,\n      (canonicalObservation xs left right fuel reads).2) =\n      observeRun reads (run (buildMemory xs) queryProgram fuel\n        (initialState xs.length left right)) {} :=\n  nativeExecutionCapstone_holds.canonicalSource",
+      "replacementDeclaration": "  canonicalSource : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.canonicalSource",
+      "actualSourceLine": 84,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:84:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:84:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.canonicalSource",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right fuel : Nat) (reads : Bool),",
+        "    left < 2 ^ wordWidth xs.length →",
+        "      right < 2 ^ wordWidth xs.length →",
+        "        ((canonicalObservation xs left right fuel reads).fst.decode,",
+        "            (canonicalObservation xs left right fuel reads).snd) =",
+        "          observeRun reads (run (buildMemory xs) queryProgram fuel (initialState xs.length left right)) { } : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "533FB0C1BD207C4400491719CAE219C7F4D8E67B3D781719F1B761ED35EF2792",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n15\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "5AA5BE0C9987EF6197890DD8DDAB7D83421A704B1031FB1968F56929FDEAA810",
+        "afterConsumerSha256": "533FB0C1BD207C4400491719CAE219C7F4D8E67B3D781719F1B761ED35EF2792",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "533FB0C1BD207C4400491719CAE219C7F4D8E67B3D781719F1B761ED35EF2792",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "F3D3F713A8AF3C275F71EC007140455A8FBA5D36FC5F07B1DD0D25A0CE4C32AF",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n16",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN16 : ∀ (xs : List Int) left right fuel reads,\n    (canonicalImage xs).Supported nativeLimits →\n    left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length →\n    fuel ≤ nativeFuelLimit →\n    nativeQueryEntry (canonicalImage xs) (canonicalEndpoint xs.length left)\n      (canonicalEndpoint xs.length right) fuel reads =\n      .ok (nativeObservationText (canonicalObservation xs left right fuel reads)) :=\n  nativeExecutionCapstone_holds.canonicalQuery",
+      "replacementDeclaration": "  canonicalQuery : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.canonicalQuery",
+      "actualSourceLine": 93,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:93:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:93:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.canonicalQuery",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right fuel : Nat) (reads : Bool),",
+        "    StorageImage.Supported nativeLimits (canonicalImage xs) →",
+        "      left < 2 ^ wordWidth xs.length →",
+        "        right < 2 ^ wordWidth xs.length →",
+        "          fuel ≤ nativeFuelLimit →",
+        "            nativeQueryEntry (canonicalImage xs) (canonicalEndpoint xs.length left) (canonicalEndpoint xs.length right)",
+        "                fuel reads =",
+        "              Except.ok (nativeObservationText (canonicalObservation xs left right fuel reads)) : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "E5D5961A6B071B29246D3A13ABAE5526A5ED28B5321C836E300A382B1D9AA6B8",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n16\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "533FB0C1BD207C4400491719CAE219C7F4D8E67B3D781719F1B761ED35EF2792",
+        "afterConsumerSha256": "E5D5961A6B071B29246D3A13ABAE5526A5ED28B5321C836E300A382B1D9AA6B8",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "E5D5961A6B071B29246D3A13ABAE5526A5ED28B5321C836E300A382B1D9AA6B8",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "E3F5CCE620DD784138CE3D239BA202A3FBAA6508A58AAB10417AB0AED1C8CFCC",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n17",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN17 : ∀ n, Nat.log2 (n + 2) + 1 ≤ wordWidth n ∧\n    wordWidth n ≤ 192 * (Nat.log2 (n + 2) + 1) :=\n  nativeExecutionCapstone_holds.widthBounds",
+      "replacementDeclaration": "  widthBounds : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.widthBounds",
+      "actualSourceLine": 97,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:97:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:97:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.widthBounds",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (n : Nat), (n + 2).log2 + 1 ≤ wordWidth n ∧ wordWidth n ≤ 192 * ((n + 2).log2 + 1) : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "815ABE3EA665B9DE26C554CA5DD2E546EE01B8D407D95B93261E26302BA47B19",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n17\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "E5D5961A6B071B29246D3A13ABAE5526A5ED28B5321C836E300A382B1D9AA6B8",
+        "afterConsumerSha256": "815ABE3EA665B9DE26C554CA5DD2E546EE01B8D407D95B93261E26302BA47B19",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "815ABE3EA665B9DE26C554CA5DD2E546EE01B8D407D95B93261E26302BA47B19",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "6899C5CEBC6FB0314CB210987A26810821F9A8C2B76F6C66C8421BD9D7EC2B5C",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n18",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN18 : ∀ xs : List Int, (canonicalImage xs).memory.size * (canonicalImage xs).width ≤\n    2 * xs.length + allocationRho xs.length :=\n  nativeExecutionCapstone_holds.dataCapacity",
+      "replacementDeclaration": "  dataCapacity : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.dataCapacity",
+      "actualSourceLine": 101,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:101:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:101:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.dataCapacity",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int),",
+        "    Array.size (canonicalImage xs).memory * (canonicalImage xs).width ≤ 2 * xs.length + allocationRho xs.length : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "CBCE8BB513D8CE3C965DE6F6E0DBE5096E991B9295B5392C8BCE50B571DA2E2F",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n18\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "815ABE3EA665B9DE26C554CA5DD2E546EE01B8D407D95B93261E26302BA47B19",
+        "afterConsumerSha256": "CBCE8BB513D8CE3C965DE6F6E0DBE5096E991B9295B5392C8BCE50B571DA2E2F",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "CBCE8BB513D8CE3C965DE6F6E0DBE5096E991B9295B5392C8BCE50B571DA2E2F",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "283776D130C5974175504667384D9EE4830C4F556F4F74C6DFF5005EF5116630",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n19",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN19 : ∀ xs : List Int,\n    (canonicalImage xs).wordCount * (canonicalImage xs).width +\n      (queryRegisterCount + 3) * (canonicalImage xs).width ≤\n        2 * xs.length + queryCompleteRho xs.length :=\n  nativeExecutionCapstone_holds.completeNumericCapacity",
+      "replacementDeclaration": "  completeNumericCapacity : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.completeNumericCapacity",
+      "actualSourceLine": 107,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:107:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:107:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.completeNumericCapacity",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int),",
+        "    (canonicalImage xs).wordCount * (canonicalImage xs).width + (queryRegisterCount + 3) * (canonicalImage xs).width ≤",
+        "      2 * xs.length + queryCompleteRho xs.length : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "A9B9638548F1CC1D785E2923EC83840B3726DD8B5ACF1897C979BE2BB9D1765A",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n19\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "CBCE8BB513D8CE3C965DE6F6E0DBE5096E991B9295B5392C8BCE50B571DA2E2F",
+        "afterConsumerSha256": "A9B9638548F1CC1D785E2923EC83840B3726DD8B5ACF1897C979BE2BB9D1765A",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "A9B9638548F1CC1D785E2923EC83840B3726DD8B5ACF1897C979BE2BB9D1765A",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "BE90E8F117915DAA13196146C508681EE0FA32B9BBA22C71CA0DEF4BE18D5564",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n20",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN20 : LittleOLinear allocationRho ∧ LittleOLinear queryCompleteRho :=\n  nativeExecutionCapstone_holds.residuals",
+      "replacementDeclaration": "  residuals : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.residuals",
+      "actualSourceLine": 110,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:110:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:110:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.residuals",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  LittleOLinear allocationRho ∧ LittleOLinear queryCompleteRho : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "576D4E73F84CF5E35CCFDC1A0A4556A03170798F5EFF2CCCA77A9518FCEF100D",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n20\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "A9B9638548F1CC1D785E2923EC83840B3726DD8B5ACF1897C979BE2BB9D1765A",
+        "afterConsumerSha256": "576D4E73F84CF5E35CCFDC1A0A4556A03170798F5EFF2CCCA77A9518FCEF100D",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "576D4E73F84CF5E35CCFDC1A0A4556A03170798F5EFF2CCCA77A9518FCEF100D",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "01895F942C67C367EA50958974F8B11153B373EE42A90383589E3C653618A7A7",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n21",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN21 : ∀ xs : List Int, 8 * (canonicalImage xs).encode.size =\n    ((buildMemory xs).length + (queryProgram.map Instruction.encoding).flatten.length) *\n      wordWidth xs.length +\n    ((buildMemory xs).length + (queryProgram.map Instruction.encoding).flatten.length) *\n      (8 * LimbWord.limbCount (wordWidth xs.length) - wordWidth xs.length) +\n    8 * (canonicalImage xs).framingBytes :=\n  nativeExecutionCapstone_holds.fileAccounting",
+      "replacementDeclaration": "  fileAccounting : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.fileAccounting",
+      "actualSourceLine": 118,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:118:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:118:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.fileAccounting",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int),",
+        "    8 * (canonicalImage xs).encode.size =",
+        "      ((buildMemory xs).length + (List.map Instruction.encoding queryProgram).flatten.length) * wordWidth xs.length +",
+        "          ((buildMemory xs).length + (List.map Instruction.encoding queryProgram).flatten.length) *",
+        "            (8 * LimbWord.limbCount (wordWidth xs.length) - wordWidth xs.length) +",
+        "        8 * (canonicalImage xs).framingBytes : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "E890057A9065927B6EC78533857E7B5BF12C18E0AE8657F97CB96794B30F2D51",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n21\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "576D4E73F84CF5E35CCFDC1A0A4556A03170798F5EFF2CCCA77A9518FCEF100D",
+        "afterConsumerSha256": "E890057A9065927B6EC78533857E7B5BF12C18E0AE8657F97CB96794B30F2D51",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "E890057A9065927B6EC78533857E7B5BF12C18E0AE8657F97CB96794B30F2D51",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "0158D443ED31F82174AEE4E06A9BDA29652CDF1921A97CE6DA206C6DFAC936AA",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n22",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN22 : queryBudget = 837572 ∧ queryProgram.length = queryBudget ∧\n    queryRegisterCount = 8271 ∧ queryScratchWords = 8274 ∧\n    (queryProgram.map Instruction.encoding).flatten.length ≤ 5 * queryBudget :=\n  nativeExecutionCapstone_holds.machineInventory",
+      "replacementDeclaration": "  machineInventory : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.machineInventory",
+      "actualSourceLine": 123,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:123:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:123:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.machineInventory",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  queryBudget = 837572 ∧",
+        "    List.length queryProgram = queryBudget ∧",
+        "      queryRegisterCount = 8271 ∧",
+        "        queryScratchWords = 8274 ∧ (List.map Instruction.encoding queryProgram).flatten.length ≤ 5 * queryBudget : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "9F1A4699100784009DEB58E7BE8C2C6BE6B3268D2002D6E7E197B19E87159993",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n22\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "E890057A9065927B6EC78533857E7B5BF12C18E0AE8657F97CB96794B30F2D51",
+        "afterConsumerSha256": "9F1A4699100784009DEB58E7BE8C2C6BE6B3268D2002D6E7E197B19E87159993",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "9F1A4699100784009DEB58E7BE8C2C6BE6B3268D2002D6E7E197B19E87159993",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "93342C7A7B85D29E44F70C51FDBCF979C3991029A61D97706BAEE21314B3D4C8",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n23",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN23 : ∀ (xs : List Int) address, address ≤ (canonicalImage xs).memory.size →\n    address < 2 ^ (canonicalImage xs).width :=\n  nativeExecutionCapstone_holds.allocationAddressWidth",
+      "replacementDeclaration": "  allocationAddressWidth : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.allocationAddressWidth",
+      "actualSourceLine": 127,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:127:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:127:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.allocationAddressWidth",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (address : Nat),",
+        "    address ≤ Array.size (canonicalImage xs).memory → address < 2 ^ (canonicalImage xs).width : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "4E93B0F5D462F790D3C56E65C68BAF155F16E6BEC500232E9568F2AB396CD8A6",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n23\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "9F1A4699100784009DEB58E7BE8C2C6BE6B3268D2002D6E7E197B19E87159993",
+        "afterConsumerSha256": "4E93B0F5D462F790D3C56E65C68BAF155F16E6BEC500232E9568F2AB396CD8A6",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "4E93B0F5D462F790D3C56E65C68BAF155F16E6BEC500232E9568F2AB396CD8A6",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "6DE0807D190202C06CE93B4C96A1C660BB9B6E24AE8DC0E26FEAC4F7821B1548",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n24",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN24 : ∀ n instruction, instruction ∈ queryProgram → instruction.Fits (wordWidth n) :=\n  nativeExecutionCapstone_holds.programWidth",
+      "replacementDeclaration": "  programWidth : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.programWidth",
+      "actualSourceLine": 130,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:130:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:130:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.programWidth",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (n : Nat) (instruction : Instruction),",
+        "    instruction ∈ queryProgram → Instruction.Fits (wordWidth n) instruction : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "4A313274D4B871C4104B8568926C0FBC13448812E5494D9C46956578D3B7A366",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n24\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "4E93B0F5D462F790D3C56E65C68BAF155F16E6BEC500232E9568F2AB396CD8A6",
+        "afterConsumerSha256": "4A313274D4B871C4104B8568926C0FBC13448812E5494D9C46956578D3B7A366",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "4A313274D4B871C4104B8568926C0FBC13448812E5494D9C46956578D3B7A366",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "0E4FBA3A3C30243D4418139CF4B2B6C44EFC7C16F4963ADEC8EFE00CDBB8EE10",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n25",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN25 : ∀ (xs : List Int) left right, ValidRange xs left right →\n    (canonicalExecution xs left right queryBudget).decode.result =\n      some (scanWindow xs left (right - left) + 1) :=\n  nativeExecutionCapstone_holds.validResult",
+      "replacementDeclaration": "  validResult : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.validResult",
+      "actualSourceLine": 135,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:135:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:135:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.validResult",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right : Nat),",
+        "    ValidRange xs left right →",
+        "      (canonicalExecution xs left right queryBudget).decode.result = some (scanWindow xs left (right - left) + 1) : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "0EA8F5EC9B079C52D77C1F6523BD6B0B45AEFF94B1718CC8418CBD12076DD25A",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n25\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "4A313274D4B871C4104B8568926C0FBC13448812E5494D9C46956578D3B7A366",
+        "afterConsumerSha256": "0EA8F5EC9B079C52D77C1F6523BD6B0B45AEFF94B1718CC8418CBD12076DD25A",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "0EA8F5EC9B079C52D77C1F6523BD6B0B45AEFF94B1718CC8418CBD12076DD25A",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "0B000F3815D62153BEA3830597C3AC84F8FB8F1FB1B5984913B2BA10B8E6D0B0",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n26",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN26 : ∀ (xs : List Int) left right reads,\n    left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length →\n    (canonicalObservation xs left right queryBudget reads).1.decode.status =\n      .halted (optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value) :=\n  nativeExecutionCapstone_holds.nativeHalt",
+      "replacementDeclaration": "  nativeHalt : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.nativeHalt",
+      "actualSourceLine": 141,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:141:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:141:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.nativeHalt",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right : Nat) (reads : Bool),",
+        "    left < 2 ^ wordWidth xs.length →",
+        "      right < 2 ^ wordWidth xs.length →",
+        "        (canonicalObservation xs left right queryBudget reads).fst.decode.status =",
+        "          Status.halted (optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value) : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "D58F4F7D0DA9ABDE665D539E1174808569CBD5BA5FBB864E1405D8DC453066A1",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n26\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "0EA8F5EC9B079C52D77C1F6523BD6B0B45AEFF94B1718CC8418CBD12076DD25A",
+        "afterConsumerSha256": "D58F4F7D0DA9ABDE665D539E1174808569CBD5BA5FBB864E1405D8DC453066A1",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "D58F4F7D0DA9ABDE665D539E1174808569CBD5BA5FBB864E1405D8DC453066A1",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "5A2B79443D3F6F5911D73BEB9217B8575CCD3B9548023C150502E8E84346A109",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n27",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN27 : ∀ (xs : List Int) left right,\n    left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length → ¬ ValidRange xs left right →\n    (canonicalExecution xs left right queryBudget).decode.result = some 0 ∧\n    (canonicalExecution xs left right queryBudget).decode.reads = [] ∧\n    (canonicalExecution xs left right queryBudget).decode.steps ≤ 6 :=\n  nativeExecutionCapstone_holds.invalidGuard",
+      "replacementDeclaration": "  invalidGuard : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.invalidGuard",
+      "actualSourceLine": 148,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:148:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:148:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.invalidGuard",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right : Nat),",
+        "    left < 2 ^ wordWidth xs.length →",
+        "      right < 2 ^ wordWidth xs.length →",
+        "        ¬ValidRange xs left right →",
+        "          (canonicalExecution xs left right queryBudget).decode.result = some 0 ∧",
+        "            (canonicalExecution xs left right queryBudget).decode.reads = [] ∧",
+        "              (canonicalExecution xs left right queryBudget).decode.steps ≤ 6 : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "1C3F3806FD615D6CB1BE7EF930866F7813E13D02887EF2B6DBBFD5A053064D4E",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n27\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "D58F4F7D0DA9ABDE665D539E1174808569CBD5BA5FBB864E1405D8DC453066A1",
+        "afterConsumerSha256": "1C3F3806FD615D6CB1BE7EF930866F7813E13D02887EF2B6DBBFD5A053064D4E",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "1C3F3806FD615D6CB1BE7EF930866F7813E13D02887EF2B6DBBFD5A053064D4E",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "4CB30FFC2207116DF9295B8260FFC42EA2763B600F42AE8D1B08BF677087CD67",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n28",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN28 : ∀ (xs : List Int) left right reads,\n    left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length →\n    (canonicalObservation xs left right queryBudget reads).2.steps ≤ queryBudget :=\n  nativeExecutionCapstone_holds.stepBound",
+      "replacementDeclaration": "  stepBound : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.stepBound",
+      "actualSourceLine": 153,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:153:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:153:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.stepBound",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right : Nat) (reads : Bool),",
+        "    left < 2 ^ wordWidth xs.length →",
+        "      right < 2 ^ wordWidth xs.length →",
+        "        (canonicalObservation xs left right queryBudget reads).snd.steps ≤ queryBudget : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "157B3D230F572FCB1C6AC7FC10D77A8347307C2FCC11478A303832A9575CC8FF",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n28\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "1C3F3806FD615D6CB1BE7EF930866F7813E13D02887EF2B6DBBFD5A053064D4E",
+        "afterConsumerSha256": "157B3D230F572FCB1C6AC7FC10D77A8347307C2FCC11478A303832A9575CC8FF",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "157B3D230F572FCB1C6AC7FC10D77A8347307C2FCC11478A303832A9575CC8FF",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "F78B85EBF41EC458572A626FDF1D4482A3FEADD4E0F67A94752E1D743FC05ADD",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n29",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN29 : ∀ (xs : List Int) left right fuel reads category,\n    left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length →\n    (canonicalObservation xs left right fuel reads).2.counts.get category =\n      (canonicalExecution xs left right fuel).decode.categoryCount category :=\n  nativeExecutionCapstone_holds.categoryExact",
+      "replacementDeclaration": "  categoryExact : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.categoryExact",
+      "actualSourceLine": 159,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:159:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:159:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.categoryExact",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right fuel : Nat) (reads : Bool) (category : Category),",
+        "    left < 2 ^ wordWidth xs.length →",
+        "      right < 2 ^ wordWidth xs.length →",
+        "        (canonicalObservation xs left right fuel reads).snd.counts.get category =",
+        "          (canonicalExecution xs left right fuel).decode.categoryCount category : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "CB1F60639EEC71260FD067BD503075747DC33A60EF1157BC3861FE9985A7775D",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n29\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "157B3D230F572FCB1C6AC7FC10D77A8347307C2FCC11478A303832A9575CC8FF",
+        "afterConsumerSha256": "CB1F60639EEC71260FD067BD503075747DC33A60EF1157BC3861FE9985A7775D",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "CB1F60639EEC71260FD067BD503075747DC33A60EF1157BC3861FE9985A7775D",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "1548544F399CBCF9360D56F7323D36CF5B9E935A50240FE6BB4346317F73A3FF",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n30",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN30 : ∀ (xs : List Int) left right fuel,\n    left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length →\n    (canonicalObservation xs left right fuel true).2.readsRev.reverse =\n      (canonicalExecution xs left right fuel).decode.reads :=\n  nativeExecutionCapstone_holds.readExact",
+      "replacementDeclaration": "  readExact : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.readExact",
+      "actualSourceLine": 165,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:165:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:165:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.readExact",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right fuel : Nat),",
+        "    left < 2 ^ wordWidth xs.length →",
+        "      right < 2 ^ wordWidth xs.length →",
+        "        (canonicalObservation xs left right fuel true).snd.readsRev.reverse =",
+        "          (canonicalExecution xs left right fuel).decode.reads : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "780FBC715E4D546C592036F893DD286605664E978A9FB9F79A54255EE02F1E30",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n30\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "CB1F60639EEC71260FD067BD503075747DC33A60EF1157BC3861FE9985A7775D",
+        "afterConsumerSha256": "780FBC715E4D546C592036F893DD286605664E978A9FB9F79A54255EE02F1E30",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "780FBC715E4D546C592036F893DD286605664E978A9FB9F79A54255EE02F1E30",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "0922C1949FEA6710ADDA2BF23DB8DDA7A3FCF44E1D3ED453935C37D164514168",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n31",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN31 : ∀ (xs : List Int) left right,\n    left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length →\n    ∀ (index : Nat) (t : Transition),\n      (canonicalExecution xs left right queryBudget).decode.transitions[index]? = some t →\n      Instruction.Safe (wordWidth xs.length) t.before t.instruction ∧\n        t.after.Fits (wordWidth xs.length) :=\n  nativeExecutionCapstone_holds.transitionSafety",
+      "replacementDeclaration": "  transitionSafety : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.transitionSafety",
+      "actualSourceLine": 173,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:173:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:173:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.transitionSafety",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right : Nat),",
+        "    left < 2 ^ wordWidth xs.length →",
+        "      right < 2 ^ wordWidth xs.length →",
+        "        ∀ (index : Nat) (t : Transition),",
+        "          (canonicalExecution xs left right queryBudget).decode.transitions[index]? = some t →",
+        "            Instruction.Safe (wordWidth xs.length) t.before t.instruction ∧",
+        "              State.Fits (wordWidth xs.length) t.after : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "14BA09C8D7D1F29031F2230F4C777D84AEB0D4EF81F1844C97A0B152760BBB50",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n31\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "780FBC715E4D546C592036F893DD286605664E978A9FB9F79A54255EE02F1E30",
+        "afterConsumerSha256": "14BA09C8D7D1F29031F2230F4C777D84AEB0D4EF81F1844C97A0B152760BBB50",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "14BA09C8D7D1F29031F2230F4C777D84AEB0D4EF81F1844C97A0B152760BBB50",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "8D04879F04DAFECB4623C2B3D90E166AEE9947755BC062CFCB550A177380EC1C",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n32",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN32 : ∀ (xs : List Int) left right,\n    left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length →\n    ∀ (index : Nat) (t : Transition) (receipt : Receipt),\n      (canonicalExecution xs left right queryBudget).decode.transitions[index]? = some t →\n      t.receipt = some receipt →\n      t.before = (canonicalExecution xs left right index).decode.final ∧\n      t.before.status = .running ∧ queryProgram[t.before.pc]? = some t.instruction ∧\n      execute (buildMemory xs) t.instruction t.before = (t.after, t.receipt) ∧\n      ∃ dst addrReg, t.instruction = .load dst addrReg ∧\n        receipt.address = t.before.regs addrReg ∧\n        receipt.reply = (LimbMachine.decodeMemory (canonicalImage xs).memory)[receipt.address]? :=\n  nativeExecutionCapstone_holds.positionalReadBacking",
+      "replacementDeclaration": "  positionalReadBacking : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.positionalReadBacking",
+      "actualSourceLine": 186,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:186:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:186:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.positionalReadBacking",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right : Nat),",
+        "    left < 2 ^ wordWidth xs.length →",
+        "      right < 2 ^ wordWidth xs.length →",
+        "        ∀ (index : Nat) (t : Transition) (receipt : Receipt),",
+        "          (canonicalExecution xs left right queryBudget).decode.transitions[index]? = some t →",
+        "            t.receipt = some receipt →",
+        "              t.before = (canonicalExecution xs left right index).decode.final ∧",
+        "                t.before.status = Status.running ∧",
+        "                  queryProgram[t.before.pc]? = some t.instruction ∧",
+        "                    execute (buildMemory xs) t.instruction t.before = (t.after, t.receipt) ∧",
+        "                      ∃ dst addrReg,",
+        "                        t.instruction = Instruction.load dst addrReg ∧",
+        "                          receipt.address = t.before.regs addrReg ∧",
+        "                            receipt.reply =",
+        "                              (LimbMachine.decodeMemory (canonicalImage xs).memory)[receipt.address]? : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "B221D4C82145048911E1179CD3851F958C3701BD065E001950FC7C9ACF6D6713",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n32\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "14BA09C8D7D1F29031F2230F4C777D84AEB0D4EF81F1844C97A0B152760BBB50",
+        "afterConsumerSha256": "B221D4C82145048911E1179CD3851F958C3701BD065E001950FC7C9ACF6D6713",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "B221D4C82145048911E1179CD3851F958C3701BD065E001950FC7C9ACF6D6713",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "E9DE95614D3A76AEDEC701E0B32770A334AC9932BA69E218E62EB7EC7C31BEC3",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n33",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN33 : ∀ (xs : List Int) left right,\n    left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length →\n    (canonicalExecution xs left right queryBudget).decode.reads =\n      if ValidRange xs left right then\n        (List.range 174).map (fun i => ⟨i, (metadata (SuccinctClassic.cartesianShape xs))[i]?⟩) ++\n          logicalTraceReads (SuccinctClassic.cartesianShape xs) (buildMemory xs)\n            (SuccinctClassic.queryTraceResult xs left right).trace\n      else [] :=\n  nativeExecutionCapstone_holds.orderedLogicalReads",
+      "replacementDeclaration": "  orderedLogicalReads : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.orderedLogicalReads",
+      "actualSourceLine": 196,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:196:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:196:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.orderedLogicalReads",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right : Nat),",
+        "    left < 2 ^ wordWidth xs.length →",
+        "      right < 2 ^ wordWidth xs.length →",
+        "        (canonicalExecution xs left right queryBudget).decode.reads =",
+        "          if ValidRange xs left right then",
+        "            List.map (fun i => { address := i, reply := (metadata (SuccinctClassic.cartesianShape xs))[i]? })",
+        "                (List.range 174) ++",
+        "              logicalTraceReads (SuccinctClassic.cartesianShape xs) (buildMemory xs)",
+        "                (SuccinctClassic.queryTraceResult xs left right).trace",
+        "          else [] : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "DC3087AB0EEBDF824676B5D37CF4B0D143CAD435810C02A6ADFE73259397F1F1",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n33\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "B221D4C82145048911E1179CD3851F958C3701BD065E001950FC7C9ACF6D6713",
+        "afterConsumerSha256": "DC3087AB0EEBDF824676B5D37CF4B0D143CAD435810C02A6ADFE73259397F1F1",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "DC3087AB0EEBDF824676B5D37CF4B0D143CAD435810C02A6ADFE73259397F1F1",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "0C97AF3E3257EED6EAC98019068C21C8E17231CFC99503F78BB9137B6145FED8",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n34",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN34 : ∀ (xs : List Int) (memory : Memory) left right,\n    left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length →\n    (∀ value ∈ memory, value < 2 ^ wordWidth xs.length) →\n    (∀ receipt ∈ (canonicalExecution xs left right queryBudget).decode.reads,\n      memory[receipt.address]? = (buildMemory xs)[receipt.address]?) →\n    (LimbMachine.run (wordWidth xs.length) (LimbMachine.encodeMemory (wordWidth xs.length) memory)\n      (canonicalImage xs).code queryBudget\n      (nativeInitialState (canonicalImage xs) (canonicalEndpoint xs.length left).data\n        (canonicalEndpoint xs.length right).data)).decode =\n      (canonicalExecution xs left right queryBudget).decode :=\n  nativeExecutionCapstone_holds.suppliedStoreAgreement",
+      "replacementDeclaration": "  suppliedStoreAgreement : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.suppliedStoreAgreement",
+      "actualSourceLine": 208,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:208:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:208:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.suppliedStoreAgreement",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (memory : Memory) (left right : Nat),",
+        "    left < 2 ^ wordWidth xs.length →",
+        "      right < 2 ^ wordWidth xs.length →",
+        "        (∀ (value : Nat), value ∈ memory → value < 2 ^ wordWidth xs.length) →",
+        "          (∀ (receipt : Receipt),",
+        "              receipt ∈ (canonicalExecution xs left right queryBudget).decode.reads →",
+        "                memory[receipt.address]? = (buildMemory xs)[receipt.address]?) →",
+        "            (LimbMachine.run (wordWidth xs.length) (LimbMachine.encodeMemory (wordWidth xs.length) memory)",
+        "                  (canonicalImage xs).code queryBudget",
+        "                  (nativeInitialState (canonicalImage xs) (canonicalEndpoint xs.length left).data",
+        "                    (canonicalEndpoint xs.length right).data)).decode =",
+        "              (canonicalExecution xs left right queryBudget).decode : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "9AB36507F33CF826D1346BC9D2FC0929FB07DE6319383CAD937C5865D3607911",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n34\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "DC3087AB0EEBDF824676B5D37CF4B0D143CAD435810C02A6ADFE73259397F1F1",
+        "afterConsumerSha256": "9AB36507F33CF826D1346BC9D2FC0929FB07DE6319383CAD937C5865D3607911",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "9AB36507F33CF826D1346BC9D2FC0929FB07DE6319383CAD937C5865D3607911",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "BBB66452B0BAD7F436F6A32BCFCF82EBC9776519CF4FC3D662CF8D25A01CFA55",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n35",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN35 : ∀ bytes image, nativeLoadEntry bytes = .ok image →\n    bytes = image.encode ∧ image.Valid ∧ image.Supported nativeLimits :=\n  nativeExecutionCapstone_holds.loadedDomain",
+      "replacementDeclaration": "  loadedDomain : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.loadedDomain",
+      "actualSourceLine": 212,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:212:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:212:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.loadedDomain",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (bytes : ByteArray) (image : StorageImage),",
+        "    nativeLoadEntry bytes = Except.ok image →",
+        "      bytes = image.encode ∧ image.Valid ∧ StorageImage.Supported nativeLimits image : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "74FD8B97E1575A2F61B00B9A9DEF4CBA802FF81E61C2C866CB3C6A2E92EDB3D2",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n35\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "9AB36507F33CF826D1346BC9D2FC0929FB07DE6319383CAD937C5865D3607911",
+        "afterConsumerSha256": "74FD8B97E1575A2F61B00B9A9DEF4CBA802FF81E61C2C866CB3C6A2E92EDB3D2",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "74FD8B97E1575A2F61B00B9A9DEF4CBA802FF81E61C2C866CB3C6A2E92EDB3D2",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "1824DBBBAA64DA7016735A14BB20B66BFCAA49E0E2B130F2655D6ABB1BC5B1D3",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n36",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN36 : ∀ image : StorageImage, image.Supported nativeLimits →\n    image.encode.size < USize.size ∧ image.registerCount < USize.size ∧\n    image.code.size < USize.size ∧ image.memory.size < USize.size :=\n  nativeExecutionCapstone_holds.hostContainers",
+      "replacementDeclaration": "  hostContainers : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.hostContainers",
+      "actualSourceLine": 217,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:217:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:217:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.hostContainers",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (image : StorageImage),",
+        "    StorageImage.Supported nativeLimits image →",
+        "      image.encode.size < USize.size ∧",
+        "        image.registerCount < USize.size ∧",
+        "          Array.size image.code < USize.size ∧ Array.size image.memory < USize.size : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "3C91BD828F112B8F0111FA4679AA99D9F3C99B2BF776F721111C67868B697C35",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n36\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "74FD8B97E1575A2F61B00B9A9DEF4CBA802FF81E61C2C866CB3C6A2E92EDB3D2",
+        "afterConsumerSha256": "3C91BD828F112B8F0111FA4679AA99D9F3C99B2BF776F721111C67868B697C35",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "3C91BD828F112B8F0111FA4679AA99D9F3C99B2BF776F721111C67868B697C35",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "1B5223E1FB9178B1304326BA8D56CFE661631C901392736B30CB34AD3B64B675",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n37",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN37 : ∀ (image : StorageImage) (address : Nat) (word : LimbWord.Word),\n    image.Supported nativeLimits → image.memory[address]? = some word →\n    address < image.memory.size ∧ address < USize.size ∧ address.toUSize.toNat = address :=\n  nativeExecutionCapstone_holds.memoryHostAddress",
+      "replacementDeclaration": "  memoryHostAddress : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.memoryHostAddress",
+      "actualSourceLine": 222,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:222:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:222:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.memoryHostAddress",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (image : StorageImage) (address : Nat) (word : LimbWord.Word),",
+        "    StorageImage.Supported nativeLimits image →",
+        "      image.memory[address]? = some word →",
+        "        address < Array.size image.memory ∧ address < USize.size ∧ address.toUSize.toNat = address : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "45030C8EB79039416649A40CF00D50FBA4478CD8965E280619A532F5FAA44230",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n37\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "3C91BD828F112B8F0111FA4679AA99D9F3C99B2BF776F721111C67868B697C35",
+        "afterConsumerSha256": "45030C8EB79039416649A40CF00D50FBA4478CD8965E280619A532F5FAA44230",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "45030C8EB79039416649A40CF00D50FBA4478CD8965E280619A532F5FAA44230",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "A69518A643B621C422884300EB34F892273C4C5F9DC8420A67D0E0B2E64CE6D0",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n38",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN38 : ∀ (image : StorageImage) (pc : Nat) (fields : Array LimbWord.Word),\n    image.Supported nativeLimits → image.code[pc]? = some fields →\n    pc < image.code.size ∧ pc < USize.size ∧ pc.toUSize.toNat = pc :=\n  nativeExecutionCapstone_holds.codeHostAddress",
+      "replacementDeclaration": "  codeHostAddress : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.codeHostAddress",
+      "actualSourceLine": 227,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:227:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:227:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.codeHostAddress",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (image : StorageImage) (pc : Nat) (fields : Array LimbWord.Word),",
+        "    StorageImage.Supported nativeLimits image →",
+        "      image.code[pc]? = some fields → pc < Array.size image.code ∧ pc < USize.size ∧ pc.toUSize.toNat = pc : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "D06F59BDD95D7D96617386593290D9F6861EDC95FC0F0A92EF9CDA02DD0D1762",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n38\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "45030C8EB79039416649A40CF00D50FBA4478CD8965E280619A532F5FAA44230",
+        "afterConsumerSha256": "D06F59BDD95D7D96617386593290D9F6861EDC95FC0F0A92EF9CDA02DD0D1762",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "D06F59BDD95D7D96617386593290D9F6861EDC95FC0F0A92EF9CDA02DD0D1762",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "38DE12AE5A4E717B9A0631D0F43256FD03B50F9E840B18D7CF05FC9A77036858",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n39",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN39 : ∀ (xs : List Int) left right index, ValidRange xs left right →\n    (canonicalExecution xs left right queryBudget).decode.result = some (index + 1) →\n    LeftmostArgMin xs left right index :=\n  nativeExecutionCapstone_holds.leftmostResult",
+      "replacementDeclaration": "  leftmostResult : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.leftmostResult",
+      "actualSourceLine": 232,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:232:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:232:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.leftmostResult",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right index : Nat),",
+        "    ValidRange xs left right →",
+        "      (canonicalExecution xs left right queryBudget).decode.result = some (index + 1) →",
+        "        LeftmostArgMin xs left right index : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "F824A651C1927BE364AC9A21864BE45DA4460215907F9F22C4C15B1691E74BA5",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n39\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "D06F59BDD95D7D96617386593290D9F6861EDC95FC0F0A92EF9CDA02DD0D1762",
+        "afterConsumerSha256": "F824A651C1927BE364AC9A21864BE45DA4460215907F9F22C4C15B1691E74BA5",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "F824A651C1927BE364AC9A21864BE45DA4460215907F9F22C4C15B1691E74BA5",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "92BB1CD0B91FD4BE75E7B5ABFD3C98C7EA45281DF17E8C45BB16B962FE8E0D00",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n40",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN40 : ∀ (xs : List Int) left right,\n    left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length →\n    ∀ (index : Nat) (t : Transition) (receipt : Receipt),\n      (canonicalExecution xs left right queryBudget).decode.transitions[index]? = some t →\n      t.receipt = some receipt →\n      receipt.address < 2 ^ wordWidth xs.length ∧\n      receipt.reply = (LimbMachine.decodeMemory (canonicalImage xs).memory)[receipt.address]? ∧\n      (∀ value, receipt.reply = some value → value < 2 ^ wordWidth xs.length) :=\n  nativeExecutionCapstone_holds.readWidth",
+      "replacementDeclaration": "  readWidth : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.readWidth",
+      "actualSourceLine": 242,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:242:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:242:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.readWidth",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right : Nat),",
+        "    left < 2 ^ wordWidth xs.length →",
+        "      right < 2 ^ wordWidth xs.length →",
+        "        ∀ (index : Nat) (t : Transition) (receipt : Receipt),",
+        "          (canonicalExecution xs left right queryBudget).decode.transitions[index]? = some t →",
+        "            t.receipt = some receipt →",
+        "              receipt.address < 2 ^ wordWidth xs.length ∧",
+        "                receipt.reply = (LimbMachine.decodeMemory (canonicalImage xs).memory)[receipt.address]? ∧",
+        "                  ∀ (value : Nat), receipt.reply = some value → value < 2 ^ wordWidth xs.length : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "FAA12DA0482F7775B608B9A0113A1D20B7BD560A08032BCA7514569749555E20",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n40\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "F824A651C1927BE364AC9A21864BE45DA4460215907F9F22C4C15B1691E74BA5",
+        "afterConsumerSha256": "FAA12DA0482F7775B608B9A0113A1D20B7BD560A08032BCA7514569749555E20",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "FAA12DA0482F7775B608B9A0113A1D20B7BD560A08032BCA7514569749555E20",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "2B8AA1AF03FA1371C44B9CC9A0AE9A07B76A597A7C9DE83E817151CAAA7C740F",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n41",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN41 : ∀ (xs : List Int) left right reads,\n    left < 2 ^ wordWidth xs.length → right < 2 ^ wordWidth xs.length →\n    let stats := (canonicalObservation xs left right queryBudget reads).2\n    stats.steps = stats.counts.get .memoryRead + stats.counts.get .registerWrite +\n      stats.counts.get .arithmetic + stats.counts.get .comparison +\n      stats.counts.get .branch + stats.counts.get .control :=\n  nativeExecutionCapstone_holds.categoryPartition",
+      "replacementDeclaration": "  categoryPartition : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.categoryPartition",
+      "actualSourceLine": 250,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:250:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:250:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.categoryPartition",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (xs : List Int) (left right : Nat) (reads : Bool),",
+        "    left < 2 ^ wordWidth xs.length →",
+        "      right < 2 ^ wordWidth xs.length →",
+        "        let stats := (canonicalObservation xs left right queryBudget reads).snd;",
+        "        stats.steps =",
+        "          stats.counts.get Category.memoryRead + stats.counts.get Category.registerWrite +",
+        "                  stats.counts.get Category.arithmetic +",
+        "                stats.counts.get Category.comparison +",
+        "              stats.counts.get Category.branch +",
+        "            stats.counts.get Category.control : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "71E7BB4C647626BDDFF2BC60840BA9100F4293BD562151BA966983BE9CFA8C41",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n41\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "FAA12DA0482F7775B608B9A0113A1D20B7BD560A08032BCA7514569749555E20",
+        "afterConsumerSha256": "71E7BB4C647626BDDFF2BC60840BA9100F4293BD562151BA966983BE9CFA8C41",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "71E7BB4C647626BDDFF2BC60840BA9100F4293BD562151BA966983BE9CFA8C41",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "7F2BA5532D459FD3251334BB138237FD292775CFF2D74F9047AD749A616F5DC7",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "field-n42",
+      "kind": "field-weaken",
+      "literalConsumer": "theorem checkN42 : ∀ bytes image, nativeLoadEntry bytes = .ok image →\n    ∃ program : Program, image.code = LimbMachine.encodeCode image.width program ∧\n      ∀ instruction ∈ program, instruction.Fits image.width :=\n  nativeExecutionCapstone_holds.loadedProgram",
+      "replacementDeclaration": "  loadedProgram : True\n",
+      "publicReplacement": null,
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "  nativeExecutionCapstone_holds.loadedProgram",
+      "actualSourceLine": 255,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:255:2: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:255:2: error: type mismatch",
+        "  nativeExecutionCapstone_holds.loadedProgram",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  ∀ (bytes : ByteArray) (image : StorageImage),",
+        "    nativeLoadEntry bytes = Except.ok image →",
+        "      ∃ program,",
+        "        image.code = LimbMachine.encodeCode image.width program ∧",
+        "          ∀ (instruction : Instruction), instruction ∈ program → Instruction.Fits image.width instruction : Prop"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "CCECD10CF30EF85AE1847E5171D60155107CA278F2F4F4A2FA1442EE0C45E102",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-field-n42\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "71E7BB4C647626BDDFF2BC60840BA9100F4293BD562151BA966983BE9CFA8C41",
+        "afterConsumerSha256": "CCECD10CF30EF85AE1847E5171D60155107CA278F2F4F4A2FA1442EE0C45E102",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "CCECD10CF30EF85AE1847E5171D60155107CA278F2F4F4A2FA1442EE0C45E102",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "2C4917F0A9D1E2236F4D33A705ACF491D01E9D4737B45C7AA1F7C3AFB7CCE1BE",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    },
+    {
+      "id": "public-type-collapse",
+      "kind": "public-weaken",
+      "literalConsumer": "theorem publicContract : NativeExecutionCapstone := nativeExecutionCapstone_holds",
+      "replacementDeclaration": null,
+      "publicReplacement": "theorem nativeExecutionCapstone_holds : True := True.intro",
+      "producerExit": 0,
+      "consumerExit": 1,
+      "expectedProofLine": "theorem publicContract : NativeExecutionCapstone := nativeExecutionCapstone_holds",
+      "actualSourceLine": 9,
+      "matchedDiagnostics": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:9:52: error: type mismatch"
+      ],
+      "consumerOutput": [
+        "RMQ/Core/WordRAM/Native/Contract.lean:9:52: error: type mismatch",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True : Prop",
+        "but is expected to have type",
+        "  NativeExecutionCapstone : Prop",
+        "RMQ/Core/WordRAM/Native/Contract.lean:12:2: error: Invalid field `wordRoundtrip`: The environment does not contain `True.wordRoundtrip`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:15:2: error: Invalid field `wordCanonicalInverse`: The environment does not contain `True.wordCanonicalInverse`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:21:2: error: Invalid field `checkedArithmetic`: The environment does not contain `True.checkedArithmetic`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:25:2: error: Invalid field `serializedRoundtrip`: The environment does not contain `True.serializedRoundtrip`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:28:2: error: Invalid field `serializedInjective`: The environment does not contain `True.serializedInjective`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:34:2: error: Invalid field `loaderSource`: The environment does not contain `True.loaderSource`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:39:2: error: Invalid field `querySource`: The environment does not contain `True.querySource`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:48:2: error: Invalid field `coreProjection`: The environment does not contain `True.coreProjection`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:51:2: error: Invalid field `defaultNoReads`: The environment does not contain `True.defaultNoReads`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:56:2: error: Invalid field `hostWordBytes`: The environment does not contain `True.hostWordBytes`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:59:2: error: Invalid field `canonicalValid`: The environment does not contain `True.canonicalValid`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:63:2: error: Invalid field `canonicalLoad`: The environment does not contain `True.canonicalLoad`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:70:2: error: Invalid field `loadedAllocation`: The environment does not contain `True.loadedAllocation`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:76:2: error: Invalid field `allFuelExecution`: The environment does not contain `True.allFuelExecution`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:84:2: error: Invalid field `canonicalSource`: The environment does not contain `True.canonicalSource`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:93:2: error: Invalid field `canonicalQuery`: The environment does not contain `True.canonicalQuery`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:97:2: error: Invalid field `widthBounds`: The environment does not contain `True.widthBounds`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:101:2: error: Invalid field `dataCapacity`: The environment does not contain `True.dataCapacity`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:107:2: error: Invalid field `completeNumericCapacity`: The environment does not contain `True.completeNumericCapacity`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:110:2: error: Invalid field `residuals`: The environment does not contain `True.residuals`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:118:2: error: Invalid field `fileAccounting`: The environment does not contain `True.fileAccounting`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:123:2: error: Invalid field `machineInventory`: The environment does not contain `True.machineInventory`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:127:2: error: Invalid field `allocationAddressWidth`: The environment does not contain `True.allocationAddressWidth`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:130:2: error: Invalid field `programWidth`: The environment does not contain `True.programWidth`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:135:2: error: Invalid field `validResult`: The environment does not contain `True.validResult`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:141:2: error: Invalid field `nativeHalt`: The environment does not contain `True.nativeHalt`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:148:2: error: Invalid field `invalidGuard`: The environment does not contain `True.invalidGuard`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:153:2: error: Invalid field `stepBound`: The environment does not contain `True.stepBound`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:159:2: error: Invalid field `categoryExact`: The environment does not contain `True.categoryExact`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:165:2: error: Invalid field `readExact`: The environment does not contain `True.readExact`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:173:2: error: Invalid field `transitionSafety`: The environment does not contain `True.transitionSafety`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:186:2: error: Invalid field `positionalReadBacking`: The environment does not contain `True.positionalReadBacking`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:196:2: error: Invalid field `orderedLogicalReads`: The environment does not contain `True.orderedLogicalReads`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:208:2: error: Invalid field `suppliedStoreAgreement`: The environment does not contain `True.suppliedStoreAgreement`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:212:2: error: Invalid field `loadedDomain`: The environment does not contain `True.loadedDomain`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:217:2: error: Invalid field `hostContainers`: The environment does not contain `True.hostContainers`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:222:2: error: Invalid field `memoryHostAddress`: The environment does not contain `True.memoryHostAddress`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:227:2: error: Invalid field `codeHostAddress`: The environment does not contain `True.codeHostAddress`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:232:2: error: Invalid field `leftmostResult`: The environment does not contain `True.leftmostResult`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:242:2: error: Invalid field `readWidth`: The environment does not contain `True.readWidth`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:250:2: error: Invalid field `categoryPartition`: The environment does not contain `True.categoryPartition`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True",
+        "RMQ/Core/WordRAM/Native/Contract.lean:255:2: error: Invalid field `loadedProgram`: The environment does not contain `True.loadedProgram`",
+        "  nativeExecutionCapstone_holds",
+        "has type",
+        "  True"
+      ],
+      "producerBinding": {
+        "freshOutputSha256": "A3F361DF0214F8D9D6C6AE7EE37D08F06DDB5D678206D46028B8A76F8C456882",
+        "freshOutputPath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\overlay-public-type-collapse\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "previousPrivateSha256": "CCECD10CF30EF85AE1847E5171D60155107CA278F2F4F4A2FA1442EE0C45E102",
+        "afterConsumerSha256": "A3F361DF0214F8D9D6C6AE7EE37D08F06DDB5D678206D46028B8A76F8C456882",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T132610808\\imports\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "beforeConsumerSha256": "A3F361DF0214F8D9D6C6AE7EE37D08F06DDB5D678206D46028B8A76F8C456882",
+        "exactFreshBinding": true,
+        "sharedOriginalSha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+      },
+      "originalSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "mutatedSourceSha256": "F495E7236ABD7AF47775510BC671D17574F3436148C97E8D7D9DCEB693718338",
+      "restoredSourceSha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D",
+      "exactGitRestoration": true,
+      "sharedOleansUnchanged": true,
+      "sharedOleans": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+          "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+          "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+        }
+      ]
+    }
+  ],
+  "sourceDeclarations": "Literal expectations copied from the independently frozen registry; observed results copied from the full44 receipt."
+}

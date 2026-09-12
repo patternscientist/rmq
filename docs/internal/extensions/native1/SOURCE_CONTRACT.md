@@ -255,3 +255,44 @@ availability or physical constant-time multiprecision arithmetic.
 | `readWidth` | `ContractChecks.checkN40` |
 | `categoryPartition` | `ContractChecks.checkN41` |
 | `loadedProgram` | `ContractChecks.checkN42` |
+
+## Independent internal reconstruction
+
+A separate worker reconstructed all 31 frozen requirements from the current
+Capstone, Contract, executable definitions and inherited Packed modules without
+editing files or running a competing compiler. It found no substantive missing
+source proposition, quantifier or object-identity obligation. This is an internal
+source review, not the fresh blind exact-commit audit or a campaign verdict.
+
+The value-dependency conclusion uses the execution equation in
+`positionalReadBacking`, not inequality of an enclosing log: expanding
+`Primitive.execute` shows that the actual memory reply updates the destination
+register, and subsequent arithmetic, branches and halt consume those registers.
+`allFuelExecution` and `canonicalSource` preserve that complete state computation.
+`suppliedStoreAgreement` concludes equality of the entire decoded run, including
+final state, transitions and costs, for width-fitting supplied memory agreeing
+at the original run's reads. Its safety premise is derived through inherited
+run equality rather than assumed for an unrelated execution.
+
+The occurrence chain additionally uses `Witnesses.stages_trace`,
+`staged_receipt_at` and `occurrence_source`: semantic calls expand to ordered
+physical receipts, then to an actual global transition index, producing load,
+prefix pre-state and reply. Equal repeated reads remain distinct occurrences.
+The seven operational fixtures and their native replay have separate evidence;
+the 42 field consumers alone do not replace those obligations or generic fault
+and operation checks.
+
+The code is the closed `queryProgram`; varying geometry is loaded from counted
+metadata. Complete numeric capacity and file accounting include encoded tags,
+operands and the finite scratch bank. The category partition transports the
+accepted word-RAM operation model. It is not a physical timing theorem for
+multiprecision decoding or arithmetic.
+
+The same reviewer inspected the narrow C/Rust boundary and emitted Entry/Runtime
+C at source checkpoint `fa79233f77acbfa0470ef6203131e66784c7b014`. No concrete
+boundary defect was found. The external contract still requires legitimate owned
+handles and readable spans, the initializing OS thread, allocation availability,
+the supported Windows x64 ABI and correctness of the pinned Lean/C/Rust compiler
+and runtime. Runtime's emitted guards precede canonical-word checking and core
+execution. The exact build manifest independently pins these source and generated
+C bytes; review does not establish verified compilation.

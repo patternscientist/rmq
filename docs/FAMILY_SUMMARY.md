@@ -3462,5 +3462,10 @@ and supplied-store agreement. Numeric payload/code/scratch bits, byte rounding,
 file framing and host container bounds are separate claims. Finite native API
 support is explicit; compiler/runtime/FFI correctness and allocator success
 remain external assumptions. There is no physical constant-time multiprecision
-or Lean heap-succinctness claim. The native build, expanded operational replay
-and final independent acceptance are still in progress at this checkpoint.
+or Lean heap-succinctness claim. The generated native build and full operational replay pass: 109 cases
+expand
+to 214 checks in both clients and source controls, inside 128 replay controls.
+All 42 field weakenings and the public-proposition collapse are rejected by
+the independent consumers after successful fresh producer compilation; the
+44-case certificate replay and nine controls pass. Fresh independent acceptance
+and aggregate certification remain coordinator-scheduled on frozen content.

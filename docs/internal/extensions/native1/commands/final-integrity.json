@@ -1,0 +1,335 @@
+{
+  "schema": "native1-final-integrity-v1",
+  "pass_": true,
+  "checkedUtc": "2026-09-12T13:47:34.053942+00:00",
+  "sourceGeneratedAndArtifactPins": [
+    {
+      "path": "RMQ\\Core\\WordRAM\\Packed\\Primitive.lean",
+      "bytes": 7448,
+      "sha256": "4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Packed\\Calculus.lean",
+      "bytes": 17807,
+      "sha256": "2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Packed\\Structured.lean",
+      "bytes": 4052,
+      "sha256": "F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Packed\\Compiler.lean",
+      "bytes": 29873,
+      "sha256": "C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Packed\\Frame.lean",
+      "bytes": 3216,
+      "sha256": "480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Packed\\Scratch.lean",
+      "bytes": 4433,
+      "sha256": "320DDD6C1F6549902951B99CCF99C66B231D2A0106487A710D8638372EF32E64"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Finite.lean",
+      "bytes": 11537,
+      "sha256": "8EDC747F2F0BBB7D4E6F6849B63869016969C4F7535D62E99A6E4D01901223DF"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Thin.lean",
+      "bytes": 4498,
+      "sha256": "26D984386EEA21CCCC49EBF6217CD824B7896CF98785F8F843C6AD9E2EB69845"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Route.lean",
+      "bytes": 7462,
+      "sha256": "C00240A5A2E994DD1A996C79A52FF54780A0B5A87010B3DBCF4ED3A61244A5C5"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Limbs.lean",
+      "bytes": 15313,
+      "sha256": "06D057D0DE50E263E701D2D5FEA1A4B0E1F6C3DD9A6BFDB6F2F9EDE71A7803F1"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Machine.lean",
+      "bytes": 38858,
+      "sha256": "F5286E6B52A5C5A73571BBF831E7CA9C5D731F7F5998F3ABA724E17F7AB94B3D"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Observations.lean",
+      "bytes": 3164,
+      "sha256": "BC3C825AB7598810F9506B36D0EC9F34031DF7D9715F2AB68FEDB823009679B6"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Binary\\Codec.lean",
+      "bytes": 16260,
+      "sha256": "E46F05148BB2F4D1D25C848EC804B0E2E0881EFB536F988A90AB9CB7371C11F7"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Binary.lean",
+      "bytes": 25637,
+      "sha256": "C50741D0A9AED1797919F405E8F7440410C0CD13DD2B9F299D0E6AB5E959AE16"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Binary\\Bounds.lean",
+      "bytes": 6807,
+      "sha256": "1ADF9BE737AD6C86AAC6E5FBA75ED3384876AA029CCEFBBD76CDA03DF70C339E"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Binary\\Cursor\\Core.lean",
+      "bytes": 24281,
+      "sha256": "18F42ACEE5D218DA5CB6B787E7DF25C69C572C72551E3008D1106A6CFA660E28"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Binary\\Cursor.lean",
+      "bytes": 10733,
+      "sha256": "FA032A73E3CAAB84A874D736D26CA8B833CECC526BBC880BDF09AC8647E68F45"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Runtime.lean",
+      "bytes": 6120,
+      "sha256": "23EF158FCC87169566CC443401BD6842197F9373E39CF5DF172165B765FEA847"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Entry.lean",
+      "bytes": 2266,
+      "sha256": "ADD666450D8CF6B724F1467CC2CD4182E8B5EEFC50AE1BF369AEFC5A2A4B7832"
+    },
+    {
+      "path": "native\\packed-rmq\\native_shim.c",
+      "bytes": 3692,
+      "sha256": "0D395279A803AB9FB796BB1176F5376F59CBF887E0414F09AF4D376A78F89780"
+    },
+    {
+      "path": "native\\packed-rmq\\include\\packed_rmq.h",
+      "bytes": 2936,
+      "sha256": "E2DDB51D62B2CBAB79E0A64803F38343F4E73D66C91327E55D708CF47A3C993E"
+    },
+    {
+      "path": "native\\packed-rmq\\src\\lib.rs",
+      "bytes": 2606,
+      "sha256": "CC5A8DEFC747DC08E855C758E7F6BAC5036D6611ACB4C2A589BE48C2E9090FBE"
+    },
+    {
+      "path": "native\\packed-rmq\\src\\native.rs",
+      "bytes": 5211,
+      "sha256": "82E7DEF4F6F67FBC52D0829FF82BA67082D7E68FC8B7A6938EDA41802AA1BDE7"
+    },
+    {
+      "path": "native\\packed-rmq\\src\\native_main.rs",
+      "bytes": 2910,
+      "sha256": "3251E67EA8339FF7E5339B78A025308B0D031348BA844BDCBACA9C56CFAF1E22"
+    },
+    {
+      "path": "native\\packed-rmq\\Cargo.toml",
+      "bytes": 228,
+      "sha256": "C641E44960474CF903618A2AA4E9A724623A13BB4609DA853EFCF21BA58416D8"
+    },
+    {
+      "path": "scripts\\packed_native_binary_build.ps1",
+      "bytes": 9141,
+      "sha256": "7FB90CC8AF87AD01FD250E8D9A253852E5A954FEF0E5FD8E7B48F06DBBFDAB87"
+    },
+    {
+      "path": "native\\packed-rmq\\Cargo.lock",
+      "bytes": 154,
+      "sha256": "5A59DA0864CAB8E739DC408245DF7BF5ED4BC7AD3A11FAF2962C3DECFF1C8AAC"
+    },
+    {
+      "path": "native\\packed-rmq\\examples\\native.cpp",
+      "bytes": 7428,
+      "sha256": "A5BFE471012D24A68BF743F2EC76F141F5B7731E66F7002A6F2127485FBA3FAB"
+    },
+    {
+      "path": "native\\packed-rmq\\packed_rmq.def",
+      "bytes": 256,
+      "sha256": "1FDE85FF9210ABD57407803250A4348B6F919187D387B0368E76BFA2B4CFB1B9"
+    },
+    {
+      "path": "scripts\\packed_native_identity.ps1",
+      "bytes": 18289,
+      "sha256": "A21F67E2EDF49C8E218C657E73967E920EFB85FF025476E01BD04A83CA50B17A"
+    },
+    {
+      "path": "scripts\\owned_process_tree.ps1",
+      "bytes": 47060,
+      "sha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Primitive.c",
+      "bytes": 217285,
+      "sha256": "568EE3038CD8DE167702AF65E6EDC2D0725C4D76D384F58F0A817EE6D937D4EC"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Calculus.c",
+      "bytes": 24712,
+      "sha256": "08F75F522DA58DEE4EFD9322245E78C2F4086654FD917B9728729E38F66AD136"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Structured.c",
+      "bytes": 99684,
+      "sha256": "395BEA6499816BE439D32C6FCE232ACBCCADE8BDEEF6A6701206174F3E1CD4A3"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Compiler.c",
+      "bytes": 62966,
+      "sha256": "03D40362A34DB1192FA35D269957EE6B0A19ED67A35061A1B679B393BF0D6D8F"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Frame.c",
+      "bytes": 7357,
+      "sha256": "F3BBFCA649A0208BA1C1537A5E9B4B5FE176C698BCA0223D262AF67318B76C93"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Scratch.c",
+      "bytes": 14772,
+      "sha256": "E69ABDE6567ECD36190E13F6A46222CC3F00120647862709715A6E3DB4602C4A"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Finite.c",
+      "bytes": 136291,
+      "sha256": "DD360675CE814223BF1217CA26EBB017B85C069D7B67784334F9F94D927DF329"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Thin.c",
+      "bytes": 94533,
+      "sha256": "96C23972C3BB49F1BD8CDD1ED7E1F1DE6FD82D68487689379C77926B731F7B43"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Route.c",
+      "bytes": 79264,
+      "sha256": "8C6D342B244FC51F375D4796BFBA45E2377939E0190271264DC7111137D911C0"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Limbs.c",
+      "bytes": 62390,
+      "sha256": "750FBA03D69CD8330C7CCBB19EDB03AA3DF21A2E13FF8BE3237FE7CCD8771E74"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Machine.c",
+      "bytes": 248500,
+      "sha256": "1DD535D3B8B88F1290288170ECB942D173540D039A6246AB9F475AFCCCB7517E"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Observations.c",
+      "bytes": 11562,
+      "sha256": "05B15E4616FD1BF9C381E4146D252C109B96F69B028CB36ED49BBC7601B1EFBA"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Binary\\Codec.c",
+      "bytes": 40015,
+      "sha256": "9C534BE3ABD08E7023C5DF1D565D0E1E350BFA882FD2ECB1282BC8AEB0A95677"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Binary.c",
+      "bytes": 136717,
+      "sha256": "092BE2EC0D8F65E08658D598DCD9887ED0518F9A3B268647630D0D60D8C9B20F"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Binary\\Bounds.c",
+      "bytes": 2513,
+      "sha256": "BE407AD71EBA7A655610C90075245C3F3F031857F72B63049D34BF9117E3F352"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Binary\\Cursor\\Core.c",
+      "bytes": 56690,
+      "sha256": "4351C57F0382D926E2892F336E765331BC48FEEABDCCF8949CBC22C5C50B9A9E"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Binary\\Cursor.c",
+      "bytes": 27595,
+      "sha256": "ABBE67E4B5F1B34E35A8557A7825924439D02B3B2EC3B7A658981D3F23BDE427"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Runtime.c",
+      "bytes": 22993,
+      "sha256": "13679232A101DBCB385B0B12025A7B71E6251911352B347CD14B801C0B437459"
+    },
+    {
+      "path": ".lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Entry.c",
+      "bytes": 5254,
+      "sha256": "239E7EE0109619EEE6B5DDA1D4154CF0C6B1B8EADE2D763B91883DA9C18C256F"
+    },
+    {
+      "path": ".lake\\native1\\binary-build\\packed_rmq.dll",
+      "bytes": 1013248,
+      "sha256": "7605525E9E89540D43DFD307E84DE24F03062A9632A59062682600D20E0168C4"
+    },
+    {
+      "path": ".lake\\native1\\binary-build\\packed-rmq-native.exe",
+      "bytes": 169472,
+      "sha256": "7A6FB03165C0DFCBD8F58D4A7E04D383019D1633CC9E28F052B57E2FA27814D7"
+    },
+    {
+      "path": ".lake\\native1\\binary-build\\packed-rmq-native-cpp.exe",
+      "bytes": 325120,
+      "sha256": "74F0AE4696EBD35DF6C230D25859FA83458F62BDDD2AE8EE6CAE90E59956BEC2"
+    },
+    {
+      "path": ".lake\\native1\\binary-build\\packed_rmq.lib",
+      "bytes": 4076,
+      "sha256": "36512540CD8C6E1636B9E46D776C4113AFEAE9A17C5BC405D589E28B0217A0D0"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Capstone.lean",
+      "bytes": 17145,
+      "sha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D"
+    },
+    {
+      "path": "RMQ\\Core\\WordRAM\\Native\\Contract.lean",
+      "bytes": 13766,
+      "sha256": "A8DB1EAAC6445F2F8490A6C344A3F573FD169D3FD7B82E6637C4947159E306AE"
+    }
+  ],
+  "frozenPrefixSha256": "0A5D2313CCEC30DE81AAB3B19439247C612CE4B8FC6C19C0BF51F6C3809D103E",
+  "binaryLogicalCases": 109,
+  "binaryExpandedCases": 214,
+  "exactRawByteObservations": 210,
+  "actualFfiMutantObservations": 2,
+  "sourceChallengeCases": 4,
+  "contractCases": 44,
+  "controls": [
+    {
+      "path": "binary-commands/binary-controls-20260912T130603847.json",
+      "sha256": "2BEAD2557D7CD8EA6056265636B45F05E0AF68F4E39F848441EF51F9226C06ED",
+      "count": 128,
+      "startedUtc": "2026-09-12T13:06:03.8365363Z",
+      "completedUtc": "2026-09-12T13:44:55.7752615Z"
+    },
+    {
+      "path": "binary-commands/contract-replay-20260912T132516703.json",
+      "sha256": "65909FEE725067FEFE4D46EA196F81878A95942B399AF613209EA99A825F2C50",
+      "count": 9,
+      "startedUtc": "2026-09-12T13:25:16.7175665Z",
+      "completedUtc": "2026-09-12T13:38:48.3130922Z"
+    }
+  ],
+  "receipts": [
+    {
+      "path": "binary-commands/binary-replay-20260912T131712734.json",
+      "sha256": "C159656B68A1C1757EB439277D21C36C485D39A228A516BD47995E69C8CD60EA"
+    },
+    {
+      "path": "binary-commands/binary-controls-20260912T130603847.json",
+      "sha256": "2BEAD2557D7CD8EA6056265636B45F05E0AF68F4E39F848441EF51F9226C06ED"
+    },
+    {
+      "path": "binary-commands/contract-replay-20260912T132610808.json",
+      "sha256": "F98F12D881F0FAF1B13A6159ED1F116009C2CD5878771093B892152ED9F894FE"
+    },
+    {
+      "path": "binary-commands/contract-replay-20260912T132516703.json",
+      "sha256": "65909FEE725067FEFE4D46EA196F81878A95942B399AF613209EA99A825F2C50"
+    }
+  ],
+  "verificationScript": "import base64, hashlib, json, pathlib, sys, datetime\nroot = pathlib.Path.cwd()\nevidence = root / 'docs/internal/extensions/native1'\ndef sha_bytes(b): return hashlib.sha256(b).hexdigest().upper()\ndef sha(p): return sha_bytes(p.read_bytes())\ndef read(name): return json.loads((evidence / name).read_text(encoding='utf-8-sig'))\ndef require(ok, message):\n    if not ok: raise RuntimeError(message)\ndef checked_pin(rel, expected, prefix=root):\n    p = prefix / rel\n    actual = sha(p)\n    require(actual == expected, 'byte pin mismatch: ' + str(p))\n    return dict(path=str(p.relative_to(root)), bytes=p.stat().st_size, sha256=actual)\nrequire(len(sys.argv) == 5, 'expected binary full/control and contract full/control receipt paths')\nbinary_name, binary_controls_name, contract_name, contract_controls_name = sys.argv[1:]\nmanifest = read('BINARY_V3_BUILD_MANIFEST.json')\nrequire((len(manifest['sources']), len(manifest['generatedC']), len(manifest['artifacts'])) == (31,19,3), 'build roster count')\nbuild = root / '.lake/native1/binary-build'\nrequire(sha(build/'build-manifest.json') == sha(evidence/'BINARY_V3_BUILD_MANIFEST.json'), 'current/immutable manifest mismatch')\npins = [checked_pin(p['path'],p['sha256']) for p in manifest['sources']+manifest['generatedC']]\npins += [checked_pin(p['path'],p['sha256'],build) for p in manifest['artifacts']]\npins += [checked_pin('packed_rmq.lib',manifest['cppImportLibrarySHA256'],build)]\nprefix = (evidence/'ACCEPTANCE_MATRIX.md').read_bytes()[:28298]\nrequire(len(prefix)==28298 and sha_bytes(prefix)=='0A5D2313CCEC30DE81AAB3B19439247C612CE4B8FC6C19C0BF51F6C3809D103E','frozen requirement prefix mismatch')\nchecked_pin('docs/internal/extensions/native1/AUDIT_REQUIREMENTS.md','2EEB860936F15D1C189D23C67960B1679DFFF1FF6FEB2DBFE53D018C624CBA60')\nchecked_pin('docs/internal/extensions/native1/SOURCE_CONTRACT.md','8D9833471C76FD84E7C93E1387A755B063EB3307CD6ABE4B604564FAB6ABE94D')\nchecked_pin('docs/internal/extensions/native1/FINAL_SOURCE_MATRIX.md','AC9259FB49DC6E0CBCDD83760AFE61FD2E76AC27979B8E2ACCDC17782C9395B5')\ncase_path=root/'scripts/packed_native_binary_cases.json'\nrequire(sha(case_path)=='2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637','binary registry hash')\nregistry=json.loads(case_path.read_text(encoding='utf-8-sig'))\nrequire(len(registry['cases'])==109,'109 logical cases')\nexpected=[]\nfor c in registry['cases']:\n    expected += [c['id']+'/'+consumer for consumer in c['consumers']] if c['kind'] in ('native','ffi-mutation') else [c['id']]\nrequire(len(expected)==214 and len(set(expected))==214,'214 unique expanded cases')\nbinary=read(binary_name)\nrequire(binary['pass'] and not binary['failure'] and binary['expected']==expected and binary['executed']==expected and [r['id'] for r in binary['results']]==expected,'binary exact executed roster')\nrequire(binary['runnerSha256']==sha(root/'scripts/packed_native_binary_replay.ps1'),'binary executed runner differs')\nraw_count=0; ffi_count=0; source_count=0\nfor r in binary['results']:\n    require(r['pass'],'failed binary result '+r['id'])\n    if 'raw' in r:\n        raw_count+=1\n        ffi='mutantExpectedStdout' in r\n        field='mutantExpected' if ffi else 'expected'\n        raw=r['raw']\n        require(not raw['timedOut'] and not raw['outputLimitExceeded'],'raw deadline '+r['id'])\n        require(raw['exitCode']==r[field+'Exit'],'raw exit '+r['id'])\n        require(base64.b64decode(raw['stdoutBase64'])==r[field+'Stdout'].encode('utf-8'),'raw stdout '+r['id'])\n        require(base64.b64decode(raw['stderrBase64'])==r[field+'Stderr'].encode('utf-8'),'raw stderr '+r['id'])\n        if ffi:\n            ffi_count+=1\n            require(r['exactGitRestoration'] and r['baselineArtifactsUnchanged'] and r['sourceBeforeSha256']==r['restoredSourceSha256'],'FFI restoration')\n            b=r['baselineObservation']; br=b['raw']\n            require(b['pass'] and br['exitCode']==b['expectedExit'],'FFI unchanged baseline')\n            require(base64.b64decode(br['stdoutBase64'])==b['expectedStdout'].encode('utf-8'),'FFI baseline stdout')\n            require(base64.b64decode(br['stderrBase64'])==b['expectedStderr'].encode('utf-8'),'FFI baseline stderr')\n            require(raw['stdoutBase64']!=br['stdoutBase64'],'FFI mutation did not change observation')\n    else:\n        source_count+=1\n        require(r['details']['exactGitRestoration'],'source restoration '+r['id'])\nrequire((raw_count,ffi_count,source_count)==(210,2,4),'binary surface totals')\ncontract_registry=json.loads((root/'scripts/packed_native_contract_cases.json').read_text(encoding='utf-8-sig'))\nrequire(sha(root/'scripts/packed_native_contract_cases.json')=='6E0C8E5A73F7DE47D14F7298435E7F72F2AC82A5881AEBF3EFFE0388CBF48E2C','contract registry hash')\nfor p in contract_registry['sources']: pins.append(checked_pin(p['path'],p['sha256']))\ncontract=read(contract_name)\ncontract_expected=['baseline']+['field-n%02d'%n for n in range(1,43)]+['public-type-collapse']\nrequire(contract['pass'] and contract['expected']==contract_expected and contract['executed']==contract_expected and len(contract['results'])==44,'44 contract roster')\nrequire(contract['runnerSha256']==sha(root/'scripts/packed_native_contract_replay.ps1'),'contract runner changed')\nfor r in contract['results']:\n    d=r['details']; b=d['producerBinding']\n    require(r['pass'] and d['producer']['ExitCode']==0,'contract fresh producer '+r['id'])\n    require(b['exactFreshBinding'] and b['freshOutputSha256']==b['beforeConsumerSha256']==b['afterConsumerSha256'],'contract binding '+r['id'])\n    require(d['exactGitRestoration'] and d['sharedOleansUnchanged'] and d['originalSourceSha256']==d['restoredSourceSha256'],'contract restoration '+r['id'])\n    require(d['consumer']['ExitCode']==0 if r['id']=='baseline' else d['consumer']['ExitCode']!=0,'contract consumer verdict '+r['id'])\n    if r['id']!='baseline':\n        require(b['freshOutputSha256']!=b['sharedOriginalSha256'] and len(d['matchedDiagnostics'])==1,'fresh negative exact surface '+r['id'])\ncontrol_summaries=[]\nfor name,count in [(binary_controls_name,128),(contract_controls_name,9)]:\n    r=read(name)\n    require(r['pass'] and len(r['expected'])==count and r['executed']==r['expected'] and [x['id'] for x in r['results']]==r['expected'] and all(x['pass'] for x in r['results']), 'control roster '+name)\n    control_summaries.append(dict(path=name,sha256=sha(evidence/name),count=count,startedUtc=r['startedUtc'],completedUtc=r['completedUtc']))\nfor name in [binary_name,binary_controls_name,contract_name,contract_controls_name]:\n    r=read(name)\n    for c in r['commands']:\n        require(not c.get('TimedOut',False) and not c.get('OutputLimitExceeded',False),'incomplete recorded child '+name)\nsummary=dict(schema='native1-final-integrity-v1',pass_=True,checkedUtc=datetime.datetime.now(datetime.timezone.utc).isoformat(),\n    sourceGeneratedAndArtifactPins=pins,frozenPrefixSha256=sha_bytes(prefix),binaryLogicalCases=109,binaryExpandedCases=214,\n    exactRawByteObservations=raw_count,actualFfiMutantObservations=ffi_count,sourceChallengeCases=source_count,contractCases=44,\n    controls=control_summaries,receipts=[dict(path=n,sha256=sha(evidence/n)) for n in sys.argv[1:]],\n    verificationScript=pathlib.Path(__file__).read_text(encoding='utf-8'),arguments=sys.argv[1:])\n(evidence/'commands/final-integrity.json').write_text(json.dumps(summary,indent=2)+'\\n',encoding='utf-8')\nprint('NATIVE1 FINAL INTEGRITY PASS: 31 source / 19 generated C / 3 artifacts; 109/214 binary + 128 controls; 44 contract + 9 controls; exact raw bytes, fresh binding and restoration')\n",
+  "arguments": [
+    "binary-commands/binary-replay-20260912T131712734.json",
+    "binary-commands/binary-controls-20260912T130603847.json",
+    "binary-commands/contract-replay-20260912T132610808.json",
+    "binary-commands/contract-replay-20260912T132516703.json"
+  ]
+}

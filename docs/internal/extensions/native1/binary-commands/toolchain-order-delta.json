@@ -1,0 +1,169 @@
+{
+  "schema": "native1-toolchain-order-delta-v1",
+  "onlyInventoryRowOrderChanged": true,
+  "commandVersionTextEqual": true,
+  "dependencyRootsAndOptionalStatesEqual": true,
+  "expectedDigest": "8DF566C7330ED567CDBDE84504EC261D1FB26EA713E4BF6034ECA7B0A20751C7",
+  "actualDigest": "B37CC3DB6D49F922980DF14ADF427D397F478E9EE483F558A883DC6003A80B81",
+  "inventories": [
+    {
+      "field": "leanFiles",
+      "count": 4856,
+      "unorderedExactRowsEqual": true,
+      "changedIndexCount": 11,
+      "firstDifferences": [
+        {
+          "index": 11,
+          "expected": "/bin/libleanshared.dll",
+          "actual": "/bin/libleanshared_1.dll"
+        },
+        {
+          "index": 12,
+          "expected": "/bin/libleanshared_1.dll",
+          "actual": "/bin/libleanshared.dll"
+        },
+        {
+          "index": 45,
+          "expected": "/include/lean/lean.h",
+          "actual": "/include/lean/lean_gmp.h"
+        },
+        {
+          "index": 46,
+          "expected": "/include/lean/lean_gmp.h",
+          "actual": "/include/lean/lean_libuv.h"
+        },
+        {
+          "index": 47,
+          "expected": "/include/lean/lean_libuv.h",
+          "actual": "/include/lean/lean.h"
+        },
+        {
+          "index": 4083,
+          "expected": "/lib/lean/libInit.a",
+          "actual": "/lib/lean/libInit_shared.dll.a"
+        }
+      ]
+    },
+    {
+      "field": "rustFiles",
+      "count": 48,
+      "unorderedExactRowsEqual": true,
+      "changedIndexCount": 19,
+      "firstDifferences": [
+        {
+          "index": 0,
+          "expected": "/bin/cargo.exe",
+          "actual": "/bin/cargo-clippy.exe"
+        },
+        {
+          "index": 1,
+          "expected": "/bin/cargo.pdb",
+          "actual": "/bin/cargo-clippy.pdb"
+        },
+        {
+          "index": 2,
+          "expected": "/bin/cargo-clippy.exe",
+          "actual": "/bin/cargo-fmt.exe"
+        },
+        {
+          "index": 3,
+          "expected": "/bin/cargo-clippy.pdb",
+          "actual": "/bin/cargo-fmt.pdb"
+        },
+        {
+          "index": 4,
+          "expected": "/bin/cargo-fmt.exe",
+          "actual": "/bin/cargo.exe"
+        },
+        {
+          "index": 5,
+          "expected": "/bin/cargo-fmt.pdb",
+          "actual": "/bin/cargo.pdb"
+        }
+      ]
+    },
+    {
+      "field": "cppFiles",
+      "count": 6545,
+      "unorderedExactRowsEqual": true,
+      "changedIndexCount": 366,
+      "firstDifferences": [
+        {
+          "index": 26,
+          "expected": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\include/arm_neon.h",
+          "actual": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\include/arm_neon_sve_bridge.h"
+        },
+        {
+          "index": 27,
+          "expected": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\include/arm_neon_sve_bridge.h",
+          "actual": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\include/arm_neon.h"
+        },
+        {
+          "index": 114,
+          "expected": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\include/ehdata.h",
+          "actual": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\include/ehdata_forceinclude.h"
+        },
+        {
+          "index": 115,
+          "expected": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\include/ehdata_forceinclude.h",
+          "actual": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\include/ehdata_values.h"
+        },
+        {
+          "index": 116,
+          "expected": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\include/ehdata_values.h",
+          "actual": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\include/ehdata.h"
+        },
+        {
+          "index": 117,
+          "expected": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\include/ehdata4.h",
+          "actual": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\include/ehdata4_export.h"
+        }
+      ]
+    },
+    {
+      "field": "toolRuntimeFiles",
+      "count": 145,
+      "unorderedExactRowsEqual": true,
+      "changedIndexCount": 23,
+      "firstDifferences": [
+        {
+          "index": 28,
+          "expected": "/C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\bin\\Hostx64\\x64\\msvcp140.dll",
+          "actual": "/C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\bin\\Hostx64\\x64\\msvcp140_1.dll"
+        },
+        {
+          "index": 29,
+          "expected": "/C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\bin\\Hostx64\\x64\\msvcp140_1.dll",
+          "actual": "/C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\bin\\Hostx64\\x64\\msvcp140_2.dll"
+        },
+        {
+          "index": 30,
+          "expected": "/C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\bin\\Hostx64\\x64\\msvcp140_2.dll",
+          "actual": "/C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\bin\\Hostx64\\x64\\msvcp140_atomic_wait.dll"
+        },
+        {
+          "index": 31,
+          "expected": "/C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\bin\\Hostx64\\x64\\msvcp140_atomic_wait.dll",
+          "actual": "/C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\bin\\Hostx64\\x64\\msvcp140_codecvt_ids.dll"
+        },
+        {
+          "index": 32,
+          "expected": "/C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\bin\\Hostx64\\x64\\msvcp140_codecvt_ids.dll",
+          "actual": "/C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\bin\\Hostx64\\x64\\msvcp140.dll"
+        },
+        {
+          "index": 42,
+          "expected": "/C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\bin\\Hostx64\\x64\\vcruntime140.dll",
+          "actual": "/C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.50.35717\\bin\\Hostx64\\x64\\vcruntime140_1.dll"
+        }
+      ]
+    },
+    {
+      "field": "externalFiles",
+      "count": 4,
+      "unorderedExactRowsEqual": true,
+      "changedIndexCount": 0,
+      "firstDifferences": []
+    }
+  ]
+}

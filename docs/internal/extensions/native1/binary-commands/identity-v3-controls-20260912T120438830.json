@@ -1,0 +1,613 @@
+{
+  "schema": "native1-identity-v3-control-receipt-v1",
+  "startedUtc": "2026-09-12T12:04:38.8676791Z",
+  "completedUtc": "2026-09-12T12:08:04.8060621Z",
+  "pass": true,
+  "failure": null,
+  "selectors": true,
+  "selectorBound": false,
+  "selector": "",
+  "registrySha256": "4CB180BB0380215D14AC80058652120AA877488BDF4A231C39BF6017CD99DA14",
+  "helperSha256": "A21F67E2EDF49C8E218C657E73967E920EFB85FF025476E01BD04A83CA50B17A",
+  "runnerSha256": "D8C9C5209D2E4FD738D9F89208A3AEDAB5FC35916A9F8220CCFD94E94422BBD1",
+  "shellVersion": "7.6.5",
+  "inputPins": [
+    {
+      "property": "toolchainIdentity",
+      "sha256": "8486C0C039365DE086E651FBC1686531D1DCA4F000C75C62BE6A65E70E6C53EB",
+      "path": "docs/internal/extensions/native1/commands/binary-build-20260912T111100924.json"
+    },
+    {
+      "property": "",
+      "sha256": "AF8459AC7377D3353E5EA96D362A16EF4309D8A2F2A93B9EB1820ED9594BDA11",
+      "path": "docs/internal/extensions/native1/binary-commands/toolchain-mismatch-actual-v2.json"
+    }
+  ],
+  "expected": [
+    "empty",
+    "whitespace",
+    "malformed",
+    "unknown",
+    "valid",
+    "omitted"
+  ],
+  "executed": [
+    "empty",
+    "whitespace",
+    "malformed",
+    "unknown",
+    "valid",
+    "omitted"
+  ],
+  "results": [
+    {
+      "id": "empty",
+      "details": {
+        "process": {
+          "Stage": "empty",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+            "Line |",
+            "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+            "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact identity v3 selector"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+            "Line |",
+            "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+            "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact identity v3 selector"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 26.303,
+          "DeadlineSeconds": 180,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T12:04:54.7260785Z",
+          "CompletedUtc": "2026-09-12T12:05:21.3157923Z",
+          "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1",
+            "-Case",
+            ""
+          ]
+        },
+        "executed": []
+      },
+      "pass": true
+    },
+    {
+      "id": "whitespace",
+      "details": {
+        "process": {
+          "Stage": "whitespace",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+            "Line |",
+            "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+            "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact identity v3 selector"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+            "Line |",
+            "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+            "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact identity v3 selector"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 21.97,
+          "DeadlineSeconds": 180,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T12:05:21.4365914Z",
+          "CompletedUtc": "2026-09-12T12:05:43.4348600Z",
+          "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1",
+            "-Case",
+            " "
+          ]
+        },
+        "executed": []
+      },
+      "pass": true
+    },
+    {
+      "id": "malformed",
+      "details": {
+        "process": {
+          "Stage": "malformed",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+            "Line |",
+            "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+            "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact identity v3 selector"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+            "Line |",
+            "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+            "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact identity v3 selector"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 8.364,
+          "DeadlineSeconds": 180,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T12:05:43.4778660Z",
+          "CompletedUtc": "2026-09-12T12:05:51.8817785Z",
+          "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1",
+            "-Case",
+            "unchanged,"
+          ]
+        },
+        "executed": []
+      },
+      "pass": true
+    },
+    {
+      "id": "unknown",
+      "details": {
+        "process": {
+          "Stage": "unknown",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+            "Line |",
+            "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+            "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact identity v3 selector"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+            "Line |",
+            "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+            "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact identity v3 selector"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 10.505,
+          "DeadlineSeconds": 180,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T12:05:51.9573754Z",
+          "CompletedUtc": "2026-09-12T12:06:02.4996387Z",
+          "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1",
+            "-Case",
+            "unknown-case"
+          ]
+        },
+        "executed": []
+      },
+      "pass": true
+    },
+    {
+      "id": "valid",
+      "details": {
+        "process": {
+          "Stage": "valid",
+          "ExitCode": 0,
+          "Output": [
+            "NATIVE1-IDENTITY-V3 PASS unchanged"
+          ],
+          "StandardOutput": [
+            "NATIVE1-IDENTITY-V3 PASS unchanged"
+          ],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 26.187,
+          "DeadlineSeconds": 180,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T12:06:02.5030700Z",
+          "CompletedUtc": "2026-09-12T12:06:28.7486185Z",
+          "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1",
+            "-Case",
+            "unchanged"
+          ]
+        },
+        "executed": [
+          "unchanged"
+        ]
+      },
+      "pass": true
+    },
+    {
+      "id": "omitted",
+      "details": {
+        "process": {
+          "Stage": "omitted",
+          "ExitCode": 0,
+          "Output": [
+            "NATIVE1-IDENTITY-V3 PASS ordinal-order",
+            "NATIVE1-IDENTITY-V3 CANONICAL 2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+            "NATIVE1-IDENTITY-V3 PASS canonical-maps",
+            "NATIVE1-IDENTITY-V3 PASS cross-shell",
+            "NATIVE1-IDENTITY-V3 PASS unchanged",
+            "NATIVE1-IDENTITY-V3 PASS command-text",
+            "NATIVE1-IDENTITY-V3 PASS command-argument",
+            "NATIVE1-IDENTITY-V3 PASS command-file",
+            "NATIVE1-IDENTITY-V3 PASS cpp-missing-key",
+            "NATIVE1-IDENTITY-V3 PASS cpp-extra-key",
+            "NATIVE1-IDENTITY-V3 PASS cpp-root",
+            "NATIVE1-IDENTITY-V3 PASS include-order",
+            "NATIVE1-IDENTITY-V3 PASS library-order",
+            "NATIVE1-IDENTITY-V3 PASS file-row",
+            "NATIVE1-IDENTITY-V3 PASS sort-policy",
+            "NATIVE1-IDENTITY-V3 PASS missing-command",
+            "NATIVE1-IDENTITY-V3 PASS command-extra-key",
+            "NATIVE1-IDENTITY-V3 PASS digest-change",
+            "NATIVE1-IDENTITY-V3 PASS unknown-top-key",
+            "NATIVE1-IDENTITY-V3 PASS root-pin",
+            "NATIVE1-IDENTITY-V3 PASS restored"
+          ],
+          "StandardOutput": [
+            "NATIVE1-IDENTITY-V3 PASS ordinal-order",
+            "NATIVE1-IDENTITY-V3 CANONICAL 2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+            "NATIVE1-IDENTITY-V3 PASS canonical-maps",
+            "NATIVE1-IDENTITY-V3 PASS cross-shell",
+            "NATIVE1-IDENTITY-V3 PASS unchanged",
+            "NATIVE1-IDENTITY-V3 PASS command-text",
+            "NATIVE1-IDENTITY-V3 PASS command-argument",
+            "NATIVE1-IDENTITY-V3 PASS command-file",
+            "NATIVE1-IDENTITY-V3 PASS cpp-missing-key",
+            "NATIVE1-IDENTITY-V3 PASS cpp-extra-key",
+            "NATIVE1-IDENTITY-V3 PASS cpp-root",
+            "NATIVE1-IDENTITY-V3 PASS include-order",
+            "NATIVE1-IDENTITY-V3 PASS library-order",
+            "NATIVE1-IDENTITY-V3 PASS file-row",
+            "NATIVE1-IDENTITY-V3 PASS sort-policy",
+            "NATIVE1-IDENTITY-V3 PASS missing-command",
+            "NATIVE1-IDENTITY-V3 PASS command-extra-key",
+            "NATIVE1-IDENTITY-V3 PASS digest-change",
+            "NATIVE1-IDENTITY-V3 PASS unknown-top-key",
+            "NATIVE1-IDENTITY-V3 PASS root-pin",
+            "NATIVE1-IDENTITY-V3 PASS restored"
+          ],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 95.739,
+          "DeadlineSeconds": 360,
+          "Ownership": "kill-on-close-job",
+          "StartedUtc": "2026-09-12T12:06:28.8519358Z",
+          "CompletedUtc": "2026-09-12T12:08:04.6250007Z",
+          "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1"
+          ]
+        },
+        "executed": [
+          "ordinal-order",
+          "canonical-maps",
+          "cross-shell",
+          "unchanged",
+          "command-text",
+          "command-argument",
+          "command-file",
+          "cpp-missing-key",
+          "cpp-extra-key",
+          "cpp-root",
+          "include-order",
+          "library-order",
+          "file-row",
+          "sort-policy",
+          "missing-command",
+          "command-extra-key",
+          "digest-change",
+          "unknown-top-key",
+          "root-pin",
+          "restored"
+        ]
+      },
+      "pass": true
+    }
+  ],
+  "commands": [
+    {
+      "Stage": "empty",
+      "ExitCode": 1,
+      "Output": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+        "Line |",
+        "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+        "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact identity v3 selector"
+      ],
+      "StandardOutput": [],
+      "StandardError": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+        "Line |",
+        "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+        "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact identity v3 selector"
+      ],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 26.303,
+      "DeadlineSeconds": 180,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T12:04:54.7260785Z",
+      "CompletedUtc": "2026-09-12T12:05:21.3157923Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1",
+        "-Case",
+        ""
+      ]
+    },
+    {
+      "Stage": "whitespace",
+      "ExitCode": 1,
+      "Output": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+        "Line |",
+        "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+        "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact identity v3 selector"
+      ],
+      "StandardOutput": [],
+      "StandardError": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+        "Line |",
+        "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+        "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact identity v3 selector"
+      ],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 21.97,
+      "DeadlineSeconds": 180,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T12:05:21.4365914Z",
+      "CompletedUtc": "2026-09-12T12:05:43.4348600Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1",
+        "-Case",
+        " "
+      ]
+    },
+    {
+      "Stage": "malformed",
+      "ExitCode": 1,
+      "Output": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+        "Line |",
+        "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+        "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact identity v3 selector"
+      ],
+      "StandardOutput": [],
+      "StandardError": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+        "Line |",
+        "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+        "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact identity v3 selector"
+      ],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 8.364,
+      "DeadlineSeconds": 180,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T12:05:43.4778660Z",
+      "CompletedUtc": "2026-09-12T12:05:51.8817785Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1",
+        "-Case",
+        "unchanged,"
+      ]
+    },
+    {
+      "Stage": "unknown",
+      "ExitCode": 1,
+      "Output": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+        "Line |",
+        "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+        "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact identity v3 selector"
+      ],
+      "StandardOutput": [],
+      "StandardError": [
+        "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1:19",
+        "Line |",
+        "  19 |  … r.id -cnotcontains $Case){throw 'invalid exact identity v3 selector'}",
+        "     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "     | invalid exact identity v3 selector"
+      ],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 10.505,
+      "DeadlineSeconds": 180,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T12:05:51.9573754Z",
+      "CompletedUtc": "2026-09-12T12:06:02.4996387Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1",
+        "-Case",
+        "unknown-case"
+      ]
+    },
+    {
+      "Stage": "valid",
+      "ExitCode": 0,
+      "Output": [
+        "NATIVE1-IDENTITY-V3 PASS unchanged"
+      ],
+      "StandardOutput": [
+        "NATIVE1-IDENTITY-V3 PASS unchanged"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 26.187,
+      "DeadlineSeconds": 180,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T12:06:02.5030700Z",
+      "CompletedUtc": "2026-09-12T12:06:28.7486185Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1",
+        "-Case",
+        "unchanged"
+      ]
+    },
+    {
+      "Stage": "omitted",
+      "ExitCode": 0,
+      "Output": [
+        "NATIVE1-IDENTITY-V3 PASS ordinal-order",
+        "NATIVE1-IDENTITY-V3 CANONICAL 2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "NATIVE1-IDENTITY-V3 PASS canonical-maps",
+        "NATIVE1-IDENTITY-V3 PASS cross-shell",
+        "NATIVE1-IDENTITY-V3 PASS unchanged",
+        "NATIVE1-IDENTITY-V3 PASS command-text",
+        "NATIVE1-IDENTITY-V3 PASS command-argument",
+        "NATIVE1-IDENTITY-V3 PASS command-file",
+        "NATIVE1-IDENTITY-V3 PASS cpp-missing-key",
+        "NATIVE1-IDENTITY-V3 PASS cpp-extra-key",
+        "NATIVE1-IDENTITY-V3 PASS cpp-root",
+        "NATIVE1-IDENTITY-V3 PASS include-order",
+        "NATIVE1-IDENTITY-V3 PASS library-order",
+        "NATIVE1-IDENTITY-V3 PASS file-row",
+        "NATIVE1-IDENTITY-V3 PASS sort-policy",
+        "NATIVE1-IDENTITY-V3 PASS missing-command",
+        "NATIVE1-IDENTITY-V3 PASS command-extra-key",
+        "NATIVE1-IDENTITY-V3 PASS digest-change",
+        "NATIVE1-IDENTITY-V3 PASS unknown-top-key",
+        "NATIVE1-IDENTITY-V3 PASS root-pin",
+        "NATIVE1-IDENTITY-V3 PASS restored"
+      ],
+      "StandardOutput": [
+        "NATIVE1-IDENTITY-V3 PASS ordinal-order",
+        "NATIVE1-IDENTITY-V3 CANONICAL 2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "NATIVE1-IDENTITY-V3 PASS canonical-maps",
+        "NATIVE1-IDENTITY-V3 PASS cross-shell",
+        "NATIVE1-IDENTITY-V3 PASS unchanged",
+        "NATIVE1-IDENTITY-V3 PASS command-text",
+        "NATIVE1-IDENTITY-V3 PASS command-argument",
+        "NATIVE1-IDENTITY-V3 PASS command-file",
+        "NATIVE1-IDENTITY-V3 PASS cpp-missing-key",
+        "NATIVE1-IDENTITY-V3 PASS cpp-extra-key",
+        "NATIVE1-IDENTITY-V3 PASS cpp-root",
+        "NATIVE1-IDENTITY-V3 PASS include-order",
+        "NATIVE1-IDENTITY-V3 PASS library-order",
+        "NATIVE1-IDENTITY-V3 PASS file-row",
+        "NATIVE1-IDENTITY-V3 PASS sort-policy",
+        "NATIVE1-IDENTITY-V3 PASS missing-command",
+        "NATIVE1-IDENTITY-V3 PASS command-extra-key",
+        "NATIVE1-IDENTITY-V3 PASS digest-change",
+        "NATIVE1-IDENTITY-V3 PASS unknown-top-key",
+        "NATIVE1-IDENTITY-V3 PASS root-pin",
+        "NATIVE1-IDENTITY-V3 PASS restored"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 95.739,
+      "DeadlineSeconds": 360,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T12:06:28.8519358Z",
+      "CompletedUtc": "2026-09-12T12:08:04.6250007Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1"
+      ]
+    }
+  ],
+  "restored": true,
+  "scope": "Actual production sorting/digest/retained predicates on pinned captured inventories; fresh compiler byte discovery remains required by build/startup."
+}

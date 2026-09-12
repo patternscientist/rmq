@@ -1,0 +1,1543 @@
+{
+  "schema": "native1-small-file-development-v1",
+  "purpose": "bounded unchanged-production-helper cross-shell sample; no whole-inventory extrapolation",
+  "scriptSHA256": "ADEC7226FAA756F1B72DE4DBB0DF0D9441BD097E98F9BF074FA087AF6BDD10FA",
+  "script": "$ErrorActionPreference='Stop'\n$taskRoot='C:/Users/poin/.codex/worktrees/1817/RMQ'\n$taskHelper=Join-Path $taskRoot 'scripts/packed_native_identity.ps1'\nif((Get-FileHash -LiteralPath $taskHelper).Hash -cne 'A21F67E2EDF49C8E218C657E73967E920EFB85FF025476E01BD04A83CA50B17A'){throw 'frozen helper mismatch'}\n. $taskHelper\n$taskPins=Get-Content (Join-Path $PSScriptRoot 'hash-small-file-pins.json') -Raw|ConvertFrom-Json\nif($taskPins.files.Count -ne 100){throw 'exact sample count mismatch'}\n$taskStarted=[DateTime]::UtcNow.ToString('o');$taskWatch=[Diagnostics.Stopwatch]::StartNew()\n# Each supplied path is an exact existing leaf; no wider directory is scanned.\n$taskActual=@(Get-NativeFileInventory $taskPins.root @($taskPins.files.path))\n$taskWatch.Stop()\nif($taskActual.Count -ne 100){throw 'actual sample count mismatch'}\nforeach($taskRow in $taskActual){\n  $taskExpected=@($taskPins.files|Where-Object path -CEQ $taskRow.path)\n  if($taskExpected.Count -ne 1 -or $taskRow.bytes -ne $taskExpected[0].bytes -or $taskRow.sha256 -cne $taskExpected[0].sha256){throw ('exact sample row mismatch: '+$taskRow.path)}\n}\n$taskResult=[ordered]@{schema='native1-small-file-benchmark-v1';shell=$PSVersionTable.PSVersion.ToString();startedUTC=$taskStarted;completedUTC=[DateTime]::UtcNow.ToString('o');seconds=$taskWatch.Elapsed.TotalSeconds;pid=$PID;files=$taskActual.Count;bytes=$taskPins.bytes;pass=$true;helperSHA256=(Get-FileHash -LiteralPath $taskHelper).Hash;actual=$taskActual}\n[IO.File]::WriteAllText((Join-Path $PSScriptRoot ('hash-small-file-result-'+$PSVersionTable.PSVersion.Major+'.json')),($taskResult|ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))\n$taskResult.Remove('actual');$taskResult|ConvertTo-Json -Depth 5 -Compress|Write-Output\n",
+  "pins": {
+    "schema": "native1-small-file-sample-v1",
+    "root": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0",
+    "files": [
+      {
+        "path": "lib/lean/Init.olean",
+        "bytes": 22432,
+        "sha256": "4914DD4930059D8591928A6E1BD1F73BBA00242F3402138C4346E2777DD0F882"
+      },
+      {
+        "path": "lib/lean/Init/Control.olean",
+        "bytes": 19736,
+        "sha256": "976397A0A1E7300A6D25DC9E81FF2ED167F2CE14DB25EAE4ECA3FC478DF02610"
+      },
+      {
+        "path": "lib/lean/Init/Control/Lawful/Lemmas.olean",
+        "bytes": 30592,
+        "sha256": "A6D2674D993EEAC960D7C5A364A856A7CCCCE85D3A9851369860515D7B4D857B"
+      },
+      {
+        "path": "lib/lean/Init/Data.olean",
+        "bytes": 23288,
+        "sha256": "67F183CED76C89875D65B4EB3971AFC797B04E2D47C1213CEA2947D7AA318D31"
+      },
+      {
+        "path": "lib/lean/Init/Data/Array/Lex.olean",
+        "bytes": 19024,
+        "sha256": "DF28D1CFB57E121FB82927B8421FE9813A6F9CA9BF60D93DC359EDA0559C7C32"
+      },
+      {
+        "path": "lib/lean/Init/Data/Array/TakeDrop.olean",
+        "bytes": 30056,
+        "sha256": "17BCCB74731FF2E4BC2A036F5E173589DB8B1B86065FDAEA60A84902248DB0D5"
+      },
+      {
+        "path": "lib/lean/Init/Data/ByteArray.olean",
+        "bytes": 18856,
+        "sha256": "C669FBC0CB3EFCCEDD9AD3AADC91FAE83559D9E8F0620179902E02D7DDD20B85"
+      },
+      {
+        "path": "lib/lean/Init/Data/Fin.olean",
+        "bytes": 19264,
+        "sha256": "A8C836443DC11F1BE756C93324EF19668F029FF6462A4CA1631F8098D00C8D1F"
+      },
+      {
+        "path": "lib/lean/Init/Data/FloatArray.olean",
+        "bytes": 18856,
+        "sha256": "DCD856C68D17BD38169B4BFB0CBD48D67680E32A6D1D6E4B2B67FDD18B366B2D"
+      },
+      {
+        "path": "lib/lean/Init/Data/Int.olean",
+        "bytes": 20000,
+        "sha256": "108D48657DE0F612E4E097BA8539D1C8DE811B8EDC6D629FE30EDFB1BB4046F7"
+      },
+      {
+        "path": "lib/lean/Init/Data/Int/Compare.olean",
+        "bytes": 32360,
+        "sha256": "A32FDBF5684DF415EBEA7DF290A69C4B3A0B38E3563CB9B73A14518EA3595798"
+      },
+      {
+        "path": "lib/lean/Init/Data/Iterators.olean",
+        "bytes": 19528,
+        "sha256": "9D1820BEF7FCE02A474A88FC796C045E1083839C435A9EE21E69D1C1C6251802"
+      },
+      {
+        "path": "lib/lean/Init/Data/Iterators/Consumers.olean",
+        "bytes": 19352,
+        "sha256": "8561EBD82C3FCC73BA9089CB1500F030147DE6F65E9B39D6A6028ED916E2A64F"
+      },
+      {
+        "path": "lib/lean/Init/Data/Iterators/Internal.olean",
+        "bytes": 19064,
+        "sha256": "823EB4DC1FE442896DD7C8E8FCF0B8ECA00AB8A26D45FFF8FD9D89C3E75E2880"
+      },
+      {
+        "path": "lib/lean/Init/Data/Iterators/Lemmas/Combinators.olean",
+        "bytes": 19328,
+        "sha256": "499EEF85BFF72611D6C4AB4705FD76FA6CB2A671B89BBFD06C01EF093B62C49D"
+      },
+      {
+        "path": "lib/lean/Init/Data/Iterators/Lemmas/Consumers.olean",
+        "bytes": 19216,
+        "sha256": "EDE11F3381DF5F9A2D2149E73B46E06EF893960EA76563105BCE9E3EC69F339E"
+      },
+      {
+        "path": "lib/lean/Init/Data/List.olean",
+        "bytes": 21392,
+        "sha256": "3A37AEB21E9F02071A31F87B2AA87CFF505D5359961116ED193EB63EF24394BC"
+      },
+      {
+        "path": "lib/lean/Init/Data/List/Nat/Find.olean",
+        "bytes": 30096,
+        "sha256": "39C5F462C233BFAFF020B543BC65804FB6C47999706E302A9315B6359080110D"
+      },
+      {
+        "path": "lib/lean/Init/Data/List/Sort.olean",
+        "bytes": 19128,
+        "sha256": "2243B79A39EAEBFA88578FC157121DA801DCAD8AA17DE245B5D5996E5E9517C5"
+      },
+      {
+        "path": "lib/lean/Init/Data/Nat.olean",
+        "bytes": 20512,
+        "sha256": "93EF331434EA5EFD269BC160DF75A9F3F2EB30BFBE4365DC2F6F61255B45BF3C"
+      },
+      {
+        "path": "lib/lean/Init/Data/Nat/Compare.olean",
+        "bytes": 32008,
+        "sha256": "92DA435019CB66E85AA1E70DF966F29D07473DB813220FB4CB5803746FA66A2E"
+      },
+      {
+        "path": "lib/lean/Init/Data/Nat/Log2.olean",
+        "bytes": 28408,
+        "sha256": "3BB8C73079D85A824666122AA8EC9FB97E451ADE988FE2886544F6B3193747AA"
+      },
+      {
+        "path": "lib/lean/Init/Data/Option/Coe.olean",
+        "bytes": 24112,
+        "sha256": "E9E1F70EE735E0A6F536250328EA52E60B02782F9674016E6DF96635904CB762"
+      },
+      {
+        "path": "lib/lean/Init/Data/Range/Polymorphic/NatLemmas.olean",
+        "bytes": 27912,
+        "sha256": "74DEB330D0A90C8B46AFFB97FC708749968049156BB2802B20C5DA8A1D90E02E"
+      },
+      {
+        "path": "lib/lean/Init/Data/Slice.olean",
+        "bytes": 19176,
+        "sha256": "8ED2847E75225B88B0D4FD82DEBB94E6AB90B53C08F6D1A1993DBEF0E34BF6A9"
+      },
+      {
+        "path": "lib/lean/Init/Data/String.olean",
+        "bytes": 19056,
+        "sha256": "D398BE839EA2A8EDE977C7BF3A2DB6A188A58EC438CDC0D802259FADF05E1DE2"
+      },
+      {
+        "path": "lib/lean/Init/Data/Subtype.olean",
+        "bytes": 29432,
+        "sha256": "F5E3BCF6AA81F31EF5B2CADB69BE995FB512327701C17DDC174FB9622BB4ECE1"
+      },
+      {
+        "path": "lib/lean/Init/Data/ToString.olean",
+        "bytes": 18960,
+        "sha256": "C2969D43927A6F4CF3ABAB0444C27C956BDBE4ECE5E2FAC79D355C83AB37288F"
+      },
+      {
+        "path": "lib/lean/Init/Data/Vector.olean",
+        "bytes": 20432,
+        "sha256": "1F3BBC630A7202F0075E3BE1FEB4CF906BAD6B3E88CDDCA5CA917D71A4D94E5C"
+      },
+      {
+        "path": "lib/lean/Init/Grind/Cases.olean",
+        "bytes": 20184,
+        "sha256": "9F21F05D19CB62C285643BD9B16F63F4542C4BC2D7040D2355242FAEAD6A840E"
+      },
+      {
+        "path": "lib/lean/Init/Grind/Module.olean",
+        "bytes": 18920,
+        "sha256": "E42F673E72BB3CCD4EB5FAE82EDCE91B29ACF713392A1223E5F8C055A5ED73CC"
+      },
+      {
+        "path": "lib/lean/Init/Grind/Ring.olean",
+        "bytes": 19344,
+        "sha256": "83FD6977E086FD1F5A8610BD6FA01F488AF49AA270EE9F2677439834DFEBC136"
+      },
+      {
+        "path": "lib/lean/Init/GrindInstances.olean",
+        "bytes": 18992,
+        "sha256": "5DA870542A42C183FD5E83FB5A12C4EC5EBE349B7AF0274AF96B393614F8F2F9"
+      },
+      {
+        "path": "lib/lean/Init/GrindInstances/Ring.olean",
+        "bytes": 19376,
+        "sha256": "210215FAEF09C6CDF72F095EDDB27147548BC0FA365280DEAD574C904F20D76F"
+      },
+      {
+        "path": "lib/lean/Init/Internal/Order.olean",
+        "bytes": 19024,
+        "sha256": "72A6218FA9F0640F5F758D9F497B5950FD7A2D89FA21E63538EF9FF461044EED"
+      },
+      {
+        "path": "lib/lean/Init/Omega.olean",
+        "bytes": 19168,
+        "sha256": "00185B902D5634263ACCE9570B48F6593E16320C12DA4E6B440E5C75C6B264A5"
+      },
+      {
+        "path": "lib/lean/Init/Syntax.olean",
+        "bytes": 28488,
+        "sha256": "20D642D4D226AB00F78AA0EDB3A3D00807962117FF3DFE7B5FB032A7C99A044C"
+      },
+      {
+        "path": "lib/lean/Lake.olean",
+        "bytes": 19296,
+        "sha256": "BE1A81EE846702BBAC3433E876705367B5B7EF034E18D8655E5FC289C6419743"
+      },
+      {
+        "path": "lib/lean/Lake/Build/Job.olean",
+        "bytes": 19064,
+        "sha256": "61C394490F00A7B46E1646BCE80E1F3AE180DE7A4BC07702A0AC54BD0AD3CE8B"
+      },
+      {
+        "path": "lib/lean/Lake/Config.olean",
+        "bytes": 18776,
+        "sha256": "34EF2E9BB70299432C148131DA5F6127C6517B25277EFD5D24B8DD75CAB6522C"
+      },
+      {
+        "path": "lib/lean/Lake/DSL.olean",
+        "bytes": 19800,
+        "sha256": "47DCE1C7278EA687D60299BA14C25074C6012875388A81934F4216A24659131E"
+      },
+      {
+        "path": "lib/lean/Lake/Toml.olean",
+        "bytes": 18776,
+        "sha256": "6212FF83F2B48E1493D70A2FE4627E43371ECA55AA5F4DDCA2C1A667F7977441"
+      },
+      {
+        "path": "lib/lean/Lake/Toml/Elab.olean",
+        "bytes": 19128,
+        "sha256": "25BD466D76F284A1E274A508366C8A386817C4C3D672AA9C19830E0E79A798A8"
+      },
+      {
+        "path": "lib/lean/Lean.olean",
+        "bytes": 22584,
+        "sha256": "642724702C12B0FCB5BF7D63E31EC0A5FA270201391B2C0B6D7B5D0EFE255C2A"
+      },
+      {
+        "path": "lib/lean/Lean/Compiler/BorrowedAnnotation.olean",
+        "bytes": 28096,
+        "sha256": "5310B35514E8479C34885B8DBEEDA7E56CEC581F3E27DCE73307F14FD3A6476B"
+      },
+      {
+        "path": "lib/lean/Lean/Data/Json.olean",
+        "bytes": 19120,
+        "sha256": "79EC253ACF9C16817CD378C7A54592495037B10F6FFA70C6A6AA12288EC3FD6F"
+      },
+      {
+        "path": "lib/lean/Lean/Data/Xml.olean",
+        "bytes": 18840,
+        "sha256": "608083C1AA1D95A13F7D3082FD31056A7E172A4728B659646D1DC6DA01A9D5C2"
+      },
+      {
+        "path": "lib/lean/Lean/Elab/Deriving.olean",
+        "bytes": 20000,
+        "sha256": "296DAC11671ABF72589A4BCB4D60CEE076EB3F058128CBD64320490485DADA91"
+      },
+      {
+        "path": "lib/lean/Lean/Elab/PreDefinition.olean",
+        "bytes": 19408,
+        "sha256": "1F9213649A233D211B11EB6DA51DC00CD0BE2673BBB41FD38ED9CD842D70EDE5"
+      },
+      {
+        "path": "lib/lean/Lean/Elab/PreDefinition/Structural.olean",
+        "bytes": 18744,
+        "sha256": "644D476075E6D9F7EA990D35230BC588D5703293E117B691AB5D6238AD02CCB7"
+      },
+      {
+        "path": "lib/lean/Lean/Elab/Tactic/BoolToPropSimps.olean",
+        "bytes": 32680,
+        "sha256": "85B9647CD41CC8482F0518276030E22921B6B1E014A586B64A2414DFFBC86C22"
+      },
+      {
+        "path": "lib/lean/Lean/Elab/Tactic/BVDecide/Frontend.olean",
+        "bytes": 19600,
+        "sha256": "D6C4A225B277E5DE8DFD14F684D6A4B87150D09E704EA4C5BE3FD9F420EF0635"
+      },
+      {
+        "path": "lib/lean/Lean/Elab/Tactic/Conv.olean",
+        "bytes": 19496,
+        "sha256": "A19727B9916EA171523C30DC5E9140681BB3407A740A4FF2C5C735B40632B0CE"
+      },
+      {
+        "path": "lib/lean/Lean/Elab/Tactic/Do/ProofMode.olean",
+        "bytes": 20360,
+        "sha256": "A90E410CF78073F4668066BAEE5F0484E7136523DF4CFD3E248522CCCF738F8C"
+      },
+      {
+        "path": "lib/lean/Lean/ErrorExplanations.olean",
+        "bytes": 19344,
+        "sha256": "7B9D7A8D2C6DE085B7CFC76C64EB4463F96E1B6B9FF85CF8CA7874C94F0B2675"
+      },
+      {
+        "path": "lib/lean/Lean/ErrorExplanations/DependsOnNoncomputable.olean",
+        "bytes": 23344,
+        "sha256": "4B82A84F8C2A66932981E43A6777E7E67E313EED5905A26175BEE7ACE58F2100"
+      },
+      {
+        "path": "lib/lean/Lean/ErrorExplanations/InvalidDottedIdent.olean",
+        "bytes": 21960,
+        "sha256": "F5E7780A50DF4EB1E85594DFFC72452A4CA59CB588DBA7E1A2175605D87F6C2E"
+      },
+      {
+        "path": "lib/lean/Lean/Linter.olean",
+        "bytes": 19536,
+        "sha256": "FDA7F32C3D23236371461454A79028CC960066D6A9412D05D6F91730698A6047"
+      },
+      {
+        "path": "lib/lean/Lean/Meta/Constructions.olean",
+        "bytes": 19032,
+        "sha256": "A907C960A95C35C414391C1C29B78E59294FFE18C3E9493B647BC9F4F069BA5C"
+      },
+      {
+        "path": "lib/lean/Lean/Meta/Tactic.olean",
+        "bytes": 22424,
+        "sha256": "04F7B8B679199B18FBAD92A18142D18967E5F64405AEC4FE6A9BAF841838314B"
+      },
+      {
+        "path": "lib/lean/Lean/Meta/Tactic/Grind/Arith.olean",
+        "bytes": 19616,
+        "sha256": "694283E1E9526228A9FD837B476B8E10EEBB308712E024DAE3CB8D03372C4710"
+      },
+      {
+        "path": "lib/lean/Lean/Meta/Tactic/Simp/Arith.olean",
+        "bytes": 30632,
+        "sha256": "571C1D76E4D606DB85053D25A1677C65200C9C7416F896DFCCDFE3FA1DAA4A4B"
+      },
+      {
+        "path": "lib/lean/Lean/Meta/Tactic/Simp/BuiltinSimprocs.olean",
+        "bytes": 19816,
+        "sha256": "253D2A9AD3281555AC19614C038C9DD2A9FEE762066D5407E0EF7B520EF1064E"
+      },
+      {
+        "path": "lib/lean/Lean/Runtime.olean",
+        "bytes": 30520,
+        "sha256": "41382C2632DB167C05CE6B54BF304117C41F0550A4B0B85729E2AD55E07C1B74"
+      },
+      {
+        "path": "lib/lean/Lean/Server/CodeActions.olean",
+        "bytes": 18928,
+        "sha256": "8CEB48F28A422969818A708E1A1AB9293DD25EF34738131F6D2DA05C4FF6BE4C"
+      },
+      {
+        "path": "lib/lean/Lean/Server/Test.olean",
+        "bytes": 18808,
+        "sha256": "0AB711C8DB4E1532E3DA18B6EAC14C05D631BD0F7F085EF667BCCF120B8A1899"
+      },
+      {
+        "path": "lib/lean/Lean/Widget.olean",
+        "bytes": 19096,
+        "sha256": "DC76A89229ADF089CD93E1948A5B95D7291FA640DDDAC24B5CC236391D94130B"
+      },
+      {
+        "path": "lib/lean/Std/Classes/Ord.olean",
+        "bytes": 19368,
+        "sha256": "D92844147A59384D3A30FB36FB57FE7FA5122ECE6831E5EDFF2AB81BF5B7BC96"
+      },
+      {
+        "path": "lib/lean/Std/Data.olean",
+        "bytes": 20568,
+        "sha256": "09CE138638B267056337F8CA640701ABF22E127E8A4CCD275AC3E475DC9D7AC6"
+      },
+      {
+        "path": "lib/lean/Std/Data/DTreeMap.olean",
+        "bytes": 19080,
+        "sha256": "244B3DC9FAEB022425DC204F92C487AE5003D1C4A6D3CF25A0A8A81FAF57CDDD"
+      },
+      {
+        "path": "lib/lean/Std/Data/ExtDHashMap.olean",
+        "bytes": 18960,
+        "sha256": "5638E70231BB91B3DA045F6EEF6CCC65B32E10D516C725BDE91581230FBCA8DE"
+      },
+      {
+        "path": "lib/lean/Std/Data/ExtHashMap.olean",
+        "bytes": 18960,
+        "sha256": "24B0758812E1AC7C9D78A93954CF1D5C2A50820D12091AB1A3D6DA574AE254CE"
+      },
+      {
+        "path": "lib/lean/Std/Data/ExtTreeMap.olean",
+        "bytes": 18960,
+        "sha256": "6A9F1F1A0E21ADFFC97CD54E819ABEF1BDAF68C4C84D77E47DA8B0E8D0073078"
+      },
+      {
+        "path": "lib/lean/Std/Data/HashSet.olean",
+        "bytes": 18952,
+        "sha256": "6B2B1987EF259894F24FC64951176E933B3F2F77D6469D96DB5684B2370A044F"
+      },
+      {
+        "path": "lib/lean/Std/Data/Iterators/Combinators.olean",
+        "bytes": 19584,
+        "sha256": "4954D833B4E18E23FDF4526D7344402DB8509A5ECF7CF2DA47D4CF5C5191531D"
+      },
+      {
+        "path": "lib/lean/Std/Data/Iterators/Combinators/Monadic.olean",
+        "bytes": 19552,
+        "sha256": "E87CB5363A106460D8FDBDB9B842107DAB485F8FEB9FD71EC35F1B888B2A5B31"
+      },
+      {
+        "path": "lib/lean/Std/Data/Iterators/Lemmas.olean",
+        "bytes": 19536,
+        "sha256": "6D66894FC9F3FBAA4CFD966A087ECA9DE93D55FAABE4CF0B772449E52A2D63D7"
+      },
+      {
+        "path": "lib/lean/Std/Data/Iterators/Lemmas/Combinators/Monadic.olean",
+        "bytes": 19624,
+        "sha256": "4E83E5EEBAEDB2638FD5EDB01BD8F7EDD1FFE0BD15A0CECC781B78D0F267ABBF"
+      },
+      {
+        "path": "lib/lean/Std/Data/Iterators/Lemmas/Equivalence.olean",
+        "bytes": 19224,
+        "sha256": "1065F23C76648C43DC5134A6D1A3C62363F0CBF4C1FB5D5E19ED8E4AD2288A70"
+      },
+      {
+        "path": "lib/lean/Std/Data/Iterators/Lemmas/Producers.olean",
+        "bytes": 19632,
+        "sha256": "45692FE4E4C739B4137FFF016A26BE13F65BC8418DB7362230F439B38A01D94E"
+      },
+      {
+        "path": "lib/lean/Std/Data/Iterators/Lemmas/Producers/Range.olean",
+        "bytes": 26464,
+        "sha256": "265CA9A5EEA08D319B26C99BB188AC6FAD614F93F6C98F3B6183C2474AC2F47A"
+      },
+      {
+        "path": "lib/lean/Std/Data/Iterators/Producers/Array.olean",
+        "bytes": 30768,
+        "sha256": "F4E459681B88182DC63AF41774925DC6195ED3C9234D652C6FADF496980BAE0D"
+      },
+      {
+        "path": "lib/lean/Std/Data/Iterators/Producers/List.olean",
+        "bytes": 26432,
+        "sha256": "8A2EDB072FD32760DF3DD23502BB17DA44E88BDB8BEBE6B1B7387EB643033298"
+      },
+      {
+        "path": "lib/lean/Std/Data/Iterators/Producers/Slice.olean",
+        "bytes": 28072,
+        "sha256": "B5D3565D948ADF8794486D30B126AEF6C6690E7438EAF6E271F961E7C382BF4C"
+      },
+      {
+        "path": "lib/lean/Std/Data/TreeSet.olean",
+        "bytes": 19072,
+        "sha256": "E4B3D16A4BCC5B884ED3ACB99F4BB6FD23D3ADEF70577486E90827BA8BF2D025"
+      },
+      {
+        "path": "lib/lean/Std/Do.olean",
+        "bytes": 19168,
+        "sha256": "5859E0C033E37F6BF10A4C0CA6F0C0910BFCB84B37EF6873A40B657AD7CE9E9D"
+      },
+      {
+        "path": "lib/lean/Std/Do/Triple.olean",
+        "bytes": 18920,
+        "sha256": "DFDC4409B565264E9BB502696DD5A5B9CB21B2EA8095C9EB24842E4A052E4F08"
+      },
+      {
+        "path": "lib/lean/Std/Internal.olean",
+        "bytes": 19328,
+        "sha256": "AC81AEEB1E06DECB660428D85D6A662DE1C866DBD9EA03798A4E66B988A9B0D7"
+      },
+      {
+        "path": "lib/lean/Std/Internal/Parsec.olean",
+        "bytes": 19072,
+        "sha256": "DA98C993C095C1DC4DEDC7E7E84F99E4B4F51C959C05E557DE82BB627C37561C"
+      },
+      {
+        "path": "lib/lean/Std/Net.olean",
+        "bytes": 18776,
+        "sha256": "11BF6D05A6C147AEA99F47375A00D635AA5225ECC75668436F118F2ACD9B7F92"
+      },
+      {
+        "path": "lib/lean/Std/Sat/AIG.olean",
+        "bytes": 20272,
+        "sha256": "C1F39617444FF0DAE32BAECFACB9D0F0E1D95AF8B699FE476C8A2DD5E65D9F8B"
+      },
+      {
+        "path": "lib/lean/Std/Sat/CNF.olean",
+        "bytes": 19272,
+        "sha256": "A6DDE64DBDF9832958CFF65EFB48268D5218CED8913FB5DB2D4ABA4E5EF6EC2C"
+      },
+      {
+        "path": "lib/lean/Std/Sync/Basic.olean",
+        "bytes": 20992,
+        "sha256": "0821F73253EB7DC663E252BF3E96EAB74DC3D1850B3AB4814DFB6AC6BEA47EBE"
+      },
+      {
+        "path": "lib/lean/Std/Tactic/BVDecide.olean",
+        "bytes": 19520,
+        "sha256": "4FBE193135431AB2693ACFBACFC53592450CDABA9F9A75BCE0BD4BDAD6FB3408"
+      },
+      {
+        "path": "lib/lean/Std/Tactic/BVDecide/Bitblast/BoolExpr.olean",
+        "bytes": 19200,
+        "sha256": "5FF5F1268E61F3F51599F51288233DD835E2F960E343EC9BA294758B9392E5BB"
+      },
+      {
+        "path": "lib/lean/Std/Tactic/BVDecide/Bitblast/BVExpr/Circuit/Impl.olean",
+        "bytes": 19440,
+        "sha256": "FE9F7023BBB8D63090C24A022B49C1E32AAE273E0BE95821D787D1FE713CC2B7"
+      },
+      {
+        "path": "lib/lean/Std/Tactic/BVDecide/LRAT.olean",
+        "bytes": 19344,
+        "sha256": "F838F2A57AE2AE81F1916415C9259B835CC6744795F1CA2C777C12FD208F25AD"
+      },
+      {
+        "path": "lib/lean/Std/Tactic/BVDecide/Normalize.olean",
+        "bytes": 19816,
+        "sha256": "234B8EC3E9ADC483532865E6DE8C140431D86D0775BC2669F75A611B6CB87F26"
+      },
+      {
+        "path": "lib/lean/Std/Tactic/Do.olean",
+        "bytes": 19280,
+        "sha256": "6855B6E1D1A5B8609135E3E6552BBF838666EAF9FE5FF7BB3B5ADACFC5800B8C"
+      },
+      {
+        "path": "lib/lean/Std/Time/Internal.olean",
+        "bytes": 18960,
+        "sha256": "398B1B3E1D7E92D02CBCAF5839128B4F8F7C63C7B07356628A1664330F4A3B8D"
+      }
+    ],
+    "bytes": 2136064
+  },
+  "results": [
+    {
+      "schema": "native1-small-file-benchmark-v1",
+      "shell": "5.1.26100.9444",
+      "startedUTC": "2026-09-12T12:49:33.0040101Z",
+      "completedUTC": "2026-09-12T12:49:34.7159548Z",
+      "seconds": 1.4194959999999999,
+      "pid": 30096,
+      "files": 100,
+      "bytes": 2136064,
+      "pass": true,
+      "helperSHA256": "A21F67E2EDF49C8E218C657E73967E920EFB85FF025476E01BD04A83CA50B17A",
+      "actual": [
+        {
+          "path": "lib/lean/Init.olean",
+          "bytes": 22432,
+          "sha256": "4914DD4930059D8591928A6E1BD1F73BBA00242F3402138C4346E2777DD0F882"
+        },
+        {
+          "path": "lib/lean/Init/Control.olean",
+          "bytes": 19736,
+          "sha256": "976397A0A1E7300A6D25DC9E81FF2ED167F2CE14DB25EAE4ECA3FC478DF02610"
+        },
+        {
+          "path": "lib/lean/Init/Control/Lawful/Lemmas.olean",
+          "bytes": 30592,
+          "sha256": "A6D2674D993EEAC960D7C5A364A856A7CCCCE85D3A9851369860515D7B4D857B"
+        },
+        {
+          "path": "lib/lean/Init/Data.olean",
+          "bytes": 23288,
+          "sha256": "67F183CED76C89875D65B4EB3971AFC797B04E2D47C1213CEA2947D7AA318D31"
+        },
+        {
+          "path": "lib/lean/Init/Data/Array/Lex.olean",
+          "bytes": 19024,
+          "sha256": "DF28D1CFB57E121FB82927B8421FE9813A6F9CA9BF60D93DC359EDA0559C7C32"
+        },
+        {
+          "path": "lib/lean/Init/Data/Array/TakeDrop.olean",
+          "bytes": 30056,
+          "sha256": "17BCCB74731FF2E4BC2A036F5E173589DB8B1B86065FDAEA60A84902248DB0D5"
+        },
+        {
+          "path": "lib/lean/Init/Data/ByteArray.olean",
+          "bytes": 18856,
+          "sha256": "C669FBC0CB3EFCCEDD9AD3AADC91FAE83559D9E8F0620179902E02D7DDD20B85"
+        },
+        {
+          "path": "lib/lean/Init/Data/Fin.olean",
+          "bytes": 19264,
+          "sha256": "A8C836443DC11F1BE756C93324EF19668F029FF6462A4CA1631F8098D00C8D1F"
+        },
+        {
+          "path": "lib/lean/Init/Data/FloatArray.olean",
+          "bytes": 18856,
+          "sha256": "DCD856C68D17BD38169B4BFB0CBD48D67680E32A6D1D6E4B2B67FDD18B366B2D"
+        },
+        {
+          "path": "lib/lean/Init/Data/Int.olean",
+          "bytes": 20000,
+          "sha256": "108D48657DE0F612E4E097BA8539D1C8DE811B8EDC6D629FE30EDFB1BB4046F7"
+        },
+        {
+          "path": "lib/lean/Init/Data/Int/Compare.olean",
+          "bytes": 32360,
+          "sha256": "A32FDBF5684DF415EBEA7DF290A69C4B3A0B38E3563CB9B73A14518EA3595798"
+        },
+        {
+          "path": "lib/lean/Init/Data/Iterators.olean",
+          "bytes": 19528,
+          "sha256": "9D1820BEF7FCE02A474A88FC796C045E1083839C435A9EE21E69D1C1C6251802"
+        },
+        {
+          "path": "lib/lean/Init/Data/Iterators/Consumers.olean",
+          "bytes": 19352,
+          "sha256": "8561EBD82C3FCC73BA9089CB1500F030147DE6F65E9B39D6A6028ED916E2A64F"
+        },
+        {
+          "path": "lib/lean/Init/Data/Iterators/Internal.olean",
+          "bytes": 19064,
+          "sha256": "823EB4DC1FE442896DD7C8E8FCF0B8ECA00AB8A26D45FFF8FD9D89C3E75E2880"
+        },
+        {
+          "path": "lib/lean/Init/Data/Iterators/Lemmas/Combinators.olean",
+          "bytes": 19328,
+          "sha256": "499EEF85BFF72611D6C4AB4705FD76FA6CB2A671B89BBFD06C01EF093B62C49D"
+        },
+        {
+          "path": "lib/lean/Init/Data/Iterators/Lemmas/Consumers.olean",
+          "bytes": 19216,
+          "sha256": "EDE11F3381DF5F9A2D2149E73B46E06EF893960EA76563105BCE9E3EC69F339E"
+        },
+        {
+          "path": "lib/lean/Init/Data/List.olean",
+          "bytes": 21392,
+          "sha256": "3A37AEB21E9F02071A31F87B2AA87CFF505D5359961116ED193EB63EF24394BC"
+        },
+        {
+          "path": "lib/lean/Init/Data/List/Nat/Find.olean",
+          "bytes": 30096,
+          "sha256": "39C5F462C233BFAFF020B543BC65804FB6C47999706E302A9315B6359080110D"
+        },
+        {
+          "path": "lib/lean/Init/Data/List/Sort.olean",
+          "bytes": 19128,
+          "sha256": "2243B79A39EAEBFA88578FC157121DA801DCAD8AA17DE245B5D5996E5E9517C5"
+        },
+        {
+          "path": "lib/lean/Init/Data/Nat.olean",
+          "bytes": 20512,
+          "sha256": "93EF331434EA5EFD269BC160DF75A9F3F2EB30BFBE4365DC2F6F61255B45BF3C"
+        },
+        {
+          "path": "lib/lean/Init/Data/Nat/Compare.olean",
+          "bytes": 32008,
+          "sha256": "92DA435019CB66E85AA1E70DF966F29D07473DB813220FB4CB5803746FA66A2E"
+        },
+        {
+          "path": "lib/lean/Init/Data/Nat/Log2.olean",
+          "bytes": 28408,
+          "sha256": "3BB8C73079D85A824666122AA8EC9FB97E451ADE988FE2886544F6B3193747AA"
+        },
+        {
+          "path": "lib/lean/Init/Data/Option/Coe.olean",
+          "bytes": 24112,
+          "sha256": "E9E1F70EE735E0A6F536250328EA52E60B02782F9674016E6DF96635904CB762"
+        },
+        {
+          "path": "lib/lean/Init/Data/Range/Polymorphic/NatLemmas.olean",
+          "bytes": 27912,
+          "sha256": "74DEB330D0A90C8B46AFFB97FC708749968049156BB2802B20C5DA8A1D90E02E"
+        },
+        {
+          "path": "lib/lean/Init/Data/Slice.olean",
+          "bytes": 19176,
+          "sha256": "8ED2847E75225B88B0D4FD82DEBB94E6AB90B53C08F6D1A1993DBEF0E34BF6A9"
+        },
+        {
+          "path": "lib/lean/Init/Data/String.olean",
+          "bytes": 19056,
+          "sha256": "D398BE839EA2A8EDE977C7BF3A2DB6A188A58EC438CDC0D802259FADF05E1DE2"
+        },
+        {
+          "path": "lib/lean/Init/Data/Subtype.olean",
+          "bytes": 29432,
+          "sha256": "F5E3BCF6AA81F31EF5B2CADB69BE995FB512327701C17DDC174FB9622BB4ECE1"
+        },
+        {
+          "path": "lib/lean/Init/Data/ToString.olean",
+          "bytes": 18960,
+          "sha256": "C2969D43927A6F4CF3ABAB0444C27C956BDBE4ECE5E2FAC79D355C83AB37288F"
+        },
+        {
+          "path": "lib/lean/Init/Data/Vector.olean",
+          "bytes": 20432,
+          "sha256": "1F3BBC630A7202F0075E3BE1FEB4CF906BAD6B3E88CDDCA5CA917D71A4D94E5C"
+        },
+        {
+          "path": "lib/lean/Init/GrindInstances.olean",
+          "bytes": 18992,
+          "sha256": "5DA870542A42C183FD5E83FB5A12C4EC5EBE349B7AF0274AF96B393614F8F2F9"
+        },
+        {
+          "path": "lib/lean/Init/GrindInstances/Ring.olean",
+          "bytes": 19376,
+          "sha256": "210215FAEF09C6CDF72F095EDDB27147548BC0FA365280DEAD574C904F20D76F"
+        },
+        {
+          "path": "lib/lean/Init/Grind/Cases.olean",
+          "bytes": 20184,
+          "sha256": "9F21F05D19CB62C285643BD9B16F63F4542C4BC2D7040D2355242FAEAD6A840E"
+        },
+        {
+          "path": "lib/lean/Init/Grind/Module.olean",
+          "bytes": 18920,
+          "sha256": "E42F673E72BB3CCD4EB5FAE82EDCE91B29ACF713392A1223E5F8C055A5ED73CC"
+        },
+        {
+          "path": "lib/lean/Init/Grind/Ring.olean",
+          "bytes": 19344,
+          "sha256": "83FD6977E086FD1F5A8610BD6FA01F488AF49AA270EE9F2677439834DFEBC136"
+        },
+        {
+          "path": "lib/lean/Init/Internal/Order.olean",
+          "bytes": 19024,
+          "sha256": "72A6218FA9F0640F5F758D9F497B5950FD7A2D89FA21E63538EF9FF461044EED"
+        },
+        {
+          "path": "lib/lean/Init/Omega.olean",
+          "bytes": 19168,
+          "sha256": "00185B902D5634263ACCE9570B48F6593E16320C12DA4E6B440E5C75C6B264A5"
+        },
+        {
+          "path": "lib/lean/Init/Syntax.olean",
+          "bytes": 28488,
+          "sha256": "20D642D4D226AB00F78AA0EDB3A3D00807962117FF3DFE7B5FB032A7C99A044C"
+        },
+        {
+          "path": "lib/lean/Lake.olean",
+          "bytes": 19296,
+          "sha256": "BE1A81EE846702BBAC3433E876705367B5B7EF034E18D8655E5FC289C6419743"
+        },
+        {
+          "path": "lib/lean/Lake/Build/Job.olean",
+          "bytes": 19064,
+          "sha256": "61C394490F00A7B46E1646BCE80E1F3AE180DE7A4BC07702A0AC54BD0AD3CE8B"
+        },
+        {
+          "path": "lib/lean/Lake/Config.olean",
+          "bytes": 18776,
+          "sha256": "34EF2E9BB70299432C148131DA5F6127C6517B25277EFD5D24B8DD75CAB6522C"
+        },
+        {
+          "path": "lib/lean/Lake/DSL.olean",
+          "bytes": 19800,
+          "sha256": "47DCE1C7278EA687D60299BA14C25074C6012875388A81934F4216A24659131E"
+        },
+        {
+          "path": "lib/lean/Lake/Toml.olean",
+          "bytes": 18776,
+          "sha256": "6212FF83F2B48E1493D70A2FE4627E43371ECA55AA5F4DDCA2C1A667F7977441"
+        },
+        {
+          "path": "lib/lean/Lake/Toml/Elab.olean",
+          "bytes": 19128,
+          "sha256": "25BD466D76F284A1E274A508366C8A386817C4C3D672AA9C19830E0E79A798A8"
+        },
+        {
+          "path": "lib/lean/Lean.olean",
+          "bytes": 22584,
+          "sha256": "642724702C12B0FCB5BF7D63E31EC0A5FA270201391B2C0B6D7B5D0EFE255C2A"
+        },
+        {
+          "path": "lib/lean/Lean/Compiler/BorrowedAnnotation.olean",
+          "bytes": 28096,
+          "sha256": "5310B35514E8479C34885B8DBEEDA7E56CEC581F3E27DCE73307F14FD3A6476B"
+        },
+        {
+          "path": "lib/lean/Lean/Data/Json.olean",
+          "bytes": 19120,
+          "sha256": "79EC253ACF9C16817CD378C7A54592495037B10F6FFA70C6A6AA12288EC3FD6F"
+        },
+        {
+          "path": "lib/lean/Lean/Data/Xml.olean",
+          "bytes": 18840,
+          "sha256": "608083C1AA1D95A13F7D3082FD31056A7E172A4728B659646D1DC6DA01A9D5C2"
+        },
+        {
+          "path": "lib/lean/Lean/Elab/Deriving.olean",
+          "bytes": 20000,
+          "sha256": "296DAC11671ABF72589A4BCB4D60CEE076EB3F058128CBD64320490485DADA91"
+        },
+        {
+          "path": "lib/lean/Lean/Elab/PreDefinition.olean",
+          "bytes": 19408,
+          "sha256": "1F9213649A233D211B11EB6DA51DC00CD0BE2673BBB41FD38ED9CD842D70EDE5"
+        },
+        {
+          "path": "lib/lean/Lean/Elab/PreDefinition/Structural.olean",
+          "bytes": 18744,
+          "sha256": "644D476075E6D9F7EA990D35230BC588D5703293E117B691AB5D6238AD02CCB7"
+        },
+        {
+          "path": "lib/lean/Lean/Elab/Tactic/BVDecide/Frontend.olean",
+          "bytes": 19600,
+          "sha256": "D6C4A225B277E5DE8DFD14F684D6A4B87150D09E704EA4C5BE3FD9F420EF0635"
+        },
+        {
+          "path": "lib/lean/Lean/Elab/Tactic/BoolToPropSimps.olean",
+          "bytes": 32680,
+          "sha256": "85B9647CD41CC8482F0518276030E22921B6B1E014A586B64A2414DFFBC86C22"
+        },
+        {
+          "path": "lib/lean/Lean/Elab/Tactic/Conv.olean",
+          "bytes": 19496,
+          "sha256": "A19727B9916EA171523C30DC5E9140681BB3407A740A4FF2C5C735B40632B0CE"
+        },
+        {
+          "path": "lib/lean/Lean/Elab/Tactic/Do/ProofMode.olean",
+          "bytes": 20360,
+          "sha256": "A90E410CF78073F4668066BAEE5F0484E7136523DF4CFD3E248522CCCF738F8C"
+        },
+        {
+          "path": "lib/lean/Lean/ErrorExplanations.olean",
+          "bytes": 19344,
+          "sha256": "7B9D7A8D2C6DE085B7CFC76C64EB4463F96E1B6B9FF85CF8CA7874C94F0B2675"
+        },
+        {
+          "path": "lib/lean/Lean/ErrorExplanations/DependsOnNoncomputable.olean",
+          "bytes": 23344,
+          "sha256": "4B82A84F8C2A66932981E43A6777E7E67E313EED5905A26175BEE7ACE58F2100"
+        },
+        {
+          "path": "lib/lean/Lean/ErrorExplanations/InvalidDottedIdent.olean",
+          "bytes": 21960,
+          "sha256": "F5E7780A50DF4EB1E85594DFFC72452A4CA59CB588DBA7E1A2175605D87F6C2E"
+        },
+        {
+          "path": "lib/lean/Lean/Linter.olean",
+          "bytes": 19536,
+          "sha256": "FDA7F32C3D23236371461454A79028CC960066D6A9412D05D6F91730698A6047"
+        },
+        {
+          "path": "lib/lean/Lean/Meta/Constructions.olean",
+          "bytes": 19032,
+          "sha256": "A907C960A95C35C414391C1C29B78E59294FFE18C3E9493B647BC9F4F069BA5C"
+        },
+        {
+          "path": "lib/lean/Lean/Meta/Tactic.olean",
+          "bytes": 22424,
+          "sha256": "04F7B8B679199B18FBAD92A18142D18967E5F64405AEC4FE6A9BAF841838314B"
+        },
+        {
+          "path": "lib/lean/Lean/Meta/Tactic/Grind/Arith.olean",
+          "bytes": 19616,
+          "sha256": "694283E1E9526228A9FD837B476B8E10EEBB308712E024DAE3CB8D03372C4710"
+        },
+        {
+          "path": "lib/lean/Lean/Meta/Tactic/Simp/Arith.olean",
+          "bytes": 30632,
+          "sha256": "571C1D76E4D606DB85053D25A1677C65200C9C7416F896DFCCDFE3FA1DAA4A4B"
+        },
+        {
+          "path": "lib/lean/Lean/Meta/Tactic/Simp/BuiltinSimprocs.olean",
+          "bytes": 19816,
+          "sha256": "253D2A9AD3281555AC19614C038C9DD2A9FEE762066D5407E0EF7B520EF1064E"
+        },
+        {
+          "path": "lib/lean/Lean/Runtime.olean",
+          "bytes": 30520,
+          "sha256": "41382C2632DB167C05CE6B54BF304117C41F0550A4B0B85729E2AD55E07C1B74"
+        },
+        {
+          "path": "lib/lean/Lean/Server/CodeActions.olean",
+          "bytes": 18928,
+          "sha256": "8CEB48F28A422969818A708E1A1AB9293DD25EF34738131F6D2DA05C4FF6BE4C"
+        },
+        {
+          "path": "lib/lean/Lean/Server/Test.olean",
+          "bytes": 18808,
+          "sha256": "0AB711C8DB4E1532E3DA18B6EAC14C05D631BD0F7F085EF667BCCF120B8A1899"
+        },
+        {
+          "path": "lib/lean/Lean/Widget.olean",
+          "bytes": 19096,
+          "sha256": "DC76A89229ADF089CD93E1948A5B95D7291FA640DDDAC24B5CC236391D94130B"
+        },
+        {
+          "path": "lib/lean/Std/Classes/Ord.olean",
+          "bytes": 19368,
+          "sha256": "D92844147A59384D3A30FB36FB57FE7FA5122ECE6831E5EDFF2AB81BF5B7BC96"
+        },
+        {
+          "path": "lib/lean/Std/Data.olean",
+          "bytes": 20568,
+          "sha256": "09CE138638B267056337F8CA640701ABF22E127E8A4CCD275AC3E475DC9D7AC6"
+        },
+        {
+          "path": "lib/lean/Std/Data/DTreeMap.olean",
+          "bytes": 19080,
+          "sha256": "244B3DC9FAEB022425DC204F92C487AE5003D1C4A6D3CF25A0A8A81FAF57CDDD"
+        },
+        {
+          "path": "lib/lean/Std/Data/ExtDHashMap.olean",
+          "bytes": 18960,
+          "sha256": "5638E70231BB91B3DA045F6EEF6CCC65B32E10D516C725BDE91581230FBCA8DE"
+        },
+        {
+          "path": "lib/lean/Std/Data/ExtHashMap.olean",
+          "bytes": 18960,
+          "sha256": "24B0758812E1AC7C9D78A93954CF1D5C2A50820D12091AB1A3D6DA574AE254CE"
+        },
+        {
+          "path": "lib/lean/Std/Data/ExtTreeMap.olean",
+          "bytes": 18960,
+          "sha256": "6A9F1F1A0E21ADFFC97CD54E819ABEF1BDAF68C4C84D77E47DA8B0E8D0073078"
+        },
+        {
+          "path": "lib/lean/Std/Data/HashSet.olean",
+          "bytes": 18952,
+          "sha256": "6B2B1987EF259894F24FC64951176E933B3F2F77D6469D96DB5684B2370A044F"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Combinators.olean",
+          "bytes": 19584,
+          "sha256": "4954D833B4E18E23FDF4526D7344402DB8509A5ECF7CF2DA47D4CF5C5191531D"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Combinators/Monadic.olean",
+          "bytes": 19552,
+          "sha256": "E87CB5363A106460D8FDBDB9B842107DAB485F8FEB9FD71EC35F1B888B2A5B31"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Lemmas.olean",
+          "bytes": 19536,
+          "sha256": "6D66894FC9F3FBAA4CFD966A087ECA9DE93D55FAABE4CF0B772449E52A2D63D7"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Lemmas/Combinators/Monadic.olean",
+          "bytes": 19624,
+          "sha256": "4E83E5EEBAEDB2638FD5EDB01BD8F7EDD1FFE0BD15A0CECC781B78D0F267ABBF"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Lemmas/Equivalence.olean",
+          "bytes": 19224,
+          "sha256": "1065F23C76648C43DC5134A6D1A3C62363F0CBF4C1FB5D5E19ED8E4AD2288A70"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Lemmas/Producers.olean",
+          "bytes": 19632,
+          "sha256": "45692FE4E4C739B4137FFF016A26BE13F65BC8418DB7362230F439B38A01D94E"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Lemmas/Producers/Range.olean",
+          "bytes": 26464,
+          "sha256": "265CA9A5EEA08D319B26C99BB188AC6FAD614F93F6C98F3B6183C2474AC2F47A"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Producers/Array.olean",
+          "bytes": 30768,
+          "sha256": "F4E459681B88182DC63AF41774925DC6195ED3C9234D652C6FADF496980BAE0D"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Producers/List.olean",
+          "bytes": 26432,
+          "sha256": "8A2EDB072FD32760DF3DD23502BB17DA44E88BDB8BEBE6B1B7387EB643033298"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Producers/Slice.olean",
+          "bytes": 28072,
+          "sha256": "B5D3565D948ADF8794486D30B126AEF6C6690E7438EAF6E271F961E7C382BF4C"
+        },
+        {
+          "path": "lib/lean/Std/Data/TreeSet.olean",
+          "bytes": 19072,
+          "sha256": "E4B3D16A4BCC5B884ED3ACB99F4BB6FD23D3ADEF70577486E90827BA8BF2D025"
+        },
+        {
+          "path": "lib/lean/Std/Do.olean",
+          "bytes": 19168,
+          "sha256": "5859E0C033E37F6BF10A4C0CA6F0C0910BFCB84B37EF6873A40B657AD7CE9E9D"
+        },
+        {
+          "path": "lib/lean/Std/Do/Triple.olean",
+          "bytes": 18920,
+          "sha256": "DFDC4409B565264E9BB502696DD5A5B9CB21B2EA8095C9EB24842E4A052E4F08"
+        },
+        {
+          "path": "lib/lean/Std/Internal.olean",
+          "bytes": 19328,
+          "sha256": "AC81AEEB1E06DECB660428D85D6A662DE1C866DBD9EA03798A4E66B988A9B0D7"
+        },
+        {
+          "path": "lib/lean/Std/Internal/Parsec.olean",
+          "bytes": 19072,
+          "sha256": "DA98C993C095C1DC4DEDC7E7E84F99E4B4F51C959C05E557DE82BB627C37561C"
+        },
+        {
+          "path": "lib/lean/Std/Net.olean",
+          "bytes": 18776,
+          "sha256": "11BF6D05A6C147AEA99F47375A00D635AA5225ECC75668436F118F2ACD9B7F92"
+        },
+        {
+          "path": "lib/lean/Std/Sat/AIG.olean",
+          "bytes": 20272,
+          "sha256": "C1F39617444FF0DAE32BAECFACB9D0F0E1D95AF8B699FE476C8A2DD5E65D9F8B"
+        },
+        {
+          "path": "lib/lean/Std/Sat/CNF.olean",
+          "bytes": 19272,
+          "sha256": "A6DDE64DBDF9832958CFF65EFB48268D5218CED8913FB5DB2D4ABA4E5EF6EC2C"
+        },
+        {
+          "path": "lib/lean/Std/Sync/Basic.olean",
+          "bytes": 20992,
+          "sha256": "0821F73253EB7DC663E252BF3E96EAB74DC3D1850B3AB4814DFB6AC6BEA47EBE"
+        },
+        {
+          "path": "lib/lean/Std/Tactic/BVDecide.olean",
+          "bytes": 19520,
+          "sha256": "4FBE193135431AB2693ACFBACFC53592450CDABA9F9A75BCE0BD4BDAD6FB3408"
+        },
+        {
+          "path": "lib/lean/Std/Tactic/BVDecide/Bitblast/BVExpr/Circuit/Impl.olean",
+          "bytes": 19440,
+          "sha256": "FE9F7023BBB8D63090C24A022B49C1E32AAE273E0BE95821D787D1FE713CC2B7"
+        },
+        {
+          "path": "lib/lean/Std/Tactic/BVDecide/Bitblast/BoolExpr.olean",
+          "bytes": 19200,
+          "sha256": "5FF5F1268E61F3F51599F51288233DD835E2F960E343EC9BA294758B9392E5BB"
+        },
+        {
+          "path": "lib/lean/Std/Tactic/BVDecide/LRAT.olean",
+          "bytes": 19344,
+          "sha256": "F838F2A57AE2AE81F1916415C9259B835CC6744795F1CA2C777C12FD208F25AD"
+        },
+        {
+          "path": "lib/lean/Std/Tactic/BVDecide/Normalize.olean",
+          "bytes": 19816,
+          "sha256": "234B8EC3E9ADC483532865E6DE8C140431D86D0775BC2669F75A611B6CB87F26"
+        },
+        {
+          "path": "lib/lean/Std/Tactic/Do.olean",
+          "bytes": 19280,
+          "sha256": "6855B6E1D1A5B8609135E3E6552BBF838666EAF9FE5FF7BB3B5ADACFC5800B8C"
+        },
+        {
+          "path": "lib/lean/Std/Time/Internal.olean",
+          "bytes": 18960,
+          "sha256": "398B1B3E1D7E92D02CBCAF5839128B4F8F7C63C7B07356628A1664330F4A3B8D"
+        }
+      ]
+    },
+    {
+      "schema": "native1-small-file-benchmark-v1",
+      "shell": "7.6.5",
+      "startedUTC": "2026-09-12T12:49:45.7283081Z",
+      "completedUTC": "2026-09-12T12:49:47.2561369Z",
+      "seconds": 0.8605977,
+      "pid": 33592,
+      "files": 100,
+      "bytes": 2136064,
+      "pass": true,
+      "helperSHA256": "A21F67E2EDF49C8E218C657E73967E920EFB85FF025476E01BD04A83CA50B17A",
+      "actual": [
+        {
+          "path": "lib/lean/Init.olean",
+          "bytes": 22432,
+          "sha256": "4914DD4930059D8591928A6E1BD1F73BBA00242F3402138C4346E2777DD0F882"
+        },
+        {
+          "path": "lib/lean/Init/Control.olean",
+          "bytes": 19736,
+          "sha256": "976397A0A1E7300A6D25DC9E81FF2ED167F2CE14DB25EAE4ECA3FC478DF02610"
+        },
+        {
+          "path": "lib/lean/Init/Control/Lawful/Lemmas.olean",
+          "bytes": 30592,
+          "sha256": "A6D2674D993EEAC960D7C5A364A856A7CCCCE85D3A9851369860515D7B4D857B"
+        },
+        {
+          "path": "lib/lean/Init/Data.olean",
+          "bytes": 23288,
+          "sha256": "67F183CED76C89875D65B4EB3971AFC797B04E2D47C1213CEA2947D7AA318D31"
+        },
+        {
+          "path": "lib/lean/Init/Data/Array/Lex.olean",
+          "bytes": 19024,
+          "sha256": "DF28D1CFB57E121FB82927B8421FE9813A6F9CA9BF60D93DC359EDA0559C7C32"
+        },
+        {
+          "path": "lib/lean/Init/Data/Array/TakeDrop.olean",
+          "bytes": 30056,
+          "sha256": "17BCCB74731FF2E4BC2A036F5E173589DB8B1B86065FDAEA60A84902248DB0D5"
+        },
+        {
+          "path": "lib/lean/Init/Data/ByteArray.olean",
+          "bytes": 18856,
+          "sha256": "C669FBC0CB3EFCCEDD9AD3AADC91FAE83559D9E8F0620179902E02D7DDD20B85"
+        },
+        {
+          "path": "lib/lean/Init/Data/Fin.olean",
+          "bytes": 19264,
+          "sha256": "A8C836443DC11F1BE756C93324EF19668F029FF6462A4CA1631F8098D00C8D1F"
+        },
+        {
+          "path": "lib/lean/Init/Data/FloatArray.olean",
+          "bytes": 18856,
+          "sha256": "DCD856C68D17BD38169B4BFB0CBD48D67680E32A6D1D6E4B2B67FDD18B366B2D"
+        },
+        {
+          "path": "lib/lean/Init/Data/Int.olean",
+          "bytes": 20000,
+          "sha256": "108D48657DE0F612E4E097BA8539D1C8DE811B8EDC6D629FE30EDFB1BB4046F7"
+        },
+        {
+          "path": "lib/lean/Init/Data/Int/Compare.olean",
+          "bytes": 32360,
+          "sha256": "A32FDBF5684DF415EBEA7DF290A69C4B3A0B38E3563CB9B73A14518EA3595798"
+        },
+        {
+          "path": "lib/lean/Init/Data/Iterators.olean",
+          "bytes": 19528,
+          "sha256": "9D1820BEF7FCE02A474A88FC796C045E1083839C435A9EE21E69D1C1C6251802"
+        },
+        {
+          "path": "lib/lean/Init/Data/Iterators/Consumers.olean",
+          "bytes": 19352,
+          "sha256": "8561EBD82C3FCC73BA9089CB1500F030147DE6F65E9B39D6A6028ED916E2A64F"
+        },
+        {
+          "path": "lib/lean/Init/Data/Iterators/Internal.olean",
+          "bytes": 19064,
+          "sha256": "823EB4DC1FE442896DD7C8E8FCF0B8ECA00AB8A26D45FFF8FD9D89C3E75E2880"
+        },
+        {
+          "path": "lib/lean/Init/Data/Iterators/Lemmas/Combinators.olean",
+          "bytes": 19328,
+          "sha256": "499EEF85BFF72611D6C4AB4705FD76FA6CB2A671B89BBFD06C01EF093B62C49D"
+        },
+        {
+          "path": "lib/lean/Init/Data/Iterators/Lemmas/Consumers.olean",
+          "bytes": 19216,
+          "sha256": "EDE11F3381DF5F9A2D2149E73B46E06EF893960EA76563105BCE9E3EC69F339E"
+        },
+        {
+          "path": "lib/lean/Init/Data/List.olean",
+          "bytes": 21392,
+          "sha256": "3A37AEB21E9F02071A31F87B2AA87CFF505D5359961116ED193EB63EF24394BC"
+        },
+        {
+          "path": "lib/lean/Init/Data/List/Nat/Find.olean",
+          "bytes": 30096,
+          "sha256": "39C5F462C233BFAFF020B543BC65804FB6C47999706E302A9315B6359080110D"
+        },
+        {
+          "path": "lib/lean/Init/Data/List/Sort.olean",
+          "bytes": 19128,
+          "sha256": "2243B79A39EAEBFA88578FC157121DA801DCAD8AA17DE245B5D5996E5E9517C5"
+        },
+        {
+          "path": "lib/lean/Init/Data/Nat.olean",
+          "bytes": 20512,
+          "sha256": "93EF331434EA5EFD269BC160DF75A9F3F2EB30BFBE4365DC2F6F61255B45BF3C"
+        },
+        {
+          "path": "lib/lean/Init/Data/Nat/Compare.olean",
+          "bytes": 32008,
+          "sha256": "92DA435019CB66E85AA1E70DF966F29D07473DB813220FB4CB5803746FA66A2E"
+        },
+        {
+          "path": "lib/lean/Init/Data/Nat/Log2.olean",
+          "bytes": 28408,
+          "sha256": "3BB8C73079D85A824666122AA8EC9FB97E451ADE988FE2886544F6B3193747AA"
+        },
+        {
+          "path": "lib/lean/Init/Data/Option/Coe.olean",
+          "bytes": 24112,
+          "sha256": "E9E1F70EE735E0A6F536250328EA52E60B02782F9674016E6DF96635904CB762"
+        },
+        {
+          "path": "lib/lean/Init/Data/Range/Polymorphic/NatLemmas.olean",
+          "bytes": 27912,
+          "sha256": "74DEB330D0A90C8B46AFFB97FC708749968049156BB2802B20C5DA8A1D90E02E"
+        },
+        {
+          "path": "lib/lean/Init/Data/Slice.olean",
+          "bytes": 19176,
+          "sha256": "8ED2847E75225B88B0D4FD82DEBB94E6AB90B53C08F6D1A1993DBEF0E34BF6A9"
+        },
+        {
+          "path": "lib/lean/Init/Data/String.olean",
+          "bytes": 19056,
+          "sha256": "D398BE839EA2A8EDE977C7BF3A2DB6A188A58EC438CDC0D802259FADF05E1DE2"
+        },
+        {
+          "path": "lib/lean/Init/Data/Subtype.olean",
+          "bytes": 29432,
+          "sha256": "F5E3BCF6AA81F31EF5B2CADB69BE995FB512327701C17DDC174FB9622BB4ECE1"
+        },
+        {
+          "path": "lib/lean/Init/Data/ToString.olean",
+          "bytes": 18960,
+          "sha256": "C2969D43927A6F4CF3ABAB0444C27C956BDBE4ECE5E2FAC79D355C83AB37288F"
+        },
+        {
+          "path": "lib/lean/Init/Data/Vector.olean",
+          "bytes": 20432,
+          "sha256": "1F3BBC630A7202F0075E3BE1FEB4CF906BAD6B3E88CDDCA5CA917D71A4D94E5C"
+        },
+        {
+          "path": "lib/lean/Init/GrindInstances.olean",
+          "bytes": 18992,
+          "sha256": "5DA870542A42C183FD5E83FB5A12C4EC5EBE349B7AF0274AF96B393614F8F2F9"
+        },
+        {
+          "path": "lib/lean/Init/GrindInstances/Ring.olean",
+          "bytes": 19376,
+          "sha256": "210215FAEF09C6CDF72F095EDDB27147548BC0FA365280DEAD574C904F20D76F"
+        },
+        {
+          "path": "lib/lean/Init/Grind/Cases.olean",
+          "bytes": 20184,
+          "sha256": "9F21F05D19CB62C285643BD9B16F63F4542C4BC2D7040D2355242FAEAD6A840E"
+        },
+        {
+          "path": "lib/lean/Init/Grind/Module.olean",
+          "bytes": 18920,
+          "sha256": "E42F673E72BB3CCD4EB5FAE82EDCE91B29ACF713392A1223E5F8C055A5ED73CC"
+        },
+        {
+          "path": "lib/lean/Init/Grind/Ring.olean",
+          "bytes": 19344,
+          "sha256": "83FD6977E086FD1F5A8610BD6FA01F488AF49AA270EE9F2677439834DFEBC136"
+        },
+        {
+          "path": "lib/lean/Init/Internal/Order.olean",
+          "bytes": 19024,
+          "sha256": "72A6218FA9F0640F5F758D9F497B5950FD7A2D89FA21E63538EF9FF461044EED"
+        },
+        {
+          "path": "lib/lean/Init/Omega.olean",
+          "bytes": 19168,
+          "sha256": "00185B902D5634263ACCE9570B48F6593E16320C12DA4E6B440E5C75C6B264A5"
+        },
+        {
+          "path": "lib/lean/Init/Syntax.olean",
+          "bytes": 28488,
+          "sha256": "20D642D4D226AB00F78AA0EDB3A3D00807962117FF3DFE7B5FB032A7C99A044C"
+        },
+        {
+          "path": "lib/lean/Lake.olean",
+          "bytes": 19296,
+          "sha256": "BE1A81EE846702BBAC3433E876705367B5B7EF034E18D8655E5FC289C6419743"
+        },
+        {
+          "path": "lib/lean/Lake/Build/Job.olean",
+          "bytes": 19064,
+          "sha256": "61C394490F00A7B46E1646BCE80E1F3AE180DE7A4BC07702A0AC54BD0AD3CE8B"
+        },
+        {
+          "path": "lib/lean/Lake/Config.olean",
+          "bytes": 18776,
+          "sha256": "34EF2E9BB70299432C148131DA5F6127C6517B25277EFD5D24B8DD75CAB6522C"
+        },
+        {
+          "path": "lib/lean/Lake/DSL.olean",
+          "bytes": 19800,
+          "sha256": "47DCE1C7278EA687D60299BA14C25074C6012875388A81934F4216A24659131E"
+        },
+        {
+          "path": "lib/lean/Lake/Toml.olean",
+          "bytes": 18776,
+          "sha256": "6212FF83F2B48E1493D70A2FE4627E43371ECA55AA5F4DDCA2C1A667F7977441"
+        },
+        {
+          "path": "lib/lean/Lake/Toml/Elab.olean",
+          "bytes": 19128,
+          "sha256": "25BD466D76F284A1E274A508366C8A386817C4C3D672AA9C19830E0E79A798A8"
+        },
+        {
+          "path": "lib/lean/Lean.olean",
+          "bytes": 22584,
+          "sha256": "642724702C12B0FCB5BF7D63E31EC0A5FA270201391B2C0B6D7B5D0EFE255C2A"
+        },
+        {
+          "path": "lib/lean/Lean/Compiler/BorrowedAnnotation.olean",
+          "bytes": 28096,
+          "sha256": "5310B35514E8479C34885B8DBEEDA7E56CEC581F3E27DCE73307F14FD3A6476B"
+        },
+        {
+          "path": "lib/lean/Lean/Data/Json.olean",
+          "bytes": 19120,
+          "sha256": "79EC253ACF9C16817CD378C7A54592495037B10F6FFA70C6A6AA12288EC3FD6F"
+        },
+        {
+          "path": "lib/lean/Lean/Data/Xml.olean",
+          "bytes": 18840,
+          "sha256": "608083C1AA1D95A13F7D3082FD31056A7E172A4728B659646D1DC6DA01A9D5C2"
+        },
+        {
+          "path": "lib/lean/Lean/Elab/Deriving.olean",
+          "bytes": 20000,
+          "sha256": "296DAC11671ABF72589A4BCB4D60CEE076EB3F058128CBD64320490485DADA91"
+        },
+        {
+          "path": "lib/lean/Lean/Elab/PreDefinition.olean",
+          "bytes": 19408,
+          "sha256": "1F9213649A233D211B11EB6DA51DC00CD0BE2673BBB41FD38ED9CD842D70EDE5"
+        },
+        {
+          "path": "lib/lean/Lean/Elab/PreDefinition/Structural.olean",
+          "bytes": 18744,
+          "sha256": "644D476075E6D9F7EA990D35230BC588D5703293E117B691AB5D6238AD02CCB7"
+        },
+        {
+          "path": "lib/lean/Lean/Elab/Tactic/BVDecide/Frontend.olean",
+          "bytes": 19600,
+          "sha256": "D6C4A225B277E5DE8DFD14F684D6A4B87150D09E704EA4C5BE3FD9F420EF0635"
+        },
+        {
+          "path": "lib/lean/Lean/Elab/Tactic/BoolToPropSimps.olean",
+          "bytes": 32680,
+          "sha256": "85B9647CD41CC8482F0518276030E22921B6B1E014A586B64A2414DFFBC86C22"
+        },
+        {
+          "path": "lib/lean/Lean/Elab/Tactic/Conv.olean",
+          "bytes": 19496,
+          "sha256": "A19727B9916EA171523C30DC5E9140681BB3407A740A4FF2C5C735B40632B0CE"
+        },
+        {
+          "path": "lib/lean/Lean/Elab/Tactic/Do/ProofMode.olean",
+          "bytes": 20360,
+          "sha256": "A90E410CF78073F4668066BAEE5F0484E7136523DF4CFD3E248522CCCF738F8C"
+        },
+        {
+          "path": "lib/lean/Lean/ErrorExplanations.olean",
+          "bytes": 19344,
+          "sha256": "7B9D7A8D2C6DE085B7CFC76C64EB4463F96E1B6B9FF85CF8CA7874C94F0B2675"
+        },
+        {
+          "path": "lib/lean/Lean/ErrorExplanations/DependsOnNoncomputable.olean",
+          "bytes": 23344,
+          "sha256": "4B82A84F8C2A66932981E43A6777E7E67E313EED5905A26175BEE7ACE58F2100"
+        },
+        {
+          "path": "lib/lean/Lean/ErrorExplanations/InvalidDottedIdent.olean",
+          "bytes": 21960,
+          "sha256": "F5E7780A50DF4EB1E85594DFFC72452A4CA59CB588DBA7E1A2175605D87F6C2E"
+        },
+        {
+          "path": "lib/lean/Lean/Linter.olean",
+          "bytes": 19536,
+          "sha256": "FDA7F32C3D23236371461454A79028CC960066D6A9412D05D6F91730698A6047"
+        },
+        {
+          "path": "lib/lean/Lean/Meta/Constructions.olean",
+          "bytes": 19032,
+          "sha256": "A907C960A95C35C414391C1C29B78E59294FFE18C3E9493B647BC9F4F069BA5C"
+        },
+        {
+          "path": "lib/lean/Lean/Meta/Tactic.olean",
+          "bytes": 22424,
+          "sha256": "04F7B8B679199B18FBAD92A18142D18967E5F64405AEC4FE6A9BAF841838314B"
+        },
+        {
+          "path": "lib/lean/Lean/Meta/Tactic/Grind/Arith.olean",
+          "bytes": 19616,
+          "sha256": "694283E1E9526228A9FD837B476B8E10EEBB308712E024DAE3CB8D03372C4710"
+        },
+        {
+          "path": "lib/lean/Lean/Meta/Tactic/Simp/Arith.olean",
+          "bytes": 30632,
+          "sha256": "571C1D76E4D606DB85053D25A1677C65200C9C7416F896DFCCDFE3FA1DAA4A4B"
+        },
+        {
+          "path": "lib/lean/Lean/Meta/Tactic/Simp/BuiltinSimprocs.olean",
+          "bytes": 19816,
+          "sha256": "253D2A9AD3281555AC19614C038C9DD2A9FEE762066D5407E0EF7B520EF1064E"
+        },
+        {
+          "path": "lib/lean/Lean/Runtime.olean",
+          "bytes": 30520,
+          "sha256": "41382C2632DB167C05CE6B54BF304117C41F0550A4B0B85729E2AD55E07C1B74"
+        },
+        {
+          "path": "lib/lean/Lean/Server/CodeActions.olean",
+          "bytes": 18928,
+          "sha256": "8CEB48F28A422969818A708E1A1AB9293DD25EF34738131F6D2DA05C4FF6BE4C"
+        },
+        {
+          "path": "lib/lean/Lean/Server/Test.olean",
+          "bytes": 18808,
+          "sha256": "0AB711C8DB4E1532E3DA18B6EAC14C05D631BD0F7F085EF667BCCF120B8A1899"
+        },
+        {
+          "path": "lib/lean/Lean/Widget.olean",
+          "bytes": 19096,
+          "sha256": "DC76A89229ADF089CD93E1948A5B95D7291FA640DDDAC24B5CC236391D94130B"
+        },
+        {
+          "path": "lib/lean/Std/Classes/Ord.olean",
+          "bytes": 19368,
+          "sha256": "D92844147A59384D3A30FB36FB57FE7FA5122ECE6831E5EDFF2AB81BF5B7BC96"
+        },
+        {
+          "path": "lib/lean/Std/Data.olean",
+          "bytes": 20568,
+          "sha256": "09CE138638B267056337F8CA640701ABF22E127E8A4CCD275AC3E475DC9D7AC6"
+        },
+        {
+          "path": "lib/lean/Std/Data/DTreeMap.olean",
+          "bytes": 19080,
+          "sha256": "244B3DC9FAEB022425DC204F92C487AE5003D1C4A6D3CF25A0A8A81FAF57CDDD"
+        },
+        {
+          "path": "lib/lean/Std/Data/ExtDHashMap.olean",
+          "bytes": 18960,
+          "sha256": "5638E70231BB91B3DA045F6EEF6CCC65B32E10D516C725BDE91581230FBCA8DE"
+        },
+        {
+          "path": "lib/lean/Std/Data/ExtHashMap.olean",
+          "bytes": 18960,
+          "sha256": "24B0758812E1AC7C9D78A93954CF1D5C2A50820D12091AB1A3D6DA574AE254CE"
+        },
+        {
+          "path": "lib/lean/Std/Data/ExtTreeMap.olean",
+          "bytes": 18960,
+          "sha256": "6A9F1F1A0E21ADFFC97CD54E819ABEF1BDAF68C4C84D77E47DA8B0E8D0073078"
+        },
+        {
+          "path": "lib/lean/Std/Data/HashSet.olean",
+          "bytes": 18952,
+          "sha256": "6B2B1987EF259894F24FC64951176E933B3F2F77D6469D96DB5684B2370A044F"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Combinators.olean",
+          "bytes": 19584,
+          "sha256": "4954D833B4E18E23FDF4526D7344402DB8509A5ECF7CF2DA47D4CF5C5191531D"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Combinators/Monadic.olean",
+          "bytes": 19552,
+          "sha256": "E87CB5363A106460D8FDBDB9B842107DAB485F8FEB9FD71EC35F1B888B2A5B31"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Lemmas.olean",
+          "bytes": 19536,
+          "sha256": "6D66894FC9F3FBAA4CFD966A087ECA9DE93D55FAABE4CF0B772449E52A2D63D7"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Lemmas/Combinators/Monadic.olean",
+          "bytes": 19624,
+          "sha256": "4E83E5EEBAEDB2638FD5EDB01BD8F7EDD1FFE0BD15A0CECC781B78D0F267ABBF"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Lemmas/Equivalence.olean",
+          "bytes": 19224,
+          "sha256": "1065F23C76648C43DC5134A6D1A3C62363F0CBF4C1FB5D5E19ED8E4AD2288A70"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Lemmas/Producers.olean",
+          "bytes": 19632,
+          "sha256": "45692FE4E4C739B4137FFF016A26BE13F65BC8418DB7362230F439B38A01D94E"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Lemmas/Producers/Range.olean",
+          "bytes": 26464,
+          "sha256": "265CA9A5EEA08D319B26C99BB188AC6FAD614F93F6C98F3B6183C2474AC2F47A"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Producers/Array.olean",
+          "bytes": 30768,
+          "sha256": "F4E459681B88182DC63AF41774925DC6195ED3C9234D652C6FADF496980BAE0D"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Producers/List.olean",
+          "bytes": 26432,
+          "sha256": "8A2EDB072FD32760DF3DD23502BB17DA44E88BDB8BEBE6B1B7387EB643033298"
+        },
+        {
+          "path": "lib/lean/Std/Data/Iterators/Producers/Slice.olean",
+          "bytes": 28072,
+          "sha256": "B5D3565D948ADF8794486D30B126AEF6C6690E7438EAF6E271F961E7C382BF4C"
+        },
+        {
+          "path": "lib/lean/Std/Data/TreeSet.olean",
+          "bytes": 19072,
+          "sha256": "E4B3D16A4BCC5B884ED3ACB99F4BB6FD23D3ADEF70577486E90827BA8BF2D025"
+        },
+        {
+          "path": "lib/lean/Std/Do.olean",
+          "bytes": 19168,
+          "sha256": "5859E0C033E37F6BF10A4C0CA6F0C0910BFCB84B37EF6873A40B657AD7CE9E9D"
+        },
+        {
+          "path": "lib/lean/Std/Do/Triple.olean",
+          "bytes": 18920,
+          "sha256": "DFDC4409B565264E9BB502696DD5A5B9CB21B2EA8095C9EB24842E4A052E4F08"
+        },
+        {
+          "path": "lib/lean/Std/Internal.olean",
+          "bytes": 19328,
+          "sha256": "AC81AEEB1E06DECB660428D85D6A662DE1C866DBD9EA03798A4E66B988A9B0D7"
+        },
+        {
+          "path": "lib/lean/Std/Internal/Parsec.olean",
+          "bytes": 19072,
+          "sha256": "DA98C993C095C1DC4DEDC7E7E84F99E4B4F51C959C05E557DE82BB627C37561C"
+        },
+        {
+          "path": "lib/lean/Std/Net.olean",
+          "bytes": 18776,
+          "sha256": "11BF6D05A6C147AEA99F47375A00D635AA5225ECC75668436F118F2ACD9B7F92"
+        },
+        {
+          "path": "lib/lean/Std/Sat/AIG.olean",
+          "bytes": 20272,
+          "sha256": "C1F39617444FF0DAE32BAECFACB9D0F0E1D95AF8B699FE476C8A2DD5E65D9F8B"
+        },
+        {
+          "path": "lib/lean/Std/Sat/CNF.olean",
+          "bytes": 19272,
+          "sha256": "A6DDE64DBDF9832958CFF65EFB48268D5218CED8913FB5DB2D4ABA4E5EF6EC2C"
+        },
+        {
+          "path": "lib/lean/Std/Sync/Basic.olean",
+          "bytes": 20992,
+          "sha256": "0821F73253EB7DC663E252BF3E96EAB74DC3D1850B3AB4814DFB6AC6BEA47EBE"
+        },
+        {
+          "path": "lib/lean/Std/Tactic/BVDecide.olean",
+          "bytes": 19520,
+          "sha256": "4FBE193135431AB2693ACFBACFC53592450CDABA9F9A75BCE0BD4BDAD6FB3408"
+        },
+        {
+          "path": "lib/lean/Std/Tactic/BVDecide/Bitblast/BVExpr/Circuit/Impl.olean",
+          "bytes": 19440,
+          "sha256": "FE9F7023BBB8D63090C24A022B49C1E32AAE273E0BE95821D787D1FE713CC2B7"
+        },
+        {
+          "path": "lib/lean/Std/Tactic/BVDecide/Bitblast/BoolExpr.olean",
+          "bytes": 19200,
+          "sha256": "5FF5F1268E61F3F51599F51288233DD835E2F960E343EC9BA294758B9392E5BB"
+        },
+        {
+          "path": "lib/lean/Std/Tactic/BVDecide/LRAT.olean",
+          "bytes": 19344,
+          "sha256": "F838F2A57AE2AE81F1916415C9259B835CC6744795F1CA2C777C12FD208F25AD"
+        },
+        {
+          "path": "lib/lean/Std/Tactic/BVDecide/Normalize.olean",
+          "bytes": 19816,
+          "sha256": "234B8EC3E9ADC483532865E6DE8C140431D86D0775BC2669F75A611B6CB87F26"
+        },
+        {
+          "path": "lib/lean/Std/Tactic/Do.olean",
+          "bytes": 19280,
+          "sha256": "6855B6E1D1A5B8609135E3E6552BBF838666EAF9FE5FF7BB3B5ADACFC5800B8C"
+        },
+        {
+          "path": "lib/lean/Std/Time/Internal.olean",
+          "bytes": 18960,
+          "sha256": "398B1B3E1D7E92D02CBCAF5839128B4F8F7C63C7B07356628A1664330F4A3B8D"
+        }
+      ]
+    }
+  ]
+}

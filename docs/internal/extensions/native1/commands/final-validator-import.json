@@ -1,0 +1,33 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "fa79233f77acbfa0470ef6203131e66784c7b014",
+  "command": {
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "arguments": [
+      "-j",
+      "1",
+      "scripts/packed_native_validator_import.lean"
+    ]
+  },
+  "result": {
+    "Stage": "final-validator-import",
+    "ExitCode": 0,
+    "Output": [
+      "RMQ.SuccinctFinal.PackedNative.nativeExecutionCapstone_holds : RMQ.SuccinctFinal.PackedNative.NativeExecutionCapstone",
+      "RMQ.SuccinctFinal.PackedNative.ContractChecks.publicContract : RMQ.SuccinctFinal.PackedNative.NativeExecutionCapstone"
+    ],
+    "StandardOutput": [
+      "RMQ.SuccinctFinal.PackedNative.nativeExecutionCapstone_holds : RMQ.SuccinctFinal.PackedNative.NativeExecutionCapstone",
+      "RMQ.SuccinctFinal.PackedNative.ContractChecks.publicContract : RMQ.SuccinctFinal.PackedNative.NativeExecutionCapstone"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 6.128,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  }
+}

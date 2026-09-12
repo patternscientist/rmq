@@ -1782,3 +1782,29 @@ The next skeptical question is whether the actual compiled bridge preserves
 argument order, byte lengths and ownership, and whether the replay witnesses
 identify real select/fringe/rank/cross-cell instruction occurrences. The
 expanded native campaign and fresh final audit must answer those questions.
+
+## 2026-09-12 — NATIVE-1 compiled execution and dependency controls
+
+The compiled DLL and unchanged Rust/C++ clients now pass every final native
+case, including ordered duplicate reads, wide words/endpoints, malformed inputs,
+all six categories and the seven real select/fringe/rank/cross-cell witnesses.
+The deliberate endpoint-order defect in a separately rebuilt shim produces the
+independently predicted fault in both clients, and mutations of the actual
+exported Lean source break the designated correspondence proofs. Original
+source, generated C and binary artifact hashes are restored and rechecked.
+
+The public dependency replay successfully compiles each of 42 field weakenings
+and a collapsed public proposition, then demonstrates rejection by the unchanged
+independent literal consumer. Each newly compiled producer is hash-bound into a
+complete private import package; the shared checked objects remain unchanged.
+The unchanged baseline accepts. All 44 cases, nine certificate controls, 109
+native cases expanded to 214 checks, 128 native controls and 24 validator controls
+pass their exact rosters. These executed challenges support the source join and
+bridge assumptions; they do not turn compiler, runtime or foreign-pointer
+semantics into kernel theorems.
+
+A skeptical reader can now inspect the exact same-store propositions, raw
+observations, designated failures and restoration records in the final evidence
+packet. Fresh blind exact-commit review and aggregate certification remain the
+coordinator's independent acceptance phase. Numeric payload and model counts
+retain the limitations stated in the source-composition entry above.

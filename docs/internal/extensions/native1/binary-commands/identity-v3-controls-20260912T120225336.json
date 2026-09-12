@@ -1,0 +1,74 @@
+{
+  "schema": "native1-identity-v3-control-receipt-v1",
+  "startedUtc": "2026-09-12T12:02:25.3625209Z",
+  "completedUtc": "2026-09-12T12:02:36.5003547Z",
+  "pass": true,
+  "failure": null,
+  "selectors": false,
+  "selectorBound": true,
+  "selector": "ordinal-order",
+  "registrySha256": "4CB180BB0380215D14AC80058652120AA877488BDF4A231C39BF6017CD99DA14",
+  "helperSha256": "A21F67E2EDF49C8E218C657E73967E920EFB85FF025476E01BD04A83CA50B17A",
+  "runnerSha256": "86C25C2DB5DEB6DF0A9D68CAB4F71C62B653695B225D650AD4641FD512F4EEA5",
+  "shellVersion": "7.6.5",
+  "inputPins": [
+    {
+      "property": "toolchainIdentity",
+      "path": "docs/internal/extensions/native1/commands/binary-build-20260912T111100924.json",
+      "sha256": "8486C0C039365DE086E651FBC1686531D1DCA4F000C75C62BE6A65E70E6C53EB"
+    },
+    {
+      "property": "",
+      "path": "docs/internal/extensions/native1/binary-commands/toolchain-mismatch-actual-v2.json",
+      "sha256": "AF8459AC7377D3353E5EA96D362A16EF4309D8A2F2A93B9EB1820ED9594BDA11"
+    }
+  ],
+  "expected": [
+    "ordinal-order"
+  ],
+  "executed": [
+    "ordinal-order"
+  ],
+  "results": [
+    {
+      "details": {
+        "expected": [
+          "A",
+          "a",
+          "a-b",
+          "a.b",
+          "a_b",
+          "�",
+          "�",
+          ""
+        ],
+        "actual": [
+          "A",
+          "a",
+          "a-b",
+          "a.b",
+          "a_b",
+          "�",
+          "�",
+          ""
+        ],
+        "input": [
+          "a_b",
+          "a.b",
+          "a-b",
+          "A",
+          "a",
+          "a",
+          "",
+          "�",
+          "�"
+        ]
+      },
+      "pass": true,
+      "id": "ordinal-order"
+    }
+  ],
+  "commands": [],
+  "restored": true,
+  "scope": "Actual production sorting/digest/retained predicates on pinned captured inventories; fresh compiler byte discovery remains required by build/startup."
+}

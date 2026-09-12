@@ -2,3 +2,18 @@
 commands/*.json -text whitespace=cr-at-eol
 binary-commands/*.json -text whitespace=cr-at-eol
 *_MANIFEST.json -text whitespace=cr-at-eol
+# Frozen requirement prefixes and cited report/source text use exact LF bytes.
+ACCEPTANCE_MATRIX.md text eol=lf
+AUDIT_REQUIREMENTS.md text eol=lf
+SOURCE_CONTRACT.md text eol=lf
+FINAL_SOURCE_MATRIX.md text eol=lf
+REPORT.md text eol=lf
+REPORT_ROUTE_HISTORY.md text eol=lf
+FRESH_AUDIT_PROMPT.md text eol=lf
+BINARY_VALIDATION.md text eol=lf
+CONTRACT_VALIDATION.md text eol=lf
+DEFAULT_CACHE_PREPARATION.md text eol=lf
+NATIVE_WITNESSES.md text eol=lf
+VALIDATOR.md text eol=lf
+AUDIT_PACKET_INDEX.json -text whitespace=cr-at-eol
+AUDIT_PUBLIC_CLAIM_PATHS.json -text whitespace=cr-at-eol
