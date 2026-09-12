@@ -12542,3 +12542,27 @@ their retained original bytes, and committed/worktree byte identity is checked.
 Historical receipt content is not rewritten or regenerated. Markdown proof
 reports already matched their committed bytes. The earlier normalized commit
 remains in history; it is not cited as the exact-byte evidence endpoint.
+
+## WDD-20260912-NATIVE1-006: include the effective C++ dependency search
+
+Further source review found a limitation in the historical version-1 toolchain
+inventory: it pinned compiler executables, Lean and Rust trees but omitted the
+MSVC/STL/SDK headers and libraries selected by Visual Studio clang. A bounded
+compiler dry run measured that this host's clang19 selects MSVC14.50.35717 for
+C++, while the configured Rust linker and librarian use MSVC14.44.35207. Both
+use Windows SDK10.0.26100.0. Calling either toolset's executable hash a complete
+dependency inventory was rejected.
+
+Version 2 discovers and pins the effective ordered include/library search,
+clang resource tree, both selected/configured MSVC header and x64 library
+trees, SDK include/ucrt/um library trees, actual C++ linker and adjacent tool
+runtime DLLs. Required roots must exist and unexpected search roots are rejected.
+Two advertised optional ATL/MFC paths are absent on this host; their absence is
+explicitly pinned, so their later appearance changes identity. Assuming they
+exist or silently dropping them would misstate the effective search.
+
+The discovery and syntax checks passed. Full hashing, version-2 cache
+invalidation and the native binary build remain next-stage evidence. Historical
+version-1 repair receipts retain their original limited inventory and are not
+retroactively promoted to version 2. OS system-library behavior remains within
+the explicit host/runtime assumption, separate from recorded tool inputs.

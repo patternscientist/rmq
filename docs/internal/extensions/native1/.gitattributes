@@ -1,3 +1,4 @@
 # Receipts and build inventories carry byte hashes; preserve the authored bytes.
 commands/*.json -text whitespace=cr-at-eol
+binary-commands/*.json -text whitespace=cr-at-eol
 *_MANIFEST.json -text whitespace=cr-at-eol

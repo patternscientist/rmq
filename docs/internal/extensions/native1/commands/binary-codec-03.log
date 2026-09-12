@@ -1,0 +1,14 @@
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:92:58: warning: This simp argument is unused:
+  List.nil_append
+
+Hint: Omit it from the simp argument list.
+  simp only [scalar, List.append_assoc, List.cons_append,̵ ̵L̵i̵s̵t̵.̵n̵i̵l̵_̵a̵p̵p̵e̵n̵d̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:113:70: warning: This simp argument is unused:
+  List.nil_append
+
+Hint: Omit it from the simp argument list.
+  simp only [scalar, hd, he, List.append_assoc, List.cons_append,̵ ̵L̵i̵s̵t̵.̵n̵i̵l̵_̵a̵p̵p̵e̵n̵d̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

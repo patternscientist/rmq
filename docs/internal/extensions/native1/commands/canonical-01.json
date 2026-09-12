@@ -1,0 +1,35 @@
+{
+    "schema":  "native1-command-v1",
+    "platform":  "Microsoft Windows NT 10.0.26200.0",
+    "base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+    "head":  "fbd5a44f4f68c0ab1ad54fbff0cc9169000c8949",
+    "command":  {
+                    "arguments":  [
+                                      "\u0027-j\u0027,\u00271\u0027,\u0027-o\u0027,\u0027.lake/build/lib/lean/RMQ/Core/WordRAM/Native/Canonical.olean\u0027,\u0027-c\u0027,\u0027.lake/build/ir/RMQ/Core/WordRAM/Native/Canonical.c\u0027,\u0027RMQ/Core/WordRAM/Native/Canonical.lean\u0027"
+                                  ],
+                    "file":  "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe"
+                },
+    "result":  {
+                   "Stage":  "canonical-01",
+                   "ExitCode":  1,
+                   "Output":  [
+                                  "no such file or directory (error code: 2)",
+                                  "  file: \u0027-j\u0027,\u00271\u0027,\u0027-o\u0027,\u0027.lake/build/lib/lean/RMQ/Core/WordRAM/Native/Canonical.olean\u0027,\u0027-c\u0027,\u0027.lake/build/ir/RMQ/Core/WordRAM/Native/Canonical.c\u0027,\u0027RMQ/Core/WordRAM/Native/Canonical.lean\u0027"
+                              ],
+                   "StandardOutput":  [
+
+                                      ],
+                   "StandardError":  [
+                                         "no such file or directory (error code: 2)",
+                                         "  file: \u0027-j\u0027,\u00271\u0027,\u0027-o\u0027,\u0027.lake/build/lib/lean/RMQ/Core/WordRAM/Native/Canonical.olean\u0027,\u0027-c\u0027,\u0027.lake/build/ir/RMQ/Core/WordRAM/Native/Canonical.c\u0027,\u0027RMQ/Core/WordRAM/Native/Canonical.lean\u0027"
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  2.618,
+                   "DeadlineSeconds":  180,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

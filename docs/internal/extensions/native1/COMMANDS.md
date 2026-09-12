@@ -73,3 +73,29 @@ The finished REPORT.md was scanned explicitly with `-Strict
 PASS, one allowed hit and zero strict failures, 5.358s/120s
 (`claim-drift-report.json`). All 31 frozen acceptance IDs appear in the report;
 the initial matrix prefix was rechecked unchanged after its final appendix.
+
+## Loaded-image continuation checkpoint
+
+The first production binary build passed (`binary-build-20260912T111100924.json`).
+`BINARY_BUILD_MANIFEST.json` preserves its exact 31-source, 19-generated-C and
+three-artifact inventory, with `native1-toolchain-v2` identity digest
+`8DF566C7330ED567CDBDE84504EC261D1FB26EA713E4BF6034ECA7B0A20751C7`.
+The full identity enumerates 4856 Lean, 48 Rust, 6545 C++ dependency, 145 tool-runtime
+and four external executable files. Its ordered effective search roots and
+explicitly absent optional directories remain part of the identity.
+
+The independent startup checks rehashed every source/generated-C/artifact pin
+before execution. The Rust and C++ clients each loaded the same 146-byte,
+168-bit image and produced exactly 24 bytes, including the final blank line:
+`halted 8\n2\n0 1 0 0 0 1\n\n`. Their exit codes were zero and stderr was empty.
+The owned native durations were 0.266s and0.453s. Exact input/expected bytes and
+raw process receipts are in `binary-commands/startup-packed-rmq-native.exe.json`
+and `binary-commands/startup-packed-rmq-native-cpp.exe.json`. These are bounded
+startup checks, not the complete-path or mutation campaign.
+
+The source 42-field capstone and all 42 independently written literal consumers
+passed before this build. The executable Lean validator elaborated in 10.122s,
+then ran its complete 16-case roster in 6.710s with 16/16 passing. The semantic
+occurrence proofs and exporter also elaborate; their full witness export is
+still running. Full certificate/native campaigns, the complete axiom inventory,
+blind exact-commit audit and scheduled aggregate certification remain pending.

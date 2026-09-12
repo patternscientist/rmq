@@ -10,3 +10,7 @@ path = "src/lib.rs"
 [[bin]]
 name = "packed-rmq-route"
 path = "src/main.rs"
+
+[[bin]]
+name = "packed-rmq-native"
+path = "src/native_main.rs"

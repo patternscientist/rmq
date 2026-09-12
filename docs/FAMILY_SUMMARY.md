@@ -3441,3 +3441,26 @@ assumptions, exact checked types and remaining canonical/limb/serialization/API
 obligations are recorded in `internal/extensions/native1/ROUTE_EVIDENCE.md`.
 The accepted PQ1 family and its public aliases are unchanged. No native payload
 or hardware-time bound and no completed Rust refinement are claimed here.
+
+### NATIVE-1 continuation: checked loaded-image source contract
+
+The continuation now provides
+`PackedNative.nativeExecutionCapstone_holds : PackedNative.NativeExecutionCapstone`
+with 42 independently typed field consumers in `Native/Contract.lean`.
+Canonical code, memory, registers and status use finite arrays of little-endian
+byte limbs. All-fuel execution agrees with the accepted PQ1 primitive run for
+every input size and representable endpoint pair, including invalid queries.
+The versioned binary codec has roundtrip, injectivity and exact storage
+accounting proofs. An indexed parser is proved equal to its specification for
+every byte sequence and limit record, with digit/count limits checked before
+large accumulation or allocation.
+
+The source contract ties the actual exported loader and query declarations to
+those same arrays. Its fields transport leftmost results, invalid guards,
+operation counts, ordered attempted reads, positional backing, width bounds
+and supplied-store agreement. Numeric payload/code/scratch bits, byte rounding,
+file framing and host container bounds are separate claims. Finite native API
+support is explicit; compiler/runtime/FFI correctness and allocator success
+remain external assumptions. There is no physical constant-time multiprecision
+or Lean heap-succinctness claim. The native build, expanded operational replay
+and final independent acceptance are still in progress at this checkpoint.

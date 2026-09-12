@@ -1754,3 +1754,31 @@ checked native fault policy. The downstream consumer is the assigned native
 capstone on the exact PQ1 allocation and program. A skeptical reader should ask
 whether the later loaded limbs and marshaled inputs are those same counted and
 executed objects, and how corruption is rejected before unsafe arithmetic.
+
+## 2026-09-12 — NATIVE-1 loaded-limb source composition
+
+Conceptually, the reference program now has a direct byte-limb implementation,
+and the source theorem follows one canonical image through serialization,
+loading, execution and observation. The canonical all-fuel proof discharges
+the machine safety premises from the accepted PQ1 safety theorem; extra fuel
+after the query budget is justified by halting. The query-independent word
+width is unchanged, so the real 168/176-bit examples do not pass through a
+64/128-bit surrogate.
+
+In plain English, the bytes loaded for a query contain exactly the code and
+memory counted by the space theorem, and the executor uses those bytes to
+compute its answer. Its optional read list and six operation counts come from
+the same execution. Replacing a supplied store by one agreeing at every actual
+read preserves the entire run. The public certificate and all 42 literal
+consumer types have passed Lean checks; their native build and operational
+replay are separate obligations still being completed.
+
+Live assumptions are explicit: endpoints fit the modeled width; the finite
+native API checks its own file/container/fuel limits; compiler, foreign runtime
+and FFI behavior are outside the kernel theorem. Byte-array container overhead
+and allocation availability are not the numeric payload bound, and a checked
+multiprecision operation is not a constant physical-time hardware instruction.
+The next skeptical question is whether the actual compiled bridge preserves
+argument order, byte lengths and ownership, and whether the replay witnesses
+identify real select/fringe/rank/cross-cell instruction occurrences. The
+expanded native campaign and fresh final audit must answer those questions.

@@ -1,0 +1,10 @@
+# Exact native case and source hashes must survive a fresh checkout.
+packed_native_binary_cases.json text eol=lf
+packed_native_cases.py text eol=lf
+packed_native_image.py text eol=lf
+packed_native_contract_cases.json text eol=lf
+packed_native_binary_build.ps1 text eol=lf
+packed_native_binary_replay.ps1 text eol=lf
+packed_native_binary_controls.ps1 text eol=lf
+packed_native_contract_replay.ps1 text eol=lf
+packed_native_identity.ps1 text eol=lf

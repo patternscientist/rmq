@@ -20,13 +20,37 @@ channel mismatch remains recorded as a failed harness run. POLICY_REPAIR.md,
 REGISTRY_REPAIR.md and the commands directory contain exact source pins and
 complete receipts. These repairs do not close the full native acceptance rows.
 
-The continuation also has checked byte-limb operation and full-run proofs,
-binary image roundtrip/injectivity/accounting proofs, and a checked query entry
-source theorem. Their working implementation and independent leaf notes are
-being joined to the canonical PQ1 theorem. The efficient indexed loader,
-canonical join, final Rust/C/C++ API, expanded binary replay, public capstone,
-independent exact-commit audit and final aggregate certification remain open.
-No source branch has been pushed or merged. Local commits are checkpoints only.
+The continuation has checked byte-limb operation/full-run proofs, binary
+roundtrip/injectivity/accounting, the all-byte indexed loader refinement and
+the canonical exported-source join. The named target
+`nativeExecutionCapstone_holds : NativeExecutionCapstone` and all 42 independent
+literal field consumers now pass. The same loaded arrays carry results,
+leftmost semantics, counts, ordered attempted reads, positional backing,
+width/accounting and supplied-store agreement. Host conversion claims apply
+to successful finite lookups and do not assert allocation availability.
+
+Focused producer/consumer checks are complete for Limbs, Machine, CodeFacts,
+Binary/Codec/Bounds and Cursor/Core. Binary Checks passed 37 controls and 13
+axiom inventories; Cursor Checks passed 21 concrete controls and its independent
+consumer/axiom inventory. Canonical (9.070s), CanonicalImage (8.210s), Entry
+(6.328s), Host (6.138s), Execution (7.388s), the 42-field Capstone (4.970s) and
+Contract (7.309s) passed. Their individual failed development attempts remain
+recorded; none was a timed-out success or a weaker completion endpoint.
+
+The first binary build passed against 31 source inputs and 19 emitted-C
+modules, producing the DLL and Rust/C++ clients. All 31 source, 19 generated-C
+and three artifact hashes were independently rechecked. Both clients passed
+the same exact 24-byte startup observation (Rust 0.266s, C++ 0.453s), exit zero
+and empty stderr. BINARY_BUILD_MANIFEST.json and the startup receipts preserve
+the input and expected bytes and the checked artifact identity. The expanded
+toolchain identity includes the effective C++/MSVC/SDK dependency roots; the
+earlier version-1 inventory remains historical evidence. The executable Lean
+validator passed 16/16 cases, and the semantic witness source proofs check.
+Witness generation, expanded native/FFI and certificate mutation campaigns,
+the complete axiom inventory, final audit and aggregate certification remain
+open. No full frozen
+acceptance row is recorded as closed. No source branch has been pushed or
+merged; local commits remain checkpoints.
 
 Claude tools were discovered after the coordinator's operational notice, but
 automatic approval review rejected the one attempted external helper call;

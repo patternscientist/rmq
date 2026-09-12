@@ -12725,3 +12725,43 @@ instruction rejection. A separate C++ algorithm or success exit on parser
 rejection was rejected because either would invalidate the consumer evidence.
 Runtime results and source identities are recorded by the route repair campaign;
 no unexecuted host branch is claimed.
+
+## DD-20260912-NATIVE1-004: compose the loaded image with the exported executor
+
+The native contract uses one canonical image built from the accepted
+`buildMemory`, fixed `queryProgram`, `queryRegisterCount` and query-independent
+`wordWidth`. Its encoded memory and program are the arrays consumed by the
+byte-limb machine. The complete logged run refines the accepted primitive run
+for every fuel and representable endpoint pair, including invalid ranges;
+canonical safety is discharged from the existing positional safety theorem.
+After-budget fuel is handled by canonical halting, without a new correctness
+or readiness premise. A separate predicate exposes finite native file, width,
+register, code, memory and fuel limits. It does not narrow the abstract all-size
+representation theorem.
+
+The exported loader uses an indexed, tail-recursive ByteArray parser. Its
+all-byte equality to the specification codec is proved. Scalar digit limits
+precede accumulation; input-length digits are bounded by the checked width.
+Repeated list suffix conversion and whole-list parsing were rejected as an
+operational implementation because the fixed program has 837,572 instructions.
+Only bounded word slices and the fixed magic prefix convert to ordinary byte
+arrays. The reference codec remains the proof specification.
+
+The runtime retains byte arrays for code fields, memory, registers, PC and
+halted values. Queries use the proved accumulator projection and omit receipts
+by default; they never allocate the full proof transition list. The same loaded
+handle supports repeated queries. Endpoints are full-width little-endian bytes.
+The C ABI has distinct owned load/query results and explicit status, error and
+borrowed-image access; Rust lifetimes and the C++ example release handles through
+the matching DLL. Compiler/runtime/FFI behavior and available allocation remain
+external assumptions. Multiprecision arithmetic does not acquire physical
+unit-cost time from the abstract operation count.
+
+The certificate separates numeric allocation/code/scratch capacity, byte
+rounding, file framing and host container bounds. It transports results,
+leftmost ties, invalid guards, costs, ordered reads, positional read backing,
+read-width safety and supplied-store agreement through the same decoded limb
+execution. Independent literal consumer types cover every public field. Checks
+of Canonical, CanonicalImage, Entry, Execution and the initial 34-field
+certificate/consumer set passed; further host/program additions and the final
+compiled/replay/audit campaign remain separately required.

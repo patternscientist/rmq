@@ -1,0 +1,228 @@
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:74:48: warning: This simp argument is unused:
+  Option.some.injEq
+
+Hint: Omit it from the simp argument list.
+  simp only [hs, bind, Option.bind, O̵p̵t̵i̵o̵n̵.̵s̵o̵m̵e̵.̵i̵n̵j̵E̵q̵,̵ ̵Prod.mk.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:74:67: warning: This simp argument is unused:
+  Prod.mk.injEq
+
+Hint: Omit it from the simp argument list.
+  simp only [hs, bind, Option.bind, Option.some.injEq,̵ ̵P̵r̵o̵d̵.̵m̵k̵.̵i̵n̵j̵E̵q̵] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:92:58: warning: This simp argument is unused:
+  List.nil_append
+
+Hint: Omit it from the simp argument list.
+  simp only [scalar, List.append_assoc, List.cons_append,̵ ̵L̵i̵s̵t̵.̵n̵i̵l̵_̵a̵p̵p̵e̵n̵d̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:113:70: warning: This simp argument is unused:
+  List.nil_append
+
+Hint: Omit it from the simp argument list.
+  simp only [scalar, hd, he, List.append_assoc, List.cons_append,̵ ̵L̵i̵s̵t̵.̵n̵i̵l̵_̵a̵p̵p̵e̵n̵d̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:214:44: error: unknown identifier 'more'
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:212:29: warning: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, b̵i̵n̵d̵,̵ ̵Option.bind, Option.some.injEq, Prod.mk.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:212:35: warning: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, bind, Option.b̵i̵n̵d̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵some.injEq, Prod.mk.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:212:48: warning: This simp argument is unused:
+  Option.some.injEq
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, bind, Option.bind, O̵p̵t̵i̵o̵n̵.̵s̵o̵m̵e̵.̵i̵n̵j̵E̵q̵,̵ ̵Prod.mk.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:212:67: warning: This simp argument is unused:
+  Prod.mk.injEq
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, bind, Option.bind, Option.some.injEq,̵ ̵P̵r̵o̵d̵.̵m̵k̵.̵i̵n̵j̵E̵q̵] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:230:73: error: unsolved goals
+α : Type
+emit : α → Bytes
+parse : Bytes → Option (α × Bytes)
+h : ∀ (value : α) (tail : Bytes), parse (emit value ++ tail) = some (value, tail)
+hp : ∀ (value : α), 0 < List.length (emit value)
+values : Array α
+tail : Bytes
+hb : values.toList.length ≤ (List.flatMap emit values.toList).length
+hb' : values.size ≤ (List.flatMap emit values.toList ++ tail).length
+⊢ values.toList.length ≤ (List.map (fun a => List.length (emit a)) values.toList).sum + List.length tail
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:237:8: warning: This simp argument is unused:
+  hb'
+
+Hint: Omit it from the simp argument list.
+  simp [h̵b̵'̵,̵ ̵← Array.length_toList, readMany_append emit parse h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:243:73: error: unsolved goals
+α : Type
+emit : α → Bytes
+parse : Bytes → Option (α × Bytes)
+hp : ∀ (value : α), 0 < List.length (emit value)
+values : Array α
+h : ∀ (value : α), value ∈ values.toList → ∀ (tail : Bytes), parse (emit value ++ tail) = some (value, tail)
+tail : Bytes
+hb : values.toList.length ≤ (List.flatMap emit values.toList).length
+hb' : values.size ≤ (List.flatMap emit values.toList ++ tail).length
+⊢ values.toList.length ≤ (List.map (fun a => List.length (emit a)) values.toList).sum + List.length tail
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:250:8: warning: This simp argument is unused:
+  hb'
+
+Hint: Omit it from the simp argument list.
+  simp [h̵b̵'̵,̵ ̵← Array.length_toList, readMany_append_of_mem emit parse values.toList h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:269:72: error: unknown identifier 'more'
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:265:18: error: unsolved goals
+case some.mk.isTrue.some.mk.refl.intro
+α : Type
+emit : α → Bytes
+parse : Bytes → Option (α × Bytes)
+hp : ∀ (bytes : Bytes) (value : α) (tail : Bytes), parse bytes = some (value, tail) → bytes = emit value ++ tail
+bytes tail : Bytes
+count : Nat
+rest : Bytes
+hs : readScalar bytes = some (count, rest)
+h✝ : count ≤ List.length rest
+vs : List α
+ht : readMany parse count rest = some (vs, tail)
+hl : vs.length = count
+he : rest = List.flatMap emit vs ++ sorry
+⊢ sorry () = tail
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:267:25: warning: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, b̵i̵n̵d̵,̵ ̵Option.bind, Option.some.injEq, Prod.mk.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:267:31: warning: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, bind, Option.b̵i̵n̵d̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵some.injEq, Prod.mk.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:267:44: warning: This simp argument is unused:
+  Option.some.injEq
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, bind, Option.bind, O̵p̵t̵i̵o̵n̵.̵s̵o̵m̵e̵.̵i̵n̵j̵E̵q̵,̵ ̵Prod.mk.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:267:63: warning: This simp argument is unused:
+  Prod.mk.injEq
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, bind, Option.bind, Option.some.injEq,̵ ̵P̵r̵o̵d̵.̵m̵k̵.̵i̵n̵j̵E̵q̵] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:362:55: error: unknown identifier 'more'
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:358:22: error: unsolved goals
+case succ.some.mk.some.mk.refl
+α : Type u_1
+p q : Bytes → Option (α × Bytes)
+hp : ∀ (bytes : Bytes) (value : α) (tail : Bytes), p bytes = some (value, tail) → q bytes = some (value, tail)
+count : Nat
+ih :
+  ∀ (bytes : Bytes) (values : List α) (tail : Bytes),
+    readMany p count bytes = some (values, tail) → readMany q count bytes = some (values, tail)
+bytes tail : Bytes
+value : α
+rest : Bytes
+hs : p bytes = some (value, rest)
+vs : List α
+ht : readMany p count rest = some (vs, tail)
+⊢ ((readMany q count rest).bind fun __discr => some (value :: __discr.fst, __discr.snd)) = some (value :: vs, tail)
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:360:29: warning: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, b̵i̵n̵d̵,̵ ̵Option.bind, Option.some.injEq, Prod.mk.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:360:35: warning: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, bind, Option.b̵i̵n̵d̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵some.injEq, Prod.mk.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:360:48: warning: This simp argument is unused:
+  Option.some.injEq
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, bind, Option.bind, O̵p̵t̵i̵o̵n̵.̵s̵o̵m̵e̵.̵i̵n̵j̵E̵q̵,̵ ̵Prod.mk.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:360:67: warning: This simp argument is unused:
+  Prod.mk.injEq
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, bind, Option.bind, Option.some.injEq,̵ ̵P̵r̵o̵d̵.̵m̵k̵.̵i̵n̵j̵E̵q̵] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:384:54: error: unknown identifier 'more'
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:380:18: error: unsolved goals
+case some.mk.isTrue.some.mk.refl
+α : Type
+p q : Bytes → Option (α × Bytes)
+hp : ∀ (bytes : Bytes) (value : α) (tail : Bytes), p bytes = some (value, tail) → q bytes = some (value, tail)
+bytes tail : Bytes
+count : Nat
+rest : Bytes
+hs : readScalar bytes = some (count, rest)
+hb : count ≤ List.length rest
+vs : List α
+ht : readMany p count rest = some (vs, tail)
+⊢ (match readMany q count rest, fun __discr => some (__discr.fst.toArray, __discr.snd) with
+    | none, x => none
+    | some a, f => f a) =
+    some (vs.toArray, tail)
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:382:25: warning: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, b̵i̵n̵d̵,̵ ̵Option.bind, Option.some.injEq, Prod.mk.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:382:31: warning: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, bind, Option.b̵i̵n̵d̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵some.injEq, Prod.mk.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:382:44: warning: This simp argument is unused:
+  Option.some.injEq
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, bind, Option.bind, O̵p̵t̵i̵o̵n̵.̵s̵o̵m̵e̵.̵i̵n̵j̵E̵q̵,̵ ̵Prod.mk.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RMQ/Core/WordRAM/Native/Binary/Codec.lean:382:63: warning: This simp argument is unused:
+  Prod.mk.injEq
+
+Hint: Omit it from the simp argument list.
+  simp only [ht, bind, Option.bind, Option.some.injEq,̵ ̵P̵r̵o̵d̵.̵m̵k̵.̵i̵n̵j̵E̵q̵] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

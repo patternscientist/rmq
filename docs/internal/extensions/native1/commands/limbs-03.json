@@ -1,0 +1,59 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+  "command": {
+    "arguments": [
+      "-j",
+      "1",
+      "-o",
+      ".lake/build/lib/lean/RMQ/Core/WordRAM/Native/Limbs.olean",
+      "RMQ/Core/WordRAM/Native/Limbs.lean"
+    ],
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe"
+  },
+  "result": {
+    "Stage": "limbs-03",
+    "ExitCode": 1,
+    "Output": [
+      "RMQ/Core/WordRAM/Native/Limbs.lean:167:2: error: tactic 'split' failed, consider using `set_option trace.split.failure true`",
+      "case isFalse.isFalse.isFalse",
+      "width : Nat",
+      "op : Arithmetic",
+      "x y : Nat",
+      "result : Word",
+      "hs : ¬(op = Arithmetic.sub ∧ x < y)",
+      "hd : ¬((op = Arithmetic.div ∨ op = Arithmetic.mod) ∧ y = 0)",
+      "hh : ¬((op = Arithmetic.shl ∨ op = Arithmetic.shr) ∧ width ≤ y)",
+      "h :",
+      "  (have result := op.eval x y;",
+      "    if result < 2 ^ width then Except.ok (encode width result) else Except.error WordFault.overflow) =",
+      "    Except.ok result",
+      "⊢ ArithmeticSafe width op x y ∧ Canonical width result ∧ decode result = op.eval x y"
+    ],
+    "StandardOutput": [
+      "RMQ/Core/WordRAM/Native/Limbs.lean:167:2: error: tactic 'split' failed, consider using `set_option trace.split.failure true`",
+      "case isFalse.isFalse.isFalse",
+      "width : Nat",
+      "op : Arithmetic",
+      "x y : Nat",
+      "result : Word",
+      "hs : ¬(op = Arithmetic.sub ∧ x < y)",
+      "hd : ¬((op = Arithmetic.div ∨ op = Arithmetic.mod) ∧ y = 0)",
+      "hh : ¬((op = Arithmetic.shl ∨ op = Arithmetic.shr) ∧ width ≤ y)",
+      "h :",
+      "  (have result := op.eval x y;",
+      "    if result < 2 ^ width then Except.ok (encode width result) else Except.error WordFault.overflow) =",
+      "    Except.ok result",
+      "⊢ ArithmeticSafe width op x y ∧ Canonical width result ∧ decode result = op.eval x y"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 14.334,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  }
+}

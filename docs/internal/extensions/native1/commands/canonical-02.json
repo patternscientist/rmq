@@ -1,0 +1,45 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "fbd5a44f4f68c0ab1ad54fbff0cc9169000c8949",
+  "command": {
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "arguments": [
+      "-j",
+      "1",
+      "-o",
+      ".lake/build/lib/lean/RMQ/Core/WordRAM/Native/Canonical.olean",
+      "-c",
+      ".lake/build/ir/RMQ/Core/WordRAM/Native/Canonical.c",
+      "RMQ/Core/WordRAM/Native/Canonical.lean"
+    ]
+  },
+  "result": {
+    "Stage": "canonical-02",
+    "ExitCode": 1,
+    "Output": [
+      "RMQ/Core/WordRAM/Native/Canonical.lean:20:51: error: maximum recursion depth has been reached",
+      "use `set_option maxRecDepth <num>` to increase limit",
+      "use `set_option diagnostics true` to get diagnostic information",
+      "RMQ/Core/WordRAM/Native/Canonical.lean:77:7: error: maximum recursion depth has been reached",
+      "use `set_option maxRecDepth <num>` to increase limit",
+      "use `set_option diagnostics true` to get diagnostic information"
+    ],
+    "StandardOutput": [
+      "RMQ/Core/WordRAM/Native/Canonical.lean:20:51: error: maximum recursion depth has been reached",
+      "use `set_option maxRecDepth <num>` to increase limit",
+      "use `set_option diagnostics true` to get diagnostic information",
+      "RMQ/Core/WordRAM/Native/Canonical.lean:77:7: error: maximum recursion depth has been reached",
+      "use `set_option maxRecDepth <num>` to increase limit",
+      "use `set_option diagnostics true` to get diagnostic information"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 7.708,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  }
+}

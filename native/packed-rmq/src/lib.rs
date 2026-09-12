@@ -1,6 +1,8 @@
-//! Experimental frontend to the proved Lean natural-cell container core.
-//! This is not the final binary/limb API. One runtime on one OS thread.
-//! Compilation/runtime/FFI remain explicit assumptions of this source route.
+//! Native frontends to the proved Lean execution core.
+//! `native` loads binary images and executes checked byte-limb words.
+//! The older textual route remains available for its recorded experiment.
+//! Compilation/runtime/FFI remain explicit assumptions. One initializing thread.
+pub mod native;
 use std::ffi::{CStr, CString};
 use std::marker::PhantomData;
 use std::os::raw::{c_char, c_void};
