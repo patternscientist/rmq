@@ -1,7 +1,9 @@
 # BV-1 exact byte preservation
 
-Status: INCOMPLETE — actual committed-blob and fresh-checkout replay is pending
-the coordinated candidate commit.
+Status: PASS at source/replay candidate
+`763b00e68cabef2ea322a92fb7b3be354b367179`. All 717 protected artifacts and
+all 552 dependency occurrences match; the exact measured result follows below.
+Current report and receipt additions are a subsequent evidence delta.
 
 The original four-rule authorization is retained verbatim in
 [CHECKOUT_BYTES_DISPOSITION.md](CHECKOUT_BYTES_DISPOSITION.md), SHA256
@@ -67,6 +69,7 @@ row's UTF-8 bytes without normalization. Its current records pass all 30 with
 zero changed rows and the original complete-file hash. Final evidence must
 retain the actual byte-round-trip result after staging and committing; the
 prepared runner and these attribute declarations do not substitute for it.
+The completed measurement below now supplies that result for the named source.
 
 ## Staged whitespace and index correction
 
@@ -91,6 +94,31 @@ adding another whitespace exception. WDD-20260912-BV1-006 records the rationale.
 [manifest-raw-staging-v1.json](commands/manifest-raw-staging-v1.json) verifies
 that the manifest's staged raw blob is now
 fa57dac01b0a2a3217fe359402ac88c88709d8dc and its 691 bytes/SHA256 are unchanged.
-This deliberately corrects an old cached normalized index entry without
-rewriting the working file. Committed and fresh-checkout equality are still
-pending the candidate commit; no completed round trip is inferred here.
+This deliberately corrected an old cached normalized index entry without
+rewriting the working file. The same precommit raw-index check also isolated
+23 historical JSON receipts whose old index blobs differed only by CRLF/LF.
+Their current files were untouched, old Git blobs remain available, and the
+new candidate stores their exact current bytes. The completed round trip below
+checks that outcome directly.
+
+## Actual committed-candidate result
+
+[candidate-checkout-bytes-v1.json](commands/candidate-checkout-bytes-v1.json)
+records PASS at source/replay candidate
+`763b00e68cabef2ea322a92fb7b3be354b367179`. Its 1220877 bytes have SHA256
+`1E7944DDE24967717E629E632025B45E6DF7A7D6A6DA9A08A2FFF8425D30EE0B`.
+All 717 committed protected artifacts, including 33 binary gzip archives,
+match both raw source and the isolated core.autocrlf=true checkout. The 552
+recorded dependency occurrences cover 284 distinct paths, with zero missing
+files, conflicting identities or mismatches. Repeated receipt roles remain
+separate comparisons. All nine bounded Git operations succeeded without a
+timeout or output cap. The fresh checkout was clean and source HEAD unchanged.
+
+The exact source commit contains the unchanged frozen matrix, public producer,
+independent consumer, every tested source/input and retained fixture generation.
+The current byte receipt, postcommit policy receipt and maintained report updates
+are committed afterward. Their later evidence delta is explicitly separate from
+the 717 source artifacts, avoiding a circular claim about a receipt containing
+its own Git commit identity. The original checked source/report bytes remain
+available at the named commit. No source, fixture or replay-input bytes change
+in that evidence delta; the aggregate remains a separate held obligation.

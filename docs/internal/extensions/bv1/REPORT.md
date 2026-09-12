@@ -1,5 +1,5 @@
 Status: INCOMPLETE
-Phase: VERIFICATION — mathematical target and all runtime/mutation campaigns checked.
+Phase: VERIFICATION — local proof, replay, byte and policy checks passed; aggregate held.
 
 The assigned theorem is proved:
 `RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds :
@@ -7,9 +7,9 @@ FullyChargedBitvectorCapstone` in
 [Capstone.lean](../../../../RMQ/Core/WordRAM/Bitvector/Capstone.lean).
 Its 23-field certificate has no correctness, readiness, representation or
 geometry premises. The independent public consumer checks every field and
-the exact named inhabitant. Committed-byte verification and aggregate
-certification remain unfinished; this report does
-not record coordinator acceptance.
+the exact named inhabitant. Committed-byte verification also passed. The
+coordinator-scheduled aggregate remains unfinished; this report does not
+record coordinator acceptance.
 
 ## Exact task and unchanged contract
 
@@ -17,9 +17,11 @@ not record coordinator acceptance.
 - Branch: `codex/bv-1-fully-charged-rank-select`.
 - Worktree: `C:/Users/poin/.codex/worktrees/c974/RMQ`.
 - Base and workflow governance: `0e6a00f654abc64f8b68988fa9675b9a839dca2f`.
-- Implementation parent checkpoint: `645a0502b9da9ad6444edbe44759e1c2c5661f25`.
-  This report accompanies the reviewed shared implementation and replay
-  additions; the committed-byte receipt will identify their exact candidate.
+- Exact source/replay candidate: `763b00e68cabef2ea322a92fb7b3be354b367179`,
+  committed from parent `645a0502b9da9ad6444edbe44759e1c2c5661f25`.
+  The subsequent evidence commit retains its byte/postcommit receipts and
+  updates current reporting. Those receipt/report additions are separate from
+  the 717 artifacts compared at the exact source candidate.
 - Route prerequisite: APPROVE_ROUTE_AND_CONTINUE, retained in
   [COORDINATOR_ROUTE_DISPOSITION.md](COORDINATOR_ROUTE_DISPOSITION.md).
 - All 30 original requirements remain frozen in
@@ -87,8 +89,8 @@ alias was changed.
 | Public mutation campaign | PASS corrected final generation: 32/32 cases, all 32 constructors compile, 30 exact semantic rejections, two expected accepts, and eight selectors; 592.664 seconds, no resource failures. |
 | Frozen requirements | PASS raw Git-blob/file comparison and all 30 exact row-byte comparisons; no changed row. |
 | Parsed build manifest | PASS: removing precisely the owned validation target restores the governance manifest; recorded 691 bytes unchanged. |
-| Complete committed-blob/fresh-checkout comparison | Pending candidate commit. |
-| Final trust, whitespace and strict design/claim checks | PASS 7/7 in implementation-final-policy-v1.json, including the staged diff and strict claims (221.268 seconds). The earlier CRLF/EOF staging failure was resolved by the exact approved attributes; committed-range coverage of the new candidate follows its commit. |
+| Complete committed-blob/fresh-checkout comparison | PASS at source candidate 763b00e: all 717 protected artifacts, including 33 binary archives; all 552 dependency occurrences across 284 paths; zero mismatches, clean isolated checkout. |
+| Final trust, whitespace and strict design/claim checks | PASS 7/7 in implementation-final-policy-v1.json, including the staged diff and strict claims (221.268 seconds). The earlier CRLF/EOF staging failure was resolved by the exact approved attributes; the new source candidate also passes committed-range whitespace and per-commit strict design checks. |
 | Full aggregate, including its own lake build | Pending coordinator slot; the host currently has a diagnostic hold after the peer aggregate timed out. No BV-1 aggregate has run. |
 
 Exact producer SHA256:
@@ -130,9 +132,15 @@ The separately approved exact whitespace patch recognizes CRLF and permits only
 38 recorded EOF blanks; normal trailing-space and indentation checks remain.
 [CHECKOUT_BYTES.md](CHECKOUT_BYTES.md) retains the diagnosis, patch and verbatim
 approval. The ordinary staged check now passes without a whitespace override.
-The final check will compare actual committed blob IDs with raw source/fresh
-bytes and compare replay dependency SHA256 values outside those five scopes.
-A declaration of attributes alone is not counted as a passing round trip.
+The actual check compared committed blob IDs with raw source/fresh bytes and
+compared every retained dependency occurrence, including paths outside those
+five scopes. All 717 artifact and 552 dependency comparisons passed at
+`763b00e68cabef2ea322a92fb7b3be354b367179`. The 1220877-byte receipt is
+[candidate-checkout-bytes-v1.json](commands/candidate-checkout-bytes-v1.json),
+SHA256 `1E7944DDE24967717E629E632025B45E6DF7A7D6A6DA9A08A2FFF8425D30EE0B`.
+It records a separate shallow clone with core.autocrlf=true, exact frozen-row
+hash, clean fresh status and unchanged source HEAD. Current report/receipt
+additions follow this check and are not silently included in its 717 count.
 
 Task-specific entries in DESIGN_DECISIONS.md, WORKFLOW_DESIGN_DECISIONS.md,
 FAMILY_SUMMARY.md and DIGESTION_LOG.md explain the construction, chosen model,
@@ -157,7 +165,7 @@ n+o(n) statement after logarithmic-width scaling but are large at small sizes.
 
 The next skeptical questions concern tighter constants, practical construction
 time and use of this generic bitvector client in an RMQ representation. They
-do not replace the remaining committed-byte and certification obligations here.
+do not replace the remaining aggregate certification obligation here.
 Independent exact-commit audit and coordinator acceptance are still required.
 
 The optional Claude helper was not used: automatic approval review rejected

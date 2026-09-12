@@ -3451,6 +3451,7 @@ from the modeled instruction bound. Code/scratch absorption is
 asymptotic and supplies no useful finite-size threshold. This is an additive
 generic bitvector construction; the RMQ reference semantics and shared Packed
 modules are unchanged. The independent consumer and all runtime/mutation
-campaigns have passed. Committed-byte verification, aggregate certification
+campaigns have passed. Committed-byte verification also passed on source
+candidate `763b00e68cabef2ea322a92fb7b3be354b367179`; aggregate certification
 and coordinator acceptance remain pending at this checkpoint. See
 `internal/extensions/bv1/REPORT.md` for the current task disposition.

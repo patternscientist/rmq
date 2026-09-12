@@ -187,3 +187,28 @@ separately after commit. `whitespace-attributes-v1.json` passed 90/90 effective
 working/index comparisons: 38 exact EOF artifacts, five normal BV controls and
 two unaffected outside controls on both surfaces. `frozen-rows-final-policy-v1.json`
 again passed all 30 original row-byte comparisons and the full frozen hash.
+
+
+## Committed source and checkout result
+
+Source/replay candidate: `763b00e68cabef2ea322a92fb7b3be354b367179`.
+The current raw index matched all 716 protected files before the final index
+receipt was added; the candidate therefore contains 717 protected artifacts.
+The 23 historical receipt entries with cached LF index blobs were staged from
+their unchanged CRLF working bytes. Their old Git blobs remain retained, and
+`index-historical-eol-v1.json` proves that only newline encoding differed.
+No historical receipt file was edited. Scope inspection found zero outside paths.
+
+`candidate-checkout-bytes-v1.json` passed all 717 actual blob/source/fresh
+comparisons, including 33 binary archives, plus all 552 replay dependency
+occurrences across 284 distinct paths. The isolated shallow clone and exact
+checkout both succeeded within their bounds; source HEAD remained fixed and
+the fresh checkout was clean. There were zero artifact/dependency mismatches.
+`candidate-postcommit-policy-v1.json` passed ordinary committed-range whitespace
+and strict per-commit design checks. `final-report-claims-v1.json` separately
+retains the final reporting follow-up PASS (213.856 seconds).
+
+These byte and postcommit receipts and current status prose are added after
+the checked source commit. They are a declared evidence delta, not silently
+included in the source commit's artifact count. Full aggregate certification
+remains held by the coordinator and has not been attempted by BV-1.

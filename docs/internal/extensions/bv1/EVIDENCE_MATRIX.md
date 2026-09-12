@@ -124,9 +124,9 @@ and the full independently expanded 23-field consumer, rather than theorem
 names as stand-alone evidence. The common object chain applies to each positive
 canonical claim. The third column specifies the required decisive tests; a
 test is completed only when the separate persisted outcome records below say
-so. All runtime and public mutation campaigns below have passed. The committed
-byte comparison and final certification remain pending; prepared fixtures or
-prospective descriptions do not close an obligation.
+so. All runtime and public mutation campaigns below have passed, as has the
+committed-byte comparison at source candidate 763b00e. Aggregate certification
+remains pending; prospective descriptions alone do not close an obligation.
 
 | Frozen ID | Exact proposition and concrete composition | Required decisive anti-vacuity check (see outcomes) |
 | --- | --- | --- |
@@ -154,7 +154,7 @@ prospective descriptions do not close an obligation.
 | INV-CATEGORY-SEPARATION | Actual numerical memory/code/scratch capacity, proof-only fields, unit-cost modeled transitions, preprocessing, API guard and Lean host runtime have separate stated scopes. | Public completeCapacity/category/finiteScratch consumers; documented runtime/model caveat and strict claim-policy check. |
 | INV-PUBLIC-COMPOSITION | All 23 expanded fields share the original bits, exact counted memory, operation, target, entry and actual Run, with the explicit safety validity domain. | Smaller-memory, access-for-select safety and access-for-reader siblings are independently true and well-typed, but fail the original required object projections. |
 | INV-CERTIFICATE-ANTI-BYPASS | Arbitrary-certificate consumers repeat each exact required proposition; the separate inhabitant consumer fixes the advertised theorem type. | All 23 field weakenings, mandatory-field deletion, three siblings and public theorem proposition mutation require constructor success before consumer rejection. |
-| INV-MUTATION-REPRODUCIBILITY | Versioned runners, immutable baseline and fixture bytes, exact replacement strings/hashes, independent verdict registry, pinned failing file/line/class, and finally restoration checks are retained. | Public 32 cases and validation five cases include expected-accept controls; resource errors, wrong surfaces and changed fixtures fail; actual committed blobs and fresh checkout must preserve bytes (comparison pending). |
+| INV-MUTATION-REPRODUCIBILITY | Versioned runners, immutable baseline and fixture bytes, exact replacement strings/hashes, independent verdict registry, pinned failing file/line/class, and finally restoration checks are retained. | Public 32 cases and validation five cases include expected-accept controls; resource errors, wrong surfaces and changed fixtures fail; source candidate 763b00e passed all 717 committed-blob/fresh-checkout artifact comparisons and all 552 recorded dependency occurrences; later receipt/report additions are separate. |
 | INV-GLOBAL-PHYSICAL-MACHINE | One pre-execution complete memory, all 39 regular arrays, numerical target-bank descriptors and exact translation for active/dead/sentinel/outside segments feed whole compiled runs. | Canonical expanded reader consumer covers optional-word distinctions; final-allocation raw/component crossings; whole-operation safety and reader sibling rejection. |
 | INV-WIDTH-SCALING | One query-independent `Experiment.width n = 32 + 16 * machineWordBits n` bounds memory, code operands, addresses and all safe states; the same W occurs in complete capacity and logarithmic inequalities. | Width/memory/safety/capacity consumers prevent an unrelated asymptotic width fact; public weakenings and dormant width controls. |
 | REPLAY-EXACT-REGISTRY | Each production registry has a fixed version, nonempty independent names/order/count, exact selected output sequence and executed/expected summary. | Main missing-fixture mutation fails registry comparison; all full omitted runs must execute their exact complete registry. |
@@ -218,9 +218,14 @@ constructor-success flags, zero resource failures and exact sibling/charge/
 public-inhabitant error surfaces from those records. This is worker verification,
 not a blind coordinator audit or acceptance.
 
-Pending: final committed candidate, Git-blob/fresh-checkout byte comparison,
-strict policy/trust/diff checks and coordinator-scheduled aggregate gate.
-Final outcomes will be appended here from exact persisted records. Historical
+Source/replay candidate `763b00e68cabef2ea322a92fb7b3be354b367179` passed all
+717 protected artifact and 552 dependency-occurrence byte comparisons in
+[the retained receipt](commands/candidate-checkout-bytes-v1.json), including
+33 binary archives and the frozen matrix. All seven local policy checks and
+the source candidate committed-range/per-commit design checks passed. The
+receipt and current reporting are added in a subsequent evidence commit; they
+are not part of the original 717-artifact comparison. The coordinator-scheduled
+aggregate remains pending under its diagnostic hold. Historical
 failed development checks remain labeled diagnostics and are never counted as
 successful negative semantic controls.
 

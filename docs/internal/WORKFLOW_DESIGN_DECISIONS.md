@@ -12499,3 +12499,27 @@ still fail. No receipt, dependency hash or replay input is rewritten. The
 independent current-file review passed 568 before/after comparisons across 280
 distinct files, including exact public producer/consumer/snapshot identities;
 the actual committed/fresh comparison remains the stronger next obligation.
+
+
+The source/replay candidate is now committed at
+763b00e68cabef2ea322a92fb7b3be354b367179. Before that commit, an exhaustive
+raw-index check found the same cached-line-ending issue on 23 historical JSON
+receipts inside the already approved evidence scope. Their current bytes were
+not edited: comparing each prior index blob with CRLF-decoded current bytes
+showed only line-ending differences, retained in index-historical-eol-v1.json.
+Stage those exact current raw bytes while preserving the older Git blobs.
+The final protected index comparison passed 716 files, then its new receipt
+was added as the 717th protected artifact. This applies the existing byte
+preservation decision; it introduces no new normalization or wider scope.
+
+The actual candidate-checkout-bytes-v1.json result passed all 717 committed
+blob/source/fresh comparisons, including 33 gzip archives, and all 552 replay
+dependency occurrences across 284 distinct paths. The shallow clone used no
+local object sharing; its exact checkout used core.autocrlf=true and was clean.
+Every bounded Git operation completed without a timeout or output cap; the
+source HEAD and original frozen matrix hash remained unchanged. The new source
+candidate's ordinary committed-range whitespace and strict per-commit design
+checks also passed. Retain those receipts in the following evidence commit,
+and explicitly distinguish its new receipts/current prose from the 717 source
+artifacts just measured. The aggregate remains under the coordinator's diagnostic
+hold; no proof, replay or aggregate is repeated merely for these retained results.

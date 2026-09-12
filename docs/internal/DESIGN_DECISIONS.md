@@ -12666,3 +12666,33 @@ Keep generic controller evaluation and compiler conversion abstract until the fi
 Rejected alternatives were a second complemented raw payload; a separate rank payload containing another n bits; uncharged metadata or input-dependent code; a shape-specific hypothesis; proving only reached instruction operands; ignoring nominal sentinel positions; and counting a code-length alias whose unfolding obscured the literal public capacity statement. The concrete effects are all-natural access/rank/select correctness, representable whole-program safety, exact same-memory ordered receipts, actual category counts and an all-fuel finite-register theorem, joined in the23-field fullyChargedBitvectorCapstone_holds. Its first module check and expanded public consumer pass; final replay, exact-commit audit and coordinator acceptance remain distinct workflow obligations. Evidence and exact propositions are in extensions/bv1/CAPSTONE_COMPOSITION.md and the linked leaf reports.
 
 The model assumptions remain unit-cost scalar division, remainder, shifts and other explicit ISA operations; unbounded preprocessing; an uncharged outer Nat-domain check; and asymptotic-only absorption of fixed code/scratch. No claim about measured Lean interpreter performance or useful finite-size thresholds is added. FAMILY_SUMMARY and DIGESTION_LOG receive additive task-specific entries. README and the shared public aliases remain outside this lane's write scope, so no broader RMQ headline or paper theorem is rewritten.
+
+
+## DD-20260912-BV1-004: identify checked source separately from later evidence
+
+The complete generic bitvector construction and its tested replay inputs are
+frozen at source candidate 763b00e68cabef2ea322a92fb7b3be354b367179. A subsequent
+fresh checkout established exact raw-byte equality for 717 protected artifacts,
+including 33 binary archives, and all 552 dependency occurrences across 284
+paths. The measurement receipt necessarily exists after the commit it measures.
+Public family status should reflect that observed result while continuing to
+state that aggregate certification and coordinator acceptance are pending.
+
+Keep the source candidate fixed and retain the new receipts and current report
+updates in a distinct evidence commit. Name both roles explicitly: source and
+replay-input bytes remain those measured at the source candidate; the later
+receipt and updated prose are not silently added to the original 717 count.
+The exact commit and receipt identities provide a reader with an auditable path
+from the mathematical certificate through the tested physical object to the
+Git checkout measurement. This publication/provenance decision does not change
+any proposition, memory component, instruction, width, capacity or cost bound.
+
+Rejected alternatives are presenting the byte-preservation attributes alone as
+reproducibility evidence, folding the receipt into a self-referential claim about
+its own commit identity, leaving the public family status stale after the
+measurement passed, or treating the local checks as coordinator acceptance.
+The evidence delta contains maintained reports and retained verification results;
+tested Lean/replay/attribute/manifest bytes are preserved. Its public status
+update carries this design rationale in the same commit, as required by the
+repository's per-commit policy. The existing model and preprocessing/runtime
+caveats remain live, and the coordinator's aggregate hold remains authoritative.
