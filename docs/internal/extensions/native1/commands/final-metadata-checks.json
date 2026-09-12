@@ -1,0 +1,166 @@
+{
+  "schema": "native1-final-metadata-checks-v1",
+  "pass": true,
+  "targetCommit": "52ba2a57784c1dcd234615821865b87fd31b2d31",
+  "checkedUtc": "2026-09-12T14:26:46.8464878Z",
+  "durationSeconds": 4.2660748,
+  "sourcePins": [
+    {
+      "sha256": "2FB3D34A27414A796CCCBA0C4483B25A0435C8A8ED03643A60BFA1880D2877CF",
+      "path": "docs/internal/extensions/native1/REPORT.md",
+      "bytes": 14049
+    },
+    {
+      "sha256": "FB993699B9E2CB96C1732251DA874038C1CE62872622DF2543952349A6DC36DE",
+      "path": "docs/internal/extensions/native1/FRESH_AUDIT_PROMPT.md",
+      "bytes": 15782
+    },
+    {
+      "sha256": "81B89157942D4C67A24E3E9885D4A6C51FAD0E39B1A0A95C4A5E7275D9C31807",
+      "path": "docs/internal/extensions/native1/AUDIT_PACKET_INDEX.json",
+      "bytes": 36713
+    },
+    {
+      "sha256": "6AC9F2B344D1B49C1D0432384BB78E6ED9EA6C04D017C811FA8B5A38517FD57A",
+      "path": "docs/internal/extensions/native1/AUDIT_PUBLIC_CLAIM_PATHS.json",
+      "bytes": 16613
+    },
+    {
+      "sha256": "8252D80BF9C2F8A495EAED5CD7B04F85F6C32830DC7D1435D5A0ABE674EC0F07",
+      "path": "docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+      "bytes": 690676
+    }
+  ],
+  "checks": [
+    {
+      "output": [
+        "CLAIM-DRIFT[role-scoped-2pow128][explicit-compatibility-premise-or-proof-only-sparse-witness-never-canonical-activation][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:1817: - Claim drift classifies `2^128` by role: explicit legacy compatibility premise",
+        "CLAIM-DRIFT[role-scoped-2pow128][explicit-compatibility-premise-or-proof-only-sparse-witness-never-canonical-activation][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:1821: execution/route/query may name `2^128` as its activation premise, or the",
+        "CLAIM-DRIFT[role-scoped-2pow128][explicit-compatibility-premise-or-proof-only-sparse-witness-never-canonical-activation][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:1836: `N = 2^128` witness, and the genuine native execution closure is unchanged.",
+        "CLAIM-DRIFT[role-scoped-2pow128][explicit-compatibility-premise-or-proof-only-sparse-witness-never-canonical-activation][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:1884: on the same line, `2^128` (spaced or unspaced), plus the then-required",
+        "CLAIM-DRIFT[role-scoped-2pow128][explicit-compatibility-premise-or-proof-only-sparse-witness-never-canonical-activation][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:1917: reorderings must not silently reactivate the false canonical `2^128` story, but",
+        "CLAIM-DRIFT[role-scoped-2pow128][explicit-compatibility-premise-or-proof-only-sparse-witness-never-canonical-activation][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2042: current canonical/`2^128` claim. Commit `f5c2ab0` therefore failed both the",
+        "CLAIM-DRIFT[role-scoped-2pow128][explicit-compatibility-premise-or-proof-only-sparse-witness-never-canonical-activation][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8576: constant -- `76`, `142`, `207`, `328`, `352`, `118`, `4144`, `196727`, `2^128` --",
+        "CLAIM-DRIFT[all-size-196727][legacy-compatibility-history-only-current-table-and-export-enforcement-in-paper-topology-lint][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:153: aggregate pattern `196727` remains compatibility-only. Leaving the policy status",
+        "CLAIM-DRIFT[all-size-196727][legacy-compatibility-history-only-current-table-and-export-enforcement-in-paper-topology-lint][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:419: Some scanned terms, such as `196727`, can move from public theorem truth to",
+        "CLAIM-DRIFT[all-size-196727][legacy-compatibility-history-only-current-table-and-export-enforcement-in-paper-topology-lint][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8576: constant -- `76`, `142`, `207`, `328`, `352`, `118`, `4144`, `196727`, `2^128` --",
+        "CLAIM-DRIFT[fast-regime-118][legacy-compatibility-history-only-current-table-and-export-enforcement-in-paper-topology-lint][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8576: constant -- `76`, `142`, `207`, `328`, `352`, `118`, `4144`, `196727`, `2^128` --",
+        "CLAIM-DRIFT[legacy-route-split-4144][legacy-compatibility-history-only-current-table-and-export-enforcement-in-paper-topology-lint][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:152: The all-size clean RMQ bound moved from `65585` to `4144`, while the legacy",
+        "CLAIM-DRIFT[legacy-route-split-4144][legacy-compatibility-history-only-current-table-and-export-enforcement-in-paper-topology-lint][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8576: constant -- `76`, `142`, `207`, `328`, `352`, `118`, `4144`, `196727`, `2^128` --",
+        "CLAIM-DRIFT[historical-canonical-transitional-328][literal-pinned-historical-canonical-transitional-bound-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2100: execution. The policy retains `328` as an explicitly historical transitional",
+        "CLAIM-DRIFT[historical-canonical-transitional-328][literal-pinned-historical-canonical-transitional-bound-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2107: U2 deliberately landed `328` as a checked but conservative bound. U3 replaces",
+        "CLAIM-DRIFT[historical-canonical-transitional-328][literal-pinned-historical-canonical-transitional-bound-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2111: `328` after public consumption would instead make the strict scanner certify a",
+        "CLAIM-DRIFT[historical-canonical-transitional-328][literal-pinned-historical-canonical-transitional-bound-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2116: - Keep `328` current until a conventional word-RAM small-step machine exists.",
+        "CLAIM-DRIFT[historical-canonical-transitional-328][literal-pinned-historical-canonical-transitional-bound-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2117: - Replace every historical `328` occurrence, including frozen U2 evidence.",
+        "CLAIM-DRIFT[historical-canonical-transitional-328][literal-pinned-historical-canonical-transitional-bound-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2133: current-facing surfaces and classify `328` as transitional history.",
+        "CLAIM-DRIFT[historical-canonical-transitional-328][literal-pinned-historical-canonical-transitional-bound-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:3979: by `REQ-B7R1-HISTORICAL-328-IDENTITY`:",
+        "CLAIM-DRIFT[historical-canonical-transitional-328][literal-pinned-historical-canonical-transitional-bound-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:3985: because restoring the public 328 identity while separating the live 352 bound",
+        "CLAIM-DRIFT[historical-canonical-transitional-328][literal-pinned-historical-canonical-transitional-bound-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4266: - Historical 76, 142, 207, and 328 evidence and distinctly named compatibility",
+        "CLAIM-DRIFT[historical-canonical-transitional-328][literal-pinned-historical-canonical-transitional-bound-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8576: constant -- `76`, `142`, `207`, `328`, `352`, `118`, `4144`, `196727`, `2^128` --",
+        "CLAIM-DRIFT[live-compatibility-352][live-raw-expression-compatibility-bound-must-be-distinctly-named-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:3985: because restoring the public 328 identity while separating the live 352 bound",
+        "CLAIM-DRIFT[live-compatibility-352][live-raw-expression-compatibility-bound-must-be-distinctly-named-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4206: compatibility 352 followed by retired comparison. A marker or history word",
+        "CLAIM-DRIFT[live-compatibility-352][live-raw-expression-compatibility-bound-must-be-distinctly-named-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4267: 352 remain truthful, while current-surface use of 207 becomes gate-failing.",
+        "CLAIM-DRIFT[live-compatibility-352][live-raw-expression-compatibility-bound-must-be-distinctly-named-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4618: invocation. Preserve current 210/readWord-only/352 topology anchors. Resolve",
+        "CLAIM-DRIFT[live-compatibility-352][live-raw-expression-compatibility-bound-must-be-distinctly-named-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4897: and topology portability passed in 335.2, 380.4, 352.4, and 351.3 seconds.",
+        "CLAIM-DRIFT[live-compatibility-352][live-raw-expression-compatibility-bound-must-be-distinctly-named-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4984: portability in 352.4 seconds (root 1905 and child 1951 absent). It resolved",
+        "CLAIM-DRIFT[live-compatibility-352][live-raw-expression-compatibility-bound-must-be-distinctly-named-not-paper-facing-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8576: constant -- `76`, `142`, `207`, `328`, `352`, `118`, `4144`, `196727`, `2^128` --",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2096: The claim-drift policy treats `76` as the current canonical charged-trace cost",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2109: `2 * 13 + (2 * 4 + 2 * 4 + 30) + 4 = 76`. Updating policy before this theorem",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2118: - Move only the current token to `76`, preserve named transitional history, and",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2132: - Strict claim scans require the principled charged-trace `76` vocabulary on",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2141: certificate-sum/`Costed` equality, and the `76` bound. `TraceResult.toCosted`",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2149: numeric equality `76`.",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2490: the 76 -> 142 migration, coordinator-ratified per the B3 worklog), and",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:3489: Update the stale physical-payload/76 topology comment to describe the live",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:3522: public/current surfaces: cost bounds `76` or `142`, a 20-source manifest,",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:3545: strict failure. The policy had marked `76` and the 20-source manifest as current",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4199: 1. The current-cost claim category treats 76, 142, and 207 as retired tokens",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4266: - Historical 76, 142, 207, and 328 evidence and distinctly named compatibility",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4462: The judgment-bearing migration is the retired public `76` cost conjunct to",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4635: - Revert the current topology linter to R4's 76/old-source assumptions.",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8222: `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 76`, while",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8223: mainline proves `= 210`. `76` is a numeral this repository lists as a retired",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8235: | `880dfdf` (off-main sibling) | `76` |",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8277: stale would import rules written against a `76`-era surface. If any of it is",
+        "CLAIM-DRIFT[principled-charged-trace-76][historical-pre-A07-principled-charged-trace-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8576: constant -- `76`, `142`, `207`, `328`, `352`, `118`, `4144`, `196727`, `2^128` --",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2500: - Keep the 142 anchor alongside 207 (rejected: the lint anchors name the",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2559: `207 -> 210`, so the CURRENT topology anchor moves with it:",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2573: frozen is renamed or deleted, and the retired `207` is preserved as",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2596: stale `207` NUMERAL do not fail the gate (prose numerals are not resolved",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:3490: canonical reviewer-payload, `readWord`-only, derived-207 topology.  This is a",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:3531: 4. The live replacement facts are cost `207` with algebra",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:3532: `2*35 + (2*11 + 2*37 + 30) + 11 = 207`, 22 physical sources over logical",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4199: 1. The current-cost claim category treats 76, 142, and 207 as retired tokens",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4236: charged-trace bound is 207\" after the live bound moved to 210. Separately,",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4244: - Add 207 to one sentence fixture but retain the broad marker-word allowance.",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4266: - Historical 76, 142, 207, and 328 evidence and distinctly named compatibility",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4267: 352 remain truthful, while current-surface use of 207 becomes gate-failing.",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4283: final certification, including the retired-207 category, current-210 and",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4327: the registered `docs/PUBLICATION_STRATEGY.md` split “current theorem” and `207`",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4345: - Named regression `p1-registered-current-cost-cross-line-207-rejected`",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4384: moving from `207` to current `210`, plus the existing explicit B7",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4386: `207 -> 210` and `207 => 210` remain failures.",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4406: The rejected P1 candidate passed a registered two-line current `207` statement,",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4409: `207` was followed by `-> 210`.",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:4415: - Exclude every `207 -> 210` spelling before semantic classification.",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:5070: 6. **The governed frontier's remaining live axiom anchor moves from `207` to",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:5087: anchor. After the `207 -> 210` repair, the focused general axiom inventory passed.",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:5328: `RMQPaper.lean` still stated a uniform cost certificate of `207` instead of",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8237: | `f1c8af3` | `207` |",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8576: constant -- `76`, `142`, `207`, `328`, `352`, `118`, `4144`, `196727`, `2^128` --",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8605: the historical-marker allowance distinguishes \"the current cap is 207\" from",
+        "CLAIM-DRIFT[historical-silent-sparse-level-207][historical-retired-silent-sparse-level-bound-not-current][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:8606: \"Historical comparison: the retired cap is 207\".",
+        "CLAIM-DRIFT[typed-reviewer-source-manifest][current-exhaustive-typed-canonical-universe][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:1537: `ReviewerSource.Live` was definitionally `True`; consumer ownership came from a",
+        "CLAIM-DRIFT[typed-reviewer-source-manifest][current-exhaustive-typed-canonical-universe][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:2527: policy: \"typed 20-source universe\" becomes \"typed 22-source universe (23",
+        "CLAIM-DRIFT[producer-level-provenance][current-when-indexed-occurrence-state-and-invocation-data-are-retained][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:1610: ## WDD-20260713-002: Require occurrence-level evidence for producer provenance",
+        "CLAIM-DRIFT[producer-level-provenance][current-when-indexed-occurrence-state-and-invocation-data-are-retained][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:1621: cannot close producer provenance.",
+        "CLAIM-DRIFT[producer-level-provenance][current-when-indexed-occurrence-state-and-invocation-data-are-retained][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:1658: - Claim policy and reviewer docs reserve “producer provenance” for the",
+        "CLAIM-DRIFT[producer-level-provenance][current-when-indexed-occurrence-state-and-invocation-data-are-retained][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:1738: The decision log now preserves why the formal notion of producer provenance",
+        "CLAIM-DRIFT[invalid-range-rejection][current-returns-none-on-all-list-surfaces][review] docs/internal/extensions/native1/FRESH_AUDIT_PROMPT.md:37: - Reconstruct `canonicalImage xs` through serialization, loaded code/memory/register containers, `nativeInitialState`, full execution and actual native observation. Verify the counted store/code/scratch is the store/program/state used by every advertised result, cost, provenance and width field. Check valid, empty, reversed and out-of-bounds endpoint domains.",
+        "CLAIM-DRIFT[invalid-range-rejection][current-returns-none-on-all-list-surfaces][review] docs/internal/WORKFLOW_DESIGN_DECISIONS.md:1541: packet on invalid ranges. CI, artifact reproduction, axiom inventories, and",
+        "CLAIM-DRIFT: scan complete (138 hits, 0 strict failures)"
+      ],
+      "exitCode": 0,
+      "name": "final-metadata-strict-claims"
+    },
+    {
+      "output": [
+        "DESIGN-CHECK: checked 15 changed files (0 code, 14 workflow, 1 neutral)"
+      ],
+      "exitCode": 0,
+      "name": "final-metadata-strict-design"
+    },
+    {
+      "arguments": [
+        "diff",
+        "--check"
+      ],
+      "output": [],
+      "exitCode": 0,
+      "name": "working-diff"
+    },
+    {
+      "arguments": [
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "output": [
+        "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied"
+      ],
+      "exitCode": 0,
+      "name": "staged-diff"
+    },
+    {
+      "arguments": [
+        "diff",
+        "--check",
+        "0e6a00f654abc64f8b68988fa9675b9a839dca2f..HEAD"
+      ],
+      "output": [],
+      "exitCode": 0,
+      "name": "committed-diff"
+    }
+  ],
+  "verificationScript": "$ErrorActionPreference='Stop'\n$rows=[Collections.Generic.List[object]]::new()\n$paths=@('docs/internal/extensions/native1/REPORT.md','docs/internal/extensions/native1/FRESH_AUDIT_PROMPT.md','docs/internal/extensions/native1/AUDIT_PACKET_INDEX.json','docs/internal/extensions/native1/AUDIT_PUBLIC_CLAIM_PATHS.json','docs/internal/WORKFLOW_DESIGN_DECISIONS.md')\n$pins=@(foreach($path in $paths){@{path=$path;bytes=(Get-Item -LiteralPath $path).Length;sha256=(Get-FileHash -LiteralPath $path).Hash}})\n$watch=[Diagnostics.Stopwatch]::StartNew()\n$output=@(& scripts/claim_drift_scan.ps1 -Strict -IncludeProcessRecords -Path $paths *>&1 | ForEach-Object {$_.ToString()})\n$code=$LASTEXITCODE\n$rows.Add(@{name='final-metadata-strict-claims';exitCode=$code;output=$output})\nif($code -ne 0){throw ('Final metadata strict claims failed: '+($output -join \"`n\"))}\n$output=@(& scripts/design_decision_check.ps1 -Strict -Base '52ba2a57784c1dcd234615821865b87fd31b2d31' *>&1 | ForEach-Object {$_.ToString()})\n$code=$LASTEXITCODE\n$rows.Add(@{name='final-metadata-strict-design';exitCode=$code;output=$output})\nif($code -ne 0){throw ('Final metadata strict design failed: '+($output -join \"`n\"))}\nforeach($entry in @(@{name='working';args=@('diff','--check')},@{name='staged';args=@('diff','--cached','--check')},@{name='committed';args=@('diff','--check','0e6a00f654abc64f8b68988fa9675b9a839dca2f..HEAD')})){\n  $arguments=$entry.args\n  $output=@(& git @arguments 2>&1 | ForEach-Object {$_.ToString()})\n  $code=$LASTEXITCODE\n  $rows.Add(@{name=($entry.name+'-diff');exitCode=$code;arguments=$arguments;output=$output})\n  if($code -ne 0){throw 'Final metadata diff check failed'}\n}\nforeach($pin in $pins){if((Get-FileHash -LiteralPath $pin.path).Hash -cne $pin.sha256){throw 'Final metadata input changed'}}\n$watch.Stop()\n[ordered]@{schema='native1-final-metadata-checks-v1';pass=$true;targetCommit='52ba2a57784c1dcd234615821865b87fd31b2d31';checkedUtc=[DateTime]::UtcNow.ToString('o');durationSeconds=$watch.Elapsed.TotalSeconds;sourcePins=$pins;checks=@($rows.ToArray());verificationScript=[IO.File]::ReadAllText($PSCommandPath)} | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath docs/internal/extensions/native1/commands/final-metadata-checks.json -Encoding utf8\nWrite-Output ('NATIVE1 final metadata claims/design/diffs PASS in '+$watch.Elapsed.TotalSeconds+' seconds')\n"
+}

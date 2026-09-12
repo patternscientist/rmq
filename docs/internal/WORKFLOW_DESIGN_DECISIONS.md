@@ -12790,3 +12790,35 @@ an unfiltered scan of those process records. The coordinator separately owns
 aggregate certification and its host/output planning. This evidence-scope
 choice changes no source theorem, acceptance requirement or policy rule, and
 is not a claim that the unfinished default-root scan passed.
+
+## WDD-20260912-NATIVE1-013: freeze source before the final report and fresh audit packet
+
+Commit `52ba2a57784c1dcd234615821865b87fd31b2d31` freezes the completed
+implementation, operational registries, raw evidence and append-only requirement
+matrix. A subsequent metadata/report commit names that exact source commit;
+this avoids a document attempting to contain the hash of its own future commit.
+The compiled inputs, source propositions and registry bytes remain unchanged.
+Both the whole-base and individual candidate-commit design checks passed.
+
+The fresh audit packet is report-only on the frozen target, with verbatim
+requirements and selected raw receipts. Worker verdicts, internal reconstructions
+and broad scanner transcripts are withheld. A separate44-path public inventory
+allows the unchanged strict scanner to check current public claims without
+printing prior process narratives from extension reports or historical JSON.
+The worker separately passed all26 process claim paths and checked the finished
+report/matrix again after insertion. The auditor checks its own final report
+with IncludeProcessRecords after forming its independent findings. This preserves
+both applicable claim coverage and the fresh-audit boundary; hiding a current
+public claim or using prior verdicts as audit instructions was rejected.
+
+The coordinator separately schedules the aggregate gate and handles its
+potentially history-bearing output. The packet requests that certification and
+fresh exact-commit review; it does not record either as executed or ACCEPTED.
+No new source/representation design decision is made by this metadata follow-up,
+so the existing DD-20260912-NATIVE1 entries continue to apply unchanged.
+
+Public claim inventory rows record both the actual working-copy bytes scanned
+and the canonical Git blob bytes at the frozen target, so a fresh checkout can
+reconcile ordinary line-ending conversion without treating different source
+content as equivalent. The native build manifest, frozen requirement prefix
+and final report retain their separately enforced exact-byte policies.

@@ -4,9 +4,9 @@ Phase: FROZEN_CANDIDATE
 
 # NATIVE-1 worker report
 
-The required target `RMQ.SuccinctFinal.PackedNative.nativeExecutionCapstone_holds : NativeExecutionCapstone` is checked, with all 42 independently written literal field consumers and the public exact-type consumer in `Native/Contract.lean`. The default library build, explicit Native/validator imports, 86-declaration axiom inventory, source validator controls, generated native build and complete n9 calibration pass. The full certificate and native campaigns pass, and the independent final integrity check confirms source/artifact pins, exact rosters, raw observation bytes and fresh consumer binding. The required owned checks pass; the local source/evidence commit is frozen before the final report and audit-packet follow-up. No coordinator acceptance, integration or roadmap closure is recorded.
+The required target `RMQ.SuccinctFinal.PackedNative.nativeExecutionCapstone_holds : NativeExecutionCapstone` is checked, with all 42 independently written literal field consumers and the public exact-type consumer in `Native/Contract.lean`. The default library build, explicit Native/validator imports, 86-declaration axiom inventory, source validator controls, generated native build and complete n9 calibration pass. The full certificate and native campaigns pass, and the independent final integrity check confirms source/artifact pins, exact rosters, raw observation bytes and fresh consumer binding. The required owned checks pass, and the source/evidence commit is frozen. The final report and audit-packet follow-up preserve that source identity. No coordinator acceptance, integration or roadmap closure is recorded.
 
-The exact source/governance base is `0e6a00f654abc64f8b68988fa9675b9a839dca2f`; the branch is `codex/native-1-packed-execution` in `C:/Users/poin/.codex/worktrees/1817/RMQ`. The current committed source checkpoint is `fa79233f77acbfa0470ef6203131e66784c7b014`; the final witnesses, validator, runners and receipts are being prepared for the next local commit. No push or merge was performed.
+The exact source/governance base is `0e6a00f654abc64f8b68988fa9675b9a839dca2f`; the branch is `codex/native-1-packed-execution` in `C:/Users/poin/.codex/worktrees/1817/RMQ`. The exact frozen implementation/evidence commit is `52ba2a57784c1dcd234615821865b87fd31b2d31`. The subsequent local submission commit contains only this report, audit-packet metadata, workflow disposition notes and final verification receipts; the compiled source and operational registries are unchanged. No push or merge was performed.
 
 ## What the construction establishes
 
@@ -32,8 +32,8 @@ The exported computational declarations proved in Lean are the declarations comp
 | Native calibration | Both clients match all 24 startup bytes and all 4,523 n9 query bytes, including ordered reads and six category counts | `binary-v3-calibration-query-smoke-20260912T125624257.json`, `binary-v3-calibration-pq1-n9-full-20260912T125906228.json` under `binary-commands` |
 | Final native registry/control campaign | PASS, all 128 controls including exactly one full 109 logical / 214 expanded replay; 2337.505s/7200s, no timeout/output limit | `BINARY_VALIDATION.md`, `binary-commands/binary-replay-20260912T131712734.json`, `binary-controls-20260912T130603847.json`, wrapper `binary-v3-final-128-20260912T130558739.json` |
 | Certificate dependency campaign | PASS, nine controls including all 44 cases exactly once; 816.151s/2100s; every fresh producer binds to the untouched consumer and source/registry restoration passes | `scripts/packed_native_contract_cases.json`, `CONTRACT_VALIDATION.md`, `commands/contract-controls-all-01.json` |
-| Final trust/claim/design/diff checks | PASS: both trust scans have zero matches; strict design/base and working/staged/committed whitespace checks pass; unchanged strict claim rules pass all 44 public and 26 process-document paths, zero failures | `commands/final-design-base.json`, `final-diff-checks.json`, `final-claims-public.json`, `final-claims-process.json`; final report/appendix receive a focused follow-up check |
-| Fresh blind audit and aggregate certification | Coordinator-scheduled on frozen content | Exact-commit prompt and evidence packet prepared after the candidate is frozen |
+| Final trust/claim/design/diff checks | PASS: both trust scans have zero matches; strict design/base and working/staged/committed whitespace checks pass; unchanged strict claim rules pass all 44 public and 26 process-document paths, zero failures | `commands/final-design-base.json`, `final-diff-checks.json`, `final-claims-public.json`, `final-claims-process.json`; the finished report/appendix passed the focused process-corpus follow-up (416 hits, zero failures,4.741s), recorded in `final-text-claims-process.json` |
+| Fresh blind audit and aggregate certification | Coordinator-scheduled on frozen content | `FRESH_AUDIT_PROMPT.md` and `AUDIT_PACKET_INDEX.json` pin the frozen implementation commit; no fresh audit or aggregate pass is claimed |
 
 The completed final native campaign covers the eight original PQ1 fixtures plus checked instructions, arithmetic/fault behavior, wide endpoints, malformed binary/host requests, repeated queries, independent semantic witnesses, actual source-correspondence mutations and a rebuilt FFI argument-order mutation. Expected values come from the connected predecessor specification or independently written literal results. The completed certificate campaign compiled each weakened producer successfully, then rejected it at the unchanged consumer's exact proposition and diagnostic location. A stale source rejection or a failed producer does not satisfy that requirement.
 
@@ -77,3 +77,10 @@ claim document, all18 current-fact paths and all16 required-attribution paths.
 Those exact inputs and outcomes are recorded in the final claim receipts and
 WDD-20260912-NATIVE1-012. No policy exception was added, no receipt was edited,
 and no default-root or aggregate pass is inferred from the focused checks.
+The complete candidate commit passed strict per-commit design checking in
+4.703 seconds (`commands/design-final-candidate-commit.json`). Its fresh audit
+packet uses only exact requirements, public/source surfaces and a selective raw
+receipt index. Worker narratives and broad scanner output are withheld from
+the fresh auditor. The packet includes a separate public claim-path inventory;
+the worker's complete process-document scan remains separate evidence. Full
+aggregate certification and coordinator acceptance are still required.
