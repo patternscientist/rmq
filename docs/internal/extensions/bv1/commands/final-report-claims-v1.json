@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "scope": [
+    "docs/internal/extensions/bv1",
+    "docs/internal/WORKFLOW_DESIGN_DECISIONS.md"
+  ],
+  "reason": "Narrow follow-up for reporting and dependency-checker edits after full seven-check policy pass",
+  "checkerParsePassed": true,
+  "seconds": 213.856,
+  "exit": 0,
+  "timedOut": false,
+  "outputLimitExceeded": false,
+  "outputArchive": "docs/internal/extensions/bv1/commands/final-report-claims-v1-output.json.gz",
+  "archiveSHA256": "E3215C620F71942E895536119117F17831C1F7061272D4B5AB31121D41B34839",
+  "originalRecordSHA256": "20119094E9B0CCD4DCDBA6A632D8CA91FF0C018CAD7FB00BB8DC36E9D6AC8C8A",
+  "storageReason": "Retain complete output verbatim in gzip so future claim scans do not treat captured historical review examples as current prose."
+}

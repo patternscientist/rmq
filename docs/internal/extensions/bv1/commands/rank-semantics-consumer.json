@@ -1,0 +1,248 @@
+{
+  "stage": "rank-semantics-consumer",
+  "platform": "Windows",
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "dirty": [
+    " M docs/internal/DESIGN_DECISIONS.md",
+    " M docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+    " M docs/internal/extensions/bv1/CONTRACT.md",
+    " M docs/internal/extensions/bv1/REPORT.md",
+    " M scripts/packed_bitvector_crossing.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Allocation.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/AllocationLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ControllerInterface.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/DescriptorReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericRankProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericSelectProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/MemoryLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/NumericReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/NumericSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RankSemantics.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ReaderGeometry.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ReaderProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RegularLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SegmentMap.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SelectSemantics.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Source.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Space.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/WordBounds.lean",
+    "?? docs/internal/extensions/bv1/ALLOCATION_READER_PROOFS.md",
+    "?? docs/internal/extensions/bv1/CONTINUATION.md",
+    "?? docs/internal/extensions/bv1/CONTROLLER_PROOFS.md",
+    "?? docs/internal/extensions/bv1/COORDINATOR_ROUTE_DISPOSITION.md",
+    "?? docs/internal/extensions/bv1/NUMERIC_READER.md",
+    "?? docs/internal/extensions/bv1/NUMERIC_SAFETY.md",
+    "?? docs/internal/extensions/bv1/RANK_SEMANTICS.md",
+    "?? docs/internal/extensions/bv1/REGULAR_LAYOUT.md",
+    "?? docs/internal/extensions/bv1/SELECT_SEMANTICS.md",
+    "?? docs/internal/extensions/bv1/commands/controller-generic-rank-r3.json",
+    "?? docs/internal/extensions/bv1/commands/controller-generic-rank-r4.json",
+    "?? docs/internal/extensions/bv1/commands/controller-generic-rank-r5.json",
+    "?? docs/internal/extensions/bv1/commands/controller-rank-prerequisite-r2.json",
+    "?? docs/internal/extensions/bv1/commands/controller-rank-r1.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-1.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-2.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-3.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-4.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-5.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-6.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-7.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-build-final.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-build-v3.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-compile-v1.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-compile-v2.json",
+    "?? docs/internal/extensions/bv1/commands/rank-semantics-1.json",
+    "?? docs/internal/extensions/bv1/commands/rank-semantics-2.json",
+    "?? docs/internal/extensions/bv1/commands/reader-support-8.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-1.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-2.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-3.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-axiom-source.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-axioms.json",
+    "?? docs/internal/extensions/bv1/commands/select-semantics-1.json",
+    "?? docs/internal/extensions/bv1/commands/select-semantics-2.json",
+    "?? docs/internal/extensions/bv1/commands/select-semantics-3.json",
+    "?? docs/internal/extensions/bv1/commands/select-semantics-consumer.json",
+    "?? docs/internal/extensions/bv1/controls/controller_axioms.lean"
+  ],
+  "sourceHashes": [
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Allocation.lean",
+      "Hash": "B4DE6C3B923589A2AA890399D7D0B8236E3C46E1608ADE74F8CEFE65B60F392B"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\AllocationFacts.lean",
+      "Hash": "F189969208B13333219EE460DB8581D43BABB88F18480C68A37F47C070801623"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\AllocationLayout.lean",
+      "Hash": "52405DACE44B0823974F9BE7ED2B11B4A37CB5E27B57F9BEDA26593EDB83A90F"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ControllerInterface.lean",
+      "Hash": "14F14B5A78FC77DB768536BF78DA47CB60922364538859535198C1E440B30981"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\DescriptorReader.lean",
+      "Hash": "A85C55E8962F8F9F78E0FB00EDD81ED9DFF7E870792F62830DB6CADB54F45108"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\GenericRankProof.lean",
+      "Hash": "01544E3B71EBCB90B7ABF34F8C241BA6ED6F7954027C3E22443AD9AC65192F94"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\GenericSelectProof.lean",
+      "Hash": "AC0838503BA7942963DB26EC9D787A2080AD1E3C3DB752D5F2FB39F8528F72C1"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\MemoryLayout.lean",
+      "Hash": "2CB94877358664BDC93234128FE2115B626C10442AEC87C9429A89395B0D6A24"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Normalization.lean",
+      "Hash": "BA10A82917C9914E0BB11F619A15A51CFC65E2C0842C066F372339C77FF5F9D4"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\NumericReader.lean",
+      "Hash": "7E2CC443F2DE7351112460B7C2B0699C2879B51E760DEC3261B055790133897D"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\NumericSafety.lean",
+      "Hash": "C56D747793B54D93CEE9CB1FD4429B6E8E9C7CE7464C0E9B1962B14B66FC366B"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\RankSemantics.lean",
+      "Hash": "9AC0B86BC1630635EAA63A3DC3C3889206A0FDFB0205DD86C36ECF7F5516AB7C"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ReaderGeometry.lean",
+      "Hash": "BED317E98337D9D9478284C973C38FFAE3D8E41EEED7A5D4C0EC591FA5B7C4C9"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ReaderInterface.lean",
+      "Hash": "ECD8043060AAE4A3F753B81ADCFE47F9E22B2914744DB6686ABBFB18A218A210"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ReaderProof.lean",
+      "Hash": "CCAC92567402E9C837829B3218F71C06C8A7D2CFB47B7C46749CCF16D9CC382C"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\RegularLayout.lean",
+      "Hash": "172ED0F83F0D8E63136F7A3063F8EDC009F71D57C4BF8B1D311067F1AC53638C"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SegmentMap.lean",
+      "Hash": "8F9454FD730B9B857A99BBC33530DAF23E2F185AC66E21CC0845F29742C55B41"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SelectExperiment.lean",
+      "Hash": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SelectSemantics.lean",
+      "Hash": "D950323B3DE006F320335F68AF96BE9F8A7D50A425EDDB35B493EFA2AB8DD3A2"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Source.lean",
+      "Hash": "8277F15D876437BD6C35835C57C9332E839AAA94EA63EC8A9F10B8BC661D1074"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Space.lean",
+      "Hash": "3A071C4CDF92D14783503A6A139B1FE839892BBED40B9A4B32399F2BC5E66F4F"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\WordBounds.lean",
+      "Hash": "756AD2CF263E310966CEE28F214B0190B3F748365C9D5B6E808D1BD994956AB0"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_allocation_consumers.lean",
+      "Hash": "11625C223A9EA1952FE664DFEE7D8DC9C2C3CE798A6C74A39CCD24ACC42D08DE"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_axioms.lean",
+      "Hash": "505072CA4722C123F65C7184855813AD75C4208763F696222B9127C955C0C145"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_crossing.lean",
+      "Hash": "EEDDA48140C4DB2912186F42D874206015CAB12A58D39CF6FCAF9F4D10B9833F"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_normalization_consumers.lean",
+      "Hash": "CF7C09F2CE8DF5D364933FD0BD982BC1835610F5D2B6CCAEBE0EDD6374C529A2"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_probe.ps1",
+      "Hash": "8C3D92D057026636386BCD075886C54E9D034C6E2322F8C7290244B1934F4D38"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_selector_controls.ps1",
+      "Hash": "D676AC5F587F3EECC0A15B75CCBB0E76B729DD531E7E6A72EAF1FFCB3F0E1228"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean",
+      "Hash": "A36ACF5EDF0750D2F5F01BCCE931B2104310E68AEFEB4F7A6BBE6CEBEA30ACA3"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\lakefile.toml",
+      "Hash": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A"
+    }
+  ],
+  "startedUtc": "2026-09-12T09:29:44.1130404Z",
+  "executable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+  "arguments": [
+    "env",
+    "lean",
+    "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-rank-semantics-consumer.lean"
+  ],
+  "deadlineSeconds": 180,
+  "leanNumThreads": 1,
+  "result": {
+    "Stage": "rank-semantics-consumer",
+    "ExitCode": 1,
+    "Output": [
+      "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-rank-semantics-consumer.lean:40:2: error: type mismatch",
+      "  canonicalRankRead_value [] target limit",
+      "has type",
+      "  have d := jacobsonRankData [];",
+      "  have c := SuccinctClose.bpFringeChunkBits (2 * [].length);",
+      "  (packedRankRead 17 18 19 21 c target (canonicalRankReadStore [] target) [].length d.wordSize d.blocksPerSuper",
+      "        limit).value =",
+      "    Succinct.rankPrefix target [] limit : Prop",
+      "but is expected to have type",
+      "  (packedRankRead 17 18 19 21 (SuccinctClose.bpFringeChunkBits 0) target (canonicalRankReadStore [] target) 0",
+      "        (jacobsonRankData []).wordSize (jacobsonRankData []).blocksPerSuper limit).value =",
+      "    0 : Prop",
+      "'RMQ.PackedBitvector.canonical_rank_chunk_geometry' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.rankRead_toCosted_of_agree' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.rankRead_value_of_agree' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.canonicalRankRead_value' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.constant_zero_rank_rejected' does not depend on any axioms"
+    ],
+    "StandardOutput": [
+      "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-rank-semantics-consumer.lean:40:2: error: type mismatch",
+      "  canonicalRankRead_value [] target limit",
+      "has type",
+      "  have d := jacobsonRankData [];",
+      "  have c := SuccinctClose.bpFringeChunkBits (2 * [].length);",
+      "  (packedRankRead 17 18 19 21 c target (canonicalRankReadStore [] target) [].length d.wordSize d.blocksPerSuper",
+      "        limit).value =",
+      "    Succinct.rankPrefix target [] limit : Prop",
+      "but is expected to have type",
+      "  (packedRankRead 17 18 19 21 (SuccinctClose.bpFringeChunkBits 0) target (canonicalRankReadStore [] target) 0",
+      "        (jacobsonRankData []).wordSize (jacobsonRankData []).blocksPerSuper limit).value =",
+      "    0 : Prop",
+      "'RMQ.PackedBitvector.canonical_rank_chunk_geometry' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.rankRead_toCosted_of_agree' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.rankRead_value_of_agree' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.canonicalRankRead_value' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.constant_zero_rank_rejected' does not depend on any axioms"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 5.161,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  }
+}

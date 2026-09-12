@@ -12381,3 +12381,121 @@ Alternatives rejected: accepting an empty selected set; using the tested output 
 Phase verification exposed a process defect: placing live claim-scan stdout under docs made the scanner consume its own freshly emitted copies of baseline policy examples. The bounded run rejected seven occurrences in that transient stdout, while its earlier direct run reported zero strict failures. Move only the owned process spool to the task-local .lake/bv1-phase-process directory, then archive full completed results as compressed JSON with hashes under the task evidence folder. All actual source/prose remains in the production scan; no shared scanner or allowance changes. Keep the failed self-scanning result and its exact diagnosis, then rerun after this material spool-location correction. Compressed evidence limits output duplication; it does not exempt new public prose from checking.
 
 The phase source is frozen at 581deebcacfded874d17da7db1e9132a1eefa184. A separate evidence amendment records that commit, postcommit checks and the request for the task-mandated route review, preserving code and frozen rows. This separates a reviewable architecture/feasibility checkpoint from full-target candidate completion; all composed rows remain open and the same worker branch must resume afterward. The corrected phase verifier passed all six checks, including strict claim scanning with zero strict failures. No new mathematical or public-surface decision is introduced by this evidence amendment, so DD-BV1-001 remains its code-design record.
+
+## WDD-20260912-BV1-002: continue after the discharged route prerequisite
+
+The coordinator approved the route at 645a0502b9da9ad6444edbe44759e1c2c5661f25, after exact-source review and focused independent replays. Preserve that disposition and the original frozen matrix, update current phase prose, and append new evidence instead of rewriting historical OPEN rows. Routine helper completion, a local commit, a cold build or another proof choice no longer ends a route-review phase. The same branch continues to the original capstone unless an actual scope/model boundary or precise obstruction requires a coordinator decision.
+
+Disjoint workers own canonical regular-layout facts, numeric reader evaluation and generic controller refinement; the lead owns allocation identity and their mathematical/physical composition. All share one build tree with explicit lead-controlled build-slot handoff and one Lean job. This parallelism separates independent producer proofs while preventing overlapping writes or heavy builds. Existing owned-process tooling and unique command evidence stages remain unchanged. PRE's separate builder audit is not a dependency of this lane. Full aggregate certification still requires a coordinator-scheduled host slot on frozen candidate content.
+
+## WDD-20260912-BV1-003: test public dependencies with independently checked mutant constructors
+
+The public certificate exposes23 mandatory fields. A separate consumer quantifies an arbitrary certificate and projects every field at an independently written required proposition, plus the exact named inhabitant. Reader geometry, receipts/frame and all five execution-safety conjuncts are expanded; complete capacity names the actual numerical memory, all three encoded programs and8274 scratch words. The consumer does not recover a missing certificate claim from an implementation sibling theorem. Its final source and the producer are hashed only after both pass.
+
+Freeze a32-case public campaign: unchanged and harmless-comment expected accepts; one True weakening for each of23 fields; field deletion with its initializer removed; three coherent sibling substitutions; mutation of the public inhabitant proposition; and two capacity weakenings omitting code or scratch. Preserve content-addressed baseline snapshots, exact before/after transformations, generated constructor/consumer fixtures and a versioned manifest. Each altered constructor must first compile successfully. Only then does the same independent consumer have to reject it at the pinned projection/type surface. Resource exhaustion, unrelated errors and a stale initializer failure cannot earn a passing negative verdict. No live library source is mutated; byte/hash and scoped status checks in finally establish preservation of the shared working tree and fixture content. Exact case membership and expected verdicts are also pinned independently in the production runner.
+
+Finite operational coverage is a separate layer. Keep the historical18-case select validator and earlier failed crossing experiment intact, expand the current complete-allocation validator to46 exact cases, and retain independent List expected answers. Its four whole-operation crossings assert the actual second load, request segment/index and addressed reply. A separate12-case campaign changes decisive supplied memory, creates first-load faults and checks an oversized dormant instruction against the same complete static-fit predicate. Valid parameterized directories exercise long-superblock and sparse-local branches for both targets when small canonical fixtures cannot reach them; the record must state that canonical-global classification remains covered by universal proof. Wrong expected outputs/routes and lost registry entries require the actual production verdict to fail, followed by expected-accept restoration controls.
+
+Every new selector boundary distinguishes omitted, valid, empty, whitespace, malformed, unknown, padded and incompatible inputs. Startup and a known selector precede the omitted full registry; avoid another unchanged full run unless a distinct final replay contract requires it. One owned Lean child runs at a time, with per-command deadlines and bounded campaign ownership; process output is retained with exact exits and no silent case loss. Other workers continue disjoint offline work while a campaign owns the build slot. The aggregate host slot remains a separate coordinator decision after final content is frozen.
+
+Rejected alternatives include a text-only field-name checklist, deleting a field while leaving a broken constructor, trusting an error anywhere in a consumer file, treating a heartbeat timeout as a semantic counterexample, changing the golden registry to match a lost fixture, mutating the shared import tree, or describing small canonical cases as exceptional without observing the marked branch. The design adds replay evidence and stronger dependency checks without changing the Lean trust base, ISA, accepted width model or frozen acceptance requirements. Current checks and residual work are recorded in extensions/bv1; a green helper campaign is not full-task or coordinator acceptance.
+
+## WDD-20260912-BV1-004: preserve replay bytes across Git checkouts
+
+The exact consumer and mutation manifests hash source/fixture bytes. With core.autocrlf=true and no BV-1 attributes, a fresh checkout could change line endings even though the Git revision and Lean propositions stayed the same. The coordinator approved only the four additive -text rules in extensions/bv1/CHECKOUT_BYTES_PATCH.diff, extending this worker's scope to root .gitattributes for that purpose. The durable disposition is copied verbatim to extensions/bv1/CHECKOUT_BYTES_DISPOSITION.md. Every other rule and all 30 frozen requirements remain unchanged.
+
+The rules cover RMQ/Core/WordRAM/Bitvector/**, the one PackedBitvector validator, scripts/packed_bitvector_*, and docs/internal/extensions/bv1/**. Disable Git text conversion on these paths to retain their actual recorded bytes, including mixed existing line endings and binary evidence. Do not renormalize historical evidence or weaken a hash comparison. The attribute declaration is only the mechanism: final evidence must compare committed blobs, current source and a fresh isolated checkout under core.autocrlf=true, including the frozen matrix, public source/consumer, fixture manifests and binary archives. The exact byte-round-trip measurement will be appended when performed.
+
+Alternatives rejected were allowing either arbitrary newline variant against a fixed hash; rewriting snapshots after every checkout; applying a repository-wide line-ending policy; omitting binary/frozen evidence from the check; or stopping the mathematical work for a new route-review phase. This is an artifact-reproducibility prerequisite, with no theorem, ISA, model, checker allowance, main integration or aggregate-slot change. The existing aggregate slot remains with the other scheduled worker until the coordinator releases it.
+
+The import-closure check found one additional concrete path: of 230 public replay dependencies outside the four protected groups, lakefile.toml alone had mixed working-tree line endings. Its recorded 691 bytes/hash66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A became 696 bytes/hash5CFC20B6F1A9BED1EEF7CD96DADAFED6286C1147F22EA4F42DC19915AD4E2298 in an actual isolated autoCRLF index checkout. The coordinator independently checked that observation and approved solely a fifth `lakefile.toml -text` rule and its explanatory comment. Preserve the original four-rule disposition and retain the amended bytes separately as CHECKOUT_BYTES_LAKEFILE_DISPOSITION.md, SHA256 F43488628BCDBDED05BC7139719F6E9CCFF3B5272BB138B14B14EB316101F512.
+
+The fifth rule was applied between the numeric campaigns and leaf-consumer replay, with the manifest byte hash unchanged. Python's standard-library TOML parser independently compared it with the exact governance blob: removing precisely the owned rmq_packed_bitvector_validate target leaves the original parsed manifest unchanged; the target has exactly its expected name and root. This rules out a semantic build-configuration change hidden among newline bytes. Final staging must ensure that Git stores those actual mixed bytes, and the complete committed-blob/fresh-checkout comparison remains required. No recorded fixture, manifest or prior evidence was normalized or rewritten to make a hash pass.
+
+## WDD-20260912-BV1-005: keep mutation diagnostics semantic and byte checks exhaustive
+
+The first public mutation campaign exposed two distinct fixture problems. The smaller-memory capacity constructor used List.length_take_le, whose conclusion bounds the taken list by the requested count, where List.length_take_le' bounds it by the original list length. The constructor failed and its consumer was correctly skipped. Separately, a code-charge omission constructed successfully but its consumer exhausted Lean's ordinary heartbeat limit while comparing the large program expressions. The production runner rejected that resource failure instead of labeling it the required semantic type error. Both original receipts remain failed development evidence.
+
+Correct the one-character lemma reference and add the identical replay-only `attribute [local irreducible] RMQ.PackedBitvector.program` epilogue after every copied constructor, before the unchanged independent consumer. Include the epilogue in constructor-only fixtures too. This preserves actual program definitions, producer and consumer bytes, required propositions, primitive semantics and resource limits; it directs the elaborator to leave the large program constant unexpanded during the negative type comparison. Pin the epilogue bytes, new content-addressed fixtures and exact error locations. Recheck unchanged acceptance, both charge omissions and the repaired sibling before one full campaign on the corrected fixture generation. This materially changed test environment justifies the later full replay; no prior failure is relabeled a pass. Reject raising resource limits as a substitute for obtaining the exact diagnostic, or counting constructor failure as a public-dependency counterexample.
+
+The first epilogue startup, r7, rejected a nonlocal irreducibility attribute on the imported program definition and launched no consumer. Lean's diagnostic required the local modifier. The final boundary above includes that modifier uniformly in every fixture, preserving its intended file-local scope. Keep the original generation and r7 failure; this ordinary scoping repair does not change a theorem, permit an unsafe reducibility option, or require another route-approval stop.
+
+The program-only local boundary still exhausted the conversion budget on missing-code r9. A bounded diagnostics-only copy identified the remaining expansion as Allocation.memory: List.rec147056, List.append131280, canonicalSuperRankEntries17108, descriptorsFrom8672 and directorySegments6816 reductions. Extend the uniform local boundary to Allocation.memory and Experiment.width as well; leave completeRho and global arithmetic operators unchanged. With these three public constants held unexpanded, unchanged r11 passed28.407 seconds, missing-code r12 passed24.219 seconds with its exact semantic type mismatch at258:2, and missing-scratch r13 passed27.711 seconds. No heartbeat/depth limit changed. Exact older fixtures and diagnostics remain retained. The corrected full campaign still has to pass; these focused results alone do not close its row.
+
+The first omitted public run reached its owned 1800.807-second deadline during case 32, which therefore has no verdict. Cases 1–26 and 28–30 passed; cases 27 and 31 failed for the two reasons above. The other seven selector checks passed, and the outer record verified source/fixture bytes, scoped status and whitespace after owned cleanup. No live child survives that attempt. The corrected full replay receives a 2700-second omitted-child bound and 3000-second outer bound based on this measured duration and cold-cache margin; each Lean child retains the original 180-second bound. Record that deadline change with the material fixture repairs before the new narrow checks. Other proof consumers and operation campaigns use the build slot while this offline repair proceeds.
+
+An independent read-only review also strengthened check_checkout_bytes.ps1 before execution. Machine-readable Git status must parse stdout alone while retaining stderr diagnostics, because this host can emit a harmless global-ignore warning. Require the original protected source paths to be clean, including untracked files with user-global exclusions disabled for the individual command, so a forgotten artifact cannot disappear from a commit-only enumeration. Compare every protected file's raw Git blob identity and source/fresh-checkout SHA256, and compare the nonempty import-closure hashes from passing replay records even for dependencies outside the four attribute scopes. Use an isolated shallow clone, bounded owned processes and no cleanup or renormalization. These changes make the test fail on missing committed evidence and external dependency byte drift; they do not authorize additional source or attribute edits.
+
+
+The corrected final public generation subsequently passed all 32 cases and
+all eight selectors in 592.664 seconds, below its retained bounds, with no
+resource failures. Every constructor compiled; two consumers accepted and 30
+rejected at their exact independent semantic surfaces. The final manifest is
+55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821.
+The final selector summary and omitted-registry summary under
+extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507
+(and its -omitted sibling) preserve all 276 source/dependency hashes and all 64
+fixtures. Final static review also checked 82 standard-axiom reports across 34
+successful compiler phases. These outcomes close the campaign's local replay
+requirement; committed-byte verification, aggregate certification and independent
+coordinator acceptance remain separate obligations.
+
+
+## WDD-20260912-BV1-006: preserve pinned line endings with narrow whitespace rules
+
+The first staged final candidate exposed a distinction that the earlier plain
+working-tree diff checks did not cover: the newly added -text paths store CRLF
+literally, so Git's default whitespace rules reported 303202 terminal carriage
+returns as trailing whitespace, plus 38 actual final blank lines. A bounded
+captured diagnostic with CR-at-EOL recognition left exactly those 38 files and
+no other whitespace/indentation diagnostics. This diagnostic is failed evidence,
+not a policy pass; its count and exact path inventory are retained in
+extensions/bv1/commands/staged-whitespace-diagnostic-v1.json.
+
+The coordinator independently reproduced the 38-file result, read every path,
+and approved exactly the 1927-byte zero-context patch with SHA256
+8ADDBDB7B260ACEB3712CE30D59E066A2144C01013164F4E52352F1D464B057E.
+Add explicit blank-at-eol, blank-at-eof, space-before-tab and cr-at-eol checks to
+the five approved byte-preservation patterns. Disable only blank-at-eof for the
+seven exact patterns covering the 38 already hashed artifacts: current Capstone,
+validation mutation runner, three copied dispositions, the original hash-named
+32 constructor fixtures and the original snapshot Capstone. The hash directory
+and constructor suffix are exact; other and future files retain EOF checking.
+Ordinary trailing-space and indentation checks remain enabled on every BV path.
+
+The full authorization is archived without changing any bytes in
+extensions/bv1/CHECKOUT_WHITESPACE_DISPOSITION.md.gz; the decompressed original
+is 3517 bytes with SHA256 89358C85F25104EC65BCFCAC6B812F9F168774C73D756F751E87E25FB5C54B25.
+Compression preserves the new approval itself without requesting another EOF
+exception for its verbatim final blank line. The approved patch and all older
+dispositions remain retained. After applying precisely that patch, ordinary
+git diff --cached --check passed with no command-level whitespace override.
+Final staging and committed-range checks will repeat this on their actual trees.
+
+The raw build manifest needed a separate index correction: git add retained its
+old cached normalized blob after the attribute changed. Stage only its verified
+691 raw bytes using hash-object --no-filters and update-index cacheinfo, preserving
+mode 100644 and its recorded SHA256. The resulting index blob is
+fa57dac01b0a2a3217fe359402ac88c88709d8dc; the retained manifest-raw-staging-v1.json
+records the equality. The parsed semantic manifest check already passed. Actual
+committed-blob and fresh autoCRLF checkout equality remain required next.
+
+Rejected alternatives are normalizing recorded source/fixture/approval bytes,
+blanket -whitespace, a repository-wide core.whitespace change, treating the
+earlier unstaged check as staged coverage, or rerunning unchanged proof campaigns
+for attributes alone. This is a real, documented EOF-check exception for exact
+artifacts, not a claim that their blank lines were absent. No Lean proposition,
+model, replay verdict, frozen row, public claim allowance or aggregate permission
+changed. Coordinator acceptance remains independent.
+
+
+Final dependency review found the validation selector receipt intentionally
+records its same runner in two roles: four entries but three unique paths.
+The initial checkout checker mistakenly demanded unique per-record paths.
+Remove that unnecessary restriction while preserving every recorded entry,
+validating each SHA256 and comparing every occurrence with source and fresh
+bytes. Contradictory hashes cannot both match the actual file and therefore
+still fail. No receipt, dependency hash or replay input is rewritten. The
+independent current-file review passed 568 before/after comparisons across 280
+distinct files, including exact public producer/consumer/snapshot identities;
+the actual committed/fresh comparison remains the stronger next obligation.

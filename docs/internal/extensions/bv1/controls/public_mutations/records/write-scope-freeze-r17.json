@@ -1,0 +1,1531 @@
+{
+  "utc": "2026-09-12T13:29:32.9637283Z",
+  "status": "WRITE_SCOPE_FROZEN",
+  "candidateStatus": "CANDIDATE_COMPLETE",
+  "noFurtherLean": true,
+  "noWorkerCommit": true,
+  "scope": [
+    "scripts/packed_bitvector_public_controls.ps1",
+    "docs/internal/extensions/bv1/PUBLIC_MUTATION_CONTROLS.md",
+    "docs/internal/extensions/bv1/controls/public_mutations/**"
+  ],
+  "summary": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507/summary.json",
+  "fullSummary": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/summary.json",
+  "finalStatic": "docs/internal/extensions/bv1/controls/public_mutations/records/final-static-r16.json",
+  "manifestSHA256": "55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821",
+  "runnerSHA256": "CF2D7C080AD7F4ADF42313C693ACF474CF87147DE1FCAF93A31AA164994BA085",
+  "reportSHA256": "00B9C435B65B5F5C5516D255B67DCFE558E243AA4537D358DB734C511D1D8C59",
+  "all32CasesPassed": true,
+  "allEightSelectorsPassed": true,
+  "sourceRestoration": true,
+  "fixtureIdentity": true,
+  "scopedStatusRestored": true,
+  "whitespaceCheck": true,
+  "baselineWasGloballyClean": false,
+  "frozenFilesExcludingThisRecord": [
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/capacity-without-code.constructor.lean",
+      "sha256": "648A6A344CFD1D95B1384AFF1D805A7F66D8A6ABF72C13A36C49B70F00B5B55F"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/capacity-without-code.consumer.lean",
+      "sha256": "0551357AB6FDECA16921CBC2E38131462338188C72BCF697886139A68B356ABD"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/capacity-without-scratch.constructor.lean",
+      "sha256": "7BF69AADCDD603D3DAE0FD3A4194C2151BB94F7B51E90D1ABC5CA0C81D446EA5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/capacity-without-scratch.consumer.lean",
+      "sha256": "4854D99D124B5B7AB5E0C07AB4448499C8FF6E1A5D3CBA3B3CCD02797B1F0872"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/delete-accessCorrect.constructor.lean",
+      "sha256": "E107CDBA1FD835C7CD236AA6EE5CB28B632B4BC79821A5607B4AE0070D24D0A9"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/delete-accessCorrect.consumer.lean",
+      "sha256": "623C809616B6935F1AB462AFE46940F9DEF46BCFB105D4EFC002B4B05530A930"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/harmless-comment.constructor.lean",
+      "sha256": "B98A0874F9314EEC8601EA885726D66F17847062A29F444F2F92309152B1E937"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/harmless-comment.consumer.lean",
+      "sha256": "6B4D647B5CC0FB377CB4F2ACA1DE30AB1BB0D84E1C810AC5E1F8F3DE42A1ABA8"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/public-proposition-True.constructor.lean",
+      "sha256": "C0795054B92747D206166B629DCB8AD43A25C0BAB8A289F8BD6FBA2EBB959F4E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/public-proposition-True.consumer.lean",
+      "sha256": "5FE7E7C2CD8F5EF82956B103C12CF1B1A28F88E43974BEA4AFE13E88F3CA0D61"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/sibling-completeCapacity.constructor.lean",
+      "sha256": "D7A40FD7F8CCA01DDAB064D1258459145CDB263207CCAB7E003A62463ED07438"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/sibling-completeCapacity.consumer.lean",
+      "sha256": "B515C27BBC7C7445E64563C2E91C476813186742FBCBEF4B0C40F6DE9D7CC29F"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/sibling-readerCorrect.constructor.lean",
+      "sha256": "D5A0136709D05AE4DD09BF7033B1691370225221997DFA87F144F0BFB7C29236"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/sibling-readerCorrect.consumer.lean",
+      "sha256": "5C359574D244E725DEE232E852C94516EA06AE455FB8C2659AA053789BF9B565"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/sibling-selectSafety.constructor.lean",
+      "sha256": "C25B0530845C1B02F0A01BAE596D5B7A8DFED8AF5337F9F8AC33664D8F1EA66A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/sibling-selectSafety.consumer.lean",
+      "sha256": "35924FBC0C83E6A97B0825490D9C97BBD650318CA84DE27C928C55D18D539E3A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/unchanged.constructor.lean",
+      "sha256": "051E5472BB3AA2F8F22B6A1C392E68EF2CCE2F0744F2F1657B58CC45F18EAFAE"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/unchanged.consumer.lean",
+      "sha256": "07320BBA0DBFCE2862CF737CA2549371E50C85ED31062C2C73740EF03BEC8B32"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-accessCorrect.constructor.lean",
+      "sha256": "BA8855F6A16EF8F8AE7216DA53AAE1C2F5F4A68571C98F9E8B0B31C816C1BF64"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-accessCorrect.consumer.lean",
+      "sha256": "10E69147FB2A58BA4A63A6A949EBD72050866172D53F2227DBA829723670C7C4"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-accessExecution.constructor.lean",
+      "sha256": "6582D802F511E7636F238DB3F91F51834625F31875D68D97480EB41B724DA79D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-accessExecution.consumer.lean",
+      "sha256": "6C3A572FEE66F47158C9564BFFC4734FB1D6CFEE8EBD4FFBD071AD73EC2A58D9"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-accessSafety.constructor.lean",
+      "sha256": "E91610F2212F81F1A3D09FE4727CA187CC24239EF1BB56565A39357A2B4DE554"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-accessSafety.consumer.lean",
+      "sha256": "34C2327113E1356622DE8AB2DFF3CF42326EF2528A3BD40CD38FB74F93AD1C37"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-categoryBounds.constructor.lean",
+      "sha256": "6949E46511D90A5F2F4BECF310E5016B1E98A3B6B1BD7D67E349B86EB127F66A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-categoryBounds.consumer.lean",
+      "sha256": "0609F1C9021FAF43B3BC5A9A02E45D3CCF950B42C03A8476E249420FC0790AA4"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-categoryPartition.constructor.lean",
+      "sha256": "7C19221F37F3FD07387C8999B5FD1D1EE683955F983C248951F489E5F3A9EA9B"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-categoryPartition.consumer.lean",
+      "sha256": "AA1E55E48F0A618C1B96DAB1937A0DD24F3005E51F163AB3D3227ED2AFEF0EB5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-completeCapacity.constructor.lean",
+      "sha256": "F17A26D72B7C0A9A9CA79A0E9D99879C56FF0739CD5F5780349D77C7ACAEB4D9"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-completeCapacity.consumer.lean",
+      "sha256": "0D5C916242818400E43F59A1F7A59E415E84E9FCFBB57B36B83B9C9D9B2042C5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-finiteScratch.constructor.lean",
+      "sha256": "1132BE4D82415B8E0EDED57F266A11BF296A081FECDF96B06F2CD587D5E69193"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-finiteScratch.consumer.lean",
+      "sha256": "6430D5EE21F8F5B04DD6C427CF2C23CE2765C9F2474198D1A044344999E80875"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-memoryWordsFit.constructor.lean",
+      "sha256": "4309D769AA3B95540AB4BEE346CA264A51FB0E5B8E1B2E650A6048C3305D6728"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-memoryWordsFit.consumer.lean",
+      "sha256": "86F30A1E37EA8E53AAE7CAC29B5D2C1A5142E30D62F79EBCAEC9047807870D27"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-overheadLittleO.constructor.lean",
+      "sha256": "35ED2361481CE3409F0F0200EB6B41D894B409DB8C1191325BA8BB1805EEF4A4"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-overheadLittleO.consumer.lean",
+      "sha256": "F28B855D9AE3A3792462F4199EEDC6F164286479DD168CC6D790A952A1403937"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-programLengths.constructor.lean",
+      "sha256": "73EDD80D3493862ACFAAC033C720F70DE216E2984C6E274B0FAC5E12444268C1"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-programLengths.consumer.lean",
+      "sha256": "2D2EFB3ED01BA27749498A2A29208A7792A699F5988E3D2E009465DA6DC8EB6E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-rankCorrect.constructor.lean",
+      "sha256": "0B5EC9D0FDB6B003FA4A5E5129CB38ABF77E8FEF64717B0768F0D24C6B2E69AB"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-rankCorrect.consumer.lean",
+      "sha256": "C918E25B84C82860F2F9A69AD33E27BA11981CE7E9AB7302E0C4300DA9EE0A46"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-rankExecution.constructor.lean",
+      "sha256": "929124CB2D24A019614A6951E0F651F4AC8D88E1477E4F76D66A39835EF2602E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-rankExecution.consumer.lean",
+      "sha256": "A18E055613BE6B35AEF2D73124A3939A5E763A18F15685354751B7256E28B43E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-rankSafety.constructor.lean",
+      "sha256": "B4CF3EA1E6C9E9665495E8EFC3725C0D4828879242A0B4B0AE0DCC7B92CA1623"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-rankSafety.consumer.lean",
+      "sha256": "04E66EB52C517F09CB1B68152553C8D907EDF348CC110931E1E78BC9B1CB7C21"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-readerCorrect.constructor.lean",
+      "sha256": "EF9FD42A99BC7FC9E30EC36860547697FD1066DCEB5B2C8F037DF9C84C8E6442"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-readerCorrect.consumer.lean",
+      "sha256": "8FB7AB2DD365B1A2CF50EC646E9B8B20F254D16607FF8A82EB12AB46AF2CDC5C"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-readerGeometry.constructor.lean",
+      "sha256": "A17C94536127915C823B65826C136ACEE50C7F09A8D67698604105B894496F22"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-readerGeometry.consumer.lean",
+      "sha256": "FFE06E2491A7D86FCD28E5951C5697231F90A7DA7B4D8518DA94BED1AC72E13A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-selectCorrect.constructor.lean",
+      "sha256": "C1AA1B79B631EA5943CDC4736C179B4E6041CCC574BE7F88E0917BF942511BC2"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-selectCorrect.consumer.lean",
+      "sha256": "10846343307642CEC627ED4C9FEA917F1112F358086579DED3353708A23EEF84"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-selectExecution.constructor.lean",
+      "sha256": "2CB005B1D063B78C95AEE13E431F352156EE44F3F7AC08A49190253C04EEAB88"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-selectExecution.consumer.lean",
+      "sha256": "5F0EF38FCC7FBF843612B39E0948429DEA7D76B34C01E5B26D426D75B4F9800E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-selectSafety.constructor.lean",
+      "sha256": "9AC67AF9F57D88E5BE80A609F61A630CE67522CA0E3AEEA9453D7F51BF36A3AF"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-selectSafety.consumer.lean",
+      "sha256": "886CE818099F531C25B1D7D59DA8E82E04027D0731048948D6FDB2C4D5CEB2E8"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-sourceBudgets.constructor.lean",
+      "sha256": "826D9211D0AE37384D09E5C931341577B3DC2E23A091CA10E049505DF9EA7A74"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-sourceBudgets.consumer.lean",
+      "sha256": "3B1B57A79FA8AE065AAB959B78864BF2617D8ED74079BC96A53BC2EE7425319E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-stepsBound.constructor.lean",
+      "sha256": "D9F4B4C9791037A3C5760B743CE3C4606E126B59FC63C5EE47E37513F55E5F73"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-stepsBound.consumer.lean",
+      "sha256": "16421CDA6CB337FDBA04DE4727CF19744DCBD5350246EBFE32761517CAFBA63E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-suppliedMemoryAgreement.constructor.lean",
+      "sha256": "61BFA2E0E489D2BAB4A64D155B1F0B224388E1578EC7DEC01A59509B636858DA"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-suppliedMemoryAgreement.consumer.lean",
+      "sha256": "813CFDF046C30C83FA2506747BE016DE1E9699760BFA3B76A3F2FE40A7E85767"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-validArgumentFits.constructor.lean",
+      "sha256": "4E70B1E0541ECD469F9FD28E4D4A0FF9BBC1712D9960000701745EA7DAA89E65"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-validArgumentFits.consumer.lean",
+      "sha256": "7816DB0F5B2BE3B00746DE43AF9DE3A2894DC0118176C9D5479834172B5B91A8"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-widthBounds.constructor.lean",
+      "sha256": "8C77D786737FAD5EFD287AD46B889BC72CFE6A2D74B6A4BE2BDD0098AADC9FB3"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A/weaken-widthBounds.consumer.lean",
+      "sha256": "879657296DC3615A02661B33A7913920F6EF7E2BEFA199093D465F12BB377D41"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/capacity-without-code.constructor.lean",
+      "sha256": "7C09B74D503BF7F673A834D9B1CB2F092BBA8A17B41F5160BEE3C10679C1AC04"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/capacity-without-code.consumer.lean",
+      "sha256": "7849671DA72D77E6ECF49F4ADEC7CC0608CD4DC6F9054B9823FBFBD09715735F"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/capacity-without-scratch.constructor.lean",
+      "sha256": "904825C2C5A5F96040BFFB84135D504A417174EF5D7A2D46B9691DC9F73B75EB"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/capacity-without-scratch.consumer.lean",
+      "sha256": "B679C671E706C9F9F3FB042E9913C900A3388752186D28DD016962F343E411D1"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/delete-accessCorrect.constructor.lean",
+      "sha256": "0F0406739EF1C369E2CFC38541A4FB51B22A4E3C6D0259E538061AC58A6AC3AF"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/delete-accessCorrect.consumer.lean",
+      "sha256": "0F0D99598825D9946B77913AA886E69C4648AF272F46B90EBCFB0071E9F80A5A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/harmless-comment.constructor.lean",
+      "sha256": "A4AB5E4587BCD8F59FB11CEB44EFB47BE70C216BC864AAD1794F8FC24FA96A87"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/harmless-comment.consumer.lean",
+      "sha256": "B4E84042625F412B9A5EC0EE94172EA685F43390FA7D1686CF171E198A31A874"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/public-proposition-True.constructor.lean",
+      "sha256": "32E8C382C78FADE4CA06BF78228FE1B8A7E59D5F8D929C5F61B1F0DC81FCD3EF"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/public-proposition-True.consumer.lean",
+      "sha256": "CC86C2519BC28F797AFA57832A4A480DE69D814AD747F4FA62DF3BD72C34CF58"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/sibling-completeCapacity.constructor.lean",
+      "sha256": "E97FC11F28A067D0FC4CA0B2BFAB0B68FE6889ACD89FB08E589C25E523D45B3A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/sibling-completeCapacity.consumer.lean",
+      "sha256": "277C6FFDC862520B9BD3C16D95622A727338363154530122E1464727B1F65606"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/sibling-readerCorrect.constructor.lean",
+      "sha256": "2AD7E7C62D2346D57A9ECB9D415C67ED6D4C5BDDC4236A840F193F2FB7D59BD1"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/sibling-readerCorrect.consumer.lean",
+      "sha256": "731B15131915CF739754C250405F1F897FBDCE48CFD3D5C9853295AB9FD7290A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/sibling-selectSafety.constructor.lean",
+      "sha256": "1CC63491001F357B5C76799177A79C1AED57B3D7FD79CB18DFAB80EDF028B74D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/sibling-selectSafety.consumer.lean",
+      "sha256": "040BCE96780FB16A9FE681CE8A5B9AEC1CC099B467E1203E42B894A0F29A6B58"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/unchanged.constructor.lean",
+      "sha256": "7F7B7EC00BFA68887243AD12B3D0D87147D37EC457E2025AE99359B8A47E2C12"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/unchanged.consumer.lean",
+      "sha256": "BB8983EA0A13E5B50163522EFFD007F2AF98E563C3D0681F2E0C3DB941E9B6A3"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-accessCorrect.constructor.lean",
+      "sha256": "03446601C88A0F8D4EE1E69EC635FF62995F9A1EFBC5923165783510B80FABAE"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-accessCorrect.consumer.lean",
+      "sha256": "A9122CCF5714FD08D5DFCF813995DAE0C2E37FFFDCFDAC078B8C6AAAEF2D613D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-accessExecution.constructor.lean",
+      "sha256": "4EBDB3F8FE1DD35D563FB0315380292BDC9BFF48DEE55DCC45E4FDEB0166ECCE"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-accessExecution.consumer.lean",
+      "sha256": "A6EC15E8BF0B17E4DA01E968CE8F3DF496F191FAE3D207E89C9850EC9E3EADE9"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-accessSafety.constructor.lean",
+      "sha256": "D4236DB17F212D0BAD7778440138FB61954163905FA0E2797E03D779C0BA1B1C"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-accessSafety.consumer.lean",
+      "sha256": "47FC99AD80104B2A3AAE5DA7BC471E85F81EB884D7A91A7830F5CAAEDA0497C6"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-categoryBounds.constructor.lean",
+      "sha256": "F09305959C7BE02EB358D1DF577F7F0DF2B59E776AD41FBE1283B98643759781"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-categoryBounds.consumer.lean",
+      "sha256": "A996C5DA62ACB6F95BEF10B5E950AB6FC2A9123FDC6EFFA15A4C63851130BB48"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-categoryPartition.constructor.lean",
+      "sha256": "01E8DCD4F40FB210DC78BD3B2CCCEB8BA08252F82E27B02BA22407DA8438F41B"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-categoryPartition.consumer.lean",
+      "sha256": "38676DBAF807CFE09EF8B6474DC67EA5FC560521E8944F6D828096E964EA4EB0"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-completeCapacity.constructor.lean",
+      "sha256": "C2CC22B5A53391CF69C3D68BDE36B8B9A096CF9E88B57CD91B81FC5E80FDD661"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-completeCapacity.consumer.lean",
+      "sha256": "FF5F485929E3AEF036422E1CE658C7FEBDFEB59D2DFD24D91BF43D917FD994E4"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-finiteScratch.constructor.lean",
+      "sha256": "D21A76992F4EE54F58AEA7B9E6332B44268F1E4349F682918EEFD57191F5A080"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-finiteScratch.consumer.lean",
+      "sha256": "F6532543B8B0444DCB13F6ACB46ED30E05D83ECFA0BFA56953079E9D848E88C1"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-memoryWordsFit.constructor.lean",
+      "sha256": "328063870767754D95EE7B2192D4263AE37335289C5A90C81F413E3E0F8FA99C"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-memoryWordsFit.consumer.lean",
+      "sha256": "E4C525AA498BF0F609182BA82D0D4AAF661B4EF2A79CBF929D286A96B45C101D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-overheadLittleO.constructor.lean",
+      "sha256": "DFB67100F9E512F9EAA7270D650949491193CCE5D504AEBA5E54DC46AA9C5D95"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-overheadLittleO.consumer.lean",
+      "sha256": "8517D6B5F604E384AC9CE2FF68908C028A06DF5BA0174F40A0879F663965F405"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-programLengths.constructor.lean",
+      "sha256": "284691291D50277EB8AB79F917CDF6691939CD5E2940D1BC61756DB3ACFF8F61"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-programLengths.consumer.lean",
+      "sha256": "F02584E3B4FDE6E7F8D0BE7C11240E2DACC8436EA627F4FCC2F45B8DA57E4A27"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-rankCorrect.constructor.lean",
+      "sha256": "04C3F219060F67B66423AB9CC9A73DC0F114521655187419F1C865D4FA559446"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-rankCorrect.consumer.lean",
+      "sha256": "7BD0479E0FE44FC476753FD1578C27C25C7B4286DD5BB2E87D0BD3BA2137D537"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-rankExecution.constructor.lean",
+      "sha256": "483F2074D1ABE6A72364AFB6654300A0D2AE7038363BC46A440865ADC004F9D9"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-rankExecution.consumer.lean",
+      "sha256": "FDAC29ABBF3A0DEE84EB673BFC9CCE83049C0147D619D92B10D288ABD94E65BF"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-rankSafety.constructor.lean",
+      "sha256": "FA0E57B48FFC2B3EE1AA02EBBAFAD39A81FDC6ADD2D8899B831AE05D41291654"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-rankSafety.consumer.lean",
+      "sha256": "EDF9308C83EB831EC444C5E8393F263E845396D583715692F6F43030AA13FD95"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-readerCorrect.constructor.lean",
+      "sha256": "70F29691A7A81238D8287AD1204CB42580B3BDE1DEF21C11B43BBCEC91769D21"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-readerCorrect.consumer.lean",
+      "sha256": "A686E61143D39E595C3544B523FA06086ACC6E5B5D0623096B90B9989853C522"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-readerGeometry.constructor.lean",
+      "sha256": "7EC5D47EB0C8D6260FD30ECF2F2791333CAADE175E7283C52008DA24A5986663"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-readerGeometry.consumer.lean",
+      "sha256": "9EF134D70A370C8F5E6C63CF239A3621AF529D6E4EC2D0488DB8518B0F73ED55"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-selectCorrect.constructor.lean",
+      "sha256": "129467D512207044D15388AE05FC3CC0EDAFA81B50EC98C071924AEBDF1C0ADB"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-selectCorrect.consumer.lean",
+      "sha256": "0131FD5B04E6194DF51FA1E04C447254AC43698761B7C4A563635DE8C0AFBE04"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-selectExecution.constructor.lean",
+      "sha256": "256145ADDFCB7A2B746C28D61F2001AA200CB7F1BFF24EB21C8A22762D5D001D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-selectExecution.consumer.lean",
+      "sha256": "6C6DFAC4D59C02176F2883C103261EDB0A549EA3B2BD460918CCACD2BDAC6626"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-selectSafety.constructor.lean",
+      "sha256": "1A2E66C5AF4AD393CCCAD4E9C087C51410C9785DDFCB25F2B36D382157BA3F91"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-selectSafety.consumer.lean",
+      "sha256": "31D27BD8C8B62F39B4BBF24445E0869A71A9EEA01A07E8DD032106F4DCACC1BD"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-sourceBudgets.constructor.lean",
+      "sha256": "C0ABBB5591BA2198028DFC2C3306B78EBA3BB50B0C35957DF850A87EED198A9D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-sourceBudgets.consumer.lean",
+      "sha256": "637AABF5E10408764016D9D972CBDD3F74D2A56A9A96C932B0D80D717495DC32"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-stepsBound.constructor.lean",
+      "sha256": "9CAE3C200B773EA6A3A9E6DF07B1E1678C3536C365FC90AC504F5441E65D1E70"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-stepsBound.consumer.lean",
+      "sha256": "A8041A49032744E7AAD19A522BDB826264BCE7129E7002B912CDAEB99E9578E1"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-suppliedMemoryAgreement.constructor.lean",
+      "sha256": "3B57BE9502209F2E102938C3914B8E6E2071C78D7803EEAEC6A9F1D181AA665B"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-suppliedMemoryAgreement.consumer.lean",
+      "sha256": "3EC6F253E26664AB9BD7542514ECD75AE2C63250F483B940D6E36D2091BF4824"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-validArgumentFits.constructor.lean",
+      "sha256": "6312C19E40DAEECB8166E82F6D609F0D0F94A04F5CFDF7FB5AAAE129500B2C44"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-validArgumentFits.consumer.lean",
+      "sha256": "472F158CE31D7C0F1AA63E1F00506005E19EBD11E2651B1F2CB311BB61A5FD91"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-widthBounds.constructor.lean",
+      "sha256": "7A76E88C776843C55677298B903B0CB051580D56EEF772981987A4F47FFC778C"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821/weaken-widthBounds.consumer.lean",
+      "sha256": "3B2DFFF51A9959F39C12F25C50B6AAB67F6FF74B721A70A28070468066808EC5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/capacity-without-code.constructor.lean",
+      "sha256": "B1498ED33EC8656803133CCC32F6560A3EF2D9A345E6F8C2FB70DDDAC670FEC9"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/capacity-without-code.consumer.lean",
+      "sha256": "3C92A1A989EEE049BB61A36CD138B6D834E622EA4706C96EA428CF955D3ACA51"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/capacity-without-scratch.constructor.lean",
+      "sha256": "9BD68C775DD930400A88A320855BE4D66C3A91DABA162F8B556745F53061CB16"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/capacity-without-scratch.consumer.lean",
+      "sha256": "A3AB73E68543F636B03EFCD85E345B43C0537AC0754ED0609F92D0A64F5EE9E1"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/delete-accessCorrect.constructor.lean",
+      "sha256": "D5A999CFDB2FEA2598EFC0999D10D15002D67B6D2090CF8EA1117CDF8BEEB343"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/delete-accessCorrect.consumer.lean",
+      "sha256": "50CE522DB5671B9DA3FA9BCEEF71D38A05D4F2A8BE41C9B5F7C182CE4329B25C"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/harmless-comment.constructor.lean",
+      "sha256": "FEC9E7C7BA1299C60E8D3EB6E3DCF06BB51029D9CF66509F2049CB4C55D900C9"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/harmless-comment.consumer.lean",
+      "sha256": "2D37F54478DDBAD26E5EA0132323739A6B5D33CA4EBACB4CD45BA920E468CDD3"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/public-proposition-True.constructor.lean",
+      "sha256": "67676F9278028407C5D50E0B0DB3858FD63526659468285912F27C09A29FD155"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/public-proposition-True.consumer.lean",
+      "sha256": "18C8D76BDF639FEF1B55C052A30CA6BEB80980A7B5AA9EDEE421C6C4CA47A62D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/sibling-completeCapacity.constructor.lean",
+      "sha256": "12E410D3F19C1BA5288D506549F8BA4A1FD5142D4FE776DB7FB11D1ED4FD3E40"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/sibling-completeCapacity.consumer.lean",
+      "sha256": "E3619A833E72A70B5030D0043B4E4963DAFBAF78D40BC3690195D56BB8DE7BFC"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/sibling-readerCorrect.constructor.lean",
+      "sha256": "61D16C948DDBB3825BA19C7F780AF94C108AEA700CF4330548EC2BB5953EBAAB"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/sibling-readerCorrect.consumer.lean",
+      "sha256": "9AC0FE972CFE6825F48781B502086434F421DA86255AAA04FC978BBCF2EFECED"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/sibling-selectSafety.constructor.lean",
+      "sha256": "FEB06585E104DA3C4B665B4AF9B1BAEBE0642F39CD15AE472FDDD0AAD0F49809"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/sibling-selectSafety.consumer.lean",
+      "sha256": "2AC4C251760BF877E382109D55996EAA1387881C3E4D6E90D0C7BCC8D5B65EC2"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/unchanged.constructor.lean",
+      "sha256": "3E6163098F25F0A698A33A9E3CC9F5BF230A56451DD1570CC571D5DF4510ED77"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/unchanged.consumer.lean",
+      "sha256": "0214F8540456AD97CDD60A19431CB9EA14DD162370C2CD63902A4F916C6C868D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-accessCorrect.constructor.lean",
+      "sha256": "A91B8EC7BF919DE89E97D36030AA10A45A1C260ECE541520F20B0A6901B4A61F"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-accessCorrect.consumer.lean",
+      "sha256": "3EDADE56CADB4067C7467710B3FD61BA5D2C6537E0FE414611F04057DC9850A4"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-accessExecution.constructor.lean",
+      "sha256": "8CA893FA74512AAC3E84E6825524A1140A90198C09D8CD02242DD1BDDA78A2BF"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-accessExecution.consumer.lean",
+      "sha256": "D5C5545945AB8540BB5F05B72634C3BE1B30B8C05E339D2FA8AC55327B127C53"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-accessSafety.constructor.lean",
+      "sha256": "AC2F6B6FF76FFD51B8B37F2B738ACA1049B78F07C4E1C10B38DD2A6380C7E33E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-accessSafety.consumer.lean",
+      "sha256": "A1556436823BB967CE0CF5A30CB1AC530C542F323DD9C3CD7287D25A111DC3D1"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-categoryBounds.constructor.lean",
+      "sha256": "C869FA9C5559F6365BF73B2D6B2AD3C0395BE79E8D6CAD015FA3913829E63DC3"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-categoryBounds.consumer.lean",
+      "sha256": "DD1C80FB12A567C40177BB26AC88AAA7159864D45C565E5A5792F79816D1B37C"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-categoryPartition.constructor.lean",
+      "sha256": "4BC1E2E56BD83331C1F0073E805FB1ED9F4F68E9E52EB590A72EBCB6AFEBC691"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-categoryPartition.consumer.lean",
+      "sha256": "05B77E9A4682110852E02330EAE35008F33689FFAB0C95E1C57F379B91CE9AAB"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-completeCapacity.constructor.lean",
+      "sha256": "A2A79B31028DCBAA990C354CCB6EAC4F15E69C015776FA99F5133F09FC120108"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-completeCapacity.consumer.lean",
+      "sha256": "7974FEABD9C67765DC3D10AC6C4AA507645268B47647F42E757BBE167151C25C"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-finiteScratch.constructor.lean",
+      "sha256": "9A14F8D9BA315A63E2794CD9ACC62066B09A8CD6EC24F3B4E538F6B352029F66"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-finiteScratch.consumer.lean",
+      "sha256": "342682DAF21A7C0B94A4E59041084960E09B16110B094C295F3BE1D7891777B4"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-memoryWordsFit.constructor.lean",
+      "sha256": "C1D3730D6AAC0A1128C823821F17A4A7BCE6B20BD88B4785789F9EB232933C1F"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-memoryWordsFit.consumer.lean",
+      "sha256": "0E1FA937E9D1BF2739AB2BE64F15EE0477E0D1F6C578D7CC0E2DF5A6B08D42B2"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-overheadLittleO.constructor.lean",
+      "sha256": "C9CA06D84EA8AD65B10C87EC9C2285C70EFDAB2EA33DAD354195E972BC237142"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-overheadLittleO.consumer.lean",
+      "sha256": "FB1F0EF5ACC97B9DB6E08B3B39759B2EE0ADBD358748AB803BC1E2535CF6FD12"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-programLengths.constructor.lean",
+      "sha256": "0C61E1D4CB45C8147D736B11C33FBD4703FD266AF833429D31A3E1F5B5C210A3"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-programLengths.consumer.lean",
+      "sha256": "301A49EC9AD804E7DC9E2D3AA2D782F93ECDC30901147DA5DB42CFE2DCD274D2"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-rankCorrect.constructor.lean",
+      "sha256": "5E5852B5B5216E9762BF204C9BE8BC0F43CED3E9610247665D4F9ECBB081952B"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-rankCorrect.consumer.lean",
+      "sha256": "5060AE513318AC89BBA83BAC95E4D3D3B62B38388DBE04DF4BE0A95C7F96BAE5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-rankExecution.constructor.lean",
+      "sha256": "DB3C462314D91A669D9EE1D9FFB80F3D4A4ED36C781E9A139E35081A897E9BD9"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-rankExecution.consumer.lean",
+      "sha256": "4357F0DFA0DFA23EFA153D502B4E960FAA7C531329BAB18915912E7DC48F754A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-rankSafety.constructor.lean",
+      "sha256": "A8697E1E9553C7A0CAB78B0EFE5BE5FCF6217C401BA11E781DEE489BB214A03A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-rankSafety.consumer.lean",
+      "sha256": "22F88A61AF30638089BCF15B71900C137056C1F8A434CD4ECA61746C4DBF30DD"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-readerCorrect.constructor.lean",
+      "sha256": "BA1FDBF0ABA815C0CFAECCCA117AC46C36C0D4BC2EFACE02AAC969FB53385381"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-readerCorrect.consumer.lean",
+      "sha256": "BEF27C49C398627DEAAD4490F5DAC22E4C9DBB55A8E4D0C1F772FD54B83275B6"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-readerGeometry.constructor.lean",
+      "sha256": "CEFE12EB9AD045B3109C60D4E4A839B22588F07ED71C34002766FB0516005962"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-readerGeometry.consumer.lean",
+      "sha256": "B459C912FA63A869F0353B8E6D1BDECA91D2D61B4A0DF4FF6EB1B2DC965AA046"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-selectCorrect.constructor.lean",
+      "sha256": "5A8B507444F96A5FCD981AC792EC98B1828D68BC9178257846A1C04D6414D24E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-selectCorrect.consumer.lean",
+      "sha256": "7BA9F6E3635B6CF6EACE442F5629C8157B562006E6B50118B66D4CBF0F520573"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-selectExecution.constructor.lean",
+      "sha256": "E2257A7AD3B756E144E142F2B0097CA03A63423307E2D4A0FC24CF92B830968C"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-selectExecution.consumer.lean",
+      "sha256": "D6164A4C8B8765EB193BB335E9F4F3CC2A41DA4EA924D9C1087BC2A49B526EA4"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-selectSafety.constructor.lean",
+      "sha256": "087312E4EABDBCE8868FA93B0489BEB3129CA756B8F27855BACF4EAF62182E0D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-selectSafety.consumer.lean",
+      "sha256": "C3F5DF9AF70E24D549D6BAFEAAE7FC8293BC44C3CEF55351210F5BDBB06C7738"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-sourceBudgets.constructor.lean",
+      "sha256": "5630B8D3EEB6EFEDBEB00609A9B29E4A5FFCBDB190B133CB88F7E1F7C8D411A4"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-sourceBudgets.consumer.lean",
+      "sha256": "9DFA351D725D4D6BFBFF387FF3CC7E556D433EC0AECBFF3F88BBE601520FD7A5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-stepsBound.constructor.lean",
+      "sha256": "287279111614FA86ACE3BFA7B6B0D34EF1D23CC8D4DDDD5CB0FA728C6B1C3075"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-stepsBound.consumer.lean",
+      "sha256": "57E53CA68683C31D4D71F34A8504C4F14C92F09F4FF097B9F7BE9973E34E1488"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-suppliedMemoryAgreement.constructor.lean",
+      "sha256": "D37D398A33627168DBFA19CD30487F4E6E4F3B7A8FA48F5A1649FD971A99A7E6"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-suppliedMemoryAgreement.consumer.lean",
+      "sha256": "979C4975E4484D66DAE9864380269BB37FEE0926695DCB61D37FE1A3865593FE"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-validArgumentFits.constructor.lean",
+      "sha256": "3ED0A28AA01AF37DC29A2170ACBB0EB14CFEC27686EFBF156CC9E2E53E1A5F21"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-validArgumentFits.consumer.lean",
+      "sha256": "5B2AF2EC240642F0CD03C38FE51EC6E51C810E519C9DE28BFA6D93EF4FF71B54"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-widthBounds.constructor.lean",
+      "sha256": "E5B7627E6BEBE4733ADBCEF700C3976B6081924FC230D98797B68D085B39BC05"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2/weaken-widthBounds.consumer.lean",
+      "sha256": "D9287C6F1E8402A30A66F79D76FD65A05902D67ABCEEDF66CE1F90DA6840B10A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/capacity-without-code.constructor.lean",
+      "sha256": "3B8F2B138D8688E6135B810B4DFE542D2E6A541CD0228EE11F3EDF7A7A7BC4FB"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/capacity-without-code.consumer.lean",
+      "sha256": "51441D1D50D5306585FB86A5B6E7878A40227EF4496E567482675373B6F55A80"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/capacity-without-scratch.constructor.lean",
+      "sha256": "A753103B1A5ACF77E6C1E99AE347C5737CE5F430BE46AC37FF0A6F5FCC33A6C9"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/capacity-without-scratch.consumer.lean",
+      "sha256": "C4F7C8FD7424E1E114FA44146C8264A73DB4979B726735DC43C6D7A5F2CA338C"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/delete-accessCorrect.constructor.lean",
+      "sha256": "651791C2BACE987748195F70EAE64B2B7456DAD1B64F76D39959113EDEFFC6E7"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/delete-accessCorrect.consumer.lean",
+      "sha256": "1D448F39649BE5CA08713BA75E8B198063819BC1DE619488DE32A3D06145DCEA"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/harmless-comment.constructor.lean",
+      "sha256": "72FB34AEFDD6DD4C5D58160F954FF6F6A251B957438528E4BFE9FE86CCDA4DAA"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/harmless-comment.consumer.lean",
+      "sha256": "FD5635974A1AB26F392D5AD314220BC219019ACBC066C38D8B4BB1275A3917A8"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/public-proposition-True.constructor.lean",
+      "sha256": "25F7DFA212CA726BFA0B94D53514F418F636334834E611683C107DDB500198F5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/public-proposition-True.consumer.lean",
+      "sha256": "CD318D4A01D7EB7D85734777D2DE9793DF29C799AF2DBBC66E6E39521CFB8E2A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-completeCapacity.constructor.lean",
+      "sha256": "383AC71E84D35B513E61FB2D6922511EC707A66D73906EDBE059F110BB4CA583"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-completeCapacity.consumer.lean",
+      "sha256": "3D897DBE47103BB5DBAB786B2EFC7DBB6320EDCFEDAA5E5F050AF8C9B6A321A5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-readerCorrect.constructor.lean",
+      "sha256": "09DD0A40D2E4AA6100F2FCD52327F3F1A899DFD7C18CFA8AA6025D02A56D8A93"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-readerCorrect.consumer.lean",
+      "sha256": "8BF63B05D98C8F0785AC0684B7F1D960757C792A0A81CEF5B98445B5845DA11F"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-selectSafety.constructor.lean",
+      "sha256": "E7EC2C585E24141BF454AC9B116F824ACBA24EDE85D58D5CFD33B9670BF7E2A0"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-selectSafety.consumer.lean",
+      "sha256": "E6C6E5F62FEB8B9A903A40606A2FCE0C84E467480595BC097B9DB2F2949DBF0E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/unchanged.constructor.lean",
+      "sha256": "1C6CD0A85B77FBA7706C77DA87DE358808A24FA661D5635A3C4B3BBF96005D69"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/unchanged.consumer.lean",
+      "sha256": "34030EC06C9424F6692A02E49352D7B58CB67A6F1A874BCF07D980DEA0FCB3FB"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessCorrect.constructor.lean",
+      "sha256": "BE09F4706F3D5A0B82A0B7A2B3C2F7EC974F39181B7FF6EB82A3C2F0D0905839"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessCorrect.consumer.lean",
+      "sha256": "3E46A4250093F07453FDDD3077B0CD86D24E4F0C7DA68E0B7A36614937D1EB8F"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessExecution.constructor.lean",
+      "sha256": "D08CBAFF37A5A3CF762A697B7C0B041D91612DB39CED86481A29F11D80A9A4F5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessExecution.consumer.lean",
+      "sha256": "233BC572F5947A66BFB47857CA8629E696B691E3399AE6DDB7BEF3814129EF9E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessSafety.constructor.lean",
+      "sha256": "89BD8C1D125D764AB8538610A7986B71B4639107B89DE60C3B00B012F89127E2"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessSafety.consumer.lean",
+      "sha256": "5433D05760D65D9F969D3433834EEDABAB1A6274F65F951EFA5FD0AF339E901F"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-categoryBounds.constructor.lean",
+      "sha256": "7716C9062519F437B242E46328219893B7C9DA9FDB4F56C7F7CAB92E96A899F5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-categoryBounds.consumer.lean",
+      "sha256": "E4311923FFF5ADB3787056D750814B35477E68419265D522BF46FCA8D7FF79A8"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-categoryPartition.constructor.lean",
+      "sha256": "04863CC2F81C1F9DE7E69F8A8E551AF2DC69AE39DD7327ACE348FDC7314C0719"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-categoryPartition.consumer.lean",
+      "sha256": "A87CC95187DDEB2E09FB08D0834036C10F434318E32B1631581E80CBDB05106A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-completeCapacity.constructor.lean",
+      "sha256": "4B0706831969C019A3D2783BA58FB40FCF6314ABA0324A8FA664F5F8E1486FA7"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-completeCapacity.consumer.lean",
+      "sha256": "6EEAC100AD379A0CCF6D0AE1DF62AED680DB286B4A3ACA11A204C23ECFFA28E4"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-finiteScratch.constructor.lean",
+      "sha256": "B152A554E610CD1B71AF4FEBE48EF7DE76A07AD1E552BBBB369329F73E753D95"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-finiteScratch.consumer.lean",
+      "sha256": "45A0F90170383AEBCC6A26B1F805930C9EDD1C7AC7712A4572CB05413B124C07"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-memoryWordsFit.constructor.lean",
+      "sha256": "357895F2A939A21AD32072C92496E332A6A7C0D19B11ACD6460BB4777F1365BE"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-memoryWordsFit.consumer.lean",
+      "sha256": "7C694AF7B9DCB60A38645BEF898AF307E331504B9234F03C727782CE119FB382"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-overheadLittleO.constructor.lean",
+      "sha256": "81B4ED9073C48C982CD353D2FC5AEA6DB93312EAF20E1A5F3B1E59B0F57AF1EC"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-overheadLittleO.consumer.lean",
+      "sha256": "4B929237A0A552FB5C0452ADC7C67645CC48145DF3136145429E914DE25A39E3"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-programLengths.constructor.lean",
+      "sha256": "218B2E0E75ADA30FF7CC020751D13604192493D43BF9DEA4A8A38720A1BEC884"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-programLengths.consumer.lean",
+      "sha256": "6504D0887EBEABC94D26FF26EC79CFBB9BE8E44E192D1179A9B9A872799E425D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankCorrect.constructor.lean",
+      "sha256": "CB537E5BDF53729456D4CC64D8ED0C587EB0DCB02FC71B0890E0FEACFFF08AED"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankCorrect.consumer.lean",
+      "sha256": "70DC8889FB84878BE1F28130F289EFEE45D4A993A1B41AF79F989B1B637468E9"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankExecution.constructor.lean",
+      "sha256": "94001D672071D489778FA49426B372FBFBC332370182A6281D7548F5702CA367"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankExecution.consumer.lean",
+      "sha256": "8560837AA178EAF503503DD786C74EA68E3AD4CA57822877611C460FC5762AFF"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankSafety.constructor.lean",
+      "sha256": "507059533A947EBAF1CEDF8BF78F68A90E76904793922602F4EFB1BCCDBD8641"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankSafety.consumer.lean",
+      "sha256": "5CA82990A028513E0955CFD0D3BB20E97D6B7109A30BF36A3FC8305CA6ADC937"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-readerCorrect.constructor.lean",
+      "sha256": "93E5ED046477366087D233485968F19B015170505D15C2E7745C1EBC54F5C1DC"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-readerCorrect.consumer.lean",
+      "sha256": "ED39EA38FA85B96952E8C5442E95D3F60BB16147A4995C5CD2256C0F8B6EE0B7"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-readerGeometry.constructor.lean",
+      "sha256": "B83749B6812A69E42E75C286F433BDEC4F07B8297B50EC220313C8EDACAB1029"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-readerGeometry.consumer.lean",
+      "sha256": "94B58CD1D753928B54BE64BF9341E3F01AD2ED48EF6FFC1ED915D28D7B18F7EA"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectCorrect.constructor.lean",
+      "sha256": "CF4D7AF5EFA1270F66619985DA7A42453826FEC680C932BF3CD562DEDA1D4820"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectCorrect.consumer.lean",
+      "sha256": "EC2BC5463D39D9511A08403449B9818356DB57309E3D0BA6CADC6875B831BB81"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectExecution.constructor.lean",
+      "sha256": "6F840AFC5BA6467310E7DB225FC8A8D1396F3B01339A8463CCC3AB60716BF122"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectExecution.consumer.lean",
+      "sha256": "0507FAB74975C9FFA4094FC2644580900A2AE77FD74013F6131E0666D7A326F6"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectSafety.constructor.lean",
+      "sha256": "2B7D753EC6DFBF5848B7F3E14BD0C6C4AE0E98D0D04876EFFBE316ED497C5BE1"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectSafety.consumer.lean",
+      "sha256": "A61094FE7ECF898D423E14830D6845942F59E93C24DFA49F10B3559D8CD1B588"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-sourceBudgets.constructor.lean",
+      "sha256": "005BB35670B2C32FBE85E30EF1718DC644B1234AED677F8754C5659BA5AC2331"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-sourceBudgets.consumer.lean",
+      "sha256": "6C7C268A1034C947B8F8E922E17B4DCA6E675F1B40F2FC6962B8227D3DB1631E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-stepsBound.constructor.lean",
+      "sha256": "01046965F0DB6E44EB0701DC4D8E77BE3A61037132270B41D24B76324384E193"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-stepsBound.consumer.lean",
+      "sha256": "BBDFC89E87897BEC6F8CDFE092134FF9D8AA413F0BBED409D832DD7077DE9765"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-suppliedMemoryAgreement.constructor.lean",
+      "sha256": "46B67E7A43110C142844548F3C12F71C6A261E216105A7E98EE0511E909F96FE"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-suppliedMemoryAgreement.consumer.lean",
+      "sha256": "BC23BD30C1C415D25127455ED9C75E7158BAB19325CB69F93797032FD9F3E195"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-validArgumentFits.constructor.lean",
+      "sha256": "6B9A8F0B135126F6A20839D0AC2E1EDA63FAE2ADDB068C2E40CA3FAC14C89C35"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-validArgumentFits.consumer.lean",
+      "sha256": "FE300CD5BE7A660467EA4C06DD91B6CDDE02C5BAD63490A5A6C9EEE56226AF69"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-widthBounds.constructor.lean",
+      "sha256": "DCAC8F2FE924655589D8A5436CB92A1288A0BDD797F3A20A8E15C2B0BD0F4689"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-widthBounds.consumer.lean",
+      "sha256": "2ECB9D416095DC8ADFF4067438A5D2FD17D57D5EC63EF29B747C6FE0108380CF"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/diagnostics/capacity-without-code-r10.consumer.lean",
+      "sha256": "46FA2E22E169F04DA3348E33986EC96BDDDA9441F385079F019CE390B91E25EF"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/manifests/177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A.json",
+      "sha256": "177285DBD0DEE89002F8BC59478EF90A4D5B8B227FDFB7F04E6BED14DCB5F16A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/manifests/55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821.json",
+      "sha256": "55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/manifests/6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2.json",
+      "sha256": "6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/manifests/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618.json",
+      "sha256": "B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/capacity-without-code.json",
+      "sha256": "218B564248CFC043ED72DAD7712900703B7FCB3E50526F3F80C2447AB34FF030"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/capacity-without-scratch.json",
+      "sha256": "D9D63CA9D840280C0421FBCAAB91C2D22C2D6A3BB9782FC69DC5E782ED7BA54D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/delete-accessCorrect.json",
+      "sha256": "C63667ECBCBF93AD2B97340459C09C525686CA5F6D771AE0321F3F24670EF9F9"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/harmless-comment.json",
+      "sha256": "542EBCD8671A0D75E1A584EE17E7F38DC859862CF5F52BC544C9DB758803451A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/public-proposition-True.json",
+      "sha256": "2D01C5558EE5D5AEB9F469200D079472CC33405090C4ABB81A40843D8256722B"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/sibling-completeCapacity.json",
+      "sha256": "807CACE1B1BA4530E66DD6AF6F91F1F42133796BE6AFD4F460F09EFB15128C1D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/sibling-readerCorrect.json",
+      "sha256": "21C344C900687FCC7685CFD9F0307DAF90C5D6C1623B61C439B5E5E24E032498"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/sibling-selectSafety.json",
+      "sha256": "4DD630756B4A4024415BF8A91350A12B7E72E26C408F7738875A26C198E970C9"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/summary.json",
+      "sha256": "DC190DE58D493133D28D800E73A1CE58FD474D674BF5A9D8F61017987A5016C1"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/unchanged.json",
+      "sha256": "38F7F634E83E047C78DB2AB86305B9775C4AD7A41E4435532F399F2AFAA3A799"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-accessCorrect.json",
+      "sha256": "65AFA75BA0FCC50063446D66E15647A713363C86D05BC3AC5B4BC50C68F2CAA3"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-accessExecution.json",
+      "sha256": "1E51557748066F4355BC771B9C657A1147527B406E75B1D34ED533954134734F"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-accessSafety.json",
+      "sha256": "68160FDDB776B184889AF48B76AA4B33EEAB4CBA8AF1DEED47599D39DE28D597"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-categoryBounds.json",
+      "sha256": "48C7EAC3C35F1A141F800D5CDAA83E022211D1F7A4CBCE909141C2869D6A7498"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-categoryPartition.json",
+      "sha256": "4CF07693F65CAD28FA3E0F365B592B7679ABD414CB2ADAAF3D19DDB67E151216"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-completeCapacity.json",
+      "sha256": "794E04DFBADB5742E01D979F9BCF81CC331FB3F8B31B2DE061F62311331E710E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-finiteScratch.json",
+      "sha256": "9A415A1A199E2B557FB73D89313F0ED183D86F3D26DBEA6DADA25CF374716396"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-memoryWordsFit.json",
+      "sha256": "73C5B67F305F6832828D5D56AE5AA7AFF7222E6CD682D737650FE7F1C9A98916"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-overheadLittleO.json",
+      "sha256": "CD012E14F23863D28D98CBA4D37B0280151415D2F95C6BEFDAD9DC81F9DBBDDD"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-programLengths.json",
+      "sha256": "77746BC59DD7B5C83C44F4F644146CD339C2F380DB080919A7E2302757536E82"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-rankCorrect.json",
+      "sha256": "88679530B7E56C31E45F03B4F41C07B46A087A9464AEE8236DB8FF8E600AB015"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-rankExecution.json",
+      "sha256": "08E32AC6411DCE2831C1D8FD1239FBBCB9682101DAE866F79409D5464F0C7E87"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-rankSafety.json",
+      "sha256": "7E7C4D7DB8CD26F3144A7D1D2D8AE5A649EDECC4BD78725F597AAD77B2989A8D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-readerCorrect.json",
+      "sha256": "8AE24729CBB9893B28DAA455C5C251DB4F0A7FDE48C722C302360B1D2243504B"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-readerGeometry.json",
+      "sha256": "90B282F678A9CE46CCAC42807BDF1D6C987C0AC9941C1E3C28C49B503507B75A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-selectCorrect.json",
+      "sha256": "463D8217DD8B67AC7745F09AB30F07DB365372C692EF4F714D87FEB29D40F510"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-selectExecution.json",
+      "sha256": "FF92B9B1CC91937758A49E7439F2F3FEC5C81438BA8329D084786C0FB6BD0A1F"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-selectSafety.json",
+      "sha256": "F664D534DC90C38D2DB50BEAB2E245153C9712A8680C0EEB0957E8BF8BA98B2E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-sourceBudgets.json",
+      "sha256": "EC89931815B8C56F1664A23A1633D9A9E6D527858135A28C3E34384AD8D7AE5C"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-stepsBound.json",
+      "sha256": "CD04B1D72BCEED20F8091F9CCAEA3F84A845D05D9443913EF29B66C1291E28A5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-suppliedMemoryAgreement.json",
+      "sha256": "E98F669BBBAD677C3D64DF121410A14AD3354E86D07C86B6473FD0F2FD0FD5BB"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-validArgumentFits.json",
+      "sha256": "6EDA749FE36ECA43ECD022D178F23DAB20CC7BB8951C7CC3ADF7B7FBA4D055D3"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-omitted/weaken-widthBounds.json",
+      "sha256": "A1170C4BD6DA3C75AC9CFEDBC866FCFE15C35BC5B5400E64B32C82590FC2C46B"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-valid/summary.json",
+      "sha256": "94D5C1E8678D63E7F3B1FAD31AA829E8DA55B1D70BE433B04A655B32F5470185"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507-valid/weaken-accessCorrect.json",
+      "sha256": "9B2BAA4802CA6B2138DECEE73043265D5267E37EB83D2FD1CCF420C8CF460654"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507/summary.json",
+      "sha256": "176C5D9D041B2791D10F4E635D51DD664367B8A3AC2FA59DAF0D6BD95777420D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/capacity-without-code.json",
+      "sha256": "789C5A54E7AAF6B957A4A4F76C8AE5637A5F28CAB4EDB49A7016E30459C2D4AA"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/capacity-without-scratch-consumer-campaign-v1-20260912120258157-2c2c1792-omitted-24a73644b0e14a389023d3d989968e6b.bootstrap.ps1",
+      "sha256": "E66C4BE027DE2BFDBE634A0AF46B0CC346B514788014246CA6482BD416F7DFBA"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/capacity-without-scratch-consumer-campaign-v1-20260912120258157-2c2c1792-omitted-24a73644b0e14a389023d3d989968e6b.launch.json",
+      "sha256": "6FEEF544985AE20C47FE3AF8B731BA567C0B6FBA825CD47502D287396E7828E8"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/capacity-without-scratch-consumer-campaign-v1-20260912120258157-2c2c1792-omitted-24a73644b0e14a389023d3d989968e6b.release",
+      "sha256": "F5E6D024C05C9CC2746A3E127408B91A8B7A7F2A30DA0C259BC54265502DDEF4"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/capacity-without-scratch-consumer-campaign-v1-20260912120258157-2c2c1792-omitted-24a73644b0e14a389023d3d989968e6b.stderr.log",
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/capacity-without-scratch-consumer-campaign-v1-20260912120258157-2c2c1792-omitted-24a73644b0e14a389023d3d989968e6b.stdout.log",
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/delete-accessCorrect.json",
+      "sha256": "8AF49B1A6F73CCA7DD9FE7A25AA5016B0382F3C9C577EABE182F60CF2D0645FC"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/harmless-comment.json",
+      "sha256": "7744F7B3D1706DDEDB49A5E0A4FEB775CC13F68138CA306F943F1FE80B30F6C5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/public-proposition-True.json",
+      "sha256": "3C36B10B05DB79B8AA7B356647D32B926701D57BBF3DE07AC16D06BAE8BCCA18"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/sibling-completeCapacity.json",
+      "sha256": "20F74544602ACC3C307D92328B6E4AEA04AABD19A2463660144D7E0397E83E98"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/sibling-readerCorrect.json",
+      "sha256": "1CBA0C3D18735BC4782E8808A4D072FFAD26B1CDA269D6CC6D570299A6707F71"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/sibling-selectSafety.json",
+      "sha256": "680BBE2DEF3A5C5372030BC53DDF1B4C251374B45BB895552202199A323460FF"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/unchanged.json",
+      "sha256": "79C71F7421481F6C61F68AFA5100E737DA6E65D55E92F655C70E21CE7A090802"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-accessCorrect.json",
+      "sha256": "13025C57DD6EE46504D49A0A2283367AD4F304C610FFD49016BA2E16B970317B"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-accessExecution.json",
+      "sha256": "B25E70B2E168089CCABF71F04757A049A7019209F06A9126A8426D0BB7C9EA94"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-accessSafety.json",
+      "sha256": "258010DCB6CE2F2D8D983B642B51A41D6DA2986AAEE12F5C535FF2C30C3957CF"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-categoryBounds.json",
+      "sha256": "FD90787AE8D0DE8E9B1C836AC210CFC2DD7EAB82EFE5188B3B88D4F836593C6F"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-categoryPartition.json",
+      "sha256": "129CFB8C2344698E73CD40935F5C931F183FA336301E4BD033149C83A0E67336"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-completeCapacity.json",
+      "sha256": "02CACF411343EE091F420E0E931568418AD0DB2519725AA172B2223392181826"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-finiteScratch.json",
+      "sha256": "3332311A14A2EF97437D73CDAB65B5EAC3A1CD07A3DB30DDB624EFD248324D9D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-memoryWordsFit.json",
+      "sha256": "B9AE7DD4117F19804AD90558AAE64698D7369EA78EFA13E10B4F9506965A6E09"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-overheadLittleO.json",
+      "sha256": "3004A5A5CC8D091C9247C9DB9ED1B715DC5C8ABC029BBE0B51B2A11E4D7347BE"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-programLengths.json",
+      "sha256": "C1BDC511045C38BCAE793AD44ABAB09A81B27AE8B9C4F63E6DA07F5BE735768B"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-rankCorrect.json",
+      "sha256": "24DE8525CBFC2D2117DA6CD3D0D26E71C66BA7A160655C8ABAFC43BAF62189D3"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-rankExecution.json",
+      "sha256": "0BC449A586B4D0D522D67BFC732C5A7C71954709E6E9D82201DB2D1F86396542"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-rankSafety.json",
+      "sha256": "52A8B89B236A96AF2843501D72E9BE2D8B6733FFA2F68CECFA384B0229359DC2"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-readerCorrect.json",
+      "sha256": "21C099880974B57EAE5F2394B1C633FB2309284EB101E7E7B9B1222AE59DA390"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-readerGeometry.json",
+      "sha256": "16F295E4F066B2F7B94FB5227359E028FE008769550A0FC94D69CCB885D7B1F9"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-selectCorrect.json",
+      "sha256": "96B5B4C1BFF269CB3ABC64E5B2519393D3E63FDC82575CCFBB95D63F0551FAAE"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-selectExecution.json",
+      "sha256": "275A26EF8ABC4F81EB2C8A50FFA9C0599E830AA3F0B3CC2D616E001E7AEED482"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-selectSafety.json",
+      "sha256": "13BD295EF3584CCE4128DDADB803DECE9773C1B900C7AB35C332FBDA12C1B50D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-sourceBudgets.json",
+      "sha256": "58FED9ED5E1A7BF453E0EBCB9B9CED144ADD0AAED0D04E28416FC6EB8E7D7B8E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-stepsBound.json",
+      "sha256": "0CCAA2071E9A6F35E5A9CEE0329CAF8A0B89151C3FE66B3EDEFCB6ABF0B89A55"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-suppliedMemoryAgreement.json",
+      "sha256": "081D4D07D9D824E88A7397A41386E077DCCB4D7680D269701542E31686FCABC1"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-validArgumentFits.json",
+      "sha256": "E5EA6A139E8E65CF1443ACF518620FC3261BD5BB5CADB6BF644BDAE29D452DC0"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-omitted/weaken-widthBounds.json",
+      "sha256": "DF2C85E9847FB837581B75F8C21BA0A5D8833CC1F8DEF8EE310E9409454D0B95"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-valid/summary.json",
+      "sha256": "1991B66202A780E3ABBC9D448CFEEBA73044EFAA90D380260C30249BECE3C4F5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792-valid/weaken-accessCorrect.json",
+      "sha256": "D4A15477F5272D8BC8EBCB448A5BC8F20A1B423BEE4ECFD8CCBDEF20EB856C27"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/campaign-v1-20260912120258157-2c2c1792/summary.json",
+      "sha256": "65546AE004A15E5B09DB583E169803A5C22C5E83A5C927AC5217A9CA6F40C1EC"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/driver-known-r2.json",
+      "sha256": "9ED285C82152C828016BF095A9DD4A70C1B2BF7DAC2AC64CA28F8EC4311514A0"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/driver-selectors-r15.json",
+      "sha256": "648BFEF62D26C2F97765785319F28DB321CB289FA5F31F4E9613BDEE81035695"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/driver-selectors-r3.json",
+      "sha256": "15E9CCEAA5BD9B7A6B7A69678C9012DA4B9E57CC5779108DCD376EDFBBE9C46F"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/driver-sibling-capacity-r14.json",
+      "sha256": "88405A9141EDF748F43D970A1828E85B206799DE80DB95763D6DB20788A86D3D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/driver-startup-r1.json",
+      "sha256": "68937007517CF24122EA01B03B750A4F324D05AF256C426432BB6167AE856FE9"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/driver-startup-r11.json",
+      "sha256": "08CD3BA113D91285C3326B0A3406ECE175C590FAC6353EFA58064F044A8E2C60"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/driver-startup-r7.json",
+      "sha256": "E6630325A65107E4C596406E25E09691137BE3D5F7FC7EA49AD2E949A2BDB56E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/driver-startup-r8.json",
+      "sha256": "45327F4CE0E73A92E505994CD11B5151A9915B8F407EBC4EB84F9D45480EB309"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/driver-without-code-r12.json",
+      "sha256": "1AF88927E2370B4ABC688E7E90E95E6F2D7703289AFEB66B601F594796EAD6CD"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/driver-without-code-r9.json",
+      "sha256": "871C0C21BEF28913B224439C83F4719AF7F0DF23892B7C2C4050806C0A40194F"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/driver-without-scratch-r13.json",
+      "sha256": "78AC9D40B1ED9D1EF03303914EA60E7095DBE6D030E2DED4E0F4369598E56D98"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/final-static-r16.json",
+      "sha256": "3A6B5CADD17A7F4FE7BB7D0D263C33D34A4B8BA10C79290BFB54E2DC902B6180"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/first-campaign-multiline-axioms-r6.json",
+      "sha256": "027B1C9613213338E7F53E55A20B5DDCC6626E0D1A1BB3D2D1DACAED8C92D06F"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/known-v1-20260912120122614-27f1d4e3/summary.json",
+      "sha256": "9DB603032EE96EE9C5D97C6B18DA8A36A9D364E7E896148466D3794D1CF64494"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/known-v1-20260912120122614-27f1d4e3/weaken-accessCorrect.json",
+      "sha256": "9803BD6D4745FB61BA011FB59E20AD4DD83292EADF65F2BDBF7A7D5667B8397D"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/preparation-r11-allocation-boundary.json",
+      "sha256": "B116B00C7E8D02CA6C7750D0B0388CE1EF81353CDD6AB9466AD316BBAC864300"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/preparation-r5-amendments.json",
+      "sha256": "9684D50BF35829AA05FFCA39B9DB919CAAAB7E6BCDB7B863C5B847F1829CC856"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/preparation-r8-local-scope.json",
+      "sha256": "EE178EA4B25ED69052CF5E02211EE90054F2E02BBE42347E71DB8D11B44C29A3"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/reduction-diagnostic-r10.json",
+      "sha256": "3ABCCBF66562F75B0649B86519353ACC317CC4405051B269A6DFDF09CBD23FEB"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/sibling-capacity-bounded-v1-20260912131232993-0dae1d73/sibling-completeCapacity.json",
+      "sha256": "7FA9ED78DAF87DBFA065AA82F089CFBF2563FE90F1EEF664D3301E3425F2C7DE"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/sibling-capacity-bounded-v1-20260912131232993-0dae1d73/summary.json",
+      "sha256": "9AF7A77855DF07179D3A9899388EECACDA58DCEE1F78DDF193EF9B3ED6F97FD3"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/startup-bounded-v1-20260912131112382-16de550c/summary.json",
+      "sha256": "C34A27BB72B9FE87D646CC539FCC75140392CFD64EDFAB6852C7E778957437EC"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/startup-bounded-v1-20260912131112382-16de550c/unchanged.json",
+      "sha256": "CFD77BACBCB8304D1F814C8E4D3C61749737619EDF706F539E48537CE933D94A"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/startup-fixed-v1-20260912130326593-5ae12815/summary.json",
+      "sha256": "140A2DCEAC22BE786F125B87BDA9C5DDB5FC70E808735394568F1F1FC4DAC964"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/startup-fixed-v1-20260912130326593-5ae12815/unchanged.json",
+      "sha256": "7A384C2680324D69C5F8BAFD967BF878B9812216710C5059FC21451E02E99B6E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/startup-local-v1-20260912130542938-da84d62a/summary.json",
+      "sha256": "9CB2EC431BFE07917529597F2A951CB612D4ACEB1507E9EC245EFC1AFC895EC5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/startup-local-v1-20260912130542938-da84d62a/unchanged.json",
+      "sha256": "AFAB159AC4C59F2F9A31715C5762BB7EAE420E9B0F0941263FEAA71DF49090E1"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/startup-v1-20260912115946824-c5633795/summary.json",
+      "sha256": "31F1115F7ED0F4AE460ACED3DC3E7D12D46D0D24060361B33B612BF1E5AED027"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/startup-v1-20260912115946824-c5633795/unchanged.json",
+      "sha256": "E8BBAFE43C54802F8564204AE1186A615BBBE00ACA39498FEBD2325461782BF6"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/without-code-bounded-v1-20260912131141013-c315be77/capacity-without-code.json",
+      "sha256": "CEA9E5FE376C2A5C79699FADA5A17BA54AB8DF89652B0A71A02638064AC30CA5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/without-code-bounded-v1-20260912131141013-c315be77/summary.json",
+      "sha256": "4BBF4D3C1E7E863574691CEC3A8031034C01D4C642E1AFD09EF0B32746874E2E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/without-code-v1-20260912130638654-f62ec813/capacity-without-code.json",
+      "sha256": "776C35AFD301F51C3F46641E0ADB319EA220D4F9F42DF2625EF8DF219D2C9630"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/without-code-v1-20260912130638654-f62ec813/summary.json",
+      "sha256": "4A5B4F30C3E2B83F71395407B5D962E87F3F181DD2F69E9D13F72AA80B794035"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/without-scratch-bounded-v1-20260912131205253-a3c06263/capacity-without-scratch.json",
+      "sha256": "897C3B948E05A28EACDE75F7FD7EC9B4336321A51651752583B317586A5E0032"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/records/without-scratch-bounded-v1-20260912131205253-a3c06263/summary.json",
+      "sha256": "D4490C8903753A59FE1FBB54E2E0F25B7A932BA26C43623D34DB135B40F106B5"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/registry-v1.json",
+      "sha256": "546ED02ED97227C269C4649C0B75C5A7337B9D40DE6ADA14CBBE2546AD79FEEB"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/snapshots/97405C70ED3B60CED72874D6DF622D2E9BBA0BD8F04808A3F98ED34EE1CEB770/Capstone.lean",
+      "sha256": "1C6CD0A85B77FBA7706C77DA87DE358808A24FA661D5635A3C4B3BBF96005D69"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/snapshots/97405C70ED3B60CED72874D6DF622D2E9BBA0BD8F04808A3F98ED34EE1CEB770/public_expected_type.lean",
+      "sha256": "FEA8D045EF0A9CB9679949ED8825F2E04A4542C01E8F056A778BB0B474BF7A9E"
+    },
+    {
+      "path": "docs/internal/extensions/bv1/PUBLIC_MUTATION_CONTROLS.md",
+      "sha256": "00B9C435B65B5F5C5516D255B67DCFE558E243AA4537D358DB734C511D1D8C59"
+    },
+    {
+      "path": "scripts/packed_bitvector_public_controls.ps1",
+      "sha256": "CF2D7C080AD7F4ADF42313C693ACF474CF87147DE1FCAF93A31AA164994BA085"
+    }
+  ]
+}

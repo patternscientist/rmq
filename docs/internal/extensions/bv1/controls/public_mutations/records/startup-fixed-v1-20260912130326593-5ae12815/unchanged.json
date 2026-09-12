@@ -1,0 +1,37 @@
+{
+  "id": "unchanged",
+  "passed": false,
+  "constructorExpectedExit": 0,
+  "consumerExpectedExit": 0,
+  "expectedErrorLines": null,
+  "expectedDiagnosticClasses": [],
+  "observedErrors": [],
+  "unparsedErrors": [],
+  "resourceErrors": [],
+  "constructorTrustFailures": [],
+  "consumerTrustFailures": [],
+  "constructorPassed": false,
+  "consumerPassed": false,
+  "constructor": {
+    "Stage": "unchanged-constructor-startup-fixed-v1-20260912130326593-5ae12815",
+    "ExitCode": 1,
+    "Output": [
+      "'RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2\\unchanged.constructor.lean:240:11: error: failed to set reducibility status, `RMQ.PackedBitvector.program` has not been defined in this file, consider using the `local` modifier",
+      "Note: Use `set_option allowUnsafeReducibility true` to override reducibility status validation"
+    ],
+    "StandardOutput": [
+      "'RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\6E87E80858AAB80AD14C66934009B54BEE070120AAE7BBE038FBD55AFA446BB2\\unchanged.constructor.lean:240:11: error: failed to set reducibility status, `RMQ.PackedBitvector.program` has not been defined in this file, consider using the `local` modifier",
+      "Note: Use `set_option allowUnsafeReducibility true` to override reducibility status validation"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 9.616,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  },
+  "consumer": null
+}

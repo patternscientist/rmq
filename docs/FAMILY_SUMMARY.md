@@ -3425,3 +3425,32 @@ completeness.
    `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` with its committed replay
    and independent audit evidence. A path-sensitive step bound and a
    preprocessing bound in the same machine are separate, unstarted targets.
+
+## BV-1 candidate: generic physical bitvector operations
+
+`RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds` in
+`RMQ/Core/WordRAM/Bitvector/Capstone.lean` now has a kernel-checked inhabitant.
+For every `List Bool`, one numerical allocation supports access and rank/select
+for either Boolean target through the shared Packed primitive ISA and
+Structured compiler. The APIs agree with the independent List specifications
+for all natural arguments; the actual programs return those packets and halt.
+For representable machine inputs, every instruction field, transition,
+execution prefix, attempted read address and returned word fits the declared
+width. Actual setup, decoding, arithmetic and branches contribute to the
+execution-derived costs, with uniform instruction bounds 132/1450/10030 for
+access/rank/select.
+
+The same certificate counts the full numerical allocation, both select
+directories, all three encoded programs and 8274 scratch words within
+`n + completeRho n` bits, proves `LittleOLinear completeRho`, and uses
+`W = 32 + 16*machineWordBits n = O(log(n+2))`. The raw input is retained once;
+true-select normalization applies to loaded raw words. The model uses unit-cost
+scalar arithmetic including division and shifts; preprocessing is unbounded,
+the outer unbounded-Nat encoding check is uncharged. Lean runtime is separate
+from the modeled instruction bound. Code/scratch absorption is
+asymptotic and supplies no useful finite-size threshold. This is an additive
+generic bitvector construction; the RMQ reference semantics and shared Packed
+modules are unchanged. The independent consumer and all runtime/mutation
+campaigns have passed. Committed-byte verification, aggregate certification
+and coordinator acceptance remain pending at this checkpoint. See
+`internal/extensions/bv1/REPORT.md` for the current task disposition.

@@ -1,0 +1,56 @@
+{
+  "id": "sibling-completeCapacity",
+  "passed": false,
+  "constructorExpectedExit": 0,
+  "consumerExpectedExit": 1,
+  "expectedErrorLines": 256,
+  "expectedDiagnosticClasses": [
+    "type mismatch",
+    "application type mismatch"
+  ],
+  "observedErrors": [],
+  "unparsedErrors": [],
+  "resourceErrors": [],
+  "constructorTrustFailures": [
+    " sorryAx,"
+  ],
+  "consumerTrustFailures": [],
+  "constructorPassed": false,
+  "consumerPassed": false,
+  "constructor": {
+    "Stage": "sibling-completeCapacity-constructor-campaign-v1-20260912120258157-2c2c1792-omitted",
+    "ExitCode": 1,
+    "Output": [
+      "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618\\sibling-completeCapacity.constructor.lean:156:92: error: type mismatch",
+      "  List.length_take_le ?m.4293 ?m.4294",
+      "has type",
+      "  (List.take ?m.4293 ?m.4294).length ≤ ?m.4293 : Prop",
+      "but is expected to have type",
+      "  (List.take 1 (Allocation.memory bits)).length ≤ List.length (Allocation.memory bits) : Prop",
+      "'RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds' depends on axioms: [propext,",
+      " sorryAx,",
+      " Classical.choice,",
+      " Quot.sound]"
+    ],
+    "StandardOutput": [
+      "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618\\sibling-completeCapacity.constructor.lean:156:92: error: type mismatch",
+      "  List.length_take_le ?m.4293 ?m.4294",
+      "has type",
+      "  (List.take ?m.4293 ?m.4294).length ≤ ?m.4293 : Prop",
+      "but is expected to have type",
+      "  (List.take 1 (Allocation.memory bits)).length ≤ List.length (Allocation.memory bits) : Prop",
+      "'RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds' depends on axioms: [propext,",
+      " sorryAx,",
+      " Classical.choice,",
+      " Quot.sound]"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 26.672,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  },
+  "consumer": null
+}

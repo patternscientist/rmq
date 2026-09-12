@@ -2,18 +2,26 @@ param(
   [AllowEmptyString()][string]$Case,
   [switch]$Startup,
   [switch]$ListRegistry,
-  [string]$Stage = 'select-probe',
-  [int]$DeadlineSeconds = 120
+  [string]$Stage = ('query-probe-' + [DateTime]::UtcNow.ToString('yyyyMMddHHmmssfff')),
+  [int]$DeadlineSeconds = 300
 )
 $ErrorActionPreference = 'Stop'
 $caseNames = @(
   'empty-false', 'empty-true', 'singleton-zero', 'singleton-one', 'singleton-missing',
   'size-two-false', 'size-two-true', 'size-two-invalid', 'zeros-last', 'zeros-missing-true',
   'ones-last', 'ones-missing-false', 'alternating-false', 'alternating-true',
-  'mixed-false', 'mixed-true', 'threshold-minus-one', 'threshold'
+  'mixed-false', 'mixed-true', 'threshold-minus-one', 'threshold',
+  'access-empty', 'access-singleton-zero', 'access-singleton-one', 'access-length',
+  'access-length-plus-one', 'access-mixed-last', 'rank-empty-false', 'rank-empty-true',
+  'rank-empty-invalid', 'rank-zero-prefix', 'rank-singleton-false', 'rank-singleton-true',
+  'rank-length-false', 'rank-length-true', 'rank-length-plus-one', 'rank-zeros', 'rank-ones',
+  'rank-threshold-minus-one', 'rank-threshold', 'access-crossing', 'rank-crossing',
+  'select-false-crossing', 'select-true-crossing', 'rank-max-representable',
+  'select-max-representable', 'api-access-unrepresentable', 'api-rank-unrepresentable',
+  'api-select-unrepresentable'
 )
-if ($caseNames.Count -ne 18 -or @($caseNames | Select-Object -Unique).Count -ne 18) {
-  Write-Error 'BV1-REGISTRY FAIL version=1'
+if ($caseNames.Count -ne 46 -or @($caseNames | Select-Object -Unique).Count -ne 46) {
+  Write-Error 'BV1-REGISTRY FAIL version=2'
   exit 2
 }
 $boundCase = $PSBoundParameters.ContainsKey('Case')

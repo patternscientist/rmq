@@ -1,0 +1,150 @@
+{
+  "stage": "implementation-final-policy-v1",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "platform": "Windows PowerShell 7",
+  "checks": [
+    {
+      "id": "trust",
+      "executable": "C:\\Users\\poin\\AppData\\Local\\OpenAI\\Codex\\bin\\6fdec9b372c2c0fd\\rg.exe",
+      "arguments": [
+        "-n",
+        "\\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\\b|import Mathlib",
+        "RMQ",
+        "lakefile.toml"
+      ],
+      "expectedExit": 1,
+      "passed": true,
+      "exit": 1,
+      "seconds": 12.196,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\implementation-final-policy-v1-trust.json.gz",
+      "sha256": "5565C3124076B9D6413B814CB9ED803CED1BFD7628B5F13859E67AD1323D2924",
+      "outputTail": []
+    },
+    {
+      "id": "native-trust",
+      "executable": "C:\\Users\\poin\\AppData\\Local\\OpenAI\\Codex\\bin\\6fdec9b372c2c0fd\\rg.exe",
+      "arguments": [
+        "-n",
+        "native_decide|Lean\\.ofReduceBool",
+        "RMQ"
+      ],
+      "expectedExit": 1,
+      "passed": true,
+      "exit": 1,
+      "seconds": 4.064,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\implementation-final-policy-v1-native-trust.json.gz",
+      "sha256": "CF8320C46A07D78091BD847A1B5D0D681E3E8CB99E3E762D105000B6BBEDC576",
+      "outputTail": []
+    },
+    {
+      "id": "staged-diff",
+      "executable": "C:\\Program Files\\Git\\cmd\\git.exe",
+      "arguments": [
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "expectedExit": 0,
+      "passed": true,
+      "exit": 0,
+      "seconds": 13.059,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\implementation-final-policy-v1-staged-diff.json.gz",
+      "sha256": "202C1ED84A83095AD7B52145F088CE42C70221ACD0C5C440ED1CAB03BE70326E",
+      "outputTail": [
+        "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied"
+      ]
+    },
+    {
+      "id": "working-diff",
+      "executable": "C:\\Program Files\\Git\\cmd\\git.exe",
+      "arguments": [
+        "diff",
+        "--check"
+      ],
+      "expectedExit": 0,
+      "passed": true,
+      "exit": 0,
+      "seconds": 13.077,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\implementation-final-policy-v1-working-diff.json.gz",
+      "sha256": "7DD79014E0D19958E001CFC1EE1DE101DFDDADB88DE3C8533FA52249FE35227D",
+      "outputTail": []
+    },
+    {
+      "id": "range-diff",
+      "executable": "C:\\Program Files\\Git\\cmd\\git.exe",
+      "arguments": [
+        "diff",
+        "--check",
+        "0e6a00f654abc64f8b68988fa9675b9a839dca2f..HEAD"
+      ],
+      "expectedExit": 0,
+      "passed": true,
+      "exit": 0,
+      "seconds": 15.602,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\implementation-final-policy-v1-range-diff.json.gz",
+      "sha256": "9DED06C4403978C0C54091287FDA10B4E6C617AFA34623E9AA0815EEF3B08446",
+      "outputTail": []
+    },
+    {
+      "id": "design",
+      "executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "arguments": [
+        "-NoProfile",
+        "-File",
+        "scripts/design_decision_check.ps1",
+        "-Strict",
+        "-Base",
+        "0e6a00f654abc64f8b68988fa9675b9a839dca2f"
+      ],
+      "expectedExit": 0,
+      "passed": true,
+      "exit": 0,
+      "seconds": 27.117,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\implementation-final-policy-v1-design.json.gz",
+      "sha256": "23F0243C259ED54A450630688D909E61444D0F01E09DD538D425547C4588CFDD",
+      "outputTail": [
+        "DESIGN-CHECK: checked 712 changed files (334 code, 659 workflow, 5 neutral)"
+      ]
+    },
+    {
+      "id": "claims",
+      "executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "arguments": [
+        "-NoProfile",
+        "-File",
+        "scripts/claim_drift_scan.ps1",
+        "-Strict"
+      ],
+      "expectedExit": 0,
+      "passed": true,
+      "exit": 0,
+      "seconds": 221.268,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\implementation-final-policy-v1-claims.json.gz",
+      "sha256": "C80D9E825FD18A7F974138295ADD19245E286C4FFCBAAFF7B668118F6B2336F6",
+      "outputTail": [
+        "CLAIM-DRIFT[required-current-readword-only-theorem-attribution][strong-current-readword-only-claim-must-name-the-strong-public-theorem][allowed] README.md:104: strong claim has its required theorem identity",
+        "CLAIM-DRIFT: scan complete (2609 hits, 0 strict failures)"
+      ]
+    }
+  ],
+  "expectedChecks": 7,
+  "executedChecks": 7,
+  "frozenMatrixSha256": "80BD59A314FD33D37076802954444DA24F65C87A2A91DE23BC668B6AF9CCEB24",
+  "frozenMatrixUnchanged": true,
+  "passed": true
+}

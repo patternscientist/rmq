@@ -1,0 +1,18 @@
+{
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "trustScanExit": 1,
+  "trustScan": [],
+  "nativeScanExit": 1,
+  "nativeScan": [],
+  "sourceScanExit": 1,
+  "sourceScan": [],
+  "diffCheckExit": 0,
+  "diffCheck": [],
+  "committedRangeCheckExit": 0,
+  "committedRangeCheck": [],
+  "markerCount": 23,
+  "markerNamesUnique": true,
+  "markerNamesMatch": true,
+  "sourceHash": "1C6CD0A85B77FBA7706C77DA87DE358808A24FA661D5635A3C4B3BBF96005D69",
+  "matrixHash": "80BD59A314FD33D37076802954444DA24F65C87A2A91DE23BC668B6AF9CCEB24"
+}

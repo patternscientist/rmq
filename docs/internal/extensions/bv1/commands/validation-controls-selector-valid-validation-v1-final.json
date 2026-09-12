@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "productionVersion": 2,
+  "evidenceTag": "selector-valid-validation-v1-final",
+  "platform": "Windows",
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "expected": [
+    "baseline",
+    "wrong-packet",
+    "removed-fixture",
+    "wrong-crossing",
+    "restored"
+  ],
+  "selected": [
+    "baseline"
+  ],
+  "executed": [
+    "baseline"
+  ],
+  "passed": true,
+  "sourceHashesBefore": [
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean",
+      "Hash": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_probe.ps1",
+      "Hash": "FE126C3906CD65BA3AE65EE773EE1B818CD86564CB7190DB837151BD0D10A06D"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_selector_controls.ps1",
+      "Hash": "601BD8289E805E9ABB2B09607C02FD2AA36428F7EA7FB5767B812BC3B578739D"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_crossing.lean",
+      "Hash": "33FFD328EBC0F80EEBEA279B4904F804D5A54E1FE5CBC2C4A017A75807FE279D"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_validation_controls.ps1",
+      "Hash": "FA3E2C3A7F6E329417CB854F8B2B841B543479478B2FB346314F71E84F0818F0"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\registry.json",
+      "Hash": "BA82633FC1D6647A294C150DC20A21159C64635A08FFD5CBA5B3C16464B64CDF"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\baseline.lean",
+      "Hash": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\wrong_packet.lean",
+      "Hash": "4895B39F548A5C434D173288346A59D812D996F5A2A1D31D1CC0E7FBACF478A1"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\removed_fixture.lean",
+      "Hash": "1F2241088DD172B38673AA376F291400C5B68DB319545A3C465B78E971875BB2"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\wrong_crossing.lean",
+      "Hash": "6B9484013683BFA4E6C0F46800582BFEDE057BA8661273DCACA5BB8453D06D14"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\restored.lean",
+      "Hash": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E"
+    }
+  ],
+  "sourceHashesAfter": [
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean",
+      "Hash": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_probe.ps1",
+      "Hash": "FE126C3906CD65BA3AE65EE773EE1B818CD86564CB7190DB837151BD0D10A06D"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_selector_controls.ps1",
+      "Hash": "601BD8289E805E9ABB2B09607C02FD2AA36428F7EA7FB5767B812BC3B578739D"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_crossing.lean",
+      "Hash": "33FFD328EBC0F80EEBEA279B4904F804D5A54E1FE5CBC2C4A017A75807FE279D"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_validation_controls.ps1",
+      "Hash": "FA3E2C3A7F6E329417CB854F8B2B841B543479478B2FB346314F71E84F0818F0"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\registry.json",
+      "Hash": "BA82633FC1D6647A294C150DC20A21159C64635A08FFD5CBA5B3C16464B64CDF"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\baseline.lean",
+      "Hash": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\wrong_packet.lean",
+      "Hash": "4895B39F548A5C434D173288346A59D812D996F5A2A1D31D1CC0E7FBACF478A1"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\removed_fixture.lean",
+      "Hash": "1F2241088DD172B38673AA376F291400C5B68DB319545A3C465B78E971875BB2"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\wrong_crossing.lean",
+      "Hash": "6B9484013683BFA4E6C0F46800582BFEDE057BA8661273DCACA5BB8453D06D14"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\restored.lean",
+      "Hash": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E"
+    }
+  ],
+  "scopedStatusBefore": [
+    " M RMQ/Validation/PackedBitvector.lean",
+    " M scripts/packed_bitvector_crossing.lean",
+    " M scripts/packed_bitvector_probe.ps1",
+    " M scripts/packed_bitvector_selector_controls.ps1",
+    "?? docs/internal/extensions/bv1/controls/validation_v2/baseline.lean",
+    "?? docs/internal/extensions/bv1/controls/validation_v2/registry.json",
+    "?? docs/internal/extensions/bv1/controls/validation_v2/removed_fixture.lean",
+    "?? docs/internal/extensions/bv1/controls/validation_v2/restored.lean",
+    "?? docs/internal/extensions/bv1/controls/validation_v2/wrong_crossing.lean",
+    "?? docs/internal/extensions/bv1/controls/validation_v2/wrong_packet.lean",
+    "?? scripts/packed_bitvector_validation_controls.ps1"
+  ],
+  "scopedStatusAfter": [
+    " M RMQ/Validation/PackedBitvector.lean",
+    " M scripts/packed_bitvector_crossing.lean",
+    " M scripts/packed_bitvector_probe.ps1",
+    " M scripts/packed_bitvector_selector_controls.ps1",
+    "?? docs/internal/extensions/bv1/controls/validation_v2/baseline.lean",
+    "?? docs/internal/extensions/bv1/controls/validation_v2/registry.json",
+    "?? docs/internal/extensions/bv1/controls/validation_v2/removed_fixture.lean",
+    "?? docs/internal/extensions/bv1/controls/validation_v2/restored.lean",
+    "?? docs/internal/extensions/bv1/controls/validation_v2/wrong_crossing.lean",
+    "?? docs/internal/extensions/bv1/controls/validation_v2/wrong_packet.lean",
+    "?? scripts/packed_bitvector_validation_controls.ps1"
+  ],
+  "exactRestoration": true,
+  "statusUnchanged": true,
+  "deadlineSeconds": 300,
+  "results": [
+    {
+      "id": "baseline",
+      "sourceSha256": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E",
+      "arguments": [
+        "env",
+        "lean",
+        "--run",
+        "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\baseline.lean",
+        "--case",
+        "access-crossing"
+      ],
+      "expectedExit": 0,
+      "expectedSurfaces": [
+        {
+          "exactText": "BV1-CASE access-crossing PASS",
+          "present": true
+        },
+        {
+          "exactText": "expected=2 actual=some 2",
+          "present": true
+        },
+        {
+          "exactText": "crossing=true",
+          "present": true
+        },
+        {
+          "exactText": "executed=1 expected=1 passed=1 total=46",
+          "present": true
+        }
+      ],
+      "resourceFailure": false,
+      "passed": true,
+      "result": {
+        "Stage": "validation-control-baseline-selector-valid-validation-v1-final",
+        "ExitCode": 0,
+        "Output": [
+          "BV1-CASE access-crossing PASS backend=primitive n=511 operation=RMQ.PackedBitvector.Operation.access target=false argument=171 expected=2 actual=some 2 steps=122 reads=25 crossing=true capacity=63360",
+          "BV1-REGISTRY version=2 executed=1 expected=1 passed=1 total=46"
+        ],
+        "StandardOutput": [
+          "BV1-CASE access-crossing PASS backend=primitive n=511 operation=RMQ.PackedBitvector.Operation.access target=false argument=171 expected=2 actual=some 2 steps=122 reads=25 crossing=true capacity=63360",
+          "BV1-REGISTRY version=2 executed=1 expected=1 passed=1 total=46"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 71.49,
+        "DeadlineSeconds": 300,
+        "Ownership": "kill-on-close-job"
+      }
+    }
+  ]
+}

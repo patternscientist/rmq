@@ -94,7 +94,7 @@ Subsequent evidence is recorded separately as it finishes. No ledger entry
 closes the full frozen operation,
 allocation, execution, safety, capstone or mutation obligations.
 
-## Planned final checks, still pending
+## Historical route-phase verification plan
 
 After the named theorem is proved and independently reconstructed, explicitly
 build its module and every exact-type consumer; inspect the new exact
@@ -107,3 +107,83 @@ aggregate certification. No aggregate slot has been requested or used here.
 Final lake build/full registry and coordinator-scheduled aggregate are deferred
 because this is still contract/feasibility work, not a frozen candidate. A
 timeout or partial output will never be recorded as a passing gate.
+
+## Post-route implementation ledger
+
+The feasibility-phase description above is historical. The coordinator's
+`APPROVE_ROUTE_AND_CONTINUE` disposition at645a050 authorizes the ongoing
+full implementation. Every subsequent uniquely named JSON under `commands/`
+records its exact arguments, source hashes, tree identity, owned process,
+deadline, duration, exit and captured output. Leaf reports map these checks
+to the exact propositions and independent consumers:
+
+- `ALLOCATION_READER_PROOFS.md`: full39-component allocation, complete retained
+  capacity, logical/physical reader, metadata and actual operation joins.
+- `CANONICAL_MEMORY_BOUNDS.md`, `CANONICAL_SELECT_SAFETY.md`,
+  `CANONICAL_RANK_ACCESS_SAFETY.md`: unconditional canonical memory/geometry
+  bounds and all-prefix compiled safety for representable arguments.
+- `MACHINE_CONTROLS.md`: checked12 actual-memory/static-instruction controls
+  and8 production selector controls.
+- `CAPSTONE_COMPOSITION.md`, `PUBLIC_MUTATION_CONTROLS.md` and
+  `EXCEPTION_CONTROLS.md`: their own frozen requirements, current evidence
+  and remaining checks; a draft specification is not a passing result.
+
+Only one heavy Lean/Lake process runs in this build tree at a time. Workers
+release the slot during offline repairs. The operation-joins records are
+narrow development checks, not aggregate certification. The original matrix
+remains frozen, and the full build and host-scheduled aggregate remain pending
+until the final content is ready for certification.
+
+## Final campaign results and certification boundary
+
+All finite and typed-consumer campaigns have now passed on the completed
+construction. Current reports supersede the earlier planned-final-checks
+paragraphs above; the frozen route-era records remain historical evidence.
+
+- `selector-controls-main-v2-final.json`: 46 exact cases (43 primitive runs
+  and three guarded APIs), all four whole-operation crossings and 8/8 selectors;
+  the omitted registry took 378.344 seconds.
+- `selector-controls-validation-v1-final.json`: five validation mutations,
+  17 exact verdict pins and 8/8 selectors, with exact restoration.
+- `machine-controls-v1-20260912111955043-999b380b-omitted.json`: 12 actual
+  memory/fault/static-instruction controls; its outer selector record passed 8/8.
+- `exception-controls-replay-v1-omitted.json`: four valid parameterized
+  exceptional routes, with 11 outer selector/wrong-route controls.
+- `leaf-replay-20260912130101742-summary.json`: 8/8 retained exact consumers,
+  52 typed assertions, 68 standard-axiom reports and unchanged byte hashes.
+- The public final selector summary under
+  `controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507/`
+  passed 32 cases and 8/8 selectors in 592.664 seconds. All constructors compile;
+  the two accepts and 30 precisely located semantic rejections meet the frozen
+  registry. All 276 dependency hashes and 64 generated fixtures are preserved.
+
+These are exact retained local outcomes. The failed earlier public fixture
+and resource generations remain failed evidence. Current leaf provenance is
+established by the fresh retained-consumer replay, not by assuming that every
+historical temporary file's original bytes can still be recovered.
+
+The first final staging check failed: the new -text rules preserve CRLF bytes,
+which Git's default whitespace checker classified as trailing whitespace.
+Diagnostic-only recognition of CR-at-EOL isolated 38 recorded artifacts ending
+with a blank line and no ordinary trailing-space/indentation failures. The
+inventory is `commands/staged-whitespace-diagnostic-v1.json`; neither diagnostic
+command is a passing policy check. Root requested a precise attribute amendment
+while retaining every recorded source/fixture byte. The build manifest's index
+was separately corrected to its unchanged raw 691-byte blob rather than
+renormalized. Final staged/range policy checks and an actual committed-blob/
+fresh-checkout comparison remain required.
+
+The aggregate slot has been requested and is on the coordinator's diagnostic
+hold after a peer aggregate timed out. No BV-1 aggregate has run. Its first
+build stage will satisfy the full-build obligation when the slot is granted;
+there will be no duplicate standalone broad build.
+
+
+`implementation-final-policy-v1.json` subsequently passed all seven checks:
+trust, native-trust, staged diff, working diff, the historical parent range,
+strict design and strict claims. The strict claim scan took 221.268 seconds
+under its 300-second bound. The candidate's new committed range is checked
+separately after commit. `whitespace-attributes-v1.json` passed 90/90 effective
+working/index comparisons: 38 exact EOF artifacts, five normal BV controls and
+two unaffected outside controls on both surfaces. `frozen-rows-final-policy-v1.json`
+again passed all 30 original row-byte comparisons and the full frozen hash.

@@ -1,0 +1,133 @@
+{
+  "stage": "implementation-precertification",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "platform": "Windows PowerShell 7",
+  "checks": [
+    {
+      "id": "trust",
+      "executable": "C:\\Users\\poin\\AppData\\Local\\OpenAI\\Codex\\bin\\6fdec9b372c2c0fd\\rg.exe",
+      "arguments": [
+        "-n",
+        "\\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\\b|import Mathlib",
+        "RMQ",
+        "lakefile.toml"
+      ],
+      "expectedExit": 1,
+      "passed": true,
+      "exit": 1,
+      "seconds": 4.02,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\implementation-precertification-trust.json.gz",
+      "sha256": "3E7CD96BFDDB6A2C1B13D01979D4C96766C07DA38B32B79D4548DE4BE11A88E0",
+      "outputTail": []
+    },
+    {
+      "id": "native-trust",
+      "executable": "C:\\Users\\poin\\AppData\\Local\\OpenAI\\Codex\\bin\\6fdec9b372c2c0fd\\rg.exe",
+      "arguments": [
+        "-n",
+        "native_decide|Lean\\.ofReduceBool",
+        "RMQ"
+      ],
+      "expectedExit": 1,
+      "passed": true,
+      "exit": 1,
+      "seconds": 2.963,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\implementation-precertification-native-trust.json.gz",
+      "sha256": "05A3BCF86170144ACCCF79626736792D3D8A195A5F45897782A05AF1356AB33A",
+      "outputTail": []
+    },
+    {
+      "id": "working-diff",
+      "executable": "C:\\Program Files\\Git\\cmd\\git.exe",
+      "arguments": [
+        "diff",
+        "--check"
+      ],
+      "expectedExit": 0,
+      "passed": true,
+      "exit": 0,
+      "seconds": 2.523,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\implementation-precertification-working-diff.json.gz",
+      "sha256": "EE28ADFDA9282557955164CD9DA62FA69B44F2EA9F0E8B3639EAD012851757A3",
+      "outputTail": [
+        "warning: in the working copy of 'scripts/packed_bitvector_probe.ps1', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'scripts/packed_bitvector_selector_controls.ps1', LF will be replaced by CRLF the next time Git touches it"
+      ]
+    },
+    {
+      "id": "range-diff",
+      "executable": "C:\\Program Files\\Git\\cmd\\git.exe",
+      "arguments": [
+        "diff",
+        "--check",
+        "0e6a00f654abc64f8b68988fa9675b9a839dca2f..HEAD"
+      ],
+      "expectedExit": 0,
+      "passed": true,
+      "exit": 0,
+      "seconds": 2.779,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\implementation-precertification-range-diff.json.gz",
+      "sha256": "9323A76D487EC99FC1769DB47F432676A00D2D37ED45E44AC1F6668F6AD7E489",
+      "outputTail": []
+    },
+    {
+      "id": "design",
+      "executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "arguments": [
+        "-NoProfile",
+        "-File",
+        "scripts/design_decision_check.ps1",
+        "-Strict",
+        "-Base",
+        "0e6a00f654abc64f8b68988fa9675b9a839dca2f"
+      ],
+      "expectedExit": 0,
+      "passed": true,
+      "exit": 0,
+      "seconds": 5.621,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\implementation-precertification-design.json.gz",
+      "sha256": "E457741CF1809D9576208ED01FF5EF13FC993DEA98E81335F6DB40AD91739305",
+      "outputTail": [
+        "DESIGN-CHECK: checked 382 changed files (141 code, 331 workflow, 3 neutral)"
+      ]
+    },
+    {
+      "id": "claims",
+      "executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "arguments": [
+        "-NoProfile",
+        "-File",
+        "scripts/claim_drift_scan.ps1",
+        "-Strict"
+      ],
+      "expectedExit": 0,
+      "passed": false,
+      "exit": 1,
+      "seconds": 139.169,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\implementation-precertification-claims.json.gz",
+      "sha256": "24698F2B225CD0574316514CDD4B1910C70B1674E43943C72D98E32676D05AC6",
+      "outputTail": [
+        "CLAIM-DRIFT[required-current-readword-only-theorem-attribution][strong-current-readword-only-claim-must-name-the-strong-public-theorem][allowed] README.md:104: strong claim has its required theorem identity",
+        "CLAIM-DRIFT: strict mode found 1 unapproved sensitive matches"
+      ]
+    }
+  ],
+  "expectedChecks": 6,
+  "executedChecks": 6,
+  "frozenMatrixSha256": "80BD59A314FD33D37076802954444DA24F65C87A2A91DE23BC668B6AF9CCEB24",
+  "frozenMatrixUnchanged": true,
+  "passed": false
+}

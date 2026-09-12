@@ -1,0 +1,11 @@
+diff --git a/.gitattributes b/.gitattributes
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -18,4 +18,7 @@
+ RMQ/Core/WordRAM/Bitvector/** -text
+ RMQ/Validation/PackedBitvector.lean -text
+ scripts/packed_bitvector_* -text
+ docs/internal/extensions/bv1/** -text
++
++# BV-1 replay also pins the existing build manifest's exact mixed newline bytes.
++lakefile.toml -text

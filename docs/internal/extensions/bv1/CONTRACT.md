@@ -1,10 +1,12 @@
-# BV-1 contract and proposed route
+# BV-1 contract and approved route
 
-Phase: contract/feasibility; status INCOMPLETE. The complete target remains
+Phase: implementation; status INCOMPLETE. The complete target remains
 `RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds`. No row of the frozen
 matrix is closed by this document. Source facts are at baseline
 `0e6a00f654abc64f8b68988fa9675b9a839dca2f`; new code is an unverified experiment
-until its command results are recorded.
+until its command results are recorded. The coordinator approved this route at
+evidence commit 645a0502b9da9ad6444edbe44759e1c2c5661f25; the route review is
+discharged. Its preserved disposition is COORDINATOR_ROUTE_DISPOSITION.md.
 
 ## Operation conventions and quantifiers
 

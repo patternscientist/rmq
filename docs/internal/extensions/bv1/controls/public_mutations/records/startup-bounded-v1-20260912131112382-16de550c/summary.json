@@ -1,0 +1,2811 @@
+{
+  "version": 1,
+  "registry": [
+    "unchanged",
+    "harmless-comment",
+    "weaken-completeCapacity",
+    "weaken-overheadLittleO",
+    "weaken-widthBounds",
+    "weaken-memoryWordsFit",
+    "weaken-readerGeometry",
+    "weaken-readerCorrect",
+    "weaken-accessCorrect",
+    "weaken-rankCorrect",
+    "weaken-selectCorrect",
+    "weaken-accessExecution",
+    "weaken-rankExecution",
+    "weaken-selectExecution",
+    "weaken-accessSafety",
+    "weaken-rankSafety",
+    "weaken-selectSafety",
+    "weaken-programLengths",
+    "weaken-sourceBudgets",
+    "weaken-stepsBound",
+    "weaken-categoryPartition",
+    "weaken-categoryBounds",
+    "weaken-finiteScratch",
+    "weaken-suppliedMemoryAgreement",
+    "weaken-validArgumentFits",
+    "delete-accessCorrect",
+    "sibling-completeCapacity",
+    "sibling-selectSafety",
+    "sibling-readerCorrect",
+    "public-proposition-True",
+    "capacity-without-code",
+    "capacity-without-scratch"
+  ],
+  "manifestSHA256": "55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821",
+  "snapshotId": "97405C70ED3B60CED72874D6DF622D2E9BBA0BD8F04808A3F98ED34EE1CEB770",
+  "evidenceTag": "startup-bounded-v1-20260912131112382-16de550c",
+  "mode": "startup",
+  "startedUtc": "2026-09-12T13:11:17.9464889Z",
+  "finishedUtc": "2026-09-12T13:11:40.5953034Z",
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "expected": "unchanged",
+  "executed": [
+    "unchanged"
+  ],
+  "passed": true,
+  "failure": null,
+  "results": [
+    {
+      "id": "unchanged",
+      "passed": true,
+      "constructorExpectedExit": 0,
+      "consumerExpectedExit": 0,
+      "expectedErrorLines": null,
+      "expectedDiagnosticClasses": [],
+      "observedErrors": [],
+      "unparsedErrors": [],
+      "resourceErrors": [],
+      "constructorTrustFailures": [],
+      "consumerTrustFailures": [],
+      "constructorPassed": true,
+      "consumerPassed": true,
+      "constructor": {
+        "Stage": "unchanged-constructor-startup-bounded-v1-20260912131112382-16de550c",
+        "ExitCode": 0,
+        "Output": [
+          "'RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds' depends on axioms: [propext, Classical.choice, Quot.sound]"
+        ],
+        "StandardOutput": [
+          "'RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds' depends on axioms: [propext, Classical.choice, Quot.sound]"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 5.799,
+        "DeadlineSeconds": 180,
+        "Ownership": "kill-on-close-job"
+      },
+      "consumer": {
+        "Stage": "unchanged-consumer-startup-bounded-v1-20260912131112382-16de550c",
+        "ExitCode": 0,
+        "Output": [
+          "'RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds' depends on axioms: [propext, Classical.choice, Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_completeCapacity_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_overheadLittleO_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_widthBounds_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_memoryWordsFit_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_readerGeometry_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_readerCorrect_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_accessCorrect_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_rankCorrect_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_selectCorrect_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_accessExecution_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_rankExecution_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_selectExecution_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_accessSafety_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_rankSafety_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_selectSafety_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_programLengths_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_sourceBudgets_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_stepsBound_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_categoryPartition_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_categoryBounds_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_finiteScratch_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_suppliedMemoryAgreement_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_validArgumentFits_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_inhabitant_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]"
+        ],
+        "StandardOutput": [
+          "'RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds' depends on axioms: [propext, Classical.choice, Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_completeCapacity_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_overheadLittleO_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_widthBounds_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_memoryWordsFit_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_readerGeometry_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_readerCorrect_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_accessCorrect_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_rankCorrect_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_selectCorrect_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_accessExecution_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_rankExecution_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_selectExecution_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_accessSafety_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_rankSafety_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_selectSafety_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_programLengths_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_sourceBudgets_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_stepsBound_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_categoryPartition_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_categoryBounds_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_finiteScratch_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_suppliedMemoryAgreement_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_validArgumentFits_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]",
+          "'RMQ.PackedBitvector.PublicConsumer.public_inhabitant_required' depends on axioms: [propext,",
+          " Classical.choice,",
+          " Quot.sound]"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 12.488,
+        "DeadlineSeconds": 180,
+        "Ownership": "kill-on-close-job"
+      }
+    }
+  ],
+  "sourceHashesBefore": [
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_expected_type.lean",
+      "sha256": "FEA8D045EF0A9CB9679949ED8825F2E04A4542C01E8F056A778BB0B474BF7A9E"
+    },
+    {
+      "path": "lakefile.toml",
+      "sha256": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A"
+    },
+    {
+      "path": "lean-toolchain",
+      "sha256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F"
+    },
+    {
+      "path": "RMQ/Core/Backend.lean",
+      "sha256": "8D911857ED6E9669936D5F8818149E23EBF4874C2C508D63CEEA889660ACC751"
+    },
+    {
+      "path": "RMQ/Core/Cartesian.lean",
+      "sha256": "A0C175425B7DF234F8CF59E177B36E3ED593D81D78337D40E6E2ED74028D9580"
+    },
+    {
+      "path": "RMQ/Core/Cost.lean",
+      "sha256": "887CDCCA893969756F6B7F785E1CA2249106F215A4155C6BA6FE714A6373BAA4"
+    },
+    {
+      "path": "RMQ/Core/EncodingLowerBound.lean",
+      "sha256": "BA555AADFA7F3AB3BF0B8DC1D09E093A33DE6A4747DCE6BA707FA68BCBAE61E5"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Arithmetic.lean",
+      "sha256": "188659DFE14431FA924C60BE82D03EE1733CFC01AC5E5DB046FAB129DB4B88AC"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/DenseEntryTable.lean",
+      "sha256": "9AF07D6EC8A806E0F7966D3F62801989F8E7DEC84A20C245A9A80555F0655EAB"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/DenseWord.lean",
+      "sha256": "771195F6125E8DE11C24F1F94876B620151CD4A2EA86DB3464E0C9E6E26FA728"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Directory.lean",
+      "sha256": "1B99217374A50A1DA29B9E2625D8884F89B1EF255FFF3EC643A32DA58CE246B9"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Entries.lean",
+      "sha256": "AE17F58FF740414FE9DFB6DF59B1EE92D2912A26E50D0AB042DD26C813C341F8"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Family.lean",
+      "sha256": "982BA48D8EB6EE8271FE6037BD0A84A0920AC1A5CFE6076B8800211EAA0F891F"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/FlagRank.lean",
+      "sha256": "25EF697C1D68E47DEAD370FFF58717279317E3BB7B5103CD9A5FD8E71896359C"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/LowLevel.lean",
+      "sha256": "D80DC849E26E30EB31487C03865098CD582A62E89EEB2BCD7CAE1020AB306535"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Params.lean",
+      "sha256": "05F8E4CB75A07792F6B51E5F561EE5E20EEB8F7F51EC05664CDDAF0E55440EA1"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Primitives.lean",
+      "sha256": "EAF0C05A429B425A40E8CC77044F268BC8FF36F8B9BB648473D6576F53DF6840"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/RAM.lean",
+      "sha256": "FEE4D7BE36077D93F928716E4909B4773F818CE39FDA17BC17E85E944EC2892F"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/RAMStoreParam.lean",
+      "sha256": "F17C7F141928ADEA7320B3187C98F2983B34E3D95B9E6F629860AB4C1313A277"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/RelativeSplit.lean",
+      "sha256": "89E4188223B34F322480147FE5EA4D57542E79A00763408B2EC45D4C80DD9C36"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/RelativeTables.lean",
+      "sha256": "7131A37475059E917D114531BA34726E1C34432BC9DF271D56C166370DC9F1EC"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/SelectFacts.lean",
+      "sha256": "DF6E9CB61E7FEEE0659B62960379FB8CD851B6BD914347A2D3BD06785CF93C69"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/SelectSource.lean",
+      "sha256": "222526C0D6D8AD56EB1E4FD5678111471961A6D3674614790BD5ACE58098D57A"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Slots.lean",
+      "sha256": "AE96B766A1D0CF34CE468B3EE9C9FDF82195AE25FA4ACA41E150AE426FA59051"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Source.lean",
+      "sha256": "D1A404009FB648D1F256AFB0EFC396594C00B6E0EC85192F978B16BC0F08932E"
+    },
+    {
+      "path": "RMQ/Core/LCA.lean",
+      "sha256": "E981D40A5C3429A6794BD7857AEB01A0B49653F869C1139232AFB8766F1B053C"
+    },
+    {
+      "path": "RMQ/Core/ListLemmas.lean",
+      "sha256": "E4DF7A2D19754BC5BA77BA05235EC72E839DF226B00D4A38BAEB452B46ECA1FA"
+    },
+    {
+      "path": "RMQ/Core/LowerBound.lean",
+      "sha256": "FEFE56A46F206F5233C7E4B9EDAFC6BC1FA5CB0E04B03494FB94D9D0DFD6DF56"
+    },
+    {
+      "path": "RMQ/Core/Microtable.lean",
+      "sha256": "7AC16582B05226A39314CB12CF4032394BCC9802E01867697E1271BBD9C21A80"
+    },
+    {
+      "path": "RMQ/Core/PayloadLowerBound.lean",
+      "sha256": "24523EC8D3DD5859738DDBDF69BCC14C41FB0E21D7175ADDD494072FFF1BCA55"
+    },
+    {
+      "path": "RMQ/Core/PlusMinusOne.lean",
+      "sha256": "F66CFC4256FA0F3806E4C64EB3DC530E9675A86F3D1C3082AF349DFA9A3F74EF"
+    },
+    {
+      "path": "RMQ/Core/RAM.lean",
+      "sha256": "208E621844CA2A0F5CA73312B3C5688406AFD330EB753506987DAB603AADEF4F"
+    },
+    {
+      "path": "RMQ/Core/RankSelectSpec.lean",
+      "sha256": "2D48B2089432B601337E7FDB6CF9B081D8382A44019068D5DF64FBC4867DBCD1"
+    },
+    {
+      "path": "RMQ/Core/Reduction.lean",
+      "sha256": "A15808CA01F085C691CC30F73EEEB88E8AA858670D4BF0B707F2DED1AA1791EF"
+    },
+    {
+      "path": "RMQ/Core/Refine.lean",
+      "sha256": "75953F297DE26411AF75EA9BE3CDBF2FD6D0403EE0AE88E3310DDCD5ABBBEB2A"
+    },
+    {
+      "path": "RMQ/Core/Shape.lean",
+      "sha256": "A29366B989E786A5C762764C2DA1FFC9DF1487BE212A113A122384D9A1E2C863"
+    },
+    {
+      "path": "RMQ/Core/Spec.lean",
+      "sha256": "D32B9EF9873E9C9D8E2AEFE1227770F2B565122FAE01C0AE86737FA750F74AE3"
+    },
+    {
+      "path": "RMQ/Core/Succinct.lean",
+      "sha256": "C81AF4978110198561B109893832045509D8C8846CF2FCB179C809B5BA67E74E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose.lean",
+      "sha256": "D0DCF4A2D323A65FE03D901AD6C37189281522A75DF01447B2C9CF9FDE56718D"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/BlockLocal.lean",
+      "sha256": "818D93BC4665385FD6F5E45431DFC783E1A1D0860DCA35DCB9B75EFCDB5F0B62"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe.lean",
+      "sha256": "47F178B980D4386FA297A3BC8352F5D8FFD73AE9CA5C8E5CE8C5994FAC04F6F3"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro.lean",
+      "sha256": "466D70E742C3B92EE02833F796B1776DDFC3BEA4CF487F0EB2F1734B48005732"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/MicroCodebook.lean",
+      "sha256": "3E9DFFFD9C463376798509E1E88919A47EA52C39D7DF18D8369996954929BF04"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro.lean",
+      "sha256": "F9E7C1471B2167BDAF3D049E187224E27AAB87971C3404C5F17298C55E0A99D9"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/Concrete.lean",
+      "sha256": "1A72C3A22D9EC67B1F7D728E4E369E0AF4CC33384C8922583A971CA4224E74B2"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/PayloadMacro.lean",
+      "sha256": "9FA35FD83C7F46FBA374B549AE1F85F2733A2409FFB03B9CCBEAFCC6510CD08B"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/RangeTables.lean",
+      "sha256": "C036F7B736ABF755A8B8D9B1A02CE5810AD441CDAC7F546993F8D5B5AF63F041"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/RelativeMerge.lean",
+      "sha256": "ABDEAEBF1C169C5EDE34EF2323C2C942D26C8052BE68C6E1E21D2FE0A86C09EF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate.lean",
+      "sha256": "948813C73489C2642729997DC9AB448EB8FCFB70966A9F6307783F4DE5434BCC"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/Candidate.lean",
+      "sha256": "C843AABE9ADCA16A463EFC1307CF629604470E8847D3591131EC29784D4C6D83"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean",
+      "sha256": "92A2322E6DD91D8D2718E65F52B5DAC2572C142297501F0DF3882BF84534BC16"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/Base.lean",
+      "sha256": "65522F59E57BE29618BCA88A624F9A867C8DE02469A42C526B48E087751391A1"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean",
+      "sha256": "25A067E1C7E41C525680E44BB0767868EEEACE8D09825F232CB957EE000996B1"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/ValueDependency.lean",
+      "sha256": "B10110A3A0231D1FAD754A830EE0397A55ECB894C16B0864B6DD8A0B6F607D2C"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorRAM.lean",
+      "sha256": "E6850BE91B2120958019452EE26658AB2AA13CDAFD42BDDE649B6BA177EFD956"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/LocalGlobalSparse.lean",
+      "sha256": "B2A3B8866E5FCB52CC5A0884B22AFBE6DE2B74C92CED3D36B6F5C1CB8D29EFA6"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/RelativeScan.lean",
+      "sha256": "AD29744DA234215194478A2D8D0F2BF31FCCA119E5E9C9554A11970F2C9E0B21"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/TwoLevelCandidate.lean",
+      "sha256": "6900B5DDEB67DF79BA9A1A2B39682FEFCD9EA975E2E408ECD8291316748D15A8"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/WordReads.lean",
+      "sha256": "995F2E38D1F5C43FCAA1E4815FD2235EA481F7DBDCFFE3738EB5CFF7BACC37F6"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange.lean",
+      "sha256": "A0FED5EE46F3152D63EF42F8791D802FA34CCF8AE9D4A98A3288DF1425302B0D"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/AnswerSemantics.lean",
+      "sha256": "148B0E1DB197AADFD8F0927A82A89195D5F066F98B8BFF31C92718DCA1D66A9F"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/LocalSparseOffset.lean",
+      "sha256": "717A2514A0255D9994D780C87E0BA952D193EE791EFFAFF440D194438765B82D"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/PrefixArgMin.lean",
+      "sha256": "02EAC18E6679B60A7A78BA101C39E3269C18EAF8202178B3C0335441FE548CAD"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/PrefixWitnessTable.lean",
+      "sha256": "07538D0E27689BCB02915F5101ED158B5258A168ABB172F35DE0CF5733C2B56B"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/RelativeSummaryCandidate.lean",
+      "sha256": "4092148FDDBF60A1F481128DC96EFFB2FABD121CAD14F8EAA0142DDF6F30ECAA"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/SparseArgMin.lean",
+      "sha256": "BD98AF45F9D43B75768E23013EAEC66400850215124102C7720BE4CA115A774E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/SparseLevelTable.lean",
+      "sha256": "15E23994297D09D37CABDCFB2277BC8F819FF76C307636AC6E3889C1B7E61043"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RangeSummary.lean",
+      "sha256": "4DBE30022D3066FB44C1405D2C52FD8D4469537B6DE0C589DB6F99FBABB9A7EE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RangeWitness.lean",
+      "sha256": "4A9EF0FAD0B84ED02F55A1313353375F5159322DA5B159DBC6081E8781F378DC"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro.lean",
+      "sha256": "9F55F443ED0234E9C509664F31CC90884C455C2783491FDB6EBA058FDFCD27EC"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/AbstractMacro.lean",
+      "sha256": "4A368521FB415863E5FD77A7B0F4ED83CBD49983DBF4A7CD4A2B6921A0407553"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeChunks.lean",
+      "sha256": "7D3C02BF0F79FF53008D322C7FB92A99449252AA1303FB539222BB4F0B75CC6A"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeSubstitution.lean",
+      "sha256": "A76B18F22F18D2F26F60136ECA544921FC6177B55718E092D6C92A74071D9BEB"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeTableFacts.lean",
+      "sha256": "CD0E8F62E7AA6F58EFF3CB7C937F2025B98D99AF5798C7B8EC55676224670744"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeTrace.lean",
+      "sha256": "3958821F9FFB5FE5A3E51664ECF50191AF3BC27FEF1303BCA27565D772B61E26"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeWiring.lean",
+      "sha256": "BE36BA283C012EA66699A85AACC45D435465BD6C535F6BD142F53A231BF2C117"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectLeafTrace.lean",
+      "sha256": "418AAB560F5E0A6DB37CB4D5B3245D44580BE8004ADCC3A98528DEC598B87C96"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectLeaves.lean",
+      "sha256": "4964AD5844644F486DF44F75ABC31862DFFD3BE4A507B503E120A615657BB418"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectTrace.lean",
+      "sha256": "D22D91D49051A544BC511FBB7D0663069323F41BAD782B092B147185707FB595"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectWiring.lean",
+      "sha256": "E4CB679DBA4B995B33C411A7FDB49859C4DDA0B2D4402ED14C8F673F072D9570"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockChunks.lean",
+      "sha256": "F3E233EDD10FC8DE7098ED037A3A173A3096FB026043F6F81E9AA83F09D34470"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockSubstitution.lean",
+      "sha256": "CAA29118F8302CD07D50B7E824AFCC30A31C58991446DE9AF841CA99DA7B8C77"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockTrace.lean",
+      "sha256": "F68059B658962AA7D00942DA93B27415B19D2D04A9D6E5A1614706A914D37373"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedWordChunks.lean",
+      "sha256": "32AFF7472532A2CD3FDBD8DEECB92148466ABBA6780CEAFF695BE52F83F467C8"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/CompactEndpoint.lean",
+      "sha256": "383F30B3C6662F9C455632E6AE96F5935ADCA6EB65D25642676139DB08681761"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectory.lean",
+      "sha256": "823081F1FF979F77970BA2477CD9F9F5BB6E1255EA15129C061B726BA62CB7CE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectoryRAM.lean",
+      "sha256": "0CED594DE17F432C8FDB3BBDFF926FAF26F051BCACE6B9EB5040D70A91172E49"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectoryRAMStoreParam.lean",
+      "sha256": "074AE2026220430F9B6D00805FC51BA46917C8C0C50FD599A777245E029CC31E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/EndpointCodebook.lean",
+      "sha256": "5029E982326AB8DEA8D0E0F22B0A29081F2D802B2C78770E5D7584158BDB66A7"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/LocalBPDecoder.lean",
+      "sha256": "54CAD93011FDA3A464BE6F93D102332A375712E3993E4A8380D88EDDBE5F5B8A"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/MacroMicroFamily.lean",
+      "sha256": "9D3CEED171681840D7A81D65E2D6507AA1C8922C4A268DA9EB4AB0253C01E642"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeSummary.lean",
+      "sha256": "14346D7A6E5C881DA559C423A53CE82170EE2A78D77F7ED31282671504AF034E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal.lean",
+      "sha256": "372A0C59D175950DC6111ACBD1E6E71FF8B913B2738912220CCB17D4C08BCFEC"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/FlatPayload.lean",
+      "sha256": "104480BB2E138921504FB96DEB7153D11B603DFA4085FA1DDE36B274244A07C3"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/GeometryClosure.lean",
+      "sha256": "67907F202156D3D0583041E4508D3BC33A57623598CB59A57407C41B02D3DDCB"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Address.lean",
+      "sha256": "6E8F3EC58E4A1C7588FF98C425CE71098916932C5E8ACC26E244C8EE5426A119"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Boundaries.lean",
+      "sha256": "CCF5D924505569FE557DB6BF3B6974ADA7322393C215656AB0D48DD35C5C5BEF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ExecutedUniverse.lean",
+      "sha256": "F2A04D822F298BBCEBDF7D00CB27CD8E8CD5D018B3B888D23662FEB133A194D3"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Header.lean",
+      "sha256": "2711A6F855F3A6D83C053B7C32C0A42F4940793266A44959FD804D9886644A2D"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Memory.lean",
+      "sha256": "64F8BF4F8FD67CE1ADA3635CFA5608BE6F9235CBF3A502342C475E65A1EDDEDE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Payload.lean",
+      "sha256": "500E2ADE7D46B6F9C884EBE06D19C031C1CFE7A75852150E3EC50C449CA54808"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/PhysicalRead.lean",
+      "sha256": "BB56CEF34E6E743B4CE522AFB8C85882D992E0C6C2128EDEB5C71970001724EA"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Probe.lean",
+      "sha256": "34E468F86DD5C6A35C83B4A5B36E9E217F4661CD94BA219709001C207473709B"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReadProgram.lean",
+      "sha256": "391D87D69679A4D9A263AF6193DFDD1DF0979541C8B5805569B6215E3998BE15"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerClosedGeometry.lean",
+      "sha256": "3F97100E132680EA8F901884AA383532031224F99DEA4255AB807E8E20B677AE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCloseGeometry.lean",
+      "sha256": "B0828658CBD2453B7BC4178EC859D9C9C77006899C3B20195131F6CA8D8C270B"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCloseRead.lean",
+      "sha256": "E3377018D62A378D745B2402AE46BD61382A10D7F6B490727659E6F0724DF399"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCloseWidth.lean",
+      "sha256": "E69298E7D3C8167609C2D74387D5482198F9A6CB783955BB6C6FF0F5BB20768E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerComponentAccess.lean",
+      "sha256": "35DD259730F4861FA6A3B7CF01AF9E9C5B8D4BDB2F0F2F2C214236B7D7585336"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerConcatIndex.lean",
+      "sha256": "B7417D93358DED4340DF33CE8A04C4C4C925E54937789CE214488E0C940504D7"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean",
+      "sha256": "AD9943085CF3E19D2F72129D5832AF1894C183229CD468DC6EECDBEC06572C4C"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerControllerProof.lean",
+      "sha256": "1225A5D847B0F3D4D9653A51DFAA39A51A744A13D524261236286FC98E993401"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCrossing.lean",
+      "sha256": "003BE10AA05F2B025F83ECE30EC7A91A4F092CA9179B5FF2EF33CEB433A2AE28"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerEntryAddress.lean",
+      "sha256": "41E67F063A92159E64467A56FEF20828AD65E8AC585A53CF815812177B96B214"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerEntryChunks.lean",
+      "sha256": "9B365EF07A62FE3D989C3EDDA7119D72D765B9676C88A40FDF258D12460A4FD9"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerInteriorCount.lean",
+      "sha256": "4F07D21A9FB1C6799131C4D4F778616A60BC18CCDA0B42C4D27251663F2731E3"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerInteriorProtocol.lean",
+      "sha256": "AC1ECA986A2411B88393C5006C89CAAEBA97C86CEBD0B4AB67A8CD958547D159"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerInteriorRead.lean",
+      "sha256": "074780F3536806DE36BC094BDA66AC0448529992E5C406F85824C63EDD75B1DF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerInteriorWidths.lean",
+      "sha256": "F08390B3A3C5ACF0036DAFEAD1A6384607317681C31299E7B4225971EAF43B7A"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLcaProtocol.lean",
+      "sha256": "B06E4D6C57BAFA21EB75F76AF099B18BB975FFACE9025F3AB5F7EA2EF8016D7A"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLength.lean",
+      "sha256": "3589BC63E435F307A5A6457DA7043DCA5A2AF9DD4018F615EBED4A194C1068CF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLogicalLowering.lean",
+      "sha256": "CE1F85F0181467AC28E431DF8BE90010649FDB541038278A20D29D82CB3DB895"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLogicalProtocol.lean",
+      "sha256": "E9169BE01037693A6893CB46E5F99E4AE8F2AA79C415F0C9D2BAF0098DA19BB7"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLogicalSimulation.lean",
+      "sha256": "7F2F353F7D53ED1E0BCB0D963A162193B6C87C912A8D80D5FCC683E0BA06E5B1"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerMachineWords.lean",
+      "sha256": "63AAE89D756E47255AD8821B336B3D3D2FE1607FC03C7771F2B36C6A35BC400A"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerMemory.lean",
+      "sha256": "B25D62BCBA1BFF603EE1E364B8EA355A36010906D159927AAC800EB1145179F8"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerPayload.lean",
+      "sha256": "F383AC00585EF7389C72610BA44E2941F45F6B6E9CC13AD6FA39EDDD38B4C75C"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerPhysicalRead.lean",
+      "sha256": "4C773AD3FA0EEC82DFABBE8F142A07AD583B4DBAE9455ABFD57CC593D1AB833B"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerProbe.lean",
+      "sha256": "01280EABBC2CDB4BB38E1EA22E3A55E6C64FCB9EF8AC4723D11BC26215317BBC"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerSelectProtocol.lean",
+      "sha256": "6BF0867042F07B9A4B8A26EF8AC83E5144C0A533932F10EA9E747BBC010F0A3C"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerSourceAddress.lean",
+      "sha256": "93EB4EF3697DED2867172D7E46E690550EBFFBCBC3D9003CA83863C2115DD9BA"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerSpace.lean",
+      "sha256": "56918F51DBDE05F1B69E449A6E41E944D706A65F2423D549426A3037B2D76BBF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerSparsePrelude.lean",
+      "sha256": "3A99BA036F6651EEE2A0823DBF2A6BAC365D5D6AB78A52949DDA0D480ECE8DA4"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerWholeProtocol.lean",
+      "sha256": "492436C51E2CAD4EFC13AB2B6D20704492780EEDB5F2B4BD9E3213F0331E045C"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerWidth.lean",
+      "sha256": "07F0A4D08CA3A599BD1DA8D747CB7298376A74DC24D8F722B411B41AD64E16D6"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceFactorization.lean",
+      "sha256": "04500A8A27354B5B2A19BE2DB4067ED56D85268A8D266E4F411A82E7B9F4C693"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceGeometry.lean",
+      "sha256": "99CCED87772781D6C4311F92831277DC08BB5481EF411BEF24DB8A5A0AA351F6"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceWords.lean",
+      "sha256": "901CBE8A30F7FFA92AAD48F3DEB7E01B5384CFB17A7B912D32D999FF020B5F23"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Space.lean",
+      "sha256": "E128DB764C24210CFB01CA197CAC427EAE126DD743D5695F580C414071791FE4"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/WordWidth.lean",
+      "sha256": "462C7120F2480CEC505EB53E2F6F49FEADFB92EB968504912B1D9ADA086992A0"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean",
+      "sha256": "0E506752E7843836CE715C57287CA3FC016D7CBB13E817C77A8DE6AC9D27DDB1"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean",
+      "sha256": "0E0FE1E5F7E56104EB8007BFF55B844B1EC9627F88F5CB519B0A8DB625297A18"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/Segments.lean",
+      "sha256": "F99920A82633074FF9018646D221154B2D23CEBEF860A3BA3FF09164D0ABAC81"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinalModelAdequacy.lean",
+      "sha256": "C86323DB215E020CB46B88B2D92BAFF8DC210D8270E2B821B60EACD22F3E11B4"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinalRAM.lean",
+      "sha256": "86E5424B05BD18A81BAA544C4A0E1638B536A6B4A6FF3B7FA818E61297D3FC33"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinalStoreParam.lean",
+      "sha256": "466DF9555BAB1EBE77567DC6D269C2DE7F73C421BD78BE15C0271B0D292C4636"
+    },
+    {
+      "path": "RMQ/Core/SuccinctRank.lean",
+      "sha256": "164F2C7BF988559DB4EFE7FC8C933E91DB66737C9C6F0297D6993831FFFF335B"
+    },
+    {
+      "path": "RMQ/Core/SuccinctRMQClassic.lean",
+      "sha256": "07D34D2D79DC23B04235802D61ABFF2695F521131D0816304E79B3C1C6ECC177"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/AsymptoticFacts.lean",
+      "sha256": "8E628E9C4A94F239AC78157F9A2874E5596B5C8E9CF37E765968CA1382086BFB"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/Basic.lean",
+      "sha256": "B845BF8D2D94D1C92BAD544D5A1BC8AFD7F13F2D2BE451D370D36CA3E20D0283"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting.lean",
+      "sha256": "6D7093C011DB8B7172463714B57556CFED2F22D19528002936DC67008748DFCE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/FlagRankTables.lean",
+      "sha256": "F4AC00DF7B9C78AB09B9962F7A18D9AAB68A6FA1B6AC152D7E2C7258276EE069"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/LookupDense.lean",
+      "sha256": "29FB384ACE2DB0C5716E07211E52707345DA8E9E492A9030155EA419900A3B47"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/RelativeEntries.lean",
+      "sha256": "125C26C48D1BF6FAEC9D2F22AF23A171A3920F803C42F502692FA1D649B22361"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/SlotBasics.lean",
+      "sha256": "F71F91BC5CC954EC2BD4B979837F1D6D2E7924AEA42AF76B495F1867A3BAEDFE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/SpanBudgets.lean",
+      "sha256": "393E33B53C6311FB5982839D0A1ADF4B89F470A893CDA779AE98FC053C590A6B"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/WidthBounds.lean",
+      "sha256": "0F179C2CD32543C45759957FFD726E426400954F8A045D1C0AC880E3AD55B955"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/RelativeSplit.lean",
+      "sha256": "9AC682EA9A955744E44E79235112FC7609BCAABE6AF3F04DBE63E6BF50631BF1"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionCloseData/BuildProfile.lean",
+      "sha256": "5B43A04B43B22E69ABAD58A00394A6F54B519B84E9938473638A2CFB6D4609C4"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionCloseData/BuiltExact.lean",
+      "sha256": "D1FA216A2236B3DD3CA6924373AF9A93D0644DEA9BCB338F2BCDA18C76C3DF36"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionCloseData/DataSurface.lean",
+      "sha256": "42ED0155C69A52FAB233C97D370FD8D94A112497E527AF21A4C5AE08C56D02AB"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionDirectory.lean",
+      "sha256": "60CE8CB87F721A02EDCAB06CE16FDD164C276C93E393D51A911CB5E8D35E6A7E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/DenseLocalTables.lean",
+      "sha256": "EB63021D1866BF0F9A621270FCFBB0D43FD5CAC72FEAAEC230D3CA0FB57245BF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel.lean",
+      "sha256": "016C04966B6641D8DD2011856D1BC953F5A8769C2808B7EDA81416E94B8DE74E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/BPCloseNavigation.lean",
+      "sha256": "4BEF79B1C636F11DEFE0A48035461C25958A4B203F3D2C6BF04B1D3E812A825E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/ClarkSource.lean",
+      "sha256": "5BC9B60B0A33EE3CE6ECF02A9E6F4B05A8D308FBDC1A83905110F78FE598ED86"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/RankSelectAdapters.lean",
+      "sha256": "4EAEF65F1BF992E99862E839C2B66EB928280812FE696A29F3C53593CEE51C61"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/SelectData.lean",
+      "sha256": "9D53AA16D945BE4AC2EF041AD3850F7150FEFD99B7696A0CB75AA38B4246092C"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/SelectSamples.lean",
+      "sha256": "03B22A47CCA422EDA459FAD2B14EFF1EE8FA822F0D54B254A72C7D6AE9A8A329"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/WordExact.lean",
+      "sha256": "C50B1CF6D8B98AE698918955B84EE490DF1BDCC662B68B5B0E8A3441AAD9BC22"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace.lean",
+      "sha256": "2DB86CA92D7EFBEB75B4DEB59A039ACA1E1C9DFE9BD597330A814568A12D7FEB"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/Asymptotics.lean",
+      "sha256": "39493F9BD2B86C041ED7471C310244E4FCED9DE831C566A8FEB8593EA783FFCE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPAccess.lean",
+      "sha256": "F79B2360503863665F30953566AEFF88BAC736063F725C599858460F13F344DF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPCloseLCA.lean",
+      "sha256": "00C85BEEA48B2DFA4BEFA8A3DAAF70ADA06F876B71F7DAE6CC185FF47DC465AF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPCloseLCARAM.lean",
+      "sha256": "776D7F64C12CF9F6515D121FECFAA28C963887C0C9DD34E834CFC9B2FEF3C1DF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPCloseRMQNavigation.lean",
+      "sha256": "9F7FA7CCDDB6F4106559D483EA35313BD1AE34B00F27259723DA6AD9E4A1AB55"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPCloseRMQNavigationRAM.lean",
+      "sha256": "11541F260779F41468BECE8C941B16B6ED06AB32487AEEA9F916279DC36248DE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPShape.lean",
+      "sha256": "633C2CFCEE96751D7CB84B5492A16E1DE3A79B7BE4904C799188363D5B75A00F"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BroadwordRMQ.lean",
+      "sha256": "FB21261792E59FEC4A48350A968076CA8E45454F7F7CBA32EF36538DB5F163AD"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/MachineChunkedTable.lean",
+      "sha256": "CA5804E728E7CCB5AEE8C8BC2EBC220D5E7AE27A5BD286599337BC6EB682576A"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/MachineChunkedTableProgram.lean",
+      "sha256": "E8BAA33AA98DBBC67CD12E033B85DA1BC0B3A46303938A6A47A400C5FE34FB80"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/RankSelect.lean",
+      "sha256": "8DDB5D45C8EA60413EC5A0478C968895172406E855A4B1E5BB8405ECFE66B4A4"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/RankSelectRAM.lean",
+      "sha256": "42CE073D6492EE4FAD5E45A3D41F26B73BBE6493B33ACC189AEAB8681342F0EE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/SelectSamples.lean",
+      "sha256": "62B18FA9CB7301DAA61490224C65068A38B3FB10D48B9E9FEF57359194B23495"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/SelectSamplesRAM.lean",
+      "sha256": "4931E8C80A9490DF33ADD8DE32ED3DE84041FB16A7E01B8031F400C44C01AFF4"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/Tables.lean",
+      "sha256": "5676C8B39B17EB0C183C9CE7C7E5B7210CEB947182D44933355A24BFB34A3BBF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/TablesRAM.lean",
+      "sha256": "6E5E99094B6B9D4C273AF2A6D3988C7627FEACC8EE0F75ADABB2652FAD4322BE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/WordStore.lean",
+      "sha256": "E508F5EEBA21D642E94D391B29E0DA85228A941539C341BCC97B333D2A23BC34"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/WordStoreRAM.lean",
+      "sha256": "E73D6D9DB3D61E28CFA9F108E23C97E8CA3C7176A59C28E14B91C320574EA5C3"
+    },
+    {
+      "path": "RMQ/Core/TableModel.lean",
+      "sha256": "B015B94A0B2E130B6E6ABBB44415868B824AD5242148D614355E580EFA5D8159"
+    },
+    {
+      "path": "RMQ/Core/Window.lean",
+      "sha256": "C135E68A11AF7FF52623A7CCD8439330A93D5758B2E548330889BBF04B08432C"
+    },
+    {
+      "path": "RMQ/Core/WordRAM.lean",
+      "sha256": "7A47CED349D84C379135918115E3A0424B1DE2D9F4DDA0BB774FF42A94A174A9"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/AccessExecution.lean",
+      "sha256": "966E88F15B6CED25C337F4614B774FE85AAA0358E44F7EFDEBFB5BE0A0087300"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/AccessProof.lean",
+      "sha256": "0077FE19D2E693D7F02936FDB4A9592D68B9E67AC1FB9A1E905D361F1DB30DE2"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Allocation.lean",
+      "sha256": "B4DE6C3B923589A2AA890399D7D0B8236E3C46E1608ADE74F8CEFE65B60F392B"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/AllocationFacts.lean",
+      "sha256": "F189969208B13333219EE460DB8581D43BABB88F18480C68A37F47C070801623"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/AllocationLayout.lean",
+      "sha256": "EDE611982080F8600CE5F59BE89D8D331DC7920855F55B969A66F39C60E99ACF"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalLimits.lean",
+      "sha256": "1B0B761C9A42D0CE4C3EF3972B3EB43E3FE02BF56B9D3B7D501D23067C4D5A1F"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalMemoryBounds.lean",
+      "sha256": "182406E5BCAD21C8EF5EE236B92F3EBB63441B8DEECB15B9E46019CB8A97AA21"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalRankAccessSafety.lean",
+      "sha256": "1C39E9D0A2637C45B7306DBD5077DD2319BA2F6C2AF7CA43D0DE189F9BBAC03C"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalSelectSafety.lean",
+      "sha256": "FCBC3B363E47BC16298DEDBDE693921EC4CA45672753AD564161807D6CE7D753"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalStoreBounds.lean",
+      "sha256": "1209D9A14B0B92D5CCD6455197C57189903CF65C1502BB049DF25CA4472038BA"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Capstone.lean",
+      "sha256": "1C6CD0A85B77FBA7706C77DA87DE358808A24FA661D5635A3C4B3BBF96005D69"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ChargedSetup.lean",
+      "sha256": "21440D54C844202F5AF6816C5BFD1DFBE07EFA18ED23A7C546F8BF29948476E9"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CompleteLayout.lean",
+      "sha256": "E2C61B99E504E99940B3D63645F62CBE805FF21FF4B28473C1DE7646E08803DD"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CompleteReader.lean",
+      "sha256": "53926E3596E4C98A76D939E14CFBB26BFC939950E7A25CB774FBDB0617F73055"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CompleteReadStore.lean",
+      "sha256": "3A8A6F6F57CE5C7368C8115D4A95521DBC92FF25934BF9B5CD8D8A31AB92FD46"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ControllerInterface.lean",
+      "sha256": "14F14B5A78FC77DB768536BF78DA47CB60922364538859535198C1E440B30981"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/DescriptorReader.lean",
+      "sha256": "A85C55E8962F8F9F78E0FB00EDD81ED9DFF7E870792F62830DB6CADB54F45108"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/GenericRankProof.lean",
+      "sha256": "01544E3B71EBCB90B7ABF34F8C241BA6ED6F7954027C3E22443AD9AC65192F94"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/GenericRankSafety.lean",
+      "sha256": "46D1C897F34BA42A3DA76B5B9876D3C7CE46D05A63950FE9E1F2F9E513D3B4A5"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/GenericSelectProof.lean",
+      "sha256": "07D1090314E454341CCECBEFB74009600C9AFB40A812DC218C6810C450790EA0"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/GenericSelectSafety.lean",
+      "sha256": "DE8C9B1CD5C13C0B4D630839872DE55542116046EBDB4CC9B823C53B59C5B678"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/InterfaceProof.lean",
+      "sha256": "9B04897F77EF88A00B85F71BD7A43119572157F9266E74DACEFB726856D431CF"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/MemoryLayout.lean",
+      "sha256": "2CB94877358664BDC93234128FE2115B626C10442AEC87C9429A89395B0D6A24"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Metadata.lean",
+      "sha256": "CBA9B8CC9B574EC9D66FA4CCF8E4CE277BE6AA864B68BCFE6B9AAAB7AE955720"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Normalization.lean",
+      "sha256": "BA10A82917C9914E0BB11F619A15A51CFC65E2C0842C066F372339C77FF5F9D4"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/NumericReader.lean",
+      "sha256": "7E2CC443F2DE7351112460B7C2B0699C2879B51E760DEC3261B055790133897D"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/NumericSafety.lean",
+      "sha256": "621FC88A3FD86C8188A3074608CB254FA1D507CC4482F21C9EA13F8888A02C92"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Observations.lean",
+      "sha256": "76B7CAE29F31ADDEDD6A90D0FD80BA52FB62F26A6FEF02D94BA41FD731CE880B"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/RankExecution.lean",
+      "sha256": "BD4BDCDE4443E60E624DCEB0CC87673CF51321AD277DADE3A33DC898559A3B7F"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/RankLayout.lean",
+      "sha256": "7A5756940175BD775A0F4F0928EBB01F222C7C8DB0461CB12C74770A6F8D629B"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/RankSemantics.lean",
+      "sha256": "9AC0B86BC1630635EAA63A3DC3C3889206A0FDFB0205DD86C36ECF7F5516AB7C"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ReaderGeometry.lean",
+      "sha256": "F8FF6C3B35B86208E3C56B09FFA5CA1113FE17650F98EE51E8EA5D9515394133"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ReaderInterface.lean",
+      "sha256": "ECD8043060AAE4A3F753B81ADCFE47F9E22B2914744DB6686ABBFB18A218A210"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/RegularLayout.lean",
+      "sha256": "172ED0F83F0D8E63136F7A3063F8EDC009F71D57C4BF8B1D311067F1AC53638C"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SafetyInterface.lean",
+      "sha256": "9BD0732D2863E80F4311D92C75366A0F280B7EBB250D51C32F66DA4540766CD5"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ScratchFrame.lean",
+      "sha256": "0EB35B270F66D55C250D9EF6DC46D897F7AFD1AA8E07D5EA40A6EB2D7784905A"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SegmentMap.lean",
+      "sha256": "8F9454FD730B9B857A99BBC33530DAF23E2F185AC66E21CC0845F29742C55B41"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SelectExecution.lean",
+      "sha256": "580DB81FDE442C341332A1185FD524C2925E45744F1B6918447D915E1E3FD4D0"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SelectExperiment.lean",
+      "sha256": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SelectSemantics.lean",
+      "sha256": "D950323B3DE006F320335F68AF96BE9F8A7D50A425EDDB35B493EFA2AB8DD3A2"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Source.lean",
+      "sha256": "8277F15D876437BD6C35835C57C9332E839AAA94EA63EC8A9F10B8BC661D1074"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Space.lean",
+      "sha256": "DBF34F5508AC1A1FC57F722DEF6A4724B6B495B5416AE2A9970179E5780BEFC1"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Width.lean",
+      "sha256": "873FE2E55102BEEB0E5B0450E86BF83CEF569303EF76C93D9B8AFC7A26860556"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/WordBounds.lean",
+      "sha256": "756AD2CF263E310966CEE28F214B0190B3F748365C9D5B6E808D1BD994956AB0"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/E1FringeBridge.lean",
+      "sha256": "B0287F964144901282A2949DC7FDCE9B682506EFB34F0BEC15F9098A5C8351DF"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/E1Machine.lean",
+      "sha256": "69CC3DDEFD185F7B6E9B09B64E8B2FB0FEFBE0669210E3D17D96CA707F3E1F94"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/E1MachineCalculus.lean",
+      "sha256": "15138768C905F6B462B52C2A128801B94E57A70411AAE7439CBE36183446FE66"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/E1RankBridge.lean",
+      "sha256": "40754A0D37317F48F88125E66E6CE207683F639BB4DDBEDDA4669D80BF1B4ED0"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Allocation.lean",
+      "sha256": "7FDC39400FF3AB877BECD63D2E367E24ACE0C71F373C7F54017039EE578E7D49"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ArrayRun.lean",
+      "sha256": "CD45C07C1F822C1BA57B65ACCA2F5CE916FA735B33269AFB7CEB17F4E3B9C82F"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Calculus.lean",
+      "sha256": "2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ChunkArithmetic.lean",
+      "sha256": "0F1B3DE7E3CF3DC37036335DA47FEA5F4A859E06BFBDF47314F23C6312A982FE"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Compiler.lean",
+      "sha256": "C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/DensePacking.lean",
+      "sha256": "75487722A3DBB6BCB3D445B0C242E8380F7B9F77A0762354D83F692CBC956913"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Frame.lean",
+      "sha256": "480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Guard.lean",
+      "sha256": "B911E50388FBDCDCD82A8E3ADEDD754473B6E5AB162A0D5D25B5C009A9160FFC"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/InteriorLocate.lean",
+      "sha256": "E570243D505D2498085A4CA289DEB74E7CCC98985F08AFF7BFB9D9D3151600E7"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/LoadSafety.lean",
+      "sha256": "AA7F502022E29C3D10A808E68CA0C9BB1481A0032659FA3C05BBB6D860850369"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Locate.lean",
+      "sha256": "3220FEECE22BAEF77AB8466675B8BDE65BD3FEF3A3C3832AEB176ADB4AF81578"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/LogicalSpan.lean",
+      "sha256": "3A3BF287E8221FD1825D2205260FD7E5F02ED75FF930CEBF603FBA67420B1573"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/PhysicalRead.lean",
+      "sha256": "49C9CE18F81B0B7A00E96C0E32F12121EE27401412146752DB845CE22581558F"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Primitive.lean",
+      "sha256": "4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/RankProof.lean",
+      "sha256": "52106920B98F295C699008619DE132D320A3F97258074C8027FD8F6B2D5231BC"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/RankSafety.lean",
+      "sha256": "BFF7F9CB3BC558EC41B0B1BC4B73C08F4F8F2ACC5DF9EB734E7FF20D9974D4F4"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/RankSource.lean",
+      "sha256": "B10BA599D21313AC0E5FC7D837D1FE1B999D270280959CA1AE30B8690AB4F6FB"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ReaderSafety.lean",
+      "sha256": "AE8AA18EAE3C6639AE66843EFCA0A4A4E4CA9F52ED974756F092214408BAEA44"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ReadInterface.lean",
+      "sha256": "75509F98331EB79E87809851B1BFB340BC3157E4482405F9F47D1D49A7C1EA87"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/RegularLocate.lean",
+      "sha256": "047ECF38990BD410085689FDE702417C035785C59C738BA6E1D66B248709D360"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Safety.lean",
+      "sha256": "EF0273D4B16F5876A949CAD219EC421864D7533FDDD5BB492BFF360C0134CC1C"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Scalar.lean",
+      "sha256": "5D25C758D77F5523DF8AE1C1136AE85FAE12BD9B11BCB6E472DBFABF97506493"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ScalarSafety.lean",
+      "sha256": "E7AFB1FB9E238AD9F051DFC5236E3E095EF259B4D0CFD875E4A757C10AF858BC"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Scratch.lean",
+      "sha256": "320DDD6C1F6549902951B99CCF99C66B231D2A0106487A710D8638372EF32E64"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/SelectProof.lean",
+      "sha256": "292AD12DC2879B2F523B29300DB2E5251AEA57BBACC5AD2154B2660DAF8946FB"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/SelectSafety.lean",
+      "sha256": "43C6C183A6B08B38B58521C42320F56A7AC87C27D23DC7AAF0DD5F73EEFC13E3"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/SelectSource.lean",
+      "sha256": "9C41270FE301B417CA622E523F6546E1EB4CB707FDF68D38F64F2975A97C9A5D"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Setup.lean",
+      "sha256": "B1BEF6D6859A63C33E8ABD31387697012C002209503D3E13F79B2C8145E6A918"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Span.lean",
+      "sha256": "54E1A81BDDE51E0C460C9BA5ADFD57A04254FE5D14CA6A77259F4108A64584B7"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/SpanAssembly.lean",
+      "sha256": "EA0B7CA706C9750A6E0CDF6220F5F8B411A54CEC33CFADDDED4F010020239106"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Structured.lean",
+      "sha256": "F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Width.lean",
+      "sha256": "6FB1D7DFE053E4A415B861819E46E448750EE056F8A0A6CAB8ED904277F9F9E5"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/ReadStoreEval.lean",
+      "sha256": "862496D886BE52077FD0B6F9A8AD6D4E49EE0C39234DCD3213C3DF33300397D2"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Register.lean",
+      "sha256": "93284E2A6DCACF9C3B425C3267EB8A0568E38CB2CDB083D21EC93FCDB32B783D"
+    },
+    {
+      "path": "scripts/owned_process_tree.ps1",
+      "sha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E"
+    },
+    {
+      "path": "scripts/packed_bitvector_public_controls.ps1",
+      "sha256": "CF2D7C080AD7F4ADF42313C693ACF474CF87147DE1FCAF93A31AA164994BA085"
+    }
+  ],
+  "sourceHashesAfter": [
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_expected_type.lean",
+      "sha256": "FEA8D045EF0A9CB9679949ED8825F2E04A4542C01E8F056A778BB0B474BF7A9E"
+    },
+    {
+      "path": "lakefile.toml",
+      "sha256": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A"
+    },
+    {
+      "path": "lean-toolchain",
+      "sha256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F"
+    },
+    {
+      "path": "RMQ/Core/Backend.lean",
+      "sha256": "8D911857ED6E9669936D5F8818149E23EBF4874C2C508D63CEEA889660ACC751"
+    },
+    {
+      "path": "RMQ/Core/Cartesian.lean",
+      "sha256": "A0C175425B7DF234F8CF59E177B36E3ED593D81D78337D40E6E2ED74028D9580"
+    },
+    {
+      "path": "RMQ/Core/Cost.lean",
+      "sha256": "887CDCCA893969756F6B7F785E1CA2249106F215A4155C6BA6FE714A6373BAA4"
+    },
+    {
+      "path": "RMQ/Core/EncodingLowerBound.lean",
+      "sha256": "BA555AADFA7F3AB3BF0B8DC1D09E093A33DE6A4747DCE6BA707FA68BCBAE61E5"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Arithmetic.lean",
+      "sha256": "188659DFE14431FA924C60BE82D03EE1733CFC01AC5E5DB046FAB129DB4B88AC"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/DenseEntryTable.lean",
+      "sha256": "9AF07D6EC8A806E0F7966D3F62801989F8E7DEC84A20C245A9A80555F0655EAB"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/DenseWord.lean",
+      "sha256": "771195F6125E8DE11C24F1F94876B620151CD4A2EA86DB3464E0C9E6E26FA728"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Directory.lean",
+      "sha256": "1B99217374A50A1DA29B9E2625D8884F89B1EF255FFF3EC643A32DA58CE246B9"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Entries.lean",
+      "sha256": "AE17F58FF740414FE9DFB6DF59B1EE92D2912A26E50D0AB042DD26C813C341F8"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Family.lean",
+      "sha256": "982BA48D8EB6EE8271FE6037BD0A84A0920AC1A5CFE6076B8800211EAA0F891F"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/FlagRank.lean",
+      "sha256": "25EF697C1D68E47DEAD370FFF58717279317E3BB7B5103CD9A5FD8E71896359C"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/LowLevel.lean",
+      "sha256": "D80DC849E26E30EB31487C03865098CD582A62E89EEB2BCD7CAE1020AB306535"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Params.lean",
+      "sha256": "05F8E4CB75A07792F6B51E5F561EE5E20EEB8F7F51EC05664CDDAF0E55440EA1"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Primitives.lean",
+      "sha256": "EAF0C05A429B425A40E8CC77044F268BC8FF36F8B9BB648473D6576F53DF6840"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/RAM.lean",
+      "sha256": "FEE4D7BE36077D93F928716E4909B4773F818CE39FDA17BC17E85E944EC2892F"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/RAMStoreParam.lean",
+      "sha256": "F17C7F141928ADEA7320B3187C98F2983B34E3D95B9E6F629860AB4C1313A277"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/RelativeSplit.lean",
+      "sha256": "89E4188223B34F322480147FE5EA4D57542E79A00763408B2EC45D4C80DD9C36"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/RelativeTables.lean",
+      "sha256": "7131A37475059E917D114531BA34726E1C34432BC9DF271D56C166370DC9F1EC"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/SelectFacts.lean",
+      "sha256": "DF6E9CB61E7FEEE0659B62960379FB8CD851B6BD914347A2D3BD06785CF93C69"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/SelectSource.lean",
+      "sha256": "222526C0D6D8AD56EB1E4FD5678111471961A6D3674614790BD5ACE58098D57A"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Slots.lean",
+      "sha256": "AE96B766A1D0CF34CE468B3EE9C9FDF82195AE25FA4ACA41E150AE426FA59051"
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Source.lean",
+      "sha256": "D1A404009FB648D1F256AFB0EFC396594C00B6E0EC85192F978B16BC0F08932E"
+    },
+    {
+      "path": "RMQ/Core/LCA.lean",
+      "sha256": "E981D40A5C3429A6794BD7857AEB01A0B49653F869C1139232AFB8766F1B053C"
+    },
+    {
+      "path": "RMQ/Core/ListLemmas.lean",
+      "sha256": "E4DF7A2D19754BC5BA77BA05235EC72E839DF226B00D4A38BAEB452B46ECA1FA"
+    },
+    {
+      "path": "RMQ/Core/LowerBound.lean",
+      "sha256": "FEFE56A46F206F5233C7E4B9EDAFC6BC1FA5CB0E04B03494FB94D9D0DFD6DF56"
+    },
+    {
+      "path": "RMQ/Core/Microtable.lean",
+      "sha256": "7AC16582B05226A39314CB12CF4032394BCC9802E01867697E1271BBD9C21A80"
+    },
+    {
+      "path": "RMQ/Core/PayloadLowerBound.lean",
+      "sha256": "24523EC8D3DD5859738DDBDF69BCC14C41FB0E21D7175ADDD494072FFF1BCA55"
+    },
+    {
+      "path": "RMQ/Core/PlusMinusOne.lean",
+      "sha256": "F66CFC4256FA0F3806E4C64EB3DC530E9675A86F3D1C3082AF349DFA9A3F74EF"
+    },
+    {
+      "path": "RMQ/Core/RAM.lean",
+      "sha256": "208E621844CA2A0F5CA73312B3C5688406AFD330EB753506987DAB603AADEF4F"
+    },
+    {
+      "path": "RMQ/Core/RankSelectSpec.lean",
+      "sha256": "2D48B2089432B601337E7FDB6CF9B081D8382A44019068D5DF64FBC4867DBCD1"
+    },
+    {
+      "path": "RMQ/Core/Reduction.lean",
+      "sha256": "A15808CA01F085C691CC30F73EEEB88E8AA858670D4BF0B707F2DED1AA1791EF"
+    },
+    {
+      "path": "RMQ/Core/Refine.lean",
+      "sha256": "75953F297DE26411AF75EA9BE3CDBF2FD6D0403EE0AE88E3310DDCD5ABBBEB2A"
+    },
+    {
+      "path": "RMQ/Core/Shape.lean",
+      "sha256": "A29366B989E786A5C762764C2DA1FFC9DF1487BE212A113A122384D9A1E2C863"
+    },
+    {
+      "path": "RMQ/Core/Spec.lean",
+      "sha256": "D32B9EF9873E9C9D8E2AEFE1227770F2B565122FAE01C0AE86737FA750F74AE3"
+    },
+    {
+      "path": "RMQ/Core/Succinct.lean",
+      "sha256": "C81AF4978110198561B109893832045509D8C8846CF2FCB179C809B5BA67E74E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose.lean",
+      "sha256": "D0DCF4A2D323A65FE03D901AD6C37189281522A75DF01447B2C9CF9FDE56718D"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/BlockLocal.lean",
+      "sha256": "818D93BC4665385FD6F5E45431DFC783E1A1D0860DCA35DCB9B75EFCDB5F0B62"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe.lean",
+      "sha256": "47F178B980D4386FA297A3BC8352F5D8FFD73AE9CA5C8E5CE8C5994FAC04F6F3"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro.lean",
+      "sha256": "466D70E742C3B92EE02833F796B1776DDFC3BEA4CF487F0EB2F1734B48005732"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/MicroCodebook.lean",
+      "sha256": "3E9DFFFD9C463376798509E1E88919A47EA52C39D7DF18D8369996954929BF04"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro.lean",
+      "sha256": "F9E7C1471B2167BDAF3D049E187224E27AAB87971C3404C5F17298C55E0A99D9"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/Concrete.lean",
+      "sha256": "1A72C3A22D9EC67B1F7D728E4E369E0AF4CC33384C8922583A971CA4224E74B2"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/PayloadMacro.lean",
+      "sha256": "9FA35FD83C7F46FBA374B549AE1F85F2733A2409FFB03B9CCBEAFCC6510CD08B"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/RangeTables.lean",
+      "sha256": "C036F7B736ABF755A8B8D9B1A02CE5810AD441CDAC7F546993F8D5B5AF63F041"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/RelativeMerge.lean",
+      "sha256": "ABDEAEBF1C169C5EDE34EF2323C2C942D26C8052BE68C6E1E21D2FE0A86C09EF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate.lean",
+      "sha256": "948813C73489C2642729997DC9AB448EB8FCFB70966A9F6307783F4DE5434BCC"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/Candidate.lean",
+      "sha256": "C843AABE9ADCA16A463EFC1307CF629604470E8847D3591131EC29784D4C6D83"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean",
+      "sha256": "92A2322E6DD91D8D2718E65F52B5DAC2572C142297501F0DF3882BF84534BC16"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/Base.lean",
+      "sha256": "65522F59E57BE29618BCA88A624F9A867C8DE02469A42C526B48E087751391A1"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean",
+      "sha256": "25A067E1C7E41C525680E44BB0767868EEEACE8D09825F232CB957EE000996B1"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/ValueDependency.lean",
+      "sha256": "B10110A3A0231D1FAD754A830EE0397A55ECB894C16B0864B6DD8A0B6F607D2C"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorRAM.lean",
+      "sha256": "E6850BE91B2120958019452EE26658AB2AA13CDAFD42BDDE649B6BA177EFD956"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/LocalGlobalSparse.lean",
+      "sha256": "B2A3B8866E5FCB52CC5A0884B22AFBE6DE2B74C92CED3D36B6F5C1CB8D29EFA6"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/RelativeScan.lean",
+      "sha256": "AD29744DA234215194478A2D8D0F2BF31FCCA119E5E9C9554A11970F2C9E0B21"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/TwoLevelCandidate.lean",
+      "sha256": "6900B5DDEB67DF79BA9A1A2B39682FEFCD9EA975E2E408ECD8291316748D15A8"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/WordReads.lean",
+      "sha256": "995F2E38D1F5C43FCAA1E4815FD2235EA481F7DBDCFFE3738EB5CFF7BACC37F6"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange.lean",
+      "sha256": "A0FED5EE46F3152D63EF42F8791D802FA34CCF8AE9D4A98A3288DF1425302B0D"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/AnswerSemantics.lean",
+      "sha256": "148B0E1DB197AADFD8F0927A82A89195D5F066F98B8BFF31C92718DCA1D66A9F"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/LocalSparseOffset.lean",
+      "sha256": "717A2514A0255D9994D780C87E0BA952D193EE791EFFAFF440D194438765B82D"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/PrefixArgMin.lean",
+      "sha256": "02EAC18E6679B60A7A78BA101C39E3269C18EAF8202178B3C0335441FE548CAD"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/PrefixWitnessTable.lean",
+      "sha256": "07538D0E27689BCB02915F5101ED158B5258A168ABB172F35DE0CF5733C2B56B"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/RelativeSummaryCandidate.lean",
+      "sha256": "4092148FDDBF60A1F481128DC96EFFB2FABD121CAD14F8EAA0142DDF6F30ECAA"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/SparseArgMin.lean",
+      "sha256": "BD98AF45F9D43B75768E23013EAEC66400850215124102C7720BE4CA115A774E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/SparseLevelTable.lean",
+      "sha256": "15E23994297D09D37CABDCFB2277BC8F819FF76C307636AC6E3889C1B7E61043"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RangeSummary.lean",
+      "sha256": "4DBE30022D3066FB44C1405D2C52FD8D4469537B6DE0C589DB6F99FBABB9A7EE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RangeWitness.lean",
+      "sha256": "4A9EF0FAD0B84ED02F55A1313353375F5159322DA5B159DBC6081E8781F378DC"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro.lean",
+      "sha256": "9F55F443ED0234E9C509664F31CC90884C455C2783491FDB6EBA058FDFCD27EC"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/AbstractMacro.lean",
+      "sha256": "4A368521FB415863E5FD77A7B0F4ED83CBD49983DBF4A7CD4A2B6921A0407553"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeChunks.lean",
+      "sha256": "7D3C02BF0F79FF53008D322C7FB92A99449252AA1303FB539222BB4F0B75CC6A"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeSubstitution.lean",
+      "sha256": "A76B18F22F18D2F26F60136ECA544921FC6177B55718E092D6C92A74071D9BEB"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeTableFacts.lean",
+      "sha256": "CD0E8F62E7AA6F58EFF3CB7C937F2025B98D99AF5798C7B8EC55676224670744"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeTrace.lean",
+      "sha256": "3958821F9FFB5FE5A3E51664ECF50191AF3BC27FEF1303BCA27565D772B61E26"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeWiring.lean",
+      "sha256": "BE36BA283C012EA66699A85AACC45D435465BD6C535F6BD142F53A231BF2C117"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectLeafTrace.lean",
+      "sha256": "418AAB560F5E0A6DB37CB4D5B3245D44580BE8004ADCC3A98528DEC598B87C96"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectLeaves.lean",
+      "sha256": "4964AD5844644F486DF44F75ABC31862DFFD3BE4A507B503E120A615657BB418"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectTrace.lean",
+      "sha256": "D22D91D49051A544BC511FBB7D0663069323F41BAD782B092B147185707FB595"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectWiring.lean",
+      "sha256": "E4CB679DBA4B995B33C411A7FDB49859C4DDA0B2D4402ED14C8F673F072D9570"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockChunks.lean",
+      "sha256": "F3E233EDD10FC8DE7098ED037A3A173A3096FB026043F6F81E9AA83F09D34470"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockSubstitution.lean",
+      "sha256": "CAA29118F8302CD07D50B7E824AFCC30A31C58991446DE9AF841CA99DA7B8C77"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockTrace.lean",
+      "sha256": "F68059B658962AA7D00942DA93B27415B19D2D04A9D6E5A1614706A914D37373"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedWordChunks.lean",
+      "sha256": "32AFF7472532A2CD3FDBD8DEECB92148466ABBA6780CEAFF695BE52F83F467C8"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/CompactEndpoint.lean",
+      "sha256": "383F30B3C6662F9C455632E6AE96F5935ADCA6EB65D25642676139DB08681761"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectory.lean",
+      "sha256": "823081F1FF979F77970BA2477CD9F9F5BB6E1255EA15129C061B726BA62CB7CE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectoryRAM.lean",
+      "sha256": "0CED594DE17F432C8FDB3BBDFF926FAF26F051BCACE6B9EB5040D70A91172E49"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectoryRAMStoreParam.lean",
+      "sha256": "074AE2026220430F9B6D00805FC51BA46917C8C0C50FD599A777245E029CC31E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/EndpointCodebook.lean",
+      "sha256": "5029E982326AB8DEA8D0E0F22B0A29081F2D802B2C78770E5D7584158BDB66A7"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/LocalBPDecoder.lean",
+      "sha256": "54CAD93011FDA3A464BE6F93D102332A375712E3993E4A8380D88EDDBE5F5B8A"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/MacroMicroFamily.lean",
+      "sha256": "9D3CEED171681840D7A81D65E2D6507AA1C8922C4A268DA9EB4AB0253C01E642"
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeSummary.lean",
+      "sha256": "14346D7A6E5C881DA559C423A53CE82170EE2A78D77F7ED31282671504AF034E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal.lean",
+      "sha256": "372A0C59D175950DC6111ACBD1E6E71FF8B913B2738912220CCB17D4C08BCFEC"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/FlatPayload.lean",
+      "sha256": "104480BB2E138921504FB96DEB7153D11B603DFA4085FA1DDE36B274244A07C3"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/GeometryClosure.lean",
+      "sha256": "67907F202156D3D0583041E4508D3BC33A57623598CB59A57407C41B02D3DDCB"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Address.lean",
+      "sha256": "6E8F3EC58E4A1C7588FF98C425CE71098916932C5E8ACC26E244C8EE5426A119"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Boundaries.lean",
+      "sha256": "CCF5D924505569FE557DB6BF3B6974ADA7322393C215656AB0D48DD35C5C5BEF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ExecutedUniverse.lean",
+      "sha256": "F2A04D822F298BBCEBDF7D00CB27CD8E8CD5D018B3B888D23662FEB133A194D3"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Header.lean",
+      "sha256": "2711A6F855F3A6D83C053B7C32C0A42F4940793266A44959FD804D9886644A2D"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Memory.lean",
+      "sha256": "64F8BF4F8FD67CE1ADA3635CFA5608BE6F9235CBF3A502342C475E65A1EDDEDE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Payload.lean",
+      "sha256": "500E2ADE7D46B6F9C884EBE06D19C031C1CFE7A75852150E3EC50C449CA54808"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/PhysicalRead.lean",
+      "sha256": "BB56CEF34E6E743B4CE522AFB8C85882D992E0C6C2128EDEB5C71970001724EA"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Probe.lean",
+      "sha256": "34E468F86DD5C6A35C83B4A5B36E9E217F4661CD94BA219709001C207473709B"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReadProgram.lean",
+      "sha256": "391D87D69679A4D9A263AF6193DFDD1DF0979541C8B5805569B6215E3998BE15"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerClosedGeometry.lean",
+      "sha256": "3F97100E132680EA8F901884AA383532031224F99DEA4255AB807E8E20B677AE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCloseGeometry.lean",
+      "sha256": "B0828658CBD2453B7BC4178EC859D9C9C77006899C3B20195131F6CA8D8C270B"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCloseRead.lean",
+      "sha256": "E3377018D62A378D745B2402AE46BD61382A10D7F6B490727659E6F0724DF399"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCloseWidth.lean",
+      "sha256": "E69298E7D3C8167609C2D74387D5482198F9A6CB783955BB6C6FF0F5BB20768E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerComponentAccess.lean",
+      "sha256": "35DD259730F4861FA6A3B7CF01AF9E9C5B8D4BDB2F0F2F2C214236B7D7585336"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerConcatIndex.lean",
+      "sha256": "B7417D93358DED4340DF33CE8A04C4C4C925E54937789CE214488E0C940504D7"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean",
+      "sha256": "AD9943085CF3E19D2F72129D5832AF1894C183229CD468DC6EECDBEC06572C4C"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerControllerProof.lean",
+      "sha256": "1225A5D847B0F3D4D9653A51DFAA39A51A744A13D524261236286FC98E993401"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCrossing.lean",
+      "sha256": "003BE10AA05F2B025F83ECE30EC7A91A4F092CA9179B5FF2EF33CEB433A2AE28"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerEntryAddress.lean",
+      "sha256": "41E67F063A92159E64467A56FEF20828AD65E8AC585A53CF815812177B96B214"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerEntryChunks.lean",
+      "sha256": "9B365EF07A62FE3D989C3EDDA7119D72D765B9676C88A40FDF258D12460A4FD9"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerInteriorCount.lean",
+      "sha256": "4F07D21A9FB1C6799131C4D4F778616A60BC18CCDA0B42C4D27251663F2731E3"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerInteriorProtocol.lean",
+      "sha256": "AC1ECA986A2411B88393C5006C89CAAEBA97C86CEBD0B4AB67A8CD958547D159"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerInteriorRead.lean",
+      "sha256": "074780F3536806DE36BC094BDA66AC0448529992E5C406F85824C63EDD75B1DF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerInteriorWidths.lean",
+      "sha256": "F08390B3A3C5ACF0036DAFEAD1A6384607317681C31299E7B4225971EAF43B7A"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLcaProtocol.lean",
+      "sha256": "B06E4D6C57BAFA21EB75F76AF099B18BB975FFACE9025F3AB5F7EA2EF8016D7A"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLength.lean",
+      "sha256": "3589BC63E435F307A5A6457DA7043DCA5A2AF9DD4018F615EBED4A194C1068CF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLogicalLowering.lean",
+      "sha256": "CE1F85F0181467AC28E431DF8BE90010649FDB541038278A20D29D82CB3DB895"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLogicalProtocol.lean",
+      "sha256": "E9169BE01037693A6893CB46E5F99E4AE8F2AA79C415F0C9D2BAF0098DA19BB7"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLogicalSimulation.lean",
+      "sha256": "7F2F353F7D53ED1E0BCB0D963A162193B6C87C912A8D80D5FCC683E0BA06E5B1"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerMachineWords.lean",
+      "sha256": "63AAE89D756E47255AD8821B336B3D3D2FE1607FC03C7771F2B36C6A35BC400A"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerMemory.lean",
+      "sha256": "B25D62BCBA1BFF603EE1E364B8EA355A36010906D159927AAC800EB1145179F8"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerPayload.lean",
+      "sha256": "F383AC00585EF7389C72610BA44E2941F45F6B6E9CC13AD6FA39EDDD38B4C75C"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerPhysicalRead.lean",
+      "sha256": "4C773AD3FA0EEC82DFABBE8F142A07AD583B4DBAE9455ABFD57CC593D1AB833B"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerProbe.lean",
+      "sha256": "01280EABBC2CDB4BB38E1EA22E3A55E6C64FCB9EF8AC4723D11BC26215317BBC"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerSelectProtocol.lean",
+      "sha256": "6BF0867042F07B9A4B8A26EF8AC83E5144C0A533932F10EA9E747BBC010F0A3C"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerSourceAddress.lean",
+      "sha256": "93EB4EF3697DED2867172D7E46E690550EBFFBCBC3D9003CA83863C2115DD9BA"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerSpace.lean",
+      "sha256": "56918F51DBDE05F1B69E449A6E41E944D706A65F2423D549426A3037B2D76BBF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerSparsePrelude.lean",
+      "sha256": "3A99BA036F6651EEE2A0823DBF2A6BAC365D5D6AB78A52949DDA0D480ECE8DA4"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerWholeProtocol.lean",
+      "sha256": "492436C51E2CAD4EFC13AB2B6D20704492780EEDB5F2B4BD9E3213F0331E045C"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerWidth.lean",
+      "sha256": "07F0A4D08CA3A599BD1DA8D747CB7298376A74DC24D8F722B411B41AD64E16D6"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceFactorization.lean",
+      "sha256": "04500A8A27354B5B2A19BE2DB4067ED56D85268A8D266E4F411A82E7B9F4C693"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceGeometry.lean",
+      "sha256": "99CCED87772781D6C4311F92831277DC08BB5481EF411BEF24DB8A5A0AA351F6"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceWords.lean",
+      "sha256": "901CBE8A30F7FFA92AAD48F3DEB7E01B5384CFB17A7B912D32D999FF020B5F23"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Space.lean",
+      "sha256": "E128DB764C24210CFB01CA197CAC427EAE126DD743D5695F580C414071791FE4"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/WordWidth.lean",
+      "sha256": "462C7120F2480CEC505EB53E2F6F49FEADFB92EB968504912B1D9ADA086992A0"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean",
+      "sha256": "0E506752E7843836CE715C57287CA3FC016D7CBB13E817C77A8DE6AC9D27DDB1"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean",
+      "sha256": "0E0FE1E5F7E56104EB8007BFF55B844B1EC9627F88F5CB519B0A8DB625297A18"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/Segments.lean",
+      "sha256": "F99920A82633074FF9018646D221154B2D23CEBEF860A3BA3FF09164D0ABAC81"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinalModelAdequacy.lean",
+      "sha256": "C86323DB215E020CB46B88B2D92BAFF8DC210D8270E2B821B60EACD22F3E11B4"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinalRAM.lean",
+      "sha256": "86E5424B05BD18A81BAA544C4A0E1638B536A6B4A6FF3B7FA818E61297D3FC33"
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinalStoreParam.lean",
+      "sha256": "466DF9555BAB1EBE77567DC6D269C2DE7F73C421BD78BE15C0271B0D292C4636"
+    },
+    {
+      "path": "RMQ/Core/SuccinctRank.lean",
+      "sha256": "164F2C7BF988559DB4EFE7FC8C933E91DB66737C9C6F0297D6993831FFFF335B"
+    },
+    {
+      "path": "RMQ/Core/SuccinctRMQClassic.lean",
+      "sha256": "07D34D2D79DC23B04235802D61ABFF2695F521131D0816304E79B3C1C6ECC177"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/AsymptoticFacts.lean",
+      "sha256": "8E628E9C4A94F239AC78157F9A2874E5596B5C8E9CF37E765968CA1382086BFB"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/Basic.lean",
+      "sha256": "B845BF8D2D94D1C92BAD544D5A1BC8AFD7F13F2D2BE451D370D36CA3E20D0283"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting.lean",
+      "sha256": "6D7093C011DB8B7172463714B57556CFED2F22D19528002936DC67008748DFCE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/FlagRankTables.lean",
+      "sha256": "F4AC00DF7B9C78AB09B9962F7A18D9AAB68A6FA1B6AC152D7E2C7258276EE069"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/LookupDense.lean",
+      "sha256": "29FB384ACE2DB0C5716E07211E52707345DA8E9E492A9030155EA419900A3B47"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/RelativeEntries.lean",
+      "sha256": "125C26C48D1BF6FAEC9D2F22AF23A171A3920F803C42F502692FA1D649B22361"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/SlotBasics.lean",
+      "sha256": "F71F91BC5CC954EC2BD4B979837F1D6D2E7924AEA42AF76B495F1867A3BAEDFE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/SpanBudgets.lean",
+      "sha256": "393E33B53C6311FB5982839D0A1ADF4B89F470A893CDA779AE98FC053C590A6B"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/WidthBounds.lean",
+      "sha256": "0F179C2CD32543C45759957FFD726E426400954F8A045D1C0AC880E3AD55B955"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/RelativeSplit.lean",
+      "sha256": "9AC682EA9A955744E44E79235112FC7609BCAABE6AF3F04DBE63E6BF50631BF1"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionCloseData/BuildProfile.lean",
+      "sha256": "5B43A04B43B22E69ABAD58A00394A6F54B519B84E9938473638A2CFB6D4609C4"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionCloseData/BuiltExact.lean",
+      "sha256": "D1FA216A2236B3DD3CA6924373AF9A93D0644DEA9BCB338F2BCDA18C76C3DF36"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionCloseData/DataSurface.lean",
+      "sha256": "42ED0155C69A52FAB233C97D370FD8D94A112497E527AF21A4C5AE08C56D02AB"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionDirectory.lean",
+      "sha256": "60CE8CB87F721A02EDCAB06CE16FDD164C276C93E393D51A911CB5E8D35E6A7E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/DenseLocalTables.lean",
+      "sha256": "EB63021D1866BF0F9A621270FCFBB0D43FD5CAC72FEAAEC230D3CA0FB57245BF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel.lean",
+      "sha256": "016C04966B6641D8DD2011856D1BC953F5A8769C2808B7EDA81416E94B8DE74E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/BPCloseNavigation.lean",
+      "sha256": "4BEF79B1C636F11DEFE0A48035461C25958A4B203F3D2C6BF04B1D3E812A825E"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/ClarkSource.lean",
+      "sha256": "5BC9B60B0A33EE3CE6ECF02A9E6F4B05A8D308FBDC1A83905110F78FE598ED86"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/RankSelectAdapters.lean",
+      "sha256": "4EAEF65F1BF992E99862E839C2B66EB928280812FE696A29F3C53593CEE51C61"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/SelectData.lean",
+      "sha256": "9D53AA16D945BE4AC2EF041AD3850F7150FEFD99B7696A0CB75AA38B4246092C"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/SelectSamples.lean",
+      "sha256": "03B22A47CCA422EDA459FAD2B14EFF1EE8FA822F0D54B254A72C7D6AE9A8A329"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/WordExact.lean",
+      "sha256": "C50B1CF6D8B98AE698918955B84EE490DF1BDCC662B68B5B0E8A3441AAD9BC22"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace.lean",
+      "sha256": "2DB86CA92D7EFBEB75B4DEB59A039ACA1E1C9DFE9BD597330A814568A12D7FEB"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/Asymptotics.lean",
+      "sha256": "39493F9BD2B86C041ED7471C310244E4FCED9DE831C566A8FEB8593EA783FFCE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPAccess.lean",
+      "sha256": "F79B2360503863665F30953566AEFF88BAC736063F725C599858460F13F344DF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPCloseLCA.lean",
+      "sha256": "00C85BEEA48B2DFA4BEFA8A3DAAF70ADA06F876B71F7DAE6CC185FF47DC465AF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPCloseLCARAM.lean",
+      "sha256": "776D7F64C12CF9F6515D121FECFAA28C963887C0C9DD34E834CFC9B2FEF3C1DF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPCloseRMQNavigation.lean",
+      "sha256": "9F7FA7CCDDB6F4106559D483EA35313BD1AE34B00F27259723DA6AD9E4A1AB55"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPCloseRMQNavigationRAM.lean",
+      "sha256": "11541F260779F41468BECE8C941B16B6ED06AB32487AEEA9F916279DC36248DE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPShape.lean",
+      "sha256": "633C2CFCEE96751D7CB84B5492A16E1DE3A79B7BE4904C799188363D5B75A00F"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BroadwordRMQ.lean",
+      "sha256": "FB21261792E59FEC4A48350A968076CA8E45454F7F7CBA32EF36538DB5F163AD"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/MachineChunkedTable.lean",
+      "sha256": "CA5804E728E7CCB5AEE8C8BC2EBC220D5E7AE27A5BD286599337BC6EB682576A"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/MachineChunkedTableProgram.lean",
+      "sha256": "E8BAA33AA98DBBC67CD12E033B85DA1BC0B3A46303938A6A47A400C5FE34FB80"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/RankSelect.lean",
+      "sha256": "8DDB5D45C8EA60413EC5A0478C968895172406E855A4B1E5BB8405ECFE66B4A4"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/RankSelectRAM.lean",
+      "sha256": "42CE073D6492EE4FAD5E45A3D41F26B73BBE6493B33ACC189AEAB8681342F0EE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/SelectSamples.lean",
+      "sha256": "62B18FA9CB7301DAA61490224C65068A38B3FB10D48B9E9FEF57359194B23495"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/SelectSamplesRAM.lean",
+      "sha256": "4931E8C80A9490DF33ADD8DE32ED3DE84041FB16A7E01B8031F400C44C01AFF4"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/Tables.lean",
+      "sha256": "5676C8B39B17EB0C183C9CE7C7E5B7210CEB947182D44933355A24BFB34A3BBF"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/TablesRAM.lean",
+      "sha256": "6E5E99094B6B9D4C273AF2A6D3988C7627FEACC8EE0F75ADABB2652FAD4322BE"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/WordStore.lean",
+      "sha256": "E508F5EEBA21D642E94D391B29E0DA85228A941539C341BCC97B333D2A23BC34"
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/WordStoreRAM.lean",
+      "sha256": "E73D6D9DB3D61E28CFA9F108E23C97E8CA3C7176A59C28E14B91C320574EA5C3"
+    },
+    {
+      "path": "RMQ/Core/TableModel.lean",
+      "sha256": "B015B94A0B2E130B6E6ABBB44415868B824AD5242148D614355E580EFA5D8159"
+    },
+    {
+      "path": "RMQ/Core/Window.lean",
+      "sha256": "C135E68A11AF7FF52623A7CCD8439330A93D5758B2E548330889BBF04B08432C"
+    },
+    {
+      "path": "RMQ/Core/WordRAM.lean",
+      "sha256": "7A47CED349D84C379135918115E3A0424B1DE2D9F4DDA0BB774FF42A94A174A9"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/AccessExecution.lean",
+      "sha256": "966E88F15B6CED25C337F4614B774FE85AAA0358E44F7EFDEBFB5BE0A0087300"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/AccessProof.lean",
+      "sha256": "0077FE19D2E693D7F02936FDB4A9592D68B9E67AC1FB9A1E905D361F1DB30DE2"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Allocation.lean",
+      "sha256": "B4DE6C3B923589A2AA890399D7D0B8236E3C46E1608ADE74F8CEFE65B60F392B"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/AllocationFacts.lean",
+      "sha256": "F189969208B13333219EE460DB8581D43BABB88F18480C68A37F47C070801623"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/AllocationLayout.lean",
+      "sha256": "EDE611982080F8600CE5F59BE89D8D331DC7920855F55B969A66F39C60E99ACF"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalLimits.lean",
+      "sha256": "1B0B761C9A42D0CE4C3EF3972B3EB43E3FE02BF56B9D3B7D501D23067C4D5A1F"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalMemoryBounds.lean",
+      "sha256": "182406E5BCAD21C8EF5EE236B92F3EBB63441B8DEECB15B9E46019CB8A97AA21"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalRankAccessSafety.lean",
+      "sha256": "1C39E9D0A2637C45B7306DBD5077DD2319BA2F6C2AF7CA43D0DE189F9BBAC03C"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalSelectSafety.lean",
+      "sha256": "FCBC3B363E47BC16298DEDBDE693921EC4CA45672753AD564161807D6CE7D753"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalStoreBounds.lean",
+      "sha256": "1209D9A14B0B92D5CCD6455197C57189903CF65C1502BB049DF25CA4472038BA"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Capstone.lean",
+      "sha256": "1C6CD0A85B77FBA7706C77DA87DE358808A24FA661D5635A3C4B3BBF96005D69"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ChargedSetup.lean",
+      "sha256": "21440D54C844202F5AF6816C5BFD1DFBE07EFA18ED23A7C546F8BF29948476E9"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CompleteLayout.lean",
+      "sha256": "E2C61B99E504E99940B3D63645F62CBE805FF21FF4B28473C1DE7646E08803DD"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CompleteReader.lean",
+      "sha256": "53926E3596E4C98A76D939E14CFBB26BFC939950E7A25CB774FBDB0617F73055"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CompleteReadStore.lean",
+      "sha256": "3A8A6F6F57CE5C7368C8115D4A95521DBC92FF25934BF9B5CD8D8A31AB92FD46"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ControllerInterface.lean",
+      "sha256": "14F14B5A78FC77DB768536BF78DA47CB60922364538859535198C1E440B30981"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/DescriptorReader.lean",
+      "sha256": "A85C55E8962F8F9F78E0FB00EDD81ED9DFF7E870792F62830DB6CADB54F45108"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/GenericRankProof.lean",
+      "sha256": "01544E3B71EBCB90B7ABF34F8C241BA6ED6F7954027C3E22443AD9AC65192F94"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/GenericRankSafety.lean",
+      "sha256": "46D1C897F34BA42A3DA76B5B9876D3C7CE46D05A63950FE9E1F2F9E513D3B4A5"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/GenericSelectProof.lean",
+      "sha256": "07D1090314E454341CCECBEFB74009600C9AFB40A812DC218C6810C450790EA0"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/GenericSelectSafety.lean",
+      "sha256": "DE8C9B1CD5C13C0B4D630839872DE55542116046EBDB4CC9B823C53B59C5B678"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/InterfaceProof.lean",
+      "sha256": "9B04897F77EF88A00B85F71BD7A43119572157F9266E74DACEFB726856D431CF"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/MemoryLayout.lean",
+      "sha256": "2CB94877358664BDC93234128FE2115B626C10442AEC87C9429A89395B0D6A24"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Metadata.lean",
+      "sha256": "CBA9B8CC9B574EC9D66FA4CCF8E4CE277BE6AA864B68BCFE6B9AAAB7AE955720"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Normalization.lean",
+      "sha256": "BA10A82917C9914E0BB11F619A15A51CFC65E2C0842C066F372339C77FF5F9D4"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/NumericReader.lean",
+      "sha256": "7E2CC443F2DE7351112460B7C2B0699C2879B51E760DEC3261B055790133897D"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/NumericSafety.lean",
+      "sha256": "621FC88A3FD86C8188A3074608CB254FA1D507CC4482F21C9EA13F8888A02C92"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Observations.lean",
+      "sha256": "76B7CAE29F31ADDEDD6A90D0FD80BA52FB62F26A6FEF02D94BA41FD731CE880B"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/RankExecution.lean",
+      "sha256": "BD4BDCDE4443E60E624DCEB0CC87673CF51321AD277DADE3A33DC898559A3B7F"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/RankLayout.lean",
+      "sha256": "7A5756940175BD775A0F4F0928EBB01F222C7C8DB0461CB12C74770A6F8D629B"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/RankSemantics.lean",
+      "sha256": "9AC0B86BC1630635EAA63A3DC3C3889206A0FDFB0205DD86C36ECF7F5516AB7C"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ReaderGeometry.lean",
+      "sha256": "F8FF6C3B35B86208E3C56B09FFA5CA1113FE17650F98EE51E8EA5D9515394133"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ReaderInterface.lean",
+      "sha256": "ECD8043060AAE4A3F753B81ADCFE47F9E22B2914744DB6686ABBFB18A218A210"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/RegularLayout.lean",
+      "sha256": "172ED0F83F0D8E63136F7A3063F8EDC009F71D57C4BF8B1D311067F1AC53638C"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SafetyInterface.lean",
+      "sha256": "9BD0732D2863E80F4311D92C75366A0F280B7EBB250D51C32F66DA4540766CD5"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ScratchFrame.lean",
+      "sha256": "0EB35B270F66D55C250D9EF6DC46D897F7AFD1AA8E07D5EA40A6EB2D7784905A"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SegmentMap.lean",
+      "sha256": "8F9454FD730B9B857A99BBC33530DAF23E2F185AC66E21CC0845F29742C55B41"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SelectExecution.lean",
+      "sha256": "580DB81FDE442C341332A1185FD524C2925E45744F1B6918447D915E1E3FD4D0"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SelectExperiment.lean",
+      "sha256": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SelectSemantics.lean",
+      "sha256": "D950323B3DE006F320335F68AF96BE9F8A7D50A425EDDB35B493EFA2AB8DD3A2"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Source.lean",
+      "sha256": "8277F15D876437BD6C35835C57C9332E839AAA94EA63EC8A9F10B8BC661D1074"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Space.lean",
+      "sha256": "DBF34F5508AC1A1FC57F722DEF6A4724B6B495B5416AE2A9970179E5780BEFC1"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Width.lean",
+      "sha256": "873FE2E55102BEEB0E5B0450E86BF83CEF569303EF76C93D9B8AFC7A26860556"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/WordBounds.lean",
+      "sha256": "756AD2CF263E310966CEE28F214B0190B3F748365C9D5B6E808D1BD994956AB0"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/E1FringeBridge.lean",
+      "sha256": "B0287F964144901282A2949DC7FDCE9B682506EFB34F0BEC15F9098A5C8351DF"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/E1Machine.lean",
+      "sha256": "69CC3DDEFD185F7B6E9B09B64E8B2FB0FEFBE0669210E3D17D96CA707F3E1F94"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/E1MachineCalculus.lean",
+      "sha256": "15138768C905F6B462B52C2A128801B94E57A70411AAE7439CBE36183446FE66"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/E1RankBridge.lean",
+      "sha256": "40754A0D37317F48F88125E66E6CE207683F639BB4DDBEDDA4669D80BF1B4ED0"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Allocation.lean",
+      "sha256": "7FDC39400FF3AB877BECD63D2E367E24ACE0C71F373C7F54017039EE578E7D49"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ArrayRun.lean",
+      "sha256": "CD45C07C1F822C1BA57B65ACCA2F5CE916FA735B33269AFB7CEB17F4E3B9C82F"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Calculus.lean",
+      "sha256": "2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ChunkArithmetic.lean",
+      "sha256": "0F1B3DE7E3CF3DC37036335DA47FEA5F4A859E06BFBDF47314F23C6312A982FE"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Compiler.lean",
+      "sha256": "C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/DensePacking.lean",
+      "sha256": "75487722A3DBB6BCB3D445B0C242E8380F7B9F77A0762354D83F692CBC956913"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Frame.lean",
+      "sha256": "480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Guard.lean",
+      "sha256": "B911E50388FBDCDCD82A8E3ADEDD754473B6E5AB162A0D5D25B5C009A9160FFC"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/InteriorLocate.lean",
+      "sha256": "E570243D505D2498085A4CA289DEB74E7CCC98985F08AFF7BFB9D9D3151600E7"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/LoadSafety.lean",
+      "sha256": "AA7F502022E29C3D10A808E68CA0C9BB1481A0032659FA3C05BBB6D860850369"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Locate.lean",
+      "sha256": "3220FEECE22BAEF77AB8466675B8BDE65BD3FEF3A3C3832AEB176ADB4AF81578"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/LogicalSpan.lean",
+      "sha256": "3A3BF287E8221FD1825D2205260FD7E5F02ED75FF930CEBF603FBA67420B1573"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/PhysicalRead.lean",
+      "sha256": "49C9CE18F81B0B7A00E96C0E32F12121EE27401412146752DB845CE22581558F"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Primitive.lean",
+      "sha256": "4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/RankProof.lean",
+      "sha256": "52106920B98F295C699008619DE132D320A3F97258074C8027FD8F6B2D5231BC"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/RankSafety.lean",
+      "sha256": "BFF7F9CB3BC558EC41B0B1BC4B73C08F4F8F2ACC5DF9EB734E7FF20D9974D4F4"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/RankSource.lean",
+      "sha256": "B10BA599D21313AC0E5FC7D837D1FE1B999D270280959CA1AE30B8690AB4F6FB"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ReaderSafety.lean",
+      "sha256": "AE8AA18EAE3C6639AE66843EFCA0A4A4E4CA9F52ED974756F092214408BAEA44"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ReadInterface.lean",
+      "sha256": "75509F98331EB79E87809851B1BFB340BC3157E4482405F9F47D1D49A7C1EA87"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/RegularLocate.lean",
+      "sha256": "047ECF38990BD410085689FDE702417C035785C59C738BA6E1D66B248709D360"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Safety.lean",
+      "sha256": "EF0273D4B16F5876A949CAD219EC421864D7533FDDD5BB492BFF360C0134CC1C"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Scalar.lean",
+      "sha256": "5D25C758D77F5523DF8AE1C1136AE85FAE12BD9B11BCB6E472DBFABF97506493"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ScalarSafety.lean",
+      "sha256": "E7AFB1FB9E238AD9F051DFC5236E3E095EF259B4D0CFD875E4A757C10AF858BC"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Scratch.lean",
+      "sha256": "320DDD6C1F6549902951B99CCF99C66B231D2A0106487A710D8638372EF32E64"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/SelectProof.lean",
+      "sha256": "292AD12DC2879B2F523B29300DB2E5251AEA57BBACC5AD2154B2660DAF8946FB"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/SelectSafety.lean",
+      "sha256": "43C6C183A6B08B38B58521C42320F56A7AC87C27D23DC7AAF0DD5F73EEFC13E3"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/SelectSource.lean",
+      "sha256": "9C41270FE301B417CA622E523F6546E1EB4CB707FDF68D38F64F2975A97C9A5D"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Setup.lean",
+      "sha256": "B1BEF6D6859A63C33E8ABD31387697012C002209503D3E13F79B2C8145E6A918"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Span.lean",
+      "sha256": "54E1A81BDDE51E0C460C9BA5ADFD57A04254FE5D14CA6A77259F4108A64584B7"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/SpanAssembly.lean",
+      "sha256": "EA0B7CA706C9750A6E0CDF6220F5F8B411A54CEC33CFADDDED4F010020239106"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Structured.lean",
+      "sha256": "F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Width.lean",
+      "sha256": "6FB1D7DFE053E4A415B861819E46E448750EE056F8A0A6CAB8ED904277F9F9E5"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/ReadStoreEval.lean",
+      "sha256": "862496D886BE52077FD0B6F9A8AD6D4E49EE0C39234DCD3213C3DF33300397D2"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Register.lean",
+      "sha256": "93284E2A6DCACF9C3B425C3267EB8A0568E38CB2CDB083D21EC93FCDB32B783D"
+    },
+    {
+      "path": "scripts/owned_process_tree.ps1",
+      "sha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E"
+    },
+    {
+      "path": "scripts/packed_bitvector_public_controls.ps1",
+      "sha256": "CF2D7C080AD7F4ADF42313C693ACF474CF87147DE1FCAF93A31AA164994BA085"
+    }
+  ],
+  "exactRestoration": true,
+  "fixturesUnchanged": true,
+  "scopedStatusBefore": [
+    "?? RMQ/Core/WordRAM/Bitvector/AccessExecution.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/AccessProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Allocation.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/AllocationLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalLimits.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalMemoryBounds.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalRankAccessSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalSelectSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalStoreBounds.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Capstone.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ChargedSetup.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CompleteLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CompleteReadStore.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CompleteReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ControllerInterface.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/DescriptorReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericRankProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericRankSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericSelectProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericSelectSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/InterfaceProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/MemoryLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Metadata.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/NumericReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/NumericSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Observations.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RankExecution.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RankLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RankSemantics.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ReaderGeometry.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RegularLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SafetyInterface.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ScratchFrame.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SegmentMap.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SelectExecution.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SelectSemantics.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Source.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Space.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Width.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/WordBounds.lean",
+    "?? docs/internal/extensions/bv1/controls/public_expected_type.lean",
+    "?? scripts/packed_bitvector_public_controls.ps1"
+  ],
+  "scopedStatusAfter": [
+    "?? RMQ/Core/WordRAM/Bitvector/AccessExecution.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/AccessProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Allocation.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/AllocationLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalLimits.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalMemoryBounds.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalRankAccessSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalSelectSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalStoreBounds.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Capstone.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ChargedSetup.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CompleteLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CompleteReadStore.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CompleteReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ControllerInterface.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/DescriptorReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericRankProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericRankSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericSelectProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericSelectSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/InterfaceProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/MemoryLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Metadata.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/NumericReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/NumericSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Observations.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RankExecution.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RankLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RankSemantics.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ReaderGeometry.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RegularLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SafetyInterface.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ScratchFrame.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SegmentMap.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SelectExecution.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SelectSemantics.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Source.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Space.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Width.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/WordBounds.lean",
+    "?? docs/internal/extensions/bv1/controls/public_expected_type.lean",
+    "?? scripts/packed_bitvector_public_controls.ps1"
+  ],
+  "scopedStatusRestored": true,
+  "whitespaceCheck": true,
+  "baselineWasGloballyClean": false,
+  "initialRepositoryStatus": [
+    " M .gitattributes",
+    " M RMQ/Validation/PackedBitvector.lean",
+    " M docs/DIGESTION_LOG.md",
+    " M docs/FAMILY_SUMMARY.md",
+    " M docs/internal/DESIGN_DECISIONS.md",
+    " M docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+    " M docs/internal/extensions/bv1/COMMANDS.md",
+    " M docs/internal/extensions/bv1/CONTRACT.md",
+    " M docs/internal/extensions/bv1/REPORT.md",
+    " M scripts/packed_bitvector_crossing.lean",
+    " M scripts/packed_bitvector_probe.ps1",
+    " M scripts/packed_bitvector_selector_controls.ps1",
+    "?? RMQ/Core/WordRAM/Bitvector/AccessExecution.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/AccessProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Allocation.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/AllocationLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalLimits.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalMemoryBounds.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalRankAccessSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalSelectSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CanonicalStoreBounds.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Capstone.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ChargedSetup.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CompleteLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CompleteReadStore.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CompleteReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ControllerInterface.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/DescriptorReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericRankProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericRankSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericSelectProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericSelectSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/InterfaceProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/MemoryLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Metadata.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/NumericReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/NumericSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Observations.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RankExecution.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RankLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RankSemantics.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ReaderGeometry.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ReaderProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RegularLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SafetyInterface.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ScratchFrame.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SegmentMap.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SelectExecution.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SelectSemantics.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Source.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Space.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Width.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/WordBounds.lean",
+    "?? docs/internal/extensions/bv1/ACCESS_PROOF.md",
+    "?? docs/internal/extensions/bv1/ALLOCATION_READER_PROOFS.md",
+    "?? docs/internal/extensions/bv1/CANONICAL_MEMORY_BOUNDS.md",
+    "?? docs/internal/extensions/bv1/CANONICAL_RANK_ACCESS_SAFETY.md",
+    "?? docs/internal/extensions/bv1/CANONICAL_SELECT_SAFETY.md",
+    "?? docs/internal/extensions/bv1/CAPSTONE_COMPOSITION.md",
+    "?? docs/internal/extensions/bv1/CAPSTONE_SCHEMA.md",
+    "?? docs/internal/extensions/bv1/CHARGED_SETUP.md",
+    "?? docs/internal/extensions/bv1/CHECKOUT_BYTES_DISPOSITION.md",
+    "?? docs/internal/extensions/bv1/CHECKOUT_BYTES_LAKEFILE_DISPOSITION.md",
+    "?? docs/internal/extensions/bv1/CHECKOUT_BYTES_LAKEFILE_PATCH.diff",
+    "?? docs/internal/extensions/bv1/CHECKOUT_BYTES_PATCH.diff",
+    "?? docs/internal/extensions/bv1/CONTINUATION.md",
+    "?? docs/internal/extensions/bv1/CONTROLLER_PROOFS.md",
+    "?? docs/internal/extensions/bv1/COORDINATOR_ROUTE_DISPOSITION.md",
+    "?? docs/internal/extensions/bv1/EVIDENCE_MATRIX.md",
+    "?? docs/internal/extensions/bv1/EXCEPTION_CONTROLS.md",
+    "?? docs/internal/extensions/bv1/GENERIC_SELECT_SAFETY.md",
+    "?? docs/internal/extensions/bv1/LEAF_CONSUMER_REPLAY.md",
+    "?? docs/internal/extensions/bv1/MACHINE_CONTROLS.md",
+    "?? docs/internal/extensions/bv1/NUMERIC_READER.md",
+    "?? docs/internal/extensions/bv1/NUMERIC_SAFETY.md",
+    "?? docs/internal/extensions/bv1/PREFINAL_COMPOSITION_REVIEW.md",
+    "?? docs/internal/extensions/bv1/PUBLIC_MUTATION_CONTROLS.md",
+    "?? docs/internal/extensions/bv1/RANK_LAYOUT.md",
+    "?? docs/internal/extensions/bv1/RANK_SEMANTICS.md",
+    "?? docs/internal/extensions/bv1/REGULAR_LAYOUT.md",
+    "?? docs/internal/extensions/bv1/SCRATCH_FRAME.md",
+    "?? docs/internal/extensions/bv1/SELECT_SEMANTICS.md",
+    "?? docs/internal/extensions/bv1/VALIDATION_CONTROLS.md",
+    "?? docs/internal/extensions/bv1/access_expected_type.lean",
+    "?? docs/internal/extensions/bv1/canonical_rank_access_safety_expected_type.lean",
+    "?? docs/internal/extensions/bv1/charged_setup_expected_type.lean",
+    "?? docs/internal/extensions/bv1/check_build_manifest.py",
+    "?? docs/internal/extensions/bv1/check_checkout_bytes.ps1",
+    "?? docs/internal/extensions/bv1/check_frozen_rows.ps1",
+    "?? docs/internal/extensions/bv1/claude/",
+    "?? docs/internal/extensions/bv1/commands/access-proof-build-final.json",
+    "?? docs/internal/extensions/bv1/commands/access-proof-build-v1.json",
+    "?? docs/internal/extensions/bv1/commands/access-proof-build-v2.json",
+    "?? docs/internal/extensions/bv1/commands/access-proof-build-v3.json",
+    "?? docs/internal/extensions/bv1/commands/access-proof-build-v4.json",
+    "?? docs/internal/extensions/bv1/commands/access-proof-build-v5.json",
+    "?? docs/internal/extensions/bv1/commands/access-proof-consumer-final.json",
+    "?? docs/internal/extensions/bv1/commands/canonical-rank-access-safety-build-final.json",
+    "?? docs/internal/extensions/bv1/commands/canonical-rank-access-safety-build-v1.json",
+    "?? docs/internal/extensions/bv1/commands/canonical-rank-access-safety-build-v2.json",
+    "?? docs/internal/extensions/bv1/commands/canonical-rank-access-safety-consumer-final.json",
+    "?? docs/internal/extensions/bv1/commands/canonical-rank-access-safety-static-final.json",
+    "?? docs/internal/extensions/bv1/commands/canonical-select-safety-1.json",
+    "?? docs/internal/extensions/bv1/commands/canonical-select-safety-2.json",
+    "?? docs/internal/extensions/bv1/commands/canonical-select-safety-consumer-1.json",
+    "?? docs/internal/extensions/bv1/commands/canonical-select-safety-consumer-2.json",
+    "?? docs/internal/extensions/bv1/commands/capstone-allocation-reader-consumer-v1.json",
+    "?? docs/internal/extensions/bv1/commands/capstone-build-v1.json",
+    "?? docs/internal/extensions/bv1/commands/capstone-public-consumer-v1.json",
+    "?? docs/internal/extensions/bv1/commands/capstone-public-consumer-v2.json",
+    "?? docs/internal/extensions/bv1/commands/capstone-static-final.json",
+    "?? docs/internal/extensions/bv1/commands/charged-setup-build-final.json",
+    "?? docs/internal/extensions/bv1/commands/charged-setup-build-v1.json",
+    "?? docs/internal/extensions/bv1/commands/charged-setup-build-v2.json",
+    "?? docs/internal/extensions/bv1/commands/charged-setup-build-v3.json",
+    "?? docs/internal/extensions/bv1/commands/charged-setup-build-v4.json",
+    "?? docs/internal/extensions/bv1/commands/charged-setup-consumer-final.json",
+    "?? docs/internal/extensions/bv1/commands/checkout-lakefile-observation.json",
+    "?? docs/internal/extensions/bv1/commands/complete-layout-11.json",
+    "?? docs/internal/extensions/bv1/commands/complete-reader-12.json",
+    "?? docs/internal/extensions/bv1/commands/complete-reader-limits-13.json",
+    "?? docs/internal/extensions/bv1/commands/controller-generic-rank-r3.json",
+    "?? docs/internal/extensions/bv1/commands/controller-generic-rank-r4.json",
+    "?? docs/internal/extensions/bv1/commands/controller-generic-rank-r5.json",
+    "?? docs/internal/extensions/bv1/commands/controller-generic-select-r6.json",
+    "?? docs/internal/extensions/bv1/commands/controller-machine-known-r17.json",
+    "?? docs/internal/extensions/bv1/commands/controller-machine-selectors-r18.json",
+    "?? docs/internal/extensions/bv1/commands/controller-machine-startup-r16.json",
+    "?? docs/internal/extensions/bv1/commands/controller-machine-static-r20.json",
+    "?? docs/internal/extensions/bv1/commands/controller-memory-consumer-r15.json",
+    "?? docs/internal/extensions/bv1/commands/controller-memory-r11.json",
+    "?? docs/internal/extensions/bv1/commands/controller-memory-r12.json",
+    "?? docs/internal/extensions/bv1/commands/controller-memory-r13.json",
+    "?? docs/internal/extensions/bv1/commands/controller-memory-r14.json",
+    "?? docs/internal/extensions/bv1/commands/controller-rank-prerequisite-r2.json",
+    "?? docs/internal/extensions/bv1/commands/controller-rank-r1.json",
+    "?? docs/internal/extensions/bv1/commands/controller-rank-safety-r9.json",
+    "?? docs/internal/extensions/bv1/commands/controller-safety-consumer-r10.json",
+    "?? docs/internal/extensions/bv1/commands/controller-select-interface-r7.json",
+    "?? docs/internal/extensions/bv1/commands/controller-source-consumer-r8.json",
+    "?? docs/internal/extensions/bv1/commands/exception-controls-known-v1.json",
+    "?? docs/internal/extensions/bv1/commands/exception-controls-replay-v1-omitted.json",
+    "?? docs/internal/extensions/bv1/commands/exception-controls-replay-v1-route-accept-after.json",
+    "?? docs/internal/extensions/bv1/commands/exception-controls-replay-v1-route-accept-before.json",
+    "?? docs/internal/extensions/bv1/commands/exception-controls-replay-v1-route-reject.json",
+    "?? docs/internal/extensions/bv1/commands/exception-controls-replay-v1-valid.json",
+    "?? docs/internal/extensions/bv1/commands/exception-controls-replay-v1.json",
+    "?? docs/internal/extensions/bv1/commands/exception-controls-startup-v1.json",
+    "?? docs/internal/extensions/bv1/commands/exception-controls-startup-v2.json",
+    "?? docs/internal/extensions/bv1/commands/exception-controls-startup-v3.json",
+    "?? docs/internal/extensions/bv1/commands/frozen-rows-implementation.json",
+    "?? docs/internal/extensions/bv1/commands/frozen-rows-pre-replay-repair.json",
+    "?? docs/internal/extensions/bv1/commands/generic-select-safety-1.json",
+    "?? docs/internal/extensions/bv1/commands/generic-select-safety-2.json",
+    "?? docs/internal/extensions/bv1/commands/generic-select-safety-consumer-1.json",
+    "?? docs/internal/extensions/bv1/commands/implementation-precertification-claims.json.gz",
+    "?? docs/internal/extensions/bv1/commands/implementation-precertification-design.json.gz",
+    "?? docs/internal/extensions/bv1/commands/implementation-precertification-native-trust.json.gz",
+    "?? docs/internal/extensions/bv1/commands/implementation-precertification-range-diff.json.gz",
+    "?? docs/internal/extensions/bv1/commands/implementation-precertification-trust.json.gz",
+    "?? docs/internal/extensions/bv1/commands/implementation-precertification-working-diff.json.gz",
+    "?? docs/internal/extensions/bv1/commands/implementation-precertification.json",
+    "?? docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-canonical-select-safety.json",
+    "?? docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-generic-select-safety.json",
+    "?? docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-rank-layout.json",
+    "?? docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-rank-semantics.json",
+    "?? docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-regular-layout-axioms.json",
+    "?? docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-regular-layout-types.json",
+    "?? docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-scratch-frame.json",
+    "?? docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-select-semantics.json",
+    "?? docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-summary.json",
+    "?? docs/internal/extensions/bv1/commands/machine-controls-v1-20260912111911796-bcf37cc6.json",
+    "?? docs/internal/extensions/bv1/commands/machine-controls-v1-20260912111955043-999b380b-omitted.json",
+    "?? docs/internal/extensions/bv1/commands/machine-controls-v1-20260912111955043-999b380b-valid.json",
+    "?? docs/internal/extensions/bv1/commands/machine-controls-v1-20260912111955043-999b380b.json",
+    "?? docs/internal/extensions/bv1/commands/manifest-semantics-v1.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-1.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-2.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-3.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-4.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-5.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-6.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-7.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-build-final.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-build-v3.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-compile-v1.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-compile-v2.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-safety-build-v1.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-safety-build-v2.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-safety-build-v3.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-safety-prerequisite-v1.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-14.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-15.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-16.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-17.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-18.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-19.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-20.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-21.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-22.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-23.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-24.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-25.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-26.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-27.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-28.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-29.json",
+    "?? docs/internal/extensions/bv1/commands/operation-joins-30.json",
+    "?? docs/internal/extensions/bv1/commands/rank-layout-1.json",
+    "?? docs/internal/extensions/bv1/commands/rank-layout-2.json",
+    "?? docs/internal/extensions/bv1/commands/rank-layout-consumer.json",
+    "?? docs/internal/extensions/bv1/commands/rank-semantics-1.json",
+    "?? docs/internal/extensions/bv1/commands/rank-semantics-2.json",
+    "?? docs/internal/extensions/bv1/commands/rank-semantics-consumer-2.json",
+    "?? docs/internal/extensions/bv1/commands/rank-semantics-consumer.json",
+    "?? docs/internal/extensions/bv1/commands/reader-geometry-9.json",
+    "?? docs/internal/extensions/bv1/commands/reader-space-10.json",
+    "?? docs/internal/extensions/bv1/commands/reader-support-8.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-1.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-2.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-3.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-axiom-source.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-axioms.json",
+    "?? docs/internal/extensions/bv1/commands/scratch-frame-consumer-1.json",
+    "?? docs/internal/extensions/bv1/commands/select-semantics-1.json",
+    "?? docs/internal/extensions/bv1/commands/select-semantics-2.json",
+    "?? docs/internal/extensions/bv1/commands/select-semantics-3.json",
+    "?? docs/internal/extensions/bv1/commands/select-semantics-consumer.json",
+    "?? docs/internal/extensions/bv1/commands/selector-controls-main-v2-final.json",
+    "?? docs/internal/extensions/bv1/commands/selector-controls-validation-v1-final.json",
+    "?? docs/internal/extensions/bv1/commands/selector-omitted-main-v2-final.json",
+    "?? docs/internal/extensions/bv1/commands/selector-valid-main-v2-final.json",
+    "?? docs/internal/extensions/bv1/commands/validation-controls-selector-omitted-validation-v1-final.json",
+    "?? docs/internal/extensions/bv1/commands/validation-controls-selector-valid-validation-v1-final.json",
+    "?? docs/internal/extensions/bv1/commands/validation-crossing-v3-first.json",
+    "?? docs/internal/extensions/bv1/commands/validation-final-static.json",
+    "?? docs/internal/extensions/bv1/commands/validation-v2-known.json",
+    "?? docs/internal/extensions/bv1/commands/validation-v2-startup.json",
+    "?? docs/internal/extensions/bv1/controls/allocation_reader_expected_type.lean",
+    "?? docs/internal/extensions/bv1/controls/controller_axioms.lean",
+    "?? docs/internal/extensions/bv1/controls/leaf_consumers/",
+    "?? docs/internal/extensions/bv1/controls/public_expected_type.lean",
+    "?? docs/internal/extensions/bv1/controls/public_mutations/",
+    "?? docs/internal/extensions/bv1/controls/route_v1_probe.ps1",
+    "?? docs/internal/extensions/bv1/controls/route_v1_selector_controls.ps1",
+    "?? docs/internal/extensions/bv1/controls/route_v1_validator.lean",
+    "?? docs/internal/extensions/bv1/controls/validation_v2/",
+    "?? docs/internal/extensions/bv1/run_final_gate.ps1",
+    "?? scripts/packed_bitvector_exceptions.lean",
+    "?? scripts/packed_bitvector_exceptions.ps1",
+    "?? scripts/packed_bitvector_machine_controls.lean",
+    "?? scripts/packed_bitvector_machine_controls.ps1",
+    "?? scripts/packed_bitvector_public_controls.ps1",
+    "?? scripts/packed_bitvector_validation_controls.ps1"
+  ],
+  "platform": "Windows",
+  "leanNumThreads": 1,
+  "deadlineSeconds": 180,
+  "campaignDeadlineSeconds": 2700,
+  "cleanScope": "Exact live public source import closure, immutable snapshots and generated fixtures; pre-existing shared changes preserved"
+}

@@ -1,175 +1,165 @@
 Status: INCOMPLETE
-Phase: CONTRACT/FEASIBILITY — pending mandatory coordinator route review.
+Phase: VERIFICATION — mathematical target and all runtime/mutation campaigns checked.
 
-All 30 rows in ACCEPTANCE_MATRIX.md remain open at the composed target.
-The named target, `RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds` in
-`RMQ/Core/WordRAM/Bitvector/Capstone.lean`, remains unproved and absent.
-This is the authorized phase checkpoint, not candidate completion or an
-obstruction. The task's explicit completion contract permits an INCOMPLETE
-phase return for mandatory contract/route review. Resume the same branch after
-the coordinator's disposition; no acceptance criterion is amended.
+The assigned theorem is proved:
+`RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds :
+FullyChargedBitvectorCapstone` in
+[Capstone.lean](../../../../RMQ/Core/WordRAM/Bitvector/Capstone.lean).
+Its 23-field certificate has no correctness, readiness, representation or
+geometry premises. The independent public consumer checks every field and
+the exact named inhabitant. Committed-byte verification and aggregate
+certification remain unfinished; this report does
+not record coordinator acceptance.
+
+## Exact task and unchanged contract
 
 - Handle/title: BV-1 / `(BV-1) Prove fully charged generic rank select`.
 - Branch: `codex/bv-1-fully-charged-rank-select`.
 - Worktree: `C:/Users/poin/.codex/worktrees/c974/RMQ`.
-- Base/governance and initial preflight HEAD: `0e6a00f654abc64f8b68988fa9675b9a839dca2f`.
-- Source phase commit: `581deebcacfded874d17da7db1e9132a1eefa184`.
-- The following amendment records that exact source commit and its verification;
-  it changes only task evidence/process prose. No push or integration occurred.
-- Durable frozen matrix: `docs/internal/extensions/bv1/ACCEPTANCE_MATRIX.md`.
-- Exact command evidence: `COMMANDS.md`, `commands/*.json`.
-- Route contract/source facts: `CONTRACT.md`, `SOURCE_FACTS.md`.
+- Base and workflow governance: `0e6a00f654abc64f8b68988fa9675b9a839dca2f`.
+- Implementation parent checkpoint: `645a0502b9da9ad6444edbe44759e1c2c5661f25`.
+  This report accompanies the reviewed shared implementation and replay
+  additions; the committed-byte receipt will identify their exact candidate.
+- Route prerequisite: APPROVE_ROUTE_AND_CONTINUE, retained in
+  [COORDINATOR_ROUTE_DISPOSITION.md](COORDINATOR_ROUTE_DISPOSITION.md).
+- All 30 original requirements remain frozen in
+  [ACCEPTANCE_MATRIX.md](ACCEPTANCE_MATRIX.md), 29096 bytes, SHA256
+  `80BD59A314FD33D37076802954444DA24F65C87A2A91DE23BC668B6AF9CCEB24`.
+  Its historical OPEN cells are not retrospectively rewritten.
+- [EVIDENCE_MATRIX.md](EVIDENCE_MATRIX.md) maps every frozen ID to exact
+  propositions, actual object composition, consumers and control outcomes.
+- Local commits are authorized; no push, merge, integration, branch deletion
+  or worktree cleanup has occurred.
 
-## Implemented and checked so far
+The governed proof-sprint preflight passed at the exact base with all three
+runtime RMQ skills reported and rmq-proof-sprint required. The final target
+and inherited invariants were never narrowed. Earlier route-phase source and
+evidence are retained at commits 581deebcacfded874d17da7db1e9132a1eefa184 and
+645a0502b9da9ad6444edbe44759e1c2c5661f25 and in the labeled phase artifacts;
+this report replaces the historical route-only status.
 
-`Normalization.lean` proves position-preserving normalization for both Boolean
-values, all prefix ranks, all select occurrences, access/slices and finite-word
-numeric/optional packet identities. No shape/readiness premise occurs. Exact
-types and axiom/build evidence are in NORMALIZATION.md. The clean source build
-and typed/axiom consumer passed. These are mathematical identities, not a
-physical machine theorem.
+## What the checked theorem says
 
-`SelectExperiment.lean` builds one numeric select allocation with both
-directories, one raw input, shared chunk tables and a charged descriptor/span
-reader. It compiles the existing selectCloseBlock with the new reader using
-the existing Structured compiler. Its source and `ReaderInterface.lean` compile.
-The latter defines the exact generic reader proposition; its canonical instance
-has not been proved. No access/rank program or full allocation/safety theorem
-exists yet, and Capstone.lean is not present.
+For every original List Bool, one numerical memory contains one raw input,
+both select directories, four Jacobson rank sample tables, shared chunk
+tables, numerical descriptors and padding. The capacity proposition counts
+that same memory, all three actual encoded programs and 8274 scratch/control
+words, multiplied by the declared word width. It is bounded by
+n + completeRho(n), and LittleOLinear completeRho is checked.
 
-The version1 feasibility validator has18 exact named cases and uses independent
-Succinct.select expected results. Startup, a known case and all18 cases passed.
-All eight production selector controls also passed, including omitted and
-empty parameters. The threshold query's attempted crossing assertion failed:
-its answer was correct but it made no second span load. A separate version2
-reader-component crossing control passed at n127,segment2,index0, with one
-actual second span load and correct packet1. It addresses component coverage
-without claiming whole-select crossing reachability. The failed earlier source
-is retained byte-for-byte as a replayable expected-fail control. No full
-controls row is closed; long/sparse parameterized cases remain unexecuted.
+Access equals the optional indexed bit; rank counts the target in the
+half-open prefix and returns none beyond the list length; select uses
+zero-based occurrence indices and equals the independent List specification
+for either Boolean value. These API equalities cover every natural argument.
+The actual primitive runs supply the result, halted state, result register
+and ordered receipts, with fixed bounds of 132, 1450 and 10030 instructions.
 
-`AllocationFacts.lean` now proves the exact retained-bit serialization and
-count for all valid generic directory objects, reconciling the four omitted
-false rank sample tables. It derives the canonical overhead bound for each
-target and sums the two bounds. Its clean build, five typed consumers and
-eight axiom inventories passed. These are component-capacity facts: final
-padding, metadata, rank/access data, code and scratch accounting remain open.
+For every representable argument, including invalid queries, safety covers
+all encoded instruction fields, every transition and fuel prefix through
+the source budget, final state and every indexed addressed reply. Every
+stored word and safe intermediate value uses the same logarithmic word width.
+The finite-register theorem separately covers arbitrary supplied memory and
+all fuel. Agreement on every attempted canonical receipt implies equality of
+the whole supplied-memory Run, including result, cost and trace.
 
-An independent read-only contract review is in ROUTE_REVIEW.md. It identifies
-canonical layout regularity and arbitrary-memory fault-specification boundaries;
-the lead incorporated both into CONTRACT.md. No canonical counterexample or
-formal obstruction was found. The coordinator's evidence-dependent route
-disposition, full generic reader proof and final blind candidate audit are
-separate pending stages.
+The common chain is the original bits, actual component arrays, counted
+Allocation.memory, charged numerical metadata and physical reader, existing
+Packed primitive blocks and Structured compiler, actual program/run, public
+certificate and independently stated typed projection. The all-size geometry
+handles short words, trailing empty sentinels, absent words and dead segments.
+No shared Packed implementation, canonical skill, gate.ps1 or public root
+alias was changed.
 
-## Exact checked propositions
+## Checked evidence and pending certification
 
-For every target,bits,k,p, with no additional premise:
+| Check | Current result |
+| --- | --- |
+| Exact capstone module | PASS, 9.170 seconds; standard project axioms only. |
+| Independent 23-field consumer plus inhabitant | PASS, 15.320 seconds; reader/safety predicates expanded independently. |
+| Complete allocation/reader consumer | PASS, 8.770 seconds; 14 standard-axiom inventories. |
+| Main operation registry | PASS 46/46: 43 primitive runs and three guarded API fixtures, including four actual whole-operation crossings; omitted run 378.344 seconds. |
+| Main production selectors | PASS 8/8, with no duplicate unchanged full registry. |
+| Focused final-allocation reader crossings | PASS 3/3, including observable true-target raw complementation. |
+| Decisive memory/fault/dormant-instruction controls | PASS 12/12, plus eight production selectors. |
+| Parameterized exceptional routes | PASS four routes for both target values, plus 11 selector/wrong-route controls. These are explicitly valid parameterized component memories. |
+| Validation mutations | PASS 5/5 with 17/17 exact verdict pins, no resource failures, and eight production selectors. |
+| Retained leaf consumers | PASS 8/8: 52 typed assertions and 68 standard-axiom reports; unchanged bytes. |
+| Public mutation campaign | PASS corrected final generation: 32/32 cases, all 32 constructors compile, 30 exact semantic rejections, two expected accepts, and eight selectors; 592.664 seconds, no resource failures. |
+| Frozen requirements | PASS raw Git-blob/file comparison and all 30 exact row-byte comparisons; no changed row. |
+| Parsed build manifest | PASS: removing precisely the owned validation target restores the governance manifest; recorded 691 bytes unchanged. |
+| Complete committed-blob/fresh-checkout comparison | Pending candidate commit. |
+| Final trust, whitespace and strict design/claim checks | PASS 7/7 in implementation-final-policy-v1.json, including the staged diff and strict claims (221.268 seconds). The earlier CRLF/EOF staging failure was resolved by the exact approved attributes; committed-range coverage of the new candidate follows its commit. |
+| Full aggregate, including its own lake build | Pending coordinator slot; the host currently has a diagnostic hold after the peer aggregate timed out. No BV-1 aggregate has run. |
 
-```text
-Succinct.rankPrefix false (normalize target bits) p =
-  Succinct.rankPrefix target bits p
-Succinct.select false (normalize target bits) k = Succinct.select target bits k
-readerPacket (word.map (normalize target)) =
-  let packet := readerPacket word
-  let len := readerLength word
-  if packet = 0 then 0 else if target then 2^len + 1 - packet else packet
-```
+Exact producer SHA256:
+`1C6CD0A85B77FBA7706C77DA87DE358808A24FA661D5635A3C4B3BBF96005D69`.
+Exact independent consumer SHA256:
+`FEA8D045EF0A9CB9679949ED8825F2E04A4542C01E8F056A778BB0B474BF7A9E`.
 
-For every valid `d : SparseExceptionSelectData bits target rs rb`, the length
-of the actual selected sixteen component arrays plus the lengths of the four
-omitted false sample tables equals `d.payload.length`. Consequently those
-selected bits are at most `canonicalSparseExceptionSelectOverhead bits.length`.
-The independent false/true pair is at most the sum of two such overheads. The
-directory object's validity proofs remain hypotheses of this generic leaf;
-canonical instantiation is checked. No packet/trace/safety fact is inferred
-from this length theorem. Exact full types appear in ALLOCATION_FACTS.md and
-the committed typed consumers under scripts/packed_bitvector_*_consumers.lean.
+The first public campaign kept two failures separate from semantic rejection:
+a smaller-memory constructor used the wrong take-length lemma, and a
+code-charge consumer exhausted its elaborator heartbeat budget. Its owned
+deadline interrupted the final case without a verdict. The corrected copied
+fixtures fix the lemma and apply the same local irreducibility boundary to
+program, Allocation.memory and Experiment.width before every unchanged consumer. Actual producer,
+program and consumer bytes and per-Lean resource limits stay unchanged.
+The first nonlocal attribute attempt also remains a failed startup record.
+Only precisely located semantic consumer errors after successful constructors
+can pass this campaign. The final manifest is
+55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821;
+its passing campaign preserves all 276 source/dependency hashes, all 64
+fixtures, scoped status and whitespace. The failed generations remain retained.
 
-`CanonicalGenericReaderCorrect` is an elaborated proposition, not a theorem:
-it universally requests GenericReaderCorrect for Experiment.memory bits and
-Experiment.physicalReader at the same bits and target. The actual decoder,
-descriptor loads and same-memory receipt equations must still establish it.
+Detailed outcomes, replay commands, exact fixtures and restoration evidence
+are retained in [PUBLIC_MUTATION_CONTROLS.md](PUBLIC_MUTATION_CONTROLS.md),
+[VALIDATION_CONTROLS.md](VALIDATION_CONTROLS.md),
+[MACHINE_CONTROLS.md](MACHINE_CONTROLS.md),
+[EXCEPTION_CONTROLS.md](EXCEPTION_CONTROLS.md) and
+[LEAF_CONSUMER_REPLAY.md](LEAF_CONSUMER_REPLAY.md).
+The [command ledger](COMMANDS.md) distinguishes development failures, narrow
+checks, full registries and pending final certification. Failed resource,
+constructor or process checks are never successful negative controls.
 
-## Verification, scope and decisions
+## Byte preservation and design records
 
-Narrow builds, exact-type/axiom consumers, startup, all18 select fixtures and
-eight production selector controls passed. The crossing candidate failed and
-the repaired component fixture passed, as recorded above. The proof leaves and
-reader packet facts use only propext and Quot.sound in their explicit axiom
-inventories. Trust-token/native-decision scans returned no matches.
+The coordinator approved four scoped -text rules, then the additional
+lakefile.toml rule after an actual checkout changed its mixed newline bytes.
+Both original and amended dispositions are retained. The five rules are now
+applied; no source, manifest, frozen row or old evidence bytes were normalized.
+The separately approved exact whitespace patch recognizes CRLF and permits only
+38 recorded EOF blanks; normal trailing-space and indentation checks remain.
+[CHECKOUT_BYTES.md](CHECKOUT_BYTES.md) retains the diagnosis, patch and verbatim
+approval. The ordinary staged check now passes without a whitespace override.
+The final check will compare actual committed blob IDs with raw source/fresh
+bytes and compare replay dependency SHA256 values outside those five scopes.
+A declaration of attributes alone is not counted as a passing round trip.
 
-DD-20260912-BV1-001 and WDD-20260912-BV1-001 record source and process decisions,
-alternatives, evidence and consequences. Shared ledgers were appended only.
-Changed source is confined to four Bitvector modules, the new validator and
-lane scripts; lakefile adds only rmq_packed_bitvector_validate. The remaining
-changed files are the task evidence folder and the two appended ledgers.
-No shared Packed module, canonical skill, public root alias or gate.ps1 changed.
+Task-specific entries in DESIGN_DECISIONS.md, WORKFLOW_DESIGN_DECISIONS.md,
+FAMILY_SUMMARY.md and DIGESTION_LOG.md explain the construction, chosen model,
+replay repairs and candidate status. Public root aliases and a final paper
+rewrite remain outside this worker's scope.
 
-The full lake build, full capstone import/axiom inventory, mutation campaign,
-long/sparse controls, final public family/digestion entry and blind exact-commit
-candidate audit are not run or claimed. They remain requirements after the
-route review; no capstone exists to certify now. No host-wide aggregate slot
-was requested or consumed. Windows process ownership is recorded; unexecuted
-Linux/escape controls are uncovered. Detailed phase policy checks are in
-COMMANDS.md and commands/phase-*.json(.gz).
+## Proof digestion and live limits
 
-The corrected archived phase check passed all six checks and preserved the
-exact frozen matrix hash. Its claim scan reported1601 hits and zero strict
-failures. The preceding self-scanning failure remains archived with the
-process repair described in WDD-20260912-BV1-001. This certifies the phase's
-checked hygiene/prose surfaces, not the still-missing capstone or its final
-aggregate. The postcommit source identity and range check are recorded in the
-following report amendment.
+The conceptual change is that the old logical directory operations now run
+through one charged physical allocation. Directory words, including empty
+sentinels and false/true views, are recovered from actual numerical descriptors
+and packed cells. The same physical object supplies the answers, receipts,
+safety facts and complete space accounting. The finite mutation checks test
+whether those public facts and actual read-dependent values are necessary.
 
-## Postcommit phase identity
+The result uses the existing unit-cost arithmetic/indexed-access word-RAM
+model. Preprocessing time is not bounded here. The unbounded-Nat API encoding
+guard is outside the charged machine run. Lean runtime is separate from the
+modeled instruction bound; finite fixture timings are measurements of this
+host, not asymptotic machine proofs. Fixed code and 8274 scratch words fit the
+n+o(n) statement after logarithmic-width scaling but are large at small sizes.
 
-The source snapshot is commit581deebcacfded874d17da7db1e9132a1eefa184, a direct
-descendant of the assigned base, on the exact requested branch. The worktree
-was clean immediately after that commit. `git diff --check
-0e6a00f654abc64f8b68988fa9675b9a839dca2f..HEAD` and the strict design checker
-with that same base passed after committing (60 changed files classified).
-The initial sandboxed staging attempt could not write the parent repository's
-worktree index; automatic approval permitted the already-authorized local
-staging/commit. No user permission or scope amendment was needed.
+The next skeptical questions concern tighter constants, practical construction
+time and use of this generic bitvector client in an RMQ representation. They
+do not replace the remaining committed-byte and certification obligations here.
+Independent exact-commit audit and coordinator acceptance are still required.
 
-The final report/evidence commit is identified in the task response and Git
-history; it retains this exact source snapshot. The coordinator should review
-the frozen requirements, CONTRACT.md, ReaderInterface.lean and the full select
-experiment before recording the required route disposition. That review must
-not be confused with acceptance of the unproved full capstone.
-
-## Unmet rows
-
-REQ-BV-ALLOC, REQ-BV-OPS, REQ-BV-RUN, REQ-BV-REUSE, REQ-BV-JOIN,
-CHK-BV-CONTROLS; INV-STORE-IDENTITY, INV-VALUE-DEPENDENCY,
-INV-SEMANTIC-NONVACUITY, INV-TRACE-EXECUTION, INV-STORE-AGREEMENT,
-INV-READ-BACKING, INV-WORD-WIDTH, INV-ADDRESS-WIDTH,
-INV-INSTRUCTION-ATOMICITY, INV-PROGRAM-ACCOUNTING,
-INV-ORACLE-INDEPENDENCE, INV-VALIDATION-REACH, INV-ALL-SIZE,
-INV-PROOF-SEPARATION, INV-NO-SYNTHETIC, INV-CATEGORY-SEPARATION,
-INV-PUBLIC-COMPOSITION, INV-CERTIFICATE-ANTI-BYPASS,
-INV-MUTATION-REPRODUCIBILITY, INV-GLOBAL-PHYSICAL-MACHINE,
-INV-WIDTH-SCALING; REPLAY-EXACT-REGISTRY, REPLAY-SELECTOR-NONVACUITY,
-REPLAY-SUBPROCESS-DEADLINE. No row is narrowed or marked inapplicable.
-
-## Proof digestion and next consumer
-
-Both-bit select can share the existing false-select source: complement only a
-loaded raw data word when selecting true, preserving its actual length and
-positions. Store both target-specific exception directories; their flags keep
-their original values. The normalization theorem now proves the semantic
-identity needed by that route.
-
-The next checked consumer is the generic physical reader, followed by a full
-generic select refinement and the all-size safety/allocation join. Its live
-obligations include descriptor erasure, same-store reply dependence, all
-intermediate width bounds, both directory capacities, and final code/scratch
-accounting. A skeptical graduate student should ask whether those metadata
-loads and normalized replies actually determine each returned position on
-every exceptional route. The existing helper theorem does not answer that yet.
-
-Two independent source inventories found an additive path without shared
-Packed edits. Contract review and executable feasibility evidence are being
-prepared; no formal obstruction was found. Final full-target independent audit,
-coordinator acceptance and integration remain separate stages.
+The optional Claude helper was not used: automatic approval review rejected
+its launch/access attempts. No job was created, and the authorized local proof
+work continued to the checked theorem.

@@ -1,0 +1,880 @@
+{
+  "utc": "2026-09-12T12:47:07.0228129Z",
+  "sourceCampaign": "campaign-v1-20260912120258157-2c2c1792-omitted",
+  "scope": "Only recorded successful compiler phases; no inference about uncovered case32 or failed constructor/consumer",
+  "recordedCaseCount": 31,
+  "recordedPassedCount": 29,
+  "inventoryCount": 79,
+  "allInventoriesStandard": true,
+  "inventories": [
+    {
+      "case": "capacity-without-code",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "delete-accessCorrect",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_completeCapacity_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_overheadLittleO_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_widthBounds_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_memoryWordsFit_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_readerGeometry_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_readerCorrect_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_accessCorrect_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_rankCorrect_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_selectCorrect_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_accessExecution_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_rankExecution_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_selectExecution_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_accessSafety_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_rankSafety_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_selectSafety_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_programLengths_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_sourceBudgets_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_stepsBound_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_categoryPartition_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_categoryBounds_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_finiteScratch_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_suppliedMemoryAgreement_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_validArgumentFits_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_inhabitant_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "sibling-readerCorrect",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "sibling-selectSafety",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_completeCapacity_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_overheadLittleO_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_widthBounds_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_memoryWordsFit_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_readerGeometry_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_readerCorrect_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_accessCorrect_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_rankCorrect_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_selectCorrect_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_accessExecution_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_rankExecution_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_selectExecution_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_accessSafety_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_rankSafety_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_selectSafety_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_programLengths_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_sourceBudgets_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_stepsBound_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_categoryPartition_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_categoryBounds_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_finiteScratch_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_suppliedMemoryAgreement_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_validArgumentFits_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "declaration": "RMQ.PackedBitvector.PublicConsumer.public_inhabitant_required",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-accessCorrect",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-accessExecution",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-accessSafety",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-categoryBounds",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-categoryPartition",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-completeCapacity",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-finiteScratch",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-memoryWordsFit",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-overheadLittleO",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-programLengths",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-rankCorrect",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-rankExecution",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-rankSafety",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-readerCorrect",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-readerGeometry",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-selectCorrect",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-selectExecution",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-selectSafety",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-sourceBudgets",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-stepsBound",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-suppliedMemoryAgreement",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-validArgumentFits",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-widthBounds",
+      "phase": "constructor",
+      "declaration": "RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "passed": true
+    }
+  ]
+}
