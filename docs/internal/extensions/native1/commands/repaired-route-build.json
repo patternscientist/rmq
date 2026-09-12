@@ -1,0 +1,65 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+  "command": {
+    "arguments": [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "scripts/packed_native_build.ps1"
+    ],
+    "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+  },
+  "result": {
+    "Stage": "repaired-route-build",
+    "ExitCode": 0,
+    "Output": [
+      "NATIVE1-BUILD toolchain identity C60F0547C27BA8D6120D084F9F3BCB9EAA7DF70C1B4F13CD5CF6393882D85363",
+      "NATIVE1-BUILD lean-Primitive exit=0 seconds=11.54",
+      "NATIVE1-BUILD lean-Calculus exit=0 seconds=20.699",
+      "NATIVE1-BUILD lean-Structured exit=0 seconds=14.241",
+      "NATIVE1-BUILD lean-Compiler exit=0 seconds=18.183",
+      "NATIVE1-BUILD lean-Frame exit=0 seconds=8.906",
+      "NATIVE1-BUILD lean-Scratch exit=0 seconds=10.922",
+      "NATIVE1-BUILD lean-Finite exit=0 seconds=11.756",
+      "NATIVE1-BUILD lean-Thin exit=0 seconds=7.388",
+      "NATIVE1-BUILD lean-Route exit=0 seconds=7.127",
+      "NATIVE1-BUILD link-dll exit=0 seconds=21.89",
+      "   Compiling packed-rmq v0.0.0 (C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\native\\packed-rmq)",
+      "    Finished `release` profile [optimized] target(s) in 3.73s",
+      "NATIVE1-BUILD cargo-build exit=0 seconds=6.549",
+      "   Creating library C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\packed_route.lib and object C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\packed_route.exp",
+      "NATIVE1-BUILD cpp-import-library exit=0 seconds=2.277",
+      "NATIVE1-BUILD cpp-build exit=0 seconds=8.056"
+    ],
+    "StandardOutput": [
+      "NATIVE1-BUILD toolchain identity C60F0547C27BA8D6120D084F9F3BCB9EAA7DF70C1B4F13CD5CF6393882D85363",
+      "NATIVE1-BUILD lean-Primitive exit=0 seconds=11.54",
+      "NATIVE1-BUILD lean-Calculus exit=0 seconds=20.699",
+      "NATIVE1-BUILD lean-Structured exit=0 seconds=14.241",
+      "NATIVE1-BUILD lean-Compiler exit=0 seconds=18.183",
+      "NATIVE1-BUILD lean-Frame exit=0 seconds=8.906",
+      "NATIVE1-BUILD lean-Scratch exit=0 seconds=10.922",
+      "NATIVE1-BUILD lean-Finite exit=0 seconds=11.756",
+      "NATIVE1-BUILD lean-Thin exit=0 seconds=7.388",
+      "NATIVE1-BUILD lean-Route exit=0 seconds=7.127",
+      "NATIVE1-BUILD link-dll exit=0 seconds=21.89",
+      "   Compiling packed-rmq v0.0.0 (C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\native\\packed-rmq)",
+      "    Finished `release` profile [optimized] target(s) in 3.73s",
+      "NATIVE1-BUILD cargo-build exit=0 seconds=6.549",
+      "   Creating library C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\packed_route.lib and object C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\packed_route.exp",
+      "NATIVE1-BUILD cpp-import-library exit=0 seconds=2.277",
+      "NATIVE1-BUILD cpp-build exit=0 seconds=8.056"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 239.648,
+    "DeadlineSeconds": 1500,
+    "Ownership": "kill-on-close-job"
+  }
+}

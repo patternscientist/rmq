@@ -1,0 +1,38 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+  "command": {
+    "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+    "arguments": [
+      "-NoLogo",
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+      "-Case",
+      "smoke"
+    ]
+  },
+  "result": {
+    "Stage": "repair-known-smoke",
+    "ExitCode": 0,
+    "Output": [
+      "NATIVE1-ROUTE PASS smoke",
+      "NATIVE1-ROUTE-REPORT C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\route-20260912T092619569.json"
+    ],
+    "StandardOutput": [
+      "NATIVE1-ROUTE PASS smoke",
+      "NATIVE1-ROUTE-REPORT C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\route-20260912T092619569.json"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 38.693,
+    "DeadlineSeconds": 480,
+    "Ownership": "kill-on-close-job"
+  }
+}

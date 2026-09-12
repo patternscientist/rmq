@@ -1,90 +1,21 @@
 {
-  "schema": "native1-route-registry-v1",
+  "schema": "native1-route-registry-v3",
   "cases": [
-    {
-      "id": "smoke",
-      "kind": "smoke",
-      "expected": "8 2\n0 1 0 0 0 1"
-    },
-    {
-      "id": "n9-full",
-      "kind": "fixture",
-      "fixture": "n9-full",
-      "mode": "reads"
-    },
-    {
-      "id": "n9-empty",
-      "kind": "fixture",
-      "fixture": "n9-empty",
-      "mode": "reads"
-    },
-    {
-      "id": "n9-range",
-      "kind": "fixture",
-      "fixture": "n9-range",
-      "mode": "reads"
-    },
-    {
-      "id": "n9-corrupt",
-      "kind": "fixture",
-      "fixture": "n9-corrupt",
-      "mode": "reads"
-    },
-    {
-      "id": "n9-missing",
-      "kind": "fixture",
-      "fixture": "n9-missing",
-      "mode": "reads"
-    },
-    {
-      "id": "n12-interior",
-      "kind": "fixture",
-      "fixture": "n12-interior",
-      "mode": "reads"
-    },
-    {
-      "id": "n12-same",
-      "kind": "fixture",
-      "fixture": "n12-same",
-      "mode": "reads"
-    },
-    {
-      "id": "n12-adjacent",
-      "kind": "fixture",
-      "fixture": "n12-adjacent",
-      "mode": "reads"
-    },
-    {
-      "id": "n9-no-reads",
-      "kind": "fixture",
-      "fixture": "n9-full",
-      "mode": "quiet"
-    },
-    {
-      "id": "malformed-instruction",
-      "kind": "malformed",
-      "program": "99\n",
-      "fixture": "9 0 9 168 100\n",
-      "expected": "ERROR instruction shape",
-      "exit": 2
-    },
-    {
-      "id": "malformed-fixture",
-      "kind": "malformed",
-      "program": "8 3\n",
-      "fixture": "wrong\n",
-      "expected": "ERROR invalid natural",
-      "exit": 2
-    },
-    {
-      "id": "source-core-mutation",
-      "kind": "source-mutation",
-      "expected": "Lean type rejection at routeCore_source; exact source restoration"
-    },
-    {
-      "id": "stale-source-rejection",
-      "kind": "source-pin",
-      "expected": "build identity check rejects a source edit; exact source restoration"
-    }
+    {"id":"smoke","kind":"smoke","operation":"native-exact-output","executable":"packed-rmq-route.exe","mode":"reads","program":"1 3 8\n8 3\n","fixture":"9 0 9 168 100\n","exit":0,"expected":"8 2\n0 1 0 0 0 1","outputChannel":"stdout","expectedOtherOutput":""},
+    {"id":"n9-full","kind":"fixture","operation":"reference-observation","executable":"packed-rmq-route.exe","fixture":"n9-full","mode":"reads","exit":0,"expected":"n9-full.expected","outputChannel":"stdout","expectedOtherOutput":""},
+    {"id":"n9-empty","kind":"fixture","operation":"reference-observation","executable":"packed-rmq-route.exe","fixture":"n9-empty","mode":"reads","exit":0,"expected":"n9-empty.expected","outputChannel":"stdout","expectedOtherOutput":""},
+    {"id":"n9-range","kind":"fixture","operation":"reference-observation","executable":"packed-rmq-route.exe","fixture":"n9-range","mode":"reads","exit":0,"expected":"n9-range.expected","outputChannel":"stdout","expectedOtherOutput":""},
+    {"id":"n9-corrupt","kind":"fixture","operation":"reference-observation","executable":"packed-rmq-route.exe","fixture":"n9-corrupt","mode":"reads","exit":0,"expected":"n9-corrupt.expected","outputChannel":"stdout","expectedOtherOutput":""},
+    {"id":"n9-missing","kind":"fixture","operation":"reference-observation","executable":"packed-rmq-route.exe","fixture":"n9-missing","mode":"reads","exit":0,"expected":"n9-missing.expected","outputChannel":"stdout","expectedOtherOutput":""},
+    {"id":"n12-interior","kind":"fixture","operation":"reference-observation","executable":"packed-rmq-route.exe","fixture":"n12-interior","mode":"reads","exit":0,"expected":"n12-interior.expected","outputChannel":"stdout","expectedOtherOutput":""},
+    {"id":"n12-same","kind":"fixture","operation":"reference-observation","executable":"packed-rmq-route.exe","fixture":"n12-same","mode":"reads","exit":0,"expected":"n12-same.expected","outputChannel":"stdout","expectedOtherOutput":""},
+    {"id":"n12-adjacent","kind":"fixture","operation":"reference-observation","executable":"packed-rmq-route.exe","fixture":"n12-adjacent","mode":"reads","exit":0,"expected":"n12-adjacent.expected","outputChannel":"stdout","expectedOtherOutput":""},
+    {"id":"n9-no-reads","kind":"fixture","operation":"reference-observation","executable":"packed-rmq-route.exe","fixture":"n9-full","mode":"quiet","exit":0,"expected":"n9-full.expected","outputChannel":"stdout","expectedOtherOutput":""},
+    {"id":"malformed-instruction","kind":"malformed","operation":"native-exact-output","executable":"packed-rmq-route.exe","mode":"reads","program":"99\n","fixture":"9 0 9 168 100\n","exit":2,"expected":"ERROR instruction shape","outputChannel":"stdout","expectedOtherOutput":"Lean parser rejected input"},
+    {"id":"malformed-fixture","kind":"malformed","operation":"native-exact-output","executable":"packed-rmq-route.exe","mode":"reads","program":"8 3\n","fixture":"wrong\n","exit":2,"expected":"ERROR invalid natural","outputChannel":"stdout","expectedOtherOutput":"Lean parser rejected input"},
+    {"id":"cpp-n9-full","kind":"fixture","operation":"reference-observation","executable":"packed-rmq-cpp.exe","fixture":"n9-full","mode":"reads","exit":0,"expected":"n9-full.expected","outputChannel":"stdout","expectedOtherOutput":""},
+    {"id":"cpp-malformed-instruction","kind":"malformed","operation":"native-exact-output","executable":"packed-rmq-cpp.exe","mode":"reads","program":"99\n","fixture":"9 0 9 168 100\n","exit":1,"expected":"ERROR instruction shape","outputChannel":"stderr","expectedOtherOutput":""},
+    {"id":"source-core-mutation","kind":"source-mutation","operation":"lean-type-rejection","mode":"lean","source":"RMQ/Core/WordRAM/Native/Route.lean","anchor":"runThin observeReads memory program fuel s {}","replacement":"runThin observeReads memory program 0 s {}","proofLine":"  runThin_projection observeReads memory program fuel s {}","exit":"nonzero","expected":"type mismatch","surface":"routeCore_source"},
+    {"id":"stale-source-rejection","kind":"source-pin","operation":"source-identity-rejection","mode":"identity","source":"RMQ/Core/WordRAM/Native/Route.lean","append":"\n-- stale-source control\n","exit":"rejection","expected":"stale native source: RMQ/Core/WordRAM/Native/Route.lean"}
   ]
 }

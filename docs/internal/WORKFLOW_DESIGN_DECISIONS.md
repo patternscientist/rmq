@@ -12428,3 +12428,102 @@ unresolved design result. The continuation review also distinguishes actual
 in-process script binding controls from the still-required OS process-boundary
 selector campaign, so 8/8 phase controls cannot silently close the stronger
 frozen requirement.
+
+## WDD-20260912-NATIVE1-002: classify the authorized native package by role
+
+The reviewed route commits failed strict design checking on 28 native paths.
+The coordinator subsequently granted this worker narrow ownership of the
+production checker and regression for the package role repair. The checker now
+classifies native source/ABI, Cargo files, public README and exact operational
+fixture/program formats as code decisions; the route registry and fixture
+manifest require workflow decisions. A package-root build.rs requires both.
+Code extension identity takes precedence over evidence-like names. Existing Git
+plumbing stays neutral; unknown paths and adjacent suffixes fail closed even
+when both ledgers are present.
+
+The reviewed current set is exactly 26 code paths and 2 workflow paths. A blanket
+directory exemption, retrospective waiver and renamed source files were rejected
+because they would conceal future changes. The regression uses the production
+Git observer and final verdict, covers held-out extensions, the exact `.rmqbin`
+format, missing/both-ledger cases and unknown neighbors, and retains all original
+39 cases and eight historical records except explicit final roster counts. One
+full frozen-source run passed 98 cases (58 expected rejections, 40 expected
+accepts) in 460.683 seconds on Windows PowerShell 5.1. Preservation and strict
+checks of both earlier native commits are recorded in POLICY_REPAIR.md and its
+durable receipts. The old failure remains historical evidence; the repaired
+checker certifies those commits now. Later commits require their own check.
+
+## WDD-20260912-NATIVE1-003: pin semantic replay operations and actual build inputs
+
+The coordinator measured a dependency-coverage failure: changing only
+`source-core-mutation.kind` to `source-pin` retained the ID, passed the original
+runner and never checked the correspondence theorem. Version 3 pins the complete
+registry bytes before parsing or dispatch, including ID, operation, fixture,
+mode, expected result/exit and diagnostic anchor. Its exact 16-case roster adds
+the C++ success/error consumers. Registry evolution requires an explicit version
+and source change; ID-only validation is insufficient. Production-boundary
+controls include the measured same-ID downgrade, fixture substitution,
+load-bearing field deletion/change and unknown variants, plus the original
+positive source mutation and correctly named stale-source case. The historical
+measured receipts remain byte-for-byte. Every campaign reports its exact roster
+and preserves exits, stderr, deadlines and restoration; fixture success alone
+does not certify theorem dependency.
+
+The initial version-2 full run exposed a real harness assumption: the C++ error
+consumer correctly used stderr, while the registry expected stdout. That run
+remains INCOMPLETE evidence. Version 3 explicitly pins both the selected output
+channel and the exact other-channel output. Its 55 production controls and all
+16 native route cases passed in the final 617.614-second campaign, including
+the exact source failure at Route.lean:114 and byte/diff restoration. A separate
+focused selector repair admits the two existing camel-case proofLine IDs while
+exact roster membership continues to reject unknown case spellings.
+
+The old generated-module cache omitted compiler/import/runtime identity. This
+was a source-derived risk, not an observed different-compiler mismatch. The
+build now enforces the repository Lean pin and actual version, records compiler
+versions and byte identities of the Lean bin/include/lib tree, Rust host files
+and C++/link tools, and includes the complete digest in every generated-module
+reuse predicate. Olean/C bytes and the ordered source prefix must also match.
+Old schemas and changed identities cannot reuse generated output. Before/after
+build pins include Cargo.lock, C++ source/import metadata and the identity
+checker. The manifest pins the DLL and both language consumers. Ten production
+predicate controls passed unchanged-identity positive, changed-identity/schema/
+source/artifact negative, restored-artifact positive and Lean-pin checks. They
+do not pretend to execute another compiler or prove compiler correctness.
+
+Complete identity collection has measurable startup cost (cold inventory:
+159.128 seconds); replay budgets include it separately from query initialization.
+The repaired build passed in 239.648 seconds and rebuilt all nine old-schema
+modules. Replay remains owned and bounded on the authorized host boundary. The
+scoped dependency warmer uses topologically ordered Lake module targets, one
+process at a time, with source-pinned resumable progress and per-module receipts.
+It warms only the canonical proof dependency closure, preserving Lake traces for
+final checking. It is neither an aggregate gate nor authority to overlap the
+mutation compiler. These repairs implement the approved continuation without a
+new route decision, waived row or self-recorded coordinator acceptance.
+
+## WDD-20260912-NATIVE1-004: copy verified dependency artifacts without shared mutable caches
+
+The canonical native join imports 249 existing modules. Cold validation had
+completed 49 before another governed RMQ worktree was found to contain byte-identical
+sources and compiler artifacts. Rebuilding every identical dependency would
+consume the same host resource needed by the independent native proof leaves.
+Sharing a mutable cache directory or trusting a foreign successful build report
+was rejected: another task can mutate source or artifacts while this task runs.
+
+The hydration helper therefore copies only missing artifacts, without links or
+overwriting local outputs. It checks the frozen local source inventory, exact
+foreign source bytes, repository/compiler pins, and artifact hashes before and
+after each copy. A foreign source mismatch excludes that module. The first
+attempt stopped before copying when the foreign Packed/Capstone source changed;
+the repaired attempt copied 790 missing artifacts from 248 matching modules,
+excluding that capstone. The 49 independently compiled local object interfaces
+also matched the corresponding foreign object interfaces byte-for-byte.
+
+Copied traces retain historical command paths and are not evidence that those
+commands ran in this worktree. Lake remains the final validity check. A no-build
+probe reported pending work, so validation resumes from the source-pinned
+topological progress record, rebuilding stale entries one module at a time.
+Hydration alone does not certify the imported closure or the final theorem.
+The two hydrate receipts and the subsequent validation receipts preserve these
+distinctions; no foreign worktree was modified.

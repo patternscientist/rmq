@@ -1,0 +1,126 @@
+{
+  "schema": "native1-route-controls-v2",
+  "success": true,
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "powershell": "7.6.5",
+  "runnerSha256": "385E0E831B807E7F1FB4170C80ECCD0572E0D85BC4057EE31FCFD76AAE71C587",
+  "controlsSha256": "F8823507C49F3B1E04A76C9500506BB07F28ACED881F637D3E6B3DFCD164D5E1",
+  "registrySha256": "D129ADB049146FDB67FD4E0C7A186A7785596803491E06CB22880C0AF08B429E",
+  "registryCases": [
+    "empty",
+    "whitespace",
+    "malformed",
+    "unknown",
+    "registry-source-pin-downgrade",
+    "registry-fixture-substitution",
+    "registry-stale-fixture-substitution",
+    "registry-missing-schema",
+    "registry-changed-schema",
+    "registry-empty-cases",
+    "registry-missing-cases",
+    "registry-duplicate-case",
+    "registry-extra-top-field",
+    "registry-extra-case-field",
+    "registry-duplicate-json-key",
+    "registry-format-change",
+    "registry-delete-id",
+    "registry-change-id",
+    "registry-delete-kind",
+    "registry-change-kind",
+    "registry-delete-operation",
+    "registry-change-operation",
+    "registry-delete-executable",
+    "registry-change-executable",
+    "registry-delete-mode",
+    "registry-change-mode",
+    "registry-delete-program",
+    "registry-change-program",
+    "registry-delete-fixture",
+    "registry-change-fixture",
+    "registry-delete-exit",
+    "registry-change-exit",
+    "registry-delete-expected",
+    "registry-change-expected",
+    "registry-delete-source",
+    "registry-change-source",
+    "registry-delete-anchor",
+    "registry-change-anchor",
+    "registry-delete-replacement",
+    "registry-change-replacement",
+    "registry-delete-proofLine",
+    "registry-change-proofLine",
+    "registry-delete-surface",
+    "registry-change-surface",
+    "registry-delete-append",
+    "registry-change-append",
+    "source-manifest-missing",
+    "artifact-manifest-empty",
+    "fixture-manifest-missing",
+    "valid-smoke",
+    "omitted-full"
+  ],
+  "registryCount": 51,
+  "expectedCases": [
+    "registry-change-append"
+  ],
+  "executedCases": [
+    "registry-change-append"
+  ],
+  "expectedCount": 1,
+  "executedCount": 1,
+  "results": [
+    {
+      "pass": true,
+      "evidence": {
+        "selector": "smoke",
+        "restoredSha256": "D129ADB049146FDB67FD4E0C7A186A7785596803491E06CB22880C0AF08B429E",
+        "beforeSha256": "D129ADB049146FDB67FD4E0C7A186A7785596803491E06CB22880C0AF08B429E",
+        "verdict": "expected rejection",
+        "surface": "exact semantic registry mismatch",
+        "process": {
+          "Stage": "native1-control-registry-change-append",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 17.982,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "mutatedSha256": "F74E680184EECAF77B13F77C664B04DF63F069D33827ED4206A6289FC8C2B0AA",
+        "selectorBound": true,
+        "exactGitRestoration": true
+      },
+      "id": "registry-change-append"
+    }
+  ],
+  "unsupportedHosts": [
+    "Non-Windows process boundary and native execution are not covered by this campaign"
+  ]
+}

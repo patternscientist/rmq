@@ -223,6 +223,23 @@ $codeRootPatterns = @(
 $proofCodePattern = "(?i)\.lean$"
 $workflowCodePattern = "(?i)\.(?:ps1|psm1|psd1|py|sh|bash|js|mjs|cjs|ts|tsx|jsx)$"
 
+# The authorized native package has distinct implementation and replay-policy
+# roles. Keep its boundary exact: another package, new metadata schema, archive
+# suffix or unknown binary extension still needs an explicit policy decision.
+# Operational fixture bytes are inputs/results of the shipped evaluator, not
+# neutral historical reports. Source identity wins over evidence-like names.
+$nativeSourcePattern = "^native/packed-rmq/(?:[^/]+/)*[^/]+\.(?:rs|c|cc|cpp|cxx|h|hpp|hxx|def)$"
+$nativeCodePatterns = @(
+  "^native/packed-rmq/(?:Cargo\.(?:toml|lock)|README\.md)$",
+  "^native/packed-rmq/fixtures/[^/]+\.(?:fixture|expected|rmqbin)$",
+  "^native/packed-rmq/fixtures/program\.txt\.gz$"
+)
+$nativeWorkflowPatterns = @(
+  "^native/packed-rmq/(?:route-registry\.json|fixtures/manifest\.json)$",
+  # This exact Cargo hook is executable Rust AND build automation.
+  "^native/packed-rmq/build\.rs$"
+)
+
 function Get-PathDisposition {
   param([string]$Path)
 
@@ -232,12 +249,14 @@ function Get-PathDisposition {
   # require the workflow decision even outside the ordinary workflow roots.
   $isProofCode = $Path -match $proofCodePattern
   $isWorkflowCode = $Path -match $workflowCodePattern
-  if ($isProofCode -or $isWorkflowCode) {
+  $isNativeSource = $Path -match $nativeSourcePattern
+  $isNativeWorkflow = Test-AnyPattern -Path $Path -Patterns $nativeWorkflowPatterns
+  if ($isProofCode -or $isWorkflowCode -or $isNativeSource) {
     return [PSCustomObject]@{
       Path = $Path
       Neutral = $false
-      NeedsCode = $isProofCode
-      NeedsWorkflow = $isWorkflowCode -or
+      NeedsCode = $isProofCode -or $isNativeSource
+      NeedsWorkflow = $isWorkflowCode -or $isNativeWorkflow -or
         (Test-AnyPattern -Path $Path -Patterns $workflowRootPatterns)
       Unclassified = $false
     }
@@ -253,8 +272,10 @@ function Get-PathDisposition {
     }
   }
 
-  $needsWorkflow = Test-AnyPattern -Path $Path -Patterns $workflowRootPatterns
-  $needsCode = Test-AnyPattern -Path $Path -Patterns $codeRootPatterns
+  $needsWorkflow = $isNativeWorkflow -or
+    (Test-AnyPattern -Path $Path -Patterns $workflowRootPatterns)
+  $needsCode = (Test-AnyPattern -Path $Path -Patterns $codeRootPatterns) -or
+    (Test-AnyPattern -Path $Path -Patterns $nativeCodePatterns)
   return [PSCustomObject]@{
     Path = $Path
     Neutral = $false

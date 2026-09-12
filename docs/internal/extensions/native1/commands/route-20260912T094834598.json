@@ -1,0 +1,73 @@
+{
+  "schema": "native1-route-results-v3",
+  "success": true,
+  "run": "20260912T094834598",
+  "selectorBound": true,
+  "selector": "cpp-malformed-instruction",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "toolchainVerificationSeconds": 47.852295,
+  "buildManifestSha256": "B07F660A24BA5966D7CD5BDA3D2C7C7D90ECF6FDD4192DE0B709C486D5F006F9",
+  "registrySha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+  "expectedCases": [
+    "cpp-malformed-instruction"
+  ],
+  "executedCases": [
+    "cpp-malformed-instruction"
+  ],
+  "expectedCount": 1,
+  "executedCount": 1,
+  "results": [
+    {
+      "operation": "native-exact-output",
+      "contract": {
+        "id": "cpp-malformed-instruction",
+        "kind": "malformed",
+        "operation": "native-exact-output",
+        "executable": "packed-rmq-cpp.exe",
+        "mode": "reads",
+        "program": "99\n",
+        "fixture": "9 0 9 168 100\n",
+        "exit": 1,
+        "expected": "ERROR instruction shape",
+        "outputChannel": "stderr",
+        "expectedOtherOutput": ""
+      },
+      "kind": "malformed",
+      "pass": true,
+      "evidence": {
+        "outputChannel": "stderr",
+        "process": {
+          "Stage": "cpp-malformed-instruction",
+          "ExitCode": 1,
+          "Output": [
+            "ERROR instruction shape"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "ERROR instruction shape"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 2.403,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\packed-rmq-cpp.exe",
+          "InvokedArguments": [
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\replay\\cpp-malformed-instruction.program",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\replay\\cpp-malformed-instruction.fixture"
+          ]
+        },
+        "expectedOtherOutput": "",
+        "exactOtherOutput": true,
+        "outputLines": 0,
+        "exactOutput": true,
+        "expectedExit": 1
+      },
+      "id": "cpp-malformed-instruction"
+    }
+  ],
+  "unsupportedHosts": [
+    "Non-Windows execution not covered by this experiment"
+  ]
+}

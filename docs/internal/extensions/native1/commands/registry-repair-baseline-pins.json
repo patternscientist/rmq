@@ -1,0 +1,14 @@
+[
+  {
+    "source": "C:/Users/poin/Documents/RMQ/extension-coordination-20260911/native1-route-review/registry-kind-downgrade.json",
+    "copy": "docs/internal/extensions/native1/commands/registry-kind-downgrade-coordinator.json",
+    "sha256": "0781EA8258D7A66EFF322CE0F4E1740007A546EEA27532C420FC7B5F30A7FA89",
+    "bytes": 747
+  },
+  {
+    "source": "C:/Users/poin/Documents/RMQ/extension-coordination-20260911/native1-route-review/registry-source-pin-positive.json",
+    "copy": "docs/internal/extensions/native1/commands/registry-source-pin-positive-coordinator.json",
+    "sha256": "01CC7A0BEA50E8C08608D59B0F9D5916BF31CFB4AE3369D3C615F62D679E8F19",
+    "bytes": 753
+  }
+]

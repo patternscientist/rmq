@@ -1,0 +1,9 @@
+{
+  "schema": "native1-startup-launch-failure-v1",
+  "date": "2026-09-12",
+  "command": "scripts/packed_native_command.ps1 -FilePath .lake/native1/build/packed-rmq-route.exe -Arguments @() -Stage repair-native-startup -DeadlineSeconds 30",
+  "exit": 1,
+  "surface": "Cannot bind argument to parameter Arguments because it is an empty array.",
+  "nativeProcessInvoked": false,
+  "repair": "Use existing Invoke-RMQOwnedBoundedProcess directly, preserving empty argument collection and all process metadata."
+}

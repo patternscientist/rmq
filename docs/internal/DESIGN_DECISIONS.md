@@ -12663,3 +12663,65 @@ The experimental C++ consumer uses the same exported C functions and DLL as
 Rust. The committed .def file describes the four C exports for an MSVC import
 library; it is interface metadata, not another query implementation. The
 complete n9-full output comparison covers the actual C++ consumption path.
+
+## DD-20260912-NATIVE1-002: byte-limb state and exact loaded storage
+
+Context: the coordinator approved the Lean-to-C route and directed continuation
+to the full original native contract. The natural-cell experiment established
+that route, but did not supply the finite word representation or binary loader.
+The new word representation is `Array UInt8`, ordered least-significant byte
+first, with exactly `(width + 7) / 8` bytes and zero unused high bits. Registers,
+PC, halted packets, memory cells and every numeric instruction field use that
+same representation. There is no cached natural value in a stored word.
+
+Decision: decode only the fetched instruction and scalar operands needed by its
+operation, use the existing natural operation as a temporary computation, and
+check its safety conditions before encoding the result. The complete run
+simulation consumes the original `Instruction.Safe` and final-state width
+conditions. Missing memory retains its failed receipt and faults; missing code
+fetch stops unchanged and uncharged. Malformed code and unsafe arithmetic have
+explicit checked rejection outside the canonical safe domain. The tail runner
+calls the same step and erases transition states; optional ordered reads and all
+six category counts remain projections of that execution.
+
+Rationale: byte arrays give an exact finite stored representation for the actual
+168-176-bit examples and arbitrary abstract widths. Unchecked total natural
+arithmetic would misrepresent word faults; u64/u128 would truncate current
+examples. Reimplementing arithmetic in Rust would create a separate unproved
+core. Temporary BigNat decoding, byte-array slots, headers, reference counts and
+observation lists are runtime overhead. Neither this simulation nor the existing
+word-RAM bound asserts constant physical time for multiprecision operations.
+
+The version-1 image stores width, public input length, register count, code and
+memory. Public input length remains independent of memory cell zero so corrupt
+metadata cannot silently rewrite the initial input contract. Scalar lengths use
+minimal little-endian base-256 digits, framed by a unary digit-byte count and
+delimiter. This permits all abstract natural lengths without a hidden 64-bit
+header restriction. Framing and byte rounding are separate from numeric payload
+bits. Native host limits remain a checked additional domain. A list codec
+supplies roundtrip and consumption proofs; the actual native loader must avoid
+repeated whole-tail length scans and non-tail recursive array parsing. Its
+efficient bounded refinement is part of this target, not a deferred claim.
+
+Evidence: Native/Limbs.lean proves both limb roundtrips, padding/size, arithmetic,
+comparison and address conversions; Native/Machine.lean proves all nine
+operation cases and complete all-fuel run equality. Detailed propositions and
+narrow receipts are in LIMB_WORDS.md and MACHINE_LEAF.md. Binary, canonical-query
+and final public composition remain in progress at this entry. No existing
+Packed semantics, aliases or accepted theorem is changed. This record grants no
+native capstone acceptance.
+
+## DD-20260912-NATIVE1-003: propagate C++ rejection through the shared ABI
+
+The reviewed C++ experiment returned success after printing an ERROR-prefixed
+Lean parser result. Its consumer now owns the returned handle with RAII,
+validates the borrowed view, copies the result before release, and sends parser
+errors to stderr with a failing process exit. The success path remains the
+same DLL call. The final production ABI will expose an explicit status channel;
+the textual experiment's convention is retained only for that version. The
+rebuilt C++ executable is pinned alongside the Rust executable and DLL in the
+version-2 manifest. The registry includes both complete n9 success and malformed
+instruction rejection. A separate C++ algorithm or success exit on parser
+rejection was rejected because either would invalidate the consumer evidence.
+Runtime results and source identities are recorded by the route repair campaign;
+no unexecuted host branch is claimed.

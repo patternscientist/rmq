@@ -1,0 +1,33 @@
+{
+  "schema": "native1-registry-repair-summary-v3",
+  "success": true,
+  "expected": 55,
+  "executed": 55,
+  "controlsSha256": "2720061FF3A2A47C77F221A6BF5831D0CF60EF1E27B8A045AE7C2EC529FDBE21",
+  "runnerSha256": "D483F5764E34FFBBCD3C2DD0FE24D4CE3CC2EF4E0307C8751AF8C1A3E5401DEF",
+  "registrySha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+  "controlsReport": "docs/internal/extensions/native1/commands/controls-20260912T100023269.json",
+  "controlsReportSha256": "2F81170ED3D368B2B0ECD87343C9BBF6CCCC4A284B3ECBAF0C94E2EEFE6E8679",
+  "positives": [
+    {
+      "id": "valid-smoke",
+      "routeReport": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\route-20260912T095846357.json",
+      "routeSha256": "23A2C407B17E336388C1323CC28B3A48D0A02D757D6A89E07794A920AF08E6B8",
+      "identitySeconds": 34.8952181,
+      "processSeconds": 44.133,
+      "expected": 1,
+      "executed": 1,
+      "buildManifestSha256": "B07F660A24BA5966D7CD5BDA3D2C7C7D90ECF6FDD4192DE0B709C486D5F006F9"
+    },
+    {
+      "id": "omitted-full",
+      "routeReport": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\route-20260912T095926516.json",
+      "routeSha256": "5A31BDDA30A5026EDD27ED3374E4354B4AD5928C2A75591DB0BFCF780B1EB647",
+      "identitySeconds": 28.0026912,
+      "processSeconds": 93.205,
+      "expected": 16,
+      "executed": 16,
+      "buildManifestSha256": "B07F660A24BA5966D7CD5BDA3D2C7C7D90ECF6FDD4192DE0B709C486D5F006F9"
+    }
+  ]
+}

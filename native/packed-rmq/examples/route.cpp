@@ -1,6 +1,7 @@
 #include "../include/packed_rmq_route.h"
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -18,10 +19,18 @@ int main(int argc, char **argv) {
         const auto program = read_file(argv[1]);
         const auto fixture = read_file(argv[2]);
         if (packed_route_init()) return 3;
-        void *result = packed_route_eval(program.c_str(), program.size(), fixture.c_str(), fixture.size(), 1);
+        std::unique_ptr<void, decltype(&packed_route_free)> result(
+            packed_route_eval(program.c_str(), program.size(), fixture.c_str(), fixture.size(), 1),
+            &packed_route_free);
         if (!result) return 4;
-        std::cout << packed_route_text(result);
-        packed_route_free(result);
+        const char *view = packed_route_text(result.get());
+        if (!view) return 4;
+        const std::string text(view);
+        if (text.rfind("ERROR", 0) == 0) {
+            std::cerr << text;
+            return 1;
+        }
+        std::cout << text;
         return 0;
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';

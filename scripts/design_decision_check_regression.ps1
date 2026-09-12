@@ -259,7 +259,97 @@ $cases = @(
   # Runtime skills are process definition. `.claude/` was absent from the
   # workflow roots, so skill edits were classified as proof/code and
   # DD-20260725 had to record a code decision to satisfy a misclassification.
-  @{ Id = "claude-runtime-skill-is-workflow"; Files = @{ ".claude/skills/probe/SKILL.md" = "# Probe" }; Reject = $true; Output = "workflow/process-sensitive" }
+  @{ Id = "claude-runtime-skill-is-workflow"; Files = @{ ".claude/skills/probe/SKILL.md" = "# Probe" }; Reject = $true; Output = "workflow/process-sensitive" },
+  # Native category holdouts exercise the real checker and exact ledger roles.
+  # These names are independent of the implementation's category patterns.
+  @{ Id = "native-rust-nested-requires-code"; Files = @{ "native/packed-rmq/src/heldout/deep/Index.rs" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-rust-nested-with-code"; Files = @{ "native/packed-rmq/src/heldout/deep/Index.rs" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-c-source-requires-code"; Files = @{ "native/packed-rmq/generated/heldout_core.c" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-c-source-with-code"; Files = @{ "native/packed-rmq/generated/heldout_core.c" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-cc-source-requires-code"; Files = @{ "native/packed-rmq/examples/heldout.cc" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-cc-source-with-code"; Files = @{ "native/packed-rmq/examples/heldout.cc" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-cpp-consumer-requires-code"; Files = @{ "native/packed-rmq/examples/heldout/consume.cpp" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-cpp-consumer-with-code"; Files = @{ "native/packed-rmq/examples/heldout/consume.cpp" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-cxx-source-requires-code"; Files = @{ "native/packed-rmq/examples/heldout.cxx" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-cxx-source-with-code"; Files = @{ "native/packed-rmq/examples/heldout.cxx" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-c-header-requires-code"; Files = @{ "native/packed-rmq/include/heldout/interface.h" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-c-header-with-code"; Files = @{ "native/packed-rmq/include/heldout/interface.h" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-hpp-header-requires-code"; Files = @{ "native/packed-rmq/include/heldout.hpp" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-hpp-header-with-code"; Files = @{ "native/packed-rmq/include/heldout.hpp" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-hxx-header-requires-code"; Files = @{ "native/packed-rmq/include/heldout.hxx" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-hxx-header-with-code"; Files = @{ "native/packed-rmq/include/heldout.hxx" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-abi-def-requires-code"; Files = @{ "native/packed-rmq/heldout_exports.def" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-abi-def-with-code"; Files = @{ "native/packed-rmq/heldout_exports.def" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-cargo-manifest-requires-code"; Files = @{ "native/packed-rmq/Cargo.toml" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-cargo-manifest-with-code"; Files = @{ "native/packed-rmq/Cargo.toml" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-cargo-lock-requires-code"; Files = @{ "native/packed-rmq/Cargo.lock" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-cargo-lock-with-code"; Files = @{ "native/packed-rmq/Cargo.lock" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-public-readme-requires-code"; Files = @{ "native/packed-rmq/README.md" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-public-readme-with-code"; Files = @{ "native/packed-rmq/README.md" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-fixture-requires-code"; Files = @{ "native/packed-rmq/fixtures/heldout.fixture" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-fixture-with-code"; Files = @{ "native/packed-rmq/fixtures/heldout.fixture" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-expected-requires-code"; Files = @{ "native/packed-rmq/fixtures/heldout.expected" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-expected-with-code"; Files = @{ "native/packed-rmq/fixtures/heldout.expected" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-program-archive-requires-code"; Files = @{ "native/packed-rmq/fixtures/program.txt.gz" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-program-archive-with-code"; Files = @{ "native/packed-rmq/fixtures/program.txt.gz" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-evidence-named-source-requires-code"; Files = @{ "native/packed-rmq/fixtures/Native_WORKLOG.rs" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-evidence-named-source-with-code"; Files = @{ "native/packed-rmq/fixtures/Native_WORKLOG.rs" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-registry-requires-workflow"; Files = @{ "native/packed-rmq/route-registry.json" = '{ "newField": "still governed", "cases": ["heldout"] }' }; CodeDecision = $true; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "native-registry-with-workflow"; Files = @{ "native/packed-rmq/route-registry.json" = '{ "newField": "still governed", "cases": ["heldout"] }' }; WorkflowDecision = $true; Reject = $false; Output = "(0 code, 1 workflow, 1 neutral)" },
+  @{ Id = "native-manifest-requires-workflow"; Files = @{ "native/packed-rmq/fixtures/manifest.json" = '{ "newField": "still governed", "cases": ["heldout"] }' }; CodeDecision = $true; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "native-manifest-with-workflow"; Files = @{ "native/packed-rmq/fixtures/manifest.json" = '{ "newField": "still governed", "cases": ["heldout"] }' }; WorkflowDecision = $true; Reject = $false; Output = "(0 code, 1 workflow, 1 neutral)" },
+  @{ Id = "native-build-hook-requires-workflow"; Files = @{ "native/packed-rmq/build.rs" = 'native policy probe' }; CodeDecision = $true; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "native-build-hook-requires-code"; Files = @{ "native/packed-rmq/build.rs" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-build-hook-with-both"; Files = @{ "native/packed-rmq/build.rs" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $false; Output = "(1 code, 1 workflow, 2 neutral)" },
+  @{ Id = "native-script-requires-workflow"; Files = @{ "native/packed-rmq/tools/heldout.ps1" = 'native policy probe' }; CodeDecision = $true; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "native-script-with-workflow"; Files = @{ "native/packed-rmq/tools/heldout.ps1" = 'native policy probe' }; WorkflowDecision = $true; Reject = $false; Output = "(0 code, 1 workflow, 1 neutral)" },
+  @{ Id = "native-lean-script-requires-workflow"; Files = @{ "scripts/packed_native_policy_probe.lean" = 'native policy probe' }; CodeDecision = $true; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "native-lean-script-requires-code"; Files = @{ "scripts/packed_native_policy_probe.lean" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-lean-script-with-both"; Files = @{ "scripts/packed_native_policy_probe.lean" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $false; Output = "(1 code, 1 workflow, 2 neutral)" },
+  @{ Id = "native-unknown-binary-unclassified"; Files = @{ "native/packed-rmq/unknown.bin" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-unknown-policy-json-unclassified"; Files = @{ "native/packed-rmq/fixtures/new-policy.json" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-fixture-readme-unclassified"; Files = @{ "native/packed-rmq/fixtures/README.md" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-another-package-unclassified"; Files = @{ "native/another-package/src/lib.rs" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-neighbor-prefix-unclassified"; Files = @{ "native/packed-rmq-other/src/lib.rs" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-appended-program-suffix-unclassified"; Files = @{ "native/packed-rmq/fixtures/program.txt.gz.bak" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-nested-fixture-unclassified"; Files = @{ "native/packed-rmq/fixtures/nested/heldout.fixture" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-unknown-nonstrict"; Files = @{ "native/packed-rmq/unknown.bin" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; NonStrict = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-gitignore-neutral"; Files = @{ "native/packed-rmq/.gitignore" = '*.tmp' }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "native-gitattributes-neutral"; Files = @{ "native/packed-rmq/.gitattributes" = '* text=auto' }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "native-current-28-path-role-counts"; Files = @{
+    "native/packed-rmq/src/lib.rs" = "operational probe"
+    "native/packed-rmq/src/main.rs" = "operational probe"
+    "native/packed-rmq/route_shim.c" = "operational probe"
+    "native/packed-rmq/include/packed_rmq_route.h" = "operational probe"
+    "native/packed-rmq/examples/route.cpp" = "operational probe"
+    "native/packed-rmq/packed_route.def" = "operational probe"
+    "native/packed-rmq/Cargo.toml" = "operational probe"
+    "native/packed-rmq/Cargo.lock" = "operational probe"
+    "native/packed-rmq/README.md" = "operational probe"
+    "native/packed-rmq/route-registry.json" = "operational probe"
+    "native/packed-rmq/fixtures/manifest.json" = "operational probe"
+    "native/packed-rmq/fixtures/program.txt.gz" = "operational probe"
+    "native/packed-rmq/fixtures/n12-adjacent.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n12-adjacent.fixture" = "operational probe"
+    "native/packed-rmq/fixtures/n12-interior.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n12-interior.fixture" = "operational probe"
+    "native/packed-rmq/fixtures/n12-same.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n12-same.fixture" = "operational probe"
+    "native/packed-rmq/fixtures/n9-corrupt.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n9-corrupt.fixture" = "operational probe"
+    "native/packed-rmq/fixtures/n9-empty.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n9-empty.fixture" = "operational probe"
+    "native/packed-rmq/fixtures/n9-full.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n9-full.fixture" = "operational probe"
+    "native/packed-rmq/fixtures/n9-missing.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n9-missing.fixture" = "operational probe"
+    "native/packed-rmq/fixtures/n9-range.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n9-range.fixture" = "operational probe"
+  }; CodeDecision = $true; WorkflowDecision = $true; Reject = $false; Output = "(26 code, 2 workflow, 2 neutral)" },
+  @{ Id = "native-binary-image-requires-code"; Files = @{ "native/packed-rmq/fixtures/heldout.rmqbin" = "binary image probe" }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-binary-image-with-code"; Files = @{ "native/packed-rmq/fixtures/heldout.rmqbin" = "binary image probe" }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-binary-neighbor-extension-unclassified"; Files = @{ "native/packed-rmq/fixtures/heldout.rmqbinx" = "unknown image probe" }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-binary-appended-suffix-unclassified"; Files = @{ "native/packed-rmq/fixtures/heldout.rmqbin.bak" = "unknown image probe" }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" }
 )
 
 $expectedCaseIds = @(
@@ -301,7 +391,66 @@ $expectedCaseIds = @(
   "neutral-repository-plumbing",
   "paper-manuscript-remains-code-sensitive",
   "paper-bibliography-remains-code-sensitive",
-  "claude-runtime-skill-is-workflow"
+  "claude-runtime-skill-is-workflow",
+  "native-rust-nested-requires-code",
+  "native-rust-nested-with-code",
+  "native-c-source-requires-code",
+  "native-c-source-with-code",
+  "native-cc-source-requires-code",
+  "native-cc-source-with-code",
+  "native-cpp-consumer-requires-code",
+  "native-cpp-consumer-with-code",
+  "native-cxx-source-requires-code",
+  "native-cxx-source-with-code",
+  "native-c-header-requires-code",
+  "native-c-header-with-code",
+  "native-hpp-header-requires-code",
+  "native-hpp-header-with-code",
+  "native-hxx-header-requires-code",
+  "native-hxx-header-with-code",
+  "native-abi-def-requires-code",
+  "native-abi-def-with-code",
+  "native-cargo-manifest-requires-code",
+  "native-cargo-manifest-with-code",
+  "native-cargo-lock-requires-code",
+  "native-cargo-lock-with-code",
+  "native-public-readme-requires-code",
+  "native-public-readme-with-code",
+  "native-fixture-requires-code",
+  "native-fixture-with-code",
+  "native-expected-requires-code",
+  "native-expected-with-code",
+  "native-program-archive-requires-code",
+  "native-program-archive-with-code",
+  "native-evidence-named-source-requires-code",
+  "native-evidence-named-source-with-code",
+  "native-registry-requires-workflow",
+  "native-registry-with-workflow",
+  "native-manifest-requires-workflow",
+  "native-manifest-with-workflow",
+  "native-build-hook-requires-workflow",
+  "native-build-hook-requires-code",
+  "native-build-hook-with-both",
+  "native-script-requires-workflow",
+  "native-script-with-workflow",
+  "native-lean-script-requires-workflow",
+  "native-lean-script-requires-code",
+  "native-lean-script-with-both",
+  "native-unknown-binary-unclassified",
+  "native-unknown-policy-json-unclassified",
+  "native-fixture-readme-unclassified",
+  "native-another-package-unclassified",
+  "native-neighbor-prefix-unclassified",
+  "native-appended-program-suffix-unclassified",
+  "native-nested-fixture-unclassified",
+  "native-unknown-nonstrict",
+  "native-gitignore-neutral",
+  "native-gitattributes-neutral",
+  "native-current-28-path-role-counts",
+  "native-binary-image-requires-code",
+  "native-binary-image-with-code",
+  "native-binary-neighbor-extension-unclassified",
+  "native-binary-appended-suffix-unclassified"
 )
 
 $expectedRejectCaseIds = @(
@@ -328,7 +477,41 @@ $expectedRejectCaseIds = @(
   "unclassified-path-fails-even-nonstrict",
   "paper-manuscript-remains-code-sensitive",
   "paper-bibliography-remains-code-sensitive",
-  "claude-runtime-skill-is-workflow"
+  "claude-runtime-skill-is-workflow",
+  "native-rust-nested-requires-code",
+  "native-c-source-requires-code",
+  "native-cc-source-requires-code",
+  "native-cpp-consumer-requires-code",
+  "native-cxx-source-requires-code",
+  "native-c-header-requires-code",
+  "native-hpp-header-requires-code",
+  "native-hxx-header-requires-code",
+  "native-abi-def-requires-code",
+  "native-cargo-manifest-requires-code",
+  "native-cargo-lock-requires-code",
+  "native-public-readme-requires-code",
+  "native-fixture-requires-code",
+  "native-expected-requires-code",
+  "native-program-archive-requires-code",
+  "native-evidence-named-source-requires-code",
+  "native-registry-requires-workflow",
+  "native-manifest-requires-workflow",
+  "native-build-hook-requires-workflow",
+  "native-build-hook-requires-code",
+  "native-script-requires-workflow",
+  "native-lean-script-requires-workflow",
+  "native-lean-script-requires-code",
+  "native-unknown-binary-unclassified",
+  "native-unknown-policy-json-unclassified",
+  "native-fixture-readme-unclassified",
+  "native-another-package-unclassified",
+  "native-neighbor-prefix-unclassified",
+  "native-appended-program-suffix-unclassified",
+  "native-nested-fixture-unclassified",
+  "native-unknown-nonstrict",
+  "native-binary-image-requires-code",
+  "native-binary-neighbor-extension-unclassified",
+  "native-binary-appended-suffix-unclassified"
 )
 
 function Test-CaseRegistry {
@@ -954,8 +1137,8 @@ if (-not (Test-Path -LiteralPath $retroPath -PathType Leaf)) {
   }
 }
 
-if ($rejectCount -ne 24 -or $acceptCount -ne 15) {
-  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [final-verdict-counts] expected 24 reject and 15 accept; got $rejectCount reject and $acceptCount accept"
+if ($rejectCount -ne 58 -or $acceptCount -ne 40) {
+  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [final-verdict-counts] expected 58 reject and 40 accept; got $rejectCount reject and $acceptCount accept"
   $failures += 1
 }
 

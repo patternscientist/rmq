@@ -1,0 +1,111 @@
+{
+  "schema": "native1-route-controls-v2",
+  "success": true,
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "powershell": "7.6.5",
+  "runnerSha256": "D117664BD8D1877446C705E7F3ACB071EFC780CAD9990F92DD453C464C14203E",
+  "controlsSha256": "BD8A7BC24E07B2DBA7E6EE7720E688D9C1B74CE31803527BB6B9773F5F03F154",
+  "registrySha256": "D129ADB049146FDB67FD4E0C7A186A7785596803491E06CB22880C0AF08B429E",
+  "registryCases": [
+    "empty",
+    "whitespace",
+    "malformed",
+    "unknown",
+    "registry-source-pin-downgrade",
+    "registry-fixture-substitution",
+    "registry-stale-fixture-substitution",
+    "registry-missing-schema",
+    "registry-changed-schema",
+    "registry-empty-cases",
+    "registry-missing-cases",
+    "registry-duplicate-case",
+    "registry-extra-top-field",
+    "registry-extra-case-field",
+    "registry-duplicate-json-key",
+    "registry-format-change",
+    "registry-delete-id",
+    "registry-change-id",
+    "registry-delete-kind",
+    "registry-change-kind",
+    "registry-delete-operation",
+    "registry-change-operation",
+    "registry-delete-executable",
+    "registry-change-executable",
+    "registry-delete-mode",
+    "registry-change-mode",
+    "registry-delete-program",
+    "registry-change-program",
+    "registry-delete-fixture",
+    "registry-change-fixture",
+    "registry-delete-exit",
+    "registry-change-exit",
+    "registry-delete-expected",
+    "registry-change-expected",
+    "registry-delete-source",
+    "registry-change-source",
+    "registry-delete-anchor",
+    "registry-change-anchor",
+    "registry-delete-replacement",
+    "registry-change-replacement",
+    "registry-delete-proofLine",
+    "registry-change-proofLine",
+    "registry-delete-surface",
+    "registry-change-surface",
+    "registry-delete-append",
+    "registry-change-append",
+    "source-manifest-missing",
+    "artifact-manifest-empty",
+    "fixture-manifest-missing",
+    "valid-smoke",
+    "omitted-full"
+  ],
+  "registryCount": 51,
+  "expectedCases": [
+    "empty"
+  ],
+  "executedCases": [
+    "empty"
+  ],
+  "expectedCount": 1,
+  "executedCount": 1,
+  "results": [
+    {
+      "id": "empty",
+      "evidence": {
+        "verdict": "expected rejection",
+        "selector": "",
+        "selectorBound": true,
+        "process": {
+          "Stage": "native1-control-empty",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:30",
+            "Line |",
+            "  30 |  … $taskExactIds -cnotcontains $Case) { throw 'invalid exact selector' }",
+            "     |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact selector"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:30",
+            "Line |",
+            "  30 |  … $taskExactIds -cnotcontains $Case) { throw 'invalid exact selector' }",
+            "     |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact selector"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 11.089,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job"
+        },
+        "surface": "invalid exact selector"
+      },
+      "pass": true
+    }
+  ],
+  "unsupportedHosts": [
+    "Non-Windows process boundary and native execution are not covered by this campaign"
+  ]
+}

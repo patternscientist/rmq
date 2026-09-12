@@ -1,0 +1,71 @@
+{
+  "schema": "native1-route-results-v2",
+  "success": true,
+  "run": "20260912T094044361",
+  "selectorBound": true,
+  "selector": "smoke",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "toolchainVerificationSeconds": 48.4645769,
+  "buildManifestSha256": "B07F660A24BA5966D7CD5BDA3D2C7C7D90ECF6FDD4192DE0B709C486D5F006F9",
+  "registrySha256": "D129ADB049146FDB67FD4E0C7A186A7785596803491E06CB22880C0AF08B429E",
+  "expectedCases": [
+    "smoke"
+  ],
+  "executedCases": [
+    "smoke"
+  ],
+  "expectedCount": 1,
+  "executedCount": 1,
+  "results": [
+    {
+      "evidence": {
+        "outputLines": 2,
+        "process": {
+          "Stage": "smoke",
+          "ExitCode": 0,
+          "Output": [
+            "8 2",
+            "0 1 0 0 0 1"
+          ],
+          "StandardOutput": [
+            "8 2",
+            "0 1 0 0 0 1"
+          ],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 2.323,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\packed-rmq-route.exe",
+          "InvokedArguments": [
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\replay\\smoke.program",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\replay\\smoke.fixture",
+            "reads"
+          ]
+        },
+        "expectedExit": 0,
+        "exactOutput": true
+      },
+      "kind": "smoke",
+      "contract": {
+        "id": "smoke",
+        "kind": "smoke",
+        "operation": "native-exact-output",
+        "executable": "packed-rmq-route.exe",
+        "mode": "reads",
+        "program": "1 3 8\n8 3\n",
+        "fixture": "9 0 9 168 100\n",
+        "exit": 0,
+        "expected": "8 2\n0 1 0 0 0 1"
+      },
+      "pass": true,
+      "id": "smoke",
+      "operation": "native-exact-output"
+    }
+  ],
+  "unsupportedHosts": [
+    "Non-Windows execution not covered by this experiment"
+  ]
+}

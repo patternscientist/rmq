@@ -1,7 +1,44 @@
 Status: INCOMPLETE
-Phase: ROUTE_READY
+Phase: APPROVED_ROUTE_IMPLEMENTATION
 
 # NATIVE-1 worker report
+
+## Current continuation checkpoint
+
+The coordinator approved the Lean-to-C route and directed continuation to the
+full frozen native target. Work is continuing on the same branch; this is not
+a new route-review pause or a candidate completion report. The original 31
+acceptance rows and frozen prefix remain unchanged.
+
+The four requested repairs now have concrete evidence: the native path policy
+passed all 98 production regression cases and strict checks of the earlier
+native commits; the version-3 semantic registry passed 55 controls and all 16
+native route cases; the toolchain-aware build/cache predicate passed 10 controls
+and the repaired native build; and the C++ consumer correctly releases its
+handle and returns failure on parser rejection. The initial version-2 output-
+channel mismatch remains recorded as a failed harness run. POLICY_REPAIR.md,
+REGISTRY_REPAIR.md and the commands directory contain exact source pins and
+complete receipts. These repairs do not close the full native acceptance rows.
+
+The continuation also has checked byte-limb operation and full-run proofs,
+binary image roundtrip/injectivity/accounting proofs, and a checked query entry
+source theorem. Their working implementation and independent leaf notes are
+being joined to the canonical PQ1 theorem. The efficient indexed loader,
+canonical join, final Rust/C/C++ API, expanded binary replay, public capstone,
+independent exact-commit audit and final aggregate certification remain open.
+No source branch has been pushed or merged. Local commits are checkpoints only.
+
+Claude tools were discovered after the coordinator's operational notice, but
+automatic approval review rejected the one attempted external helper call;
+no job started. The requested disclosure and complete attempted brief are in
+CLAUDE_ASSISTANCE.md. Independent local work continues without a transport
+workaround or account/billing change.
+
+## Historical route-review submission at c8c266f
+
+The following original phase account is retained as history. Its open policy
+and process-control findings are superseded by the repair evidence above; its
+source and artifact identities still describe that earlier experiment.
 
 The mandatory contract/route-review evidence is ready for coordinator
 disposition. The assigned native capstone is not complete; no full acceptance

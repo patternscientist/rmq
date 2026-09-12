@@ -1,0 +1,28 @@
+{
+  "schema": "native1-startup-repair-v1",
+  "head": "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+  "command": {
+    "file": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\packed-rmq-route.exe",
+    "runtimeBin": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin",
+    "arguments": []
+  },
+  "result": {
+    "Stage": "repair-native-startup-runtime-path",
+    "ExitCode": 2,
+    "Output": [
+      "usage: packed-rmq-route PROGRAM FIXTURE reads|quiet"
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "usage: packed-rmq-route PROGRAM FIXTURE reads|quiet"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 2.236,
+    "DeadlineSeconds": 30,
+    "Ownership": "kill-on-close-job"
+  },
+  "expectedExit": 2,
+  "artifactSha256": "FB91B5C89BBD8726E1EF1C3A755BED7D34A084C51E6FE37993D502DECBA055D0"
+}
