@@ -12527,3 +12527,18 @@ topological progress record, rebuilding stale entries one module at a time.
 Hydration alone does not certify the imported closure or the final theorem.
 The two hydrate receipts and the subsequent validation receipts preserve these
 distinctions; no foreign worktree was modified.
+
+## WDD-20260912-NATIVE1-005: preserve receipt bytes in Git
+
+The first repair checkpoint preserved receipt bytes in the worktree but Git's
+automatic text normalization changed CRLF JSON to LF in committed blobs. A
+direct byte comparison exposed this for both copied coordinator receipts and
+the repaired build manifest. Semantic JSON equality does not satisfy the
+required byte-preservation contract or the report's SHA-256 citations.
+
+This extension now marks JSON command receipts and named build manifests as
+non-normalizing evidence. The repair checkpoint's JSON files are re-added from
+their retained original bytes, and committed/worktree byte identity is checked.
+Historical receipt content is not rewritten or regenerated. Markdown proof
+reports already matched their committed bytes. The earlier normalized commit
+remains in history; it is not cited as the exact-byte evidence endpoint.
