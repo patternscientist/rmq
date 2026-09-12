@@ -121,19 +121,19 @@ This theorem does not charge controller dispatch, input/register access, option
 tests, arithmetic, branching, decoding, local scanning, candidate merging,
 trace assembly, or the public validity guard. Consequently `210` is an explicit
 charged-trace bound, not conventional word-RAM time or compiled Lean runtime.
-The separate candidate in the next section charges every primitive
+The separate accepted theorem in the next section charges every primitive
 instruction of its own, different execution.
 
-## Separate Primitive-Machine Candidate
+## Separate Accepted Primitive Machine
 
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` (producer
 `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`) is a
-different proposition about a different execution, and it is a CANDIDATE: it
+different proposition about a different execution, and it is ACCEPTED: it
 is kernel checked with the same three standard axioms and consumed by an
-independent typed client, but its committed replay campaign, the aggregate
-gate and a fresh blind exact-commit audit are pending. For every
+independent typed client, and its committed replay campaign, the aggregate
+gate and a fresh blind source audit with its tooling correction review have passed. For every
 `xs : List Int` it fixes one numeric memory `buildMemory xs` and one closed
-straight-line program of 837,572 primitive instructions. For every
+loop-free program of 837,572 primitive instructions. For every
 representable endpoint pair the run halts within at most 837,572 steps, every
 executed instruction counts, and every word, operand and prefix state fits one
 logarithmic width. Valid ranges return the leftmost minimum, and
@@ -147,7 +147,7 @@ are an explicit additional assumption); an uncharged
 value-level check that rejects endpoints outside the word domain; absorption
 of the code and scratch storage into `o(n)` only asymptotically (that storage
 exceeds `n` for every `n` below about `2^28`); and a step budget equal to the
-straight-line program length, far above the 6,003 to 16,358 steps observed on
+loop-free program length, far above the 6,003 to 16,358 steps observed on
 the committed valid-query fixtures. Full details are in
 [`WORD_RAM_REVIEW_PACKET.md`](WORD_RAM_REVIEW_PACKET.md).
 
@@ -186,13 +186,13 @@ The canonical charged-trace theorem does not establish:
 
 - compiled Lean wall-clock performance;
 - a fully charged small-step controller for its own execution (the separate
-  candidate `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` charges every
+  accepted theorem `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` charges every
   primitive instruction of a distinct execution instead);
 - end-to-end preprocessing complexity in the same machine;
 - a serialized-payload query API with conventional word-RAM cost; or
 - global minimality of the numerical constant `210`.
 
-The candidate `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` does not
+The accepted theorem `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` does not
 establish preprocessing time or space, compiled Lean wall-clock performance,
 attainment of its 837,572-step budget, or a machine-instruction bound for
 parsing endpoints outside the word domain.
@@ -206,6 +206,6 @@ parsing endpoints outside the word domain.
 5. `RMQ/Core/SuccinctRMQClassic.lean`
 6. `docs/PAPER_CLAIM_CORRESPONDENCE.md`
 7. `docs/PAPER_MODEL_ADEQUACY.md`
-8. for the separate candidate: `RMQ/Core/WordRAM/Packed/Capstone.lean`,
+8. for the separate accepted theorem: `RMQ/Core/WordRAM/Packed/Capstone.lean`,
    `RMQ/Validation/PackedQueryContract.lean` and
    `docs/WORD_RAM_REVIEW_PACKET.md`

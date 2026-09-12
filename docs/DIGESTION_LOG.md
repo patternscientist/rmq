@@ -1726,3 +1726,9 @@ code and scratch term is genuinely lower order; whether weakening any
 certificate field really breaks the typed client, which the committed replay
 campaign is meant to show; and whether preprocessing can be brought into the
 same machine.
+
+## 2026-09-12 UTC: PQ1 coordinator acceptance
+
+The packed primitive query is accepted on the source and evidence identified in `internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`. Both full host gates and the independent audit passed. The one gate-blocking runtime-selector defect was repaired; current descriptions now say “loop-free” because the fixed program contains forward conditional branches. The earlier dated entries remain historical accounts.
+
+Conceptually, the query obtains its answer from a counted numeric allocation and charges every executed primitive instruction, including metadata reads, decoding and branches. In plain English, the modeled machine answers every valid half-open list query with the leftmost minimum under one uniform budget. The unit-cost scalar arithmetic model, unbounded preprocessing, uncharged outer Nat encoding check and asymptotic-only code/scratch absorption remain live assumptions. The next skeptical question concerns useful finite-size or preprocessing bounds in the same model. S1 serialization, extraction and release-wide V1 verification are separate work; this acceptance changes no theorem.

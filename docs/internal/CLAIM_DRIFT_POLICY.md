@@ -136,7 +136,7 @@ and the headline axiom inventory.
 ## Primitive-Instruction Claims
 
 Policy version 28 adds two strict current-fact-surface terms for the
-candidate primitive-machine query and rescopes one existing term.
+accepted primitive-machine query and rescopes one existing term.
 
 `required-pq1-fully-charged-attribution` is an attribution rule. On a
 registered current surface, every paragraph that states the 837,572 budget
@@ -170,7 +170,7 @@ separate bound of `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` is
 stated as an attributed at-most bound of 837,572 primitive instructions. The
 sentence shapes it matches ("executes in N word-RAM instructions", "runs in a
 fixed or constant number of word-RAM steps") stay rejected for every theorem,
-including that candidate, whose bound must be written as an attributed
+including that theorem, whose bound must be written as an attributed
 at-most bound.
 
 Each behaviour is pinned twice. `claim_drift_scan.ps1 -SelfTest` asserts the
@@ -211,7 +211,7 @@ still owns the meaning of the surrounding English.
   trace length. The current route is `readWord`-only: attempted payload reads
   are charged and `wordRank`/`wordSelect` remain compatibility-only
   constructors that are never emitted by this route. Controller operations
-  remain explicitly uncharged in that theorem. The separate candidate
+  remain explicitly uncharged in that theorem. The separate accepted
   primitive-machine query charges every executed instruction of its own
   distinct execution; its budget is governed by the primitive-instruction
   terms above, not by this bullet.

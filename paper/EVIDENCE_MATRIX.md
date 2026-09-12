@@ -371,3 +371,9 @@ amends `L-OPEN-06`, and cites primary sources for the machine model, with
 division and remainder stated as an explicit assumption.
 
 Status: this entry records a repin and new rows. It closes no row.
+
+## 2026-09-12 UTC: PQ1 acceptance status synchronization (EV-07 evidence only)
+
+The coordinator accepted the repaired source-equivalent PQ1 lineage after both-host full gates, its fresh blind source audit and the narrow tooling correction review. `docs/internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md` records the exact identities and all 34 requirements. Editing-rule-5 status passages in rmq.tex, README, THEOREM_LEDGER and NOVELTY_LOG now distinguish that acceptance from the older mathematical pin and from the still-separate release-wide audit.
+
+This update changes process descriptions only: no theorem statement, allocation, instruction budget, operation set, bibliography or priority claim changes. Theorem 9.1 remains confined to its existing mathematical statement and capacity entry; its referenced reading changes only the process adjective attached to the distinct PQ1 theorem. The original 3849ecbb mathematical source pins remain. EV-07 and all frozen evidence-matrix requirements/status rows are preserved; this entry adds evidence and closes no additional paper row.

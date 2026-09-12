@@ -61,7 +61,7 @@ N1 naming/module design ------------+----------------------------+
                                                                  |
                           +--------------------------------------+------+
                           v                                             v
-                 M1 exact adequacy/certificate                 E1/PQ1 candidate
+                 M1 exact adequacy/certificate                 E1/PQ1 accepted
                           |  |                                          |
                           |  +--> S1 bit-addressed serialized query      |
                           |       (deferred; does NOT gate V1)           |
@@ -75,13 +75,14 @@ N1 naming/module design ------------+----------------------------+
 other. `S1` hangs off `M1` because it consumes the supplied-store transfer
 lemma `M1` makes primary, and is deferred out of the `V1` path deliberately.
 
-The `E1` node is superseded by the PQ1 candidate
+The `E1` node is superseded by the accepted PQ1 construction
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` (see `E1` below). Instead
 of simulating the charged-trace execution, PQ1 compiles a distinct
-straight-line primitive program over a densely repacked allocation and charges
-every executed instruction. The node closes only if that candidate is accepted
-after its replay campaign, aggregate gate and fresh blind audit; until then
-its status is superseded-by-candidate, not closed.
+loop-free primitive program over a densely repacked allocation and charges
+every executed instruction. Coordinator acceptance now closes the revised
+E1/PQ1 node after the committed replay, both-host aggregate gates and fresh
+blind source audit with its narrow tooling correction review. The exact
+evidence is in `packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`.
 
 The `F0`/`P1`/`N1` scouts are complete and joined in
 `RMQ_DECLARATION_CLOSURE_2026_07_10.md` and
@@ -293,7 +294,7 @@ does not prove serialized-payload querying, preprocessing complexity, or
 conventional word-RAM complexity. Controller dispatch, arithmetic, branching,
 decoding, local scans, and merging remain documentary uncharged omissions. U3
 does not predeclare a replacement instruction vocabulary. That work was
-assigned to E1 and is now superseded by the PQ1 candidate described under
+assigned to E1 and is now superseded by the accepted PQ1 construction described under
 `E1` below; it does not change U3's charged-trace theorem.
 
 ### M1. Make Machine Adequacy Reviewer-Native
@@ -312,8 +313,8 @@ logical segments `0..22` and rejects fresh segment `23`.
 
 This closes the M1 roadmap node under its owner-approved supplied-store scope.
 Serialized-payload querying remains the separate deferred S1 rung, while E1
-remains an independent sibling under U3 (now superseded by the PQ1
-candidate). Historical forward-port diagnosis follows.
+remains an independent sibling under U3 (now closed by the accepted PQ1
+construction). Historical forward-port diagnosis follows.
 
 `main`'s broad final-trace adequacy certificate already certifies
 all five named invariant families, including word width. The unmerged
@@ -363,8 +364,8 @@ bit-addressed target when drafting it. The next record the same day,
 DD-20260714-008, restates the same obligation neutrally as a "downstream
 obligation" without the M1 attribution. Bit-addressed serialized-payload
 querying is now rung `S1` below; it does not gate `V1`. The fully charged
-machine that the recollection left downstream is now the PQ1 candidate
-`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, pending audit.
+machine that the recollection left downstream is now the accepted PQ1 construction
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, accepted after independent audit.
 
 NAMING NOTE (evidence only; the requirement text above is unchanged). "first-order
 controller execution" is a roadmap phrase with no counterpart in the codebase —
@@ -480,23 +481,24 @@ Mechanical movement and semantic strengthening should be separate commits.
 
 ### E1. Add A Small-Step Reference Word-RAM Machine
 
-Status (updated 2026-09-11): **superseded by the PQ1 candidate; not closed.**
+Status (updated 2026-09-12): **ACCEPTED through the revised PQ1 construction.**
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` (producer
 `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`,
 branch `codex/fully-charged-packed-query-v1`) takes a different route from the
-simulation planned below. One closed straight-line program of 837,572
+simulation planned below. One closed loop-free program of 837,572
 primitive instructions runs over a numeric memory, 174 counted metadata words
 followed by the packed allocation densely repacked at a wider logarithmic
 word; every executed instruction is charged, and on valid ranges the ordered
 loads are proved to be the physical expansion of the same logical trace. The
-theorem is kernel
-checked. Its committed replay campaign, the aggregate gate and a fresh blind
-exact-commit audit are pending, against the frozen contract
-`docs/internal/packed_query/PQ1_ACCEPTANCE_MATRIX.md`. Do not start a separate
-E1 simulation while the candidate is under audit. The original E1 plan
+theorem is kernel checked. Both required host aggregates, the full committed
+replay and the independent audit have passed. The coordinator closes all
+34 frozen requirement/invariant IDs in
+`docs/internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`, preserving the
+frozen contract in `docs/internal/packed_query/PQ1_ACCEPTANCE_MATRIX.md`.
+Do not start a duplicate E1 simulation. The original E1 plan
 follows as history: E1 was to define a richer instruction semantics and prove
 a fully charged small-step simulation of the charged-trace execution, a
-different target from the candidate
+different target from the accepted construction
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`.
 
 Define the smallest familiar instruction semantics needed by the existing
@@ -543,8 +545,8 @@ Status: final milestone.
 
 ## Work Not To Start Yet
 
-- C/Rust generation or a verified backend before the PQ1 candidate, which
-  supersedes `E1`, is accepted.
+- C/Rust generation or a verified backend without a separate scoped target;
+  PQ1 acceptance does not provide a compiler or preprocessing theorem.
 - Broad BP-navigation, rank/select, or union-find expansion.
 - Public renames before the uniform route and architecture map stabilize.
 - Deletion based on file size or import reachability alone.

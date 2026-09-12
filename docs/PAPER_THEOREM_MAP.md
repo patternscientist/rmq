@@ -1,6 +1,6 @@
 # Paper Theorem Map
 
-## Packed primitive query (candidate)
+## Packed primitive query (accepted)
 
 `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`
 in `RMQ/Core/WordRAM/Packed/Capstone.lean` is exported as
@@ -8,11 +8,9 @@ in `RMQ/Core/WordRAM/Packed/Capstone.lean` is exported as
 It fixes one `buildMemory`/`wordWidth`/`queryProgram`/`initialState`/`run`
 chain for complete `2n + o(n)` data/code/scratch capacity, exact answers and
 invalid rejection, fitting words at every prefix, and a fixed 837,572-step
-budget equal to the length of the straight-line `queryProgram`. Every
+budget equal to the length of the loop-free `queryProgram`. Every
 certificate field has an independently checked public expected-type consumer
-in `RMQ/Validation/PackedQueryContract.lean`. Status: CANDIDATE, pending the
-committed replay campaign, the aggregate gate and a fresh blind exact-commit
-audit. The word model, the uncharged outer word-domain check and the
+in `RMQ/Validation/PackedQueryContract.lean`. Status: ACCEPTED, following the replay campaign, both-host aggregate gates and independent audit. The word model, the uncharged outer word-domain check and the
 asymptotic-only absorption of code and scratch storage are stated in
 `docs/WORD_RAM_REVIEW_PACKET.md`; the earlier 210 and 427 models remain
 separate.
@@ -196,7 +194,7 @@ candidate merging are documentary uncharged omissions because they are not
 events in the current trace. The current theorem does not predeclare them as a checked
 instruction vocabulary. Thus `210` is not a conventional word-RAM runtime
 theorem. The former E1 plan, a richer machine proved to simulate this same
-execution, is superseded by the separate candidate
+execution, is superseded by the separate accepted theorem
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` above: it charges every
 primitive instruction of its own distinct execution and does not reinterpret
 `210`.
@@ -247,7 +245,7 @@ Scope, stated because each part is easy to over-read:
 - This is a **cell-probe** result. Computation between probes is free;
   controller dispatch, decoding, arithmetic, comparisons and branching are
   uncharged. It is not word-RAM instruction time, not preprocessing time, and
-  not measured runtime. The candidate at the top of this file charges those
+  not measured runtime. The accepted construction at the top of this file charges those
   operations for its own distinct execution and does not reinterpret this
   probe bound.
 - The `210` inside `427 = 1 + 2*3 + 2*210` is the packed controller's own

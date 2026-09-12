@@ -424,3 +424,15 @@ The following IDs apply when the public claim has the corresponding shape:
   capacity/width is related to input size in the form required by the public
   word-RAM claim. A standalone asymptotic fact about an unconstrained width
   function is insufficient.
+
+
+## Coordinator acceptance (2026-09-12)
+
+Status: **ACCEPTED**. All 34 frozen requirement/invariant IDs are closed in
+`PQ1_COORDINATOR_ACCEPTANCE.md`, with exact proposition/composition evidence
+in the immutable `../audit_reports/PQ1_FRESH_BLIND_4c89378.md` report committed
+at `d21b190139fa810291ae271974ec00cde58af965`. Both-host full gates certify
+repaired source `6562ff62d14b17e918e7149f896bd0657ffd5aa0`. The original P1
+selector failure was repaired; the later P3 wording correction changes no
+theorem. Earlier Open/pending rows remain historical evidence, not live gaps.
+This append-only disposition does not alter any frozen requirement text.

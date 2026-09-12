@@ -13,16 +13,10 @@ Status vocabulary (fixed):
   mainline theorem surface. Where the project's internal acceptance process
   has a finer status (for example a still-open fresh-blind audit), the row
   says so in its notes; that is a process status, not a kernel status.
-  Row `L-PQ-01` is the case in point: its theorem is kernel-checked at the
-  base and is a candidate in that process, which its `Process status` line
-  states. For that row the label asserts only the first clause of this
-  definition. At this writing (2026-09-11) the base commit is contained in no
-  branch other than `codex/fully-charged-packed-query-v1` and in neither
-  `main` nor any release tag, and the public alias the row cites occurs on no
-  other branch. The
-  theorem is exported by `RMQPaper` at the base commit, and it has been
-  neither accepted nor integrated, so it is not part of the integrated
-  mainline theorem surface. The label records no acceptance.
+  Row `L-PQ-01` keeps this mathematical source pin; its later source-equivalent
+  lineage has coordinator acceptance after both-host gates and independent
+  audit. Its `Process status` line cites that separate acceptance record.
+  The older source pin itself is not presented as an audit or merge receipt.
 - **PROVISIONAL_ARCHITECTURE** -- a frozen target statement under an active
   feasibility gate. Not a theorem. May appear in the manuscript only at a
   marked insertion point and in the target-statement environment that quotes
@@ -602,18 +596,14 @@ references are at the base commit.
 
 #### L-PQ-01
 - Status: ACCEPTED_BASE
-- Process status: CANDIDATE. Kernel-checked at the base commit and exported
-  through the paper root, but the project's acceptance process also requires
-  a full replay of the committed validation cases, the aggregate gate and a
-  fresh blind exact-commit audit, and it has recorded no acceptance. The
-  status label above is the kernel status this file's header defines, and
-  for this row it asserts only the first clause of that definition: the base
-  commit and the public alias are on branch
-  `codex/fully-charged-packed-query-v1` only, the theorem is exported by
-  `RMQPaper` at the base commit, and it has been neither accepted nor
-  integrated into the mainline theorem surface. The label records no
-  acceptance. `paper/README.md` editing rule 5 lists every place this
-  process status is stated; they change together.
+- Process status: ACCEPTED. The mathematical declarations are kernel-checked
+  at the base pin and exported through `RMQPaper`. The source-equivalent
+  repaired lineage `6562ff6` passed the full committed replay and aggregate
+  gates under PowerShell 7 and Windows PowerShell 5.1. A fresh blind audit at
+  `4c89378` and its narrow tooling correction review support coordinator
+  acceptance in `docs/internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`.
+  The later follow-up changes terminology and process status only.
+  `paper/README.md` editing rule 5 lists the synchronized status surfaces.
 - Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration: structure
   `RMQ.SuccinctFinal.PackedWordRAM.FullyChargedPackedQueryCapstone`,

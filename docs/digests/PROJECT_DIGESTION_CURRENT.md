@@ -15,10 +15,10 @@ uniform charged-trace bound `210`. Controller operations remain outside the
 charged event model, so this is not a conventional word-RAM or Lean runtime
 bound. On the exact same canonical trace, the separate strong theorem
 `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` proves
-that every emitted event is a payload-word read. A separate candidate theorem,
+that every emitted event is a payload-word read. A separate accepted theorem,
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, charges every primitive
 instruction of a different, numeric-memory execution; it is explained in its
-own section below and is still pending audit.
+own section below and has passed independent audit.
 
 ## What The Main Theorem Says
 
@@ -120,13 +120,13 @@ also does not prove:
 Those remain true of the charged-trace theorem, and they do not weaken the
 checked statement inside its explicit model. Charging every controller
 operation is now addressed separately, for a different execution, by the
-candidate in the next section; serialized-payload querying and preprocessing
+accepted construction in the next section; serialized-payload querying and preprocessing
 remain open for both.
 
-## The Separate Primitive-Machine Candidate
+## The Separate Accepted Primitive Machine
 
 **What changed conceptually.** The theorems above count charged payload reads
-on a logical trace and leave the controller's own work free. The candidate
+on a logical trace and leave the controller's own work free. The accepted construction
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` counts that work too, for a
 different execution. Preprocessing builds one numeric memory, `buildMemory xs`:
 174 metadata words that serialize the sizes, widths and layout descriptors of
@@ -145,7 +145,7 @@ every valid range, as proved by
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`; invalid ranges are
 rejected before any memory read. The memory, the program text and the
 registers together take `2n + o(n)` bits. The number 837,572 is simply the
-length of the program: the program is straight-line, so no run can take more
+length of the program: the program is loop-free, so no run can take more
 steps than it has instructions, and the committed valid-query fixtures take
 6,003 to 16,358 steps. On a valid range the loads the machine performs are
 exactly the metadata loads followed by the logical reads of the charged-trace
@@ -162,13 +162,13 @@ parsing them. The code and scratch storage is roughly 1.68 to 4.2 million
 words; it exceeds `n` for every `n` below about `2^28`, so the `2n + o(n)`
 statement absorbs it only asymptotically. Preprocessing time and space are
 unbounded and unclaimed, and Lean runtime is separate from the model. The
-status is CANDIDATE: the theorem is kernel checked and consumed by an
-independent typed client, but the committed replay campaign, the aggregate
-gate and a fresh blind exact-commit audit are pending.
+status is ACCEPTED: the theorem is kernel checked and consumed by an
+independent typed client, and the committed replay campaign, the aggregate
+gate and a fresh blind source audit with its tooling correction review have passed.
 
 **Reusable proof ideas.**
 
-- Straight-line compilation. Structured source with statically expanded,
+- Loop-free compilation. Structured source with statically expanded,
   proved-bounded repetition compiles to forward-jump code, so the step budget
   is the program length and needs no loop analysis.
 - Serialized geometry. Size and shape parameters live in a counted metadata
@@ -204,7 +204,7 @@ whether preprocessing, unbounded here, can be brought into the same machine.
 
 `RMQPaper.lean` imports only `RMQ.Headlines.RMQ`. The canonical headline module
 contains the current construction, list, adequacy, store, provenance, and cost
-aliases, and also the candidate primitive-machine alias described above.
+aliases, and also the accepted primitive-machine alias described above.
 Historical query profiles and old cost/regime companions remain
 checked through the separately named `RMQ.Headlines.RMQCompatibility` module,
 which is available from the broad `RMQ.Headlines` barrel but is not imported by

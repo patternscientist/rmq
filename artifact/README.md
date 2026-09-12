@@ -167,9 +167,8 @@ things:
   proves every actual event is `readWord`, and direct event
   weights equal both emitted trace length and the same execution's modeled
   cost;
-- as a candidate still pending its committed replay campaign, aggregate gate
-  and fresh blind audit, `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`:
-  one numeric memory and one closed straight-line primitive program whose run
+- as an accepted result following the replay campaign, both-host aggregate gates and independent audit, `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`:
+  one numeric memory and one closed loop-free primitive program whose run
   halts within at most 837,572 primitive instructions for every representable
   endpoint pair, returns the leftmost minimum on valid ranges, and fits
   memory, literal program encoding and registers in `2n + o(n)` bits, under a
@@ -195,7 +194,7 @@ the exact 21-case registry, uniform `210` charged-trace bound, and the modeled
 count. The registry records historical pre-cost, current post-cost, answer,
 route, and disposition under unique stable IDs. Controller work is uncharged
 in the charged-trace model this harness reports, and the harness is not a
-conventional word-RAM runtime benchmark. The candidate primitive-machine
+conventional word-RAM runtime benchmark. The accepted primitive-machine
 query has its own runtime fixtures inside `scripts/packed_query_replay.ps1`,
 which the aggregate gate runs on a clean committed tree; they report primitive
 steps and reads, not wall-clock time.
@@ -227,7 +226,7 @@ The artifact does not claim:
 - optimized constants;
 - preprocessing time or space bounds, for any query theorem;
 - attainment or tightness of any budget, including the 837,572-instruction
-  budget of the candidate `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`;
+  budget of the accepted theorem `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`;
 - an exact or minimal dynamic read set; or
 - unqualified priority status for the mechanization.
 

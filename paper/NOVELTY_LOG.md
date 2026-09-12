@@ -38,6 +38,7 @@ Nothing in §3 may be read as stronger than the underlying artifact. For the rec
 - A mechanized information-theoretic lower bound: any fixed-length payload-only exact RMQ encoding needs `2n − 1.5 log₂ n − O(1)` bits, in doubled-Catalan-slack integer form.
 - Preprocessing complexity for the succinct construction is **unproved and unclaimed**.
 - *(Appended 2026-09-11, at the repin to `3849ecbb`.)* A candidate theorem, kernel-checked at this base but not accepted by the project's audit process, counts every executed instruction of one fixed 837,572-instruction register-machine program run on a numeric repacking of the packed object, in a unit-cost model that includes multiplication, division, remainder, variable shifts and bitwise operations. It bounds a different execution: the second bullet above still describes the `210` and `427` bounds, and neither acquires an instruction count. See §7.
+- *(Status update 2026-09-12.)* That PQ1 lineage is now coordinator-accepted after its replay, both-host gates and independent audit. This process change adds no novelty evidence and leaves the search limitations in §7 intact.
 
 ---
 
@@ -800,6 +801,8 @@ Two adjudications produced conflicting results this session and are left open:
 ## 7. Appended 2026-09-11: the fully charged packed query is outside this search
 
 At the repin to `3849ecbb` the development gains `L-PQ-01`: one fixed program of 837,572 register-machine instructions whose every executed instruction is counted, under a unit-cost operation set that includes multiplication, division, remainder, variable shifts and bitwise operations, with the program's encoding and register bank counted in a `2n + o(n)` allocation. It is a candidate in the project's acceptance process.
+
+Status update (2026-09-12): that candidate's source-equivalent repaired lineage is now coordinator-accepted; see `docs/internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`. Acceptance does not extend this novelty search or license a priority claim.
 
 This log was completed on 2026-08-07 and has not been extended for it. Its coverage of instruction-level cost is thin, and is recorded here so that it is not over-read:
 

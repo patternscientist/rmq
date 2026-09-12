@@ -1,9 +1,9 @@
 # Final RMQ Model Adequacy
 
-## Separate Primitive-Machine Candidate
+## Separate Accepted Primitive Machine
 
 This file is about the charged-trace model of the canonical reviewer route. A
-separate candidate theorem, `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`
+separate accepted theorem, `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`
 (producer `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`),
 uses a different machine and a different execution, so its adequacy argument
 is summarized here rather than merged into the sections below.
@@ -30,14 +30,12 @@ crosses a word boundary, and none for a logically absent or dead read or a
 zero-length span. Agreement of any
 supplied memory with `buildMemory xs` at the read addresses determines the
 entire run. The program of `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`
-is one fixed straight-line program of 837,572 instructions for every input;
+is one fixed loop-free program of 837,572 instructions for every input;
 its literal encoding and 8,271 registers plus three control words are charged
 in the `2n + o(n)` capacity statement, and the step budget equals the program
 length. Endpoints outside the word domain are rejected by an uncharged
 value-level check. Preprocessing cost is not claimed, Lean runtime is not
-claimed, and the budget is not claimed tight. Status: CANDIDATE, pending the
-committed replay campaign, the aggregate gate and a fresh blind exact-commit
-audit. Details are in `docs/WORD_RAM_REVIEW_PACKET.md`.
+claimed, and the budget is not claimed tight. Status: ACCEPTED, following the replay campaign, both-host aggregate gates and independent audit. Details are in `docs/WORD_RAM_REVIEW_PACKET.md`.
 
 ## Canonical Machine Adequacy
 
@@ -133,7 +131,7 @@ execution's ordered dynamic reads; exact complete-result equality is applied
 there, and value, backing, cost, and exactness are projections. This rung does
 not decode or query raw `List Bool` serialized payload bits; that is S1. It
 also does not charge the controller. That job, once assigned to an E1
-simulation of this execution, is now carried by the separate candidate
+simulation of this execution, is now carried by the separate accepted theorem
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, which charges every
 primitive instruction of its own distinct execution (see the first section).
 
@@ -341,12 +339,12 @@ assembly, and validity guards. In this charged-trace theorem these omissions
 are documentary and enumerated here, not silently absorbed into an unbounded
 primitive. The amended E1 target of `OPTION_B_CHARGED_FRINGE_DESIGN.md` was to
 charge each of them by simulating this execution with a richer instruction
-semantics. That plan is superseded by the separate candidate
+semantics. That plan is superseded by the separate accepted theorem
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`: it compiles a distinct
-straight-line primitive program over a densely repacked allocation, charges
+loop-free primitive program over a densely repacked allocation, charges
 every executed controller, decode, arithmetic, comparison, branch and register
 instruction of that program, and proves a separate literal budget. It is
-pending audit and does not change the enumeration above.
+accepted after independent audit and does not change the enumeration above.
 
 ## No Synthetic Cost-Only Events
 
@@ -468,7 +466,7 @@ section above: attempted payload-word reads are the only charged trace
 events, the uncharged remainder is enumerated there and is bounded-per-step
 register computation, and the charged-trace theorem does not define a
 substitute controller vocabulary or prove conventional word-RAM complexity.
-Instruction-level charging is carried instead by the separate candidate
+Instruction-level charging is carried instead by the separate accepted theorem
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` for its own distinct
 execution, not by a simulation of this one.
 

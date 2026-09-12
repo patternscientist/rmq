@@ -173,6 +173,9 @@ function Test-AnyPattern {
 $neutralEvidencePatterns = @(
   "^docs/internal/(?:DESIGN_DECISIONS|WORKFLOW_DESIGN_DECISIONS)\.md$",
   "^docs/internal/audit_reports/[^/]+\.md$",
+  # Dated internal audit evidence also lives beside its frozen task contract.
+  # Keep the terminal date/Markdown suffix: prompts, plans and code stay governed.
+  "^docs/internal/(?:[^/]+/)*[A-Z0-9][A-Z0-9_-]*_AUDIT_\d{8}\.md$",
   "(?:^|/)[^/]*(?:_WORKLOG|_ACCEPTANCE_MATRIX|_AUDIT_REPORT|_HANDOFF)\.md$",
   "(?:^|/)(?:WORKLOG|THEOREM_LEDGER|RELATED_WORK_LEDGER|EVIDENCE_MATRIX)\.md$",
   "^docs/digests/(?![A-Z0-9_-]*CURRENT)[A-Z0-9][A-Z0-9_-]*_\d{4}_\d{2}_\d{2}\.md$",

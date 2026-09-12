@@ -96,13 +96,15 @@ the manuscript pinned at `0665b494` called instruction-level charging future
 work in Section 3, Section 11 item 1 and the conclusion. That is the `RC-10`
 class described above, arriving a second time.
 
-The theorem is stated in Section 9.2 as a **candidate**: it is kernel-checked
-at the new base, but the project's acceptance process -- a full replay, the
-aggregate gate and a fresh blind exact-commit audit -- has not accepted it.
+The theorem was first stated in Section 9.2 as a candidate at the new base.
+Its later source-equivalent lineage is now **accepted** after the full replay,
+both-host aggregate gates, fresh blind source audit and narrow tooling
+correction review. The coordinator record is
+`docs/internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`.
 The passages that called instruction-level charging future work now speak
 only of the charged-trace bound and Theorem 9.1, which are unchanged. In the
 ledger, `L-PQ-01` records the theorem with `ACCEPTED_BASE` as its kernel
-status and `CANDIDATE` as its process status, `L-OPEN-07` records that the
+status and `ACCEPTED` as its current process status, `L-OPEN-07` records that the
 budget's optimality and attainment are unproved, and `L-OPEN-06` is amended
 because `L-PQ-01` falsifies its first clause. The theorem sits in subsection
 9.2 so that Sections 10 to 12 keep the numbers the ledger and the evidence
@@ -159,7 +161,7 @@ mistaken for a straggler.
   stated as a theorem in Section 9 (RC-4, 2026-08-16); it was previously a
   quoted provisional target plus one `ARCHITECTURE_RESULT_PENDING` marker,
   and there are now zero such markers. The fully charged packed query is
-  stated in Section 9.2 as a candidate theorem (2026-09-11); see editing
+  stated in Section 9.2 as an accepted theorem (2026-09-12); see editing
   rule 5.
 - `references.bib` -- primary-source bibliography. Unverified fields are
   omitted, never guessed; see the field policy in
@@ -253,15 +255,15 @@ while another build task owns the tree.
    `RC-10` finding the RC-4 round exists to answer.
 4. Evidence-matrix requirement text is frozen; evidence/status fields are
    append-only.
-5. The fully charged packed query (`L-PQ-01`) is a **candidate**. Its status
-   is stated in these places, which must change together when the project
-   accepts or rejects it. In `rmq.tex`: the header comment, the abstract,
+5. The fully charged packed query (`L-PQ-01`) is **accepted**. Its status
+   is stated in these places, which must remain synchronized with the
+   coordinator record. In `rmq.tex`: the header comment, the abstract,
    Section 1.1 (lead-in and item 6), Sections 1.2 and 1.3, Section 3 (the
    allocated-bits and executed-instructions items and the model paragraph),
    the second reading of Theorem 9.1, Section 9.2 (theorem title and status
    paragraph), the Section 10 cost paragraph, Section 11 items 1, 3 and 6,
-   and Section 12. `grep -n -i candidate rmq.tex` finds every one of them, plus
-   two unrelated uses ("candidate merging" in the charge policy and the
+   and Section 12. Searching `candidate` in `rmq.tex` now finds only the two
+   unrelated uses ("candidate merging" in the charge policy and the
    "candidate lineage" behind Theorem 9.1's acceptance). In
    `THEOREM_LEDGER.md`: the header sentence on `L-PQ-01` and that row's
    `Process status` line. In `NOVELTY_LOG.md`: sections 0.3 and 7. In this

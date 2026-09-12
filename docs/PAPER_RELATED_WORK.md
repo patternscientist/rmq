@@ -85,14 +85,13 @@ execution. The relevant adequacy claim is that the final modeled trace has
 explicit read events, no synthetic cost-only markers, bounded event data, and
 successful reads backed by counted flat payload words.
 
-A separate candidate theorem,
+A separate accepted theorem,
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, moves closer to the
 program-step tradition without leaving the model: it counts every executed
-instruction of one fixed straight-line program for a small register machine
+instruction of one fixed loop-free program for a small register machine
 over numeric memory, with unit-cost multiplication, division, remainder,
 shifts and bitwise operations. That is still a model-level instruction count
-for a Lean-defined machine, not verified compiled execution, and it is pending
-its replay campaign, aggregate gate and blind audit.
+for a Lean-defined machine, not verified compiled execution, and it is accepted following the replay campaign, both-host aggregate gates and independent audit.
 
 ## Artifact And Provenance Positioning
 
@@ -115,12 +114,12 @@ make a theorem true.
   lives in the explicit
   [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md),
   not in the current paper proposition.
-- The candidate `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` charges
+- The accepted theorem `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` charges
   every primitive instruction of a distinct numeric-memory execution, within a
-  fixed budget equal to its straight-line program length, under the unit-cost
+  fixed budget equal to its loop-free program length, under the unit-cost
   word operations named above. Its code and scratch term is lower order only
   asymptotically, out-of-word endpoints are rejected by an uncharged
-  value-level check, and it is pending audit. Neither it nor the `210` theorem
+  value-level check, and it has passed independent audit. Neither it nor the `210` theorem
   bounds preprocessing.
 - The auxiliary logical layout footprint is a safe overapproximation. The
   reviewer flat-physical footprint is execution-derived and exactly the

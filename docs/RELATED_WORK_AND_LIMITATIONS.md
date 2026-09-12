@@ -57,9 +57,9 @@ remains a safe overapproximation.
   theorem, so it is not a conventional word-RAM result. Earlier checked cost
   and dispatch surfaces are documented in the explicit
   [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
-- The separate candidate `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`
+- The separate accepted theorem `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`
   charges every primitive instruction of a distinct numeric-memory execution.
-  Its fixed budget is the length of its straight-line program, its word model
+  Its fixed budget is the length of its loop-free program, its word model
   assumes unit-cost multiplication, division, remainder, shifts and bitwise
   operations, its outer word-domain check is uncharged, and its code and
   scratch storage is absorbed into `o(n)` only asymptotically. It is pending

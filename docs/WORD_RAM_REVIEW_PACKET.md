@@ -1,11 +1,11 @@
 # Word-RAM Review Packet
 
-This packet separates three things: the candidate primitive-machine query
+This packet separates three things: the accepted primitive-machine query
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, the earlier traced
 payload-access theorem with its `210` charged-trace bound, and
 compiled-runtime claims, which neither theorem makes.
 
-## Packed primitive query (candidate)
+## Packed primitive query (accepted)
 
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, imported through `RMQPaper`,
 has the exact proposition
@@ -13,9 +13,9 @@ has the exact proposition
 is `fullyChargedPackedQueryCapstone_holds` in
 `RMQ/Core/WordRAM/Packed/Capstone.lean`, and its axioms are `propext`,
 `Classical.choice` and `Quot.sound`. The theorem has no canonical safety,
-correctness, readiness, successful-read or route premise. Status: CANDIDATE,
-pending the committed replay campaign, the aggregate gate and a fresh blind
-exact-commit audit; nothing here records acceptance.
+correctness, readiness, successful-read or route premise. Status: ACCEPTED,
+following the replay campaign, both-host aggregate gates and independent audit;
+the coordinator record is `docs/internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`.
 
 ### Machine
 
@@ -67,9 +67,9 @@ it is lower order only asymptotically.
 `queryProgram`, the program of
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, is one closed program of
 837,572 instructions, independent of `xs` and `n`, and `queryBudget = 837572`.
-It is straight-line: it contains forward jumps only and no `jumpRegister`. For
+It is loop-free: it contains forward jumps only and no `jumpRegister`. For
 every list and every representable endpoint pair the run halts within at most
-837,572 steps. Because the program is straight-line, that budget is its length
+837,572 steps. Because the program is loop-free, that budget is its length
 rather than a measured cost: the committed valid-query fixtures observe 6,003
 steps (`n = 1`) to 16,358 steps (`n = 24`), and every representable invalid
 input stops within six guard steps (certificate field `invalidGuardSteps`;
@@ -127,14 +127,15 @@ certificate field as an expected-type consumer of the public alias.
 `scripts/packed_query_replay.ps1` weakens one field at a time, requires the
 named consumer to fail, restores the tree, and runs the numeric-memory runtime
 fixtures; the aggregate gate invokes it on a clean committed tree. The theorem
-and the consumer check today. The replay campaign, the aggregate gate and the
-blind audit have not yet certified this candidate; their status is recorded in
-`docs/internal/packed_query/PQ1_ACCEPTANCE_MATRIX.md`.
+and the consumer check today. The replay campaign, both-host aggregate gates
+and independent audit passed on the repaired source. Coordinator acceptance
+is recorded in `docs/internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`;
+the frozen matrix retains the original requirements and appends their closure.
 
 ## Earlier trace-model boundary
 
 The following sections describe the earlier `210` charged-trace theorem. Its
-charge policy is unchanged by the separate primitive-machine candidate.
+charge policy is unchanged by the separate accepted primitive machine.
 
 ## Machine Objects
 
@@ -230,7 +231,7 @@ The checked `210` result is therefore a charged-trace theorem. It is not a claim
 about compiled Lean time or a complete conventional word-RAM instruction
 count.
 
-The candidate `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` at the top of
+The accepted theorem `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` at the top of
 this packet charges those operations for a different execution: its primitive
 run returns the same answers and its ordered loads expand the same logical
 trace, but over a densely repacked allocation. Its 837,572-step budget does

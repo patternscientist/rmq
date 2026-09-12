@@ -227,6 +227,12 @@ $cases = @(
   @{ Id = "present-correct-decisions"; Files = @{ "RMQ/New/BothDecisions.lean" = "def bothDecisions := true"; "scripts/both_decisions.ps1" = "Write-Host governed" }; CodeDecision = $true; WorkflowDecision = $true; Reject = $false; Output = "checked" },
   @{ Id = "neutral-worklog"; Files = @{ "docs/internal/NEW_POLICY_WORKLOG.md" = "# Evidence" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
   @{ Id = "neutral-audit-report"; Files = @{ "docs/internal/audit_reports/2026-07-19_probe.md" = "# Audit evidence" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "neutral-dated-internal-audit"; Files = @{ "docs/internal/packed_query/PQ1_CONTINUATION_AUDIT_20260911.md" = "# Frozen audit evidence" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "dated-audit-lean-remains-code"; Files = @{ "docs/internal/packed_query/PQ1_CONTINUATION_AUDIT_20260911.lean" = "def auditProbe := true" }; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "dated-audit-script-remains-workflow"; Files = @{ "docs/internal/packed_query/PQ1_CONTINUATION_AUDIT_20260911.ps1" = "Write-Host probe" }; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "dated-audit-prompt-remains-workflow"; Files = @{ "docs/internal/packed_query/PQ1_CONTINUATION_AUDIT_20260911_PROMPT.md" = "# Audit instructions" }; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "dated-audit-plan-remains-workflow"; Files = @{ "docs/internal/packed_query/PQ1_CONTINUATION_AUDIT_PLAN_20260911.md" = "# Audit plan" }; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "dated-public-audit-remains-public"; Files = @{ "docs/PQ1_CONTINUATION_AUDIT_20260911.md" = "# Public current claim" }; Reject = $true; Output = "code/public/repository-sensitive" },
   @{ Id = "neutral-historical-digest"; Files = @{ "docs/digests/PROJECT_STATE_2026_07_19.md" = "# Frozen history" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
   @{ Id = "p1-neutral-audit-markdown-control"; Files = @{ "docs/internal/audit_reports/P1NeutralEvidence.md" = "# Audit evidence" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
   @{ Id = "p1-frozen-historical-digest-control"; Files = @{ "docs/digests/DEEP_PROJECT_DIGESTION_2026_07_19.md" = "# Frozen history" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
@@ -275,6 +281,12 @@ $expectedCaseIds = @(
   "present-correct-decisions",
   "neutral-worklog",
   "neutral-audit-report",
+  "neutral-dated-internal-audit",
+  "dated-audit-lean-remains-code",
+  "dated-audit-script-remains-workflow",
+  "dated-audit-prompt-remains-workflow",
+  "dated-audit-plan-remains-workflow",
+  "dated-public-audit-remains-public",
   "neutral-historical-digest",
   "p1-neutral-audit-markdown-control",
   "p1-frozen-historical-digest-control",
@@ -306,6 +318,11 @@ $expectedRejectCaseIds = @(
   "p1-neutral-digest-code-rejected",
   "p1-current-looking-digest-heldout-rejected",
   "p1-registered-current-digest-remains-sensitive",
+  "dated-audit-lean-remains-code",
+  "dated-audit-script-remains-workflow",
+  "dated-audit-prompt-remains-workflow",
+  "dated-audit-plan-remains-workflow",
+  "dated-public-audit-remains-public",
   "absolute-windows-repository-root",
   "strict-unresolvable-base",
   "unclassified-path-fails-even-nonstrict",
@@ -533,6 +550,10 @@ try {
     & git config user.email 'regression@local' | Out-Null
     & git config user.name 'regression' | Out-Null
     & git config commit.gpgsign false | Out-Null
+    # This fixture tests commit membership, not checkout line-ending policy.
+    # A copied LF checker plus inherited autocrlf=true emits native stderr;
+    # Windows PowerShell promotes that warning to an error under Stop.
+    $null = Invoke-BoundedGit -WorkingDirectory $pcRoot -Arguments @("config", "core.autocrlf", "false")
 
     Write-FixtureFile -Root $pcRoot -RelativePath 'docs/internal/DESIGN_DECISIONS.md' `
       -Content '# Design decisions'
@@ -933,8 +954,8 @@ if (-not (Test-Path -LiteralPath $retroPath -PathType Leaf)) {
   }
 }
 
-if ($rejectCount -ne 19 -or $acceptCount -ne 14) {
-  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [final-verdict-counts] expected 19 reject and 14 accept; got $rejectCount reject and $acceptCount accept"
+if ($rejectCount -ne 24 -or $acceptCount -ne 15) {
+  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [final-verdict-counts] expected 24 reject and 15 accept; got $rejectCount reject and $acceptCount accept"
   $failures += 1
 }
 
