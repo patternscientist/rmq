@@ -2,6 +2,8 @@ Status: INCOMPLETE
 Phase: CONTRACT/FEASIBILITY — pending mandatory coordinator route review.
 
 All 30 rows in ACCEPTANCE_MATRIX.md remain open at the composed target.
+The named target, `RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds` in
+`RMQ/Core/WordRAM/Bitvector/Capstone.lean`, remains unproved and absent.
 This is the authorized phase checkpoint, not candidate completion or an
 obstruction. The task's explicit completion contract permits an INCOMPLETE
 phase return for mandatory contract/route review. Resume the same branch after
@@ -11,7 +13,9 @@ the coordinator's disposition; no acceptance criterion is amended.
 - Branch: `codex/bv-1-fully-charged-rank-select`.
 - Worktree: `C:/Users/poin/.codex/worktrees/c974/RMQ`.
 - Base/governance and initial preflight HEAD: `0e6a00f654abc64f8b68988fa9675b9a839dca2f`.
-- Local phase commit is being prepared. Assigned edits are preserved; no push or integration.
+- Source phase commit: `581deebcacfded874d17da7db1e9132a1eefa184`.
+- The following amendment records that exact source commit and its verification;
+  it changes only task evidence/process prose. No push or integration occurred.
 - Durable frozen matrix: `docs/internal/extensions/bv1/ACCEPTANCE_MATRIX.md`.
 - Exact command evidence: `COMMANDS.md`, `commands/*.json`.
 - Route contract/source facts: `CONTRACT.md`, `SOURCE_FACTS.md`.
@@ -117,6 +121,23 @@ process repair described in WDD-20260912-BV1-001. This certifies the phase's
 checked hygiene/prose surfaces, not the still-missing capstone or its final
 aggregate. The postcommit source identity and range check are recorded in the
 following report amendment.
+
+## Postcommit phase identity
+
+The source snapshot is commit581deebcacfded874d17da7db1e9132a1eefa184, a direct
+descendant of the assigned base, on the exact requested branch. The worktree
+was clean immediately after that commit. `git diff --check
+0e6a00f654abc64f8b68988fa9675b9a839dca2f..HEAD` and the strict design checker
+with that same base passed after committing (60 changed files classified).
+The initial sandboxed staging attempt could not write the parent repository's
+worktree index; automatic approval permitted the already-authorized local
+staging/commit. No user permission or scope amendment was needed.
+
+The final report/evidence commit is identified in the task response and Git
+history; it retains this exact source snapshot. The coordinator should review
+the frozen requirements, CONTRACT.md, ReaderInterface.lean and the full select
+experiment before recording the required route disposition. That review must
+not be confused with acceptance of the unproved full capstone.
 
 ## Unmet rows
 
