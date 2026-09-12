@@ -1,0 +1,17 @@
+{
+  "Stage": "native-loader-emptyargs-host",
+  "ExitCode": 2,
+  "Output": [
+    "usage: packed-rmq-route PROGRAM FIXTURE reads|quiet"
+  ],
+  "StandardOutput": [],
+  "StandardError": [
+    "usage: packed-rmq-route PROGRAM FIXTURE reads|quiet"
+  ],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 4.603,
+  "DeadlineSeconds": 15,
+  "Ownership": "kill-on-close-job"
+}

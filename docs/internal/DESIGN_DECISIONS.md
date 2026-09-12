@@ -12634,3 +12634,32 @@ Decision (date in UTC): accept the revised E1/PQ1 construction on repaired sourc
 The follow-up updates the 18 registered current-fact surfaces, the declaration-adjacent public docstring and the manuscript status companions. Theorem definitions, statements, proof bodies, numeric constants, counted allocation, operation set, consumers and replay cases remain unchanged. The original source pin in paper/ remains the mathematical reference; later audit and coordinator acceptance are separate identities. No priority claim or release-wide acceptance follows.
 
 Alternatives rejected: leaving “straight-line” unexplained despite conditional branches; relabeling an older trace/probe theorem as instruction-costed; treating a green audit as automatic coordinator acceptance; rerunning hours of unchanged mutation campaigns for one docstring and process wording; and rewriting frozen evidence/history instead of appending a disposition. The public import and exact-type consumer are rebuilt, and affected claim, design, paper, topology, source-identity and hygiene checks cover the follow-up. The prior both-host gates remain the source certification. S1, preprocessing, tighter path-sensitive costs, extraction and release-wide V1 work remain distinct targets.
+
+## DD-20260912-NATIVE1-001: finite containers and a proved Lean core for the native route experiment
+
+Context: NATIVE-1 is a newly authorized extension of exact PQ1 base 0e6a00f654abc64f8b68988fa9675b9a839dca2f. The assignment explicitly permits a proved Lean executable compiled through C behind a narrow Rust/C ABI frontend. Historical extraction deferrals remain historical; this task-specific authorization does not edit their frozen wording.
+
+Decision: first refine program, memory and register storage to Arrays while retaining natural-cell semantics, and prove operation/run equality. A separate tail-recursive runner accumulates all six category counts and optional ordered reads without retaining transition states. Test the actual exported Lean declaration through the installed C compiler and Rust frontend. This is a route experiment feeding review, not the native capstone or a fixed-limb claim.
+
+Rationale: the exact PQ1 operation semantics and fixed program are already proved; an independent handwritten Rust VM would add an unproved algorithm. Reusing the proved computational declaration gives an explicit source identity, while compiler/runtime translation and FFI marshaling remain separate obligations. Natural arrays are an intermediate leaf only. Fixed limbs, binary image proofs, canonical all-size instantiation and usable API are still required by the frozen matrix.
+
+Corrupt-state distinction: raw PQ1 arithmetic is total Nat arithmetic and missing instruction fetch stops without changing running status. The container leaf preserves those behaviors exactly under its destination bound. A future checked limb executor must state separate checked-fault semantics and prove compatibility on canonical safe executions; it cannot claim unconditional equality after introducing overflow/divisor/shift faults.
+
+Alternatives rejected: substituting u64/u128 despite 168-176-bit fixtures; treating ArrayRun's fetch-only equality as a storage theorem; logging full states in default execution; claiming fixture comparison proves Rust refinement; silently adding Aeneas/Mathlib or upgrading Lean. The actual route experiment, exact proposed source theorem and trust assumptions are recorded in docs/internal/extensions/native1/ROUTE_EVIDENCE.md. No public alias or baseline Packed definition changes.
+
+### NATIVE-1 route-review refinements to DD-20260912-NATIVE1-001
+
+Independent review caught and repaired the experiment's endpoint register order;
+`routeInitialState_decode` now checks the exact left/right/n initial-state body.
+The parser's destination predicate is proved equivalent to the raw simulation's
+bank guard. These are operational repairs, not changes to the reference theory.
+The C bridge uses explicit byte lengths and an owned Lean-string handle with a
+borrowed-text accessor, avoiding a second allocator/copy ABI and the bundled C
+compiler's absent general-purpose C headers. Rust's process-wide atomic claim
+and non-Send/non-Sync owner constrain the tested single-thread initialization
+contract. Universal frontend marshaling and the final binary API remain open.
+
+The experimental C++ consumer uses the same exported C functions and DLL as
+Rust. The committed .def file describes the four C exports for an MSVC import
+library; it is interface metadata, not another query implementation. The
+complete n9-full output comparison covers the actual C++ consumption path.

@@ -1732,3 +1732,25 @@ same machine.
 The packed primitive query is accepted on the source and evidence identified in `internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`. Both full host gates and the independent audit passed. The one gate-blocking runtime-selector defect was repaired; current descriptions now say “loop-free” because the fixed program contains forward conditional branches. The earlier dated entries remain historical accounts.
 
 Conceptually, the query obtains its answer from a counted numeric allocation and charges every executed primitive instruction, including metadata reads, decoding and branches. In plain English, the modeled machine answers every valid half-open list query with the leftmost minimum under one uniform budget. The unit-cost scalar arithmetic model, unbounded preprocessing, uncharged outer Nat encoding check and asymptotic-only code/scratch absorption remain live assumptions. The next skeptical question concerns useful finite-size or preprocessing bounds in the same model. S1 serialization, extraction and release-wide V1 verification are separate work; this acceptance changes no theorem.
+
+## 2026-09-12 — NATIVE-1 finite-container/native-route checkpoint
+
+Conceptually, the new leaf replaces three storage interfaces with Arrays while
+preserving the old primitive run as the reference. The equality includes final
+state and ordered transitions under a destination-bank bound. A separate
+accumulator computes the same final state, instruction count, six categories
+and optional read observations without retaining a full transition trace.
+
+In plain English, the executable source being prepared for the native DLL is
+now the same Lean function whose behavior is connected to the reference
+interpreter. Rust only supplies the frontend in this experiment. This does not
+yet supply fixed limbs, a proved binary loader, a production API or the final
+`PackedNative.nativeExecutionCapstone_holds` join.
+
+Live assumptions: natural-cell arithmetic, a bounded destination bank, and
+explicit compiler/runtime/FFI assumptions for native execution. Raw PQ1's total
+arithmetic and missing-fetch behavior must be kept separate from a future
+checked native fault policy. The downstream consumer is the assigned native
+capstone on the exact PQ1 allocation and program. A skeptical reader should ask
+whether the later loaded limbs and marshaled inputs are those same counted and
+executed objects, and how corruption is rejected before unsafe arithmetic.

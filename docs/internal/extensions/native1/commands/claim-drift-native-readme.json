@@ -1,0 +1,38 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "command": {
+    "arguments": [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "scripts/claim_drift_scan.ps1",
+      "-Strict",
+      "-Path",
+      "native/packed-rmq/README.md"
+    ],
+    "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+  },
+  "result": {
+    "Stage": "claim-drift-native-readme",
+    "ExitCode": 1,
+    "Output": [
+      "CLAIM-DRIFT[lean-runtime][separate-from-model-cost][fail] native/packed-rmq/README.md:37: OS thread, with the Lean runtime retained until process exit. Rust rejects NUL",
+      "CLAIM-DRIFT: strict mode found 1 unapproved sensitive matches"
+    ],
+    "StandardOutput": [
+      "CLAIM-DRIFT[lean-runtime][separate-from-model-cost][fail] native/packed-rmq/README.md:37: OS thread, with the Lean runtime retained until process exit. Rust rejects NUL",
+      "CLAIM-DRIFT: strict mode found 1 unapproved sensitive matches"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 14.433,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  }
+}

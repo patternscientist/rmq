@@ -1,0 +1,27 @@
+{
+  "route": {
+    "expected": 14,
+    "file": "route-20260912T081311355.json",
+    "success": true,
+    "executed": 14
+  },
+  "aggregate": "NOT RUN; coordinator slot required for final candidate",
+  "controls": {
+    "expected": 8,
+    "file": "controls-20260912T081542413.json",
+    "success": true,
+    "executed": 8
+  },
+  "fullNativeCapstone": "OPEN",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "schema": "native1-phase-results-v1",
+  "phase": "ROUTE_READY",
+  "cpp": {
+    "exit": 0,
+    "file": "cpp-n9-full-final.json",
+    "seconds": 10.318,
+    "exactReferenceComparison": true
+  },
+  "build": "build-20260912T080927170.json",
+  "status": "INCOMPLETE"
+}

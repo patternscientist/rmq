@@ -1,0 +1,41 @@
+{
+  "schema": "native1-route-results-v1",
+  "success": false,
+  "run": "20260912T074345564",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "registrySha256": "A1CE591EE9D36F3A503EF012521BFDC372B32B5799F4841ED077F69EC099519D",
+  "expectedCases": [
+    "smoke"
+  ],
+  "executedCases": [
+    "smoke"
+  ],
+  "expectedCount": 1,
+  "executedCount": 1,
+  "results": [
+    {
+      "process": {
+        "Stage": "smoke",
+        "ExitCode": -1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": true,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [
+          9596,
+          28816
+        ],
+        "DurationSeconds": 120.214,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      },
+      "id": "smoke",
+      "incomplete": true,
+      "pass": false
+    }
+  ],
+  "unsupportedHosts": [
+    "Non-Windows execution not covered by this experiment"
+  ]
+}

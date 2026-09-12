@@ -3425,3 +3425,19 @@ completeness.
    `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` with its committed replay
    and independent audit evidence. A path-sensitive step bound and a
    preprocessing bound in the same machine are separate, unstarted targets.
+
+## NATIVE-1 extension: finite-container and native-route checkpoint
+
+The isolated NATIVE-1 extension adds operation and whole-run simulation from
+Array-backed code, memory and registers to the existing primitive interpreter,
+under a finite destination-bank bound. `PackedNative.runThin_reference` and
+`PackedNative.routeCore_reference` connect the actual tail-recursive executable
+core to the same original run and its accumulated observations. Optional read
+logging is erased by a checked projection. Natural-number cells are an
+intermediate representation; this is not the finite-limb/binary native capstone.
+
+The Lean-to-C DLL and Rust frontend are a route experiment. Compiler/runtime/FFI
+assumptions, exact checked types and remaining canonical/limb/serialization/API
+obligations are recorded in `internal/extensions/native1/ROUTE_EVIDENCE.md`.
+The accepted PQ1 family and its public aliases are unchanged. No native payload
+or hardware-time bound and no completed Rust refinement are claimed here.

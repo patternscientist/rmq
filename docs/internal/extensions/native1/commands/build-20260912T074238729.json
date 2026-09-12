@@ -1,0 +1,351 @@
+{
+  "schema": "native1-build-commands-v1",
+  "run": "20260912T074238729",
+  "success": true,
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "initialSourceHashes": [
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Primitive.lean",
+      "sha256": "4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Calculus.lean",
+      "sha256": "2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Structured.lean",
+      "sha256": "F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Compiler.lean",
+      "sha256": "C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Frame.lean",
+      "sha256": "480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Scratch.lean",
+      "sha256": "320DDD6C1F6549902951B99CCF99C66B231D2A0106487A710D8638372EF32E64"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Native/Finite.lean",
+      "sha256": "8EDC747F2F0BBB7D4E6F6849B63869016969C4F7535D62E99A6E4D01901223DF"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Native/Thin.lean",
+      "sha256": "26D984386EEA21CCCC49EBF6217CD824B7896CF98785F8F843C6AD9E2EB69845"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Native/Route.lean",
+      "sha256": "C00240A5A2E994DD1A996C79A52FF54780A0B5A87010B3DBCF4ED3A61244A5C5"
+    },
+    {
+      "path": "native/packed-rmq/route_shim.c",
+      "sha256": "24FFA6075DFE6D0C1AFCD89096A60306B794A7CF29C1D98A85D49B4E9B66149D"
+    },
+    {
+      "path": "native/packed-rmq/include/packed_rmq_route.h",
+      "sha256": "57B8D5524BE0B479AB65706E0D009DFA9F47DCB5CBAFD90FEFA27833539A6E13"
+    },
+    {
+      "path": "native/packed-rmq/src/lib.rs",
+      "sha256": "FA1367C0DB8BE0106B96752D649487DB5ACFE9A2DED751F3B821005BB82E1B8F"
+    },
+    {
+      "path": "native/packed-rmq/src/main.rs",
+      "sha256": "9FFFA20EDF9CC19884F4F14E38D2C3219A2EB725895414E299051B49D471F456"
+    },
+    {
+      "path": "native/packed-rmq/Cargo.toml",
+      "sha256": "D44BB4EC7BE16520436F80B3256FFE9AA42B91869A64637CE3242C2D76638AA1"
+    },
+    {
+      "path": "scripts/packed_native_build.ps1",
+      "sha256": "608234187824C193C94557E9750F5339748EF63EA8E1831F4F23F21D478D153C"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Primitive.lean",
+      "sha256": "4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Calculus.lean",
+      "sha256": "2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Structured.lean",
+      "sha256": "F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Compiler.lean",
+      "sha256": "C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Frame.lean",
+      "sha256": "480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Scratch.lean",
+      "sha256": "320DDD6C1F6549902951B99CCF99C66B231D2A0106487A710D8638372EF32E64"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Native/Finite.lean",
+      "sha256": "8EDC747F2F0BBB7D4E6F6849B63869016969C4F7535D62E99A6E4D01901223DF"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Native/Thin.lean",
+      "sha256": "26D984386EEA21CCCC49EBF6217CD824B7896CF98785F8F843C6AD9E2EB69845"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Native/Route.lean",
+      "sha256": "C00240A5A2E994DD1A996C79A52FF54780A0B5A87010B3DBCF4ED3A61244A5C5"
+    },
+    {
+      "path": "native/packed-rmq/route_shim.c",
+      "sha256": "24FFA6075DFE6D0C1AFCD89096A60306B794A7CF29C1D98A85D49B4E9B66149D"
+    },
+    {
+      "path": "native/packed-rmq/include/packed_rmq_route.h",
+      "sha256": "57B8D5524BE0B479AB65706E0D009DFA9F47DCB5CBAFD90FEFA27833539A6E13"
+    },
+    {
+      "path": "native/packed-rmq/src/lib.rs",
+      "sha256": "FA1367C0DB8BE0106B96752D649487DB5ACFE9A2DED751F3B821005BB82E1B8F"
+    },
+    {
+      "path": "native/packed-rmq/src/main.rs",
+      "sha256": "9FFFA20EDF9CC19884F4F14E38D2C3219A2EB725895414E299051B49D471F456"
+    },
+    {
+      "path": "native/packed-rmq/Cargo.toml",
+      "sha256": "D44BB4EC7BE16520436F80B3256FFE9AA42B91869A64637CE3242C2D76638AA1"
+    },
+    {
+      "path": "scripts/packed_native_build.ps1",
+      "sha256": "608234187824C193C94557E9750F5339748EF63EA8E1831F4F23F21D478D153C"
+    }
+  ],
+  "stages": [
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+        "arguments": [
+          "--version"
+        ]
+      },
+      "result": {
+        "Stage": "lean-version",
+        "ExitCode": 0,
+        "Output": [
+          "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+        ],
+        "StandardOutput": [
+          "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.819,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "c": "568EE3038CD8DE167702AF65E6EDC2D0725C4D76D384F58F0A817EE6D937D4EC",
+      "olean": "1DAE0B9C88FE0C9BCE828D77CFD8812060C62082D436D68D6C248E5CB0D266AD",
+      "signature": "RMQ/Core/WordRAM/Packed/Primitive.lean:4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4",
+      "reuse": "RMQ/Core/WordRAM/Packed/Primitive.lean"
+    },
+    {
+      "c": "08F75F522DA58DEE4EFD9322245E78C2F4086654FD917B9728729E38F66AD136",
+      "olean": "3B57B49C7F359512E02208DB2FA733813FB76CAE31A6BC90DAF06486DCFF888E",
+      "signature": "RMQ/Core/WordRAM/Packed/Primitive.lean:4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4|RMQ/Core/WordRAM/Packed/Calculus.lean:2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45",
+      "reuse": "RMQ/Core/WordRAM/Packed/Calculus.lean"
+    },
+    {
+      "c": "395BEA6499816BE439D32C6FCE232ACBCCADE8BDEEF6A6701206174F3E1CD4A3",
+      "olean": "5877ED893A7A5CB638528636E0201E202E6B0B5A4B12C0D78A22D64C1463164E",
+      "signature": "RMQ/Core/WordRAM/Packed/Primitive.lean:4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4|RMQ/Core/WordRAM/Packed/Calculus.lean:2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45|RMQ/Core/WordRAM/Packed/Structured.lean:F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887",
+      "reuse": "RMQ/Core/WordRAM/Packed/Structured.lean"
+    },
+    {
+      "c": "03D40362A34DB1192FA35D269957EE6B0A19ED67A35061A1B679B393BF0D6D8F",
+      "olean": "FBEB129400405B1653906970E617FA1E3787CECB9BD0EE1391BB67CAED9367EB",
+      "signature": "RMQ/Core/WordRAM/Packed/Primitive.lean:4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4|RMQ/Core/WordRAM/Packed/Calculus.lean:2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45|RMQ/Core/WordRAM/Packed/Structured.lean:F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887|RMQ/Core/WordRAM/Packed/Compiler.lean:C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505",
+      "reuse": "RMQ/Core/WordRAM/Packed/Compiler.lean"
+    },
+    {
+      "c": "F3BBFCA649A0208BA1C1537A5E9B4B5FE176C698BCA0223D262AF67318B76C93",
+      "olean": "2CD51C52A9FDC6404DF5CBCE0F2EA18163161C8B5A7CF872316B2B3057D3C258",
+      "signature": "RMQ/Core/WordRAM/Packed/Primitive.lean:4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4|RMQ/Core/WordRAM/Packed/Calculus.lean:2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45|RMQ/Core/WordRAM/Packed/Structured.lean:F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887|RMQ/Core/WordRAM/Packed/Compiler.lean:C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505|RMQ/Core/WordRAM/Packed/Frame.lean:480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939",
+      "reuse": "RMQ/Core/WordRAM/Packed/Frame.lean"
+    },
+    {
+      "c": "E69ABDE6567ECD36190E13F6A46222CC3F00120647862709715A6E3DB4602C4A",
+      "olean": "F91E98D5030AADA47B68CF5E801BD0F6093B3CA46C47BB078277D88C04D2B520",
+      "signature": "RMQ/Core/WordRAM/Packed/Primitive.lean:4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4|RMQ/Core/WordRAM/Packed/Calculus.lean:2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45|RMQ/Core/WordRAM/Packed/Structured.lean:F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887|RMQ/Core/WordRAM/Packed/Compiler.lean:C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505|RMQ/Core/WordRAM/Packed/Frame.lean:480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939|RMQ/Core/WordRAM/Packed/Scratch.lean:320DDD6C1F6549902951B99CCF99C66B231D2A0106487A710D8638372EF32E64",
+      "reuse": "RMQ/Core/WordRAM/Packed/Scratch.lean"
+    },
+    {
+      "c": "DD360675CE814223BF1217CA26EBB017B85C069D7B67784334F9F94D927DF329",
+      "olean": "5D5BA0BB1A6831E3466472A2205D49212FDB524013E712BCA1CA823BA30239F3",
+      "signature": "RMQ/Core/WordRAM/Packed/Primitive.lean:4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4|RMQ/Core/WordRAM/Packed/Calculus.lean:2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45|RMQ/Core/WordRAM/Packed/Structured.lean:F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887|RMQ/Core/WordRAM/Packed/Compiler.lean:C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505|RMQ/Core/WordRAM/Packed/Frame.lean:480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939|RMQ/Core/WordRAM/Packed/Scratch.lean:320DDD6C1F6549902951B99CCF99C66B231D2A0106487A710D8638372EF32E64|RMQ/Core/WordRAM/Native/Finite.lean:8EDC747F2F0BBB7D4E6F6849B63869016969C4F7535D62E99A6E4D01901223DF",
+      "reuse": "RMQ/Core/WordRAM/Native/Finite.lean"
+    },
+    {
+      "c": "96C23972C3BB49F1BD8CDD1ED7E1F1DE6FD82D68487689379C77926B731F7B43",
+      "olean": "A4BB252B227903DAF81BF633F149B0CBE2D1A7730844C05277D8943A58F059F7",
+      "signature": "RMQ/Core/WordRAM/Packed/Primitive.lean:4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4|RMQ/Core/WordRAM/Packed/Calculus.lean:2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45|RMQ/Core/WordRAM/Packed/Structured.lean:F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887|RMQ/Core/WordRAM/Packed/Compiler.lean:C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505|RMQ/Core/WordRAM/Packed/Frame.lean:480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939|RMQ/Core/WordRAM/Packed/Scratch.lean:320DDD6C1F6549902951B99CCF99C66B231D2A0106487A710D8638372EF32E64|RMQ/Core/WordRAM/Native/Finite.lean:8EDC747F2F0BBB7D4E6F6849B63869016969C4F7535D62E99A6E4D01901223DF|RMQ/Core/WordRAM/Native/Thin.lean:26D984386EEA21CCCC49EBF6217CD824B7896CF98785F8F843C6AD9E2EB69845",
+      "reuse": "RMQ/Core/WordRAM/Native/Thin.lean"
+    },
+    {
+      "c": "8C6D342B244FC51F375D4796BFBA45E2377939E0190271264DC7111137D911C0",
+      "olean": "A819F333502EE24EE4D507B25B44F3B6CBA9F1FE2B24FFBC0F7D9B129523153B",
+      "signature": "RMQ/Core/WordRAM/Packed/Primitive.lean:4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4|RMQ/Core/WordRAM/Packed/Calculus.lean:2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45|RMQ/Core/WordRAM/Packed/Structured.lean:F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887|RMQ/Core/WordRAM/Packed/Compiler.lean:C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505|RMQ/Core/WordRAM/Packed/Frame.lean:480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939|RMQ/Core/WordRAM/Packed/Scratch.lean:320DDD6C1F6549902951B99CCF99C66B231D2A0106487A710D8638372EF32E64|RMQ/Core/WordRAM/Native/Finite.lean:8EDC747F2F0BBB7D4E6F6849B63869016969C4F7535D62E99A6E4D01901223DF|RMQ/Core/WordRAM/Native/Thin.lean:26D984386EEA21CCCC49EBF6217CD824B7896CF98785F8F843C6AD9E2EB69845|RMQ/Core/WordRAM/Native/Route.lean:C00240A5A2E994DD1A996C79A52FF54780A0B5A87010B3DBCF4ED3A61244A5C5",
+      "reuse": "RMQ/Core/WordRAM/Native/Route.lean"
+    },
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe",
+        "arguments": [
+          "-shared",
+          "-O1",
+          "-DPACKED_ROUTE_BUILD",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Primitive.c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Calculus.c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Structured.c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Compiler.c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Frame.c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Scratch.c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Finite.c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Thin.c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Route.c",
+          "native/packed-rmq/route_shim.c",
+          "-o",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\packed_route.dll"
+        ]
+      },
+      "result": {
+        "Stage": "link-dll",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 19.068,
+        "DeadlineSeconds": 300,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.cargo\\bin\\cargo.exe",
+        "arguments": [
+          "generate-lockfile",
+          "--offline",
+          "--manifest-path",
+          "native/packed-rmq/Cargo.toml"
+        ]
+      },
+      "result": {
+        "Stage": "cargo-lock",
+        "ExitCode": 0,
+        "Output": [
+          "warn: could not canonicalize path: 'C:\\Users\\poin'"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "warn: could not canonicalize path: 'C:\\Users\\poin'"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.231,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.cargo\\bin\\rustc.exe",
+        "arguments": [
+          "-vV"
+        ]
+      },
+      "result": {
+        "Stage": "rust-version",
+        "ExitCode": 0,
+        "Output": [
+          "rustc 1.89.0 (29483883e 2025-08-04)",
+          "binary: rustc",
+          "commit-hash: 29483883eed69d5fb4db01964cdf2af4d86e9cb2",
+          "commit-date: 2025-08-04",
+          "host: x86_64-pc-windows-msvc",
+          "release: 1.89.0",
+          "LLVM version: 20.1.7",
+          "warn: could not canonicalize path: 'C:\\Users\\poin'"
+        ],
+        "StandardOutput": [
+          "rustc 1.89.0 (29483883e 2025-08-04)",
+          "binary: rustc",
+          "commit-hash: 29483883eed69d5fb4db01964cdf2af4d86e9cb2",
+          "commit-date: 2025-08-04",
+          "host: x86_64-pc-windows-msvc",
+          "release: 1.89.0",
+          "LLVM version: 20.1.7"
+        ],
+        "StandardError": [
+          "warn: could not canonicalize path: 'C:\\Users\\poin'"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 6.079,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.cargo\\bin\\cargo.exe",
+        "arguments": [
+          "build",
+          "--locked",
+          "--offline",
+          "--release",
+          "--manifest-path",
+          "native/packed-rmq/Cargo.toml",
+          "--target-dir",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\rust-target"
+        ]
+      },
+      "result": {
+        "Stage": "cargo-build",
+        "ExitCode": 0,
+        "Output": [
+          "warn: could not canonicalize path: 'C:\\Users\\poin'",
+          "   Compiling packed-rmq v0.0.0 (C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\native\\packed-rmq)",
+          "    Finished `release` profile [optimized] target(s) in 5.35s"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "warn: could not canonicalize path: 'C:\\Users\\poin'",
+          "   Compiling packed-rmq v0.0.0 (C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\native\\packed-rmq)",
+          "    Finished `release` profile [optimized] target(s) in 5.35s"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 9.485,
+        "DeadlineSeconds": 300,
+        "Ownership": "kill-on-close-job"
+      }
+    }
+  ]
+}

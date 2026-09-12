@@ -1,0 +1,8 @@
+* text=auto eol=lf
+fixtures/*.fixture -text
+fixtures/*.expected -text
+fixtures/*.gz -text
+# These exact exported empty observations intentionally end with a blank line.
+fixtures/n9-empty.expected whitespace=-blank-at-eof
+fixtures/n9-range.expected whitespace=-blank-at-eof
+fixtures/n9-missing.fixture whitespace=-blank-at-eof

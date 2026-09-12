@@ -12367,3 +12367,49 @@ Final integration hygiene also removes one inherited trailing space from the pro
 Rejected alternatives: rewriting the audited report's commit and descendants would invalidate frozen source identities; adding another retrospective certification would turn a classifier defect into a historical bypass; exempting the whole packed-query folder or arbitrary audit-named documents would hide future workflow or public decisions. A narrowly dated internal Markdown convention follows the existing evidence distinction without changing the eight exact retrospective exceptions.
 
 Consequences and evidence: this changes report-path classification only. It neither weakens Lean mutation rejection nor changes source semantics, accepted theorem requirements or the toolchain. New scripts and ordinary internal plans still require a workflow decision, including this change itself. The first failed history run is retained as `.lake/pq1-merge/history-design-before-fix.json`; focused regression, corrected history and final-tree checks are recorded in `.lake/pq1-merge/verification.json`. The previous full Lean gates remain evidence for unchanged mathematical/replay source; this policy correction requires its own focused regression rather than a repeat of those campaigns.
+
+## WDD-20260912-NATIVE1-001: freeze the native contract and produce route evidence before dependency choice
+
+Context: the governed NATIVE-1 task starts clean at 0e6a00f654abc64f8b68988fa9675b9a839dca2f on its isolated authorized branch. The acceptance matrix is frozen before proof edits, including all 21 inherited invariants and three replay boundary requirements. The task permits an incomplete route-review phase, but helpers and measured examples do not close its full native capstone.
+
+Decision: keep exact source, contract review, phase reports and bounded command receipts under docs/internal/extensions/native1. Use one task-local Lean build process/job at a time; do not link mutable shared caches. Invoke the installed pinned Lean binary directly when the elan shim attempts a network download despite the installed compiler. The route harness calls the existing owned-process helper, preserves exit/stderr/deadline outcomes, freezes nonempty exact selectors and restores source mutations byte-for-byte. Record unsupported host branches as uncovered. Final aggregate work requires a coordinator-scheduled host slot.
+
+Rationale and rejected alternatives: evidence must precede a source-dependent toolchain decision. A proposal without a full different-block execution cannot establish feasibility; a differential test cannot establish source correspondence. Reusing the exact current compiler is within the authorized route, while an external proof dependency still needs an evidence-based disposition. Repeating a quiet expensive build, sharing another lane's mutable cache or declaring completion at the first green helper are excluded.
+
+Consequences: independent finite-container and encoding lemmas can proceed during route review. The worker reports INCOMPLETE for any phase with open assigned rows and never records coordinator acceptance. The matrix, exact-type consumers, source mutation checks and command receipts are the durable review inputs. This lane introduces no PRE builder and claims no fulfillment of PRE's separate contract gate.
+
+### NATIVE-1 route-review refinements to WDD-20260912-NATIVE1-001
+
+The independent continuation review required exact source/artifact/fixture
+registries, before/after build-source pins, diagnostic-location matching for the
+core mutation, and preserving timeout process results before throwing. The
+harness implements those checks. Local generated-artifact reuse additionally
+checks an ordered source-prefix signature and the C/olean hashes; a later module
+cannot reuse output after an earlier source changes. This repairs the build
+loop without shared cache links or repeated unchanged prerequisite compilation.
+
+A bounded native startup and even the binary's argument-error path stalled in
+the sandbox with almost no CPU and no output. Owned process trees were cleaned
+at their recorded deadlines. The identical argument-error probe outside the
+sandbox returned its expected exit and stderr in 4.603 seconds, and the host
+smoke passed. Subsequent native replay therefore uses the authorized host
+execution boundary with the same owned timeouts. The sandbox timeouts remain
+INCOMPLETE evidence, not passes or semantic counterexamples. No toolchain or
+proof dependency changes to work around that execution restriction.
+
+The phase evidence wrapper retains full stdout/stderr in its durable receipt
+while limiting console display to twenty final lines. Its large claim-scan
+receipt is stored losslessly as gzip with both raw and archive hashes. This
+changes output presentation only. C++ consumption is additionally checked
+through a generated MSVC import library and the same DLL, using the committed
+export definition and example; it adds no second RMQ algorithm. Exact fixture
+comparisons and full native registry results are preserved in the phase ledger.
+
+Phase staging exposed deliberate blank final lines in three copied empty
+fixtures and ordinary redundant final lines in generated text files. The latter
+were removed. Scoped .gitattributes preserve LF and exact fixture bytes on new
+Windows checkouts; only those three named exported files exempt intentional
+blank-at-EOF whitespace, while their full content remains diff-visible and hash
+checked. No global Git configuration or whitespace policy was changed. Native
+source byte pins are rebuilt after the formatting-only source change, and the
+final phase registry is rerun against that newly pinned executable.

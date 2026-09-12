@@ -1,0 +1,90 @@
+{
+  "schema": "native1-route-registry-v1",
+  "cases": [
+    {
+      "id": "smoke",
+      "kind": "smoke",
+      "expected": "8 2\n0 1 0 0 0 1"
+    },
+    {
+      "id": "n9-full",
+      "kind": "fixture",
+      "fixture": "n9-full",
+      "mode": "reads"
+    },
+    {
+      "id": "n9-empty",
+      "kind": "fixture",
+      "fixture": "n9-empty",
+      "mode": "reads"
+    },
+    {
+      "id": "n9-range",
+      "kind": "fixture",
+      "fixture": "n9-range",
+      "mode": "reads"
+    },
+    {
+      "id": "n9-corrupt",
+      "kind": "fixture",
+      "fixture": "n9-corrupt",
+      "mode": "reads"
+    },
+    {
+      "id": "n9-missing",
+      "kind": "fixture",
+      "fixture": "n9-missing",
+      "mode": "reads"
+    },
+    {
+      "id": "n12-interior",
+      "kind": "fixture",
+      "fixture": "n12-interior",
+      "mode": "reads"
+    },
+    {
+      "id": "n12-same",
+      "kind": "fixture",
+      "fixture": "n12-same",
+      "mode": "reads"
+    },
+    {
+      "id": "n12-adjacent",
+      "kind": "fixture",
+      "fixture": "n12-adjacent",
+      "mode": "reads"
+    },
+    {
+      "id": "n9-no-reads",
+      "kind": "fixture",
+      "fixture": "n9-full",
+      "mode": "quiet"
+    },
+    {
+      "id": "malformed-instruction",
+      "kind": "malformed",
+      "program": "99\n",
+      "fixture": "9 0 9 168 100\n",
+      "expected": "ERROR instruction shape",
+      "exit": 2
+    },
+    {
+      "id": "malformed-fixture",
+      "kind": "malformed",
+      "program": "8 3\n",
+      "fixture": "wrong\n",
+      "expected": "ERROR invalid natural",
+      "exit": 2
+    },
+    {
+      "id": "source-core-mutation",
+      "kind": "source-mutation",
+      "expected": "Lean type rejection at routeCore_source; exact source restoration"
+    },
+    {
+      "id": "stale-source-rejection",
+      "kind": "source-pin",
+      "expected": "build identity check rejects a source edit; exact source restoration"
+    }
+  ]
+}

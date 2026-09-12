@@ -1,0 +1,104 @@
+{
+  "schema": "native1-fixtures-v1",
+  "sourceCommit": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "exporter": "ExportPQ1.lean in supplied pq1-frontier-20260911 evidence packet",
+  "exporterSha256": "828F0D1025809F25E6F4359767CF24AE66693228D3FDEACDC320267CAD7D27C4",
+  "programSha256": "2D978D9D81CC3326F623F3A21AFCDA9FE3329E6F1DB60B2000425C4EF0A0D875",
+  "cases": [
+    "n9-full",
+    "n9-empty",
+    "n9-range",
+    "n9-corrupt",
+    "n9-missing",
+    "n12-interior",
+    "n12-same",
+    "n12-adjacent"
+  ],
+  "files": [
+    {
+      "bytes": 3884,
+      "name": "n12-adjacent.expected",
+      "sha256": "E2834D14FF9BA5977CD31869623B91D2E573D8B6117889D2E0F768F21BBCE34D"
+    },
+    {
+      "bytes": 774,
+      "name": "n12-adjacent.fixture",
+      "sha256": "159719FFDE2DEC626239D410671AE0CD4F91833AC5E8214DC7CB9C7633B0A50E"
+    },
+    {
+      "bytes": 4737,
+      "name": "n12-interior.expected",
+      "sha256": "380E25EC977E4234A02184451F9F96E462431BE4262F8EF3F3358F7061E65A95"
+    },
+    {
+      "bytes": 775,
+      "name": "n12-interior.fixture",
+      "sha256": "26C204304B119A98EFDB099AE830440127FCFF8E5AD36422A7ABA6B7583A4234"
+    },
+    {
+      "bytes": 3324,
+      "name": "n12-same.expected",
+      "sha256": "A3FFCF6BF9FB995BD765A902EEE65FB1DE70EF52BA5CF9BBB3A032F3C1E1C2D8"
+    },
+    {
+      "bytes": 775,
+      "name": "n12-same.fixture",
+      "sha256": "254604DEEE28105717BC31744D14B9442D1AF3A34828BEDA2756AF0D8BFE9930"
+    },
+    {
+      "bytes": 1059,
+      "name": "n9-corrupt.expected",
+      "sha256": "237CCC8507B3AB49891946D6129E46EEC1D4C98B74D5C19033D10F2ECD17370F"
+    },
+    {
+      "bytes": 720,
+      "name": "n9-corrupt.fixture",
+      "sha256": "C4BCA82BBE201FBD8319B1DD24A0582633600D8C8F6E1B4DB57D8AC425F1CF76"
+    },
+    {
+      "bytes": 17,
+      "name": "n9-empty.expected",
+      "sha256": "3F59B43485A5E120ACBA4A6C65BD9BF938601835359C6E8DF83F311E17273FA1"
+    },
+    {
+      "bytes": 720,
+      "name": "n9-empty.fixture",
+      "sha256": "63E4B303AC9D518F2672B187BE9F3AF9E51C65E1EC4E03F8A9E342A78A685785"
+    },
+    {
+      "bytes": 4516,
+      "name": "n9-full.expected",
+      "sha256": "FC25F556CD4C4E5804AB580A3FB8B184D98F72CEE207F4C4829EDD412F418A56"
+    },
+    {
+      "bytes": 720,
+      "name": "n9-full.fixture",
+      "sha256": "70216D5E6F5CA5769EBB8D7269DA9B74ED867D7B4B7F9B2C4AD7603AA513DDC1"
+    },
+    {
+      "bytes": 26,
+      "name": "n9-missing.expected",
+      "sha256": "D658EFEEED82848B94A085B2F3CDE29FE5E649449694A422FD6CEB9CF26366EC"
+    },
+    {
+      "bytes": 18,
+      "name": "n9-missing.fixture",
+      "sha256": "08637CDED478315C117052EEF8A3D2FD8A37E972A202A68AE033B168ECA3E6C4"
+    },
+    {
+      "bytes": 17,
+      "name": "n9-range.expected",
+      "sha256": "DB477A96C823BCF48B468FD1BCC4CA95804504EADC69991F4E39DF56D05A8E54"
+    },
+    {
+      "bytes": 721,
+      "name": "n9-range.fixture",
+      "sha256": "5FB5C9F9B1785A5F873248F7BA1AB7E11048757C0BF3B88BBD97ABB47329409C"
+    },
+    {
+      "bytes": 1008972,
+      "name": "program.txt.gz",
+      "sha256": "13EE9E81E17DD25D5F25546B72762A038886AE7545031FAF51DC2757E666C011"
+    }
+  ]
+}
