@@ -68,3 +68,10 @@ integration is a fast-forward of local `main` to the branch containing this
 receipt, with no conflict-resolution source changes. The active coordinator
 branch and worktree are retained. Remote publication is outside this local
 integration disposition.
+
+Final integration hygiene addendum: checking the entire local-main-to-tip
+range exposed one inherited trailing space in the production design checker.
+The follow-up removes it and verifies exact PowerShell token equality against
+the tested checker, with no parse errors. The entire integration range then
+passes whitespace checking. Strict claim and per-commit decision checks cover
+this cleanup commit; the both-host semantic regression above remains applicable.

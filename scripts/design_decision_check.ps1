@@ -311,7 +311,7 @@ if ($Head) {
 # would judge the merge by the union of both branches, which is the same
 # aggregate question under a different name.
 if ($Head) {
-  $parents = @((& git rev-list --parents -n 1 $resolvedHead 2>$null) -split '\s+' | Where-Object { $_ }) 
+  $parents = @((& git rev-list --parents -n 1 $resolvedHead 2>$null) -split '\s+' | Where-Object { $_ })
   if ($LASTEXITCODE -ne 0) { Stop-DesignCheck "could not read the parents of '$Head'" }
   if ($parents.Count -gt 2) {
     Stop-DesignCheck ("'$Head' is a merge commit ({0} parents); per-commit certification cannot judge it, because its first-parent diff carries the merged branch's design-log entries. Certify the merged commits individually instead." -f ($parents.Count - 1))
