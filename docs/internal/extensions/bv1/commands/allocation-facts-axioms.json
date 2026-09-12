@@ -1,0 +1,79 @@
+{
+  "stage": "allocation-facts-axioms",
+  "platform": "Windows",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "dirty": [
+    " M lakefile.toml",
+    "?? RMQ/Core/WordRAM/Bitvector/",
+    "?? RMQ/Validation/PackedBitvector.lean",
+    "?? docs/internal/extensions/",
+    "?? scripts/packed_bitvector_probe.ps1",
+    "?? scripts/packed_bitvector_selector_controls.ps1"
+  ],
+  "sourceHashes": [
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\AllocationFacts.lean",
+      "Hash": "F189969208B13333219EE460DB8581D43BABB88F18480C68A37F47C070801623"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Normalization.lean",
+      "Hash": "BA10A82917C9914E0BB11F619A15A51CFC65E2C0842C066F372339C77FF5F9D4"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ReaderInterface.lean",
+      "Hash": "ECD8043060AAE4A3F753B81ADCFE47F9E22B2914744DB6686ABBFB18A218A210"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SelectExperiment.lean",
+      "Hash": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean",
+      "Hash": "A36ACF5EDF0750D2F5F01BCCE931B2104310E68AEFEB4F7A6BBE6CEBEA30ACA3"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\lakefile.toml",
+      "Hash": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A"
+    }
+  ],
+  "startedUtc": "2026-09-12T07:41:42.0520994Z",
+  "executable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+  "arguments": [
+    "env",
+    "lean",
+    "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-allocation-facts-exact-types.lean"
+  ],
+  "deadlineSeconds": 180,
+  "leanNumThreads": 1,
+  "result": {
+    "Stage": "allocation-facts-axioms",
+    "ExitCode": 0,
+    "Output": [
+      "'RMQ.PackedBitvector.segmentBits_payload' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.directorySegments_bits_eq' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.directorySegments_length_add_omitted' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.directorySegments_length_le_payload' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.directorySegments_length_le_canonical' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.directorySegments_both_length_le' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.directorySegments_positive_extra_breaks_exact_count' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.directoryAllocationFacts' depends on axioms: [propext, Quot.sound]"
+    ],
+    "StandardOutput": [
+      "'RMQ.PackedBitvector.segmentBits_payload' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.directorySegments_bits_eq' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.directorySegments_length_add_omitted' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.directorySegments_length_le_payload' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.directorySegments_length_le_canonical' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.directorySegments_both_length_le' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.directorySegments_positive_extra_breaks_exact_count' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.directoryAllocationFacts' depends on axioms: [propext, Quot.sound]"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 9.943,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  }
+}

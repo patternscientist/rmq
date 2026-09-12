@@ -1,0 +1,37 @@
+{
+  "stage": "normalization-final",
+  "platform": "Windows",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "dirty": [
+    " M lakefile.toml",
+    "?? RMQ/Core/WordRAM/Bitvector/",
+    "?? RMQ/Validation/PackedBitvector.lean",
+    "?? docs/internal/extensions/"
+  ],
+  "executable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+  "arguments": [
+    "build",
+    "RMQ.Core.WordRAM.Bitvector.Normalization"
+  ],
+  "deadlineSeconds": 120,
+  "leanNumThreads": 1,
+  "result": {
+    "Stage": "normalization-final",
+    "ExitCode": 0,
+    "Output": [
+      "✔ [20/20] Built RMQ.Core.WordRAM.Bitvector.Normalization",
+      "Build completed successfully."
+    ],
+    "StandardOutput": [
+      "✔ [20/20] Built RMQ.Core.WordRAM.Bitvector.Normalization",
+      "Build completed successfully."
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 18.939,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  }
+}

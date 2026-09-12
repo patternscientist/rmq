@@ -1,0 +1,40 @@
+{
+  "stage": "select-reader-compile-r2",
+  "platform": "Windows",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "dirty": [
+    " M lakefile.toml",
+    "?? RMQ/Core/WordRAM/Bitvector/",
+    "?? RMQ/Validation/PackedBitvector.lean",
+    "?? docs/internal/extensions/"
+  ],
+  "executable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+  "arguments": [
+    "build",
+    "RMQ.Validation.PackedBitvector",
+    "RMQ.Core.WordRAM.Bitvector.ReaderInterface"
+  ],
+  "deadlineSeconds": 180,
+  "leanNumThreads": 1,
+  "result": {
+    "Stage": "select-reader-compile-r2",
+    "ExitCode": 0,
+    "Output": [
+      "✔ [127/128] Built RMQ.Core.WordRAM.Bitvector.ReaderInterface",
+      "✔ [128/128] Built RMQ.Validation.PackedBitvector",
+      "Build completed successfully."
+    ],
+    "StandardOutput": [
+      "✔ [127/128] Built RMQ.Core.WordRAM.Bitvector.ReaderInterface",
+      "✔ [128/128] Built RMQ.Validation.PackedBitvector",
+      "Build completed successfully."
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 16.072,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  }
+}
