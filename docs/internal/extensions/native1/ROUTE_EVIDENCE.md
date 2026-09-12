@@ -196,3 +196,9 @@ required contract review and repair responses are in CONTRACT_AUDIT.md.
 This phase cannot be called CANDIDATE_COMPLETE: all seven assigned full native
 rows and all inherited execution joins remain open. Final blind exact-commit
 audit and coordinator acceptance belong after those rows close.
+
+Submission policy result: strict design checking fails on 28 new native paths
+with no classifier rule. The shared checker is outside worker scope; REPORT.md
+requests coordinator disposition and does not claim a pass. The eight boundary
+controls execute the real script in-process, so the stronger frozen OS
+process-boundary selector check remains open with the final campaign.

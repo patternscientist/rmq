@@ -12413,3 +12413,18 @@ blank-at-EOF whitespace, while their full content remains diff-visible and hash
 checked. No global Git configuration or whitespace policy was changed. Native
 source byte pins are rebuilt after the formatting-only source change, and the
 final phase registry is rerun against that newly pinned executable.
+
+### NATIVE-1 route submission and policy boundary
+
+The exact implementation/evidence commit is
+3329a6e90cf70bc10b3cb68b008f8a23264ce567. Its strict design check fails closed
+because the new authorized native paths have no shared classifier rule. The
+route worker retains that failure and requests coordinator-owned classification
+with regression evidence; changing the shared checker, moving source to evade
+classification, or inferring a waiver from this ledger are rejected. The
+documentation-only report commit changes no source/build pins and claims no
+acceptance. Its final base-range whitespace check is independent of the known
+unresolved design result. The continuation review also distinguishes actual
+in-process script binding controls from the still-required OS process-boundary
+selector campaign, so 8/8 phase controls cannot silently close the stronger
+frozen requirement.

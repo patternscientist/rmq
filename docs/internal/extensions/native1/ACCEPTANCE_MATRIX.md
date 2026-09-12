@@ -100,3 +100,11 @@ and SHA-256. No host aggregate slot is requested for this evidence phase. Full
 lake build, explicit final capstone/validator, final registry, fresh blind
 exact-commit audit and coordinator-scheduled aggregate certification remain
 pending for the full candidate. No PRE builder is implemented by this lane.
+
+Submission evidence correction (requirements unchanged): strict design checking
+at implementation 3329a6e fails closed on 28 unclassified native paths; the
+coordinator must arrange the shared classification change. Current eight-case
+selector controls call the real script in-process and do not cover OS argument
+serialization. The frozen process-boundary requirement remains open. The
+implementation committed-range whitespace and frozen-prefix/source/artifact
+integrity checks pass. REPORT.md records the exact results and source identity.

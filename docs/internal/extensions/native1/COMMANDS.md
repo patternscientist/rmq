@@ -54,3 +54,22 @@ separates Lean runtime lifetime from modeled operation costs. The focused rerun
 passed with one allowed hit and zero strict failures in 7.815s/120s
 (`claim-drift-native-readme-fixed.json`). Both receipts are retained; this prose
 repair changes none of the build-manifest source bytes.
+
+The implementation-range whitespace check passed after commit 3329a6e
+(`committed-diff-phase.json`). Strict design checking with the exact base failed
+closed in 10.99s/120s: 28 new native paths have no classification rule
+(`design-phase.json`). The shared classifier is outside this worker's write
+scope; no design-policy pass or waiver is claimed. Coordinator disposition is
+required. `phase-integrity.json` verifies the frozen prefix and all source and
+artifact hashes against the implementation commit's current files.
+
+The continuation packet review clarified that the eight selector/manifest
+controls call the actual route script in-process. They cover PowerShell script
+parameter binding, not OS command-line serialization. The stronger final
+process-boundary check in the frozen replay requirement remains open.
+
+The finished REPORT.md was scanned explicitly with `-Strict
+-IncludeProcessRecords -Path docs/internal/extensions/native1/REPORT.md`:
+PASS, one allowed hit and zero strict failures, 5.358s/120s
+(`claim-drift-report.json`). All 31 frozen acceptance IDs appear in the report;
+the initial matrix prefix was rechecked unchanged after its final appendix.
