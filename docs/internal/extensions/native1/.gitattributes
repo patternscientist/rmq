@@ -17,3 +17,16 @@ NATIVE_WITNESSES.md text eol=lf
 VALIDATOR.md text eol=lf
 AUDIT_PACKET_INDEX.json -text whitespace=cr-at-eol
 AUDIT_PUBLIC_CLAIM_PATHS.json -text whitespace=cr-at-eol
+# NATIVE-1-R1: exact gzip archives of receipts that embedded claim-scanner result lines.
+commands/claim-drift-native-readme.json.gz binary
+commands/claim-drift-packet.json.gz binary
+commands/claim-native-source-checkpoint.json.gz binary
+commands/final-claims-process-command.json.gz binary
+commands/final-claims-process.json.gz binary
+commands/final-claims-public-command.json.gz binary
+commands/final-claims-public.json.gz binary
+commands/final-metadata-checks.json.gz binary
+commands/final-static-command.json.gz binary
+commands/final-text-claims-command.json.gz binary
+commands/final-text-claims-process.json.gz binary
+commands/metadata-checks-before-public-blob.json.gz binary

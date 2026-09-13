@@ -12904,3 +12904,37 @@ packaged pwsh.
 This commit freezes the NATIVE-1-R1 acceptance matrix only. The archives,
 manifest, verifier and controls land in the next commit, and its evidence is
 appended below.
+
+Implementation record (NATIVE-1-R1 repair commit). The twelve selected receipts
+hold 8,785,885 blob bytes and 4,571 claim-scanner result lines at the base; their
+archives hold 1,206,228 bytes, written by Python
+`gzip.compress(data, compresslevel=9, mtime=0)`. The selection is computed from
+every blob under the commands root at the base. As a guard, every blob that
+contains the scanner prefix at all must also contain a result line, so a
+variant line format cannot be skipped silently. The verifier recomputes the Git
+object id of each base blob from its bytes. That proves it compared raw blob
+bytes, not a checkout-normalized copy. Each negative control needs its exact
+set of failure codes, not merely a nonzero exit. Two controls pin surfaces that
+a digest check alone would hide. In one, a changed gzip header byte leaves the
+recovered bytes intact, so only the archive digest can reject it. In the other,
+a recompressed archive with an updated digest can only be rejected by comparing
+the recovered bytes. The runner registry `NATIVE1-R1-RECEIPT-ARCHIVE-CONTROLS-V1`
+has 19 cases: three positives (working tree, committed HEAD, unmutated
+disposable copy), nine archive/manifest negatives, a deadline control that
+holds a root and a child, and six selector controls run through a real child
+PowerShell process. A rehearsal in a disposable clone found two runner defects
+before this commit. First, `-like` treats `[`...`]` as a wildcard class, so
+bracketed case ids never matched. Second, Windows PowerShell 5.1
+`ConvertTo-Json` rejects an array wrapped around a generic list. Both made
+cases fail closed, never pass. They were fixed, and the full registry then
+passed there. That rehearsal is development evidence only. The certifying runs
+use the committed tree, and the report records them.
+
+Scan-cost observation for the coordinator. The policy-v28 multiline term
+`required-pq1-fully-charged-attribution` restarts a lazy paragraph expansion at
+every line of a paragraph. In a receipt without blank lines, one rg pass costs
+roughly lines times bytes. It needed 136.5 s for the 970,501-byte
+`commands/build-20260912T091755276.json` alone. None of the files it is slow on
+contains claim-scanner result lines, so this repair neither causes that cost
+nor removes it. The scan deadlines in this lane are set from that measurement
+rather than from the 171-412 s figure measured on other trees.
