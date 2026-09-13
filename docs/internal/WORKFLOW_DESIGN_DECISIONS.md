@@ -12938,3 +12938,18 @@ roughly lines times bytes. It needed 136.5 s for the 970,501-byte
 contains claim-scanner result lines, so this repair neither causes that cost
 nor removes it. The scan deadlines in this lane are set from that measurement
 rather than from the 171-412 s figure measured on other trees.
+
+Verification record (d0b4cef). On the clean repaired commit the unchanged
+strict default-root scan exited 0 with its scan-complete summary
+and 0 strict failures in 1265.16 s, and the self-test exited
+0 in 2312.494 s. Both ran under pwsh 7.6.6 in one
+`Global\RMQHeavyVerification` session, which first reproduced the base failure
+(1703.225 s and 2291.572 s). Ripgrep enumerated
+all thirteen `.gz` files under the commands root. Its binary detection skipped
+all of them, and `--binary` matched all of them. No policy term matched inside
+an archive. The archive bytes contain neither the scanner prefix nor the failing
+term's text. The 19-case control runner passed under Windows PowerShell 5.1,
+and preservation checks `PRES-01` to `PRES-08` passed. The report commit adds
+only the worker report, this matrix evidence appendix, the controls receipt and
+this note. The coordinator aggregate gate and continuation check on the branch
+tip remain pending. No acceptance is recorded.

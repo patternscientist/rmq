@@ -133,3 +133,18 @@ Not run by this task (coordinator-owned): `scripts/gate.ps1`, the full default `
 ## Non-goals and deferred items (prompt)
 
 Non-goals: changing any Lean, native (native/packed-rmq), scripts/, lakefile.toml, lean-toolchain, registry, runner, manifest pin, the frozen acceptance matrix prefix, AUDIT_PACKET_INDEX.json, AUDIT_PUBLIC_CLAIM_PATHS.json, REPORT.md of the original lane, the scanner, the claim policy or any allowlist; addressing the audit's P2/P3 follow-ups; re-running native campaigns. Deferred to the coordinator: P2-1 gate-roster stages, P2-2 path parameterization, P3 documentation fixes, the aggregate gate and the continuation check. None of these is needed for the repair rows to be true.
+
+## Evidence update: certification of repaired commit `d0b4cef57e87540f4e333d15a5564bda8834227d`
+
+The frozen matrix above is byte-preserved as the prefix of this file. This appendix adds evidence and status only. The full commands, durations, deadlines and exits are in `REPORT.md` and `CONTROLS_RECEIPT_d0b4cef.json`.
+
+| ID | Evidence obtained | Status / residual gap |
+| --- | --- | --- |
+| `REQ-NATIVE-R1-CLAIM-SCAN` | Base: strict exit 1 (1703.225 s), 17 fails = 14 + 3; self-test exit 1 (2291.572 s). Repaired `d0b4cef`: strict exit 0 (1265.16 s), `CLAIM-DRIFT: scan complete (1907 hits, 0 strict failures)`; self-test exit 0 (2312.494 s), final line `CLAIM-DRIFT SELFTEST: RESULT: PASS`. Scanner and policy SHA-256 unchanged. Challenges 1-5: E1 (binary detection skips all 13 `.gz`; `--binary` matches all 13), E2 (no policy term matches inside a `.gz`), E3 (no scanner prefix or failing-term text in archive bytes), E4 (required attribution selects no archive), `PRES-01` (no excluded-path placement), positive self-test exclusion delta. | Worker evidence complete; coordinator aggregate gate pending. |
+| `REQ-NATIVE-R1-HISTORY` | `verify_receipt_archives.py` exit 0 on the worktree and `--committed d0b4cef`: 12 of 12 required archives, selection recomputed from 226 base blobs, prefix guard consistent, blob ids recomputed from bytes, referring files recomputed. Every registered negative produced its exact code set. | Worker evidence complete. |
+| `REQ-NATIVE-R1-PRESERVATION` | `PRES-01`..`PRES-08` PASS on `d0b4cef` (see REPORT.md). | Worker evidence complete; continuation check pending. |
+| `CHK-NATIVE-R1-VERIFICATION` | Runner 19/19 PASS (446.0 s, exit 0, restoration digests equal); strict scan, self-test, `git diff --check`, `git diff --check 4edb1e14f607a809c018d569c3d4be99c0c54959..d0b4cef`, strict design check with `-Base` (aggregate and per commit), and both trust hygiene scans recorded with command, duration, deadline and exit. | Worker evidence complete for `d0b4cef`; tip repeats are in the submission message. |
+| `REPLAY-EXACT-REGISTRY` (runner) | Pinned 19-case registry; `executed 19 of 19`; child `executed 1 of 1`. | Worker evidence complete. |
+| `REPLAY-SELECTOR-NONVACUITY` (runner) | Omitted = 19 cases; valid = exactly `positive-copy`; empty, whitespace, malformed, duplicate, unknown = exit 2 before execution, through a real child process. | Worker evidence complete. |
+| `REPLAY-SUBPROCESS-DEADLINE` (runner) | All subprocesses owned and bounded; disposable copies removed; state digests equal; deadline control removed the held root and child; packaged hosts refused as INCONCLUSIVE. | Worker evidence complete on Windows PowerShell 5.1; POSIX not exercised. |
+| Inherited 31 + 4 | `PRES-01`..`PRES-06` and `PRES-08` PASS. | Preserved by byte identity; coordinator continuation check pending. |

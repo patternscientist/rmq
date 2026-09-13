@@ -1,0 +1,1136 @@
+{
+    "registryVersion":  "NATIVE1-R1-RECEIPT-ARCHIVE-CONTROLS-V1",
+    "registryCases":  19,
+    "selected":  [
+                     "positive-worktree",
+                     "positive-committed",
+                     "positive-copy",
+                     "changed-archive-header-byte",
+                     "changed-archive-trailer-byte",
+                     "missing-archive",
+                     "extra-archive",
+                     "duplicate-manifest-entry",
+                     "wrong-base-blob-id",
+                     "decompressed-byte-mismatch",
+                     "original-restored",
+                     "manifest-entry-removed",
+                     "deadline-descendant-cleanup",
+                     "selector-empty",
+                     "selector-whitespace",
+                     "selector-malformed",
+                     "selector-unknown",
+                     "selector-duplicate",
+                     "selector-valid"
+                 ],
+    "executed":  19,
+    "passed":  19,
+    "failed":  0,
+    "host":  {
+                 "edition":  "Desktop",
+                 "version":  "5.1.26100.9444",
+                 "path":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+             },
+    "python":  "C:\\Python314\\python.exe",
+    "repository":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+    "head":  "d0b4cef57e87540f4e333d15a5564bda8834227d",
+    "finishedUtc":  "2026-09-13T13:30:25.4843926Z",
+    "cases":  [
+                  {
+                      "id":  "positive-worktree",
+                      "kind":  "verify-worktree",
+                      "expectedExit":  0,
+                      "expectedCodes":  [
+
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\verify_receipt_archives.py --tree C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  0,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  30.737,
+                                            "DeadlineSeconds":  900,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVES: source tree C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                                           "RECEIPT-ARCHIVES: base 4edb1e14f607a809c018d569c3d4be99c0c54959: 226 blobs under docs/internal/extensions/native1/commands/, 12 contain claim-scanner result lines",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-native-readme.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-native-readme.json blob ae85ea8f985f001629cc1b06bdf56bfb25209358 sha256 ECDE3DCF2D2DB9D25C9F2B7A3445EBB22B31843F0484FCC43001F3A9FB0B8639 bytes 1378 archive sha256 13C39FCF08BDD46E3FDB735A57244E9D087220BA59433746BB20A0DD849FFBCD bytes 621 result-lines 2 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-packet.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-packet.json blob 393537de9cef52e4e2e2cf0ad3322b9c5b575549 sha256 9012550729DC59F6A4FF2202A4CDEC5A9160C79DD5BC31F468D85C206FBDF424 bytes 15518 archive sha256 1C7D2F500130E861CA6288C32739533B449956C19A130EE85B8CA78D346A8085 bytes 1558 result-lines 58 referring-files 7",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json.gz -\u003e docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json blob 75730d644fae2e001ab0a98bc23b16a5b037ab2b sha256 1645FBAF9478D69586EA1AB9B7328DE7416A565F236BD7D7AFCFB7AAD4C61830 bytes 50485 archive sha256 3677A12060580E070DE15972EDC4C7E562DFD82D2BA56FBAAFA1CA86AB518386 bytes 5812 result-lines 184 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process-command.json blob 0de72bf0243aee216beab3ff703a01b90cf3661e sha256 16E5FC0AA866338B5269E24A9769DFE1418D52E25DB8C6083404C5ECC894B280 bytes 4790 archive sha256 471EC10A7974D0BBB805D20FD4D62374611F73210C192E6EE16B2EB1BCB3DDE1 bytes 1353 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process.json blob f0d0d24aa6246e727d1273c20c9d96fb41c8ec0f sha256 60E2469637958ECD701375EB85E06B4C88DFC4649CE669642CC59F9572222575 bytes 129943 archive sha256 0C50B6A46D0277023FE9635A7D8A8F6C32F3251B54091A66F896911AE16DFA6F bytes 22256 result-lines 282 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public-command.json blob f734369147652e9b835a97a34f1e83a91063576f sha256 AC7B1CDBE521F3C22E03AE9B96BDFE6A22AD09765DEBA7B95F850ED7C777A373 bytes 2993 archive sha256 771F4654B086D65F2A401FDEF3BA7D0E19933ED9F0D5A979EF92787738B49779 bytes 789 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public.json blob 25da3996e47a45187ae6b8ead41a0304f27344e7 sha256 B42003CE4F66E2682172861842B2789B631FC6DF0A9011F201753A40E211EC22 bytes 139441 archive sha256 5D4DB70088AA5FB163C2B7C918CB754F482B03678DCD13ABEDA068D7F96410C2 bytes 24569 result-lines 277 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-metadata-checks.json.gz -\u003e docs/internal/extensions/native1/commands/final-metadata-checks.json blob 655a0e41a7dab1f8109dde91ae007bcac9441a94 sha256 C825CB3393E349629B507B65F7ECB964C0B5EAFBFB7C72F933A3EDC42479CD74 bytes 26282 archive sha256 AF13F3AD9EBD8FDFACE7D7F02DEE89CAD1700D84FA101E15AB120D06850F3C43 bytes 5384 result-lines 84 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-static-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-static-command.json blob 98331e54b9259b42feb8482bb0189acb67680c19 sha256 CF300AC0127A4FEC0D9DDED1EBCB906C5BA16CEC84FEFC323E5D36CE47217EF3 bytes 8253880 archive sha256 FB288DCBED23770DC9C45E35BF7A00D8434A064F21ACE1BC8946F93263CE79C1 bytes 1114860 result-lines 3294 referring-files 8",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-command.json blob c1eda55352806ea5979637177ec5677ba47917a7 sha256 279E52386697567774D704CF75FE2524183C2C14F4C3C98DFD54AF758A910F40 bytes 4793 archive sha256 F9B8E8610C08D3A300CB09BA8112402E060309581C0BA916D08BE8EE6463AA97 bytes 1358 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-process.json blob 00b401d7d17d4f60b0d6f1be7ea7c76d7f39dec7 sha256 6BB49BA80D5395EB5ECDAE40C33680EBAABF48DF7A6ED7347B96DEE9CA2B7175 bytes 129948 archive sha256 9441834D18427E7653D0157EBC6973710E159AC76128F7F1642FE98543507D30 bytes 22238 result-lines 282 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json.gz -\u003e docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json blob 86f27ad5243395986821fb193401e8fb38e74258 sha256 7BA93098A74B4F38A0D02552662EF09BABA267D5AD74055EB675CA0268D15C2D bytes 26434 archive sha256 414976873974C97840A1FF89454F858FB8D75F06A61704CD91FEAC56D6A07886 bytes 5430 result-lines 84 referring-files 0",
+                                                           "RECEIPT-ARCHIVES: RESULT: PASS (12 of 12 required archives verified; 12 manifest entries; 0 extra archives; base 4edb1e14f607a809c018d569c3d4be99c0c54959)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "positive-committed",
+                      "kind":  "verify-committed",
+                      "expectedExit":  0,
+                      "expectedCodes":  [
+
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\verify_receipt_archives.py --tree C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts --committed HEAD",
+                                            "ExitCode":  0,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  35.579,
+                                            "DeadlineSeconds":  900,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVES: source commit d0b4cef57e87540f4e333d15a5564bda8834227d",
+                                                           "RECEIPT-ARCHIVES: base 4edb1e14f607a809c018d569c3d4be99c0c54959: 226 blobs under docs/internal/extensions/native1/commands/, 12 contain claim-scanner result lines",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-native-readme.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-native-readme.json blob ae85ea8f985f001629cc1b06bdf56bfb25209358 sha256 ECDE3DCF2D2DB9D25C9F2B7A3445EBB22B31843F0484FCC43001F3A9FB0B8639 bytes 1378 archive sha256 13C39FCF08BDD46E3FDB735A57244E9D087220BA59433746BB20A0DD849FFBCD bytes 621 result-lines 2 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-packet.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-packet.json blob 393537de9cef52e4e2e2cf0ad3322b9c5b575549 sha256 9012550729DC59F6A4FF2202A4CDEC5A9160C79DD5BC31F468D85C206FBDF424 bytes 15518 archive sha256 1C7D2F500130E861CA6288C32739533B449956C19A130EE85B8CA78D346A8085 bytes 1558 result-lines 58 referring-files 7",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json.gz -\u003e docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json blob 75730d644fae2e001ab0a98bc23b16a5b037ab2b sha256 1645FBAF9478D69586EA1AB9B7328DE7416A565F236BD7D7AFCFB7AAD4C61830 bytes 50485 archive sha256 3677A12060580E070DE15972EDC4C7E562DFD82D2BA56FBAAFA1CA86AB518386 bytes 5812 result-lines 184 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process-command.json blob 0de72bf0243aee216beab3ff703a01b90cf3661e sha256 16E5FC0AA866338B5269E24A9769DFE1418D52E25DB8C6083404C5ECC894B280 bytes 4790 archive sha256 471EC10A7974D0BBB805D20FD4D62374611F73210C192E6EE16B2EB1BCB3DDE1 bytes 1353 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process.json blob f0d0d24aa6246e727d1273c20c9d96fb41c8ec0f sha256 60E2469637958ECD701375EB85E06B4C88DFC4649CE669642CC59F9572222575 bytes 129943 archive sha256 0C50B6A46D0277023FE9635A7D8A8F6C32F3251B54091A66F896911AE16DFA6F bytes 22256 result-lines 282 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public-command.json blob f734369147652e9b835a97a34f1e83a91063576f sha256 AC7B1CDBE521F3C22E03AE9B96BDFE6A22AD09765DEBA7B95F850ED7C777A373 bytes 2993 archive sha256 771F4654B086D65F2A401FDEF3BA7D0E19933ED9F0D5A979EF92787738B49779 bytes 789 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public.json blob 25da3996e47a45187ae6b8ead41a0304f27344e7 sha256 B42003CE4F66E2682172861842B2789B631FC6DF0A9011F201753A40E211EC22 bytes 139441 archive sha256 5D4DB70088AA5FB163C2B7C918CB754F482B03678DCD13ABEDA068D7F96410C2 bytes 24569 result-lines 277 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-metadata-checks.json.gz -\u003e docs/internal/extensions/native1/commands/final-metadata-checks.json blob 655a0e41a7dab1f8109dde91ae007bcac9441a94 sha256 C825CB3393E349629B507B65F7ECB964C0B5EAFBFB7C72F933A3EDC42479CD74 bytes 26282 archive sha256 AF13F3AD9EBD8FDFACE7D7F02DEE89CAD1700D84FA101E15AB120D06850F3C43 bytes 5384 result-lines 84 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-static-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-static-command.json blob 98331e54b9259b42feb8482bb0189acb67680c19 sha256 CF300AC0127A4FEC0D9DDED1EBCB906C5BA16CEC84FEFC323E5D36CE47217EF3 bytes 8253880 archive sha256 FB288DCBED23770DC9C45E35BF7A00D8434A064F21ACE1BC8946F93263CE79C1 bytes 1114860 result-lines 3294 referring-files 8",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-command.json blob c1eda55352806ea5979637177ec5677ba47917a7 sha256 279E52386697567774D704CF75FE2524183C2C14F4C3C98DFD54AF758A910F40 bytes 4793 archive sha256 F9B8E8610C08D3A300CB09BA8112402E060309581C0BA916D08BE8EE6463AA97 bytes 1358 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-process.json blob 00b401d7d17d4f60b0d6f1be7ea7c76d7f39dec7 sha256 6BB49BA80D5395EB5ECDAE40C33680EBAABF48DF7A6ED7347B96DEE9CA2B7175 bytes 129948 archive sha256 9441834D18427E7653D0157EBC6973710E159AC76128F7F1642FE98543507D30 bytes 22238 result-lines 282 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json.gz -\u003e docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json blob 86f27ad5243395986821fb193401e8fb38e74258 sha256 7BA93098A74B4F38A0D02552662EF09BABA267D5AD74055EB675CA0268D15C2D bytes 26434 archive sha256 414976873974C97840A1FF89454F858FB8D75F06A61704CD91FEAC56D6A07886 bytes 5430 result-lines 84 referring-files 0",
+                                                           "RECEIPT-ARCHIVES: RESULT: PASS (12 of 12 required archives verified; 12 manifest entries; 0 extra archives; base 4edb1e14f607a809c018d569c3d4be99c0c54959)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "positive-copy",
+                      "kind":  "verify-copy",
+                      "expectedExit":  0,
+                      "expectedCodes":  [
+
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\verify_receipt_archives.py --tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-cf4ec00ff5bd444ba712e9da5f5f830f --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  0,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  35.629,
+                                            "DeadlineSeconds":  900,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVES: source tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-cf4ec00ff5bd444ba712e9da5f5f830f",
+                                                           "RECEIPT-ARCHIVES: base 4edb1e14f607a809c018d569c3d4be99c0c54959: 226 blobs under docs/internal/extensions/native1/commands/, 12 contain claim-scanner result lines",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-native-readme.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-native-readme.json blob ae85ea8f985f001629cc1b06bdf56bfb25209358 sha256 ECDE3DCF2D2DB9D25C9F2B7A3445EBB22B31843F0484FCC43001F3A9FB0B8639 bytes 1378 archive sha256 13C39FCF08BDD46E3FDB735A57244E9D087220BA59433746BB20A0DD849FFBCD bytes 621 result-lines 2 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-packet.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-packet.json blob 393537de9cef52e4e2e2cf0ad3322b9c5b575549 sha256 9012550729DC59F6A4FF2202A4CDEC5A9160C79DD5BC31F468D85C206FBDF424 bytes 15518 archive sha256 1C7D2F500130E861CA6288C32739533B449956C19A130EE85B8CA78D346A8085 bytes 1558 result-lines 58 referring-files 7",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json.gz -\u003e docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json blob 75730d644fae2e001ab0a98bc23b16a5b037ab2b sha256 1645FBAF9478D69586EA1AB9B7328DE7416A565F236BD7D7AFCFB7AAD4C61830 bytes 50485 archive sha256 3677A12060580E070DE15972EDC4C7E562DFD82D2BA56FBAAFA1CA86AB518386 bytes 5812 result-lines 184 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process-command.json blob 0de72bf0243aee216beab3ff703a01b90cf3661e sha256 16E5FC0AA866338B5269E24A9769DFE1418D52E25DB8C6083404C5ECC894B280 bytes 4790 archive sha256 471EC10A7974D0BBB805D20FD4D62374611F73210C192E6EE16B2EB1BCB3DDE1 bytes 1353 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process.json blob f0d0d24aa6246e727d1273c20c9d96fb41c8ec0f sha256 60E2469637958ECD701375EB85E06B4C88DFC4649CE669642CC59F9572222575 bytes 129943 archive sha256 0C50B6A46D0277023FE9635A7D8A8F6C32F3251B54091A66F896911AE16DFA6F bytes 22256 result-lines 282 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public-command.json blob f734369147652e9b835a97a34f1e83a91063576f sha256 AC7B1CDBE521F3C22E03AE9B96BDFE6A22AD09765DEBA7B95F850ED7C777A373 bytes 2993 archive sha256 771F4654B086D65F2A401FDEF3BA7D0E19933ED9F0D5A979EF92787738B49779 bytes 789 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public.json blob 25da3996e47a45187ae6b8ead41a0304f27344e7 sha256 B42003CE4F66E2682172861842B2789B631FC6DF0A9011F201753A40E211EC22 bytes 139441 archive sha256 5D4DB70088AA5FB163C2B7C918CB754F482B03678DCD13ABEDA068D7F96410C2 bytes 24569 result-lines 277 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-metadata-checks.json.gz -\u003e docs/internal/extensions/native1/commands/final-metadata-checks.json blob 655a0e41a7dab1f8109dde91ae007bcac9441a94 sha256 C825CB3393E349629B507B65F7ECB964C0B5EAFBFB7C72F933A3EDC42479CD74 bytes 26282 archive sha256 AF13F3AD9EBD8FDFACE7D7F02DEE89CAD1700D84FA101E15AB120D06850F3C43 bytes 5384 result-lines 84 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-static-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-static-command.json blob 98331e54b9259b42feb8482bb0189acb67680c19 sha256 CF300AC0127A4FEC0D9DDED1EBCB906C5BA16CEC84FEFC323E5D36CE47217EF3 bytes 8253880 archive sha256 FB288DCBED23770DC9C45E35BF7A00D8434A064F21ACE1BC8946F93263CE79C1 bytes 1114860 result-lines 3294 referring-files 8",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-command.json blob c1eda55352806ea5979637177ec5677ba47917a7 sha256 279E52386697567774D704CF75FE2524183C2C14F4C3C98DFD54AF758A910F40 bytes 4793 archive sha256 F9B8E8610C08D3A300CB09BA8112402E060309581C0BA916D08BE8EE6463AA97 bytes 1358 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-process.json blob 00b401d7d17d4f60b0d6f1be7ea7c76d7f39dec7 sha256 6BB49BA80D5395EB5ECDAE40C33680EBAABF48DF7A6ED7347B96DEE9CA2B7175 bytes 129948 archive sha256 9441834D18427E7653D0157EBC6973710E159AC76128F7F1642FE98543507D30 bytes 22238 result-lines 282 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json.gz -\u003e docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json blob 86f27ad5243395986821fb193401e8fb38e74258 sha256 7BA93098A74B4F38A0D02552662EF09BABA267D5AD74055EB675CA0268D15C2D bytes 26434 archive sha256 414976873974C97840A1FF89454F858FB8D75F06A61704CD91FEAC56D6A07886 bytes 5430 result-lines 84 referring-files 0",
+                                                           "RECEIPT-ARCHIVES: RESULT: PASS (12 of 12 required archives verified; 12 manifest entries; 0 extra archives; base 4edb1e14f607a809c018d569c3d4be99c0c54959)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "changed-archive-header-byte",
+                      "kind":  "mutate",
+                      "expectedExit":  1,
+                      "expectedCodes":  [
+                                            "archive-sha256-mismatch"
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\receipt_archive_control_helper.py mutate --case changed-archive-header-byte --copy C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-9f417dba31014bfebb52f414acc53e4a --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  0,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  1.249,
+                                            "DeadlineSeconds":  300,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "MUTATION-APPLIED [changed-archive-header-byte] docs/internal/extensions/native1/commands/final-claims-public.json.gz 5D4DB70088AA5FB163C2B7C918CB754F482B03678DCD13ABEDA068D7F96410C2 -\u003e ED1FBE51F7C6BB0B462018FB182FA9C342BC3944FB1C6AF341772E37717D982A (offset 4)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        },
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\verify_receipt_archives.py --tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-9f417dba31014bfebb52f414acc53e4a --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  1,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  30.651,
+                                            "DeadlineSeconds":  900,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVES: source tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-9f417dba31014bfebb52f414acc53e4a",
+                                                           "RECEIPT-ARCHIVES: base 4edb1e14f607a809c018d569c3d4be99c0c54959: 226 blobs under docs/internal/extensions/native1/commands/, 12 contain claim-scanner result lines",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-native-readme.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-native-readme.json blob ae85ea8f985f001629cc1b06bdf56bfb25209358 sha256 ECDE3DCF2D2DB9D25C9F2B7A3445EBB22B31843F0484FCC43001F3A9FB0B8639 bytes 1378 archive sha256 13C39FCF08BDD46E3FDB735A57244E9D087220BA59433746BB20A0DD849FFBCD bytes 621 result-lines 2 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-packet.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-packet.json blob 393537de9cef52e4e2e2cf0ad3322b9c5b575549 sha256 9012550729DC59F6A4FF2202A4CDEC5A9160C79DD5BC31F468D85C206FBDF424 bytes 15518 archive sha256 1C7D2F500130E861CA6288C32739533B449956C19A130EE85B8CA78D346A8085 bytes 1558 result-lines 58 referring-files 7",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json.gz -\u003e docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json blob 75730d644fae2e001ab0a98bc23b16a5b037ab2b sha256 1645FBAF9478D69586EA1AB9B7328DE7416A565F236BD7D7AFCFB7AAD4C61830 bytes 50485 archive sha256 3677A12060580E070DE15972EDC4C7E562DFD82D2BA56FBAAFA1CA86AB518386 bytes 5812 result-lines 184 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process-command.json blob 0de72bf0243aee216beab3ff703a01b90cf3661e sha256 16E5FC0AA866338B5269E24A9769DFE1418D52E25DB8C6083404C5ECC894B280 bytes 4790 archive sha256 471EC10A7974D0BBB805D20FD4D62374611F73210C192E6EE16B2EB1BCB3DDE1 bytes 1353 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process.json blob f0d0d24aa6246e727d1273c20c9d96fb41c8ec0f sha256 60E2469637958ECD701375EB85E06B4C88DFC4649CE669642CC59F9572222575 bytes 129943 archive sha256 0C50B6A46D0277023FE9635A7D8A8F6C32F3251B54091A66F896911AE16DFA6F bytes 22256 result-lines 282 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public-command.json blob f734369147652e9b835a97a34f1e83a91063576f sha256 AC7B1CDBE521F3C22E03AE9B96BDFE6A22AD09765DEBA7B95F850ED7C777A373 bytes 2993 archive sha256 771F4654B086D65F2A401FDEF3BA7D0E19933ED9F0D5A979EF92787738B49779 bytes 789 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: FAIL [archive-sha256-mismatch] docs/internal/extensions/native1/commands/final-claims-public.json.gz: manifest 5D4DB70088AA5FB163C2B7C918CB754F482B03678DCD13ABEDA068D7F96410C2 != ED1FBE51F7C6BB0B462018FB182FA9C342BC3944FB1C6AF341772E37717D982A",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-metadata-checks.json.gz -\u003e docs/internal/extensions/native1/commands/final-metadata-checks.json blob 655a0e41a7dab1f8109dde91ae007bcac9441a94 sha256 C825CB3393E349629B507B65F7ECB964C0B5EAFBFB7C72F933A3EDC42479CD74 bytes 26282 archive sha256 AF13F3AD9EBD8FDFACE7D7F02DEE89CAD1700D84FA101E15AB120D06850F3C43 bytes 5384 result-lines 84 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-static-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-static-command.json blob 98331e54b9259b42feb8482bb0189acb67680c19 sha256 CF300AC0127A4FEC0D9DDED1EBCB906C5BA16CEC84FEFC323E5D36CE47217EF3 bytes 8253880 archive sha256 FB288DCBED23770DC9C45E35BF7A00D8434A064F21ACE1BC8946F93263CE79C1 bytes 1114860 result-lines 3294 referring-files 8",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-command.json blob c1eda55352806ea5979637177ec5677ba47917a7 sha256 279E52386697567774D704CF75FE2524183C2C14F4C3C98DFD54AF758A910F40 bytes 4793 archive sha256 F9B8E8610C08D3A300CB09BA8112402E060309581C0BA916D08BE8EE6463AA97 bytes 1358 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-process.json blob 00b401d7d17d4f60b0d6f1be7ea7c76d7f39dec7 sha256 6BB49BA80D5395EB5ECDAE40C33680EBAABF48DF7A6ED7347B96DEE9CA2B7175 bytes 129948 archive sha256 9441834D18427E7653D0157EBC6973710E159AC76128F7F1642FE98543507D30 bytes 22238 result-lines 282 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json.gz -\u003e docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json blob 86f27ad5243395986821fb193401e8fb38e74258 sha256 7BA93098A74B4F38A0D02552662EF09BABA267D5AD74055EB675CA0268D15C2D bytes 26434 archive sha256 414976873974C97840A1FF89454F858FB8D75F06A61704CD91FEAC56D6A07886 bytes 5430 result-lines 84 referring-files 0",
+                                                           "RECEIPT-ARCHIVES: RESULT: FAIL (1 failures; 11 of 12 required archives verified)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+                                    "archive-sha256-mismatch"
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "changed-archive-trailer-byte",
+                      "kind":  "mutate",
+                      "expectedExit":  1,
+                      "expectedCodes":  [
+                                            "archive-gzip-invalid",
+                                            "archive-sha256-mismatch"
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\receipt_archive_control_helper.py mutate --case changed-archive-trailer-byte --copy C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-b4039cf17e36438c8ac386d19d58da4b --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  0,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  0.797,
+                                            "DeadlineSeconds":  300,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "MUTATION-APPLIED [changed-archive-trailer-byte] docs/internal/extensions/native1/commands/final-claims-public.json.gz 5D4DB70088AA5FB163C2B7C918CB754F482B03678DCD13ABEDA068D7F96410C2 -\u003e A934D3C0AB7C7DCCF13CA17B07F73C62C9A345DD4EEFA156684D0CA58D2A049F (offset 24561)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        },
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\verify_receipt_archives.py --tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-b4039cf17e36438c8ac386d19d58da4b --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  1,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  26.364,
+                                            "DeadlineSeconds":  900,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVES: source tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-b4039cf17e36438c8ac386d19d58da4b",
+                                                           "RECEIPT-ARCHIVES: base 4edb1e14f607a809c018d569c3d4be99c0c54959: 226 blobs under docs/internal/extensions/native1/commands/, 12 contain claim-scanner result lines",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-native-readme.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-native-readme.json blob ae85ea8f985f001629cc1b06bdf56bfb25209358 sha256 ECDE3DCF2D2DB9D25C9F2B7A3445EBB22B31843F0484FCC43001F3A9FB0B8639 bytes 1378 archive sha256 13C39FCF08BDD46E3FDB735A57244E9D087220BA59433746BB20A0DD849FFBCD bytes 621 result-lines 2 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-packet.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-packet.json blob 393537de9cef52e4e2e2cf0ad3322b9c5b575549 sha256 9012550729DC59F6A4FF2202A4CDEC5A9160C79DD5BC31F468D85C206FBDF424 bytes 15518 archive sha256 1C7D2F500130E861CA6288C32739533B449956C19A130EE85B8CA78D346A8085 bytes 1558 result-lines 58 referring-files 7",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json.gz -\u003e docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json blob 75730d644fae2e001ab0a98bc23b16a5b037ab2b sha256 1645FBAF9478D69586EA1AB9B7328DE7416A565F236BD7D7AFCFB7AAD4C61830 bytes 50485 archive sha256 3677A12060580E070DE15972EDC4C7E562DFD82D2BA56FBAAFA1CA86AB518386 bytes 5812 result-lines 184 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process-command.json blob 0de72bf0243aee216beab3ff703a01b90cf3661e sha256 16E5FC0AA866338B5269E24A9769DFE1418D52E25DB8C6083404C5ECC894B280 bytes 4790 archive sha256 471EC10A7974D0BBB805D20FD4D62374611F73210C192E6EE16B2EB1BCB3DDE1 bytes 1353 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process.json blob f0d0d24aa6246e727d1273c20c9d96fb41c8ec0f sha256 60E2469637958ECD701375EB85E06B4C88DFC4649CE669642CC59F9572222575 bytes 129943 archive sha256 0C50B6A46D0277023FE9635A7D8A8F6C32F3251B54091A66F896911AE16DFA6F bytes 22256 result-lines 282 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public-command.json blob f734369147652e9b835a97a34f1e83a91063576f sha256 AC7B1CDBE521F3C22E03AE9B96BDFE6A22AD09765DEBA7B95F850ED7C777A373 bytes 2993 archive sha256 771F4654B086D65F2A401FDEF3BA7D0E19933ED9F0D5A979EF92787738B49779 bytes 789 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: FAIL [archive-sha256-mismatch] docs/internal/extensions/native1/commands/final-claims-public.json.gz: manifest 5D4DB70088AA5FB163C2B7C918CB754F482B03678DCD13ABEDA068D7F96410C2 != A934D3C0AB7C7DCCF13CA17B07F73C62C9A345DD4EEFA156684D0CA58D2A049F",
+                                                           "RECEIPT-ARCHIVES: FAIL [archive-gzip-invalid] docs/internal/extensions/native1/commands/final-claims-public.json.gz: Error -3 while decompressing data: incorrect data check",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-metadata-checks.json.gz -\u003e docs/internal/extensions/native1/commands/final-metadata-checks.json blob 655a0e41a7dab1f8109dde91ae007bcac9441a94 sha256 C825CB3393E349629B507B65F7ECB964C0B5EAFBFB7C72F933A3EDC42479CD74 bytes 26282 archive sha256 AF13F3AD9EBD8FDFACE7D7F02DEE89CAD1700D84FA101E15AB120D06850F3C43 bytes 5384 result-lines 84 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-static-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-static-command.json blob 98331e54b9259b42feb8482bb0189acb67680c19 sha256 CF300AC0127A4FEC0D9DDED1EBCB906C5BA16CEC84FEFC323E5D36CE47217EF3 bytes 8253880 archive sha256 FB288DCBED23770DC9C45E35BF7A00D8434A064F21ACE1BC8946F93263CE79C1 bytes 1114860 result-lines 3294 referring-files 8",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-command.json blob c1eda55352806ea5979637177ec5677ba47917a7 sha256 279E52386697567774D704CF75FE2524183C2C14F4C3C98DFD54AF758A910F40 bytes 4793 archive sha256 F9B8E8610C08D3A300CB09BA8112402E060309581C0BA916D08BE8EE6463AA97 bytes 1358 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-process.json blob 00b401d7d17d4f60b0d6f1be7ea7c76d7f39dec7 sha256 6BB49BA80D5395EB5ECDAE40C33680EBAABF48DF7A6ED7347B96DEE9CA2B7175 bytes 129948 archive sha256 9441834D18427E7653D0157EBC6973710E159AC76128F7F1642FE98543507D30 bytes 22238 result-lines 282 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json.gz -\u003e docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json blob 86f27ad5243395986821fb193401e8fb38e74258 sha256 7BA93098A74B4F38A0D02552662EF09BABA267D5AD74055EB675CA0268D15C2D bytes 26434 archive sha256 414976873974C97840A1FF89454F858FB8D75F06A61704CD91FEAC56D6A07886 bytes 5430 result-lines 84 referring-files 0",
+                                                           "RECEIPT-ARCHIVES: RESULT: FAIL (2 failures; 11 of 12 required archives verified)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+                                    "archive-gzip-invalid",
+                                    "archive-sha256-mismatch"
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "missing-archive",
+                      "kind":  "mutate",
+                      "expectedExit":  1,
+                      "expectedCodes":  [
+                                            "archive-missing"
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\receipt_archive_control_helper.py mutate --case missing-archive --copy C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-7a2fcbf4b94a4fb99a3ecc56e77aeb27 --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  0,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  0.911,
+                                            "DeadlineSeconds":  300,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "MUTATION-APPLIED [missing-archive] docs/internal/extensions/native1/commands/final-claims-public.json.gz 5D4DB70088AA5FB163C2B7C918CB754F482B03678DCD13ABEDA068D7F96410C2 -\u003e absent (removed)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        },
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\verify_receipt_archives.py --tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-7a2fcbf4b94a4fb99a3ecc56e77aeb27 --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  1,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  25.939,
+                                            "DeadlineSeconds":  900,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVES: source tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-7a2fcbf4b94a4fb99a3ecc56e77aeb27",
+                                                           "RECEIPT-ARCHIVES: base 4edb1e14f607a809c018d569c3d4be99c0c54959: 226 blobs under docs/internal/extensions/native1/commands/, 12 contain claim-scanner result lines",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-native-readme.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-native-readme.json blob ae85ea8f985f001629cc1b06bdf56bfb25209358 sha256 ECDE3DCF2D2DB9D25C9F2B7A3445EBB22B31843F0484FCC43001F3A9FB0B8639 bytes 1378 archive sha256 13C39FCF08BDD46E3FDB735A57244E9D087220BA59433746BB20A0DD849FFBCD bytes 621 result-lines 2 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-packet.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-packet.json blob 393537de9cef52e4e2e2cf0ad3322b9c5b575549 sha256 9012550729DC59F6A4FF2202A4CDEC5A9160C79DD5BC31F468D85C206FBDF424 bytes 15518 archive sha256 1C7D2F500130E861CA6288C32739533B449956C19A130EE85B8CA78D346A8085 bytes 1558 result-lines 58 referring-files 7",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json.gz -\u003e docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json blob 75730d644fae2e001ab0a98bc23b16a5b037ab2b sha256 1645FBAF9478D69586EA1AB9B7328DE7416A565F236BD7D7AFCFB7AAD4C61830 bytes 50485 archive sha256 3677A12060580E070DE15972EDC4C7E562DFD82D2BA56FBAAFA1CA86AB518386 bytes 5812 result-lines 184 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process-command.json blob 0de72bf0243aee216beab3ff703a01b90cf3661e sha256 16E5FC0AA866338B5269E24A9769DFE1418D52E25DB8C6083404C5ECC894B280 bytes 4790 archive sha256 471EC10A7974D0BBB805D20FD4D62374611F73210C192E6EE16B2EB1BCB3DDE1 bytes 1353 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process.json blob f0d0d24aa6246e727d1273c20c9d96fb41c8ec0f sha256 60E2469637958ECD701375EB85E06B4C88DFC4649CE669642CC59F9572222575 bytes 129943 archive sha256 0C50B6A46D0277023FE9635A7D8A8F6C32F3251B54091A66F896911AE16DFA6F bytes 22256 result-lines 282 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public-command.json blob f734369147652e9b835a97a34f1e83a91063576f sha256 AC7B1CDBE521F3C22E03AE9B96BDFE6A22AD09765DEBA7B95F850ED7C777A373 bytes 2993 archive sha256 771F4654B086D65F2A401FDEF3BA7D0E19933ED9F0D5A979EF92787738B49779 bytes 789 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: FAIL [archive-missing] docs/internal/extensions/native1/commands/final-claims-public.json.gz",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-metadata-checks.json.gz -\u003e docs/internal/extensions/native1/commands/final-metadata-checks.json blob 655a0e41a7dab1f8109dde91ae007bcac9441a94 sha256 C825CB3393E349629B507B65F7ECB964C0B5EAFBFB7C72F933A3EDC42479CD74 bytes 26282 archive sha256 AF13F3AD9EBD8FDFACE7D7F02DEE89CAD1700D84FA101E15AB120D06850F3C43 bytes 5384 result-lines 84 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-static-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-static-command.json blob 98331e54b9259b42feb8482bb0189acb67680c19 sha256 CF300AC0127A4FEC0D9DDED1EBCB906C5BA16CEC84FEFC323E5D36CE47217EF3 bytes 8253880 archive sha256 FB288DCBED23770DC9C45E35BF7A00D8434A064F21ACE1BC8946F93263CE79C1 bytes 1114860 result-lines 3294 referring-files 8",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-command.json blob c1eda55352806ea5979637177ec5677ba47917a7 sha256 279E52386697567774D704CF75FE2524183C2C14F4C3C98DFD54AF758A910F40 bytes 4793 archive sha256 F9B8E8610C08D3A300CB09BA8112402E060309581C0BA916D08BE8EE6463AA97 bytes 1358 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-process.json blob 00b401d7d17d4f60b0d6f1be7ea7c76d7f39dec7 sha256 6BB49BA80D5395EB5ECDAE40C33680EBAABF48DF7A6ED7347B96DEE9CA2B7175 bytes 129948 archive sha256 9441834D18427E7653D0157EBC6973710E159AC76128F7F1642FE98543507D30 bytes 22238 result-lines 282 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json.gz -\u003e docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json blob 86f27ad5243395986821fb193401e8fb38e74258 sha256 7BA93098A74B4F38A0D02552662EF09BABA267D5AD74055EB675CA0268D15C2D bytes 26434 archive sha256 414976873974C97840A1FF89454F858FB8D75F06A61704CD91FEAC56D6A07886 bytes 5430 result-lines 84 referring-files 0",
+                                                           "RECEIPT-ARCHIVES: RESULT: FAIL (1 failures; 11 of 12 required archives verified)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+                                    "archive-missing"
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "extra-archive",
+                      "kind":  "mutate",
+                      "expectedExit":  1,
+                      "expectedCodes":  [
+                                            "archive-extra"
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\receipt_archive_control_helper.py mutate --case extra-archive --copy C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-c2319c9c4c994417b67e956479a5c8de --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  0,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  0.818,
+                                            "DeadlineSeconds":  300,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "MUTATION-APPLIED [extra-archive] docs/internal/extensions/native1/commands/control-unlisted-receipt.json.gz absent -\u003e 8B0B8749ABA12DE93F3CF5D86F9FAC9D6DE7CAC400A17473718F182A34EBB7E9 (added)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        },
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\verify_receipt_archives.py --tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-c2319c9c4c994417b67e956479a5c8de --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  1,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  25.208,
+                                            "DeadlineSeconds":  900,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVES: source tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-c2319c9c4c994417b67e956479a5c8de",
+                                                           "RECEIPT-ARCHIVES: base 4edb1e14f607a809c018d569c3d4be99c0c54959: 226 blobs under docs/internal/extensions/native1/commands/, 12 contain claim-scanner result lines",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-native-readme.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-native-readme.json blob ae85ea8f985f001629cc1b06bdf56bfb25209358 sha256 ECDE3DCF2D2DB9D25C9F2B7A3445EBB22B31843F0484FCC43001F3A9FB0B8639 bytes 1378 archive sha256 13C39FCF08BDD46E3FDB735A57244E9D087220BA59433746BB20A0DD849FFBCD bytes 621 result-lines 2 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-packet.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-packet.json blob 393537de9cef52e4e2e2cf0ad3322b9c5b575549 sha256 9012550729DC59F6A4FF2202A4CDEC5A9160C79DD5BC31F468D85C206FBDF424 bytes 15518 archive sha256 1C7D2F500130E861CA6288C32739533B449956C19A130EE85B8CA78D346A8085 bytes 1558 result-lines 58 referring-files 7",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json.gz -\u003e docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json blob 75730d644fae2e001ab0a98bc23b16a5b037ab2b sha256 1645FBAF9478D69586EA1AB9B7328DE7416A565F236BD7D7AFCFB7AAD4C61830 bytes 50485 archive sha256 3677A12060580E070DE15972EDC4C7E562DFD82D2BA56FBAAFA1CA86AB518386 bytes 5812 result-lines 184 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process-command.json blob 0de72bf0243aee216beab3ff703a01b90cf3661e sha256 16E5FC0AA866338B5269E24A9769DFE1418D52E25DB8C6083404C5ECC894B280 bytes 4790 archive sha256 471EC10A7974D0BBB805D20FD4D62374611F73210C192E6EE16B2EB1BCB3DDE1 bytes 1353 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process.json blob f0d0d24aa6246e727d1273c20c9d96fb41c8ec0f sha256 60E2469637958ECD701375EB85E06B4C88DFC4649CE669642CC59F9572222575 bytes 129943 archive sha256 0C50B6A46D0277023FE9635A7D8A8F6C32F3251B54091A66F896911AE16DFA6F bytes 22256 result-lines 282 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public-command.json blob f734369147652e9b835a97a34f1e83a91063576f sha256 AC7B1CDBE521F3C22E03AE9B96BDFE6A22AD09765DEBA7B95F850ED7C777A373 bytes 2993 archive sha256 771F4654B086D65F2A401FDEF3BA7D0E19933ED9F0D5A979EF92787738B49779 bytes 789 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public.json blob 25da3996e47a45187ae6b8ead41a0304f27344e7 sha256 B42003CE4F66E2682172861842B2789B631FC6DF0A9011F201753A40E211EC22 bytes 139441 archive sha256 5D4DB70088AA5FB163C2B7C918CB754F482B03678DCD13ABEDA068D7F96410C2 bytes 24569 result-lines 277 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-metadata-checks.json.gz -\u003e docs/internal/extensions/native1/commands/final-metadata-checks.json blob 655a0e41a7dab1f8109dde91ae007bcac9441a94 sha256 C825CB3393E349629B507B65F7ECB964C0B5EAFBFB7C72F933A3EDC42479CD74 bytes 26282 archive sha256 AF13F3AD9EBD8FDFACE7D7F02DEE89CAD1700D84FA101E15AB120D06850F3C43 bytes 5384 result-lines 84 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-static-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-static-command.json blob 98331e54b9259b42feb8482bb0189acb67680c19 sha256 CF300AC0127A4FEC0D9DDED1EBCB906C5BA16CEC84FEFC323E5D36CE47217EF3 bytes 8253880 archive sha256 FB288DCBED23770DC9C45E35BF7A00D8434A064F21ACE1BC8946F93263CE79C1 bytes 1114860 result-lines 3294 referring-files 8",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-command.json blob c1eda55352806ea5979637177ec5677ba47917a7 sha256 279E52386697567774D704CF75FE2524183C2C14F4C3C98DFD54AF758A910F40 bytes 4793 archive sha256 F9B8E8610C08D3A300CB09BA8112402E060309581C0BA916D08BE8EE6463AA97 bytes 1358 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-process.json blob 00b401d7d17d4f60b0d6f1be7ea7c76d7f39dec7 sha256 6BB49BA80D5395EB5ECDAE40C33680EBAABF48DF7A6ED7347B96DEE9CA2B7175 bytes 129948 archive sha256 9441834D18427E7653D0157EBC6973710E159AC76128F7F1642FE98543507D30 bytes 22238 result-lines 282 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json.gz -\u003e docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json blob 86f27ad5243395986821fb193401e8fb38e74258 sha256 7BA93098A74B4F38A0D02552662EF09BABA267D5AD74055EB675CA0268D15C2D bytes 26434 archive sha256 414976873974C97840A1FF89454F858FB8D75F06A61704CD91FEAC56D6A07886 bytes 5430 result-lines 84 referring-files 0",
+                                                           "RECEIPT-ARCHIVES: FAIL [archive-extra] docs/internal/extensions/native1/commands/control-unlisted-receipt.json.gz is under docs/internal/extensions/native1/commands/ but in neither the manifest nor the base tree",
+                                                           "RECEIPT-ARCHIVES: RESULT: FAIL (1 failures; 12 of 12 required archives verified)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+                                    "archive-extra"
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "duplicate-manifest-entry",
+                      "kind":  "mutate",
+                      "expectedExit":  1,
+                      "expectedCodes":  [
+                                            "manifest-duplicate-entry"
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\receipt_archive_control_helper.py mutate --case duplicate-manifest-entry --copy C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-3e2c3deb433c41fb8f4f6e5f8012c8ff --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  0,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  0.859,
+                                            "DeadlineSeconds":  300,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "MUTATION-APPLIED [duplicate-manifest-entry] docs/internal/extensions/native1/repair-r1/RECEIPT_ARCHIVES.json  -\u003e  (appended a second entry for docs/internal/extensions/native1/commands/final-claims-public.json)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        },
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\verify_receipt_archives.py --tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-3e2c3deb433c41fb8f4f6e5f8012c8ff --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  1,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  23.419,
+                                            "DeadlineSeconds":  900,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVES: source tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-3e2c3deb433c41fb8f4f6e5f8012c8ff",
+                                                           "RECEIPT-ARCHIVES: base 4edb1e14f607a809c018d569c3d4be99c0c54959: 226 blobs under docs/internal/extensions/native1/commands/, 12 contain claim-scanner result lines",
+                                                           "RECEIPT-ARCHIVES: FAIL [manifest-duplicate-entry] originalPath docs/internal/extensions/native1/commands/final-claims-public.json appears 2 times",
+                                                           "RECEIPT-ARCHIVES: FAIL [manifest-duplicate-entry] archivePath docs/internal/extensions/native1/commands/final-claims-public.json.gz appears 2 times",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-native-readme.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-native-readme.json blob ae85ea8f985f001629cc1b06bdf56bfb25209358 sha256 ECDE3DCF2D2DB9D25C9F2B7A3445EBB22B31843F0484FCC43001F3A9FB0B8639 bytes 1378 archive sha256 13C39FCF08BDD46E3FDB735A57244E9D087220BA59433746BB20A0DD849FFBCD bytes 621 result-lines 2 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-packet.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-packet.json blob 393537de9cef52e4e2e2cf0ad3322b9c5b575549 sha256 9012550729DC59F6A4FF2202A4CDEC5A9160C79DD5BC31F468D85C206FBDF424 bytes 15518 archive sha256 1C7D2F500130E861CA6288C32739533B449956C19A130EE85B8CA78D346A8085 bytes 1558 result-lines 58 referring-files 7",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json.gz -\u003e docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json blob 75730d644fae2e001ab0a98bc23b16a5b037ab2b sha256 1645FBAF9478D69586EA1AB9B7328DE7416A565F236BD7D7AFCFB7AAD4C61830 bytes 50485 archive sha256 3677A12060580E070DE15972EDC4C7E562DFD82D2BA56FBAAFA1CA86AB518386 bytes 5812 result-lines 184 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process-command.json blob 0de72bf0243aee216beab3ff703a01b90cf3661e sha256 16E5FC0AA866338B5269E24A9769DFE1418D52E25DB8C6083404C5ECC894B280 bytes 4790 archive sha256 471EC10A7974D0BBB805D20FD4D62374611F73210C192E6EE16B2EB1BCB3DDE1 bytes 1353 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process.json blob f0d0d24aa6246e727d1273c20c9d96fb41c8ec0f sha256 60E2469637958ECD701375EB85E06B4C88DFC4649CE669642CC59F9572222575 bytes 129943 archive sha256 0C50B6A46D0277023FE9635A7D8A8F6C32F3251B54091A66F896911AE16DFA6F bytes 22256 result-lines 282 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public-command.json blob f734369147652e9b835a97a34f1e83a91063576f sha256 AC7B1CDBE521F3C22E03AE9B96BDFE6A22AD09765DEBA7B95F850ED7C777A373 bytes 2993 archive sha256 771F4654B086D65F2A401FDEF3BA7D0E19933ED9F0D5A979EF92787738B49779 bytes 789 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public.json blob 25da3996e47a45187ae6b8ead41a0304f27344e7 sha256 B42003CE4F66E2682172861842B2789B631FC6DF0A9011F201753A40E211EC22 bytes 139441 archive sha256 5D4DB70088AA5FB163C2B7C918CB754F482B03678DCD13ABEDA068D7F96410C2 bytes 24569 result-lines 277 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-metadata-checks.json.gz -\u003e docs/internal/extensions/native1/commands/final-metadata-checks.json blob 655a0e41a7dab1f8109dde91ae007bcac9441a94 sha256 C825CB3393E349629B507B65F7ECB964C0B5EAFBFB7C72F933A3EDC42479CD74 bytes 26282 archive sha256 AF13F3AD9EBD8FDFACE7D7F02DEE89CAD1700D84FA101E15AB120D06850F3C43 bytes 5384 result-lines 84 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-static-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-static-command.json blob 98331e54b9259b42feb8482bb0189acb67680c19 sha256 CF300AC0127A4FEC0D9DDED1EBCB906C5BA16CEC84FEFC323E5D36CE47217EF3 bytes 8253880 archive sha256 FB288DCBED23770DC9C45E35BF7A00D8434A064F21ACE1BC8946F93263CE79C1 bytes 1114860 result-lines 3294 referring-files 8",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-command.json blob c1eda55352806ea5979637177ec5677ba47917a7 sha256 279E52386697567774D704CF75FE2524183C2C14F4C3C98DFD54AF758A910F40 bytes 4793 archive sha256 F9B8E8610C08D3A300CB09BA8112402E060309581C0BA916D08BE8EE6463AA97 bytes 1358 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-process.json blob 00b401d7d17d4f60b0d6f1be7ea7c76d7f39dec7 sha256 6BB49BA80D5395EB5ECDAE40C33680EBAABF48DF7A6ED7347B96DEE9CA2B7175 bytes 129948 archive sha256 9441834D18427E7653D0157EBC6973710E159AC76128F7F1642FE98543507D30 bytes 22238 result-lines 282 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json.gz -\u003e docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json blob 86f27ad5243395986821fb193401e8fb38e74258 sha256 7BA93098A74B4F38A0D02552662EF09BABA267D5AD74055EB675CA0268D15C2D bytes 26434 archive sha256 414976873974C97840A1FF89454F858FB8D75F06A61704CD91FEAC56D6A07886 bytes 5430 result-lines 84 referring-files 0",
+                                                           "RECEIPT-ARCHIVES: RESULT: FAIL (2 failures; 12 of 12 required archives verified)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+                                    "manifest-duplicate-entry"
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "wrong-base-blob-id",
+                      "kind":  "mutate",
+                      "expectedExit":  1,
+                      "expectedCodes":  [
+                                            "base-blob-id-mismatch"
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\receipt_archive_control_helper.py mutate --case wrong-base-blob-id --copy C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-0d03be7c1cb04fadba79bc0de8c6b18f --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  0,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  0.747,
+                                            "DeadlineSeconds":  300,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "MUTATION-APPLIED [wrong-base-blob-id] docs/internal/extensions/native1/repair-r1/RECEIPT_ARCHIVES.json  -\u003e  (docs/internal/extensions/native1/commands/final-claims-public.json baseBlobId := 98331e54b9259b42feb8482bb0189acb67680c19)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        },
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\verify_receipt_archives.py --tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-0d03be7c1cb04fadba79bc0de8c6b18f --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  1,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  24.101,
+                                            "DeadlineSeconds":  900,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVES: source tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-0d03be7c1cb04fadba79bc0de8c6b18f",
+                                                           "RECEIPT-ARCHIVES: base 4edb1e14f607a809c018d569c3d4be99c0c54959: 226 blobs under docs/internal/extensions/native1/commands/, 12 contain claim-scanner result lines",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-native-readme.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-native-readme.json blob ae85ea8f985f001629cc1b06bdf56bfb25209358 sha256 ECDE3DCF2D2DB9D25C9F2B7A3445EBB22B31843F0484FCC43001F3A9FB0B8639 bytes 1378 archive sha256 13C39FCF08BDD46E3FDB735A57244E9D087220BA59433746BB20A0DD849FFBCD bytes 621 result-lines 2 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-packet.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-packet.json blob 393537de9cef52e4e2e2cf0ad3322b9c5b575549 sha256 9012550729DC59F6A4FF2202A4CDEC5A9160C79DD5BC31F468D85C206FBDF424 bytes 15518 archive sha256 1C7D2F500130E861CA6288C32739533B449956C19A130EE85B8CA78D346A8085 bytes 1558 result-lines 58 referring-files 7",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json.gz -\u003e docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json blob 75730d644fae2e001ab0a98bc23b16a5b037ab2b sha256 1645FBAF9478D69586EA1AB9B7328DE7416A565F236BD7D7AFCFB7AAD4C61830 bytes 50485 archive sha256 3677A12060580E070DE15972EDC4C7E562DFD82D2BA56FBAAFA1CA86AB518386 bytes 5812 result-lines 184 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process-command.json blob 0de72bf0243aee216beab3ff703a01b90cf3661e sha256 16E5FC0AA866338B5269E24A9769DFE1418D52E25DB8C6083404C5ECC894B280 bytes 4790 archive sha256 471EC10A7974D0BBB805D20FD4D62374611F73210C192E6EE16B2EB1BCB3DDE1 bytes 1353 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process.json blob f0d0d24aa6246e727d1273c20c9d96fb41c8ec0f sha256 60E2469637958ECD701375EB85E06B4C88DFC4649CE669642CC59F9572222575 bytes 129943 archive sha256 0C50B6A46D0277023FE9635A7D8A8F6C32F3251B54091A66F896911AE16DFA6F bytes 22256 result-lines 282 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public-command.json blob f734369147652e9b835a97a34f1e83a91063576f sha256 AC7B1CDBE521F3C22E03AE9B96BDFE6A22AD09765DEBA7B95F850ED7C777A373 bytes 2993 archive sha256 771F4654B086D65F2A401FDEF3BA7D0E19933ED9F0D5A979EF92787738B49779 bytes 789 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: FAIL [base-blob-id-mismatch] docs/internal/extensions/native1/commands/final-claims-public.json: manifest 98331e54b9259b42feb8482bb0189acb67680c19 != base 25da3996e47a45187ae6b8ead41a0304f27344e7",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-metadata-checks.json.gz -\u003e docs/internal/extensions/native1/commands/final-metadata-checks.json blob 655a0e41a7dab1f8109dde91ae007bcac9441a94 sha256 C825CB3393E349629B507B65F7ECB964C0B5EAFBFB7C72F933A3EDC42479CD74 bytes 26282 archive sha256 AF13F3AD9EBD8FDFACE7D7F02DEE89CAD1700D84FA101E15AB120D06850F3C43 bytes 5384 result-lines 84 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-static-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-static-command.json blob 98331e54b9259b42feb8482bb0189acb67680c19 sha256 CF300AC0127A4FEC0D9DDED1EBCB906C5BA16CEC84FEFC323E5D36CE47217EF3 bytes 8253880 archive sha256 FB288DCBED23770DC9C45E35BF7A00D8434A064F21ACE1BC8946F93263CE79C1 bytes 1114860 result-lines 3294 referring-files 8",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-command.json blob c1eda55352806ea5979637177ec5677ba47917a7 sha256 279E52386697567774D704CF75FE2524183C2C14F4C3C98DFD54AF758A910F40 bytes 4793 archive sha256 F9B8E8610C08D3A300CB09BA8112402E060309581C0BA916D08BE8EE6463AA97 bytes 1358 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-process.json blob 00b401d7d17d4f60b0d6f1be7ea7c76d7f39dec7 sha256 6BB49BA80D5395EB5ECDAE40C33680EBAABF48DF7A6ED7347B96DEE9CA2B7175 bytes 129948 archive sha256 9441834D18427E7653D0157EBC6973710E159AC76128F7F1642FE98543507D30 bytes 22238 result-lines 282 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json.gz -\u003e docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json blob 86f27ad5243395986821fb193401e8fb38e74258 sha256 7BA93098A74B4F38A0D02552662EF09BABA267D5AD74055EB675CA0268D15C2D bytes 26434 archive sha256 414976873974C97840A1FF89454F858FB8D75F06A61704CD91FEAC56D6A07886 bytes 5430 result-lines 84 referring-files 0",
+                                                           "RECEIPT-ARCHIVES: RESULT: FAIL (1 failures; 11 of 12 required archives verified)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+                                    "base-blob-id-mismatch"
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "decompressed-byte-mismatch",
+                      "kind":  "mutate",
+                      "expectedExit":  1,
+                      "expectedCodes":  [
+                                            "decompressed-bytes-mismatch"
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\receipt_archive_control_helper.py mutate --case decompressed-byte-mismatch --copy C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-6c1ba4ba0f7e44329faf46a5d8df3e6c --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  0,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  0.752,
+                                            "DeadlineSeconds":  300,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "MUTATION-APPLIED [decompressed-byte-mismatch] docs/internal/extensions/native1/commands/final-claims-public.json.gz 5D4DB70088AA5FB163C2B7C918CB754F482B03678DCD13ABEDA068D7F96410C2 -\u003e CC4B8697DC8968B016D533C7FA8A02DC81384B0F5E73B7764E0118697E5EA7C6 (recovered byte 69720 flipped; manifest archive digest/length updated)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        },
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\verify_receipt_archives.py --tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-6c1ba4ba0f7e44329faf46a5d8df3e6c --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  1,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  22.861,
+                                            "DeadlineSeconds":  900,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVES: source tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-6c1ba4ba0f7e44329faf46a5d8df3e6c",
+                                                           "RECEIPT-ARCHIVES: base 4edb1e14f607a809c018d569c3d4be99c0c54959: 226 blobs under docs/internal/extensions/native1/commands/, 12 contain claim-scanner result lines",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-native-readme.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-native-readme.json blob ae85ea8f985f001629cc1b06bdf56bfb25209358 sha256 ECDE3DCF2D2DB9D25C9F2B7A3445EBB22B31843F0484FCC43001F3A9FB0B8639 bytes 1378 archive sha256 13C39FCF08BDD46E3FDB735A57244E9D087220BA59433746BB20A0DD849FFBCD bytes 621 result-lines 2 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-packet.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-packet.json blob 393537de9cef52e4e2e2cf0ad3322b9c5b575549 sha256 9012550729DC59F6A4FF2202A4CDEC5A9160C79DD5BC31F468D85C206FBDF424 bytes 15518 archive sha256 1C7D2F500130E861CA6288C32739533B449956C19A130EE85B8CA78D346A8085 bytes 1558 result-lines 58 referring-files 7",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json.gz -\u003e docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json blob 75730d644fae2e001ab0a98bc23b16a5b037ab2b sha256 1645FBAF9478D69586EA1AB9B7328DE7416A565F236BD7D7AFCFB7AAD4C61830 bytes 50485 archive sha256 3677A12060580E070DE15972EDC4C7E562DFD82D2BA56FBAAFA1CA86AB518386 bytes 5812 result-lines 184 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process-command.json blob 0de72bf0243aee216beab3ff703a01b90cf3661e sha256 16E5FC0AA866338B5269E24A9769DFE1418D52E25DB8C6083404C5ECC894B280 bytes 4790 archive sha256 471EC10A7974D0BBB805D20FD4D62374611F73210C192E6EE16B2EB1BCB3DDE1 bytes 1353 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process.json blob f0d0d24aa6246e727d1273c20c9d96fb41c8ec0f sha256 60E2469637958ECD701375EB85E06B4C88DFC4649CE669642CC59F9572222575 bytes 129943 archive sha256 0C50B6A46D0277023FE9635A7D8A8F6C32F3251B54091A66F896911AE16DFA6F bytes 22256 result-lines 282 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public-command.json blob f734369147652e9b835a97a34f1e83a91063576f sha256 AC7B1CDBE521F3C22E03AE9B96BDFE6A22AD09765DEBA7B95F850ED7C777A373 bytes 2993 archive sha256 771F4654B086D65F2A401FDEF3BA7D0E19933ED9F0D5A979EF92787738B49779 bytes 789 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: FAIL [decompressed-bytes-mismatch] docs/internal/extensions/native1/commands/final-claims-public.json.gz: recovered SHA-256 2BD5317598482040A35BE8AFE68C42DB6CAD8D6A03A18058EBB54BF5DFADFFF7 != base blob B42003CE4F66E2682172861842B2789B631FC6DF0A9011F201753A40E211EC22",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-metadata-checks.json.gz -\u003e docs/internal/extensions/native1/commands/final-metadata-checks.json blob 655a0e41a7dab1f8109dde91ae007bcac9441a94 sha256 C825CB3393E349629B507B65F7ECB964C0B5EAFBFB7C72F933A3EDC42479CD74 bytes 26282 archive sha256 AF13F3AD9EBD8FDFACE7D7F02DEE89CAD1700D84FA101E15AB120D06850F3C43 bytes 5384 result-lines 84 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-static-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-static-command.json blob 98331e54b9259b42feb8482bb0189acb67680c19 sha256 CF300AC0127A4FEC0D9DDED1EBCB906C5BA16CEC84FEFC323E5D36CE47217EF3 bytes 8253880 archive sha256 FB288DCBED23770DC9C45E35BF7A00D8434A064F21ACE1BC8946F93263CE79C1 bytes 1114860 result-lines 3294 referring-files 8",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-command.json blob c1eda55352806ea5979637177ec5677ba47917a7 sha256 279E52386697567774D704CF75FE2524183C2C14F4C3C98DFD54AF758A910F40 bytes 4793 archive sha256 F9B8E8610C08D3A300CB09BA8112402E060309581C0BA916D08BE8EE6463AA97 bytes 1358 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-process.json blob 00b401d7d17d4f60b0d6f1be7ea7c76d7f39dec7 sha256 6BB49BA80D5395EB5ECDAE40C33680EBAABF48DF7A6ED7347B96DEE9CA2B7175 bytes 129948 archive sha256 9441834D18427E7653D0157EBC6973710E159AC76128F7F1642FE98543507D30 bytes 22238 result-lines 282 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json.gz -\u003e docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json blob 86f27ad5243395986821fb193401e8fb38e74258 sha256 7BA93098A74B4F38A0D02552662EF09BABA267D5AD74055EB675CA0268D15C2D bytes 26434 archive sha256 414976873974C97840A1FF89454F858FB8D75F06A61704CD91FEAC56D6A07886 bytes 5430 result-lines 84 referring-files 0",
+                                                           "RECEIPT-ARCHIVES: RESULT: FAIL (1 failures; 11 of 12 required archives verified)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+                                    "decompressed-bytes-mismatch"
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "original-restored",
+                      "kind":  "mutate",
+                      "expectedExit":  1,
+                      "expectedCodes":  [
+                                            "original-present"
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\receipt_archive_control_helper.py mutate --case original-restored --copy C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-e5f12fb070204dfebe843d2456ba1220 --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  0,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  0.857,
+                                            "DeadlineSeconds":  300,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "MUTATION-APPLIED [original-restored] docs/internal/extensions/native1/commands/final-claims-public.json absent -\u003e B42003CE4F66E2682172861842B2789B631FC6DF0A9011F201753A40E211EC22 (restored base blob)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        },
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\verify_receipt_archives.py --tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-e5f12fb070204dfebe843d2456ba1220 --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  1,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  21.87,
+                                            "DeadlineSeconds":  900,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVES: source tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-e5f12fb070204dfebe843d2456ba1220",
+                                                           "RECEIPT-ARCHIVES: base 4edb1e14f607a809c018d569c3d4be99c0c54959: 226 blobs under docs/internal/extensions/native1/commands/, 12 contain claim-scanner result lines",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-native-readme.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-native-readme.json blob ae85ea8f985f001629cc1b06bdf56bfb25209358 sha256 ECDE3DCF2D2DB9D25C9F2B7A3445EBB22B31843F0484FCC43001F3A9FB0B8639 bytes 1378 archive sha256 13C39FCF08BDD46E3FDB735A57244E9D087220BA59433746BB20A0DD849FFBCD bytes 621 result-lines 2 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-packet.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-packet.json blob 393537de9cef52e4e2e2cf0ad3322b9c5b575549 sha256 9012550729DC59F6A4FF2202A4CDEC5A9160C79DD5BC31F468D85C206FBDF424 bytes 15518 archive sha256 1C7D2F500130E861CA6288C32739533B449956C19A130EE85B8CA78D346A8085 bytes 1558 result-lines 58 referring-files 7",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json.gz -\u003e docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json blob 75730d644fae2e001ab0a98bc23b16a5b037ab2b sha256 1645FBAF9478D69586EA1AB9B7328DE7416A565F236BD7D7AFCFB7AAD4C61830 bytes 50485 archive sha256 3677A12060580E070DE15972EDC4C7E562DFD82D2BA56FBAAFA1CA86AB518386 bytes 5812 result-lines 184 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process-command.json blob 0de72bf0243aee216beab3ff703a01b90cf3661e sha256 16E5FC0AA866338B5269E24A9769DFE1418D52E25DB8C6083404C5ECC894B280 bytes 4790 archive sha256 471EC10A7974D0BBB805D20FD4D62374611F73210C192E6EE16B2EB1BCB3DDE1 bytes 1353 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process.json blob f0d0d24aa6246e727d1273c20c9d96fb41c8ec0f sha256 60E2469637958ECD701375EB85E06B4C88DFC4649CE669642CC59F9572222575 bytes 129943 archive sha256 0C50B6A46D0277023FE9635A7D8A8F6C32F3251B54091A66F896911AE16DFA6F bytes 22256 result-lines 282 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public-command.json blob f734369147652e9b835a97a34f1e83a91063576f sha256 AC7B1CDBE521F3C22E03AE9B96BDFE6A22AD09765DEBA7B95F850ED7C777A373 bytes 2993 archive sha256 771F4654B086D65F2A401FDEF3BA7D0E19933ED9F0D5A979EF92787738B49779 bytes 789 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: FAIL [original-present] docs/internal/extensions/native1/commands/final-claims-public.json still exists in the tree",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-metadata-checks.json.gz -\u003e docs/internal/extensions/native1/commands/final-metadata-checks.json blob 655a0e41a7dab1f8109dde91ae007bcac9441a94 sha256 C825CB3393E349629B507B65F7ECB964C0B5EAFBFB7C72F933A3EDC42479CD74 bytes 26282 archive sha256 AF13F3AD9EBD8FDFACE7D7F02DEE89CAD1700D84FA101E15AB120D06850F3C43 bytes 5384 result-lines 84 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-static-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-static-command.json blob 98331e54b9259b42feb8482bb0189acb67680c19 sha256 CF300AC0127A4FEC0D9DDED1EBCB906C5BA16CEC84FEFC323E5D36CE47217EF3 bytes 8253880 archive sha256 FB288DCBED23770DC9C45E35BF7A00D8434A064F21ACE1BC8946F93263CE79C1 bytes 1114860 result-lines 3294 referring-files 8",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-command.json blob c1eda55352806ea5979637177ec5677ba47917a7 sha256 279E52386697567774D704CF75FE2524183C2C14F4C3C98DFD54AF758A910F40 bytes 4793 archive sha256 F9B8E8610C08D3A300CB09BA8112402E060309581C0BA916D08BE8EE6463AA97 bytes 1358 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-process.json blob 00b401d7d17d4f60b0d6f1be7ea7c76d7f39dec7 sha256 6BB49BA80D5395EB5ECDAE40C33680EBAABF48DF7A6ED7347B96DEE9CA2B7175 bytes 129948 archive sha256 9441834D18427E7653D0157EBC6973710E159AC76128F7F1642FE98543507D30 bytes 22238 result-lines 282 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json.gz -\u003e docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json blob 86f27ad5243395986821fb193401e8fb38e74258 sha256 7BA93098A74B4F38A0D02552662EF09BABA267D5AD74055EB675CA0268D15C2D bytes 26434 archive sha256 414976873974C97840A1FF89454F858FB8D75F06A61704CD91FEAC56D6A07886 bytes 5430 result-lines 84 referring-files 0",
+                                                           "RECEIPT-ARCHIVES: RESULT: FAIL (1 failures; 11 of 12 required archives verified)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+                                    "original-present"
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "manifest-entry-removed",
+                      "kind":  "mutate",
+                      "expectedExit":  1,
+                      "expectedCodes":  [
+                                            "archive-extra",
+                                            "manifest-missing-entry"
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\receipt_archive_control_helper.py mutate --case manifest-entry-removed --copy C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-f6c091ab1ab348948499d19b1ff848ce --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  0,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  0.714,
+                                            "DeadlineSeconds":  300,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "MUTATION-APPLIED [manifest-entry-removed] docs/internal/extensions/native1/repair-r1/RECEIPT_ARCHIVES.json  -\u003e  (removed the entry for docs/internal/extensions/native1/commands/final-claims-public.json; its archive stays)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        },
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\verify_receipt_archives.py --tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-f6c091ab1ab348948499d19b1ff848ce --repo C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts",
+                                            "ExitCode":  1,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  20.781,
+                                            "DeadlineSeconds":  900,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVES: source tree C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\copy-f6c091ab1ab348948499d19b1ff848ce",
+                                                           "RECEIPT-ARCHIVES: base 4edb1e14f607a809c018d569c3d4be99c0c54959: 226 blobs under docs/internal/extensions/native1/commands/, 12 contain claim-scanner result lines",
+                                                           "RECEIPT-ARCHIVES: FAIL [manifest-missing-entry] docs/internal/extensions/native1/commands/final-claims-public.json has 277 result lines at base but no manifest entry",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-native-readme.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-native-readme.json blob ae85ea8f985f001629cc1b06bdf56bfb25209358 sha256 ECDE3DCF2D2DB9D25C9F2B7A3445EBB22B31843F0484FCC43001F3A9FB0B8639 bytes 1378 archive sha256 13C39FCF08BDD46E3FDB735A57244E9D087220BA59433746BB20A0DD849FFBCD bytes 621 result-lines 2 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-drift-packet.json.gz -\u003e docs/internal/extensions/native1/commands/claim-drift-packet.json blob 393537de9cef52e4e2e2cf0ad3322b9c5b575549 sha256 9012550729DC59F6A4FF2202A4CDEC5A9160C79DD5BC31F468D85C206FBDF424 bytes 15518 archive sha256 1C7D2F500130E861CA6288C32739533B449956C19A130EE85B8CA78D346A8085 bytes 1558 result-lines 58 referring-files 7",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json.gz -\u003e docs/internal/extensions/native1/commands/claim-native-source-checkpoint.json blob 75730d644fae2e001ab0a98bc23b16a5b037ab2b sha256 1645FBAF9478D69586EA1AB9B7328DE7416A565F236BD7D7AFCFB7AAD4C61830 bytes 50485 archive sha256 3677A12060580E070DE15972EDC4C7E562DFD82D2BA56FBAAFA1CA86AB518386 bytes 5812 result-lines 184 referring-files 6",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process-command.json blob 0de72bf0243aee216beab3ff703a01b90cf3661e sha256 16E5FC0AA866338B5269E24A9769DFE1418D52E25DB8C6083404C5ECC894B280 bytes 4790 archive sha256 471EC10A7974D0BBB805D20FD4D62374611F73210C192E6EE16B2EB1BCB3DDE1 bytes 1353 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-process.json blob f0d0d24aa6246e727d1273c20c9d96fb41c8ec0f sha256 60E2469637958ECD701375EB85E06B4C88DFC4649CE669642CC59F9572222575 bytes 129943 archive sha256 0C50B6A46D0277023FE9635A7D8A8F6C32F3251B54091A66F896911AE16DFA6F bytes 22256 result-lines 282 referring-files 3",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-claims-public-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-claims-public-command.json blob f734369147652e9b835a97a34f1e83a91063576f sha256 AC7B1CDBE521F3C22E03AE9B96BDFE6A22AD09765DEBA7B95F850ED7C777A373 bytes 2993 archive sha256 771F4654B086D65F2A401FDEF3BA7D0E19933ED9F0D5A979EF92787738B49779 bytes 789 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-metadata-checks.json.gz -\u003e docs/internal/extensions/native1/commands/final-metadata-checks.json blob 655a0e41a7dab1f8109dde91ae007bcac9441a94 sha256 C825CB3393E349629B507B65F7ECB964C0B5EAFBFB7C72F933A3EDC42479CD74 bytes 26282 archive sha256 AF13F3AD9EBD8FDFACE7D7F02DEE89CAD1700D84FA101E15AB120D06850F3C43 bytes 5384 result-lines 84 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-static-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-static-command.json blob 98331e54b9259b42feb8482bb0189acb67680c19 sha256 CF300AC0127A4FEC0D9DDED1EBCB906C5BA16CEC84FEFC323E5D36CE47217EF3 bytes 8253880 archive sha256 FB288DCBED23770DC9C45E35BF7A00D8434A064F21ACE1BC8946F93263CE79C1 bytes 1114860 result-lines 3294 referring-files 8",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-command.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-command.json blob c1eda55352806ea5979637177ec5677ba47917a7 sha256 279E52386697567774D704CF75FE2524183C2C14F4C3C98DFD54AF758A910F40 bytes 4793 archive sha256 F9B8E8610C08D3A300CB09BA8112402E060309581C0BA916D08BE8EE6463AA97 bytes 1358 result-lines 8 referring-files 1",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/final-text-claims-process.json.gz -\u003e docs/internal/extensions/native1/commands/final-text-claims-process.json blob 00b401d7d17d4f60b0d6f1be7ea7c76d7f39dec7 sha256 6BB49BA80D5395EB5ECDAE40C33680EBAABF48DF7A6ED7347B96DEE9CA2B7175 bytes 129948 archive sha256 9441834D18427E7653D0157EBC6973710E159AC76128F7F1642FE98543507D30 bytes 22238 result-lines 282 referring-files 2",
+                                                           "RECEIPT-ARCHIVES: ok docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json.gz -\u003e docs/internal/extensions/native1/commands/metadata-checks-before-public-blob.json blob 86f27ad5243395986821fb193401e8fb38e74258 sha256 7BA93098A74B4F38A0D02552662EF09BABA267D5AD74055EB675CA0268D15C2D bytes 26434 archive sha256 414976873974C97840A1FF89454F858FB8D75F06A61704CD91FEAC56D6A07886 bytes 5430 result-lines 84 referring-files 0",
+                                                           "RECEIPT-ARCHIVES: FAIL [archive-extra] docs/internal/extensions/native1/commands/final-claims-public.json.gz is under docs/internal/extensions/native1/commands/ but in neither the manifest nor the base tree",
+                                                           "RECEIPT-ARCHIVES: RESULT: FAIL (2 failures; 11 of 12 required archives verified)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+                                    "archive-extra",
+                                    "manifest-missing-entry"
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "deadline-descendant-cleanup",
+                      "kind":  "hold",
+                      "expectedExit":  -1,
+                      "expectedCodes":  [
+
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\Python314\\python.exe C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\receipt_archive_control_helper.py hold --pid-dir C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\hold-14bc735c9d514703b3e3f6b4a969061a",
+                                            "ExitCode":  -1,
+                                            "TimedOut":  true,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  10.095,
+                                            "DeadlineSeconds":  10,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+                                                                  39236,
+                                                                  33300,
+                                                                  9504
+                                                              ],
+                                            "Stdout":  [
+                                                           "HOLD-READY root=33300 child=9504"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS",
+                      "heldProcessIds":  [
+                                             33300,
+                                             9504
+                                         ]
+                  },
+                  {
+                      "id":  "selector-empty",
+                      "kind":  "selector",
+                      "expectedExit":  2,
+                      "expectedCodes":  [
+
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \u0026 \u0027C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\run_receipt_archive_controls.ps1\u0027 -Case \u0027\u0027 -TempRoot \u0027C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\child-0240c81e340744e98d0f600a51276994\u0027 -VerifierDeadlineSeconds 900; exit $LASTEXITCODE",
+                                            "ExitCode":  2,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  1.307,
+                                            "DeadlineSeconds":  300,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVE-CONTROLS: SELECTOR-REJECTED [empty] -Case was bound to the empty string; omit it to run the full registry"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "selector-whitespace",
+                      "kind":  "selector",
+                      "expectedExit":  2,
+                      "expectedCodes":  [
+
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \u0026 \u0027C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\run_receipt_archive_controls.ps1\u0027 -Case \u0027 \u0027 -TempRoot \u0027C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\child-b6d84cd657534880aee051aae7303add\u0027 -VerifierDeadlineSeconds 900; exit $LASTEXITCODE",
+                                            "ExitCode":  2,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  1.061,
+                                            "DeadlineSeconds":  300,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVE-CONTROLS: SELECTOR-REJECTED [whitespace] -Case contains only whitespace"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "selector-malformed",
+                      "kind":  "selector",
+                      "expectedExit":  2,
+                      "expectedCodes":  [
+
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \u0026 \u0027C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\run_receipt_archive_controls.ps1\u0027 -Case \u0027Positive-Copy!\u0027 -TempRoot \u0027C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\child-fa6ae61b125542458c4133375c597b7b\u0027 -VerifierDeadlineSeconds 900; exit $LASTEXITCODE",
+                                            "ExitCode":  2,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  1.087,
+                                            "DeadlineSeconds":  300,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVE-CONTROLS: SELECTOR-REJECTED [malformed] element \u0027Positive-Copy!\u0027 is not a lowercase case id"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "selector-unknown",
+                      "kind":  "selector",
+                      "expectedExit":  2,
+                      "expectedCodes":  [
+
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \u0026 \u0027C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\run_receipt_archive_controls.ps1\u0027 -Case \u0027no-such-control\u0027 -TempRoot \u0027C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\child-bd8dbb0d936f416a93cdb663d4037ae4\u0027 -VerifierDeadlineSeconds 900; exit $LASTEXITCODE",
+                                            "ExitCode":  2,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  1.178,
+                                            "DeadlineSeconds":  300,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVE-CONTROLS: SELECTOR-REJECTED [unknown] \u0027no-such-control\u0027 is not in NATIVE1-R1-RECEIPT-ARCHIVE-CONTROLS-V1"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "selector-duplicate",
+                      "kind":  "selector",
+                      "expectedExit":  2,
+                      "expectedCodes":  [
+
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \u0026 \u0027C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\run_receipt_archive_controls.ps1\u0027 -Case \u0027positive-copy,positive-copy\u0027 -TempRoot \u0027C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\child-b88496811ce142d99bd0ce7592bb8c9a\u0027 -VerifierDeadlineSeconds 900; exit $LASTEXITCODE",
+                                            "ExitCode":  2,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  1.102,
+                                            "DeadlineSeconds":  300,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVE-CONTROLS: SELECTOR-REJECTED [duplicate] positive-copy selected more than once"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  },
+                  {
+                      "id":  "selector-valid",
+                      "kind":  "selector",
+                      "expectedExit":  0,
+                      "expectedCodes":  [
+
+                                        ],
+                      "processes":  [
+                                        {
+                                            "Command":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \u0026 \u0027C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\native1-r1-claim-receipts\\docs\\internal\\extensions\\native1\\repair-r1\\run_receipt_archive_controls.ps1\u0027 -Case \u0027positive-copy\u0027 -TempRoot \u0027C:\\Users\\poin\\AppData\\Local\\Temp\\rmq-native1-r1-controls\\child-9bdf08fcc61a4a069bdb43720dc22f12\u0027 -VerifierDeadlineSeconds 900; exit $LASTEXITCODE",
+                                            "ExitCode":  0,
+                                            "TimedOut":  false,
+                                            "OutputLimitExceeded":  false,
+                                            "DurationSeconds":  25.657,
+                                            "DeadlineSeconds":  1500,
+                                            "Ownership":  "kill-on-close-job",
+                                            "TerminatedIds":  [
+
+                                                              ],
+                                            "Stdout":  [
+                                                           "RECEIPT-ARCHIVE-CONTROLS: registry NATIVE1-R1-RECEIPT-ARCHIVE-CONTROLS-V1 (19 cases); selected 1; host Desktop 5.1.26100.9444 C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe; python C:\\Python314\\python.exe",
+                                                           "RECEIPT-ARCHIVE-CONTROLS: PASS [positive-copy] exits=0 codes=[] durations=20.797s deadlines=900s restored=True",
+                                                           "RECEIPT-ARCHIVE-CONTROLS: RESULT: PASS executed 1 of 1 selected cases (registry NATIVE1-R1-RECEIPT-ARCHIVE-CONTROLS-V1, 19 cases)"
+                                                       ],
+                                            "Stderr":  [
+
+                                                       ],
+                                            "Error":  ""
+                                        }
+                                    ],
+                      "codes":  [
+
+                                ],
+                      "problems":  [
+
+                                   ],
+                      "stateBefore":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "stateAfter":  "DFD704866AF16F704D748F8DA5097D03F67F3854220C832C3BBBB24A6971AE60",
+                      "restored":  true,
+                      "verdict":  "PASS"
+                  }
+              ]
+}
