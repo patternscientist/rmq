@@ -1770,3 +1770,54 @@ rejects every weakened field, whether valid small components exercise the rare
 exception branches, what finite input sizes make the overhead useful, and
 whether preprocessing or tighter path-sensitive bounds can be proved in the
 same machine.
+
+## 2026-09-12 UTC: LB-1 candidate joins variable payload counting to PQ1 allocation
+
+The new generic encoding record permits bitstrings of length at most B and
+allows the decoder to observe their lengths. There are exactly 2^(B+1)-1 such
+strings. One decoder must answer every valid leftmost RMQ window across every
+input of the chosen size. Equal codes consequently force equal Cartesian
+shapes, so the finite shape count gives
+`doubledLogSlackLower n <= 2*(B+1)`. The lower bound constrains a uniform budget
+over inputs; it does not depend on the numerical values being recoverable.
+
+The adapter now counts exactly the words PQ1 allocates. It writes each word at
+the same n-only width, retains the bitstring length, recovers the entire word
+list, and passes that recovered memory to the existing query. Different numbers
+of zero words stay distinguishable. Inputs with the same Cartesian shape share
+the same serialized allocation. In plain English, the information lower bound
+and the payload upper bound now refer to the memory the query actually uses.
+The named join is
+`RMQ.SuccinctFinal.PackedWordRAM.packedAllocationOptimality_holds`; the checked
+adapter's full memory equality transports all 33 existing machine propositions
+with their original endpoint and validity conditions.
+
+The live conventions are observed payload length, one decoder fixed per n, a
+uniform allocation budget, and PQ1's declared unit-cost scalar operations and
+word width. The canonical decoder takes only n, bits and endpoints. Code and
+finite scratch are separately accounted; bit conversion, preprocessing and the
+outer natural-number wrapper have no added primitive-time bound. Independent
+literal consumers and replay controls are tracked in the LB-1 report; candidate
+status does not record coordinator acceptance.
+
+The next questions for a skeptical graduate student are the useful finite-size
+slack in allocationRho and the cost of building this serialized allocation in
+the same machine model. Those are separate from the present uniform payload
+comparison. The task's consumer/replay and exact-commit verification remain
+required before candidate closure.
+
+
+### LB-1 lower/upper allocation join: repaired verification checkpoint (2026-09-12)
+
+Allowing the payload length to be observed gives `2^(B+1)-1` available codes
+through B bits. Exact half-open leftmost RMQ answers distinguish the Cartesian
+shapes, so the information bound applies to a uniform budget for the complete
+PQ1 allocation. Serialization and its whole-list inverse keep the counted
+memory identical to the memory used by the decoder and primitive query run.
+All 63 mutation/control cases, all 6 runtime fixtures, five focused modes, three extra selector branches and the 20-name trust inventory passed on the repaired candidate. The earlier sibling-budget test reached a recursion
+limit; its unchanged proposition now rejects at the intended type mismatch
+after a proof-body comparison repair. The failed campaign is retained as
+inconclusive history. Live conventions remain public n, observed length,
+uniform worst-case budget and the stated word-RAM primitives/width. There is
+no per-input allocation lower bound or charged-time claim for bit conversion.
+Coordinator broad certification and acceptance remain pending.

@@ -1,0 +1,29 @@
+{
+  "Stage": "M08-programFieldsFit-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:117:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.programFieldsFit",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (n : Nat) (instruction : Instruction),",
+    "    instruction ∈ queryProgram → Instruction.Fits (wordWidth n) instruction : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:117:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.programFieldsFit",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (n : Nat) (instruction : Instruction),",
+    "    instruction ∈ queryProgram → Instruction.Fits (wordWidth n) instruction : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 37.206,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

@@ -1,0 +1,29 @@
+{
+  "Stage": "M17-leftmost-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:150:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.leftmost",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right index : Nat),",
+    "    queryNat (reconstructedMemory xs) xs.length left right = some index → LeftmostArgMin xs left right index : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:150:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.leftmost",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right index : Nat),",
+    "    queryNat (reconstructedMemory xs) xs.length left right = some index → LeftmostArgMin xs left right index : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 32.39,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

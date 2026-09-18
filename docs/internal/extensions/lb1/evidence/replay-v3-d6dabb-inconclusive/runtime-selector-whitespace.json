@@ -1,0 +1,17 @@
+{
+  "Stage": "runtime-selector-whitespace",
+  "ExitCode": 1,
+  "Output": [
+    "uncaught exception: LB1-RUNTIME whitespace selector"
+  ],
+  "StandardOutput": [],
+  "StandardError": [
+    "uncaught exception: LB1-RUNTIME whitespace selector"
+  ],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 41.086,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

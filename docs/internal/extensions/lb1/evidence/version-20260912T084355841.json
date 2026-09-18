@@ -1,0 +1,17 @@
+{
+  "Stage": "lean-version",
+  "ExitCode": 0,
+  "Output": [
+    "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+  ],
+  "StandardOutput": [
+    "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 3.201,
+  "DeadlineSeconds": 60,
+  "Ownership": "kill-on-close-job"
+}

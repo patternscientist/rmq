@@ -1,0 +1,27 @@
+{
+  "Stage": "M06-memoryWordsFit-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:110:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.memoryWordsFit",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (word : Nat), word ∈ reconstructedMemory xs → word < 2 ^ wordWidth xs.length : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:110:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.memoryWordsFit",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (word : Nat), word ∈ reconstructedMemory xs → word < 2 ^ wordWidth xs.length : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 65.926,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

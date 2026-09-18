@@ -1,0 +1,27 @@
+{
+  "SourceTarget": "5033ce54da233fc7a3df319d50ab09a2ebee523a",
+  "Governance": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "PromptSHA256": "B872E9EEC5B5C4C011D109F6CA55A72E26E7AA75DFDFF566D5E39F965AD794BB",
+  "ProjectPreflight": {
+    "status": "fulfilled",
+    "value": {
+      "chunk_id": "5ca793",
+      "wall_time_seconds": 8.5569479,
+      "exit_code": 0,
+      "original_token_count": 203,
+      "output": "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied\nwarning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied\nwarning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied\nSKILL-PREFLIGHT: governance=0e6a00f654abc64f8b68988fa9675b9a839dca2f\r\nSKILL-PREFLIGHT: checkout=5033ce54da233fc7a3df319d50ab09a2ebee523a\r\nSKILL-PREFLIGHT: expected=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint\r\nSKILL-PREFLIGHT: checkout_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint\r\nSKILL-PREFLIGHT: working_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint\r\nSKILL-PREFLIGHT: runtime_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint\r\nSKILL-PREFLIGHT: required=<none>\r\nSKILL-PREFLIGHT: required_mode=explicit-no-role\r\nSKILL-PREFLIGHT: PASS\r\n"
+    }
+  },
+  "WorkerPromptPreflight": {
+    "status": "fulfilled",
+    "value": {
+      "chunk_id": "d0a804",
+      "wall_time_seconds": 5.2102479,
+      "exit_code": 0,
+      "original_token_count": 141,
+      "output": "WORKER-PROMPT-PREFLIGHT: status=READY_TO_SEND\r\nWORKER-PROMPT-PREFLIGHT: governance=0e6a00f654abc64f8b68988fa9675b9a839dca2f\r\nWORKER-PROMPT-PREFLIGHT: worker_base=5033ce54da233fc7a3df319d50ab09a2ebee523a\r\nWORKER-PROMPT-PREFLIGHT: worker=LB1-BLIND3\r\nWORKER-PROMPT-PREFLIGHT: feedback=NOT_APPLICABLE\r\nWORKER-PROMPT-PREFLIGHT: semantic_review=COMPLETE\r\nWORKER-PROMPT-PREFLIGHT: destination_task=FRESH_GOVERNED_WORKTREE\r\nWORKER-PROMPT-PREFLIGHT: destination_runtime=GOVERNED_START\r\nWORKER-PROMPT-PREFLIGHT: automated_completion=False\r\nWORKER-PROMPT-PREFLIGHT: PASS\r\n"
+    }
+  },
+  "AuditRole": "READ_ONLY; no-role explicit preflight; no file edits; full report text returned for verbatim lead staging",
+  "SourceIndependence": "Fork none; fresh detached child checkout; prior narratives withheld; list_agents prohibited to prevent completion-narrative disclosure"
+}

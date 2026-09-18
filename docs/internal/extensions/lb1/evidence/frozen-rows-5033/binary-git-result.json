@@ -1,0 +1,17 @@
+{
+  "Stage": "lb1-frozen-binary-git",
+  "ExitCode": 0,
+  "Output": [
+    "LB1-FROZEN binary Git bytes=17918 exit=0"
+  ],
+  "StandardOutput": [
+    "LB1-FROZEN binary Git bytes=17918 exit=0"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 3.99,
+  "DeadlineSeconds": 60,
+  "Ownership": "kill-on-close-job"
+}

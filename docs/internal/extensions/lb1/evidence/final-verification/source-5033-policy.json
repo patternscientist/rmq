@@ -1,0 +1,36 @@
+{
+  "SourceTarget": "5033ce54da233fc7a3df319d50ab09a2ebee523a",
+  "UTC": "2026-09-12T11:22:56.7664460Z",
+  "CleanTree": true,
+  "Checks": [
+    {
+      "Command": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "scripts/claim_drift_scan.ps1",
+        "-Strict",
+        "-IncludeProcessRecords"
+      ],
+      "ExitCode": 0,
+      "Log": ".lake/lb1-finalization/source-5033-claim.log",
+      "SHA256": "2CB318C6520BD8CEF3BCB7351FEE684F879A992BD9181E6CA8FCE478B63B0B4A",
+      "Result": "2026 hits, 0 strict failures"
+    },
+    {
+      "Command": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "scripts/design_decision_check.ps1",
+        "-Strict",
+        "-Base",
+        "0e6a00f654abc64f8b68988fa9675b9a839dca2f"
+      ],
+      "ExitCode": 0,
+      "Log": ".lake/lb1-finalization/source-5033-design.log",
+      "SHA256": "B8C6F527AFCEB3E87AAE310E208AA97CAAAA1EF4EA72D91D5F4235B55FA828CC",
+      "Result": "185 changed files, 9 code/177 workflow/3 neutral; categories may overlap"
+    }
+  ]
+}

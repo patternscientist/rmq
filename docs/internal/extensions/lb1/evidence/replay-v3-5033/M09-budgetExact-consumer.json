@@ -1,0 +1,27 @@
+{
+  "Stage": "M09-budgetExact-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:120:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.budgetExact",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  queryBudget = 837572 : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:120:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.budgetExact",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  queryBudget = 837572 : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 31.916,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

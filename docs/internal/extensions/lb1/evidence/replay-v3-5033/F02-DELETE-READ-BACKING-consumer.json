@@ -1,0 +1,23 @@
+{
+  "Stage": "F02-DELETE-READ-BACKING-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:216:2: error: Invalid field `positionalReadBacking`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.ReconstructedPackedQueryCapstone.positionalReadBacking`",
+    "  packedAllocationOptimality_holds.machine",
+    "has type",
+    "  ReconstructedPackedQueryCapstone"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:216:2: error: Invalid field `positionalReadBacking`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.ReconstructedPackedQueryCapstone.positionalReadBacking`",
+    "  packedAllocationOptimality_holds.machine",
+    "has type",
+    "  ReconstructedPackedQueryCapstone"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 18.129,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

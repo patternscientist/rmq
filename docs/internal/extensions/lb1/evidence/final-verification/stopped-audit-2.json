@@ -1,0 +1,12 @@
+{
+  "Handle": "LB1-BLIND2",
+  "SourceTarget": "5033ce54da233fc7a3df319d50ab09a2ebee523a",
+  "Status": "INCOMPLETE",
+  "Reason": "collaboration.list_agents exposed a completed sibling worker narrative and CANDIDATE_COMPLETE statement, contrary to the frozen blind-independence boundary.",
+  "Disposition": "Stopped without substantive verdict; replaced by fresh context LB1-BLIND3 and fresh governed detached checkout with the inventory tool prohibited.",
+  "Preflight": "PASS; exact target and clean checkout",
+  "FilesEdited": false,
+  "LeanOrRuntimeExecuted": false,
+  "SubstantiveVerdictUsable": false,
+  "Evidence": "Agent explicit contamination notification and final response in this task, 2026-09-12."
+}

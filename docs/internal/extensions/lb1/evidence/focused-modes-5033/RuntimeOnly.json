@@ -1,0 +1,92 @@
+{
+  "UTC": "2026-09-12T11:17:57.4026365Z",
+  "Commit": "5033ce54da233fc7a3df319d50ab09a2ebee523a",
+  "Command": [
+    "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+    "-NoProfile",
+    "-File",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1",
+    "-RuntimeOnly",
+    "-DeadlineSeconds",
+    "600",
+    "-LeanPath",
+    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe"
+  ],
+  "WorkingDirectory": "C:/Users/poin/.codex/worktrees/2270/RMQ",
+  "Sources": [
+    {
+      "Path": "RMQ/Core/EncodingVariableLowerBound.lean",
+      "SHA256": "688E98C5FBCC12D17CB475FD4B381B707EC224805C9A3C1C0B1858B3270B1FFA"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Packed/AllocationLowerBound.lean",
+      "SHA256": "FB78AD4A5C23709E0EAB724D02F5DEB46E23A535D5AC63CC6E2B4DE54192972D"
+    },
+    {
+      "Path": "RMQ/Validation/VariablePayloadLowerBound.lean",
+      "SHA256": "092B965AB266D1578A1CDD83A05BAC31644F14CE4400C380CD78032EA5850B72"
+    },
+    {
+      "Path": "scripts/variable_payload_replay.ps1",
+      "SHA256": "E1EE63BB1AEC8E53D769D8E26B56BF3576FA94E0C559D192643EE0F5EC63E51C"
+    },
+    {
+      "Path": "scripts/variable_payload_inventory.lean",
+      "SHA256": "1E4A84883CE5695C3392B5DB38B02335D0853B4FAFF772040D351FDB15E30721"
+    },
+    {
+      "Path": "scripts/variable_payload_generic_consumer.lean",
+      "SHA256": "EAEABD56E6AA750D02F416E34952A1164037DC8FEE60B4C39A3AD22F9245151D"
+    },
+    {
+      "Path": "scripts/owned_process_tree.ps1",
+      "SHA256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E"
+    },
+    {
+      "Path": "docs/internal/extensions/lb1/REPLAY_REGISTRY.json",
+      "SHA256": "9015398F8F1AEE8AF69C21294B2437B68FC77DF70006B69EDD2A593878D07E8B"
+    },
+    {
+      "Path": "lean-toolchain",
+      "SHA256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F"
+    },
+    {
+      "Path": "lakefile.toml",
+      "SHA256": "E429257DB73FE8E0FB795444EBB324C9A5472289047A400CEE10AA3B722FEFB9"
+    }
+  ],
+  "CreatedReplayRoots": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T111149080"
+  ],
+  "Result": {
+    "Stage": "focused-RuntimeOnly",
+    "ExitCode": 0,
+    "Output": [
+      "LB1-STAGE runtime-startup",
+      "LB1-STAGE runtime-known-selector",
+      "LB1-STAGE runtime-selector-empty",
+      "LB1-STAGE runtime-selector-whitespace",
+      "LB1-STAGE runtime-selector-malformed",
+      "LB1-STAGE runtime-selector-unknown",
+      "LB1-STAGE runtime-full",
+      "LB1-RUNTIME-PASS expected=6 executed=6 evidence=C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T111149080"
+    ],
+    "StandardOutput": [
+      "LB1-STAGE runtime-startup",
+      "LB1-STAGE runtime-known-selector",
+      "LB1-STAGE runtime-selector-empty",
+      "LB1-STAGE runtime-selector-whitespace",
+      "LB1-STAGE runtime-selector-malformed",
+      "LB1-STAGE runtime-selector-unknown",
+      "LB1-STAGE runtime-full",
+      "LB1-RUNTIME-PASS expected=6 executed=6 evidence=C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T111149080"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 375.182,
+    "DeadlineSeconds": 1200,
+    "Ownership": "kill-on-close-job"
+  }
+}

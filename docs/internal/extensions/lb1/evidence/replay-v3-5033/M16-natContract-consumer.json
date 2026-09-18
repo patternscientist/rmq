@@ -1,0 +1,31 @@
+{
+  "Stage": "M16-natContract-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:146:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.natContract",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    queryNat (reconstructedMemory xs) xs.length left right =",
+    "      if ValidRange xs left right then some (scanWindow xs left (right - left)) else none : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:146:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.natContract",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    queryNat (reconstructedMemory xs) xs.length left right =",
+    "      if ValidRange xs left right then some (scanWindow xs left (right - left)) else none : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 37.52,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

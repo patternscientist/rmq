@@ -1,0 +1,37 @@
+{
+  "Stage": "M30-suppliedMemoryAgreement-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:236:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.suppliedMemoryAgreement",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (memory : Memory) (left right : Nat),",
+    "    (∀ (receipt : Receipt),",
+    "        receipt ∈ (run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right)).reads →",
+    "          memory[receipt.address]? = (reconstructedMemory xs)[receipt.address]?) →",
+    "      run memory queryProgram queryBudget (initialState xs.length left right) =",
+    "        run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right) : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:236:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.suppliedMemoryAgreement",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (memory : Memory) (left right : Nat),",
+    "    (∀ (receipt : Receipt),",
+    "        receipt ∈ (run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right)).reads →",
+    "          memory[receipt.address]? = (reconstructedMemory xs)[receipt.address]?) →",
+    "      run memory queryProgram queryBudget (initialState xs.length left right) =",
+    "        run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right) : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 36.172,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

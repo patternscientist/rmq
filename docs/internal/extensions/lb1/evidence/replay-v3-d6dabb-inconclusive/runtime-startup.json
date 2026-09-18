@@ -1,0 +1,31 @@
+{
+  "Stage": "runtime-startup",
+  "ExitCode": 0,
+  "Output": [
+    "LB1-RUNTIME LIST LB1-RUNTIME-V1",
+    "R01-EMPTY",
+    "R02-SINGLETON",
+    "R03-LEFTMOST",
+    "R04-ZERO-LENGTH",
+    "R05-ZERO-WORDS",
+    "R06-SAME-SHAPE",
+    "LB1-RUNTIME LIST count=6"
+  ],
+  "StandardOutput": [
+    "LB1-RUNTIME LIST LB1-RUNTIME-V1",
+    "R01-EMPTY",
+    "R02-SINGLETON",
+    "R03-LEFTMOST",
+    "R04-ZERO-LENGTH",
+    "R05-ZERO-WORDS",
+    "R06-SAME-SHAPE",
+    "LB1-RUNTIME LIST count=6"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 54.457,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

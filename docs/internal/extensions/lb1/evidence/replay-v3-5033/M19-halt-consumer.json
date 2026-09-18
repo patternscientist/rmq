@@ -1,0 +1,35 @@
+{
+  "Stage": "M19-halt-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:162:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.halt",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    left < 2 ^ wordWidth xs.length →",
+    "      right < 2 ^ wordWidth xs.length →",
+    "        (run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right)).final.status =",
+    "          Status.halted (optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value) : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:162:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.halt",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    left < 2 ^ wordWidth xs.length →",
+    "      right < 2 ^ wordWidth xs.length →",
+    "        (run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right)).final.status =",
+    "          Status.halted (optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value) : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 24.817,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

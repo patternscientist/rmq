@@ -1,0 +1,31 @@
+{
+  "Stage": "M14-unusedRegisters-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:136:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.unusedRegisters",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right fuel r : Nat),",
+    "    queryRegisterCount ≤ r →",
+    "      (run (reconstructedMemory xs) queryProgram fuel (initialState xs.length left right)).final.regs r = 0 : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:136:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.unusedRegisters",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right fuel r : Nat),",
+    "    queryRegisterCount ≤ r →",
+    "      (run (reconstructedMemory xs) queryProgram fuel (initialState xs.length left right)).final.regs r = 0 : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 27.567,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

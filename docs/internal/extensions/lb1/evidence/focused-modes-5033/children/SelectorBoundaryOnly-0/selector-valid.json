@@ -1,0 +1,17 @@
+{
+  "Stage": "selector-valid",
+  "ExitCode": 0,
+  "Output": [
+    "LB1-SELECTOR-PASS selected=1 ids=A01-BASELINE"
+  ],
+  "StandardOutput": [
+    "LB1-SELECTOR-PASS selected=1 ids=A01-BASELINE"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 4.582,
+  "DeadlineSeconds": 60,
+  "Ownership": "kill-on-close-job"
+}

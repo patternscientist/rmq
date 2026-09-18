@@ -1,0 +1,14 @@
+{
+  "Auditor": "LB1-BLIND3",
+  "SourceTarget": "5033ce54da233fc7a3df319d50ab09a2ebee523a",
+  "ReportPath": "docs/internal/extensions/lb1/FINAL_AUDIT.md",
+  "Bytes": 59981,
+  "SHA256": "1399106CF5BD8C9F1CEB636F2E531022BD9E5A4328BDD8BCE000F98AEF050C12",
+  "SourceSessionLog": "C:/Users/poin/.codex/sessions/2026/09/12\\rollout-2026-09-12T03-34-58-01a0952f-4454-79b0-8a43-25c13fe07d8b.jsonl",
+  "Transport": "Exact assistant final response text decoded from own auditor session record, UTF-8 without BOM, no added newline; ignored and durable bytes identical",
+  "AuditVerdict": "INCOMPLETE",
+  "PendingAtReportTime": [
+    "Coordinator full build and aggregate gate",
+    "Lead report-containing-tree checks"
+  ]
+}

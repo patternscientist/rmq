@@ -1,0 +1,13 @@
+{
+  "Stage": "A02-PROOF-ONLY-WRAPPER-consumer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 29.622,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

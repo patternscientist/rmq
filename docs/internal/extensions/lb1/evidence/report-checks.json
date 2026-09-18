@@ -1,0 +1,116 @@
+{
+  "UTC": "2026-09-12T11:42:25.7182496Z",
+  "ImplementationTarget": "5033ce54da233fc7a3df319d50ab09a2ebee523a",
+  "Governance": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "ReportFiles": [
+    {
+      "Path": "docs/internal/extensions/lb1/REPORT.md",
+      "Bytes": 15213,
+      "SHA256": "AADB75159A19ADF005D4C71C9FC66DF251A64EAC5AD5E9B8EC450989510328B4"
+    },
+    {
+      "Path": "docs/internal/extensions/lb1/FINAL_AUDIT.md",
+      "Bytes": 59981,
+      "SHA256": "1399106CF5BD8C9F1CEB636F2E531022BD9E5A4328BDD8BCE000F98AEF050C12"
+    },
+    {
+      "Path": "docs/internal/extensions/lb1/AUDIT_D6_INCONCLUSIVE.md",
+      "Bytes": 978,
+      "SHA256": "C438E7A3BB08742E1E71E1DE8FE65D792F454851DD37660D5A65EDE1A06AE702"
+    },
+    {
+      "Path": "docs/internal/extensions/lb1/FINAL_DISPOSITION.md",
+      "Bytes": 9666,
+      "SHA256": "9D63FCE02D605D9D5211A78E4024A2E5039F0792601129FC4996E104145C1241"
+    },
+    {
+      "Path": "docs/internal/extensions/lb1/EVIDENCE_PLAN.md",
+      "Bytes": 13218,
+      "SHA256": "1A47FC2EE7769CA1C89E6BE7FABB19949A540424D0BBBA605FB215C84A760A5B"
+    },
+    {
+      "Path": "docs/internal/extensions/lb1/VERIFICATION_LEDGER.md",
+      "Bytes": 12815,
+      "SHA256": "B4F4094FDCC00D17565CDBF10D771AADE48A93D70DA506A638B8D2735F850A5D"
+    },
+    {
+      "Path": "docs/FAMILY_SUMMARY.md",
+      "Bytes": 247301,
+      "SHA256": "44391A11FCCBFDF21CA3FFF8DC5D2A61EF4A8C88D223C416882A4AD105616772"
+    },
+    {
+      "Path": "docs/DIGESTION_LOG.md",
+      "Bytes": 114316,
+      "SHA256": "A3BF9ED029E4A1A2F4EB251604FA15D3AB92AD9FDAC883ECCCCA03F7F59F58AC"
+    },
+    {
+      "Path": "docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+      "Bytes": 670718,
+      "SHA256": "41B0952502B9631DD8503492B7DF6AD0CCFCBD352C5B7E2FE4A0D6945A7358FD"
+    }
+  ],
+  "Checks": [
+    {
+      "Command": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "scripts/claim_drift_scan.ps1",
+        "-Strict",
+        "-IncludeProcessRecords"
+      ],
+      "ExitCode": 0,
+      "Result": "2087 hits, 0 strict failures",
+      "Log": "final-verification/report-certified-claim.log.gz"
+    },
+    {
+      "Command": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "scripts/design_decision_check.ps1",
+        "-Strict",
+        "-Base",
+        "0e6a00f654abc64f8b68988fa9675b9a839dca2f"
+      ],
+      "ExitCode": 0,
+      "Result": "394 changed files, 12 code/386 workflow/3 neutral",
+      "Log": "final-verification/report-certified-design.log"
+    },
+    {
+      "Command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "ExitCode": 0
+    },
+    {
+      "Command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "ExitCode": 0
+    },
+    {
+      "Command": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "scripts/claim_drift_scan.ps1",
+        "-Strict",
+        "-IncludeProcessRecords",
+        "-Path",
+        "C:/Users/poin/.codex/worktrees/2270/RMQ/.lake/lb1-final-audit/REPORT.md"
+      ],
+      "ExitCode": 0,
+      "Result": "Decoded original historical audit: 7 hits, 0 strict failures",
+      "Log": "final-verification/historical-audit-claim.log.gz"
+    }
+  ],
+  "SourceDiff": [],
+  "ReceiptOnlyAdditions": "This receipt and its lossless log copies are added after the checks; all nine checked report/prose hashes above remain unchanged. Post-commit exact-base design and committed-range whitespace are separately checked and reported in the handoff.",
+  "BroadChecks": "Full lake build and aggregate gate are coordinator-owned and remain unprovided."
+}

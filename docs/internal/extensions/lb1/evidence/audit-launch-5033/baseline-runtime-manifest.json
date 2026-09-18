@@ -1,0 +1,90 @@
+{
+  "SourceTarget": "5033ce54da233fc7a3df319d50ab09a2ebee523a",
+  "Scope": "Completed stages only; full campaign still pending",
+  "Records": [
+    {
+      "Stage": "baseline-generic-producer",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101947006\\baseline-generic-producer.json",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\completed-baseline-runtime\\baseline-generic-producer.json",
+      "Bytes": 301,
+      "SHA256": "83F1E0BBD236626DC287DF8A8F57B6248E1F184FF807C853AA7FF082E8C9213F"
+    },
+    {
+      "Stage": "baseline-packed-producer",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101947006\\baseline-packed-producer.json",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\completed-baseline-runtime\\baseline-packed-producer.json",
+      "Bytes": 299,
+      "SHA256": "FFA658F03EA44E6974A36FB7CB7A8EF5CCCA7B42A6EE1EB34455092615F5F588"
+    },
+    {
+      "Stage": "baseline-inventory",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101947006\\baseline-inventory.json",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\completed-baseline-runtime\\baseline-inventory.json",
+      "Bytes": 697,
+      "SHA256": "212879380044D9DA954945EED5C8C31B8395A76B41AE9C4E50C65EFB35B0A4B6"
+    },
+    {
+      "Stage": "baseline-consumer",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101947006\\baseline-consumer.json",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\completed-baseline-runtime\\baseline-consumer.json",
+      "Bytes": 293,
+      "SHA256": "4C8F7DFD1B77A0738AF57CAED1C5BCCA7A2E2EED4DEF70F5A77D07D78686B31A"
+    },
+    {
+      "Stage": "baseline-generic-consumer",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101947006\\baseline-generic-consumer.json",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\completed-baseline-runtime\\baseline-generic-consumer.json",
+      "Bytes": 300,
+      "SHA256": "764B25FB42F66405B8E8F04C6D09744D276C674ABA2E8D933F6B5E70201C437E"
+    },
+    {
+      "Stage": "runtime-startup",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101947006\\runtime-startup.json",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\completed-baseline-runtime\\runtime-startup.json",
+      "Bytes": 705,
+      "SHA256": "166FE6CD3838E2675E1FFBA69B0091F07AE5F161706B3B1375D09037D61D6B35"
+    },
+    {
+      "Stage": "runtime-known-selector",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101947006\\runtime-known-selector.json",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\completed-baseline-runtime\\runtime-known-selector.json",
+      "Bytes": 576,
+      "SHA256": "017FBF50FB9F0409528FC1B5B41FDCA73AA365798CDB7A51AFF0E2E9FC216B16"
+    },
+    {
+      "Stage": "runtime-selector-empty",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101947006\\runtime-selector-empty.json",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\completed-baseline-runtime\\runtime-selector-empty.json",
+      "Bytes": 414,
+      "SHA256": "A9EA3F0527D05F4EB2D28E45686E32EC1F77CD6018837A11AA78A5839D2CD846"
+    },
+    {
+      "Stage": "runtime-selector-whitespace",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101947006\\runtime-selector-whitespace.json",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\completed-baseline-runtime\\runtime-selector-whitespace.json",
+      "Bytes": 429,
+      "SHA256": "4381CF8D5E38BD91674675EBE77F8A42DBE379AB4347D866B277FFB2D531F86F"
+    },
+    {
+      "Stage": "runtime-selector-malformed",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101947006\\runtime-selector-malformed.json",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\completed-baseline-runtime\\runtime-selector-malformed.json",
+      "Bytes": 442,
+      "SHA256": "1847FC1A4475A6E45F16C952F51AE441B81030F50B6A3430A13ABE0FCDC4D6FA"
+    },
+    {
+      "Stage": "runtime-selector-unknown",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101947006\\runtime-selector-unknown.json",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\completed-baseline-runtime\\runtime-selector-unknown.json",
+      "Bytes": 446,
+      "SHA256": "CC840553F920161CBCA7B1F17E1F35EA0FDC19841776F6528DDAA38CCF6A51A0"
+    },
+    {
+      "Stage": "runtime-full",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101947006\\runtime-full.json",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\completed-baseline-runtime\\runtime-full.json",
+      "Bytes": 1135,
+      "SHA256": "274DA194CF15E0062FF89A8C775DF1EC8FD68C236AD074D9F345DF1E9D3AD7F4"
+    }
+  ]
+}

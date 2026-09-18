@@ -1,0 +1,29 @@
+{
+  "Stage": "M07-allocationAddressesFit-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:114:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.allocationAddressesFit",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (address : Nat),",
+    "    address ≤ List.length (reconstructedMemory xs) → address < 2 ^ wordWidth xs.length : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:114:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.allocationAddressesFit",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (address : Nat),",
+    "    address ≤ List.length (reconstructedMemory xs) → address < 2 ^ wordWidth xs.length : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 53.935,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

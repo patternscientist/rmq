@@ -12523,3 +12523,93 @@ checks also passed. Retain those receipts in the following evidence commit,
 and explicitly distinguish its new receipts/current prose from the 717 source
 artifacts just measured. The aggregate remains under the coordinator's diagnostic
 hold; no proof, replay or aggregate is repeated merely for these retained results.
+## WDD-20260912-LB1-001: freeze the additive lane and retain bounded verification ownership
+
+The newly authorized LB-1 extension starts from clean exact base/governance 0e6a00f654abc64f8b68988fa9675b9a839dca2f in its isolated codex/lb-1-variable-payload worktree. All three canonical RMQ skills were present and the actual runtime catalog was passed to project_skill_preflight with rmq-proof-sprint required; it passed. The task freezes original assigned paragraphs and all 21 inherited invariant blocks before proof edits. The matrix includes the complete target, not a helper endpoint.
+
+Read-only independent inventories separate generic counting from the actual allocation adapter; exact generic signatures precede any parallel proof writing. Contract/route review precedes the adapter. Process evidence stays in docs/internal/extensions/lb1, and any replay will use the existing owned_process_tree tooling, exact versioned case inventory, nonempty selectors and byte restoration. This is a lane-specific application of current workflow, not a change to canonical skills or the aggregate gate. Mutable shared cache links and unscheduled full builds were rejected because peer lanes run concurrently; narrow builds use one job and a task-local cache. Final aggregate execution awaits a coordinator host slot on frozen content.
+
+## WDD-20260912-LB1-002: exact consumer attacks and bounded local build evidence
+
+The lane runner uses the existing owned-process implementation for every proof, runtime and Git subprocess, preserves exit/stdout/stderr and resource-limit results, and restores mutated source and compiled artifacts byte-for-byte in nested finally blocks. It checks worktree, index and untracked state after each mutation. A resource failure is inconclusive, not an expected semantic rejection. The first ten-second descendant fixture expired before its child PID was recorded; the retained result is inconclusive. A thirty-second fixture, chosen after observing two-shell startup, proved Windows job cleanup and descendant absence. POSIX execution is explicitly uncovered on this host.
+
+Independent development review found that the initial declaration diagnostic range admitted the following declaration's first line, and that runtime startup followed the mutation loop. The range now excludes that next line, with inside/adjacent controls exercising the actual rejection function. Bounded runtime startup and one known selector now precede the full campaign. Removal of environment entries uses the existing provider convention; assigning a PowerShell null had preserved an empty channel in the initial failed selector probe. Fresh subprocess tests distinguish omitted, valid, empty, whitespace, malformed and unknown selectors. The default toolchain launcher tried downloading an already installed pinned toolchain, so this lane uses the verified installed 4.22.0 binaries without changing the pin.
+
+The registry began with 49 mandatory field weakenings and seven public/generic/decoder/baseline cases. Version 2 adds field deletion, sibling memory/run/budget substitutions and restricted-domain exactness. Version 3 adds a deliberately harmless proof-only wrapper mutation that must pass the unchanged literal inventory and public consumer. An unchanged baseline alone would not show that rejection is selective. Historical registries remain evidence; only the current exact ordered registry and its full executed/expected result can certify replay. No unexecuted source mutation is reported passed.
+
+The local dependency builder reads only actual import headers with nested comment/string handling and keys each artifact by the pinned Lean version, source hash and recursive direct-import keys. A quoted import in a source comment exposed the first parser's overreach; a whole-file scanner was then replaced by header-only scanning to avoid needless work. Global earlier-module keys were rejected because they rebuilt unrelated dependencies. Each cold module runs once at -j1 with an owned 1800-second deadline and JSONL evidence. Quiet builds are observed through their owned session and artifacts, not restarted. This runner is narrow development tooling, not authority to run the coordinator's aggregate gate.
+
+Frozen requirement integrity is checked from the exact raw Git blob at the contract checkpoint against strict UTF-8 row bytes, including trailing whitespace. All 29 rows and seven corruption/missing/duplicate controls passed; line delimiters and added evidence prose are outside those rows. Exact field inventory uses Lean structure metadata with an independently literal list, rather than trusting a regular expression or the producer's current type. These are task-local validation decisions; canonical workflow and inherited acceptance wording are unchanged.
+
+Before the full replay, the runner recompiles the current generic producer, packed producer and validation client in dependency order. The actual metadata check follows the packed compilation. Source cleanliness alone cannot establish that a cached olean matches the candidate; relying on that implication was rejected. Mutation backups therefore capture freshly checked positive artifacts, and every mutation restores those same baseline bytes. The parent-category inventory fixture also required the pinned Lean syntax `structure WithParent : Prop extends Unchanged`; its initial compile failure and corrected category-level result are both preserved. No inventory allowance or theorem proposition changed in that repair.
+
+## WDD-20260912-LB1-003: preserve the sibling-budget attack while bounding elaboration
+
+The first full version-3 campaign at d6dabbec10648f368df9ddcd32102f84deffb281 completed 60 cases, then reached Lean's recursion limit at checkO09 for S03-SIBLING-BUDGET. The altered producer compiled, but the consumer's default type comparison unfolded the large canonical allocation formula while comparing it with arbitrary B. The runner correctly classified this as inconclusive and restored the source/artifacts. All 129 raw stages remain in the lane evidence; H01 and A02 were not executed.
+
+The repair changes only checkO09's proof elaboration to `with_reducible exact` around the same public field projection. The literal expected proposition still quantifies every n, B and UniformAllocationBudget n B and concludes shapeCount n <= 2^(B+1)-1. S03 still substitutes the canonical-budget conclusion at 2*n+allocationRho n under those same quantifiers. Restricting elaboration transparency permits the ordinary type mismatch without expanding unrelated semireducible implementation constants. The kernel still checks the unchanged proposition and public proof dependency.
+
+Counting recursion exhaustion as a rejection, weakening the mutation to a simpler fact, narrowing the expected proposition, or blindly raising a global recursion allowance were rejected. The baseline validation check passed in 42.411 seconds; a same-P/Q diagnostic returned an explicit type mismatch in 7.524 seconds. The registered S03 case remains a separate required check, followed by a new complete campaign on the repaired commit and a fresh exact-commit audit. Earlier source-target evidence stays attached to its original commit.
+
+The user chose coordinator execution and result delivery for the full build and aggregate gate. This lane continues its narrow checks and report preparation, and does not use that choice as a broad-build grant. There is no mathematical representation or theorem-type decision to revise in the design ledger; this entry records the changed validation/elaboration procedure and the evidence ownership consequences.
+
+## WDD-20260912-LB1-004: keep fresh audits clear of shared completion narratives
+
+The repaired LB-1 candidate required a fresh blind exact-commit audit. Its
+read-only proof-auditor role forbids every file edit, including a report write,
+so the lead receives the finished report as text and stages it verbatim. This
+preserves role ownership while producing the durable report required by the
+lane; it does not let the lead rewrite the auditor's findings.
+
+One fresh auditor called the collaboration agent-inventory tool to assess
+parallelism. The tool response exposed a completed sibling's narrative and
+candidate declaration. The frozen independence rule required that attempt to
+stop; it made no substantive audit finding and supplied no usable verdict.
+The replacement starts in a fresh context and detached governed checkout,
+with prior reports and completion narratives withheld and that inventory tool
+explicitly excluded. Root owns the independent execution/evidence work, so
+the bounded source auditor has no necessary parallel leaf of its own.
+
+Continuing the contaminated session with a disclaimer was rejected because it
+would not meet the frozen blind-audit condition. Granting the read-only auditor
+write permission was also rejected: the lead can preserve its exact returned
+bytes without broadening the auditor's role. The consequence is a clean
+separation between authored findings, transport, source-target identity and
+later report-sensitive checks. A report's receipt or candidate-status token
+does not confer implementation acceptance. The launch prompt, exact-target
+preflight receipts, report digest and recorded stopped attempt supply evidence
+for future delegated audits.
+
+## WDD-20260912-LB1-005: preserve scan logs without recursively reclassifying diagnostics
+
+The exact-source claim check passed, but copying its complete raw output under
+the documentation evidence directory made the subsequent report-tree scan
+classify those diagnostic lines again. Seven copied examples had allowances
+attached to their original source paths; the log path cannot supply those
+allowances. The actual source and both verbatim audit reports were not the
+failing surfaces.
+
+The complete log is now losslessly gzip archived, with archive and decoded
+byte counts and SHA256 values in the evidence manifest. Decompression was
+performed and the decoded bytes were checked against the original raw log.
+The failed report-check output is archived the same way. The actual public
+text, worker report and current audit remain directly scanned by the unchanged
+strict checker, including process records. The historical audit is checked
+after decoding by that same strict scanner.
+
+Changing the policy or adding an evidence-directory allowance was rejected:
+that would broaden the accepted claim surface. Editing or selectively removing
+captured lines would lose raw evidence. Keeping the entire raw log as a binary
+archive preserves it without treating a logger's copy as a newly authored
+assertion at a different path. No implementation, theorem or replay case changed.
+The discovery receipt and final report-tree checks document this packaging
+choice and its verification. Future evidence consumers must check decoded
+hashes when reading archived logs; archive equality alone is insufficient.
+
+The staged whitespace check also identified a deliberate Markdown hard break
+in the original d6 audit. Its complete report is therefore retained losslessly
+as a separate gzip artifact with the original 63952-byte decoded digest. A small
+Markdown pointer distinguishes the historical report from the current audit.
+This preserves the original text instead of trimming it or weakening whitespace
+checking. The decoded historical report remains part of explicit strict claim
+verification.

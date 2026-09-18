@@ -1,0 +1,25 @@
+{
+  "Stage": "selector-malformed",
+  "ExitCode": 1,
+  "Output": [
+    "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:109",
+    "Line |",
+    " 109 |  … [StringComparison]::Ordinal)){throw 'LB1-SELECTOR malformed channel'}",
+    "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "     | LB1-SELECTOR malformed channel"
+  ],
+  "StandardOutput": [],
+  "StandardError": [
+    "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:109",
+    "Line |",
+    " 109 |  … [StringComparison]::Ordinal)){throw 'LB1-SELECTOR malformed channel'}",
+    "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "     | LB1-SELECTOR malformed channel"
+  ],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 6.644,
+  "DeadlineSeconds": 60,
+  "Ownership": "kill-on-close-job"
+}

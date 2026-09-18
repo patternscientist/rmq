@@ -1,0 +1,1243 @@
+{
+  "Version": 3,
+  "Target": "d6dabbec10648f368df9ddcd32102f84deffb281",
+  "Run": "20260912T090642898",
+  "Result": "INCONCLUSIVE",
+  "SuccessfulCases": [
+    "O01-wordRoundTrip",
+    "O02-wordSerializationInjective",
+    "O03-serializedLength",
+    "O04-memoryRecovery",
+    "O05-decoderExact",
+    "O06-decoderLeftmost",
+    "O07-sameShapeMemory",
+    "O08-shapeInjectivity",
+    "O09-uniformBudgetCount",
+    "O10-uniformBudgetLower",
+    "O11-canonicalCount",
+    "O12-canonicalLower",
+    "O13-upperCapacity",
+    "O14-allocationResidualLittleO",
+    "O15-runIdentity",
+    "O16-machine",
+    "M01-allocationResidualLittleO",
+    "M02-completeResidualLittleO",
+    "M03-widthBounds",
+    "M04-dataCapacity",
+    "M05-completeCapacity",
+    "M06-memoryWordsFit",
+    "M07-allocationAddressesFit",
+    "M08-programFieldsFit",
+    "M09-budgetExact",
+    "M10-programLength",
+    "M11-encodedProgramBound",
+    "M12-registerCount",
+    "M13-scratchCount",
+    "M14-unusedRegisters",
+    "M15-validInputs",
+    "M16-natContract",
+    "M17-leftmost",
+    "M18-result",
+    "M19-halt",
+    "M20-invalidGuard",
+    "M21-stepBound",
+    "M22-categoryPartition",
+    "M23-finalStateFit",
+    "M24-transitionSafety",
+    "M25-prefixSafety",
+    "M26-readWidth",
+    "M27-positionalReadBacking",
+    "M28-orderedLogicalRefinement",
+    "M29-logicalReadOnly",
+    "M30-suppliedMemoryAgreement",
+    "M31-specResult",
+    "M32-noFailedLoads",
+    "M33-invalidGuardSteps",
+    "A01-BASELINE",
+    "P01-PUBLIC-PROPOSITION",
+    "G01-LOWER-PROPOSITION",
+    "G02-DELETED-EXACTNESS",
+    "D01-NULL-DECODER",
+    "D02-WRONG-DECODER",
+    "D03-ZERO-SERIALIZER",
+    "F01-DELETE-MEMORY-RECOVERY",
+    "F02-DELETE-READ-BACKING",
+    "S01-SIBLING-MEMORY",
+    "S02-SIBLING-RUN"
+  ],
+  "InconclusiveCase": "S03-SIBLING-BUDGET",
+  "Reason": "Producer compiled; consumer exhausted elaborator recursion depth at checkO09. Resource exhaustion is not a semantic rejection.",
+  "UnexecutedCases": [
+    "H01-EMPTY-ONLY-DECODER",
+    "A02-PROOF-ONLY-WRAPPER"
+  ],
+  "FullSummaryEmitted": false,
+  "Restoration": "Runner nested finally completed and propagated the original semantic-classifier exception; root immediately observed empty git status and matching generic/packed source SHA256s before granting the repair worker a slot. No positive full-campaign summary exists.",
+  "SourceHashes": {
+    "Generic": "688E98C5FBCC12D17CB475FD4B381B707EC224805C9A3C1C0B1858B3270B1FFA",
+    "Packed": "FB78AD4A5C23709E0EAB724D02F5DEB46E23A535D5AC63CC6E2B4DE54192972D"
+  },
+  "Records": [
+    {
+      "Name": "A01-BASELINE.json",
+      "SHA256": "712EC65DFCC9569BA355F40318911D3E7716E0F0B035FE9BA12A29A32F10A3DA",
+      "Bytes": 288,
+      "Stage": "A01-BASELINE",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "baseline-consumer.json",
+      "SHA256": "4655295D1086E0AD8DC862CDC1EDF7512B577C1CC3E1C8668F7698BA5B93ED86",
+      "Bytes": 293,
+      "Stage": "baseline-consumer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "baseline-generic-consumer.json",
+      "SHA256": "A3BC0FB07665C1D64444F12F942029C63D1F9F99C71E37C8B37C6A9BECD19C88",
+      "Bytes": 299,
+      "Stage": "baseline-generic-consumer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "baseline-generic-producer.json",
+      "SHA256": "E93155EBA9DC93E41F07759DD9D2EFD883FD9E630BC009336FA28201CD1D3B48",
+      "Bytes": 300,
+      "Stage": "baseline-generic-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "baseline-inventory.json",
+      "SHA256": "D67E6FCE332574D05C0EBC425117D842B90BCEB17B102E7C289B257D081235FE",
+      "Bytes": 698,
+      "Stage": "baseline-inventory",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "baseline-packed-producer.json",
+      "SHA256": "414F7F7D67E510BA2E48F069BCD80038AC58D3622988A2D397C6A92A01D817C0",
+      "Bytes": 299,
+      "Stage": "baseline-packed-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "D01-NULL-DECODER-producer.json",
+      "SHA256": "9AB0DE276BA6F9B361462386451A6E25B6F334A45C6856F50DDBB703E78DCE1F",
+      "Bytes": 3803,
+      "Stage": "D01-NULL-DECODER-producer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "D02-WRONG-DECODER-producer.json",
+      "SHA256": "2891CC04C8D8C88C7FB2955549D40405CD995BFA4C1043AE744565F54437D6CE",
+      "Bytes": 3804,
+      "Stage": "D02-WRONG-DECODER-producer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "D03-ZERO-SERIALIZER-producer.json",
+      "SHA256": "3AAE58F5D38E558322255AA1420B437E9231D791CC05DAE73CDF25294BFFDB76",
+      "Bytes": 2851,
+      "Stage": "D03-ZERO-SERIALIZER-producer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "F01-DELETE-MEMORY-RECOVERY-consumer.json",
+      "SHA256": "1673359A432881002EDD754B19577266633995324429C539424BFF62E8329D8A",
+      "Bytes": 1735,
+      "Stage": "F01-DELETE-MEMORY-RECOVERY-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "F01-DELETE-MEMORY-RECOVERY-producer.json",
+      "SHA256": "41322BC61E93A76F80C7E231B91AC4304C0BD6AE47BB2FE88C28EF5F17524B32",
+      "Bytes": 310,
+      "Stage": "F01-DELETE-MEMORY-RECOVERY-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "F02-DELETE-READ-BACKING-consumer.json",
+      "SHA256": "23DF298F07E41EE2C0C63202ABA114DD792280AF2378040011FD9B2EA950D141",
+      "Bytes": 1092,
+      "Stage": "F02-DELETE-READ-BACKING-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "F02-DELETE-READ-BACKING-producer.json",
+      "SHA256": "5F09BF44698BD1F050EFB94264B4AC717EE4F8EF67E270D8F71DA962CDC610A8",
+      "Bytes": 307,
+      "Stage": "F02-DELETE-READ-BACKING-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "G01-LOWER-PROPOSITION-consumer.json",
+      "SHA256": "F7EB104EAA1ECD664F10C46079E31E701D07A703F21FD9C01384E75FCE540B67",
+      "Bytes": 991,
+      "Stage": "G01-LOWER-PROPOSITION-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "G01-LOWER-PROPOSITION-producer.json",
+      "SHA256": "BAC840040065F8AC81BFDF2AF1A6F3FAE90B41030FD0B8D07E9B497D373523B9",
+      "Bytes": 759,
+      "Stage": "G01-LOWER-PROPOSITION-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "G02-DELETED-EXACTNESS-producer.json",
+      "SHA256": "91068AF99B4E751E80E58AC3E72CB2172EF5F431886938A1C4FB6EF09C81873E",
+      "Bytes": 6763,
+      "Stage": "G02-DELETED-EXACTNESS-producer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M01-allocationResidualLittleO-consumer.json",
+      "SHA256": "71D1DF5C907A87CE2BD5C035F73CB52F0FFEE526485345D36445DD0044A04C83",
+      "Bytes": 976,
+      "Stage": "M01-allocationResidualLittleO-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M01-allocationResidualLittleO-producer.json",
+      "SHA256": "8A1E7844ABAA65AA30027679BABCD13FC4EA299F78A92ABDFB2D4657EFD0106C",
+      "Bytes": 313,
+      "Stage": "M01-allocationResidualLittleO-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M02-completeResidualLittleO-consumer.json",
+      "SHA256": "CDC3E8A2EB0F138D8979E89AC9CDE1C31E7E9BBBF5F33CDAA65D360BEC167DE3",
+      "Bytes": 976,
+      "Stage": "M02-completeResidualLittleO-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M02-completeResidualLittleO-producer.json",
+      "SHA256": "B6F6E90CAE01D2C07F0FFA1F8D666719754D47886D3AACA1351E66D24D68FAF8",
+      "Bytes": 311,
+      "Stage": "M02-completeResidualLittleO-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M03-widthBounds-consumer.json",
+      "SHA256": "4F5E49899FA2032FAF31C3A7791AD76431B8B23776A99AB607628437B20DA43A",
+      "Bytes": 1064,
+      "Stage": "M03-widthBounds-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M03-widthBounds-producer.json",
+      "SHA256": "8AD876E242FDC2DC288CE55FB93098A2B588CB27293DEDAB9C9A08DFF1DF13CC",
+      "Bytes": 298,
+      "Stage": "M03-widthBounds-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M04-dataCapacity-consumer.json",
+      "SHA256": "C98593CCE714DA7DB49813A7BBE861231A4C3908462928DC48CA2F773EA76C64",
+      "Bytes": 1155,
+      "Stage": "M04-dataCapacity-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M04-dataCapacity-producer.json",
+      "SHA256": "AD2BF81422144C5141EB5616D7D2D569AFB8DB9893137CDA832B2369756253DA",
+      "Bytes": 301,
+      "Stage": "M04-dataCapacity-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M05-completeCapacity-consumer.json",
+      "SHA256": "0141C4C7630F710B312F1C10454700C2B28AD9EAD50C669574FD39370E63BAFC",
+      "Bytes": 1451,
+      "Stage": "M05-completeCapacity-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M05-completeCapacity-producer.json",
+      "SHA256": "62559803035BA720A2349E4DBA44ECA652C1E5E04918429319B9AB7B4BFF6EA0",
+      "Bytes": 303,
+      "Stage": "M05-completeCapacity-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M06-memoryWordsFit-consumer.json",
+      "SHA256": "7D6BBD1F3A2C31294E7A7249EBE684EF30A1E5B25E454E33550D9C6246959BBB",
+      "Bytes": 1091,
+      "Stage": "M06-memoryWordsFit-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M06-memoryWordsFit-producer.json",
+      "SHA256": "C178B8606B69C1D5B6DB73FC6F39E1935257B191D54C1DFC9985C3746544EEBC",
+      "Bytes": 303,
+      "Stage": "M06-memoryWordsFit-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M07-allocationAddressesFit-consumer.json",
+      "SHA256": "88190A83300B391CA22CA9C7D998015AC4ECF4D9366BFDAE8A841DBC626CDF7D",
+      "Bytes": 1185,
+      "Stage": "M07-allocationAddressesFit-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M07-allocationAddressesFit-producer.json",
+      "SHA256": "5019DC44AF5577D78C81211E45FEAC432F16309F446FD3F41EDBF1181C0E0B26",
+      "Bytes": 311,
+      "Stage": "M07-allocationAddressesFit-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M08-programFieldsFit-consumer.json",
+      "SHA256": "EF16F170F686A289146B145C4075AF7119F6AA57674E2F4A2319C35EB4FB8C80",
+      "Bytes": 1156,
+      "Stage": "M08-programFieldsFit-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M08-programFieldsFit-producer.json",
+      "SHA256": "9219BCC7A15020D2B10AC6C348A1BBB72AB810692617FB3444C7AAC69D495641",
+      "Bytes": 305,
+      "Stage": "M08-programFieldsFit-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M09-budgetExact-consumer.json",
+      "SHA256": "C9DF567E6DD0CB566EE9FF40F60E7B48911236F85459778698B9E4DB3B2A0252",
+      "Bytes": 922,
+      "Stage": "M09-budgetExact-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M09-budgetExact-producer.json",
+      "SHA256": "1608E531132669D2AC53F2449BE94CC9B4CC47ADCAD3A31C224BAC4E08289631",
+      "Bytes": 300,
+      "Stage": "M09-budgetExact-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M10-programLength-consumer.json",
+      "SHA256": "7271E232BF50F718DE1DEEF4BE06540D9442D4B366C93C894F9F371C8F5108EF",
+      "Bytes": 964,
+      "Stage": "M10-programLength-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M10-programLength-producer.json",
+      "SHA256": "25C1C950197E3CE1A468588BA4457D07501A1AF31B9AE20E680FCEAE576C97BD",
+      "Bytes": 301,
+      "Stage": "M10-programLength-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M11-encodedProgramBound-consumer.json",
+      "SHA256": "2328C18A6588ADAE098EADCD03B267D7ECBFD165C1D31278BCCD4E2C367E08E9",
+      "Bytes": 1064,
+      "Stage": "M11-encodedProgramBound-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M11-encodedProgramBound-producer.json",
+      "SHA256": "C0921B3DA0680FBB7C441B5DAFE3B46DF160AD012424FD1422E28BE652E7EFB4",
+      "Bytes": 308,
+      "Stage": "M11-encodedProgramBound-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M12-registerCount-consumer.json",
+      "SHA256": "9FA45E657D51185E552067A412722AFB19AEF6AFB4E7128B8BB4462121EAAF7F",
+      "Bytes": 938,
+      "Stage": "M12-registerCount-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M12-registerCount-producer.json",
+      "SHA256": "D51903240B74DD58AF076986B53B0D0C23B9ADBF3FAFE9D6C1ACA27EE3FDD39A",
+      "Bytes": 301,
+      "Stage": "M12-registerCount-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M13-scratchCount-consumer.json",
+      "SHA256": "54875D7954BD56C99B6B4D9358C28302D367A8F77380A47E3F05346D8B49B26F",
+      "Bytes": 932,
+      "Stage": "M13-scratchCount-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M13-scratchCount-producer.json",
+      "SHA256": "7601DA52430A58E68DFDDF10DA7E625E7B58BA1C0554AD2BCC8C241F13430685",
+      "Bytes": 301,
+      "Stage": "M13-scratchCount-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M14-unusedRegisters-consumer.json",
+      "SHA256": "A374D680402D2B51C320CBA41BD609302936944174185957A4EAF42FBE846B0F",
+      "Bytes": 1300,
+      "Stage": "M14-unusedRegisters-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M14-unusedRegisters-producer.json",
+      "SHA256": "9EB1FA04C3583E90A646D59CAEED4F785029CB354F8C4854897A60C4F28AB181",
+      "Bytes": 303,
+      "Stage": "M14-unusedRegisters-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M15-validInputs-consumer.json",
+      "SHA256": "2B56336F19D9FA6D09801359CA6C9D5E7F1B3A1C1FC12651B708DEE20E0F2469",
+      "Bytes": 1398,
+      "Stage": "M15-validInputs-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M15-validInputs-producer.json",
+      "SHA256": "78948C45E83E7714E0647673C8F168A773E61EFA5EF7DB693DE9572F4CD13070",
+      "Bytes": 300,
+      "Stage": "M15-validInputs-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M16-natContract-consumer.json",
+      "SHA256": "A409BE6FEE756F258E69D03FAB2D37A14363A0ED9AB8571B6F01CFC31936A1CD",
+      "Bytes": 1294,
+      "Stage": "M16-natContract-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M16-natContract-producer.json",
+      "SHA256": "807AB71CD7525D9330DC28E5CC4EF52157D5CCD0A5D309A763F96DBC8C48D980",
+      "Bytes": 299,
+      "Stage": "M16-natContract-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M17-leftmost-consumer.json",
+      "SHA256": "603F8250B18880A96864A5AFD657C1140DE8F8B065384D576AB7449B06D94EBC",
+      "Bytes": 1201,
+      "Stage": "M17-leftmost-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M17-leftmost-producer.json",
+      "SHA256": "82380974EF079759BBE7E75B78DE2FAD505B6CD82FD40BF3407CB2E9F645072F",
+      "Bytes": 297,
+      "Stage": "M17-leftmost-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M18-result-consumer.json",
+      "SHA256": "F91C22365E11068BE111F7B312299A562F502206EE995759A38AD915322C9CE9",
+      "Bytes": 1565,
+      "Stage": "M18-result-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M18-result-producer.json",
+      "SHA256": "D480BC8FA9EAFF0A5AC0D37C52EF89347D7A22149626299E617CA2283DFF06DF",
+      "Bytes": 294,
+      "Stage": "M18-result-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M19-halt-consumer.json",
+      "SHA256": "0F795C0F1C0074FE2DB742BB107D38120F66E63DD155503B482EF2D9C9E556B2",
+      "Bytes": 1589,
+      "Stage": "M19-halt-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M19-halt-producer.json",
+      "SHA256": "982E151CFB0712D76CF4EF7A083475F0AC5E341895EBF0838CEBB18815DEF607",
+      "Bytes": 293,
+      "Stage": "M19-halt-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M20-invalidGuard-consumer.json",
+      "SHA256": "4CDA65EF745B83CDB5BAF0CD9611DC0D94D74BE02B3625D72190153282A5E080",
+      "Bytes": 1801,
+      "Stage": "M20-invalidGuard-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M20-invalidGuard-producer.json",
+      "SHA256": "CAAE67214F6189A14E432147723496217BDDB6E6C8FA3BC493355EB5B0512F49",
+      "Bytes": 300,
+      "Stage": "M20-invalidGuard-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M21-stepBound-consumer.json",
+      "SHA256": "6EFA500C947041200A3CF7AD25657C54E12447FBFD2F5443CE415D19B192688C",
+      "Bytes": 1234,
+      "Stage": "M21-stepBound-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M21-stepBound-producer.json",
+      "SHA256": "57C034CA68EEB4826B1A2BAFE068D8CF9AA3A7107B5763BFED47066B0FE33829",
+      "Bytes": 297,
+      "Stage": "M21-stepBound-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M22-categoryPartition-consumer.json",
+      "SHA256": "A2119990B30012AFA64671101109F8CCE30D6FDEB5A7746ECEA5D1FF3E68B535",
+      "Bytes": 1950,
+      "Stage": "M22-categoryPartition-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M22-categoryPartition-producer.json",
+      "SHA256": "981040FADBECBA59A70B959DBA4A058E42644FAE3AF11EFCF88ED6FBBCC37451",
+      "Bytes": 305,
+      "Stage": "M22-categoryPartition-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M23-finalStateFit-consumer.json",
+      "SHA256": "610693694F50EA05FA91F4AE101FDECAE13E925D9EBAD83F2D5E434B00D3AB11",
+      "Bytes": 1490,
+      "Stage": "M23-finalStateFit-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M23-finalStateFit-producer.json",
+      "SHA256": "1C87A51CC9A7CAE61A62C747B987859096A785D6672D6CE82A95A67944FBE75E",
+      "Bytes": 302,
+      "Stage": "M23-finalStateFit-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M24-transitionSafety-consumer.json",
+      "SHA256": "7D78E556A32D4446C8B29E444EAB5F66F123F090A30F4ADE1F5F96D77002DD98",
+      "Bytes": 1957,
+      "Stage": "M24-transitionSafety-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M24-transitionSafety-producer.json",
+      "SHA256": "6B79612CBC2D452146DF208F23EBC465DA0081493D4BA6F2EC09EBB2D66C2EEC",
+      "Bytes": 305,
+      "Stage": "M24-transitionSafety-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M25-prefixSafety-consumer.json",
+      "SHA256": "35444C870AA75B7EB8E3BA7E26C1D6B6028B6051E2E20B96F299C530A1A85F63",
+      "Bytes": 1643,
+      "Stage": "M25-prefixSafety-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M25-prefixSafety-producer.json",
+      "SHA256": "B95451295B9B85456A668553A59D03B82100078D5D66EFB49B7A67CCF4414656",
+      "Bytes": 300,
+      "Stage": "M25-prefixSafety-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M26-readWidth-consumer.json",
+      "SHA256": "016FB0EF469E88BAC1018FA6344695ED137BAAE1440C579B6E9CB9A6E6F037DD",
+      "Bytes": 2302,
+      "Stage": "M26-readWidth-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M26-readWidth-producer.json",
+      "SHA256": "55AF6B836CCA2AA24E9E5B8023078FD6E4C1B09355D415DBE1EBC9D08346966B",
+      "Bytes": 298,
+      "Stage": "M26-readWidth-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M27-positionalReadBacking-consumer.json",
+      "SHA256": "6C1FF48B31C44A8CBAF504AE600D0115583858E2A1A0028EBD85439D2897104B",
+      "Bytes": 2732,
+      "Stage": "M27-positionalReadBacking-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M27-positionalReadBacking-producer.json",
+      "SHA256": "080AF5351A2CD5037B743D790D805826D03DEAFF01E8B7270ACEF43980D9E984",
+      "Bytes": 308,
+      "Stage": "M27-positionalReadBacking-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M28-orderedLogicalRefinement-consumer.json",
+      "SHA256": "66E4B7A182D7793914F095E2C9041895E1B26BBBBFA4570B92C943A0898B6A5F",
+      "Bytes": 2013,
+      "Stage": "M28-orderedLogicalRefinement-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M28-orderedLogicalRefinement-producer.json",
+      "SHA256": "9671362FFEC26BA86AE3F71E2176B07AAEB07D6C8330220980F687E5B0EA1709",
+      "Bytes": 312,
+      "Stage": "M28-orderedLogicalRefinement-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M29-logicalReadOnly-consumer.json",
+      "SHA256": "3A1011B6A80B914704A35357173B08311EA0578323E54DEBC6009E3FDD255AA1",
+      "Bytes": 1110,
+      "Stage": "M29-logicalReadOnly-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M29-logicalReadOnly-producer.json",
+      "SHA256": "3BD1A2488A0B1D856BF01D55FE49022C2B0A6B324E127CE7AF774FAE49F335B1",
+      "Bytes": 303,
+      "Stage": "M29-logicalReadOnly-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M30-suppliedMemoryAgreement-consumer.json",
+      "SHA256": "1C2BBAB15A8244915CA2C0DC82F3CF11A9392004792950B4444BF39CB87CE7A2",
+      "Bytes": 1942,
+      "Stage": "M30-suppliedMemoryAgreement-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M30-suppliedMemoryAgreement-producer.json",
+      "SHA256": "2684AA2C25E2FC9DA94A4A237440369C66C02EC749EC46A85B2F52D96C0D6A24",
+      "Bytes": 311,
+      "Stage": "M30-suppliedMemoryAgreement-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M31-specResult-consumer.json",
+      "SHA256": "F69DB00C6D3314EF11A66FC7A02DF07C47C245A25163CEA3A33A421CADC94317",
+      "Bytes": 1391,
+      "Stage": "M31-specResult-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M31-specResult-producer.json",
+      "SHA256": "6296098DE870D6751744BBD682A9F2A8DEB0C681566F5001955104B50A1B0B5E",
+      "Bytes": 298,
+      "Stage": "M31-specResult-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M32-noFailedLoads-consumer.json",
+      "SHA256": "26EE8963319C82618845E90CD5D0DF747AF1A8E8CD735A4CB56E1787DEC2862F",
+      "Bytes": 1498,
+      "Stage": "M32-noFailedLoads-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M32-noFailedLoads-producer.json",
+      "SHA256": "B1B9E0E5825029A2C5B359C8F9B22D32A4A1578816F63B5596A7D6FD4E52CFAB",
+      "Bytes": 300,
+      "Stage": "M32-noFailedLoads-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M33-invalidGuardSteps-consumer.json",
+      "SHA256": "DFD47A5BE28BB4BD05589E3CB1DDA6C61F255B77CEAB2623CB45D710966ADF44",
+      "Bytes": 1300,
+      "Stage": "M33-invalidGuardSteps-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "M33-invalidGuardSteps-producer.json",
+      "SHA256": "D4467AA385CDB38C4772EA0BB5DA34BD1E65EAC3879F074FB1B06249730FD109",
+      "Bytes": 305,
+      "Stage": "M33-invalidGuardSteps-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O01-wordRoundTrip-consumer.json",
+      "SHA256": "25436D389FB8ABFFB4AA8EA39996882A1B812E9873059B8569F0AD2E77B91FAF",
+      "Bytes": 1296,
+      "Stage": "O01-wordRoundTrip-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O01-wordRoundTrip-producer.json",
+      "SHA256": "D6283CFBD841A7939C4ACBA52C828CBCEF540D4144DB87D58BD332B05362B133",
+      "Bytes": 302,
+      "Stage": "O01-wordRoundTrip-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O02-wordSerializationInjective-consumer.json",
+      "SHA256": "D4204EBE59276DB3FDA625575C3BA4393468C7A5409C9E988340994A780EEA7B",
+      "Bytes": 1539,
+      "Stage": "O02-wordSerializationInjective-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O02-wordSerializationInjective-producer.json",
+      "SHA256": "AAB4C9363098F58D0CCED354122432B317D6154C77D89817BEF8D0776080EC94",
+      "Bytes": 315,
+      "Stage": "O02-wordSerializationInjective-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O03-serializedLength-consumer.json",
+      "SHA256": "EFE0D627007D44F095AADB0AD8784235D99946D5A08FA943440DAC9EEB7CA6E3",
+      "Bytes": 2075,
+      "Stage": "O03-serializedLength-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O03-serializedLength-producer.json",
+      "SHA256": "76E0286104BD383586A629E70652485DA75A295FAEA743F886906B5E7F17430F",
+      "Bytes": 305,
+      "Stage": "O03-serializedLength-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O04-memoryRecovery-consumer.json",
+      "SHA256": "E396D838D8FC9BE31E8C840AFB0C60D6FBE5913AF8C66FFE4A2A747A08F556BE",
+      "Bytes": 1921,
+      "Stage": "O04-memoryRecovery-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O04-memoryRecovery-producer.json",
+      "SHA256": "9651BA49EE2714497B8D5E549A449D26E0EDA7569AEB0610F1B3213FCF210A3F",
+      "Bytes": 303,
+      "Stage": "O04-memoryRecovery-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O05-decoderExact-consumer.json",
+      "SHA256": "C3309947ADFD7C38903B5C0D95375C19BDEF58981125C59265C2764509000C29",
+      "Bytes": 2531,
+      "Stage": "O05-decoderExact-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O05-decoderExact-producer.json",
+      "SHA256": "DA2573AAF016390BCFF800D081A8BF51DF4A56E375E5A644368FC96FA7C07498",
+      "Bytes": 300,
+      "Stage": "O05-decoderExact-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O06-decoderLeftmost-consumer.json",
+      "SHA256": "0149BE9EB0BA4697A51BE013641188BF9CE982787034FAD8CCF9A321443A918E",
+      "Bytes": 1212,
+      "Stage": "O06-decoderLeftmost-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O06-decoderLeftmost-producer.json",
+      "SHA256": "B4EAF72D6E4C0F52253C5183B444B4467BA0A5C056EBC8B5E1308AC2F7399BC0",
+      "Bytes": 303,
+      "Stage": "O06-decoderLeftmost-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O07-sameShapeMemory-consumer.json",
+      "SHA256": "53FCA2AE56727669E398D3DDBED813DDCFDEEC90A1E923D1ACE40EB62650C6D6",
+      "Bytes": 1032,
+      "Stage": "O07-sameShapeMemory-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O07-sameShapeMemory-producer.json",
+      "SHA256": "57FD1836D25FF7DE7873C77A4AE79C565C95D5A6678501915B42A9727A9A4F4C",
+      "Bytes": 303,
+      "Stage": "O07-sameShapeMemory-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O08-shapeInjectivity-consumer.json",
+      "SHA256": "DF53E542B880729EC6AEBDF07A3BD8CFEC7EC4C71E477B936979A8076E6535EA",
+      "Bytes": 1361,
+      "Stage": "O08-shapeInjectivity-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O08-shapeInjectivity-producer.json",
+      "SHA256": "F68612AC0380FA702AA6C2EE27456EFB7D0AC02C532BED36136E88D43137CD23",
+      "Bytes": 304,
+      "Stage": "O08-shapeInjectivity-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O09-uniformBudgetCount-consumer.json",
+      "SHA256": "DA7AFB39C9AF4945126CBBD139F5DF244B2AC1F9C3A2B4F5801A5A3A3DB35E44",
+      "Bytes": 1047,
+      "Stage": "O09-uniformBudgetCount-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O09-uniformBudgetCount-producer.json",
+      "SHA256": "117B32A6CAAB0E48F647122EEC6CD8BB6D92549AFE763EDBDBCD68FD173E7575",
+      "Bytes": 306,
+      "Stage": "O09-uniformBudgetCount-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O10-uniformBudgetLower-consumer.json",
+      "SHA256": "636C6393AEEA1A6B457DCB93F2CD35310CC351996A71D9E575C5E467E9731BC3",
+      "Bytes": 2299,
+      "Stage": "O10-uniformBudgetLower-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O10-uniformBudgetLower-producer.json",
+      "SHA256": "33AF7F49FBCC886F4973D09C6E2846BF484335C8E4175F472CA498B74DE6325E",
+      "Bytes": 306,
+      "Stage": "O10-uniformBudgetLower-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O11-canonicalCount-consumer.json",
+      "SHA256": "0BF6F0ECE3E66F670E380334BAAC904137B9B7DCDB19A52126F15D0F689AD18F",
+      "Bytes": 1011,
+      "Stage": "O11-canonicalCount-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O11-canonicalCount-producer.json",
+      "SHA256": "21713190071EA86D0EB9F75D0A85AEAF90079225D8DBEA863EE22F43985C9824",
+      "Bytes": 302,
+      "Stage": "O11-canonicalCount-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O12-canonicalLower-consumer.json",
+      "SHA256": "908E54E31102B54F2ED731CB7439B88F2899BE7FE510F971812220745C474529",
+      "Bytes": 1061,
+      "Stage": "O12-canonicalLower-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O12-canonicalLower-producer.json",
+      "SHA256": "31E97A7FC737852FF89F336CA237CE7DEE72B84CF8BA8709938DD7EC2BCBE8BA",
+      "Bytes": 302,
+      "Stage": "O12-canonicalLower-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O13-upperCapacity-consumer.json",
+      "SHA256": "29D8799807CA8E2C82D58599BC34FC697B4D6264D8AB4A82D43307572E54F83A",
+      "Bytes": 2128,
+      "Stage": "O13-upperCapacity-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O13-upperCapacity-producer.json",
+      "SHA256": "E8560D7501B44A5EFAE7D734AA706BD57FB2AF84E54E2191BB308B0446DD5760",
+      "Bytes": 301,
+      "Stage": "O13-upperCapacity-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O14-allocationResidualLittleO-consumer.json",
+      "SHA256": "4ED269205BE7D8AD960B0577C33D4462147EA16DE19345BAF25D25585396480D",
+      "Bytes": 959,
+      "Stage": "O14-allocationResidualLittleO-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O14-allocationResidualLittleO-producer.json",
+      "SHA256": "F636C9083DEC9423B7069074B8E7B2DAED40C4038C0E5DD7F58D9A16708C283A",
+      "Bytes": 313,
+      "Stage": "O14-allocationResidualLittleO-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O15-runIdentity-consumer.json",
+      "SHA256": "D8762ED56920649DD49EF8EA0B1912B853392F0174C61CC7A0A088EA2A0F0291",
+      "Bytes": 1324,
+      "Stage": "O15-runIdentity-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O15-runIdentity-producer.json",
+      "SHA256": "1C1153403D51501E95AFE2BCC85AE00CBD3BC5F77D6C621305616616A680315B",
+      "Bytes": 298,
+      "Stage": "O15-runIdentity-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O16-machine-consumer.json",
+      "SHA256": "8DA50654B60E400FBFD53DC36DC0C2C54C3957094060D65D80B553809449429C",
+      "Bytes": 19896,
+      "Stage": "O16-machine-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "O16-machine-producer.json",
+      "SHA256": "23118787B5DB8807E2DCE020CABC3AAA90237618FA4DA0E03A057888F0FDD1E3",
+      "Bytes": 295,
+      "Stage": "O16-machine-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "P01-PUBLIC-PROPOSITION-consumer.json",
+      "SHA256": "C0DA99ECD914A8295528E3E63566EBB448D70651FD56E74B77ADB2C0E592F150",
+      "Bytes": 30173,
+      "Stage": "P01-PUBLIC-PROPOSITION-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "P01-PUBLIC-PROPOSITION-producer.json",
+      "SHA256": "FDE7593ADA182FC3A19A22FBF5445AA0A1D4A314244DCDE79B6FC32405DBD34A",
+      "Bytes": 306,
+      "Stage": "P01-PUBLIC-PROPOSITION-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "runtime-full.json",
+      "SHA256": "559F8A0C3ACC4CAA060A94A25DBF0D62B43D5ED3BE95ADBA327773152FF5A306",
+      "Bytes": 1135,
+      "Stage": "runtime-full",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "runtime-known-selector.json",
+      "SHA256": "E097E7ABF6891F6D04B581CABAA24537F3EA451DDB0DF74D56F94A8A643F3083",
+      "Bytes": 576,
+      "Stage": "runtime-known-selector",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "runtime-selector-empty.json",
+      "SHA256": "99B58979B5805894DCFC5B5A4614AF30950B986DB59018D598B467854F6434EF",
+      "Bytes": 414,
+      "Stage": "runtime-selector-empty",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "runtime-selector-malformed.json",
+      "SHA256": "15C77E77B560B2C3CFFC96A4C79FC70E3CE14A36B91DC4CFD0C00E4D31451E4D",
+      "Bytes": 442,
+      "Stage": "runtime-selector-malformed",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "runtime-selector-unknown.json",
+      "SHA256": "C15CF894B9B9BD4F24F0915BA81F2F5801937252EF6F0C291BF7D38A8FD9DABB",
+      "Bytes": 446,
+      "Stage": "runtime-selector-unknown",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "runtime-selector-whitespace.json",
+      "SHA256": "F11C1C023CBFB717B43353F3B2F3C30D29D821ECA20FBA5CE35B261DF0418B53",
+      "Bytes": 429,
+      "Stage": "runtime-selector-whitespace",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "runtime-startup.json",
+      "SHA256": "ECB45140B2EE7E49C007E68FC36C63D80524417EA5FD54590A0C2FE2E3612FF6",
+      "Bytes": 705,
+      "Stage": "runtime-startup",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "S01-SIBLING-MEMORY-consumer.json",
+      "SHA256": "D38E762FA6D8AEEFC2565C43EB1E8A479AA4556FEE7FDC640475C422DB423C80",
+      "Bytes": 2177,
+      "Stage": "S01-SIBLING-MEMORY-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "S01-SIBLING-MEMORY-producer.json",
+      "SHA256": "F1557AD5988031F6598CB9B2EFBCC4A4DBFDAFBB5519C8246E020632A836AB03",
+      "Bytes": 302,
+      "Stage": "S01-SIBLING-MEMORY-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "S02-SIBLING-RUN-consumer.json",
+      "SHA256": "A746652C8E0A4F2BF0E02F9365945B13E70311DD5F7467DD961C28337F7AE856",
+      "Bytes": 1792,
+      "Stage": "S02-SIBLING-RUN-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "S02-SIBLING-RUN-producer.json",
+      "SHA256": "02F78268B1133836FE2C87333A79A12E46A8308880D6648EF9D086074A4FE336",
+      "Bytes": 299,
+      "Stage": "S02-SIBLING-RUN-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "S03-SIBLING-BUDGET-consumer.json",
+      "SHA256": "85DDAFF9947135F7DEB02C69B99698A78F9ED2003D4FA17863F0408C42D4FE00",
+      "Bytes": 889,
+      "Stage": "S03-SIBLING-BUDGET-consumer",
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    },
+    {
+      "Name": "S03-SIBLING-BUDGET-producer.json",
+      "SHA256": "0C640F319F08F91E74398D6F77048B4A04D987CB8FA9457C6B2E2FFF67ABF19F",
+      "Bytes": 302,
+      "Stage": "S03-SIBLING-BUDGET-producer",
+      "ExitCode": 0,
+      "TimedOut": false,
+      "OutputLimitExceeded": false
+    }
+  ]
+}

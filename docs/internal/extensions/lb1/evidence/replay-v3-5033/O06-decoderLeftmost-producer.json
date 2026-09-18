@@ -1,0 +1,13 @@
+{
+  "Stage": "O06-decoderLeftmost-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 8.928,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

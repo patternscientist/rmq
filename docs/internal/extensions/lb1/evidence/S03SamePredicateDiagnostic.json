@@ -1,0 +1,27 @@
+{
+  "Stage": "S03-same-P-Q-reducible-diagnostic",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-s03-repair\\SamePredicateDiagnostic.lean:19:20: error: type mismatch",
+    "  canonicalBudgetSibling",
+    "has type",
+    "  ∀ (n B : Nat), UniformAllocationBudget n B → shapeCount n ≤ 2 ^ (2 * n + allocationRho n + 1) - 1 : Prop",
+    "but is expected to have type",
+    "  ∀ (n B : Nat), UniformAllocationBudget n B → shapeCount n ≤ 2 ^ (B + 1) - 1 : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-s03-repair\\SamePredicateDiagnostic.lean:19:20: error: type mismatch",
+    "  canonicalBudgetSibling",
+    "has type",
+    "  ∀ (n B : Nat), UniformAllocationBudget n B → shapeCount n ≤ 2 ^ (2 * n + allocationRho n + 1) - 1 : Prop",
+    "but is expected to have type",
+    "  ∀ (n B : Nat), UniformAllocationBudget n B → shapeCount n ≤ 2 ^ (B + 1) - 1 : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 7.524,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

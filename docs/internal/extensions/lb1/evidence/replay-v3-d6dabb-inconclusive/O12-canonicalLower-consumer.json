@@ -1,0 +1,27 @@
+{
+  "Stage": "O12-canonicalLower-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:69:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.canonicalLower",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (n : Nat), EncodingLowerBound.doubledLogSlackLower n ≤ 2 * (2 * n + allocationRho n + 1) : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:69:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.canonicalLower",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (n : Nat), EncodingLowerBound.doubledLogSlackLower n ≤ 2 * (2 * n + allocationRho n + 1) : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 36.736,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

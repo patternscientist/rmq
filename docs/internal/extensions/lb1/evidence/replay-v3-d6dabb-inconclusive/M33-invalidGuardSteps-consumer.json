@@ -1,0 +1,31 @@
+{
+  "Stage": "M33-invalidGuardSteps-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:250:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.invalidGuardSteps",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    ¬ValidRange xs left right →",
+    "      (run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right)).steps ≤ 6 : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:250:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.invalidGuardSteps",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    ¬ValidRange xs left right →",
+    "      (run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right)).steps ≤ 6 : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 28.524,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

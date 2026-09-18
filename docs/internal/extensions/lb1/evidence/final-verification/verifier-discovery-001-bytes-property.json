@@ -1,0 +1,43 @@
+{
+  "VerifierVersion": 1,
+  "Verdict": "EVIDENCE_REJECTED",
+  "Candidate": "5033ce54da233fc7a3df319d50ab09a2ebee523a",
+  "RunRoot": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101947006",
+  "CheckedAtUTC": "2026-09-12T11:09:01.2807773Z",
+  "VerifierSHA256": "f76d6392cfa8ace1b4967acd85ae3df435de3340f457eab1d923cdfdae9d46bd",
+  "SummaryRawSHA256": "2747ef8ed6285b345b683d53b42a58d527b644d183da85ebccbcba53b4c6062a",
+  "CommittedRegistrySHA256": null,
+  "CommittedRunnerSHA256": null,
+  "Failure": "The property 'Bytes' cannot be found on this object. Verify that the property exists.",
+  "CompletedChecks": [],
+  "CaseCount": 63,
+  "ExpectedCaseVerdicts": {
+    "REJECT": 61,
+    "ACCEPT": 2
+  },
+  "ExpectedStageVerdicts": {
+    "ExitOne": 65,
+    "Total": 134,
+    "ExitZero": 69
+  },
+  "RuntimeIDs": [
+    "R01-EMPTY",
+    "R02-SINGLETON",
+    "R03-LEFTMOST",
+    "R04-ZERO-LENGTH",
+    "R05-ZERO-WORDS",
+    "R06-SAME-SHAPE"
+  ],
+  "StageEvidence": [],
+  "CurrentSources": [],
+  "CurrentArtifacts": [],
+  "Limitations": [
+    "This inspects recorded runner evidence; it does not independently execute Lean, prove diagnostic authenticity, reproduce mutations, or grant coordinator acceptance.",
+    "SourceRestored, ArtifactsRestored, CleanTree and per-case restoration are runner assertions. Current source equality and current clean Git status are independently checked; pre-run artifact bytes/hashes were not persisted.",
+    "Current source coverage is every tracked .lean, scripts/*.ps1, lakefile.toml, lean-toolchain, .gitattributes, and the exact replay registry. Documentation prose and external toolchain binaries are not source-hash checked.",
+    "CRLF/LF-only equality is reported separately from raw byte/hash equality; no other text normalization is accepted.",
+    "The 63 cases and six runtime cases are a finite campaign, not a universal mutation or runtime correctness claim.",
+    "Separate replay-selector command-boundary, diagnostic-boundary, Windows descendant-timeout and POSIX ownership probes are not independently established by this full-summary verifier.",
+    "Exact current HEAD is required; execute after replay restoration and before any subsequent documentation commit. No Lean processes are inspected or controlled."
+  ]
+}

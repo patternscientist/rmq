@@ -1,0 +1,35 @@
+{
+  "Stage": "S02-SIBLING-RUN-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:81:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.runIdentity",
+    "has type",
+    "  ∀ (xs : List Int) (left right fuel : Nat),",
+    "    run (reconstructedMemory xs) queryProgram fuel (initialState xs.length left right) =",
+    "      run (reconstructedMemory xs) queryProgram fuel (initialState xs.length left right) : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right fuel : Nat),",
+    "    run (reconstructedMemory xs) queryProgram fuel (initialState xs.length left right) =",
+    "      run (buildMemory xs) queryProgram fuel (initialState xs.length left right) : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:81:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.runIdentity",
+    "has type",
+    "  ∀ (xs : List Int) (left right fuel : Nat),",
+    "    run (reconstructedMemory xs) queryProgram fuel (initialState xs.length left right) =",
+    "      run (reconstructedMemory xs) queryProgram fuel (initialState xs.length left right) : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right fuel : Nat),",
+    "    run (reconstructedMemory xs) queryProgram fuel (initialState xs.length left right) =",
+    "      run (buildMemory xs) queryProgram fuel (initialState xs.length left right) : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 20.565,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

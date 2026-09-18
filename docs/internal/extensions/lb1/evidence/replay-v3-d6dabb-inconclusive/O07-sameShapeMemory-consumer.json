@@ -1,0 +1,27 @@
+{
+  "Stage": "O07-sameShapeMemory-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:51:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.sameShapeMemory",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs ys : List Int), shape xs = shape ys → buildMemory xs = buildMemory ys : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:51:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.sameShapeMemory",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs ys : List Int), shape xs = shape ys → buildMemory xs = buildMemory ys : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 23.4,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

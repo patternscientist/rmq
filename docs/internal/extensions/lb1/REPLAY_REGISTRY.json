@@ -1,0 +1,454 @@
+{
+  "version": 3,
+  "cases": [
+    {
+      "id": "O01-wordRoundTrip",
+      "kind": "OPTIMALITY",
+      "field": "wordRoundTrip",
+      "verdict": "REJECT",
+      "surface": "checkO01"
+    },
+    {
+      "id": "O02-wordSerializationInjective",
+      "kind": "OPTIMALITY",
+      "field": "wordSerializationInjective",
+      "verdict": "REJECT",
+      "surface": "checkO02"
+    },
+    {
+      "id": "O03-serializedLength",
+      "kind": "OPTIMALITY",
+      "field": "serializedLength",
+      "verdict": "REJECT",
+      "surface": "checkO03"
+    },
+    {
+      "id": "O04-memoryRecovery",
+      "kind": "OPTIMALITY",
+      "field": "memoryRecovery",
+      "verdict": "REJECT",
+      "surface": "checkO04"
+    },
+    {
+      "id": "O05-decoderExact",
+      "kind": "OPTIMALITY",
+      "field": "decoderExact",
+      "verdict": "REJECT",
+      "surface": "checkO05"
+    },
+    {
+      "id": "O06-decoderLeftmost",
+      "kind": "OPTIMALITY",
+      "field": "decoderLeftmost",
+      "verdict": "REJECT",
+      "surface": "checkO06"
+    },
+    {
+      "id": "O07-sameShapeMemory",
+      "kind": "OPTIMALITY",
+      "field": "sameShapeMemory",
+      "verdict": "REJECT",
+      "surface": "checkO07"
+    },
+    {
+      "id": "O08-shapeInjectivity",
+      "kind": "OPTIMALITY",
+      "field": "shapeInjectivity",
+      "verdict": "REJECT",
+      "surface": "checkO08"
+    },
+    {
+      "id": "O09-uniformBudgetCount",
+      "kind": "OPTIMALITY",
+      "field": "uniformBudgetCount",
+      "verdict": "REJECT",
+      "surface": "checkO09"
+    },
+    {
+      "id": "O10-uniformBudgetLower",
+      "kind": "OPTIMALITY",
+      "field": "uniformBudgetLower",
+      "verdict": "REJECT",
+      "surface": "checkO10"
+    },
+    {
+      "id": "O11-canonicalCount",
+      "kind": "OPTIMALITY",
+      "field": "canonicalCount",
+      "verdict": "REJECT",
+      "surface": "checkO11"
+    },
+    {
+      "id": "O12-canonicalLower",
+      "kind": "OPTIMALITY",
+      "field": "canonicalLower",
+      "verdict": "REJECT",
+      "surface": "checkO12"
+    },
+    {
+      "id": "O13-upperCapacity",
+      "kind": "OPTIMALITY",
+      "field": "upperCapacity",
+      "verdict": "REJECT",
+      "surface": "checkO13"
+    },
+    {
+      "id": "O14-allocationResidualLittleO",
+      "kind": "OPTIMALITY",
+      "field": "allocationResidualLittleO",
+      "verdict": "REJECT",
+      "surface": "checkO14"
+    },
+    {
+      "id": "O15-runIdentity",
+      "kind": "OPTIMALITY",
+      "field": "runIdentity",
+      "verdict": "REJECT",
+      "surface": "checkO15"
+    },
+    {
+      "id": "O16-machine",
+      "kind": "OPTIMALITY",
+      "field": "machine",
+      "verdict": "REJECT",
+      "surface": "checkO16"
+    },
+    {
+      "id": "M01-allocationResidualLittleO",
+      "kind": "MACHINE",
+      "field": "allocationResidualLittleO",
+      "verdict": "REJECT",
+      "surface": "checkM01"
+    },
+    {
+      "id": "M02-completeResidualLittleO",
+      "kind": "MACHINE",
+      "field": "completeResidualLittleO",
+      "verdict": "REJECT",
+      "surface": "checkM02"
+    },
+    {
+      "id": "M03-widthBounds",
+      "kind": "MACHINE",
+      "field": "widthBounds",
+      "verdict": "REJECT",
+      "surface": "checkM03"
+    },
+    {
+      "id": "M04-dataCapacity",
+      "kind": "MACHINE",
+      "field": "dataCapacity",
+      "verdict": "REJECT",
+      "surface": "checkM04"
+    },
+    {
+      "id": "M05-completeCapacity",
+      "kind": "MACHINE",
+      "field": "completeCapacity",
+      "verdict": "REJECT",
+      "surface": "checkM05"
+    },
+    {
+      "id": "M06-memoryWordsFit",
+      "kind": "MACHINE",
+      "field": "memoryWordsFit",
+      "verdict": "REJECT",
+      "surface": "checkM06"
+    },
+    {
+      "id": "M07-allocationAddressesFit",
+      "kind": "MACHINE",
+      "field": "allocationAddressesFit",
+      "verdict": "REJECT",
+      "surface": "checkM07"
+    },
+    {
+      "id": "M08-programFieldsFit",
+      "kind": "MACHINE",
+      "field": "programFieldsFit",
+      "verdict": "REJECT",
+      "surface": "checkM08"
+    },
+    {
+      "id": "M09-budgetExact",
+      "kind": "MACHINE",
+      "field": "budgetExact",
+      "verdict": "REJECT",
+      "surface": "checkM09"
+    },
+    {
+      "id": "M10-programLength",
+      "kind": "MACHINE",
+      "field": "programLength",
+      "verdict": "REJECT",
+      "surface": "checkM10"
+    },
+    {
+      "id": "M11-encodedProgramBound",
+      "kind": "MACHINE",
+      "field": "encodedProgramBound",
+      "verdict": "REJECT",
+      "surface": "checkM11"
+    },
+    {
+      "id": "M12-registerCount",
+      "kind": "MACHINE",
+      "field": "registerCount",
+      "verdict": "REJECT",
+      "surface": "checkM12"
+    },
+    {
+      "id": "M13-scratchCount",
+      "kind": "MACHINE",
+      "field": "scratchCount",
+      "verdict": "REJECT",
+      "surface": "checkM13"
+    },
+    {
+      "id": "M14-unusedRegisters",
+      "kind": "MACHINE",
+      "field": "unusedRegisters",
+      "verdict": "REJECT",
+      "surface": "checkM14"
+    },
+    {
+      "id": "M15-validInputs",
+      "kind": "MACHINE",
+      "field": "validInputs",
+      "verdict": "REJECT",
+      "surface": "checkM15"
+    },
+    {
+      "id": "M16-natContract",
+      "kind": "MACHINE",
+      "field": "natContract",
+      "verdict": "REJECT",
+      "surface": "checkM16"
+    },
+    {
+      "id": "M17-leftmost",
+      "kind": "MACHINE",
+      "field": "leftmost",
+      "verdict": "REJECT",
+      "surface": "checkM17"
+    },
+    {
+      "id": "M18-result",
+      "kind": "MACHINE",
+      "field": "result",
+      "verdict": "REJECT",
+      "surface": "checkM18"
+    },
+    {
+      "id": "M19-halt",
+      "kind": "MACHINE",
+      "field": "halt",
+      "verdict": "REJECT",
+      "surface": "checkM19"
+    },
+    {
+      "id": "M20-invalidGuard",
+      "kind": "MACHINE",
+      "field": "invalidGuard",
+      "verdict": "REJECT",
+      "surface": "checkM20"
+    },
+    {
+      "id": "M21-stepBound",
+      "kind": "MACHINE",
+      "field": "stepBound",
+      "verdict": "REJECT",
+      "surface": "checkM21"
+    },
+    {
+      "id": "M22-categoryPartition",
+      "kind": "MACHINE",
+      "field": "categoryPartition",
+      "verdict": "REJECT",
+      "surface": "checkM22"
+    },
+    {
+      "id": "M23-finalStateFit",
+      "kind": "MACHINE",
+      "field": "finalStateFit",
+      "verdict": "REJECT",
+      "surface": "checkM23"
+    },
+    {
+      "id": "M24-transitionSafety",
+      "kind": "MACHINE",
+      "field": "transitionSafety",
+      "verdict": "REJECT",
+      "surface": "checkM24"
+    },
+    {
+      "id": "M25-prefixSafety",
+      "kind": "MACHINE",
+      "field": "prefixSafety",
+      "verdict": "REJECT",
+      "surface": "checkM25"
+    },
+    {
+      "id": "M26-readWidth",
+      "kind": "MACHINE",
+      "field": "readWidth",
+      "verdict": "REJECT",
+      "surface": "checkM26"
+    },
+    {
+      "id": "M27-positionalReadBacking",
+      "kind": "MACHINE",
+      "field": "positionalReadBacking",
+      "verdict": "REJECT",
+      "surface": "checkM27"
+    },
+    {
+      "id": "M28-orderedLogicalRefinement",
+      "kind": "MACHINE",
+      "field": "orderedLogicalRefinement",
+      "verdict": "REJECT",
+      "surface": "checkM28"
+    },
+    {
+      "id": "M29-logicalReadOnly",
+      "kind": "MACHINE",
+      "field": "logicalReadOnly",
+      "verdict": "REJECT",
+      "surface": "checkM29"
+    },
+    {
+      "id": "M30-suppliedMemoryAgreement",
+      "kind": "MACHINE",
+      "field": "suppliedMemoryAgreement",
+      "verdict": "REJECT",
+      "surface": "checkM30"
+    },
+    {
+      "id": "M31-specResult",
+      "kind": "MACHINE",
+      "field": "specResult",
+      "verdict": "REJECT",
+      "surface": "checkM31"
+    },
+    {
+      "id": "M32-noFailedLoads",
+      "kind": "MACHINE",
+      "field": "noFailedLoads",
+      "verdict": "REJECT",
+      "surface": "checkM32"
+    },
+    {
+      "id": "M33-invalidGuardSteps",
+      "kind": "MACHINE",
+      "field": "invalidGuardSteps",
+      "verdict": "REJECT",
+      "surface": "checkM33"
+    },
+    {
+      "id": "A01-BASELINE",
+      "kind": "ACCEPT",
+      "field": "",
+      "verdict": "ACCEPT",
+      "surface": "publicContract"
+    },
+    {
+      "id": "P01-PUBLIC-PROPOSITION",
+      "kind": "PUBLIC",
+      "field": "",
+      "verdict": "REJECT",
+      "surface": "publicContract"
+    },
+    {
+      "id": "G01-LOWER-PROPOSITION",
+      "kind": "GENERIC",
+      "field": "",
+      "verdict": "REJECT",
+      "surface": "genericBoundConsumer"
+    },
+    {
+      "id": "G02-DELETED-EXACTNESS",
+      "kind": "EXACTNESS",
+      "field": "",
+      "verdict": "REJECT",
+      "surface": "sameRMQBehavior_of_encode_eq"
+    },
+    {
+      "id": "D01-NULL-DECODER",
+      "kind": "NULL",
+      "field": "",
+      "verdict": "REJECT",
+      "surface": "allocationDecoder_exact"
+    },
+    {
+      "id": "D02-WRONG-DECODER",
+      "kind": "WRONG",
+      "field": "",
+      "verdict": "REJECT",
+      "surface": "allocationDecoder_exact"
+    },
+    {
+      "id": "D03-ZERO-SERIALIZER",
+      "kind": "ZERO",
+      "field": "",
+      "verdict": "REJECT",
+      "surface": "serializeWords_length"
+    },
+    {
+      "id": "F01-DELETE-MEMORY-RECOVERY",
+      "kind": "DELETE",
+      "field": "OPTIMALITY.memoryRecovery",
+      "verdict": "REJECT",
+      "surface": "checkO04"
+    },
+    {
+      "id": "F02-DELETE-READ-BACKING",
+      "kind": "DELETE",
+      "field": "MACHINE.positionalReadBacking",
+      "verdict": "REJECT",
+      "surface": "checkM27"
+    },
+    {
+      "id": "S01-SIBLING-MEMORY",
+      "kind": "SIBLING",
+      "field": "memoryRecovery",
+      "verdict": "REJECT",
+      "surface": "checkO04"
+    },
+    {
+      "id": "S02-SIBLING-RUN",
+      "kind": "SIBLING",
+      "field": "runIdentity",
+      "verdict": "REJECT",
+      "surface": "checkO15"
+    },
+    {
+      "id": "S03-SIBLING-BUDGET",
+      "kind": "SIBLING",
+      "field": "uniformBudgetCount",
+      "verdict": "REJECT",
+      "surface": "checkO09"
+    },
+    {
+      "id": "H01-EMPTY-ONLY-DECODER",
+      "kind": "GUARD",
+      "field": "decoderExact",
+      "verdict": "REJECT",
+      "surface": "checkO05"
+    },
+    {
+      "id": "A02-PROOF-ONLY-WRAPPER",
+      "kind": "WRAPPER",
+      "field": "",
+      "verdict": "ACCEPT",
+      "surface": "publicContract"
+    }
+  ],
+  "runtime": [
+    "R01-EMPTY",
+    "R02-SINGLETON",
+    "R03-LEFTMOST",
+    "R04-ZERO-LENGTH",
+    "R05-ZERO-WORDS",
+    "R06-SAME-SHAPE"
+  ]
+}

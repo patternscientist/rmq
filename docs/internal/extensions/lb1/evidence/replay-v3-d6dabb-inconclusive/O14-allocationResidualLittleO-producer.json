@@ -1,0 +1,13 @@
+{
+  "Stage": "O14-allocationResidualLittleO-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 8.414,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

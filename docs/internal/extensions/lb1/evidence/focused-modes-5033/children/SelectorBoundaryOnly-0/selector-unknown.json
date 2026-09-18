@@ -1,0 +1,25 @@
+{
+  "Stage": "selector-unknown",
+  "ExitCode": 1,
+  "Output": [
+    "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:99",
+    "Line |",
+    "  99 |  …  if ($selected.Count -ne 1) { throw 'LB1-SELECTOR unknown selector' }",
+    "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "     | LB1-SELECTOR unknown selector"
+  ],
+  "StandardOutput": [],
+  "StandardError": [
+    "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:99",
+    "Line |",
+    "  99 |  …  if ($selected.Count -ne 1) { throw 'LB1-SELECTOR unknown selector' }",
+    "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "     | LB1-SELECTOR unknown selector"
+  ],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 7.43,
+  "DeadlineSeconds": 60,
+  "Ownership": "kill-on-close-job"
+}

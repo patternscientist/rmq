@@ -1,0 +1,41 @@
+{
+  "Stage": "M28-orderedLogicalRefinement-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:225:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.orderedLogicalRefinement",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    (run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right)).reads =",
+    "      if ValidRange xs left right then",
+    "        List.map (fun i => { address := i, reply := (metadata (SuccinctClassic.cartesianShape xs))[i]? })",
+    "            (List.range 174) ++",
+    "          logicalTraceReads (SuccinctClassic.cartesianShape xs) (reconstructedMemory xs)",
+    "            (SuccinctClassic.queryTraceResult xs left right).trace",
+    "      else [] : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:225:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.orderedLogicalRefinement",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    (run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right)).reads =",
+    "      if ValidRange xs left right then",
+    "        List.map (fun i => { address := i, reply := (metadata (SuccinctClassic.cartesianShape xs))[i]? })",
+    "            (List.range 174) ++",
+    "          logicalTraceReads (SuccinctClassic.cartesianShape xs) (reconstructedMemory xs)",
+    "            (SuccinctClassic.queryTraceResult xs left right).trace",
+    "      else [] : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 30.543,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

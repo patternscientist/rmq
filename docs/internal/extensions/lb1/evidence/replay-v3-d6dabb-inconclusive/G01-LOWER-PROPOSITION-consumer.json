@@ -1,0 +1,27 @@
+{
+  "Stage": "G01-LOWER-PROPOSITION-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_generic_consumer.lean:7:2: error: type mismatch",
+    "  ExactRMQBoundedEncoding.doubledLogSlackLower_le E",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  EncodingLowerBound.doubledLogSlackLower n ≤ 2 * (B + 1) : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_generic_consumer.lean:7:2: error: type mismatch",
+    "  ExactRMQBoundedEncoding.doubledLogSlackLower_le E",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  EncodingLowerBound.doubledLogSlackLower n ≤ 2 * (B + 1) : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 2.335,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

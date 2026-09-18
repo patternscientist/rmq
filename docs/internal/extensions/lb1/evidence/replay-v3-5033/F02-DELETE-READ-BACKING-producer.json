@@ -1,0 +1,13 @@
+{
+  "Stage": "F02-DELETE-READ-BACKING-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 4.174,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

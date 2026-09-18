@@ -1,0 +1,13 @@
+{
+  "Stage": "M31-specResult-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 5.069,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

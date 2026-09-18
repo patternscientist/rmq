@@ -1,0 +1,25 @@
+{
+  "Stage": "selector-whitespace",
+  "ExitCode": 1,
+  "Output": [
+    "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:96",
+    "Line |",
+    "  96 |  … ace($selector)) { throw 'LB1-SELECTOR empty or whitespace selector' }",
+    "     |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "     | LB1-SELECTOR empty or whitespace selector"
+  ],
+  "StandardOutput": [],
+  "StandardError": [
+    "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:96",
+    "Line |",
+    "  96 |  … ace($selector)) { throw 'LB1-SELECTOR empty or whitespace selector' }",
+    "     |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "     | LB1-SELECTOR empty or whitespace selector"
+  ],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 5.988,
+  "DeadlineSeconds": 60,
+  "Ownership": "kill-on-close-job"
+}

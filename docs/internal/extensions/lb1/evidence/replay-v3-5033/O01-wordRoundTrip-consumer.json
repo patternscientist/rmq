@@ -1,0 +1,33 @@
+{
+  "Stage": "O01-wordRoundTrip-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:24:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.wordRoundTrip",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (width : Nat) (words : List Nat),",
+    "    0 < width →",
+    "      (∀ (word : Nat), word ∈ words → word < 2 ^ width) →",
+    "        deserializeWords width (serializeWords width words) = words : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:24:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.wordRoundTrip",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (width : Nat) (words : List Nat),",
+    "    0 < width →",
+    "      (∀ (word : Nat), word ∈ words → word < 2 ^ width) →",
+    "        deserializeWords width (serializeWords width words) = words : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 34.654,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

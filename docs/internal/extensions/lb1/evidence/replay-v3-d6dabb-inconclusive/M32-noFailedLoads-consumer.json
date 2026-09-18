@@ -1,0 +1,35 @@
+{
+  "Stage": "M32-noFailedLoads-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:246:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.noFailedLoads",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    ValidRange xs left right →",
+    "      ∀ (receipt : Receipt),",
+    "        receipt ∈ (run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right)).reads →",
+    "          ∃ value, receipt.reply = some value : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:246:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.noFailedLoads",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    ValidRange xs left right →",
+    "      ∀ (receipt : Receipt),",
+    "        receipt ∈ (run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right)).reads →",
+    "          ∃ value, receipt.reply = some value : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 35.443,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

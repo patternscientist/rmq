@@ -1,0 +1,213 @@
+{
+  "Commit": "5033ce54da233fc7a3df319d50ab09a2ebee523a",
+  "Expected": [
+    "RMQ.EncodingVariableLowerBound.boundedBitStrings_cardinality",
+    "RMQ.ExactRMQBoundedEncoding.shapeEncode_injective_on",
+    "RMQ.ExactRMQBoundedEncoding.shapeCount_le",
+    "RMQ.ExactRMQBoundedEncoding.doubledLogSlackLower_le",
+    "RMQ.SuccinctFinal.PackedWordRAM.deserializeWords_serializeWords",
+    "RMQ.SuccinctFinal.PackedWordRAM.serializeWords_injective",
+    "RMQ.SuccinctFinal.PackedWordRAM.allocationBits_length",
+    "RMQ.SuccinctFinal.PackedWordRAM.reconstructedMemory_eq_buildMemory",
+    "RMQ.SuccinctFinal.PackedWordRAM.allocationDecoder_exact",
+    "RMQ.SuccinctFinal.PackedWordRAM.allocationBits_shape_injective",
+    "RMQ.SuccinctFinal.PackedWordRAM.uniformAllocation_shapeCount_le",
+    "RMQ.SuccinctFinal.PackedWordRAM.uniformAllocation_doubledLogSlackLower_le",
+    "RMQ.SuccinctFinal.PackedWordRAM.canonicalAllocation_shapeCount_le",
+    "RMQ.SuccinctFinal.PackedWordRAM.canonicalAllocation_doubledLogSlackLower_le",
+    "RMQ.SuccinctFinal.PackedWordRAM.allocationBits_capacity_le",
+    "RMQ.SuccinctFinal.PackedWordRAM.reconstructedRun_eq",
+    "RMQ.SuccinctFinal.PackedWordRAM.reconstructedPackedQueryCapstone_holds",
+    "RMQ.SuccinctFinal.PackedWordRAM.packedAllocationOptimality_holds",
+    "RMQ.Validation.VariablePayloadLowerBound.publicContract",
+    "RMQ.Validation.VariablePayloadLowerBound.composedConsumer"
+  ],
+  "Observed": [
+    {
+      "Name": "RMQ.EncodingVariableLowerBound.boundedBitStrings_cardinality",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.ExactRMQBoundedEncoding.shapeEncode_injective_on",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.ExactRMQBoundedEncoding.shapeCount_le",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.ExactRMQBoundedEncoding.doubledLogSlackLower_le",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.SuccinctFinal.PackedWordRAM.deserializeWords_serializeWords",
+      "Axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.SuccinctFinal.PackedWordRAM.serializeWords_injective",
+      "Axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.SuccinctFinal.PackedWordRAM.allocationBits_length",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.SuccinctFinal.PackedWordRAM.reconstructedMemory_eq_buildMemory",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.SuccinctFinal.PackedWordRAM.allocationDecoder_exact",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.SuccinctFinal.PackedWordRAM.allocationBits_shape_injective",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.SuccinctFinal.PackedWordRAM.uniformAllocation_shapeCount_le",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.SuccinctFinal.PackedWordRAM.uniformAllocation_doubledLogSlackLower_le",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.SuccinctFinal.PackedWordRAM.canonicalAllocation_shapeCount_le",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.SuccinctFinal.PackedWordRAM.canonicalAllocation_doubledLogSlackLower_le",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.SuccinctFinal.PackedWordRAM.allocationBits_capacity_le",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.SuccinctFinal.PackedWordRAM.reconstructedRun_eq",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.SuccinctFinal.PackedWordRAM.reconstructedPackedQueryCapstone_holds",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.SuccinctFinal.PackedWordRAM.packedAllocationOptimality_holds",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.Validation.VariablePayloadLowerBound.publicContract",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "Name": "RMQ.Validation.VariablePayloadLowerBound.composedConsumer",
+      "Axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    }
+  ],
+  "Scans": [
+    {
+      "Name": "trust-tokens",
+      "Command": [
+        "rg",
+        "-n",
+        "\\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\\b|import Mathlib",
+        "RMQ",
+        "lakefile.toml"
+      ],
+      "ExitCode": 1,
+      "Output": []
+    },
+    {
+      "Name": "native-reduction",
+      "Command": [
+        "rg",
+        "-n",
+        "native_decide|Lean\\.ofReduceBool",
+        "RMQ"
+      ],
+      "ExitCode": 1,
+      "Output": []
+    }
+  ],
+  "SourceUnchanged": true,
+  "CleanTree": true,
+  "TrustScope": "Reported kernel assumptions; no replacement for expected-type consumers or semantic mutations."
+}

@@ -1,0 +1,64 @@
+[
+  {
+    "Stage": "startup-list",
+    "UTC": "2026-09-12T08:53:10.1091747Z",
+    "ConsumerSHA256": "20B076D0BDB84703D7238D196BD13832B3A7BFAB411CB5DF56BD685B855CA394",
+    "Tree": "Dirty implementation; prospective frozen source already checked",
+    "Result": {
+      "Stage": "startup-list",
+      "ExitCode": 0,
+      "Output": [
+        "LB1-RUNTIME LIST LB1-RUNTIME-V1",
+        "R01-EMPTY",
+        "R02-SINGLETON",
+        "R03-LEFTMOST",
+        "R04-ZERO-LENGTH",
+        "R05-ZERO-WORDS",
+        "R06-SAME-SHAPE",
+        "LB1-RUNTIME LIST count=6"
+      ],
+      "StandardOutput": [
+        "LB1-RUNTIME LIST LB1-RUNTIME-V1",
+        "R01-EMPTY",
+        "R02-SINGLETON",
+        "R03-LEFTMOST",
+        "R04-ZERO-LENGTH",
+        "R05-ZERO-WORDS",
+        "R06-SAME-SHAPE",
+        "LB1-RUNTIME LIST count=6"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 39.092,
+      "DeadlineSeconds": 600,
+      "Ownership": "kill-on-close-job"
+    }
+  },
+  {
+    "Stage": "startup-known",
+    "UTC": "2026-09-12T08:53:56.4756238Z",
+    "ConsumerSHA256": "20B076D0BDB84703D7238D196BD13832B3A7BFAB411CB5DF56BD685B855CA394",
+    "Tree": "Dirty implementation; prospective frozen source already checked",
+    "Result": {
+      "Stage": "startup-known",
+      "ExitCode": 0,
+      "Output": [
+        "LB1-RUNTIME CASE PASS R04-ZERO-LENGTH",
+        "LB1-RUNTIME PASS version=LB1-RUNTIME-V1 executed=1 expected=1 ids=R04-ZERO-LENGTH"
+      ],
+      "StandardOutput": [
+        "LB1-RUNTIME CASE PASS R04-ZERO-LENGTH",
+        "LB1-RUNTIME PASS version=LB1-RUNTIME-V1 executed=1 expected=1 ids=R04-ZERO-LENGTH"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 46.26,
+      "DeadlineSeconds": 600,
+      "Ownership": "kill-on-close-job"
+    }
+  }
+]

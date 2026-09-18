@@ -3455,3 +3455,53 @@ campaigns have passed. Committed-byte verification also passed on source
 candidate `763b00e68cabef2ea322a92fb7b3be354b367179`; aggregate certification
 and coordinator acceptance remain pending at this checkpoint. See
 `internal/extensions/bv1/REPORT.md` for the current task disposition.
+
+## LB-1 candidate: bounded payloads for the actual packed allocation
+
+`RMQ.ExactRMQBoundedEncoding n B` fixes one bitstring decoder across all size-n
+inputs and permits every payload length through B, with length observed.
+`RMQ.ExactRMQBoundedEncoding.shapeCount_le` proves
+`Cartesian.shapeCount n <= 2^(B+1)-1`; its
+`doubledLogSlackLower_le` proves
+`EncodingLowerBound.doubledLogSlackLower n <= 2*(B+1)`.
+Shape injectivity is derived from valid half-open leftmost answers.
+
+`RMQ.SuccinctFinal.PackedWordRAM.packedAllocationOptimality_holds` joins that
+generic model to the actual PQ1 allocation. `allocationBits xs` serializes every
+`buildMemory xs` word at `wordWidth xs.length`; positive width and observed bit
+length preserve zero-word multiplicity. Deserialization recovers that complete
+memory exactly. `allocationDecoder n bits left right` uses the recovered words,
+n and endpoints and has the total exact RMQ contract. Equal Cartesian shapes
+intentionally share memory and payload even when their input values differ.
+
+Every uniform budget B satisfying
+`forall xs, xs.length=n -> (buildMemory xs).length * wordWidth n <= B`
+therefore obeys the lower bound. The actual per-input allocation satisfies
+`(allocationBits xs).length <= 2*xs.length + allocationRho xs.length`, with
+`LittleOLinear allocationRho`. Thus the comparison concerns a worst-case payload
+budget and the very allocation used by the query.
+
+The recovered-memory certificate retains all 33 fields and original guards of
+the underlying PQ1 model named by
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`. Fixed code and finite scratch
+retain their separate complete-capacity accounting; n is external, and the
+canonical decoder captures no other advice. Mathematical bit conversion and
+the outer natural-number argument/result wrapper remain outside the primitive
+query charges. LB-1 is an additive candidate with independent typed-consumer,
+replay and coordinator verification tracked in `internal/extensions/lb1/REPORT.md`.
+
+
+### LB-1 repaired candidate evidence checkpoint (2026-09-12)
+
+The additive LB-1 candidate at 5033ce54 connects the observed-length count
+`shapeCount n <= 2^(B+1)-1` and doubled lower bound to the actual serialized
+PQ1 allocation through a uniform worst-case budget. The decoder reconstructs
+the identical complete memory, and its 16-field allocation capstone includes
+all 33 transported machine fields with their original guards. The S03 repair
+changes only one expected-type consumer's comparison transparency; the
+arbitrary-budget proposition and tested canonical-budget substitution remain
+unchanged. All 63 mutation/control cases, all 6 runtime fixtures, five focused modes, three extra selector branches and the 20-name trust inventory passed on the repaired candidate. Coordinator-owned full build, aggregate
+certification and acceptance remain pending. Payload, separately counted
+fixed code/scratch, primitive model steps and uncharged mathematical bit
+conversion remain distinct. See the LB-1 REPORT.md and FINAL_DISPOSITION.md
+for exact source and evidence identities.

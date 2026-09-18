@@ -1,0 +1,43 @@
+{
+  "Stage": "O03-serializedLength-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:34:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.serializedLength",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int), (allocationBits xs).length = (buildMemory xs).length * wordWidth xs.length : Prop",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:271:4: error: Application type mismatch: In the application",
+    "  And.intro packedAllocationOptimality_holds.serializedLength",
+    "the argument",
+    "  packedAllocationOptimality_holds.serializedLength",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int), (allocationBits xs).length = (buildMemory xs).length * wordWidth xs.length : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:34:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.serializedLength",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int), (allocationBits xs).length = (buildMemory xs).length * wordWidth xs.length : Prop",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:271:4: error: Application type mismatch: In the application",
+    "  And.intro packedAllocationOptimality_holds.serializedLength",
+    "the argument",
+    "  packedAllocationOptimality_holds.serializedLength",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int), (allocationBits xs).length = (buildMemory xs).length * wordWidth xs.length : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 27.452,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

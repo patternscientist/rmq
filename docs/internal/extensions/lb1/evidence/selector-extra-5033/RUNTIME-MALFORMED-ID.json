@@ -1,0 +1,69 @@
+{
+  "UTC": "2026-09-12T11:20:06.0044343Z",
+  "Commit": "5033ce54da233fc7a3df319d50ab09a2ebee523a",
+  "Case": "RUNTIME-MALFORMED-ID",
+  "Command": [
+    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "-j1",
+    "--run",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean"
+  ],
+  "Environment": {
+    "LEAN_PATH": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\build\\lib\\lean",
+    "LB1_RUNTIME_SELECTOR": "case:not an id"
+  },
+  "WorkingDirectory": "C:/Users/poin/.codex/worktrees/2270/RMQ",
+  "Sources": [
+    {
+      "Path": "RMQ/Core/EncodingVariableLowerBound.lean",
+      "SHA256": "688E98C5FBCC12D17CB475FD4B381B707EC224805C9A3C1C0B1858B3270B1FFA"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Packed/AllocationLowerBound.lean",
+      "SHA256": "FB78AD4A5C23709E0EAB724D02F5DEB46E23A535D5AC63CC6E2B4DE54192972D"
+    },
+    {
+      "Path": "RMQ/Validation/VariablePayloadLowerBound.lean",
+      "SHA256": "092B965AB266D1578A1CDD83A05BAC31644F14CE4400C380CD78032EA5850B72"
+    },
+    {
+      "Path": "scripts/variable_payload_replay.ps1",
+      "SHA256": "E1EE63BB1AEC8E53D769D8E26B56BF3576FA94E0C559D192643EE0F5EC63E51C"
+    },
+    {
+      "Path": "scripts/owned_process_tree.ps1",
+      "SHA256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E"
+    },
+    {
+      "Path": "docs/internal/extensions/lb1/REPLAY_REGISTRY.json",
+      "SHA256": "9015398F8F1AEE8AF69C21294B2437B68FC77DF70006B69EDD2A593878D07E8B"
+    },
+    {
+      "Path": "lean-toolchain",
+      "SHA256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F"
+    },
+    {
+      "Path": "lakefile.toml",
+      "SHA256": "E429257DB73FE8E0FB795444EBB324C9A5472289047A400CEE10AA3B722FEFB9"
+    }
+  ],
+  "Result": {
+    "Stage": "RUNTIME-MALFORMED-ID",
+    "ExitCode": 1,
+    "Output": [
+      "uncaught exception: LB1-RUNTIME malformed selector"
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "uncaught exception: LB1-RUNTIME malformed selector"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 36.94,
+    "DeadlineSeconds": 600,
+    "Ownership": "kill-on-close-job"
+  },
+  "ExpectedDiagnostic": "LB1-RUNTIME malformed selector",
+  "ExpectedVerdict": "REJECT before any case pass"
+}

@@ -1,0 +1,33 @@
+{
+  "Stage": "M31-specResult-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:241:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.specResult",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    ValidRange xs left right →",
+    "      (run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right)).result =",
+    "        some (scanWindow xs left (right - left) + 1) : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:241:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.specResult",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    ValidRange xs left right →",
+    "      (run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right)).result =",
+    "        some (scanWindow xs left (right - left) + 1) : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 21.602,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

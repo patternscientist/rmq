@@ -1,0 +1,99 @@
+{
+  "SourceTarget": "5033ce54da233fc7a3df319d50ab09a2ebee523a",
+  "UTC": "2026-09-12T10:31:56.6367904Z",
+  "PromptSHA256": "B872E9EEC5B5C4C011D109F6CA55A72E26E7AA75DFDFF566D5E39F965AD794BB",
+  "Records": [
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\focused-s03\\baseline-consumer.json",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101606719\\baseline-consumer.json",
+      "Bytes": 293,
+      "SHA256": "95F31DF092195B0153A5DDA7E7C2AE3C14594DF3EC2F3816D6E7EB068CAD1616"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\focused-s03\\baseline-generic-consumer.json",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101606719\\baseline-generic-consumer.json",
+      "Bytes": 300,
+      "SHA256": "96A7EA7DD24B07BEAD3AB14838C1475FC11EB9707E36CD15243BED27623F8786"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\focused-s03\\baseline-generic-producer.json",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101606719\\baseline-generic-producer.json",
+      "Bytes": 300,
+      "SHA256": "F7698694F62D758CAE495B429B00E647B42D956F672D4821E2681281286F2B45"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\focused-s03\\baseline-inventory.json",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101606719\\baseline-inventory.json",
+      "Bytes": 696,
+      "SHA256": "C72559E98DD6854A89F1CE567A2D7D12CA5F921EEE17C658848C5BDD0A4DC21E"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\focused-s03\\baseline-packed-producer.json",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101606719\\baseline-packed-producer.json",
+      "Bytes": 299,
+      "SHA256": "233BD9D05B14BCDCBB190913850673B454547EFE8308CDE36D098A0C06C6B7A9"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\focused-s03\\candidate.txt",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101606719\\candidate.txt",
+      "Bytes": 40,
+      "SHA256": "38E9F2BE4EE79EDFA800B36A3E1C3945EA26D0A4B3F9298D014293A2116E3586"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\focused-s03\\diagnostic-boundary.lean",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101606719\\diagnostic-boundary.lean",
+      "Bytes": 82,
+      "SHA256": "095AA29925219A82EE935057C12CE34296AD318BA3415B2EDE6B51A1E3101343"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\focused-s03\\S03-SIBLING-BUDGET-consumer.json",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101606719\\S03-SIBLING-BUDGET-consumer.json",
+      "Bytes": 1243,
+      "SHA256": "58E28F29A2494E82314E91B303CFFF45ED9CBC71970C8C77F7811D038406B439"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\focused-s03\\S03-SIBLING-BUDGET-producer.json",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101606719\\S03-SIBLING-BUDGET-producer.json",
+      "Bytes": 300,
+      "SHA256": "8105A064EF2C9A4C53E9519FFB999D6CDBD8F864BD829E77DC86FCD0B7C6206D"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\focused-s03\\summary.json",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101606719\\summary.json",
+      "Bytes": 4162,
+      "SHA256": "76A94106857CF44762EFE51ED3C805EFA5FAE0215C7C9180A5673F45C099FC29"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\frozen-rows\\binary-git-result.json",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-contract-check\\20260912T101850451\\binary-git-result.json",
+      "Bytes": 398,
+      "SHA256": "12C017570AFBF1678E5747B82839B0271EE9CF011D83204F016935B4BED17D3B"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\frozen-rows\\binary-git.json",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-contract-check\\20260912T101850451\\binary-git.json",
+      "Bytes": 352,
+      "SHA256": "A4EC1484EF04A42D5A28105480D131AD48F27F897BB09AA5DACA2C5F2A454BEE"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\frozen-rows\\binary-git.ps1",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-contract-check\\20260912T101850451\\binary-git.ps1",
+      "Bytes": 1484,
+      "SHA256": "A6114FA343B887374140E37F5363F59C9BFA95BAF837AC794A1363F92F56C10E"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\frozen-rows\\evidence.json",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-contract-check\\20260912T101850451\\evidence.json",
+      "Bytes": 12423,
+      "SHA256": "ADD641EE29784166FD20F1FF972B1C6242A246E8F82770BB9D6577465FDF8D4D"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-final-audit-3\\delivered-evidence\\frozen-rows\\frozen-matrix.bin",
+      "OriginalPath": "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-contract-check\\20260912T101850451\\frozen-matrix.bin",
+      "Bytes": 17918,
+      "SHA256": "D1289E6A41F68DC69846B87880A33989691E5F27724210FEE8B9E5746A391B77"
+    }
+  ],
+  "FullReplay": "PENDING",
+  "BroadCertification": "COORDINATOR_OWNED_PENDING"
+}

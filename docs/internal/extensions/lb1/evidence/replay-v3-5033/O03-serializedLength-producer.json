@@ -1,0 +1,13 @@
+{
+  "Stage": "O03-serializedLength-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 15.867,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

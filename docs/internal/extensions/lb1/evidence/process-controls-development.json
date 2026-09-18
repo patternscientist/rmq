@@ -1,0 +1,248 @@
+{
+  "Phase": "development-process-controls",
+  "Platform": "Microsoft Windows NT 10.0.26200.0",
+  "BaselineCommit": "0bbbe8ca4a937bc9782b2f7c5cc5419faa1a75a2",
+  "Meaning": "First 10-second deadline and first selector run are inconclusive/failing discovery; repaired six-selector subprocess run and thirty-second deadline pass. POSIX execution uncovered.",
+  "Runs": [
+    {
+      "Run": "20260912T073604062",
+      "Artifacts": [
+        {
+          "Name": "deadline-result.json",
+          "Data": {
+            "Stage": "deadline-descendant",
+            "ExitCode": -1,
+            "Output": [],
+            "StandardOutput": [],
+            "StandardError": [],
+            "TimedOut": true,
+            "OutputLimitExceeded": false,
+            "TerminatedIds": [
+              6796,
+              28988
+            ],
+            "DurationSeconds": 10.444,
+            "DeadlineSeconds": 10,
+            "Ownership": "kill-on-close-job"
+          }
+        }
+      ]
+    },
+    {
+      "Run": "20260912T073803112",
+      "Artifacts": [
+        {
+          "Name": "selector-omitted.json",
+          "Data": {
+            "Stage": "selector-omitted",
+            "ExitCode": 1,
+            "Output": [
+              "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:101",
+              "Line |",
+              " 101 |  … [StringComparison]::Ordinal)){throw 'LB1-SELECTOR malformed channel'}",
+              "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+              "     | LB1-SELECTOR malformed channel"
+            ],
+            "StandardOutput": [],
+            "StandardError": [
+              "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:101",
+              "Line |",
+              " 101 |  … [StringComparison]::Ordinal)){throw 'LB1-SELECTOR malformed channel'}",
+              "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+              "     | LB1-SELECTOR malformed channel"
+            ],
+            "TimedOut": false,
+            "OutputLimitExceeded": false,
+            "TerminatedIds": [],
+            "DurationSeconds": 9.76,
+            "DeadlineSeconds": 60,
+            "Ownership": "kill-on-close-job"
+          }
+        }
+      ]
+    },
+    {
+      "Run": "20260912T073914495",
+      "Artifacts": [
+        {
+          "Name": "selector-empty.json",
+          "Data": {
+            "Stage": "selector-empty",
+            "ExitCode": 1,
+            "Output": [
+              "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:88",
+              "Line |",
+              "  88 |  … ace($selector)) { throw 'LB1-SELECTOR empty or whitespace selector' }",
+              "     |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+              "     | LB1-SELECTOR empty or whitespace selector"
+            ],
+            "StandardOutput": [],
+            "StandardError": [
+              "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:88",
+              "Line |",
+              "  88 |  … ace($selector)) { throw 'LB1-SELECTOR empty or whitespace selector' }",
+              "     |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+              "     | LB1-SELECTOR empty or whitespace selector"
+            ],
+            "TimedOut": false,
+            "OutputLimitExceeded": false,
+            "TerminatedIds": [],
+            "DurationSeconds": 7.974,
+            "DeadlineSeconds": 60,
+            "Ownership": "kill-on-close-job"
+          }
+        },
+        {
+          "Name": "selector-malformed.json",
+          "Data": {
+            "Stage": "selector-malformed",
+            "ExitCode": 1,
+            "Output": [
+              "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:101",
+              "Line |",
+              " 101 |  … [StringComparison]::Ordinal)){throw 'LB1-SELECTOR malformed channel'}",
+              "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+              "     | LB1-SELECTOR malformed channel"
+            ],
+            "StandardOutput": [],
+            "StandardError": [
+              "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:101",
+              "Line |",
+              " 101 |  … [StringComparison]::Ordinal)){throw 'LB1-SELECTOR malformed channel'}",
+              "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+              "     | LB1-SELECTOR malformed channel"
+            ],
+            "TimedOut": false,
+            "OutputLimitExceeded": false,
+            "TerminatedIds": [],
+            "DurationSeconds": 7.659,
+            "DeadlineSeconds": 60,
+            "Ownership": "kill-on-close-job"
+          }
+        },
+        {
+          "Name": "selector-omitted.json",
+          "Data": {
+            "Stage": "selector-omitted",
+            "ExitCode": 0,
+            "Output": [
+              "LB1-SELECTOR-PASS selected=56 ids=O01-wordRoundTrip,O02-wordSerializationInjective,O03-serializedLength,O04-memoryRecovery,O05-decoderExact,O06-decoderLeftmost,O07-sameShapeMemory,O08-shapeInjectivity,O09-uniformBudgetCount,O10-uniformBudgetLower,O11-canonicalCount,O12-canonicalLower,O13-upperCapacity,O14-allocationResidualLittleO,O15-runIdentity,O16-machine,M01-allocationResidualLittleO,M02-completeResidualLittleO,M03-widthBounds,M04-dataCapacity,M05-completeCapacity,M06-memoryWordsFit,M07-allocationAddressesFit,M08-programFieldsFit,M09-budgetExact,M10-programLength,M11-encodedProgramBound,M12-registerCount,M13-scratchCount,M14-unusedRegisters,M15-validInputs,M16-natContract,M17-leftmost,M18-result,M19-halt,M20-invalidGuard,M21-stepBound,M22-categoryPartition,M23-finalStateFit,M24-transitionSafety,M25-prefixSafety,M26-readWidth,M27-positionalReadBacking,M28-orderedLogicalRefinement,M29-logicalReadOnly,M30-suppliedMemoryAgreement,M31-specResult,M32-noFailedLoads,M33-invalidGuardSteps,A01-BASELINE,P01-PUBLIC-PROPOSITION,G01-LOWER-PROPOSITION,G02-DELETED-EXACTNESS,D01-NULL-DECODER,D02-WRONG-DECODER,D03-ZERO-SERIALIZER"
+            ],
+            "StandardOutput": [
+              "LB1-SELECTOR-PASS selected=56 ids=O01-wordRoundTrip,O02-wordSerializationInjective,O03-serializedLength,O04-memoryRecovery,O05-decoderExact,O06-decoderLeftmost,O07-sameShapeMemory,O08-shapeInjectivity,O09-uniformBudgetCount,O10-uniformBudgetLower,O11-canonicalCount,O12-canonicalLower,O13-upperCapacity,O14-allocationResidualLittleO,O15-runIdentity,O16-machine,M01-allocationResidualLittleO,M02-completeResidualLittleO,M03-widthBounds,M04-dataCapacity,M05-completeCapacity,M06-memoryWordsFit,M07-allocationAddressesFit,M08-programFieldsFit,M09-budgetExact,M10-programLength,M11-encodedProgramBound,M12-registerCount,M13-scratchCount,M14-unusedRegisters,M15-validInputs,M16-natContract,M17-leftmost,M18-result,M19-halt,M20-invalidGuard,M21-stepBound,M22-categoryPartition,M23-finalStateFit,M24-transitionSafety,M25-prefixSafety,M26-readWidth,M27-positionalReadBacking,M28-orderedLogicalRefinement,M29-logicalReadOnly,M30-suppliedMemoryAgreement,M31-specResult,M32-noFailedLoads,M33-invalidGuardSteps,A01-BASELINE,P01-PUBLIC-PROPOSITION,G01-LOWER-PROPOSITION,G02-DELETED-EXACTNESS,D01-NULL-DECODER,D02-WRONG-DECODER,D03-ZERO-SERIALIZER"
+            ],
+            "StandardError": [],
+            "TimedOut": false,
+            "OutputLimitExceeded": false,
+            "TerminatedIds": [],
+            "DurationSeconds": 13.759,
+            "DeadlineSeconds": 60,
+            "Ownership": "kill-on-close-job"
+          }
+        },
+        {
+          "Name": "selector-unknown.json",
+          "Data": {
+            "Stage": "selector-unknown",
+            "ExitCode": 1,
+            "Output": [
+              "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:91",
+              "Line |",
+              "  91 |  …  if ($selected.Count -ne 1) { throw 'LB1-SELECTOR unknown selector' }",
+              "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+              "     | LB1-SELECTOR unknown selector"
+            ],
+            "StandardOutput": [],
+            "StandardError": [
+              "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:91",
+              "Line |",
+              "  91 |  …  if ($selected.Count -ne 1) { throw 'LB1-SELECTOR unknown selector' }",
+              "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+              "     | LB1-SELECTOR unknown selector"
+            ],
+            "TimedOut": false,
+            "OutputLimitExceeded": false,
+            "TerminatedIds": [],
+            "DurationSeconds": 8.481,
+            "DeadlineSeconds": 60,
+            "Ownership": "kill-on-close-job"
+          }
+        },
+        {
+          "Name": "selector-valid.json",
+          "Data": {
+            "Stage": "selector-valid",
+            "ExitCode": 0,
+            "Output": [
+              "LB1-SELECTOR-PASS selected=1 ids=A01-BASELINE"
+            ],
+            "StandardOutput": [
+              "LB1-SELECTOR-PASS selected=1 ids=A01-BASELINE"
+            ],
+            "StandardError": [],
+            "TimedOut": false,
+            "OutputLimitExceeded": false,
+            "TerminatedIds": [],
+            "DurationSeconds": 9.516,
+            "DeadlineSeconds": 60,
+            "Ownership": "kill-on-close-job"
+          }
+        },
+        {
+          "Name": "selector-whitespace.json",
+          "Data": {
+            "Stage": "selector-whitespace",
+            "ExitCode": 1,
+            "Output": [
+              "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:88",
+              "Line |",
+              "  88 |  … ace($selector)) { throw 'LB1-SELECTOR empty or whitespace selector' }",
+              "     |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+              "     | LB1-SELECTOR empty or whitespace selector"
+            ],
+            "StandardOutput": [],
+            "StandardError": [
+              "Exception: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:88",
+              "Line |",
+              "  88 |  … ace($selector)) { throw 'LB1-SELECTOR empty or whitespace selector' }",
+              "     |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+              "     | LB1-SELECTOR empty or whitespace selector"
+            ],
+            "TimedOut": false,
+            "OutputLimitExceeded": false,
+            "TerminatedIds": [],
+            "DurationSeconds": 9.712,
+            "DeadlineSeconds": 60,
+            "Ownership": "kill-on-close-job"
+          }
+        }
+      ]
+    },
+    {
+      "Run": "20260912T073914693",
+      "Artifacts": [
+        {
+          "Name": "deadline-result.json",
+          "Data": {
+            "Stage": "deadline-descendant",
+            "ExitCode": -1,
+            "Output": [],
+            "StandardOutput": [],
+            "StandardError": [],
+            "TimedOut": true,
+            "OutputLimitExceeded": false,
+            "TerminatedIds": [
+              24532,
+              27772,
+              29284,
+              18368
+            ],
+            "DurationSeconds": 30.284,
+            "DeadlineSeconds": 30,
+            "Ownership": "kill-on-close-job"
+          }
+        }
+      ]
+    }
+  ]
+}

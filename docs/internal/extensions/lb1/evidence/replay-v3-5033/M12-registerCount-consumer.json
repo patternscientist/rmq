@@ -1,0 +1,27 @@
+{
+  "Stage": "M12-registerCount-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:129:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.registerCount",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  queryRegisterCount = 8271 : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:129:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.registerCount",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  queryRegisterCount = 8271 : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 21.334,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

@@ -1,0 +1,13 @@
+{
+  "Stage": "M11-encodedProgramBound-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 10.437,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}
