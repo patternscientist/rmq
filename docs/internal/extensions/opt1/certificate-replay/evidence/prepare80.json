@@ -1,0 +1,2194 @@
+{
+  "Summary": {
+    "TrackedSourceMutations": 0,
+    "ExitCode": 0,
+    "Stages": [
+      {
+        "Name": "tracked-source-status",
+        "Executable": "C:\\Program Files\\Git\\cmd\\git.exe",
+        "Arguments": [
+          "-c",
+          "core.excludesfile=",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=no",
+          "--",
+          "RMQ/Core/WordRAM/Optimization/Certificate.lean",
+          "RMQ/Core/WordRAM/Optimization/Capstone.lean",
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "docs/internal/extensions/opt1/certificate-replay/FIELDS.json"
+        ],
+        "Directory": "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ",
+        "Environment": {},
+        "Result": {
+          "Stage": "tracked-source-status",
+          "ExitCode": 0,
+          "Output": [
+            " M RMQ/Core/WordRAM/Optimization/Capstone.lean"
+          ],
+          "StandardOutput": [
+            " M RMQ/Core/WordRAM/Optimization/Capstone.lean"
+          ],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 1.86,
+          "DeadlineSeconds": 180,
+          "Ownership": "kill-on-close-job"
+        }
+      },
+      {
+        "Name": "tracked-source-status",
+        "Executable": "C:\\Program Files\\Git\\cmd\\git.exe",
+        "Arguments": [
+          "-c",
+          "core.excludesfile=",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=no",
+          "--",
+          "RMQ/Core/WordRAM/Optimization/Certificate.lean",
+          "RMQ/Core/WordRAM/Optimization/Capstone.lean",
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "docs/internal/extensions/opt1/certificate-replay/FIELDS.json"
+        ],
+        "Directory": "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ",
+        "Environment": {},
+        "Result": {
+          "Stage": "tracked-source-status",
+          "ExitCode": 0,
+          "Output": [
+            " M RMQ/Core/WordRAM/Optimization/Capstone.lean"
+          ],
+          "StandardOutput": [
+            " M RMQ/Core/WordRAM/Optimization/Capstone.lean"
+          ],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.52,
+          "DeadlineSeconds": 180,
+          "Ownership": "kill-on-close-job"
+        }
+      }
+    ],
+    "Version": "opt1-certificate-replay-v3",
+    "PrepareOnly": true
+  },
+  "Executed": {
+    "Expected": [
+      "A01-UNCHANGED",
+      "A02-COMMENT",
+      "D01-allocationResidualLittleO",
+      "W01-allocationResidualLittleO",
+      "D02-completeResidualLittleO",
+      "W02-completeResidualLittleO",
+      "D03-widthBounds",
+      "W03-widthBounds",
+      "D04-dataCapacity",
+      "W04-dataCapacity",
+      "D05-completeCapacity",
+      "W05-completeCapacity",
+      "D06-memoryWordsFit",
+      "W06-memoryWordsFit",
+      "D07-allocationAddressesFit",
+      "W07-allocationAddressesFit",
+      "D08-programFieldsFit",
+      "W08-programFieldsFit",
+      "D09-budgetExact",
+      "W09-budgetExact",
+      "D10-programLength",
+      "W10-programLength",
+      "D11-encodedProgramLength",
+      "W11-encodedProgramLength",
+      "D12-programReduction",
+      "W12-programReduction",
+      "D13-emittedProgram",
+      "W13-emittedProgram",
+      "D14-originalExecutionBound",
+      "W14-originalExecutionBound",
+      "D15-originalReducedFuel",
+      "W15-originalReducedFuel",
+      "D16-arbitraryMemoryObservations",
+      "W16-arbitraryMemoryObservations",
+      "D17-completedExecution",
+      "W17-completedExecution",
+      "D18-adequateFuel",
+      "W18-adequateFuel",
+      "D19-registerCount",
+      "W19-registerCount",
+      "D20-scratchCount",
+      "W20-scratchCount",
+      "D21-unusedRegisters",
+      "W21-unusedRegisters",
+      "D22-validInputs",
+      "W22-validInputs",
+      "D23-natContract",
+      "W23-natContract",
+      "D24-leftmost",
+      "W24-leftmost",
+      "D25-result",
+      "W25-result",
+      "D26-halt",
+      "W26-halt",
+      "D27-invalidGuard",
+      "W27-invalidGuard",
+      "D28-stepBound",
+      "W28-stepBound",
+      "D29-categoryPartition",
+      "W29-categoryPartition",
+      "D30-finalStateFit",
+      "W30-finalStateFit",
+      "D31-transitionSafety",
+      "W31-transitionSafety",
+      "D32-prefixSafety",
+      "W32-prefixSafety",
+      "D33-readWidth",
+      "W33-readWidth",
+      "D34-positionalReadBacking",
+      "W34-positionalReadBacking",
+      "D35-orderedLogicalRefinement",
+      "W35-orderedLogicalRefinement",
+      "D36-logicalReadOnly",
+      "W36-logicalReadOnly",
+      "D37-suppliedMemoryAgreement",
+      "W37-suppliedMemoryAgreement",
+      "D38-specResult",
+      "W38-specResult",
+      "D39-noFailedLoads",
+      "W39-noFailedLoads"
+    ],
+    "Version": "opt1-certificate-replay-v3",
+    "PrepareOnly": true,
+    "Executed": [
+      "A01-UNCHANGED",
+      "A02-COMMENT",
+      "D01-allocationResidualLittleO",
+      "W01-allocationResidualLittleO",
+      "D02-completeResidualLittleO",
+      "W02-completeResidualLittleO",
+      "D03-widthBounds",
+      "W03-widthBounds",
+      "D04-dataCapacity",
+      "W04-dataCapacity",
+      "D05-completeCapacity",
+      "W05-completeCapacity",
+      "D06-memoryWordsFit",
+      "W06-memoryWordsFit",
+      "D07-allocationAddressesFit",
+      "W07-allocationAddressesFit",
+      "D08-programFieldsFit",
+      "W08-programFieldsFit",
+      "D09-budgetExact",
+      "W09-budgetExact",
+      "D10-programLength",
+      "W10-programLength",
+      "D11-encodedProgramLength",
+      "W11-encodedProgramLength",
+      "D12-programReduction",
+      "W12-programReduction",
+      "D13-emittedProgram",
+      "W13-emittedProgram",
+      "D14-originalExecutionBound",
+      "W14-originalExecutionBound",
+      "D15-originalReducedFuel",
+      "W15-originalReducedFuel",
+      "D16-arbitraryMemoryObservations",
+      "W16-arbitraryMemoryObservations",
+      "D17-completedExecution",
+      "W17-completedExecution",
+      "D18-adequateFuel",
+      "W18-adequateFuel",
+      "D19-registerCount",
+      "W19-registerCount",
+      "D20-scratchCount",
+      "W20-scratchCount",
+      "D21-unusedRegisters",
+      "W21-unusedRegisters",
+      "D22-validInputs",
+      "W22-validInputs",
+      "D23-natContract",
+      "W23-natContract",
+      "D24-leftmost",
+      "W24-leftmost",
+      "D25-result",
+      "W25-result",
+      "D26-halt",
+      "W26-halt",
+      "D27-invalidGuard",
+      "W27-invalidGuard",
+      "D28-stepBound",
+      "W28-stepBound",
+      "D29-categoryPartition",
+      "W29-categoryPartition",
+      "D30-finalStateFit",
+      "W30-finalStateFit",
+      "D31-transitionSafety",
+      "W31-transitionSafety",
+      "D32-prefixSafety",
+      "W32-prefixSafety",
+      "D33-readWidth",
+      "W33-readWidth",
+      "D34-positionalReadBacking",
+      "W34-positionalReadBacking",
+      "D35-orderedLogicalRefinement",
+      "W35-orderedLogicalRefinement",
+      "D36-logicalReadOnly",
+      "W36-logicalReadOnly",
+      "D37-suppliedMemoryAgreement",
+      "W37-suppliedMemoryAgreement",
+      "D38-specResult",
+      "W38-specResult",
+      "D39-noFailedLoads",
+      "W39-noFailedLoads"
+    ]
+  },
+  "Cases": [
+    {
+      "Id": "A01-UNCHANGED",
+      "Kind": "unchanged",
+      "Field": "",
+      "Expected": "ACCEPT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "A02-COMMENT",
+      "Kind": "comment",
+      "Field": "",
+      "Expected": "ACCEPT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "c4c9bf72d23950f45b11d62d2be229d34fdd912380871ab35dd44abc21514807",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D01-allocationResidualLittleO",
+      "Kind": "delete",
+      "Field": "allocationResidualLittleO",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "541f9024b248eb02f5dc64b9fc88e9bf3407dcbe7e2aed87a93f5d5ca8069c4a",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "4798c3f5eb2699542d7b387f41a646270a6132629beb72ea26d7c3e4064538bb",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D02-completeResidualLittleO",
+      "Kind": "delete",
+      "Field": "completeResidualLittleO",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "17a77e404c0afc7697e1388f4a630c310c76be20a1190cce439c6e40212b2b94",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "de5e573475a833d0163780ffc70a651e07d5d5fca144bc527034a39c20ec6a8b",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D03-widthBounds",
+      "Kind": "delete",
+      "Field": "widthBounds",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "8f49a902a0ed21e4c5f62b7b064b5cfd832940eab6dbe1e93cf1453b4e217a58",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "9d9f73323c9c997a814bec914321fdae0bf11628f549912ce0ac74e96d7517bf",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D04-dataCapacity",
+      "Kind": "delete",
+      "Field": "dataCapacity",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "de4f19731da77b327d18549de3a2887ffec9b2ed3780a511458d86d0580f2851",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "facc3036b082f88a24eca77ab6cefb2f78af9852fcf65873b47f52a4c4120c7e",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D05-completeCapacity",
+      "Kind": "delete",
+      "Field": "completeCapacity",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "c238158587d5caa14c378f44377be22865803a4664325ba5e4e5bddaca3c667d",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "881cdd875a06b94c6a32879b49080395d66d60bf3399bf304c4d3d9a5ec70ce7",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D06-memoryWordsFit",
+      "Kind": "delete",
+      "Field": "memoryWordsFit",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "1c46ee72aeea959c68f3781f9615b252c1b66ca5d7c4c68f1496085b9383e9c2",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "098025bfeae834464cd98cb316daf2deea0f12407bf77bc024760ed1633f3a96",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D07-allocationAddressesFit",
+      "Kind": "delete",
+      "Field": "allocationAddressesFit",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "de2b4d7c3ed322c0978cb5f8bd86f3550abf2e965adc9111afd805722514dc7f",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "9d518e46082c7f06c97bc232af817a1eed51fcf5ee865ead39dce44eae42a917",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D08-programFieldsFit",
+      "Kind": "delete",
+      "Field": "programFieldsFit",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "51dae6bf4bceffe259105b11c5224f239e0dfb47488eadd9124be3990efe7d0c",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "7a4a362a8f0541675a53ec9dc55eb2e31513a6374b833ea4708205cfac7441dd",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D09-budgetExact",
+      "Kind": "delete",
+      "Field": "budgetExact",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d732a66c3cf205221648bd023c2a5225094cec7157babf6a75a31b8aa6571d41",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "f0feef307651e12aba2514780f50ab1e3d04217a7e731bb63989d4c7b9ffbdfa",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D10-programLength",
+      "Kind": "delete",
+      "Field": "programLength",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "0b1947ce41c4fd35bbcb90a705c1a094ca9c4e12ce2cdc8a20a167dc0b8a05a4",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "c2ac52f37de7a71d527bd06c5eee1ff64e2a4084e93a4c44907ebd86a858b65b",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D11-encodedProgramLength",
+      "Kind": "delete",
+      "Field": "encodedProgramLength",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "7e96c659c133cb6456e5d9bd8506ea1a551d3e67f8bef17f6558a4e6773e24a6",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "f48173155507323b6abfdbf5ed1f1126d3dd799b965642783fc6082f68fa75de",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D12-programReduction",
+      "Kind": "delete",
+      "Field": "programReduction",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "01e76a495cb14d52e6b39390015cd73b26f6d0ff6c6e6ed085adf80ddad8805c",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "32438467f6ac1ab04a532cee260e2b53c66e9f890ffd018543027afe36eb3165",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D13-emittedProgram",
+      "Kind": "delete",
+      "Field": "emittedProgram",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "7042d20a16df260b04b6fb7edbcebd71aac93d5ee05c4c776608a6d09528efe8",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "2026f2cdfae394924362d6de297ae75ccb718009be172c5747a217b0e599be7b",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D14-originalExecutionBound",
+      "Kind": "delete",
+      "Field": "originalExecutionBound",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "9e8941ed0847248032ac5a732a3be7c5895e9c638c8c7502371cda43beafe9d2",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "27dcc77825cf7f0996ec31a82ab2b7a3c68594dcc658b21a98e1157e1bb62dec",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D15-originalReducedFuel",
+      "Kind": "delete",
+      "Field": "originalReducedFuel",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0fb3f22935dc19d98064d7742f34104735045ca4578ef59a7e7d7690c32908f",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "283b72c3532dcebefe5e7b4f2241e8a30513f3ca79f3e13aefd50fce527b2d92",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D16-arbitraryMemoryObservations",
+      "Kind": "delete",
+      "Field": "arbitraryMemoryObservations",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "422a1d8788a97c6402c8733f04d1b8784605c7035bf7727c754b88e809a89c57",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "a6e0a1e9318a8bd3d68cbb5d2bd283c6d6f691b9b7173ab56d2a5371daadc4c9",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D17-completedExecution",
+      "Kind": "delete",
+      "Field": "completedExecution",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "6a23670c8c2b0eba82c5089a4738060b3dc71b7e2ce623122451108cf9fa0e50",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "2fac10ce8a726a074be7a2043cc2f308c8cb7c15b3d66de8d508ea03a9720644",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D18-adequateFuel",
+      "Kind": "delete",
+      "Field": "adequateFuel",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "449117dddd6cdc404c59db41105dd25592f064a21b6bbfea9504bf1ae0793ac3",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "a0db74e6be942c725157c2c8619132947df0555a55e675c8899843d3de0780a8",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D19-registerCount",
+      "Kind": "delete",
+      "Field": "registerCount",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "6893a3f3bcde001e763b2213ffe9bcb30cbbd2a3bb60dd28314883d979593604",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "41c2707ca7f70da2bab561cc4f951bb3bf12da0904bb2cc549e46b4062f258b0",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D20-scratchCount",
+      "Kind": "delete",
+      "Field": "scratchCount",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "0d22ba25fc63b5fabf43f2cc29d52be225a76d87434a455125483b25bac21b96",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "f7000bfb47bd537db05542fdcf7d03cdeab37161b7e1d76e70d8098087d7adc9",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D21-unusedRegisters",
+      "Kind": "delete",
+      "Field": "unusedRegisters",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "e101284d61875e020f61be8cebd0650f261ae25972f12d5334f58f77ea22b5d8",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "a53a5fa63d5a10e43b7a0c9c5d3ec09935fa5fd720ff52ddb1f32d9c3055cbc3",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D22-validInputs",
+      "Kind": "delete",
+      "Field": "validInputs",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "7b62b62b3fc451195e1e9122c7babf1db4da4e2a1077c7fd0073c43e20bc2c30",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "a9a5b6ff3b202aff25dc267b52b074c43ae9b6ab1b8b0ae3d8415a3108f770b8",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D23-natContract",
+      "Kind": "delete",
+      "Field": "natContract",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "b33fed6ad39f07981514fd620f374fcd0dd00083ed6f3776bb09aaf51392347d",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "6a43ca9c123a561f1ea0c5f2089144e132b54c861290f720b2f0dcb51bc7ed80",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D24-leftmost",
+      "Kind": "delete",
+      "Field": "leftmost",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "9bdac188d761a2cb6d5157f900a1ddea820506db2a3378293ae85c07da926cad",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "0b91fa70f28543efd507a30de04d55d42a40bec3f1f16fa215202956d38bbaed",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D25-result",
+      "Kind": "delete",
+      "Field": "result",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "448036f62ea88b024f43c782d19ddc3cffe03d83760b367b36a207f5f0b5602a",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "e77c23fcd690f36479d9c86b4581b5af6d876faf9260318c927447324cb0dcbc",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D26-halt",
+      "Kind": "delete",
+      "Field": "halt",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "efc4af5bafadd2242271fd930ed7e9a5dfab226601a345b80dc09e80eaa4950a",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "9d2e0288df39fbd53dd06d57ada6e43cb881b4f4c4cbbfdbd42fac213005e99b",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D27-invalidGuard",
+      "Kind": "delete",
+      "Field": "invalidGuard",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "b98ea44380be168ac161fe2302cd303aa2c5412cddb39a3e0a22216f3b37c979",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "7e5700ed7fea000a532997004dfe388a2eeeb08bc0ae639de9431a2d60c00908",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D28-stepBound",
+      "Kind": "delete",
+      "Field": "stepBound",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "3a13581c88c8a49f263e311e3cbd5955c8013418788b87acb294049e916630ca",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "84d5f6481235e49e48ff70c959d950d588d4fc6754b8626e42e383ecf4717c0d",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D29-categoryPartition",
+      "Kind": "delete",
+      "Field": "categoryPartition",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "abbeef6257479eb1d70cb83c3d295d0ef9ffe4c4f63d9106bf476e626175fc92",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "3cc1f3f76813e8e20304e53dd6a2e113dc7c90097aada0cc0daead2ef0c896b9",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D30-finalStateFit",
+      "Kind": "delete",
+      "Field": "finalStateFit",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "a37fdce62d527c942ac7ab15c6b19fba493b28f2bd4aedbb1b9c7940f48969bc",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "16775ebfbb0d4c79180bc86c13dcc291cd07f96beac3a180c798d835591a7dc6",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D31-transitionSafety",
+      "Kind": "delete",
+      "Field": "transitionSafety",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d7e24d6b1d49b5a57a7bf03cf23cb8212da9f4acaa79411a79ab7f2c82e26f02",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "0d04a8964dad44a7b6062c0c083023e93ad7f214d09d1f7393c96dd09d301108",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D32-prefixSafety",
+      "Kind": "delete",
+      "Field": "prefixSafety",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "7d128fdb44d1062141115a86c9a34138b09e478aa579f6a9a272dd7df018deee",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "68b557c0b37a31b28756b53cc0b4599fedfd495f6d646f866690d8f146712e35",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D33-readWidth",
+      "Kind": "delete",
+      "Field": "readWidth",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "e6570c5065aada513d749277ffdf25f4bdc431a21788b0901bcfdc135c567457",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "9bec04aa58a95b957f900e00bec37eaadba99d94b4b4664fa6501fb87a038be8",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D34-positionalReadBacking",
+      "Kind": "delete",
+      "Field": "positionalReadBacking",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "c3bd92af26e6ffa728c19414e75f63e3f82634c0f53ed82fed04f737b6337580",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "e2d3d1d1e71d26d2165e9e2e80484c6cf77db1c5c18f2e98d2bbcd2616a61b2e",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D35-orderedLogicalRefinement",
+      "Kind": "delete",
+      "Field": "orderedLogicalRefinement",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "1543f3bc38a9c504903d09f27f617e9212402ec61958ac4e288930bb7361bd90",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "f9cc037cf5701bf82c8127f5d351955b823fa11146312e79773ab4c583fcc187",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D36-logicalReadOnly",
+      "Kind": "delete",
+      "Field": "logicalReadOnly",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "053413dc893565df53d4e7664f61b25303558e3dabf57b0c6621f8135f7dce1e",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "1f70b5f8bd9f762d3fb2d4227c53cac08c8d73dab67e7af77477e9b9f3d32201",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D37-suppliedMemoryAgreement",
+      "Kind": "delete",
+      "Field": "suppliedMemoryAgreement",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "1b0ddd72484de1f9bdc33474681357d5a6b85fcc6a3277485ea65f3aa1abba9c",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "f0fb061def555fbfb8f2f7a1fd65d791ddd99c5acf749722bbe3d19f32a60df4",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D38-specResult",
+      "Kind": "delete",
+      "Field": "specResult",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "3a9477796ae833a89414cd30fd2f68efdc9f94db4024744b7c79fd60912ff7d0",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "0d15114e3244912855311ec936a0f323847e65d7b7d83de18c6f705a7cfc6d45",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "D39-noFailedLoads",
+      "Kind": "delete",
+      "Field": "noFailedLoads",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "9f2a84fba2fb42fd47f04303abf14eed0adaa0fb107818a153f284086a686d57",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "fdbe14fd003d3940a94025d71f35d7fc2d90d1ffb709a4aab58f3235b67be956",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W01-allocationResidualLittleO",
+      "Kind": "weaken",
+      "Field": "allocationResidualLittleO",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "dc586a3a73ac99cc2bc00eed8e085e1daa66d6632e2648a1b5d6cf361ba0ed37",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "9ec2f26d7d7e6136535766174d28727ad449a3c227991f97a5bea7108db77dc7",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W02-completeResidualLittleO",
+      "Kind": "weaken",
+      "Field": "completeResidualLittleO",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "3da8ffcf47ca7e230d053732283e21ba75c4f0d21a38717aab4a843422d3f6aa",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "1ce0f0246a41a3b6f4825a66f59f77403f6de26341139271a2cddcd1769077b8",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W03-widthBounds",
+      "Kind": "weaken",
+      "Field": "widthBounds",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "b52c11b3d3a356cd7154c53ad9709e4943b3daa7dcbaea34be9b1938d9f9b834",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "890892c259bf9124b9e4fd9e106b07d00422a3d5cd8f93ac5e11a1c204dbf698",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W04-dataCapacity",
+      "Kind": "weaken",
+      "Field": "dataCapacity",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "c5a5f9ec6de420bc15728f4ff296cda0b9b959d34768964d089e6fcb2c3089e0",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "a13b23b710bbeea0e8602574894b5dcc3d86dee9248e87b5f9f2a280770e2710",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W05-completeCapacity",
+      "Kind": "weaken",
+      "Field": "completeCapacity",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "786329da1e7a5ae22215206a15e0362344ab0d929acc7ab801b3feb71dd52e22",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "05b2572be5ffef9ff0969c370a8cfb7234e7243939e931719fb80c007faeedb4",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W06-memoryWordsFit",
+      "Kind": "weaken",
+      "Field": "memoryWordsFit",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "ee867c613ee14cd2c4c1222dd389227b306aecdedd4b957173980a940613cf89",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "274dd3ce79ffa9e38027f95219afb58edb47f68a30e33a2139566400c183a53d",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W07-allocationAddressesFit",
+      "Kind": "weaken",
+      "Field": "allocationAddressesFit",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "12818cdf1f7f508314289f0393af124abe0a5fc32fc726c9ce652855226c00d7",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "70b787695437eb15df45bc32aeb3802bd34b49b33c39b70d6d999f3fc2745b6b",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W08-programFieldsFit",
+      "Kind": "weaken",
+      "Field": "programFieldsFit",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "382e43f0a6de2bce83b8f3ae53e9b00448e86b88e0a9fd8550d867f2d6f80459",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "56002aba0dcdd5c20c75820fc790b9015ef4650e6a04fb205f400f8d836681e4",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W09-budgetExact",
+      "Kind": "weaken",
+      "Field": "budgetExact",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "be1582166c162c24ea551acbf4d7b2f4e82b143c7fa1d0fee9929e3c5ade7adb",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "73f3dc9ff2f6d7b0dffe703022775b929e167f4d3da04389713b7573f83812bc",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W10-programLength",
+      "Kind": "weaken",
+      "Field": "programLength",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "048c2a56ac1d2f82ef9231c60315f5c0c1bfcb8e0a5adf8d5bec8db6edf8c55a",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "1016c7d807b0fafb721bf101dbd6fae53ae5664bb6512a6370e412cebd1048b6",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W11-encodedProgramLength",
+      "Kind": "weaken",
+      "Field": "encodedProgramLength",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "ced2f913fea4d023927567194e1d4f507c3e5b6eba649c5906f253d714c7ea81",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "83baa5d1a9b7cd75c7369a3e3bd06983ef95045cfb982264e81aba83ac01ae23",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W12-programReduction",
+      "Kind": "weaken",
+      "Field": "programReduction",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "471ff5b5d0e007c07683da57368122316203946d16cb2223d996171cde9a0170",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "37da9e6b522e71ea094e59e30bd7a900e50e110d33a57a99959ae98ee15e4244",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W13-emittedProgram",
+      "Kind": "weaken",
+      "Field": "emittedProgram",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "cfe207ea492e88cb877a538142653d22c2ae8ab4e495b8d4d517a5db95ee42e0",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "032f422e4d22100fcf25ffddb5c1ba03e41948bf2fac6da13a02ca35a8028ea5",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W14-originalExecutionBound",
+      "Kind": "weaken",
+      "Field": "originalExecutionBound",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "a75f992725b9f55c8936186dfd4677204884ead525fb0b82c29feb1246aef659",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "31972d38df12ac070bc369d098a484ea07b61c324ba81af7b7ce0458588e859c",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W15-originalReducedFuel",
+      "Kind": "weaken",
+      "Field": "originalReducedFuel",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "9a90c6d08341fb2a1c78c44a5ac4146291a2f608914f5d2601ca21beb48fb26f",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "809739d479d1d1ce0e63888ebf8984f7481d609b9f4b4cbda1e48e4b81514708",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W16-arbitraryMemoryObservations",
+      "Kind": "weaken",
+      "Field": "arbitraryMemoryObservations",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "8294d83f601306e793b9f54aa538b770440e1890e2d7c27e59bdb880c7c5eb6b",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "9bc65a128c9ce4b245c04bd7d12ec67a346729a6c72c61587c2a9a4fdf923662",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W17-completedExecution",
+      "Kind": "weaken",
+      "Field": "completedExecution",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "98d16c34c94a8fac57ed9c4cbcd0511e1e106b0bf60844b3e165e20e050f88be",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "c45570efebc454718de904ab5c342afa60bd7f1b3a27bde7459d94614fe4bdbb",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W18-adequateFuel",
+      "Kind": "weaken",
+      "Field": "adequateFuel",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "b89db64155189fe1d5f5045d4d6df90ed5e1ce177d6d56f928a3aef9bf314a92",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "82e1738ef98af6fc34235f7bba811b6b6c962a798dc9e15f549c2f6f78b174b4",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W19-registerCount",
+      "Kind": "weaken",
+      "Field": "registerCount",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "0b033a333cd141f4db9ee06e4160492ed120bd70cf07b7fcbbe860f7abdf80e3",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "51b08a630583d078f869b5f9536e3e65986d4e8a7f3e363e2f9f3d1eb159ff88",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W20-scratchCount",
+      "Kind": "weaken",
+      "Field": "scratchCount",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "0a854a463b370225345de8f1651f172829e39e6144232df38640064f29ba18d3",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "56611b8fedab76b7ac600c71b81792b9193c5beef6fc927a2d7be371a68fc58c",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W21-unusedRegisters",
+      "Kind": "weaken",
+      "Field": "unusedRegisters",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "3b78a792558109dea8973c91916a786ce91799d20e3311b106786a2c3888cb69",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "140361bb73c73d63351fe6fa38a8d9dc2566fca0d00c0133eaf345f32ec824b9",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W22-validInputs",
+      "Kind": "weaken",
+      "Field": "validInputs",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "17aa04a3df7df8ca33fd130a4f5cae9e2766abf8f18c3e050d322c4cfe8d493e",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "8c761def82edfd47366ab3e2a4af6aa7b897d6a9c066cbcb3d45fd269ff3882e",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W23-natContract",
+      "Kind": "weaken",
+      "Field": "natContract",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "8afe18d2a48b42bec25ca2daf5c3cea290ac44847cd610ed22f8bbae65c815ab",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "4bb30a45e0c147a72400946b2afbc495b6ab859a792bbf724c9f13dbcfe8f238",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W24-leftmost",
+      "Kind": "weaken",
+      "Field": "leftmost",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "a2e777b1981f861ed4dfb1c53fe6baac85694cc5d48b8f396e67451eb565b56e",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "6500530394771299fc7f8af825fdd74f6314a82c24183ecf4c073eb7327d4229",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W25-result",
+      "Kind": "weaken",
+      "Field": "result",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "663e1ad54a8c7b16216ca2decb75dad81fa326d4826b8d5dfd9e3115d3d36ecc",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "2aaf7387bda73c65b618937c38415a2270bd1050f8d003793b2f471ba3b5d496",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W26-halt",
+      "Kind": "weaken",
+      "Field": "halt",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "8c9d123163076105ba844c9cb80cbfe9dc13ca82ea754851b5ccd40895670ef3",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "d3fcfa14492ad64c2307b4e775f9f30aea67cf6de8e2b21a22c4b7dbdd18bf32",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W27-invalidGuard",
+      "Kind": "weaken",
+      "Field": "invalidGuard",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "ecf01beaf6c5fe07f8b8b8b5140a9ff7da97d98aeb9e442c8b9a82b7ba51e25c",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "a88cb99f2c0ed7f346f0e898f4765cf7b848eb5fe750f9889d4740661173ac03",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W28-stepBound",
+      "Kind": "weaken",
+      "Field": "stepBound",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "eb274de15dcc11c1185dbd2a62b97e1308f3ac9ee2b09ba6882f3e63b9f5ed4e",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "bd4a83610f8f3adf85947a00b8b1c0c2dacdbc8cb51ecbd0d25480d529e68753",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W29-categoryPartition",
+      "Kind": "weaken",
+      "Field": "categoryPartition",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "ff46f44df8b93fb97035dc3b1328072ca82277fda24b7174b762f18cb7aec15a",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "892538d7d18ea1de911c811577479dc25f36d0607a5e357f5be23105759f01de",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W30-finalStateFit",
+      "Kind": "weaken",
+      "Field": "finalStateFit",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "c230a631ee6a8091241976e3697aa89a839a50fe28391aab67b13122d724801c",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "d62b06976516e54e2c93840122f4510ffb313ca2766d997bee1116a9541971e5",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W31-transitionSafety",
+      "Kind": "weaken",
+      "Field": "transitionSafety",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "ae63ab5434bb2e90c2842e21830a2cd2c4eb5ab7df76c65144ac24767ebd6831",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "33df0a6a35dc988e012b25a6fc3f900629c930f009e628200551825c23cc429c",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W32-prefixSafety",
+      "Kind": "weaken",
+      "Field": "prefixSafety",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "6b2519936a5303e8249ed3ed0fd7a493f04872517c99b6d6853833b8bba6cbf9",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "5e86005a43b9e8158b94e66d9643c6492cf01206b38270aef9592329485100b9",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W33-readWidth",
+      "Kind": "weaken",
+      "Field": "readWidth",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "eafd0ce62d355685600788e953ebffa700a0a7b48651a37b77264aa31f446b19",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "f700291c5b7fe29f79f2428b3de7d24ea9d763810190b8ef12bb0df52968bd9c",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W34-positionalReadBacking",
+      "Kind": "weaken",
+      "Field": "positionalReadBacking",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "fddeb6b7d87a10da4fe8e7aa549448662067595a3fa62ef730a567ac6abc30cc",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "650c4db6f93724a5b719560d042a66e7ac486089e872255b08a0d8c3dcc857b6",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W35-orderedLogicalRefinement",
+      "Kind": "weaken",
+      "Field": "orderedLogicalRefinement",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "59086ff42a297b6a5908b3c3ac9b7a6392a4d1418a5fb3b45b94b13bd539d70e",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "c7427bc9fdcce3a65b1886f362b53d8b1b8202df04e80c628307045954613d6c",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W36-logicalReadOnly",
+      "Kind": "weaken",
+      "Field": "logicalReadOnly",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "e43b4af7263127ea52ebe18d058bc16c0df17d38c20bf04fcbe176799ee395b7",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "1f72e07442814a2443d300759378d35246f2f91e380853744dd7858bc32d5238",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W37-suppliedMemoryAgreement",
+      "Kind": "weaken",
+      "Field": "suppliedMemoryAgreement",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "b5f6ac1534edb069254da3c9e05e748f75c2d6d58fbdd1ac8035fc929bd107d3",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "49106208e6f987319c079aaadc5c93a3c2e1a6aa8ba5a861757fe65b3e37f5ef",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W38-specResult",
+      "Kind": "weaken",
+      "Field": "specResult",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "b22d394b5a20db292a93f0d0f2803293fdfbf130fd6f96194f9476e2350272b4",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "d8c8ea655d78be4e70519167ee1cc33463f920d3798c7b9665cb260fe4daa273",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    },
+    {
+      "Id": "W39-noFailedLoads",
+      "Kind": "weaken",
+      "Field": "noFailedLoads",
+      "Expected": "REJECT",
+      "Mode": "PREPARE_ONLY",
+      "OriginalHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "MutatedHashes": {
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "6e84c25c07a3ee895f15a6321ace0eb16afdea5a1d5d85f5fce64037d2aec81c",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "6e14d9e0483bab66ebea42dc77943572ae788c39505cdc0059a973bc38039ce4",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "RestoredHashes": {
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+      },
+      "ProducersCompiled": false,
+      "ConsumerVerdict": "NOT_RUN"
+    }
+  ],
+  "OriginalBefore": {
+    "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+    "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+    "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5",
+    "docs/internal/extensions/opt1/certificate-replay/FIELDS.json": "0d1529c98d35b6ff2ac53d58d107f0a47ec8f5d263f51819c085827c055a63bb",
+    "docs/internal/extensions/opt1/certificate-replay/REGISTRY.md": "b8ec102894191b3e583b83df8b24b0521bdd5a06b4ee1894d9fdd1fdf1902273",
+    "scripts/packed_optimized_certificate_replay.ps1": "8f21b99bb90ee972cd167bd3e969139396bf4722bd202e9a6f19610e66a1faa8"
+  },
+  "OriginalAfter": {
+    "RMQ/Core/WordRAM/Optimization/Certificate.lean": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448",
+    "RMQ/Core/WordRAM/Optimization/Capstone.lean": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75",
+    "RMQ/Core/WordRAM/Optimization/Consumers.lean": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5",
+    "docs/internal/extensions/opt1/certificate-replay/FIELDS.json": "0d1529c98d35b6ff2ac53d58d107f0a47ec8f5d263f51819c085827c055a63bb",
+    "docs/internal/extensions/opt1/certificate-replay/REGISTRY.md": "b8ec102894191b3e583b83df8b24b0521bdd5a06b4ee1894d9fdd1fdf1902273",
+    "scripts/packed_optimized_certificate_replay.ps1": "8f21b99bb90ee972cd167bd3e969139396bf4722bd202e9a6f19610e66a1faa8"
+  },
+  "TrackedBefore": {
+    "Status": " M RMQ/Core/WordRAM/Optimization/Capstone.lean",
+    "Clean": false
+  },
+  "TrackedAfter": {
+    "Status": " M RMQ/Core/WordRAM/Optimization/Capstone.lean",
+    "Clean": false
+  }
+}

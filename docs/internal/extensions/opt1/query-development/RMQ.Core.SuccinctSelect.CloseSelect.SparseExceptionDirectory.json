@@ -1,0 +1,34 @@
+﻿{
+    "Module":  "RMQ.Core.SuccinctSelect.CloseSelect.SparseExceptionDirectory",
+    "Command":  [
+                    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+                    "-j1",
+                    "-o",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\SuccinctSelect\\CloseSelect\\SparseExceptionDirectory.olean",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctSelect\\CloseSelect\\SparseExceptionDirectory.lean"
+                ],
+    "SourceSHA256":  "60CE8CB87F721A02EDCAB06CE16FDD164C276C93E393D51A911CB5E8D35E6A7E",
+    "Base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+    "Platform":  "Microsoft Windows NT 10.0.26200.0",
+    "Result":  {
+                   "Stage":  "RMQ.Core.SuccinctSelect.CloseSelect.SparseExceptionDirectory",
+                   "ExitCode":  0,
+                   "Output":  [
+
+                              ],
+                   "StandardOutput":  [
+
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  5.396,
+                   "DeadlineSeconds":  600,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

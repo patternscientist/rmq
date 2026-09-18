@@ -1,0 +1,66 @@
+{
+  "Version": "opt1-r1-lake-build-receipt-v1",
+  "Head": "f7cf20da8ae52c1f8295e5cedd4326bb8d44cbb3",
+  "ExactBase": "aecf4a580c591e8f694a3699e19e843198089194",
+  "LeanTreeDiffVsBase": [],
+  "Command": [
+    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+    "build",
+    "-j1"
+  ],
+  "WorkingDirectory": "C:/Users/poin/.codex/worktrees/ccb1/RMQ",
+  "Environment": {
+    "LEAN_NUM_THREADS": "1",
+    "PATH": "pinned toolchain bin prepended"
+  },
+  "CacheOrigin": "private byte-verified copy of C:/Users/poin/.codex/worktrees/1580/RMQ/.lake/build (2995 files, 0 mismatches) taken before this build; 23 Lean/config files differ from that checkout only by CRLF/LF serialization",
+  "TrackedStatusBefore": [
+    " M docs/DIGESTION_LOG.md",
+    " M docs/FAMILY_SUMMARY.md",
+    " M docs/internal/DESIGN_DECISIONS.md",
+    " M docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+    " M docs/internal/extensions/opt1/repair-r1/ACCEPTANCE_MATRIX.md",
+    " M docs/internal/extensions/opt1/repair-r1/README.md",
+    " M docs/internal/extensions/opt1/repair-r1/REPORT.md"
+  ],
+  "TrackedStatusAfter": [
+    " M docs/DIGESTION_LOG.md",
+    " M docs/FAMILY_SUMMARY.md",
+    " M docs/internal/DESIGN_DECISIONS.md",
+    " M docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+    " M docs/internal/extensions/opt1/repair-r1/ACCEPTANCE_MATRIX.md",
+    " M docs/internal/extensions/opt1/repair-r1/README.md",
+    " M docs/internal/extensions/opt1/repair-r1/REPORT.md"
+  ],
+  "ModifiedTrackedDuringBuild": [
+    "docs/DIGESTION_LOG.md",
+    "docs/FAMILY_SUMMARY.md",
+    "docs/internal/DESIGN_DECISIONS.md",
+    "docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+    "docs/internal/extensions/opt1/repair-r1/ACCEPTANCE_MATRIX.md",
+    "docs/internal/extensions/opt1/repair-r1/README.md",
+    "docs/internal/extensions/opt1/repair-r1/REPORT.md"
+  ],
+  "CacheFilesBefore": 2995,
+  "CacheFilesAfter": 2995,
+  "FilesWrittenDuringBuild": [],
+  "StartedUTC": "2026-09-13T00:54:56.1882400Z",
+  "Result": {
+    "Stage": "lake-build-j1",
+    "ExitCode": 1,
+    "Output": [
+      "error: unknown short option '-j'"
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "error: unknown short option '-j'"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 2.832,
+    "DeadlineSeconds": 5400,
+    "Ownership": "kill-on-close-job"
+  },
+  "POSIX": "UNEXECUTED"
+}

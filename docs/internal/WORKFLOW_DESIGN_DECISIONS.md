@@ -13199,3 +13199,201 @@ and preservation checks `PRES-01` to `PRES-08` passed. The report commit adds
 only the worker report, this matrix evidence appendix, the controls receipt and
 this note. The coordinator aggregate gate and continuation check on the branch
 tip remain pending. No acceptance is recorded.
+
+## WDD-20260912-OPT1-001: freeze the extension contract and separate route review from certification
+
+Context: the OPT-1 delegation authorizes a fresh isolated write branch, local commits, a verbatim acceptance matrix, an evidence-dependent route review and independent exact-commit candidate audit. It forbids shared Packed edits, public-root migration, unscheduled host aggregates and peer build-cache sharing.
+
+Decision: retain the complete frozen requirements under docs/internal/extensions/opt1 before proof editing, with append-only row-keyed evidence. Independent read-only leaves inspect the original cost bridge and compact route while one proof worker owns the sole narrow Lean/Lake process in this build tree. The same folder records commands, deadlines, source identity and external blockers. Review the compact proposal before dependent implementation; allow the independent original-code bound proof to proceed. This applies the delegated lifecycle without weakening it.
+
+The PRE C1-C4 blind contract gate in RMQ_PROGRAM_PLAN.md C.3 applies before builder construction. This query-compiler lane neither implements that builder nor certifies the PRE gate. The OPT-specific route review is retained. Full aggregate certification requires a coordinator-scheduled host slot on frozen content. No thread-title or coordinator-message tool was available in the task runtime at startup; this limitation is recorded rather than emulated by private application state edits.
+
+Rejected alternatives: treating the static estimate as execution evidence; making compact implementation precede its route producer; taking an unscheduled aggregate slot; reusing mutable external caches; or reporting a helper as full completion. The exact matrix and eventual report, rather than a compact chat response, are the deliverable. Local commits are authorized; remote publication and integration are excluded. Evidence: startup preflight PASS on the exact baseline, clean initial tree and creation of codex/opt-1-packed-compiler; verification and review outcomes are recorded separately as they occur.
+
+## WDD-20260912-OPT1-002: direct pinned single-worker Lean development and durable route review
+
+Context: the elan launcher tried a blocked toolchain download, while the exact Lean 4.22.0 binaries were already installed. That pinned Lake CLI does not accept -j1. The assignment limits each build tree to one heavy process and disallows mutable shared-cache links.
+
+Decision: use the installed exact lean.exe directly with -j1, sequential dependency order, task-local .lake/build/lib/lean and scripts/owned_process_tree.ps1. Leaf check scripts capture command arguments, source hash, base, platform, deadline, duration, exit, stdout/stderr and ownership results in their assigned evidence folders. Narrow baseline prerequisites and exact-type consumers were built before any large query import. Toolchain identity is checked; no shared source/configuration or external cache is used. A later Lake/full aggregate remains coordinator-scheduled final certification, not something these development checks replace.
+
+The fresh read-only proof auditor returned a route report instead of writing a file because its role forbids writes. The lead persisted its findings, all 35 row dispositions and positive-evidence limits in CONTRACT_AUDIT.md, then adopted both proof-interface corrections and the explicit PC premise. No requirement row was amended; an exact UTF-8 frozen-row comparison against 1f3a4199eaa95324cd1daaadbab89340ca8392c4 passed all 35 rows.
+
+Rejected alternatives: downloading/replacing the toolchain, silently allowing unconstrained Lake jobs, hiding first failed development attempts, passing low-register fit as whole-state safety, or promoting a route review to milestone acceptance. The scripts here are leaf development checks, not an acceptance mutation replay, and their reports explicitly retain the full OPT-1 target as open. Evidence: retained startup diagnosis, bounded dependency/leaf/consumer outcomes and row-integrity JSON. Source hash and theorem evidence accompany each leaf; final query/compact checks are distinct later stages.
+
+## WDD-20260912-OPT1-003: serialized cold imports, runtime registry and explicit resource-wait recovery
+
+Context: the new capstone imports 251 local modules in this fresh task-local cache. The assignment allows one heavy Lean process per lane and explicitly permits an INCOMPLETE resource-wait phase. Generic leaves checked first; subsequent compact proof workers need narrow feedback while the single cold build is still healthy.
+
+Decision: preserve the owned sequential build and all partial source/evidence rather than interrupt a healthy module or run a second Lean process. Persist its launched script version, exact topological plan and per-module source/command/deadline/output records. A future build-helper invocation can pause safely between modules via .lake/opt1-build-pause; it also invalidates local consumers when sources or direct imported artifacts are newer. The already-running invocation predates these additions and is described as such. Its initial PowerShell JSON-array enumeration failure occurred before any Lean launch; explicit enumeration repaired that startup before the active invocation.
+
+The separate optimized runtime runner uses an independent v1 registry, actual script-selector boundary controls, bounded owned subprocesses, exact exit/stderr/failure receipts and source hashes. The runtime mutations alter in-memory Program/fuel values, so no tracked source bytes are mutated by those controls. The public certificate field-deletion/weakening campaign remains separately required. Startup and a known selector precede the eventual full semantic run. Windows/PowerShell controls and unavailable host paths are distinguished in the runtime report; no timed-out or host-uncreated branch becomes a pass by prose.
+
+The lane adds only the uniquely named rmq_packed_optimized_validate Lake target. No gate, canonical skill, shared Packed implementation or external cache configuration changes. A resource report retains all unmet rows and re-entry order; it does not narrow the assigned target. The final candidate must later be clean, kernel/executable checked, independently audited and scheduled for full aggregate certification by the coordinator.
+
+Rejected alternatives: treating an incomplete cold build as a gate pass; launching parallel Lean jobs within this lane; hiding failed startup or timeout probes; accepting an empty selector as full-suite omission; relying on a copied regex as runtime evidence; and treating the helper theorem or draft code as a submitted compact capstone. Durable leaf reports and the root report provide exact hashes, timing/exit records and the next owned build-slot action.
+
+Resource-report evidence follow-up for WDD-20260912-OPT1-003: source checkpoint a44691d500f3a094b4c96480ed74172c944f69f3 preserves the drafts and initial logs. Exact-base and single-phase strict design checks and committed whitespace checks passed; the focused strict claim scan had 457 hits and zero strict failures. This report/evidence-only follow-up records those results and the continuing owned build. It introduces no new process decision and does not promote the incomplete phase to candidate completion. Later build outputs may remain outside the snapshot until resumption.
+
+## WDD-20260912-OPT1-004: explicit continuation owns the ordinary scoped slot
+
+Coordinator continuation at exact checkpoint 8e355fda7788077f548865c1d6acf2ae5e88da55 clarifies that OPT-1 retains its ordinary single-job proof slot; PRE-1 owns only host-wide aggregate scheduling. The earlier resource-wait report did not narrow or complete the target. Reattachment obtained the actual session 34305 exit: all 250 prerequisite entries passed, then concrete Capstone failed recursion-depth/reflexivity obligations in 8.808 seconds without timeout. Preserve its failure receipt and original report, repair only the changed module, then serialize compact proof/static/query consumers and runtime. A routine healthy owned build is awaited while useful authorized work continues; a new resource-wait handback requires an actual external scheduling/resource obstruction. No route/model/observation amendment is made, no duplicate build is launched, and no predecessor receipt is promoted to a capstone pass. Exact entry/frozen-row evidence is continuation-entry.json. The focused repaired concrete bound subsequently passed; the slot then transferred to the compact proof owner.
+
+OPT-1 continuation scheduling incident: root accidentally launched the independent ArrayRun prerequisite while axiom-inventory session36508 was still active, after a wait returned a live session rather than final exit. ArrayRun completed; the inventory remained the only owned Lean process. This was a violation of the one-heavy-process rule and is not counted as compliant scheduling evidence. No imported inventory source/artifact was changed by ArrayRun. All subsequent transfers require an inspected final exit in a separate step before launch. Exact results and correction are in composition-development/scheduling-overlap.json; no output or failed scheduling condition is suppressed.
+
+## WDD-20260912-OPT1-005: source-stable registries and shared axiom traversal
+
+The final verification plan separates startup diagnostics from the complete frozen-content registries. Runtime imports must have task-local artifacts at least as fresh as source and direct imports; source and artifact SHA snapshots are checked before/after execution. Exact23 positive/four negative semantic IDs preserve omitted versus explicitly empty selector behavior. The certificate registry fixes 39 field names and exact expected propositions, with 78 deletion/weakening rejections and two accepts. Altered source copies must compile their producer before the fixed consumer rejects at the matching field/type surface. Copies are restored in finally and tracked originals remain byte-identical; preparation-only transformations are not kernel rejection evidence.
+
+The first 93 separate-print axiom command exceeded 180 seconds with no flushed output and its owned PIDs were confirmed absent. Installed Lean4.22.0 source shows that each print starts a fresh CollectAxioms state. The revised script invokes the same builtin collector across all 93 exact roots with one shared visited set, checks every root exists in the kernel environment before collection (the builtin otherwise ignores missing names), and checks every root was visited afterward. It reports one exact dependency union, not93 individual distributions, plus explicit standard prints for both named public targets. The wrapper requires exact root coverage, one union, both prints and only standard permitted dependencies. This is a material algorithmic verification change; the original driver/timeout record are retained and the revised command must itself pass.
+
+A final content freeze precedes the full registries and independent audit. A newly started repeated semantic startup was intentionally interrupted for this freeze handoff before its full positive-registry stage; it remains INCOMPLETE with process cleanup evidence. No gate pass is inferred from startup or preparation controls. The earlier one-slot scheduling incident remains recorded separately and is not erased by subsequent successful checks. Timestamped root build receipts preserve every attempt. Only the coordinator may schedule host-wide aggregate certification; ordinary single-job proof work continues independently of PRE.
+
+WDD-OPT1-005 checked outcome: the revised shared builtin collector passed in 8.710 seconds with exactly93 covered roots and only propext/Classical.choice/Quot.sound; both explicit standard public prints were present. This confirms the material traversal change, not a larger unchanged retry. Runtime kernel/startup/known-selector checks passed before the source freeze; full registries follow the committed snapshot.
+
+## WDD-20260912-OPT1-006: reject mixed diagnostics before dependency certification
+
+An independent source review of the frozen certificate runner produced a concrete boundary witness: the production rejection checker accepted a located mismatch at the intended field even when the output also contained an unlocated setup error. The actual field campaign had not run; the witness is a checker defect, not a failed Lean theorem. Tighten the production verdict over the ordinary Lean diagnostic-header category: reject top-level unlocated error headers, and require every located error to identify the selected exact consumer field and the allowed deletion/type-mismatch surface. Known setup/resource failures are rejected separately; indented quoted diagnostic detail is not a new top-level header. Preserve positive controls and add mixed/unlocated diagnostic controls that call the actual checker. An ordinary process exit one, a selected-field substring, or one matching error cannot certify a campaign case when another diagnostic remains unclassified.
+
+The semantic runtime campaign closed its exact-source/artifact snapshots before this repair window. Its full positive/negative/selector evidence remains tied to ac5af8e416f906391dc117f083a883acc053a268. The certificate runner is refrozen before executing its altered producer and fixed-consumer cases; the 39 field types and exact 80-case registry remain unchanged. Rejected alternatives were accepting the first matching error, using a copied regex as final evidence, treating startup/preparation as a kernel campaign, or widening a diagnostic allowance to absorb an unrelated failure. Retain the pre-fix witness and all actual outcomes, then certify only completed cases with exact restoration. This changes verification logic, not the compiler, word model, observation relation or proof target; no mathematical design-decision amendment is needed.
+
+## WDD-20260912-OPT1-007: complete isolated import roots and bind checked dependencies
+
+The first actual unchanged certificate control at 15e5266888c35a38733ca14846e4ad53ed119ebe stopped during Certificate setup with a missing QueryProof.olean. Lean selected the first RMQ package directory and did not fill missing descendants from the later original-cache prefix. The runner correctly rejected setup, never ran Capstone or Consumers, restored its source copies and retained the failure. A source-only review of the intended producer-before-consumer order was insufficient to establish executable library isolation.
+
+The corrective design must provide the complete checked RMQ import hierarchy in each case, reserving Certificate/Capstone outputs as private files. Snapshot immutable imports once per campaign and, where supported and verified, link those private snapshot dependencies into each case; never link mutable producer outputs or depend on writes to the original build cache. Measure the closure size, pin every copied/linked byte to known checked hashes, and verify the original cache remains unchanged. This avoids both missing-package fallback and repeated whole-library duplication. A shared mutable producer cache, implicit lookup fallback, timestamp-only provenance, and changing the current consumer to tolerate missing facts were rejected.
+
+The committed full-runtime receipt supplies earlier checked source/artifact identities for the unchanged Lean source. The campaign must consume that fixed manifest rather than create its expectations from whatever files happen to be present at launch. Stable before/after bytes and favorable timestamps alone cannot exclude an artifact already stale before the run. This evidence binding supplements prior explicit proof-build/axiom/runtime receipts; it does not turn a hash into a compilation proof.
+
+A separate fresh source review also produced a mixed diagnostic with an intended field mismatch and an uncaught-exception message. It was accepted by the old parser, although no actual compile-only case had produced it. Reject that supported exception prefix in the compile-only verdict and exercise both the mixed rejection and ordinary indented-detail acceptance through the production function. Preserve the distinction from runtime controls, whose expected user errors use a different exception contract. These are runner/provenance repairs; all 39 field types, 80 case IDs, Lean sources and mathematical design choices stay fixed. Actual focused controls and the complete field campaign remain mandatory after refreeze.
+
+Implementation outcome: the immutable closure is 259 files and 264276816 bytes. The runner copies it once into a private read-only snapshot, verifies per-case hardlinks and excludes all three mutable module outputs. Only the complete case library is supplied as LEAN_PATH, removing implicit mutable-cache fallback. Production library controls reject existing or aliased outputs, escaped paths and altered provenance. The registry and mixed-header controls preserve valid rejection/acceptance controls. Their zero-Lean results establish these setup boundaries, not the outstanding 80-case kernel campaign.
+
+WDD-OPT1-007 actual campaign outcome: on clean bbbe652fa41fa40bf2530b5e2f09c4c225c0e896, focused unchanged/deleted/weakened width-bound controls passed, followed by the complete 80-case registry. All 160 producer compilations succeeded before 80 fixed-consumer checks; two accepts and 78 exact selected-field rejections were recorded with no stderr, timeout or output-limit event. The wrapper exited zero after exact source/import/status/private-snapshot restoration. The 243 retained stages include those 240 compilations and three probes. Root independently checked commands, stage order, actual diagnostics, private output hashes and restored bytes. A bounded continuation reviewer separately resolved the two demonstrated checker findings against the final source and controls. Neither source review nor these execution receipts is coordinator acceptance; the explicitly assigned final aggregate remains external. Repeating unchanged proof/runtime suites after documentation-only consolidation was rejected because no dependency they consume changed.
+
+## WDD-20260912-OPT1-008: preserve evidence bytes and bound final scan ownership
+
+The final staged-blob check found that Git's text conversion normalized CRLF evidence to LF. The tested worktree FIELDS.json and full-runtime.json still matched the runner's literal SHA pins, but their indexed blobs did not. The completed full80 receipt and requested final REPORT byte hash had the same storage distinction. Content comparison established that the differences were exclusively CRLF conversion. This is an evidence-storage defect, not a field, theorem, runner or replay-input mutation.
+
+Add narrowly scoped -text attributes under the owned OPT-1 evidence folder for the literal-pinned inputs, certificate evidence and final hash-bearing artifacts. Re-stage their existing bytes and verify indexed blobs against recorded raw hashes; do not normalize the originals and regenerate expectations. Checked source hashes remain explicitly the actual Windows worktree bytes; record Git blob identities and exact CRLF-only correspondence separately for source files that retain normal repository text handling. Historical source refs remain historical; the final evidence commit preserves the tested receipt bytes directly. This changes storage metadata and committed line endings only. The already completed campaign consumed exactly the bytes now retained, so no Lean or full replay rerun is invalidated. Rejected alternatives were silently labeling a worktree hash a Git-blob hash, changing the runner's pin to untested bytes, or weakening its comparison.
+
+The first final-report claim scan also exceeded the old 180-second wrapper deadline after adding 2317762 bytes of raw full/focused certificate evidence. Three parallel light checks passed; the claim result is INCOMPLETE, never a pass. The ad hoc Python subprocess wrapper did not supervise descendants. Contemporaneous Python/rg PIDs were gone before native command-line identification; ownership of that rg process was not established and nothing was killed. Another observed claim scan belonged to a different named lane and was left alone. The final scan uses the repository's owned-process-tree helper, preserves its output and deadline outcome, and uses a 900-second bound with margin over the observed 284-second rg CPU sample and increased scan volume. Preserve the failed attempt; do not copy policy-fixture output into a new claim surface. No claim policy, scanner, allowance, scan roots or aggregate gate is changed.
+
+The first staged whitespace check after -text correctly exposed preserved CR characters under Git's default LF expectation. The same narrow paths now declare cr-at-eol while retaining blank-at-eol, blank-at-eof and space-before-tab checks. No trailing space is stripped from evidence or ignored globally. The failed whitespace result is preserved, followed by ordinary git diff --check and direct byte identity checks. This recognizes the artifact's line-ending format rather than changing the recorded bytes or exempting evidence from whitespace checking.
+
+## WDD-20260912-OPT1-R1-001: exclusive runtime diagnostics and reproducible source provenance
+
+Context: exact candidate aecf4a580c591e8f694a3699e19e843198089194 failed two independently reproduced production controls. The runtime check accepted an expected exception alongside an unrelated exception. The certificate library positive rejected a fresh raw Git checkout even when all261 historical artifact hashes matched, because251 source hashes encoded undocumented checkout newlines. Earlier WDD-OPT1-006/007 recognized analogous diagnostic exclusivity in the certificate path; that invariant was not transferred to the runtime path. Preserving raw JSON bytes did not establish fresh-checkout reproducibility.
+
+Decision: freeze all35 historical row-content byte strings and append four repair requirements in repair-r1 before implementation. Require the production runtime rejection grammar to accept exactly the intended retained nonempty diagnostic across both streams with bounded exit1. Test its complete allowance boundary with real owned children and category holdouts, retaining the pre-fix counterexample. Add a separately versioned canonical source profile anchored to immutable Git source bytes, with genuine private compilation and exact toolchain/dependency/artifact receipts. Keep raw live hashes for restoration. The old source/artifact receipts remain immutable history and are not relabeled as canonical build evidence.
+
+Rationale: accepting a matching substring cannot exclude an unrelated failure, and copying a historical artifact cannot prove a new source profile compiled. The profile identity must precede compilation, which must precede certificate consumers. Strict UTF8 and only CRLF-to-LF conversion identify a declared serialization equivalence; all other source bytes stay significant. A live input cannot supply its own expected hash. The full runtime closure, not the incomplete earlier development plan, is required. Private artifact installation checks linkage and bytes; timestamps describe installation/freshness and do not establish provenance.
+
+Rejected alternatives: broad error blacklists, copied self-test detectors, undocumented mixed-newline reconstruction, changing shared source/attributes, timestamp-only reuse, ignoring imports, hashing live inputs as baseline, weakening fields or consumers, and treating startup as a complete campaign. All27 runtime cases, all80 certificate cases, the new exact repair registry, both checkout-profile positives and decisive typed negatives, restoration, bounded descendant cleanup and final local checks remain required. Coordinator aggregate/final audit and acceptance are later external stages. No shared gate/policy/skill change is made. Evidence: repair-r1/ACCEPTANCE_MATRIX.md, runtime/frozen-reproduction and provenance-reproduction; repaired measurements are appended separately after execution.
+
+WDD-OPT1-R1-001 implementation detail: runtime/replay.ps1 pins53 explicit fixtures by complete registry SHA256 and independent ordered IDs, extracts unique actual production AST functions for classifier controls and calls real script entry points for selectors. The separate production regression runner pins its profile/certificate/repair boundary and output-verdict cases (49 in the final version opt1-r1-production-v4) and preserves exact registry bytes with enumerated local attributes. Omitted and duplicated middle records are challenged at actual publication/entry boundaries; the certificate path rejects duplicate records before converting them to a keyed hash map. Bounded overflow results follow the unchanged owned-helper representation, which discards over-ceiling streams; emitted-line witnesses are separate from the retained result and never represented as full overflow output. These process choices preserve full ordinary exit/stderr evidence while failing closed on incomplete captures. Final runtime/profile/certificate measurements remain distinct from their development and historical receipts.
+
+WDD-OPT1-R1-001 adversarial follow-up: an independent read-only review tested the new repair wrapper's Assert-R1Verdict with three actual owned children. Its initial prefix-based stderr check accepted unrelated exception or semantic-success stdout beside the intended setup error, even though the repaired production runtime classifier was already exclusive. Preserve that exact pre-fix wrapper and receipts under runtime/review. The wrapper now requires one exact stderr diagnostic and an explicit ordered stdout grammar containing only declared setup progress/restoration records, with no duplicate/reordered/indented allowance. Nine new actual-child controls extended the production repair registry to version 2 with 46 cases; the independent runtime registry remains 53. Version 3 then added three cache-inventory controls (P19 foreign Init.olean, P20 empty Init shadow directory, P21 Backend.olean.server sidecar) after an independent review noted that an extra artifact in the import search path could shadow a pinned compiler library without changing any expected artifact hash; the production profile now requires the exact 263-file/ancestor-directory cache inventory. Version 4 corrected only the stale R01 definition text (46 to 49) and repinned the registry hash; no case was added or removed. Missing/stale/invalidUTF8 import controls additionally inspect the real nested import-freshness result so a generic setup wrapper failure cannot be credited as the intended cause. This corrects a new test-wrapper defect before production campaign execution; it is not a mathematical finding or a waiver of either original defect. A draft V02 invocation failed closed on its still-placeholder registry pin after a patch transaction failed; no child case ran and it received no semantic credit. The pin was filled from the fixed versioned registry and the actual mixed-stdout focused case passed.
+
+WDD-OPT1-R1-001 execution follow-up at f7cf20da8ae52c1f8295e5cedd4326bb8d44cbb3: the continuation worker (a Claude session authorized after the Codex session reached a usage limit) re-verified every inherited receipt, corrected the stale R01 definition text by publishing registry version opt1-r1-production-v4 with a repinned hash, completed the enumerated local attribute coverage (adding cr-at-eol whitespace handling for preserved CRLF evidence and covering the final receipt directory), and executed the campaigns through the versioned command adapter with recorded deadlines carrying 2x margin over measured durations. Measured costs are recorded rather than tuned away: the exact toolchain-inventory profile makes a library self-test take about 130 s under pwsh 7.6.6 and about 465 s under Windows PowerShell 5.1. One session interruption occurred after the regression launch; the owned campaign completed unattended and was re-verified from receipts before later steps, which is the intended behavior of bounded owned execution. Lake build evidence was obtained on a byte-verified private copy of the author cache rather than a fresh full compile, because no Lean source changed and the profile receipt already compiled all 263 modules from canonical source; this reuse is recorded, not hidden. Lake 5.0.0 (Lean 4.22.0) accepts no -j/--jobs option, so the first attempt with -j1 failed immediately (unknown short option; the failed receipt is kept under final/lake-build-attempt1-wrong-flag) and the recorded build enforces one job through LEAN_NUM_THREADS=1 in the child environment, the same plain `lake build` invocation the coordinator used for the base. POSIX ownership remains unexecuted on this host. No gate, policy, skill or shared script changed.
+
+WDD-OPT1-R1-001 claim-surface follow-up: the first report-bearing strict claim scan passed, but the second failed strictly with seven forbidden-2pow128-canonical-activation matches, all inside the first scan's raw stdout log that had been committed-to-be under docs/internal/extensions/opt1/repair-r1/final/. Raw scanner output quotes hit lines out of their allowed contexts, so storing it under a scanned root manufactures a new claim surface; the earlier WDD-OPT1 warning against copying policy-fixture output into a claim surface applies to scanner logs too. The raw hit logs now live only in untracked .lake scratch with their SHA-256 recorded in the committed receipt, the failed run B receipt is preserved, and run C on the final bytes is the report-bearing evidence. No scanner root, policy or allowance changed.
+
+WDD-OPT1-R1-001 receipt commit correction: the receipt-only commit 8f2f9b091b92f0533d5fc9539528d3c6915513c2 recorded the final-mode preservation run against evidence commit d766e84b22c933a852d90cdb44ac123819fe75a4 with an empty result, but that run FAILED with ROW_DUPLICATE for REQ-OPT-R1-EXCLUSIVE-REJECTION (receipt preserved unchanged under docs/internal/extensions/opt1/repair-r1/final/preservation-c2/). The cause was the evidence appendix appended to the repair matrix by this continuation: its rows reused the frozen rows' first-cell format, so the checker correctly found two rows for one ID; no protected Git object, frozen row byte string or field type changed. The appendix rows are now labelled `Evidence for` and the report records the failure. The chain step that wrote the empty result assumed a passing receipt; it now reads status and error code and stops on failure. A new final-mode run against the corrected commit is recorded in the following receipt-only commit.
+
+WDD-OPT1-R1-001 receipt commit: the corrected evidence commit 2b229867b864e1e91da901bd3fcb728612209964 was checked by the final-mode preservation checker after it existed (receipt docs/internal/extensions/opt1/repair-r1/final/preservation-c4/result.json, SHA-256 d180c5ec6281f297dce3091687f6da136d83784650b3b0846c4b789e06510313, result `PASS/17/510/True` as status/controls/protected-total/old-matrix-blob-equal). This receipt-only commit adds that receipt and this line; no script, registry, matrix row or report conclusion changes. A receipt cannot be included in the commit it certifies, so the coordinator's aggregate and audit re-run the checker on the final head.
+
+## WDD-20260913-OPT1-R2-001: archive OPT-1 receipts whose embedded scanner summary misleads the self-test
+
+Context. The coordinator aggregate gate on the OPT-1-R1 final head
+`4cc95012a31cda9459d06d87b3371c8c172bb973` passed every stage except one: the
+unchanged `scripts/claim_drift_scan.ps1 -SelfTest` reported that the
+process-record exclusion removed nothing, with the same count, 457, for the run
+with records and the run without. Separate strict runs on the same tree report
+two different totals (1831 without records, 2262 with), so the exclusion works
+and the measurement is wrong. The self-test reads each child run's hit count
+from the first output line anywhere that contains the scan-complete summary
+shape followed by a number. Two committed OPT-1 receipts,
+`docs/internal/extensions/opt1/checkpoint-claims.json` and
+`checkpoint-report-claims.json`, store an earlier focused scan's complete
+stdout as one JSON string on one physical line, including that scan's own
+summary. Several review-only terms match that line, the scanner prints it as a
+review hit, and it is printed before the real summary in both child runs. The
+self-test therefore parsed the embedded count from the receipt twice. The
+outcome depends on emission order: the other receipt embeds 136, and this
+lane's own reproduction on the same clean tree read 136 in both child runs,
+while its separate strict runs emitted the 136 receipt line first without
+records and the 457 line first with records. That last ordering, inside the
+self-test, would have let the defective tree pass. This is
+the same defect class as NATIVE-1-R1 (WDD-20260913-NATIVE1-R1-001), reached
+through the self-test parser rather than through a strict term. It is an
+evidence-storage defect; no theorem, runner, profile, registry or replay input
+is implicated.
+
+Decision (OPT-1-R2). Recompute from Git blobs, not from a checkout, every file
+under `docs/internal/extensions/opt1/` at the base that contains a claim-scanner
+result line (the scanner's emission shape: prefix, rule bracket, status bracket,
+verdict bracket), and replace each by a single-member gzip archive at the same
+path plus `.gz` whose decompressed bytes are the exact base blob bytes. Files
+that only quote summary text keep their bytes. Record every original path, base
+blob id and mode, blob SHA-256 and length, embedded and physical result-line
+counts, archive SHA-256 and length, decompressed length, and the files that
+refer to each original name, in `repair-r2/RECEIPT_ARCHIVES.json`. Commit a
+verifier that trusts none of those values and recomputes all of them from Git
+objects, and a controls runner with an exact case registry, disposable copies,
+owned bounded subprocesses and restoration checks. Mark each archive `binary`
+by an append-only entry in the lane's `.gitattributes`. References to the
+original names in other evidence files stay unrewritten; the manifest is their
+resolution record.
+
+Preservation. The OPT-1-R1 preservation checker protects the whole history
+directory and must stay byte-identical, so it necessarily rejects this repair.
+The coordinator amended `REQ-OPT-R1-PRESERVATION` for this lane: the history
+scope may differ from the base only by the enumerated relocations, new files
+under `repair-r2/` and the append-only attributes entry. The repair demonstrates
+the amendment twice. The unchanged checker is run and its failure is recorded
+as an expected controlled difference, never as a pass; because it stops at the
+first failing category, a companion enumeration calls the same unchanged
+comparison functions repeatedly and restores only the paths each rejection
+names, until the complete difference is known and can be compared with the
+admitted set. A separate relocation-aware run imports the unchanged checker,
+substitutes the decompressed archive bytes for each original path, requires the
+mapped protected map to equal the base map exactly, and reproduces every
+OPT-1-R1 check with PASS, with its own registered controls showing that the
+mapping cannot hide an unrelated deletion, blob or mode change, or addition.
+
+Rejected alternatives.
+
+- Changing the scanner, its self-test, the policy, globs, allowlists or
+  exclusions. Anchoring the self-test's hit-count parser to the final summary
+  line would fix the measurement for every lane, but it is shared tooling owned
+  by the coordinator's integration governance commit and explicitly deferred
+  there. A lane repair that edits the gate's own checker would also certify
+  itself with a modified instrument.
+- Relocating the receipts under an excluded path (an `audit_reports` directory
+  or a worklog name). That would misuse the process-record exclusion, whose
+  purpose is to hide prior verdicts from blind auditors, as a storage exemption,
+  and the default scan would still read them in the records run.
+- Deleting the receipts. They are referenced evidence of how the OPT-1 claims
+  were checked; deletion without a byte-exact recoverable copy destroys history
+  that the preservation contract protects.
+- Rewriting the receipts as escaped or summarized text. Any in-place text
+  transformation changes the bytes that the referring receipts and the
+  preservation checker identify, and a summary is not recoverable.
+- Moving only the embedded summary out of the JSON string. That is a
+  semantic edit of a historical receipt and leaves the embedded result lines in
+  the scanned corpus, where a later policy term could emit them again.
+
+Consequences. The scanned corpus no longer contains the receipts' embedded
+output, because ripgrep stops reading a file at its first NUL byte during
+traversal and a gzip header has NUL bytes at fixed offsets; the repaired tree's
+scans must show this rather than assume it. The relocation is visible as two
+deletions and two additions and needs the manifest to be resolved. The
+self-test parser remains unanchored, so any future committed text that is
+emitted as a hit and contains the summary shape can reproduce the defect; the
+repair's own new documents are written to avoid that shape except where the
+frozen contract requires verbatim text, and the scan receipts count the
+summary-shaped output lines to show only the real summary remains. Evidence:
+`docs/internal/extensions/opt1/repair-r2/ACCEPTANCE_MATRIX.md`; the
+implementation, receipts and report follow in later commits on the same branch.
+
+WDD-20260913-OPT1-R2-001 verification note: the repaired commit `3b8296767f93cd11fed7eb6a257ce94683430228` carries the certifying evidence. On the clean base, in one heavy-verification session, the unchanged self-test failed with the exclusion reported as removing nothing, at 136 in both runs; the separate strict runs gave 1831 and 2262. The gate's 457 and this reproduction's 136 are the two receipts' embedded counts, selected by ripgrep's emission order. On `3b8296767f93cd11fed7eb6a257ce94683430228`, in the same session, the self-test passed with the exclusion removing 431 hits (2241 to 1810), matching the separate strict runs, and the strict default-root scan exited 0 with 0 strict failures. The 20-case archive controls, both preservation demonstrations, the whitespace and strict design checks, and both hygiene scans passed or gave their expected verdicts. Curated receipts under `repair-r2/receipts/` avoid the scanner's emission and summary shapes: raw scanner logs and large JSON dumps stay outside the repository, identified by SHA-256. A 614 KB pretty-printed receipt costs about 40 s per strict scan under the multiline attribution term, and a committed raw scan log would reintroduce the defect. This note, the report, the matrix appendix and the receipts are the only additions after `3b8296767f93cd11fed7eb6a257ce94683430228`.

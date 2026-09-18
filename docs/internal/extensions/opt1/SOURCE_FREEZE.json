@@ -1,0 +1,42 @@
+{
+  "Target": "ac5af8e416f906391dc117f083a883acc053a268",
+  "OriginalBase": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "ReturningBase": "8e355fda7788077f548865c1d6acf2ae5e88da55",
+  "ClaimReceipt": "docs/internal/extensions/opt1/freeze-claims-pass.json",
+  "AllProofSourcesVerified": true,
+  "AxiomUnion93": "docs/internal/extensions/opt1/composition-development/20260912T0922141726079Z-axioms.json",
+  "Checks": [
+    {
+      "Command": [
+        "git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "ExitCode": 0,
+      "Stdout": "",
+      "Stderr": "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied\nwarning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied\n"
+    },
+    {
+      "Command": [
+        "git",
+        "diff",
+        "--check",
+        "0e6a00f654abc64f8b68988fa9675b9a839dca2f..HEAD"
+      ],
+      "ExitCode": 0,
+      "Stdout": "",
+      "Stderr": ""
+    },
+    {
+      "Command": [
+        "git",
+        "diff",
+        "--check",
+        "8e355fda7788077f548865c1d6acf2ae5e88da55..HEAD"
+      ],
+      "ExitCode": 0,
+      "Stdout": "",
+      "Stderr": ""
+    }
+  ]
+}

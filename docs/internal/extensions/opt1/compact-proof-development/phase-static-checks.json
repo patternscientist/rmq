@@ -1,0 +1,11 @@
+{
+  "HarnessParseErrorCount": 0,
+  "HarnessParseErrors": [],
+  "OwnedTrustScanExit": 1,
+  "OwnedTrustScanOutput": [],
+  "ProofSHA256": "253CF7C1D5709CB319B88D2AC00BA326BF7366874E850E1E0C9DF9BBC6797BDB",
+  "SafetySHA256": "5F569537047695DC789FB4505BFD84EE8D33622EBAB0395D478F9EDDE66EE360",
+  "KernelChecksRun": false,
+  "ResourceWaitDirectedBy": "lead /root",
+  "Head": "0cdfcc307a14d39da19fdd8721ab80918c55d3e3"
+}

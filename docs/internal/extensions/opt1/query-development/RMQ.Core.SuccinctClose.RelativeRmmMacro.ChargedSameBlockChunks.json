@@ -1,0 +1,34 @@
+﻿{
+    "Module":  "RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedSameBlockChunks",
+    "Command":  [
+                    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+                    "-j1",
+                    "-o",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\SuccinctClose\\RelativeRmmMacro\\ChargedSameBlockChunks.olean",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctClose\\RelativeRmmMacro\\ChargedSameBlockChunks.lean"
+                ],
+    "SourceSHA256":  "F3E233EDD10FC8DE7098ED037A3A173A3096FB026043F6F81E9AA83F09D34470",
+    "Base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+    "Platform":  "Microsoft Windows NT 10.0.26200.0",
+    "Result":  {
+                   "Stage":  "RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedSameBlockChunks",
+                   "ExitCode":  0,
+                   "Output":  [
+
+                              ],
+                   "StandardOutput":  [
+
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  8.836,
+                   "DeadlineSeconds":  600,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

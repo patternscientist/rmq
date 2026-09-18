@@ -1,0 +1,44 @@
+{
+  "HEAD": "8e355fda7788077f548865c1d6acf2ae5e88da55",
+  "Files": [
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/Compact.lean",
+      "Bytes": 3133,
+      "SHA256": "A616631ACD50296408D5CD5D9BB6122C6F84C517C452C9FFE2DEE4177F63C434"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/CompactProof.lean",
+      "Bytes": 30606,
+      "SHA256": "FC28F5FA141C1F66EA69C0B0C77BA988E7887F4AF273CD283C2B823F06748A1B"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/CompactSafety.lean",
+      "Bytes": 34119,
+      "SHA256": "75A541A25894F1807F118EC846E49E45DD47D02D98DB691F2A8CAB0C61320A29"
+    }
+  ],
+  "TrustScanOutput": [],
+  "TrustScanExit": 1,
+  "DiffCheckOutput": [
+    "warning: in the working copy of 'RMQ/Core/WordRAM/Optimization/Capstone.lean', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'RMQ/Core/WordRAM/Optimization/CompactProof.lean', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'RMQ/Core/WordRAM/Optimization/CompactSafety.lean', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'RMQ/Core/WordRAM/Optimization/CompactStatic.lean', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'RMQ/Core/WordRAM/Optimization/Query.lean', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'RMQ/Core/WordRAM/Optimization/QueryProof.lean', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'RMQ/Core/WordRAM/Optimization/QuerySafety.lean', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'RMQ/Validation/PackedOptimized.lean', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'docs/internal/WORKFLOW_DESIGN_DECISIONS.md', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'docs/internal/extensions/opt1/ACCEPTANCE_MATRIX.md', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'docs/internal/extensions/opt1/REPORT.md', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'docs/internal/extensions/opt1/compact-proof-development/check.ps1', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'docs/internal/extensions/opt1/compact-static-development/CONTRACT.md', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'docs/internal/extensions/opt1/compact-static-development/check.ps1', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'docs/internal/extensions/opt1/runtime-replay/REPORT.md', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'scripts/packed_optimized_build.ps1', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'scripts/packed_optimized_runtime.ps1', LF will be replaced by CRLF the next time Git touches it"
+  ],
+  "DiffCheckExit": 0,
+  "KernelReport": "20260912-090310-823-CompactSafety.json",
+  "AxiomsReport": "20260912-090340-416-Axioms.json"
+}

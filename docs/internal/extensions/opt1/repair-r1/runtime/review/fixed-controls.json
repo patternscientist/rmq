@@ -1,0 +1,685 @@
+{
+  "Executed": [
+    "V01-SOLE-SETUP",
+    "V03-SUCCESS-STDOUT",
+    "V04-WRONG-STDERR",
+    "V06-DUPLICATE-PROGRESS",
+    "V07-REORDERED-PROGRESS",
+    "V08-EXTRA-STDERR",
+    "V09-PREFIX-HOLDOUT"
+  ],
+  "SourceUnchanged": true,
+  "LeanLaunched": false,
+  "ParentRunnerAfterSHA256": "E9DE8689CA8C49F36B1EA4898E0504EE79BC30AF6D385D1B370404D7F57DD78D",
+  "Cases": [
+    {
+      "ID": "V01-SOLE-SETUP",
+      "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "Arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_replay_regression.ps1",
+        "-OnlyCase",
+        "V01-SOLE-SETUP",
+        "-ArtifactDirectory",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V01-SOLE-SETUP",
+        "-CampaignDeadlineSeconds",
+        "120"
+      ],
+      "DeadlineSeconds": 150,
+      "OutputLimitBytes": 1048576,
+      "ActualResult": {
+        "Stage": "review-V01-SOLE-SETUP",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-R1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V01-SOLE-SETUP",
+          "OPT1-R1 CASE V01-SOLE-SETUP PASS",
+          "OPT1-R1-REPLAY PASS executed=1 expected=1 registry=opt1-r1-production-v2"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V01-SOLE-SETUP",
+          "OPT1-R1 CASE V01-SOLE-SETUP PASS",
+          "OPT1-R1-REPLAY PASS executed=1 expected=1 registry=opt1-r1-production-v2"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 16.649,
+        "DeadlineSeconds": 150,
+        "Ownership": "kill-on-close-job"
+      },
+      "ProductionReceipt": {
+        "POSIX": "UNEXECUTED",
+        "Version": "opt1-r1-production-v2",
+        "Expected": [
+          "V01-SOLE-SETUP"
+        ],
+        "Stages": [
+          {
+            "Name": "V01-SOLE-SETUP",
+            "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+            "Arguments": [
+              "-NoProfile",
+              "-File",
+              "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V01-SOLE-SETUP\\V01-SOLE-SETUP-child.ps1"
+            ],
+            "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+            "Result": {
+              "Stage": "V01-SOLE-SETUP",
+              "ExitCode": 1,
+              "Output": [
+                "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+              ],
+              "StandardOutput": [],
+              "StandardError": [
+                "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+              ],
+              "TimedOut": false,
+              "OutputLimitExceeded": false,
+              "TerminatedIds": [],
+              "DurationSeconds": 8.276,
+              "DeadlineSeconds": 60,
+              "Ownership": "kill-on-close-job"
+            }
+          }
+        ],
+        "DeadlineSeconds": 120,
+        "DurationSeconds": 11.3818274,
+        "ExitCode": 0,
+        "Executed": [
+          "V01-SOLE-SETUP"
+        ]
+      },
+      "ClassifierVerdict": {
+        "ActualOwnedChild": true,
+        "Id": "V01-SOLE-SETUP",
+        "Reason": null,
+        "ProductionFunction": "Assert-R1Verdict",
+        "ActualAccept": true,
+        "ExpectedAccept": true
+      }
+    },
+    {
+      "ID": "V03-SUCCESS-STDOUT",
+      "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "Arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_replay_regression.ps1",
+        "-OnlyCase",
+        "V03-SUCCESS-STDOUT",
+        "-ArtifactDirectory",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V03-SUCCESS-STDOUT",
+        "-CampaignDeadlineSeconds",
+        "120"
+      ],
+      "DeadlineSeconds": 150,
+      "OutputLimitBytes": 1048576,
+      "ActualResult": {
+        "Stage": "review-V03-SUCCESS-STDOUT",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-R1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V03-SUCCESS-STDOUT",
+          "OPT1-R1 CASE V03-SUCCESS-STDOUT PASS",
+          "OPT1-R1-REPLAY PASS executed=1 expected=1 registry=opt1-r1-production-v2"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V03-SUCCESS-STDOUT",
+          "OPT1-R1 CASE V03-SUCCESS-STDOUT PASS",
+          "OPT1-R1-REPLAY PASS executed=1 expected=1 registry=opt1-r1-production-v2"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 12.352,
+        "DeadlineSeconds": 150,
+        "Ownership": "kill-on-close-job"
+      },
+      "ProductionReceipt": {
+        "Version": "opt1-r1-production-v2",
+        "DeadlineSeconds": 120,
+        "POSIX": "UNEXECUTED",
+        "ExitCode": 0,
+        "Executed": [
+          "V03-SUCCESS-STDOUT"
+        ],
+        "Stages": [
+          {
+            "Name": "V03-SUCCESS-STDOUT",
+            "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+            "Arguments": [
+              "-NoProfile",
+              "-File",
+              "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V03-SUCCESS-STDOUT\\V03-SUCCESS-STDOUT-child.ps1"
+            ],
+            "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+            "Result": {
+              "Stage": "V03-SUCCESS-STDOUT",
+              "ExitCode": 1,
+              "Output": [
+                "OPT1-CERT-REPLAY PASS executed=80 expected=80 registry=opt1-certificate-replay-v3",
+                "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+              ],
+              "StandardOutput": [
+                "OPT1-CERT-REPLAY PASS executed=80 expected=80 registry=opt1-certificate-replay-v3"
+              ],
+              "StandardError": [
+                "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+              ],
+              "TimedOut": false,
+              "OutputLimitExceeded": false,
+              "TerminatedIds": [],
+              "DurationSeconds": 4.306,
+              "DeadlineSeconds": 60,
+              "Ownership": "kill-on-close-job"
+            }
+          }
+        ],
+        "DurationSeconds": 7.2909882,
+        "Expected": [
+          "V03-SUCCESS-STDOUT"
+        ]
+      },
+      "ClassifierVerdict": {
+        "ActualOwnedChild": true,
+        "ActualAccept": false,
+        "ExpectedAccept": false,
+        "ProductionFunction": "Assert-R1Verdict",
+        "Reason": "OPT1-R1-VERDICT: unrelated stdout on rejected setup",
+        "Id": "V03-SUCCESS-STDOUT"
+      }
+    },
+    {
+      "ID": "V04-WRONG-STDERR",
+      "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "Arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_replay_regression.ps1",
+        "-OnlyCase",
+        "V04-WRONG-STDERR",
+        "-ArtifactDirectory",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V04-WRONG-STDERR",
+        "-CampaignDeadlineSeconds",
+        "120"
+      ],
+      "DeadlineSeconds": 150,
+      "OutputLimitBytes": 1048576,
+      "ActualResult": {
+        "Stage": "review-V04-WRONG-STDERR",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-R1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V04-WRONG-STDERR",
+          "OPT1-R1 CASE V04-WRONG-STDERR PASS",
+          "OPT1-R1-REPLAY PASS executed=1 expected=1 registry=opt1-r1-production-v2"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V04-WRONG-STDERR",
+          "OPT1-R1 CASE V04-WRONG-STDERR PASS",
+          "OPT1-R1-REPLAY PASS executed=1 expected=1 registry=opt1-r1-production-v2"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 11.717,
+        "DeadlineSeconds": 150,
+        "Ownership": "kill-on-close-job"
+      },
+      "ProductionReceipt": {
+        "Stages": [
+          {
+            "Name": "V04-WRONG-STDERR",
+            "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+            "Arguments": [
+              "-NoProfile",
+              "-File",
+              "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V04-WRONG-STDERR\\V04-WRONG-STDERR-child.ps1"
+            ],
+            "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+            "Result": {
+              "Stage": "V04-WRONG-STDERR",
+              "ExitCode": 1,
+              "Output": [
+                "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection extra diagnostic detail"
+              ],
+              "StandardOutput": [],
+              "StandardError": [
+                "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection extra diagnostic detail"
+              ],
+              "TimedOut": false,
+              "OutputLimitExceeded": false,
+              "TerminatedIds": [],
+              "DurationSeconds": 4.61,
+              "DeadlineSeconds": 60,
+              "Ownership": "kill-on-close-job"
+            }
+          }
+        ],
+        "Version": "opt1-r1-production-v2",
+        "Executed": [
+          "V04-WRONG-STDERR"
+        ],
+        "Expected": [
+          "V04-WRONG-STDERR"
+        ],
+        "DurationSeconds": 7.3318197,
+        "POSIX": "UNEXECUTED",
+        "ExitCode": 0,
+        "DeadlineSeconds": 120
+      },
+      "ClassifierVerdict": {
+        "ProductionFunction": "Assert-R1Verdict",
+        "ActualAccept": false,
+        "ExpectedAccept": false,
+        "Reason": "OPT1-R1-VERDICT: wrong or unrelated failure diagnostic",
+        "ActualOwnedChild": true,
+        "Id": "V04-WRONG-STDERR"
+      }
+    },
+    {
+      "ID": "V06-DUPLICATE-PROGRESS",
+      "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "Arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_replay_regression.ps1",
+        "-OnlyCase",
+        "V06-DUPLICATE-PROGRESS",
+        "-ArtifactDirectory",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V06-DUPLICATE-PROGRESS",
+        "-CampaignDeadlineSeconds",
+        "120"
+      ],
+      "DeadlineSeconds": 150,
+      "OutputLimitBytes": 1048576,
+      "ActualResult": {
+        "Stage": "review-V06-DUPLICATE-PROGRESS",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-R1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V06-DUPLICATE-PROGRESS",
+          "OPT1-R1 CASE V06-DUPLICATE-PROGRESS PASS",
+          "OPT1-R1-REPLAY PASS executed=1 expected=1 registry=opt1-r1-production-v2"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V06-DUPLICATE-PROGRESS",
+          "OPT1-R1 CASE V06-DUPLICATE-PROGRESS PASS",
+          "OPT1-R1-REPLAY PASS executed=1 expected=1 registry=opt1-r1-production-v2"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 18.864,
+        "DeadlineSeconds": 150,
+        "Ownership": "kill-on-close-job"
+      },
+      "ProductionReceipt": {
+        "Stages": [
+          {
+            "Name": "V06-DUPLICATE-PROGRESS",
+            "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+            "Arguments": [
+              "-NoProfile",
+              "-File",
+              "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V06-DUPLICATE-PROGRESS\\V06-DUPLICATE-PROGRESS-child.ps1"
+            ],
+            "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+            "Result": {
+              "Stage": "V06-DUPLICATE-PROGRESS",
+              "ExitCode": 1,
+              "Output": [
+                "OPT1-CERT-STAGE import-freshness deadline=600s",
+                "OPT1-CERT-STAGE import-freshness deadline=600s",
+                "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+              ],
+              "StandardOutput": [
+                "OPT1-CERT-STAGE import-freshness deadline=600s",
+                "OPT1-CERT-STAGE import-freshness deadline=600s"
+              ],
+              "StandardError": [
+                "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+              ],
+              "TimedOut": false,
+              "OutputLimitExceeded": false,
+              "TerminatedIds": [],
+              "DurationSeconds": 6.816,
+              "DeadlineSeconds": 60,
+              "Ownership": "kill-on-close-job"
+            }
+          }
+        ],
+        "Expected": [
+          "V06-DUPLICATE-PROGRESS"
+        ],
+        "Version": "opt1-r1-production-v2",
+        "Executed": [
+          "V06-DUPLICATE-PROGRESS"
+        ],
+        "POSIX": "UNEXECUTED",
+        "DeadlineSeconds": 120,
+        "DurationSeconds": 11.7019351,
+        "ExitCode": 0
+      },
+      "ClassifierVerdict": {
+        "ActualOwnedChild": true,
+        "Reason": "OPT1-R1-VERDICT: duplicate or reordered setup progress",
+        "ActualAccept": false,
+        "ExpectedAccept": false,
+        "ProductionFunction": "Assert-R1Verdict",
+        "Id": "V06-DUPLICATE-PROGRESS"
+      }
+    },
+    {
+      "ID": "V07-REORDERED-PROGRESS",
+      "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "Arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_replay_regression.ps1",
+        "-OnlyCase",
+        "V07-REORDERED-PROGRESS",
+        "-ArtifactDirectory",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V07-REORDERED-PROGRESS",
+        "-CampaignDeadlineSeconds",
+        "120"
+      ],
+      "DeadlineSeconds": 150,
+      "OutputLimitBytes": 1048576,
+      "ActualResult": {
+        "Stage": "review-V07-REORDERED-PROGRESS",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-R1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V07-REORDERED-PROGRESS",
+          "OPT1-R1 CASE V07-REORDERED-PROGRESS PASS",
+          "OPT1-R1-REPLAY PASS executed=1 expected=1 registry=opt1-r1-production-v2"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V07-REORDERED-PROGRESS",
+          "OPT1-R1 CASE V07-REORDERED-PROGRESS PASS",
+          "OPT1-R1-REPLAY PASS executed=1 expected=1 registry=opt1-r1-production-v2"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 10.857,
+        "DeadlineSeconds": 150,
+        "Ownership": "kill-on-close-job"
+      },
+      "ProductionReceipt": {
+        "POSIX": "UNEXECUTED",
+        "Version": "opt1-r1-production-v2",
+        "Executed": [
+          "V07-REORDERED-PROGRESS"
+        ],
+        "DurationSeconds": 6.1018258,
+        "Stages": [
+          {
+            "Name": "V07-REORDERED-PROGRESS",
+            "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+            "Arguments": [
+              "-NoProfile",
+              "-File",
+              "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V07-REORDERED-PROGRESS\\V07-REORDERED-PROGRESS-child.ps1"
+            ],
+            "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+            "Result": {
+              "Stage": "V07-REORDERED-PROGRESS",
+              "ExitCode": 1,
+              "Output": [
+                "OPT1-CERT-STAGE tracked-source-status-after deadline=60s",
+                "OPT1-CERT-STAGE import-freshness deadline=600s",
+                "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+              ],
+              "StandardOutput": [
+                "OPT1-CERT-STAGE tracked-source-status-after deadline=60s",
+                "OPT1-CERT-STAGE import-freshness deadline=600s"
+              ],
+              "StandardError": [
+                "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+              ],
+              "TimedOut": false,
+              "OutputLimitExceeded": false,
+              "TerminatedIds": [],
+              "DurationSeconds": 3.49,
+              "DeadlineSeconds": 60,
+              "Ownership": "kill-on-close-job"
+            }
+          }
+        ],
+        "ExitCode": 0,
+        "DeadlineSeconds": 120,
+        "Expected": [
+          "V07-REORDERED-PROGRESS"
+        ]
+      },
+      "ClassifierVerdict": {
+        "ActualOwnedChild": true,
+        "ExpectedAccept": false,
+        "Id": "V07-REORDERED-PROGRESS",
+        "Reason": "OPT1-R1-VERDICT: duplicate or reordered setup progress",
+        "ProductionFunction": "Assert-R1Verdict",
+        "ActualAccept": false
+      }
+    },
+    {
+      "ID": "V08-EXTRA-STDERR",
+      "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "Arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_replay_regression.ps1",
+        "-OnlyCase",
+        "V08-EXTRA-STDERR",
+        "-ArtifactDirectory",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V08-EXTRA-STDERR",
+        "-CampaignDeadlineSeconds",
+        "120"
+      ],
+      "DeadlineSeconds": 150,
+      "OutputLimitBytes": 1048576,
+      "ActualResult": {
+        "Stage": "review-V08-EXTRA-STDERR",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-R1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V08-EXTRA-STDERR",
+          "OPT1-R1 CASE V08-EXTRA-STDERR PASS",
+          "OPT1-R1-REPLAY PASS executed=1 expected=1 registry=opt1-r1-production-v2"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V08-EXTRA-STDERR",
+          "OPT1-R1 CASE V08-EXTRA-STDERR PASS",
+          "OPT1-R1-REPLAY PASS executed=1 expected=1 registry=opt1-r1-production-v2"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 10.392,
+        "DeadlineSeconds": 150,
+        "Ownership": "kill-on-close-job"
+      },
+      "ProductionReceipt": {
+        "Version": "opt1-r1-production-v2",
+        "Expected": [
+          "V08-EXTRA-STDERR"
+        ],
+        "Stages": [
+          {
+            "Name": "V08-EXTRA-STDERR",
+            "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+            "Arguments": [
+              "-NoProfile",
+              "-File",
+              "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V08-EXTRA-STDERR\\V08-EXTRA-STDERR-child.ps1"
+            ],
+            "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+            "Result": {
+              "Stage": "V08-EXTRA-STDERR",
+              "ExitCode": 1,
+              "Output": [
+                "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection",
+                "uncaught exception: unrelated stderr"
+              ],
+              "StandardOutput": [],
+              "StandardError": [
+                "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection",
+                "uncaught exception: unrelated stderr"
+              ],
+              "TimedOut": false,
+              "OutputLimitExceeded": false,
+              "TerminatedIds": [],
+              "DurationSeconds": 4.08,
+              "DeadlineSeconds": 60,
+              "Ownership": "kill-on-close-job"
+            }
+          }
+        ],
+        "ExitCode": 0,
+        "DeadlineSeconds": 120,
+        "Executed": [
+          "V08-EXTRA-STDERR"
+        ],
+        "POSIX": "UNEXECUTED",
+        "DurationSeconds": 6.8680297
+      },
+      "ClassifierVerdict": {
+        "ActualOwnedChild": true,
+        "Reason": "OPT1-R1-VERDICT: wrong or unrelated failure diagnostic",
+        "ExpectedAccept": false,
+        "ProductionFunction": "Assert-R1Verdict",
+        "Id": "V08-EXTRA-STDERR",
+        "ActualAccept": false
+      }
+    },
+    {
+      "ID": "V09-PREFIX-HOLDOUT",
+      "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "Arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_replay_regression.ps1",
+        "-OnlyCase",
+        "V09-PREFIX-HOLDOUT",
+        "-ArtifactDirectory",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V09-PREFIX-HOLDOUT",
+        "-CampaignDeadlineSeconds",
+        "120"
+      ],
+      "DeadlineSeconds": 150,
+      "OutputLimitBytes": 1048576,
+      "ActualResult": {
+        "Stage": "review-V09-PREFIX-HOLDOUT",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-R1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V09-PREFIX-HOLDOUT",
+          "OPT1-R1 CASE V09-PREFIX-HOLDOUT PASS",
+          "OPT1-R1-REPLAY PASS executed=1 expected=1 registry=opt1-r1-production-v2"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V09-PREFIX-HOLDOUT",
+          "OPT1-R1 CASE V09-PREFIX-HOLDOUT PASS",
+          "OPT1-R1-REPLAY PASS executed=1 expected=1 registry=opt1-r1-production-v2"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 12.313,
+        "DeadlineSeconds": 150,
+        "Ownership": "kill-on-close-job"
+      },
+      "ProductionReceipt": {
+        "Executed": [
+          "V09-PREFIX-HOLDOUT"
+        ],
+        "ExitCode": 0,
+        "DurationSeconds": 8.0096328,
+        "POSIX": "UNEXECUTED",
+        "DeadlineSeconds": 120,
+        "Version": "opt1-r1-production-v2",
+        "Expected": [
+          "V09-PREFIX-HOLDOUT"
+        ],
+        "Stages": [
+          {
+            "Name": "V09-PREFIX-HOLDOUT",
+            "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+            "Arguments": [
+              "-NoProfile",
+              "-File",
+              "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742\\V09-PREFIX-HOLDOUT\\V09-PREFIX-HOLDOUT-child.ps1"
+            ],
+            "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+            "Result": {
+              "Stage": "V09-PREFIX-HOLDOUT",
+              "ExitCode": 1,
+              "Output": [
+                " OPT1-CERT-STAGE import-freshness deadline=600s",
+                "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+              ],
+              "StandardOutput": [
+                " OPT1-CERT-STAGE import-freshness deadline=600s"
+              ],
+              "StandardError": [
+                "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+              ],
+              "TimedOut": false,
+              "OutputLimitExceeded": false,
+              "TerminatedIds": [],
+              "DurationSeconds": 4.528,
+              "DeadlineSeconds": 60,
+              "Ownership": "kill-on-close-job"
+            }
+          }
+        ]
+      },
+      "ClassifierVerdict": {
+        "ProductionFunction": "Assert-R1Verdict",
+        "Reason": "OPT1-R1-VERDICT: unrelated stdout on rejected setup",
+        "ExpectedAccept": false,
+        "ActualAccept": false,
+        "Id": "V09-PREFIX-HOLDOUT",
+        "ActualOwnedChild": true
+      }
+    }
+  ],
+  "POSIX": "UNEXECUTED",
+  "ParentRunnerBeforeSHA256": "E9DE8689CA8C49F36B1EA4898E0504EE79BC30AF6D385D1B370404D7F57DD78D",
+  "Failure": null,
+  "ArtifactRoot": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\fixed-review-ed6ed443d85b4fb5a542a6c471ad8742",
+  "Meaning": "Independent focused actual parent-entry controls, not the later full46 production campaign",
+  "Expected": [
+    "V01-SOLE-SETUP",
+    "V03-SUCCESS-STDOUT",
+    "V04-WRONG-STDERR",
+    "V06-DUPLICATE-PROGRESS",
+    "V07-REORDERED-PROGRESS",
+    "V08-EXTRA-STDERR",
+    "V09-PREFIX-HOLDOUT"
+  ]
+}

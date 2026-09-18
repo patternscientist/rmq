@@ -1,0 +1,34 @@
+﻿{
+    "Module":  "RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory.Base",
+    "Command":  [
+                    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+                    "-j1",
+                    "-o",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\SuccinctClose\\EndpointFringe\\InteriorCandidate\\InteriorDirectory\\Base.olean",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctClose\\EndpointFringe\\InteriorCandidate\\InteriorDirectory\\Base.lean"
+                ],
+    "SourceSHA256":  "65522F59E57BE29618BCA88A624F9A867C8DE02469A42C526B48E087751391A1",
+    "Base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+    "Platform":  "Microsoft Windows NT 10.0.26200.0",
+    "Result":  {
+                   "Stage":  "RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory.Base",
+                   "ExitCode":  0,
+                   "Output":  [
+
+                              ],
+                   "StandardOutput":  [
+
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  56.408,
+                   "DeadlineSeconds":  600,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

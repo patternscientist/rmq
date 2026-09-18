@@ -1,0 +1,16 @@
+{
+  "Label": "whitespace",
+  "Command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "ExitCode": 0,
+  "ExpectedExit": 0,
+  "Passed": true,
+  "DurationSeconds": 0.766,
+  "Stdout": "",
+  "Stderr": "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied\n",
+  "Tree": "staged resource snapshot over 0cdfcc307a14d39da19fdd8721ab80918c55d3e3, before resource commit"
+}

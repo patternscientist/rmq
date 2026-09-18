@@ -1,0 +1,15 @@
+{
+  "HygieneCommand": "rg -n \\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\\b|import Mathlib RMQ lakefile.toml",
+  "HygieneExit": 1,
+  "HygieneOutput": [],
+  "NativeCommand": "rg -n native_decide|Lean\\.ofReduceBool RMQ",
+  "NativeExit": 1,
+  "NativeOutput": [],
+  "DiffCommand": "git diff --check",
+  "DiffExit": 0,
+  "DiffOutput": [],
+  "OwnedUntrackedCommand": "git diff --no-index --check -- NUL RMQ/Core/WordRAM/Optimization/BranchBound.lean",
+  "OwnedUntrackedExit": 1,
+  "OwnedUntrackedOutput": [],
+  "SourceSHA256": "277A92EBF330770D992795D510DDBCEBF2CC51CAD49666E3C70E92E9083E8004"
+}

@@ -1,0 +1,9 @@
+{
+  "ReviewKind": "read-only source comparison; not Lean/type/mutation replay",
+  "CertificateHash": "B8E9526541FA984A5B19C5A08F57069721FA1F5F9E0211D0C33C390162D7FDB2",
+  "ConsumersHash": "037C89D629CD856E4FA828106702DC3E86524ED8F9FDB0DECEB16FCACA951F93",
+  "RegistryHash": "E4E17D1BFC129D105B08E85BE1E9C1601931FAE8FBC30EEB935567ECD3C418B1",
+  "RegistryCount": 37,
+  "ParsedCertificateCount": 37,
+  "Problems": []
+}

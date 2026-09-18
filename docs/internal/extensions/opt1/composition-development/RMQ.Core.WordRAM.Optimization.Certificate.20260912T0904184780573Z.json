@@ -1,0 +1,34 @@
+﻿{
+    "Module":  "RMQ.Core.WordRAM.Optimization.Certificate",
+    "Command":  [
+                    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+                    "-j1",
+                    "-o",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Optimization\\Certificate.olean",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Certificate.lean"
+                ],
+    "SourceSHA256":  "D0B8109E23431050D9949749BEF8678F35891E3CFE1CEE9EDD9038CA662F9448",
+    "Base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+    "Platform":  "Microsoft Windows NT 10.0.26200.0",
+    "Result":  {
+                   "Stage":  "RMQ.Core.WordRAM.Optimization.Certificate",
+                   "ExitCode":  0,
+                   "Output":  [
+
+                              ],
+                   "StandardOutput":  [
+
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  4.715,
+                   "DeadlineSeconds":  180,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

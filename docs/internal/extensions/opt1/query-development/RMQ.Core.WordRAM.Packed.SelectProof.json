@@ -1,0 +1,34 @@
+﻿{
+    "Module":  "RMQ.Core.WordRAM.Packed.SelectProof",
+    "Command":  [
+                    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+                    "-j1",
+                    "-o",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Packed\\SelectProof.olean",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Packed\\SelectProof.lean"
+                ],
+    "SourceSHA256":  "292AD12DC2879B2F523B29300DB2E5251AEA57BBACC5AD2154B2660DAF8946FB",
+    "Base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+    "Platform":  "Microsoft Windows NT 10.0.26200.0",
+    "Result":  {
+                   "Stage":  "RMQ.Core.WordRAM.Packed.SelectProof",
+                   "ExitCode":  0,
+                   "Output":  [
+
+                              ],
+                   "StandardOutput":  [
+
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  53.446,
+                   "DeadlineSeconds":  600,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

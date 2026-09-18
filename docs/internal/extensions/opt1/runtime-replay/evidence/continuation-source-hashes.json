@@ -1,0 +1,18 @@
+[
+  {
+    "Path": "RMQ/Validation/PackedOptimized.lean",
+    "SHA256": "c3fca7ee37356f12b08e03b45886b4b390098d56954596cc2ff784c51cf98ceb"
+  },
+  {
+    "Path": "scripts/packed_optimized_runtime.ps1",
+    "SHA256": "8f932e528eb015c8b5881511b2bc3a0fe7af1be71359e1e605beb2c99ce40532"
+  },
+  {
+    "Path": "scripts/packed_optimized_certificate_replay.ps1",
+    "SHA256": "b7c60b3cfd7f7776dcfef769a9f2f310dc2ca4c0cc565657d8d273009c1b12b3"
+  },
+  {
+    "Path": "docs/internal/extensions/opt1/certificate-replay/FIELDS.json",
+    "SHA256": "0d1529c98d35b6ff2ac53d58d107f0a47ec8f5d263f51819c085827c055a63bb"
+  }
+]

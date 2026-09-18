@@ -1,0 +1,24 @@
+{
+  "Label": "design-phase",
+  "Command": [
+    "powershell",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "scripts/design_decision_check.ps1",
+    "-Strict",
+    "-Base",
+    "bbbe652fa41fa40bf2530b5e2f09c4c225c0e896"
+  ],
+  "Passed": true,
+  "ExitCode": 0,
+  "DurationSeconds": 1.537,
+  "OutputBytes": 72,
+  "OutputSHA256": "7c82b3f4ec4031e911863a82338731a190557896adf0cb95faf3cffaeeae4623",
+  "OutputSummary": [
+    "DESIGN-CHECK: checked 47 changed files (1 code, 42 workflow, 4 neutral)"
+  ],
+  "Stderr": "",
+  "Scope": "Final narrative/storage tree with completed verification receipts before local final evidence commit"
+}

@@ -1,0 +1,34 @@
+﻿{
+    "Module":  "RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam",
+    "Command":  [
+                    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+                    "-j1",
+                    "-o",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\SuccinctClose\\RelativeRmmMacro\\ConcreteDirectoryRAMStoreParam.olean",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctClose\\RelativeRmmMacro\\ConcreteDirectoryRAMStoreParam.lean"
+                ],
+    "SourceSHA256":  "074AE2026220430F9B6D00805FC51BA46917C8C0C50FD599A777245E029CC31E",
+    "Base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+    "Platform":  "Microsoft Windows NT 10.0.26200.0",
+    "Result":  {
+                   "Stage":  "RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam",
+                   "ExitCode":  0,
+                   "Output":  [
+
+                              ],
+                   "StandardOutput":  [
+
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  24.292,
+                   "DeadlineSeconds":  600,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

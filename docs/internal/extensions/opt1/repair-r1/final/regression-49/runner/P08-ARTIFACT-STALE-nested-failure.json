@@ -1,0 +1,25 @@
+{
+  "ExpectedCase": "P08-ARTIFACT-STALE",
+  "Intended": true,
+  "NotASemanticRejection": true,
+  "RawResult": {
+    "Stage": "import-freshness",
+    "ExitCode": 1,
+    "Output": [
+      "OPT1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\opt1-runtime-replay\\20260912T200709Z-3ba717d3b4304270af4b3ceb79e3a06a",
+      "OPT1-IMPORT: stale artifact for RMQ.Core.Backend; rebuild the affected import closure before replay"
+    ],
+    "StandardOutput": [
+      "OPT1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\opt1-runtime-replay\\20260912T200709Z-3ba717d3b4304270af4b3ceb79e3a06a"
+    ],
+    "StandardError": [
+      "OPT1-IMPORT: stale artifact for RMQ.Core.Backend; rebuild the affected import closure before replay"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 4.479,
+    "DeadlineSeconds": 600,
+    "Ownership": "kill-on-close-job"
+  }
+}

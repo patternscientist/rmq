@@ -1,0 +1,22 @@
+{
+  "Phase": "resumed-kernel-repair",
+  "Head": "8e355fda7788077f548865c1d6acf2ae5e88da55",
+  "Governance": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "SkillPreflight": "PASS",
+  "RuntimeProjectSkills": [
+    "rmq-coordinator",
+    "rmq-proof-sprint",
+    "rmq-audit-prompt"
+  ],
+  "RequiredRole": "rmq-proof-sprint",
+  "Ownership": [
+    "RMQ/Core/WordRAM/Optimization/CompactProof.lean",
+    "RMQ/Core/WordRAM/Optimization/CompactSafety.lean",
+    "docs/internal/extensions/opt1/compact-proof-development/"
+  ],
+  "ProofSHA256": "253CF7C1D5709CB319B88D2AC00BA326BF7366874E850E1E0C9DF9BBC6797BDB",
+  "SafetySHA256": "5F569537047695DC789FB4505BFD84EE8D33622EBAB0395D478F9EDDE66EE360",
+  "FirstCommand": "& docs/internal/extensions/opt1/compact-proof-development/check.ps1 -Modules Compact",
+  "Slot": "await explicit root transfer",
+  "LeanLaunched": false
+}

@@ -1,0 +1,854 @@
+{
+  "version": "OPT1-R2-RECEIPT-ARCHIVE-CONTROLS-RECEIPT-V1",
+  "registryVersion": "OPT1-R2-RECEIPT-ARCHIVE-CONTROLS-V1",
+  "registrySha256": "69FF8EB23D710A0134C408D2029A177CA6D73E64E1EA9F63895EF3566BDFA447",
+  "runnerSha256": "1C247F13FEC0EA2C1CEAACC3B57E76039F1EFD747000FA520CED2E0DBDF067AF",
+  "helperSha256": "EFC3775D6B8C55E85F7AC4CE52865B6AAB5B50A79FFCF52A66CCC39D2A301CEE",
+  "verifierSha256": "01C91E8FCDD25B57430369420A1C359132D06D6F484522B4E3CBA70DBD63E367",
+  "liveBytesNote": "SHA-256 values are of the live checkout bytes that ran",
+  "repo": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\opt1-r2-claim-receipts",
+  "head": "3b8296767f93cd11fed7eb6a257ce94683430228",
+  "host": "POINPAD",
+  "os": "Microsoft Windows NT 10.0.26200.0",
+  "powershell": "5.1.26100.9444",
+  "hostPath": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+  "packagedHost": false,
+  "python": "C:\\Python314\\python.exe",
+  "pythonSha256": "7CA24F26D6E3F463419EE4F537DDD3ACD312C38FE45E678CCE08572F26A8BD1A",
+  "workRoot": "C:\\Users\\poin\\AppData\\Local\\Temp\\claude\\C--Users-poin-Documents-RMQ--claude-worktrees-pq1-preprocessing-native-bounds-b3fee3\\e89e3ad0-2cc5-4b25-95d1-280ec16233b7\\scratchpad\\final\\controls-work",
+  "workRootRemoved": true,
+  "selectorBound": false,
+  "selected": [
+    "positive-tree",
+    "positive-committed",
+    "positive-copy",
+    "changed-archive-header-byte",
+    "changed-archive-trailer-byte",
+    "missing-archive",
+    "extra-archive",
+    "duplicate-manifest-entry",
+    "wrong-base-blob-id",
+    "decompressed-byte-mismatch",
+    "original-restored",
+    "manifest-entry-removed",
+    "new-result-line-file",
+    "deadline-descendant-cleanup",
+    "selector-valid",
+    "selector-empty",
+    "selector-whitespace",
+    "selector-malformed",
+    "selector-unknown",
+    "selector-duplicate"
+  ],
+  "expected": [
+    "positive-tree",
+    "positive-committed",
+    "positive-copy",
+    "changed-archive-header-byte",
+    "changed-archive-trailer-byte",
+    "missing-archive",
+    "extra-archive",
+    "duplicate-manifest-entry",
+    "wrong-base-blob-id",
+    "decompressed-byte-mismatch",
+    "original-restored",
+    "manifest-entry-removed",
+    "new-result-line-file",
+    "deadline-descendant-cleanup",
+    "selector-valid",
+    "selector-empty",
+    "selector-whitespace",
+    "selector-malformed",
+    "selector-unknown",
+    "selector-duplicate"
+  ],
+  "executed": [
+    "positive-tree",
+    "positive-committed",
+    "positive-copy",
+    "changed-archive-header-byte",
+    "changed-archive-trailer-byte",
+    "missing-archive",
+    "extra-archive",
+    "duplicate-manifest-entry",
+    "wrong-base-blob-id",
+    "decompressed-byte-mismatch",
+    "original-restored",
+    "manifest-entry-removed",
+    "new-result-line-file",
+    "deadline-descendant-cleanup",
+    "selector-valid",
+    "selector-empty",
+    "selector-whitespace",
+    "selector-malformed",
+    "selector-unknown",
+    "selector-duplicate"
+  ],
+  "registryCaseCount": 20,
+  "result": "PASS",
+  "schema": "rmq.opt1.repair-r2.controls-receipt.v1",
+  "rawReceiptOutsideRepository": {
+    "path": "final/controls-3b82967.raw.json",
+    "sha256": "E54224803203697EB20631AB824D2FA8A7A2F311F196433BB4955DBB914BF84E",
+    "bytes": 71345
+  },
+  "cases": [
+    {
+      "id": "positive-tree",
+      "kind": "verify-tree",
+      "requirement": "positive",
+      "verdict": "PASS",
+      "detail": "exit 0 codes [] expected exit 0 codes []",
+      "seconds": 4.771,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "verifier": {
+        "exit": 0,
+        "seconds": 1.163,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [],
+        "jsonCodes": [],
+        "expectedExit": 0,
+        "expectedCodes": [],
+        "stderr": [],
+        "resultLine": [
+          "RECEIPT-ARCHIVES: RESULT: PASS \u00282 of 2 required archives verified; 2 manifest entries; 0 extra archives; 11 unselected scanner-text files present; base 4cc95012a31cda9459d06d87b3371c8c172bb973)"
+        ],
+        "failLines": []
+      }
+    },
+    {
+      "id": "positive-committed",
+      "kind": "verify-committed",
+      "requirement": "positive",
+      "verdict": "PASS",
+      "detail": "exit 0 codes [] expected exit 0 codes []",
+      "seconds": 7.242,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "verifier": {
+        "exit": 0,
+        "seconds": 2.611,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [],
+        "jsonCodes": [],
+        "expectedExit": 0,
+        "expectedCodes": [],
+        "stderr": [],
+        "resultLine": [
+          "RECEIPT-ARCHIVES: RESULT: PASS \u00282 of 2 required archives verified; 2 manifest entries; 0 extra archives; 11 unselected scanner-text files present; base 4cc95012a31cda9459d06d87b3371c8c172bb973)"
+        ],
+        "failLines": []
+      }
+    },
+    {
+      "id": "positive-copy",
+      "kind": "verify-copy",
+      "requirement": "positive on an unmutated disposable copy",
+      "verdict": "PASS",
+      "detail": "exit 0 codes [] expected exit 0 codes []",
+      "seconds": 12.185,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "verifier": {
+        "exit": 0,
+        "seconds": 2.679,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [],
+        "jsonCodes": [],
+        "expectedExit": 0,
+        "expectedCodes": [],
+        "stderr": [],
+        "resultLine": [
+          "RECEIPT-ARCHIVES: RESULT: PASS \u00282 of 2 required archives verified; 2 manifest entries; 0 extra archives; 11 unselected scanner-text files present; base 4cc95012a31cda9459d06d87b3371c8c172bb973)"
+        ],
+        "failLines": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 1.09,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "RECEIPT-CONTROL-MUTATION: no mutation"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "changed-archive-header-byte",
+      "kind": "verify-copy",
+      "requirement": "changed archive byte",
+      "verdict": "PASS",
+      "detail": "exit 1 codes [archive-gzip-invalid,archive-sha256-mismatch] expected exit 1 codes [archive-gzip-invalid,archive-sha256-mismatch]",
+      "seconds": 10.942,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "verifier": {
+        "exit": 1,
+        "seconds": 2.262,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "archive-gzip-invalid",
+          "archive-sha256-mismatch"
+        ],
+        "jsonCodes": [
+          "archive-gzip-invalid",
+          "archive-sha256-mismatch"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "archive-gzip-invalid",
+          "archive-sha256-mismatch"
+        ],
+        "stderr": [],
+        "resultLine": [
+          "RECEIPT-ARCHIVES: RESULT: FAIL \u00282 failures; 1 of 2 required archives verified)"
+        ],
+        "failLines": [
+          "RECEIPT-ARCHIVES: FAIL [archive-sha256-mismatch] docs/internal/extensions/opt1/checkpoint-claims.json.gz: manifest 08167E54224598F390183A4EE2038ED8A69BB2E72CD52C5B3BB8506474C9C141 != D8FBA119F093A6F9E1DFCECBC2F5E4B2CA963153E2AB0DE919898DD28E8DE273",
+          "RECEIPT-ARCHIVES: FAIL [archive-gzip-invalid] docs/internal/extensions/opt1/checkpoint-claims.json.gz: header 1f8b08000000000002fe != pinned 1f8b08000000000002ff"
+        ]
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.911,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "RECEIPT-CONTROL-MUTATION: flipped bit 0 of byte 9 \u0028gzip OS field) of docs/internal/extensions/opt1/checkpoint-claims.json.gz"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "changed-archive-trailer-byte",
+      "kind": "verify-copy",
+      "requirement": "changed archive byte",
+      "verdict": "PASS",
+      "detail": "exit 1 codes [archive-gzip-invalid,archive-sha256-mismatch] expected exit 1 codes [archive-gzip-invalid,archive-sha256-mismatch]",
+      "seconds": 11.774,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "verifier": {
+        "exit": 1,
+        "seconds": 2.414,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "archive-gzip-invalid",
+          "archive-sha256-mismatch"
+        ],
+        "jsonCodes": [
+          "archive-gzip-invalid",
+          "archive-sha256-mismatch"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "archive-gzip-invalid",
+          "archive-sha256-mismatch"
+        ],
+        "stderr": [],
+        "resultLine": [
+          "RECEIPT-ARCHIVES: RESULT: FAIL \u00282 failures; 1 of 2 required archives verified)"
+        ],
+        "failLines": [
+          "RECEIPT-ARCHIVES: FAIL [archive-sha256-mismatch] docs/internal/extensions/opt1/checkpoint-claims.json.gz: manifest 08167E54224598F390183A4EE2038ED8A69BB2E72CD52C5B3BB8506474C9C141 != ABA8E40E3E92607C7FE94F4A95981B74DC39413E7AAC2BF4D41968FC799FC6F8",
+          "RECEIPT-ARCHIVES: FAIL [archive-gzip-invalid] docs/internal/extensions/opt1/checkpoint-claims.json.gz: Error -3 while decompressing data: incorrect length check"
+        ]
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.978,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "RECEIPT-CONTROL-MUTATION: flipped bit 0 of the last byte \u0028gzip ISIZE) of docs/internal/extensions/opt1/checkpoint-claims.json.gz"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "missing-archive",
+      "kind": "verify-copy",
+      "requirement": "missing archive",
+      "verdict": "PASS",
+      "detail": "exit 1 codes [archive-missing] expected exit 1 codes [archive-missing]",
+      "seconds": 10.324,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "verifier": {
+        "exit": 1,
+        "seconds": 2.232,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "archive-missing"
+        ],
+        "jsonCodes": [
+          "archive-missing"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "archive-missing"
+        ],
+        "stderr": [],
+        "resultLine": [
+          "RECEIPT-ARCHIVES: RESULT: FAIL \u00281 failures; 1 of 2 required archives verified)"
+        ],
+        "failLines": [
+          "RECEIPT-ARCHIVES: FAIL [archive-missing] docs/internal/extensions/opt1/checkpoint-claims.json.gz"
+        ]
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.831,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "RECEIPT-CONTROL-MUTATION: deleted docs/internal/extensions/opt1/checkpoint-claims.json.gz"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "extra-archive",
+      "kind": "verify-copy",
+      "requirement": "extra archive not in the manifest",
+      "verdict": "PASS",
+      "detail": "exit 1 codes [archive-extra] expected exit 1 codes [archive-extra]",
+      "seconds": 14.082,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "verifier": {
+        "exit": 1,
+        "seconds": 3.414,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "archive-extra"
+        ],
+        "jsonCodes": [
+          "archive-extra"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "archive-extra"
+        ],
+        "stderr": [],
+        "resultLine": [
+          "RECEIPT-ARCHIVES: RESULT: FAIL \u00281 failures; 2 of 2 required archives verified)"
+        ],
+        "failLines": [
+          "RECEIPT-ARCHIVES: FAIL [archive-extra] docs/internal/extensions/opt1/unlisted-control-extra.json.gz is under docs/internal/extensions/opt1/ but in neither the manifest nor the base tree"
+        ]
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 1.45,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "RECEIPT-CONTROL-MUTATION: added valid gzip docs/internal/extensions/opt1/unlisted-control-extra.json.gz absent from the manifest and the base tree"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "duplicate-manifest-entry",
+      "kind": "verify-copy",
+      "requirement": "duplicated manifest entry",
+      "verdict": "PASS",
+      "detail": "exit 1 codes [manifest-duplicate-entry] expected exit 1 codes [manifest-duplicate-entry]",
+      "seconds": 11.964,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "verifier": {
+        "exit": 1,
+        "seconds": 3.171,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "manifest-duplicate-entry"
+        ],
+        "jsonCodes": [
+          "manifest-duplicate-entry"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "manifest-duplicate-entry"
+        ],
+        "stderr": [],
+        "resultLine": [
+          "RECEIPT-ARCHIVES: RESULT: FAIL \u00282 failures; 2 of 2 required archives verified)"
+        ],
+        "failLines": [
+          "RECEIPT-ARCHIVES: FAIL [manifest-duplicate-entry] originalPath docs/internal/extensions/opt1/checkpoint-claims.json appears 2 times",
+          "RECEIPT-ARCHIVES: FAIL [manifest-duplicate-entry] archivePath docs/internal/extensions/opt1/checkpoint-claims.json.gz appears 2 times"
+        ]
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 1.099,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "RECEIPT-CONTROL-MUTATION: inserted a second copy of the docs/internal/extensions/opt1/checkpoint-claims.json entry next to the first"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "wrong-base-blob-id",
+      "kind": "verify-copy",
+      "requirement": "wrong base blob id",
+      "verdict": "PASS",
+      "detail": "exit 1 codes [base-blob-id-mismatch] expected exit 1 codes [base-blob-id-mismatch]",
+      "seconds": 12.701,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "verifier": {
+        "exit": 1,
+        "seconds": 3.198,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "base-blob-id-mismatch"
+        ],
+        "jsonCodes": [
+          "base-blob-id-mismatch"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "base-blob-id-mismatch"
+        ],
+        "stderr": [],
+        "resultLine": [
+          "RECEIPT-ARCHIVES: RESULT: FAIL \u00281 failures; 1 of 2 required archives verified)"
+        ],
+        "failLines": [
+          "RECEIPT-ARCHIVES: FAIL [base-blob-id-mismatch] docs/internal/extensions/opt1/checkpoint-claims.json: manifest eb59b5d20aed5491fb66c51e64e9a873ed043823 != base 25a2026b26c792e42e90a53a6594e0c5c2fd52d9"
+        ]
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 1.217,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "RECEIPT-CONTROL-MUTATION: set the docs/internal/extensions/opt1/checkpoint-claims.json baseBlobId to the other entry's blob id eb59b5d20aed5491fb66c51e64e9a873ed043823"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "decompressed-byte-mismatch",
+      "kind": "verify-copy",
+      "requirement": "decompressed-byte mismatch",
+      "verdict": "PASS",
+      "detail": "exit 1 codes [decompressed-bytes-mismatch] expected exit 1 codes [decompressed-bytes-mismatch]",
+      "seconds": 13.14,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "verifier": {
+        "exit": 1,
+        "seconds": 3.288,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "decompressed-bytes-mismatch"
+        ],
+        "jsonCodes": [
+          "decompressed-bytes-mismatch"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "decompressed-bytes-mismatch"
+        ],
+        "stderr": [],
+        "resultLine": [
+          "RECEIPT-ARCHIVES: RESULT: FAIL \u00281 failures; 1 of 2 required archives verified)"
+        ],
+        "failLines": [
+          "RECEIPT-ARCHIVES: FAIL [decompressed-bytes-mismatch] docs/internal/extensions/opt1/checkpoint-claims.json.gz: recovered blob c8299ec304240f0d5804263311468e70ad3ab07d sha256 422ADE8D26CF8694BDB01746A55012A110A9D89410B0A77E71EC85334E209EE0 != base blob 25a2026b26c792e42e90a53a6594e0c5c2fd52d9 sha256 4073391ECBF3EE6C16301851F0F3F392C5ACF0E0E16BDD64F2B8CE68EE3DF24F"
+        ]
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 1.277,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "RECEIPT-CONTROL-MUTATION: replaced docs/internal/extensions/opt1/checkpoint-claims.json.gz by a well-formed gzip of the base bytes with byte 39291 changed and updated archiveSha256/archiveBytes to match, so only decompressed content differs"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "original-restored",
+      "kind": "verify-copy",
+      "requirement": "original file restored beside its archive",
+      "verdict": "PASS",
+      "detail": "exit 1 codes [original-present] expected exit 1 codes [original-present]",
+      "seconds": 9.158,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "verifier": {
+        "exit": 1,
+        "seconds": 2.283,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "original-present"
+        ],
+        "jsonCodes": [
+          "original-present"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "original-present"
+        ],
+        "stderr": [],
+        "resultLine": [
+          "RECEIPT-ARCHIVES: RESULT: FAIL \u00281 failures; 1 of 2 required archives verified)"
+        ],
+        "failLines": [
+          "RECEIPT-ARCHIVES: FAIL [original-present] docs/internal/extensions/opt1/checkpoint-claims.json still exists in the tree"
+        ]
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.878,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "RECEIPT-CONTROL-MUTATION: wrote the exact base blob bytes of docs/internal/extensions/opt1/checkpoint-claims.json beside its archive"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "manifest-entry-removed",
+      "kind": "verify-copy",
+      "requirement": "missing manifest entry \u0028additional)",
+      "verdict": "PASS",
+      "detail": "exit 1 codes [archive-extra,attributes-manifest-mismatch,manifest-missing-entry] expected exit 1 codes [archive-extra,attributes-manifest-mismatch,manifest-missing-entry]",
+      "seconds": 9.038,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "verifier": {
+        "exit": 1,
+        "seconds": 2.084,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "archive-extra",
+          "attributes-manifest-mismatch",
+          "manifest-missing-entry"
+        ],
+        "jsonCodes": [
+          "archive-extra",
+          "attributes-manifest-mismatch",
+          "manifest-missing-entry"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "archive-extra",
+          "attributes-manifest-mismatch",
+          "manifest-missing-entry"
+        ],
+        "stderr": [],
+        "resultLine": [
+          "RECEIPT-ARCHIVES: RESULT: FAIL \u00283 failures; 1 of 2 required archives verified)"
+        ],
+        "failLines": [
+          "RECEIPT-ARCHIVES: FAIL [manifest-missing-entry] docs/internal/extensions/opt1/checkpoint-report-claims.json has 83 result lines at base but no manifest entry",
+          "RECEIPT-ARCHIVES: FAIL [archive-extra] docs/internal/extensions/opt1/checkpoint-report-claims.json.gz is under docs/internal/extensions/opt1/ but in neither the manifest nor the base tree",
+          "RECEIPT-ARCHIVES: FAIL [attributes-manifest-mismatch] attributes.appendedLines differs from the lines implied by the archives"
+        ]
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.915,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "RECEIPT-CONTROL-MUTATION: removed the docs/internal/extensions/opt1/checkpoint-report-claims.json entry; its archive stays"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "new-result-line-file",
+      "kind": "verify-copy",
+      "requirement": "reintroduced result-line file \u0028additional)",
+      "verdict": "PASS",
+      "detail": "exit 1 codes [new-result-line-file] expected exit 1 codes [new-result-line-file]",
+      "seconds": 12.866,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "verifier": {
+        "exit": 1,
+        "seconds": 3.515,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "new-result-line-file"
+        ],
+        "jsonCodes": [
+          "new-result-line-file"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "new-result-line-file"
+        ],
+        "stderr": [],
+        "resultLine": [
+          "RECEIPT-ARCHIVES: RESULT: FAIL \u00281 failures; 2 of 2 required archives verified)"
+        ],
+        "failLines": [
+          "RECEIPT-ARCHIVES: FAIL [new-result-line-file] docs/internal/extensions/opt1/repair-r2/control-new-result-line.txt is new since base and contains a claim-scanner result line"
+        ]
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 1.127,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "RECEIPT-CONTROL-MUTATION: added docs/internal/extensions/opt1/repair-r2/control-new-result-line.txt holding one synthesized scanner result line"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "deadline-descendant-cleanup",
+      "kind": "deadline",
+      "requirement": "REPLAY-SUBPROCESS-DEADLINE",
+      "verdict": "PASS",
+      "detail": "timed out after 5.158 s; root 29752 and child 12460 both absent",
+      "seconds": 12.727,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "sleeper": {
+        "exit": -1,
+        "seconds": 5.158,
+        "deadline": 5,
+        "timedOut": true,
+        "terminatedIds": [
+          36880,
+          29752,
+          12460
+        ],
+        "ownership": "kill-on-close-job",
+        "pids": [
+          29752,
+          12460
+        ],
+        "aliveAfter": [],
+        "host": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "packagedHost": false,
+        "stderr": []
+      }
+    },
+    {
+      "id": "selector-valid",
+      "kind": "selector",
+      "requirement": "REPLAY-SELECTOR-NONVACUITY",
+      "verdict": "PASS",
+      "detail": "exit 0 marker 1 executed [positive-tree]",
+      "seconds": 22.436,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "selector": {
+        "argument": "positive-tree",
+        "exit": 0,
+        "seconds": 14.985,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 0,
+        "expectedMarker": "RECEIPT-CONTROLS: RESULT: PASS executed 1 of 1 selected cases",
+        "childExecuted": [
+          "positive-tree"
+        ],
+        "stdout": [
+          "RECEIPT-CONTROLS: PASS [positive-tree] exit 0 codes [] expected exit 0 codes [] \u002811.333 s)",
+          "RECEIPT-CONTROLS: RESULT: PASS executed 1 of 1 selected cases \u0028registry OPT1-R2-RECEIPT-ARCHIVE-CONTROLS-V1, 20 cases)"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "selector-empty",
+      "kind": "selector",
+      "requirement": "REPLAY-SELECTOR-NONVACUITY",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "seconds": 7.154,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "selector": {
+        "argument": "''",
+        "exit": 2,
+        "seconds": 1.144,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "RECEIPT-CONTROLS: SELECTOR-ERROR [empty]",
+        "childExecuted": [],
+        "stdout": [
+          "RECEIPT-CONTROLS: SELECTOR-ERROR [empty] bound -Case holds an empty string"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "selector-whitespace",
+      "kind": "selector",
+      "requirement": "REPLAY-SELECTOR-NONVACUITY",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "seconds": 7.23,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "selector": {
+        "argument": "' '",
+        "exit": 2,
+        "seconds": 1.197,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "RECEIPT-CONTROLS: SELECTOR-ERROR [whitespace]",
+        "childExecuted": [],
+        "stdout": [
+          "RECEIPT-CONTROLS: SELECTOR-ERROR [whitespace] bound -Case holds only whitespace"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "selector-malformed",
+      "kind": "selector",
+      "requirement": "REPLAY-SELECTOR-NONVACUITY",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "seconds": 8.185,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "selector": {
+        "argument": "'Positive Tree!'",
+        "exit": 2,
+        "seconds": 1.28,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "RECEIPT-CONTROLS: SELECTOR-ERROR [malformed]",
+        "childExecuted": [],
+        "stdout": [
+          "RECEIPT-CONTROLS: SELECTOR-ERROR [malformed] 'Positive Tree!' is not a lowercase hyphenated case id"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "selector-unknown",
+      "kind": "selector",
+      "requirement": "REPLAY-SELECTOR-NONVACUITY",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "seconds": 8.626,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "selector": {
+        "argument": "no-such-case",
+        "exit": 2,
+        "seconds": 1.372,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "RECEIPT-CONTROLS: SELECTOR-ERROR [unknown]",
+        "childExecuted": [],
+        "stdout": [
+          "RECEIPT-CONTROLS: SELECTOR-ERROR [unknown] 'no-such-case' is not a registered case id"
+        ],
+        "stderr": []
+      }
+    },
+    {
+      "id": "selector-duplicate",
+      "kind": "selector",
+      "requirement": "REPLAY-SELECTOR-NONVACUITY",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "seconds": 7.729,
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "B53364AF34EB54F9DEA97EC4A914C428D71D2FFA1379A62AAE8222B4D2318F58",
+      "selector": {
+        "argument": "positive-tree,positive-tree",
+        "exit": 2,
+        "seconds": 1.193,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "RECEIPT-CONTROLS: SELECTOR-ERROR [duplicate]",
+        "childExecuted": [],
+        "stdout": [
+          "RECEIPT-CONTROLS: SELECTOR-ERROR [duplicate] bound -Case repeats a case id"
+        ],
+        "stderr": []
+      }
+    }
+  ],
+  "totalSeconds": 215.744,
+  "invocation": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/internal/extensions/opt1/repair-r2/run_receipt_archive_controls.ps1 -WorkRoot <scratch>/controls-work -ReceiptPath <scratch>/controls-3b82967.raw.json"
+}

@@ -1,0 +1,50 @@
+﻿{
+    "Module":  "RMQ.Validation.PackedOptimized",
+    "Command":  [
+                    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+                    "-j1",
+                    "-o",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Validation\\PackedOptimized.olean",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean"
+                ],
+    "SourceSHA256":  "C46497EC664BCF939A548969F73B3E1D5048920E675D2AE852B4745A06EBE2F1",
+    "Base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+    "Platform":  "Microsoft Windows NT 10.0.26200.0",
+    "Result":  {
+                   "Stage":  "RMQ.Validation.PackedOptimized",
+                   "ExitCode":  1,
+                   "Output":  [
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:75:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:76:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:77:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:78:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:79:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:80:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:81:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:82:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:84:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided"
+                              ],
+                   "StandardOutput":  [
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:75:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:76:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:77:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:78:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:79:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:80:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:81:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:82:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Validation\\PackedOptimized.lean:84:2: error: invalid constructor ⟨...⟩, insufficient number of arguments, constructs \u0027RMQ.Validation.PackedOptimized.QueryFixture.mk\u0027 has #6 explicit fields, but only #5 provided"
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  15.459,
+                   "DeadlineSeconds":  180,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

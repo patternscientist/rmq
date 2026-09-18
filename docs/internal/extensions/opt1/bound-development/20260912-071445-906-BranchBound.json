@@ -1,0 +1,25 @@
+{
+  "Command": [
+    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "-j1",
+    "-o",
+    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Optimization\\BranchBound.olean",
+    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\BranchBound.lean"
+  ],
+  "SourceSHA256": "277A92EBF330770D992795D510DDBCEBF2CC51CAD49666E3C70E92E9083E8004",
+  "Base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "Platform": "Microsoft Windows NT 10.0.26200.0",
+  "Result": {
+    "Stage": "bound-BranchBound",
+    "ExitCode": 0,
+    "Output": [],
+    "StandardOutput": [],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 10.75,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  }
+}

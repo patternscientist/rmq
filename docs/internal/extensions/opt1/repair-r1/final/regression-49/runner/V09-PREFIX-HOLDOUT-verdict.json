@@ -1,0 +1,8 @@
+{
+  "ProductionFunction": "Assert-R1Verdict",
+  "ActualOwnedChild": true,
+  "Id": "V09-PREFIX-HOLDOUT",
+  "Reason": "OPT1-R1-VERDICT: unrelated stdout on rejected setup",
+  "ExpectedAccept": false,
+  "ActualAccept": false
+}

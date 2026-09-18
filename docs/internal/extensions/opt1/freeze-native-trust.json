@@ -1,0 +1,6 @@
+{
+  "Command": "native_decide|Lean.ofReduceBool over RMQ",
+  "ExitCode": 1,
+  "NoMatches": true,
+  "Output": []
+}

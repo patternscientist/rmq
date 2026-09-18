@@ -1,0 +1,13 @@
+# Branch-bound leaf contract and development check plan
+
+Base/governance: 0e6a00f654abc64f8b68988fa9675b9a839dca2f. Worktree C:/Users/poin/.codex/worktrees/1580/RMQ; branch codex/opt-1-packed-compiler. Personal preflight passed with all three actual runtime RMQ skills and rmq-proof-sprint required.
+
+Owned proof: Optimization/BranchBound.lean only. Downstream root-owned consumer: Optimization/Capstone.lean branchSensitiveQueryBound, then compact capstone. This leaf is not OPT-1 completion.
+
+Frozen local target: define branchBound skip=0, action/exit=1, sequence=sum, ifZero=max(1+zero,2+nonzero), repeat=count*body. Prove Realizes for every source block hosted at base and every initial state with PC=base, using this budget and finish=base+block.size. Prove branchBound<=block.size. For standalone code at PC0, prove actual run.steps<=branchBound for any adequate fuel a, and full Run equality at any two fuels a,b at least the bound. No memory, successful-load, running-state, or source-completion assumption is permitted. No new axioms, fabricated logs, modified baseline semantics, or shared-module edits.
+
+Development verification: exact Lean 4.22.0 direct invocation with -j1, sequential prerequisites Primitive/Calculus/Structured/Compiler, then owned BranchBound and exact-type consumers inside the owned module. All output files use task-local .lake/build/lib/lean. Each invocation uses scripts/owned_process_tree.ps1 with 180 seconds and 1 MiB output bound. The import chain is four small modules; there is no prior cold-run timing, so 180 seconds is a conservative startup/development allowance. Source hashes, exact commands, outputs, exits, duration, deadline and ownership are persisted per run. The automatic elan shim tried a blocked download despite the exact installed binaries; direct version check succeeded. Pinned Lake rejects -j1, hence direct Lean -j1 implements the required single-job policy without changing configuration.
+
+Covered leaf obligations: REQ-OPT-BUDGET execution bridge, INV-TRACE-EXECUTION (exact RunsTo transition segments), INV-SEMANTIC-NONVACUITY (universal operational conclusion), INV-PROOF-SEPARATION (proof-only bridge), INV-CATEGORY-SEPARATION (model instruction count only). Full store/width/space/query obligations remain root-owned and are not closed by this leaf.
+
+Broad lake build, aggregate gates, public prose checks, query instantiation and mutation replay are root/coordinator phases, excluded from this leaf's verification. Source code decisions and process evidence are delivered to root for append-only shared-ledger entries; this worker does not edit shared docs or commit.

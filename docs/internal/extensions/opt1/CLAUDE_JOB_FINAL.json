@@ -1,0 +1,21 @@
+{
+  "FinalMetadata": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"schema\": \"claude-bridge-job/2\",\n  \"job_id\": \"job-2b83424c-8507-4df3-ab0c-596b32c80d2d\",\n  \"session_id\": \"abfd6e93-57be-4f0b-8136-0623adc75b8f\",\n  \"previous_job_id\": null,\n  \"owner_pid\": 23016,\n  \"owner_bridge_id\": \"ddf7db73-6858-42f8-b23e-ca044597625c\",\n  \"status\": \"error\",\n  \"request\": {\n    \"cwd\": \"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1580\\\\RMQ\",\n    \"mode\": \"read\",\n    \"model\": \"claude-opus-5\",\n    \"effort\": \"max\",\n    \"add_dirs\": [],\n    \"timeout_sec\": 600\n  },\n  \"started_at\": \"2026-09-12T09:46:21.612Z\",\n  \"ended_at\": \"2026-09-12T09:56:22.474Z\",\n  \"claude_version\": \"2.1.263 (Claude Code)\",\n  \"bridge_version\": \"2.0.0\",\n  \"bridge_sha256\": \"c395914e17f75c0cff30fbb27278c2c1ea119765f73e6c6b6490397ebec9b731\",\n  \"brief_sha256\": \"b2f18f747c791808607cd99d5e27f9d141fbd1f6aa67f1590749e66307cf635c\",\n  \"pid\": 30264,\n  \"exit_code\": 1,\n  \"signal\": null,\n  \"result\": null,\n  \"error\": \"Stopped: timeout.\",\n  \"permission_denials\": [],\n  \"last_activity_at\": \"2026-09-12T09:56:21.416Z\",\n  \"stdout_bytes\": 1015132,\n  \"stderr_bytes\": 0,\n  \"resolved_model\": \"claude-opus-5\",\n  \"num_turns\": null,\n  \"duration_ms\": null,\n  \"usage\": null,\n  \"evidence_sealed\": true,\n  \"truncated\": false,\n  \"result_chars\": 0,\n  \"evidence_directory\": \"C:\\\\Users\\\\poin\\\\AppData\\\\Local\\\\Codex\\\\claude-bridge\\\\v2\\\\jobs\\\\job-2b83424c-8507-4df3-ab0c-596b32c80d2d\"\n}"
+      }
+    ],
+    "isError": false
+  },
+  "CompleteResponse": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"job_id\": \"job-2b83424c-8507-4df3-ab0c-596b32c80d2d\",\n  \"status\": \"error\",\n  \"text\": \"\",\n  \"offset\": 0,\n  \"total_chars\": 0,\n  \"next_offset\": null\n}"
+      }
+    ],
+    "isError": false
+  },
+  "Disposition": "Timed out at the bounded 600-second deadline, with no final response. No acceptance evidence. No quota or permission denial reported; no retry, billing or limit change."
+}

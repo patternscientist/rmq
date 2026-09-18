@@ -1,0 +1,21 @@
+{
+  "Command": [
+    "powershell",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "scripts/claim_drift_scan.ps1",
+    "-Strict"
+  ],
+  "ExitCode": 0,
+  "Passed": true,
+  "DurationSeconds": 37.126,
+  "OutputSHA256": "f496ca9bd1c8fceae0de3f6c759abbfd839b443ba86157f5c5aec1b2647fee3a",
+  "OutputBytes": 4850101,
+  "FailureRules": [],
+  "VerdictLines": [
+    "CLAIM-DRIFT: scan complete (1626 hits, 0 strict failures)"
+  ],
+  "Stderr": ""
+}

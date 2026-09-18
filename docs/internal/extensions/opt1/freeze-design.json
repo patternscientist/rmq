@@ -1,0 +1,19 @@
+{
+  "Command": [
+    "powershell",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "scripts/design_decision_check.ps1",
+    "-Strict",
+    "-Base",
+    "0e6a00f654abc64f8b68988fa9675b9a839dca2f"
+  ],
+  "ExitCode": 0,
+  "Passed": true,
+  "DurationSeconds": 2.018,
+  "Stdout": "DESIGN-CHECK: checked 401 changed files (24 code, 383 workflow, 3 neutral)\n",
+  "Stderr": "",
+  "Tree": "staged verified proof/replay source freeze over 8e355fda7788077f548865c1d6acf2ae5e88da55"
+}

@@ -1,0 +1,22 @@
+{
+  "version": "opt1-r1-preservation-controls-v1",
+  "cases": [
+    {"id": "P01-EXACT-ROWS", "verdict": "ACCEPT", "code": null},
+    {"id": "P02-MISSING-MIDDLE-ROW", "verdict": "REJECT", "code": "ROW_IDS"},
+    {"id": "P03-DUPLICATE-MIDDLE-ROW", "verdict": "REJECT", "code": "ROW_DUPLICATE"},
+    {"id": "P04-CHANGED-MIDDLE-ROW", "verdict": "REJECT", "code": "ROW_BYTES"},
+    {"id": "P05-UNKNOWN-ROW", "verdict": "REJECT", "code": "ROW_IDS"},
+    {"id": "P06-MISSING-REPAIR-ROW", "verdict": "REJECT", "code": "ROW_IDS"},
+    {"id": "P07-DUPLICATE-REPAIR-ROW", "verdict": "REJECT", "code": "ROW_DUPLICATE"},
+    {"id": "P08-MOJIBAKE", "verdict": "REJECT", "code": "MOJIBAKE"},
+    {"id": "P09-ORDINARY-UNICODE", "verdict": "ACCEPT", "code": null},
+    {"id": "P10-PROTECTED-OMISSION", "verdict": "REJECT", "code": "PROTECTED_OMISSION"},
+    {"id": "P11-PROTECTED-BLOB", "verdict": "REJECT", "code": "PROTECTED_IDENTITY"},
+    {"id": "P12-PROTECTED-MODE", "verdict": "REJECT", "code": "PROTECTED_IDENTITY"},
+    {"id": "P13-UNAUTHORIZED-ADDITION", "verdict": "REJECT", "code": "PROTECTED_ADDITION"},
+    {"id": "P14-REPAIR-ADDITION", "verdict": "ACCEPT", "code": null},
+    {"id": "P15-INVALID-UTF8", "verdict": "REJECT", "code": "UTF8"},
+    {"id": "P16-LINE-TERMINATORS", "verdict": "ACCEPT", "code": null},
+    {"id": "P17-FIELD-TYPE-ALTERED", "verdict": "REJECT", "code": "FIELD_TYPE_BYTES"}
+  ]
+}

@@ -3549,3 +3549,84 @@ All 42 field weakenings and the public-proposition collapse are rejected by
 the independent consumers after successful fresh producer compilation; the
 44-case certificate replay and nine controls pass. Fresh independent acceptance
 and aggregate certification remain coordinator-scheduled on frozen content.
+
+
+## 2026-09-12 OPT-1 extension checkpoint
+
+OPT-1 is in progress on its isolated optimization branch. The additive
+`Optimization.compile_realizes_branchBound` and
+`Optimization.compiled_run_bound_and_fuel_eq` producers bound actual baseline
+compiler transitions and preserve the full run at any two adequate fuels.
+`Optimization.source_eval_congr`, `source_eval_frame` and
+`source_safe_transport` preserve the independent source evaluation under a
+complete source-register inventory, with explicit global fitting data for
+safety transport. These generic producers are kernel-checked; their full
+namespace is `RMQ.SuccinctFinal.PackedWordRAM.Optimization`.
+
+The concrete query-bound instantiation and compact emitted-query capstone
+remain under development and have not been submitted for acceptance. The
+accepted public baseline remains
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`; its allocation, aliases,
+word model and budget identity are unchanged. Detailed phase evidence and
+unmet requirements are in `internal/extensions/opt1/REPORT.md`. This dated
+entry updates the earlier next-milestone description of path-sensitive work
+as unstarted, without closing that milestone or changing preprocessing scope.
+
+
+### OPT-1 checked compact-query candidate proof (2026-09-12 continuation)
+
+The additive `Optimization.compactPackedQueryCapstone_holds` now has a checked
+39-field inhabitant on the same `buildMemory`, `initialState` and `wordWidth`.
+The actual compact program contains 212964 instructions and 722339 encoded
+numeric words; its finite bank 8273 and scratch 8276 include the two loop
+registers. The same counted code/store/scratch satisfies the complete 2n+o(n)
+capacity theorem. Exact-type consumers cover every mandatory field.
+
+`Optimization.branchSensitiveQueryBound` bounds the original complete queryRun
+by 150739 steps and its smaller-fuel theorem preserves the full Run. Compact
+counted loops have a certified upper bound 151978 while preserving arbitrary-
+memory answers and ordered attempted reads. Its certificate includes actual
+completion/adequate-fuel equality, canonical ordinary-list/leftmost correctness,
+all-prefix primitive/word/address safety and positional physical read backing.
+These are modeled word-operation bounds, not measured Lean-runtime speedups
+or attained worst cases. The historical 837572 budget of
+RMQ.Headlines.succinctRMQFullyChargedPackedQuery and accepted public root
+aliases remain unchanged. Semantic/dependency replay, fresh exact-commit audit
+and final certification are still pending at this proof checkpoint.
+
+The subsequent full semantic campaign on the same OPT-1 proof source passed
+23 positive cases, four expected corruption rejections and all script/direct
+selector controls with unchanged source and artifact hashes. Field-dependency
+replay and coordinator-scheduled final certification remain open; this runtime
+result does not change the accepted public aliases or record acceptance.
+
+The subsequent OPT-1 field-dependency campaign passed all 80 cases: unchanged
+and comment-only controls were accepted, and deletion or weakening of each of
+the 39 frozen certificate fields was rejected by its fixed expected-type
+consumer after both altered producers compiled. The complete private dependency
+library and source copies retained their checked hashes. This supplements the
+earlier semantic replay and checked inhabitant. Coordinator-scheduled final
+compatibility certification and exact-candidate acceptance remain external
+phases; RMQ.Headlines.succinctRMQFullyChargedPackedQuery remains the public baseline.
+
+### OPT-1 replay certification repair (2026-09-12, R1)
+
+The OPT-1 compact-query construction did not change: the checked
+`Optimization.compactPackedQueryCapstone_holds` inhabitant, its 39 fields, 78
+exact consumers, the 150739 original bound, the 151978 compact bound, 212964
+instructions, 722339 encoded words and the 8273-register finite bank are
+byte-identical Git blobs at the repair candidate. What changed is the evidence
+contract around the executable replays: the production runtime classifier now
+accepts a rejection only when the child produced exactly the intended
+diagnostic and nothing else, and the production certificate replay identifies
+its compiled inputs through a versioned canonical source profile (strict UTF-8,
+CRLF replaced by LF only, exact Git source frontier, complete pinned Lean 4.22.0
+Windows distribution inventory and an actual one-job compilation receipt) instead
+of undocumented historical checkout newline bytes. The repaired replays passed
+their full registries on a fresh raw-Git checkout: 27 runtime cases, 80
+certificate field cases, plus 53 runtime-classifier and 49 production
+provenance/boundary regressions. These are replay-certification results about
+host processes and compiled artifacts, not new theorems, tighter bounds or
+native-time claims. Coordinator aggregate certification, fresh exact-commit
+audit and acceptance remain external; RMQ.Headlines.succinctRMQFullyChargedPackedQuery
+remains the public baseline.

@@ -1,0 +1,15 @@
+{
+  "Source": "RMQ/Core/WordRAM/Optimization/SourceRelations.lean",
+  "SourceSHA256": "26B26ED4BFCBEFBA130A9A6FD26CE51FA564313707F141527763792BE39B8EFB",
+  "TrustExit": 1,
+  "TrustOutput": [],
+  "NativeExit": 1,
+  "NativeOutput": [],
+  "DiffExit": 0,
+  "DiffOutput": [],
+  "NewFileDiffExit": 1,
+  "NewFileDiffOutput": [
+    "warning: in the working copy of 'RMQ/Core/WordRAM/Optimization/SourceRelations.lean', LF will be replaced by CRLF the next time Git touches it"
+  ],
+  "Note": "rg exit 1 with empty output means no matches; no-index exit 1 with only LF conversion warning means nonempty new-file diff and no whitespace errors."
+}

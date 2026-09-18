@@ -1,0 +1,8 @@
+{
+  "ProductionFunction": "Assert-R1Verdict",
+  "ActualOwnedChild": true,
+  "Id": "V08-EXTRA-STDERR",
+  "Reason": "OPT1-R1-VERDICT: wrong or unrelated failure diagnostic",
+  "ExpectedAccept": false,
+  "ActualAccept": false
+}

@@ -1,0 +1,82 @@
+{
+  "Before": {
+    "Stage": "before-uncaught-fix",
+    "SourceCommit": "15e5266888c35a38733ca14846e4ad53ed119ebe",
+    "RunnerSHA256": "d900f70f87fddd8a0291e89552d621be02e9a27ed49828a4397c5e00b35ed8ca",
+    "Function": "Assert-CRejected",
+    "Fixture": {
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "StandardOutput": [
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean:33:2: error: type mismatch",
+        "  certificate.widthBounds"
+      ],
+      "StandardError": [
+        "uncaught exception: failed to write output"
+      ],
+      "Output": [
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean:33:2: error: type mismatch",
+        "  certificate.widthBounds",
+        "uncaught exception: failed to write output"
+      ]
+    },
+    "SelectedCase": {
+      "Id": "W03-widthBounds",
+      "Field": "widthBounds",
+      "Kind": "weaken"
+    },
+    "ActualVerdict": "ACCEPTED_EXPECTED_REJECTION",
+    "Exception": "",
+    "ExpectedVerdict": "REJECTED_MIXED_DIAGNOSTIC",
+    "LeanLaunched": false
+  },
+  "AfterRunnerSHA256": "44536468e5df8bb8ed9e6cf88f86cfaedadceb6b55d4de71dd67531116e9b5d1",
+  "Function": "Assert-CRejected",
+  "After": [
+    {
+      "Channel": "stderr",
+      "Fixture": {
+        "ExitCode": 1,
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "StandardOutput": [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean:33:2: error: type mismatch",
+          "  certificate.widthBounds"
+        ],
+        "StandardError": [
+          "uncaught exception: failed to write output"
+        ],
+        "Output": [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean:33:2: error: type mismatch",
+          "  certificate.widthBounds",
+          "uncaught exception: failed to write output"
+        ]
+      },
+      "Verdict": "REJECTED_MIXED_DIAGNOSTIC",
+      "Exception": "OPT1-CERT-VERDICT: uncaught exception is not a compile-time field rejection"
+    },
+    {
+      "Channel": "stdout",
+      "Fixture": {
+        "ExitCode": 1,
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "StandardOutput": [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean:33:2: error: type mismatch",
+          "  certificate.widthBounds",
+          "uncaught exception: failed to write output"
+        ],
+        "StandardError": [],
+        "Output": [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean:33:2: error: type mismatch",
+          "  certificate.widthBounds",
+          "uncaught exception: failed to write output"
+        ]
+      },
+      "Verdict": "REJECTED_MIXED_DIAGNOSTIC",
+      "Exception": "OPT1-CERT-VERDICT: uncaught exception is not a compile-time field rejection"
+    }
+  ],
+  "LeanLaunched": false
+}

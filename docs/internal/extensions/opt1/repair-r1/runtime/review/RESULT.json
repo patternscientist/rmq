@@ -1,0 +1,79 @@
+{
+  "ActualFunction": "Assert-R1Verdict",
+  "Cases": [
+    {
+      "Diagnostic": "",
+      "Mode": "sole-expected",
+      "Accepted": true,
+      "ActualResult": {
+        "Stage": "sole-expected",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-IMPORT: source/artifact differs from checked provenance: RMQ/Core/Backend.lean"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: source/artifact differs from checked provenance: RMQ/Core/Backend.lean"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.334,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Diagnostic": "",
+      "Mode": "mixed-unrelated-stdout",
+      "Accepted": true,
+      "ActualResult": {
+        "Stage": "mixed-unrelated-stdout",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: independent parent-review failure",
+          "OPT1-CERT-IMPORT: source/artifact differs from checked provenance: RMQ/Core/Backend.lean"
+        ],
+        "StandardOutput": [
+          "uncaught exception: independent parent-review failure"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: source/artifact differs from checked provenance: RMQ/Core/Backend.lean"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.444,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Diagnostic": "",
+      "Mode": "mixed-success-stdout",
+      "Accepted": true,
+      "ActualResult": {
+        "Stage": "mixed-success-stdout",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-REPLAY PASS executed=80 expected=80 registry=opt1-certificate-replay-v3",
+          "OPT1-CERT-IMPORT: source/artifact differs from checked provenance: RMQ/Core/Backend.lean"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-REPLAY PASS executed=80 expected=80 registry=opt1-certificate-replay-v3"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: source/artifact differs from checked provenance: RMQ/Core/Backend.lean"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.354,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    }
+  ],
+  "Meaning": "Read-only review of parent regression acceptance, not Lean semantic replay",
+  "ParentRunnerSHA256": "9F52C599FEE4B7BEE683BA9A87156A028959E37339AFA7AD8E430D04517C71FD"
+}

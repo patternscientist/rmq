@@ -1,0 +1,52 @@
+﻿{
+    "Module":  "RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerSparsePrelude",
+    "Command":  [
+                    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+                    "-j1",
+                    "-o",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\SuccinctFinal\\RAM\\PackedCellProbe\\ReviewerSparsePrelude.olean",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\PackedCellProbe\\ReviewerSparsePrelude.lean"
+                ],
+    "SourceSHA256":  "3A99BA036F6651EEE2A0823DBF2A6BAC365D5D6AB78A52949DDA0D480ECE8DA4",
+    "Base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+    "Platform":  "Microsoft Windows NT 10.0.26200.0",
+    "Result":  {
+                   "Stage":  "RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerSparsePrelude",
+                   "ExitCode":  0,
+                   "Output":  [
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\PackedCellProbe\\ReviewerSparsePrelude.lean:151:12: warning: try \u0027simp\u0027 instead of \u0027simpa\u0027",
+                                  "Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\PackedCellProbe\\ReviewerSparsePrelude.lean:167:12: warning: try \u0027simp\u0027 instead of \u0027simpa\u0027",
+                                  "Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\PackedCellProbe\\ReviewerSparsePrelude.lean:483:4: warning: This simp argument is unused:",
+                                  "  packedReviewerSparsePreludeRequests",
+                                  "Hint: Omit it from the simp argument list.",
+                                  "  simp [packedReviewerSparsePreludeInit, p̵a̵c̵k̵e̵d̵R̵e̵v̵i̵e̵w̵e̵r̵S̵p̵a̵r̵s̵e̵P̵r̵e̵l̵u̵d̵e̵R̵e̵q̵u̵e̵s̵t̵s̵,̵packedReviewerSparsePreludeNextRequest,",
+                                  "      packedReviewerSparsePreludeConsumeReply, packedReviewerSparsePreludeResult]",
+                                  "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`"
+                              ],
+                   "StandardOutput":  [
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\PackedCellProbe\\ReviewerSparsePrelude.lean:151:12: warning: try \u0027simp\u0027 instead of \u0027simpa\u0027",
+                                          "Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\PackedCellProbe\\ReviewerSparsePrelude.lean:167:12: warning: try \u0027simp\u0027 instead of \u0027simpa\u0027",
+                                          "Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\PackedCellProbe\\ReviewerSparsePrelude.lean:483:4: warning: This simp argument is unused:",
+                                          "  packedReviewerSparsePreludeRequests",
+                                          "Hint: Omit it from the simp argument list.",
+                                          "  simp [packedReviewerSparsePreludeInit, p̵a̵c̵k̵e̵d̵R̵e̵v̵i̵e̵w̵e̵r̵S̵p̵a̵r̵s̵e̵P̵r̵e̵l̵u̵d̵e̵R̵e̵q̵u̵e̵s̵t̵s̵,̵packedReviewerSparsePreludeNextRequest,",
+                                          "      packedReviewerSparsePreludeConsumeReply, packedReviewerSparsePreludeResult]",
+                                          "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`"
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  8.736,
+                   "DeadlineSeconds":  600,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

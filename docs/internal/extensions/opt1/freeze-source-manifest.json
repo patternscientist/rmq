@@ -1,0 +1,104 @@
+{
+  "Base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "ReturningBase": "8e355fda7788077f548865c1d6acf2ae5e88da55",
+  "FrozenRowCount": 35,
+  "FrozenByteIntegrity": "PASS",
+  "Sources": [
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/BranchBound.lean",
+      "Bytes": 17383,
+      "SHA256": "277a92ebf330770d992795d510ddbcebf2cc51cad49666e3c70e92e9083e8004"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/Capstone.lean",
+      "Bytes": 7428,
+      "SHA256": "838fce234f85fe2fc3720411f78dc813cbc10529cab61e5513876ea38bb30a75"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/Certificate.lean",
+      "Bytes": 9109,
+      "SHA256": "d0b8109e23431050d9949749bef8678f35891e3cfe1cee9edd9038ca662f9448"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/Compact.lean",
+      "Bytes": 3133,
+      "SHA256": "a616631acd50296408d5cd5d9bb6122c6f84c517c452c9ffe2dee4177f63c434"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/CompactProof.lean",
+      "Bytes": 30606,
+      "SHA256": "fc28f5fa141c1f66ea69c0b0c77ba988e7887f4af273cd283c2b823f06748a1b"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/CompactSafety.lean",
+      "Bytes": 34119,
+      "SHA256": "75a541a25894f1807f118ec846e49e45dd47d02d98db691f2a8cab0c61320a29"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/CompactStatic.lean",
+      "Bytes": 16926,
+      "SHA256": "9459f014702789c6403404bd89b267e85a363f930f2b6b560d1d8d156e473074"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+      "Bytes": 24706,
+      "SHA256": "6a435eff7e3cd2a2dfea248b3a8abebabaf10ff643927c5c3fcae52e666e7cb5"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/Query.lean",
+      "Bytes": 9234,
+      "SHA256": "6cfa64cbfab2b18fa2d35f84bda610901b8df1de296f6202b0a164bee18b6368"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/QueryProof.lean",
+      "Bytes": 6322,
+      "SHA256": "e64dea58f75d67e797a232814b8d1a00812142312509203119bd2fa890f4fabe"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/QuerySafety.lean",
+      "Bytes": 2334,
+      "SHA256": "4a8404ed30de03ace87670b9d007e29c418665068dbb99e987351dcece7f73cd"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/SourceRelations.lean",
+      "Bytes": 17214,
+      "SHA256": "26b26ed4bfcbefba130a9a6fd26ce51fa564313707f141527763792be39b8efb"
+    },
+    {
+      "Path": "RMQ/Validation/PackedOptimized.lean",
+      "Bytes": 12245,
+      "SHA256": "c3fca7ee37356f12b08e03b45886b4b390098d56954596cc2ff784c51cf98ceb"
+    },
+    {
+      "Path": "scripts/packed_optimized_axiom_check.ps1",
+      "Bytes": 4083,
+      "SHA256": "1005dc8f6217efbc71992e88a4e4d41559917c253996a09d932f5ffed87eb4ab"
+    },
+    {
+      "Path": "scripts/packed_optimized_build.ps1",
+      "Bytes": 4620,
+      "SHA256": "3b35063708f5bebadf84b930f9dacdb73edcd9297b06a00864ce68ef45daaa48"
+    },
+    {
+      "Path": "scripts/packed_optimized_certificate_replay.ps1",
+      "Bytes": 27055,
+      "SHA256": "b7c60b3cfd7f7776dcfef769a9f2f310dc2ca4c0cc565657d8d273009c1b12b3"
+    },
+    {
+      "Path": "scripts/packed_optimized_runtime.ps1",
+      "Bytes": 24457,
+      "SHA256": "8f932e528eb015c8b5881511b2bc3a0fe7af1be71359e1e605beb2c99ce40532"
+    },
+    {
+      "Path": "scripts/packed_optimized_axiom_union.lean",
+      "Bytes": 10452,
+      "SHA256": "78be47b938914ca6cb413162778d675bf9b34e120f36c1bf31903b0d8ed9a8ae"
+    },
+    {
+      "Path": "scripts/packed_optimized_axioms.lean",
+      "Bytes": 9773,
+      "SHA256": "212aff476a887a38b29d1a943f04f3e3b0e953a32111a01bcd44a92a9d928019"
+    }
+  ],
+  "State": "kernel proof+startup checked; full registries and final audit/gate pending"
+}

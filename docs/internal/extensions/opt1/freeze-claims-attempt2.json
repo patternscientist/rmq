@@ -1,0 +1,21 @@
+{
+  "Command": [
+    "powershell",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "scripts/claim_drift_scan.ps1",
+    "-Strict"
+  ],
+  "ExitCode": 1,
+  "Passed": false,
+  "DurationSeconds": 58.594,
+  "OutputSHA256": "fb2c056db15fbe1852ba76d0c616ef8aa7face8a2503b97bc114bee37483b11b",
+  "OutputBytes": 4856551,
+  "OutputSummary": [
+    "Strict failure: two forbidden-language fixtures were accidentally copied into the previous scan receipt by a broad output filter. Source attribution repair itself passed."
+  ],
+  "Stderr": "",
+  "Correction": "Keep hashed output metadata and paraphrased failure summaries in tracked receipts. No policy or allowance changes."
+}

@@ -1,0 +1,51 @@
+{
+  "Command": [
+    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "-j1",
+    "-o",
+    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Optimization\\CompactProof.olean",
+    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\CompactProof.lean"
+  ],
+  "SourceSHA256": "8934A2D7C0D035C3EB714579487319560FC674B6548EF8FFFB5A7E7E4138B257",
+  "Base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "Platform": "Microsoft Windows NT 10.0.26200.0",
+  "Result": {
+    "Stage": "compact-development-CompactProof",
+    "ExitCode": 1,
+    "Output": [
+      "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\CompactProof.lean:350:14: error: type mismatch, term",
+      "  HostedAt.append_right host",
+      "after simplification has type",
+      "  HostedAt program (base + (1 + (1 + (1 + compactSize body))))",
+      "    [Instruction.arithmetic Arithmetic.sub (compactCounter fresh depth) (compactCounter fresh depth)",
+      "        (1 + compactCounter fresh depth),",
+      "      Instruction.jump (base + 2)] : Prop",
+      "but is expected to have type",
+      "  HostedAt program (base + (3 + compactSize body))",
+      "    [Instruction.arithmetic Arithmetic.sub (compactCounter fresh depth) (compactCounter fresh depth)",
+      "        (1 + compactCounter fresh depth),",
+      "      Instruction.jump (base + 2)] : Prop"
+    ],
+    "StandardOutput": [
+      "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\CompactProof.lean:350:14: error: type mismatch, term",
+      "  HostedAt.append_right host",
+      "after simplification has type",
+      "  HostedAt program (base + (1 + (1 + (1 + compactSize body))))",
+      "    [Instruction.arithmetic Arithmetic.sub (compactCounter fresh depth) (compactCounter fresh depth)",
+      "        (1 + compactCounter fresh depth),",
+      "      Instruction.jump (base + 2)] : Prop",
+      "but is expected to have type",
+      "  HostedAt program (base + (3 + compactSize body))",
+      "    [Instruction.arithmetic Arithmetic.sub (compactCounter fresh depth) (compactCounter fresh depth)",
+      "        (1 + compactCounter fresh depth),",
+      "      Instruction.jump (base + 2)] : Prop"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 23.58,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  }
+}

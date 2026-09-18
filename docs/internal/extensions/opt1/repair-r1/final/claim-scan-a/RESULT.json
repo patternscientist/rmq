@@ -1,0 +1,24 @@
+{
+  "Version": "opt1-r1-claim-scan-receipt-v1",
+  "Head": "f7cf20da8ae52c1f8295e5cedd4326bb8d44cbb3",
+  "ReportSHA256AtScan": "3016812637092a969e0cefad827fbe6a406733d7cad2f6f52162ae535f7199a1",
+  "MatrixSHA256AtScan": "fe96ff6ca5854ed2204ba2315aabbc473aabb87bfd11382954d4ea75940c3cf0",
+  "Command": [
+    "scripts/claim_drift_scan.ps1",
+    "-Strict"
+  ],
+  "RootsAndPolicy": "unchanged production defaults (README.md, artifact, docs, paper; docs/internal/CLAIM_DRIFT_POLICY.json)",
+  "StartedUTC": "2026-09-13T04:49:00.8872341Z",
+  "FinishedUTC": "2026-09-13T04:53:44.9621640Z",
+  "ExitCode": 0,
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "DurationSeconds": 283.752,
+  "DeadlineSeconds": 1200,
+  "Ownership": "kill-on-close-job",
+  "SummaryLines": [
+    "CLAIM-DRIFT: scan complete (1807 hits, 0 strict failures)"
+  ],
+  "HitLines": 1259,
+  "StandardError": []
+}

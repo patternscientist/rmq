@@ -1897,3 +1897,121 @@ observations, designated failures and restoration records in the final evidence
 packet. Fresh blind exact-commit review and aggregate certification remain the
 coordinator's independent acceptance phase. Numeric payload and model counts
 retain the limitations stated in the source-composition entry above.
+
+
+## 2026-09-12: OPT-1 generic proof checkpoint, compact query still open
+
+Conceptually, the checked BranchBound producer separates static program
+addresses from executed branch cost. Its witness is an actual primitive
+transition segment; extending its fuel preserves the entire Run, including
+ordered duplicate and failed read attempts. In plain English, extra unused
+fuel does not change what this compiled program does once the witnessed
+segment has stopped. This generic theorem is not yet the concrete query
+bound or compact-query capstone.
+
+The checked SourceRelations producer inventories every source register,
+including read addresses and dormant branch/exit operands. It permits fresh
+scratch to differ while preserving source-visible registers, status and
+ordered reads. Its safety transport also requires the alternative data state
+to fit globally: agreement on a finite prefix cannot bound untouched high
+registers. Independent route review additionally requires rebasing source
+scratch when nested-loop induction protects a newly initialized counter pair.
+
+The named downstream consumers remain
+`RMQ.SuccinctFinal.PackedWordRAM.Optimization.branchSensitiveQueryBound` and
+`compactPackedQueryCapstone_holds`. Their compact simulation, literal emitted
+size, whole-state safety and combined accounting are still open. The accepted
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` baseline remains unchanged.
+Live generic assumptions are hosted code and starting PC, adequate fuel, or
+complete register inventory/agreement and global fit as appropriate. A
+skeptical reader should next ask whether nested counters survive every early
+halt/fault and whether the final capstone counts the exact code, register bank,
+allocation and execution it certifies. See `internal/extensions/opt1/REPORT.md`.
+
+
+### 2026-09-12 — OPT-1 compact query reaches the inhabited certificate
+
+The compact machine now has a checked whole-query certificate. Repeated source
+blocks share one emitted body and use two counted loop registers. This reduces
+actual code from 837572 to 212964 instructions and its encoding from 2847399 to
+722339 numeric words. It introduces modeled loop-control work: the compact
+upper bound 151978 is slightly above the sharper 150739 bound proved for the
+complete original unrolled run. Neither figure is a claim of attained cost or
+native runtime improvement.
+
+The conceptual proof step is comparing a nested body with the source evaluator
+at that body's actual machine state, while separately maintaining global word
+fit. That permits ancestor counters to remain protected without pretending all
+scratch equals the original source state. The resulting run preserves exact
+ordered attempts/replies, including faults; every adequate larger fuel produces
+the same complete compact Run. Canonical query safety, positional backing and
+complete literal code/store/scratch space all use the same allocation and width.
+
+The named downstream theorem is `Optimization.compactPackedQueryCapstone_holds`,
+with 39 explicit fields and 78 checked generic/canonical expected-type consumers.
+The live model assumes unit-cost word arithmetic as in the accepted baseline;
+physical safety requires representable endpoints, while ordinary-list exactness
+is all-size. The next skeptical checks are the actual route fixtures, negative
+mutation surfaces and exact-commit audit/certification. Those checks remain
+active; a checked inhabitant alone is not OPT-1 acceptance.
+
+OPT-1 executable follow-up at source ac5af8e416f906391dc117f083a883acc053a268:
+all 23 positive semantic cases and four corrupted-program controls reached
+their expected verdicts, including independently identified query routes and
+malformed metadata. Script/direct selector controls passed and exact source
+and compiled-artifact hashes were unchanged. This checks the implemented
+compiler and query objects; it does not establish native-time complexity or
+replace the remaining field-dependency campaign and independent acceptance.
+
+The subsequent certificate replay checks a concrete dependency for every
+mandatory field: removing a fact, or replacing its proposition with True,
+leaves the altered certificate and inhabitant compilable but breaks the fixed
+consumer that demands the original proposition. Two positive controls check
+that the same mechanism accepts an unchanged certificate and a nonsemantic
+comment. All 80 actual cases reached their expected verdicts with exact
+restoration. This tests producer/consumer dependence; the mathematical proofs
+remain the separately checked inhabited certificate. Live machine assumptions,
+representable-endpoint guards and modeled cost interpretation are unchanged.
+The remaining acceptance checks are full-project compatibility and the
+coordinator's independent reconstruction on the final candidate.
+
+## 2026-09-12: OPT-1-R1 replay certification repair (not accepted)
+
+Two production replay defects found by the fresh audit of the OPT-1 compact
+compiler candidate were repaired without touching a line of Lean. The runtime
+rejection check had accepted an expected `uncaught exception` line even when an
+unrelated exception appeared on the other stream; it now admits exactly one
+retained line equal to the intended diagnostic across both streams, with exit 1
+and no timeout or overflow, and 53 real-child controls (mixed streams,
+duplicates, padding, success and resource records, actual timeouts with
+descendant death, actual overflows) pin that grammar. The certificate replay
+had pinned source bytes that Git does not reproduce, so a clean checkout failed
+before any semantic case; it now checks a declared canonical serialization of
+the exact Git blobs, the complete toolchain distribution, a frozen build driver
+and a receipt of actual one-job compilation of all 263 modules, and requires an
+exact dedicated artifact cache. Both a raw LF and a default Windows CRLF fresh
+checkout pass the production library positive and reject the decisive
+`stepBound` weakening at the unchanged expected-type consumer, while seventeen
+tampering categories (source token, whitespace, BOM, bare CR, invalid UTF-8,
+artifact byte, missing or stale artifact, omitted or duplicated import,
+manifest, receipt, toolchain text, wrong executable, extra artifact, shadow
+package directory, sidecar) are rejected with exact sole diagnostics and exact
+restoration.
+
+Conceptually this separates four things the old evidence had conflated:
+immutable source content, checkout newline serialization, successful
+compilation, and later artifact installation. In plain English, a known failure
+message can no longer hide another failure, and a reviewer can reproduce the
+checked compiler inputs from the commit alone. Live assumptions are the
+unchanged primitive machine model with its representable-endpoint guards, the
+pinned Windows Lean 4.22.0 distribution as the only supported compiler for exact
+artifact equality, and the trusted manifest/receipt/driver pins. The downstream
+consumer is the production replay of the same inhabited certificate through its
+78 exact consumers and then the coordinator's aggregate certification and fresh
+audit. A skeptical graduate student would ask whether another compiler build
+could pass the profile (it is rejected, and cross-distribution reproducibility
+is explicitly not claimed) and whether POSIX process ownership behaves like the
+Windows job (unexecuted on this host). The full 27 runtime and 80 certificate
+campaigns were re-executed on the repaired scripts; the mathematical bounds,
+allocation, word width and observation relation are unchanged, and no
+acceptance is recorded by this entry.

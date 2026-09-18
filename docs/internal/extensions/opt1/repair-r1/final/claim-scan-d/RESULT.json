@@ -1,0 +1,27 @@
+{
+  "Version": "opt1-r1-claim-scan-receipt-v2",
+  "RawHitLog": "C:/Users/poin/.codex/worktrees/ccb1/RMQ/.lake/r1/claim-scan-logs/claim-scan-d.stdout.log",
+  "RawHitLogSHA256": "d70da75a816bce31e211c4ec681a77032d2497e1b24c5f8d33b24c8b3787766f",
+  "RawHitLogNote": "raw scanner hit lines are kept in untracked scratch only: storing them under docs/ creates a new claim surface that re-triggers strict terms out of their allowed contexts (this happened in claim-scan-b)",
+  "Head": "8f2f9b091b92f0533d5fc9539528d3c6915513c2",
+  "ReportSHA256AtScan": "fec8c6ec8a78015adc9c2fd747a853c387910cea5e2ca2108c3c04d4c5af0c9c",
+  "MatrixSHA256AtScan": "690d9ff348d86c2afdb93016d2626e837721ba1b633a7916dda55284672b4561",
+  "Command": [
+    "scripts/claim_drift_scan.ps1",
+    "-Strict"
+  ],
+  "RootsAndPolicy": "unchanged production defaults (README.md, artifact, docs, paper; docs/internal/CLAIM_DRIFT_POLICY.json)",
+  "StartedUTC": "2026-09-13T05:12:43.0369988Z",
+  "FinishedUTC": "2026-09-13T05:17:56.0490708Z",
+  "ExitCode": 0,
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "DurationSeconds": 312.548,
+  "DeadlineSeconds": 1200,
+  "Ownership": "kill-on-close-job",
+  "SummaryLines": [
+    "CLAIM-DRIFT: scan complete (1814 hits, 0 strict failures)"
+  ],
+  "HitLines": 1261,
+  "StandardError": []
+}

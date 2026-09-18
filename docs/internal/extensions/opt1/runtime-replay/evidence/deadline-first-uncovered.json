@@ -1,0 +1,75 @@
+{
+    "InitialSelectorPresent":  false,
+    "ExitCode":  1,
+    "Stages":  [
+                   {
+                       "Name":  "nonzero-stderr",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoProfile",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075532Z-cad1d2290d7a4a6fab7b7605f93de300\\nonzero.ps1"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "nonzero-stderr",
+                                      "ExitCode":  7,
+                                      "Output":  [
+                                                     "OPT1 controlled stderr"
+                                                 ],
+                                      "StandardOutput":  [
+
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1 controlled stderr"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  6.331,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "owned-descendant-timeout",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoProfile",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075532Z-cad1d2290d7a4a6fab7b7605f93de300\\owned-descendant.ps1"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "owned-descendant-timeout",
+                                      "ExitCode":  -1,
+                                      "Output":  [
+
+                                                 ],
+                                      "StandardOutput":  [
+
+                                                         ],
+                                      "StandardError":  [
+
+                                                        ],
+                                      "TimedOut":  true,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+                                                            23316,
+                                                            24164
+                                                        ],
+                                      "DurationSeconds":  8.643,
+                                      "DeadlineSeconds":  8,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   }
+               ],
+    "Registry":  "v1",
+    "TrackedMutations":  0
+}

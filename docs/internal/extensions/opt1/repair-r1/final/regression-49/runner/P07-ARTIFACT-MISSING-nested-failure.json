@@ -1,0 +1,25 @@
+{
+  "ExpectedCase": "P07-ARTIFACT-MISSING",
+  "Intended": true,
+  "NotASemanticRejection": true,
+  "RawResult": {
+    "Stage": "import-freshness",
+    "ExitCode": 1,
+    "Output": [
+      "OPT1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\opt1-runtime-replay\\20260912T200655Z-3221bbfb40cf43f9bb635799580d7876",
+      "Cannot find path 'C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\build\\lib\\lean\\RMQ\\Core\\Backend.olean' because it does not exist."
+    ],
+    "StandardOutput": [
+      "OPT1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\opt1-runtime-replay\\20260912T200655Z-3221bbfb40cf43f9bb635799580d7876"
+    ],
+    "StandardError": [
+      "Cannot find path 'C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\build\\lib\\lean\\RMQ\\Core\\Backend.olean' because it does not exist."
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 4.84,
+    "DeadlineSeconds": 600,
+    "Ownership": "kill-on-close-job"
+  }
+}

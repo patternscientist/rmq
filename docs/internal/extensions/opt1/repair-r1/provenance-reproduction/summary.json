@@ -1,0 +1,11 @@
+{
+  "Base": "aecf4a580c591e8f694a3699e19e843198089194",
+  "RawCheckout": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\raw",
+  "CopiedVerifiedArtifacts": 261,
+  "SourceMismatches": 251,
+  "ProductionFailure": "OPT1-CERT-IMPORT: source/artifact differs from checked provenance: RMQ/Core/Backend.lean",
+  "SemanticCases": 0,
+  "Restored": true,
+  "HistoricalArtifactsOnly": true,
+  "TimestampMeaning": "Experimental fixture freshness, not a compilation claim"
+}

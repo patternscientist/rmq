@@ -1,0 +1,13 @@
+# Preserve the exact bytes named by the OPT-1 verification receipts.
+/REPORT.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/certificate-replay/FIELDS.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/runtime-replay/evidence/full-runtime.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/certificate-replay/evidence/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/certificate-*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/certificate-independent-check.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/final-*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/CHECKER_REVIEW_BBBE.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/CAMPAIGN_RECEIPT_REVIEW.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+# OPT-1-R2: exact gzip archives of receipts that embedded claim-scanner result lines.
+/checkpoint-claims.json.gz binary
+/checkpoint-report-claims.json.gz binary

@@ -1,0 +1,24 @@
+{
+  "Label": "design-base",
+  "Command": [
+    "powershell",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "scripts/design_decision_check.ps1",
+    "-Strict",
+    "-Base",
+    "0e6a00f654abc64f8b68988fa9675b9a839dca2f"
+  ],
+  "ExitCode": 0,
+  "Passed": true,
+  "DurationSeconds": 3.261,
+  "OutputSHA256": "b59349649fcb1d3f455cfb8e452dcfe7ccd6785a787d394db077c42c38ee7fb1",
+  "OutputBytes": 75,
+  "OutputSummary": [
+    "DESIGN-CHECK: checked 449 changed files (24 code, 430 workflow, 4 neutral)"
+  ],
+  "Stderr": "",
+  "Scope": "final combined report/checker tree before local refreeze commit"
+}

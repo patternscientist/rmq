@@ -1,0 +1,21 @@
+{
+  "Label": "design",
+  "Command": [
+    "powershell",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "scripts/design_decision_check.ps1",
+    "-Strict",
+    "-Base",
+    "0e6a00f654abc64f8b68988fa9675b9a839dca2f"
+  ],
+  "ExitCode": 0,
+  "ExpectedExit": 0,
+  "Passed": true,
+  "DurationSeconds": 4.449,
+  "Stdout": "DESIGN-CHECK: checked 219 changed files (17 code, 203 workflow, 3 neutral)\n",
+  "Stderr": "",
+  "Tree": "staged resource snapshot over 0cdfcc307a14d39da19fdd8721ab80918c55d3e3, before resource commit"
+}

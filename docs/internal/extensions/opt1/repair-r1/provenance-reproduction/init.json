@@ -1,0 +1,17 @@
+{
+  "Stage": "init",
+  "ExitCode": 0,
+  "Output": [
+    "Initialized empty Git repository in C:/Users/poin/.codex/worktrees/ccb1/RMQ/.lake/r1/raw/.git/"
+  ],
+  "StandardOutput": [
+    "Initialized empty Git repository in C:/Users/poin/.codex/worktrees/ccb1/RMQ/.lake/r1/raw/.git/"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 3.316,
+  "DeadlineSeconds": 120,
+  "Ownership": "kill-on-close-job"
+}

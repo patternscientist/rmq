@@ -1,0 +1,8 @@
+RMQ/Core/WordRAM/Optimization/Consumers.lean:267:2: error: type mismatch
+  certificate.stepBound
+has type
+  True : Prop
+but is expected to have type
+  ∀ (xs : List Int) (left right : Nat),
+    (run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)).steps ≤
+      compactQueryBudget : Prop

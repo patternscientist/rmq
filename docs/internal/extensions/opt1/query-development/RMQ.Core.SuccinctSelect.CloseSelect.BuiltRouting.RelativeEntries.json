@@ -1,0 +1,34 @@
+﻿{
+    "Module":  "RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.RelativeEntries",
+    "Command":  [
+                    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+                    "-j1",
+                    "-o",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\SuccinctSelect\\CloseSelect\\BuiltRouting\\RelativeEntries.olean",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctSelect\\CloseSelect\\BuiltRouting\\RelativeEntries.lean"
+                ],
+    "SourceSHA256":  "125C26C48D1BF6FAEC9D2F22AF23A171A3920F803C42F502692FA1D649B22361",
+    "Base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+    "Platform":  "Microsoft Windows NT 10.0.26200.0",
+    "Result":  {
+                   "Stage":  "RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.RelativeEntries",
+                   "ExitCode":  0,
+                   "Output":  [
+
+                              ],
+                   "StandardOutput":  [
+
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  12.706,
+                   "DeadlineSeconds":  600,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

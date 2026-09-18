@@ -1,0 +1,22 @@
+{
+  "Label": "phase-design",
+  "Command": [
+    "powershell",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "scripts/design_decision_check.ps1",
+    "-Strict",
+    "-Base",
+    "0cdfcc307a14d39da19fdd8721ab80918c55d3e3",
+    "-Head",
+    "a44691d500f3a094b4c96480ed74172c944f69f3"
+  ],
+  "ExitCode": 0,
+  "Passed": true,
+  "DurationSeconds": 9.408,
+  "Stdout": "DESIGN-CHECK: checked 203 changed files (13 code, 189 workflow, 3 neutral)\n",
+  "Stderr": "",
+  "Tree": "exact source checkpoint a44691d500f3a094b4c96480ed74172c944f69f3"
+}

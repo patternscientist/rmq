@@ -1,0 +1,7 @@
+[
+  "RMQ.Core.WordRAM.Optimization.QueryProof",
+  "RMQ.Core.WordRAM.Optimization.QuerySafety",
+  "RMQ.Core.WordRAM.Optimization.Certificate",
+  "RMQ.Core.WordRAM.Optimization.Capstone",
+  "RMQ.Core.WordRAM.Optimization.Consumers"
+]

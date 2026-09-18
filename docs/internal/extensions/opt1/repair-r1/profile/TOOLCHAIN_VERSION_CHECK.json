@@ -1,0 +1,9 @@
+{
+  "SourceCommit": "aecf4a580c591e8f694a3699e19e843198089194",
+  "SourceProfileSHA256": "b83ada3baa438d812da076b48422c0a92f88ce686cd48ef982f39de7701699c9",
+  "VersionReceiptSHA256": "5ecaf07fb8a1b0f081a4321dd4cba3133e63728fdb86aa217a664118c91577a7",
+  "PinnedLeanExecutableSHA256": "9b5af669d8dc9b5826a1f5427584915eeca659e9bf34c7ee72667b93c0bfdcb0",
+  "VersionPlatformMatch": true,
+  "BinaryIdentityMatch": true,
+  "PriorOuterCheck": "Failed because an ad-hoc expected compiler commit suffix was incorrect. The actual owned child succeeded. Rechecked retained exact output against version/platform configuration and pre-existing pinned executable SHA256; no child rerun and no receipt rewritten."
+}

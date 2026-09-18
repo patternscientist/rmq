@@ -1,0 +1,34 @@
+{
+    "Version":  "opt1-r1-preservation-process-v1",
+    "CandidateRef":  "aecf4a580c591e8f694a3699e19e843198089194",
+    "RepoRoot":  "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+    "SelfTestOnly":  true,
+    "Python":  "C:\\Python314\\python.exe",
+    "PythonSHA256":  "7CA24F26D6E3F463419EE4F537DDD3ACD312C38FE45E678CCE08572F26A8BD1A",
+    "CheckerSHA256":  "8504A7187F0BBA8388E3B38B141374B2DA178C7F3B0FAAC7377F58AC934B6550",
+    "SupervisorSHA256":  "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+    "DeadlineSeconds":  180,
+    "OutputLimitBytes":  8388608,
+    "Result":  {
+                   "Stage":  "opt1-r1-preservation",
+                   "ExitCode":  1,
+                   "Output":  [
+                                  "OPT1-R1-PRESERVATION FAIL selftest=True controls=0/17",
+                                  "{\"code\": \"FileNotFoundError\", \"detail\": \"[WinError 206] The filename or extension is too long\"}"
+                              ],
+                   "StandardOutput":  [
+                                          "OPT1-R1-PRESERVATION FAIL selftest=True controls=0/17"
+                                      ],
+                   "StandardError":  [
+                                         "{\"code\": \"FileNotFoundError\", \"detail\": \"[WinError 206] The filename or extension is too long\"}"
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  2.785,
+                   "DeadlineSeconds":  180,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

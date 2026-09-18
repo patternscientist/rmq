@@ -1,0 +1,8 @@
+{
+    "Host":  "Win32NT",
+    "Absent":  true,
+    "Descendant":  22972,
+    "Ownership":  "kill-on-close-job",
+    "TrackedMutation":  "none",
+    "OtherHost":  "UNCOVERED"
+}

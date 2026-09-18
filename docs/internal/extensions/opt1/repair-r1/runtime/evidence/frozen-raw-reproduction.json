@@ -1,0 +1,102 @@
+{
+  "Verdict": "REPRODUCED",
+  "Receipts": [
+    {
+      "ID": "sole-expected",
+      "Accepted": true,
+      "ExpectedHistoricalAccepted": true,
+      "ClassifierDiagnostic": "",
+      "Result": {
+        "Stage": "sole-expected",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.521,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "ID": "mixed-streams",
+      "Accepted": true,
+      "ExpectedHistoricalAccepted": true,
+      "ClassifierDiagnostic": "",
+      "Result": {
+        "Stage": "mixed-streams",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "uncaught exception: independent coordinator failure"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [
+          "uncaught exception: independent coordinator failure"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 5.216,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "ID": "unrelated-only",
+      "Accepted": false,
+      "ExpectedHistoricalAccepted": false,
+      "ClassifierDiagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1",
+      "Result": {
+        "Stage": "unrelated-only",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: independent coordinator failure"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "uncaught exception: independent coordinator failure"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.258,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    }
+  ],
+  "ProductionSHA256": "C63CDC9481429CADCE1D36A6EBB3D68518603638CAB0D8C824F4BA953B8190C7",
+  "ActualFunctions": [
+    "Assert-OPT1Bounded",
+    "Assert-OPT1Rejected"
+  ],
+  "Limits": "Classifier defect; not evidence original Lean negatives contained mixed failures",
+  "SourceSerialization": "Exact Git blob extracted with git archive",
+  "SourceExtraction": {
+    "Stage": "frozen-git-archive",
+    "ExitCode": 0,
+    "Output": [
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied"
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 2.019,
+    "DeadlineSeconds": 60,
+    "Ownership": "kill-on-close-job"
+  },
+  "FrozenBase": "aecf4a580c591e8f694a3699e19e843198089194"
+}

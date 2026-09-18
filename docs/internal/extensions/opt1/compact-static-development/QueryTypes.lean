@@ -1,0 +1,28 @@
+import RMQ.Core.WordRAM.Optimization.Query
+
+open RMQ.SuccinctFinal.PackedWordRAM
+open RMQ.SuccinctFinal.PackedWordRAM.Optimization
+
+#check compactQuerySource_registersBelow
+#check compactQueryProgram_fits
+#check compactQuery_finite_registers
+#check compactQuery_complete_capacity
+#print CompactQueryStaticConsumers.program_length_expectedType
+#print CompactQueryStaticConsumers.numeric_encoded_words_expectedType
+#print CompactQueryStaticConsumers.budget_expectedType
+#print CompactQueryStaticConsumers.scratch_expectedType
+#print CompactQueryStaticConsumers.encoded_words_expectedType
+#print CompactQueryStaticConsumers.finite_bank_expectedType
+#print CompactQueryStaticConsumers.complete_capacity_expectedType
+#print axioms compactQuerySource_registersBelow
+#print axioms compactQueryProgram_fits
+#print axioms compactQuery_finite_registers
+#print axioms compactQueryProgramWords_eq_encoding
+#print axioms compactQuery_complete_capacity
+#print axioms compactQueryProgram_length_eq
+#print axioms compactQueryProgramWords_eq
+#print axioms compactQueryBudget_eq
+#print axioms CompactQueryStaticConsumers.program_length_expectedType
+#print axioms CompactQueryStaticConsumers.numeric_encoded_words_expectedType
+#print axioms CompactQueryStaticConsumers.budget_expectedType
+#print axioms CompactQueryStaticConsumers.scratch_expectedType

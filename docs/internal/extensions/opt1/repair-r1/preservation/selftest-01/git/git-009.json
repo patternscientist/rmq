@@ -1,0 +1,33 @@
+{
+  "command": [
+    "git",
+    "--no-pager",
+    "-c",
+    "core.fsmonitor=false",
+    "-c",
+    "core.untrackedCache=false",
+    "cat-file",
+    "blob",
+    "aecf4a580c591e8f694a3699e19e843198089194:docs/internal/extensions/opt1/AXIOM_ROOTS.json"
+  ],
+  "cwd": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+  "exit": 0,
+  "expected_exit": 0,
+  "duration_seconds": 0.1617219999898225,
+  "deadline_seconds": 30.0,
+  "output_limit_bytes": 8388608,
+  "timed_out": false,
+  "overflow": false,
+  "stream_bytes": [
+    9090,
+    0
+  ],
+  "stdout_file": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\docs\\internal\\extensions\\opt1\\repair-r1\\preservation\\selftest-01\\git\\git-009.stdout.bin",
+  "stderr_file": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\docs\\internal\\extensions\\opt1\\repair-r1\\preservation\\selftest-01\\git\\git-009.stderr.bin",
+  "stdout_sha256": "0d4f03ac19f890b67894b74042ff7559add574a8d160539ad3565a48289ba0ae",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "capture_errors": [],
+  "capture_complete": true,
+  "root_absent": true,
+  "descendant_ownership": "Inherited from check.ps1 owned supervisor; see process.json"
+}

@@ -1,0 +1,12 @@
+{
+  "Base": "1f3a4199eaa95324cd1daaadbab89340ca8392c4",
+  "Candidate": "working tree snapshot",
+  "File": "docs/internal/extensions/opt1/ACCEPTANCE_MATRIX.md",
+  "StrictUTF8": true,
+  "Count": 35,
+  "MissingIds": [],
+  "DuplicateIds": [],
+  "ChangedIds": [],
+  "ExtraIds": [],
+  "Verdict": "PASS"
+}

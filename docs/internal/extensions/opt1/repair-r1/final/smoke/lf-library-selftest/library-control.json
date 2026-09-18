@@ -1,0 +1,20 @@
+{
+  "Kind": "hardlinks-to-private-readonly-snapshot",
+  "LinkedCount": 259,
+  "SnapshotManifestSHA256": "ac21da7e4ea483e42cd0716e494ef70fd55025b582700e8ed329e8111e2f4e9c",
+  "PrivateOutputs": [
+    "RMQ/Core/WordRAM/Optimization/Certificate.olean",
+    "RMQ/Core/WordRAM/Optimization/Capstone.olean",
+    "RMQ/Core/WordRAM/Optimization/Consumers.olean"
+  ],
+  "CacheAliased": false,
+  "PrivateControls": {
+    "RMQ/Core/WordRAM/Optimization/Certificate.olean": "private-write-pass/existing-output-rejected",
+    "RMQ/Core/WordRAM/Optimization/Capstone.olean": "private-write-pass/existing-output-rejected",
+    "RMQ/Core/WordRAM/Optimization/Consumers.olean": "private-write-pass/existing-output-rejected"
+  },
+  "AliasRejected": true,
+  "EscapeRejected": true,
+  "ChangedProvenanceRejected": true,
+  "LeanLaunched": false
+}

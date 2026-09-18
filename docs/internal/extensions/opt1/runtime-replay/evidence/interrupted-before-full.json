@@ -1,0 +1,45 @@
+{
+  "Status": "INCOMPLETE_COORDINATOR_INTERRUPTION",
+  "Reason": "Coordinator requested content freeze before full registries; Ctrl-C before positive-cases stage",
+  "Invocation": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/packed_optimized_runtime.ps1",
+  "ExecSession": 19674,
+  "InterruptionExit": 1,
+  "LastStage": "startup-C05-REPEATED-LOAD",
+  "FullPositiveStageReached": false,
+  "ProcessCheck": "Read-only native command-line scan after stop found no matching full-run script/bootstrap/artifact GUID/Lean --run PackedOptimized process except the checker itself (PID13016), which exited normally",
+  "SourceAndArtifactCount": 646,
+  "ChangedPaths": [],
+  "OriginalSourceBytesUnchanged": true,
+  "CompletedStartupC01": {
+    "Name": "startup-C01-ZERO-BRANCH",
+    "Executable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "Arguments": [
+      "-j1",
+      "--run",
+      "RMQ/Validation/PackedOptimized.lean"
+    ],
+    "Environment": {
+      "OPT1_RUNTIME_SELECTOR": "id:C01-ZERO-BRANCH",
+      "LEAN_PATH": "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean"
+    },
+    "Result": {
+      "Stage": "startup-C01-ZERO-BRANCH",
+      "ExitCode": 0,
+      "Output": [
+        "OPT1 CASE C01-ZERO-BRANCH PASS steps=3 reads=0",
+        "OPT1 PASS executed=1 expected=1 registry=v1"
+      ],
+      "StandardOutput": [
+        "OPT1 CASE C01-ZERO-BRANCH PASS steps=3 reads=0",
+        "OPT1 PASS executed=1 expected=1 registry=v1"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 49.681,
+      "DeadlineSeconds": 120,
+      "Ownership": "kill-on-close-job"
+    }
+  }
+}

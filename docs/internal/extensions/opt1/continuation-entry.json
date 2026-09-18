@@ -1,0 +1,24 @@
+{
+  "HEAD": "8e355fda7788077f548865c1d6acf2ae5e88da55",
+  "Branch": "codex/opt-1-packed-compiler",
+  "Governance": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "RequiredSkill": "rmq-proof-sprint",
+  "RuntimeSkills": [
+    "rmq-audit-prompt",
+    "rmq-coordinator",
+    "rmq-proof-sprint"
+  ],
+  "SkillPreflight": "PASS",
+  "FrozenRows": 35,
+  "FrozenRowBytes": "PASS",
+  "Session34305": {
+    "ExitCode": 1,
+    "PrerequisiteEntriesPassed": 250,
+    "FailedModule": "RMQ.Core.WordRAM.Optimization.Capstone",
+    "TimedOut": false,
+    "DurationSecondsFailedModule": 8.808,
+    "Error": "whole_bound recursion depth; final adequate-fuel guard reflexivity"
+  },
+  "Disposition": "Repair exact failed component; no duplicate build, no broad retry",
+  "ThreadTitleTool": "unavailable after discovery"
+}

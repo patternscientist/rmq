@@ -1,0 +1,38 @@
+OPT1-ARTIFACTS C:\Users\poin\.codex\worktrees\ccb1\RMQ\.lake\r1\r1-lf\.lake\opt1-runtime-replay\20260912T234744Z-5db62ac6b20a40f4990566cdb26bccfc
+OPT1-STAGE source-inventory-before deadline=30s
+OPT1-STAGE startup-C01-ZERO-BRANCH deadline=300s
+OPT1-STAGE startup-C05-REPEATED-LOAD deadline=300s
+OPT1-STAGE positive-cases deadline=2400s
+OPT1-STAGE N01-JUMP deadline=300s
+OPT1 EXPECTED REJECT N01-JUMP surface=compiler observation mismatch
+OPT1-STAGE N02-COUNTER deadline=300s
+OPT1 EXPECTED REJECT N02-COUNTER surface=compiler observation mismatch
+OPT1-STAGE N03-BUDGET deadline=300s
+OPT1 EXPECTED REJECT N03-BUDGET surface=compiler observation mismatch
+OPT1-STAGE N04-FRESH-COLLISION deadline=300s
+OPT1 EXPECTED REJECT N04-FRESH-COLLISION surface=compiler observation mismatch
+OPT1-STAGE selector-present-omitted deadline=30s
+OPT1-STAGE selector-present-valid deadline=30s
+OPT1-STAGE selector-present-empty deadline=30s
+OPT1-STAGE selector-present-whitespace deadline=30s
+OPT1-STAGE selector-present-malformed deadline=30s
+OPT1-STAGE selector-present-zero deadline=30s
+OPT1-STAGE selector-present-unknown deadline=30s
+OPT1-STAGE selector-present-duplicate deadline=30s
+OPT1-STAGE selector-absent-omitted deadline=30s
+OPT1-STAGE selector-absent-valid deadline=30s
+OPT1-STAGE selector-absent-empty deadline=30s
+OPT1-STAGE selector-absent-whitespace deadline=30s
+OPT1-STAGE selector-absent-malformed deadline=30s
+OPT1-STAGE selector-absent-zero deadline=30s
+OPT1-STAGE selector-absent-unknown deadline=30s
+OPT1-STAGE selector-absent-duplicate deadline=30s
+OPT1-BOUNDARY SELF-TEST PASS executed=16 expected=16 host-script-only
+OPT1-STAGE lean-selector-empty deadline=300s
+OPT1-STAGE lean-selector-whitespace deadline=300s
+OPT1-STAGE lean-selector-malformed deadline=300s
+OPT1-STAGE lean-selector-unknown deadline=300s
+OPT1-STAGE lean-selector-duplicate deadline=300s
+OPT1-STAGE source-inventory-after deadline=30s
+OPT1-SOURCE PASS exact source/import SHA256 before=after; tracked byte mutations=0; restoration not needed
+OPT1-REPLAY PASS executed=27 expected=27 registry=v1
