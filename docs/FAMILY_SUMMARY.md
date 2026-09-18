@@ -3630,3 +3630,41 @@ host processes and compiled artifacts, not new theorems, tighter bounds or
 native-time claims. Coordinator aggregate certification, fresh exact-commit
 audit and acceptance remain external; RMQ.Headlines.succinctRMQFullyChargedPackedQuery
 remains the public baseline.
+
+### PRE-1 construction contract author phase (2026-09-12)
+
+The isolated Construction modules establish scalar/input prerequisites for a
+future efficient builder into the accepted PQ1 allocation. They include a
+conservative primitive bridge, pointwise signed input with an executed unsigned
+length header, reflected primitive cap and canonical-BP oracle rejection.
+`PackedConstruction.contractPrerequisites_holds` certifies those prerequisites
+only. The efficient builder, linear preprocessing/temporary-word bounds and
+construction/query capstone remain unproved; contract audit precedes their
+implementation. The exact contract, amendments and evidence live in
+`docs/internal/extensions/pre1/`. Existing paper/headline identities are unchanged.
+
+### PRE-1 efficient builder candidate (2026-09-14, pending gate and audit)
+
+On the PRE-1 lane branch, `PackedConstruction.constructionAndQueryCapstone_holds`
+(`RMQ/Core/WordRAM/Construction/Capstone.lean`, not imported by `RMQ.lean`)
+states a candidate construction-and-query result on the frozen construction
+machine. One closed program constant per input model, both compiled from one
+source template, emits exactly `PackedWordRAM.buildMemory xs`
+(`PackedConstruction.efficientBuild_eq_buildMemory` for every `xs : List Int`
+in the comparison-oracle model, and the word-model version under
+`InputFits (wordWidth xs.length) xs`). The actual run halts within
+`1000000000 * n + 1000000000` interpreter transitions, keeps at most
+`3200000 * n + 3200000` temporary cells below its output, is safe at
+`wordWidth n`, never writes an input cell, and records a store transition for
+every output cell. Every instruction of both constants, executed or not, has
+operands fitting `wordWidth n`, registers below 400 and branch targets inside
+the program. The existing query theorem
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` is transported to the
+emitted cells through that list equality, and the query program is also
+simulated step for step in the construction instruction set on the detached
+emitted list; no relocated in-place query execution is claimed. The executable
+`rmq_preprocessing_validate` runs both constants on eleven fixtures up to
+`n = 129` against the reference allocation. The constants are crude upper
+bounds. This is candidate status only: the aggregate gate, a fresh blind audit
+and coordinator acceptance are still required, and the paper and headline
+identities are unchanged.

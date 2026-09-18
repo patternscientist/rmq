@@ -1,0 +1,307 @@
+{
+  "sourceCommit": "26d6b5c2b10ed06ae4f72d9075d746ede987bdab",
+  "overallStatus": "INCOMPLETE",
+  "aggregateVerdict": "FAIL: timeout plus two unresolved original fixture failures",
+  "archive": "gate-failure-diagnostics.zip",
+  "bytes": 5240,
+  "sha256": "a709586842fa18ae57f3cd87999e677dbb1aa90dcad7cb5b47cd2aa0b5c09d58",
+  "focusedChecks": [
+    {
+      "command": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/claim_drift_policy_regression.ps1",
+        "-OnlyCase",
+        "r1r2-48147cb-family-three-constructor-vocabulary"
+      ],
+      "expectedExit": 0,
+      "exit": 0,
+      "durationSeconds": 52.174,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "outputTail": [
+        "CLAIM-POLICY-REGRESSION: PASS [exact-fixture-registry] 130 ordered fixtures",
+        "CLAIM-POLICY-REGRESSION: PASS [subprocess-deadline-sleeper-control] timeout classified and owned process cleaned",
+        "CLAIM-POLICY-REGRESSION: PASS [r1r2-48147cb-family-three-constructor-vocabulary] REJECT",
+        "CLAIM-POLICY-REGRESSION: PASS [final-clean-restoration] tracked state unchanged",
+        "CLAIM-POLICY-REGRESSION: PASS [final-verdict-counts] (1 must-reject strict verdicts, 0 must-accept strict verdicts, 0 path/context/bypass verdicts)"
+      ]
+    },
+    {
+      "command": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/claim_drift_policy_regression.ps1",
+        "-OnlyCase",
+        "m1r5r4-former-allowance-unqualified-rejected"
+      ],
+      "expectedExit": 0,
+      "exit": 0,
+      "durationSeconds": 23.742,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "outputTail": [
+        "CLAIM-POLICY-REGRESSION: PASS [exact-fixture-registry] 130 ordered fixtures",
+        "CLAIM-POLICY-REGRESSION: PASS [subprocess-deadline-sleeper-control] timeout classified and owned process cleaned",
+        "CLAIM-POLICY-REGRESSION: PASS [m1r5r4-former-allowance-unqualified-rejected] REJECT",
+        "CLAIM-POLICY-REGRESSION: PASS [final-clean-restoration] tracked state unchanged",
+        "CLAIM-POLICY-REGRESSION: PASS [final-verdict-counts] (1 must-reject strict verdicts, 0 must-accept strict verdicts, 0 path/context/bypass verdicts)"
+      ]
+    },
+    {
+      "command": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/project_skill_preflight.ps1",
+        "-GovernanceRef",
+        "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+        "-RequiredSkills",
+        "rmq-proof-sprint",
+        "-RuntimeProjectSkills",
+        "rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint"
+      ],
+      "expectedExit": 0,
+      "exit": 0,
+      "durationSeconds": 16.079,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "outputTail": [
+        "SKILL-PREFLIGHT: working_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint",
+        "SKILL-PREFLIGHT: runtime_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint",
+        "SKILL-PREFLIGHT: required=rmq-proof-sprint",
+        "SKILL-PREFLIGHT: required_mode=role-skills",
+        "SKILL-PREFLIGHT: PASS"
+      ]
+    }
+  ],
+  "postReportChecks": {
+    "verdict": "PASS for these focused checks only",
+    "archive": "postgate-final-checks.zip",
+    "bytes": 1172050,
+    "sha256": "890d595f45d2ff98d4d478dc03d3cb644735be71ad3c08843ccc7b4eb8f0f486",
+    "reportBytes": 13120,
+    "reportSha256": "d9174ff1cf3beee3f29eeb8c1b240212e0e3acc41139e11e8c2d79ee36ac1193",
+    "checks": [
+      {
+        "command": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "arguments": [
+          "-NoProfile",
+          "-File",
+          "scripts/claim_drift_scan.ps1",
+          "-Strict"
+        ],
+        "expectedExit": 0,
+        "exit": 0,
+        "durationSeconds": 49.913,
+        "timedOut": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "command": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+        "arguments": [
+          "build",
+          "RMQ.Core.WordRAM.Construction.Contract"
+        ],
+        "expectedExit": 0,
+        "exit": 0,
+        "durationSeconds": 5.706,
+        "timedOut": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "command": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+        "arguments": [
+          "env",
+          "lean",
+          "scripts/preprocessing_contract_check.lean"
+        ],
+        "expectedExit": 0,
+        "exit": 0,
+        "durationSeconds": 9.871,
+        "timedOut": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "command": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "arguments": [
+          "-NoProfile",
+          "-File",
+          "scripts/design_decision_check.ps1",
+          "-Strict",
+          "-Base",
+          "26d6b5c2b10ed06ae4f72d9075d746ede987bdab"
+        ],
+        "expectedExit": 0,
+        "exit": 0,
+        "durationSeconds": 7.709,
+        "timedOut": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "command": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "arguments": [
+          "-NoProfile",
+          "-File",
+          "scripts/design_decision_check.ps1",
+          "-Strict",
+          "-Base",
+          "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+          "-Head",
+          "26d6b5c2b10ed06ae4f72d9075d746ede987bdab"
+        ],
+        "expectedExit": 0,
+        "exit": 0,
+        "durationSeconds": 17.432,
+        "timedOut": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "command": "C:\\Users\\poin\\AppData\\Local\\OpenAI\\Codex\\bin\\6fdec9b372c2c0fd\\rg.exe",
+        "arguments": [
+          "-n",
+          "native_decide|Lean\\.ofReduceBool",
+          "RMQ"
+        ],
+        "expectedExit": 1,
+        "exit": 1,
+        "durationSeconds": 3.63,
+        "timedOut": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "command": "C:\\Users\\poin\\AppData\\Local\\OpenAI\\Codex\\bin\\6fdec9b372c2c0fd\\rg.exe",
+        "arguments": [
+          "-n",
+          "\\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\\b|import Mathlib",
+          "RMQ",
+          "lakefile.toml"
+        ],
+        "expectedExit": 1,
+        "exit": 1,
+        "durationSeconds": 3.572,
+        "timedOut": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "command": "C:\\Program Files\\Git\\cmd\\git.exe",
+        "arguments": [
+          "diff",
+          "--check",
+          "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+          "26d6b5c2b10ed06ae4f72d9075d746ede987bdab"
+        ],
+        "expectedExit": 0,
+        "exit": 0,
+        "durationSeconds": 4.305,
+        "timedOut": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "command": "C:\\Program Files\\Git\\cmd\\git.exe",
+        "arguments": [
+          "diff",
+          "--cached",
+          "--check"
+        ],
+        "expectedExit": 0,
+        "exit": 0,
+        "durationSeconds": 2.734,
+        "timedOut": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "command": "C:\\Program Files\\Git\\cmd\\git.exe",
+        "arguments": [
+          "diff",
+          "--check"
+        ],
+        "expectedExit": 0,
+        "exit": 0,
+        "durationSeconds": 3.348,
+        "timedOut": false,
+        "outputLimitExceeded": false
+      }
+    ],
+    "protectedSourceHashes": [
+      {
+        "path": "docs/internal/extensions/pre1/primitive_manifest.json",
+        "expected": "a1d31f0bc4b1d732a331d4bac3b1b2103e3be9812fd0b1eb2e9769c45931fcfa",
+        "actual": "a1d31f0bc4b1d732a331d4bac3b1b2103e3be9812fd0b1eb2e9769c45931fcfa",
+        "match": true
+      },
+      {
+        "path": "lean-toolchain",
+        "expected": "ad3e6363c78908c80953282baf57162702f1134173a5247aad3dbfea108a525f",
+        "actual": "ad3e6363c78908c80953282baf57162702f1134173a5247aad3dbfea108a525f",
+        "match": true
+      },
+      {
+        "path": "RMQ/Core/WordRAM/Construction/Conservative.lean",
+        "expected": "e10276e6526c2592ec2fb6d619b202003a5433a9f9fcbb8cb131aaec7b3828bb",
+        "actual": "e10276e6526c2592ec2fb6d619b202003a5433a9f9fcbb8cb131aaec7b3828bb",
+        "match": true
+      },
+      {
+        "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+        "expected": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+        "actual": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+        "match": true
+      },
+      {
+        "path": "RMQ/Core/WordRAM/Construction/Controls.lean",
+        "expected": "8887604c57d3ccda1ca1e1b8a25b419c32076e787f419cf35cda808dff068000",
+        "actual": "8887604c57d3ccda1ca1e1b8a25b419c32076e787f419cf35cda808dff068000",
+        "match": true
+      },
+      {
+        "path": "RMQ/Core/WordRAM/Construction/Input.lean",
+        "expected": "78316916624cf086a87bc797b1111b62383f37218101b5c7f6b267ab647722e4",
+        "actual": "78316916624cf086a87bc797b1111b62383f37218101b5c7f6b267ab647722e4",
+        "match": true
+      },
+      {
+        "path": "RMQ/Core/WordRAM/Construction/Model.lean",
+        "expected": "9d7b3d7ef66f5739d2501576e6990d284f30b318d4eda4d71ae0731d3dd32a1e",
+        "actual": "9d7b3d7ef66f5739d2501576e6990d284f30b318d4eda4d71ae0731d3dd32a1e",
+        "match": true
+      },
+      {
+        "path": "RMQ/Core/WordRAM/Construction/Primitive.lean",
+        "expected": "80120235c5bcb3c72d1c536644f5b22e41dfb36d08b8564ecbadad2efcf6edca",
+        "actual": "80120235c5bcb3c72d1c536644f5b22e41dfb36d08b8564ecbadad2efcf6edca",
+        "match": true
+      },
+      {
+        "path": "scripts/preprocessing_contract_check.lean",
+        "expected": "09cc867149fb8be6bef9acc3a862db8465492b405a666ea0ccfce7ca52186843",
+        "actual": "09cc867149fb8be6bef9acc3a862db8465492b405a666ea0ccfce7ca52186843",
+        "match": true
+      },
+      {
+        "path": "scripts/preprocessing_contract_firewall.ps1",
+        "expected": "1f6903d5ae753fb49ac0d21611ba82aeb61fe9c8aced63e2c6469473b5f28786",
+        "actual": "1f6903d5ae753fb49ac0d21611ba82aeb61fe9c8aced63e2c6469473b5f28786",
+        "match": true
+      },
+      {
+        "path": "scripts/preprocessing_contract_replay.ps1",
+        "expected": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c",
+        "actual": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c",
+        "match": true
+      }
+    ]
+  },
+  "interpretation": "Focused success does not establish the original empty-output failure cause or certify the aggregate."
+}

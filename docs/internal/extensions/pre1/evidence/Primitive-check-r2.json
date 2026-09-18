@@ -1,0 +1,19 @@
+{
+  "Stage": "pre1-Primitive-r2",
+  "ExitCode": 0,
+  "Output": [
+    "✔ [2/2] Built RMQ.Core.WordRAM.Construction.Primitive",
+    "Build completed successfully."
+  ],
+  "StandardOutput": [
+    "✔ [2/2] Built RMQ.Core.WordRAM.Construction.Primitive",
+    "Build completed successfully."
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 17.905,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

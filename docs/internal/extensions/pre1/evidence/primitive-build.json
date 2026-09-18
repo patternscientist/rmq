@@ -1,0 +1,30 @@
+{
+  "Stage": "pre1-primitive-direct-toolchain",
+  "ExitCode": 1,
+  "Output": [
+    "✖ [2/2] Building RMQ.Core.WordRAM.Construction.Primitive",
+    "trace: .> LEAN_PATH=C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\lib\\lean c:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\RMQ\\Core\\WordRAM\\Construction\\Primitive.lean -o C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Construction\\Primitive.olean -i C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Construction\\Primitive.ilean -c C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Construction\\Primitive.c --setup C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Construction\\Primitive.setup.json --json",
+    "error: RMQ/Core/WordRAM/Construction/Primitive.lean:188:69: unexpected token 'at'; expected '_' or identifier",
+    "error: Lean exited with code 1",
+    "Some required builds logged failures:",
+    "- RMQ.Core.WordRAM.Construction.Primitive",
+    "error: build failed"
+  ],
+  "StandardOutput": [
+    "✖ [2/2] Building RMQ.Core.WordRAM.Construction.Primitive",
+    "trace: .> LEAN_PATH=C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\lib\\lean c:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\RMQ\\Core\\WordRAM\\Construction\\Primitive.lean -o C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Construction\\Primitive.olean -i C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Construction\\Primitive.ilean -c C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Construction\\Primitive.c --setup C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Construction\\Primitive.setup.json --json",
+    "error: RMQ/Core/WordRAM/Construction/Primitive.lean:188:69: unexpected token 'at'; expected '_' or identifier",
+    "error: Lean exited with code 1",
+    "Some required builds logged failures:",
+    "- RMQ.Core.WordRAM.Construction.Primitive"
+  ],
+  "StandardError": [
+    "error: build failed"
+  ],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 20.718,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

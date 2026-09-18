@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "normalization": "strict UTF-8, CRLF to LF only",
+  "files": [
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Primitive.lean",
+      "sha256": "80120235C5BCB3C72D1C536644F5B22E41DFB36D08B8564ECBADAD2EFCF6EDCA"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Input.lean",
+      "sha256": "78316916624CF086A87BC797B1111B62383F37218101B5C7F6B267AB647722E4"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Model.lean",
+      "sha256": "9D7B3D7EF66F5739D2501576E6990D284F30B318D4EDA4D71AE0731D3DD32A1E"
+    }
+  ]
+}

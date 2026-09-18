@@ -1,0 +1,185 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "C01_REFLECTION",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "before": "  reflection : ∀ i s, bstep i s = interpretPrims i.semantics s := bstep_reflects\n",
+      "after": "  reflection : True := True.intro\n",
+      "expected": "reject",
+      "expectedSurface": "preprocessing_contract_check.lean:11:",
+      "expectedStage": "consumer"
+    },
+    {
+      "id": "C02_CAP",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "before": "  workCap : ∀ i : BInstr, i.semantics.length ≤ 1 := semantics_cap\n",
+      "after": "  workCap : True := True.intro\n",
+      "expected": "reject",
+      "expectedSurface": "preprocessing_contract_check.lean:13:",
+      "expectedStage": "consumer"
+    },
+    {
+      "id": "C03_CONSTANTS",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "before": "  constantCap : ∀ (i : BInstr) (p : Prim), p ∈ i.semantics → ∀ c ∈ p.constants,\n    ∀ width, 32 ≤ width → c.val < 2 ^ width := constants_fit_width\n",
+      "after": "  constantCap : True := True.intro\n",
+      "expected": "reject",
+      "expectedSurface": "preprocessing_contract_check.lean:15:",
+      "expectedStage": "consumer"
+    },
+    {
+      "id": "C04_HEADER",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "before": "  headerRead : ∀ width xs,\n    ((bstep headerInstruction (wordInputState width xs)).regs 1 = xs.length ∧\n      (bstep headerInstruction (wordInputState width xs)).status = .running) ∧\n    (bstep headerInstruction\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).status = .fault :=\n    fun width xs => ⟨header_read width xs, missing_header_fault width xs⟩\n",
+      "after": "  headerRead : True := True.intro\n",
+      "expected": "reject",
+      "expectedSurface": "preprocessing_contract_check.lean:21:",
+      "expectedStage": "consumer"
+    },
+    {
+      "id": "C05_POINTWISE",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "before": "  pointwise : ∀ width xs i,\n    encodeInput width xs (i + 1) = (xs[i]?).map (encodeInt width) := encodeInput_succ\n",
+      "after": "  pointwise : True := True.intro\n",
+      "expected": "reject",
+      "expectedSurface": "preprocessing_contract_check.lean:24:",
+      "expectedStage": "consumer"
+    },
+    {
+      "id": "C06_ORACLE",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "before": "  oracleControl : ¬ ∃ ps : List Prim,\n    ps.length ≤ primCap ∧ ∀ s, interpretPrims ps s = oracleSemantics s := oracle_not_reflected\n",
+      "after": "  oracleControl : True := True.intro\n",
+      "expected": "reject",
+      "expectedSurface": "preprocessing_contract_check.lean:27:",
+      "expectedStage": "consumer"
+    },
+    {
+      "id": "C07_UNIFORM",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "before": "  uniformControl : ¬ ∃ program, Uniform program bakedProgram := baked_not_uniform\n",
+      "after": "  uniformControl : True := True.intro\n",
+      "expected": "reject",
+      "expectedSurface": "preprocessing_contract_check.lean:29:",
+      "expectedStage": "consumer"
+    },
+    {
+      "id": "C08_STORE_VALUE",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "before": "  writeValue : ∀ address value s, s.regs address < s.extent →\n    (execPrim (.store address value) s).memory (s.regs address) = some (s.regs value) :=\n    store_value_from_prestate\n",
+      "after": "  writeValue : True := True.intro\n",
+      "expected": "reject",
+      "expectedSurface": "preprocessing_contract_check.lean:32:",
+      "expectedStage": "consumer"
+    },
+    {
+      "id": "C09_FRESH_RESERVE",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "before": "  freshReserve : ∀ s, CleanTail s → ∀ dst,\n    (execPrim (.reserve dst) s).memory s.extent = none := reserve_fresh\n",
+      "after": "  freshReserve : True := True.intro\n",
+      "expected": "reject",
+      "expectedSurface": "preprocessing_contract_check.lean:35:",
+      "expectedStage": "consumer"
+    },
+    {
+      "id": "C10_CODE_ACCOUNTING",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "before": "  codeAccounting : ∀ program width,\n    CodeAccounting program width (programWords program * width) := code_accounting_exact\n",
+      "after": "  codeAccounting : True := True.intro\n",
+      "expected": "reject",
+      "expectedSurface": "preprocessing_contract_check.lean:38:",
+      "expectedStage": "consumer"
+    },
+    {
+      "id": "C11_FIELD_DELETE",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "before": "  uniform : Uniform program family\n",
+      "after": "",
+      "expected": "reject",
+      "expectedSurface": "preprocessing_contract_check.lean:47:",
+      "expectedStage": "consumer"
+    },
+    {
+      "id": "C12_FIELD_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "before": "  uniform : Uniform program family\n",
+      "after": "  uniform : True\n",
+      "expected": "reject",
+      "expectedSurface": "preprocessing_contract_check.lean:47:",
+      "expectedStage": "consumer"
+    },
+    {
+      "id": "C13_SIBLING",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "before": "  oracleControl : ¬ ∃ ps : List Prim,\n    ps.length ≤ primCap ∧ ∀ s, interpretPrims ps s = oracleSemantics s := oracle_not_reflected\n",
+      "after": "  oracleControl : ¬ ∃ program, Uniform program bakedProgram := baked_not_uniform\n",
+      "expected": "reject",
+      "expectedSurface": "preprocessing_contract_check.lean:27:",
+      "expectedStage": "consumer"
+    },
+    {
+      "id": "C14_ACCEPT_COMMENT",
+      "kind": "control",
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "before": "The theorem in this file certifies primitive and input prerequisites only.",
+      "after": "The theorem in this file records primitive and input prerequisites only.",
+      "expected": "accept",
+      "expectedSurface": "PRE1-CONTRACT-TYPED-CONSUMERS PASS",
+      "expectedStage": "consumer"
+    },
+    {
+      "id": "C15_CODE_ALIAS",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Controls.lean",
+      "before": "import RMQ.Core.WordRAM.Construction.Model\nimport RMQ.Core.Shape\n\n/-! # C4 negative controls\n\nThis module is outside the interpreter firewall. It deliberately names an\nexisting semantic shape builder to define a forbidden one-step oracle. No\nproduction instruction, initial state, or program imports this module.\n-/\n\nnamespace RMQ.SuccinctFinal.PackedConstruction\n\ntheorem execPrim_numeric_independent (p : Prim) (s : State)\n    (otherKeys : Nat → Option Int) :\n    (execPrim p { s with keys := otherKeys }).regs = (execPrim p s).regs := by\n  cases p <;> simp only [execPrim, State.writeNext, State.next]\n  all_goals repeat first | rfl | split\n\ntheorem capped_numeric_independent (ps : List Prim) (hcap : ps.length ≤ primCap)\n    (s : State) (otherKeys : Nat → Option Int) :\n    (interpretPrims ps { s with keys := otherKeys }).regs = (interpretPrims ps s).regs := by\n  cases ps with\n  | nil => rfl\n  | cons p ps =>\n      cases ps with\n      | nil => exact execPrim_numeric_independent p s otherKeys\n      | cons q qs => simp [primCap] at hcap\n\n/-- Actual existing Cartesian serialization, packed little-endian, used ONLY\nas the hypothetical oracle's answer. This is not an efficient builder. -/\ndef oracleBPWord (s : State) : Nat :=\n  (Cartesian.stackCartesianShape [(s.keys 0).getD 0, (s.keys 1).getD 0]).bpCode.foldr\n    (fun b acc => (if b then 1 else 0) + 2 * acc) 0\n\ndef oracleSemantics (s : State) : State := s.writeNext 0 (oracleBPWord s)\n\ntheorem oracle_increasing : oracleBPWord (comparisonInputState [0, 1]) = 5 := by\n  simp [oracleBPWord, comparisonInputState, Cartesian.stackCartesianShape,\n    Cartesian.StackCartesianTree.buildTree, Cartesian.StackCartesianTree.buildTreeAux,\n    Cartesian.StackCartesianTree.insertRightStack_eq_insertRight,\n    Cartesian.StackCartesianTree.insertRight, Cartesian.StackCartesianTree.shape,\n    Cartesian.CartesianShape.bpCode]\ntheorem oracle_decreasing : oracleBPWord (comparisonInputState [1, 0]) = 3 := by\n  simp [oracleBPWord, comparisonInputState, Cartesian.stackCartesianShape,\n    Cartesian.StackCartesianTree.buildTree, Cartesian.StackCartesianTree.buildTreeAux,\n    Cartesian.StackCartesianTree.insertRightStack_eq_insertRight,\n    Cartesian.StackCartesianTree.insertRight, Cartesian.StackCartesianTree.shape,\n    Cartesian.CartesianShape.bpCode]\ntheorem oracle_equal : oracleBPWord (comparisonInputState [1, 1]) = 5 := by\n  simp [oracleBPWord, comparisonInputState, Cartesian.stackCartesianShape,\n    Cartesian.StackCartesianTree.buildTree, Cartesian.StackCartesianTree.buildTreeAux,\n    Cartesian.StackCartesianTree.insertRightStack_eq_insertRight,\n    Cartesian.StackCartesianTree.insertRight, Cartesian.StackCartesianTree.shape,\n    Cartesian.CartesianShape.bpCode]\n\n/-- The C4 fake changes the numeric result using input keys which no one\nreflected primitive can yet transfer into that result. The quantified domain\nis exactly the all-state reflection domain, and the proof uses two legitimate\nsame-length pointwise comparison inputs. -/\ntheorem oracle_not_reflected : ¬ ∃ ps : List Prim,\n    ps.length ≤ primCap ∧ ∀ s, interpretPrims ps s = oracleSemantics s := by\n  rintro ⟨ps, hcap, heq⟩\n  have hi := capped_numeric_independent ps hcap (comparisonInputState [0, 1])\n    (comparisonInputState [1, 0]).keys\n  have hs : { comparisonInputState [0, 1] with keys := (comparisonInputState [1, 0]).keys } =\n      comparisonInputState [1, 0] := rfl\n  rw [hs, heq, heq] at hi\n  have hv := congrFun hi 0\n  simp [oracleSemantics, State.writeNext, put, oracle_increasing, oracle_decreasing] at hv\n\nabbrev Program := List BInstr\n\n/-- Same code for every input, including length zero. -/\ndef Uniform (program : Program) (family : List Int → Program) : Prop :=\n  ∀ xs, family xs = program\n\ntheorem closed_uniform (program : Program) : Uniform program (fun _ => program) := by\n  intro _\n  rfl\n\ndef bakedProgram (xs : List Int) : Program :=\n  [⟨.constant 0 (if (xs[0]?).getD 0 ≤ (xs[1]?).getD 0 then 5 else 3)⟩,\n    ⟨.store 1 0⟩]\n\ntheorem baked_length (xs : List Int) : (bakedProgram xs).length = 2 := rfl\n\n/-- The negative uses the same Uniform predicate as every accepted program.\nA length/shape-indexed baked table cannot be disguised as fixed code. -/\ntheorem baked_not_uniform : ¬ ∃ program, Uniform program bakedProgram := by\n  rintro ⟨program, h⟩\n  have hdiff : bakedProgram [0, 1] ≠ bakedProgram [1, 0] := by decide\n  exact hdiff ((h [0, 1]).trans (h [1, 0]).symm)\n\ndef programWords (program : Program) : Nat :=\n  ((program.map (fun i => i.primitive.constants)).flatten).length\n\ndef CodeAccounting (program : Program) (width bits : Nat) : Prop :=\n  bits = programWords program * width\n\ntheorem code_accounting_exact (program : Program) (width : Nat) :\n    CodeAccounting program width (programWords program * width) := rfl\n\n/-- A plain-data replay predicate can express and reject a fabricated result;\nit is intentionally not advertised as sufficient anti-oracle evidence. -/\ndef Replays (initial : Memory) (writes : List (Nat × Nat)) (final : Memory) : Prop :=\n  final = writes.foldl (fun memory event => put memory event.1 (some event.2)) initial\n\ntheorem fabricated_replay_rejected :\n    ¬ Replays (fun _ => none) [(0, 0)] (put (fun _ => none) 1 (some 7)) := by\n  intro h\n  have hv := congrFun h 1\n  simp [put] at hv\n\nend RMQ.SuccinctFinal.PackedConstruction\n",
+      "after": "import RMQ.Core.WordRAM.Construction.Model\nimport RMQ.Core.Shape\n\n/-! # C4 negative controls\n\nThis module is outside the interpreter firewall. It deliberately names an\nexisting semantic shape builder to define a forbidden one-step oracle. No\nproduction instruction, initial state, or program imports this module.\n-/\n\nnamespace RMQ.SuccinctFinal.PackedConstruction\n\ntheorem execPrim_numeric_independent (p : Prim) (s : State)\n    (otherKeys : Nat → Option Int) :\n    (execPrim p { s with keys := otherKeys }).regs = (execPrim p s).regs := by\n  cases p <;> simp only [execPrim, State.writeNext, State.next]\n  all_goals repeat first | rfl | split\n\ntheorem capped_numeric_independent (ps : List Prim) (hcap : ps.length ≤ primCap)\n    (s : State) (otherKeys : Nat → Option Int) :\n    (interpretPrims ps { s with keys := otherKeys }).regs = (interpretPrims ps s).regs := by\n  cases ps with\n  | nil => rfl\n  | cons p ps =>\n      cases ps with\n      | nil => exact execPrim_numeric_independent p s otherKeys\n      | cons q qs => simp [primCap] at hcap\n\n/-- Actual existing Cartesian serialization, packed little-endian, used ONLY\nas the hypothetical oracle's answer. This is not an efficient builder. -/\ndef oracleBPWord (s : State) : Nat :=\n  (Cartesian.stackCartesianShape [(s.keys 0).getD 0, (s.keys 1).getD 0]).bpCode.foldr\n    (fun b acc => (if b then 1 else 0) + 2 * acc) 0\n\ndef oracleSemantics (s : State) : State := s.writeNext 0 (oracleBPWord s)\n\ntheorem oracle_increasing : oracleBPWord (comparisonInputState [0, 1]) = 5 := by\n  simp [oracleBPWord, comparisonInputState, Cartesian.stackCartesianShape,\n    Cartesian.StackCartesianTree.buildTree, Cartesian.StackCartesianTree.buildTreeAux,\n    Cartesian.StackCartesianTree.insertRightStack_eq_insertRight,\n    Cartesian.StackCartesianTree.insertRight, Cartesian.StackCartesianTree.shape,\n    Cartesian.CartesianShape.bpCode]\ntheorem oracle_decreasing : oracleBPWord (comparisonInputState [1, 0]) = 3 := by\n  simp [oracleBPWord, comparisonInputState, Cartesian.stackCartesianShape,\n    Cartesian.StackCartesianTree.buildTree, Cartesian.StackCartesianTree.buildTreeAux,\n    Cartesian.StackCartesianTree.insertRightStack_eq_insertRight,\n    Cartesian.StackCartesianTree.insertRight, Cartesian.StackCartesianTree.shape,\n    Cartesian.CartesianShape.bpCode]\ntheorem oracle_equal : oracleBPWord (comparisonInputState [1, 1]) = 5 := by\n  simp [oracleBPWord, comparisonInputState, Cartesian.stackCartesianShape,\n    Cartesian.StackCartesianTree.buildTree, Cartesian.StackCartesianTree.buildTreeAux,\n    Cartesian.StackCartesianTree.insertRightStack_eq_insertRight,\n    Cartesian.StackCartesianTree.insertRight, Cartesian.StackCartesianTree.shape,\n    Cartesian.CartesianShape.bpCode]\n\n/-- The C4 fake changes the numeric result using input keys which no one\nreflected primitive can yet transfer into that result. The quantified domain\nis exactly the all-state reflection domain, and the proof uses two legitimate\nsame-length pointwise comparison inputs. -/\ntheorem oracle_not_reflected : ¬ ∃ ps : List Prim,\n    ps.length ≤ primCap ∧ ∀ s, interpretPrims ps s = oracleSemantics s := by\n  rintro ⟨ps, hcap, heq⟩\n  have hi := capped_numeric_independent ps hcap (comparisonInputState [0, 1])\n    (comparisonInputState [1, 0]).keys\n  have hs : { comparisonInputState [0, 1] with keys := (comparisonInputState [1, 0]).keys } =\n      comparisonInputState [1, 0] := rfl\n  rw [hs, heq, heq] at hi\n  have hv := congrFun hi 0\n  simp [oracleSemantics, State.writeNext, put, oracle_increasing, oracle_decreasing] at hv\n\nabbrev Program := List BInstr\n\n/-- Same code for every input, including length zero. -/\ndef Uniform (program : Program) (family : List Int → Program) : Prop :=\n  ∀ xs, family xs = program\n\ntheorem closed_uniform (program : Program) : Uniform program (fun _ => program) := by\n  intro _\n  rfl\n\ndef bakedProgram (xs : List Int) : Program :=\n  [⟨.constant 0 (if (xs[0]?).getD 0 ≤ (xs[1]?).getD 0 then 5 else 3)⟩,\n    ⟨.store 1 0⟩]\n\ntheorem baked_length (xs : List Int) : (bakedProgram xs).length = 2 := rfl\n\n/-- The negative uses the same Uniform predicate as every accepted program.\nA length/shape-indexed baked table cannot be disguised as fixed code. -/\ntheorem baked_not_uniform : ¬ ∃ program, Uniform program bakedProgram := by\n  rintro ⟨program, h⟩\n  have hdiff : bakedProgram [0, 1] ≠ bakedProgram [1, 0] := by decide\n  exact hdiff ((h [0, 1]).trans (h [1, 0]).symm)\n\ndef programWords (program : Program) : Nat :=\n  ((program.map (fun i => i.primitive.constants)).flatten).length\n\ndef CodeAccounting (program : Program) (width bits : Nat) : Prop :=\n  True\n\ntheorem code_accounting_exact (program : Program) (width : Nat) :\n    CodeAccounting program width (programWords program * width) := True.intro\n\n/-- A plain-data replay predicate can express and reject a fabricated result;\nit is intentionally not advertised as sufficient anti-oracle evidence. -/\ndef Replays (initial : Memory) (writes : List (Nat × Nat)) (final : Memory) : Prop :=\n  final = writes.foldl (fun memory event => put memory event.1 (some event.2)) initial\n\ntheorem fabricated_replay_rejected :\n    ¬ Replays (fun _ => none) [(0, 0)] (put (fun _ => none) 1 (some 7)) := by\n  intro h\n  have hv := congrFun h 1\n  simp [put] at hv\n\nend RMQ.SuccinctFinal.PackedConstruction\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:42:"
+    },
+    {
+      "id": "C16_CODE_COUNT",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Controls.lean",
+      "before": "def programWords (program : Program) : Nat :=\n  ((program.map (fun i => i.primitive.constants)).flatten).length",
+      "after": "def programWords (program : Program) : Nat :=\n  0",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:44:"
+    },
+    {
+      "id": "C17_FIREWALL_IMPORT",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Primitive.lean",
+      "before": "import Std\n",
+      "after": "import Std\nimport RMQ.Core.Shape\n",
+      "expected": "reject",
+      "expectedStage": "firewall",
+      "expectedSurface": "PRE1-FIREWALL imports rejected: RMQ/Core/WordRAM/Construction/Primitive.lean"
+    },
+    {
+      "id": "C18_PRIMITIVE_BYTES",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Primitive.lean",
+      "before": ".constant dst value => s.writeNext dst value",
+      "after": ".constant dst value => s.writeNext dst 0",
+      "expected": "reject",
+      "expectedStage": "firewall",
+      "expectedSurface": "PRE1-FIREWALL frozen primitive bytes changed: RMQ/Core/WordRAM/Construction/Primitive.lean"
+    }
+  ]
+}

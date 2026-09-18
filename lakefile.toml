@@ -52,3 +52,7 @@ root = "RMQ.Validation.PackedNative"
 [[lean_exe]]
 name = "rmq_packed_optimized_validate"
 root = "RMQ.Validation.PackedOptimized"
+
+[[lean_exe]]
+name = "rmq_preprocessing_validate"
+root = "RMQ.Validation.Preprocessing"

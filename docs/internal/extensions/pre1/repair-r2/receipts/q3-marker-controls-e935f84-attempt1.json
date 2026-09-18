@@ -1,0 +1,106 @@
+{
+  "version": "PRE1-R2-RECEIPT-V1",
+  "label": "Q3 attempt 1 (setup failure): marker control matrix on Windows PowerShell 5.1 (full registry) and the non-Lean cases on pwsh 7.6.6 on e935f84, with the work root under the long scratchpad path",
+  "repo": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+  "revision": "e935f84a962335e63407f21f56f1117ee99ef221",
+  "status": "?? docs/internal/extensions/pre1/repair-r2/receipts/q3-marker-controls-e935f84-attempt1-ps51.json\n?? docs/internal/extensions/pre1/repair-r2/receipts/q3-marker-controls-e935f84-attempt1-pwsh.json",
+  "host": "PoinPad",
+  "os": "Windows-11-10.0.26200-SP0",
+  "mutex": "Global\\RMQHeavyVerification",
+  "mutexWaitSeconds": 0.0,
+  "requested": "2026-09-17T11:12:59.1373048-07:00",
+  "acquired": "2026-09-17T11:12:59.1603857-07:00",
+  "released": "2026-09-17T12:15:45.1625950-07:00",
+  "queueStatus": "DONE",
+  "steps": [
+    {
+      "label": "controls-ps51-full",
+      "command": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/docs/internal/extensions/pre1/repair-r2/run_marker_controls.ps1",
+        "-WorkRoot",
+        "C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-pq1-preprocessing-native-bounds-b3fee3/e89e3ad0-2cc5-4b25-95d1-280ec16233b7/scratchpad/pre1-r2/q3/mc-ps51-work",
+        "-ReceiptPath",
+        "C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-pq1-preprocessing-native-bounds-b3fee3/e89e3ad0-2cc5-4b25-95d1-280ec16233b7/scratchpad/pre1-r2/q3/controls-ps51.json"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 10800,
+      "start": "2026-09-17T11:12:59.1699087-07:00",
+      "end": "2026-09-17T12:14:21.2872359-07:00",
+      "seconds": 3682.009,
+      "exit": 1,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "309a35d9aedc3c01386fa539db6d5943c060848959f25c7b6f79106a522603a6",
+      "logBytes": 5437,
+      "logLines": 46,
+      "markerLines": {
+        "MARKER-CONTROLS: RESULT:": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "MARKER-CONTROLS: PASS [selector-empty] exit 2 marker 1 executed [] (4.599 s)",
+        "MARKER-CONTROLS: PASS [selector-whitespace] exit 2 marker 1 executed [] (4.256 s)",
+        "MARKER-CONTROLS: PASS [selector-malformed] exit 2 marker 1 executed [] (4.499 s)",
+        "MARKER-CONTROLS: PASS [selector-unknown] exit 2 marker 1 executed [] (4.649 s)",
+        "MARKER-CONTROLS: PASS [selector-duplicate] exit 2 marker 1 executed [] (4.473 s)",
+        "MARKER-CONTROLS: RESULT: FAIL executed 45 of 45 selected cases (registry PRE1-R2-MARKER-CONTROLS-V1, 45 cases)"
+      ]
+    },
+    {
+      "label": "controls-pwsh-nonlean",
+      "command": "C:/Users/poin/AppData/Local/Microsoft/WindowsApps/pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/docs/internal/extensions/pre1/repair-r2/run_marker_controls.ps1",
+        "-Case",
+        "deadline-descendant-cleanup,registry-remove-last,registry-swap-first-two,registry-version,registry-content,selector-omitted,selector-valid,selector-empty,selector-whitespace,selector-malformed,selector-unknown,selector-duplicate",
+        "-WorkRoot",
+        "C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-pq1-preprocessing-native-bounds-b3fee3/e89e3ad0-2cc5-4b25-95d1-280ec16233b7/scratchpad/pre1-r2/q3/mc-pwsh-work",
+        "-ReceiptPath",
+        "C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-pq1-preprocessing-native-bounds-b3fee3/e89e3ad0-2cc5-4b25-95d1-280ec16233b7/scratchpad/pre1-r2/q3/controls-pwsh.json"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 3600,
+      "start": "2026-09-17T12:14:21.2988690-07:00",
+      "end": "2026-09-17T12:15:45.1592698-07:00",
+      "seconds": 83.836,
+      "exit": 1,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "435e6426335f151a78e8bb91157623112d88f4c02654c98e9231b2052fe28dc6",
+      "logBytes": 1160,
+      "logLines": 13,
+      "markerLines": {
+        "MARKER-CONTROLS: RESULT:": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "MARKER-CONTROLS: PASS [selector-empty] exit 2 marker 1 executed [] (6.062 s)",
+        "MARKER-CONTROLS: PASS [selector-whitespace] exit 2 marker 1 executed [] (6.026 s)",
+        "MARKER-CONTROLS: PASS [selector-malformed] exit 2 marker 1 executed [] (6.123 s)",
+        "MARKER-CONTROLS: PASS [selector-unknown] exit 2 marker 1 executed [] (5.942 s)",
+        "MARKER-CONTROLS: PASS [selector-duplicate] exit 2 marker 1 executed [] (6.075 s)",
+        "MARKER-CONTROLS: RESULT: FAIL executed 12 of 12 selected cases (registry PRE1-R2-MARKER-CONTROLS-V1, 45 cases)"
+      ]
+    }
+  ],
+  "outcome": "SETUP FAILURE, recorded as incomplete (not a PASS and not a marker defect): the -WorkRoot was placed under this session's scratchpad, whose prefix is about 175 characters, so the copy path of the case with the longest id and consumer file name (contract-d-unknown-identifier/preprocessing_contract_check.lean, 268 characters in the reproduction) and every copy under the selector-valid child's work root (which adds selector-valid/child-work/) exceeded the Windows 260-character path limit; lean.exe then fails in about 0.5 s with 'no such file or directory (error code: 2)' on stderr, exit 1, without elaborating, which the runner correctly reports as FAIL (not exercised). Direct reproduction on the tip: the same contract consumer copy at a 268-character path exits 1 with that stderr and no output, at an 82-character path exits 0 with its marker. All 42 other cases of the 5.1 run passed (33 consumer cases minus the one, the deadline case with root and child absent after 45 s, four registry cases, six selector cases) and every case restored the repository state and removed its copy; the pwsh run passed its 10 registry and selector cases apart from selector-valid, and reported the deadline case INCONCLUSIVE under the packaged host as designed. The rerun (attempt 2) uses the runner's default work root under %TEMP% (about 70 characters), which the first session also used.",
+  "runnerReceipts": [
+    "q3-marker-controls-e935f84-attempt1-ps51.json",
+    "q3-marker-controls-e935f84-attempt1-pwsh.json"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "Stage": "pre1-RMQ.Core.WordRAM.Construction.Model-r4",
+  "ExitCode": 1,
+  "Output": [
+    "✖ [4/4] Building RMQ.Core.WordRAM.Construction.Model",
+    "trace: .> LEAN_PATH=C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\lib\\lean c:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\RMQ\\Core\\WordRAM\\Construction\\Model.lean -o C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Construction\\Model.olean -i C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Construction\\Model.ilean -c C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Construction\\Model.c --setup C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Construction\\Model.setup.json --json",
+    "error: RMQ/Core/WordRAM/Construction/Model.lean:28:47: Application type mismatch: In the application",
+    "  h a ha",
+    "the argument",
+    "  ha",
+    "has type",
+    "  (execPrim (Prim.store address value) s).extent ≤ a : Prop",
+    "but is expected to have type",
+    "  s.extent ≤ a : Prop",
+    "error: Lean exited with code 1",
+    "Some required builds logged failures:",
+    "- RMQ.Core.WordRAM.Construction.Model",
+    "error: build failed"
+  ],
+  "StandardOutput": [
+    "✖ [4/4] Building RMQ.Core.WordRAM.Construction.Model",
+    "trace: .> LEAN_PATH=C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\lib\\lean c:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\RMQ\\Core\\WordRAM\\Construction\\Model.lean -o C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Construction\\Model.olean -i C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Construction\\Model.ilean -c C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Construction\\Model.c --setup C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Construction\\Model.setup.json --json",
+    "error: RMQ/Core/WordRAM/Construction/Model.lean:28:47: Application type mismatch: In the application",
+    "  h a ha",
+    "the argument",
+    "  ha",
+    "has type",
+    "  (execPrim (Prim.store address value) s).extent ≤ a : Prop",
+    "but is expected to have type",
+    "  s.extent ≤ a : Prop",
+    "error: Lean exited with code 1",
+    "Some required builds logged failures:",
+    "- RMQ.Core.WordRAM.Construction.Model"
+  ],
+  "StandardError": [
+    "error: build failed"
+  ],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 6.974,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

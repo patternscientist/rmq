@@ -1,0 +1,80 @@
+{
+  "version": "PRE1-R2-RECEIPT-V1",
+  "label": "Q4: complete builder replay (55 cases, no selector) on f5d6128 (content tree of 341bc28), pwsh 7.6.6",
+  "repo": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+  "revision": "f5d6128df78d2bd92aa5698dfafd503c36c45928",
+  "status": "?? docs/internal/extensions/pre1/repair-r2/receipts/q4-builder-replay-full-f5d6128.digest.json",
+  "host": "PoinPad",
+  "os": "Windows-11-10.0.26200-SP0",
+  "mutex": "Global\\RMQHeavyVerification",
+  "mutexWaitSeconds": 0.0,
+  "requested": "2026-09-17T13:22:37.5659676-07:00",
+  "acquired": "2026-09-17T13:22:37.5867106-07:00",
+  "released": "2026-09-17T15:47:12.5239605-07:00",
+  "queueStatus": "DONE",
+  "steps": [
+    {
+      "label": "builder-replay-full",
+      "command": "C:/Users/poin/AppData/Local/Microsoft/WindowsApps/pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/scripts/preprocessing_builder_replay.ps1"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 14400,
+      "start": "2026-09-17T13:22:37.5945009-07:00",
+      "end": "2026-09-17T15:47:12.5174839-07:00",
+      "seconds": 8674.82,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "687bf7e2762f87f00a9ca26ba20cd91082d39a4daf193cc00538738efd511ca0",
+      "logBytes": 4164,
+      "logLines": 59,
+      "markerLines": {
+        "PRE-BUILDER-REPLAY: PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "PRE-CASE: B51_CAPSTONE_DW_NUMERAL PASS, exact restoration verified",
+        "PRE-CASE: B52_CAPSTONE_ACCEPT_COMMENT PASS, exact restoration verified",
+        "PRE-CASE: B53_RUNFACTS_HALTS_WEAKEN PASS, exact restoration verified",
+        "PRE-CASE: B54_RUNFACTS_HALTS_FUEL_LARGER PASS, exact restoration verified",
+        "PRE-CASE: B55_RUN_SAFE_LENGTH_WEAKEN PASS, exact restoration verified",
+        "PRE-BUILDER-REPLAY: PASS mode=full executed=55 registry=55 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers\\.lake\\preprocessing-builder-replay\\20260917-132238-092add7359"
+      ]
+    }
+  ],
+  "outcome": "Full builder replay on f5d6128 (content tree of 341bc28): PRE-BUILDER-REPLAY: PASS mode=full executed=55 registry=55; 58 self-tests PASS (categories {\"registry\": 23, \"matcher\": 23, \"selector\": 9, \"deadline\": 3}); both baseline profiles with their markers; validator stage full run PASS and the negative controls each failed with their pinned message; every case PASS with exact restoration; every consumer-stage rejection has its exact registered line set with the profile marker absent (B16 {370}, B17 {371}, B18 {352} as regression controls; B53 and B54 {227, 349}; B55 {457}); 571 stages, 7999.1 s summed stage time; owned-process wall 8674.82 s (evidence directory 13:22:38 to report.json 15:47:12). Digest of the evidence report: q4-builder-replay-full-f5d6128.digest.json; the 16.2 MB report.json stays on the host under .lake/preprocessing-builder-replay/20260917-132238-092add735903413b878e3fdfb7b1e977.",
+  "validatorStages": [],
+  "baselineStages": [],
+  "validatorNegatives": [
+    {
+      "id": "N01-MISSING-HEADER",
+      "exit": 1,
+      "verdict": "REJECTED-AS-EXPECTED"
+    },
+    {
+      "id": "N02-WRONG-EXPECTED",
+      "exit": 1,
+      "verdict": "REJECTED-AS-EXPECTED"
+    },
+    {
+      "id": "N03-MISMATCHED-ALLOCATION",
+      "exit": 1,
+      "verdict": "REJECTED-AS-EXPECTED"
+    },
+    {
+      "id": "N04-WRITE-UNIT-CONFUSION",
+      "exit": 1,
+      "verdict": "REJECTED-AS-EXPECTED"
+    }
+  ],
+  "rulingRR21": "8674.82 s exceeds 60 percent of the 10800 s gate deadline (6480 s); the checker default is raised in its own commit to 8674.82 x 2.5 = 21687.05 s rounded up to a multiple of 1800 s = 23400 s (2.70 x measured)."
+}

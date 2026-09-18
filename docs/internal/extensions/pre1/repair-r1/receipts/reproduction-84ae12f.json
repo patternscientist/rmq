@@ -1,0 +1,661 @@
+{
+  "version": "PRE1-R1-REPRODUCTION-RECEIPT-V1",
+  "baseCommit": "84ae12f6f6bad99fd3215c5bdd5b2a93e3779897",
+  "mutex": "not taken; each run under two minutes",
+  "baseScans": {
+    "version": "PRE1-R1-CLAIM-SCANS-RECEIPT-V1",
+    "head": "84ae12f6f6bad99fd3215c5bdd5b2a93e3779897",
+    "cleanBefore": true,
+    "stateBeforeSha256": "45513E8839647E84E6BAEC02994D41B22987485805E191F343F6C4FC3337B3C5",
+    "host": "POINPAD",
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "shell": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+    "runnerPowerShell": "7.6.6",
+    "scanner": {
+      "path": "scripts/claim_drift_scan.ps1",
+      "blob": "62badf7e071447a3f3a3f8db0d47a3970b918ad5",
+      "liveSha256": "5310DBA1242B3ED4A0B054A15B1B6911C056C228B2711F3D958EAB539BB3F6F7"
+    },
+    "policy": {
+      "path": "docs/internal/CLAIM_DRIFT_POLICY.json",
+      "blob": "491791898dca137d2a7d94126b87402545ccaa9d",
+      "liveSha256": "4096C7A708DF686F0AC7B62D935B22C13C1F1212494A3B39FD2ADD127AD43CD9"
+    },
+    "detectorSha256": "CDBCBC8816E094A9BA20D49410EB78F9C724F40153267D36697615AD087C8C76",
+    "runnerSha256": "0A3CE98812903458B103008FD519DE3A8CE72D2F87F3D5CD9646AD14C7B97AF8",
+    "python": "C:\\Python314\\python.exe",
+    "mutex": "not taken by this runner (each run expected under five minutes)",
+    "runs": [
+      {
+        "name": "strict",
+        "command": "scripts/claim_drift_scan.ps1 -Strict",
+        "startedUtc": "2026-09-14T06:44:57.8027086Z",
+        "exit": 0,
+        "seconds": 18.305,
+        "deadline": 3600,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "stdoutLines": 1105,
+        "stdoutSha256": "25C2A3A8B774188A49F18AAA360D3C41339701B427F33DBFC8E3240C2C27A33C",
+        "stderrLines": 0,
+        "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      },
+      {
+        "name": "records",
+        "command": "scripts/claim_drift_scan.ps1 -Strict -IncludeProcessRecords",
+        "startedUtc": "2026-09-14T06:45:16.3827433Z",
+        "exit": 0,
+        "seconds": 18.368,
+        "deadline": 3600,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "stdoutLines": 1453,
+        "stdoutSha256": "4BD61BAEE2DE2021454B6A17C780B57A73F437514D5BEF1454CD3CC06721D9C2",
+        "stderrLines": 0,
+        "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      },
+      {
+        "name": "selftest",
+        "command": "scripts/claim_drift_scan.ps1 -SelfTest",
+        "startedUtc": "2026-09-14T06:45:35.1763129Z",
+        "exit": 1,
+        "seconds": 25.956,
+        "deadline": 7200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "stdoutLines": 4,
+        "stdoutSha256": "1C710325D8511EACDCF820E0DA88E0F698624DB909FCA1E9CF5D75C6F1E80102",
+        "stderrLines": 0,
+        "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      }
+    ],
+    "detector": {
+      "exit": 1,
+      "seconds": 1.678,
+      "deadline": 300,
+      "timedOut": false,
+      "stderrLines": 0,
+      "result": {
+        "schema": "rmq.pre1.repair-r1.claim-scan-detector.v1",
+        "summaryPatternRegex": "scan complete \\([0-9]+ hits",
+        "summaryPatternFlags": "IGNORECASE",
+        "default": {
+          "label": "default",
+          "path": "<scratch>\\base-pwsh\\strict.stdout.log",
+          "bytes": 3552742,
+          "sha256": "25C2A3A8B774188A49F18AAA360D3C41339701B427F33DBFC8E3240C2C27A33C",
+          "decodeReplacements": 0,
+          "lines": 1105,
+          "exit": 0,
+          "resultLines": 1104,
+          "resultLinesWithPattern": [
+            {
+              "logLine": 128,
+              "rule": "fast-regime-118",
+              "citedPath": "docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+              "citedLine": 488
+            },
+            {
+              "logLine": 361,
+              "rule": "live-compatibility-352",
+              "citedPath": "docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+              "citedLine": 488
+            }
+          ],
+          "patternLines": 3,
+          "summaryLines": [
+            {
+              "logLine": 1105,
+              "hits": 1612,
+              "strictFailures": 0
+            }
+          ],
+          "strictFailureLines": [],
+          "lastNonemptyLogLine": 1105,
+          "firstParserMatch": {
+            "logLine": 128,
+            "value": 1609,
+            "source": "emitted result line"
+          },
+          "problems": [
+            "default: 2 emitted result line(s) contain the summary pattern",
+            "default: 3 lines contain the summary pattern, expected 1",
+            "default: the scanner summary is not the sole pattern line on the last nonempty line"
+          ]
+        },
+        "records": {
+          "label": "records",
+          "path": "<scratch>\\base-pwsh\\records.stdout.log",
+          "bytes": 3683311,
+          "sha256": "4BD61BAEE2DE2021454B6A17C780B57A73F437514D5BEF1454CD3CC06721D9C2",
+          "decodeReplacements": 0,
+          "lines": 1453,
+          "exit": 0,
+          "resultLines": 1452,
+          "resultLinesWithPattern": [
+            {
+              "logLine": 167,
+              "rule": "fast-regime-118",
+              "citedPath": "docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+              "citedLine": 488
+            },
+            {
+              "logLine": 466,
+              "rule": "live-compatibility-352",
+              "citedPath": "docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+              "citedLine": 488
+            },
+            {
+              "logLine": 635,
+              "rule": "principled-charged-trace-76",
+              "citedPath": "docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md",
+              "citedLine": 911
+            },
+            {
+              "logLine": 793,
+              "rule": "historical-silent-sparse-level-207",
+              "citedPath": "docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md",
+              "citedLine": 911
+            }
+          ],
+          "patternLines": 5,
+          "summaryLines": [
+            {
+              "logLine": 1453,
+              "hits": 2056,
+              "strictFailures": 0
+            }
+          ],
+          "strictFailureLines": [],
+          "lastNonemptyLogLine": 1453,
+          "firstParserMatch": {
+            "logLine": 167,
+            "value": 1609,
+            "source": "emitted result line"
+          },
+          "problems": [
+            "records: 4 emitted result line(s) contain the summary pattern",
+            "records: 5 lines contain the summary pattern, expected 1",
+            "records: the scanner summary is not the sole pattern line on the last nonempty line"
+          ]
+        },
+        "selftest": {
+          "label": "selftest",
+          "path": "<scratch>\\base-pwsh\\selftest.stdout.log",
+          "bytes": 356,
+          "sha256": "1C710325D8511EACDCF820E0DA88E0F698624DB909FCA1E9CF5D75C6F1E80102",
+          "decodeReplacements": 0,
+          "exit": 1,
+          "selftestLines": 4,
+          "probeLines": [
+            {
+              "protected": 6,
+              "attributed": 2
+            }
+          ],
+          "recordPathOkLines": 1,
+          "exclusion": {
+            "form": "fail-removed-nothing",
+            "removed": null,
+            "withRecords": 1609,
+            "withoutRecords": 1609
+          },
+          "results": [
+            "FAIL"
+          ],
+          "patternLines": 0,
+          "problems": [
+            "selftest: exit 1",
+            "selftest: result lines ['FAIL'], expected exactly one PASS",
+            "selftest: exclusion line form fail-removed-nothing"
+          ]
+        },
+        "problems": [
+          "default: 2 emitted result line(s) contain the summary pattern",
+          "default: 3 lines contain the summary pattern, expected 1",
+          "default: the scanner summary is not the sole pattern line on the last nonempty line",
+          "records: 4 emitted result line(s) contain the summary pattern",
+          "records: 5 lines contain the summary pattern, expected 1",
+          "records: the scanner summary is not the sole pattern line on the last nonempty line",
+          "selftest: exit 1",
+          "selftest: result lines ['FAIL'], expected exactly one PASS",
+          "selftest: exclusion line form fail-removed-nothing"
+        ],
+        "verdict": "DEFECT"
+      }
+    },
+    "stateUnchanged": true,
+    "result": "DEFECT",
+    "shellVersion": "7.6.6",
+    "stateAfterSha256": "45513E8839647E84E6BAEC02994D41B22987485805E191F343F6C4FC3337B3C5"
+  },
+  "repeatedBaseSelfTests": [
+    {
+      "host": "pwsh 7.6.6",
+      "command": "pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -SelfTest",
+      "startedUtc": "2026-09-14T06:46:21.635056+00:00",
+      "seconds": 26.777,
+      "exit": 1,
+      "deadline": "none (foreground, under two minutes each)",
+      "exclusionForm": "fail-removed-nothing",
+      "withRecords": 1609,
+      "withoutRecords": 1609,
+      "result": "FAIL",
+      "logSha256": "16107EA2B0DB3062FE44B90D6F941FAFC9FE783CF828D537B9FE1585ACFAE495"
+    },
+    {
+      "host": "pwsh 7.6.6",
+      "command": "pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -SelfTest",
+      "startedUtc": "2026-09-14T06:46:48.668385+00:00",
+      "seconds": 30.914,
+      "exit": 1,
+      "deadline": "none (foreground, under two minutes each)",
+      "exclusionForm": "fail-removed-nothing",
+      "withRecords": 1609,
+      "withoutRecords": 1609,
+      "result": "FAIL",
+      "logSha256": "16107EA2B0DB3062FE44B90D6F941FAFC9FE783CF828D537B9FE1585ACFAE495"
+    },
+    {
+      "host": "pwsh 7.6.6",
+      "command": "pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -SelfTest",
+      "startedUtc": "2026-09-14T06:47:19.785597+00:00",
+      "seconds": 26.924,
+      "exit": 1,
+      "deadline": "none (foreground, under two minutes each)",
+      "exclusionForm": "fail-removed-nothing",
+      "withRecords": 1609,
+      "withoutRecords": 1609,
+      "result": "FAIL",
+      "logSha256": "16107EA2B0DB3062FE44B90D6F941FAFC9FE783CF828D537B9FE1585ACFAE495"
+    },
+    {
+      "host": "pwsh 7.6.6",
+      "command": "pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -SelfTest",
+      "startedUtc": "2026-09-14T06:47:46.918285+00:00",
+      "seconds": 25.99,
+      "exit": 1,
+      "deadline": "none (foreground, under two minutes each)",
+      "exclusionForm": "fail-removed-nothing",
+      "withRecords": 1609,
+      "withoutRecords": 1609,
+      "result": "FAIL",
+      "logSha256": "16107EA2B0DB3062FE44B90D6F941FAFC9FE783CF828D537B9FE1585ACFAE495"
+    },
+    {
+      "host": "pwsh 7.6.6",
+      "command": "pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -SelfTest",
+      "startedUtc": "2026-09-14T06:48:13.105624+00:00",
+      "seconds": 26.42,
+      "exit": 1,
+      "deadline": "none (foreground, under two minutes each)",
+      "exclusionForm": "fail-removed-nothing",
+      "withRecords": 1609,
+      "withoutRecords": 1609,
+      "result": "FAIL",
+      "logSha256": "16107EA2B0DB3062FE44B90D6F941FAFC9FE783CF828D537B9FE1585ACFAE495"
+    },
+    {
+      "host": "pwsh 7.6.6",
+      "command": "pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -SelfTest",
+      "startedUtc": "2026-09-14T06:48:39.807392+00:00",
+      "seconds": 26.13,
+      "exit": 1,
+      "deadline": "none (foreground, under two minutes each)",
+      "exclusionForm": "fail-removed-nothing",
+      "withRecords": 1609,
+      "withoutRecords": 1609,
+      "result": "FAIL",
+      "logSha256": "16107EA2B0DB3062FE44B90D6F941FAFC9FE783CF828D537B9FE1585ACFAE495"
+    },
+    {
+      "host": "Windows PowerShell 5.1.26100.9444",
+      "command": "powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -SelfTest",
+      "startedUtc": "2026-09-14T06:49:06.206967+00:00",
+      "seconds": 29.402,
+      "exit": 1,
+      "deadline": "none (foreground, under two minutes each)",
+      "exclusionForm": "fail-removed-nothing",
+      "withRecords": 1609,
+      "withoutRecords": 1609,
+      "result": "FAIL",
+      "logSha256": "1C710325D8511EACDCF820E0DA88E0F698624DB909FCA1E9CF5D75C6F1E80102"
+    },
+    {
+      "host": "Windows PowerShell 5.1.26100.9444",
+      "command": "powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -SelfTest",
+      "startedUtc": "2026-09-14T06:49:35.877492+00:00",
+      "seconds": 27.807,
+      "exit": 1,
+      "deadline": "none (foreground, under two minutes each)",
+      "exclusionForm": "fail-removed-nothing",
+      "withRecords": 1609,
+      "withoutRecords": 1609,
+      "result": "FAIL",
+      "logSha256": "1C710325D8511EACDCF820E0DA88E0F698624DB909FCA1E9CF5D75C6F1E80102"
+    },
+    {
+      "host": "Windows PowerShell 5.1.26100.9444",
+      "command": "powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -SelfTest",
+      "startedUtc": "2026-09-14T06:50:03.913423+00:00",
+      "seconds": 23.943,
+      "exit": 1,
+      "deadline": "none (foreground, under two minutes each)",
+      "exclusionForm": "fail-removed-nothing",
+      "withRecords": 1609,
+      "withoutRecords": 1609,
+      "result": "FAIL",
+      "logSha256": "1C710325D8511EACDCF820E0DA88E0F698624DB909FCA1E9CF5D75C6F1E80102"
+    }
+  ],
+  "authorTreeExport": {
+    "commit": "babfbefe9e1b047480921bdad31de4e4e77624c5",
+    "why": "the tree of the author's R-11i run: it contains the audit report copy and C7-13/C7-14 but not stage-log row R-11h",
+    "export": "git -c core.autocrlf=false archive --format=tar <commit> -- README.md artifact docs paper scripts/claim_drift_scan.ps1, extracted outside the repository",
+    "commands": [
+      {
+        "name": "strict",
+        "command": "pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -Strict",
+        "exit": 0,
+        "seconds": 21
+      },
+      {
+        "name": "records",
+        "command": "pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -Strict -IncludeProcessRecords",
+        "exit": 0,
+        "seconds": 14
+      },
+      {
+        "name": "selftest",
+        "command": "pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -SelfTest",
+        "exit": 1,
+        "seconds": 26
+      },
+      {
+        "name": "detector",
+        "command": "python -B claim_scan_detector.py --default strict --records records --selftest selftest (with the exits)",
+        "exit": 1
+      }
+    ],
+    "startedUtc": "2026-09-14T06:52:39Z",
+    "detector": {
+      "schema": "rmq.pre1.repair-r1.claim-scan-detector.v1",
+      "summaryPatternRegex": "scan complete \\([0-9]+ hits",
+      "summaryPatternFlags": "IGNORECASE",
+      "default": {
+        "label": "default",
+        "path": "<scratch>/export-babfbef/strict.stdout.log",
+        "bytes": 3552407,
+        "sha256": "D47FEE49A299173644FA52DFA98B43A88B79B7340F859EE2F89A1057BAD9BC30",
+        "decodeReplacements": 0,
+        "lines": 1102,
+        "exit": 0,
+        "resultLines": 1101,
+        "resultLinesWithPattern": [],
+        "patternLines": 1,
+        "summaryLines": [
+          {
+            "logLine": 1102,
+            "hits": 1609,
+            "strictFailures": 0
+          }
+        ],
+        "strictFailureLines": [],
+        "lastNonemptyLogLine": 1102,
+        "firstParserMatch": {
+          "logLine": 1102,
+          "value": 1609,
+          "source": "scanner summary line"
+        },
+        "problems": []
+      },
+      "records": {
+        "label": "records",
+        "path": "<scratch>/export-babfbef/records.stdout.log",
+        "bytes": 3683324,
+        "sha256": "699BB7C5F8195B32369AAEFC2504BC871960822F0009C3279F4FED4CEEF8AA38",
+        "decodeReplacements": 0,
+        "lines": 1450,
+        "exit": 0,
+        "resultLines": 1449,
+        "resultLinesWithPattern": [
+          {
+            "logLine": 646,
+            "rule": "principled-charged-trace-76",
+            "citedPath": "docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md",
+            "citedLine": 911
+          },
+          {
+            "logLine": 940,
+            "rule": "historical-silent-sparse-level-207",
+            "citedPath": "docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md",
+            "citedLine": 911
+          }
+        ],
+        "patternLines": 3,
+        "summaryLines": [
+          {
+            "logLine": 1450,
+            "hits": 2053,
+            "strictFailures": 0
+          }
+        ],
+        "strictFailureLines": [],
+        "lastNonemptyLogLine": 1450,
+        "firstParserMatch": {
+          "logLine": 646,
+          "value": 11,
+          "source": "emitted result line"
+        },
+        "problems": [
+          "records: 2 emitted result line(s) contain the summary pattern",
+          "records: 3 lines contain the summary pattern, expected 1",
+          "records: the scanner summary is not the sole pattern line on the last nonempty line"
+        ]
+      },
+      "selftest": {
+        "label": "selftest",
+        "path": "<scratch>/export-babfbef/selftest.stdout.log",
+        "bytes": 358,
+        "sha256": "B6171B0483C0AE085A7509D307E9F4C736B4DB2EFBE9E10EF0A46D43EE9B3A80",
+        "decodeReplacements": 0,
+        "exit": 1,
+        "selftestLines": 4,
+        "probeLines": [
+          {
+            "protected": 6,
+            "attributed": 2
+          }
+        ],
+        "recordPathOkLines": 1,
+        "exclusion": {
+          "form": "fail-removed-nothing",
+          "removed": null,
+          "withRecords": 11,
+          "withoutRecords": 1609
+        },
+        "results": [
+          "FAIL"
+        ],
+        "patternLines": 0,
+        "problems": [
+          "selftest: exit 1",
+          "selftest: result lines ['FAIL'], expected exactly one PASS",
+          "selftest: exclusion line form fail-removed-nothing"
+        ]
+      },
+      "problems": [
+        "records: 2 emitted result line(s) contain the summary pattern",
+        "records: 3 lines contain the summary pattern, expected 1",
+        "records: the scanner summary is not the sole pattern line on the last nonempty line",
+        "selftest: exit 1",
+        "selftest: result lines ['FAIL'], expected exactly one PASS",
+        "selftest: exclusion line form fail-removed-nothing"
+      ],
+      "verdict": "DEFECT"
+    }
+  },
+  "coordinatorLogs": {
+    "path": "extension-coordination-20260911/claude-coordinator-20260912/pre1-final-precheck/{selftest,strict,records}.stdout.log",
+    "command": "python -B docs/internal/extensions/pre1/repair-r1/claim_scan_detector.py --default strict.stdout.log --records records.stdout.log --selftest selftest.stdout.log",
+    "exit": 1,
+    "detector": {
+      "schema": "rmq.pre1.repair-r1.claim-scan-detector.v1",
+      "summaryPatternRegex": "scan complete \\([0-9]+ hits",
+      "summaryPatternFlags": "IGNORECASE",
+      "default": {
+        "label": "default",
+        "path": "C:/Users/poin/Documents/RMQ/extension-coordination-20260911/claude-coordinator-20260912/pre1-final-precheck/strict.stdout.log",
+        "bytes": 3553847,
+        "sha256": "7A1DC01E31F08FCC9F0098EFEC96996F50D666E8DEF024169507C0CDBF864285",
+        "decodeReplacements": 0,
+        "lines": 1105,
+        "exit": null,
+        "resultLines": 1104,
+        "resultLinesWithPattern": [
+          {
+            "logLine": 132,
+            "rule": "fast-regime-118",
+            "citedPath": "docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+            "citedLine": 488
+          },
+          {
+            "logLine": 361,
+            "rule": "live-compatibility-352",
+            "citedPath": "docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+            "citedLine": 488
+          }
+        ],
+        "patternLines": 3,
+        "summaryLines": [
+          {
+            "logLine": 1105,
+            "hits": 1612,
+            "strictFailures": 0
+          }
+        ],
+        "strictFailureLines": [],
+        "lastNonemptyLogLine": 1105,
+        "firstParserMatch": {
+          "logLine": 132,
+          "value": 1609,
+          "source": "emitted result line"
+        },
+        "problems": [
+          "default: 2 emitted result line(s) contain the summary pattern",
+          "default: 3 lines contain the summary pattern, expected 1",
+          "default: the scanner summary is not the sole pattern line on the last nonempty line"
+        ]
+      },
+      "records": {
+        "label": "records",
+        "path": "C:/Users/poin/Documents/RMQ/extension-coordination-20260911/claude-coordinator-20260912/pre1-final-precheck/records.stdout.log",
+        "bytes": 3684764,
+        "sha256": "EDDB67CC887A071C134DAB828EBB372BF621DB2341B55B132C04D6A185AECA0C",
+        "decodeReplacements": 0,
+        "lines": 1453,
+        "exit": null,
+        "resultLines": 1452,
+        "resultLinesWithPattern": [
+          {
+            "logLine": 151,
+            "rule": "fast-regime-118",
+            "citedPath": "docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+            "citedLine": 488
+          },
+          {
+            "logLine": 477,
+            "rule": "live-compatibility-352",
+            "citedPath": "docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+            "citedLine": 488
+          },
+          {
+            "logLine": 616,
+            "rule": "principled-charged-trace-76",
+            "citedPath": "docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md",
+            "citedLine": 911
+          },
+          {
+            "logLine": 1000,
+            "rule": "historical-silent-sparse-level-207",
+            "citedPath": "docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md",
+            "citedLine": 911
+          }
+        ],
+        "patternLines": 5,
+        "summaryLines": [
+          {
+            "logLine": 1453,
+            "hits": 2056,
+            "strictFailures": 0
+          }
+        ],
+        "strictFailureLines": [],
+        "lastNonemptyLogLine": 1453,
+        "firstParserMatch": {
+          "logLine": 151,
+          "value": 1609,
+          "source": "emitted result line"
+        },
+        "problems": [
+          "records: 4 emitted result line(s) contain the summary pattern",
+          "records: 5 lines contain the summary pattern, expected 1",
+          "records: the scanner summary is not the sole pattern line on the last nonempty line"
+        ]
+      },
+      "selftest": {
+        "label": "selftest",
+        "path": "C:/Users/poin/Documents/RMQ/extension-coordination-20260911/claude-coordinator-20260912/pre1-final-precheck/selftest.stdout.log",
+        "bytes": 360,
+        "sha256": "16107EA2B0DB3062FE44B90D6F941FAFC9FE783CF828D537B9FE1585ACFAE495",
+        "decodeReplacements": 0,
+        "exit": null,
+        "selftestLines": 4,
+        "probeLines": [
+          {
+            "protected": 6,
+            "attributed": 2
+          }
+        ],
+        "recordPathOkLines": 1,
+        "exclusion": {
+          "form": "fail-removed-nothing",
+          "removed": null,
+          "withRecords": 1609,
+          "withoutRecords": 1609
+        },
+        "results": [
+          "FAIL"
+        ],
+        "patternLines": 0,
+        "problems": [
+          "selftest: result lines ['FAIL'], expected exactly one PASS",
+          "selftest: exclusion line form fail-removed-nothing"
+        ]
+      },
+      "problems": [
+        "default: 2 emitted result line(s) contain the summary pattern",
+        "default: 3 lines contain the summary pattern, expected 1",
+        "default: the scanner summary is not the sole pattern line on the last nonempty line",
+        "records: 4 emitted result line(s) contain the summary pattern",
+        "records: 5 lines contain the summary pattern, expected 1",
+        "records: the scanner summary is not the sole pattern line on the last nonempty line",
+        "selftest: result lines ['FAIL'], expected exactly one PASS",
+        "selftest: exclusion line form fail-removed-nothing"
+      ],
+      "verdict": "DEFECT"
+    },
+    "note": "the committed detector finds on the coordinator's logs the same result lines as on the base scans above; only log line numbers differ"
+  },
+  "termOrder": {
+    "policy": "docs/internal/CLAIM_DRIFT_POLICY.json",
+    "fast-regime-118": 8,
+    "live-compatibility-352": 11,
+    "principled-charged-trace-76": 12,
+    "historical-silent-sparse-level-207": 13,
+    "terms": 35
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "verdict": "FAIL",
+  "sourceCommit": "26d6b5c2b10ed06ae4f72d9075d746ede987bdab",
+  "evidenceCommit": "Containing report/evidence commit; source identity above is the exact gated commit",
+  "archive": "aggregate-gate.zip",
+  "bytes": 2488373,
+  "sha256": "e701983375fb3d632a01ffad26dae2be3e38cb9bd990ee9791f05d924269192b",
+  "launch": {
+    "sourceCommit": "26d6b5c2b10ed06ae4f72d9075d746ede987bdab",
+    "cleanBefore": true,
+    "gitStatus": [],
+    "startedUtc": "2026-09-12T08:39:37.4387762Z",
+    "platform": "Microsoft Windows NT 10.0.26200.0",
+    "powershell": "7.6.5",
+    "registryContentSha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+    "runnerSha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c",
+    "gateSha256": "5301d870948f19fb53edfe279138efa1035500eb81973fb084b51f02f6a5d5e4",
+    "primitiveManifestSha256": "a1d31f0bc4b1d732a331d4bac3b1b2103e3be9812fd0b1eb2e9769c45931fcfa",
+    "driverSha256": "93663a3540e1c68cace3bc899ce50a641f6dc9de3407691106775dc9e6bb0464",
+    "deadlineSeconds": 14400,
+    "outputLimitBytes": 268435456,
+    "leanNumThreads": 1,
+    "lake": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lake.exe",
+    "command": "pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File gate-driver.ps1 -> unchanged scripts/gate.ps1"
+  },
+  "postflight": {
+    "endedUtc": "2026-09-12T12:39:43.4844854Z",
+    "head": [
+      "26d6b5c2b10ed06ae4f72d9075d746ede987bdab"
+    ],
+    "status": [],
+    "cleanAfter": true,
+    "result": {
+      "terminatedIds": [
+        13644,
+        21976,
+        9456,
+        10540
+      ],
+      "outputLimitExceeded": false,
+      "timedOut": true,
+      "exit": -1,
+      "durationSeconds": 14402.71,
+      "ownership": "kill-on-close-job"
+    }
+  },
+  "markers": [
+    "PQ1-REPLAY PASS source=26d6b5c2b10ed06ae4f72d9075d746ede987bdab cases=38 clean=true",
+    "M1-MUTATION PASS (41 executed; 40 expected rejects; 1 expected accept; live hashes/tracked state unchanged)",
+    "REPLAY: FULL MODE PASS",
+    "REPLAY: FULL MODE PASS",
+    "VALIDATION EXES BUILT: rmq_succinct_classic_validate, rmq_succinct_classic_cost_harness",
+    "AXIOM CHECK PASS: hub_axiom_check.lean (standard axioms only)",
+    "AXIOM CHECK PASS: wordram_axiom_check.lean (standard axioms only)",
+    "AXIOM CHECK PASS: axiom_check.lean (standard axioms only)",
+    "AXIOM CHECK PASS: headline_axiom_check.lean (standard axioms only)",
+    "AXIOM CHECK PASS: archive_axiom_check.lean (standard axioms only)",
+    "AXIOM CHECK PASS: rank_select_axiom_check.lean (standard axioms only)",
+    "AXIOM CHECK PASS: bp_navigation_axiom_check.lean (standard axioms only)",
+    "AXIOM CHECK PASS: union_find_axiom_check.lean (standard axioms only)",
+    "INDEPENDENCE CHECK: PASS",
+    "LEDGER DECL CHECK: PASS",
+    "CLAIM-POLICY-REGRESSION: FAIL [r1r2-48147cb-family-three-constructor-vocabulary] expected final strict verdict REJECT",
+    "CLAIM-POLICY-REGRESSION: FAIL [m1r5r4-former-allowance-unqualified-rejected] expected final strict verdict REJECT",
+    "CLAIM-POLICY-REGRESSION: 2 fixture failures",
+    "GATE ISSUE: claim_drift_policy_regression.ps1 found issues (exit 1)",
+    "CHECK-PAPER: RESULT: PASS",
+    "PAPER-TOPOLOGY-REGRESSION BOUNDARY CONTROL PASS [omitted] exit=0"
+  ],
+  "files": [
+    {
+      "name": "cleanup-verification.json",
+      "bytes": 167,
+      "sha256": "1c690991555c9867fcfb32e007e65491513e1640466afa1400312ac191a4c553"
+    },
+    {
+      "name": "gate-driver.ps1",
+      "bytes": 760,
+      "sha256": "93663a3540e1c68cace3bc899ce50a641f6dc9de3407691106775dc9e6bb0464"
+    },
+    {
+      "name": "gate.result.json",
+      "bytes": 9041498,
+      "sha256": "09aec7f9b34a9c334cc2f0f031fb477b6a3d7160d32ceccae5042dcdd4d57a29"
+    },
+    {
+      "name": "gate.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "gate.stdout.log",
+      "bytes": 4093185,
+      "sha256": "78e37a6149e8afb1569ae7ca2225679359824e292f86e48ffe785d1823f048c8"
+    },
+    {
+      "name": "gate.transcript.txt",
+      "bytes": 3625331,
+      "sha256": "6c1d5986b27b76e98073408ec9fb2f787c18cddec60ea73da63939cdce3a843c"
+    },
+    {
+      "name": "launch.json",
+      "bytes": 987,
+      "sha256": "dec59ee1126932c8b37f0bd9efc6c2967bdc1d4450b4e161e2b4eac8c9ad541c"
+    },
+    {
+      "name": "postflight.json",
+      "bytes": 411,
+      "sha256": "1d2678dd1a3d52cfb43c0f1b37f643881e469436fe0fcfe66821a296aa141460"
+    },
+    {
+      "name": "run-owned.ps1",
+      "bytes": 3892,
+      "sha256": "466a887f261006ea1a5d9256e0f76d3d684ab384307e903da88a11565d810526"
+    }
+  ],
+  "scope": "Full unchanged repository gate invocation; verdict and timeout describe whether it completed. Inherited PQ1/M1/EG campaigns are distinct from PRE-1 full contract replay in replay-full.zip and replay-full-summary.json.",
+  "platformLimit": "Executed on Windows with PowerShell 7.6.5 only; no POSIX full-gate claim."
+}

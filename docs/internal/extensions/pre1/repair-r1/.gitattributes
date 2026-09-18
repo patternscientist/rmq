@@ -1,0 +1,5 @@
+# PRE-1-R1 exact local serialization of the repair records; no shared, root or lane rule changes.
+*.md text eol=lf
+*.json text eol=lf
+*.py text eol=lf
+*.ps1 text eol=lf

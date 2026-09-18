@@ -1,0 +1,59 @@
+{
+  "version": "PRE1-R1-CHECKS-RECEIPT-V1",
+  "head": "e977053d8355d0d429da33d71a42251cfa5e964a",
+  "host": "Windows 11 Pro 10.0.26200; pwsh 7.6.6 (MSIX); Git 2.51.0.windows.1; ripgrep 15.1.0",
+  "mutex": "not taken; every command under five seconds",
+  "designChecks": [
+    {
+      "command": "pwsh -NoLogo -NoProfile -File scripts/design_decision_check.ps1 -Strict -Base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897 -Head 3264da7f6c9a4b8fc4598261166e13701f85a5c9",
+      "exit": 0,
+      "milliseconds": 2117,
+      "output": "DESIGN-CHECK: checked 3 changed files (0 code, 1 workflow, 2 neutral)"
+    },
+    {
+      "command": "pwsh -NoLogo -NoProfile -File scripts/design_decision_check.ps1 -Strict -Base 3264da7f6c9a4b8fc4598261166e13701f85a5c9 -Head e977053d8355d0d429da33d71a42251cfa5e964a",
+      "exit": 0,
+      "milliseconds": 2093,
+      "output": "DESIGN-CHECK: checked 20 changed files (0 code, 17 workflow, 3 neutral)"
+    },
+    {
+      "command": "pwsh -NoLogo -NoProfile -File scripts/design_decision_check.ps1 -Strict -Base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897 -Head e977053d8355d0d429da33d71a42251cfa5e964a",
+      "exit": 0,
+      "milliseconds": 2109,
+      "output": "DESIGN-CHECK: checked 22 changed files (0 code, 18 workflow, 4 neutral)"
+    }
+  ],
+  "whitespace": [
+    {
+      "command": "git diff --check",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": "git diff --check 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897..HEAD",
+      "exit": 0,
+      "output": ""
+    }
+  ],
+  "trust": [
+    {
+      "command": "rg -n \"\\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\\b|import Mathlib\" RMQ lakefile.toml",
+      "exit": 0,
+      "matches": 1,
+      "explanation": "RMQ/Validation/PreprocessingContract.lean:12 is the word sorry inside the module docstring that describes the marker gate; the same single match the PRE-1 author recorded (BUILDER_STAGE_LOG.md R-12); the RMQ tree id 52a4d6cb7d9b3fc66494cfaad2cacabecb5d7089 equals the base"
+    },
+    {
+      "command": "rg -n \"native_decide|Lean\\.ofReduceBool\" RMQ",
+      "exit": 1,
+      "matches": 0,
+      "explanation": "no match"
+    }
+  ],
+  "skillPreflight": {
+    "command": "pwsh -NoLogo -NoProfile -File scripts/project_skill_preflight.ps1 -GovernanceRef 0e6a00f654abc64f8b68988fa9675b9a839dca2f -RequiredSkills rmq-proof-sprint -RuntimeProjectSkills \"rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint\"",
+    "exit": 0,
+    "seconds": 1.4,
+    "result": "SKILL-PREFLIGHT: PASS at checkout 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897",
+    "skillsDiffFromGovernance": "git diff 0e6a00f654abc64f8b68988fa9675b9a839dca2f -- .agents/skills is empty"
+  }
+}

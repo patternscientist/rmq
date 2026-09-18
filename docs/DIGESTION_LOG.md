@@ -2015,3 +2015,55 @@ Windows job (unexecuted on this host). The full 27 runtime and 80 certificate
 campaigns were re-executed on the repaired scripts; the mathematical bounds,
 allocation, word width and observation relation are unchanged, and no
 acceptance is recorded by this entry.
+
+## PRE-1: make the preprocessing model reviewable before building (2026-09-12)
+
+The first construction phase fixes what counts as one machine operation and
+where input values may enter. A word reservation creates one absent cell; a
+separate store initializes it. Length must be read from cell zero. Signed keys
+use a pointwise, order-preserving representation, while arbitrary integers use
+a separately named comparison-oracle model. One reflected operation cannot
+secretly compute even the existing two-key Cartesian BP code from unread keys.
+A same-length shape-dependent constant-emission program also fails the fixed-
+program requirement.
+
+These are checked contract prerequisites, not a preprocessing algorithm. The
+next consumer is an independently audited contract, then a charged monotone-
+stack/directory/packing builder whose output equals PQ1 buildMemory exactly.
+Live assumptions include indexed RAM access, the stated scalar arithmetic
+model, signed representability for the finite-key corollary, and explicit
+word/address/temporary-space obligations for the future run. A skeptical
+reader should next ask how every loop and input/table write participates in
+one linear interpreter-work proof, and whether the emitted cells are exactly
+those used by the existing query. Those questions remain required PRE-1 work.
+
+## PRE-1: an efficient builder candidate for the packed allocation (2026-09-14, pending audit)
+
+The PRE-1 lane now has a candidate builder for the allocation that the packed
+query reads. One fixed program per input model, the same for every input
+length, runs on the construction machine, where every read, write,
+reservation, arithmetic step, comparison and branch is one counted transition.
+It reads the length from cell zero, builds the Cartesian tree with a monotone
+stack, writes the parenthesis bits, the rank/select and interior tables, the
+microtables and the metadata words, and repacks the bit buffer into words.
+Lean proves that the cells it leaves between its halt value and the end of
+memory are exactly `PackedWordRAM.buildMemory xs`, for every list in the
+comparison-oracle model and for every representable list in the word model.
+
+In plain English: the precomputed structure that the query relies on can
+itself be produced by a counted machine run whose transitions and temporary
+cells are at most linear in the input length; the run never overwrites its
+input, and each output cell is traced to the transition that wrote it. The
+capstone then carries the accepted query facts over to those emitted cells.
+A compiled validator runs both programs on small fixtures against the
+reference allocation.
+
+Live assumptions: unit-cost operations of the stated machine, including
+multiplication, division and shifts on `wordWidth n`-bit words; the key
+comparison oracle for arbitrary integers; signed representability for the word
+model. Recorded limits: the constants are crude, no tightness is claimed, and
+the query is not executed at an offset inside the builder's memory. The next
+consumers are the coordinator's aggregate gate and a fresh blind audit. A
+skeptical reader should ask whether the linear bound is tight enough to matter
+in practice, how the temporary space compares to the output size, and whether
+a relocated in-place query execution can be proved as well.

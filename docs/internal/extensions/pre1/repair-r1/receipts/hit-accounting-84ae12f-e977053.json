@@ -1,0 +1,75 @@
+{
+  "version": "PRE1-R1-HIT-ACCOUNTING-V1",
+  "method": "claim_drift_scan.ps1 -Strict -ShowAllowed and -Strict -IncludeProcessRecords -ShowAllowed on an exact export of the base scanned roots and on the clean e977053 checkout; every hit is printed with its path, so per-path counts sum to the summary; all four runs exited 0",
+  "modes": {
+    "strict": {
+      "baseHits": 1612,
+      "e977053Hits": 1633,
+      "delta": 21,
+      "changedPaths": [
+        {
+          "path": "docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+          "base": 137,
+          "e977053": 142
+        },
+        {
+          "path": "docs/internal/extensions/pre1/repair-r1/ACCEPTANCE_MATRIX.md",
+          "base": 0,
+          "e977053": 6
+        },
+        {
+          "path": "docs/internal/extensions/pre1/repair-r1/REWORDS.json",
+          "base": 0,
+          "e977053": 4
+        },
+        {
+          "path": "docs/internal/extensions/pre1/repair-r1/build_repair.py",
+          "base": 0,
+          "e977053": 2
+        },
+        {
+          "path": "docs/internal/extensions/pre1/repair-r1/repair_control_helper.py",
+          "base": 0,
+          "e977053": 4
+        }
+      ]
+    },
+    "records": {
+      "baseHits": 2056,
+      "e977053Hits": 2064,
+      "delta": 8,
+      "changedPaths": [
+        {
+          "path": "docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+          "base": 137,
+          "e977053": 142
+        },
+        {
+          "path": "docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md",
+          "base": 13,
+          "e977053": 0
+        },
+        {
+          "path": "docs/internal/extensions/pre1/repair-r1/ACCEPTANCE_MATRIX.md",
+          "base": 0,
+          "e977053": 6
+        },
+        {
+          "path": "docs/internal/extensions/pre1/repair-r1/REWORDS.json",
+          "base": 0,
+          "e977053": 4
+        },
+        {
+          "path": "docs/internal/extensions/pre1/repair-r1/build_repair.py",
+          "base": 0,
+          "e977053": 2
+        },
+        {
+          "path": "docs/internal/extensions/pre1/repair-r1/repair_control_helper.py",
+          "base": 0,
+          "e977053": 4
+        }
+      ]
+    }
+  }
+}

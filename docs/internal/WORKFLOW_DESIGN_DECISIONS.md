@@ -13397,3 +13397,573 @@ summary-shaped output lines to show only the real summary remains. Evidence:
 implementation, receipts and report follow in later commits on the same branch.
 
 WDD-20260913-OPT1-R2-001 verification note: the repaired commit `3b8296767f93cd11fed7eb6a257ce94683430228` carries the certifying evidence. On the clean base, in one heavy-verification session, the unchanged self-test failed with the exclusion reported as removing nothing, at 136 in both runs; the separate strict runs gave 1831 and 2262. The gate's 457 and this reproduction's 136 are the two receipts' embedded counts, selected by ripgrep's emission order. On `3b8296767f93cd11fed7eb6a257ce94683430228`, in the same session, the self-test passed with the exclusion removing 431 hits (2241 to 1810), matching the separate strict runs, and the strict default-root scan exited 0 with 0 strict failures. The 20-case archive controls, both preservation demonstrations, the whitespace and strict design checks, and both hygiene scans passed or gave their expected verdicts. Curated receipts under `repair-r2/receipts/` avoid the scanner's emission and summary shapes: raw scanner logs and large JSON dumps stay outside the repository, identified by SHA-256. A 614 KB pretty-printed receipt costs about 40 s per strict scan under the multiline attribution term, and a committed raw scan log would reintroduce the defect. This note, the report, the matrix appendix and the receipts are the only additions after `3b8296767f93cd11fed7eb6a257ce94683430228`.
+
+## WDD-20260912-PRE1-001: replay the contract at exact producer and consumer surfaces
+
+Context: PRE-1's first authorized phase is a mandatory contract prerequisite, not builder implementation. The historical plan has no PRE-specific checker and its aggregate does not discover new unimported modules. The frozen matrix precedes all new proof edits. The initial bounded child build attempted a toolchain download through the elan proxy, while the pinned installed Lake binary was available locally.
+
+Decision: add a lane-local contract firewall, exact versioned replay registry and bounded replay runner using the existing owned_process_tree tooling. Resolve the installed pinned toolchain directly, record its path and Lean version, serialize focused target builds with LEAN_NUM_THREADS=1, and keep mutable artifacts in this worktree's .lake. Producer rebuild precedes independent typed-consumer elaboration on every mutation and restoration. Imports and primitive evaluator bytes are frozen; the complete expected registry and diagnostic stage/location are independently pinned. Restore raw source bytes in finally and compare all source/manifest hashes plus full Git state, including initially untracked files.
+
+Alternatives rejected: a report-only mutation transcript; adapting consumers to mutable proposition aliases; accepting any compiler failure containing a broad filename; silently empty selector success; relying on stale oleans; proxy-triggered downloads; shared mutable cache links; and launching a host aggregate before coordinator scheduling. Registry, selector, deadline and diagnostic-matcher controls exercise the production verdict path. Only CRLF/LF transport is normalized for registry/manifest content pins; raw restoration remains byte-exact. An unavailable host condition is inconclusive rather than a pass.
+
+Consequences and evidence: scripts/preprocessing_contract_replay.ps1, preprocessing_contract_firewall.ps1, preprocessing_contract_check.lean and extensions/pre1/REPLAY_DESIGN.md record the reproducible route. Startup and one exact selector precede the complete registry. Each author command records duration, deadline, exit and stderr. A frozen contract commit then waits for the coordinator-scheduled aggregate and fresh blind audit; no local green check authorizes the builder or self-records acceptance. Full extension validation and public synchronization remain later consumers of this prerequisite.
+
+### PRE-1 author replay disposition and scheduled gate bounds
+
+The final unchanged contract runner passed 18/18 cases, 28 harness self-tests
+and all 198 recorded stages, including exact restored bytes and Git state.
+The first full attempt stopped before mutations with an inconclusive missing
+child marker under a 12-second test deadline; preceding shell startup took
+8.997 seconds. Both owned processes were absent after cleanup. The existing
+30-second sleeper parameter passed a focused test with a real descendant and
+then the full run; the 120-second child sleep, missing-marker failure and
+semantic deadlines were preserved. Extending measured startup margin was
+chosen over weakening coverage or treating a non-created condition as PASS.
+The receipts retain both attempts and identify the actual Windows host;
+POSIX execution remains uncovered.
+
+The coordinator reserved the aggregate slot. The clean frozen commit and
+exact registry/logpaths must be reported before launching unchanged gate.ps1.
+A 14,400-second owned deadline and 256 MiB output ceiling allow cold-cache
+margin over the prior 5,654.834-second PQ1 gate. One serial build tree uses the
+installed Lean 4.22.0 binary and LEAN_NUM_THREADS=1. Durable transcript and
+structured exit/stderr receipts are retained separately from PRE-1 replay.
+Aggregate completion, failure or abandonment releases the slot explicitly.
+This scheduling authorization does not authorize builder work before the
+independent contract audit.
+
+## WDD-20260912-PRE1-002: preserve the failed aggregate and hold certification
+
+Context: the first scheduled aggregate on frozen PRE-1 source
+26d6b5c2b10ed06ae4f72d9075d746ede987bdab recorded two claim-policy fixture
+failures with empty captured child output, then hit its fixed four-hour limit
+during topology-regression startup/boundary controls. The inherited regression
+failure reporter omits its child exit, timeout and cleanup fields; neither an
+execution failure nor a semantic false acceptance can be proved from that
+omission. The fixture inputs are isolated, and checker/policy source is unchanged
+from governance. PRE-1's own 18-case replay had already passed independently.
+
+Decision: retain the complete failed invocation, clean postflight and separate
+owned-process absence check; explicitly release the shared gate slot; run only
+the two exact existing fixtures and restored PRE contract consumer; and report
+INCOMPLETE with the topology regression uncertified. Both focused fixtures
+passed their original expected rejections. This narrows diagnosis but does not
+erase the original failures or supply a gate pass. The coordinator acknowledged
+release and directed a diagnostic hold on further aggregates, with no builder
+work or full-gate retry. The following commit changes reports/evidence only,
+preserving the exact source commit tested by the gate.
+
+Rejected alternatives: extending a running deadline, accepting empty output
+as a semantic verdict, substituting focused successes for an aggregate pass,
+silently rerunning a four-hour gate, changing shared checker policy from this
+worker lane, or promoting author replay success to contract readiness. Each
+would discard an actual verification boundary or exceed the authorized phase.
+
+Consequences and evidence: aggregate-gate.zip and aggregate-summary.json under
+docs/internal/extensions/pre1/evidence preserve launch, transcript, stdout,
+stderr, result, postflight and cleanup. The bounded duration was 14,402.710s,
+exit -1, timedOut true, outputLimitExceeded false; the wrapper exited 1.
+Recorded owned processes 13644, 21976, 9456 and 10540 were absent after cleanup.
+HEAD and clean Git state were unchanged. The two focused fixture durations
+were 52.174s and 23.742s, after a successful 16.079s governance preflight. The
+restored contract build/consumer passed in 5.706s and 9.871s, with eleven source
+hashes unchanged. Final report-tree checks and their receipts are separate
+from the frozen-source failed gate. No mathematical or operational source
+decision changed after the first contract commit, so no additional DD entry
+is required for this evidence-only disposition.
+
+## WDD-20260912-PRE1-003: layer the builder firewall over the frozen contract guard and reach both from the gate
+
+Context: audit finding P2-1 showed that no gate or CI reaches the PRE-1 contract modules; amendment A4 requires two aggregate-gate checkers; coordinator ruling Q4 requires a layered builder guard with the contract guard and primitive_manifest.json byte-identical (their surfaces are frozen by contract cases C17/C18); recommendation R2 requires set equality of failing consumer lines; the route study fixes a builder registry version 1 with its own runner and the contract registry v1 untouched and rerun as regression.
+
+Decision: (1) `scripts/preprocessing_builder_firewall.ps1` runs the frozen contract guard as a child process and requires its exact PASS line, then checks the exact allowed-imports table of the seven closure modules (Program, Calculus, Safety, Structured, Compiler, Loop, ArrayRun; Builder/*.lean entries are appended per stage), rejects any unregistered file under Builder/, walks the transitive import closure against {Std, Primitive, Input, Model, closure} and checks `docs/internal/extensions/pre1/builder_manifest.json` (version 1, strict-UTF-8 CRLF-to-LF normalized SHA-256 per module). (2) `scripts/preprocessing_builder_replay.ps1` adapts the contract runner: registry `builder_cases.json` version 1 with an independent ordered ID list and a normalized content pin; stages firewall, producer (`lake build` of Loop, ArrayRun and HeaderUse), consumer (`lake env lean scripts/preprocessing_builder_check.lean`); a consumer rejection requires the SET of failing consumer lines to equal the registered set; a frozen-contract-surface regression compares normalized hashes of the contract registry, runner, guard and manifest at every Lean-mode start; deadlines 600/120/45 s with their evidence recorded in the parameter comments and BUILDER_REPLAY_DESIGN.md. (3) `scripts/preprocessing_contract_gate.ps1` (label `PRE1-CONTRACT-GATE`: contract guard, `lake build RMQ.Core.WordRAM.Construction.Contract`, `lake env lean scripts/preprocessing_contract_check.lean`, each an owned bounded stage) and `scripts/preprocessing_builder_gate.ps1` (label `PRE1-BUILDER-REPLAY`: the builder replay in full as one owned bounded child with a measured outer deadline of at least 2x) are added to the `scripts/gate.ps1` roster and call sites following the existing Invoke-Checker pattern; the roster grows from 18 to 20. (4) CONTRACT.md, AMENDMENTS.md and ATTACK_TABLE.md receive append-only version-2 entries recording AMEND-1..4, R1-R4, the accepted route-study clauses and the coordinator rulings Q1-Q10; BUILDER_PLAN.md and the audit report are copied byte-identical.
+
+Alternatives rejected: editing the contract guard or primitive_manifest.json (frozen by the 18-case registry); `Contains` matching of consumer diagnostics (a shotgun mutation could satisfy every case); a guard that rewrites its own manifest; letting the lane run the aggregate gate; a single combined checker (the contract layer must fail independently of the builder replay's runtime).
+
+Consequences and evidence: the contract replay is rerun in full as regression (18/18 expected unchanged); the builder replay is run `-StartupOnly`, then one `-OnlyCase`, then in full; both checkers are executed in isolation; the new runner is parsed and its registry/selector self-tests are run under Windows PowerShell 5.1 as well; every command, duration, deadline and exit is recorded in BUILDER_STAGE_LOG.md. The 20-of-20 GATE COVERAGE line is established by the coordinator's next aggregate on the frozen final candidate, not by this lane. Registry cases that mutate a closure module always fail at the firewall's hash surface; producer-stage semantic mutations of closure modules will require a registry-driven manifest re-hash in a later stage and are recorded as a planned extension, not as coverage. Weakening the syntactic `headerFirst` field breaks the certificate's own derived defaults at the producer; the consumer-level anti-bypass evidence is carried by the other field cases. Measured outcomes: contract replay full 18/18 in 557.7 s with registry and runner hashes unchanged; builder replay full 13/13 in 516.8 s; the `PRE1-BUILDER-REPLAY` outer deadline was set to 1800 s (3.48x that measurement) before the checker ran in isolation, where the replay child took 633.1 s (1800 s is still 2.84x); `PRE1-CONTRACT-GATE` passed in isolation in 11.8 s.
+
+## WDD-20260913-PRE1-004: a separate typed consumer for the PRE-1 machine-free specification stage
+
+Context: PRE-1 stage S1 adds reference-side specification modules (RMQ/Core/WordRAM/Construction/Spec/*) while the continuation audit of the Stage 0 commit 5f325dd runs. The existing direct consumer `scripts/preprocessing_builder_check.lean` is an input of the frozen builder replay registry version 1: its consumer-line pins (B05-B11, B13) and the replay's recorded source hashes would move with any edit, which would force a registry and manifest revision and a full builder replay rerun on a tree that is under audit.
+
+Decision: add `scripts/preprocessing_spec_check.lean`, run as `lake env lean scripts/preprocessing_spec_check.lean` with the pinned toolchain and `LEAN_NUM_THREADS=1`, ending in the line `PRE1-SPEC-TYPED-CONSUMERS PASS`. It restates every S1 exit theorem at an independently written full type, pins the named plan segments to explicit reference expressions by `rfl`, uses kernel `decide` only on tiny pure reference lists and trees (rulings Q9/Q9a), evaluates the reference `buildMemory` against the plan on the four fixture lists with `#guard` as a smoke check, and prints `#print axioms` for every new declaration. The builder replay registry, its runner, the builder firewall, the builder manifest, the contract registry and `scripts/gate.ps1` are unchanged.
+
+Alternatives rejected: editing `preprocessing_builder_check.lean` (moves registry line pins mid-audit); adding the spec consumer to the builder replay or to a gate checker now (that is a registry/roster change that belongs to the stage that also adds mutation cases for these theorems, and the aggregate is coordinator-scheduled on the final candidate); kernel evaluation of `buildMemory` (well-founded recursion in `Cartesian.shape`).
+
+Consequences: the spec consumer is a development-loop and stage-evidence check, not yet gate-reached; INV-VALIDATION-REACH and INV-MUTATION-REPRODUCIBILITY for these theorems stay open until a later builder registry version consumes them. Measured runs: 59.8 s to 78.1 s on the shared host (no per-section breakdown was measured).
+
+## WDD-20260913-PRE1-005: extend the single S1 spec consumer instead of adding a second one
+
+Context: the S1 envelope module (Spec/Envelope.lean) needs typed consumers, and WDD-20260913-PRE1-004 introduced `scripts/preprocessing_spec_check.lean` as the standalone S1 consumer outside the frozen builder replay registry.
+
+Decision: extend the same consumer (new import, full-type projections of every envelope, two extra `decide` fixture theorems on the plan lists, `#print axioms` for every new declaration) rather than adding a second script, so the stage has one consumer command and one PASS line. The builder registry, runner, firewall, manifests and `scripts/gate.ps1` stay unchanged.
+
+Consequences: one standalone S1 consumer run covers all S1 modules; it remains outside the builder replay and the gate (reach and mutation replay stay open as recorded in WDD-20260913-PRE1-004). Measured runs after the extension: 74.2 s and 51.4 s on the shared host.
+
+## WDD-20260913-PRE1-006: record the PRE-1 continuation-audit conditions and their stage deadlines
+
+Context: the coordinator accepted the continuation audit's conditions C1 (before S2), C2 (before S7 instantiates `HeaderUse` at the constants) and C3 (per-mutation manifest re-hash and V2-2 case (i) before S7; consumer-reaching foundation cases before the S8 candidate is frozen), with recommendations P3-1 and P3-7 folded into C3, authorized S2 once the C1 commit exists, and added two process rules: `scripts/claim_drift_scan.ps1 -Strict` with default roots (outer bound at least 900 s) for every commit that adds or changes public-facing or `docs/` text before the final candidate, with no raw claim-scanner hit logs committed under a scanned root; and `Global\RMQHeavyVerification` for every command expected to exceed five minutes, while a coordinator aggregate gate may hold it for hours.
+
+Decision: land C1 as its own text-only commit (CONTRACT.md V3-1..V3-10, AMENDMENTS.md version 3, BUILDER_PLAN.md naming), with the replay-case shapes of V3-7 (optional-parameter mutations through the C3 re-hash, one consumer-numeral mutation per numeral with exact line sets) and the relocation case of V3-1 fixed now as registry obligations; schedule C2 and C3 before S7 and the foundation cases before the S8 freeze; record the disposition, deadlines and process rules in BUILDER_STAGE_LOG.md and REPORT.md. The builder registry, runner, firewall, manifests and `scripts/gate.ps1` are unchanged by this commit.
+
+Alternatives rejected: implementing C2/C3 before S2 (not required by the coordinator's schedule, and the registry would be revised again when the constants exist); folding C1 into a builder-source commit (C1 must precede S2 and be reviewable on its own).
+
+Consequences: S2-S6 proceed on the frozen surfaces; the registry version, runner self-tests and manifest mechanism change only when C2/C3 land; claim-drift evidence is collected under `.lake` or summarized, never committed as raw scanner output under `docs/`.
+
+## WDD-20260913-PRE1-007: register builder modules in the layered firewall and add a builder-stage consumer
+
+Context: stage S2 adds the first `Builder/*.lean` modules. The layered builder firewall rejects any unregistered file under `Builder/` and hashes every registered module (WDD-20260912-PRE1-003). The builder replay registry's consumer file `scripts/preprocessing_builder_check.lean` is pinned by line and its producer stage builds only the Stage 0 targets, so importing stage proofs there would break a clean-checkout replay.
+
+Decision: append one allowed-imports entry per new module to `scripts/preprocessing_builder_firewall.ps1` (Registers imports Loop; Emit imports Registers; Geometry imports Emit; Interior imports Geometry) and one strict-UTF-8, CRLF-to-LF normalized SHA-256 entry per module to `builder_manifest.json` (version unchanged, as the version-1 design prescribes for new Builder modules). Add `scripts/preprocessing_stage_check.lean`, a standalone typed consumer for builder-stage specifications (S2 onward) that also runs executable `evalF` smoke checks on the actual source fragments against reference payloads; it prints `PRE1-STAGE-TYPED-CONSUMERS PASS` after the axiom inventory. The builder replay registry, runner and `scripts/gate.ps1` are unchanged.
+
+Alternatives rejected: a new manifest version (the version-1 schema already covers appended Builder entries); adding stage proofs to the replay consumer before the C3 re-hash mechanism exists; evaluating the builder fragments in the kernel (ruling Q9).
+
+Consequences: every later Builder module is registered the same way in its own commit; the stage consumer stays outside the replay and the gate until the registry revision that C2/C3 require; as with the other consumers, its exit code, not the PASS line, is the verdict (audit P3-1, to be fixed with C3). Measured: firewall 5.70 s; stage consumer 16.62 s and 11.92 s.
+
+## WDD-20260913-PRE1-008: re-hash changed builder modules, extend the stage consumer, bound discovery evaluations
+
+Context: completing stage S2 changed the program text of `Builder/Registers.lean`, `Builder/Emit.lean` and `Builder/Geometry.lean` (their imports are unchanged) and added three proof modules outside the firewall. A scratch executable comparison of the geometry prelude against reference values, run before the proofs, included an input of size 100000 whose reference layout went through `Cartesian.shape`; the interpreter hit its recursion limit only after 316.91 s (exit 127). The run was expected to take seconds and was started without the heavy-verification mutex that the coordinator requires for commands over five minutes.
+
+Decision: update the three `sha256` entries of `builder_manifest.json` (version 1 unchanged, normalization unchanged; the allowed-imports table is unchanged) in the same commit as the text change. Extend `scripts/preprocessing_stage_check.lean` to import `Proof.GeometryBank`, restate the new exit theorems at full type, pin the bank's reference identities and two source blocks by `rfl`, run five `evalF` checks of the whole prelude, and print an axiom inventory for every new declaration (498 in total). Scratch discovery evaluations now run under an explicit outer `timeout 280`, and use the size-only reference definitions (`packedInteriorLayout n`) instead of shape-based ones.
+
+Alternatives rejected: a manifest version bump (the version-1 schema covers changed hashes); moving the geometry smoke checks into the builder replay before the C3 re-hash mechanism exists; retroactively taking the mutex (the run had already ended).
+
+Consequences: the recorded deviation stands in BUILDER_STAGE_LOG.md and REPORT.md. Every later text change to a hashed builder module re-hashes its entry in the same commit.
+
+## WDD-20260913-PRE1-009: register the Cartesian phase and the program host module; array-backed stage fixtures
+
+Context: stage S3 adds `Builder/Cartesian.lean` and creates `Builder/Program.lean` (leaves only) and extends `Builder/Registers.lean`. The structured evaluator `evalF` keeps registers and memory as nested closures; on the stack pass over 64 keys the interpreter hit its recursion limit (exit 127), so stage fixtures over loops need the array-backed interpreter.
+
+Decision: append firewall table entries `Builder/Cartesian.lean` (imports `Builder.Interior`) and `Builder/Program.lean` (imports `Builder.Cartesian`), add their manifest hashes and re-hash `Builder/Registers.lean` (manifest version 1). The builder replay registry references only `Construction/Program.lean`, the interpreter, so none of its cases changes. The stage consumer runs `runArray` from `Construction/ArrayRun.lean` on `(Block.seq (.action (.load 1 0)) ...).compileAt 0 ++ [⟨.halt 3⟩]` from the array input states and compares the emitted cells with `(Cartesian.shape xs).bpCode.map bitToNat` for both leaves.
+
+Alternatives rejected: raising the interpreter stack for `evalF`; creating `Builder/Program.lean` only at S7 (the leaf specifications must be about the frozen constants).
+
+Consequences: `Builder/Program.lean`'s import entry changes as later phases join it; the stage consumer's fixtures exercise the compiled program, not the structured semantics.
+## WDD-20260913-PRE1-010: re-hash the interior phase and register tables; stage consumer for the S4 checkpoint
+
+Context: the S4 checkpoint extends `Builder/Registers.lean` (registers 115-134) and `Builder/Interior.lean` (block statistics and summary-table blocks), both hashed in `builder_manifest.json`; `emitTable_spec` gains an argument in its entry premise, which the stage consumer restates at full type.
+
+Decision: update the two `sha256` entries (manifest version 1; imports unchanged, so the firewall table is unchanged). The stage consumer now imports `Proof.SummaryTables`, updates `spec_emitTable`, pins `maxActs`, `blockStatsBlock`, `summaryTablesBlock` and `relativeEntryBlock` by `rfl`, restates the S4 exit theorems and the frame predicates, and runs `runArray` on a harness program (stack pass, four `reserveArray` statistics arrays, BP emission, a marker cell, `blockStatsBlock; summaryTablesBlock`) against the first four interior segments of the emission plan for 17 inputs.
+
+Alternatives rejected: placing the array harness in builder text before S6 fixes the layout; running the S4 fixtures in both input models (the interior close reads only BP cells; the models differ only in the leaf, which S3 covers).
+
+Consequences: the harness is test code in the consumer, not builder text; S6 replaces it with the real reservation order. The consumer's inventory grows by 88 entries.
+
+## WDD-20260913-PRE1-011: re-hash for the S4 completion; stage consumer for the close segment; heavy-command deviation and mitigation
+
+Context: the S4 completion extends `Builder/Registers.lean` (registers 135-158) and `Builder/Interior.lean` (memos, sparse entries, `interiorCloseBlock`). During the work, one `lake build` of `Proof.SummaryTables` ran 409.31 s without `Global\RMQHeavyVerification` (row S4-20). It was expected to rebuild one module, but the builder edit had invalidated the whole proof chain.
+
+Decision: update the two `sha256` entries (manifest version 1; imports and firewall table unchanged). The stage consumer imports `Proof.InteriorClose`. It pins `betterActs`, `memoLevelsBlock`, `localMemoBlock`, `globalMemoBlock` and `interiorCloseBlock` by `rfl`. It restates the S4 completion theorems at full type, with the binder lists copied from the sources and unused hypothesis names replaced by `_`. It runs `runArray` on a harness that also reserves both memos, against all eight interior segments, for 24 inputs. Mitigation for the deviation: after any builder text change the proof chain is rebuilt module by module, and any command expected to exceed five minutes goes through a scratch wrapper that holds the mutex (`pre1_mutex_lake.ps1`, outside the repository).
+
+Alternatives rejected: hand-writing the long restatements in arrow form (the binder form is a full type as well and avoids transcription errors); retroactively taking the mutex (the run had ended).
+
+Consequences: the recorded deviation stands in BUILDER_STAGE_LOG.md and REPORT.md. The consumer grows by 95 inventory entries.
+
+## WDD-20260913-PRE1-012: register the access phase; stage consumer for the access half
+
+Context: stage S5 adds `Builder/Access.lean`, a new module under `Builder/`. The layered builder firewall rejects unregistered files there and hashes every registered module (WDD-20260912-PRE1-003, WDD-20260913-PRE1-006). The S5 proofs live in six new modules outside the firewall.
+
+Decision: append one allowed-imports entry (`Builder/Access.lean` imports `Builder.Interior`) to `scripts/preprocessing_builder_firewall.ps1` and one strict-UTF-8, CRLF-to-LF normalized SHA-256 entry to `builder_manifest.json` (version 1 unchanged, as that design prescribes for new Builder modules). The stage consumer imports `Proof.AccessHalf`. It pins the 26 program definitions of `Builder/Access.lean` by `rfl`, with register names replaced by their numbers. It pins the write and frame predicates and `flagNat` by `Iff.rfl`/`rfl`. It restates 42 S5 theorems at full type, with binder lists copied from the sources and unused hypothesis names replaced by `_`. It runs `runArray` on a harness that reserves the six access arrays in the order of `accessHalf_spec`, against all eighteen access segments, for 20 inputs (`#guard`). The inventory covers every new declaration of the eight S5 modules and of the consumer section. The long-super threshold runs need `--tstack` and about 75 s each, so they stay scratch evidence recorded in BUILDER_STAGE_LOG.md and are not consumer lines.
+
+Alternatives rejected: a separate fixture script for the long-super inputs (a new script with a non-default stack option, outside the consumer command, for evidence already recorded); registering the proof modules in the firewall (they are outside the builder closure by design).
+
+Consequences: the consumer grows by 242 inventory entries (1032 total) and still runs in about 65 s without extra options. The builder replay registry, its runner and `scripts/gate.ps1` are unchanged.
+
+## WDD-20260913-PRE1-013: register the microtable and finish phases; stage consumer for the bit buffer; re-check of the S5 mutation
+
+Context: stage S6 adds two modules under `Builder/` (`Micro.lean`, `Finish.lean`); the layered builder firewall rejects unregistered files there and hashes every registered module (WDD-20260912-PRE1-003, WDD-20260913-PRE1-006). The S6 proofs live in four modules outside the firewall. While preparing the S6 mutation, a scratch file that declared the mutated block inside a nested `Builder` namespace failed at an unknown identifier instead of at the mutation (row S6-15 run 1). The S5 mutation file (row S5-17) used the same nesting, so its rejection may not have been caused by the mutation.
+
+Decision: append two allowed-imports entries (`Builder/Micro.lean` imports `Builder.Access`; `Builder/Finish.lean` imports `Builder.Micro` and `Builder.Cartesian`) to `scripts/preprocessing_builder_firewall.ps1` and two strict-UTF-8, CRLF-to-LF normalized SHA-256 entries to `builder_manifest.json` (version 1 unchanged). The stage consumer imports `Proof.Buffer`. It pins the 13 program definitions of the two modules by `rfl` with register numbers, pins `MicroWrites`, `BufferKept`, `BufferFrame`, `EmitsFrom` and `denseBitsOf` by `Iff.rfl`/`rfl`, restates 33 S6 theorems at full type (binder lists copied from the sources, unused hypothesis names replaced by `_`), and runs `runArray` on two harnesses: the microtables after a marker for `n ∈ {0, 1, 5, 127, 128}`, and the whole buffer in the layout of `bufferStage_spec` (access and interior arrays, stack arrays, stack pass, `bufferBlock`) against the dense reference buffer for 20 inputs. The inventory covers every new declaration of the six S6 modules and of the consumer section. Mutations are declared in the scratch file's own namespace and are paired with an unmutated control that must elaborate. The S5 mutation was re-run that way (row S6-16): rejected with names resolved, control passed.
+
+Alternatives rejected: consumer fixtures for the long-count input and the `L = D` edge (they need `--tstack` and about 97 s, or a reference buffer that did not finish in 285 s at `n = 1116`; they stay scratch evidence in BUILDER_STAGE_LOG.md); rewriting the S5 log row (the log is append-only; the re-check is recorded as an S6 row).
+
+Consequences: the consumer grows by 170 inventory entries (1202 total) and runs in about 86-137 s without extra options. The builder replay registry, its runner and `scripts/gate.ps1` are unchanged.
+
+## WDD-20260913-PRE1-014: condition C2, a consumer-reaching case for `headerFirst`
+
+Context: the continuation audit PRE-1-A1C (finding P2-3, condition C2, accepted as CONTRACT.md V3-10) found that no registered case reaches the consumer projection of `HeaderUse.headerFirst` (`scripts/preprocessing_builder_check.lean:20`): B04 weakens the field and stops at the producer, because every run-level default proof consumes it. C2 must land before S7 instantiates `HeaderUse` at the program constants.
+
+Decision: append `B14_HEADERFIRST_CONSUMER` to `builder_cases.json` (registry version 1) and pin it in `scripts/preprocessing_builder_replay.ps1` (`$script:ExpectedIds` gains the ID; `$script:ExpectedRegistrySha256` becomes `ac8d76e70f636445ec9f431379c42150545fa5cdc35fa513369392065a382182`). The case follows the audit text: path `RMQ/Core/WordRAM/Construction/HeaderUse.lean`; `before` is the source from `structure HeaderUse (program : List BInstr) : Prop where` through `    tailNeverWritesR1 := by first | exact htail | trivial }`; `after` has `headerFirst : True`, the four run-level fields without default proofs, `oracleExtentOne` unchanged, the docstring of `headerUse_of_program` unchanged, and a constructor supplying `headerFirst := trivial`, `tailNeverWritesR1 := htail`, both missing-header fields by `run_missing_header program hhead ... rfl rfl rfl (by simp [put]) fuel hf` and both receipts by `wordHeaderReceipt_of_head program hhead` and `comparisonHeaderReceipt_of_head program hhead`; `expected` reject, `expectedStage` consumer, `expectedSurface` `preprocessing_builder_check.lean:20:`. B04 stays as the producer-stage case. BUILDER_REPLAY_DESIGN.md gains the B14 row.
+
+Alternatives rejected: replacing B04 (it is still a valid producer-stage rejection, and the audit keeps it); matching the audit probe's mutation bytes (the probe's SHA-256 e6f2af3e... is over a CRLF copy whose exact `after` text the report does not reproduce; the registered text meets the stated shape, and the focused replay reproduces the probe's outcome, consumer failing line set exactly {20}).
+
+Consequences: the registry has 14 cases; the full replay grows by one case (about 40 s). The builder gate's measured-deadline note still cites the 13-case run until a new full run is measured.
+
+## WDD-20260913-PRE1-015: condition C3 before S7, a registry-driven manifest re-hash, the nested contract-guard deadline and verdict-gated consumer markers
+
+Context: the continuation audit PRE-1-A1C found that every semantic mutation of a hashed closure module stops at the builder firewall's hash surface, so no case can reach the consumer lines that project the foundations (P2-4, condition C3); that the builder firewall runs the contract guard as a child with no deadline of its own (P3-7); and that both typed consumers print their PASS marker even after elaboration errors (P3-1). CONTRACT.md V3-10 requires, before S7 registers the constants' cases, the re-hash mechanism (and V3-7 case (i) through it, which needs the S7 constants), with P3-7 and P3-1; the consumer-reaching foundation cases are due before the S8 candidate is frozen.
+
+Decision: (1) `scripts/preprocessing_builder_replay.ps1`: a case may carry the optional field `"manifest": "rehash"`, allowed only on the seven hashed closure modules the registry may mutate (Program, Calculus, Safety, Structured, Compiler, Loop, ArrayRun) and never with a firewall-stage expectation (`PRE-REGISTRY` otherwise; three new registry self-tests: bad value, unhashed path, firewall stage). For such a case the runner checks that exactly one manifest entry for the path holds the unmutated source's normalized digest, writes the manifest with only that digest replaced by the mutant's, writes the mutant, and in the same `finally` restores both files, then requires the manifest's raw bytes to equal the recorded pre-case bytes before re-running firewall, producer and consumer; the case evidence records `manifestBeforeSha256`, `manifestMutationSha256` and `manifestAfterSha256`. Registry version 1 is unchanged; cases without the field behave as before (B02 still rejects at the hash surface). (2) The first case through the mechanism, `B15_ARRAYRUN_FINAL_WEAKEN`: `runArray_abstract` loses its last conjunct (`final.abstract` agreement) and keeps a valid proof, expected consumer rejection at exactly {335}; the remaining foundation cases (`EvalG.compile_realizes`, `SafeEval.compile_safe`, `run_write_at`, `run_load_at`, `writes_replay`, `run_agree_of_reads`, `RunsTo.fuel_extension`, `Prim.Safe`/`Run.Safe`) are registered before the S8 freeze, and V3-7 case (i) with the S7 constants. (3) `scripts/preprocessing_builder_firewall.ps1` runs the contract guard through `Invoke-RMQOwnedBoundedProcess` with `-ContractGuardDeadlineSeconds` (default 60 s; standalone guard 2.2 s, firewall stage bound 120 s); a timeout or output-limit hit fails as inconclusive, and the rejection message format that B03 pins is unchanged. (4) Both typed consumers (`scripts/preprocessing_builder_check.lean`, `scripts/preprocessing_contract_check.lean`) gain `import Lean` on their last import line (no line moves) and end with `consumerWitness`, a definition referring to every theorem and definition of the file (the contract consumer also restates its seven anonymous examples), and, in the builder consumer, `consumerGuards`, the conjunction of its five `#guard` checks. The final command prints the marker only if the witness exists and `collectAxioms` of it has no `sorryAx` (and the guards hold); otherwise it prints nothing and adds no diagnostic, so registered failing line sets stay exact. The exit code remains the verdict.
+
+Alternatives rejected: a message-log check in the final command (the command state's message log is per command in this Lean version: after two errors it reported `hasErrors=false`, probe p31_probe); a term reference to the witness in `#eval` (a sorry-dependent term aborts with an error at the marker line, adding a line to every rejected case's failing set); removing the marker (both registries' accept controls pin it, and the contract registry is frozen); re-hashing the manifest in the registry data itself (the committed manifest would no longer describe the committed sources); registering all foundation cases now (their deadline is the S8 freeze, and each closure re-hash case adds a rebuild pair to the full replay).
+
+Consequences: the builder registry has 15 cases; its pin is `e9e4445629ef93db4ed8bbc115f7f42008037032723dc02a0560a3b991cff208`. Standalone firewall runs take longer (about 9 s instead of 2.4 s) because the guard now runs under the owned-process harness. The stage consumer `scripts/preprocessing_stage_check.lean` still prints its marker unconditionally (it is not one of the two typed consumers named by P3-1); its exit code is the verdict. Full builder and contract replays on the C3 commit must run under `Global\RMQHeavyVerification`, which was held by another process when they were first scheduled.
+
+## WDD-20260913-PRE1-016: record the missing design entry for the C3 consumer change
+
+Context: the per-commit design check of `75a6301f5db7d3d6e893cbb2a1a73e1ed5522a13` (C3) failed: `scripts/preprocessing_builder_check.lean` and `scripts/preprocessing_contract_check.lean` are classified as code and the commit carried only a workflow entry. The aggregate strict check against `c1c970b` passed because earlier commits in the range touched DESIGN_DECISIONS.md, which is exactly the masking WDD-20260816-043 describes.
+
+Decision: do not rewrite the commit (history is never rewritten in this lane); add DD-20260913-PRE1-013 in the next commit, record the failure in BUILDER_STAGE_LOG.md row C3-10 and in REPORT.md, and run the per-commit check for every commit before reporting it, not only the aggregate check.
+
+Consequences: `75a6301` remains a commit that fails the per-commit design check; the record that it lacks is in the following commit.
+
+## WDD-20260913-PRE1-017: S7 checkpoint registration, stage-consumer section and the V3-6 escalation
+
+Context: the S7 checkpoint adds a builder closure module (`Builder/Output.lean`), five proof modules, a specification module, and strengthens the buffer theorem's frame. A scratch fixture command ran past five minutes without `Global\RMQHeavyVerification` while another gate held it (BUILDER_STAGE_LOG.md S7-6). The V3-6 fuel body blocks the program constants.
+
+Decision: register `Builder/Output.lean` in `scripts/preprocessing_builder_firewall.ps1` (imports `Builder.Finish`) and in `builder_manifest.json` (17 modules); add an S7 section to `scripts/preprocessing_stage_check.lean` (exact-type restatements of the S7 exit theorems, three source pins, a whole-harness `#guard` on `[]` and `[4, -3, -3, 8]`, and axiom inventories for every new declaration); bound every later scratch `lake env lean` run with `timeout 295` or less; stop at the V3-6 obstruction and report it with the kernel evidence instead of landing constants that deviate from the contract text.
+
+Alternatives rejected: landing `builderBudget n = D + C * n` ahead of a ruling (V3-6 is frozen contract text); landing the constants without the V3-6 extraction pins (V3-6 requires them); running the leaf restructure's tower rebuild in several sub-five-minute commands (it is one heavy build and waits for the mutex).
+
+Consequences: the stage consumer grows to 1786 inventories and about 138-154 s; its marker is still unconditional. The builder replay registry, its runner and `scripts/gate.ps1` are unchanged. The five-minute deviation is recorded here and in REPORT.md.
+
+## WDD-20260913-PRE1-018: pre-constants records under rulings R-S7-5..R-S7-9
+
+Context: the coordinator adopted option (a) for the V3-6 fuel body (R-S7-5), approved the V3-4 traversal route (R-S7-6) and the leaf restructure (R-S7-7), and sequenced the work (R-S7-9): the amendment records, the V3-4 lemma in scratch, stage-consumer marker gating and the builder gate deadline note come before the mutex frees; the leaf restructure and the constants come after.
+
+Decision: record amendment V3-6a append-only (a dated note under the V3-6 fuel sentence in CONTRACT.md quoting the superseded text, and an O-BITS / O-WRITE version 3 amendment entry in AMENDMENTS.md, both citing the ruling record and both reproduction tables); gate the stage consumer's marker (DD-20260913-PRE1-015); extend the measured-deadline note of `scripts/preprocessing_builder_gate.ps1` with the focused B14/B15 measurements and a projection for the 15-case registry, keeping the 1800 s default (2.79 x the projection); keep the V3-4 traversal lemma in scratch until the constants land. The WDD entry for the amendment itself lands again with the constants commit, as the ruling requires.
+
+Alternatives rejected: lowering the gate deadline to the projection (a deadline is revised only on a measured run); landing the V3-4 lemma before the constants (it would have no consumer).
+
+Consequences: CONTRACT.md grows by one amendment note (no later line citation shifts: none cite past line 690); the builder gate still has no measured 15-case run.
+
+## WDD-20260913-PRE1-019: leaf restructure records, and the missing workflow entry of 6ccfb5c
+
+Context: the R-S7-7 leaf restructure commit `6ccfb5c` changed the stage consumer `scripts/preprocessing_stage_check.lean` (one import) and the lane records BUILDER_STAGE_LOG.md and REPORT.md, which the design check classifies as workflow paths, but it carried only the code entry DD-20260913-PRE1-016. `scripts/design_decision_check.ps1 -Strict -Base 48e590c -Head 6ccfb5c` therefore reported one missing design-log update (exit status of the script 0, strict verdict FAIL). Ruling R-S7-3 forbids history rewrites.
+
+Decision: land this entry in a follow-up commit instead of amending `6ccfb5c`. It records the workflow side of the restructure: the stage consumer imports `Proof.Leaves` so its restatements of `keyLeaf_spec`, `wordLeaf_spec`, `cartesianBP_key` and `cartesianBP_word` keep their full types; the tower rebuild, the stage consumer and the after inventory ran in one process blocked on `WaitOne` of `Global\RMQHeavyVerification`; the stage log records the restructure as rows L-1..L-6 with the seven-minute overlap of scratch checks as a deviation; REPORT.md carries the signature inventory. From this commit on, the per-commit strict check runs before the lane report is final and before the next commit is started.
+
+Alternatives rejected: amending `6ccfb5c` (a history rewrite); leaving the gap unrecorded.
+
+Consequences: `6ccfb5c` alone fails the per-commit strict check; the range from `48e590c` to this commit passes it. The failure is logged (BUILDER_STAGE_LOG.md row L-7).
+
+## WDD-20260913-PRE1-020: amendment V3-6a in the constants commit; builder firewall, manifest and replay registry for the program constants
+
+Context: ruling R-S7-5 condition (1) requires a WDD entry for amendment V3-6a in the constants commit (the dated CONTRACT.md note and the AMENDMENTS.md entry landed in `48e590c`, WDD-20260913-PRE1-018). Ruling R-S7-1 requires V3-7 case (i) in the same commit as the constants and passing before any S8 work, and the case (ii) numerals in the same commit; V3-1 requires a registered relocation case with the declarations.
+
+Decision: (1) Amendment V3-6a is realized: `builderBudget n = 1000000000 + 1000000000 * n` in `Builder/Program.lean`, `builderBudget_eq_mul_add` proved by `omega` (not `rfl`, not `decide`) and restated at full type in the stage consumer, and the fuel body pinned by `rfl` in the builder consumer, with one registry case per numeral (`B33_D_NUMERAL`, `B34_C_NUMERAL`); fuel sufficiency for every `n` is `budget_ge` from the stage cost theorems (record: `PRE1_S7_V36_RULING.md`, reproduction tables BUILDER_STAGE_LOG.md S7-14..S7-16 and the coordinator's `pre1-v36-repro/`). (2) `scripts/preprocessing_builder_firewall.ps1`: the allowed import of `Builder/Program.lean` becomes `Builder.Output`; `builder_manifest.json`: the entry of `Builder/Program.lean` is re-hashed to the new normalized bytes (F1303956...); still 17 modules. (3) `scripts/preprocessing_builder_replay.ps1`: `Proof.Constants` joins the producer targets; `Builder/Program.lean` joins the re-hashable and registrable paths; a case may carry one `companion` edit restricted to `Proof/Constants.lean`, applied and restored with the primary edit, with its own byte-exact restoration check and four new registry self-tests; 19 new IDs in registry order and the new registry pin. (4) `builder_cases.json` version 1 grows from 15 to 34 cases: B16/B17 (V3-7 (i), parameter on each constant, re-hash), B18 (V3-1 relocation of `efficientBuild` into `Proof/Constants.lean`, re-hash plus companion), B19-B34 (V3-7 (ii): `L` at both instances, `B`, `B'`, the ten elements of `P`, `D`, `C`), each with a measured single-line consumer surface. (5) BUILDER_REPLAY_DESIGN.md appends the 19 rows and the runner changes.
+
+Alternatives rejected: a second consumer script for the constants (V3-1..V3-7 name the builder consumer); moving `efficientBuild` into `Proof/Exact.lean` for the relocation case (outside the replay's producer targets, so the mutant would not be compiled); one `L` case only (the numeral appears in both instances; a second case costs one consumer run).
+
+Consequences: the builder gate's 1800 s deadline must be re-measured on the 34-case registry before the final candidate (never shortened); `Cw` and `Dw` cases follow with the S8 workspace theorem; the remaining C3 foundation cases follow before the S8 freeze.
+
+## WDD-20260913-PRE1-021: builder gate deadline raised on the measured 34-case replay; claim-scan self-test finding
+
+Context: the full builder replay on `48702c2` (34 cases) took 1535.87 s wall (BUILDER_STAGE_LOG.md C7-11). The PRE1-BUILDER-REPLAY checker's default outer deadline was 1800 s, 1.17 x that run, below AMEND-4's rule of at least 2 x the measured full run. Separately, `scripts/claim_drift_scan.ps1 -SelfTest` fails at this commit (C7-13): its hit-count parser takes the first output line containing `scan complete (N hits` anywhere, and with `-IncludeProcessRecords` one emitted hit quotes line 911 of the Stage 0 verbatim copy of the PRE-1-A1 audit report, which contains such a summary line (`11 hits`).
+
+Decision: raise the default of `scripts/preprocessing_builder_gate.ps1` to 3600 s (2.34 x measured) and extend its measured-deadline note with the run's evidence directory, stage and self-test counts; revise again on the final candidate's measured run and never shorten. Record the self-test failure and its diagnosis (a temporary probe copy with the regex anchored at `^CLAIM-DRIFT: scan complete` passes, `exclusion removed 444 hits`) without changing the scanner or the audit report copy: the scanner is outside this lane's write scope and the report must stay byte-identical.
+
+Alternatives rejected: keeping 1800 s (below 2 x); editing `scripts/claim_drift_scan.ps1` or the audit report (outside scope, and the copy is required unchanged).
+
+Consequences: the aggregate gate's PRE1-BUILDER-REPLAY checker allows up to one hour; the claim-scan self-test fix (anchoring `Get-ReportedHitCount`) is a coordinator item that must land before the final aggregate if `-SelfTest` is required to pass there.
+
+## WDD-20260913-PRE1-022: S8 capstone records, and the capstone consumer outside the replay until the replay extension
+
+Context: the S8 capstone commit adds the capstone and its typed consumer `RMQ/Validation/PreprocessingContract.lean`, and updates the lane records (BUILDER_STAGE_LOG.md S8-1..S8-10, the S8 matrix appendix, REPORT.md phase `S8_CAPSTONE_PROVED`). The builder replay's consumer stage elaborates only `scripts/preprocessing_builder_check.lean`, which stays independent of the proof tower (DD-20260913-PRE1-017).
+
+Decision: land the proofs and the consumer first, with their commands logged, and extend the replay in the next commit: capstone-consumer cases selected per case, the `Cw`/`Dw` numeral cases, the remaining C3 foundation cases and a validator stage. Until then the capstone consumer is checked by `lake build RMQ.Validation.PreprocessingContract` (marker printed only after a `sorry`-free witness) and not by the registry. The scratch development of S8 is logged as grouped rows with every failure mode and the durations, not one row per scratch compile.
+
+Alternatives rejected: one commit for the proofs and the replay extension (the replay changes need their own measured runs and would delay the proof evidence); logging each of the about 50 scratch compiles as a row.
+
+Consequences: at this commit no registry case reaches the capstone consumer; REPORT.md lists that residual.
+
+## WDD-20260913-PRE1-023: builder replay reaches the capstone, the validator and the C3 foundations (52 cases)
+
+Context: after the S8 capstone commit no registry case reached the capstone consumer, the validator executable was not run by the replay, and condition C3's consumer-reaching foundation cases (CONTRACT.md V3-10) were due before the S8 freeze. The builder consumer must stay independent of the proof tower (DD-20260913-PRE1-017).
+
+Decision: `scripts/preprocessing_builder_replay.ps1` gains compile profiles selected per case by an optional `profile` field: `builder` (default; closure targets and the builder consumer), `capstone` (builds `Capstone`, elaborates `RMQ/Validation/PreprocessingContract.lean`, surfaces `PreprocessingContract.lean:<line>:`) and `stackpass` (builds `Proof.StackPass`). Consumer line sets are matched per profile; the registry validator rejects an unknown or explicit `builder` profile and a surface file that does not match the profile (three new self-tests). The baseline compiles both the builder and the capstone profile and requires the capstone marker. In full mode a validator stage builds `rmq_preprocessing_validate` through Lake, runs it in full (requiring `PRE1-VALIDATE PASS ... mode=full`) and runs each negative control through `PRE1_VALIDATE_SELECTOR`, requiring a nonzero exit with its pinned message; its deadline is a new parameter (default 1800 s, 6.7 x the measured 267.5 s executable run). `Builder/Cartesian.lean` becomes re-hashable. `builder_cases.json` grows from 34 to 52 cases, each surface observed by a focused run before registration: B35-B42 (C3 foundations: `EvalG.compile_realizes'` loses the exact-cost conjunct, `SafeEval.compile_safe` loses the final fit, `run_write_at` loses its fault branch, `run_load_at` loses its backward conjunct, `writes_replay` becomes a sibling fact, `run_agree_of_reads`/`run_agree_of_supplied` require key agreement everywhere, `RunsTo.fuel_extension` keeps only the final state, the arithmetic arm of `Prim.SafeAt` loses its shift-amount obligation), each rejected at exactly its builder-consumer line(s) 218, 228, 108, 123, 128, {154, 161}, 142, 450; B43 (V2-7.6 quadratic control: each stack step first counts a copy of the current index down to zero, rejected by the stack-pass proofs at `Proof/StackPass.lean:287`); B44 (a semantic import into the program host module, rejected at the firewall); B45-B49 (work, workspace `Cw` and `Dw`, zero input writes and register bank weakened in `BuilderRunFacts`, each rejected at exactly the two capstone-consumer projections of the comparison and word runs); B50-B51 (V3-7 (ii) `Cw` and `Dw` numerals in the capstone consumer, line 275); B52 (accept control on the capstone docstring). BUILDER_REPLAY_DESIGN.md records the rows.
+
+Alternatives rejected: a separate runner for the capstone (duplicated selector, deadline and restoration machinery); running the validator per case (the executable run does not depend on a mutated proof file); deleting capstone fields as cases (a deletion also removes the initializer in the same file, two fragments one runner edit cannot express); the first B42 candidate, a `reserve`-arm drift (rejected at the producer `Safety.lean:162`, so it did not reach the consumer).
+
+Consequences: the builder gate's full replay grows by eighteen cases, the capstone baseline and the validator stage; its deadline is revised on the measured run before the final candidate (never shortened).
+
+## WDD-20260913-PRE1-024: builder gate deadline on the measured 52-case replay; family and digestion entries
+
+Context: the full builder replay on `cb2ba2cf9f6b0bcd2a6d1dca490c2dccd51cab3a` (52 cases, capstone baseline, validator stage) took 4573.59 s, above the builder gate's 3600 s default (AMEND-4 requires at least 2x the measured full run). The candidate also needs its one family-summary entry and one digestion entry (write scope: one appended entry each at the end).
+
+Decision: `scripts/preprocessing_builder_gate.ps1` default `OuterDeadlineSeconds` 3600 -> 10800 (2.36 x measured), with the measurement appended to its deadline note. `docs/FAMILY_SUMMARY.md` gains the section "PRE-1 efficient builder candidate (2026-09-14, pending gate and audit)" and `docs/DIGESTION_LOG.md` the entry "PRE-1: an efficient builder candidate for the packed allocation"; both state candidate status, the crude literals, the Q3 query-join limit and that headline and paper identities are unchanged.
+
+Alternatives rejected: 7200 s (1.57 x, below the 2x rule); splitting the gate replay into two checkers (a roster change outside the two permitted entries); omitting the entries until acceptance (the brief requires them in the candidate).
+
+Consequences: an aggregate gate run can spend up to three hours in this checker. `claim_drift_scan.ps1 -Strict` runs on the tree with both entries before the final candidate.
+
+## WDD-20260913-PRE1-025: final candidate records - author row review, report status and aggregate slot request
+
+Context: the final checks on `babfbef` passed (BUILDER_STAGE_LOG.md R-11..R-14) and every frozen row was reviewed against the candidate. The brief requires REPORT.md to open with `Status: CANDIDATE_COMPLETE` only when every frozen row is met, and to request the host-wide aggregate slot when the candidate is frozen. The report commit `02aa9455e9c7b57ca57b8a2b05d1f8da0d1a21dd` changed three workflow paths under `docs/internal/extensions/pre1/` without this entry, so its per-commit design check failed; this commit supplies the entry (no history rewrite) and names the frozen candidate precisely.
+
+Decision: ACCEPTANCE_MATRIX.md gains the append-only section "Final candidate review" with one row per frozen ID, each marked "MET in author review" with its evidence and residual (ruling Q3, the unexecuted `n = 1116` edge and select-flag thresholds, the uncovered POSIX branch); REPORT.md opens with the brief's candidate status lines, `Phase: FINAL_CANDIDATE` and the aggregate slot request, and records the checked statements, command outcomes, unexecuted checks, limits, digestion and lane history; the frozen candidate is the commit that adds this entry.
+
+Alternatives rejected: `Status: INCOMPLETE` with an empty unmet-row list (the brief reserves it for unmet rows); amending `02aa945` (no history rewrite); marking rows accepted (acceptance is the coordinator's).
+
+Consequences: the coordinator schedules `scripts/gate.ps1` (the builder checker needs up to 10800 s) and the fresh blind audit on the frozen candidate; a finding reopens the affected rows.
+
+## WDD-20260914-PRE1-R1-001: archive the PRE-1 claim-scan receipts and reword the quoted summaries instead of changing the scanner
+
+Status: Accepted for PRE-1-R1 (worker decision under the frozen repair contract; coordinator acceptance pending)
+
+Context. Before the aggregate gate on the PRE-1 final candidate
+`84ae12f6f6bad99fd3215c5bdd5b2a93e3779897`, the coordinator found that the
+unchanged `scripts/claim_drift_scan.ps1 -SelfTest` fails there with its
+removed-nothing form (1609 hits with records and 1609 without), although the
+separate strict runs report 1612 hits without process records and 2056 with
+them. The PRE-1 author had recorded the same failure with 11 hits with records
+(BUILDER_STAGE_LOG.md C7-13, C7-14, R-11i) and left the scanner, which is
+outside that lane's scope, unchanged.
+
+Mechanism. The self-test reads each run's hit count from the first output line
+anywhere that matches its hit-count regex. The scanner prints every review and
+fail hit as a result line that quotes the matched document line. Lane documents
+quote earlier scanner summaries, so an emitted result line can carry a stale
+count ahead of the real summary. PRE-1-R1 reproduced both forms with an
+order-independent detector: at the base the stage-log row R-11h (line 488,
+matched by the terms `fast-regime-118` and `live-compatibility-352`) is emitted
+before the scanner's summary in both runs, so both parses read 1609; on the
+author's R-11i tree `babfbef`, where that row did not yet exist, the first quote
+in the records run was line 911 of the PRE-1-A1 audit report copy (terms
+`principled-charged-trace-76` and `historical-silent-sparse-level-207`), so the
+parse read 11. The scanner runs one ripgrep process per term in policy order, so
+which quote comes first is fixed by term order and tree content; ripgrep's file
+order matters only among lines one term matches in several files. The repair
+therefore removes every emitted quote rather than reordering anything.
+
+Decision. On branch `codex/pre-1-r1-claim-receipts`:
+
+- The byte-exact audit report `docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md`
+  (added unchanged by `5f325ddb856b9095d1ad2aacc0bc69eda571d447`) leaves
+  `audit_reports/` and is stored as a single-member gzip archive at
+  `docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz`.
+  The archive sits in the lane's evidence directory because the design check
+  treats only Markdown under `audit_reports/` as neutral and rejects other
+  extensions there.
+- Every blob under `docs/internal/extensions/pre1/` at the base whose raw bytes
+  hold a claim-scanner result line becomes a gzip archive at its own path plus
+  `.gz`; the recomputed set is `evidence/author-final-checks-summary.json`.
+- Each archive decompresses to the exact base blob bytes (header
+  `1f8b08000000000002ff`, level 9, mtime 0). `repair-r1/RECEIPT_ARCHIVES.json`
+  records the original path, base blob id and mode, SHA-256, lengths, line
+  counts, archive digest and the files that refer to each original name; the
+  lane `.gitattributes` gains one exact `binary` line per archive. References
+  elsewhere keep the original names; the manifest resolves them.
+- The five lane Markdown lines that quote a scanner summary (BUILDER_STAGE_LOG.md
+  427, 428 and 488; REPORT.md 245 and 246) are reworded to state the same counts
+  and outcome in prose with the same ordered integers; nothing else in those
+  files changes except appended R1 sections. `repair-r1/REWORDS.json` records the
+  base line and new line hashes and integer lists.
+- Committed verifiers recompute both manifests from Git objects, a registered
+  control runner replays their positives and negatives on disposable copies, and
+  a preservation checker proves the changed-path set, the unchanged Lean,
+  script, registry and contract bytes, the append-only ledgers and the
+  byte-identical frozen rows.
+
+Rejected alternatives:
+
+- Anchoring the self-test parser to the scanner's final line, or any policy,
+  glob, allowlist or exclusion change. That is the right shared-tooling fix, but
+  it is a governance change for the coordinator's integration commit, and this
+  repair contract forbids touching the scanner or its policy.
+- Editing the audit report's bytes (redacting or rewording line 909 or 911). The
+  report is byte-exact audit evidence; its identity would no longer match the
+  audited record, and the contract forbids any edit to it.
+- Archiving the whole BUILDER_STAGE_LOG.md or REPORT.md. Both are maintained lane
+  records that the coordinator, the blind audit and later rows read and append
+  to; compressing them would hide 246,943 bytes of live text to remove five
+  lines, and every later append would have to rebuild an archive.
+- Leaving the audit report in `audit_reports/` and excluding it by another rule,
+  or moving files under excluded paths. That is placement-based evasion and still
+  leaves the records run parsing the quote.
+- Base64 or another text encoding of the receipts. It remains scanned text,
+  avoids a spelling rather than a category, and has no repository precedent.
+
+Consequences. The strict and records hit counts drop by the archived lines and
+may change by the appended R1 text; the self-test must pass on the repaired tip
+with counts equal to the separate runs, and the detector must find no emitted
+quote. Restoring the readable audit report under `audit_reports/` is an
+integration step after the shared parser fix lands. Process lesson: a lane
+record that quotes a scanner summary inside a scanned root turns every later
+self-test into a read of its own history; record counts in prose.
+
+## WDD-20260914-PRE1-R1-002: PRE-1-R1 repair commit - archives, rewordings, verifiers, registered controls and the preservation checker
+
+Context: WDD-20260914-PRE1-R1-001 fixed the encoding; this commit applies it and
+adds the tools that let a reader recompute it from Git objects. The frozen rows
+REQ-PRE-R1-ARCHIVE, REQ-PRE-R1-REWORD, REQ-PRE-R1-PRESERVATION and
+CHK-PRE-R1-VERIFICATION require manifests, verifiers with registered negative
+controls on disposable copies, and a preservation proof.
+
+Decision: `repair-r1/build_repair.py` (producer, run once) reads only base
+objects and writes the two gzip archives, the lane `.gitattributes`, the five
+reworded lines (stored as full new lines checked against each base line's
+SHA-256 and integer list, never as substitutions of the base text) and both
+manifests. `verify_receipt_archives.py` recomputes the result-line selection from
+every base blob under the lane root, checks the named audit report against the
+commit that added it, recomputes every digest, length and line count, requires
+the originals absent, rejects unlisted archives and any other lane file that
+still holds a result line, and in committed mode checks the exact attribute
+bytes and `git check-attr`. It records, and does not archive, the three zip
+containers whose compressed members hold scanner output, because the scanner
+does not read inside them. `verify_rewords.py` recomputes the pattern-line set
+of every lane Markdown blob, checks each base line hash and integer list, checks
+that each recorded file is its base blob with only the recorded lines replaced
+plus a tail, and rejects the pattern anywhere under the lane root and, in
+committed mode, any changed text path of the range that gains a pattern line. The
+two stage-log files that the archive verifier lists as scanner text without a
+result line are exempted from its unchanged-file check only because the reword
+verifier checks them line by line. `run_repair_controls.ps1` replays the 34-case
+registry `repair_controls.json` (both verifiers' positives and required
+negatives plus additional negatives, a descendant-cleanup deadline case, three
+registry-integrity cases and seven selector cases) under
+`scripts/owned_process_tree.ps1`; copies are exported from committed blob bytes,
+not from the CRLF checkout, and the runner reports INCONCLUSIVE for the deadline
+case under the MSIX-packaged pwsh, where NATIVE-1-R1 showed that the
+kill-on-close job does not hold descendants. `check_preservation.py` pins the
+write scope, the protected tree and blob ids, append-only ledgers, the 31
+inherited rows' bytes and the checker inputs read from the six checker scripts.
+`claim_scan_detector.py`, `run_claim_scans.ps1` and `run_checker_modes.ps1` are
+the freeze-time tools, committed byte-identical to the copies that reproduced
+the defect on the base.
+
+Alternatives rejected: normalizing CRLF in the reword verifier's tree mode (it
+would accept a checkout that differs from the committed bytes; exact exports
+and committed mode are used instead); a single combined verifier (the two
+manifests have different selection rules and failure surfaces); substitution
+pairs in the producer (they would put the base summary text into committed
+source); archiving the zip containers (they are already binary containers the
+scanner cannot read, and they are cited evidence outside the write scope).
+
+Consequences: the scans, verifiers, controls, preservation proof and checker
+modes run on this commit and on the report commit that follows; their receipts,
+the R1 sections of the stage log and report, and the worker report are appended
+there.
+
+## WDD-20260914-PRE1-R1-003: control runner - no descendant sleeper under a packaged host, and .NET hashing
+
+Context: the first full control run on the repaired commit `e977053d8355d0d429da33d71a42251cfa5e964a` (queued behind `Global\RMQHeavyVerification` for 8,414.5 s) found two runner defects, neither in a verifier. Under the MSIX-packaged pwsh 7.6.6, 33 of 34 cases passed but `deadline-descendant-cleanup` failed with a runner error: the owned job did not hold the sleeper's child (the NATIVE-1-R1 host finding), the surviving child kept the redirected stdout file locked, and `Invoke-RMQOwnedBoundedProcess` threw before the runner's packaged-host branch could classify the case, leaving two orphaned sleepers (stopped by hand). The Windows PowerShell 5.1 run, launched from a pwsh queue wrapper, stopped at its first `Get-FileHash` call, because a 5.1 child of pwsh inherits a module path under which that cmdlet does not load; no case ran.
+
+Decision: `run_repair_controls.ps1` reports the deadline case INCONCLUSIVE under a packaged host without starting the sleeper, since the condition cannot be created there and starting it only produces orphans; on other hosts it catches a failed owned launch, stops any recorded survivor and reports FAIL with the reason. File hashes use `System.Security.Cryptography.SHA256` instead of `Get-FileHash`. The registry, verifiers, helper and every expected code set are unchanged. Focused reruns of the changed runner: the deadline case PASS under Windows PowerShell 5.1 (root and child absent after the 5 s deadline), INCONCLUSIVE with exit 3 under the packaged pwsh with no process left, and a committed-mode case PASS under a 5.1 child of pwsh.
+
+Alternatives rejected: refusing the whole run under a packaged host (NATIVE-1-R1's choice; it discards 33 host-independent cases); widening the deadline so the sleeper exits before the output read (it would measure nothing about descendant ownership); changing `scripts/owned_process_tree.ps1` (outside this repair's write scope).
+
+Consequences: the full registry reruns on this commit under both hosts, and those receipts, not the failed attempt, are the control evidence; the failed attempt is recorded as incomplete.
+
+## WDD-20260914-PRE1-R1-004: PRE-1-R1 evidence commit - receipts without scanner text, tip checks in the submission, and the refined self-test mechanism
+
+Context: the repaired commit `e977053d8355d0d429da33d71a42251cfa5e964a` needed durable evidence for the frozen R1 rows. The evidence itself lives under a scanned root, so a careless receipt would recreate the defect it documents; and the commit that adds the evidence cannot contain results of checks run on itself.
+
+Decision: the receipts under `docs/internal/extensions/pre1/repair-r1/receipts/` hold exits, durations, deadlines, mutex waits, digests, counts, rule ids and cited paths, never scanner output lines; each was checked for the summary pattern and for a result line before it was written, and the tip's verifiers recheck the whole lane root. The committed receipts cover the base reproduction (`84ae12f`), the author's-tree reproduction (`babfbef` export), the repaired commit's scans on both PowerShell hosts, the per-path hit accounting, both verifiers, the preservation proof, the checker modes at base and repaired commit, the design, whitespace and trust checks, and the control registry on both hosts. BUILDER_STAGE_LOG.md and REPORT.md gain appended R1 sections, the R1 matrix an evidence appendix, and `repair-r1/REPORT.md` holds the worker record with status INCOMPLETE and phase AWAITING_COORDINATOR_CERTIFICATION. The scans, detector, verifiers, preservation check and design and whitespace checks are rerun on the exact tip after committing and reported in the submission, with the aggregate gate request for that tip.
+
+Finding for the deferred shared-tooling fix: the first-match parser does not depend on ripgrep's file order alone. The scanner runs one ripgrep process per policy term in policy order, so a quoted summary on a line matched by an earlier term is always emitted first; on `84ae12f` the stage-log quote (term index 8) always preceded the audit-report quote (term index 12), and the author's different reading came from an earlier tree. Anchoring the parser to the scanner's own final summary line removes both paths.
+
+Alternatives rejected: committing raw scanner stdout as receipts (it would put result lines and summary text back under the scanned root); a further commit that records the tip's scan results (it would itself be an unscanned tip; the coordinator gate reruns the scans on the exact tip anyway); omitting the failed queue attempt from the ledger (a setup failure is recorded as incomplete, not hidden).
+
+Consequences: the coordinator runs the aggregate gate on the tip named in the submission; the audit disposition and acceptance remain coordinator steps; restoring the readable audit report under `audit_reports/` waits for the parser fix at integration.
+
+## WDD-20260914-PRE1-R2-001: PRE-1-R2 frozen matrix - reproduce every marker failure class before any edit, and three scope readings
+
+Context: the fresh blind audit PRE-1-A2 of the PRE-1 builder candidate (report 53,979 bytes, SHA-256 `bda5f41450dddaf4cec8fc898e63d99881a12fece96f4ccc476b3fa2f82ed180`) found a gate hygiene hit in the capstone consumer's docstring (P1-1), typed consumers that print their PASS markers while failing (P2-1), a `work` field that holds for every program and no case that weakens `halts` (P2-2), an unrecorded consumer placement of the `Cw`/`Dw` cases (P3-1), four stale places in BUILDER_REPLAY_DESIGN.md (P3-2) and no case that mutates `Run.Safe` (P3-4). The repair prompt `PRE1_R2_CONSUMER_MARKERS.md` (18,929 bytes, SHA-256 `60499BD23101670392C011EA08B4D4B78C23FF9B6B629C655940CD43C9267C2B`) requires reproducing P1-1, every P2-1 failure class and P2-2 on the unchanged base before freezing six R2 rows.
+
+Decision: `docs/internal/extensions/pre1/repair-r2/ACCEPTANCE_MATRIX.md` freezes the six R2 rows verbatim, restates the three REPLAY rows for the builder runner change and a new control runner, references the 31 frozen PRE-1 rows and the five PRE-1-R1 rows by exact source line and SHA-256 at the base, and records the freeze-time reproduction. The marker reproduction is a registry-driven control matrix (`run_marker_controls.ps1 -Observe`, run from a scratch copy that the implementation commit adds byte-identical) over disposable consumer copies outside the repository, with every failure class injected by an anchored edit and required to produce its diagnostic at the injected line, so a negative cannot pass by not failing. The registry cases B16-B18 were reproduced through the production runner's focused mode, and the audit's capstone probes CAB2 and CAB4 in a disposable clone whose copied build directory was checked to be a no-op build. Three readings are recorded for the coordinator: REQ-PRE-R2-MARKER's "apply the same mechanism" to any of the contract, spec and stage consumers that prints its marker on failure governs the prompt's narrower file list, so those consumers' verdict-marker commands (and, for the spec consumer, an `import Lean` appended to its last import line) are in scope; REQ-PRE-R2-HYGIENE's line-count sentence constrains the docstring rewording, while the verdict-marker command at the end of the same file grows after every registered surface; and REQ-PRE-R1-PRESERVATION, a property of the R1 range, is re-established by rerunning its checker at the R1 tip while the R1 verifiers and the claim-scan detector run on the R2 tip.
+
+Alternatives rejected: reproducing the marker defect only on the classes the audit named (the prompt asks for five classes on five consumers, and the stage and spec consumers are run by no gate); editing consumers in the worktree for the reproduction (the base must stay byte-identical and the focused replays compare Git state); a second cold build for a disposable clone (the copied build directory replays without rebuilding); treating the spec and stage consumers as out of scope because the file list omits them (that would narrow a frozen row without a coordinator amendment).
+
+Consequences: the base reproduction shows every consumer printing its marker on a failing run in at least four classes, so the mechanism is applied to all five and the contract consumer change is recorded as a contract amendment; the implementation commit follows with its own ledger entries.
+
+## WDD-20260914-PRE1-R2-002: builder replay registry version 2 - marker-absent rejections, `halts` and `Run.Safe` controls, a committed marker control matrix, and the replay design and amendment records
+
+Context: PRE-1-A2 found that the builder replay accepted B16-B18 as rejections although their consumer printed its PASS marker (P2-1), that no case weakens `halts` although `work` holds for every program (P2-2), that no case mutates `Run.Safe` (P3-4), that the `Cw`/`Dw` placement was unrecorded (P3-1), and that BUILDER_REPLAY_DESIGN.md was stale in four places (P3-2). The consumer mechanism itself is DD-20260914-PRE1-R2-001.
+
+Decision: (1) `scripts/preprocessing_builder_replay.ps1`: `Test-CaseVerdict` rejects a consumer-stage rejection whose stage output contains the case profile's marker, before the exact line-set comparison; four matcher fixtures (builder and capstone profile, rejection with and without the marker) join the self-tests; `$script:ExpectedRegistryVersion = 2` replaces the literal version check (the registry self-test's stale-version case now uses version 1); `$script:ExpectedIds` gains B53-B55 and the content pin moves from `0bc1fba4b974e05cd94830ff0d6038d6927d33b5928bb65587fc9a2dc166ffe7` to `3e27e7626f4af805820071777246d3a5c2ac101e7adbb3db028219b2f46ae495` (the only live pin; the older value survives only in dated records). (2) `builder_cases.json` version 2 appends `B53_RUNFACTS_HALTS_WEAKEN` (`halts` becomes `∃ fuel, (run program fuel s0).final.status = s0.status`, true of every program's run at fuel 0 and without the halted status, proof `⟨0, rfl⟩`) and `B54_RUNFACTS_HALTS_FUEL_LARGER` (`halts` at the literal budget `2000000000 + 2000000000 * xs.length`, proved from the same run by `RunsTo.fuel_extension`), both capstone profile and rejected at `PreprocessingContract.lean:227:` and `:349:`, and `B55_RUN_SAFE_LENGTH_WEAKEN` (`Run.Safe` checks each transition's `Prim.Safe` at `program.length + 1`, with a proved monotonicity lemma `Prim.Safe.succ_length` and a `Coe` instance so the unchanged `Run.Safe.of_transitions` elaborates; manifest re-hash as B35-B42), rejected at `preprocessing_builder_check.lean:457:`, the `Iff.rfl` definition pin. The fragments of B53 and B54 span from the structure field to its proof in the same file because the runner admits one contiguous fragment. (3) `docs/internal/extensions/pre1/repair-r2/marker_controls.json` (version `PRE1-R2-MARKER-CONTROLS-V1`, 45 cases) and `run_marker_controls.ps1`: 33 consumer cases (unchanged copy and injected classes per consumer), a descendant-sleeper deadline case, four registry cases and seven selector cases; every Lean, Git and child run through `Invoke-RMQOwnedBoundedProcess`, copies outside the repository, repository state and watched hashes compared around every case; the development probes used to design the cases are committed under `repair-r2/tools/`. (4) BUILDER_REPLAY_DESIGN.md is corrected where the audit found it stale (four producer targets, the 15-path closed set and optional fields, the gate default of 10800 s with its revision history, the validator stage before the cases) and where registry version 2 changes it (version and pins, the marker-absence rule and fixtures, the marker mechanism, the B53-B55 surfaces), plus the stale `Assert-SourceHashes` list noticed while editing. (5) CONTRACT.md V3-7a/V3-10a and the matching AMENDMENTS.md entries record the `Cw`/`Dw` placement with the superseded V3-7 (ii) text and the marker refinement, including the contract consumer.
+
+Alternatives rejected: dropping `Run.Safe`'s post-state fit conjunct, the prompt's example (probed in a disposable clone: the producer stops at `Compiler.lean:60`, `:77` and `:96`, where `of_transitions` constructs and `not_fault` and `final_fits` project the conjuncts, so the consumer pin is never reached); any single-file weakening without a coercion (the unchanged introduction proof `exact ⟨hsafe t ht, _⟩` accepts only a definitionally equal conjunct, which the `Iff.rfl` pin would also accept); extending the runner's companion mechanism to closure modules (a runner change outside the verdict matcher and its self-tests); a `halts` weakening whose producer proof is left unchanged (it fails at the producer); counting the marker by line equality instead of containment (a marker embedded in another line would escape the absence check).
+
+Consequences: B16, B17 and B18 become regression controls for the marker rule; every consumer-stage rejection is now also a marker-absence check. The capstone consumer and the builder consumer run twice as long, so the full builder replay is re-measured and the gate checker's deadline follows the measurement under its never-shorten rule.
+
+## WDD-20260917-PRE1-R2-003: PRE-1-R2 resumption - receipts committed after every heavy step, and the before/after consumer-stage timings measured in one queue on one build
+
+Context: the first PRE-1-R2 worker session ended by an account usage limit on 2026-09-14 after committing the matrix freeze `9e06fe77fd06bc537c48260f1b056fe46593b0d1` and the repair `341bc2803dc26a123c48b1b8d0566e5e1583de7a`; a host cleanup then deleted the worktree, and every uncommitted receipt of that session (marker-control receipts, replay receipts, the worker record, the log and report appends, the matrix evidence appendix) was lost. The coordinator recreated the worktree clean at `341bc28` and the resumption prompt requires the committed repair to be reviewed against every R2 row, every verification rerun on the tip, and receipts committed as soon as each heavy step produces them. Coordinator ruling R-R2-1 additionally asks for the measured durations of the builder-consumer and capstone-consumer stages before and after the repair, and for a gate-checker deadline revision if the full builder replay exceeds 60 percent of its 10,800 s deadline.
+
+Decision: (1) Every heavy step runs in the committed queue `repair-r2/tools/queue.ps1` under `Global\RMQHeavyVerification` as an owned bounded process with LEAN_NUM_THREADS=1, and its receipt is committed before the next heavy step starts, under `docs/internal/extensions/pre1/repair-r2/receipts/` as JSON built from the queue summary and step logs: per step the command, arguments, working directory, deadline, start, end, duration, exit, timeout and output-limit flags, the step log's SHA-256, byte and line counts, the number of output lines carrying each known verdict marker, the number of Lean error locations and a six-line tail; the header carries the revision, `git status --porcelain`, host, mutex wait and queue timestamps. Scanner steps never carry scanner text (the R1 runner `repair-r1/run_claim_scans.ps1` produces those receipts). (2) Each receipts commit carries its own workflow-ledger entry, because `docs/internal/` is a workflow root and the per-commit strict design check requires the entry in the same commit. (3) The before/after timings are measured in the same queue on the same cold build and host: the base blobs of `scripts/preprocessing_builder_check.lean` and `RMQ/Validation/PreprocessingContract.lean` at `a0c93e9` run as copies outside the repository through `lake env lean` from the repository root, immediately after the tip consumers. Measured: builder consumer 3.46 s (base) and 10.95 s (tip); capstone consumer 56.09 s (base) and 120.58 s (tip); the other tip consumers contract 4.71 s, spec 86.88 s, stage 287.47 s; the cold build of the five consumers' producer targets and `rmq_preprocessing_validate` 2071.4 s (590 jobs). Receipt `receipts/q1-build-consumers-341bc28.json`.
+
+Alternatives rejected: holding receipts until the end of the session (the first session lost every uncommitted artifact that way); one ledger entry for the whole commit chain (a commit without its entry fails the per-commit strict design check); taking the "before" durations from the first session's records (measured under a different host load; the same-queue measurement is the comparable one); measuring the base consumers by checking out the base (the worktree must stay at the tip and clean).
+
+Consequences: the commit chain after `341bc28` changes only `docs/internal/` (receipts, ledger entries, appended sections and the matrix evidence appendix), except a gate-checker deadline commit if ruling R-R2-1 triggers; the Lean sources, runners, registries and manifests of `341bc28` are the content tree every receipt describes. The re-elaboration roughly triples the builder consumer and doubles the capstone consumer on this host, so the full builder replay's wall time is compared with the gate deadline before the report is written.
+
+## WDD-20260917-PRE1-R2-004: PRE-1-R2 focused replays of the three new cases and the B16 regression control before the full campaign, with digests of the evidence reports as receipts
+
+Context: the builder replay runner's own contract is "StartupOnly, then one OnlyCase, before full mode", and the completion gate requires a bounded startup smoke test and one exact selector before a full campaign whose import closure changed. The three registered R2 cases (B53, B54, B55) and the marker-absence rule had been exercised only in the first session's lost evidence. A replay evidence directory's `report.json` holds every stage's full output (314 KB for the startup run alone), so committing the raw reports would put hundreds of kilobytes of stage output per run under `docs/internal/`.
+
+Decision: (1) Q2 ran `scripts/preprocessing_builder_replay.ps1 -StartupOnly` (exit 0, 149.2 s, registry 55, both baseline profiles with their markers), then `-OnlyCase` for `B55_RUN_SAFE_LENGTH_WEAKEN` (424.8 s), `B53_RUNFACTS_HALTS_WEAKEN` (427.5 s), `B54_RUNFACTS_HALTS_FUEL_LARGER` (424.7 s) and the regression control `B16_PROGRAM_PARAMETER` (383.7 s), each exit 0 with `PRE-BUILDER-REPLAY: PASS mode=focused executed=1`. In every case the mutant consumer stage exited 1 without the profile's marker and with exactly the registered line set (B55 {457}; B53 and B54 {227, 349}; B16 {370}), the restored consumer exited 0 with the marker, the mutant producer built (B55 128.5 s and 120.0 s with the manifest re-hash; B53 19.9 s; B54 16.7 s and 17.7 s; B16 92.8 s and 105.6 s), and the source and manifest bytes were restored exactly. (2) The committed receipt is a digest of each evidence `report.json` (`receipts/q2-focused-replays-c33f2a8.digest.json`: report SHA-256 and size, mode, verdict, registry and runner digests, selected and executed IDs, per case the expectation, profile, manifest mode, verdict, before/mutation/after hashes, and per stage the exit, duration, deadline, timeout flag, the consumer error line set and marker presence) beside the queue receipt (`receipts/q2-focused-replays-c33f2a8.json`); the evidence directories stay under `.lake/preprocessing-builder-replay` on the host.
+
+Alternatives rejected: skipping the focused runs because the full replay repeats them (the runner's own startup-then-one-case contract, and a failing new case is cheaper to diagnose focused); committing the raw `report.json` files (stage outputs under a scanned docs root); digesting only the verdict line (the exact line set and marker absence are the evidence the R2 rows need).
+
+Consequences: B53, B54 and B55 are established as exact-surface rejections and B16 as a marker-absence regression control before the full campaign; the full replay's per-case results are digested the same way.
+
+## WDD-20260917-PRE1-R2-005: PRE-1-R2 marker control matrix, attempt 1 recorded as a setup failure caused by a work-root path over the Windows path limit
+
+Context: the marker control runner `repair-r2/run_marker_controls.ps1` copies each consumer into a disposable directory under `-WorkRoot`, which must lie outside the repository, and defaults that root to `%TEMP%\pre1-r2-marker-controls-<guid>` (about 70 characters). The resumed session passed an explicit `-WorkRoot` under its scratchpad, whose prefix is about 175 characters. Three consumer runs then exited 1 after about 0.5 s with two stderr lines and no Lean output: `contract-d-unknown-identifier` in the full Windows PowerShell 5.1 run (the case whose id and consumer file name are the longest, copy path 268 characters when reproduced) and `contract-unchanged` inside the `selector-valid` child on both hosts (the child adds `selector-valid/child-work/` to every copy path). The runner reported each as FAIL because no diagnostic was located at the injected line, so the 5.1 run (45 of 45 executed, 3682.0 s) and the pwsh non-Lean run (12 of 12) both ended FAIL. Reproduced directly on the tip: `lake env lean` on the contract consumer copied to a 268-character path fails with `no such file or directory (error code: 2)` on stderr, exit 1, in under a second; the same copy at an 82-character path exits 0 with its marker.
+
+Decision: attempt 1 is recorded as a setup failure, not as a PASS and not as a marker defect, with its queue receipt and both runner receipts committed (`receipts/q3-marker-controls-e935f84-attempt1*.json`; every case restored the repository state and removed its copy, the deadline case passed on 5.1 with root and child absent after its 45 s deadline and was INCONCLUSIVE under the packaged pwsh host as designed, and the four registry and the other six selector cases passed on both hosts). Attempt 2 reruns the full registry on Windows PowerShell 5.1 and the non-Lean cases on pwsh 7.6.6 with the runner's default work root, which the first session also used; only that run's receipts can close REQ-PRE-R2-MARKER.
+
+Alternatives rejected: counting the 42 passing cases of attempt 1 as the control matrix (a partial run is not a pass; the registry contract requires executed = selected with every case passing); rerunning only the failed cases (the frozen requirement names a committed control matrix run, and a case that did not elaborate has no result to complement); teaching the runner to reject an over-long work root (a runner change in a repair whose runner is committed and pinned; the default already avoids the condition, and this entry records the boundary for the coordinator's follow-up list).
+
+Consequences: the work-root path length is a recorded operational boundary of the control runner on Windows (copy paths must stay under 260 characters); the marker mechanism itself was not contradicted by attempt 1, since every case that elaborated behaved as registered.
+
+## WDD-20260917-PRE1-R2-006: PRE-1-R2 marker control matrix, attempt 2 - the committed registry passes on Windows PowerShell 5.1 and the non-Lean cases run on pwsh 7.6.6
+
+Context: REQ-PRE-R2-MARKER requires the committed control matrix (`repair-r2/marker_controls.json`, 45 cases, with `run_marker_controls.ps1`) to be run on the tip in disposable copies, and the frozen coverage plan runs the full registry under Windows PowerShell 5.1 (the only host on which the descendant-sleeper deadline case can be established) and the non-Lean cases under pwsh 7.6.6. Attempt 1 (WDD-005) was a work-root path-length setup failure.
+
+Decision: attempt 2 ran in the queue on `26b175e` (content tree of `341bc28`) with the runner's default work root under `%TEMP%`. Windows PowerShell 5.1.26100.9444: RESULT PASS, 45 of 45 executed and passed in 3630.5 s: for each of the five consumers the unchanged copy exits 0 with exactly one marker line and no error, and each injected class exits 1 with zero marker lines, its registered diagnostic and an error at the injected line (builder: example, `#guard`, `run_cmd` V3-1 check, maximum recursion, unknown identifier, unreferenced declaration, trailing `#guard` after the marker, lines 503/352/525/627; capstone: the same classes at lines 1070/1092/1246; contract at 98/119; spec at 719; stage at 4552/4574/4926); the deadline case timed out at 45 s with root and child both absent; the four registry mutations exit 1 before any case; the seven selector cases behave as pinned (omitted selects 45, a valid id executes exactly that case, bound empty, whitespace, malformed, unknown and duplicate exit 2 before any case); every copy was removed and the repository state (HEAD, status, worktree and index diffs, watched hashes) was unchanged around every case. pwsh 7.6.6 (MSIX-packaged host): the twelve non-Lean cases, 12 of 12 executed, eleven PASS and `deadline-descendant-cleanup` INCONCLUSIVE with the sleeper not started, exit 3, as the runner and the frozen matrix pre-record for a packaged host. Per-consumer run durations on the tip: builder about 10-11 s, capstone 108-127 s, contract 5-6 s, spec 91-119 s, stage 280-321 s. Receipts `receipts/q3-marker-controls-26b175e.json` (queue) with the runner receipts `-ps51.json` and `-pwsh.json`.
+
+Alternatives rejected: running the full registry on pwsh as well (the Lean cases are host-independent and the deadline case is INCONCLUSIVE there by design; the plan's split covers both hosts' distinct evidence); treating the pwsh INCONCLUSIVE as a failure (a condition the host cannot create is uncovered, not failed, and the 5.1 run establishes it).
+
+Consequences: REQ-PRE-R2-MARKER's committed control matrix is established on the tip for all five consumers and both hosts' roles; the REPLAY rows for the control runner (exact registry, selector non-vacuity, bounded subprocesses with verified restoration) are established by the same receipts.
+
+## WDD-20260917-PRE1-R2-007: PRE-1-R2 complete builder replay on the repaired tree - 55 of 55 with marker-absent rejections, and the measured wall time for the gate deadline
+
+Context: CHK-PRE-R2-VERIFICATION requires the complete builder replay (every case including B53-B55, with executed and expected IDs) on the tip; REQ-PRE-R2-RECORDS makes B16-B18 regression controls for the marker-absence rule; coordinator ruling R-R2-1 requires the run's wall time to be compared with the gate checker's 10,800 s deadline.
+
+Decision: `scripts/preprocessing_builder_replay.ps1` in full mode (no selector) ran in the queue on `f5d6128` (content tree of `341bc28`, mutex wait 0.0 s) under pwsh 7.6.6, LEAN_NUM_THREADS=1, no concurrent Lean process: `PRE-BUILDER-REPLAY: PASS mode=full executed=55 registry=55`, exit 0, owned-process wall 8674.82 s (evidence directory `20260917-132238-092add735903413b878e3fdfb7b1e977` created 13:22:38, `report.json` written 15:47:12), 7999.1 s summed over 571 stages; 58 self-tests PASS (23 registry, 23 matcher including the four marker fixtures, 9 selector, 3 deadline); both baseline profiles printed their markers; the validator stage's full executable run PASS and its four negative controls rejected with their pinned messages; all 55 cases PASS with exact restoration of source and manifest bytes and the repository state at `f5d6128` clean before and after. Every consumer-stage rejection has its exact registered line set with the profile's marker absent: the regression controls B16 {370}, B17 {371} and B18 {352} (which printed the marker on the base), the new cases B53 and B54 {227, 349} and B55 {457}, and every earlier case as registered; the accept controls B12 and B52 print their markers. The committed receipt is the queue receipt `receipts/q4-builder-replay-full-f5d6128.json` with a per-case digest of the evidence report (`.digest.json`: per stage exit, duration, deadline, timeout flag, consumer error line set and marker presence; the 16.2 MB `report.json` stays on the host).
+
+Alternatives rejected: committing the raw evidence report (16.2 MB of stage output under a scanned docs root); treating the focused runs of Q2 as the campaign (the frozen row names the complete registry with executed = expected).
+
+Consequences: REQ-PRE-R2-HALTS, REQ-PRE-R2-RUNSAFE, the B16-B18 regression clause of REQ-PRE-R2-RECORDS and the builder-replay parts of the REPLAY rows are established on the tip. 8674.82 s is 80 percent of the 10,800 s gate deadline, above the 60 percent line of ruling R-R2-1, so the gate checker's default is raised in the next commit.
+
+## WDD-20260917-PRE1-R2-008: builder gate checker deadline raised to 23,400 s under coordinator ruling R-R2-1 against the measured 55-case run
+
+Context: `scripts/preprocessing_builder_gate.ps1` runs the complete builder replay as one owned bounded child under `-OuterDeadlineSeconds`, whose default was raised on measured runs from 1800 s (13 cases, 516.8 s) to 3600 s (34 cases, 1535.87 s) to 10,800 s (52 cases, 4573.59 s), never shortened. Repair PRE-1-R2 makes every consumer stage re-elaborate its file (builder consumer 3.46 s to 10.95 s, capstone consumer 56.09 s to 120.58 s on this host) and adds B53-B55. Coordinator ruling R-R2-1 (2026-09-17): after the full builder replay on the tip, if its wall time exceeds 60 percent of the checker deadline, raise the default to the measured duration times 2.5 rounded up to a multiple of 1,800 s, in its own commit with a design entry citing the measured run; no other change to the checker.
+
+Decision: the measured run is the complete replay of WDD-007 on `f5d6128` (evidence `20260917-132238-092add735903413b878e3fdfb7b1e977`, `mode=full`, 55/55 cases, 571 stages, 58 self-tests, capstone baseline and validator stage included, pwsh 7.6.6, no concurrent Lean process): 8674.82 s owned-process wall, 7999.1 s summed stages. 8674.82 s is 80 percent of 10,800 s, above the 60 percent line, so the default becomes 8674.82 x 2.5 = 21,687.05 s rounded up to a multiple of 1,800 s, 23,400 s = 2.70 x measured. The revision is recorded at the `MEASURED-DEADLINE` comment with the same fields as the earlier revisions, and the gate paragraph of BUILDER_REPLAY_DESIGN.md (which states the default and its revision history, one of the four places PRE-1-A2 P3-2 found stale) now lists the new value against this run. Nothing else in the checker changes; the replay runner, its per-stage deadlines and the registry are untouched.
+
+Alternatives rejected: leaving 10,800 s (1.24 x the measured run, below the checker's own at-least-2x rule and the ruling's line); rounding to the ruling's product without the 1,800 s step (the ruling fixes the rounding); revising the replay runner's stage deadlines (no stage approached its 600 s, 1800 s validator or 120 s administrative deadline: the longest stages were the B42 producer rebuilds at 201.5 s and 234.3 s and the validator's full executable run).
+
+Consequences: the coordinator aggregate gate's builder-replay step has a deadline with 2.70x margin over this run; a later host or registry change re-measures and revises on evidence, never shortening.
+
+## WDD-20260917-PRE1-R2-009: PRE-1-R2 contract replay, validator, firewall, self-tests on both hosts, P2-2 probe and mechanism toy on the tip
+
+Context: CHK-PRE-R2-VERIFICATION names the complete 18-case contract replay (the contract consumer's verdict-marker command changed under amendment V3-10a), `lake build` of the capstone, the consumers and `rmq_preprocessing_validate` with `lake exe rmq_preprocessing_validate`, the builder firewall, and the registry, selector-boundary and deadline self-tests on pwsh 7.6.6 and Windows PowerShell 5.1; REQ-PRE-R2-HALTS and REQ-PRE-R2-MARKER are served by the committed P2-2 probe and the import-free mechanism toy rerun on the tip.
+
+Decision: one queue on `f7bdf20` (mutex wait 0.0 s, held 15:50:13-16:04:49): contract replay `PASS mode=full executed=18 registry=18` (378.7 s; the changed contract consumer rejects every registered case at its exact line set and accepts C14); `lake build RMQ.Core.WordRAM.Construction.Capstone RMQ.Validation.PreprocessingContract rmq_preprocessing_validate` exit 0 (71.1 s, the capstone consumer compiled as a module); `lake exe rmq_preprocessing_validate` `PRE1-VALIDATE PASS cases=11 mode=full` (257.7 s); firewall PASS (17 modules, 6.0 s); the three self-tests PASS on both hosts (pwsh 2.7 s, 14.9 s, 48.4 s; 5.1 1.6 s, 7.6 s, 46.9 s), the deadline self-test's sleeper root and child absent on both; `lake env lean` of `repair-r2/tools/p2_2_work_probe.lean` exit 0 with `work_literal_is_fuel` and `empty_program_work` on `[propext, Quot.sound]` and `empty_program_never_halts` on `[propext]` (1.6 s); the mechanism toy's eleven variants (38.7 s, scratch directory outside the repository): base and CRLF print the marker with exit 0, the eight failing classes exit 1 without it, and the unreferenced explicit-placeholder variant prints it (a warning, the recorded boundary of DD-20260914-PRE1-R2-001). Receipts `receipts/q5-contract-validator-selftests-f7bdf20.json` with the digest of the contract-replay and self-test evidence reports.
+
+Alternatives rejected: skipping the validator run because the full builder replay's validator stage already ran it (the frozen row names it separately and it is cheap); running the toy inside the repository (a scratch `base.lean` and variant files would dirty the tree).
+
+Consequences: every command CHK-PRE-R2-VERIFICATION names has run on the tip except the coordinator-owned aggregate gate; the remaining static checks, the log and report appends and the matrix evidence appendix follow in the closing commits.
+
+
+## WDD-20260917-PRE1-R2-010: PRE-1-R2 closing records - static checks, the appended log and report sections, the matrix evidence appendix, and the worker record delivered in the submission because the runtime refused to create it
+
+Context: the resumption prompt requires appended sections of BUILDER_STAGE_LOG.md and REPORT.md, an evidence appendix to `repair-r2/ACCEPTANCE_MATRIX.md`, receipts for the static checks, and the durable worker record `repair-r2/REPORT.md`; the Claude-runtime adaptation of the prompt says a runtime refusal to create a required file is to be reported as a blocker, not worked around.
+
+Decision: (1) The static checks on `9598f72` (both gate hygiene commands, `verify_receipt_archives.py --committed HEAD`, `verify_rewords.py --committed HEAD`, `check_preservation.py --head a0c93e9`, the R1 claim-scan runner with its detector, `git diff --check` on the working tree and on `a0c93e9..HEAD`, and `design_decision_check.ps1 -Strict -Base a0c93e9 -Head 9598f72`) all pass and are recorded in `receipts/q6-static-checks-9598f72.json` (command, exit, duration, note, with the verifier result files) and `receipts/q6-claim-scans-9598f72.json` (the R1 runner's receipt, which never holds scanner text). (2) The R2 section of BUILDER_STAGE_LOG.md (rows R2-1 to R2-20), the PRE-1-R2 section of REPORT.md (with the fuel-triviality reading of `work` and the `halts`-with-`work` statement REQ-PRE-R2-HALTS requires, and the before/after consumer-stage durations of ruling R-R2-1) and the evidence appendix of the R2 matrix are appended after the last line of each file; each file's earlier bytes are unchanged. (3) The second session's runtime refused to create `docs/internal/extensions/pre1/repair-r2/REPORT.md` (the Write tool answered that subagents return findings as text and do not write report files, for the required path itself); the refusal is recorded here and in the appended REPORT.md section, the worker record's full content is delivered in the submission message for the coordinator to persist, and no other route was used to create that file. (4) Defect of this session's own process, recorded rather than repaired by rewriting: the assembly step that was to write the two static-check receipts, the three appends and this entry in one commit aborted on an over-cautious assertion in the worker's script (it required the words of the scanner's summary pattern to be absent from the R1 scan-runner receipt, which names that pattern in the same way as the committed R1 receipts), and the shell did not stop, so commit `3ce9b89` contains only the two receipts and fails its per-commit strict design check (workflow paths without a ledger update) while the range check passes; the prompt forbids rewriting history, so `3ce9b89` stands and this commit carries the entry covering its receipts. CHK-PRE-R2-VERIFICATION's per-commit clause is therefore not met for that one commit. (5) The closing commit cannot record its own SHA or the checks run on it; the per-commit and range design checks, both whitespace checks, the hygiene commands, the R1 verifiers and the claim-scan runner are rerun on the exact tip and reported in the submission message, as the R1 repair did.
+
+Alternatives rejected: creating the worker record through a shell redirection after the tool refusal (the prompt forbids working around a runtime refusal of a required file); folding the worker record into the appended REPORT.md section (that section is a summary by design, and the record's row-by-row evidence, command ledger and digestion belong to the durable artifact the coordinator will persist); a further commit recording the tip's own scan results (it would itself be an unscanned tip; the coordinator gate reruns the scans on the exact tip anyway).
+
+Consequences: the worker returns `Status: INCOMPLETE` with `Phase: AWAITING_COORDINATOR_CERTIFICATION`, names the missing durable artifact as the one open item of its own, and requests the continuation audit and the coordinator aggregate gate on the exact tip; the six R2 rows are met in worker review on the repaired content tree of `341bc28` with the gate deadline of `f7bdf20`.
+
+## WDD-20260917-PRE1-R2-011: the PRE-1-R2 worker record persisted from the submission message by the coordinator, committed with its bytes unchanged
+
+Context: WDD-010 recorded that the second PRE-1-R2 session's runtime refused to create the required durable artifact `docs/internal/extensions/pre1/repair-r2/REPORT.md` and that the record's content was delivered in the submission message (28,120 bytes, SHA-256 `fe92063f3d6497b3198f7a27f8337e5df71eb8e25495d0deb9098b2f2cf8bdf6`, UTF-8 with LF line endings). The coordinator recovered that text byte-exactly from the submission message and placed it, untracked, at that path in the worker's worktree at `d36b7e5b57e195b653ab5e7a024973493ecb6e4e`, then instructed the worker to verify the digest and make one final commit containing exactly that file and this entry.
+
+Decision: the worker recomputed the placed file's SHA-256 (`fe92063f3d6497b3198f7a27f8337e5df71eb8e25495d0deb9098b2f2cf8bdf6`, 28,120 bytes, no CRLF) and found it equal to the digest reported in the submission; the file is committed without any edit, together with this entry, and nothing else changes in the commit. The report's persisted bytes were supplied by the coordinator from the worker's submission message; the report itself is not edited to say so, this entry records it. The report's own opening (`Status: INCOMPLETE`, `Phase: AWAITING_COORDINATOR_CERTIFICATION`) and its Limits section, which describe the artifact as missing from the repository at the time of writing, stand as the record of that session; this commit is the repair of that one limit.
+
+Alternatives rejected: editing the report to note its provenance (its digest is the identity the submission message pins); leaving the record uncommitted (the durable artifact would still be absent from the branch the continuation audit and aggregate gate examine); rewriting `d36b7e5` to include it (history is not rewritten).
+
+Consequences: the durable completion artifact `repair-r2/REPORT.md` exists on the branch with the pinned digest; the checks on this closing commit (per-commit strict design check against `d36b7e5`, both gate hygiene commands, `git diff --check` on the working tree and on `a0c93e9..HEAD`) are reported in the reply to the coordinator, since a commit cannot record its own SHA.

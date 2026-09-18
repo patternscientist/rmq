@@ -311,6 +311,21 @@ Invoke-Checker -Path "$PSScriptRoot\eg_cp_stagea_replay.ps1"
 
 Invoke-Checker -Path "$PSScriptRoot\eg_cp_final_falsification_replay.ps1"
 
+# PRE1-CONTRACT-GATE-ANCHOR
+# The frozen PRE-1 construction contract layer (Std-only import/byte guard over
+# Primitive/Input/Model, the contract producer build and its exact-type typed
+# consumer) is reached by the aggregate since 2026-09-12. The fresh-blind audit
+# PRE-1-A1 (finding P2-1, amendment A4) found that no gate or CI executed it, so
+# a widening of the construction ISA or of its import closure could not fail CI.
+# Each stage is an owned bounded subprocess; a timeout is inconclusive, not PASS.
+Invoke-Checker -Path "$PSScriptRoot\preprocessing_contract_gate.ps1" -Label 'PRE1-CONTRACT-GATE'
+
+# PRE1-BUILDER-REPLAY-GATE-ANCHOR
+# The layered builder firewall (contract guard first, exact import table,
+# transitive closure, frozen closure bytes) and the versioned builder mutation
+# registry run in full as one owned bounded child with a measured outer deadline.
+Invoke-Checker -Path "$PSScriptRoot\preprocessing_builder_gate.ps1" -Label 'PRE1-BUILDER-REPLAY'
+
 lake build RMQHub
 if ($LASTEXITCODE -ne 0) { Fail "lake build RMQHub failed" }
 
@@ -658,6 +673,8 @@ $expectedCheckers = @(
   'm1_certificate_mutation_regression.ps1 {m1_certificate_mutation_regression.ps1}',
   'eg_cp_stagea_replay.ps1 {eg_cp_stagea_replay.ps1}',
   'eg_cp_final_falsification_replay.ps1 {eg_cp_final_falsification_replay.ps1}',
+  'PRE1-CONTRACT-GATE {preprocessing_contract_gate.ps1}',
+  'PRE1-BUILDER-REPLAY {preprocessing_builder_gate.ps1}',
   'project_skill_preflight_regression.ps1 {project_skill_preflight_regression.ps1}',
   'worker_prompt_preflight_regression.ps1 {worker_prompt_preflight_regression.ps1}',
   'design_decision_check_regression.ps1 {design_decision_check_regression.ps1}',

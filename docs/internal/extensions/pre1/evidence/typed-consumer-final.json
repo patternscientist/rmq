@@ -1,0 +1,39 @@
+{
+  "Stage": "pre1-typed-consumer-final",
+  "ExitCode": 0,
+  "Output": [
+    "'RMQ.SuccinctFinal.PackedConstruction.contractPrerequisites_holds' depends on axioms: [propext,",
+    " Classical.choice,",
+    " Quot.sound]",
+    "'RMQ.SuccinctFinal.PackedConstruction.oracle_not_reflected' depends on axioms: [propext, Quot.sound]",
+    "'RMQ.SuccinctFinal.PackedConstruction.baked_not_uniform' depends on axioms: [propext]",
+    "'RMQ.SuccinctFinal.PackedConstruction.header_read' depends on axioms: [propext]",
+    "'RMQ.SuccinctFinal.PackedConstruction.encodeInt_lt_iff' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'RMQ.SuccinctFinal.PackedConstruction.inputFits_all_sizes' depends on axioms: [propext, Quot.sound]",
+    "'RMQ.SuccinctFinal.PackedConstruction.reserve_fresh' depends on axioms: [propext, Quot.sound]",
+    "'RMQ.SuccinctFinal.PackedConstruction.comparison_missing_header_fault' depends on axioms: [propext]",
+    "'RMQ.SuccinctFinal.PackedConstruction.Conservative.execute_eq_of_fits' depends on axioms: [propext, Quot.sound]",
+    "PRE1-CONTRACT-TYPED-CONSUMERS PASS"
+  ],
+  "StandardOutput": [
+    "'RMQ.SuccinctFinal.PackedConstruction.contractPrerequisites_holds' depends on axioms: [propext,",
+    " Classical.choice,",
+    " Quot.sound]",
+    "'RMQ.SuccinctFinal.PackedConstruction.oracle_not_reflected' depends on axioms: [propext, Quot.sound]",
+    "'RMQ.SuccinctFinal.PackedConstruction.baked_not_uniform' depends on axioms: [propext]",
+    "'RMQ.SuccinctFinal.PackedConstruction.header_read' depends on axioms: [propext]",
+    "'RMQ.SuccinctFinal.PackedConstruction.encodeInt_lt_iff' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'RMQ.SuccinctFinal.PackedConstruction.inputFits_all_sizes' depends on axioms: [propext, Quot.sound]",
+    "'RMQ.SuccinctFinal.PackedConstruction.reserve_fresh' depends on axioms: [propext, Quot.sound]",
+    "'RMQ.SuccinctFinal.PackedConstruction.comparison_missing_header_fault' depends on axioms: [propext]",
+    "'RMQ.SuccinctFinal.PackedConstruction.Conservative.execute_eq_of_fits' depends on axioms: [propext, Quot.sound]",
+    "PRE1-CONTRACT-TYPED-CONSUMERS PASS"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 12.127,
+  "DeadlineSeconds": 120,
+  "Ownership": "kill-on-close-job"
+}

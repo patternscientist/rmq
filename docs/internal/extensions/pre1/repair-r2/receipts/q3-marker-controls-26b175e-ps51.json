@@ -1,0 +1,1855 @@
+{
+    "version":  "PRE1-R2-MARKER-CONTROLS-RECEIPT-V1",
+    "registryVersion":  "PRE1-R2-MARKER-CONTROLS-V1",
+    "registrySha256":  "554072ec7ffd20de73a74ef78528a6b7902b100a4b13b0bce6b7c86fb4678310",
+    "registryContentSha256":  "11abd16938cbd0537a35460bdc203b50052bc5523b31847dc315aeec31aad81a",
+    "runnerSha256":  "763af78ea72149ff92d080ea04b39bcbbb8371f35120db7ced39f62eba4504ab",
+    "liveBytesNote":  "SHA-256 values are of the live checkout bytes that ran",
+    "repo":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers",
+    "revision":  "26b175e068780633118839e6383e2e38e576e637",
+    "host":  "POINPAD",
+    "os":  "Microsoft Windows NT 10.0.26200.0",
+    "powershell":  "5.1.26100.9444",
+    "hostPath":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "packagedHost":  false,
+    "lake":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lake.exe",
+    "observe":  false,
+    "workRoot":  "C:\\Users\\poin\\AppData\\Local\\Temp\\pre1-r2-marker-controls-a2161d3652554fb7b274cbd8993242a0",
+    "workRootRemoved":  true,
+    "selectorBound":  false,
+    "selected":  [
+                     "builder-unchanged",
+                     "builder-a-example",
+                     "builder-b-guard",
+                     "builder-b-run-cmd",
+                     "builder-c-max-recursion",
+                     "builder-d-unknown-identifier",
+                     "builder-e-unreferenced",
+                     "builder-f-after-marker",
+                     "capstone-unchanged",
+                     "capstone-a-example",
+                     "capstone-b-guard",
+                     "capstone-c-max-recursion",
+                     "capstone-d-unknown-identifier",
+                     "capstone-e-unreferenced",
+                     "capstone-f-after-marker",
+                     "contract-unchanged",
+                     "contract-a-example",
+                     "contract-b-guard",
+                     "contract-c-max-recursion",
+                     "contract-d-unknown-identifier",
+                     "contract-e-unreferenced",
+                     "spec-unchanged",
+                     "spec-a-example",
+                     "spec-b-guard",
+                     "spec-c-max-recursion",
+                     "spec-d-unknown-identifier",
+                     "spec-e-unreferenced",
+                     "stage-unchanged",
+                     "stage-a-example",
+                     "stage-b-guard",
+                     "stage-c-max-recursion",
+                     "stage-d-unknown-identifier",
+                     "stage-e-unreferenced",
+                     "deadline-descendant-cleanup",
+                     "registry-remove-last",
+                     "registry-swap-first-two",
+                     "registry-version",
+                     "registry-content",
+                     "selector-omitted",
+                     "selector-valid",
+                     "selector-empty",
+                     "selector-whitespace",
+                     "selector-malformed",
+                     "selector-unknown",
+                     "selector-duplicate"
+                 ],
+    "expected":  [
+                     "builder-unchanged",
+                     "builder-a-example",
+                     "builder-b-guard",
+                     "builder-b-run-cmd",
+                     "builder-c-max-recursion",
+                     "builder-d-unknown-identifier",
+                     "builder-e-unreferenced",
+                     "builder-f-after-marker",
+                     "capstone-unchanged",
+                     "capstone-a-example",
+                     "capstone-b-guard",
+                     "capstone-c-max-recursion",
+                     "capstone-d-unknown-identifier",
+                     "capstone-e-unreferenced",
+                     "capstone-f-after-marker",
+                     "contract-unchanged",
+                     "contract-a-example",
+                     "contract-b-guard",
+                     "contract-c-max-recursion",
+                     "contract-d-unknown-identifier",
+                     "contract-e-unreferenced",
+                     "spec-unchanged",
+                     "spec-a-example",
+                     "spec-b-guard",
+                     "spec-c-max-recursion",
+                     "spec-d-unknown-identifier",
+                     "spec-e-unreferenced",
+                     "stage-unchanged",
+                     "stage-a-example",
+                     "stage-b-guard",
+                     "stage-c-max-recursion",
+                     "stage-d-unknown-identifier",
+                     "stage-e-unreferenced",
+                     "deadline-descendant-cleanup",
+                     "registry-remove-last",
+                     "registry-swap-first-two",
+                     "registry-version",
+                     "registry-content",
+                     "selector-omitted",
+                     "selector-valid",
+                     "selector-empty",
+                     "selector-whitespace",
+                     "selector-malformed",
+                     "selector-unknown",
+                     "selector-duplicate"
+                 ],
+    "executed":  [
+                     "builder-unchanged",
+                     "builder-a-example",
+                     "builder-b-guard",
+                     "builder-b-run-cmd",
+                     "builder-c-max-recursion",
+                     "builder-d-unknown-identifier",
+                     "builder-e-unreferenced",
+                     "builder-f-after-marker",
+                     "capstone-unchanged",
+                     "capstone-a-example",
+                     "capstone-b-guard",
+                     "capstone-c-max-recursion",
+                     "capstone-d-unknown-identifier",
+                     "capstone-e-unreferenced",
+                     "capstone-f-after-marker",
+                     "contract-unchanged",
+                     "contract-a-example",
+                     "contract-b-guard",
+                     "contract-c-max-recursion",
+                     "contract-d-unknown-identifier",
+                     "contract-e-unreferenced",
+                     "spec-unchanged",
+                     "spec-a-example",
+                     "spec-b-guard",
+                     "spec-c-max-recursion",
+                     "spec-d-unknown-identifier",
+                     "spec-e-unreferenced",
+                     "stage-unchanged",
+                     "stage-a-example",
+                     "stage-b-guard",
+                     "stage-c-max-recursion",
+                     "stage-d-unknown-identifier",
+                     "stage-e-unreferenced",
+                     "deadline-descendant-cleanup",
+                     "registry-remove-last",
+                     "registry-swap-first-two",
+                     "registry-version",
+                     "registry-content",
+                     "selector-omitted",
+                     "selector-valid",
+                     "selector-empty",
+                     "selector-whitespace",
+                     "selector-malformed",
+                     "selector-unknown",
+                     "selector-duplicate"
+                 ],
+    "registryCaseCount":  45,
+    "result":  "PASS",
+    "cases":  [
+                  {
+                      "id":  "builder-unchanged",
+                      "kind":  "consumer",
+                      "requirement":  "marker present with exit 0 on the unchanged file",
+                      "verdict":  "PASS",
+                      "detail":  "exit 0 marker-lines 1 errors [] first-edit-line 0 exercised True",
+                      "lean":  {
+                                   "consumer":  "builder",
+                                   "path":  "scripts/preprocessing_builder_check.lean",
+                                   "class":  "unchanged",
+                                   "blob":  "4f3570cbd8ae3220f784b5c5a2f3abf46c8bc088",
+                                   "liveSha256":  "fd38d26cc5e165dcde1db860c35892f9bed798277ddb989e7e6251e6cba4ae49",
+                                   "copySha256":  "fd38d26cc5e165dcde1db860c35892f9bed798277ddb989e7e6251e6cba4ae49",
+                                   "firstEditLine":  0,
+                                   "exit":  0,
+                                   "seconds":  9.571,
+                                   "deadline":  900,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  1,
+                                   "errorLocations":  [
+
+                                                      ],
+                                   "errorHeads":  [
+
+                                                  ],
+                                   "errorAtFirstEdit":  false,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "zero",
+                                   "expectedMarker":  true
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  12.974
+                  },
+                  {
+                      "id":  "builder-a-example",
+                      "kind":  "consumer",
+                      "requirement":  "(a) a failing anonymous example",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [503:31] first-edit-line 503 exercised True",
+                      "lean":  {
+                                   "consumer":  "builder",
+                                   "path":  "scripts/preprocessing_builder_check.lean",
+                                   "class":  "a-example",
+                                   "blob":  "4f3570cbd8ae3220f784b5c5a2f3abf46c8bc088",
+                                   "liveSha256":  "fd38d26cc5e165dcde1db860c35892f9bed798277ddb989e7e6251e6cba4ae49",
+                                   "copySha256":  "feb46396c2918988483bffe38f9f6f2d43d219b0258115850af98d60efbdcebd",
+                                   "firstEditLine":  503,
+                                   "exit":  1,
+                                   "seconds":  10.861,
+                                   "deadline":  900,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "503:31"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "type mismatch"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  14.707
+                  },
+                  {
+                      "id":  "builder-b-guard",
+                      "kind":  "consumer",
+                      "requirement":  "(b) a failing #guard-style check",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [503:0] first-edit-line 503 exercised True",
+                      "lean":  {
+                                   "consumer":  "builder",
+                                   "path":  "scripts/preprocessing_builder_check.lean",
+                                   "class":  "b-guard",
+                                   "blob":  "4f3570cbd8ae3220f784b5c5a2f3abf46c8bc088",
+                                   "liveSha256":  "fd38d26cc5e165dcde1db860c35892f9bed798277ddb989e7e6251e6cba4ae49",
+                                   "copySha256":  "0063b53d368dc2d6db25a373a52856b9ff61c6e8f700a80541d3532ea7e53b0f",
+                                   "firstEditLine":  503,
+                                   "exit":  1,
+                                   "seconds":  10.815,
+                                   "deadline":  900,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "503:0"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "expression"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  14.791
+                  },
+                  {
+                      "id":  "builder-b-run-cmd",
+                      "kind":  "consumer",
+                      "requirement":  "(b) a failing run_cmd check (the V3-1 host-module check against a different module)",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [352:0] first-edit-line 354 exercised True",
+                      "lean":  {
+                                   "consumer":  "builder",
+                                   "path":  "scripts/preprocessing_builder_check.lean",
+                                   "class":  "b-run-cmd",
+                                   "blob":  "4f3570cbd8ae3220f784b5c5a2f3abf46c8bc088",
+                                   "liveSha256":  "fd38d26cc5e165dcde1db860c35892f9bed798277ddb989e7e6251e6cba4ae49",
+                                   "copySha256":  "c9fc694ff73a023d95070701910d6674b645e5108f5e6090a16b9775018e558d",
+                                   "firstEditLine":  354,
+                                   "exit":  1,
+                                   "seconds":  10.593,
+                                   "deadline":  900,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "352:0"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "V3-1: RMQ.SuccinctFinal.PackedConstruction.builderSource is not declared in RMQ.Core.WordRAM.Construction.Builder.Output"
+                                                  ],
+                                   "errorAtFirstEdit":  false,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  14.432
+                  },
+                  {
+                      "id":  "builder-c-max-recursion",
+                      "kind":  "consumer",
+                      "requirement":  "(c) a declaration that fails with a maximum-recursion-depth error (the CAB2/CAB4 class), referenced by the witness where one exists",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [503:0 503:0 525:4] first-edit-line 503 exercised True",
+                      "lean":  {
+                                   "consumer":  "builder",
+                                   "path":  "scripts/preprocessing_builder_check.lean",
+                                   "class":  "c-max-recursion",
+                                   "blob":  "4f3570cbd8ae3220f784b5c5a2f3abf46c8bc088",
+                                   "liveSha256":  "fd38d26cc5e165dcde1db860c35892f9bed798277ddb989e7e6251e6cba4ae49",
+                                   "copySha256":  "9077cb639a61c863f5a8b8b8593333b9dc990c3ad76bc21d3f3ab7defa1ab1b2",
+                                   "firstEditLine":  503,
+                                   "exit":  1,
+                                   "seconds":  10.961,
+                                   "deadline":  900,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "503:0",
+                                                          "503:0",
+                                                          "525:4"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "maximum recursion depth has been reached",
+                                                      "maximum recursion depth has been reached",
+                                                      "(kernel) unknown constant \u0027PRE1BuilderConsumer.r2MarkerControlDeep\u0027"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  14.848
+                  },
+                  {
+                      "id":  "builder-d-unknown-identifier",
+                      "kind":  "consumer",
+                      "requirement":  "(d) an unknown identifier inside a checked theorem, referenced by the witness where one exists",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [503:54] first-edit-line 503 exercised True",
+                      "lean":  {
+                                   "consumer":  "builder",
+                                   "path":  "scripts/preprocessing_builder_check.lean",
+                                   "class":  "d-unknown-identifier",
+                                   "blob":  "4f3570cbd8ae3220f784b5c5a2f3abf46c8bc088",
+                                   "liveSha256":  "fd38d26cc5e165dcde1db860c35892f9bed798277ddb989e7e6251e6cba4ae49",
+                                   "copySha256":  "43b5f30fae85f7b102d98863885276e3a96b822683e443ac045e67115257d2ee",
+                                   "firstEditLine":  503,
+                                   "exit":  1,
+                                   "seconds":  10.28,
+                                   "deadline":  900,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "503:54"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "unknown identifier \u0027r2MarkerControlNoSuchConstant\u0027"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  13.722
+                  },
+                  {
+                      "id":  "builder-e-unreferenced",
+                      "kind":  "consumer",
+                      "requirement":  "(e) a failure in a declaration the witness does not reference",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [503:0 503:59] first-edit-line 503 exercised True",
+                      "lean":  {
+                                   "consumer":  "builder",
+                                   "path":  "scripts/preprocessing_builder_check.lean",
+                                   "class":  "e-unreferenced",
+                                   "blob":  "4f3570cbd8ae3220f784b5c5a2f3abf46c8bc088",
+                                   "liveSha256":  "fd38d26cc5e165dcde1db860c35892f9bed798277ddb989e7e6251e6cba4ae49",
+                                   "copySha256":  "f7107197c2b57ee8ac103c505355fd8aa88abe5c6f69dd333e81f05ae6603241",
+                                   "firstEditLine":  503,
+                                   "exit":  1,
+                                   "seconds":  10.772,
+                                   "deadline":  900,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "503:0",
+                                                          "503:59"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "Not a definitional equality: the left-hand side",
+                                                      "type mismatch"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  14.314
+                  },
+                  {
+                      "id":  "builder-f-after-marker",
+                      "kind":  "consumer",
+                      "requirement":  "additional: a failing check placed after the verdict-marker command",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [627:0] first-edit-line 627 exercised True",
+                      "lean":  {
+                                   "consumer":  "builder",
+                                   "path":  "scripts/preprocessing_builder_check.lean",
+                                   "class":  "f-after-marker",
+                                   "blob":  "4f3570cbd8ae3220f784b5c5a2f3abf46c8bc088",
+                                   "liveSha256":  "fd38d26cc5e165dcde1db860c35892f9bed798277ddb989e7e6251e6cba4ae49",
+                                   "copySha256":  "d1f55f5becbe0cf2b12d91e11f9bf44d9a6d8f280647a75c499802b0aaf4a434",
+                                   "firstEditLine":  627,
+                                   "exit":  1,
+                                   "seconds":  11.08,
+                                   "deadline":  900,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "627:0"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "expression"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  15.104
+                  },
+                  {
+                      "id":  "capstone-unchanged",
+                      "kind":  "consumer",
+                      "requirement":  "marker present with exit 0 on the unchanged file",
+                      "verdict":  "PASS",
+                      "detail":  "exit 0 marker-lines 1 errors [] first-edit-line 0 exercised True",
+                      "lean":  {
+                                   "consumer":  "capstone",
+                                   "path":  "RMQ/Validation/PreprocessingContract.lean",
+                                   "class":  "unchanged",
+                                   "blob":  "edcfca8e096f62db1eee312826f43c112932b22e",
+                                   "liveSha256":  "5893c423560ddccf5fc63f8e7ba58c6334f90f70e1d6af3c9e1735c1fbfeeb2e",
+                                   "copySha256":  "5893c423560ddccf5fc63f8e7ba58c6334f90f70e1d6af3c9e1735c1fbfeeb2e",
+                                   "firstEditLine":  0,
+                                   "exit":  0,
+                                   "seconds":  121.765,
+                                   "deadline":  1800,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  1,
+                                   "errorLocations":  [
+
+                                                      ],
+                                   "errorHeads":  [
+
+                                                  ],
+                                   "errorAtFirstEdit":  false,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "zero",
+                                   "expectedMarker":  true
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  125.457
+                  },
+                  {
+                      "id":  "capstone-a-example",
+                      "kind":  "consumer",
+                      "requirement":  "(a) a failing anonymous example",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [1070:31] first-edit-line 1070 exercised True",
+                      "lean":  {
+                                   "consumer":  "capstone",
+                                   "path":  "RMQ/Validation/PreprocessingContract.lean",
+                                   "class":  "a-example",
+                                   "blob":  "edcfca8e096f62db1eee312826f43c112932b22e",
+                                   "liveSha256":  "5893c423560ddccf5fc63f8e7ba58c6334f90f70e1d6af3c9e1735c1fbfeeb2e",
+                                   "copySha256":  "dec6e7203c8c63e27cdf63dd2402506cd9ea38fc104fe8a94c94e4e4fbd4ac39",
+                                   "firstEditLine":  1070,
+                                   "exit":  1,
+                                   "seconds":  115.102,
+                                   "deadline":  1800,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "1070:31"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "type mismatch"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  118.59
+                  },
+                  {
+                      "id":  "capstone-b-guard",
+                      "kind":  "consumer",
+                      "requirement":  "(b) a failing #guard-style check",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [1070:0] first-edit-line 1070 exercised True",
+                      "lean":  {
+                                   "consumer":  "capstone",
+                                   "path":  "RMQ/Validation/PreprocessingContract.lean",
+                                   "class":  "b-guard",
+                                   "blob":  "edcfca8e096f62db1eee312826f43c112932b22e",
+                                   "liveSha256":  "5893c423560ddccf5fc63f8e7ba58c6334f90f70e1d6af3c9e1735c1fbfeeb2e",
+                                   "copySha256":  "f391dfc3dcdbe8308c7318de2471223c772ac6ed76ba8c77359160e1ff2257c8",
+                                   "firstEditLine":  1070,
+                                   "exit":  1,
+                                   "seconds":  118.663,
+                                   "deadline":  1800,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "1070:0"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "expression"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  122.346
+                  },
+                  {
+                      "id":  "capstone-c-max-recursion",
+                      "kind":  "consumer",
+                      "requirement":  "(c) a declaration that fails with a maximum-recursion-depth error (the CAB2/CAB4 class), referenced by the witness where one exists",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [1070:0 1070:0 1092:4] first-edit-line 1070 exercised True",
+                      "lean":  {
+                                   "consumer":  "capstone",
+                                   "path":  "RMQ/Validation/PreprocessingContract.lean",
+                                   "class":  "c-max-recursion",
+                                   "blob":  "edcfca8e096f62db1eee312826f43c112932b22e",
+                                   "liveSha256":  "5893c423560ddccf5fc63f8e7ba58c6334f90f70e1d6af3c9e1735c1fbfeeb2e",
+                                   "copySha256":  "61678c842e43b5ba7cf97d71aa4d94126d9821d6712378ac23b775c3849faeda",
+                                   "firstEditLine":  1070,
+                                   "exit":  1,
+                                   "seconds":  108.502,
+                                   "deadline":  1800,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "1070:0",
+                                                          "1070:0",
+                                                          "1092:4"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "maximum recursion depth has been reached",
+                                                      "maximum recursion depth has been reached",
+                                                      "(kernel) unknown constant \u0027RMQ.SuccinctFinal.PackedConstruction.CapstoneChecks.r2MarkerControlDeep\u0027"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  112.424
+                  },
+                  {
+                      "id":  "capstone-d-unknown-identifier",
+                      "kind":  "consumer",
+                      "requirement":  "(d) an unknown identifier inside a checked theorem, referenced by the witness where one exists",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [1070:54] first-edit-line 1070 exercised True",
+                      "lean":  {
+                                   "consumer":  "capstone",
+                                   "path":  "RMQ/Validation/PreprocessingContract.lean",
+                                   "class":  "d-unknown-identifier",
+                                   "blob":  "edcfca8e096f62db1eee312826f43c112932b22e",
+                                   "liveSha256":  "5893c423560ddccf5fc63f8e7ba58c6334f90f70e1d6af3c9e1735c1fbfeeb2e",
+                                   "copySha256":  "bd8fbbd5c8f792ac78fe3b2da24410634dc977125104530dba37e34535b490c3",
+                                   "firstEditLine":  1070,
+                                   "exit":  1,
+                                   "seconds":  126.578,
+                                   "deadline":  1800,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "1070:54"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "unknown identifier \u0027r2MarkerControlNoSuchConstant\u0027"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  130.19
+                  },
+                  {
+                      "id":  "capstone-e-unreferenced",
+                      "kind":  "consumer",
+                      "requirement":  "(e) a failure in a declaration the witness does not reference",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [1070:0 1070:59] first-edit-line 1070 exercised True",
+                      "lean":  {
+                                   "consumer":  "capstone",
+                                   "path":  "RMQ/Validation/PreprocessingContract.lean",
+                                   "class":  "e-unreferenced",
+                                   "blob":  "edcfca8e096f62db1eee312826f43c112932b22e",
+                                   "liveSha256":  "5893c423560ddccf5fc63f8e7ba58c6334f90f70e1d6af3c9e1735c1fbfeeb2e",
+                                   "copySha256":  "12154c046188bedaf095ca4fc17e55d3f2fed4921cac3daabbc358462415c5a0",
+                                   "firstEditLine":  1070,
+                                   "exit":  1,
+                                   "seconds":  108.002,
+                                   "deadline":  1800,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "1070:0",
+                                                          "1070:59"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "Not a definitional equality: the left-hand side",
+                                                      "type mismatch"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  111.766
+                  },
+                  {
+                      "id":  "capstone-f-after-marker",
+                      "kind":  "consumer",
+                      "requirement":  "additional: a failing check placed after the verdict-marker command",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [1246:0] first-edit-line 1246 exercised True",
+                      "lean":  {
+                                   "consumer":  "capstone",
+                                   "path":  "RMQ/Validation/PreprocessingContract.lean",
+                                   "class":  "f-after-marker",
+                                   "blob":  "edcfca8e096f62db1eee312826f43c112932b22e",
+                                   "liveSha256":  "5893c423560ddccf5fc63f8e7ba58c6334f90f70e1d6af3c9e1735c1fbfeeb2e",
+                                   "copySha256":  "58d6cc56c4cce37e7bf65583d00979cffe56794e326e3621e94d9c8d3f21707d",
+                                   "firstEditLine":  1246,
+                                   "exit":  1,
+                                   "seconds":  122.148,
+                                   "deadline":  1800,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "1246:0"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "expression"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  126.082
+                  },
+                  {
+                      "id":  "contract-unchanged",
+                      "kind":  "consumer",
+                      "requirement":  "marker present with exit 0 on the unchanged file",
+                      "verdict":  "PASS",
+                      "detail":  "exit 0 marker-lines 1 errors [] first-edit-line 0 exercised True",
+                      "lean":  {
+                                   "consumer":  "contract",
+                                   "path":  "scripts/preprocessing_contract_check.lean",
+                                   "class":  "unchanged",
+                                   "blob":  "c71b2e6cdf8f6ae58e6cd57a2b470ca63cf78d02",
+                                   "liveSha256":  "f2d4d89fc175a0dbb16764a0ffa0b67bebb413732f20036f590aabf9e2559ee9",
+                                   "copySha256":  "f2d4d89fc175a0dbb16764a0ffa0b67bebb413732f20036f590aabf9e2559ee9",
+                                   "firstEditLine":  0,
+                                   "exit":  0,
+                                   "seconds":  5.145,
+                                   "deadline":  900,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  1,
+                                   "errorLocations":  [
+
+                                                      ],
+                                   "errorHeads":  [
+
+                                                  ],
+                                   "errorAtFirstEdit":  false,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "zero",
+                                   "expectedMarker":  true
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  8.999
+                  },
+                  {
+                      "id":  "contract-a-example",
+                      "kind":  "consumer",
+                      "requirement":  "(a) a failing anonymous example",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [98:31] first-edit-line 98 exercised True",
+                      "lean":  {
+                                   "consumer":  "contract",
+                                   "path":  "scripts/preprocessing_contract_check.lean",
+                                   "class":  "a-example",
+                                   "blob":  "c71b2e6cdf8f6ae58e6cd57a2b470ca63cf78d02",
+                                   "liveSha256":  "f2d4d89fc175a0dbb16764a0ffa0b67bebb413732f20036f590aabf9e2559ee9",
+                                   "copySha256":  "e4e63772703e37835660242e02d9fda19c82677c86ddf8ee9e1e1db71476c669",
+                                   "firstEditLine":  98,
+                                   "exit":  1,
+                                   "seconds":  4.811,
+                                   "deadline":  900,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "98:31"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "type mismatch"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  8.384
+                  },
+                  {
+                      "id":  "contract-b-guard",
+                      "kind":  "consumer",
+                      "requirement":  "(b) a failing #guard-style check",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [98:0] first-edit-line 98 exercised True",
+                      "lean":  {
+                                   "consumer":  "contract",
+                                   "path":  "scripts/preprocessing_contract_check.lean",
+                                   "class":  "b-guard",
+                                   "blob":  "c71b2e6cdf8f6ae58e6cd57a2b470ca63cf78d02",
+                                   "liveSha256":  "f2d4d89fc175a0dbb16764a0ffa0b67bebb413732f20036f590aabf9e2559ee9",
+                                   "copySha256":  "51f94b5ac8112f98a91fee485c5382e0be7e77af2385a7e6ca9175bb2f02d369",
+                                   "firstEditLine":  98,
+                                   "exit":  1,
+                                   "seconds":  5.799,
+                                   "deadline":  900,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "98:0"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "expression"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  9.747
+                  },
+                  {
+                      "id":  "contract-c-max-recursion",
+                      "kind":  "consumer",
+                      "requirement":  "(c) a declaration that fails with a maximum-recursion-depth error (the CAB2/CAB4 class), referenced by the witness where one exists",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [98:0 98:0 119:4] first-edit-line 98 exercised True",
+                      "lean":  {
+                                   "consumer":  "contract",
+                                   "path":  "scripts/preprocessing_contract_check.lean",
+                                   "class":  "c-max-recursion",
+                                   "blob":  "c71b2e6cdf8f6ae58e6cd57a2b470ca63cf78d02",
+                                   "liveSha256":  "f2d4d89fc175a0dbb16764a0ffa0b67bebb413732f20036f590aabf9e2559ee9",
+                                   "copySha256":  "522aed70cb0215a1a326b2fb90150812ebd6994b4516ee538fe8438a93c9a5a7",
+                                   "firstEditLine":  98,
+                                   "exit":  1,
+                                   "seconds":  5.145,
+                                   "deadline":  900,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "98:0",
+                                                          "98:0",
+                                                          "119:4"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "maximum recursion depth has been reached",
+                                                      "maximum recursion depth has been reached",
+                                                      "(kernel) unknown constant \u0027PRE1ContractConsumer.r2MarkerControlDeep\u0027"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  8.917
+                  },
+                  {
+                      "id":  "contract-d-unknown-identifier",
+                      "kind":  "consumer",
+                      "requirement":  "(d) an unknown identifier inside a checked theorem, referenced by the witness where one exists",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [98:54] first-edit-line 98 exercised True",
+                      "lean":  {
+                                   "consumer":  "contract",
+                                   "path":  "scripts/preprocessing_contract_check.lean",
+                                   "class":  "d-unknown-identifier",
+                                   "blob":  "c71b2e6cdf8f6ae58e6cd57a2b470ca63cf78d02",
+                                   "liveSha256":  "f2d4d89fc175a0dbb16764a0ffa0b67bebb413732f20036f590aabf9e2559ee9",
+                                   "copySha256":  "891af78b16147f6ce627713e7f72c1f67ec9689f1b1ca2b99de9b0644c056fdc",
+                                   "firstEditLine":  98,
+                                   "exit":  1,
+                                   "seconds":  5.513,
+                                   "deadline":  900,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "98:54"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "unknown identifier \u0027r2MarkerControlNoSuchConstant\u0027"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  9.274
+                  },
+                  {
+                      "id":  "contract-e-unreferenced",
+                      "kind":  "consumer",
+                      "requirement":  "(e) a failure in a declaration the witness does not reference",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [98:0 98:59] first-edit-line 98 exercised True",
+                      "lean":  {
+                                   "consumer":  "contract",
+                                   "path":  "scripts/preprocessing_contract_check.lean",
+                                   "class":  "e-unreferenced",
+                                   "blob":  "c71b2e6cdf8f6ae58e6cd57a2b470ca63cf78d02",
+                                   "liveSha256":  "f2d4d89fc175a0dbb16764a0ffa0b67bebb413732f20036f590aabf9e2559ee9",
+                                   "copySha256":  "2d9fac347a28adbaf68d25a6bf4aa32beff1062a06f7e483f799343e32b4cd96",
+                                   "firstEditLine":  98,
+                                   "exit":  1,
+                                   "seconds":  5.916,
+                                   "deadline":  900,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "98:0",
+                                                          "98:59"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "Not a definitional equality: the left-hand side",
+                                                      "type mismatch"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  9.705
+                  },
+                  {
+                      "id":  "spec-unchanged",
+                      "kind":  "consumer",
+                      "requirement":  "marker present with exit 0 on the unchanged file",
+                      "verdict":  "PASS",
+                      "detail":  "exit 0 marker-lines 1 errors [] first-edit-line 0 exercised True",
+                      "lean":  {
+                                   "consumer":  "spec",
+                                   "path":  "scripts/preprocessing_spec_check.lean",
+                                   "class":  "unchanged",
+                                   "blob":  "9a74c2b2c7418345c797d40081c0f8c3e8979ea1",
+                                   "liveSha256":  "3e4e62dcdc61319b7ae9f33db691857075fed0dc1c8ef11cc0116990e022129d",
+                                   "copySha256":  "3e4e62dcdc61319b7ae9f33db691857075fed0dc1c8ef11cc0116990e022129d",
+                                   "firstEditLine":  0,
+                                   "exit":  0,
+                                   "seconds":  103.229,
+                                   "deadline":  1800,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  1,
+                                   "errorLocations":  [
+
+                                                      ],
+                                   "errorHeads":  [
+
+                                                  ],
+                                   "errorAtFirstEdit":  false,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "zero",
+                                   "expectedMarker":  true
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  107.121
+                  },
+                  {
+                      "id":  "spec-a-example",
+                      "kind":  "consumer",
+                      "requirement":  "(a) a failing anonymous example",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [719:31] first-edit-line 719 exercised True",
+                      "lean":  {
+                                   "consumer":  "spec",
+                                   "path":  "scripts/preprocessing_spec_check.lean",
+                                   "class":  "a-example",
+                                   "blob":  "9a74c2b2c7418345c797d40081c0f8c3e8979ea1",
+                                   "liveSha256":  "3e4e62dcdc61319b7ae9f33db691857075fed0dc1c8ef11cc0116990e022129d",
+                                   "copySha256":  "4d990235c297df03d74e01994b5efeeeabb3d8223ef93389071457579998890c",
+                                   "firstEditLine":  719,
+                                   "exit":  1,
+                                   "seconds":  113.635,
+                                   "deadline":  1800,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "719:31"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "type mismatch"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  117.511
+                  },
+                  {
+                      "id":  "spec-b-guard",
+                      "kind":  "consumer",
+                      "requirement":  "(b) a failing #guard-style check",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [719:0] first-edit-line 719 exercised True",
+                      "lean":  {
+                                   "consumer":  "spec",
+                                   "path":  "scripts/preprocessing_spec_check.lean",
+                                   "class":  "b-guard",
+                                   "blob":  "9a74c2b2c7418345c797d40081c0f8c3e8979ea1",
+                                   "liveSha256":  "3e4e62dcdc61319b7ae9f33db691857075fed0dc1c8ef11cc0116990e022129d",
+                                   "copySha256":  "c41797969e01b199bcd3724f013f91c31234e895a3227be006e365a7e7be60ff",
+                                   "firstEditLine":  719,
+                                   "exit":  1,
+                                   "seconds":  90.696,
+                                   "deadline":  1800,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "719:0"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "expression"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  94.329
+                  },
+                  {
+                      "id":  "spec-c-max-recursion",
+                      "kind":  "consumer",
+                      "requirement":  "(c) a declaration that fails with a maximum-recursion-depth error (the CAB2/CAB4 class), referenced by the witness where one exists",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [719:0 719:0] first-edit-line 719 exercised True",
+                      "lean":  {
+                                   "consumer":  "spec",
+                                   "path":  "scripts/preprocessing_spec_check.lean",
+                                   "class":  "c-max-recursion",
+                                   "blob":  "9a74c2b2c7418345c797d40081c0f8c3e8979ea1",
+                                   "liveSha256":  "3e4e62dcdc61319b7ae9f33db691857075fed0dc1c8ef11cc0116990e022129d",
+                                   "copySha256":  "17ceb6d05c229215bb7bcccf9d8f9f5e0acd66e06fe58fec67523dbb944c8ab2",
+                                   "firstEditLine":  719,
+                                   "exit":  1,
+                                   "seconds":  118.821,
+                                   "deadline":  1800,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "719:0",
+                                                          "719:0"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "maximum recursion depth has been reached",
+                                                      "maximum recursion depth has been reached"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  122.551
+                  },
+                  {
+                      "id":  "spec-d-unknown-identifier",
+                      "kind":  "consumer",
+                      "requirement":  "(d) an unknown identifier inside a checked theorem, referenced by the witness where one exists",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [719:54] first-edit-line 719 exercised True",
+                      "lean":  {
+                                   "consumer":  "spec",
+                                   "path":  "scripts/preprocessing_spec_check.lean",
+                                   "class":  "d-unknown-identifier",
+                                   "blob":  "9a74c2b2c7418345c797d40081c0f8c3e8979ea1",
+                                   "liveSha256":  "3e4e62dcdc61319b7ae9f33db691857075fed0dc1c8ef11cc0116990e022129d",
+                                   "copySha256":  "c5ec0066baa0ab9ea4488e8985717002097db6ae6951104197aec1b21233802b",
+                                   "firstEditLine":  719,
+                                   "exit":  1,
+                                   "seconds":  95.305,
+                                   "deadline":  1800,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "719:54"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "unknown identifier \u0027r2MarkerControlNoSuchConstant\u0027"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  99.197
+                  },
+                  {
+                      "id":  "spec-e-unreferenced",
+                      "kind":  "consumer",
+                      "requirement":  "(e) a failure in a declaration the witness does not reference",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [719:0 719:59] first-edit-line 719 exercised True",
+                      "lean":  {
+                                   "consumer":  "spec",
+                                   "path":  "scripts/preprocessing_spec_check.lean",
+                                   "class":  "e-unreferenced",
+                                   "blob":  "9a74c2b2c7418345c797d40081c0f8c3e8979ea1",
+                                   "liveSha256":  "3e4e62dcdc61319b7ae9f33db691857075fed0dc1c8ef11cc0116990e022129d",
+                                   "copySha256":  "21ebec757b0241ca517b45fbe5816ba5d40ab3f99e59e105182e7cd63533dd7f",
+                                   "firstEditLine":  719,
+                                   "exit":  1,
+                                   "seconds":  113.117,
+                                   "deadline":  1800,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "719:0",
+                                                          "719:59"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "Not a definitional equality: the left-hand side",
+                                                      "type mismatch"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  116.856
+                  },
+                  {
+                      "id":  "stage-unchanged",
+                      "kind":  "consumer",
+                      "requirement":  "marker present with exit 0 on the unchanged file",
+                      "verdict":  "PASS",
+                      "detail":  "exit 0 marker-lines 1 errors [] first-edit-line 0 exercised True",
+                      "lean":  {
+                                   "consumer":  "stage",
+                                   "path":  "scripts/preprocessing_stage_check.lean",
+                                   "class":  "unchanged",
+                                   "blob":  "c91f5adb1d18e08b235bf4a1351892a495a01a09",
+                                   "liveSha256":  "a312530c7cad2ec61e2aab220bdf3d3333c92b80feaa8e26a6f9cd405c7e0e4b",
+                                   "copySha256":  "a312530c7cad2ec61e2aab220bdf3d3333c92b80feaa8e26a6f9cd405c7e0e4b",
+                                   "firstEditLine":  0,
+                                   "exit":  0,
+                                   "seconds":  321.043,
+                                   "deadline":  3600,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  1,
+                                   "errorLocations":  [
+
+                                                      ],
+                                   "errorHeads":  [
+
+                                                  ],
+                                   "errorAtFirstEdit":  false,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "zero",
+                                   "expectedMarker":  true
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  325.369
+                  },
+                  {
+                      "id":  "stage-a-example",
+                      "kind":  "consumer",
+                      "requirement":  "(a) a failing anonymous example",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [4552:31] first-edit-line 4552 exercised True",
+                      "lean":  {
+                                   "consumer":  "stage",
+                                   "path":  "scripts/preprocessing_stage_check.lean",
+                                   "class":  "a-example",
+                                   "blob":  "c91f5adb1d18e08b235bf4a1351892a495a01a09",
+                                   "liveSha256":  "a312530c7cad2ec61e2aab220bdf3d3333c92b80feaa8e26a6f9cd405c7e0e4b",
+                                   "copySha256":  "4948ee13fafcd85aaba5843bc2240260048af0c878cdad3c205634606769f7f4",
+                                   "firstEditLine":  4552,
+                                   "exit":  1,
+                                   "seconds":  297.095,
+                                   "deadline":  3600,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "4552:31"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "type mismatch"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  301.28
+                  },
+                  {
+                      "id":  "stage-b-guard",
+                      "kind":  "consumer",
+                      "requirement":  "(b) a failing #guard-style check",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [4552:0] first-edit-line 4552 exercised True",
+                      "lean":  {
+                                   "consumer":  "stage",
+                                   "path":  "scripts/preprocessing_stage_check.lean",
+                                   "class":  "b-guard",
+                                   "blob":  "c91f5adb1d18e08b235bf4a1351892a495a01a09",
+                                   "liveSha256":  "a312530c7cad2ec61e2aab220bdf3d3333c92b80feaa8e26a6f9cd405c7e0e4b",
+                                   "copySha256":  "3bb495d11567a0ce4763f7a89968f36aed006d7ce88590ba33d1c14cdfde2952",
+                                   "firstEditLine":  4552,
+                                   "exit":  1,
+                                   "seconds":  318.672,
+                                   "deadline":  3600,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "4552:0"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "expression"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  322.774
+                  },
+                  {
+                      "id":  "stage-c-max-recursion",
+                      "kind":  "consumer",
+                      "requirement":  "(c) a declaration that fails with a maximum-recursion-depth error (the CAB2/CAB4 class), referenced by the witness where one exists",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [4552:0 4552:0 4574:4] first-edit-line 4552 exercised True",
+                      "lean":  {
+                                   "consumer":  "stage",
+                                   "path":  "scripts/preprocessing_stage_check.lean",
+                                   "class":  "c-max-recursion",
+                                   "blob":  "c91f5adb1d18e08b235bf4a1351892a495a01a09",
+                                   "liveSha256":  "a312530c7cad2ec61e2aab220bdf3d3333c92b80feaa8e26a6f9cd405c7e0e4b",
+                                   "copySha256":  "7de497a0e0eceb650c1253c47aa3ec18b64890e52dad66a18f51139ce04a309c",
+                                   "firstEditLine":  4552,
+                                   "exit":  1,
+                                   "seconds":  308.164,
+                                   "deadline":  3600,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "4552:0",
+                                                          "4552:0",
+                                                          "4574:4"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "maximum recursion depth has been reached",
+                                                      "maximum recursion depth has been reached",
+                                                      "(kernel) unknown constant \u0027PRE1StageConsumer.r2MarkerControlDeep\u0027"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  312.342
+                  },
+                  {
+                      "id":  "stage-d-unknown-identifier",
+                      "kind":  "consumer",
+                      "requirement":  "(d) an unknown identifier inside a checked theorem, referenced by the witness where one exists",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [4552:54 4926:0] first-edit-line 4552 exercised True",
+                      "lean":  {
+                                   "consumer":  "stage",
+                                   "path":  "scripts/preprocessing_stage_check.lean",
+                                   "class":  "d-unknown-identifier",
+                                   "blob":  "c91f5adb1d18e08b235bf4a1351892a495a01a09",
+                                   "liveSha256":  "a312530c7cad2ec61e2aab220bdf3d3333c92b80feaa8e26a6f9cd405c7e0e4b",
+                                   "copySha256":  "69bb0bff4a9b7a9950958182db0586866440cc89fe734cdac2dd6a03bfac7a24",
+                                   "firstEditLine":  4552,
+                                   "exit":  1,
+                                   "seconds":  280.018,
+                                   "deadline":  3600,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "4552:54",
+                                                          "4926:0"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "unknown identifier \u0027r2MarkerControlNoSuchConstant\u0027",
+                                                      "PRE1-STAGE-TYPED-CONSUMERS FAIL: a declaration is missing or depends on sorry"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  284.355
+                  },
+                  {
+                      "id":  "stage-e-unreferenced",
+                      "kind":  "consumer",
+                      "requirement":  "(e) a failure in a declaration the witness does not reference",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker-lines 0 errors [4552:0 4552:59] first-edit-line 4552 exercised True",
+                      "lean":  {
+                                   "consumer":  "stage",
+                                   "path":  "scripts/preprocessing_stage_check.lean",
+                                   "class":  "e-unreferenced",
+                                   "blob":  "c91f5adb1d18e08b235bf4a1351892a495a01a09",
+                                   "liveSha256":  "a312530c7cad2ec61e2aab220bdf3d3333c92b80feaa8e26a6f9cd405c7e0e4b",
+                                   "copySha256":  "7423ed0772edd906301f5ed433e5c1aa161f02ebe51525cff387d20ac2b32615",
+                                   "firstEditLine":  4552,
+                                   "exit":  1,
+                                   "seconds":  299.367,
+                                   "deadline":  3600,
+                                   "timedOut":  false,
+                                   "outputLimitExceeded":  false,
+                                   "ownership":  "kill-on-close-job",
+                                   "markerLines":  0,
+                                   "errorLocations":  [
+                                                          "4552:0",
+                                                          "4552:59"
+                                                      ],
+                                   "errorHeads":  [
+                                                      "Not a definitional equality: the left-hand side",
+                                                      "type mismatch"
+                                                  ],
+                                   "errorAtFirstEdit":  true,
+                                   "missingDiagnostics":  [
+
+                                                          ],
+                                   "stderrLineCount":  0,
+                                   "expectedExit":  "nonzero",
+                                   "expectedMarker":  false
+                               },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  303.549
+                  },
+                  {
+                      "id":  "deadline-descendant-cleanup",
+                      "kind":  "deadline",
+                      "requirement":  "an owned child that starts a descendant is removed with its descendant at the deadline",
+                      "verdict":  "PASS",
+                      "detail":  "timed out after 45.136 s; root 4816 and child 20576 both absent",
+                      "sleeper":  {
+                                      "started":  true,
+                                      "launchError":  "",
+                                      "host":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                                      "packagedHost":  false,
+                                      "pids":  [
+                                                   4816,
+                                                   20576
+                                               ],
+                                      "aliveAfter":  [
+
+                                                     ],
+                                      "exit":  -1,
+                                      "seconds":  45.136,
+                                      "deadline":  45,
+                                      "timedOut":  true,
+                                      "ownership":  "kill-on-close-job"
+                                  },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  48.476
+                  },
+                  {
+                      "id":  "registry-remove-last",
+                      "kind":  "registry",
+                      "requirement":  "a registry that is not the pinned one is rejected before any case",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker 1 probe 0",
+                      "registry":  {
+                                       "mutation":  "remove-last",
+                                       "exit":  1,
+                                       "seconds":  0.658,
+                                       "deadline":  1800,
+                                       "timedOut":  false,
+                                       "expectedExit":  1,
+                                       "stdout":  [
+                                                      "MARKER-CONTROLS: FAIL registry version, ordered case ids or content differ from the pinned PRE1-R2-MARKER-CONTROLS-V1 registry (44 ids read, 45 pinned, content 6a73bedb35a07b9b0d1dafe40ad125457551de7162a4cf7c297995f096358266)"
+                                                  ],
+                                       "stderr":  [
+
+                                                  ]
+                                   },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  3.921
+                  },
+                  {
+                      "id":  "registry-swap-first-two",
+                      "kind":  "registry",
+                      "requirement":  "a registry that is not the pinned one is rejected before any case",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker 1 probe 0",
+                      "registry":  {
+                                       "mutation":  "swap-first-two",
+                                       "exit":  1,
+                                       "seconds":  0.73,
+                                       "deadline":  1800,
+                                       "timedOut":  false,
+                                       "expectedExit":  1,
+                                       "stdout":  [
+                                                      "MARKER-CONTROLS: FAIL registry version, ordered case ids or content differ from the pinned PRE1-R2-MARKER-CONTROLS-V1 registry (45 ids read, 45 pinned, content c4f8c98d9305bf8f8142875430cca618194a80a54bca34172bcedaa4e89e53dd)"
+                                                  ],
+                                       "stderr":  [
+
+                                                  ]
+                                   },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  4.035
+                  },
+                  {
+                      "id":  "registry-version",
+                      "kind":  "registry",
+                      "requirement":  "a registry that is not the pinned one is rejected before any case",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker 1 probe 0",
+                      "registry":  {
+                                       "mutation":  "version",
+                                       "exit":  1,
+                                       "seconds":  0.688,
+                                       "deadline":  1800,
+                                       "timedOut":  false,
+                                       "expectedExit":  1,
+                                       "stdout":  [
+                                                      "MARKER-CONTROLS: FAIL registry version, ordered case ids or content differ from the pinned PRE1-R2-MARKER-CONTROLS-V1 registry (45 ids read, 45 pinned, content e99c21e99f8ace82f5009ad7d5bbf58c9c0ee67269ffd93f961723e81743f72a)"
+                                                  ],
+                                       "stderr":  [
+
+                                                  ]
+                                   },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  4.027
+                  },
+                  {
+                      "id":  "registry-content",
+                      "kind":  "registry",
+                      "requirement":  "a registry that is not the pinned one is rejected before any case",
+                      "verdict":  "PASS",
+                      "detail":  "exit 1 marker 1 probe 0",
+                      "registry":  {
+                                       "mutation":  "content",
+                                       "exit":  1,
+                                       "seconds":  0.68,
+                                       "deadline":  1800,
+                                       "timedOut":  false,
+                                       "expectedExit":  1,
+                                       "stdout":  [
+                                                      "MARKER-CONTROLS: FAIL registry version, ordered case ids or content differ from the pinned PRE1-R2-MARKER-CONTROLS-V1 registry (45 ids read, 45 pinned, content aed1b4beeffc0d59c60233da951067bbc67daf9c2b354a27db9ba9caf6e57f38)"
+                                                  ],
+                                       "stderr":  [
+
+                                                  ]
+                                   },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  3.868
+                  },
+                  {
+                      "id":  "selector-omitted",
+                      "kind":  "selector",
+                      "requirement":  "selector boundary: omitted",
+                      "verdict":  "PASS",
+                      "detail":  "exit 0 marker 1 executed []",
+                      "selector":  {
+                                       "argument":  "(omitted)",
+                                       "probe":  true,
+                                       "exit":  0,
+                                       "seconds":  0.686,
+                                       "deadline":  1800,
+                                       "timedOut":  false,
+                                       "expectedExit":  0,
+                                       "expectedMarker":  "MARKER-CONTROLS: SELECTOR-PROBE selected=",
+                                       "childExecuted":  [
+
+                                                         ],
+                                       "stdout":  [
+                                                      "MARKER-CONTROLS: SELECTOR-PROBE selected=45 ids=builder-unchanged,builder-a-example,builder-b-guard,builder-b-run-cmd,builder-c-max-recursion,builder-d-unknown-identifier,builder-e-unreferenced,builder-f-after-marker,capstone-unchanged,capstone-a-example,capstone-b-guard,capstone-c-max-recursion,capstone-d-unknown-identifier,capstone-e-unreferenced,capstone-f-after-marker,contract-unchanged,contract-a-example,contract-b-guard,contract-c-max-recursion,contract-d-unknown-identifier,contract-e-unreferenced,spec-unchanged,spec-a-example,spec-b-guard,spec-c-max-recursion,spec-d-unknown-identifier,spec-e-unreferenced,stage-unchanged,stage-a-example,stage-b-guard,stage-c-max-recursion,stage-d-unknown-identifier,stage-e-unreferenced,deadline-descendant-cleanup,registry-remove-last,registry-swap-first-two,registry-version,registry-content,selector-omitted,selector-valid,selector-empty,selector-whitespace,selector-malformed,selector-unknown,selector-duplicate"
+                                                  ],
+                                       "stderr":  [
+
+                                                  ]
+                                   },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  3.908
+                  },
+                  {
+                      "id":  "selector-valid",
+                      "kind":  "selector",
+                      "requirement":  "selector boundary: valid",
+                      "verdict":  "PASS",
+                      "detail":  "exit 0 marker 1 executed [contract-unchanged]",
+                      "selector":  {
+                                       "argument":  "contract-unchanged",
+                                       "probe":  false,
+                                       "exit":  0,
+                                       "seconds":  11.611,
+                                       "deadline":  1800,
+                                       "timedOut":  false,
+                                       "expectedExit":  0,
+                                       "expectedMarker":  "MARKER-CONTROLS: RESULT: PASS executed 1 of 1",
+                                       "childExecuted":  [
+                                                             "contract-unchanged"
+                                                         ],
+                                       "stdout":  [
+                                                      "MARKER-CONTROLS: PASS [contract-unchanged] exit 0 marker-lines 1 errors [] first-edit-line 0 exercised True (10.138 s)",
+                                                      "MARKER-CONTROLS: RESULT: PASS executed 1 of 1 selected cases (registry PRE1-R2-MARKER-CONTROLS-V1, 45 cases)"
+                                                  ],
+                                       "stderr":  [
+
+                                                  ]
+                                   },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  14.746
+                  },
+                  {
+                      "id":  "selector-empty",
+                      "kind":  "selector",
+                      "requirement":  "selector boundary: empty",
+                      "verdict":  "PASS",
+                      "detail":  "exit 2 marker 1 executed []",
+                      "selector":  {
+                                       "argument":  "\u0027\u0027",
+                                       "probe":  false,
+                                       "exit":  2,
+                                       "seconds":  0.713,
+                                       "deadline":  1800,
+                                       "timedOut":  false,
+                                       "expectedExit":  2,
+                                       "expectedMarker":  "MARKER-CONTROLS: SELECTOR-ERROR [empty]",
+                                       "childExecuted":  [
+
+                                                         ],
+                                       "stdout":  [
+                                                      "MARKER-CONTROLS: SELECTOR-ERROR [empty] bound -Case holds an empty string"
+                                                  ],
+                                       "stderr":  [
+
+                                                  ]
+                                   },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  4.34
+                  },
+                  {
+                      "id":  "selector-whitespace",
+                      "kind":  "selector",
+                      "requirement":  "selector boundary: whitespace",
+                      "verdict":  "PASS",
+                      "detail":  "exit 2 marker 1 executed []",
+                      "selector":  {
+                                       "argument":  "\u0027 \u0027",
+                                       "probe":  false,
+                                       "exit":  2,
+                                       "seconds":  0.712,
+                                       "deadline":  1800,
+                                       "timedOut":  false,
+                                       "expectedExit":  2,
+                                       "expectedMarker":  "MARKER-CONTROLS: SELECTOR-ERROR [whitespace]",
+                                       "childExecuted":  [
+
+                                                         ],
+                                       "stdout":  [
+                                                      "MARKER-CONTROLS: SELECTOR-ERROR [whitespace] bound -Case holds only whitespace"
+                                                  ],
+                                       "stderr":  [
+
+                                                  ]
+                                   },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  4.279
+                  },
+                  {
+                      "id":  "selector-malformed",
+                      "kind":  "selector",
+                      "requirement":  "selector boundary: malformed",
+                      "verdict":  "PASS",
+                      "detail":  "exit 2 marker 1 executed []",
+                      "selector":  {
+                                       "argument":  "Contract_Unchanged",
+                                       "probe":  false,
+                                       "exit":  2,
+                                       "seconds":  0.698,
+                                       "deadline":  1800,
+                                       "timedOut":  false,
+                                       "expectedExit":  2,
+                                       "expectedMarker":  "MARKER-CONTROLS: SELECTOR-ERROR [malformed]",
+                                       "childExecuted":  [
+
+                                                         ],
+                                       "stdout":  [
+                                                      "MARKER-CONTROLS: SELECTOR-ERROR [malformed] \u0027Contract_Unchanged\u0027 is not a lowercase hyphenated case id"
+                                                  ],
+                                       "stderr":  [
+
+                                                  ]
+                                   },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  4.163
+                  },
+                  {
+                      "id":  "selector-unknown",
+                      "kind":  "selector",
+                      "requirement":  "selector boundary: unknown",
+                      "verdict":  "PASS",
+                      "detail":  "exit 2 marker 1 executed []",
+                      "selector":  {
+                                       "argument":  "contract-no-such-case",
+                                       "probe":  false,
+                                       "exit":  2,
+                                       "seconds":  0.72,
+                                       "deadline":  1800,
+                                       "timedOut":  false,
+                                       "expectedExit":  2,
+                                       "expectedMarker":  "MARKER-CONTROLS: SELECTOR-ERROR [unknown]",
+                                       "childExecuted":  [
+
+                                                         ],
+                                       "stdout":  [
+                                                      "MARKER-CONTROLS: SELECTOR-ERROR [unknown] \u0027contract-no-such-case\u0027 is not a registered case id"
+                                                  ],
+                                       "stderr":  [
+
+                                                  ]
+                                   },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  4.366
+                  },
+                  {
+                      "id":  "selector-duplicate",
+                      "kind":  "selector",
+                      "requirement":  "selector boundary: duplicate",
+                      "verdict":  "PASS",
+                      "detail":  "exit 2 marker 1 executed []",
+                      "selector":  {
+                                       "argument":  "contract-unchanged,contract-unchanged",
+                                       "probe":  false,
+                                       "exit":  2,
+                                       "seconds":  0.875,
+                                       "deadline":  1800,
+                                       "timedOut":  false,
+                                       "expectedExit":  2,
+                                       "expectedMarker":  "MARKER-CONTROLS: SELECTOR-ERROR [duplicate]",
+                                       "childExecuted":  [
+
+                                                         ],
+                                       "stdout":  [
+                                                      "MARKER-CONTROLS: SELECTOR-ERROR [duplicate] bound -Case repeats a case id"
+                                                  ],
+                                       "stderr":  [
+
+                                                  ]
+                                   },
+                      "copyRemoved":  true,
+                      "repositoryStateUnchanged":  true,
+                      "repositoryStateSha256":  "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+                      "seconds":  4.439
+                  }
+              ]
+}

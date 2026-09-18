@@ -1,0 +1,1328 @@
+{
+  "version": "PRE1-R2-REPLAY-DIGEST-V1",
+  "reports": [
+    {
+      "evidenceDirectory": "20260917-104131-2d99fa69fc5c478aaa2eaacd06ed7839",
+      "reportSha256": "12d0e4aea8d2c5495a1ed80e227664c11c6f891171a936422cdb72baabf89fb0",
+      "reportBytes": 314095,
+      "phase": "BUILDER",
+      "mode": "startup",
+      "verdict": "PASS",
+      "error": "",
+      "platform": "Microsoft Windows NT 10.0.26200.0",
+      "powershell": "7.6.6",
+      "registrySha256": "911ed51bc30f2260508000d6c6e892c840d80afbba0233610559289861e1c931",
+      "registryContentSha256": "3e27e7626f4af805820071777246d3a5c2ac101e7adbb3db028219b2f46ae495",
+      "runnerSha256": "a1a1427531be41317f232ccaf7d73481e4c96b57aca4d585ff451149e04c4006",
+      "deadlineSeconds": 600,
+      "administrationDeadlineSeconds": 120,
+      "sleeperDeadlineSeconds": 45,
+      "expectedCount": 55,
+      "registryExpectedCount": 55,
+      "executedCount": 0,
+      "executedEqualsExpected": false,
+      "executed": [],
+      "selfTestCount": 0,
+      "selfTestsAllPass": null,
+      "selfTestSample": null,
+      "baseline": [
+        [
+          {
+            "stage": null,
+            "exit": null,
+            "seconds": null,
+            "timedOut": null
+          }
+        ]
+      ],
+      "validator": null,
+      "topStages": [
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        }
+      ],
+      "restored": {
+        "head": "c33f2a80211c0b9d62cf8a615f945e6925861235",
+        "status": "",
+        "worktree": "",
+        "index": ""
+      },
+      "sourceHashCount": 89,
+      "caseCount": 0,
+      "casesAllPass": null,
+      "sumStageSeconds": 0.0,
+      "cases": []
+    },
+    {
+      "evidenceDirectory": "20260917-104400-b7aec362e09b4c9596843630818c2990",
+      "reportSha256": "7aba3a9f7575586a313e546d85329bf1406c76d0ef7b650836b41cf9e68edb28",
+      "reportBytes": 370337,
+      "phase": "BUILDER",
+      "mode": "focused",
+      "verdict": "PASS",
+      "error": "",
+      "platform": "Microsoft Windows NT 10.0.26200.0",
+      "powershell": "7.6.6",
+      "registrySha256": "911ed51bc30f2260508000d6c6e892c840d80afbba0233610559289861e1c931",
+      "registryContentSha256": "3e27e7626f4af805820071777246d3a5c2ac101e7adbb3db028219b2f46ae495",
+      "runnerSha256": "a1a1427531be41317f232ccaf7d73481e4c96b57aca4d585ff451149e04c4006",
+      "deadlineSeconds": 600,
+      "administrationDeadlineSeconds": 120,
+      "sleeperDeadlineSeconds": 45,
+      "expectedCount": 1,
+      "registryExpectedCount": 55,
+      "executedCount": 1,
+      "executedEqualsExpected": true,
+      "executed": [
+        "B55_RUN_SAFE_LENGTH_WEAKEN"
+      ],
+      "selfTestCount": 0,
+      "selfTestsAllPass": null,
+      "selfTestSample": null,
+      "baseline": [
+        [
+          {
+            "stage": null,
+            "exit": null,
+            "seconds": null,
+            "timedOut": null
+          }
+        ]
+      ],
+      "validator": null,
+      "topStages": [
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        }
+      ],
+      "restored": {
+        "head": "c33f2a80211c0b9d62cf8a615f945e6925861235",
+        "status": "",
+        "worktree": "",
+        "index": ""
+      },
+      "sourceHashCount": 89,
+      "caseCount": 1,
+      "casesAllPass": true,
+      "sumStageSeconds": 280.143,
+      "cases": [
+        {
+          "id": "B55_RUN_SAFE_LENGTH_WEAKEN",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_builder_check.lean:457:",
+          "profile": "builder",
+          "manifest": "rehash",
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Safety.lean",
+          "beforeSha256": "0556bb89b4cd4af1026da3dad249a426ec501b1bf722033637674f6467147c4e",
+          "mutationSha256": "b4d64d569450c7b983e899dab4df9749b9b2cffabf8efc5addec17ca83c5afea",
+          "afterSha256": "0556bb89b4cd4af1026da3dad249a426ec501b1bf722033637674f6467147c4e",
+          "restoredExactly": true,
+          "manifestRestored": true,
+          "compile": [
+            {
+              "stage": "B55_RUN_SAFE_LENGTH_WEAKEN-firewall",
+              "exit": 0,
+              "seconds": 5.75,
+              "deadline": 120,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B55_RUN_SAFE_LENGTH_WEAKEN-producer",
+              "exit": 0,
+              "seconds": 128.458,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 16,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B55_RUN_SAFE_LENGTH_WEAKEN-consumer",
+              "exit": 1,
+              "seconds": 10.551,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 53,
+              "consumerErrorLines": [
+                457
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "B55_RUN_SAFE_LENGTH_WEAKEN-restored-firewall",
+              "exit": 0,
+              "seconds": 5.08,
+              "deadline": 120,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B55_RUN_SAFE_LENGTH_WEAKEN-restored-producer",
+              "exit": 0,
+              "seconds": 120.036,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 16,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B55_RUN_SAFE_LENGTH_WEAKEN-restored-consumer",
+              "exit": 0,
+              "seconds": 10.268,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 46,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "evidenceDirectory": "20260917-105105-b4d01f5370024c63b578763cef4b6ca6",
+      "reportSha256": "d0dac8f57b1c00e2d7e0bb85cd302b47636f19ca8ab5b224266a03afa8725bb3",
+      "reportBytes": 1440624,
+      "phase": "BUILDER",
+      "mode": "focused",
+      "verdict": "PASS",
+      "error": "",
+      "platform": "Microsoft Windows NT 10.0.26200.0",
+      "powershell": "7.6.6",
+      "registrySha256": "911ed51bc30f2260508000d6c6e892c840d80afbba0233610559289861e1c931",
+      "registryContentSha256": "3e27e7626f4af805820071777246d3a5c2ac101e7adbb3db028219b2f46ae495",
+      "runnerSha256": "a1a1427531be41317f232ccaf7d73481e4c96b57aca4d585ff451149e04c4006",
+      "deadlineSeconds": 600,
+      "administrationDeadlineSeconds": 120,
+      "sleeperDeadlineSeconds": 45,
+      "expectedCount": 1,
+      "registryExpectedCount": 55,
+      "executedCount": 1,
+      "executedEqualsExpected": true,
+      "executed": [
+        "B53_RUNFACTS_HALTS_WEAKEN"
+      ],
+      "selfTestCount": 0,
+      "selfTestsAllPass": null,
+      "selfTestSample": null,
+      "baseline": [
+        [
+          {
+            "stage": null,
+            "exit": null,
+            "seconds": null,
+            "timedOut": null
+          }
+        ]
+      ],
+      "validator": null,
+      "topStages": [
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        }
+      ],
+      "restored": {
+        "head": "c33f2a80211c0b9d62cf8a615f945e6925861235",
+        "status": "",
+        "worktree": "",
+        "index": ""
+      },
+      "sourceHashCount": 89,
+      "caseCount": 1,
+      "casesAllPass": true,
+      "sumStageSeconds": 282.995,
+      "cases": [
+        {
+          "id": "B53_RUNFACTS_HALTS_WEAKEN",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "PreprocessingContract.lean:227: PreprocessingContract.lean:349:",
+          "profile": "capstone",
+          "manifest": "frozen",
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Proof/RunFacts.lean",
+          "beforeSha256": "57b4cc8feab8c65c65841d0b05264ab388211e52be2fd39c90016d04d02a16cc",
+          "mutationSha256": "80e1fc501a067a2295cab3ef38be84191b667115436a5d2f871b3d01fd367b51",
+          "afterSha256": "57b4cc8feab8c65c65841d0b05264ab388211e52be2fd39c90016d04d02a16cc",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "B53_RUNFACTS_HALTS_WEAKEN-firewall",
+              "exit": 0,
+              "seconds": 6.067,
+              "deadline": 120,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B53_RUNFACTS_HALTS_WEAKEN-producer",
+              "exit": 0,
+              "seconds": 19.942,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1241,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B53_RUNFACTS_HALTS_WEAKEN-consumer",
+              "exit": 1,
+              "seconds": 114.732,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 312,
+              "consumerErrorLines": [
+                227,
+                349
+              ],
+              "anyErrorLines": 2,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "B53_RUNFACTS_HALTS_WEAKEN-restored-firewall",
+              "exit": 0,
+              "seconds": 5.267,
+              "deadline": 120,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B53_RUNFACTS_HALTS_WEAKEN-restored-producer",
+              "exit": 0,
+              "seconds": 19.845,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1241,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B53_RUNFACTS_HALTS_WEAKEN-restored-consumer",
+              "exit": 0,
+              "seconds": 117.142,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 296,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "evidenceDirectory": "20260917-105812-5281fcdcbde1430bbab67a3b7fe5064d",
+      "reportSha256": "17e765f7674d67b26c262a0bba2306792c886fd557fef2084d1be2be0cb36cf6",
+      "reportBytes": 1441126,
+      "phase": "BUILDER",
+      "mode": "focused",
+      "verdict": "PASS",
+      "error": "",
+      "platform": "Microsoft Windows NT 10.0.26200.0",
+      "powershell": "7.6.6",
+      "registrySha256": "911ed51bc30f2260508000d6c6e892c840d80afbba0233610559289861e1c931",
+      "registryContentSha256": "3e27e7626f4af805820071777246d3a5c2ac101e7adbb3db028219b2f46ae495",
+      "runnerSha256": "a1a1427531be41317f232ccaf7d73481e4c96b57aca4d585ff451149e04c4006",
+      "deadlineSeconds": 600,
+      "administrationDeadlineSeconds": 120,
+      "sleeperDeadlineSeconds": 45,
+      "expectedCount": 1,
+      "registryExpectedCount": 55,
+      "executedCount": 1,
+      "executedEqualsExpected": true,
+      "executed": [
+        "B54_RUNFACTS_HALTS_FUEL_LARGER"
+      ],
+      "selfTestCount": 0,
+      "selfTestsAllPass": null,
+      "selfTestSample": null,
+      "baseline": [
+        [
+          {
+            "stage": null,
+            "exit": null,
+            "seconds": null,
+            "timedOut": null
+          }
+        ]
+      ],
+      "validator": null,
+      "topStages": [
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        }
+      ],
+      "restored": {
+        "head": "c33f2a80211c0b9d62cf8a615f945e6925861235",
+        "status": "",
+        "worktree": "",
+        "index": ""
+      },
+      "sourceHashCount": 89,
+      "caseCount": 1,
+      "casesAllPass": true,
+      "sumStageSeconds": 272.479,
+      "cases": [
+        {
+          "id": "B54_RUNFACTS_HALTS_FUEL_LARGER",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "PreprocessingContract.lean:227: PreprocessingContract.lean:349:",
+          "profile": "capstone",
+          "manifest": "frozen",
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Proof/RunFacts.lean",
+          "beforeSha256": "57b4cc8feab8c65c65841d0b05264ab388211e52be2fd39c90016d04d02a16cc",
+          "mutationSha256": "218d7a10639ff2c9e4e59778688a53ac29c3b283237e857da895f33d4b395803",
+          "afterSha256": "57b4cc8feab8c65c65841d0b05264ab388211e52be2fd39c90016d04d02a16cc",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "B54_RUNFACTS_HALTS_FUEL_LARGER-firewall",
+              "exit": 0,
+              "seconds": 5.179,
+              "deadline": 120,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B54_RUNFACTS_HALTS_FUEL_LARGER-producer",
+              "exit": 0,
+              "seconds": 16.725,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1241,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B54_RUNFACTS_HALTS_FUEL_LARGER-consumer",
+              "exit": 1,
+              "seconds": 114.135,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 315,
+              "consumerErrorLines": [
+                227,
+                349
+              ],
+              "anyErrorLines": 2,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "B54_RUNFACTS_HALTS_FUEL_LARGER-restored-firewall",
+              "exit": 0,
+              "seconds": 5.331,
+              "deadline": 120,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B54_RUNFACTS_HALTS_FUEL_LARGER-restored-producer",
+              "exit": 0,
+              "seconds": 17.672,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1241,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B54_RUNFACTS_HALTS_FUEL_LARGER-restored-consumer",
+              "exit": 0,
+              "seconds": 113.437,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 296,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "evidenceDirectory": "20260917-110517-9c614b8846604082a96d87218f0941da",
+      "reportSha256": "d38309fbd32b7163dd106d3192d0056d497620575b133b16283ff0aa47bc4aa3",
+      "reportBytes": 362372,
+      "phase": "BUILDER",
+      "mode": "focused",
+      "verdict": "PASS",
+      "error": "",
+      "platform": "Microsoft Windows NT 10.0.26200.0",
+      "powershell": "7.6.6",
+      "registrySha256": "911ed51bc30f2260508000d6c6e892c840d80afbba0233610559289861e1c931",
+      "registryContentSha256": "3e27e7626f4af805820071777246d3a5c2ac101e7adbb3db028219b2f46ae495",
+      "runnerSha256": "a1a1427531be41317f232ccaf7d73481e4c96b57aca4d585ff451149e04c4006",
+      "deadlineSeconds": 600,
+      "administrationDeadlineSeconds": 120,
+      "sleeperDeadlineSeconds": 45,
+      "expectedCount": 1,
+      "registryExpectedCount": 55,
+      "executedCount": 1,
+      "executedEqualsExpected": true,
+      "executed": [
+        "B16_PROGRAM_PARAMETER"
+      ],
+      "selfTestCount": 0,
+      "selfTestsAllPass": null,
+      "selfTestSample": null,
+      "baseline": [
+        [
+          {
+            "stage": null,
+            "exit": null,
+            "seconds": null,
+            "timedOut": null
+          }
+        ]
+      ],
+      "validator": null,
+      "topStages": [
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        }
+      ],
+      "restored": {
+        "head": "c33f2a80211c0b9d62cf8a615f945e6925861235",
+        "status": "",
+        "worktree": "",
+        "index": ""
+      },
+      "sourceHashCount": 89,
+      "caseCount": 1,
+      "casesAllPass": true,
+      "sumStageSeconds": 230.815,
+      "cases": [
+        {
+          "id": "B16_PROGRAM_PARAMETER",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_builder_check.lean:370:",
+          "profile": "builder",
+          "manifest": "rehash",
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Builder/Program.lean",
+          "beforeSha256": "451ae09fa62d30b89b0cff174e977259fba58fd3d96d535caa4d59129caf436c",
+          "mutationSha256": "2c1a4b55749f126882fad4f7eb60b4ab54d4f123359a82adf11c631c456d521f",
+          "afterSha256": "451ae09fa62d30b89b0cff174e977259fba58fd3d96d535caa4d59129caf436c",
+          "restoredExactly": true,
+          "manifestRestored": true,
+          "compile": [
+            {
+              "stage": "B16_PROGRAM_PARAMETER-firewall",
+              "exit": 0,
+              "seconds": 4.989,
+              "deadline": 120,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B16_PROGRAM_PARAMETER-producer",
+              "exit": 0,
+              "seconds": 92.78,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 5,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B16_PROGRAM_PARAMETER-consumer",
+              "exit": 1,
+              "seconds": 11.143,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 51,
+              "consumerErrorLines": [
+                370
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "B16_PROGRAM_PARAMETER-restored-firewall",
+              "exit": 0,
+              "seconds": 5.927,
+              "deadline": 120,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B16_PROGRAM_PARAMETER-restored-producer",
+              "exit": 0,
+              "seconds": 105.581,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 3,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "B16_PROGRAM_PARAMETER-restored-consumer",
+              "exit": 0,
+              "seconds": 10.395,
+              "deadline": 600,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 46,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        }
+      ]
+    }
+  ]
+}

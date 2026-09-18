@@ -1,0 +1,19 @@
+{
+  "Stage": "pre1-RMQ.Core.WordRAM.Construction.Model-r5",
+  "ExitCode": 0,
+  "Output": [
+    "✔ [4/4] Built RMQ.Core.WordRAM.Construction.Model",
+    "Build completed successfully."
+  ],
+  "StandardOutput": [
+    "✔ [4/4] Built RMQ.Core.WordRAM.Construction.Model",
+    "Build completed successfully."
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 11.687,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

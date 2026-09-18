@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "base": "c1c970b8bfbae03163633365e512d487ae1c98f2",
+  "contractGuard": "scripts/preprocessing_contract_firewall.ps1",
+  "normalization": "strict UTF-8, CRLF to LF only",
+  "files": [
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Program.lean",
+      "sha256": "CDF813F526310D4D9F3074F084A9DBC4E67C0461906BC77CEF254CE81F3F09FA"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Calculus.lean",
+      "sha256": "3C1D8C9783A1766C93E367FF8D53BB4DC7BF5F4DDF8EC645689B544A8F36D14D"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Safety.lean",
+      "sha256": "6323549E242C0EF8FB0397456DEB5FA39BFC844F7D194774D8E6579F048BAC84"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Structured.lean",
+      "sha256": "E15BBD3E91E920820D41B56B0E995D9D2F60A4EC7E28C007E247CAA53DFBA237"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Compiler.lean",
+      "sha256": "381BF201D732D50940D9DCF65D9E5CAB15DB4F53A78222D2F3B3435F01EDE979"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Loop.lean",
+      "sha256": "72CE1513E073D8AD68512066F3C4B1E18D09B3A4F783DED18F93FF4405CA2FB5"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/ArrayRun.lean",
+      "sha256": "CA2449F1A58FC87C44E8D0AF339B5BB39D8E2017A5216E6D04FAF8AB48E34A3E"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Registers.lean",
+      "sha256": "A49266049BDE03D6AE6FAC9413F2A634ED5DE2A336FB406D144A2961E7DE36AC"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Emit.lean",
+      "sha256": "D74EE27E47D2304CD38A4FE7AC406FBEE0A1CA79C2BA7835CF55FBB51A3D4D75"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Geometry.lean",
+      "sha256": "620145F0D1F3EEB7D11AED7F515BF1282134A4A2725A12FCEA43D66E0B8ACDA4"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Interior.lean",
+      "sha256": "E7E04D4679941CE47155866AC2D6571C098514CD4FF18AD3573BF880E4CFE7EE"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Access.lean",
+      "sha256": "547C89EC0A09DFD0F4695866DA73EEEDE4368348D9FF11E65B394D57047B11CF"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Cartesian.lean",
+      "sha256": "82BA4BE59ED74FD20F95CF801F12F4C6143492D9681C5DF07584AFCF4D61F2BD"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Program.lean",
+      "sha256": "F1303956EE1E901ED6B2587D6144388C6F8B622E894077BC8700F1ED99066AF8"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Micro.lean",
+      "sha256": "C94FB4FE15AF7D45AC678BC8C61FAC42A12F444FDCA83844C790DD7D1C814FAF"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Finish.lean",
+      "sha256": "EE1647D92F6A51EA49085CF21AEB7E49A7EB4A1F2D6C0110B02F09900442D254"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Output.lean",
+      "sha256": "BF801FB0A167E95356C9E15A823B3F6A54AC9FBDDE45935D7E3179CA990BBA23"
+    }
+  ]
+}
