@@ -1,0 +1,98 @@
+{
+  "schema": "native1-identity-controls-v1",
+  "success": true,
+  "sourceHead": "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "expectedCases": [
+    "pinned-actual-lean",
+    "changed-repository-pin",
+    "changed-compiler-version",
+    "same-toolchain-cache",
+    "changed-toolchain-cache",
+    "old-cache-schema",
+    "changed-source-prefix",
+    "missing-olean",
+    "changed-generated-c",
+    "restored-cache"
+  ],
+  "expectedCount": 10,
+  "executedCount": 10,
+  "results": [
+    {
+      "id": "pinned-actual-lean",
+      "pass": true,
+      "evidence": "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+    },
+    {
+      "id": "changed-repository-pin",
+      "pass": true,
+      "evidence": "real production pin predicate rejected changed pin"
+    },
+    {
+      "id": "changed-compiler-version",
+      "pass": true,
+      "evidence": "real production pin predicate rejected changed version banner; no alternate compiler executed"
+    },
+    {
+      "id": "same-toolchain-cache",
+      "pass": true,
+      "evidence": "actual olean/C bytes, same identity: reuse"
+    },
+    {
+      "id": "changed-toolchain-cache",
+      "pass": true,
+      "evidence": "same source/artifacts, changed identity: rebuild required"
+    },
+    {
+      "id": "old-cache-schema",
+      "pass": true,
+      "evidence": "unqualified historical cache cannot be reused"
+    },
+    {
+      "id": "changed-source-prefix",
+      "pass": true,
+      "evidence": "source-prefix mismatch requires rebuild"
+    },
+    {
+      "id": "missing-olean",
+      "pass": true,
+      "evidence": "absent artifact cannot be reused"
+    },
+    {
+      "id": "changed-generated-c",
+      "pass": true,
+      "evidence": "changed actual generated C copy rejected"
+    },
+    {
+      "id": "restored-cache",
+      "pass": true,
+      "evidence": "exact restored generated C accepted"
+    }
+  ],
+  "restored": true,
+  "compilerProbe": {
+    "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+    "arguments": [
+      "--version"
+    ],
+    "process": {
+      "Stage": "identity-control-version",
+      "ExitCode": 0,
+      "Output": [
+        "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+      ],
+      "StandardOutput": [
+        "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 5.225,
+      "DeadlineSeconds": 60,
+      "Ownership": "kill-on-close-job"
+    },
+    "text": "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+  },
+  "limits": "Production predicates are exercised on actual cached bytes; no alternate compiler or binary from it was executed."
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "native1-startup-smoke-v1",
+  "success": true,
+  "client": "packed-rmq-native-cpp.exe",
+  "imageBase64": "Uk1RTgEBAKgBAAABABABAAIBAAMBABUBAAAAAAAAAAAAAAAAAAAAAAAAAAABABUDAAAAAAAAAAAAAAAAAAAAAAAAAAABABUIAAAAAAAAAAAAAAAAAAAAAAAAAAABAAIBABUIAAAAAAAAAAAAAAAAAAAAAAAAAAABABUDAAAAAAAAAAAAAAAAAAAAAAAAAAABAAA=",
+  "imageSha256": "C27D76DC6F6B7033CF596E1CBEE1B0B38B88007EBFF68D996E38A67563B5CDAC",
+  "expectedStdoutBase64": "aGFsdGVkIDgKMgowIDEgMCAwIDAgMQoK",
+  "expectedExit": 0,
+  "expectedStderrBase64": "",
+  "manifestSha256": "8ACF20E470E6247E3E415FE283F909C7BDE2F968518F76F0CDA0ED7F988954FD",
+  "rawCaptureJson": "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T11:31:27.173380+00:00\",\"completedUtc\":\"2026-09-12T11:31:27.630291+00:00\",\"durationSeconds\":0.4529999999940628,\"deadlineSeconds\":30.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native-cpp.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-draft\\\\query-smoke.bin\",\"000000000000000000000000000000000000000000\",\"000000000000000000000000000000000000000000\",\"100\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMgowIDEgMCAwIDAgMQoK\",\"stderrBase64\":\"\"}",
+  "result": {
+    "Stage": "startup-packed-rmq-native-cpp.exe",
+    "ExitCode": 0,
+    "Output": [
+      "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T11:31:27.173380+00:00\",\"completedUtc\":\"2026-09-12T11:31:27.630291+00:00\",\"durationSeconds\":0.4529999999940628,\"deadlineSeconds\":30.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native-cpp.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-draft\\\\query-smoke.bin\",\"000000000000000000000000000000000000000000\",\"000000000000000000000000000000000000000000\",\"100\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMgowIDEgMCAwIDAgMQoK\",\"stderrBase64\":\"\"}"
+    ],
+    "StandardOutput": [
+      "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T11:31:27.173380+00:00\",\"completedUtc\":\"2026-09-12T11:31:27.630291+00:00\",\"durationSeconds\":0.4529999999940628,\"deadlineSeconds\":30.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native-cpp.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-draft\\\\query-smoke.bin\",\"000000000000000000000000000000000000000000\",\"000000000000000000000000000000000000000000\",\"100\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMgowIDEgMCAwIDAgMQoK\",\"stderrBase64\":\"\"}"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 6.849,
+    "DeadlineSeconds": 50,
+    "Ownership": "kill-on-close-job"
+  }
+}

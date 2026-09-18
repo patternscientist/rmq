@@ -1,0 +1,32 @@
+# Receipts and build inventories carry byte hashes; preserve the authored bytes.
+commands/*.json -text whitespace=cr-at-eol
+binary-commands/*.json -text whitespace=cr-at-eol
+*_MANIFEST.json -text whitespace=cr-at-eol
+# Frozen requirement prefixes and cited report/source text use exact LF bytes.
+ACCEPTANCE_MATRIX.md text eol=lf
+AUDIT_REQUIREMENTS.md text eol=lf
+SOURCE_CONTRACT.md text eol=lf
+FINAL_SOURCE_MATRIX.md text eol=lf
+REPORT.md text eol=lf
+REPORT_ROUTE_HISTORY.md text eol=lf
+FRESH_AUDIT_PROMPT.md text eol=lf
+BINARY_VALIDATION.md text eol=lf
+CONTRACT_VALIDATION.md text eol=lf
+DEFAULT_CACHE_PREPARATION.md text eol=lf
+NATIVE_WITNESSES.md text eol=lf
+VALIDATOR.md text eol=lf
+AUDIT_PACKET_INDEX.json -text whitespace=cr-at-eol
+AUDIT_PUBLIC_CLAIM_PATHS.json -text whitespace=cr-at-eol
+# NATIVE-1-R1: exact gzip archives of receipts that embedded claim-scanner result lines.
+commands/claim-drift-native-readme.json.gz binary
+commands/claim-drift-packet.json.gz binary
+commands/claim-native-source-checkpoint.json.gz binary
+commands/final-claims-process-command.json.gz binary
+commands/final-claims-process.json.gz binary
+commands/final-claims-public-command.json.gz binary
+commands/final-claims-public.json.gz binary
+commands/final-metadata-checks.json.gz binary
+commands/final-static-command.json.gz binary
+commands/final-text-claims-command.json.gz binary
+commands/final-text-claims-process.json.gz binary
+commands/metadata-checks-before-public-blob.json.gz binary

@@ -1,0 +1,57 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "command": {
+    "arguments": [
+      "-j",
+      "1",
+      "-o",
+      ".lake/build/lib/lean/RMQ/Core/WordRAM/Native/Thin.olean",
+      "RMQ/Core/WordRAM/Native/Thin.lean"
+    ],
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe"
+  },
+  "result": {
+    "Stage": "thin-01",
+    "ExitCode": 1,
+    "Output": [
+      "RMQ/Core/WordRAM/Native/Thin.lean:77:18: error: type mismatch, term",
+      "  ih t.after",
+      "after simplification has type",
+      "  ∀ (a : Stats),",
+      "    runThin observeReads memory program fuel t.after a =",
+      "      ((runFinite memory program fuel t.after).final,",
+      "        List.foldl (recordTransition observeReads) a (runFinite memory program fuel t.after).transitions) : Prop",
+      "but is expected to have type",
+      "  runThin observeReads memory program fuel t.after (recordTransition observeReads a t) =",
+      "    ((runFinite memory program fuel t.after).final,",
+      "      List.foldl (recordTransition observeReads) (recordTransition observeReads a t)",
+      "        (runFinite memory program fuel t.after).transitions) : Prop",
+      "RMQ/Core/WordRAM/Native/Thin.lean:78:10: error: unexpected token '('; expected command"
+    ],
+    "StandardOutput": [
+      "RMQ/Core/WordRAM/Native/Thin.lean:77:18: error: type mismatch, term",
+      "  ih t.after",
+      "after simplification has type",
+      "  ∀ (a : Stats),",
+      "    runThin observeReads memory program fuel t.after a =",
+      "      ((runFinite memory program fuel t.after).final,",
+      "        List.foldl (recordTransition observeReads) a (runFinite memory program fuel t.after).transitions) : Prop",
+      "but is expected to have type",
+      "  runThin observeReads memory program fuel t.after (recordTransition observeReads a t) =",
+      "    ((runFinite memory program fuel t.after).final,",
+      "      List.foldl (recordTransition observeReads) (recordTransition observeReads a t)",
+      "        (runFinite memory program fuel t.after).transitions) : Prop",
+      "RMQ/Core/WordRAM/Native/Thin.lean:78:10: error: unexpected token '('; expected command"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 17.829,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  }
+}

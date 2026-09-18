@@ -1,0 +1,19 @@
+{
+  "schema": "native1-final-freeze-v1",
+  "passed": true,
+  "checkedUtc": "2026-09-12T14:26:38.464859+00:00",
+  "sourceCommit": "52ba2a57784c1dcd234615821865b87fd31b2d31",
+  "priorMatrixBytes": 36507,
+  "priorMatrixSha256": "4619ED94C335B55EA18639418D2EEFC9B8B6981978BF439F5DA0C3631F5E8CE6",
+  "allPriorMatrixBytesPreserved": true,
+  "frozenPrefixBytes": 28298,
+  "frozenPrefixSha256": "0A5D2313CCEC30DE81AAB3B19439247C612CE4B8FC6C19C0BF51F6C3809D103E",
+  "matrixBytes": 74021,
+  "matrixSha256": "F216C6F8DC13343807E126CE29F33333144306B59B60B270ABFDC5224AE80AF9",
+  "packetMetadataPins": 3,
+  "rawReceiptPins": 32,
+  "packetPinsMatch": true,
+  "reportBytes": 14049,
+  "reportSha256": "2FB3D34A27414A796CCCBA0C4483B25A0435C8A8ED03643A60BFA1880D2877CF",
+  "verificationScript": "import hashlib,json,pathlib,subprocess,datetime\nroot=pathlib.Path.cwd(); d=root/'docs/internal/extensions/native1'\ndef h(b): return hashlib.sha256(b).hexdigest().upper()\ndef git_bytes(*args): return subprocess.run(['git',*args],check=True,capture_output=True).stdout\nold=git_bytes('show','fa79233f77acbfa0470ef6203131e66784c7b014:docs/internal/extensions/native1/ACCEPTANCE_MATRIX.md')\nnew=git_bytes('show','52ba2a57784c1dcd234615821865b87fd31b2d31:docs/internal/extensions/native1/ACCEPTANCE_MATRIX.md')\nassert new.startswith(old), 'An earlier matrix byte was changed'\nassert new==(d/'ACCEPTANCE_MATRIX.md').read_bytes(), 'Matrix changed after source freeze'\nassert h(new[:28298])=='0A5D2313CCEC30DE81AAB3B19439247C612CE4B8FC6C19C0BF51F6C3809D103E'\nindex=json.loads((d/'AUDIT_PACKET_INDEX.json').read_text(encoding='utf-8-sig'))\nassert index['targetCommit']=='52ba2a57784c1dcd234615821865b87fd31b2d31'\nfor pin in index['metadata']+index['selectedRawReceipts']:\n    raw=(d/pin['path']).read_bytes(); assert len(raw)==pin['bytes'] and h(raw)==pin['sha256'], pin['path']\nreport=(d/'REPORT.md').read_bytes()\nassert report.startswith(b'Status: CANDIDATE_COMPLETE\\nI found no assigned or inherited acceptance criterion unmet; coordinator acceptance is still required.\\n')\nassert b'52ba2a57784c1dcd234615821865b87fd31b2d31' in report\nrecord=dict(schema='native1-final-freeze-v1',passed=True,checkedUtc=datetime.datetime.now(datetime.timezone.utc).isoformat(),sourceCommit=index['targetCommit'],priorMatrixBytes=len(old),priorMatrixSha256=h(old),allPriorMatrixBytesPreserved=True,frozenPrefixBytes=28298,frozenPrefixSha256=h(new[:28298]),matrixBytes=len(new),matrixSha256=h(new),packetMetadataPins=len(index['metadata']),rawReceiptPins=len(index['selectedRawReceipts']),packetPinsMatch=True,reportBytes=len(report),reportSha256=h(report),verificationScript=pathlib.Path(__file__).read_text(encoding='utf-8'))\n(d/'commands/final-freeze.json').write_text(json.dumps(record,indent=2)+'\\n',encoding='utf-8')\nprint(json.dumps({k:v for k,v in record.items() if k!='verificationScript'},indent=2))\n"
+}

@@ -1,0 +1,29 @@
+{
+  "gzip": "claim-drift.json.gz",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "result": {
+    "ownership": "kill-on-close-job",
+    "lastLine": "CLAIM-DRIFT: scan complete (1590 hits, 0 strict failures)",
+    "seconds": 79.016,
+    "timedOut": false,
+    "exit": 0,
+    "deadline": 180
+  },
+  "schema": "native1-command-archive-v1",
+  "command": {
+    "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+    "arguments": [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "scripts/claim_drift_scan.ps1",
+      "-Strict"
+    ]
+  },
+  "rawSha256": "8B06A9B5256A3D51CD34EA0BD7BEEB0A5C05F29457699813BB07FDEBF7E7B33B",
+  "rawBytes": 7825123,
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "gzipSha256": "6FD28FEE71221A7361929A73A31F4C87369031CE06168A5EA017DD921FD62FF4",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f"
+}

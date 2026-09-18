@@ -1,0 +1,9 @@
+{
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "prefixBytes": 28298,
+  "sha256": "0A5D2313CCEC30DE81AAB3B19439247C612CE4B8FC6C19C0BF51F6C3809D103E",
+  "acceptanceRows": 31,
+  "inheritedRows": 21,
+  "schema": "native1-acceptance-freeze-v1",
+  "verification": "strict UTF-8 initial bytes; appended evidence does not change this prefix"
+}

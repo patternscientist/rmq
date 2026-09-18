@@ -1,0 +1,40 @@
+{
+  "schema": "native1-binary-selector-wrapper-v1",
+  "startedUtc": "2026-09-12T11:45:06.0071897Z",
+  "completedUtc": "2026-09-12T11:46:02.0685125Z",
+  "arguments": [
+    "-NoLogo",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1",
+    "-Case",
+    "query-smoke"
+  ],
+  "result": {
+    "Stage": "binary-first-production-selector",
+    "ExitCode": 1,
+    "Output": [
+      "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity.ps1:202",
+      "Line |",
+      " 202 |  … d.digest) { throw 'native compiler/import/runtime identity changed' } …",
+      "     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | native compiler/import/runtime identity changed"
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity.ps1:202",
+      "Line |",
+      " 202 |  … d.digest) { throw 'native compiler/import/runtime identity changed' } …",
+      "     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | native compiler/import/runtime identity changed"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 55.852,
+    "DeadlineSeconds": 600,
+    "Ownership": "kill-on-close-job"
+  }
+}

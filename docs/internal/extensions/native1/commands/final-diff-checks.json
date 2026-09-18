@@ -1,0 +1,42 @@
+{
+  "schema": "native1-final-diff-v1",
+  "checks": [
+    {
+      "output": [
+        "warning: in the working copy of 'docs/internal/WORKFLOW_DESIGN_DECISIONS.md', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'docs/internal/extensions/native1/.gitattributes', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'scripts/.gitattributes', LF will be replaced by CRLF the next time Git touches it"
+      ],
+      "name": "working",
+      "exitCode": 0,
+      "arguments": [
+        "diff",
+        "--check"
+      ]
+    },
+    {
+      "output": [
+        "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied"
+      ],
+      "name": "staged",
+      "exitCode": 0,
+      "arguments": [
+        "diff",
+        "--cached",
+        "--check"
+      ]
+    },
+    {
+      "output": [],
+      "name": "committed",
+      "exitCode": 0,
+      "arguments": [
+        "diff",
+        "--check",
+        "0e6a00f654abc64f8b68988fa9675b9a839dca2f..HEAD"
+      ]
+    }
+  ],
+  "pass": true,
+  "checkedUtc": "2026-09-12T14:01:47.4859035Z"
+}

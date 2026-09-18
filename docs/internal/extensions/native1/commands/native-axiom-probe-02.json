@@ -1,0 +1,39 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "fa79233f77acbfa0470ef6203131e66784c7b014",
+  "command": {
+    "arguments": [
+      "-j",
+      "1",
+      ".lake/native1/validator-controls/CapstoneAxiomProbe.lean"
+    ],
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe"
+  },
+  "result": {
+    "Stage": "native-axiom-probe-02",
+    "ExitCode": 0,
+    "Output": [
+      "AXIOM-PROBE before=85117790",
+      "'RMQ.SuccinctFinal.PackedNative.nativeExecutionCapstone_holds' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      "AXIOM-PROBE after=85120589"
+    ],
+    "StandardOutput": [
+      "AXIOM-PROBE before=85117790",
+      "'RMQ.SuccinctFinal.PackedNative.nativeExecutionCapstone_holds' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      "AXIOM-PROBE after=85120589"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 6.99,
+    "DeadlineSeconds": 300,
+    "Ownership": "kill-on-close-job"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+  "command": {
+    "arguments": [
+      "-j",
+      "1",
+      "-o",
+      ".lake/build/lib/lean/RMQ/Core/WordRAM/Native/Observations.olean",
+      "RMQ/Core/WordRAM/Native/Observations.lean"
+    ],
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe"
+  },
+  "result": {
+    "Stage": "observations-03",
+    "ExitCode": 0,
+    "Output": [
+      "RMQ/Core/WordRAM/Native/Observations.lean:47:17: warning: This simp argument is unused:",
+      "  List.count_cons",
+      "Hint: Omit it from the simp argument list.",
+      "  simp [h, L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵,̵ ̵Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]",
+      "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+      "RMQ/Core/WordRAM/Native/Observations.lean:48:17: warning: This simp argument is unused:",
+      "  List.count_cons",
+      "Hint: Omit it from the simp argument list.",
+      "  simp [h, L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵,̵ ̵beq_iff_eq]",
+      "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+      "RMQ/Core/WordRAM/Native/Observations.lean:48:34: warning: This simp argument is unused:",
+      "  beq_iff_eq",
+      "Hint: Omit it from the simp argument list.",
+      "  simp [h, List.count_cons,̵ ̵b̵e̵q̵_̵i̵f̵f̵_̵e̵q̵]",
+      "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`"
+    ],
+    "StandardOutput": [
+      "RMQ/Core/WordRAM/Native/Observations.lean:47:17: warning: This simp argument is unused:",
+      "  List.count_cons",
+      "Hint: Omit it from the simp argument list.",
+      "  simp [h, L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵,̵ ̵Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]",
+      "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+      "RMQ/Core/WordRAM/Native/Observations.lean:48:17: warning: This simp argument is unused:",
+      "  List.count_cons",
+      "Hint: Omit it from the simp argument list.",
+      "  simp [h, L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵,̵ ̵beq_iff_eq]",
+      "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+      "RMQ/Core/WordRAM/Native/Observations.lean:48:34: warning: This simp argument is unused:",
+      "  beq_iff_eq",
+      "Hint: Omit it from the simp argument list.",
+      "  simp [h, List.count_cons,̵ ̵b̵e̵q̵_̵i̵f̵f̵_̵e̵q̵]",
+      "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 3.594,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  }
+}

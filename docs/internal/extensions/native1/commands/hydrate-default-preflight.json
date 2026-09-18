@@ -1,0 +1,24 @@
+{
+  "schema": "native1-default-hydration-preflight-v1",
+  "parserErrors": 0,
+  "hashEquivalence": [
+    {
+      "path": "lean-toolchain",
+      "bufferedSHA256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+      "standardSHA256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F"
+    },
+    {
+      "path": "scripts/packed_native_hydrate.ps1",
+      "bufferedSHA256": "E75AB8E3E07C391A1DFB67A053D049B2F6F3A8B44BC382F37A859BD0D4EB5620",
+      "standardSHA256": "E75AB8E3E07C391A1DFB67A053D049B2F6F3A8B44BC382F37A859BD0D4EB5620"
+    },
+    {
+      "path": ".lake/build/lib/lean/RMQ/Core/WordRAM/Native/Machine.olean",
+      "bufferedSHA256": "2B02839D966176633D579CE04ACF3333159AAC297874437BFDC733C6C02FCFCB",
+      "standardSHA256": "2B02839D966176633D579CE04ACF3333159AAC297874437BFDC733C6C02FCFCB"
+    }
+  ],
+  "productionWrongSourceRejected": true,
+  "leanInvoked": false,
+  "lakeInvoked": false
+}

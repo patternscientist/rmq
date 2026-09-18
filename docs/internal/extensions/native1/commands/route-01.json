@@ -1,0 +1,29 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "command": {
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "arguments": [
+      "-j",
+      "1",
+      "-o",
+      ".lake/build/lib/lean/RMQ/Core/WordRAM/Native/Route.olean",
+      "RMQ/Core/WordRAM/Native/Route.lean"
+    ]
+  },
+  "result": {
+    "Stage": "route-01",
+    "ExitCode": 0,
+    "Output": [],
+    "StandardOutput": [],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 7.287,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "native1-scheduling-inference-v1",
+  "machineReceiptCompleteUtc": "2026-09-12T10:00:15.9777238Z",
+  "cppPrerequisiteWriteUtc": "2026-09-12T10:00:14.0801155Z",
+  "cppOwnedDurationSeconds": 2.072,
+  "earliestCppCompletionUtc": "2026-09-12T10:00:16.1521155Z",
+  "interpretation": "The sequential source mutation starts after the C++ case; earliest CPP completion is after the already-completed Machine receipt. This is causal clock-based evidence, not an absolute source process-start timestamp.",
+  "assumptions": [
+    "stable UTC clock",
+    "filesystem write time and owned stopwatch refer to this completed run"
+  ],
+  "rawRouteSHA256": "5A31BDDA30A5026EDD27ED3374E4354B4AD5928C2A75591DB0BFCF780B1EB647",
+  "machineReceiptSHA256": "C6A59D79CF9171CDBA43262E4E843A900679205005F106A2CFC1C91008D9BBBF"
+}

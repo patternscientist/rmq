@@ -1,0 +1,625 @@
+{
+    "schema":  "native1-default-artifact-copy-v1",
+    "success":  false,
+    "failure":  "Missing local import: this",
+    "sourceRoot":  "C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ",
+    "sourceHead":  "26d6b5c2b10ed06ae4f72d9075d746ede987bdab",
+    "destinationRoot":  "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ",
+    "startedUtc":  "2026-09-12T12:41:21.6574307Z",
+    "completedUtc":  "2026-09-12T12:41:25.4416124Z",
+    "helperSHA256":  "E75AB8E3E07C391A1DFB67A053D049B2F6F3A8B44BC382F37A859BD0D4EB5620",
+    "target":  "RMQ",
+    "closureCount":  116,
+    "nativeModules":  0,
+    "toolchains":  [
+                       {
+                           "path":  "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\lean-toolchain",
+                           "sha256Before":  "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F"
+                       },
+                       {
+                           "path":  "C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\lean-toolchain",
+                           "sha256Before":  "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F"
+                       }
+                   ],
+    "compilerTraceMarker":  "Lean 4.22.0, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05",
+    "hashReadBufferBytes":  1048576,
+    "sources":  [
+                    {
+                        "module":  "RMQ.Core.Spec",
+                        "path":  "RMQ/Core/Spec.lean",
+                        "sha256Before":  "D32B9EF9873E9C9D8E2AEFE1227770F2B565122FAE01C0AE86737FA750F74AE3"
+                    },
+                    {
+                        "module":  "RMQ.Core.Cost",
+                        "path":  "RMQ/Core/Cost.lean",
+                        "sha256Before":  "887CDCCA893969756F6B7F785E1CA2249106F215A4155C6BA6FE714A6373BAA4"
+                    },
+                    {
+                        "module":  "RMQ.Core.Amortized",
+                        "path":  "RMQ/Core/Amortized.lean",
+                        "sha256Before":  "F728A46FA03CBF2B7E527B695D1DDA37CD06A1DC820E9031523027E86D3B8FC4"
+                    },
+                    {
+                        "module":  "RMQ.Core.AmortizedSequence",
+                        "path":  "RMQ/Core/AmortizedSequence.lean",
+                        "sha256Before":  "D32A05363608E5AACAC83535279368672F1F86C2BC1A6BC800E283F924062A94"
+                    },
+                    {
+                        "module":  "RMQ.Core.RAM",
+                        "path":  "RMQ/Core/RAM.lean",
+                        "sha256Before":  "208E621844CA2A0F5CA73312B3C5688406AFD330EB753506987DAB603AADEF4F"
+                    },
+                    {
+                        "module":  "RMQ.Core.WordRAM",
+                        "path":  "RMQ/Core/WordRAM.lean",
+                        "sha256Before":  "7A47CED349D84C379135918115E3A0424B1DE2D9F4DDA0BB774FF42A94A174A9"
+                    },
+                    {
+                        "module":  "RMQ.Core.Refine",
+                        "path":  "RMQ/Core/Refine.lean",
+                        "sha256Before":  "75953F297DE26411AF75EA9BE3CDBF2FD6D0403EE0AE88E3310DDCD5ABBBEB2A"
+                    },
+                    {
+                        "module":  "RMQ.Core.TableModel",
+                        "path":  "RMQ/Core/TableModel.lean",
+                        "sha256Before":  "B015B94A0B2E130B6E6ABBB44415868B824AD5242148D614355E580EFA5D8159"
+                    },
+                    {
+                        "module":  "RMQ.Core.ListLemmas",
+                        "path":  "RMQ/Core/ListLemmas.lean",
+                        "sha256Before":  "E4DF7A2D19754BC5BA77BA05235EC72E839DF226B00D4A38BAEB452B46ECA1FA"
+                    },
+                    {
+                        "module":  "RMQ.Core.LowerBound",
+                        "path":  "RMQ/Core/LowerBound.lean",
+                        "sha256Before":  "FEFE56A46F206F5233C7E4B9EDAFC6BC1FA5CB0E04B03494FB94D9D0DFD6DF56"
+                    },
+                    {
+                        "module":  "RMQ.Core.PayloadLowerBound",
+                        "path":  "RMQ/Core/PayloadLowerBound.lean",
+                        "sha256Before":  "24523EC8D3DD5859738DDBDF69BCC14C41FB0E21D7175ADDD494072FFF1BCA55"
+                    },
+                    {
+                        "module":  "RMQ.Core.ModelHub",
+                        "path":  "RMQ/Core/ModelHub.lean",
+                        "sha256Before":  "2C91A59EC51E3EB161AE15D288047E1F3F38BC06477E085BFBBA2F906FD200F4"
+                    },
+                    {
+                        "module":  "RMQ.Core.Window",
+                        "path":  "RMQ/Core/Window.lean",
+                        "sha256Before":  "C135E68A11AF7FF52623A7CCD8439330A93D5758B2E548330889BBF04B08432C"
+                    },
+                    {
+                        "module":  "RMQ.Core.Backend",
+                        "path":  "RMQ/Core/Backend.lean",
+                        "sha256Before":  "8D911857ED6E9669936D5F8818149E23EBF4874C2C508D63CEEA889660ACC751"
+                    },
+                    {
+                        "module":  "RMQ.Core.LCA",
+                        "path":  "RMQ/Core/LCA.lean",
+                        "sha256Before":  "E981D40A5C3429A6794BD7857AEB01A0B49653F869C1139232AFB8766F1B053C"
+                    },
+                    {
+                        "module":  "RMQ.Core.Reduction",
+                        "path":  "RMQ/Core/Reduction.lean",
+                        "sha256Before":  "A15808CA01F085C691CC30F73EEEB88E8AA858670D4BF0B707F2DED1AA1791EF"
+                    },
+                    {
+                        "module":  "RMQ.Core.Cartesian",
+                        "path":  "RMQ/Core/Cartesian.lean",
+                        "sha256Before":  "A0C175425B7DF234F8CF59E177B36E3ED593D81D78337D40E6E2ED74028D9580"
+                    },
+                    {
+                        "module":  "RMQ.Core.Shape",
+                        "path":  "RMQ/Core/Shape.lean",
+                        "sha256Before":  "A29366B989E786A5C762764C2DA1FFC9DF1487BE212A113A122384D9A1E2C863"
+                    },
+                    {
+                        "module":  "RMQ.Core.Microtable",
+                        "path":  "RMQ/Core/Microtable.lean",
+                        "sha256Before":  "7AC16582B05226A39314CB12CF4032394BCC9802E01867697E1271BBD9C21A80"
+                    },
+                    {
+                        "module":  "RMQ.Core.PlusMinusOne",
+                        "path":  "RMQ/Core/PlusMinusOne.lean",
+                        "sha256Before":  "F66CFC4256FA0F3806E4C64EB3DC530E9675A86F3D1C3082AF349DFA9A3F74EF"
+                    },
+                    {
+                        "module":  "RMQ.Core.Succinct",
+                        "path":  "RMQ/Core/Succinct.lean",
+                        "sha256Before":  "C81AF4978110198561B109893832045509D8C8846CF2FCB179C809B5BA67E74E"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.Asymptotics",
+                        "path":  "RMQ/Core/SuccinctSpace/Asymptotics.lean",
+                        "sha256Before":  "39493F9BD2B86C041ED7471C310244E4FCED9DE831C566A8FEB8593EA783FFCE"
+                    },
+                    {
+                        "module":  "RMQ.Core.SampledLayoutBudget",
+                        "path":  "RMQ/Core/SampledLayoutBudget.lean",
+                        "sha256Before":  "B3F7627EF1903C5C590A405146C53A5B07469D5E45D59CA5A56D097FE07CD4AB"
+                    },
+                    {
+                        "module":  "RMQ.Core.EncodingLowerBound",
+                        "path":  "RMQ/Core/EncodingLowerBound.lean",
+                        "sha256Before":  "BA555AADFA7F3AB3BF0B8DC1D09E093A33DE6A4747DCE6BA707FA68BCBAE61E5"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.BPShape",
+                        "path":  "RMQ/Core/SuccinctSpace/BPShape.lean",
+                        "sha256Before":  "633C2CFCEE96751D7CB84B5492A16E1DE3A79B7BE4904C799188363D5B75A00F"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.WordStore",
+                        "path":  "RMQ/Core/SuccinctSpace/WordStore.lean",
+                        "sha256Before":  "E508F5EEBA21D642E94D391B29E0DA85228A941539C341BCC97B333D2A23BC34"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.Tables",
+                        "path":  "RMQ/Core/SuccinctSpace/Tables.lean",
+                        "sha256Before":  "5676C8B39B17EB0C183C9CE7C7E5B7210CEB947182D44933355A24BFB34A3BBF"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.SelectSamples",
+                        "path":  "RMQ/Core/SuccinctSpace/SelectSamples.lean",
+                        "sha256Before":  "62B18FA9CB7301DAA61490224C65068A38B3FB10D48B9E9FEF57359194B23495"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.RankSelect",
+                        "path":  "RMQ/Core/SuccinctSpace/RankSelect.lean",
+                        "sha256Before":  "8DDB5D45C8EA60413EC5A0478C968895172406E855A4B1E5BB8405ECFE66B4A4"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.BPAccess",
+                        "path":  "RMQ/Core/SuccinctSpace/BPAccess.lean",
+                        "sha256Before":  "F79B2360503863665F30953566AEFF88BAC736063F725C599858460F13F344DF"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.BroadwordRMQ",
+                        "path":  "RMQ/Core/SuccinctSpace/BroadwordRMQ.lean",
+                        "sha256Before":  "FB21261792E59FEC4A48350A968076CA8E45454F7F7CBA32EF36538DB5F163AD"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.BPCloseLCA",
+                        "path":  "RMQ/Core/SuccinctSpace/BPCloseLCA.lean",
+                        "sha256Before":  "00C85BEEA48B2DFA4BEFA8A3DAAF70ADA06F876B71F7DAE6CC185FF47DC465AF"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.BPCloseRMQNavigation",
+                        "path":  "RMQ/Core/SuccinctSpace/BPCloseRMQNavigation.lean",
+                        "sha256Before":  "9F7FA7CCDDB6F4106559D483EA35313BD1AE34B00F27259723DA6AD9E4A1AB55"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.WordStoreRAM",
+                        "path":  "RMQ/Core/SuccinctSpace/WordStoreRAM.lean",
+                        "sha256Before":  "E73D6D9DB3D61E28CFA9F108E23C97E8CA3C7176A59C28E14B91C320574EA5C3"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.TablesRAM",
+                        "path":  "RMQ/Core/SuccinctSpace/TablesRAM.lean",
+                        "sha256Before":  "6E5E99094B6B9D4C273AF2A6D3988C7627FEACC8EE0F75ADABB2652FAD4322BE"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.SelectSamplesRAM",
+                        "path":  "RMQ/Core/SuccinctSpace/SelectSamplesRAM.lean",
+                        "sha256Before":  "4931E8C80A9490DF33ADD8DE32ED3DE84041FB16A7E01B8031F400C44C01AFF4"
+                    },
+                    {
+                        "module":  "RMQ.Core.WordRAM.Register",
+                        "path":  "RMQ/Core/WordRAM/Register.lean",
+                        "sha256Before":  "93284E2A6DCACF9C3B425C3267EB8A0568E38CB2CDB083D21EC93FCDB32B783D"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.RankSelectRAM",
+                        "path":  "RMQ/Core/SuccinctSpace/RankSelectRAM.lean",
+                        "sha256Before":  "42CE073D6492EE4FAD5E45A3D41F26B73BBE6493B33ACC189AEAB8681342F0EE"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.BPCloseLCARAM",
+                        "path":  "RMQ/Core/SuccinctSpace/BPCloseLCARAM.lean",
+                        "sha256Before":  "776D7F64C12CF9F6515D121FECFAA28C963887C0C9DD34E834CFC9B2FEF3C1DF"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.BPCloseRMQNavigationRAM",
+                        "path":  "RMQ/Core/SuccinctSpace/BPCloseRMQNavigationRAM.lean",
+                        "sha256Before":  "11541F260779F41468BECE8C941B16B6ED06AB32487AEEA9F916279DC36248DE"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace",
+                        "path":  "RMQ/Core/SuccinctSpace.lean",
+                        "sha256Before":  "2DB86CA92D7EFBEB75B4DEB59A039ACA1E1C9DFE9BD597330A814568A12D7FEB"
+                    },
+                    {
+                        "module":  "RMQ.Core.RankSelectSpec",
+                        "path":  "RMQ/Core/RankSelectSpec.lean",
+                        "sha256Before":  "2D48B2089432B601337E7FDB6CF9B081D8382A44019068D5DF64FBC4867DBCD1"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctRank",
+                        "path":  "RMQ/Core/SuccinctRank.lean",
+                        "sha256Before":  "164F2C7BF988559DB4EFE7FC8C933E91DB66737C9C6F0297D6993831FFFF335B"
+                    },
+                    {
+                        "module":  "RMQ.Core.GenericSelect.SelectSource",
+                        "path":  "RMQ/Core/GenericSelect/SelectSource.lean",
+                        "sha256Before":  "222526C0D6D8AD56EB1E4FD5678111471961A6D3674614790BD5ACE58098D57A"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.TwoLevel.SelectSamples",
+                        "path":  "RMQ/Core/SuccinctSelect/TwoLevel/SelectSamples.lean",
+                        "sha256Before":  "03B22A47CCA422EDA459FAD2B14EFF1EE8FA822F0D54B254A72C7D6AE9A8A329"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.TwoLevel.WordExact",
+                        "path":  "RMQ/Core/SuccinctSelect/TwoLevel/WordExact.lean",
+                        "sha256Before":  "C50B1CF6D8B98AE698918955B84EE490DF1BDCC662B68B5B0E8A3441AAD9BC22"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.TwoLevel.ClarkSource",
+                        "path":  "RMQ/Core/SuccinctSelect/TwoLevel/ClarkSource.lean",
+                        "sha256Before":  "5BC9B60B0A33EE3CE6ECF02A9E6F4B05A8D308FBDC1A83905110F78FE598ED86"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.TwoLevel.SelectData",
+                        "path":  "RMQ/Core/SuccinctSelect/TwoLevel/SelectData.lean",
+                        "sha256Before":  "9D53AA16D945BE4AC2EF041AD3850F7150FEFD99B7696A0CB75AA38B4246092C"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.TwoLevel.RankSelectAdapters",
+                        "path":  "RMQ/Core/SuccinctSelect/TwoLevel/RankSelectAdapters.lean",
+                        "sha256Before":  "4EAEF65F1BF992E99862E839C2B66EB928280812FE696A29F3C53593CEE51C61"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.TwoLevel.BPCloseNavigation",
+                        "path":  "RMQ/Core/SuccinctSelect/TwoLevel/BPCloseNavigation.lean",
+                        "sha256Before":  "4BEF79B1C636F11DEFE0A48035461C25958A4B203F3D2C6BF04B1D3E812A825E"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.TwoLevel",
+                        "path":  "RMQ/Core/SuccinctSelect/TwoLevel.lean",
+                        "sha256Before":  "016C04966B6641D8DD2011856D1BC953F5A8769C2808B7EDA81416E94B8DE74E"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.AsymptoticFacts",
+                        "path":  "RMQ/Core/SuccinctSelect/AsymptoticFacts.lean",
+                        "sha256Before":  "8E628E9C4A94F239AC78157F9A2874E5596B5C8E9CF37E765968CA1382086BFB"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.Obstructions",
+                        "path":  "RMQ/Core/SuccinctSelect/Obstructions.lean",
+                        "sha256Before":  "793840F544CF0BA04FDE983E19CD19FAB4B37FB86DC3E0442B0EE4B399599F30"
+                    },
+                    {
+                        "module":  "RMQ.Core.GenericSelect.SelectFacts",
+                        "path":  "RMQ/Core/GenericSelect/SelectFacts.lean",
+                        "sha256Before":  "DF6E9CB61E7FEEE0659B62960379FB8CD851B6BD914347A2D3BD06785CF93C69"
+                    },
+                    {
+                        "module":  "RMQ.Core.GenericSelect.Arithmetic",
+                        "path":  "RMQ/Core/GenericSelect/Arithmetic.lean",
+                        "sha256Before":  "188659DFE14431FA924C60BE82D03EE1733CFC01AC5E5DB046FAB129DB4B88AC"
+                    },
+                    {
+                        "module":  "RMQ.Core.GenericSelect.DenseEntryTable",
+                        "path":  "RMQ/Core/GenericSelect/DenseEntryTable.lean",
+                        "sha256Before":  "9AF07D6EC8A806E0F7966D3F62801989F8E7DEC84A20C245A9A80555F0655EAB"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.DenseLocalTables",
+                        "path":  "RMQ/Core/SuccinctSelect/DenseLocalTables.lean",
+                        "sha256Before":  "EB63021D1866BF0F9A621270FCFBB0D43FD5CAC72FEAAEC230D3CA0FB57245BF"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.Basic",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/Basic.lean",
+                        "sha256Before":  "B845BF8D2D94D1C92BAD544D5A1BC8AFD7F13F2D2BE451D370D36CA3E20D0283"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.SlotBasics",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/SlotBasics.lean",
+                        "sha256Before":  "F71F91BC5CC954EC2BD4B979837F1D6D2E7924AEA42AF76B495F1867A3BAEDFE"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.WidthBounds",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/WidthBounds.lean",
+                        "sha256Before":  "0F179C2CD32543C45759957FFD726E426400954F8A045D1C0AC880E3AD55B955"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.RelativeEntries",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/RelativeEntries.lean",
+                        "sha256Before":  "125C26C48D1BF6FAEC9D2F22AF23A171A3920F803C42F502692FA1D649B22361"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.FlagRankTables",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/FlagRankTables.lean",
+                        "sha256Before":  "F4AC00DF7B9C78AB09B9962F7A18D9AAB68A6FA1B6AC152D7E2C7258276EE069"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.SpanBudgets",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/SpanBudgets.lean",
+                        "sha256Before":  "393E33B53C6311FB5982839D0A1ADF4B89F470A893CDA779AE98FC053C590A6B"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.LookupDense",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/LookupDense.lean",
+                        "sha256Before":  "29FB384ACE2DB0C5716E07211E52707345DA8E9E492A9030155EA419900A3B47"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting.lean",
+                        "sha256Before":  "6D7093C011DB8B7172463714B57556CFED2F22D19528002936DC67008748DFCE"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.RelativeSplit",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/RelativeSplit.lean",
+                        "sha256Before":  "9AC682EA9A955744E44E79235112FC7609BCAABE6AF3F04DBE63E6BF50631BF1"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.SparseExceptionDirectory",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionDirectory.lean",
+                        "sha256Before":  "60CE8CB87F721A02EDCAB06CE16FDD164C276C93E393D51A911CB5E8D35E6A7E"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.SparseExceptionCloseData.DataSurface",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionCloseData/DataSurface.lean",
+                        "sha256Before":  "42ED0155C69A52FAB233C97D370FD8D94A112497E527AF21A4C5AE08C56D02AB"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.SparseExceptionCloseData.BuiltExact",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionCloseData/BuiltExact.lean",
+                        "sha256Before":  "D1FA216A2236B3DD3CA6924373AF9A93D0644DEA9BCB338F2BCDA18C76C3DF36"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.SparseExceptionCloseData.BuildProfile",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionCloseData/BuildProfile.lean",
+                        "sha256Before":  "5B43A04B43B22E69ABAD58A00394A6F54B519B84E9938473638A2CFB6D4609C4"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.SparseExceptionCloseData.Obstructions",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionCloseData/Obstructions.lean",
+                        "sha256Before":  "F8A9EFE1125544E95CDFDF72D1BE46E215E2F470298C65DE5F47E1868D4EC837"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.SparseExceptionCloseData",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionCloseData.lean",
+                        "sha256Before":  "4CC881E966D4FBDEB725E2810718338464741C339F934AECC09AA747796AE482"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect.TwoLevelObstruction",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect/TwoLevelObstruction.lean",
+                        "sha256Before":  "E77B820C1C3505CECB3F9DA5A8DAB6E0CAC55CA7DE6CD9C0F00787931E0F696F"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect.CloseSelect",
+                        "path":  "RMQ/Core/SuccinctSelect/CloseSelect.lean",
+                        "sha256Before":  "90E100621F7052B4545C153A3F97CFFB273CFA3EC8DB909885091DEB69CCB658"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSelect",
+                        "path":  "RMQ/Core/SuccinctSelect.lean",
+                        "sha256Before":  "77AF4C71D354803BA080F4C07CB78112BD1AB5EC5EFE9B245596C75682F027FF"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.BlockLocal",
+                        "path":  "RMQ/Core/SuccinctClose/BlockLocal.lean",
+                        "sha256Before":  "818D93BC4665385FD6F5E45431DFC783E1A1D0860DCA35DCB9B75EFCDB5F0B62"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.RangeSummary",
+                        "path":  "RMQ/Core/SuccinctClose/RangeSummary.lean",
+                        "sha256Before":  "4DBE30022D3066FB44C1405D2C52FD8D4469537B6DE0C589DB6F99FBABB9A7EE"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.RelativeSummary",
+                        "path":  "RMQ/Core/SuccinctClose/RelativeSummary.lean",
+                        "sha256Before":  "14346D7A6E5C881DA559C423A53CE82170EE2A78D77F7ED31282671504AF034E"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.RangeWitness",
+                        "path":  "RMQ/Core/SuccinctClose/RangeWitness.lean",
+                        "sha256Before":  "4A9EF0FAD0B84ED02F55A1313353375F5159322DA5B159DBC6081E8781F378DC"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.PrefixArgMin",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/PrefixArgMin.lean",
+                        "sha256Before":  "02EAC18E6679B60A7A78BA101C39E3269C18EAF8202178B3C0335441FE548CAD"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.RelativeSummaryCandidate",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/RelativeSummaryCandidate.lean",
+                        "sha256Before":  "4092148FDDBF60A1F481128DC96EFFB2FABD121CAD14F8EAA0142DDF6F30ECAA"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseArgMin",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/SparseArgMin.lean",
+                        "sha256Before":  "BD98AF45F9D43B75768E23013EAEC66400850215124102C7720BE4CA115A774E"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.LocalSparseOffset",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/LocalSparseOffset.lean",
+                        "sha256Before":  "717A2514A0255D9994D780C87E0BA952D193EE791EFFAFF440D194438765B82D"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.AnswerSemantics",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/AnswerSemantics.lean",
+                        "sha256Before":  "148B0E1DB197AADFD8F0927A82A89195D5F066F98B8BFF31C92718DCA1D66A9F"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.PrefixWitnessTable",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/PrefixWitnessTable.lean",
+                        "sha256Before":  "07538D0E27689BCB02915F5101ED158B5258A168ABB172F35DE0CF5733C2B56B"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange.lean",
+                        "sha256Before":  "A0FED5EE46F3152D63EF42F8791D802FA34CCF8AE9D4A98A3288DF1425302B0D"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.Candidate",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/Candidate.lean",
+                        "sha256Before":  "C843AABE9ADCA16A463EFC1307CF629604470E8847D3591131EC29784D4C6D83"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.LocalGlobalSparse",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/LocalGlobalSparse.lean",
+                        "sha256Before":  "B2A3B8866E5FCB52CC5A0884B22AFBE6DE2B74C92CED3D36B6F5C1CB8D29EFA6"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.RelativeScan",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/RelativeScan.lean",
+                        "sha256Before":  "AD29744DA234215194478A2D8D0F2BF31FCCA119E5E9C9554A11970F2C9E0B21"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.WordReads",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/WordReads.lean",
+                        "sha256Before":  "995F2E38D1F5C43FCAA1E4815FD2235EA481F7DBDCFFE3738EB5CFF7BACC37F6"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.TwoLevelCandidate",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/TwoLevelCandidate.lean",
+                        "sha256Before":  "6900B5DDEB67DF79BA9A1A2B39682FEFCD9EA975E2E408ECD8291316748D15A8"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.MachineChunkedTable",
+                        "path":  "RMQ/Core/SuccinctSpace/MachineChunkedTable.lean",
+                        "sha256Before":  "CA5804E728E7CCB5AEE8C8BC2EBC220D5E7AE27A5BD286599337BC6EB682576A"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctSpace.MachineChunkedTableProgram",
+                        "path":  "RMQ/Core/SuccinctSpace/MachineChunkedTableProgram.lean",
+                        "sha256Before":  "E8BAA33AA98DBBC67CD12E033B85DA1BC0B3A46303938A6A47A400C5FE34FB80"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.SparseLevelTable",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/SparseLevelTable.lean",
+                        "sha256Before":  "15E23994297D09D37CABDCFB2277BC8F819FF76C307636AC6E3889C1B7E61043"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory.Base",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/Base.lean",
+                        "sha256Before":  "65522F59E57BE29618BCA88A624F9A867C8DE02469A42C526B48E087751391A1"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory.SparseLevelWidth",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean",
+                        "sha256Before":  "25A067E1C7E41C525680E44BB0767868EEEACE8D09825F232CB957EE000996B1"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory.ValueDependency",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/ValueDependency.lean",
+                        "sha256Before":  "B10110A3A0231D1FAD754A830EE0397A55ECB894C16B0864B6DD8A0B6F607D2C"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean",
+                        "sha256Before":  "92A2322E6DD91D8D2718E65F52B5DAC2572C142297501F0DF3882BF84534BC16"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate.lean",
+                        "sha256Before":  "948813C73489C2642729997DC9AB448EB8FCFB70966A9F6307783F4DE5434BCC"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.RangeMacro.RangeTables",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/RangeTables.lean",
+                        "sha256Before":  "C036F7B736ABF755A8B8D9B1A02CE5810AD441CDAC7F546993F8D5B5AF63F041"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.RangeMacro.PayloadMacro",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/PayloadMacro.lean",
+                        "sha256Before":  "9FA35FD83C7F46FBA374B549AE1F85F2733A2409FFB03B9CCBEAFCC6510CD08B"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.RangeMacro.RelativeMerge",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/RelativeMerge.lean",
+                        "sha256Before":  "ABDEAEBF1C169C5EDE34EF2323C2C942D26C8052BE68C6E1E21D2FE0A86C09EF"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.RangeMacro.Concrete",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/Concrete.lean",
+                        "sha256Before":  "1A72C3A22D9EC67B1F7D728E4E369E0AF4CC33384C8922583A971CA4224E74B2"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.RangeMacro",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro.lean",
+                        "sha256Before":  "F9E7C1471B2167BDAF3D049E187224E27AAB87971C3404C5F17298C55E0A99D9"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.MicroCodebook",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/MicroCodebook.lean",
+                        "sha256Before":  "3E9DFFFD9C463376798509E1E88919A47EA52C39D7DF18D8369996954929BF04"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro.lean",
+                        "sha256Before":  "466D70E742C3B92EE02833F796B1776DDFC3BEA4CF487F0EB2F1734B48005732"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe.lean",
+                        "sha256Before":  "47F178B980D4386FA297A3BC8352F5D8FFD73AE9CA5C8E5CE8C5994FAC04F6F3"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.RelativeRmmMacro.AbstractMacro",
+                        "path":  "RMQ/Core/SuccinctClose/RelativeRmmMacro/AbstractMacro.lean",
+                        "sha256Before":  "4A368521FB415863E5FD77A7B0F4ED83CBD49983DBF4A7CD4A2B6921A0407553"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.RelativeRmmMacro.EndpointCodebook",
+                        "path":  "RMQ/Core/SuccinctClose/RelativeRmmMacro/EndpointCodebook.lean",
+                        "sha256Before":  "5029E982326AB8DEA8D0E0F22B0A29081F2D802B2C78770E5D7584158BDB66A7"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.RelativeRmmMacro.CompactEndpoint",
+                        "path":  "RMQ/Core/SuccinctClose/RelativeRmmMacro/CompactEndpoint.lean",
+                        "sha256Before":  "383F30B3C6662F9C455632E6AE96F5935ADCA6EB65D25642676139DB08681761"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.RelativeRmmMacro.LocalBPDecoder",
+                        "path":  "RMQ/Core/SuccinctClose/RelativeRmmMacro/LocalBPDecoder.lean",
+                        "sha256Before":  "54CAD93011FDA3A464BE6F93D102332A375712E3993E4A8380D88EDDBE5F5B8A"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectory",
+                        "path":  "RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectory.lean",
+                        "sha256Before":  "823081F1FF979F77970BA2477CD9F9F5BB6E1255EA15129C061B726BA62CB7CE"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.RelativeRmmMacro.MacroMicroFamily",
+                        "path":  "RMQ/Core/SuccinctClose/RelativeRmmMacro/MacroMicroFamily.lean",
+                        "sha256Before":  "9D3CEED171681840D7A81D65E2D6507AA1C8922C4A268DA9EB4AB0253C01E642"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorRAM",
+                        "path":  "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorRAM.lean",
+                        "sha256Before":  "E6850BE91B2120958019452EE26658AB2AA13CDAFD42BDDE649B6BA177EFD956"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAM",
+                        "path":  "RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectoryRAM.lean",
+                        "sha256Before":  "0CED594DE17F432C8FDB3BBDFF926FAF26F051BCACE6B9EB5040D70A91172E49"
+                    },
+                    {
+                        "module":  "RMQ.Core.SuccinctClose.RelativeRmmMacro",
+                        "path":  "RMQ/Core/SuccinctClose/RelativeRmmMacro.lean",
+                        "sha256Before":  "9F55F443ED0234E9C509664F31CC90884C455C2783491FDB6EBA058FDFCD27EC"
+                    }
+                ],
+    "externalImports":  [
+                            "Std"
+                        ],
+    "plannedArtifacts":  [
+
+                         ],
+    "artifacts":  [
+
+                  ],
+    "copied":  0,
+    "preexistingArtifactsPreserved":  0,
+    "linksCreated":  0,
+    "existingFilesOverwritten":  0,
+    "leanInvoked":  false,
+    "lakeInvoked":  false,
+    "nextRequiredCommand":  "lake --no-build build RMQ",
+    "validationStatus":  "PENDING: cache preparation does not certify the default build."
+}

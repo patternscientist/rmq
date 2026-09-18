@@ -1,0 +1,39 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "52ba2a57784c1dcd234615821865b87fd31b2d31",
+  "command": {
+    "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+    "arguments": [
+      "-NoLogo",
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "scripts/design_decision_check.ps1",
+      "-Strict",
+      "-Base",
+      "fa79233f77acbfa0470ef6203131e66784c7b014",
+      "-Head",
+      "52ba2a57784c1dcd234615821865b87fd31b2d31"
+    ]
+  },
+  "result": {
+    "Stage": "design-final-candidate-commit",
+    "ExitCode": 0,
+    "Output": [
+      "DESIGN-CHECK: checked 165 changed files (17 code, 144 workflow, 6 neutral)"
+    ],
+    "StandardOutput": [
+      "DESIGN-CHECK: checked 165 changed files (17 code, 144 workflow, 6 neutral)"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 4.703,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  }
+}

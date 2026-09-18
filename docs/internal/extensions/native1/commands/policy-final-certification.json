@@ -1,0 +1,116 @@
+[
+    {
+        "id":  "baseline-to-reviewed",
+        "base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+        "head":  "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+        "command":  [
+                        "-NoProfile",
+                        "-ExecutionPolicy",
+                        "Bypass",
+                        "-File",
+                        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\design_decision_check.ps1",
+                        "-Strict",
+                        "-Base",
+                        "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+                        "-Head",
+                        "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9"
+                    ],
+        "result":  {
+                       "Stage":  "policy-baseline-to-reviewed",
+                       "ExitCode":  0,
+                       "Output":  [
+                                      "DESIGN-CHECK: checked 88 changed files (31 code, 52 workflow, 6 neutral)"
+                                  ],
+                       "StandardOutput":  [
+                                              "DESIGN-CHECK: checked 88 changed files (31 code, 52 workflow, 6 neutral)"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  4.763,
+                       "DeadlineSeconds":  120,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "id":  "implementation-per-commit",
+        "base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+        "head":  "3329a6e90cf70bc10b3cb68b008f8a23264ce567",
+        "command":  [
+                        "-NoProfile",
+                        "-ExecutionPolicy",
+                        "Bypass",
+                        "-File",
+                        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\design_decision_check.ps1",
+                        "-Strict",
+                        "-Base",
+                        "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+                        "-Head",
+                        "3329a6e90cf70bc10b3cb68b008f8a23264ce567"
+                    ],
+        "result":  {
+                       "Stage":  "policy-implementation-per-commit",
+                       "ExitCode":  0,
+                       "Output":  [
+                                      "DESIGN-CHECK: checked 83 changed files (31 code, 47 workflow, 6 neutral)"
+                                  ],
+                       "StandardOutput":  [
+                                              "DESIGN-CHECK: checked 83 changed files (31 code, 47 workflow, 6 neutral)"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  5.255,
+                       "DeadlineSeconds":  120,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "id":  "report-per-commit",
+        "base":  "3329a6e90cf70bc10b3cb68b008f8a23264ce567",
+        "head":  "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+        "command":  [
+                        "-NoProfile",
+                        "-ExecutionPolicy",
+                        "Bypass",
+                        "-File",
+                        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\design_decision_check.ps1",
+                        "-Strict",
+                        "-Base",
+                        "3329a6e90cf70bc10b3cb68b008f8a23264ce567",
+                        "-Head",
+                        "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9"
+                    ],
+        "result":  {
+                       "Stage":  "policy-report-per-commit",
+                       "ExitCode":  0,
+                       "Output":  [
+                                      "DESIGN-CHECK: checked 10 changed files (0 code, 9 workflow, 1 neutral)"
+                                  ],
+                       "StandardOutput":  [
+                                              "DESIGN-CHECK: checked 10 changed files (0 code, 9 workflow, 1 neutral)"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  8.338,
+                       "DeadlineSeconds":  120,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    }
+]

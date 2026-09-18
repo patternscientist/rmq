@@ -1,0 +1,33 @@
+{
+  "schema": "native1-command-v1",
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/packed_native_hydrate.ps1 -DefaultRMQ",
+  "result": {
+    "Stage": "hydrate-default-01",
+    "ExitCode": 1,
+    "Output": [
+      "Missing local import: this",
+      "At C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_hydrate.ps1:52 char:9",
+      "+         throw \"Missing local import: $Module\"",
+      "+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "    + CategoryInfo          : OperationStopped: (Missing local import: this:String) [], RuntimeException",
+      "    + FullyQualifiedErrorId : Missing local import: this",
+      " "
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "Missing local import: this",
+      "At C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_hydrate.ps1:52 char:9",
+      "+         throw \"Missing local import: $Module\"",
+      "+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "    + CategoryInfo          : OperationStopped: (Missing local import: this:String) [], RuntimeException",
+      "    + FullyQualifiedErrorId : Missing local import: this",
+      " "
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 12.424,
+    "DeadlineSeconds": 1800,
+    "Ownership": "kill-on-close-job"
+  }
+}

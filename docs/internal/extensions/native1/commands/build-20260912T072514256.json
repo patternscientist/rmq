@@ -1,0 +1,339 @@
+{
+  "schema": "native1-build-commands-v1",
+  "run": "20260912T072514256",
+  "success": false,
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "sourceHashes": [
+    {
+      "sha256": "4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4",
+      "path": "RMQ/Core/WordRAM/Packed/Primitive.lean"
+    },
+    {
+      "sha256": "2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45",
+      "path": "RMQ/Core/WordRAM/Packed/Calculus.lean"
+    },
+    {
+      "sha256": "F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887",
+      "path": "RMQ/Core/WordRAM/Packed/Structured.lean"
+    },
+    {
+      "sha256": "C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505",
+      "path": "RMQ/Core/WordRAM/Packed/Compiler.lean"
+    },
+    {
+      "sha256": "480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939",
+      "path": "RMQ/Core/WordRAM/Packed/Frame.lean"
+    },
+    {
+      "sha256": "320DDD6C1F6549902951B99CCF99C66B231D2A0106487A710D8638372EF32E64",
+      "path": "RMQ/Core/WordRAM/Packed/Scratch.lean"
+    },
+    {
+      "sha256": "8EDC747F2F0BBB7D4E6F6849B63869016969C4F7535D62E99A6E4D01901223DF",
+      "path": "RMQ/Core/WordRAM/Native/Finite.lean"
+    },
+    {
+      "sha256": "26D984386EEA21CCCC49EBF6217CD824B7896CF98785F8F843C6AD9E2EB69845",
+      "path": "RMQ/Core/WordRAM/Native/Thin.lean"
+    },
+    {
+      "sha256": "9A5F987283BD0AB2747AE89487D333B728D0A529A6D8E216DB24296EDB4CD507",
+      "path": "RMQ/Core/WordRAM/Native/Route.lean"
+    },
+    {
+      "sha256": "60FA2D5D777666726EBB67C64718EF8B68F31CD58DB00BB8C18F0050317DB251",
+      "path": "native/packed-rmq/route_shim.c"
+    },
+    {
+      "sha256": "5A2581933DF64F743A6C0173E1D348D511E138621FA3D679C23475AC17989CF6",
+      "path": "native/packed-rmq/include/packed_rmq_route.h"
+    },
+    {
+      "sha256": "3C3FC7D764F67D6664CA9CE27DE4AD603D32950A66E3894B29A73AC8FFCF9179",
+      "path": "native/packed-rmq/src/lib.rs"
+    },
+    {
+      "sha256": "9FFFA20EDF9CC19884F4F14E38D2C3219A2EB725895414E299051B49D471F456",
+      "path": "native/packed-rmq/src/main.rs"
+    },
+    {
+      "sha256": "D44BB4EC7BE16520436F80B3256FFE9AA42B91869A64637CE3242C2D76638AA1",
+      "path": "native/packed-rmq/Cargo.toml"
+    },
+    {
+      "sha256": "BC763D1FF4C32861566C61F285DAE467033FEAD280AE303C51200BA0976F63D8",
+      "path": "scripts/packed_native_build.ps1"
+    }
+  ],
+  "stages": [
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+        "arguments": [
+          "--version"
+        ]
+      },
+      "result": {
+        "Stage": "lean-version",
+        "ExitCode": 0,
+        "Output": [
+          "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+        ],
+        "StandardOutput": [
+          "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.242,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+        "arguments": [
+          "-j",
+          "1",
+          "-o",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Packed\\Primitive..olean",
+          "-c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Primitive..c",
+          "RMQ/Core/WordRAM/Packed/Primitive.lean"
+        ]
+      },
+      "result": {
+        "Stage": "lean-Primitive",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 13.773,
+        "DeadlineSeconds": 300,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+        "arguments": [
+          "-j",
+          "1",
+          "-o",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Packed\\Calculus..olean",
+          "-c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Calculus..c",
+          "RMQ/Core/WordRAM/Packed/Calculus.lean"
+        ]
+      },
+      "result": {
+        "Stage": "lean-Calculus",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 15.164,
+        "DeadlineSeconds": 300,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+        "arguments": [
+          "-j",
+          "1",
+          "-o",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Packed\\Structured..olean",
+          "-c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Structured..c",
+          "RMQ/Core/WordRAM/Packed/Structured.lean"
+        ]
+      },
+      "result": {
+        "Stage": "lean-Structured",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 9.94,
+        "DeadlineSeconds": 300,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+        "arguments": [
+          "-j",
+          "1",
+          "-o",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Packed\\Compiler..olean",
+          "-c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Compiler..c",
+          "RMQ/Core/WordRAM/Packed/Compiler.lean"
+        ]
+      },
+      "result": {
+        "Stage": "lean-Compiler",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 18.138,
+        "DeadlineSeconds": 300,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+        "arguments": [
+          "-j",
+          "1",
+          "-o",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Packed\\Frame..olean",
+          "-c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Frame..c",
+          "RMQ/Core/WordRAM/Packed/Frame.lean"
+        ]
+      },
+      "result": {
+        "Stage": "lean-Frame",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 6.754,
+        "DeadlineSeconds": 300,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+        "arguments": [
+          "-j",
+          "1",
+          "-o",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Packed\\Scratch..olean",
+          "-c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Packed\\Scratch..c",
+          "RMQ/Core/WordRAM/Packed/Scratch.lean"
+        ]
+      },
+      "result": {
+        "Stage": "lean-Scratch",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 8.341,
+        "DeadlineSeconds": 300,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+        "arguments": [
+          "-j",
+          "1",
+          "-o",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Finite..olean",
+          "-c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Finite..c",
+          "RMQ/Core/WordRAM/Native/Finite.lean"
+        ]
+      },
+      "result": {
+        "Stage": "lean-Finite",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 12.442,
+        "DeadlineSeconds": 300,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+        "arguments": [
+          "-j",
+          "1",
+          "-o",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Thin..olean",
+          "-c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Thin..c",
+          "RMQ/Core/WordRAM/Native/Thin.lean"
+        ]
+      },
+      "result": {
+        "Stage": "lean-Thin",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 12.766,
+        "DeadlineSeconds": 300,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "command": {
+        "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+        "arguments": [
+          "-j",
+          "1",
+          "-o",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Route..olean",
+          "-c",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\WordRAM\\Native\\Route..c",
+          "RMQ/Core/WordRAM/Native/Route.lean"
+        ]
+      },
+      "result": {
+        "Stage": "lean-Route",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 17.967,
+        "DeadlineSeconds": 300,
+        "Ownership": "kill-on-close-job"
+      }
+    }
+  ]
+}

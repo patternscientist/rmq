@@ -1,0 +1,386 @@
+{
+  "schema": "native1-validator-controls-results-v1",
+  "success": true,
+  "failure": null,
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "powershell": "7.6.5",
+  "registrySha256": "60D07EC27D7854FEB107CE8A1148F382F17F882CD8F2F18427FBD8BDE8D755EC",
+  "registryCases": [
+    "omitted-default",
+    "selector-valid-argument",
+    "selector-valid-environment",
+    "selector-empty-argument",
+    "selector-empty-environment",
+    "selector-whitespace-argument",
+    "selector-whitespace-environment",
+    "selector-malformed-argument",
+    "selector-malformed-environment",
+    "selector-unknown",
+    "selector-duplicate",
+    "compare-golden",
+    "compare-quiet",
+    "compare-wrong-golden",
+    "compare-malformed-hex",
+    "compare-wrong-hex-length",
+    "compare-fuel-limit",
+    "compare-fuel-format",
+    "compare-read-mode",
+    "compare-oversized-file",
+    "compare-nonutf8",
+    "compare-truncated",
+    "compare-crlf",
+    "compare-selector-channel"
+  ],
+  "registryCount": 24,
+  "selectorBound": true,
+  "selector": "compare-golden",
+  "expectedCases": [
+    "compare-golden"
+  ],
+  "executedCases": [
+    "compare-golden"
+  ],
+  "attemptedCases": [
+    "compare-golden"
+  ],
+  "expectedCount": 1,
+  "executedCount": 1,
+  "sourcePins": [
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_validator_controls.ps1",
+      "bytes": 13716,
+      "sha256": "719546F3020562C86DE8169CAA17FB1AB0580255E7E9FAEC4DA3BC70D62BAF9F"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_validator_controls.cases.json",
+      "bytes": 9532,
+      "sha256": "60D07EC27D7854FEB107CE8A1148F382F17F882CD8F2F18427FBD8BDE8D755EC"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Validation\\PackedNative.lean",
+      "bytes": 13557,
+      "sha256": "E3FBBB3EBA7915D87EC79FE422446210B409AAB48CF68BB585899CDD27903ADE"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\owned_process_tree.ps1",
+      "bytes": 47060,
+      "sha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\lean-toolchain",
+      "bytes": 28,
+      "sha256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F"
+    },
+    {
+      "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+      "bytes": 82432,
+      "sha256": "9B5AF669D8DC9B5826A1F5427584915EECA659E9BF34C7EE72667B93C0BFDCB0"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Contract.lean",
+      "bytes": 13766,
+      "sha256": "A8DB1EAAC6445F2F8490A6C344A3F573FD169D3FD7B82E6637C4947159E306AE"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Contract.olean",
+      "bytes": 115272,
+      "sha256": "7E086A90427D71517C0080AC616FBE4C6A9B8C7321A1209AEFA49C0F72682A5F"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Capstone.lean",
+      "bytes": 17145,
+      "sha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+      "bytes": 195960,
+      "sha256": "1357DB70B2FEF15D74D004639EB89797F92927706C26131A20CAA26126A8EF07"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Execution.lean",
+      "bytes": 8989,
+      "sha256": "1367785E02684C7A81C93DF9815D8B736A3490F32046619C75A1838BAF469C06"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Execution.olean",
+      "bytes": 139928,
+      "sha256": "7BF5E9BA4EF194ED9F6C50CEBC3660435B97FB734617E9B37A69CBEDA7A06313"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Host.lean",
+      "bytes": 2820,
+      "sha256": "290F2DAB5985363FD2994EE3F96A21924F3EBD63F3A79A9F2E7DF476173001F0"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Host.olean",
+      "bytes": 120928,
+      "sha256": "0D929C3400FD1E8507309C1B5DDD90E23FC8917D4E4DB937288FDB52D26E07A6"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\CanonicalImage.lean",
+      "bytes": 4727,
+      "sha256": "2A8469798F8A7700F22DA9F01AA157BFDE5F5BF7FE7282132DD53675FD74EE75"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\CanonicalImage.olean",
+      "bytes": 101248,
+      "sha256": "13624B3225ABA670EDB5C15D4D244321462EE807778616840977BA96942234EF"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Canonical.lean",
+      "bytes": 6847,
+      "sha256": "D61C7C1AA6C5FB521995A96F5EC0EBDFE8BDBE4A58CB1F6E159080E365AB857D"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Canonical.olean",
+      "bytes": 135072,
+      "sha256": "4DA0B0E44B8F16A7D20362C60B7DFF15FA09EE22BFB07F53828530CD4BD3CCC2"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Entry.lean",
+      "bytes": 2266,
+      "sha256": "ADD666450D8CF6B724F1467CC2CD4182E8B5EEFC50AE1BF369AEFC5A2A4B7832"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Entry.olean",
+      "bytes": 90608,
+      "sha256": "B3DF441ABB5F4CEACBF273575278644C9DC14FD2A12FB464D1855BA8B4E7D7DF"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Runtime.lean",
+      "bytes": 6120,
+      "sha256": "23EF158FCC87169566CC443401BD6842197F9373E39CF5DF172165B765FEA847"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Runtime.olean",
+      "bytes": 249968,
+      "sha256": "EA1D3422E4708A2727FF1A5E43B42B0EC6C09AA609976390FBFFE1A656647CC0"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Observations.lean",
+      "bytes": 3164,
+      "sha256": "BC3C825AB7598810F9506B36D0EC9F34031DF7D9715F2AB68FEDB823009679B6"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Observations.olean",
+      "bytes": 230848,
+      "sha256": "28E4EA86AB9A3BDE008B34ECD79638FF94621B5B933EFDAC5C547B69F2F3A833"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Binary.lean",
+      "bytes": 25637,
+      "sha256": "C50741D0A9AED1797919F405E8F7440410C0CD13DD2B9F299D0E6AB5E959AE16"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Binary.olean",
+      "bytes": 1269632,
+      "sha256": "F8753191D649C50EB5D18E6C7AB0AAE21319314906295E870DFCC4EED71A67AE"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Binary\\Bounds.lean",
+      "bytes": 6807,
+      "sha256": "1ADF9BE737AD6C86AAC6E5FBA75ED3384876AA029CCEFBBD76CDA03DF70C339E"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Binary\\Bounds.olean",
+      "bytes": 653056,
+      "sha256": "F0AD0322C771B152C57387417C11FB918D1FFB324E9A4A2B70B278D6108D3A24"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Binary\\Codec.lean",
+      "bytes": 16260,
+      "sha256": "E46F05148BB2F4D1D25C848EC804B0E2E0881EFB536F988A90AB9CB7371C11F7"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Binary\\Codec.olean",
+      "bytes": 919520,
+      "sha256": "773457235A0659F6EAC08CA011BF9C8F025C11017B12C3905FCE47B48E6BAA36"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Binary\\Cursor.lean",
+      "bytes": 10733,
+      "sha256": "FA032A73E3CAAB84A874D736D26CA8B833CECC526BBC880BDF09AC8647E68F45"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Binary\\Cursor.olean",
+      "bytes": 584456,
+      "sha256": "BE082A665BBCCDDB38DB084E43A8716AA2FF947DCD302B3CC76007820ADE423D"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Binary\\Cursor\\Core.lean",
+      "bytes": 24281,
+      "sha256": "18F42ACEE5D218DA5CB6B787E7DF25C69C572C72551E3008D1106A6CFA660E28"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Binary\\Cursor\\Core.olean",
+      "bytes": 1197808,
+      "sha256": "F1F6ED3632FD947AEB8D93770A9ACB2228DC1308E8B90BB0BD5D7AD584181C2D"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Machine.lean",
+      "bytes": 38858,
+      "sha256": "F5286E6B52A5C5A73571BBF831E7CA9C5D731F7F5998F3ABA724E17F7AB94B3D"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Machine.olean",
+      "bytes": 1611816,
+      "sha256": "2B02839D966176633D579CE04ACF3333159AAC297874437BFDC733C6C02FCFCB"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Machine\\CodeFacts.lean",
+      "bytes": 7126,
+      "sha256": "94AA115EA137C32F0D11E3714A0E6C0ADD87165ED1306CDBBC22ECC4C0030C00"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Machine\\CodeFacts.olean",
+      "bytes": 947328,
+      "sha256": "CEEE993576D41619FB7C894FAB5064D3E83824E3A56E095F37C715F5248D1A98"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Limbs.lean",
+      "bytes": 15313,
+      "sha256": "06D057D0DE50E263E701D2D5FEA1A4B0E1F6C3DD9A6BFDB6F2F9EDE71A7803F1"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Limbs.olean",
+      "bytes": 688448,
+      "sha256": "90FA2407E087D4E06601B6CD9AFB32BC6C8618A9E08CE940A7605C3BCD8B74B0"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Route.lean",
+      "bytes": 7462,
+      "sha256": "C00240A5A2E994DD1A996C79A52FF54780A0B5A87010B3DBCF4ED3A61244A5C5"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Route.olean",
+      "bytes": 554240,
+      "sha256": "A819F333502EE24EE4D507B25B44F3B6CBA9F1FE2B24FFBC0F7D9B129523153B"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Thin.lean",
+      "bytes": 4498,
+      "sha256": "26D984386EEA21CCCC49EBF6217CD824B7896CF98785F8F843C6AD9E2EB69845"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Thin.olean",
+      "bytes": 435816,
+      "sha256": "A4BB252B227903DAF81BF633F149B0CBE2D1A7730844C05277D8943A58F059F7"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\RMQ\\Core\\WordRAM\\Native\\Finite.lean",
+      "bytes": 11537,
+      "sha256": "8EDC747F2F0BBB7D4E6F6849B63869016969C4F7535D62E99A6E4D01901223DF"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Native\\Finite.olean",
+      "bytes": 682376,
+      "sha256": "5D5BA0BB1A6831E3466472A2205D49212FDB524013E712BCA1CA823BA30239F3"
+    }
+  ],
+  "sourceAndImportsUnchanged": true,
+  "literalFixtures": [
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\validator-replay\\a1119de6490a44f7a021e366df148f86\\crlf.expected",
+      "bytes": 28,
+      "sha256": "E84D12C6737369635A375D4D0EB4F206AF033E0C5A3D8E99DBE1D7579CF258A1",
+      "alias": "@crlf"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\validator-replay\\a1119de6490a44f7a021e366df148f86\\smoke.expected",
+      "bytes": 24,
+      "sha256": "09701A21EBA2B0F7209C025366C6101510437D3B51BBB6D6285EC4E6D6C69A04",
+      "alias": "@golden"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\validator-replay\\a1119de6490a44f7a021e366df148f86\\smoke.bin",
+      "bytes": 35,
+      "sha256": "2438FDB9FED701DD3A8391AC4EC549A3FE38246341653F6BC105CE85A3DD2E49",
+      "alias": "@image"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\validator-replay\\a1119de6490a44f7a021e366df148f86\\nonutf8.expected",
+      "bytes": 1,
+      "sha256": "A8100AE6AA1940D0B663BB31CD466142EBBDBD5187131B92D93818987832EB89",
+      "alias": "@nonutf8"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\validator-replay\\a1119de6490a44f7a021e366df148f86\\truncated.bin",
+      "bytes": 34,
+      "sha256": "15880AB37418FD6317A37BD5DC9A8C60A758EE157F06A1A988C864571635783B",
+      "alias": "@truncated"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\validator-replay\\a1119de6490a44f7a021e366df148f86\\wrong.expected",
+      "bytes": 24,
+      "sha256": "D61E7B55BFD92DDF4D95D21BE6B40CC793E69A7C2141E78023A3D9384CC33C4B",
+      "alias": "@wrong"
+    }
+  ],
+  "literalFixturesUnchanged": true,
+  "oversizedTemporaryRemoved": false,
+  "toolchain": {
+    "Stage": "validator-replay-toolchain",
+    "ExitCode": 0,
+    "Output": [
+      "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+    ],
+    "StandardOutput": [
+      "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 3.166,
+    "DeadlineSeconds": 30,
+    "Ownership": "kill-on-close-job"
+  },
+  "results": [
+    {
+      "id": "compare-golden",
+      "pass": true,
+      "expectedExit": 0,
+      "expectedStdout": [
+        "NATIVE1-LEAN COMPARE PASS bytes=35 fuel=16 reads=1"
+      ],
+      "expectedStderr": [],
+      "invokedFile": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+      "invokedArguments": [
+        "-j",
+        "1",
+        "--run",
+        "RMQ/Validation/PackedNative.lean",
+        "compare",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\validator-replay\\a1119de6490a44f7a021e366df148f86\\smoke.bin",
+        "07",
+        "09",
+        "16",
+        "1",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\validator-replay\\a1119de6490a44f7a021e366df148f86\\smoke.expected"
+      ],
+      "invokedEnvironment": {
+        "LEAN_PATH": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\build\\lib\\lean"
+      },
+      "process": {
+        "Stage": "validator-replay-compare-golden",
+        "ExitCode": 0,
+        "Output": [
+          "NATIVE1-LEAN COMPARE PASS bytes=35 fuel=16 reads=1"
+        ],
+        "StandardOutput": [
+          "NATIVE1-LEAN COMPARE PASS bytes=35 fuel=16 reads=1"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 11.4,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    }
+  ],
+  "unsupportedHosts": [
+    "Non-Windows process replay is not covered by this runner"
+  ]
+}

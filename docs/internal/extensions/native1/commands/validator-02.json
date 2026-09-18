@@ -1,0 +1,41 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "fbd5a44f4f68c0ab1ad54fbff0cc9169000c8949",
+  "command": {
+    "arguments": [
+      "-j",
+      "1",
+      "-o",
+      ".lake/build/lib/lean/RMQ/Validation/PackedNative.olean",
+      "-c",
+      ".lake/native1/validator-c/PackedNative.c",
+      "RMQ/Validation/PackedNative.lean"
+    ],
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe"
+  },
+  "result": {
+    "Stage": "validator-02",
+    "ExitCode": 0,
+    "Output": [
+      "RMQ/Validation/PackedNative.lean:173:5: warning: unused variable `hz`",
+      "Note: This linter can be disabled with `set_option linter.unusedVariables false`",
+      "RMQ/Validation/PackedNative.lean:175:7: warning: unused variable `hb`",
+      "Note: This linter can be disabled with `set_option linter.unusedVariables false`"
+    ],
+    "StandardOutput": [
+      "RMQ/Validation/PackedNative.lean:173:5: warning: unused variable `hz`",
+      "Note: This linter can be disabled with `set_option linter.unusedVariables false`",
+      "RMQ/Validation/PackedNative.lean:175:7: warning: unused variable `hb`",
+      "Note: This linter can be disabled with `set_option linter.unusedVariables false`"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 10.122,
+    "DeadlineSeconds": 60,
+    "Ownership": "kill-on-close-job"
+  }
+}

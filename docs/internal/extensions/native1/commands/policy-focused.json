@@ -1,0 +1,207 @@
+[
+    {
+        "id":  "rust-code",
+        "expectedExit":  1,
+        "expectedOutput":  "code/public/repository-sensitive",
+        "pass":  true,
+        "result":  {
+                       "Stage":  "policy-focus-rust-code",
+                       "ExitCode":  1,
+                       "Output":  [
+                                      "DESIGN-CHECK: code/public/repository-sensitive paths changed; update docs/internal/DESIGN_DECISIONS.md",
+                                      "  code: native/packed-rmq/src/heldout/deep.rs",
+                                      "DESIGN-CHECK: checked 2 changed files (1 code, 0 workflow, 1 neutral)",
+                                      "DESIGN-CHECK: strict mode found 1 missing design-log updates"
+                                  ],
+                       "StandardOutput":  [
+                                              "DESIGN-CHECK: code/public/repository-sensitive paths changed; update docs/internal/DESIGN_DECISIONS.md",
+                                              "  code: native/packed-rmq/src/heldout/deep.rs",
+                                              "DESIGN-CHECK: checked 2 changed files (1 code, 0 workflow, 1 neutral)",
+                                              "DESIGN-CHECK: strict mode found 1 missing design-log updates"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  3.246,
+                       "DeadlineSeconds":  60,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "id":  "rust-positive",
+        "expectedExit":  0,
+        "expectedOutput":  "(1 code, 0 workflow, 1 neutral)",
+        "pass":  true,
+        "result":  {
+                       "Stage":  "policy-focus-rust-positive",
+                       "ExitCode":  0,
+                       "Output":  [
+                                      "DESIGN-CHECK: checked 2 changed files (1 code, 0 workflow, 1 neutral)"
+                                  ],
+                       "StandardOutput":  [
+                                              "DESIGN-CHECK: checked 2 changed files (1 code, 0 workflow, 1 neutral)"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  3.065,
+                       "DeadlineSeconds":  60,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "id":  "registry-workflow",
+        "expectedExit":  1,
+        "expectedOutput":  "workflow/process-sensitive",
+        "pass":  true,
+        "result":  {
+                       "Stage":  "policy-focus-registry-workflow",
+                       "ExitCode":  1,
+                       "Output":  [
+                                      "DESIGN-CHECK: workflow/process-sensitive paths changed; update docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+                                      "  workflow: native/packed-rmq/route-registry.json",
+                                      "DESIGN-CHECK: checked 2 changed files (0 code, 1 workflow, 1 neutral)",
+                                      "DESIGN-CHECK: strict mode found 1 missing design-log updates"
+                                  ],
+                       "StandardOutput":  [
+                                              "DESIGN-CHECK: workflow/process-sensitive paths changed; update docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+                                              "  workflow: native/packed-rmq/route-registry.json",
+                                              "DESIGN-CHECK: checked 2 changed files (0 code, 1 workflow, 1 neutral)",
+                                              "DESIGN-CHECK: strict mode found 1 missing design-log updates"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  3.959,
+                       "DeadlineSeconds":  60,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "id":  "build-both",
+        "expectedExit":  0,
+        "expectedOutput":  "(1 code, 1 workflow, 2 neutral)",
+        "pass":  true,
+        "result":  {
+                       "Stage":  "policy-focus-build-both",
+                       "ExitCode":  0,
+                       "Output":  [
+                                      "DESIGN-CHECK: checked 3 changed files (1 code, 1 workflow, 2 neutral)"
+                                  ],
+                       "StandardOutput":  [
+                                              "DESIGN-CHECK: checked 3 changed files (1 code, 1 workflow, 2 neutral)"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  4.341,
+                       "DeadlineSeconds":  60,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "id":  "unknown-neighbor",
+        "expectedExit":  1,
+        "expectedOutput":  "match no classification rule",
+        "pass":  true,
+        "result":  {
+                       "Stage":  "policy-focus-unknown-neighbor",
+                       "ExitCode":  1,
+                       "Output":  [
+                                      "DESIGN-CHECK: FAIL 1 path(s) match no classification rule; classify them in Get-PathDisposition rather than letting a default decide",
+                                      "  unclassified: native/packed-rmq-other/src/lib.rs"
+                                  ],
+                       "StandardOutput":  [
+                                              "DESIGN-CHECK: FAIL 1 path(s) match no classification rule; classify them in Get-PathDisposition rather than letting a default decide",
+                                              "  unclassified: native/packed-rmq-other/src/lib.rs"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  3.514,
+                       "DeadlineSeconds":  60,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "id":  "archive-suffix",
+        "expectedExit":  1,
+        "expectedOutput":  "match no classification rule",
+        "pass":  true,
+        "result":  {
+                       "Stage":  "policy-focus-archive-suffix",
+                       "ExitCode":  1,
+                       "Output":  [
+                                      "DESIGN-CHECK: FAIL 1 path(s) match no classification rule; classify them in Get-PathDisposition rather than letting a default decide",
+                                      "  unclassified: native/packed-rmq/fixtures/program.txt.gz.bak"
+                                  ],
+                       "StandardOutput":  [
+                                              "DESIGN-CHECK: FAIL 1 path(s) match no classification rule; classify them in Get-PathDisposition rather than letting a default decide",
+                                              "  unclassified: native/packed-rmq/fixtures/program.txt.gz.bak"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  2.827,
+                       "DeadlineSeconds":  60,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "id":  "plumbing",
+        "expectedExit":  0,
+        "expectedOutput":  "only neutral decision/evidence/history/report paths",
+        "pass":  true,
+        "result":  {
+                       "Stage":  "policy-focus-plumbing",
+                       "ExitCode":  0,
+                       "Output":  [
+                                      "DESIGN-CHECK: only neutral decision/evidence/history/report paths changed"
+                                  ],
+                       "StandardOutput":  [
+                                              "DESIGN-CHECK: only neutral decision/evidence/history/report paths changed"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  3.99,
+                       "DeadlineSeconds":  60,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    }
+]

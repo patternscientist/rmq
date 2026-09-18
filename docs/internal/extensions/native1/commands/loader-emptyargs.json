@@ -1,0 +1,16 @@
+{
+  "Stage": "native-loader-emptyargs",
+  "ExitCode": -1,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": true,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [
+    12764,
+    12956
+  ],
+  "DurationSeconds": 15.146,
+  "DeadlineSeconds": 15,
+  "Ownership": "kill-on-close-job"
+}

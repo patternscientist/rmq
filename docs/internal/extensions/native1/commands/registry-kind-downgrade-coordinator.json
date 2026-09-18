@@ -1,0 +1,28 @@
+{
+  "schema": "native1-route-results-v1",
+  "success": true,
+  "run": "20260912T085310559",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "registrySha256": "8842288610882C9416755293ECD7F90BEC90B7E29024C4CD053748FBB37346DD",
+  "expectedCases": [
+    "source-core-mutation"
+  ],
+  "executedCases": [
+    "source-core-mutation"
+  ],
+  "expectedCount": 1,
+  "executedCount": 1,
+  "results": [
+    {
+      "pass": true,
+      "evidence": {
+        "beforeSha256": "C00240A5A2E994DD1A996C79A52FF54780A0B5A87010B3DBCF4ED3A61244A5C5",
+        "verdict": "stale-source rejected"
+      },
+      "id": "source-core-mutation"
+    }
+  ],
+  "unsupportedHosts": [
+    "Non-Windows execution not covered by this experiment"
+  ]
+}

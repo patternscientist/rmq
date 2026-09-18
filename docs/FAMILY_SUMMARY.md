@@ -3505,3 +3505,47 @@ certification and acceptance remain pending. Payload, separately counted
 fixed code/scratch, primitive model steps and uncharged mathematical bit
 conversion remain distinct. See the LB-1 REPORT.md and FINAL_DISPOSITION.md
 for exact source and evidence identities.
+
+## NATIVE-1 extension: finite-container and native-route checkpoint
+
+The isolated NATIVE-1 extension adds operation and whole-run simulation from
+Array-backed code, memory and registers to the existing primitive interpreter,
+under a finite destination-bank bound. `PackedNative.runThin_reference` and
+`PackedNative.routeCore_reference` connect the actual tail-recursive executable
+core to the same original run and its accumulated observations. Optional read
+logging is erased by a checked projection. Natural-number cells are an
+intermediate representation; this is not the finite-limb/binary native capstone.
+
+The Lean-to-C DLL and Rust frontend are a route experiment. Compiler/runtime/FFI
+assumptions, exact checked types and remaining canonical/limb/serialization/API
+obligations are recorded in `internal/extensions/native1/ROUTE_EVIDENCE.md`.
+The accepted PQ1 family and its public aliases are unchanged. No native payload
+or hardware-time bound and no completed Rust refinement are claimed here.
+
+### NATIVE-1 continuation: checked loaded-image source contract
+
+The continuation now provides
+`PackedNative.nativeExecutionCapstone_holds : PackedNative.NativeExecutionCapstone`
+with 42 independently typed field consumers in `Native/Contract.lean`.
+Canonical code, memory, registers and status use finite arrays of little-endian
+byte limbs. All-fuel execution agrees with the accepted PQ1 primitive run for
+every input size and representable endpoint pair, including invalid queries.
+The versioned binary codec has roundtrip, injectivity and exact storage
+accounting proofs. An indexed parser is proved equal to its specification for
+every byte sequence and limit record, with digit/count limits checked before
+large accumulation or allocation.
+
+The source contract ties the actual exported loader and query declarations to
+those same arrays. Its fields transport leftmost results, invalid guards,
+operation counts, ordered attempted reads, positional backing, width bounds
+and supplied-store agreement. Numeric payload/code/scratch bits, byte rounding,
+file framing and host container bounds are separate claims. Finite native API
+support is explicit; compiler/runtime/FFI correctness and allocator success
+remain external assumptions. There is no physical constant-time multiprecision
+or Lean heap-succinctness claim. The generated native build and full operational replay pass: 109 cases
+expand
+to 214 checks in both clients and source controls, inside 128 replay controls.
+All 42 field weakenings and the public-proposition collapse are rejected by
+the independent consumers after successful fresh producer compilation; the
+44-case certificate replay and nine controls pass. Fresh independent acceptance
+and aggregate certification remain coordinator-scheduled on frozen content.

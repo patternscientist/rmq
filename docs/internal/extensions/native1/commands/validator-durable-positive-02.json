@@ -1,0 +1,40 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "fa79233f77acbfa0470ef6203131e66784c7b014",
+  "command": {
+    "arguments": [
+      "-NoLogo",
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "scripts/packed_native_validator_controls.ps1",
+      "-Case",
+      "compare-golden"
+    ],
+    "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+  },
+  "result": {
+    "Stage": "validator-durable-positive-02",
+    "ExitCode": 0,
+    "Output": [
+      "NATIVE1-VALIDATOR-CONTROL PASS compare-golden",
+      "NATIVE1-VALIDATOR-CONTROLS-REPORT C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\validator-controls-20260912T121157154.json",
+      "NATIVE1-VALIDATOR-CONTROLS PASS executed=1 expected=1"
+    ],
+    "StandardOutput": [
+      "NATIVE1-VALIDATOR-CONTROL PASS compare-golden",
+      "NATIVE1-VALIDATOR-CONTROLS-REPORT C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\validator-controls-20260912T121157154.json",
+      "NATIVE1-VALIDATOR-CONTROLS PASS executed=1 expected=1"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 24.621,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  }
+}

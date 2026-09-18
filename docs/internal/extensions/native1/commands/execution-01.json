@@ -1,0 +1,57 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "fbd5a44f4f68c0ab1ad54fbff0cc9169000c8949",
+  "command": {
+    "arguments": [
+      "-j",
+      "1",
+      "-o",
+      ".lake/build/lib/lean/RMQ/Core/WordRAM/Native/Execution.olean",
+      "-c",
+      ".lake/build/ir/RMQ/Core/WordRAM/Native/Execution.c",
+      "RMQ/Core/WordRAM/Native/Execution.lean"
+    ],
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe"
+  },
+  "result": {
+    "Stage": "execution-01",
+    "ExitCode": 1,
+    "Output": [
+      "RMQ/Core/WordRAM/Native/Execution.lean:30:6: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression",
+      "  nativeInitialState (canonicalImage xs) (LimbWord.encode (wordWidth xs.length) left)",
+      "    (LimbWord.encode (wordWidth xs.length) right)",
+      "xs : List Int",
+      "left right fuel : Nat",
+      "hl : left < 2 ^ wordWidth xs.length",
+      "hr : right < 2 ^ wordWidth xs.length",
+      "⊢ (have image := canonicalImage xs;",
+      "      LimbMachine.run image.width image.memory image.code fuel",
+      "        (nativeInitialState image { data := LimbWord.encode (wordWidth xs.length) left }.data",
+      "          { data := LimbWord.encode (wordWidth xs.length) right }.data)).decode =",
+      "    run (buildMemory xs) queryProgram fuel (initialState xs.length left right)"
+    ],
+    "StandardOutput": [
+      "RMQ/Core/WordRAM/Native/Execution.lean:30:6: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression",
+      "  nativeInitialState (canonicalImage xs) (LimbWord.encode (wordWidth xs.length) left)",
+      "    (LimbWord.encode (wordWidth xs.length) right)",
+      "xs : List Int",
+      "left right fuel : Nat",
+      "hl : left < 2 ^ wordWidth xs.length",
+      "hr : right < 2 ^ wordWidth xs.length",
+      "⊢ (have image := canonicalImage xs;",
+      "      LimbMachine.run image.width image.memory image.code fuel",
+      "        (nativeInitialState image { data := LimbWord.encode (wordWidth xs.length) left }.data",
+      "          { data := LimbWord.encode (wordWidth xs.length) right }.data)).decode =",
+      "    run (buildMemory xs) queryProgram fuel (initialState xs.length left right)"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 7.046,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  }
+}

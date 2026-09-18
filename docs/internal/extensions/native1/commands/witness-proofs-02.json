@@ -1,0 +1,90 @@
+{
+    "stage":  "witness-proofs-02",
+    "platform":  "Microsoft Windows NT 10.0.26200.0",
+    "head":  "fbd5a44f4f68c0ab1ad54fbff0cc9169000c8949",
+    "pins":  [
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Limbs.lean",
+                     "sha256":  "06D057D0DE50E263E701D2D5FEA1A4B0E1F6C3DD9A6BFDB6F2F9EDE71A7803F1"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Machine.lean",
+                     "sha256":  "F5286E6B52A5C5A73571BBF831E7CA9C5D731F7F5998F3ABA724E17F7AB94B3D"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary/Codec.lean",
+                     "sha256":  "E46F05148BB2F4D1D25C848EC804B0E2E0881EFB536F988A90AB9CB7371C11F7"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary.lean",
+                     "sha256":  "C50741D0A9AED1797919F405E8F7440410C0CD13DD2B9F299D0E6AB5E959AE16"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary/Bounds.lean",
+                     "sha256":  "1ADF9BE737AD6C86AAC6E5FBA75ED3384876AA029CCEFBBD76CDA03DF70C339E"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Witnesses.lean",
+                     "sha256":  "8E732E615A9E69646AD6B6D2FDA5F632DF9826D2A22CA1B2DD71C98FF016B642"
+                 }
+             ],
+    "result":  {
+                   "Stage":  "witness-proofs-02",
+                   "ExitCode":  0,
+                   "Output":  [
+                                  "RMQ/Core/WordRAM/Native/Witnesses.lean:118:30: warning: This simp argument is unused:",
+                                  "  List.append_assoc",
+                                  "Hint: Omit it from the simp argument list.",
+                                  "  simp [queryStages, afterSelectStages_trace, queryReadyReference, W̵o̵r̵d̵R̵A̵M̵.̵T̵r̵a̵c̵e̵R̵e̵s̵u̵l̵t̵.̵b̵i̵n̵d̵,̵ ̵L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵a̵s̵s̵o̵c̵]̵W̲o̲r̲d̲R̲A̲M̲.̲T̲r̲a̲c̲e̲R̲e̲s̲u̲l̲t̲.̲b̲i̲n̲d̲]̲",
+                                  "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                  "RMQ/Core/WordRAM/Native/Witnesses.lean:148:10: warning: This simp argument is unused:",
+                                  "  hv",
+                                  "Hint: Omit it from the simp argument list.",
+                                  "  simp [h̵v̵,̵ ̵flatten, logicalTraceReads, List.flatMap_assoc]",
+                                  "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                  "RMQ/Core/WordRAM/Native/Witnesses.lean:160:48: warning: This simp argument is unused:",
+                                  "  List.append_assoc",
+                                  "Hint: Omit it from the simp argument list.",
+                                  "  simp [logicalTraceReads, List.flatMap_append,̵ ̵L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵a̵s̵s̵o̵c̵]",
+                                  "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.Witnesses.stages_trace\u0027 depends on axioms: [propext, Classical.choice, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.Witnesses.stages_reads\u0027 depends on axioms: [propext, Classical.choice, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.Witnesses.staged_receipt_at\u0027 depends on axioms: [propext, Classical.choice, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.Witnesses.occurrence_source\u0027 depends on axioms: [propext, Classical.choice, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.Witnesses.arrayRun_exact\u0027 depends on axioms: [propext, Classical.choice, Quot.sound]"
+                              ],
+                   "StandardOutput":  [
+                                          "RMQ/Core/WordRAM/Native/Witnesses.lean:118:30: warning: This simp argument is unused:",
+                                          "  List.append_assoc",
+                                          "Hint: Omit it from the simp argument list.",
+                                          "  simp [queryStages, afterSelectStages_trace, queryReadyReference, W̵o̵r̵d̵R̵A̵M̵.̵T̵r̵a̵c̵e̵R̵e̵s̵u̵l̵t̵.̵b̵i̵n̵d̵,̵ ̵L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵a̵s̵s̵o̵c̵]̵W̲o̲r̲d̲R̲A̲M̲.̲T̲r̲a̲c̲e̲R̲e̲s̲u̲l̲t̲.̲b̲i̲n̲d̲]̲",
+                                          "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                          "RMQ/Core/WordRAM/Native/Witnesses.lean:148:10: warning: This simp argument is unused:",
+                                          "  hv",
+                                          "Hint: Omit it from the simp argument list.",
+                                          "  simp [h̵v̵,̵ ̵flatten, logicalTraceReads, List.flatMap_assoc]",
+                                          "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                          "RMQ/Core/WordRAM/Native/Witnesses.lean:160:48: warning: This simp argument is unused:",
+                                          "  List.append_assoc",
+                                          "Hint: Omit it from the simp argument list.",
+                                          "  simp [logicalTraceReads, List.flatMap_append,̵ ̵L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵a̵s̵s̵o̵c̵]",
+                                          "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.Witnesses.stages_trace\u0027 depends on axioms: [propext, Classical.choice, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.Witnesses.stages_reads\u0027 depends on axioms: [propext, Classical.choice, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.Witnesses.staged_receipt_at\u0027 depends on axioms: [propext, Classical.choice, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.Witnesses.occurrence_source\u0027 depends on axioms: [propext, Classical.choice, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.Witnesses.arrayRun_exact\u0027 depends on axioms: [propext, Classical.choice, Quot.sound]"
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  12.735,
+                   "DeadlineSeconds":  120,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

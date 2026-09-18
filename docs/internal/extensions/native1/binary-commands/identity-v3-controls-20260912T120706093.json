@@ -1,0 +1,53 @@
+﻿{
+    "schema":  "native1-identity-v3-control-receipt-v1",
+    "startedUtc":  "2026-09-12T12:07:06.1277322Z",
+    "completedUtc":  "2026-09-12T12:07:15.2354242Z",
+    "pass":  true,
+    "failure":  null,
+    "selectors":  false,
+    "selectorBound":  true,
+    "selector":  "canonical-maps",
+    "registrySha256":  "4CB180BB0380215D14AC80058652120AA877488BDF4A231C39BF6017CD99DA14",
+    "helperSha256":  "A21F67E2EDF49C8E218C657E73967E920EFB85FF025476E01BD04A83CA50B17A",
+    "runnerSha256":  "D8C9C5209D2E4FD738D9F89208A3AEDAB5FC35916A9F8220CCFD94E94422BBD1",
+    "shellVersion":  "5.1.26100.9444",
+    "inputPins":  [
+                      {
+                          "path":  "docs/internal/extensions/native1/commands/binary-build-20260912T111100924.json",
+                          "sha256":  "8486C0C039365DE086E651FBC1686531D1DCA4F000C75C62BE6A65E70E6C53EB",
+                          "property":  "toolchainIdentity"
+                      },
+                      {
+                          "path":  "docs/internal/extensions/native1/binary-commands/toolchain-mismatch-actual-v2.json",
+                          "sha256":  "AF8459AC7377D3353E5EA96D362A16EF4309D8A2F2A93B9EB1820ED9594BDA11",
+                          "property":  ""
+                      }
+                  ],
+    "expected":  [
+                     "canonical-maps"
+                 ],
+    "executed":  [
+                     "canonical-maps"
+                 ],
+    "results":  [
+                    {
+                        "pass":  true,
+                        "details":  {
+                                        "digest":  "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+                                        "counts":  [
+                                                       4856,
+                                                       48,
+                                                       6545,
+                                                       145,
+                                                       4
+                                                   ]
+                                    },
+                        "id":  "canonical-maps"
+                    }
+                ],
+    "commands":  [
+
+                 ],
+    "restored":  true,
+    "scope":  "Actual production sorting/digest/retained predicates on pinned captured inventories; fresh compiler byte discovery remains required by build/startup."
+}

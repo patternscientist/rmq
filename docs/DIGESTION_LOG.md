@@ -1821,3 +1821,79 @@ inconclusive history. Live conventions remain public n, observed length,
 uniform worst-case budget and the stated word-RAM primitives/width. There is
 no per-input allocation lower bound or charged-time claim for bit conversion.
 Coordinator broad certification and acceptance remain pending.
+
+## 2026-09-12 — NATIVE-1 finite-container/native-route checkpoint
+
+Conceptually, the new leaf replaces three storage interfaces with Arrays while
+preserving the old primitive run as the reference. The equality includes final
+state and ordered transitions under a destination-bank bound. A separate
+accumulator computes the same final state, instruction count, six categories
+and optional read observations without retaining a full transition trace.
+
+In plain English, the executable source being prepared for the native DLL is
+now the same Lean function whose behavior is connected to the reference
+interpreter. Rust only supplies the frontend in this experiment. This does not
+yet supply fixed limbs, a proved binary loader, a production API or the final
+`PackedNative.nativeExecutionCapstone_holds` join.
+
+Live assumptions: natural-cell arithmetic, a bounded destination bank, and
+explicit compiler/runtime/FFI assumptions for native execution. Raw PQ1's total
+arithmetic and missing-fetch behavior must be kept separate from a future
+checked native fault policy. The downstream consumer is the assigned native
+capstone on the exact PQ1 allocation and program. A skeptical reader should ask
+whether the later loaded limbs and marshaled inputs are those same counted and
+executed objects, and how corruption is rejected before unsafe arithmetic.
+
+## 2026-09-12 — NATIVE-1 loaded-limb source composition
+
+Conceptually, the reference program now has a direct byte-limb implementation,
+and the source theorem follows one canonical image through serialization,
+loading, execution and observation. The canonical all-fuel proof discharges
+the machine safety premises from the accepted PQ1 safety theorem; extra fuel
+after the query budget is justified by halting. The query-independent word
+width is unchanged, so the real 168/176-bit examples do not pass through a
+64/128-bit surrogate.
+
+In plain English, the bytes loaded for a query contain exactly the code and
+memory counted by the space theorem, and the executor uses those bytes to
+compute its answer. Its optional read list and six operation counts come from
+the same execution. Replacing a supplied store by one agreeing at every actual
+read preserves the entire run. The public certificate and all 42 literal
+consumer types have passed Lean checks; their native build and operational
+replay are separate obligations still being completed.
+
+Live assumptions are explicit: endpoints fit the modeled width; the finite
+native API checks its own file/container/fuel limits; compiler, foreign runtime
+and FFI behavior are outside the kernel theorem. Byte-array container overhead
+and allocation availability are not the numeric payload bound, and a checked
+multiprecision operation is not a constant physical-time hardware instruction.
+The next skeptical question is whether the actual compiled bridge preserves
+argument order, byte lengths and ownership, and whether the replay witnesses
+identify real select/fringe/rank/cross-cell instruction occurrences. The
+expanded native campaign and fresh final audit must answer those questions.
+
+## 2026-09-12 — NATIVE-1 compiled execution and dependency controls
+
+The compiled DLL and unchanged Rust/C++ clients now pass every final native
+case, including ordered duplicate reads, wide words/endpoints, malformed inputs,
+all six categories and the seven real select/fringe/rank/cross-cell witnesses.
+The deliberate endpoint-order defect in a separately rebuilt shim produces the
+independently predicted fault in both clients, and mutations of the actual
+exported Lean source break the designated correspondence proofs. Original
+source, generated C and binary artifact hashes are restored and rechecked.
+
+The public dependency replay successfully compiles each of 42 field weakenings
+and a collapsed public proposition, then demonstrates rejection by the unchanged
+independent literal consumer. Each newly compiled producer is hash-bound into a
+complete private import package; the shared checked objects remain unchanged.
+The unchanged baseline accepts. All 44 cases, nine certificate controls, 109
+native cases expanded to 214 checks, 128 native controls and 24 validator controls
+pass their exact rosters. These executed challenges support the source join and
+bridge assumptions; they do not turn compiler, runtime or foreign-pointer
+semantics into kernel theorems.
+
+A skeptical reader can now inspect the exact same-store propositions, raw
+observations, designated failures and restoration records in the final evidence
+packet. Fresh blind exact-commit review and aggregate certification remain the
+coordinator's independent acceptance phase. Numeric payload and model counts
+retain the limitations stated in the source-composition entry above.

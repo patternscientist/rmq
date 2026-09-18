@@ -12711,3 +12711,184 @@ The generic proof now enumerates all Boolean lists of length at most B, proves t
 The adapter's selected composition reconstructs the complete actual buildMemory list from fixed-width serialized words, then transports all 33 fields of the PQ1 capstone to that identical reconstructed memory. It does not conjoin an unrelated old-memory machine certificate with new-memory exactness. Every field with a memory argument is restated on reconstructedMemory; memory-independent width, code and arithmetic facts retain their literal existing types. Representable-endpoint guards remain on raw machine safety, while the natural-number decoder retains total invalid-query behavior. Bit conversion and the outer argument/result wrapper have no charged instruction-time claim.
 
 Independent review clarified the advice convention. A function type cannot syntactically inspect captured constants. The generic semantic restriction is one decoder exact uniformly over all size-n inputs; the canonical decoder visibly captures only n. The negative advice controls refute the same uniform exactness predicate for an empty payload and a fixed input/shape answer source, rather than asserting a stronger syntactic property. No input-specific lower bound, value-list injection, preprocessing bound, public alias migration or coordinator acceptance follows. The adapter and its independent literal consumers remain drafts until their build and replay evidence is recorded.
+
+## DD-20260912-NATIVE1-001: finite containers and a proved Lean core for the native route experiment
+
+Context: NATIVE-1 is a newly authorized extension of exact PQ1 base 0e6a00f654abc64f8b68988fa9675b9a839dca2f. The assignment explicitly permits a proved Lean executable compiled through C behind a narrow Rust/C ABI frontend. Historical extraction deferrals remain historical; this task-specific authorization does not edit their frozen wording.
+
+Decision: first refine program, memory and register storage to Arrays while retaining natural-cell semantics, and prove operation/run equality. A separate tail-recursive runner accumulates all six category counts and optional ordered reads without retaining transition states. Test the actual exported Lean declaration through the installed C compiler and Rust frontend. This is a route experiment feeding review, not the native capstone or a fixed-limb claim.
+
+Rationale: the exact PQ1 operation semantics and fixed program are already proved; an independent handwritten Rust VM would add an unproved algorithm. Reusing the proved computational declaration gives an explicit source identity, while compiler/runtime translation and FFI marshaling remain separate obligations. Natural arrays are an intermediate leaf only. Fixed limbs, binary image proofs, canonical all-size instantiation and usable API are still required by the frozen matrix.
+
+Corrupt-state distinction: raw PQ1 arithmetic is total Nat arithmetic and missing instruction fetch stops without changing running status. The container leaf preserves those behaviors exactly under its destination bound. A future checked limb executor must state separate checked-fault semantics and prove compatibility on canonical safe executions; it cannot claim unconditional equality after introducing overflow/divisor/shift faults.
+
+Alternatives rejected: substituting u64/u128 despite 168-176-bit fixtures; treating ArrayRun's fetch-only equality as a storage theorem; logging full states in default execution; claiming fixture comparison proves Rust refinement; silently adding Aeneas/Mathlib or upgrading Lean. The actual route experiment, exact proposed source theorem and trust assumptions are recorded in docs/internal/extensions/native1/ROUTE_EVIDENCE.md. No public alias or baseline Packed definition changes.
+
+### NATIVE-1 route-review refinements to DD-20260912-NATIVE1-001
+
+Independent review caught and repaired the experiment's endpoint register order;
+`routeInitialState_decode` now checks the exact left/right/n initial-state body.
+The parser's destination predicate is proved equivalent to the raw simulation's
+bank guard. These are operational repairs, not changes to the reference theory.
+The C bridge uses explicit byte lengths and an owned Lean-string handle with a
+borrowed-text accessor, avoiding a second allocator/copy ABI and the bundled C
+compiler's absent general-purpose C headers. Rust's process-wide atomic claim
+and non-Send/non-Sync owner constrain the tested single-thread initialization
+contract. Universal frontend marshaling and the final binary API remain open.
+
+The experimental C++ consumer uses the same exported C functions and DLL as
+Rust. The committed .def file describes the four C exports for an MSVC import
+library; it is interface metadata, not another query implementation. The
+complete n9-full output comparison covers the actual C++ consumption path.
+
+## DD-20260912-NATIVE1-002: byte-limb state and exact loaded storage
+
+Context: the coordinator approved the Lean-to-C route and directed continuation
+to the full original native contract. The natural-cell experiment established
+that route, but did not supply the finite word representation or binary loader.
+The new word representation is `Array UInt8`, ordered least-significant byte
+first, with exactly `(width + 7) / 8` bytes and zero unused high bits. Registers,
+PC, halted packets, memory cells and every numeric instruction field use that
+same representation. There is no cached natural value in a stored word.
+
+Decision: decode only the fetched instruction and scalar operands needed by its
+operation, use the existing natural operation as a temporary computation, and
+check its safety conditions before encoding the result. The complete run
+simulation consumes the original `Instruction.Safe` and final-state width
+conditions. Missing memory retains its failed receipt and faults; missing code
+fetch stops unchanged and uncharged. Malformed code and unsafe arithmetic have
+explicit checked rejection outside the canonical safe domain. The tail runner
+calls the same step and erases transition states; optional ordered reads and all
+six category counts remain projections of that execution.
+
+Rationale: byte arrays give an exact finite stored representation for the actual
+168-176-bit examples and arbitrary abstract widths. Unchecked total natural
+arithmetic would misrepresent word faults; u64/u128 would truncate current
+examples. Reimplementing arithmetic in Rust would create a separate unproved
+core. Temporary BigNat decoding, byte-array slots, headers, reference counts and
+observation lists are runtime overhead. Neither this simulation nor the existing
+word-RAM bound asserts constant physical time for multiprecision operations.
+
+The version-1 image stores width, public input length, register count, code and
+memory. Public input length remains independent of memory cell zero so corrupt
+metadata cannot silently rewrite the initial input contract. Scalar lengths use
+minimal little-endian base-256 digits, framed by a unary digit-byte count and
+delimiter. This permits all abstract natural lengths without a hidden 64-bit
+header restriction. Framing and byte rounding are separate from numeric payload
+bits. Native host limits remain a checked additional domain. A list codec
+supplies roundtrip and consumption proofs; the actual native loader must avoid
+repeated whole-tail length scans and non-tail recursive array parsing. Its
+efficient bounded refinement is part of this target, not a deferred claim.
+
+Evidence: Native/Limbs.lean proves both limb roundtrips, padding/size, arithmetic,
+comparison and address conversions; Native/Machine.lean proves all nine
+operation cases and complete all-fuel run equality. Detailed propositions and
+narrow receipts are in LIMB_WORDS.md and MACHINE_LEAF.md. Binary, canonical-query
+and final public composition remain in progress at this entry. No existing
+Packed semantics, aliases or accepted theorem is changed. This record grants no
+native capstone acceptance.
+
+## DD-20260912-NATIVE1-003: propagate C++ rejection through the shared ABI
+
+The reviewed C++ experiment returned success after printing an ERROR-prefixed
+Lean parser result. Its consumer now owns the returned handle with RAII,
+validates the borrowed view, copies the result before release, and sends parser
+errors to stderr with a failing process exit. The success path remains the
+same DLL call. The final production ABI will expose an explicit status channel;
+the textual experiment's convention is retained only for that version. The
+rebuilt C++ executable is pinned alongside the Rust executable and DLL in the
+version-2 manifest. The registry includes both complete n9 success and malformed
+instruction rejection. A separate C++ algorithm or success exit on parser
+rejection was rejected because either would invalidate the consumer evidence.
+Runtime results and source identities are recorded by the route repair campaign;
+no unexecuted host branch is claimed.
+
+## DD-20260912-NATIVE1-004: compose the loaded image with the exported executor
+
+The native contract uses one canonical image built from the accepted
+`buildMemory`, fixed `queryProgram`, `queryRegisterCount` and query-independent
+`wordWidth`. Its encoded memory and program are the arrays consumed by the
+byte-limb machine. The complete logged run refines the accepted primitive run
+for every fuel and representable endpoint pair, including invalid ranges;
+canonical safety is discharged from the existing positional safety theorem.
+After-budget fuel is handled by canonical halting, without a new correctness
+or readiness premise. A separate predicate exposes finite native file, width,
+register, code, memory and fuel limits. It does not narrow the abstract all-size
+representation theorem.
+
+The exported loader uses an indexed, tail-recursive ByteArray parser. Its
+all-byte equality to the specification codec is proved. Scalar digit limits
+precede accumulation; input-length digits are bounded by the checked width.
+Repeated list suffix conversion and whole-list parsing were rejected as an
+operational implementation because the fixed program has 837,572 instructions.
+Only bounded word slices and the fixed magic prefix convert to ordinary byte
+arrays. The reference codec remains the proof specification.
+
+The runtime retains byte arrays for code fields, memory, registers, PC and
+halted values. Queries use the proved accumulator projection and omit receipts
+by default; they never allocate the full proof transition list. The same loaded
+handle supports repeated queries. Endpoints are full-width little-endian bytes.
+The C ABI has distinct owned load/query results and explicit status, error and
+borrowed-image access; Rust lifetimes and the C++ example release handles through
+the matching DLL. Compiler/runtime/FFI behavior and available allocation remain
+external assumptions. Multiprecision arithmetic does not acquire physical
+unit-cost time from the abstract operation count.
+
+The certificate separates numeric allocation/code/scratch capacity, byte
+rounding, file framing and host container bounds. It transports results,
+leftmost ties, invalid guards, costs, ordered reads, positional read backing,
+read-width safety and supplied-store agreement through the same decoded limb
+execution. Independent literal consumer types cover every public field. Checks
+of Canonical, CanonicalImage, Entry, Execution and the initial 34-field
+certificate/consumer set passed; further host/program additions and the final
+compiled/replay/audit campaign remain separately required.
+
+## DD-20260912-NATIVE1-005: derive replay witnesses from actual occurrences
+
+The seven native coverage fixtures use the accepted canonical query's actual
+semantic stages: left select, right select, the two fringe folds, interior
+minimum, final rank, and a logical read whose bit span crosses two physical
+cells. The stage decomposition is derived from the same select/LCA/rank calls
+that construct the reference trace. Its concatenation is proved equal to that
+trace for every valid range. Each logical occurrence expands through the actual
+reader receipts, preserving repetitions and order after the 174 metadata reads.
+A physical occurrence records the raw read ordinal and actual transition index,
+prestate, source load instruction, address register and memory reply.
+
+Labels or membership in a seven-name roster were rejected as evidence of
+execution. The exporter searches actual stage occurrences and fails unless all
+seven kinds exist. The cross-cell witness additionally satisfies the explicit
+bit-position/length crossing inequality and selects two consecutive physical
+cells at the corresponding execution occurrences. The successful baseline
+inspected four candidates and emitted six n12 witnesses and one n24 crossing
+witness. It checks the independent List Int/leftmost-scan oracle and exports
+status, step count, all six categories and every ordered read/reply from the
+already connected reference execution, never from the limb or native result.
+
+Durable inputs comprise the seven small operational fixtures and the existing
+committed gzip of the fixed program. The baseline exporter produced 10,848,489
+program bytes, checked equal to the gzip's exact decompression. Keeping another
+large plaintext copy or recomputing the expensive exporter for each focused
+selector was unnecessary: the same exact bytes and hash are already durable.
+The replay separately checks those bytes, memory, instruction/address/reply
+positions, span arithmetic and the literal input oracle. Full prestate and
+stage composition still rely on the checked reference/source chain; the Python
+checker does not claim to independently derive the entire execution semantics.
+
+The executable Lean validator imports the independent public-contract consumers
+and runs the delivered loader and source entry on independently expected cases.
+A separately pinned nonempty roster and strict selector/compare modes prevent
+zero-case success. Its 16 default cases passed; selector and comparison controls,
+actual native 109-case replay and final independent acceptance remain distinct
+obligations. No preprocessing speed or physical constant-time limb cost is
+claimed by these witnesses.
+The final evidence now includes all seven witnesses in both unchanged clients,
+all 109 native cases expanded to 214 observations/source checks, 128 production
+replay controls, all 44 public-contract cases inside nine controls and 24 source
+validator controls. The isolated shim argument-order mutation is executed and
+produces the independently expected fault in both clients. Fresh producer hashes
+are bound to literal consumers for all field/public-proposition weakenings.
+Source, generated C and native artifact identities are restored and rechecked.
+These results support the existing design choice and its stated trust boundary;
+no new primitive, representation or compiler assumption was introduced by the
+final campaigns. Fresh blind audit and aggregate certification remain separate.

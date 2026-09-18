@@ -1,0 +1,6 @@
+{
+  "originalCases": 39,
+  "driverSuffix": "unchanged except explicit final count pair",
+  "originalHead": "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+  "pass": true
+}

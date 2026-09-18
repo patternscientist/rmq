@@ -1,0 +1,345 @@
+{
+  "schema": "native1-property-span-draft-check-v1",
+  "pass": true,
+  "count": 26,
+  "checks": [
+    {
+      "case": "",
+      "field": "schema",
+      "action": "delete",
+      "oldByteSpan": [
+        4,
+        40
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "50BE9568936FA56BCEC07328CFB872A608D23DD58023DAA0DB2E1376244A89B5"
+    },
+    {
+      "case": "",
+      "field": "schema",
+      "action": "change",
+      "oldByteSpan": [
+        14,
+        39
+      ],
+      "newSpanLength": 9,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "5A230D585FBF55350C606620EA3897D1496D05F575C56823908909EE4B18D0C4"
+    },
+    {
+      "case": "",
+      "field": "cases",
+      "action": "delete",
+      "oldByteSpan": [
+        248,
+        88606
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "72EE3AA72053842D3053FF1DCC560730B40C6C346308310C7163416B4A677701"
+    },
+    {
+      "case": "",
+      "field": "cases",
+      "action": "change",
+      "oldByteSpan": [
+        261,
+        88606
+      ],
+      "newSpanLength": 9,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "30A8BCB24B49ADC5FE6914219456245B79A1CF556428F3EB075B18CFFE7946DB"
+    },
+    {
+      "case": "query-smoke",
+      "field": "id",
+      "action": "delete",
+      "oldByteSpan": [
+        707,
+        726
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "680DB60A71E737797E686B2FE3EC309860450105FCE69C10DB26FBE04F935011"
+    },
+    {
+      "case": "query-smoke",
+      "field": "id",
+      "action": "change",
+      "oldByteSpan": [
+        712,
+        725
+      ],
+      "newSpanLength": 9,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "6C9E2ACB79F8BC0733FE3893821042D88FC01C0B09CA7B0B2B76A38D55329ACB"
+    },
+    {
+      "case": "query-smoke",
+      "field": "consumers",
+      "action": "delete",
+      "oldByteSpan": [
+        778,
+        844
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "8D78450EF70C08D64530D200B01A641F51AD25B1A119EADA23C95ED697D9C74E"
+    },
+    {
+      "case": "query-smoke",
+      "field": "consumers",
+      "action": "change",
+      "oldByteSpan": [
+        790,
+        843
+      ],
+      "newSpanLength": 9,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "2D5C0E9971786686A0A487140C1ED7691DC058A80C69B0E11DA0128330CE0418"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image",
+      "action": "delete",
+      "oldByteSpan": [
+        844,
+        965
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "0EF7DDA2497EF077977D10955C92684221D371A1539B2A3BBFC15CA45F2DBDB1"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image",
+      "action": "change",
+      "oldByteSpan": [
+        852,
+        964
+      ],
+      "newSpanLength": 9,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "9A6FE32C43BDB5EB1E56ADB2ED5C748A7874567FB47FB099B12554BC0BACAC3A"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.kind",
+      "action": "delete",
+      "oldByteSpan": [
+        853,
+        870
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "E8CEF0170F03C63478C7E068FDE7A9489B98E995EBC77773A38612C2B6A4EA75"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.kind",
+      "action": "change",
+      "oldByteSpan": [
+        860,
+        869
+      ],
+      "newSpanLength": 9,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "709FDCD49129DA9B9B3E8C3E08A02D702023AF574E7335DDD499F07B4FD8570D"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.width",
+      "action": "delete",
+      "oldByteSpan": [
+        870,
+        882
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "BD4CFD6A115F9A2D84DAA010349C1703E3DAB0C0B11621B2D4262E234A561EEF"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.width",
+      "action": "change",
+      "oldByteSpan": [
+        878,
+        881
+      ],
+      "newSpanLength": 9,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "49132D510D9D3481A7589A206DA470C692B2773DB3587F022437537D19AFACE0"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.code",
+      "action": "delete",
+      "oldByteSpan": [
+        919,
+        952
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "5CCD97B107F47C613EA186F00B39E83D3BDFB9D2390735ADFC0F877E320FA848"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.code",
+      "action": "change",
+      "oldByteSpan": [
+        926,
+        951
+      ],
+      "newSpanLength": 9,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "A032FBBA7760DBD434A6847642227C366397E0027585B53861EC129A4A88BD07"
+    },
+    {
+      "case": "query-smoke",
+      "field": "coverage",
+      "action": "delete",
+      "oldByteSpan": [
+        1203,
+        1249
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "DFD3889FC75305B60B5C0892833B8AB56E28F6DA9D37832981EF5ACDA208A119"
+    },
+    {
+      "case": "query-smoke",
+      "field": "coverage",
+      "action": "change",
+      "oldByteSpan": [
+        1215,
+        1249
+      ],
+      "newSpanLength": 9,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "BE3E6CAEA17091ADD822337FDF97FD5BA5A04E417A4991BE21CA31E3B91C4D22"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "proofLine",
+      "action": "delete",
+      "oldByteSpan": [
+        87049,
+        87150
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "5A12B1BE2622C5D2040EE63DE5D0E762C91A69D9FA2FDCA5AB652518D05386EF"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "proofLine",
+      "action": "change",
+      "oldByteSpan": [
+        87061,
+        87149
+      ],
+      "newSpanLength": 9,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "B4B25D3D1A679626F91059763A929075BBEA54C750F0B477D97DFAC2A19569E4"
+    },
+    {
+      "case": "stale-source-rejection",
+      "field": "append",
+      "action": "delete",
+      "oldByteSpan": [
+        88374,
+        88434
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "E847409A15D107D26FB7D442B5F01EF7BED34157951845DBA03E0C728529219A"
+    },
+    {
+      "case": "stale-source-rejection",
+      "field": "append",
+      "action": "change",
+      "oldByteSpan": [
+        88383,
+        88433
+      ],
+      "newSpanLength": 9,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "1E2FA3F1F8B3CD5F789DD69B38603D8C91EBB85E74AFE55A9DC4EDE4629CBAC5"
+    },
+    {
+      "case": "reject-image-magic",
+      "field": "image.base",
+      "action": "delete",
+      "oldByteSpan": [
+        62206,
+        62330
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "F2B9E822B3105E25BCF08F15C5B7814701E1370CA3A0DF9E289D5008FBE6ED87"
+    },
+    {
+      "case": "reject-image-magic",
+      "field": "image.base",
+      "action": "change",
+      "oldByteSpan": [
+        62213,
+        62329
+      ],
+      "newSpanLength": 9,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "0EA87148C2618B970FC0182B099B67BD6C3F4AF67886188B15C5E90565C6E79E"
+    },
+    {
+      "case": "reject-image-magic",
+      "field": "image.mutation",
+      "action": "delete",
+      "oldByteSpan": [
+        62329,
+        62348
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "B1BF70933B47811D1EE7CD8368BA54E906C0BEE91FB9E11492DB47BED37D3B1B"
+    },
+    {
+      "case": "reject-image-magic",
+      "field": "image.mutation",
+      "action": "change",
+      "oldByteSpan": [
+        62341,
+        62348
+      ],
+      "newSpanLength": 9,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "4120CA19B59F09B760EA7720ADC9F9EE23C164FE02C675FDD096EB58DC219403",
+      "afterSha256": "D67050DF4E0BF7295DF66DAAA9DBBD46B79140D9127F200FB6BA345AE1A79CF7"
+    }
+  ]
+}

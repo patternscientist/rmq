@@ -1,0 +1,17 @@
+{
+  "schema": "native1-binary-draft-producer-v1",
+  "nativeExecuted": false,
+  "nonPq1Materialized": 88,
+  "propertySpanChecks": 26,
+  "registrySha256": "D37BB998A85EE929A1D2D4577778EE6998F5801EE1118374326BFBFA853D80F2",
+  "pq1Image": {
+    "id": "pq1-n9-full",
+    "instructions": 837572,
+    "imageSha256": "13A28D376144FE4A45C939598A9028F06FAEA2CE1B64B4575FF42C0224DD491E",
+    "bytes": 70854686,
+    "width": 168,
+    "independentImageInspection": true,
+    "memoryWords": 182,
+    "numericWords": 2847581
+  }
+}
